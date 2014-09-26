@@ -5,10 +5,10 @@
       = form_for(resource, as: resource_name, url: session_path(resource_name)) do |f|
         .input-group.small_scale_padding-bottom2
           .input-group-addon.glyphicon.glyphicon-user
-          = f.email_field :email, autofocus: true, class: ".col-sm-4 ", placeholder: "Email or username"
+          = f.email_field :email, autofocus: true, class: "form-control col-sm-4 ", placeholder: "Email or username"
         .input-group.small_scale_padding-bottom2
           .input-group-addon.glyphicon.glyphicon-eye-close
-          = f.password_field :password, autocomplete: "off", class: ".col-sm-4", placeholder: "Password"
+          = f.password_field :password, autocomplete: "off", class: "form-control col-sm-4", placeholder: "Password"
         - if devise_mapping.rememberable?
           .checkbox
             %label
