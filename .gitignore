@@ -17,3 +17,6 @@
 
 # ignore database.yml file
 /config/database.yml
+
+# ignore .rvmrc
+/.rvmrc
