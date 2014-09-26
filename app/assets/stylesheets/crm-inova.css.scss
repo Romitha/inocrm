@@ -211,3 +211,16 @@ textarea{
   font-size: 0;
   line-height: 0;
 }
+fieldset{
+  border: 1px solid #dddddd;
+  margin: 1rem 0;
+  padding: 1.11111rem;
+  legend {
+    background: none repeat scroll 0 0 white;
+    font-weight: bold;
+    margin: 0 0 0 -0.16667rem;
+    padding: 0 0.16667rem;
+    width: auto;
+    border: none;
+  }
+}
