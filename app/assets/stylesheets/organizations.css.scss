@@ -3,7 +3,12 @@
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
 .center {
-     float: none;
+     float: none !important;
      margin-left: auto;
      margin-right: auto;
+}
+
+.ab{
+	display:block;
+	width:80%;
 }
