@@ -2,8 +2,8 @@
   %legend Log in
   = form_for(resource, as: resource_name, url: session_path(resource_name)) do |f|
     .input-group.small_scale_padding-bottom2
-      .input-group-addon.glyphicon.glyphicon-envelope
-      = f.email_field :email, autofocus: true, class: "form-control", placeholder: "Email"
+      .input-group-addon.glyphicon.glyphicon-user
+      = f.email_field :email, autofocus: true, class: "form-control", placeholder: "Email or username"
     .input-group.small_scale_padding-bottom2
       .input-group-addon.glyphicon.glyphicon-eye-close
       = f.password_field :password, autocomplete: "off", class: "form-control", placeholder: "Password"
