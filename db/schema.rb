@@ -50,6 +50,16 @@ ActiveRecord::Schema.define(version: 20141006045326) do
     t.integer  "terminated",            limit: 1
     t.datetime "deleted_at"
     t.integer  "deleted_by"
+
+  create_table "organizations", force: true do |t|
+    t.string   "name"
+    t.string   "short_name"
+    t.string   "website"
+    t.string   "vat_number"
+    t.string   "type"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+
   end
 
   create_table "users", force: true do |t|
