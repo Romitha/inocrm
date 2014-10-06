@@ -1,7 +1,9 @@
 Rails.application.routes.draw do
-  devise_for :users#, :controllers => {:confirmations => 'confirmations'}
+  resources :organizations
+
+  devise_for :users, skip: [:registrations, :passwords, :confirmations]#, :controllers => {:confirmations => 'confirmations'}
   # get 'auth/index'
-  root "auth#index"
+  root "organizations#index"
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
