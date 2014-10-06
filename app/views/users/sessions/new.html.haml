@@ -1,19 +1,19 @@
 .col-sm-4.center
   %fieldset
     %legend Log in
-    .center.col-sm-offset-2
+    .center.col-sm-9
       = form_for(resource, as: resource_name, url: session_path(resource_name)) do |f|
         .input-group.small_scale_padding-bottom2
           .input-group-addon.glyphicon.glyphicon-user
-          = f.email_field :email, autofocus: true, class: "form-control col-sm-4 ", placeholder: "Email or username"
+          = f.email_field :email, autofocus: true, class: "form-control col-sm-12", placeholder: "Email or username"
         .input-group.small_scale_padding-bottom2
           .input-group-addon.glyphicon.glyphicon-eye-close
-          = f.password_field :password, autocomplete: "off", class: "form-control col-sm-4", placeholder: "Password"
+          = f.password_field :password, autocomplete: "off", class: "form-control col-sm-12", placeholder: "Password"
         - if devise_mapping.rememberable?
           .checkbox
             %label
               = f.check_box :remember_me
               Remember me
-        .ab.small_scale_padding-bottom2
+        .button.small_scale_padding-bottom2
           = f.submit "Log in", class: "btn btn-primary btn-lg btn-block"
         / = render "users/share
