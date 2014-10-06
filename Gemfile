@@ -30,6 +30,10 @@ gem 'spring',        group: :development
 
 gem 'devise'
 
+gem "cancan"
+
+gem "rolify"
+
 gem "haml-rails"
 
 gem "therubyracer"
