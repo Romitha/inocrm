@@ -11,8 +11,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140922043654) do
+ActiveRecord::Schema.define(version: 20141006045326) do
 
+  create_table "organizations", force: true do |t|
+    t.string   "name",                   null: false
+    t.string   "short_name",             null: false
+    t.integer  "state"
+    t.integer  "status"
+    t.string   "vat_number"
+    t.integer  "vat_parent", default: 0, null: false
+    t.string   "web_site"
+    t.integer  "created_by"
+    t.integer  "updated_by"
+    t.datetime "deleted_at"
+    t.integer  "deleted_by"
+    t.text     "logo"
+    t.string   "code",                   null: false
+    t.integer  "account_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
   create_table "users", force: true do |t|
     t.string   "email",                  default: "", null: false
     t.string   "encrypted_password",     default: "", null: false
