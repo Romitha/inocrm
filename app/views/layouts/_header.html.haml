@@ -1,0 +1,13 @@
+.navbar.navbar-default.navbar-static-top.navbar-inverse
+  .container
+    %button.navbar-toggle(type="button" data-toggle="collapse" data-target=".navbar-responsive-collapse")
+      %span.icon-bar
+      %span.icon-bar
+      %span.icon-bar
+    = link_to "Inova Crm", root_url, class: "navbar-brand"
+    .navbar-collapse.collapse.navbar-responsive-collapse.navbar-right
+      %ul.nav.navbar-nav
+        %li= link_to "Configuration", "/path1"
+        %li= link_to "Suppliers", "/path2"
+        %li= link_to "Customers", "/path3"
+        %li= link_to "Sign Out", destroy_user_session_path, method: :delete if user_signed_in?
