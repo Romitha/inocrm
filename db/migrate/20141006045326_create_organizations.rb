@@ -5,7 +5,7 @@ class CreateOrganizations < ActiveRecord::Migration
     	t.string :short_name
     	t.string :website
     	t.string :vat_number
-    	t.string :type
+    	t.string :refers
       t.timestamps
     end
   end
