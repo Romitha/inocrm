@@ -20,3 +20,9 @@
 
 # ignore .rvmrc
 /.rvmrc
+
+#ignore schema.rb
+/db/schema.rb
+
+#ignore erd.pdf file
+erd.pdf
