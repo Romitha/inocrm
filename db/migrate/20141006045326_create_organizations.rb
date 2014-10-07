@@ -12,7 +12,7 @@ class CreateOrganizations < ActiveRecord::Migration
       t.integer :updated_by
       t.datetime :deleted_at
       t.integer :deleted_by
-      t.text :logo
+      # t.text :logo
     	t.string :code, :null =>false
       t.integer :account_id
       t.timestamps
