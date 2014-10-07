@@ -13,6 +13,7 @@
 
 ActiveRecord::Schema.define(version: 20141007085618) do
 
+
   create_table "organizations", force: true do |t|
     t.string   "name"
     t.string   "short_name"
