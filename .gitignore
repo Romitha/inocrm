@@ -28,7 +28,7 @@
 erd.pdf
 
 # ignore Gemfile.lock file
-/Gemfile.lock
+# /Gemfile.lock
 
 # ignore Capfile
 /Capfile
