@@ -9,17 +9,40 @@
 }
 
 .button{
-	display:block;
-	width:100%;
+  display:block;
+  width:100%;
 }
-.organization-config {
-	background:transparent image-url('configuration-white.png') left center no-repeat;
-	opacity: 0.7;
-	&:hover {
-		opacity: 1;
-	}
-}
+
+
 .text-hide {
-	line-height: 0;
-	font-size: 0;
+  line-height: 0;
+  font-size: 0;
+}
+
+.navbar-nav {
+  .nav-icon {
+    padding-left: 20px;
+    background-color: transparent;
+    background-attachment: scroll;
+    background-position: center center;
+    background-repeat: no-repeat;
+    opacity: 0.7;
+    &:hover {
+      opacity: 1;
+    }
+  } 
+  .organization {
+    background-image: image-url('configuration-white.png');
+  }
+
+  .supplier {
+    background-image: image-url('supplier.png');
+  }
+
+  .customers {
+    background-image: image-url('customers.png');
+  }
+  .me {
+    background-image: image-url('me-white.png');
+  }
 }
