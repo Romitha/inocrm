@@ -12,3 +12,14 @@
 	display:block;
 	width:100%;
 }
+.organization-config {
+	background:transparent image-url('configuration-white.png') left center no-repeat;
+	opacity: 0.7;
+	&:hover {
+		opacity: 1;
+	}
+}
+.text-hide {
+	line-height: 0;
+	font-size: 0;
+}
