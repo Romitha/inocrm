@@ -26,3 +26,6 @@
 
 #ignore erd.pdf file
 erd.pdf
+
+# ignore Gemfile.lock file
+/Gemfile.lock
