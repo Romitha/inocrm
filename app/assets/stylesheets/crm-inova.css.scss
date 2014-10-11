@@ -1,10 +1,7 @@
-body{
-  line-height: 16px;
-  padding-top: 10px;
-}
 textarea{
   resize: none;
 }
+
 @for $index from 0 through 10 {
   .small_scale_padding#{$index} {
     padding: ($index * 1%) !important;
