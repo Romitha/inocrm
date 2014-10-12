@@ -1,8 +1,2 @@
-- if user_signed_in?
-  %ul.nav.nav-pills.nav-stacked
-    %li.active= link_to "sample", "#"
-    %li= link_to "sample", "#"
-    %li= link_to "sample", "#"
-    %li= link_to "sample", "#"
-    %li= link_to "sample", "#"
-    %li= link_to "sample", "#"
+%ul.nav.nav-pills.nav-stacked
+  = yield :dynamic_sidebar

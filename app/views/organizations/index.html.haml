@@ -1,2 +1,18 @@
-- @organizations.each do |organization|
-  = organization.name
+- organization = @organization
+.row
+  .col-lg-2
+    = image_tag organization.logo.thumb.url, class: "img-responsive img-thumbnail"
+  .col-lg-10
+    %h3= organization.name
+    %blockquote
+      %p= organization.short_name
+.row
+  .col-lg-12
+    %p= organization.description
+
+
+- content_for :dynamic_sidebar do
+  %li.active= link_to "Organization", "#"
+  %li= link_to "Edit Organization", edit_organization_path(organization)
+  %li= link_to "Add Employee", "#"
+  %li= link_to "Add Branches", "#"

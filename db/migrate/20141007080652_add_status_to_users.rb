@@ -5,9 +5,13 @@ class AddStatusToUsers < ActiveRecord::Migration
       add_column :users, attribute, :string
     end
 
-    [:state, :status, :organization_id, :titles_id, :designation_id, :accounts_id, :role_id,
-     :permissions, :active , :created_by, :updated_by, :deleted_by].each do |attribute|
+    [:state, :status, :permissions, :active].each do |attribute|
       add_column :users, attribute, :integer
+    end
+
+
+    [:created, :updated, :deleted].each do |attribute|
+      add_reference :users, attribute, polymorphic: true
     end
 
     add_column :users, :deleted_at, :datetime

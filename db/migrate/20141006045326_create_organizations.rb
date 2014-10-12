@@ -3,6 +3,7 @@ class CreateOrganizations < ActiveRecord::Migration
     create_table :organizations do |t|
     	t.string :name, :null =>false
     	t.string :short_name, :null =>false
+      t.text :description
       t.integer :state
       t.integer :status
       t.string :logo
