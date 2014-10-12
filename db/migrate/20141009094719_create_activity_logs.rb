@@ -8,7 +8,7 @@ class CreateActivityLogs < ActiveRecord::Migration
       t.string :ip_address
       t.string :event
       t.string :reference_url
-      t.string :reference_id
+      t.references :reference
       t.timestamps
     end
   end
