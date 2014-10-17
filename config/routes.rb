@@ -1,5 +1,8 @@
 Rails.application.routes.draw do
-  resources :organizations
+
+  resources :organizations do
+    resources :addresses
+  end
 
   devise_for :users, skip: [:registrations, :passwords, :confirmations]#, :controllers => {:confirmations => 'confirmations'}
   # get 'auth/index'

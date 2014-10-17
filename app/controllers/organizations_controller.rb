@@ -15,7 +15,7 @@ class OrganizationsController < ApplicationController
   end
 
   def edit
-
+    # @address = @organization.addresses.build
     respond_to do |format|
       format.html
     end
@@ -23,10 +23,10 @@ class OrganizationsController < ApplicationController
 
   def update
     respond_to do |format|
-      if @organization.update_attributes(authorized_params)
+      if @organization.update_attributes(organization_params)
         format.html {redirect_to root_url, notice: "Organization #{@organization.name} has been updated successfully"}
       else
-        format.html {render edit_organization__path(@organization)}
+        format.html {render :edit}
       end
     end
   end
@@ -36,7 +36,7 @@ class OrganizationsController < ApplicationController
       @organization = Organization.find params[:id]
     end
 
-    def authorized_params
-      params.require(:organization).permit(:name, :description, :logo, :vat_number, :web_site, :code, :short_name)
+    def organization_params
+      params.require(:organization).permit(:name, :description, :logo, :vat_number, :web_site, :code, :short_name, addresses_attributes: [:id, :category, :address, :_destroy])
     end
 end
