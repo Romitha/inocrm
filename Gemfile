@@ -47,6 +47,8 @@ gem 'twitter-bootstrap-rails', :git => 'https://github.com/seyhunak/twitter-boot
 gem "rails-erd"
 
 gem 'simple_form'
+
+gem "nested_form"
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
