@@ -1,7 +1,7 @@
 window.Addresses =
   setup: ->
     @nested_form_addition()
-    @handlebar_template_render("#entry-template", {title: "My New Post", body: "This is my first post!"}, "#sample-handlebar")
+    # @handlebar_template_render("#entry-template", {title: "My New Post", body: "This is my first post!"}, "#sample-handlebar")
     return
 
   nested_form_addition: ->
