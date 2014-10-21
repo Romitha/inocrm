@@ -16,7 +16,7 @@
   %body
     = render "layouts/header"
 
-    .container
+    .container.main-content
       .row
         - if content_for?(:dynamic_sidebar)
           .col-lg-3
@@ -24,8 +24,9 @@
         %section{class: "#{content_for?(:dynamic_sidebar) ? 'col-lg-9' : 'col-lg-12'}"}
           = bootstrap_flash
           = yield
+      .push
 
-    %footer
+    %footer.navbar-inverse
       = render "layouts/footer"
 
     = javascript_include_tag "application"
