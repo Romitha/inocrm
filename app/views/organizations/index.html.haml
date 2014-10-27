@@ -8,8 +8,27 @@
       %p= organization.short_name
 .row
   .col-lg-12
-    %p= organization.description
+    %p Vat Number: #{organization.vat_number}
+    = link_to "visit website",organization.web_site, data: {toggle: "tooltip", placement: "bottom"}, title: organization.web_site, rel: "tooltip", :target => "_blank" 
+  .col-lg-12
+    = truncate(organization.description, :omission => "... (continued)", :length => 350)
+  %ul.nav.nav-tabs{role: "tablist"}
+    %li.active= link_to "Address", "#add", role: "tab", data: {toggle: "tab"}
+    %li= link_to "Contact Details", "#contact", role: "tab", data: {toggle: "tab"}
+    %li= link_to "Contact Person", "#person", role: "tab", data: {toggle: "tab"}
+    %li= link_to "Documents & Attachements", "#", role: "tab", data: {toggle: "tab"}
+    %li= link_to "Organization Relations", "#", role: "tab", data: {toggle: "tab"}
 
+  .tab-content
+    .tab-pane.active#add
+      - organization.addresses.each do |address|
+        = address.category
+        = address.address
+    .tab-pane#contact
+      - organization.contact_numbers.each do |contact_number|
+        = contact_number.category
+        = contact_number.value
+    .tab-pane#person
 
 
 - content_for :dynamic_sidebar do
