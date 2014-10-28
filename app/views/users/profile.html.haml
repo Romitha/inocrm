@@ -1,0 +1,172 @@
+- address_list = @address_list
+
+/Editting templates
+%script{ "id" => "username_edit_modal_template", "type" => "text/x-handlebars-template" }
+  = form_for( @user, url: profile_update_path(@user.id,"UN"), html: { id: "id_un_edit_frm", method: "post" } ) do
+    .modal-header
+      %button.close{ "type" => "button", "data-dismiss" => "modal" }
+        %span{ "aria-hidden" => "true" }
+          &times;
+        %span.sr-only
+          Close
+      %h4.modal-title
+        Update Primary Details - Username
+    .modal-body
+      %input{ "type" => 'text', "id" => 'id_user_name_edit_uname', "name" => "user_name", "placeholder" => "{{uname}}" }
+      %br
+      %br
+      %select
+        %option{ "value" => "1" }Associate Software Engineer
+        %option{ "value" => "2" }Software Engineer
+        %option{ "value" => "3" }Senior Software Engineer
+      %br
+      %br
+      %input{ "type" => 'password', "id" => 'id_user_name_edit_confpass' } 
+    .modal-footer
+      %button{ "type" => 'button', "id" => 'id_user_name_edit_cancel', "class" => 'btn btn-default', "data-dismiss" => "modal" } Cancel
+      %button{ "type" => 'submit', "id" => 'id_user_name_edit_submit', "class" => 'btn btn-default'} Update
+
+%script{ "id" => "useremail_edit_modal_template", "type" => "text/x-handlebars-template" }
+  = form_for( @user, url: profile_update_path(@user.id,"EM"), html: { id: "id_em_edit_frm", method: "post" } ) do
+    .modal-header
+      %button.close{ "type" => "button", "data-dismiss" => "modal" }
+        %span{ "aria-hidden" => "true" }
+          &times;
+        %span.sr-only
+          Close
+      %h4.modal-title
+        Update Primary Details - Email
+    .modal-body
+      %input{ "type" => 'text', "id" => 'id_user_edit_uemail', "name" => "user_email", "placeholder" => "{{uemail}}" }
+      %br
+      %br
+      %input{ "type" => 'password', "id" => 'id_user_edit_uemail_confpw' } 
+    .modal-footer
+      %button{ "type" => 'button', "id" => 'id_user_edit_uemail_cancel', "class" => 'btn btn-default', "data-dismiss" => "modal" } Cancel
+      %button{ "type" => 'submit', "id" => 'id_user_edit_uemail_submit', "class" => 'btn btn-default'} Update
+
+%script{ "id" => "useraddress_edit_modal_template", "type" => "text/x-handlebars-template" }
+  = form_for( @user, url: profile_update_path(@user.id,"EM"), html: { id: "id_add_edit_frm", method: "post" } ) do
+    .modal-header
+      %button.close{ "type" => "button", "data-dismiss" => "modal" }
+        %span{ "aria-hidden" => "true" }
+          &times;
+        %span.sr-only
+          Close
+      %h4.modal-title
+        Update Primary Details - Address
+    .modal-body
+      .row
+        .col-md-5
+          %select
+            %option{ "value" => "1" }Billings
+            %option{ "value" => "2" }Personal
+            %option{ "value" => "3" }Work
+        .col-md-5
+      .row
+        %input{ "type" => 'password', "id" => 'id_user_edit_uaddress_confpw' }
+      .row.col-md-12
+        - address_list.each do |a|
+          = "#{a['address']}"
+    .modal-footer
+      %button{ "type" => 'button', "id" => 'id_user_edit_uaddress_cancel', "class" => 'btn btn-default', "data-dismiss" => "modal" } Cancel
+      %button{ "type" => 'submit', "id" => 'id_user_edit_uaddress_submit', "class" => 'btn btn-default'} Update
+
+%script{ "id" => "userpw_edit_modal_template", "type" => "text/x-handlebars-template" }
+  = form_for( @user, url: profile_update_path(@user.id,"PW"), html: { id: "id_pw_edit_frm", method: "post" } ) do
+    .modal-header
+      %button.close{ "type" => "button", "data-dismiss" => "modal" }
+        %span{ "aria-hidden" => "true" }
+          &times;
+        %span.sr-only
+          Close
+      %h4.modal-title
+        Update Security - Password
+    .modal-body
+      %input{ "type" => 'password', "id" => 'id_user_edit_upw_current' }
+      %br
+      %br
+      %input{ "type" => 'password', "id" => 'id_user_edit_upw_retypepw' }
+      %br
+      %br
+      %input{ "type" => 'password', "id" => 'id_user_edit_upw_confpw' } 
+    .modal-footer
+      %button{ "type" => 'button', "id" => 'id_user_edit_upw_cancel', "class" => 'btn btn-default', "data-dismiss" => "modal" } Cancel
+      %button{ "type" => 'submit', "id" => 'id_user_edit_upw_submit', "class" => 'btn btn-default'} Update
+
+/Editing modal
+#user_edit_popup.modal.fade
+  .modal-dialog
+    #user_edit_popup_content.modal-content
+
+%h1 User profile
+.col-md-1
+.col-md-10
+  .col-md-4
+    = image_tag   "no_image.jpg"
+    = file_field_tag :file
+  .col-md-8
+
+    #id_primary_details_panel.panel.panel-default
+      .panel-heading
+        Primary Details
+      .panel-body
+        .row
+          .col-md-10#id_user_name
+            = @user.user_name
+            %br
+            Software Engineer
+          .col-md-2#id_user_name_edit
+            %a#edit_name_link{ "data-toggle" => "modal", "data-target" => "#user_edit_popup" } Edit
+
+        .row
+          .col-md-10#id_user_email
+            = @user.email
+          .col-md-2#id_user_email_edit
+            %a#edit_email_link{ "data-toggle" => "modal", "data-target" => "#user_edit_popup" } Edit
+
+        .row
+          .col-md-8
+            = address_list.first.address
+            /= address_list.select{|address| address.primary}.first
+            #id_user_tpnum.collapse
+              - skip_first = false
+              - address_list.each do |a|
+                - if skip_first 
+                  = "#{a['address']}"
+                  %br
+                - skip_first = true
+          .col-md-2= link_to "More>>", "#id_user_tpnum", data: {toggle: "collapse"} if @address_list.size > 1
+          .col-md-2#id_user_tpnum_edit
+            %a#edit_tpnum_link{ "data-toggle" => "modal", "data-target" => "#user_edit_popup" } Edit
+
+        .row
+          .col-md-8
+            = address_list.first.address
+            /= address_list.select{|address| address.primary}.first
+            #id_user_address.collapse
+              - skip_first = false
+              - address_list.each do |a|
+                - if skip_first 
+                  = "#{a['address']}"
+                  %br
+                - skip_first = true
+          .col-md-2= link_to "More>>", "#id_user_address", data: {toggle: "collapse"} if @address_list.size > 1
+          .col-md-2#id_user_address_edit
+            %a#edit_address_link{ "data-toggle" => "modal", "data-target" => "#user_edit_popup" } Edit
+
+    #id_additional_details_panel.panel.panel-default
+      .panel-heading
+        Additional Details
+      .panel-body
+
+    #id_security_details_panel.panel.panel-default
+      .panel-heading
+        Security
+      .panel-body
+        .row
+          .col-md-10#id_user_pw
+            XXXXXXXX
+          .col-md-2#id_user_pw_edit
+            %a#edit_password_link{ "data-toggle" => "modal", "data-target" => "#user_edit_popup" } Edit
+.col-md-1
