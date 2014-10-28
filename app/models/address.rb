@@ -1,8 +1,7 @@
 class Address < ActiveRecord::Base
+    #Users and Organizations have multiple addresses
+    belongs_to :addressable, polymorphic: true
 
-	belongs_to :organization
-
-	TYPE = %w(Billing Shipping Support Office Home)
+    TYPE = %w(Billing Shipping Support Office Home)
 	validates :address, presence: true
-
 end
