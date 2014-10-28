@@ -8,4 +8,6 @@ class User < ActiveRecord::Base
   # def only_if_unconfirmed
   #   pending_any_confirmation {yield}
   # end
+  has_many :addresses, as: :addressable
+
 end
