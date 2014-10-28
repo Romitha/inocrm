@@ -1,7 +1,16 @@
 window.Organizations =
   setup: ->
-    # @alert_me()
+    @show_more_less()
     return
 
-  alert_me: ->
-    alert "hi"
+  show_more_less: ->
+    if $(".panel-body").height() > 100
+      $(".panel-body").removeClass("show-limit")
+      $(".more_toggle").addClass("hide")
+    else
+      $(".panel-body").addClass("show-limit")
+      $(".more_toggle").removeClass("hide")
+
+  toggle_more: ->
+    $(".panel-body").removeClass("show-limit")
+    $(".hide_screen").remove()
