@@ -5,30 +5,37 @@
   .col-lg-10
     %h3= organization.name
     %blockquote
-      %p= organization.short_name
-.row
-  .col-lg-12
-    %p Vat Number: #{organization.vat_number}
-    = link_to "visit website",organization.web_site, data: {toggle: "tooltip", placement: "bottom"}, title: organization.web_site, rel: "tooltip", :target => "_blank" 
-  .col-lg-12
-    = truncate(organization.description, :omission => "... (continued)", :length => 350)
-  %ul.nav.nav-tabs{role: "tablist"}
-    %li.active= link_to "Address", "#add", role: "tab", data: {toggle: "tab"}
-    %li= link_to "Contact Details", "#contact", role: "tab", data: {toggle: "tab"}
-    %li= link_to "Contact Person", "#person", role: "tab", data: {toggle: "tab"}
-    %li= link_to "Documents & Attachements", "#", role: "tab", data: {toggle: "tab"}
-    %li= link_to "Organization Relations", "#", role: "tab", data: {toggle: "tab"}
+      = organization.short_name
 
-  .tab-content
-    .tab-pane.active#add
-      - organization.addresses.each do |address|
-        = address.category
-        = address.address
-    .tab-pane#contact
-      - organization.contact_numbers.each do |contact_number|
-        = contact_number.category
-        = contact_number.value
-    .tab-pane#person
+.row
+  .col-lg-6.padding-left0 Vat Number: #{organization.vat_number}
+  .col-lg-6.pull-right.padding0.text-right= link_to "Visit website",organization.web_site, data: {toggle: "tooltip", placement: "bottom"}, title: organization.web_site, rel: "tooltip", :target => "_blank" 
+.row.small_scale_margin-top1
+  .col-lg-12.padding0
+    .panel.panel-default
+      .panel-body.show-limit
+        %p= organization.description
+        .hide_screen
+          = link_to "More >>", "#", onclick: "Organizations.toggle_more(); return false;", class: "hide more_toggle"
+.row
+  .col-lg-12.padding0
+    %ul.nav.nav-tabs{role: "tablist"}
+      %li= link_to "Address", "#add", role: "tab", data: {toggle: "tab"}
+      %li= link_to "Contact Details", "#contact", role: "tab", data: {toggle: "tab"}
+      %li= link_to "Contact Person", "#person", role: "tab", data: {toggle: "tab"}
+      %li= link_to "Documents & Attachements", "#", role: "tab", data: {toggle: "tab"}
+      %li= link_to "Organization Relations", "#", role: "tab", data: {toggle: "tab"}
+
+    .tab-content.small_scale_margin-top1
+      .tab-pane#add
+        - organization.addresses.each do |address|
+          = address.category
+          = address.address
+      .tab-pane#contact
+        - organization.contact_numbers.each do |contact_number|
+          = contact_number.category
+          = contact_number.value
+      .tab-pane#person
 
 
 - content_for :dynamic_sidebar do
