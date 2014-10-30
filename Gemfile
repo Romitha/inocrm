@@ -49,6 +49,12 @@ gem "rails-erd"
 gem 'simple_form'
 
 gem "nested_form"
+
+gem "mustache"
+
+gem 'chosen-sass-bootstrap-rails'
+
+# gem "handlebars_assets"
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
