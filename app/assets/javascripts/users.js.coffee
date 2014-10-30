@@ -3,7 +3,7 @@ window.Users =
   setup: ->
     @username_edit()
     @useremail_edit()
-    @userpw_edit()
+    @userpassword_edit()
     @useraddress_edit()
     return
 
@@ -14,12 +14,8 @@ window.Users =
         url: "/users/getusername/1"
         dataType: "json"
         success: (data, textStatus, xhr) ->
-          source = $("#username_edit_modal_template").html()
-          template = Handlebars.compile(source)
-          content =
-            uname : data.user_name
-          html = template(content)
-          $("#user_edit_popup_content").html html
+          content = {uname : data.user_name}
+          Addresses.handlebar_template_render("#username_edit_modal_template", content, "#user_edit_popup_content")
           return
         error: ( xhr, textStatus, errorThrown ) ->
           $("#" + id + " .contentarea").html textStatus
@@ -43,7 +39,7 @@ window.Users =
           $("#" + id + " .contentarea").html textStatus
           return 
 
-  userpw_edit: ->
+  userpassword_edit: ->
     $("#edit_password_link").mouseover ->
       $.ajax
         type: "GET"

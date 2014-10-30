@@ -1,112 +1,10 @@
 - address_list = @address_list
-
-/Editting templates
-%script{ "id" => "username_edit_modal_template", "type" => "text/x-handlebars-template" }
-  = form_for( @user, url: profile_update_path(@user.id,"UN"), html: { id: "id_un_edit_frm", method: "post" } ) do
-    .modal-header
-      %button.close{ "type" => "button", "data-dismiss" => "modal" }
-        %span{ "aria-hidden" => "true" }
-          &times;
-        %span.sr-only
-          Close
-      %h4.modal-title
-        Update Primary Details - Username
-    .modal-body
-      %input{ "type" => 'text', "id" => 'id_user_name_edit_uname', "name" => "user_name", "placeholder" => "{{uname}}" }
-      %br
-      %br
-      %select
-        %option{ "value" => "1" }Associate Software Engineer
-        %option{ "value" => "2" }Software Engineer
-        %option{ "value" => "3" }Senior Software Engineer
-      %br
-      %br
-      %input{ "type" => 'password', "id" => 'id_user_name_edit_confpass' } 
-    .modal-footer
-      %button{ "type" => 'button', "id" => 'id_user_name_edit_cancel', "class" => 'btn btn-default', "data-dismiss" => "modal" } Cancel
-      %button{ "type" => 'submit', "id" => 'id_user_name_edit_submit', "class" => 'btn btn-default'} Update
-
-%script{ "id" => "useremail_edit_modal_template", "type" => "text/x-handlebars-template" }
-  = form_for( @user, url: profile_update_path(@user.id,"EM"), html: { id: "id_em_edit_frm", method: "post" } ) do
-    .modal-header
-      %button.close{ "type" => "button", "data-dismiss" => "modal" }
-        %span{ "aria-hidden" => "true" }
-          &times;
-        %span.sr-only
-          Close
-      %h4.modal-title
-        Update Primary Details - Email
-    .modal-body
-      %input{ "type" => 'text', "id" => 'id_user_edit_uemail', "name" => "user_email", "placeholder" => "{{uemail}}" }
-      %br
-      %br
-      %input{ "type" => 'password', "id" => 'id_user_edit_uemail_confpw' } 
-    .modal-footer
-      %button{ "type" => 'button', "id" => 'id_user_edit_uemail_cancel', "class" => 'btn btn-default', "data-dismiss" => "modal" } Cancel
-      %button{ "type" => 'submit', "id" => 'id_user_edit_uemail_submit', "class" => 'btn btn-default'} Update
-
-%script{ "id" => "useraddress_edit_modal_template", "type" => "text/x-handlebars-template" }
-  = form_for( @user, url: profile_update_path(@user.id,"EM"), html: { id: "id_add_edit_frm", method: "post" } ) do
-    .modal-header
-      %button.close{ "type" => "button", "data-dismiss" => "modal" }
-        %span{ "aria-hidden" => "true" }
-          &times;
-        %span.sr-only
-          Close
-      %h4.modal-title
-        Update Primary Details - Address
-    .modal-body
-      .row
-        .col-md-5
-          %select
-            %option{ "value" => "1" }Billings
-            %option{ "value" => "2" }Personal
-            %option{ "value" => "3" }Work
-        .col-md-5
-      .row
-        %input{ "type" => 'password', "id" => 'id_user_edit_uaddress_confpw' }
-      .row.col-md-12
-        - address_list.each do |a|
-          = "#{a['address']}"
-    .modal-footer
-      %button{ "type" => 'button', "id" => 'id_user_edit_uaddress_cancel', "class" => 'btn btn-default', "data-dismiss" => "modal" } Cancel
-      %button{ "type" => 'submit', "id" => 'id_user_edit_uaddress_submit', "class" => 'btn btn-default'} Update
-
-%script{ "id" => "userpw_edit_modal_template", "type" => "text/x-handlebars-template" }
-  = form_for( @user, url: profile_update_path(@user.id,"PW"), html: { id: "id_pw_edit_frm", method: "post" } ) do
-    .modal-header
-      %button.close{ "type" => "button", "data-dismiss" => "modal" }
-        %span{ "aria-hidden" => "true" }
-          &times;
-        %span.sr-only
-          Close
-      %h4.modal-title
-        Update Security - Password
-    .modal-body
-      %input{ "type" => 'password', "id" => 'id_user_edit_upw_current' }
-      %br
-      %br
-      %input{ "type" => 'password', "id" => 'id_user_edit_upw_retypepw' }
-      %br
-      %br
-      %input{ "type" => 'password', "id" => 'id_user_edit_upw_confpw' } 
-    .modal-footer
-      %button{ "type" => 'button', "id" => 'id_user_edit_upw_cancel', "class" => 'btn btn-default', "data-dismiss" => "modal" } Cancel
-      %button{ "type" => 'submit', "id" => 'id_user_edit_upw_submit', "class" => 'btn btn-default'} Update
-
-/Editing modal
-#user_edit_popup.modal.fade
-  .modal-dialog
-    #user_edit_popup_content.modal-content
-
-%h1 User profile
-.col-md-1
-.col-md-10
+.row
   .col-md-4
-    = image_tag   "no_image.jpg"
+    = image_tag "no_image.jpg"
     = file_field_tag :file
   .col-md-8
-
+    %h2#user_name= @user.user_name
     #id_primary_details_panel.panel.panel-default
       .panel-heading
         Primary Details
@@ -117,7 +15,7 @@
             %br
             Software Engineer
           .col-md-2#id_user_name_edit
-            %a#edit_name_link{ "data-toggle" => "modal", "data-target" => "#user_edit_popup" } Edit
+            = link_to "Edit", initiate_user_profile_edit_user_path(template_params: "user_name_primary_details"), data: {toggle: "modal", target: "#user_edit_popup", userid: @user.id}, remote: true
 
         .row
           .col-md-10#id_user_email
@@ -127,7 +25,7 @@
 
         .row
           .col-md-8
-            = address_list.first.address
+            = address_list.first.try :address
             /= address_list.select{|address| address.primary}.first
             #id_user_tpnum.collapse
               - skip_first = false
@@ -142,7 +40,7 @@
 
         .row
           .col-md-8
-            = address_list.first.address
+            = address_list.first.try :address
             /= address_list.select{|address| address.primary}.first
             #id_user_address.collapse
               - skip_first = false
@@ -170,3 +68,8 @@
           .col-md-2#id_user_pw_edit
             %a#edit_password_link{ "data-toggle" => "modal", "data-target" => "#user_edit_popup" } Edit
 .col-md-1
+/ = render "username_edit", mustache: {a: "apple", b: "b"}
+/Editing modal
+#profile_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "profile_modal", "aria-hidden" => true}
+  .modal-dialog
+    .modal-content

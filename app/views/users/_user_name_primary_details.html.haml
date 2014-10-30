@@ -1,0 +1,10 @@
+.modal-header
+  %h3.margin-none Update User name - Primary details
+= simple_form_for @user, remote: true do |f|
+  .modal-body
+    = f.input :user_name, label: false, placeholder: "User name"
+    = f.association :designation, collection: Designation.all, label: false, input_html: { class: 'chosen-select' }
+    = f.input :password, label: false, placeholder: "password"
+  .modal-footer
+    = link_to "Cancel", "#", data: {dismiss: "modal"}, class: "btn btn-link"
+    = f.submit nil, name: @template_params, class: "btn btn-success"

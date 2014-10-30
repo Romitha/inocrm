@@ -10,4 +10,8 @@ class User < ActiveRecord::Base
   # end
   has_many :addresses, as: :addressable
 
+  belongs_to :designation
+
+  validates_uniqueness_of :user_name
+
 end

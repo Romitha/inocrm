@@ -1,46 +1,61 @@
 class UsersController < ApplicationController
 
+  before_action :authenticate_user!
+  before_action :set_user, only: [:profile, :initiate_user_profile_edit, :update]
+
   def new
     @user = User.new
   end
 
   #Displaying the user details
   def profile
-    #User
-    @user = User.find( params[:id] )
+
     #Address linked to this user
     @address_list = @user.addresses
   end
 
   #Updating the user details
   def update
-    #User to be updated
-    @user = User.find( params[:id] )
     
-    #Selection of necessary field to be updated, this makes this method reusable
-    case params[:user_attrib]
-    when "UN"
-        @user.update_attribute( :user_name, params[:user_name] )
-        update_msg = 'User name'
-
-    when "EM"
-        @user.update_attribute( :email, params[:user_email] )
-        update_msg = 'User email'
-
-    else
-        #redirect_to()
+    [:user_name_primary_details].each do |template_param|
+      if params[template_param]
+        @template_params = template_param.to_s
+        if current_user.valid_password?(params[:user][:password])
+          if @user.update_attributes organization_params
+            flash[:notice] = "Profile is successfully updated"
+            render js: "window.location.href='"+profile_user_url+"'"
+            # redirect_to profile_user_url, notice: "Profile is successfully updated"
+          else
+            render :initiate_user_profile_edit
+          end
+        else
+          flash[:notice] = "Please provide your valid password"
+          render js: "window.location.href='"+profile_user_url+"'"
+        end
+      else
+        flash[:notice] = "not permitted"
+        render js: "window.location.href='"+profile_user_url+"'"
+        # redirect_to profile_user_url, notice: "not permitted"
+      end
     end
-
-    flash[:notice] = update_msg+' was successfully updated.'
-    redirect_to :action => 'profile', :id => @user
   end
 
   #Functions for ajax
-  def getusername
-    @user = User.find( params[:id] )
+  def initiate_user_profile_edit
+
+    @template_params = params[:template_params]
     respond_to do |format|
-      format.json { render json: @user }
+      format.js
     end
   end
+
+  private
+    def set_user
+      @user =  User.find params[:id]
+    end
+
+    def organization_params
+      params.require(:user).permit(:user_name, :designation_id)
+    end
 
 end

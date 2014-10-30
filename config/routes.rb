@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
 
+  resources :designations
+
   resources :organizations do
     resources :addresses
   end
@@ -15,8 +17,12 @@ Rails.application.routes.draw do
   # root 'welcome#index'
 
   # Example of regular route:
-  get 'users/profile/:id' => 'users#profile', as: :profile
-  get 'users/getusername/:id'  =>  'users#getusername', as: :get_username
+  resources :users do
+    member do
+      get "initiate_user_profile_edit"
+      get 'profile'
+    end
+  end
   
   post 'users/profile_update/:id/:user_attrib' => 'users#update', as: :profile_update
 
