@@ -3,5 +3,7 @@ class Address < ActiveRecord::Base
     belongs_to :addressable, polymorphic: true
 
     TYPE = %w(Billing Shipping Support Office Home)
-	validates :address, presence: true
+
+		validates :address, presence: true
+
 end
