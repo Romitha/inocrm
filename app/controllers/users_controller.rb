@@ -20,7 +20,7 @@ class UsersController < ApplicationController
     [:user_name_primary_details].each do |template_param|
       if params[template_param]
         @template_params = template_param.to_s
-        if current_user.valid_password?(params[:user][:password])
+        if current_user.valid_password?(params[:current_user_password])
           if @user.update_attributes organization_params
             flash[:notice] = "Profile is successfully updated"
             render js: "window.location.href='"+profile_user_url+"'"
