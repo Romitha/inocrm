@@ -17,25 +17,23 @@ class UsersController < ApplicationController
   #Updating the user details
   def update
     
-    [:user_name_primary_details].each do |template_param|
+    [:user_name_primary_details,:password_security_details].each do |template_param|
       if params[template_param]
         @template_params = template_param.to_s
         if current_user.valid_password?(params[:current_user_password])
           if @user.update_attributes organization_params
             flash[:notice] = "Profile is successfully updated"
-            render js: "window.location.href='"+profile_user_url+"'"
-            # redirect_to profile_user_url, notice: "Profile is successfully updated"
+            render js: "window.location.href='"+profile_user_url+"'" and return
+            break
           else
-            render :initiate_user_profile_edit
+            render :initiate_user_profile_edit and return
+            break
           end
         else
           flash[:notice] = "Please provide your valid password"
-          render js: "window.location.href='"+profile_user_url+"'"
+          render js: "window.location.href='"+profile_user_url+"'" and return
+          break
         end
-      else
-        flash[:notice] = "not permitted"
-        render js: "window.location.href='"+profile_user_url+"'"
-        # redirect_to profile_user_url, notice: "not permitted"
       end
     end
   end
@@ -55,7 +53,7 @@ class UsersController < ApplicationController
     end
 
     def organization_params
-      params.require(:user).permit(:user_name, :designation_id)
+      params.require(:user).permit(:user_name, :designation_id, :password, :password_confirmation)
     end
 
 end

@@ -66,7 +66,8 @@
           .col-md-10#id_user_pw
             XXXXXXXX
           .col-md-2#id_user_pw_edit
-            %a#edit_password_link{ "data-toggle" => "modal", "data-target" => "#user_edit_popup" } Edit
+            = link_to "Edit", initiate_user_profile_edit_user_path(template_params: "password_security_details"), data: {toggle: "modal", target: "#user_edit_popup", userid: @user.id}, remote: true
+
 .col-md-1
 / = render "username_edit", mustache: {a: "apple", b: "b"}
 /Editing modal
