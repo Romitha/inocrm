@@ -1,23 +1,46 @@
 = simple_nested_form_for organization, html: {class: "form-horizontal"} do |f|
-  = f.input :name
-  = f.input :short_name
-  = f.input :vat_number
-  = f.input :web_site
-  = f.input :description
-  = f.input :logo
+  - if organization.errors.present?
+    .row
+      = panels header_content: "Something gone wrong", panel_type: "danger" do
+        %ul
+          - organization.errors.full_messages.each do |message|
+            %li= message
+  .row
+    .col-md-2
+      = image_tag organization.logo.url, class: "img-responsive" if organization.logo.present?
+      .btn.btn-success.btn-file.has-tooltip{data: {toggle: "tooltip", placement: "left"}, title: "Upload organization Logo"}
+        Upload Logo
+        = f.input :logo, label: false, placeholder: "Upload organization Logo", wrapper_html: {class: "margin-none"}
+    .col-md-9.pull-right
+      = f.input :name, label: false, placeholder: "Name of Organization", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Organization Name"}
+      %blockquote
+        = f.input :short_name, label: false, placeholder: "Short name of Organization", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Short name of Organization"}
+  .row
+    .col-md-4
+      = f.input :vat_number, label: false, placeholder: "Vat Number", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Vat Number"}
+    .col-md-4.pull-right
+      = f.input :web_site, label: false, placeholder: "Web Site", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Web Site"}
+  .row
+    .col-md-12
+      = f.input :description, label: false, placeholder: "Description", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Description"}
+      = f.input :category, as: :hidden
 
-  .form-group
-    = f.fields_for :addresses do |address|
-      = address.input :category, collection: Address::TYPE, include_blank: false
-      = address.input :address
-      = address.link_to_remove "Remove this address"
-    = f.link_to_add "Add an address", :addresses
+  .row
+    .pull-right
+      = f.submit nil, class: "btn btn-success"
+- if organization.persisted?
+  .row
+    %ul.nav.nav-tabs{role: "tablist"}
+      - [["Address", "#addresses"], ["Contact Details", "#contacts"], ["Contact Person", "#contact_persons"], ["Documents & Attachements", "#"], ["Organization Relations", "#"]].each do |link_info|
+        %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"}
+  .tab-content.small_scale_margin-top1
+    .tab-pane#addresses.limit-height
+      = render "addresses/form", address: organization.addresses.build
 
-  .form-group
-    = f.fields_for :contact_numbers do |contact_number|
-      = contact_number.input :category, collection: ContactNumber::TYPE, include_blank: false
-      = contact_number.input :value
-      = contact_number.link_to_remove "Remove this contact number"
-    = f.link_to_add "Add an contact number", :contact_numbers
-  .form-group
-    = f.submit nil, class: "btn btn-default"
+      .fixed-height
+        - organization.addresses.order("created_at DESC").each do |address|
+          = render "addresses/address", address: address
+
+    .tab-pane#contacts
+
+    .tab-pane#contact_persons

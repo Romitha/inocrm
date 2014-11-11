@@ -1,6 +1,6 @@
 window.Organizations =
   setup: ->
-    @show_more_less()
+    # @show_more_less()
     @enable_chosen()
     return
 

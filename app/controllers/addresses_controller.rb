@@ -1,5 +1,6 @@
 class AddressesController < ApplicationController
-  before_action :set_address, only: [:show, :edit, :update, :destroy]
+  before_action :set_address, only: [:show, :edit, :update, :destroy, :make_primary_address]
+  respond_to :html, :xml, :json
 
   def index
     @addresses = Address.all
@@ -20,8 +21,29 @@ class AddressesController < ApplicationController
 
   def create
     @address = Address.new(address_params)
-    @address.save
-    respond_with(@address)
+    respond_to do |format|
+      if @address.addressable_type == "User"
+        if current_user.valid_password?(params[:current_user_password])
+          if @address.save
+            format.html {redirect_to profile_user_path(current_user), notice: "Address is successfully created."}
+          else
+            format.html {redirect_to profile_user_path(current_user), error: "Something gone error with address field. #{@address.errors.full_messages.join(',')}"}
+          end
+        else
+          flash[:error] = "Please provide your correct password."
+          format.html {redirect_to profile_user_path(current_user)}
+        end
+      else
+        if @address.save
+          format.html {redirect_to polymorphic_path([:edit, @address.addressable]), notice: "Address is successfully created"}
+          format.json {render json: @address}
+        else
+          flash[:error] = "Something gone error with address field. #{@address.errors.full_messages.join(',')}"
+          format.html {redirect_to polymorphic_path([:edit, @address.addressable])}
+          format.json {render json: @address.errors}
+        end
+      end
+    end
   end
 
   def update
@@ -31,7 +53,21 @@ class AddressesController < ApplicationController
 
   def destroy
     @address.destroy
-    respond_with(@address)
+
+    respond_to do |format|
+      format.html {redirect_to (@address.addressable_type == "User" ? profile_user_path(current_user) : polymorphic_path([@address.addressable])), notice: "Address is successfully deleted."}
+    end
+  end
+
+  def make_primary_address
+    Address.where(primary: true).each do |address|
+      address.update_attribute(:primary, false)
+    end
+    @address.update_attribute(:primary, true)
+
+    respond_to do |format|
+      format.html {redirect_to (@address.addressable_type == "User" ? profile_user_path(current_user) : polymorphic_path([@address.addressable])), notice: "Address is set to primary."}
+    end
   end
 
   private
@@ -40,6 +76,6 @@ class AddressesController < ApplicationController
     end
 
     def address_params
-      params.require(:address).permit(:type, :address)
+      params.require(:address).permit(:category, :address, :primary, :addressable_type, :addressable_id)
     end
 end

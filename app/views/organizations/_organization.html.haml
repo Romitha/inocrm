@@ -1,0 +1,47 @@
+.row
+  .col-lg-2
+    = image_tag organization.logo.thumb.url, class: "img-responsive img-thumbnail"
+  .col-lg-10
+    %h3
+      .edit_organization
+        - if current_page?(controller: "organizations", action: "show", id: organization.id)
+          = link_to edit_organization_path(organization), class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Edit #{organization.name}" do
+            = glyph(:pencil)
+            = organization.name
+        - else
+          = link_to organization do
+            = content_tag(:span, organization.name, class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "More about #{organization.name}")
+            |
+            = link_to edit_organization_path(organization), class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Edit #{organization.name}" do
+              %span= glyph(:pencil)
+
+    %blockquote
+      = organization.short_name
+
+.row
+  .col-lg-6.padding-left0 Vat Number: #{organization.vat_number}
+  .col-lg-6.pull-right.padding0.text-right= link_to "Visit website",organization.web_site, data: {toggle: "tooltip", placement: "bottom"}, title: organization.web_site, rel: "tooltip", :target => "_blank" 
+.row.small_scale_margin-top1
+  .col-lg-12.padding0
+    .panel.panel-default
+      .panel-body.show-limit
+        %p= organization.description
+        .hide_screen
+          = link_to "More >>", "#", onclick: "Organizations.toggle_more(); return false;", class: "hide more_toggle"
+
+.row
+  .col-lg-12.padding0
+    %ul.nav.nav-tabs{role: "tablist"}
+      - [["Address", "#addresses#{organization.id}"], ["Contact Details", "#contacts"], ["Contact Person", "#contact_persons"], ["Documents & Attachements", "#"], ["Organization Relations", "#"]].each do |link_info|
+        %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"}
+
+    .tab-content.small_scale_margin-top1
+      .tab-pane.limit-height{id: "addresses#{organization.id}"}
+        .fixed-height
+          - organization.addresses.order("created_at DESC").each do |address|
+            = render "addresses/address", address: address
+      .tab-pane#contacts
+        - organization.contact_numbers.each do |contact_number|
+          = contact_number.category
+          = contact_number.value
+      .tab-pane#contact_persons

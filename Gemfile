@@ -54,6 +54,8 @@ gem "mustache"
 
 gem 'chosen-sass-bootstrap-rails'
 
+gem 'bootstrap-editable-rails'
+
 # gem "handlebars_assets"
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'

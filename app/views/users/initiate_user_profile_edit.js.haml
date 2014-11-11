@@ -1,3 +1,4 @@
 $('#profile_modal').modal();
 $("#profile_modal .modal-content").html("#{j render @template_params}");
 Organizations.enable_chosen();
+Addresses.initiate_inline_edit_address();

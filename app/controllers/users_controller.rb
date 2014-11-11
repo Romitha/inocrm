@@ -11,13 +11,14 @@ class UsersController < ApplicationController
   def profile
 
     #Address linked to this user
-    @address_list = @user.addresses
+    @address_list = @user.other_addresses
+    @primary_address = @user.primary_address
   end
 
   #Updating the user details
   def update
     
-    [:user_name_primary_details,:password_security_details].each do |template_param|
+    [:user_name_primary_details,:password_security_details, :additional_details].each do |template_param|
       if params[template_param]
         @template_params = template_param.to_s
         if current_user.valid_password?(params[:current_user_password])
@@ -30,7 +31,7 @@ class UsersController < ApplicationController
             break
           end
         else
-          flash[:notice] = "Please provide your valid password"
+          flash[:error] = "Please provide your valid password"
           render js: "window.location.href='"+profile_user_url+"'" and return
           break
         end
@@ -42,6 +43,10 @@ class UsersController < ApplicationController
   def initiate_user_profile_edit
 
     @template_params = params[:template_params]
+    case @template_params
+    when "addresses_primary_details"
+      # @user.addresses.build
+    end
     respond_to do |format|
       format.js
     end
@@ -53,7 +58,7 @@ class UsersController < ApplicationController
     end
 
     def organization_params
-      params.require(:user).permit(:user_name, :designation_id, :password, :password_confirmation)
+      params.require(:user).permit(:user_name, :designation_id, :password, :password_confirmation, :NIC, :epf_no, :date_joined_at, :first_name, :last_name, :name_title, addresses_attributes: [:id, :category, :address, :_destroy])
     end
 
 end

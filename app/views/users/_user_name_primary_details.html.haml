@@ -4,7 +4,8 @@
   .modal-body
     = f.input :user_name, label: false, placeholder: "User name"
     = f.association :designation, collection: Designation.all, label: false, input_html: { class: 'chosen-select' }
-    = f.input :password, label: false, placeholder: "password", input_html: {name: "current_user_password"}
+    .form-group
+      = password_field_tag "current_user_password", nil, placeholder: "password", class: "form-control"
   .modal-footer
     = link_to "Cancel", "#", data: {dismiss: "modal"}, class: "btn btn-link"
     = f.submit nil, name: @template_params, class: "btn btn-success"
