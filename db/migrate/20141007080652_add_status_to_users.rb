@@ -1,7 +1,7 @@
 class AddStatusToUsers < ActiveRecord::Migration
   def change
 
-    [:first_name, :last_name, :NIC, :user_name].each do |attribute|
+    [:first_name, :last_name, :NIC, :user_name, :name_title, :epf_no].each do |attribute|
       add_column :users, attribute, :string
     end
 
@@ -14,7 +14,9 @@ class AddStatusToUsers < ActiveRecord::Migration
       add_reference :users, attribute, polymorphic: true
     end
 
-    add_column :users, :deleted_at, :datetime
+    [:deleted_at, :date_joined_at].each do |attribute|
+      add_column :users, attribute, :datetime
+    end
   end
 
 end

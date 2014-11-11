@@ -1,0 +1,10 @@
+- user = @user
+.modal-header
+  %h3.margin-none Addresses - Primary details
+.modal-body
+  / - if user.addresses.present?
+  .limit-height
+    = render "addresses/form", address: user.addresses.build
+    .fixed-height
+      - user.addresses.order("created_at DESC").each do |address|
+        = render "addresses/address", address: address

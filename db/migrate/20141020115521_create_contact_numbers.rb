@@ -3,7 +3,8 @@ class CreateContactNumbers < ActiveRecord::Migration
     create_table :contact_numbers do |t|
       t.string :category
       t.string :value
-      t.references :organization, index: true
+      t.boolean :primary
+      t.references :c_numberable, polymorphic: true, index: true
 
       t.timestamps
     end

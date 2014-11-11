@@ -1,9 +1,23 @@
-= simple_form_for(@address) do |f|
-  = f.error_notification
+.row
+  .col-md-12
+    = simple_form_for address, url: polymorphic_path([address.addressable, address]) do |address|
+      .row
+        = panels panel_type: "success", header_content: "Add Address" do
+          - if address.object.errors.present?
+            %ul.alert.alert-danger
+              - address.object.errors.full_messages.each do |error|
+                %li= error
+          .col-md-3
+            = address.input :category, collection: Address::TYPES, include_blank: false, input_html: {class: "chosen-select"}, label: false
+            = address.label :primary
+            = address.check_box :primary
+            = address.input :addressable_type, as: :hidden
+            = address.input :addressable_id, as: :hidden
 
-  .form-inputs
-    = f.input :type
-    = f.input :address
+          = address.input :address, wrapper_html: {class: "col-md-8 pull-right"}, label: false
 
-  .form-actions
-    = f.button :submit
+          - if address.object.addressable_type == "User"
+            .form-group.col-md-12
+              = password_field_tag "current_user_password", nil, placeholder: "password", class: "form-control"
+          .col-md-12
+            = address.submit "Add new address", class: "btn btn-success pull-right", id: "submit_new_address"

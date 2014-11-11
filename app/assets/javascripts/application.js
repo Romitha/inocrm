@@ -13,7 +13,11 @@
 //= require jquery
 //= require jquery_ujs
 //= require twitter/bootstrap
+//= require bootstrap-editable
+//= require bootstrap-editable-rails
 //= require jquery_nested_form
 //= require chosen-jquery
 //= require mustache
 //= require_tree .
+$.fn.editable.defaults.mode = 'inline';
+$.fn.editable.defaults.ajaxOptions = {type: "PUT"};

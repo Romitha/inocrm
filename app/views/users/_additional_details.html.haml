@@ -1,0 +1,19 @@
+.modal-header
+  %h3.margin-none Update Additional details
+= simple_form_for @user, remote: true do |f|
+  .modal-body
+    .row
+      .col-md-2.padding-right0
+        = f.input :name_title, label: false, collection: User::TITLES, input_html: {class: "chosen-select"}
+      .col-md-5
+        = f.input :first_name, label: false, placeholder: "First Name", input_html: {class: "input-sm"}
+      .col-md-5
+        = f.input :last_name, label: false, placeholder: "Last Name", input_html: {class: "input-sm"}
+    = f.input :NIC, label: false, placeholder: "National Identity Card Number", input_html: {class: "input-sm"}
+    = f.input :epf_no, label: false, placeholder: "E.P.F Number", input_html: {class: "input-sm"}
+    = f.input :date_joined_at, label: false, placeholder: "Date Joined", input_html: {class: "input-sm"}, as: :string
+    .form-group
+      = password_field_tag "current_user_password", nil, placeholder: "password", class: "form-control"
+  .modal-footer
+    = link_to "Cancel", "#", data: {dismiss: "modal"}, class: "btn btn-link"
+    = f.submit nil, name: @template_params, class: "btn btn-success"
