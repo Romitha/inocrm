@@ -16,6 +16,9 @@ class User < ActiveRecord::Base
 
   belongs_to :designation
 
+  #2014_11_11
+  belongs_to :organization
+
   validates_uniqueness_of :user_name
 
   TITLES = %w(Mr Mrs Miss Ms)
