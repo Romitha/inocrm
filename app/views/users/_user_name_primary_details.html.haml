@@ -4,7 +4,7 @@
   .modal-body
     = f.input :user_name, label: false, placeholder: "User name", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "User Name"}
     .has-tooltip{data: {toggle: "tooltip", placement: "left"}, title: "Designation"}
-      = f.association :designation, collection: Designation.all, label: false, input_html: { class: 'chosen-select'}
+      = f.association :designation, collection: current_user.organization.designations, label: false, input_html: { class: 'chosen-select'}
     .form-group
       = password_field_tag "current_user_password", nil, placeholder: "password", class: "form-control has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Password"
   .modal-footer
