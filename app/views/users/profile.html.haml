@@ -11,7 +11,7 @@
       .col-md-12
         %h2#user_name.margin-none= user.user_name
         %blockquote
-          Software Engineer
+          = user.designation.name
           = link_to "Edit", initiate_user_profile_edit_user_path(template_params: "user_name_primary_details"), data: {toggle: "modal", target: "#user_edit_popup", userid: user.id}, remote: true, class: "pull-right"
 
     = panels panel_type: "default", header_content: "Primary Details" do
@@ -29,21 +29,40 @@
             = link_to "More >>", initiate_user_profile_edit_user_path(template_params: "addresses_primary_details"), data: {toggle: "modal", target: "#user_edit_popup", userid: user.id}, remote: true, class: "pull-right" if address_list.present?
       .pull-right= link_to "Edit", initiate_user_profile_edit_user_path(template_params: "addresses_primary_details"), data: {toggle: "modal", target: "#user_edit_popup", userid: user.id}, remote: true, class: "pull-right"
 
-    #id_additional_details_panel.panel.panel-default
-      .panel-heading
-        Additional Details
-      .panel-body
-        = link_to "Edit", initiate_user_profile_edit_user_path(template_params: "additional_details"), data: {toggle: "modal", target: "#user_edit_popup", userid: user.id}, remote: true
-
-    #id_security_details_panel.panel.panel-default
-      .panel-heading
-        Security
-      .panel-body
+    =panels panel_type: "default", id: "id_additional_details_panel", header_content: "Additional Details" do
+      .row-fluid
         .row
-          .col-md-10#id_user_pw
-            XXXXXXXX
-          .col-md-2#id_user_pw_edit
-            = link_to "Edit", initiate_user_profile_edit_user_path(template_params: "password_security_details"), data: {toggle: "modal", target: "#user_edit_popup", userid: user.id}, remote: true
+          .col-md-4
+            Full Name
+          .col-md-8
+            = user.name_title+". "+user.first_name+" "+user.last_name
+        .row
+          .col-md-4
+            N.I.C Number
+          .col-md-8
+            = user.NIC
+        .row
+          .col-md-4
+            E.P.F Number
+          .col-md-8
+            = user.epf_no
+        .row
+          .col-md-4
+            Date joined
+          .col-md-8
+            /= user.date_joinned_at
+        .row
+          .col-md-4
+            Division
+          .col-md-8
+
+      .pull-right= link_to "Edit", initiate_user_profile_edit_user_path(template_params: "additional_details"), data: {toggle: "modal", target: "#user_edit_popup", userid: user.id}, remote: true
+
+    =panels panel_type: "default", id: "id_security_details_panel", header_content: "Security" do
+      .row-fluid
+        .row
+          XXXXXXXX
+      .pull-right= link_to "Edit", initiate_user_profile_edit_user_path(template_params: "password_security_details"), data: {toggle: "modal", target: "#user_edit_popup", userid: user.id}, remote: true
 
 .col-md-1
 / = render "username_edit", mustache: {a: "apple", b: "b"}
