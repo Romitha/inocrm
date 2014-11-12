@@ -31,4 +31,12 @@ class User < ActiveRecord::Base
     addresses.find_by_primary true
   end
 
+  def primary_contact_number
+    contact_numbers.find_by_primary true
+  end
+
+  def other_contact_numbers
+    contact_numbers.where.not(primary: true)    
+  end
+
 end
