@@ -13,6 +13,8 @@ class UsersController < ApplicationController
     #Address linked to this user
     @address_list = @user.other_addresses
     @primary_address = @user.primary_address
+    @primary_contact_number = @user.primary_contact_number
+    @contact_number_list = @user.other_contact_numbers
   end
 
   #Updating the user details

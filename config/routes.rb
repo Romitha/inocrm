@@ -12,6 +12,12 @@ Rails.application.routes.draw do
         post "make_primary_address"
       end
     end
+
+    resources :contact_numbers do
+      member do
+        post "make_primary_contact_number"
+      end
+    end
   end
 
   # get 'auth/index'

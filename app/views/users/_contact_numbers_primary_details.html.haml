@@ -1,0 +1,9 @@
+- user = @user
+.modal-header
+  %h3.margin-none Contact Numbers - Primary details
+.modal-body
+  .limit-height
+    = render "contact_numbers/form", contact_number: user.contact_numbers.build
+    .fixed-height
+      - user.contact_numbers.order("created_at DESC").each do |contact_number|
+        = render "contact_numbers/contact_number", contact_number: contact_number

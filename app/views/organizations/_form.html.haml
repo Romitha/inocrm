@@ -41,6 +41,11 @@
         - organization.addresses.order("created_at DESC").each do |address|
           = render "addresses/address", address: address
 
-    .tab-pane#contacts
+    .tab-pane#contacts.limit-height
+      = render "contact_numbers/form", contact_number: organization.contact_numbers.build
+
+      .fixed-height
+        - organization.contact_numbers.order("created_at DESC").each do |contact_number|
+          = render "contact_numbers/contact_number", contact_number: contact_number
 
     .tab-pane#contact_persons

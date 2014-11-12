@@ -1,6 +1,8 @@
 - user = @user
 - address_list = @address_list
 - primary_address = @primary_address
+- contact_number_list = @contact_number_list
+- primary_contact_number = @primary_contact_number
 .row
   .col-md-4
     = image_tag "no_image.jpg"
@@ -11,7 +13,7 @@
       .col-md-12
         %h2#user_name.margin-none= user.user_name
         %blockquote
-          = user.designation.name
+          = user.designation.try :name
           = link_to "Edit", initiate_user_profile_edit_user_path(template_params: "user_name_primary_details"), data: {toggle: "modal", target: "#user_edit_popup", userid: user.id}, remote: true, class: "pull-right"
 
     = panels panel_type: "default", header_content: "Primary Details" do
@@ -19,7 +21,18 @@
         .col-md-12#user_email
           = mail_to user.email, user.email
       .row
-        .col-md-10
+        .col-md-3
+          Contact Number:
+        .col-md-5
+          #{primary_contact_number.try :value} (#{primary_contact_number.try :category})
+        .col-md-2
+          %span
+            = link_to "More >>", initiate_user_profile_edit_user_path(template_params: "contact_numbers_primary_details"), data: {toggle: "modal", target: "#user_edit_popup", userid: user.id}, remote: true, class: "pull-right" if contact_number_list.present?
+        .col-md-2.pull-right= link_to "Edit", initiate_user_profile_edit_user_path(template_params: "contact_numbers_primary_details"), data: {toggle: "modal", target: "#user_edit_popup", userid: user.id}, remote: true, class: "pull-right"
+      .row
+        .col-md-3
+          Contact Address:
+        .col-md-5
           %address
             %strong
               = primary_address.try :category
@@ -27,15 +40,15 @@
         .col-md-2
           %span
             = link_to "More >>", initiate_user_profile_edit_user_path(template_params: "addresses_primary_details"), data: {toggle: "modal", target: "#user_edit_popup", userid: user.id}, remote: true, class: "pull-right" if address_list.present?
-      .pull-right= link_to "Edit", initiate_user_profile_edit_user_path(template_params: "addresses_primary_details"), data: {toggle: "modal", target: "#user_edit_popup", userid: user.id}, remote: true, class: "pull-right"
+        .col-md-2.pull-right= link_to "Edit", initiate_user_profile_edit_user_path(template_params: "addresses_primary_details"), data: {toggle: "modal", target: "#user_edit_popup", userid: user.id}, remote: true, class: "pull-right"
 
-    =panels panel_type: "default", id: "id_additional_details_panel", header_content: "Additional Details" do
+    = panels panel_type: "default", id: "id_additional_details_panel", header_content: "Additional Details" do
       .row-fluid
         .row
           .col-md-4
             Full Name
           .col-md-8
-            = user.name_title+". "+user.first_name+" "+user.last_name
+            #{user.name_title} #{user.first_name} #{user.last_name}
         .row
           .col-md-4
             N.I.C Number
@@ -50,7 +63,7 @@
           .col-md-4
             Date joined
           .col-md-8
-            /= user.date_joinned_at
+            = user.date_joined_at.try(:strftime, "%d %b, %Y")
         .row
           .col-md-4
             Division

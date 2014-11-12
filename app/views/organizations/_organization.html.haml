@@ -41,7 +41,7 @@
           - organization.addresses.order("created_at DESC").each do |address|
             = render "addresses/address", address: address
       .tab-pane#contacts
-        - organization.contact_numbers.each do |contact_number|
-          = contact_number.category
-          = contact_number.value
+        .fixed-height
+          - organization.contact_numbers.order("created_at DESC").each do |contact_number|
+            = render "contact_numbers/contact_number", contact_number: contact_number
       .tab-pane#contact_persons
