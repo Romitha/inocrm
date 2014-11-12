@@ -4,7 +4,8 @@ class OrganizationsController < ApplicationController
 
   def index
     @organizations = Organization.order("created_at DESC")
-
+    @suppliers = Organization.suppliers
+    @customers = Organization.customers
   end
 
   def new
