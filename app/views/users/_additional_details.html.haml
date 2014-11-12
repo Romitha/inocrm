@@ -4,16 +4,17 @@
   .modal-body
     .row
       .col-md-2.padding-right0
-        = f.input :name_title, label: false, collection: User::TITLES, input_html: {class: "chosen-select"}
+        .has-tooltip{data: {toggle: "tooltip", placement: "left"}, title: "Title"}
+          = f.input :name_title, label: false, collection: User::TITLES, input_html: {class: "chosen-select"}
       .col-md-5
-        = f.input :first_name, label: false, placeholder: "First Name", input_html: {class: "input-sm"}
+        = f.input :first_name, label: false, placeholder: "First Name", input_html: {class: "input-sm has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "First Name"}
       .col-md-5
-        = f.input :last_name, label: false, placeholder: "Last Name", input_html: {class: "input-sm"}
-    = f.input :NIC, label: false, placeholder: "National Identity Card Number", input_html: {class: "input-sm"}
-    = f.input :epf_no, label: false, placeholder: "E.P.F Number", input_html: {class: "input-sm"}
-    = f.input :date_joined_at, label: false, placeholder: "Date Joined", input_html: {class: "input-sm"}, as: :string
+        = f.input :last_name, label: false, placeholder: "Last Name", input_html: {class: "input-sm has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Last Name"}
+    = f.input :NIC, label: false, placeholder: "National Identity Card Number", input_html: {class: "input-sm has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "National Identity Card Number"}
+    = f.input :epf_no, label: false, placeholder: "E.P.F Number", input_html: {class: "input-sm has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "E.P.F Number"}
+    = f.input :date_joined_at, label: false, placeholder: "Date Joined", input_html: {class: "input-sm has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Date Joined"}, as: :string
     .form-group
-      = password_field_tag "current_user_password", nil, placeholder: "password", class: "form-control"
+      = password_field_tag "current_user_password", nil, placeholder: "password",  class: "form-control has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Password"
   .modal-footer
     = link_to "Cancel", "#", data: {dismiss: "modal"}, class: "btn btn-link"
     = f.submit nil, name: @template_params, class: "btn btn-success"

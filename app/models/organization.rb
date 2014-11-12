@@ -12,4 +12,8 @@ class Organization < ActiveRecord::Base
 	validates_format_of :web_site, :with => URI::regexp(%w(http https))
 
 	TYPES = %w(Supplier Customer)
+
+	scope :suppliers, -> {where(category: "Supplier")}
+	scope :customers, -> {where(category: "Customer")}
+
 end
