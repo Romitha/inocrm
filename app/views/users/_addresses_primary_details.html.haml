@@ -6,5 +6,6 @@
   .limit-height
     = render "addresses/form", address: user.addresses.build
     .fixed-height
+    .has-tooltip{data: {toggle: "tooltip", placement: "left"}, title: "Title"}
       - user.addresses.order("created_at DESC").each do |address|
         = render "addresses/address", address: address

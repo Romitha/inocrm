@@ -1,8 +1,16 @@
 - organizations = @organizations
-
-- organizations.each do |organization|
-  = render "organization", organization: organization
+- suppliers = @suppliers
+- customers = @customers
+.tab-content
+  .tab-pane#suppliers.active
+    - suppliers.each do |organization|
+      = render "organization", organization: organization
+  .tab-pane#customers
+    - customers.each do |organization|
+      = render "organization", organization: organization
 
 - content_for :dynamic_sidebar do
-  %li.active= link_to "New Supplier", new_organization_path(category: "Supplier")
+  %li.active= link_to "Supplier", "#suppliers", role: "tab", data: {toggle: "tab"}
+  %li= link_to "Customers", "#customers", role: "tab", data: {toggle: "tab"}
+  %li= link_to "New Supplier", new_organization_path(category: "Supplier")
   %li= link_to "New Customer", new_organization_path(category: "Customer")

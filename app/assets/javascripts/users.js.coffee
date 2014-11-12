@@ -74,3 +74,6 @@ window.Users =
           error: ( xhr, textStatus, errorThrown ) ->
             $("#" + id + " .contentarea").html textStatus
             return
+
+  initiate_tooltip: ->
+    $("a[rel~=tooltip], .has-tooltip").tooltip()

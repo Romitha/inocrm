@@ -7,17 +7,19 @@
             %ul.alert.alert-danger
               - address.object.errors.full_messages.each do |error|
                 %li= error
-          .col-md-3
-            = address.input :category, collection: Address::TYPES, include_blank: false, input_html: {class: "chosen-select"}, label: false
-            = address.label :primary
-            = address.check_box :primary
-            = address.input :addressable_type, as: :hidden
-            = address.input :addressable_id, as: :hidden
 
-          = address.input :address, wrapper_html: {class: "col-md-8 pull-right"}, label: false
+          .has-tooltip{data: {toggle: "tooltip", placement: "left"}, title: "Designation"}
+            .col-md-3
+              = address.input :category, collection: Address::TYPES, include_blank: false, input_html: {class: "chosen-select"}, label: false
+              = address.label :primary
+              = address.check_box :primary
+              = address.input :addressable_type, as: :hidden
+              = address.input :addressable_id, as: :hidden
+
+          = address.input :address, wrapper_html: {class: "col-md-8 pull-right"}, label: false, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Type the Address"}
 
           - if address.object.addressable_type == "User"
             .form-group.col-md-12
-              = password_field_tag "current_user_password", nil, placeholder: "password", class: "form-control"
+              = password_field_tag "current_user_password", nil, placeholder: "password", class: "form-control has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Password"
           .col-md-12
             = address.submit "Add new address", class: "btn btn-success pull-right", id: "submit_new_address"
