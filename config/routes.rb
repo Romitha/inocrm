@@ -2,21 +2,31 @@ Rails.application.routes.draw do
 
   root "organizations#index"
 
-  resources :designations
-
   devise_for :users, skip: [:registrations, :passwords, :confirmations]#, :controllers => {:confirmations => 'confirmations'}
 
-  resources :organizations, :users do
-    resources :addresses do
+  concern :polymophicable do
+    resources :addresses, except: [:index, :show, :new, :edit] do
       member do
         post "make_primary_address"
       end
     end
 
-    resources :contact_numbers do
+    resources :contact_numbers, except: [:index, :show, :new, :edit] do
       member do
         post "make_primary_contact_number"
       end
+    end
+  end
+
+  resources :users, concerns: :polymophicable, only: []
+  resources :organizations, concerns: :polymophicable do
+    resources :designations
+  end
+
+  resources :users, only: [:new, :update, :create] do
+    member do
+      get "initiate_user_profile_edit"
+      get 'profile'
     end
   end
 
@@ -29,14 +39,6 @@ Rails.application.routes.draw do
   # root 'welcome#index'
 
   # Example of regular route:
-  resources :users do
-    member do
-      get "initiate_user_profile_edit"
-      get 'profile'
-    end
-  end
-  
-  post 'users/profile_update/:id/:user_attrib' => 'users#update', as: :profile_update
 
 
   # Example of named route that can be invoked with purchase_url(id: product.id)

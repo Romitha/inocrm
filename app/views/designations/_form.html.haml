@@ -1,0 +1,14 @@
+.row
+  .col-md-12
+    = simple_form_for [designation.organization, designation] do |designation|
+      .row
+        = panels panel_type: "success", header_content: "Add designation" do
+          - if designation.object.errors.present?
+            %ul.alert.alert-danger
+              - designation.object.errors.full_messages.each do |error|
+                %li= error
+
+          = designation.input :name, label: false, placeholder: "name of designation"
+          = designation.input :description, label: false, placeholder: "description of designation"
+          = designation.input :organization_id, as: :hidden
+          = designation.submit "Add new designation", class: "btn btn-success pull-right", id: "submit_new_designation"

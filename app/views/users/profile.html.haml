@@ -5,8 +5,9 @@
 - primary_contact_number = @primary_contact_number
 .row
   .col-md-4
-    = image_tag "no_image.jpg"
-    = file_field_tag :file
+    = image_tag user.avatar.url, class: "img-responsive" if user.avatar.present?
+    .btn.btn-success.btn-file.has-tooltip{data: {toggle: "tooltip", placement: "left"}, title: "Upload user avatar"}
+      Upload avatar
 
   .col-md-8
     .row
@@ -66,8 +67,9 @@
             = user.date_joined_at.try(:strftime, "%d %b, %Y")
         .row
           .col-md-4
-            Division
+            Organization
           .col-md-8
+            = link_to user.organization.try(:name), user.organization
 
       .pull-right= link_to "Edit", initiate_user_profile_edit_user_path(template_params: "additional_details"), data: {toggle: "modal", target: "#user_edit_popup", userid: user.id}, remote: true
 
