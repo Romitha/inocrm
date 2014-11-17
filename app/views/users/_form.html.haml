@@ -1,0 +1,20 @@
+.row
+  = simple_form_for user, html: {multipart: true} do |f|
+    - if user.errors.present?
+      %ul
+        - user.errors.full_messages.each do |message|
+          %li= message
+    .col-md-2
+      = image_tag user.avatar.url, class: "img-responsive" if user.avatar.present?
+      .btn.btn-success.btn-file.has-tooltip{data: {toggle: "tooltip", placement: "left"}, title: "Upload user avatar"}
+        Upload avatar
+        = f.input :avatar, label: false, placeholder: "Upload user avatar", wrapper_html: {class: "margin-none"}
+    .col-md-10
+      = f.input :email, label: false, placeholder: "Email", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Email"}
+      = f.input :user_name, label: false, placeholder: "User name", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "User Name"}
+      .has-tooltip{data: {toggle: "tooltip", placement: "left"}, title: "Designation"}
+        = f.association :designation, collection: (user.organization.try(:designations) || []), include_blank: false, label: false, input_html: { class: 'chosen-select'}
+      = f.input :password, label: false, placeholder: "Password", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Password"}
+      = f.input :password_confirmation, label: false, placeholder: "Confirm new password", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Confirm new password"}
+      = f.association :organization, as: :hidden
+      = f.submit

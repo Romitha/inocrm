@@ -32,7 +32,7 @@
 .row
   .col-lg-12.padding0
     %ul.nav.nav-tabs{role: "tablist"}
-      - [["Address", "#addresses#{organization.id}"], ["Contact Details", "#contacts"], ["Contact Person", "#contact_persons"], ["Documents & Attachements", "#"], ["Organization Relations", "#"]].each do |link_info|
+      - [["Address", "#addresses#{organization.id}"], ["Contact Details", "#contacts"], ["Employees", "#contact_persons"], ["Documents & Attachements", "#"], ["Organization Relations", "#"]].each do |link_info|
         %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"}
 
     .tab-content.small_scale_margin-top1
@@ -45,3 +45,6 @@
           - organization.contact_numbers.order("created_at DESC").each do |contact_number|
             = render "contact_numbers/contact_number", contact_number: contact_number
       .tab-pane#contact_persons
+        .fixed-height
+          - organization.users.order("created_at DESC").each do |user|
+            = render "users/user", user: user

@@ -4,7 +4,13 @@ class UsersController < ApplicationController
   before_action :set_user, only: [:profile, :initiate_user_profile_edit, :update]
 
   def new
-    @user = User.new
+    begin
+      organization_id = view_context.decrypt_org(params[:organization_id])
+      @user = User.new(organization_id: organization_id)
+    rescue
+      flash[:error] = "Invalid organization is selected. Please try again or contact administrator."
+      redirect_to root_url
+    end
   end
 
   #Displaying the user details
@@ -17,6 +23,16 @@ class UsersController < ApplicationController
     @contact_number_list = @user.other_contact_numbers
   end
 
+  def create
+    @user = User.new user_params
+    respond_to do |format|
+      if @user.save
+        format.html {redirect_to profile_user_url(@user), notice: "Employee is successfully created"}
+      else
+        format.html {render :new}
+      end
+    end
+  end
   #Updating the user details
   def update
     
@@ -24,7 +40,7 @@ class UsersController < ApplicationController
       if params[template_param]
         @template_params = template_param.to_s
         if current_user.valid_password?(params[:current_user_password])
-          if @user.update_attributes organization_params
+          if @user.update_attributes user_params
             flash[:notice] = "Profile is successfully updated"
             render js: "window.location.href='"+profile_user_url+"'" and return
             break
@@ -59,8 +75,8 @@ class UsersController < ApplicationController
       @user =  User.find params[:id]
     end
 
-    def organization_params
-      params.require(:user).permit(:user_name, :designation_id, :password, :password_confirmation, :NIC, :epf_no, :date_joined_at, :first_name, :last_name, :name_title, addresses_attributes: [:id, :category, :address, :_destroy])
+    def user_params
+      params.require(:user).permit(:email, :avatar, :user_name, :organization_id, :designation_id, :password, :password_confirmation, :NIC, :epf_no, :date_joined_at, :first_name, :last_name, :name_title, addresses_attributes: [:id, :category, :address, :_destroy])
     end
 
 end
