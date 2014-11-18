@@ -1,0 +1,12 @@
+.modal-header
+  %h3.margin-none Update Profile image - Primary details
+= simple_form_for user, remote: true, url: upload_avatar_user_path(user), method: :put do |user_resource|
+  .modal-body
+    #large_image
+      = image_tag(@user.avatar.large.url, id: 'croppable_large_image', class: 'img-polaroid img-responsive')
+    #show_form
+      - %w(x y w h).each do |coord|
+        = user_resource.hidden_field "coord_#{coord}"
+      = user_resource.hidden_field :avatar
+  .modal-footer  
+    = user_resource.submit "Crop", name: "cropped_image", class: "ajax-loader-image btn btn-small btn-info pull-right", data: { disable_with: "Please wait..." }

@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
 
   before_action :authenticate_user!
-  before_action :set_user, only: [:profile, :initiate_user_profile_edit, :update]
+  before_action :set_user, only: [:profile, :initiate_user_profile_edit, :update, :upload_avatar]
 
   def new
     begin
@@ -35,7 +35,6 @@ class UsersController < ApplicationController
   end
   #Updating the user details
   def update
-    
     [:user_name_primary_details,:password_security_details, :additional_details].each do |template_param|
       if params[template_param]
         @template_params = template_param.to_s
@@ -70,13 +69,29 @@ class UsersController < ApplicationController
     end
   end
 
+  def upload_avatar
+    respond_to do |format|
+      if @user.update_attributes user_params
+        @errors = []
+      else
+        @errors = @user.errors
+      end
+      if params[:cropped_image]
+        flash[:notice] = "profile image cropped successfully"
+        format.js {render js: "window.location.href='"+profile_user_url+"'"}
+      else
+        format.js
+      end
+    end
+  end
+
   private
     def set_user
       @user =  User.find params[:id]
     end
 
     def user_params
-      params.require(:user).permit(:email, :avatar, :user_name, :organization_id, :designation_id, :password, :password_confirmation, :NIC, :epf_no, :date_joined_at, :first_name, :last_name, :name_title, addresses_attributes: [:id, :category, :address, :_destroy])
+      params.require(:user).permit(:email, :avatar, :coord_x, :coord_y, :coord_w, :coord_h, :user_name, :organization_id, :designation_id, :password, :password_confirmation, :NIC, :epf_no, :date_joined_at, :first_name, :last_name, :name_title, addresses_attributes: [:id, :category, :address, :_destroy])
     end
 
 end

@@ -3,8 +3,8 @@
 class AvatarUploader < CarrierWave::Uploader::Base
 
   # Include RMagick or MiniMagick support:
-  # include CarrierWave::RMagick
-  include CarrierWave::MiniMagick
+  include CarrierWave::RMagick
+  # include CarrierWave::MiniMagick
 
   # Choose what kind of storage to use for this uploader:
   storage :file
@@ -33,11 +33,40 @@ class AvatarUploader < CarrierWave::Uploader::Base
 
   # Create different versions of your uploaded files:
   version :thumb do
-    process :resize_to_fit => [50, 50]
+    process :crop
+    process :resize_to_limit => [200, 200]
   end
 
-  version :medium do
-    process :resize_to_fill => [150, 150]
+  version :profile_size do
+    process :crop
+    resize_to_limit(50, 50)
+  end
+
+  version :large do
+    resize_to_limit(500, 500)
+  end
+
+  def crop
+    if model.coord_x.present?
+      resize_to_limit(500,500)
+      manipulate! do |img|
+        x = model.coord_x.to_i
+        y = model.coord_y.to_i
+        w = model.coord_w.to_i
+        h = model.coord_h.to_i
+        img.crop!(x,y,w,h)# for rmagick
+
+        # size = w << 'x' << h
+        # offset = '+' << x << '+' << y
+
+        # img.crop "#{size}#{offset}" # Doesn't return an image...
+        # img # ...so you'll need to call it yourself
+      end
+      # image = MiniMagick::Image.open(model.avatar.large.path)
+      # crop_params = "#{model.coord_w}x#{model.coord_h}+#{model.coord_x}+#{model.coord_y}"
+      # image.crop(crop_params)
+      # image
+    end
   end
 
   # Add a white list of extensions which are allowed to be uploaded.

@@ -27,6 +27,7 @@ Rails.application.routes.draw do
     member do
       get "initiate_user_profile_edit"
       get 'profile'
+      put "upload_avatar"
     end
   end
 

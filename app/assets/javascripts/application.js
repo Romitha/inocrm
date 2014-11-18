@@ -12,6 +12,9 @@
 //
 //= require jquery
 //= require jquery_ujs
+//= require jquery-fileupload/basic
+//= require jquery-fileupload/vendor/tmpl
+//= require jquery.Jcrop
 //= require twitter/bootstrap
 //= require bootstrap-editable
 //= require bootstrap-editable-rails

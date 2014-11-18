@@ -1,0 +1,33 @@
+- if @errors.present?
+  alert("There are some errors updating your profile image. Please re-try or contact administrator");
+- else
+
+  - if @user.avatar.present?
+    - content_for :preview_of_profile_image do
+      - if @user.avatar.present?
+        = image_tag @user.avatar.thumb.url, class: "img-polaroid img-responsive", title: "Remove profile image"
+      - else
+        = image_tag "no_image.jpg", alt: @user.email, title: "profile image", class: "img-polaroid img-responsive"
+
+
+  $('#profile_modal').modal();
+  $("#profile_modal .modal-content").html("#{j render('avatar_primary_details', user: @user)}");
+
+  setTimeout(function(){
+  $("#preview_of_profile_image").html("#{j(yield(:preview_of_profile_image))}")
+  }, 800);
+
+  var showCoords = function(c){
+  $("#show_form #user_coord_x").val(c.x);
+  $("#show_form #user_coord_y").val(c.y);
+  $("#show_form #user_coord_w").val(c.w);
+  $("#show_form #user_coord_h").val(c.h);
+  }
+  $('#croppable_large_image').Jcrop({
+  aspectRatio: 1,
+  setSelect: [0,0,500,500],
+  onSelect: showCoords,
+  onChange: showCoords,
+  minSize: [200, 200],
+  }
+  );
