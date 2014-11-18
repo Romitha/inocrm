@@ -39,6 +39,7 @@ gem "haml-rails"
 
 gem "carrierwave"
 gem "mini_magick"
+gem 'rmagick'
 
 gem "therubyracer"
 gem "less-rails" #Sprockets (what Rails 3.1 uses for its asset pipeline) supports LESS
@@ -55,6 +56,10 @@ gem "mustache"
 gem 'chosen-sass-bootstrap-rails'
 
 gem 'bootstrap-editable-rails'
+
+#gem 'remotipart'
+gem "jquery-fileupload-rails"
+gem 'jcrop-rails-v2'
 
 # gem "handlebars_assets"
 # Use ActiveModel has_secure_password

@@ -14,5 +14,6 @@
  *= require bootstrap_and_overrides
  *= require chosen
  *= require bootstrap-editable
+ *= require jquery.Jcrop
  *= require_tree .
  */
