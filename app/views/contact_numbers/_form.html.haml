@@ -8,16 +8,17 @@
               - contact_number.object.errors.full_messages.each do |error|
                 %li= error
           .col-md-3
-            = contact_number.input :category, collection: ContactNumber::TYPES, include_blank: false, input_html: {class: "chosen-select"}, label: false
+            .has-tooltip{data: {toggle: "tooltip", placement: "left"}, title: "Type"}
+              = contact_number.input :category, collection: ContactNumber::TYPES, include_blank: false, input_html: {class: "chosen-select"}, label: false
             = contact_number.label :primary
             = contact_number.check_box :primary
             = contact_number.input :c_numberable_type, as: :hidden
             = contact_number.input :c_numberable_id, as: :hidden
 
-          = contact_number.input :value, wrapper_html: {class: "col-md-8 pull-right"}, label: false
+          = contact_number.input :value, wrapper_html: {class: "col-md-8 pull-right"}, label: false, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Type the contact number"}
 
           - if contact_number.object.c_numberable_type == "User"
             .form-group.col-md-12
-              = password_field_tag "current_user_password", nil, placeholder: "password", class: "form-control"
+              = password_field_tag "current_user_password", nil, placeholder: "password", class: "form-control has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Password"
           .col-md-12
             = contact_number.submit "Add new contact_number", class: "btn btn-success pull-right", id: "submit_new_contact_number"
