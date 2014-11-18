@@ -24,6 +24,13 @@ class User < ActiveRecord::Base
 
   validates_uniqueness_of :user_name
 
+  attr_accessor :coord_x, :coord_y, :coord_w, :coord_h
+  after_update :crop_avatar
+
+  def crop_avatar
+    avatar.recreate_versions! if coord_x.present?
+  end
+
   TITLES = %w(Mr Mrs Miss Ms)
 
   def other_addresses

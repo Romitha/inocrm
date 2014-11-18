@@ -4,12 +4,7 @@
       %ul
         - user.errors.full_messages.each do |message|
           %li= message
-    .col-md-2
-      = image_tag user.avatar.url, class: "img-responsive" if user.avatar.present?
-      .btn.btn-success.btn-file.has-tooltip{data: {toggle: "tooltip", placement: "left"}, title: "Upload user avatar"}
-        Upload avatar
-        = f.input :avatar, label: false, placeholder: "Upload user avatar", wrapper_html: {class: "margin-none"}
-    .col-md-10
+    .col-md-12
       = f.input :email, label: false, placeholder: "Email", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Email"}
       = f.input :user_name, label: false, placeholder: "User name", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "User Name"}
       .has-tooltip{data: {toggle: "tooltip", placement: "left"}, title: "Designation"}
