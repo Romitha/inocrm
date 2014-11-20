@@ -29,3 +29,8 @@ erd.pdf
 
 # ignore Gemfile.lock file
 /Gemfile.lock
+
+# ignore Capfile
+/Capfile
+/config/deploy.rb
+/config/deploy/*.rb
