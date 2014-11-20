@@ -6,7 +6,7 @@ gem 'rails', '4.1.2'
 # Use sqlite3 as the database for Active Record
 # gem 'sqlite3'
 # use postgresql for database active records
-gem 'mysql2'
+gem 'mysql2' # sudo apt-get install libmysqlclient-dev Failed to build gem native extension
 gem 'pg'
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 4.0.3'
@@ -39,7 +39,7 @@ gem "haml-rails"
 
 gem "carrierwave"
 gem "mini_magick"
-gem 'rmagick'
+gem 'rmagick' # sudo apt-get install libmagickwand-dev if ubuntu shows native library error
 
 gem "therubyracer"
 gem "less-rails" #Sprockets (what Rails 3.1 uses for its asset pipeline) supports LESS
@@ -53,7 +53,8 @@ gem "nested_form"
 
 gem "mustache"
 
-gem 'chosen-sass-bootstrap-rails'
+# gem 'chosen-sass-bootstrap-rails'
+gem "chosen-rails"
 
 gem 'bootstrap-editable-rails'
 
@@ -69,7 +70,12 @@ gem 'jcrop-rails-v2'
 # gem 'unicorn'
 
 # Use Capistrano for deployment
-# gem 'capistrano-rails', group: :development
+group :development do
+  gem 'capistrano'#, git: "https://github.com/capistrano/capistrano.git"
+  gem 'capistrano-rails'
+  gem 'capistrano-bundler'
+  gem 'capistrano-rvm'
+end
 
 # Use debugger
 # gem 'debugger', group: [:development, :test]
