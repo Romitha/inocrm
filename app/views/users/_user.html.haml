@@ -1,3 +1,16 @@
-%h4= link_to user.user_name, profile_user_path(user)
-%blockquote
-	= user.designation.try :name
+- epf_no = @epf_no
+%span= link_to user.user_name, profile_user_path(user)
+- if user.epf_no.present?
+  %span.has-tooltip{data: {toggle: "tooltip", placement: "right"}, title: "E.P.F Number"} (#{user.epf_no})
+.row
+  .col-md-1
+    #preview_of_profile_image
+      - if user.avatar.present?
+        = image_tag user.avatar.thumb.url, class: "img-polaroid img-responsive ", height: '100%', width: '100%'
+      - else
+        = image_tag "no_image.jpg", alt: user.user_name, title: "profile image", class: "img-polaroid margin-none img-responsive", height: '100%', width: '100%'
+  .col-md-4
+    .col-md-5= user.designation.try :name
+    .col-md-8= mail_to user.email, user.email
+    .col-md-5.has-tooltip{data: {toggle: "tooltip", placement: "bottom"}, title: "(Primary) Phone"}
+      = user.primary_contact_number.try :value

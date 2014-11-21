@@ -50,7 +50,7 @@
 
     .tab-pane#contact_persons.limit-height
       = link_to "Add Employee", new_user_path(organization_id: encrypt_org(organization.id))
-      .fixed-height
+      .limit-height
         - organization.users.order("created_at DESC").each do |user|
           = render "users/user", user: user
 
