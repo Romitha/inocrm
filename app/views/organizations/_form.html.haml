@@ -61,7 +61,7 @@
         - organization.designations.order("created_at DESC").each do |designation|
           = render "designations/designation", designation: designation
 
-    .tab-pane{id: "organization_relations#{organization.id}"}
+    .tab-pane.limit-height{id: "organization_relations#{organization.id}"}
       = render "organizations/parent_member", parent_member: organization
       .fixed-height
         = render "organizations/member",organization: organization.parent_organization, relation: "Parent", relation_organization: organization if organization.parent_organization.present?

@@ -8,13 +8,13 @@ class ContactNumbersController < ApplicationController
       if @contact_number.c_numberable_type == "User"
         if current_user.valid_password?(params[:current_user_password])
           if @contact_number.save
-            format.html {redirect_to profile_user_path(current_user), notice: "contact_number is successfully created."}
+            format.html {redirect_to profile_user_path(@contact_number.c_numberable), notice: "contact_number is successfully created."}
           else
-            format.html {redirect_to profile_user_path(current_user), error: "Something gone error with contact_number field. #{@contact_number.errors.full_messages.join(',')}"}
+            format.html {redirect_to profile_user_path(@contact_number.c_numberable), error: "Something gone error with contact_number field. #{@contact_number.errors.full_messages.join(',')}"}
           end
         else
           flash[:error] = "Please provide your correct password."
-          format.html {redirect_to profile_user_path(current_user)}
+          format.html {redirect_to profile_user_path(@contact_number.c_numberable)}
         end
       else
         if @contact_number.save
@@ -39,7 +39,7 @@ class ContactNumbersController < ApplicationController
     @contact_number.destroy
     # respond_with(@contact_number)
     respond_to do |format|
-      format.html {redirect_to (@contact_number.c_numberable_type == "User" ? profile_user_path(current_user) : polymorphic_path([@contact_number.c_numberable])), notice: "Address is successfully deleted."}
+      format.html {redirect_to (@contact_number.c_numberable_type == "User" ? profile_user_path(@contact_number.c_numberable) : polymorphic_path([@contact_number.c_numberable])), notice: "Address is successfully deleted."}
     end
   end
 
@@ -50,7 +50,7 @@ class ContactNumbersController < ApplicationController
     @contact_number.update_attribute(:primary, true)
 
     respond_to do |format|
-      format.html {redirect_to polymorphic_url([@contact_number.c_numberable]), notice: "contact_number is set to primary."}
+      format.html {redirect_to (@contact_number.c_numberable_type=="User" ? profile_user_url(@contact_number.c_numberable) : polymorphic_url([@contact_number.c_numberable])), notice: "contact_number is set to primary."}
     end
   end
 

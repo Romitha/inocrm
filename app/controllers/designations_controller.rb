@@ -25,7 +25,7 @@ class DesignationsController < ApplicationController
     @designation.destroy
     # respond_with(@designation)
     respond_to do |format|
-      format.html {redirect_to (@designation.c_numberable_type == "User" ? profile_user_path(current_user) : polymorphic_path([@designation.c_numberable])), notice: "Address is successfully deleted."}
+      format.html {redirect_to @designation.organization, notice: "Address is successfully deleted."}
     end
   end
 
