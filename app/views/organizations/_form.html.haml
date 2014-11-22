@@ -31,32 +31,39 @@
 - if organization.persisted?
   .row
     %ul.nav.nav-tabs{role: "tablist"}
-      - [["Address", "#addresses"], ["Contact Details", "#contacts"], ["Employees", "#contact_persons"], ["Documents & Attachements", "#"], ["Organization Relations", "#"], ["Designations", "#designations"], ["Organization Relations", "#"]].each do |link_info|
+      - [["Address", "#addresses#{organization.id}"], ["Contact Details", "#contacts#{organization.id}"], ["Employees", "#contact_persons#{organization.id}"], ["Documents & Attachements", "#documents#{organization.id}"], ["Designations", "#designations#{organization.id}"], ["Organization Relations", "#organization_relations#{organization.id}"]].each do |link_info|
         %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"}
   .tab-content.small_scale_margin-top1
-    .tab-pane#addresses.limit-height
+    .tab-pane.limit-height{id: "addresses#{organization.id}"}
       = render "addresses/form", address: organization.addresses.build
 
       .fixed-height
         - organization.addresses.order("created_at DESC").each do |address|
           = render "addresses/address", address: address
 
-    .tab-pane#contacts.limit-height
+    .tab-pane.limit-height{id: "contacts#{organization.id}"}
       = render "contact_numbers/form", contact_number: organization.contact_numbers.build
 
       .fixed-height
         - organization.contact_numbers.order("created_at DESC").each do |contact_number|
           = render "contact_numbers/contact_number", contact_number: contact_number
 
-    .tab-pane#contact_persons.limit-height
+    .tab-pane.limit-height{id: "contact_persons#{organization.id}"}
       = link_to "Add Employee", new_user_path(organization_id: encrypt_org(organization.id))
       .limit-height
         - organization.users.order("created_at DESC").each do |user|
           = render "users/user", user: user
 
-    .tab-pane#designations.limit-height
+    .tab-pane.limit-height{id: "designations#{organization.id}"}
       = render "designations/form", designation: organization.designations.build
 
       .fixed-height
         - organization.designations.order("created_at DESC").each do |designation|
           = render "designations/designation", designation: designation
+
+    .tab-pane{id: "organization_relations#{organization.id}"}
+      = render "organizations/parent_member", parent_member: organization
+      .fixed-height
+        = render "organizations/member",organization: organization.parent_organization, relation: "Parent", relation_organization: organization if organization.parent_organization.present?
+        - organization.members.order("created_at DESC").each do |member|
+          = render "organizations/member", organization: member, relation: "Member", relation_organization: organization

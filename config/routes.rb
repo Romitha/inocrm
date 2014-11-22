@@ -21,6 +21,10 @@ Rails.application.routes.draw do
   resources :users, concerns: :polymophicable, only: []
   resources :organizations, concerns: :polymophicable do
     resources :designations
+    member do
+      put "relate"
+      get "remove_relation"
+    end
   end
 
   resources :users, only: [:new, :update, :create] do

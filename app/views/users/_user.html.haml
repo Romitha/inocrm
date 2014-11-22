@@ -14,3 +14,4 @@
     .col-md-8= mail_to user.email, user.email
     .col-md-5.has-tooltip{data: {toggle: "tooltip", placement: "bottom"}, title: "(Primary) Phone"}
       = user.primary_contact_number.try :value
+%hr

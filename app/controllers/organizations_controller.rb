@@ -1,6 +1,6 @@
 class OrganizationsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_organization, only: [:show, :edit, :update]
+  before_action :set_organization, only: [:show, :edit, :update, :relate, :remove_relation]
 
   def index
     @organizations = Organization.order("created_at DESC")
@@ -45,6 +45,57 @@ class OrganizationsController < ApplicationController
         format.json { render json: @organization.errors, status: :unprocessable_entity }
       end
     end
+  end
+
+  def relate
+    relation_organization = Organization.find_by_id params[:relate_id]
+    to_url = organization_url(@organization)
+    case params[:relate]
+      when "member"
+        if relation_organization.try(:parent_organization)
+          flash[:error] = "Parent #{relation_organization.parent_organization.name} is assigned. Please remove relationship and continue again."
+          to_url = organization_url(relation_organization)
+        elsif @organization.try(:parent_organization) == relation_organization
+            flash[:error] = "#{relation_organization.name} is parent. Please remove relationship and continue again."
+            to_url = organization_url(relation_organization)
+        else
+          relation_organization.parent_organization = @organization
+          relation_organization.save
+          flash[:notice] = "Member is added successfully"
+        end
+      when "parent"
+        if @organization.try(:parent_organization)
+          flash[:error] = "Parent #{@organization.parent_organization.name} is assigned. Please remove relationship and continue again."
+          to_url = organization_url(@organization.parent_organization)
+        elsif relation_organization.try(:parent_organization) == @organization
+          flash[:error] = "Parent #{@organization.name} is assigned. Please remove relationship and continue again."
+        else
+          @organization.parent_organization = Organization.find_by_id params[:relate_id]
+          @organization.save
+          flash[:notice] = "parent is added successfully"
+        end
+      else
+        flash[:error] = "Please assign relationship and organization"
+      end
+      redirect_to to_url
+  end
+
+  def remove_relation
+    relation_organization = Organization.find_by_id params[:relation_organization]
+
+    case params[:relation]
+    when "Parent"
+      relation_organization.parent_organization = nil
+      relation_organization.save
+      flash[:notice] = "Parent relationship is removed successfully"
+    when "Member"
+      @organization.parent_organization = nil
+      @organization.save
+      flash[:notice] = "Member relationship is removed successfully"
+    else
+      flash[:error] = "Something gone wrong. Please try again."
+    end
+    redirect_to @organization
   end
 
   private
