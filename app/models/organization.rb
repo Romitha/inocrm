@@ -18,4 +18,9 @@ class Organization < ActiveRecord::Base
 	scope :customers, -> {where(category: "Customer")}
 
   validates_format_of :web_site, :with => URI::regexp(%w(http https))
+
+  # self join table tricks
+  has_many :members, class_name: "Organization", foreign_key: "parent_organization_id"
+  belongs_to :parent_organization, class_name: "Organization"
+
 end
