@@ -285,9 +285,11 @@ fieldset{
 
 /***horizontal line **********/
 hr {
-  border-color: #EEEEEE;
+  border-color: #dddddd;
   border-style: solid none;
   border-width: 1px 0;
-  margin: 18px 0;
+  margin: 5px 0;
+  display: inline-block;
+  width: 100%;
 }
 /***horizontal line **********/

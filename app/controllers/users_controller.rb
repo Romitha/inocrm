@@ -41,7 +41,7 @@ class UsersController < ApplicationController
         if current_user.valid_password?(params[:current_user_password])
           if @user.update_attributes user_params
             flash[:notice] = "Profile is successfully updated"
-            render js: "window.location.href='"+profile_user_url+"'" and return
+            render js: "window.location.href='"+profile_user_url(@user)+"'" and return
             break
           else
             render :initiate_user_profile_edit and return
@@ -49,7 +49,7 @@ class UsersController < ApplicationController
           end
         else
           flash[:error] = "Please provide your valid password"
-          render js: "window.location.href='"+profile_user_url+"'" and return
+          render js: "window.location.href='"+profile_user_url(@user)+"'" and return
           break
         end
       end
@@ -78,7 +78,7 @@ class UsersController < ApplicationController
       end
       if params[:cropped_image]
         flash[:notice] = "profile image cropped successfully"
-        format.js {render js: "window.location.href='"+profile_user_url+"'"}
+        format.js {render js: "window.location.href='"+profile_user_url(@user)+"'"}
       else
         format.js
       end

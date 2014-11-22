@@ -10,3 +10,4 @@
   .col-md-7
     = link_to "#", class: "inline_edit", data: {type: "text", resource: "contact_number", name: "value", url: polymorphic_path([contact_number.c_numberable, contact_number]), "original-title" => "Update contact_number"} do
       = contact_number.value
+  %hr

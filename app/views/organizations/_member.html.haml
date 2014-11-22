@@ -1,0 +1,19 @@
+.row
+  .col-md-2
+    = image_tag (organization.logo.thumb.url || "organization_image.png"), alt: organization.name, class: "img-responsive img-thumbnail"
+  .col-md-10
+    .row
+      .col-md-12
+        %h3.margin-top0= link_to organization.name, organization, target: "_blank"
+      .col-md-12
+        Vat Number: #{organization.vat_number}
+      .col-md-12
+        #{relation} of #{link_to relation_organization.name, relation_organization}
+      .col-md-12
+        %span
+          = link_to edit_organization_path(organization), class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Edit #{organization.name}" do
+            = glyph(:pencil)
+        %span
+          = link_to remove_relation_organization_path(organization, relation: relation, relation_organization: relation_organization), class: "has-tooltip", data: {confirm: "Do you want to remove the relationship?",toggle: "tooltip", placement: "left"}, title: "Remove parent relation of #{organization.name} from #{relation_organization.name}" do
+            = glyph(:remove)
+  %hr
