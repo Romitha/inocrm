@@ -39,7 +39,7 @@
         .col-md-12#user_email
           = mail_to user.email, user.email
       .row
-        .col-md-3
+        .col-md-3.text-right
           Contact Number:
         .col-md-5
           #{primary_contact_number.try :value} (#{primary_contact_number.try :category})
@@ -48,7 +48,7 @@
             = link_to "More >>", initiate_user_profile_edit_user_path(template_params: "contact_numbers_primary_details"), data: {toggle: "modal", target: "#user_edit_popup", userid: user.id}, remote: true, class: "pull-right" if contact_number_list.present?
         .col-md-2.pull-right= link_to "Edit", initiate_user_profile_edit_user_path(template_params: "contact_numbers_primary_details"), data: {toggle: "modal", target: "#user_edit_popup", userid: user.id}, remote: true, class: "pull-right"
       .row
-        .col-md-3
+        .col-md-3.text-right
           Contact Address:
         .col-md-5
           %address
@@ -63,29 +63,29 @@
     = panels panel_type: "default", id: "id_additional_details_panel", header_content: "Additional Details" do
       .row-fluid
         .row
-          .col-md-4
+          .col-md-2.text-right
             Full Name
-          .col-md-8
+          .col-md-10
             #{user.name_title} #{user.first_name} #{user.last_name}
         .row
-          .col-md-4
+          .col-md-2.text-right
             N.I.C Number
-          .col-md-8
+          .col-md-10
             = user.NIC
         .row
-          .col-md-4
+          .col-md-2.text-right
             E.P.F Number
-          .col-md-8
+          .col-md-10
             = user.epf_no
         .row
-          .col-md-4
+          .col-md-2.text-right
             Date joined
-          .col-md-8
+          .col-md-10
             = user.date_joined_at.try(:strftime, "%d %b, %Y")
         .row
-          .col-md-4
+          .col-md-2.text-right
             Organization
-          .col-md-8
+          .col-md-10
             = link_to user.organization.try(:name), user.organization
 
       .pull-right= link_to "Edit", initiate_user_profile_edit_user_path(template_params: "additional_details"), data: {toggle: "modal", target: "#user_edit_popup", userid: user.id}, remote: true
