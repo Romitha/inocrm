@@ -40,16 +40,16 @@
         .fixed-height
           - organization.addresses.order("created_at DESC").each do |address|
             = render "addresses/address", address: address
-      .tab-pane{id: "contacts#{organization.id}"}
+      .tab-pane.limit-height{id: "contacts#{organization.id}"}
         .fixed-height
           - organization.contact_numbers.order("created_at DESC").each do |contact_number|
             = render "contact_numbers/contact_number", contact_number: contact_number
-      .tab-pane{id: "contact_persons#{organization.id}"}
+      .tab-pane.limit-height{id: "contact_persons#{organization.id}"}
         .fixed-height
           - organization.users.order("created_at DESC").each do |user|
             = render "users/user", user: user
 
-      .tab-pane{id: "organization_relations#{organization.id}"}
+      .tab-pane.limit-height{id: "organization_relations#{organization.id}"}
         .fixed-height
           = render "organizations/member",organization: organization.parent_organization, relation: "Parent", relation_organization: organization if organization.parent_organization.present?
           - organization.members.order("created_at DESC").each do |member|

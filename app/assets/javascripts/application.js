@@ -19,6 +19,8 @@
 //= require bootstrap-editable
 //= require bootstrap-editable-rails
 //= require jquery_nested_form
+//= require bootstrap-datepicker/core
+//= require bootstrap-datepicker/locales/bootstrap-datepicker.es
 //= require chosen-jquery
 //= require mustache
 //= require_tree .

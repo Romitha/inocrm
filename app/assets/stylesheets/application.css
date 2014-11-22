@@ -13,6 +13,7 @@
  *= require_self
  *= require bootstrap_and_overrides
  *= require bootstrap-editable
+ *= require bootstrap-datepicker3
  *= require jquery.Jcrop
  *= require_tree .
  */

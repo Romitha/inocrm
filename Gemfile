@@ -58,6 +58,8 @@ gem "chosen-rails"
 
 gem 'bootstrap-editable-rails'
 
+gem 'bootstrap-datepicker-rails'
+
 #gem 'remotipart'
 gem "jquery-fileupload-rails"
 gem 'jcrop-rails-v2'

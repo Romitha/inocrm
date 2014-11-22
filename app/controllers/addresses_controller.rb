@@ -25,13 +25,13 @@ class AddressesController < ApplicationController
       if @address.addressable_type == "User"
         if current_user.valid_password?(params[:current_user_password])
           if @address.save
-            format.html {redirect_to profile_user_path(current_user), notice: "Address is successfully created."}
+            format.html {redirect_to profile_user_path(@address.addressable), notice: "Address is successfully created."}
           else
-            format.html {redirect_to profile_user_path(current_user), error: "Something gone error with address field. #{@address.errors.full_messages.join(',')}"}
+            format.html {redirect_to profile_user_path(@address.addressable), error: "Something gone error with address field. #{@address.errors.full_messages.join(',')}"}
           end
         else
           flash[:error] = "Please provide your correct password."
-          format.html {redirect_to profile_user_path(current_user)}
+          format.html {redirect_to profile_user_path(@address.addressable)}
         end
       else
         if @address.save
@@ -55,7 +55,7 @@ class AddressesController < ApplicationController
     @address.destroy
 
     respond_to do |format|
-      format.html {redirect_to (@address.addressable_type == "User" ? profile_user_path(current_user) : polymorphic_path([@address.addressable])), notice: "Address is successfully deleted."}
+      format.html {redirect_to (@address.addressable_type == "User" ? profile_user_path(@address.addressable) : polymorphic_path([@address.addressable])), notice: "Address is successfully deleted."}
     end
   end
 
@@ -66,7 +66,7 @@ class AddressesController < ApplicationController
     @address.update_attribute(:primary, true)
 
     respond_to do |format|
-      format.html {redirect_to (@address.addressable_type == "User" ? profile_user_path(current_user) : polymorphic_path([@address.addressable])), notice: "Address is set to primary."}
+      format.html {redirect_to (@address.addressable_type == "User" ? profile_user_path(@address.addressable) : polymorphic_path([@address.addressable])), notice: "Address is set to primary."}
     end
   end
 
