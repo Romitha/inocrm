@@ -7,9 +7,21 @@
     = link_to image_tag("logo.png", class: "small_scale_margin-top1"),root_url
     .navbar-collapse.collapse.navbar-responsive-collapse.navbar-right.fixed
       %ul.nav.navbar-nav
-        %li.small_scale_margin-right10= link_to "Configuration", "/path1", class: "organization text-hide nav-icon", data: {toggle: "tooltip", placement: "bottom"}, title: "Configuration", rel: "tooltip"
-        %li.small_scale_margin-right10= link_to "Suppliers", "/path2", class: "supplier text-hide nav-icon", data: {toggle: "tooltip", placement: "bottom"}, title: "Supplier", rel: "tooltip"
-        %li.small_scale_margin-right10= link_to "Customers", "/path3", class: "customers text-hide nav-icon", data: {toggle: "tooltip", placement: "bottom"}, title: "Customer", rel: "tooltip"
+        %li.dropdown.small_scale_margin-right10
+          = link_to "Configuration", "#", class: "dropdown-toggle organization text-hide nav-icon", data: {toggle: "dropdown", placement: "bottom"}, title: "Configuration", rel: "tooltip"
+
+        %li.dropdown.small_scale_margin-right10{role: "presentation"}
+          = link_to "supplier", "#", id: "supplier_dropdown", class: "dropdown-toggle supplier text-hide nav-icon", data: {toggle: "dropdown", placement: "bottom"}, "aria-haspopup" => "true", "aria-expanded" => "true", title: "Supplier", rel: "tooltip"
+          %ul.dropdown-menu{"aria-labelledby" => "supplier_dropdown"}
+            %li{role: "presentation"}= link_to "View Suppliers", root_path(category: "suppliers")
+            %li{role: "presentation"}= link_to "New Supplier", new_organization_path(category: "Supplier")
+
+        %li.dropdown.small_scale_margin-right10{role: "presentation"}
+          = link_to "Customers", "#", class: "dropdown-toggle customers text-hide nav-icon", id: "customer_dropdown", data: {toggle: "dropdown", placement: "bottom"}, title: "Customer", rel: "tooltip"
+          %ul.dropdown-menu{"aria-labelledby" => "customer_dropdown"}
+            %li{role: "presentation"}= link_to "View Customers", root_path(category: "customers")
+            %li{role: "presentation"}= link_to "New Customer", new_organization_path(category: "Customer")
+
         - if user_signed_in?
           %li.dropdown
             = link_to "Dropdown", "#", class: "dropdown-toggle me text-hide nav-icon col-lg-offset-7", "data-toggle" => "dropdown", data: {toggle: "tooltip", placement: "bottom", toggle: "dropdown"}, title: "My Profile", rel: "tooltip"
