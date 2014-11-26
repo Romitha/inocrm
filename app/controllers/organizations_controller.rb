@@ -3,9 +3,14 @@ class OrganizationsController < ApplicationController
   before_action :set_organization, only: [:show, :edit, :update, :relate, :remove_relation]
 
   def index
-    @organizations = Organization.order("created_at DESC")
-    @suppliers = Organization.suppliers
-    @customers = Organization.customers
+    case params["category"]
+    when "suppliers"
+      @organizations = Organization.suppliers
+    when "customers"
+      @organizations = Organization.customers
+    else
+      @organizations = Organization.order("created_at DESC")
+    end
   end
 
   def new
