@@ -1,4 +1,4 @@
-= simple_nested_form_for organization, html: {class: "form-horizontal"} do |f|
+= simple_nested_form_for organization do |f|
   - if organization.errors.present?
     .row
       = panels header_content: "Something gone wrong", panel_type: "danger" do
@@ -31,7 +31,7 @@
 - if organization.persisted?
   .row
     %ul.nav.nav-tabs{role: "tablist"}
-      - [["Address", "#addresses#{organization.id}"], ["Contact Details", "#contacts#{organization.id}"], ["Employees", "#contact_persons#{organization.id}"], ["Documents & Attachements", "#documents#{organization.id}"], ["Designations", "#designations#{organization.id}"], ["Organization Relations", "#organization_relations#{organization.id}"]].each do |link_info|
+      - [["Address", "#addresses#{organization.id}"], ["Contact Details", "#contacts#{organization.id}"], ["Employees", "#contact_persons#{organization.id}"], ["Documents & Attachements", "#documents#{organization.id}"], ["Designations", "#designations#{organization.id}"], ["Organization Relations", "#organization_relations#{organization.id}"], ["Roles and Permissions", "#roles_and_permissions#{organization.id}"]].each do |link_info|
         %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"}
   .tab-content.small_scale_margin-top1
     .tab-pane.limit-height{id: "addresses#{organization.id}"}
@@ -49,7 +49,7 @@
           = render "contact_numbers/contact_number", contact_number: contact_number
 
     .tab-pane.limit-height{id: "contact_persons#{organization.id}"}
-      = link_to "Add Employee", new_user_path(organization_id: encrypt_org(organization.id))
+      = link_to "Add Employee", new_user_path(organization_id: encrypt_org(organization.id)), class: "btn btn-primary btn-sm small_scale_margin-bottom1"
       .limit-height
         - organization.users.order("created_at DESC").each do |user|
           = render "users/user", user: user
@@ -67,3 +67,9 @@
         = render "organizations/member",organization: organization.parent_organization, relation: "Parent", relation_organization: organization if organization.parent_organization.present?
         - organization.members.order("created_at DESC").each do |member|
           = render "organizations/member", organization: member, relation: "Member", relation_organization: organization
+
+    .tab-pane.limit-height{id: "roles_and_permissions#{organization.id}"}
+      .fixed-height
+        = link_to "Add Roles and set Permissions", new_organization_roles_and_permission_path(organization), class: "btn btn-primary btn-sm small_scale_margin-bottom1"
+        - organization.roles.order("created_at DESC").each do |role|
+          = render "roles_and_permissions/role", role: role

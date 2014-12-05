@@ -34,7 +34,7 @@
           = user.designation.try :name
           = link_to "Edit", initiate_user_profile_edit_user_path(template_params: "user_name_primary_details"), data: {toggle: "modal", target: "#user_edit_popup", userid: user.id}, remote: true, class: "pull-right"
 
-    = panels panel_type: "default", header_content: "Primary Details" do
+    = panels panel_type: "default", header_content: "Primary Details (#{user.roles.map{|r| r.name.humanize}.join(', ')})" do
       .row
         .col-md-12#user_email
           = mail_to user.email, user.email
@@ -86,7 +86,7 @@
           .col-md-2.text-right
             Organization
           .col-md-10
-            = link_to user.organization.try(:name), user.organization
+            = link_to user.organization.try(:name), user.organization if user.organization
 
       .pull-right= link_to "Edit", initiate_user_profile_edit_user_path(template_params: "additional_details"), data: {toggle: "modal", target: "#user_edit_popup", userid: user.id}, remote: true
 

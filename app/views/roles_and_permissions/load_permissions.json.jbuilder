@@ -1,0 +1,1 @@
+json.rpermissions(@rpermissions, :name, :id, :checked, :resource)

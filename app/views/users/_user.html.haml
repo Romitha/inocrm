@@ -1,17 +1,22 @@
 - epf_no = @epf_no
-%span= link_to user.user_name, profile_user_path(user)
+%span= link_to "#{user.user_name} #{'(me)' if current_user==user}", profile_user_path(user)
 - if user.epf_no.present?
   %span.has-tooltip{data: {toggle: "tooltip", placement: "right"}, title: "E.P.F Number"} (#{user.epf_no})
 .row.margin-none
-  .col-md-1
-    #preview_of_profile_image
-      - if user.avatar.present?
-        = image_tag user.avatar.thumb.url, class: "img-polaroid img-responsive ", height: '100%', width: '100%'
-      - else
-        = image_tag "no_image.jpg", alt: user.user_name, title: "profile image", class: "img-polaroid margin-none img-responsive", height: '100%', width: '100%'
+  .fixed.pull-left
+    .span3
+      #preview_of_profile_image
+        - if user.avatar.present?
+          = image_tag user.avatar.thumb.url, class: "img-polaroid img-responsive ", height: '100%', width: '100%'
+        - else
+          = image_tag "no_image.jpg", alt: user.user_name, title: "profile image", class: "img-polaroid margin-none img-responsive", height: '100%', width: '100%'
   .col-md-11
     %div= user.designation.try :name
     %div= mail_to user.email, user.email
     .inline-block.has-tooltip{data: {toggle: "tooltip", placement: "bottom"}, title: "(Primary) Phone"}
       = user.primary_contact_number.try :value
+    .user_roles
+      Roles:
+      - user.roles.each do |role|
+        %span= link_to role.name, edit_organization_roles_and_permission_path(role.resource, role), class: "#{%w(text-primary text-muted text-success text-info text-warning text-danger).sample}"
 %hr
