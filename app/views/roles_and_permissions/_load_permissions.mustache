@@ -1,0 +1,7 @@
+#permission_list
+  {{#rpermissions}}
+  .checkbox
+    %label
+      <input value={{id}} id="rpermission_{{id}}" name="rpermissions[]" type="checkbox" {{checked}} />
+      {{name}} ({{resource}})
+  {{/rpermissions}}

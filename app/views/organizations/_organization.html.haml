@@ -1,7 +1,7 @@
 .row
-  .col-lg-2
+  .col-lg-1
     = image_tag (organization.logo.thumb.url || "organization_image.png"), class: "img-responsive img-thumbnail"
-  .col-lg-10
+  .col-lg-11
     %h3
       .edit_organization
         - if current_page?(controller: "organizations", action: "show", id: organization.id)

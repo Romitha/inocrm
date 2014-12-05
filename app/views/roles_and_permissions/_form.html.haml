@@ -1,0 +1,19 @@
+.row
+  .col-md-1.small_scale_margin-bottom1
+    = image_tag (organization.logo.thumb.url || "organization_image.png"), class: "img-responsive img-thumbnail"
+  .col-md-11
+    = link_to organization do
+      = content_tag(:div, "#{organization.name} (#{organization.category})", class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "More about #{organization.name}")
+    Vat Number: #{organization.vat_number}
+    %div= link_to organization.web_site, organization.web_site, target: "_blank"
+= simple_form_for role, url: role_url do |f|
+  = f.input :name, label: false, placeholder: "Provide role with any namespace. Ex: org_admin", input_html: {class: "input-sm"}
+  = label_tag "Inherit roles from"
+  = select_tag "inherit_role", options_from_collection_for_select(Role.where(parent_role: true), "id", "name"), include_blank: false, class: "chosen-select", id: "load_permissions", data: {organization_id: organization.id}
+
+  #load_permissions_json_render
+    = render "load_permissions", mustache: {rpermissions: rpermissions.as_json}
+  = f.submit "create role"
+
+%script{type: "text/html", id: "load_permissions_output"}
+  = render 'load_permissions'

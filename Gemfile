@@ -7,7 +7,7 @@ gem 'rails', '4.1.2'
 # gem 'sqlite3'
 # use postgresql for database active records
 gem 'mysql2' # sudo apt-get install libmysqlclient-dev Failed to build gem native extension
-gem 'pg'
+gem 'pg' # sudo apt-get install postgresql postgresql-contrib postgresql-server-dev-all if it failed to build gem native extension.
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 4.0.3'
 # Use Uglifier as compressor for JavaScript assets
@@ -39,7 +39,7 @@ gem "haml-rails"
 
 gem "carrierwave"
 gem "mini_magick"
-gem 'rmagick' # sudo apt-get install libmagickwand-dev if ubuntu shows native library error
+gem 'rmagick' # sudo apt-get install libmagickwand-dev and imagemagick if ubuntu shows native library error
 
 gem "therubyracer"
 gem "less-rails" #Sprockets (what Rails 3.1 uses for its asset pipeline) supports LESS

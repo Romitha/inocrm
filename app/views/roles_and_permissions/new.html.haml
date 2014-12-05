@@ -1,0 +1,5 @@
+- organization = @organization
+- rpermissions = @rpermissions
+- role = organization.roles.build
+- role_url = organization_roles_and_permissions_path(organization.id)
+= render "form", organization: organization, rpermissions: rpermissions, role: role, role_url: role_url 
