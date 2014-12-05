@@ -1,4 +1,5 @@
 class Organization < ActiveRecord::Base
+  resourcify
   mount_uploader :logo, LogoUploader
 
   has_many :addresses, as: :addressable

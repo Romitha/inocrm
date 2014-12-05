@@ -5,6 +5,8 @@
     = f.input :user_name, label: false, placeholder: "User name", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "User Name"}
     .has-tooltip{data: {toggle: "tooltip", placement: "left"}, title: "Designation"}
       = f.association :designation, collection: (@user.organization.try(:designations) || []), include_blank: false, label: false, input_html: { class: 'chosen-select'}
+    .has-tooltip{data: {toggle: "tooltip", placement: "left"}, title: "Assigning Role"}
+      = f.association :roles, collection: (@user.organization.try(:roles) || []), include_blank: false, label: false, input_html: { class: 'chosen-select'}
     .form-group
       = password_field_tag "current_user_password", nil, placeholder: "password", class: "form-control has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Password"
   .modal-footer

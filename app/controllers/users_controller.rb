@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-
+  load_and_authorize_resource
   before_action :authenticate_user!
   before_action :set_user, only: [:profile, :initiate_user_profile_edit, :update, :upload_avatar]
 
@@ -91,7 +91,7 @@ class UsersController < ApplicationController
     end
 
     def user_params
-      params.require(:user).permit(:email, :avatar, :coord_x, :coord_y, :coord_w, :coord_h, :user_name, :organization_id, :designation_id, :password, :password_confirmation, :NIC, :epf_no, :date_joined_at, :first_name, :last_name, :name_title, addresses_attributes: [:id, :category, :address, :_destroy])
+      params.require(:user).permit(:email, :avatar, :coord_x, :coord_y, :coord_w, :coord_h, :user_name, {role_ids: []}, :organization_id, :designation_id, :password, :password_confirmation, :NIC, :epf_no, :date_joined_at, :first_name, :last_name, :name_title, addresses_attributes: [:id, :category, :address, :_destroy])
     end
 
 end

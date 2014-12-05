@@ -5,8 +5,21 @@
 #
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
-unless(User.find_by_email("admin@inovacrm.com"))
-	User.create email: "admin@inovacrm.com", password: "123456789"
-	User.find_by_email("admin@inovacrm.com").add_role :admin
+rpermissions = [{name: "Update user profile", controller_resource: "User", controller_action: "update"},
+{name: "View list of organizations", controller_resource: "Organization", controller_action: "new"},
+{name: "Create new organization", controller_resource: "Organization", controller_action: "update"},
+{name: "View own user profile", controller_resource: "User", controller_action: "profile"},
+{name: "View own Organization", controller_resource: "Organization", controller_action: "show"},
+{name: "Edit organization details", controller_resource: "Organization", controller_action: "edit"},
+{name: "Create new user for Organization", controller_resource: "User", controller_action: "create"}]
+
+user = User.find_by_email("admin@inovacrm.com")
+unless(user)
+	user = User.create(email: "admin@inovacrm.com", password: "123456789")
+	user.add_role :admin
+	user.add_role :default_user
+	user.roles.find_by_name("admin").update_attribute(:parent_role, true)
+	user.roles.find_by_name("default_user").update_attribute(:parent_role, true)
+	Rpermission.create(rpermissions)
 end
 Organization.find_or_create_by name: "VS Information Systems", short_name: "VS Information Sys", code: "123456", web_site: "http://www.vsis.com", vat_number: "34358-90", refers: "VSIS"
