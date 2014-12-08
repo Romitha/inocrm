@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  data_key: MyString
+  data_value: MyString
+  resourceable_id: 
+  polymorphic: 
+  index: 
+
+two:
+  data_key: MyString
+  data_value: MyString
+  resourceable_id: 
+  polymorphic: 
+  index: 
