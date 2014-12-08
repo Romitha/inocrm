@@ -5,23 +5,22 @@ class Ability
     # Define abilities for the passed in user here. For example:
     #
     user ||= User.new # guest user (not logged in)
-    if user.has_role? :admin
+    if user.current_user_role_name.try(:to_sym) == :admin
       can :manage, :all
     elsif user.roles.present?
       cannot :read, :all
       cannot :manage, :all
-      user.roles.each do |role|
-        role.rpermissions.where(controller_resource: "Organization").each do |rpermission|
-          can rpermission.controller_action.to_sym, rpermission.controller_resource.constantize, id: user.organization.id
-        end
 
-        role.rpermissions.where(controller_resource: "User").each do |rpermission|
-          can rpermission.controller_action.to_sym, rpermission.controller_resource.constantize if (user.organization && user.organization.user_ids.include?(user.id))#, id: user.id, organization: {user_ids: user.organization.user_ids} 
-          # , User.organization do |block_user|
-          #   puts user.inspect
-          #   block_user.organization.user_ids.include?(user.id)# if block_user.organization
-          # end
-        end
+      user.roles.find(user.current_user_role_id).rpermissions.where(controller_resource: "Organization").each do |rpermission|
+        can rpermission.controller_action.to_sym, rpermission.controller_resource.constantize, id: user.organization.try(:id)
+      end
+
+      user.roles.find(user.current_user_role_id).rpermissions.where(controller_resource: "User").each do |rpermission|
+        can rpermission.controller_action.to_sym, rpermission.controller_resource.constantize, id: user.organization.user_ids#, id: user.id, organization: {user_ids: user.organization.user_ids} 
+        # , User.organization do |block_user|
+        #   puts user.inspect
+        #   block_user.organization.user_ids.include?(user.id)# if block_user.organization
+        # end
       end
     else
       can :read, Organization
