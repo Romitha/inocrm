@@ -5,21 +5,26 @@ class Ability
     # Define abilities for the passed in user here. For example:
     #
     user ||= User.new # guest user (not logged in)
-    if user.current_user_role_name.try(:to_sym) == :admin
-      can :manage, :all
-    elsif user.roles.present?
-      cannot :read, :all
-      cannot :manage, :all
-
-      user.roles.find(user.current_user_role_id).rpermissions.where(controller_resource: "Organization").each do |rpermission|
-        can rpermission.controller_action.to_sym, rpermission.controller_resource.constantize, id: user.organization.try(:id)
-      end
-
-      user.roles.find(user.current_user_role_id).rpermissions.where(controller_resource: "User").each do |rpermission|
-        can rpermission.controller_action.to_sym, rpermission.controller_resource.constantize, id: (user.organization.try(:user_ids) || user.id)
-      end
+    if user.new_record?
+      can :index, Organization
     else
-      can [:update, :initiate_user_profile_edit, :upload_avatar], User, id: user.id
+      if user.current_user_role_name.try(:to_sym) == :admin
+        can :manage, :all
+      elsif user.roles.present?
+        cannot :read, :all
+        cannot :manage, :all
+
+        user.roles.find(user.current_user_role_id).rpermissions.where(controller_resource: "Organization").each do |rpermission|
+          can rpermission.controller_action.to_sym, rpermission.controller_resource.constantize, id: user.organization.try(:id)
+        end
+
+        user.roles.find(user.current_user_role_id).rpermissions.where(controller_resource: "User").each do |rpermission|
+          can rpermission.controller_action.to_sym, rpermission.controller_resource.constantize, id: ((user.organization && user.organization.user_ids.present?) ? user.organization.user_ids : user.id)
+        end
+      else
+        can [:update, :initiate_user_profile_edit, :upload_avatar], User, id: user.id
+        can :index, Organization
+      end
     end
     #
     # The first argument to `can` is the action you are giving the user 
