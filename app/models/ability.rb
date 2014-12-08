@@ -16,14 +16,10 @@ class Ability
       end
 
       user.roles.find(user.current_user_role_id).rpermissions.where(controller_resource: "User").each do |rpermission|
-        can rpermission.controller_action.to_sym, rpermission.controller_resource.constantize, id: user.organization.user_ids#, id: user.id, organization: {user_ids: user.organization.user_ids} 
-        # , User.organization do |block_user|
-        #   puts user.inspect
-        #   block_user.organization.user_ids.include?(user.id)# if block_user.organization
-        # end
+        can rpermission.controller_action.to_sym, rpermission.controller_resource.constantize, id: (user.organization.try(:user_ids) || user.id)
       end
     else
-      can :read, Organization
+      can [:update, :initiate_user_profile_edit, :upload_avatar], User, id: user.id
     end
     #
     # The first argument to `can` is the action you are giving the user 
