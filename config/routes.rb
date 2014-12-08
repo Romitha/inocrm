@@ -2,7 +2,7 @@ Rails.application.routes.draw do
 
   root "organizations#index"
 
-  devise_for :users, skip: [:registrations, :passwords, :confirmations]#, :controllers => {:confirmations => 'confirmations'}
+  devise_for :users, skip: [:registrations, :passwords, :confirmations], :controllers => {:sessions => 'sessions'}
 
   concern :polymophicable do
     resources :addresses, except: [:index, :show, :new, :edit] do
@@ -35,6 +35,7 @@ Rails.application.routes.draw do
       get "initiate_user_profile_edit"
       get 'profile'
       put "upload_avatar"
+      get "assign_role"
     end
   end
 

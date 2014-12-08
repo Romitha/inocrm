@@ -6,7 +6,7 @@
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 rpermissions = [{name: "Update user profile", controller_resource: "User", controller_action: "update"},
-{name: "View list of organizations", controller_resource: "Organization", controller_action: "new"},
+{name: "View list of organizations", controller_resource: "Organization", controller_action: "index"},
 {name: "Create new organization", controller_resource: "Organization", controller_action: "update"},
 {name: "View own user profile", controller_resource: "User", controller_action: "profile"},
 {name: "View own Organization", controller_resource: "Organization", controller_action: "show"},
