@@ -27,6 +27,8 @@ class User < ActiveRecord::Base
   attr_accessor :coord_x, :coord_y, :coord_w, :coord_h
   after_update :crop_avatar
 
+  has_many :dyna_columns, as: :resourceable
+
   def crop_avatar
     avatar.recreate_versions! if coord_x.present?
   end
@@ -49,4 +51,16 @@ class User < ActiveRecord::Base
     contact_numbers.where.not(primary: true)    
   end
 
+
+  [:current_user_role_id, :current_user_role_name].each do |dyna_method|
+    define_method(dyna_method) do
+      self.dyna_columns.find_by_data_key(dyna_method).try(:data_value)
+    end
+
+    define_method("#{dyna_method}=") do |value|
+      data = self.dyna_columns.find_or_initialize_by(data_key: dyna_method)
+      data.data_value = (value.class==Fixnum ? value : value.strip)
+      data.save
+    end
+  end
 end
