@@ -21,5 +21,7 @@ unless(user)
 	user.roles.find_by_name("admin").update_attribute(:parent_role, true)
 	user.roles.find_by_name("default_user").update_attribute(:parent_role, true)
 	Rpermission.create(rpermissions)
+	user.roles.find_by_name("admin").rpermission_ids = [1,2,3,4,5,6,7]
+	user.roles.find_by_name("default_user").rpermission_ids = [2, 4, 5]
 end
 Organization.find_or_create_by name: "VS Information Systems", short_name: "VS Information Sys", code: "123456", web_site: "http://www.vsis.com", vat_number: "34358-90", refers: "VSIS"
