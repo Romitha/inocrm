@@ -25,6 +25,7 @@ Rails.application.routes.draw do
       post "load_permissions"
     end
     member do
+      get "dashboard"
       put "relate"
       get "remove_relation"
     end
