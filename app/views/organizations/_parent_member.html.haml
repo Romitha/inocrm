@@ -3,8 +3,10 @@
     / = f.association :members
     / = f.association :parent_organization
     .col-md-12.small_scale_margin-bottom1
+      = label_tag "Relation Organization"
       = select_tag "relate_id", options_from_collection_for_select(Organization.where.not(id: parent_member.id), "id", "name"), include_blank: true, class: "chosen-select"
     .col-md-4.pull-right
+      = label_tag "Relationship"
       = select_tag "relate", options_for_select([["Member of #{parent_member.name}", "member"], ["Parent of #{parent_member.name}", "parent"]]), include_blank: true, class: "chosen-select"
     .col-md-12
       = f.submit "Add relations", class: "btn btn-success"
