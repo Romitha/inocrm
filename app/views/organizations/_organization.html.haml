@@ -11,9 +11,10 @@
         - else
           = link_to organization do
             = content_tag(:span, organization.name, class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "More about #{organization.name}")
-            |
-            = link_to edit_organization_path(organization), class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Edit #{organization.name}" do
-              %span= glyph(:pencil)
+            - if can? :edit, organization
+              |
+              = link_to edit_organization_path(organization), class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Edit #{organization.name}" do
+                %span= glyph(:pencil)
 
     %blockquote
       = organization.short_name

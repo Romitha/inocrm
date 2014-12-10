@@ -1,16 +1,20 @@
 class OrganizationsController < ApplicationController
   load_and_authorize_resource
   before_action :authenticate_user!
-  before_action :set_organization, only: [:show, :edit, :update, :relate, :remove_relation]
+  before_action :set_organization, only: [:show, :edit, :update, :relate, :remove_relation, :dashboard]
 
   def index
     case params["category"]
-    when "suppliers"
-      @organizations = Organization.suppliers
-    when "customers"
-      @organizations = Organization.customers
+    when "organization_suppliers"
+      @organizations = Organization.organization_suppliers
+    when "individual_suppliers"
+      @organizations = Organization.individual_suppliers
+    when "organization_customers"
+      @organizations = Organization.organization_customers
+    when "individual_customers"
+      @organizations = Organization.individual_customers
     else
-      @organizations = Organization.order("created_at DESC")
+      @organizations = Organization.where(refers: nil).order("created_at DESC")
     end
   end
 
@@ -102,6 +106,12 @@ class OrganizationsController < ApplicationController
       flash[:error] = "Something gone wrong. Please try again."
     end
     redirect_to @organization
+  end
+
+  def dashboard
+    respond_to do |format|
+      format.html
+    end
   end
 
   private
