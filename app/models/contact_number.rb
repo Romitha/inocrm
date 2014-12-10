@@ -4,4 +4,6 @@ class ContactNumber < ActiveRecord::Base
 
   TYPES = %w(Land Mobile Mail Fax Skype)
   validates :value, presence: true
+  validates :category, presence: true
+
 end

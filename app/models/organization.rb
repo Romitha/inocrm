@@ -26,4 +26,5 @@ class Organization < ActiveRecord::Base
   has_many :members, class_name: "Organization", foreign_key: "parent_organization_id"
   belongs_to :parent_organization, class_name: "Organization"
 
+  validates :description, presence: true
 end

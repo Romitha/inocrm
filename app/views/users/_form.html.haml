@@ -5,11 +5,11 @@
         - user.errors.full_messages.each do |message|
           %li= message
     .col-md-12
-      = f.input :email, label: false, placeholder: "Email", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Email"}
-      = f.input :user_name, label: false, placeholder: "User name", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "User Name"}
+      = f.input :email, placeholder: "Email", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Email"}
+      = f.input :user_name, placeholder: "User name", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "User Name"}
       .has-tooltip{data: {toggle: "tooltip", placement: "left"}, title: "Designation"}
-        = f.association :designation, collection: (user.organization.try(:designations) || []), include_blank: false, label: false, input_html: { class: 'chosen-select'}
-      = f.input :password, label: false, placeholder: "Password", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Password"}
-      = f.input :password_confirmation, label: false, placeholder: "Confirm new password", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Confirm new password"}
+        = f.association :designation, collection: (user.organization.try(:designations) || []), include_blank: false, input_html: { class: 'chosen-select'}
+      = f.input :password, placeholder: "Password", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Password"}
+      = f.input :password_confirmation, placeholder: "Confirm new password", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Confirm new password"}
       = f.association :organization, as: :hidden
       = f.submit
