@@ -8,7 +8,7 @@
               - designation.object.errors.full_messages.each do |error|
                 %li= error
 
-          = designation.input :name, label: false, placeholder: "name of designation",input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Designation name"}
-          = designation.input :description, label: false, placeholder: "description of designation",input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Designation description"}
+          = designation.input :name, placeholder: "name of designation",input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Designation name"}
+          = designation.input :description, placeholder: "description of designation",input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Designation description"}
           = designation.input :organization_id, as: :hidden
           = designation.submit "Add new designation", class: "btn btn-success pull-right", id: "submit_new_designation"

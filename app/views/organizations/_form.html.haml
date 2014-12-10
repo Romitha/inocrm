@@ -12,17 +12,17 @@
         Upload Logo
         = f.input :logo, label: false, placeholder: "Upload organization Logo", wrapper_html: {class: "margin-none"}
     .col-md-9.pull-right
-      = f.input :name, label: false, placeholder: "Name of Organization", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Organization Name"}
+      = f.input :name, placeholder: "Name of Organization", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Organization Name"}
       %blockquote
-        = f.input :short_name, label: false, placeholder: "Short name of Organization", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Short name of Organization"}
+        = f.input :short_name, placeholder: "Short name of Organization", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Short name of Organization"}
   .row
     .col-md-4
-      = f.input :vat_number, label: false, placeholder: "Vat Number", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Vat Number"}
+      = f.input :vat_number, placeholder: "Vat Number", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Vat Number"}
     .col-md-4.pull-right
-      = f.input :web_site, label: false, placeholder: "Web Site", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Web Site"}
+      = f.input :web_site, placeholder: "Web Site", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Web Site"}
   .row
     .col-md-12
-      = f.input :description, label: false, placeholder: "Description", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Description"}
+      = f.input :description, placeholder: "Description", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Description"}
       = f.input :category, as: :hidden
 
   .row
