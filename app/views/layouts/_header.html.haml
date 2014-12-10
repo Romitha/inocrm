@@ -7,28 +7,40 @@
     .logo= link_to image_tag("logo.png", class: "small_scale_margin-top1"),root_url
     .navbar-collapse.collapse.navbar-responsive-collapse.navbar-right.fixed
       %ul.nav.navbar-nav
-        %li.dropdown.small_scale_margin-right10
-          = link_to "Configuration", "#", class: "dropdown-toggle organization text-hide nav-icon", data: {toggle: "dropdown", placement: "bottom"}, title: "Configuration", rel: "tooltip"
+        - if can? :dashboard, Organization
+          %li.small_scale_margin-right10
+            = link_to "Configuration", dashboard_organization_path(Organization.find_by_refers("VSIS")), class: "dropdown-toggle organization text-hide nav-icon", data: {placement: "bottom"}, title: "Configuration", rel: "tooltip"
 
         %li.dropdown.small_scale_margin-right10{role: "presentation"}
           = link_to "supplier", "#", id: "supplier_dropdown", class: "dropdown-toggle supplier text-hide nav-icon", data: {toggle: "dropdown", placement: "bottom"}, "aria-haspopup" => "true", "aria-expanded" => "true", title: "Supplier", rel: "tooltip"
           %ul.dropdown-menu{"aria-labelledby" => "supplier_dropdown"}
-            %li{role: "presentation"}= link_to "View Suppliers", root_path(category: "suppliers")
-            %li{role: "presentation"}= link_to "New Supplier", new_organization_path(category: "Supplier")
+            %li{role: "presentation"}= link_to "Organization Suppliers", root_path(category: "organization_suppliers")
+            %li{role: "presentation"}= link_to "Individual Suppliers", root_path(category: "individual_suppliers")
+            - if can? :new, Organization
+              %li.divider
+              %li.dropdown-header Create Supplier
+              %li{role: "presentation"}= link_to "New Organization Supplier", new_organization_path(category: "organization_supplier")
+              %li{role: "presentation"}= link_to "New Individual Supplier", new_organization_path(category: "individual_supplier")
 
         %li.dropdown.small_scale_margin-right10{role: "presentation"}
           = link_to "Customers", "#", class: "dropdown-toggle customers text-hide nav-icon", id: "customer_dropdown", data: {toggle: "dropdown", placement: "bottom"}, title: "Customer", rel: "tooltip"
           %ul.dropdown-menu{"aria-labelledby" => "customer_dropdown"}
-            %li{role: "presentation"}= link_to "View Customers", root_path(category: "customers")
-            %li{role: "presentation"}= link_to "New Customer", new_organization_path(category: "Customer")
+            %li{role: "presentation"}= link_to "View Organizaion Customers", root_path(category: "organization_customers")
+            %li{role: "presentation"}= link_to "View Individual Customers", root_path(category: "individual_customers")
+            - if can? :new, Organization
+              %li.divider
+              %li.dropdown-header Create Customer
+              %li{role: "presentation"}= link_to "New Organization Customer", new_organization_path(category: "organization_customer")
+              %li{role: "presentation"}= link_to "New Individual Customer", new_organization_path(category: "individual_customer")
+
 
         - if user_signed_in?
           %li.dropdown.profile_image_dropdown
-            = link_to image_tag((current_user.avatar.thumb.url || "no_image.jpg"), class: "img-responsive padding-top1 padding-bottom1"), "#", "data-toggle" => "dropdown", data: {toggle: "tooltip", placement: "bottom", toggle: "dropdown"}, title: "Hi! #{current_user.last_name || current_user.email}", rel: "tooltip", class: "padding0"
+            = link_to image_tag((current_user.avatar.thumb.url || "no_image.jpg"), class: "img-responsive padding-top1 padding-bottom1"), "#", "data-toggle" => "dropdown", data: {toggle: "tooltip", placement: "bottom", toggle: "dropdown"}, title: "Hi! #{current_user.current_user_role_name} #{current_user.last_name || current_user.email}", rel: "tooltip", class: "padding0"
             %ul.dropdown-menu{role: "menu"}
               %li= link_to "My Profile", profile_user_path(current_user)
               %li.divider
-              %li.dropdown-header Switch to
+              %li.dropdown-header Switch to role
               - current_user.roles.where.not(id: current_user.current_user_role_id).each do |role|
                 %li= link_to role.name, assign_role_user_path(current_user.id, set_role_id: role.id)
               %li.divider

@@ -6,11 +6,11 @@ class DesignationsController < ApplicationController
     @designation = Designation.new(designation_params)
     respond_to do |format|
       if @designation.save
-        format.html {redirect_to @designation.organization, notice: "designation is successfully created"}
+        format.html {redirect_to edit_organization_url(@designation.organization), notice: "designation is successfully created. Please click designations bottom to view #{@designation.name}"}
         format.json {render json: @designation}
       else
         flash[:error] = "Something gone error with designation field. #{@designation.errors.full_messages.join(',')}"
-        format.html {redirect_to @designation.organization}
+        format.html {redirect_to edit_organization_url(@designation.organization)}
         format.json {render json: @designation.errors}
       end
     end
