@@ -49,6 +49,10 @@ textarea{
   .small_scale_margin#{$index} {
     margin: ($index * 1%) !important;
   }
+  .font#{$index} {
+    font-size: ($index * 1em);
+    line-height: ($index * 1em);
+  }
 }
 
 .fixed{
