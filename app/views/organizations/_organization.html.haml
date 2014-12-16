@@ -2,7 +2,7 @@
   .col-lg-1
     = image_tag (organization.logo.thumb.url || "organization_image.png"), class: "img-responsive img-thumbnail"
   .col-lg-11
-    %h3
+    %h4.strong
       .edit_organization
         - if current_page?(controller: "organizations", action: "show", id: organization.id)
           = link_to edit_organization_path(organization), class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Edit #{organization.name}" do
@@ -10,13 +10,25 @@
             = organization.name
         - else
           = link_to organization do
+            %span
+              - case organization.category
+              - when "organization_supplier"
+                = image_tag("organization_suppliers.png", style: "width: 2%;", alt: organization.name, title: "Supplier (organization)")
+              - when "organization_customer"
+                = image_tag("organization_customers.png", style: "width: 2%;", alt: organization.name, title: "Customer (organization)")
+              - when "individual_supplier"
+                = image_tag("individual_supplier.png", style: "width: 2%;", alt: organization.name, title: "Supplier (Individual)")
+              - when "individual_customer"
+                = image_tag("individual_customer.png", style: "width: 2%;", alt: organization.name, title: "Customer (Individual)")
+              - else
+                = image_tag("home.png", style: "width: 2%;", alt: organization.name, title: "Home")
             = content_tag(:span, organization.name, class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "More about #{organization.name}")
             - if can? :edit, organization
               |
               = link_to edit_organization_path(organization), class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Edit #{organization.name}" do
                 %span= glyph(:pencil)
 
-    %blockquote
+    %blockquote.font1
       = organization.short_name
 
 .row
