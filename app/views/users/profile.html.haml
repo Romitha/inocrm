@@ -4,7 +4,7 @@
 - contact_number_list = @contact_number_list
 - primary_contact_number = @primary_contact_number
 .row
-  .col-md-4
+  .col-md-3
     #preview_of_profile_image
       - if user.avatar.present?
         / = link_to_function "remove", "UsersObject.remove_image('#{user.email}')", class: "remove-image text-hide-for-image", title: "Remove profile image"
@@ -26,14 +26,14 @@
         .progress
           .progress-bar.progress-bar-success.progress-bar-striped{role: "progressbar", "aria-valuemax" => 100, "aria-valuemin" => 0, "aria-valuenow" => 0}
 
-  .col-md-8
+  .col-md-9
     .row
       .col-md-12
         %h2#user_name.margin-none= user.user_name
         %blockquote
           = user.designation.try :name
           = link_to "Edit", initiate_user_profile_edit_user_path(template_params: "user_name_primary_details"), data: {toggle: "modal", target: "#user_edit_popup", userid: user.id}, remote: true, class: "pull-right"
-    = panels panel_type: "default", header_content: "Primary Details"+(user.roles.present? ? "(#{user.roles.map{|r| r.name}.join(', ')})" : nil) do
+    = panels panel_type: "default", header_content: "Primary Details"+(user.roles.present? ? "(#{user.roles.map{|r| r.name}.join(', ')})" : "") do
       .row
         .col-md-12#user_email
           = mail_to user.email, user.email
