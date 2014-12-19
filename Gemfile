@@ -38,6 +38,7 @@ gem "rolify"
 gem "haml-rails"
 
 gem "carrierwave"
+gem "carrierwave-ftp", :require => 'carrierwave/storage/sftp' # SFTP only
 gem "mini_magick"
 gem 'rmagick' # sudo apt-get install libmagickwand-dev and imagemagick if ubuntu shows native library error
 
