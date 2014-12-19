@@ -1,3 +1,5 @@
+- tapbar = [["Address", "#addresses#{organization.id}"], ["Contact Details", "#contacts#{organization.id}"], ["Employees", "#contact_persons#{organization.id}"], ["Documents & Attachements", "#documents#{organization.id}"], ["Designations", "#designations#{organization.id}"], ["Organization Relations", "#organization_relations#{organization.id}"], ["Roles and Permissions", "#roles_and_permissions#{organization.id}"]]
+
 .row
   .col-lg-1
     = image_tag (organization.logo.thumb.url || "organization_image.png"), class: "img-responsive img-thumbnail"
@@ -12,13 +14,13 @@
           = link_to organization do
             %span
               - case organization.category
-              - when "organization_supplier"
+              - when Organization::TYPES[0]
                 = image_tag("organization_suppliers.png", style: "width: 2%;", alt: organization.name, title: "Supplier (organization)")
-              - when "organization_customer"
+              - when Organization::TYPES[1]
                 = image_tag("organization_customers.png", style: "width: 2%;", alt: organization.name, title: "Customer (organization)")
-              - when "individual_supplier"
+              - when Organization::TYPES[2]
                 = image_tag("individual_supplier.png", style: "width: 2%;", alt: organization.name, title: "Supplier (Individual)")
-              - when "individual_customer"
+              - when Organization::TYPES[3]
                 = image_tag("individual_customer.png", style: "width: 2%;", alt: organization.name, title: "Customer (Individual)")
               - else
                 = image_tag("home.png", style: "width: 2%;", alt: organization.name, title: "Home")
@@ -45,8 +47,8 @@
 .row
   .col-lg-12.padding0
     %ul.nav.nav-tabs{role: "tablist"}
-      - [["Address", "#addresses#{organization.id}"], ["Contact Details", "#contacts#{organization.id}"], ["Employees", "#contact_persons#{organization.id}"], ["Documents & Attachements", "#documents#{organization.id}"], ["Organization Relations", "#organization_relations#{organization.id}"]].each do |link_info|
-        %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"}
+      - tapbar.each do |link_info|
+        %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"} unless(Organization::TYPES[2,3].include?(organization.category) and tapbar[5]==link_info)
 
     .tab-content.small_scale_margin-top1
       .tab-pane.limit-height{id: "addresses#{organization.id}"}
@@ -61,9 +63,9 @@
         .fixed-height
           - organization.users.order("created_at DESC").each do |user|
             = render "users/user", user: user
-
-      .tab-pane.limit-height{id: "organization_relations#{organization.id}"}
-        .fixed-height
-          = render "organizations/member",organization: organization.parent_organization, relation: "Parent", relation_organization: organization if organization.parent_organization.present?
-          - organization.members.order("created_at DESC").each do |member|
-            = render "organizations/member", organization: member, relation: "Member", relation_organization: organization
+      - unless Organization::TYPES[2,3].include?(organization.category)
+        .tab-pane.limit-height{id: "organization_relations#{organization.id}"}
+          .fixed-height
+            = render "organizations/member",organization: organization.parent_organization, relation: "Parent", relation_organization: organization if organization.parent_organization.present?
+            - organization.members.order("created_at DESC").each do |member|
+              = render "organizations/member", organization: member, relation: "Member", relation_organization: organization
