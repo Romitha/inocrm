@@ -1,7 +1,7 @@
 class OrganizationsController < ApplicationController
   load_and_authorize_resource
   before_action :authenticate_user!
-  before_action :set_organization, only: [:show, :edit, :update, :relate, :remove_relation, :dashboard]
+  before_action :set_organization, only: [:show, :edit, :update, :relate, :remove_relation, :dashboard, :option_for_vat_number]
 
   def index
     case params["category"]
@@ -60,6 +60,7 @@ class OrganizationsController < ApplicationController
   def relate
     relation_organization = Organization.find_by_id params[:relate_id]
     to_url = organization_url(@organization)
+    modified_vat_number = params[:modified_vat_number]
     case params[:relate]
       when "member"
         if relation_organization.try(:parent_organization)
@@ -70,7 +71,8 @@ class OrganizationsController < ApplicationController
             to_url = organization_url(relation_organization)
         else
           relation_organization.parent_organization = @organization
-          relation_organization.save
+          @organization.previous_vat_number = @organization.vat_number
+          @organization.update_attribute(:vat_number, modified_vat_number) if relation_organization.save
           flash[:notice] = "Member is added successfully"
         end
       when "parent"
@@ -81,13 +83,21 @@ class OrganizationsController < ApplicationController
           flash[:error] = "Parent #{@organization.name} is assigned. Please remove relationship and continue again."
         else
           @organization.parent_organization = Organization.find_by_id params[:relate_id]
-          @organization.save
+          @organization..previous_vat_number = @organization.vat_number
+          @organization.update_attribute(:vat_number, modified_vat_number) if @organization.save
           flash[:notice] = "parent is added successfully"
         end
       else
         flash[:error] = "Please assign relationship and organization"
       end
       redirect_to to_url
+  end
+
+  def option_for_vat_number
+    selected_organization = Organization.find_by_id params[:selected_organization_id]
+    respond_to do |format|
+      format.json {render json: {current_vat_number: @organization.vat_number, new_vat_number: selected_organization.vat_number, current_organization_name: @organization.name, relation_organization_name: selected_organization.name}}
+    end
   end
 
   def remove_relation

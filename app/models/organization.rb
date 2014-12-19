@@ -13,12 +13,12 @@ class Organization < ActiveRecord::Base
   #2014_11_11
   has_many :users
 
-	TYPES = %w(Supplier Customer)
+  TYPES = %w(organization_supplier organization_customer individual_supplier individual_customer)
 
-	scope :organization_suppliers, -> {where(category: "organization_supplier")}
-  scope :individual_suppliers, -> {where(category: "individual_supplier")}
-  scope :organization_customers, -> {where(category: "organization_customer")}
-  scope :individual_customers, -> {where(category: "individual_customer")}
+  scope :organization_suppliers, -> {where(category: TYPES[0])}
+  scope :individual_suppliers, -> {where(category: TYPES[2])}
+  scope :organization_customers, -> {where(category: TYPES[1])}
+  scope :individual_customers, -> {where(category: TYPES[3])}
 
   validates_format_of :web_site, :with => URI::regexp(%w(http https))
 
@@ -27,4 +27,20 @@ class Organization < ActiveRecord::Base
   belongs_to :parent_organization, class_name: "Organization"
 
   validates :description, presence: true
+
+  validates_presence_of :vat_number, if: Proc.new {|organization| TYPES[0,2].include?(organization.category)}
+
+  has_many :dyna_columns, as: :resourceable
+
+  [:previous_vat_number].each do |dyna_method|
+    define_method(dyna_method) do
+      self.dyna_columns.find_by_data_key(dyna_method).try(:data_value)
+    end
+
+    define_method("#{dyna_method}=") do |value|
+      data = self.dyna_columns.find_or_initialize_by(data_key: dyna_method)
+      data.data_value = (value.class==Fixnum ? value : value.strip)
+      data.save
+    end
+  end
 end
