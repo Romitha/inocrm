@@ -27,6 +27,8 @@ class Organization < ActiveRecord::Base
   belongs_to :parent_organization, class_name: "Organization"
 
   validates :description, presence: true
+  validates :name, presence: true
+  validates :short_name, presence: true
 
   validates_presence_of :vat_number, if: Proc.new {|organization| TYPES[0,2].include?(organization.category)}
 
