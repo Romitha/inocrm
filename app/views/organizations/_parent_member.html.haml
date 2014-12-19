@@ -1,12 +1,15 @@
 = panels header_content: "Add relationship", panel_type: "success" do
   = simple_form_for parent_member, url: relate_organization_path(parent_member), method: :put do |f|
-    / = f.association :members
-    / = f.association :parent_organization
+
     .col-md-12.small_scale_margin-bottom1
       = label_tag "Relation Organization"
-      = select_tag "relate_id", options_from_collection_for_select(Organization.where.not(id: parent_member.id), "id", "name"), include_blank: true, class: "chosen-select"
+      = select_tag "relate_id", options_from_collection_for_select((Organization.organization_suppliers+Organization.organization_customers).select{|org| org != parent_member and !parent_member.members.include?(org) and parent_member.parent_organization!=org}, "id", "name"), include_blank: true, class: "chosen-select", data: {organization_id: parent_member.id}
     .col-md-4.pull-right
       = label_tag "Relationship"
-      = select_tag "relate", options_for_select([["Member of #{parent_member.name}", "member"], ["Parent of #{parent_member.name}", "parent"]]), include_blank: true, class: "chosen-select"
+      = select_tag "relate", options_for_select([["Member of #{parent_member.name}", "member"], ["Parent of #{parent_member.name}", "parent"]]), include_blank: true, class: "chosen-select", id: "parent_member_for_vat_number"
+    .col-md-8#load_vat_number_option_render
     .col-md-12
       = f.submit "Add relations", class: "btn btn-success"
+
+    %script{type: "text/html", id: "vat_number_output"}
+      = render 'vat_number_selection'

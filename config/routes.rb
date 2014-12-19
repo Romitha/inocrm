@@ -28,6 +28,7 @@ Rails.application.routes.draw do
       get "dashboard"
       put "relate"
       get "remove_relation"
+      post "option_for_vat_number"
     end
   end
 
