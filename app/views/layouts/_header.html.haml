@@ -25,8 +25,8 @@
             - if can? :new, Organization
               %li.divider
               %li.dropdown-header Create Supplier
-              %li{role: "presentation"}= link_to "New Organization Supplier", new_organization_path(category: "organization_supplier")
-              %li{role: "presentation"}= link_to "New Individual Supplier", new_organization_path(category: "individual_supplier")
+              %li{role: "presentation"}= link_to "New Organization Supplier", new_organization_path(category: Organization::TYPES[0])
+              %li{role: "presentation"}= link_to "New Individual Supplier", new_organization_path(category: Organization::TYPES[2])
 
         %li.dropdown.small_scale_margin-right10{role: "presentation"}
           = link_to "Customers", "#", class: "dropdown-toggle customers text-hide nav-icon", id: "customer_dropdown", data: {toggle: "dropdown", placement: "bottom"}, title: "Customer", rel: "tooltip"
@@ -42,8 +42,8 @@
             - if can? :new, Organization
               %li.divider
               %li.dropdown-header Create Customer
-              %li{role: "presentation"}= link_to "New Organization Customer", new_organization_path(category: "organization_customer")
-              %li{role: "presentation"}= link_to "New Individual Customer", new_organization_path(category: "individual_customer")
+              %li{role: "presentation"}= link_to "New Organization Customer", new_organization_path(category: Organization::TYPES[1])
+              %li{role: "presentation"}= link_to "New Individual Customer", new_organization_path(category: Organization::TYPES[3])
 
 
         - if user_signed_in?

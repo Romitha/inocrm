@@ -1,3 +1,5 @@
+- tapbar = [["Address", "#addresses#{organization.id}"], ["Contact Details", "#contacts#{organization.id}"], ["Employees", "#contact_persons#{organization.id}"], ["Documents & Attachements", "#documents#{organization.id}"], ["Designations", "#designations#{organization.id}"], ["Organization Relations", "#organization_relations#{organization.id}"], ["Roles and Permissions", "#roles_and_permissions#{organization.id}"]]
+
 = simple_nested_form_for organization do |f|
   - if organization.errors.present?
     .row
@@ -16,8 +18,9 @@
       %blockquote
         = f.input :short_name, placeholder: "Short name of Organization", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Short name of Organization"}
   .row
-    .col-md-4
-      = f.input :vat_number, placeholder: "Vat Number", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Vat Number"}
+    - unless Organization::TYPES[2,3].include?(organization.category)
+      .col-md-4
+        = f.input :vat_number, placeholder: "Vat Number", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Vat Number"}
     .col-md-4.pull-right
       = f.input :web_site, placeholder: "Web Site", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Web Site"}
   .row
@@ -31,8 +34,8 @@
 - if organization.persisted?
   .row
     %ul.nav.nav-tabs{role: "tablist"}
-      - [["Address", "#addresses#{organization.id}"], ["Contact Details", "#contacts#{organization.id}"], ["Employees", "#contact_persons#{organization.id}"], ["Documents & Attachements", "#documents#{organization.id}"], ["Designations", "#designations#{organization.id}"], ["Organization Relations", "#organization_relations#{organization.id}"], ["Roles and Permissions", "#roles_and_permissions#{organization.id}"]].each do |link_info|
-        %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"}
+      - tapbar.each do |link_info|
+        %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"} unless(Organization::TYPES[2,3].include?(organization.category) and tapbar[5]==link_info)
   .tab-content.small_scale_margin-top1
     .tab-pane.limit-height{id: "addresses#{organization.id}"}
       = render "addresses/form", address: organization.addresses.build
@@ -61,12 +64,13 @@
         - organization.designations.order("created_at DESC").each do |designation|
           = render "designations/designation", designation: designation
 
-    .tab-pane.limit-height{id: "organization_relations#{organization.id}"}
-      = render "organizations/parent_member", parent_member: organization
-      .fixed-height
-        = render "organizations/member",organization: organization.parent_organization, relation: "Parent", relation_organization: organization if organization.parent_organization.present?
-        - organization.members.order("created_at DESC").each do |member|
-          = render "organizations/member", organization: member, relation: "Member", relation_organization: organization
+    - unless Organization::TYPES[2,3].include?(organization.category)
+      .tab-pane.limit-height{id: "organization_relations#{organization.id}"}
+        = render "organizations/parent_member", parent_member: organization
+        .fixed-height
+          = render "organizations/member",organization: organization.parent_organization, relation: "Parent", relation_organization: organization if organization.parent_organization.present?
+          - organization.members.order("created_at DESC").each do |member|
+            = render "organizations/member", organization: member, relation: "Member", relation_organization: organization
 
     .tab-pane.limit-height{id: "roles_and_permissions#{organization.id}"}
       .fixed-height

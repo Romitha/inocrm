@@ -5,13 +5,13 @@
 #
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
-rpermissions = [{name: "Update user profile", controller_resource: "User", controller_action: "update"},
+rpermissions = [{name: "Update user profile", controller_resource: "User", controller_action: "edit_update"},
 {name: "View list of organizations", controller_resource: "Organization", controller_action: "index"},
-{name: "Create new organization", controller_resource: "Organization", controller_action: "update"},
+{name: "Create new organization", controller_resource: "Organization", controller_action: "new_create"},
 {name: "View own user profile", controller_resource: "User", controller_action: "profile"},
 {name: "View own Organization", controller_resource: "Organization", controller_action: "show"},
-{name: "Edit organization details", controller_resource: "Organization", controller_action: "edit"},
-{name: "Create new user for Organization", controller_resource: "User", controller_action: "create"}]
+{name: "Edit organization details", controller_resource: "Organization", controller_action: "edit_update"},
+{name: "Create new user for Organization", controller_resource: "User", controller_action: "new_create"}]
 
 user = User.find_by_email("admin@inovacrm.com")
 unless(user)
