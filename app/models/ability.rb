@@ -4,6 +4,9 @@ class Ability
   def initialize(user)
     # Define abilities for the passed in user here. For example:
     #
+    alias_action :create, :new, :to => :new_create
+    alias_action :update, :edit, :to => :edit_update
+
     user ||= User.new # guest user (not logged in)
     if user.new_record?
       can :index, Organization
@@ -45,7 +48,6 @@ class Ability
     # See the wiki for details:
     # https://github.com/ryanb/cancan/wiki/Defining-Abilities
     # aliasing
-    # alias_action :create, :read, :update, :destroy, :to => :crud
     # can :crud, User
     # can :invite, User
   end
