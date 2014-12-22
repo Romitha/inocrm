@@ -69,6 +69,11 @@
           - organization.users.order("created_at DESC").each do |user|
             = render "users/user", user: user
 
+      .tab-pane.limit-height{id: "designations#{organization.id}"}
+        .fixed-height
+          - organization.designations.order("created_at DESC").each do |designation|
+            = render "designations/designation", designation: designation
+
       - unless Organization::TYPES[2,3].include?(organization.category)
         .tab-pane.limit-height{id: "organization_relations#{organization.id}"}
           .fixed-height
