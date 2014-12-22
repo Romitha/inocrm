@@ -85,3 +85,10 @@
           .fixed-height
             - organization.departments.order("created_at DESC").each do |department|
               = render "departments/department", department: department
+
+      - if organization.refers == "VSIS"
+        .tab-pane.limit-height{id: "roles_and_permissions#{organization.id}"}
+          .fixed-height
+            = link_to "Add Roles and set Permissions", new_organization_roles_and_permission_path(organization), class: "btn btn-primary btn-sm small_scale_margin-bottom1"
+            - organization.roles.order("created_at DESC").each do |role|
+              = render "roles_and_permissions/role", role: role
