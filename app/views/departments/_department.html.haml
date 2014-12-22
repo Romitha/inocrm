@@ -1,0 +1,7 @@
+%h4.col-md-12
+  = link_to "#", class: "inline_edit", data: {type: "text", resource: "department", name: "name", url: organization_department_path(department.organization, department), "original-title" => "Update department name"} do
+    = department.name
+%em.col-md-11.small_scale_padding-left3
+  = link_to "#", class: "inline_edit", data: {type: "textarea", resource: "department", name: "description", url: organization_department_path(department.organization, department), "original-title" => "Update department name"} do
+    = department.description
+%hr

@@ -10,6 +10,8 @@ class Organization < ActiveRecord::Base
 
   has_many :designations
 
+  has_many :departments
+
   #2014_11_11
   has_many :users
 
@@ -19,6 +21,7 @@ class Organization < ActiveRecord::Base
   scope :individual_suppliers, -> {where(category: TYPES[2])}
   scope :organization_customers, -> {where(category: TYPES[1])}
   scope :individual_customers, -> {where(category: TYPES[3])}
+  scope :owner, -> {where(refers: "VSIS").first}
 
   validates_format_of :web_site, :with => URI::regexp(%w(http https))
 

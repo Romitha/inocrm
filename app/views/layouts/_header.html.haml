@@ -9,7 +9,7 @@
       %ul.nav.navbar-nav
         - if can? :dashboard, Organization
           %li.small_scale_margin-right10
-            = link_to "Configuration", dashboard_organization_path(Organization.find_by_refers("VSIS")), class: "dropdown-toggle organization text-hide nav-icon", data: {placement: "bottom"}, title: "Configuration", rel: "tooltip"
+            = link_to "Configuration", dashboard_organization_path(Organization.owner), class: "dropdown-toggle organization text-hide nav-icon", data: {placement: "bottom"}, title: "Configuration", rel: "tooltip"
 
         %li.dropdown.small_scale_margin-right10{role: "presentation"}
           = link_to "supplier", "#", id: "supplier_dropdown", class: "dropdown-toggle supplier text-hide nav-icon", data: {toggle: "dropdown", placement: "bottom"}, "aria-haspopup" => "true", "aria-expanded" => "true", title: "Supplier", rel: "tooltip"

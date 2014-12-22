@@ -2,6 +2,7 @@ window.Organizations =
   setup: ->
     @enable_chosen()
     @load_vat_number_option()
+    # @toggle_tapbar()
     return
 
   show_more_less: ->
@@ -28,15 +29,23 @@ window.Organizations =
       todayHighlight: true
 
   load_vat_number_option: ->
+    $("#relate_id").change ->
+      $('#load_vat_number_option_render').empty()
+
     $("#parent_member_for_vat_number").change ->
       relation_organization_id = $("#relate_id").data("organizationId")
       selected_organization_id = $("#relate_id :selected").val()
-      $.post("/organizations/#{relation_organization_id}/option_for_vat_number", {relation_organization_id: relation_organization_id, selected_organization_id: selected_organization_id}, (data)->
-        $('#load_vat_number_option_render').html Mustache.to_html($('#vat_number_output').html(), data)
-      ).done( (date)->
-      ).fail( ->
-        alert $(@).data("organization-id")
-      )
-    $("#relate_id").change ->
-      alert "ok"
-      # $('#load_vat_number_option_render').empty()
+      if $(@).val()== "parent"
+        $.post("/organizations/#{relation_organization_id}/option_for_vat_number", {relation_organization_id: relation_organization_id, selected_organization_id: selected_organization_id}, (data)->
+          $('#load_vat_number_option_render').html Mustache.to_html($('#vat_number_output').html(), data)
+        ).done( (date)->
+        ).fail( ->
+          alert "There are some errors. please try again"
+        )
+      else
+        $('#load_vat_number_option_render').empty()
+
+  toggle_tapbar: ->
+    $('.nav-tabs a').click (e) ->
+      e.preventDefault()
+      $(@).tab('toggle')

@@ -31,8 +31,11 @@
       .col-md-12
         %h2#user_name.margin-none= user.user_name
         %blockquote
+          Designation :
           = user.designation.try :name
-          = link_to "Edit", initiate_user_profile_edit_user_path(template_params: "user_name_primary_details"), data: {toggle: "modal", target: "#user_edit_popup", userid: user.id}, remote: true, class: "pull-right"
+          %p
+            Department : #{user.department.try :name}
+            = link_to "Edit", initiate_user_profile_edit_user_path(template_params: "user_name_primary_details"), data: {toggle: "modal", target: "#user_edit_popup", userid: user.id}, remote: true, class: "pull-right"
     = panels panel_type: "default", header_content: "Primary Details"+(user.roles.present? ? "(#{user.roles.map{|r| r.name}.join(', ')})" : "") do
       .row
         .col-md-12#user_email
