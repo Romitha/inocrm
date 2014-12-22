@@ -1,4 +1,4 @@
-- tapbar = [["Address", "#addresses#{organization.id}"], ["Contact Details", "#contacts#{organization.id}"], ["Employees", "#contact_persons#{organization.id}"], ["Documents & Attachements", "#documents#{organization.id}"], ["Designations", "#designations#{organization.id}"], ["Organization Relations", "#organization_relations#{organization.id}"], ["Roles and Permissions", "#roles_and_permissions#{organization.id}"]]
+- tapbar = [["Address", "#addresses#{organization.id}"], ["Contact Details", "#contacts#{organization.id}"], ["Employees", "#contact_persons#{organization.id}"], ["Documents & Attachements", "#documents#{organization.id}"], ["Designations", "#designations#{organization.id}"], ["Organization Relations", "#organization_relations#{organization.id}"], ["Roles and Permissions", "#roles_and_permissions#{organization.id}"], ["Departments", "#organization_departments#{organization.id}"]]
 
 .row
   .col-lg-1
@@ -48,7 +48,12 @@
   .col-lg-12.padding0
     %ul.nav.nav-tabs{role: "tablist"}
       - tapbar.each do |link_info|
-        %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"} unless(Organization::TYPES[2,3].include?(organization.category) and tapbar[5]==link_info)
+        - if tapbar[5]==link_info or tapbar[7]==link_info
+          %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"} unless(Organization::TYPES[2,3].include?(organization.category))
+        - elsif tapbar[6]==link_info
+          %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"} if organization.refers=="VSIS"
+        - else
+          %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"}
 
     .tab-content.small_scale_margin-top1
       .tab-pane.limit-height{id: "addresses#{organization.id}"}
@@ -63,9 +68,15 @@
         .fixed-height
           - organization.users.order("created_at DESC").each do |user|
             = render "users/user", user: user
+
       - unless Organization::TYPES[2,3].include?(organization.category)
         .tab-pane.limit-height{id: "organization_relations#{organization.id}"}
           .fixed-height
             = render "organizations/member",organization: organization.parent_organization, relation: "Parent", relation_organization: organization if organization.parent_organization.present?
             - organization.members.order("created_at DESC").each do |member|
               = render "organizations/member", organization: member, relation: "Member", relation_organization: organization
+
+        .tab-pane.limit-height{id: "organization_departments#{organization.id}"}
+          .fixed-height
+            - organization.departments.order("created_at DESC").each do |department|
+              = render "departments/department", department: department

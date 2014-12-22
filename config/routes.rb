@@ -21,6 +21,7 @@ Rails.application.routes.draw do
   resources :users, concerns: :polymophicable, only: []
   resources :organizations, concerns: :polymophicable do
     resources :designations
+    resources :departments
     resources :roles_and_permissions do
       post "load_permissions"
     end

@@ -13,15 +13,15 @@ rpermissions = [{name: "Update user profile", controller_resource: "User", contr
 {name: "Edit organization details", controller_resource: "Organization", controller_action: "edit_update"},
 {name: "Create new user for Organization", controller_resource: "User", controller_action: "new_create"}]
 
+organization = Organization.find_or_create_by name: "VS Information Systems", short_name: "VS Information Sys", code: "123456", web_site: "http://www.vsis.com", vat_number: "34358-90", refers: "VSIS", description: "VSIS is product owner of this application"
 user = User.find_by_email("admin@inovacrm.com")
 unless(user)
-	user = User.create(email: "admin@inovacrm.com", password: "123456789")
-	user.add_role :admin
-	user.add_role :default_user
+	user = User.create(email: "admin@inovacrm.com", password: "123456789", organization_id: organization.id)
+	user.add_role :admin, organization
+	user.add_role :default_user, organization
 	user.roles.find_by_name("admin").update_attribute(:parent_role, true)
 	user.roles.find_by_name("default_user").update_attribute(:parent_role, true)
 	Rpermission.create(rpermissions)
 	user.roles.find_by_name("admin").rpermission_ids = [1,2,3,4,5,6,7]
 	user.roles.find_by_name("default_user").rpermission_ids = [2, 4, 5]
 end
-Organization.find_or_create_by name: "VS Information Systems", short_name: "VS Information Sys", code: "123456", web_site: "http://www.vsis.com", vat_number: "34358-90", refers: "VSIS", description: "VSIS is product owner of this application"

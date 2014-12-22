@@ -1,5 +1,6 @@
 class DesignationsController < ApplicationController
-  before_action :set_designation, only: [:update, :destroy, :make_primary_designation]
+  before_action :authenticate_user!
+  before_action :set_designation, only: [:update, :destroy]
   respond_to :html, :xml, :json
 
   def create

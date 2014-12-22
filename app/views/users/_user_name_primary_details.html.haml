@@ -5,6 +5,8 @@
     = f.input :user_name, label: false, placeholder: "User name", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "User Name"}
     .has-tooltip{data: {toggle: "tooltip", placement: "left"}, title: "Designation"}
       = f.association :designation, collection: (@user.organization.try(:designations) || []), include_blank: false, label: false, input_html: { class: 'chosen-select'}
+    .has-tooltip{data: {toggle: "tooltip", placement: "left"}, title: "Department"}
+      = f.association :department, collection: (@user.organization.try(:departments) || []), include_blank: false, label: false, input_html: { class: 'chosen-select'}
     .has-tooltip{data: {toggle: "tooltip", placement: "left"}, title: "Assigning Role"}
       = f.association :roles, collection: (@user.organization.try(:roles) || []), include_blank: false, label: false, input_html: { class: 'chosen-select'}
     .form-group
