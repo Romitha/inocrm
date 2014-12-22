@@ -22,6 +22,8 @@ class User < ActiveRecord::Base
   #2014_11_11
   belongs_to :organization
 
+  belongs_to :department
+
   validates_uniqueness_of :user_name
 
   attr_accessor :coord_x, :coord_y, :coord_w, :coord_h

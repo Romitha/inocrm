@@ -1,4 +1,4 @@
-- tapbar = [["Address", "#addresses#{organization.id}"], ["Contact Details", "#contacts#{organization.id}"], ["Employees", "#contact_persons#{organization.id}"], ["Documents & Attachements", "#documents#{organization.id}"], ["Designations", "#designations#{organization.id}"], ["Organization Relations", "#organization_relations#{organization.id}"], ["Roles and Permissions", "#roles_and_permissions#{organization.id}"]]
+- tapbar = [["Address", "#addresses#{organization.id}"], ["Contact Details", "#contacts#{organization.id}"], ["Employees", "#contact_persons#{organization.id}"], ["Documents & Attachements", "#documents#{organization.id}"], ["Designations", "#designations#{organization.id}"], ["Organization Relations", "#organization_relations#{organization.id}"], ["Roles and Permissions", "#roles_and_permissions#{organization.id}"], ["Departments", "#organization_departments#{organization.id}"]]
 
 = simple_nested_form_for organization do |f|
   - if organization.errors.present?
@@ -35,7 +35,13 @@
   .row
     %ul.nav.nav-tabs{role: "tablist"}
       - tapbar.each do |link_info|
-        %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"} unless(Organization::TYPES[2,3].include?(organization.category) and tapbar[5]==link_info)
+        - if tapbar[5]==link_info
+          %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"} unless(Organization::TYPES[2,3].include?(organization.category))
+        - elsif tapbar[6]==link_info
+          %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"} if organization.refers=="VSIS"
+        - else
+          %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"}
+
   .tab-content.small_scale_margin-top1
     .tab-pane.limit-height{id: "addresses#{organization.id}"}
       = render "addresses/form", address: organization.addresses.build
@@ -72,8 +78,16 @@
           - organization.members.order("created_at DESC").each do |member|
             = render "organizations/member", organization: member, relation: "Member", relation_organization: organization
 
-    .tab-pane.limit-height{id: "roles_and_permissions#{organization.id}"}
-      .fixed-height
-        = link_to "Add Roles and set Permissions", new_organization_roles_and_permission_path(organization), class: "btn btn-primary btn-sm small_scale_margin-bottom1"
-        - organization.roles.order("created_at DESC").each do |role|
-          = render "roles_and_permissions/role", role: role
+      .tab-pane.limit-height{id: "organization_departments#{organization.id}"}
+        = render "departments/form", department: organization.departments.build
+
+        .fixed-height
+          - organization.departments.order("created_at DESC").each do |department|
+            = render "departments/department", department: department
+
+    - if organization.refers == "VSIS"
+      .tab-pane.limit-height{id: "roles_and_permissions#{organization.id}"}
+        .fixed-height
+          = link_to "Add Roles and set Permissions", new_organization_roles_and_permission_path(organization), class: "btn btn-primary btn-sm small_scale_margin-bottom1"
+          - organization.roles.order("created_at DESC").each do |role|
+            = render "roles_and_permissions/role", role: role

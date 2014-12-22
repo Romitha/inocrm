@@ -1,0 +1,15 @@
+.row
+  .col-md-12
+    = simple_form_for [department.organization, department] do |department|
+      .row
+        = panels panel_type: "success", header_content: "Add department" do
+          - if department.object.errors.present?
+            %ul.alert.alert-danger
+              - department.object.errors.full_messages.each do |error|
+                %li= error
+
+          = department.input :name, placeholder: "name of department",input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "department name"}
+          = department.input :description, placeholder: "description of department",input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "department description"}
+          / = department.input :auto_ticket_assign
+          = department.input :organization_id, as: :hidden
+          = department.submit "Add new department", class: "btn btn-success pull-right", id: "submit_new_department"
