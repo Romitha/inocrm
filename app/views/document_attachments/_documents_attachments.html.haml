@@ -1,8 +1,8 @@
 .col-md-12
-  = link_to_if document_attachment.downloadable, document_attachment.file_path.file.try(:original_filename), document_attachment.file_path.url
+  = link_to_if document_attachment.downloadable, document_attachment.file_path.file.try(:filename), document_attachment.file_path.url
   - unless document_attachment.downloadable
-    = link_to content_tag(:span, glyph(:download)), organization_document_attachment_path(document_attachment.organization, document_attachment, "document_attachment[downloadable]" =>  true), method: :put, title: "enable the #{document_attachment.file_path.file.try(:original_filename)} downloadable"
+    = link_to content_tag(:span, glyph(:download)), organization_document_attachment_path(document_attachment.organization, document_attachment, "document_attachment[downloadable]" =>  true), method: :put, title: "enable the #{document_attachment.file_path.file.try(:filename)} downloadable"
   - else
-    = link_to content_tag(:span, glyph(:download)), organization_document_attachment_path(document_attachment.organization, document_attachment, "document_attachment[downloadable]" => false), method: :put, title: "disable the #{document_attachment.file_path.file.try(:original_filename)} downloadable"
-  = link_to content_tag(:span, glyph(:trash)), organization_document_attachment_path(document_attachment.organization, document_attachment), method: :delete, title: "remove #{document_attachment.file_path.file.try(:original_filename)}", data: {confirm: "Are you sure! do you want to remove this document? It cannot be undone."}
+    = link_to content_tag(:span, glyph(:download)), organization_document_attachment_path(document_attachment.organization, document_attachment, "document_attachment[downloadable]" => false), method: :put, title: "disable the #{document_attachment.file_path.file.try(:filename)} downloadable"
+  = link_to content_tag(:span, glyph(:trash)), organization_document_attachment_path(document_attachment.organization, document_attachment), method: :delete, title: "remove #{document_attachment.file_path.file.try(:filename)}", data: {confirm: "Are you sure! do you want to remove this document? It cannot be undone."}
   %hr

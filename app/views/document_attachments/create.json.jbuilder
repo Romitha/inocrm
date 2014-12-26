@@ -1,4 +1,4 @@
-json.file_name @document_attachment.file_path.file.try(:original_filename)
+json.file_name @document_attachment.file_path.file.try(:filename)
 json.file_path organization_document_attachment_path(@document_attachment.organization, @document_attachment)
 json.downloadable @document_attachment.downloadable ? true : false
 if @document_attachment.downloadable
