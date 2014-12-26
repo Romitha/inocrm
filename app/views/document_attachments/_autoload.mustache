@@ -1,0 +1,18 @@
+<div class = "col-md-12">
+{{#downloadable}}
+<a href={{document_attachment_file_path_url}}>{{file_name}}</a>
+<a title="disable the {{file_name}} downloadable" rel="nofollow" href="{{file_path}}" data-method="post">
+<span><span class="glyphicon glyphicon-download"></span></span>
+</a>
+{{/downloadable}}
+{{^downloadable}}
+{{file_name}}
+<a title="enable the {{file_name}} downloadable" rel="nofollow" href="{{file_path}}" data-method="post">
+<span><span class="glyphicon glyphicon-download"></span></span>
+</a>
+{{/downloadable}}
+<a title="remove {{file_name}}" rel="nofollow" data-method="delete" href={{file_path}} data-confirm="Are you sure! do you want to remove this document? It cannot be undone.">
+<span><span class="glyphicon glyphicon-trash"></span></span>
+</a>
+<hr>
+</div>
