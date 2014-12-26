@@ -74,6 +74,11 @@
           - organization.designations.order("created_at DESC").each do |designation|
             = render "designations/designation", designation: designation
 
+      .tab-pane.limit-height{id: "documents#{organization.id}"}
+        .fixed-height
+          - organization.document_attachments.order("created_at DESC").each do |document_attachment|
+            = render "document_attachments/documents_attachments", document_attachment: document_attachment
+
       - unless Organization::TYPES[2,3].include?(organization.category)
         .tab-pane.limit-height{id: "organization_relations#{organization.id}"}
           .fixed-height

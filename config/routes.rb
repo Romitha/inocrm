@@ -22,6 +22,7 @@ Rails.application.routes.draw do
   resources :organizations, concerns: :polymophicable do
     resources :designations
     resources :departments
+    resources :document_attachments
     resources :roles_and_permissions do
       post "load_permissions"
     end

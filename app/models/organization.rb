@@ -15,6 +15,8 @@ class Organization < ActiveRecord::Base
   #2014_11_11
   has_many :users
 
+  has_many :document_attachments
+
   TYPES = %w(organization_supplier organization_customer individual_supplier individual_customer)
 
   scope :organization_suppliers, -> {where(category: TYPES[0])}
