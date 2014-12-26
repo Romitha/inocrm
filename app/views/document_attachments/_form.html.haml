@@ -1,0 +1,24 @@
+.row
+  .col-md-12
+    = simple_form_for [document_attachment.organization, document_attachment], :html => {class: "form-horizontal fixed margin-bottom0" }, remote: true do |document_attachment|
+      = panels panel_type: "success", header_content: "Add Documents and Attachments" do
+        .col-md-12
+          / = document_attachment.input :name, placeholder: "name of document_attachment"
+        = document_attachment.input :organization_id, as: :hidden
+        = document_attachment.input :downloadable, as: :hidden, input_html: {value: false}
+        #document_attachment_upload.btn.btn-info.btn-mini.fileinput-button{style: "min-height: 10px;"}
+          %span Upload documents
+          = document_attachment.file_field :file_path
+
+    .document_attachment_wrapper
+
+
+    %script#document_attachment_upload_tmpl{type: "text/x-tmpl"}
+      .profile_image_upload.span12
+        {%= o.name %}
+        .progress
+          .progress-bar.progress-bar-success.progress-bar-striped{role: "progressbar", "aria-valuemax" => 100, "aria-valuemin" => 0, "aria-valuenow" => 0}
+
+
+%script{type: "text/html", id: "load_files"}
+  = render "document_attachments/autoload"
