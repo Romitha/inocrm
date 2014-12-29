@@ -1,13 +1,13 @@
 <div class = "col-md-12">
 {{#downloadable}}
 <a href={{document_attachment_file_path_url}}>{{file_name}}</a>
-<a title="disable the {{file_name}} downloadable" rel="nofollow" href="{{file_path}}" data-method="post">
+<a title="disable the {{file_name}} downloadable" rel="nofollow" href="{{file_path}}" data-method="put">
 <span><span class="glyphicon glyphicon-download"></span></span>
 </a>
 {{/downloadable}}
 {{^downloadable}}
 {{file_name}}
-<a title="enable the {{file_name}} downloadable" rel="nofollow" href="{{file_path}}" data-method="post">
+<a title="enable the {{file_name}} downloadable" rel="nofollow" href="{{file_path}}" data-method="put">
 <span><span class="glyphicon glyphicon-download"></span></span>
 </a>
 {{/downloadable}}
