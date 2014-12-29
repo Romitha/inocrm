@@ -6,4 +6,6 @@ class ContactNumber < ActiveRecord::Base
   validates :value, presence: true
   validates :category, presence: true
 
+  scope :primary_contactnumber, -> {where(primary: true)}
+  scope :nonprimary_contactnumber, -> {where(primary: false)}
 end

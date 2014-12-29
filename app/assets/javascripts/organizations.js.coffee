@@ -3,6 +3,7 @@ window.Organizations =
     @enable_chosen()
     @load_vat_number_option()
     # @toggle_tapbar()
+    @organization_logo_upload()
     return
 
   show_more_less: ->
@@ -49,3 +50,35 @@ window.Organizations =
     $('.nav-tabs a').click (e) ->
       e.preventDefault()
       $(@).tab('toggle')
+
+  organization_logo_upload: ->
+    $("#organization_logo").fileupload
+      # url: '/users/profile/temp_save_user_profile_image'
+      # type: "POST"
+      maxFileSize: 1000000
+      dataType: "json"
+      autoUpload: false
+      add: (e, data) ->
+        types = /(\.|\/)(gif|jpe?g|png)$/i
+        maxsize = 1024*1024
+        file = data.files[0]
+        if types.test(file.type) || types.test(file.name)
+          data.context = $(tmpl('organization_attachment_upload_tmpl', file))
+          $(".organization_attachment_wrapper").html(data.context)
+          data.submit()
+          jqXHR = data.submit().complete( (result, textStatus, jqXHR)->
+            # console.log result
+            setTimeout (->
+              $('#autoloadable_prepend').html Mustache.to_html($('#load_files').html(), result.responseJSON)
+              $(".organization_attachment_wrapper").empty()
+              return
+            ), 3000
+          )
+        else
+          alert("#{file.name} is not a recommended file format")
+      progress: (e, data) ->
+        if data.context
+          progress = parseInt(data.loaded/data.total*100, 10)
+          data.context.find(".progress-bar").css("width", progress+"%").html(progress+"%")
+          if progress==100
+            window.location.reload()
