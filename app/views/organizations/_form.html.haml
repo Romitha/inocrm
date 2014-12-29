@@ -13,6 +13,16 @@
       .btn.btn-success.btn-file.has-tooltip{data: {toggle: "tooltip", placement: "left"}, title: "Upload organization Logo"}
         Upload Logo
         = f.input :logo, label: false, placeholder: "Upload organization Logo", wrapper_html: {class: "margin-none"}
+
+      .organization_attachment_wrapper
+
+      %script#organization_attachment_upload_tmpl{type: "text/x-tmpl"}
+        .organization_logo_upload.span12
+          {%= o.name %}
+          .progress
+            .progress-bar.progress-bar-success.progress-bar-striped{role: "progressbar", "aria-valuemax" => 100, "aria-valuemin" => 0, "aria-valuenow" => 0}
+
+
     .col-md-9.pull-right
       = f.input :name, placeholder: "Name of Organization", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Organization Name"}
       %blockquote
