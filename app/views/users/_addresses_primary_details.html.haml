@@ -6,5 +6,7 @@
   .limit-height
     = render "addresses/form", address: user.addresses.build
     .fixed-height
-      - user.addresses.order("created_at DESC").each do |address|
+      - user.addresses.primary_address.order("created_at DESC").each do |address|
+        = render "addresses/address", address: address
+      - user.addresses.non_primary_address.order("created_at DESC").each do |address|
         = render "addresses/address", address: address
