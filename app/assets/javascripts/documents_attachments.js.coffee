@@ -21,7 +21,7 @@ window.DocumentAttachment =
           jqXHR = data.submit().complete( (result, textStatus, jqXHR)->
             # console.log result
             setTimeout (->
-              $('#autoloadable_prepend').html Mustache.to_html($('#load_files').html(), result.responseJSON)
+              $('#autoloadable_prepend').prepend Mustache.to_html($('#load_files').html(), result.responseJSON)
               $(".document_attachment_wrapper").empty()
               return
             ), 3000
