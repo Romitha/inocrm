@@ -1,0 +1,18 @@
+- organization = @organization
+- ticket = @ticket
+= simple_form_for(ticket) do |f|
+  = f.error_notification
+
+  .form-inputs
+    = f.association :customer, label: "Customer", collection: User.customers.map{|user| [user.email, user.id]}, include_blank: false # customer
+    = f.input :ticket_type, collection: Ticket::TYPES, include_blank: false
+    = f.input :status, collection: Ticket::STATUS, include_blank: false
+    = f.input :subject
+    = f.input :priority, collection: Ticket::PRIORITY, include_blank: false
+    = f.association :department, include_blank: false
+    = f.association :agents, label: "Agent", include_blank: false, collection: ticket.organization.departments, as: :grouped_select, group_method: :users , label_method: :email, value_method: :id  # agent
+    = f.input :initiated_through, as: :radio_buttons, collection: Ticket::INITIATED, label: "Initiated through"
+    = f.input :description
+    = f.input :organization_id, as: :hidden, input_html: {value: organization.id}
+
+    = f.submit "Creare Ticket", class: "btn btn-success"
