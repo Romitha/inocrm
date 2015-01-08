@@ -1,0 +1,33 @@
+%p#notice= notice
+
+%p
+  %b Type:
+  = @ticket.ticket_type
+%p
+  %b Status:
+  = @ticket.status
+%p
+  %b Subject:
+  = @ticket.subject
+%p
+  %b Priority:
+  = @ticket.priority
+%p
+  %b Description:
+  = @ticket.description
+%p
+  %b Deleted:
+  = @ticket.deleted
+%p
+  %b Organization:
+  = @ticket.organization.name
+%p
+  %b Department:
+  = @ticket.department.name
+%p
+  %b User:
+  = @ticket.customer.email
+
+= link_to 'Edit', edit_ticket_path(@ticket)
+\|
+= link_to 'Back', tickets_path
