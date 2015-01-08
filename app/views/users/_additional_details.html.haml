@@ -11,7 +11,8 @@
       .col-md-5
         = f.input :last_name, label: false, placeholder: "Last Name", input_html: {class: "input-sm has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Last Name"}
     = f.input :NIC, label: false, placeholder: "National Identity Card Number", input_html: {class: "input-sm has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "National Identity Card Number"}
-    = f.input :epf_no, label: false, placeholder: "E.P.F Number", input_html: {class: "input-sm has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "E.P.F Number"}
+    - unless @user.is_customer?
+      = f.input :epf_no, label: false, placeholder: "E.P.F Number", input_html: {class: "input-sm has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "E.P.F Number"}
     = f.input :date_joined_at, label: false, placeholder: "Date Joined", input_html: {class: "input-sm has-tooltip datepicker", data: {toggle: "tooltip", placement: "left"}, title: "Click to enter Date", value: @user.date_joined_at.try(:strftime, "%d %b, %Y")}, as: :string, :readonly => true
 
     .form-group

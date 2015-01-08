@@ -30,12 +30,13 @@
     .row
       .col-md-12
         %h2#user_name.margin-none= user.user_name
-        %blockquote
-          Designation :
-          = user.designation.try :name
-          %p
-            Department : #{user.department.try :name}
-            = link_to "Edit", initiate_user_profile_edit_user_path(template_params: "user_name_primary_details"), data: {toggle: "modal", target: "#user_edit_popup", userid: user.id}, remote: true, class: "pull-right"
+        - unless @user.is_customer?
+          %blockquote
+            Designation :
+            = user.designation.try :name
+            %p
+              Department : #{user.department.try :name}
+        = link_to "Edit", initiate_user_profile_edit_user_path(template_params: "user_name_primary_details"), data: {toggle: "modal", target: "#user_edit_popup", userid: user.id}, remote: true, class: "pull-right"
     = panels panel_type: "default", header_content: "Primary Details"+(user.roles.present? ? "(#{user.roles.map{|r| r.name}.join(', ')})" : "") do
       .row
         .col-md-12#user_email
@@ -75,29 +76,31 @@
             N.I.C Number
           .col-md-10
             = user.NIC
-        .row
-          .col-md-2.text-right
-            E.P.F Number
-          .col-md-10
-            = user.epf_no
+        - unless @user.is_customer?
+          .row
+            .col-md-2.text-right
+              E.P.F Number
+            .col-md-10
+              = user.epf_no
         .row
           .col-md-2.text-right
             Date joined
           .col-md-10
             = user.date_joined_at.try(:strftime, "%d %b, %Y")
-        .row
-          .col-md-2.text-right
-            Organization
-          .col-md-10
-            = link_to user.organization.try(:name), user.organization if user.organization
+        - unless @user.is_customer?
+          .row
+            .col-md-2.text-right
+              Organization
+            .col-md-10
+              = link_to user.organization.try(:name), user.organization if user.organization
 
       .pull-right= link_to "Edit", initiate_user_profile_edit_user_path(template_params: "additional_details"), data: {toggle: "modal", target: "#user_edit_popup", userid: user.id}, remote: true
-
-    =panels panel_type: "default", id: "id_security_details_panel", header_content: "Security" do
-      .row-fluid
-        .row
-          XXXXXXXX
-      .pull-right= link_to "Edit", initiate_user_profile_edit_user_path(template_params: "password_security_details"), data: {toggle: "modal", target: "#user_edit_popup", userid: user.id}, remote: true
+    - if user.is_customer=="false"
+      =panels panel_type: "default", id: "id_security_details_panel", header_content: "Security" do
+        .row-fluid
+          .row
+            XXXXXXXX
+        .pull-right= link_to "Edit", initiate_user_profile_edit_user_path(template_params: "password_security_details"), data: {toggle: "modal", target: "#user_edit_popup", userid: user.id}, remote: true
 
 .col-md-1
 / = render "username_edit", mustache: {a: "apple", b: "b"}
