@@ -4,8 +4,10 @@ class UsersController < ApplicationController
   before_action :set_user, only: [:profile, :initiate_user_profile_edit, :update, :upload_avatar]
 
   def new
+    session[:is_customer] = nil
     begin
-      organization_id = view_context.decrypt_org(params[:organization_id])
+      organization_id = view_context.decrypt_org(params[:organization_id]) unless params[:is_customer]
+      session[:is_customer] = (params[:is_customer] ? "true" : "false")
       @user = User.new(organization_id: organization_id)
     rescue
       flash[:error] = "Invalid organization is selected. Please try again or contact administrator."
@@ -26,8 +28,9 @@ class UsersController < ApplicationController
   def create
     @user = User.new user_params
     respond_to do |format|
-      if @user.save
+      if(session[:is_customer]=="true" ? @user.save(validate: false) : @user.save)
         format.html {redirect_to profile_user_url(@user), notice: "Employee is successfully created"}
+        session[:is_customer] = nil
       else
         format.html {render :new}
       end
@@ -97,13 +100,17 @@ class UsersController < ApplicationController
     end
   end
 
+  def individual_customers
+    @users = User.select{|user| user.is_customer?}
+  end
+
   private
     def set_user
       @user =  User.find params[:id]
     end
 
     def user_params
-      params.require(:user).permit(:email, :avatar, :coord_x, :coord_y, :coord_w, :coord_h, :user_name, {role_ids: []}, :organization_id, :designation_id, :department_id, :password, :password_confirmation, :NIC, :epf_no, :date_joined_at, :first_name, :last_name, :name_title, addresses_attributes: [:id, :category, :address, :_destroy])
+      params.require(:user).permit(:is_customer, :email, :avatar, :coord_x, :coord_y, :coord_w, :coord_h, :user_name, {role_ids: []}, :organization_id, :designation_id, :department_id, :password, :password_confirmation, :NIC, :epf_no, :date_joined_at, :first_name, :last_name, :name_title, addresses_attributes: [:id, :category, :address, :_destroy])
     end
 
 end
