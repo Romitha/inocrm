@@ -4,7 +4,7 @@ class CreateDocumentAttachments < ActiveRecord::Migration
       t.string :name
       t.string :file_path
       t.boolean :downloadable
-      t.references :organization, index: true
+      t.references :attachable, polymorphic: true, index: true
 
       t.timestamps
     end

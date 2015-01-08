@@ -24,9 +24,9 @@
 
 
     .col-md-9.pull-right
-      = f.input :name, placeholder: "Name of Organization", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Organization Name"}
+      = f.input :name, placeholder: "Name of Organization / Business", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Organization/Business Name"}
       %blockquote
-        = f.input :short_name, placeholder: "Short name of Organization", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Short name of Organization"}
+        = f.input :short_name, placeholder: "Short name of Organization / Business", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Short name of Organization / Business"}
   .row
     - unless Organization::TYPES[2,3].include?(organization.category)
       .col-md-4
