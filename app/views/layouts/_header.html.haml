@@ -36,15 +36,22 @@
                 %span= image_tag "organization_customers.png", style: "width: 12%;"
                 %span Organizaion Customers
             %li{role: "presentation"}
-              = link_to root_path(category: "individual_customers") do
+              = link_to individual_customers_users_path do
                 %span= image_tag "individual_customer.png", style: "width: 12%;"
                 %span Individual Customers
             - if can? :new, Organization
               %li.divider
               %li.dropdown-header Create Customer
               %li{role: "presentation"}= link_to "New Organization Customer", new_organization_path(category: Organization::TYPES[1])
-              %li{role: "presentation"}= link_to "New Individual Customer", new_organization_path(category: Organization::TYPES[3])
+              %li{role: "presentation"}= link_to "New Individual Customer", new_user_path(is_customer: true)#new_organization_path(category: Organization::TYPES[3])
 
+        %li.dropdown.small_scale_margin-right10{role: "presentation"}
+          = link_to "Tickets", "#", class: "dropdown-toggle tickets text-hide nav-icon", id: "ticket_dropdown", data: {toggle: "dropdown", placement: "bottom"}, title: "Ticket", rel: "tooltip"
+          %ul.dropdown-menu{"aria-labelledby" => "ticket_dropdown"}
+            %li{role: "presentation"}
+              = link_to tickets_path do
+                %span= image_tag "ticket.png", style: "width: 12%;"
+                %span Tickets
 
         - if user_signed_in?
           %li.dropdown.profile_image_dropdown

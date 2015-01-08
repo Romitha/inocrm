@@ -6,22 +6,28 @@
   .fixed.pull-left
     .span3
       #preview_of_profile_image
-        - if user.avatar.present?
-          = image_tag user.avatar.thumb.url, class: "img-polaroid img-responsive ", height: '100%', width: '100%'
-        - else
-          = image_tag "no_image.jpg", alt: user.user_name, title: "profile image", class: "img-polaroid margin-none img-responsive", height: '100%', width: '100%'
+        = link_to profile_user_path(user) do
+          - if user.avatar.present?
+            = image_tag user.avatar.thumb.url, class: "img-polaroid img-responsive ", height: '100%', width: '100%'
+          - else
+            = image_tag "no_image.jpg", alt: user.user_name, title: "profile image", class: "img-polaroid margin-none img-responsive", height: '100%', width: '100%'
   .col-md-11
     %div= user.designation.try :name
     %div= mail_to user.email, user.email
     .inline-block.has-tooltip{data: {toggle: "tooltip", placement: "bottom"}, title: "(Primary) Phone"}
       = user.primary_contact_number.try :value
       = "(#{user.primary_contact_number.try :category})" if user.primary_contact_number 
-    .user_roles
-      .col-md-1
-        Roles:
-      .col-md-11
-        - user.roles.each do |role|
-          %div
-            = link_to role.name, edit_organization_roles_and_permission_path(role.resource, role), class: "#{%w(text-primary text-muted text-success text-info text-warning text-danger).sample}"
-            // = link_to glyph(:home), "#"
+    - unless user.is_customer?
+      .user_roles
+        .col-md-1
+          Roles:
+        .col-md-11
+          - user.roles.each do |role|
+            %div
+              = link_to role.name, edit_organization_roles_and_permission_path(role.resource, role), class: "#{%w(text-primary text-muted text-success text-info text-warning text-danger).sample}"
+    - else
+      %br/
+      .inline-block.has-tooltip{data: {toggle: "tooltip", placement: "bottom"}, title: "(Primary) address"}
+        = user.primary_address.try :address
+        = "(#{user.primary_address.try :category})" if user.primary_address 
 %hr

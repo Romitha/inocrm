@@ -24,7 +24,14 @@ class User < ActiveRecord::Base
 
   belongs_to :department
 
+  has_many :customer_tickets, foreign_key: "customer_id", class_name: "Ticket"
+
+  has_many :agent_ticket_infos, foreign_key: "agent_id"
+  has_many :tickets, through: :agent_ticket_infos
+
   validates_uniqueness_of :user_name
+
+  # validates_presence_of :password, if: Proc.new {|user| user.is_customer == false}
 
   attr_accessor :coord_x, :coord_y, :coord_w, :coord_h
   after_update :crop_avatar
@@ -54,7 +61,7 @@ class User < ActiveRecord::Base
 
   has_many :dyna_columns, as: :resourceable
 
-  [:current_user_role_id, :current_user_role_name].each do |dyna_method|
+  [:current_user_role_id, :current_user_role_name, :is_customer].each do |dyna_method|
     define_method(dyna_method) do
       self.dyna_columns.find_by_data_key(dyna_method).try(:data_value)
     end
@@ -65,4 +72,10 @@ class User < ActiveRecord::Base
       data.save
     end
   end
+
+  def is_customer?
+    is_customer=="true"
+  end
+
+  scope :customers, -> {select{|user| user.is_customer?}}
 end

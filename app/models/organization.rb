@@ -15,7 +15,10 @@ class Organization < ActiveRecord::Base
   #2014_11_11
   has_many :users
 
-  has_many :document_attachments
+  has_many :document_attachments, as: :attachable
+  accepts_nested_attributes_for :document_attachments, allow_destroy: true
+
+  has_many :tickets
 
   TYPES = %w(organization_supplier organization_customer individual_supplier individual_customer)
 

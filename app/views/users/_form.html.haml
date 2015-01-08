@@ -1,15 +1,19 @@
+= user.is_customer
 .row
   = simple_form_for user, html: {multipart: true} do |f|
     - if user.errors.present?
-      %ul
-        - user.errors.full_messages.each do |message|
-          %li= message
+      = panels header_content: "Something gone wrong", panel_type: "danger" do
+        %ul
+          - user.errors.full_messages.each do |message|
+            %li= message
     .col-md-12
       = f.input :email, placeholder: "Email", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Email"}
       = f.input :user_name, placeholder: "User name", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "User Name"}
-      .has-tooltip{data: {toggle: "tooltip", placement: "left"}, title: "Designation"}
-        = f.association :designation, collection: (user.organization.try(:designations) || []), include_blank: false, input_html: { class: 'chosen-select'}
-      = f.input :password, placeholder: "Password", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Password"}
-      = f.input :password_confirmation, placeholder: "Confirm new password", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Confirm new password"}
-      = f.association :organization, as: :hidden
+      - if session[:is_customer]=="false"
+        .has-tooltip{data: {toggle: "tooltip", placement: "left"}, title: "Designation"}
+          = f.association :designation, collection: (user.organization.try(:designations) || []), include_blank: false, input_html: { class: 'chosen-select'}
+        = f.input :password, placeholder: "Password", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Password"}
+        = f.input :password_confirmation, placeholder: "Confirm new password", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Confirm new password"}
+        = f.association :organization, as: :hidden
+      = f.input :is_customer, as: :hidden, input_html: {value: session[:is_customer]}
       = f.submit
