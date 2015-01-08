@@ -1,10 +1,11 @@
 .row
   .col-md-12
-    = simple_form_for [document_attachment.organization, document_attachment], :html => {class: "form-horizontal fixed margin-bottom0" }, remote: true do |document_attachment|
+    = simple_form_for [document_attachment.attachable, document_attachment], :html => {class: "form-horizontal fixed margin-bottom0" }, remote: true do |document_attachment|
       = panels panel_type: "success", header_content: "Add Documents and Attachments" do
         .col-md-12
           / = document_attachment.input :name, placeholder: "name of document_attachment"
-        = document_attachment.input :organization_id, as: :hidden
+        = document_attachment.input :attachable_id, as: :hidden
+        = document_attachment.input :attachable_type, as: :hidden
         = document_attachment.input :downloadable, as: :hidden, input_html: {value: false}
         #document_attachment_upload.btn.btn-info.btn-mini.fileinput-button{style: "min-height: 10px;"}
           %span Upload documents

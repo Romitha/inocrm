@@ -21,7 +21,7 @@ class DocumentAttachmentsController < ApplicationController
     @document_attachment.update(document_attachment_params)
     # respond_with(@document_attachment)
     respond_to do |format|
-      format.html {redirect_to edit_organization_url(@document_attachment.organization), notice: "successfully updated."}
+      format.html {redirect_to edit_polymorphic_url([@document_attachment.attachable]), notice: "successfully updated."}
     end
   end
 
@@ -29,7 +29,7 @@ class DocumentAttachmentsController < ApplicationController
     @document_attachment.destroy
     # respond_with(@document_attachment)
     respond_to do |format|
-      format.html {redirect_to edit_organization_url(@document_attachment.organization), notice: "document is successfully deleted."}
+      format.html {redirect_to edit_polymorphic_url([@document_attachment.attachable]), notice: "document is successfully deleted."}
     end
   end
 
@@ -39,7 +39,7 @@ class DocumentAttachmentsController < ApplicationController
     end
 
     def document_attachment_params
-      params.require(:document_attachment).permit(:name, :file_path, :downloadable, :organization_id)
+      params.require(:document_attachment).permit(:name, :file_path, :downloadable, :attachable_id, :attachable_type)
     end
 
 
