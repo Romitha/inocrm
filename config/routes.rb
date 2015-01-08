@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
 
+
   root "organizations#index"
 
   devise_for :users, skip: [:registrations, :passwords, :confirmations], :controllers => {:sessions => 'sessions'}
@@ -18,11 +19,14 @@ Rails.application.routes.draw do
     end
   end
 
+  concern :attachable do
+    resources :document_attachments
+  end
+
   resources :users, concerns: :polymophicable, only: []
   resources :organizations, concerns: :polymophicable do
     resources :designations
     resources :departments
-    resources :document_attachments
     resources :roles_and_permissions do
       post "load_permissions"
     end
@@ -32,9 +36,13 @@ Rails.application.routes.draw do
       get "remove_relation"
       post "option_for_vat_number"
     end
+    concerns :attachable
   end
 
   resources :users, only: [:new, :update, :create] do
+    collection do
+      get "individual_customers"
+    end
     member do
       get "initiate_user_profile_edit"
       get 'profile'
@@ -43,6 +51,9 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :tickets do
+    concerns :attachable
+  end
   # get 'auth/index'
 
   # The priority is based upon order of creation: first created -> highest priority.
