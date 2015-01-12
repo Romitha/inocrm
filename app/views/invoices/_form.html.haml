@@ -1,0 +1,13 @@
+= simple_form_for(@invoice) do |f|
+  = f.error_notification
+
+  .form-inputs
+    = f.input :invoice_number
+    = f.input :paid
+    = f.input :total
+    = f.input :balance
+    = f.input :date
+    = f.input :due_date
+
+  .form-actions
+    = f.button :submit

@@ -1,0 +1,31 @@
+%h1 Listing invoices
+
+%table
+  %thead
+    %tr
+      %th Invoice number
+      %th Paid
+      %th Total
+      %th Balance
+      %th Date
+      %th Due date
+      %th
+      %th
+      %th
+      
+  %tbody
+    - @invoices.each do |invoice|
+      %tr
+        %td= invoice.invoice_number
+        %td= invoice.paid
+        %td= invoice.total
+        %td= invoice.balance
+        %td= invoice.date
+        %td= invoice.due_date
+        %td= link_to 'Show', invoice
+        %td= link_to 'Edit', edit_invoice_path(invoice)
+        %td= link_to 'Destroy', invoice, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Invoice', new_invoice_path
