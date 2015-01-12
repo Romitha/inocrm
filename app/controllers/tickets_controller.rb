@@ -1,4 +1,5 @@
 class TicketsController < ApplicationController
+  before_action :authenticate_user!
   before_action :set_ticket, only: [:show, :edit, :update, :destroy]
   before_action :set_organization_for_ticket, only: [:new, :edit]
 
@@ -35,6 +36,27 @@ class TicketsController < ApplicationController
   def destroy
     @ticket.destroy
     respond_with(@ticket)
+  end
+
+  # post params and response json value
+  def find_customer
+    request = params[:find_by]
+    case request
+    when "customer"
+      @label = "Customer"
+      @customers = User.customers
+    when "invoice"
+      @label = "Invoice"
+    when "serial_number"
+      @label = "Product serial number"
+    when "related_ticket"
+      @label = "Related ticket"
+    when "create_customer"
+      @label = "Create Customer"
+    end
+    respond_to do |format|
+      format.json
+    end
   end
 
   private
