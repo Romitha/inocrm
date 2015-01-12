@@ -2,7 +2,8 @@
 
 .row
   .col-lg-1
-    = image_tag (organization.logo.thumb.url || "organization_image.png"), class: "img-responsive img-thumbnail"
+    = link_to organization do
+      = image_tag (organization.logo.thumb.url || "organization_image.png"), class: "img-responsive img-thumbnail"
   .col-lg-11
     %h4.strong
       .edit_organization
