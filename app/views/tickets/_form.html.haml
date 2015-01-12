@@ -3,16 +3,29 @@
 = simple_form_for(ticket) do |f|
   = f.error_notification
 
-  .form-inputs
-    = f.association :customer, label: "Customer", collection: User.customers.map{|user| [user.email, user.id]}, include_blank: false # customer
-    = f.input :ticket_type, collection: Ticket::TYPES, include_blank: false
-    = f.input :status, collection: Ticket::STATUS, include_blank: false
-    = f.input :subject
-    = f.input :priority, collection: Ticket::PRIORITY, include_blank: false
-    = f.association :department, include_blank: false
-    = f.association :agents, label: "Agent", include_blank: false, collection: ticket.organization.departments, as: :grouped_select, group_method: :users , label_method: :email, value_method: :id  # agent
-    = f.input :initiated_through, as: :radio_buttons, collection: Ticket::INITIATED, label: "Initiated through"
-    = f.input :description
-    = f.input :organization_id, as: :hidden, input_html: {value: organization.id}
+  = panels header_content: "Find or Create customer", panel_type: "success" do
+    Find By
+    - [{value: "customer", id: "customer", label: "Customer", checked: true}, {value: "invoice", id: "invoice", label: "Invoice", checked: false}, {value: "serial_number", id: "serial_number", label: "Product serial number", checked: false}, {value: "related_ticket", id: "related_ticket", label: "Related ticket", checked: false}, {value: "create_customer", id: "create_customer", label: "Create Customer", checked: false}].each do |attr|
+      = label_tag attr[:label], class: "small_scale_margin-right1" do
+        = radio_button_tag "find_customer", attr[:value], attr[:checked], id: attr[:id], class: "find_customer"
+        %span
+          = attr[:label]
+    #load_for_customer_select_box
+      = f.association :customer, label: "Customer", collection: User.customers.map{|user| [user.email, user.id]}, include_blank: false # customer
 
-    = f.submit "Creare Ticket", class: "btn btn-success"
+  = f.input :ticket_type, collection: Ticket::TYPES, include_blank: false
+  = f.input :status, collection: Ticket::STATUS, include_blank: false
+  = f.input :subject
+  = f.input :priority, collection: Ticket::PRIORITY, include_blank: false
+  = f.association :department, include_blank: false
+  = f.association :agents, label: "Agent", include_blank: false, collection: ticket.organization.departments, as: :grouped_select, group_method: :users , label_method: :email, value_method: :id  # agent
+  = f.input :initiated_through, as: :radio_buttons, collection: Ticket::INITIATED, label: "Initiated through"
+  = f.input :description
+  = f.simple_fields_for ticket.document_attachments.build do |file|
+    = file.input :file_path
+  = f.input :organization_id, as: :hidden, input_html: {value: organization.id}
+
+  = f.submit "Creare Ticket", class: "btn btn-success"
+
+%script{type: "text/html", id: "load_for_customer_select_box_mustache"}
+  = render "tickets/load_for_customer_select_box"

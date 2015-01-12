@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
 
 
+  resources :invoices
+
   root "organizations#index"
 
   devise_for :users, skip: [:registrations, :passwords, :confirmations], :controllers => {:sessions => 'sessions'}
@@ -53,6 +55,9 @@ Rails.application.routes.draw do
 
   resources :tickets do
     concerns :attachable
+    collection do
+      post "find_customer"
+    end
   end
   # get 'auth/index'
 

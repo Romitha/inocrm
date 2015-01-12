@@ -1,0 +1,11 @@
+.control-group.form-group.select.optional.ticket_customer
+	%label.select.optional.control-label
+		{{find_by}}
+	.controls
+
+		%select.select.optional.form-control{name: "ticket[customer_id]", id: "ticket_customer_id"}
+			{{#customers}}
+			<option value="{{id}}">
+			{{email}}
+			</option>
+			{{/customers}}
