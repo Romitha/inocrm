@@ -28,7 +28,8 @@ class UsersController < ApplicationController
   def create
     @user = User.new user_params
     respond_to do |format|
-      if(session[:is_customer]=="true" ? @user.save(validate: false) : @user.save)
+      # if(session[:is_customer]=="true" ? @user.save(validate: false) : @user.save)
+      if @user.save
         format.html {redirect_to profile_user_url(@user), notice: "Employee is successfully created"}
         session[:is_customer] = nil
       else
