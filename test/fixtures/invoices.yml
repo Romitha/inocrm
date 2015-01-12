@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  invoice_number: 1
+  paid: 1
+  total: 1
+  balance: 1
+  date: 2015-01-10
+  due_date: 2015-01-10
+
+two:
+  invoice_number: 1
+  paid: 1
+  total: 1
+  balance: 1
+  date: 2015-01-10
+  due_date: 2015-01-10
