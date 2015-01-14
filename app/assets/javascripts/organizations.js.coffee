@@ -67,7 +67,6 @@ window.Organizations =
           $(".organization_attachment_wrapper").html(data.context)
           data.submit()
           jqXHR = data.submit().complete( (result, textStatus, jqXHR)->
-            # console.log result
             setTimeout (->
               $('#autoloadable_prepend').html Mustache.to_html($('#load_files').html(), result.responseJSON)
               $(".organization_attachment_wrapper").empty()

@@ -1,12 +1,12 @@
 # Use this setup block to configure all options available in SimpleForm.
 SimpleForm.setup do |config|
-  config.input_class = "form-control"
+  # config.input_class = "form-control"
   config.wrappers :bootstrap, tag: 'div', class: 'control-group form-group', error_class: 'has-error' do |b|
     b.use :html5
     b.use :placeholder
     b.use :label
     b.wrapper tag: 'div', class: 'controls' do |ba|
-      ba.use :input
+      ba.use :input, class: "form-control"
       ba.use :error, wrap_with: { tag: 'span', class: 'help-inline text-danger' }
       ba.use :hint,  wrap_with: { tag: 'p', class: 'help-block' }
     end
@@ -26,6 +26,19 @@ SimpleForm.setup do |config|
   end
 
   config.wrappers :append, tag: 'div', class: "control-group", error_class: 'error' do |b|
+    b.use :html5
+    b.use :placeholder
+    b.use :label
+    b.wrapper tag: 'div', class: 'controls' do |input|
+      input.wrapper tag: 'div', class: 'input-append' do |append|
+        append.use :input
+      end
+      input.use :hint,  wrap_with: { tag: 'span', class: 'help-block' }
+      input.use :error, wrap_with: { tag: 'span', class: 'help-inline' }
+    end
+  end
+
+  config.wrappers :for_radio_button, tag: 'div', class: "radio_buttons", error_class: 'error' do |b|
     b.use :html5
     b.use :placeholder
     b.use :label
