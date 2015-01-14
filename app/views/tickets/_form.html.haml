@@ -19,7 +19,7 @@
   = f.input :priority, collection: Ticket::PRIORITY, include_blank: false
   = f.association :department, include_blank: false
   = f.association :agents, label: "Agent", include_blank: false, collection: ticket.organization.departments, as: :grouped_select, group_method: :users , label_method: :email, value_method: :id  # agent
-  = f.input :initiated_through, as: :radio_buttons, collection: Ticket::INITIATED, label: "Initiated through"
+  = f.input :initiated_through, as: :radio_buttons, collection: Ticket::INITIATED, label: "Initiated through", wrapper: :for_radio_button
   = f.input :description
   = f.simple_fields_for ticket.document_attachments.build do |file|
     = file.input :file_path

@@ -3,7 +3,7 @@
 		{{find_by}}
 	.controls
 
-		%select.select.optional.form-control{name: "ticket[customer_id]", id: "ticket_customer_id"}
+		%select.chosen-select.optional.form-control{name: "ticket[customer_id]", id: "ticket_customer_id"}
 			{{#customers}}
 			<option value="{{id}}">
 			{{email}}

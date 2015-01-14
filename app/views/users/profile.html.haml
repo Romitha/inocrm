@@ -103,8 +103,6 @@
         .pull-right= link_to "Edit", initiate_user_profile_edit_user_path(template_params: "password_security_details"), data: {toggle: "modal", target: "#user_edit_popup", userid: user.id}, remote: true
 
 .col-md-1
-/ = render "username_edit", mustache: {a: "apple", b: "b"}
-/Editing modal
 #profile_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "profile_modal", "aria-hidden" => true}
   .modal-dialog
     .modal-content
