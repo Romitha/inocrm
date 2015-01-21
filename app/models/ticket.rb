@@ -15,4 +15,14 @@ class Ticket < ActiveRecord::Base
 
   PRIORITY = %w(Urgent high medium low )
   INITIATED = %w(phone carry-in online)
+
+  validates :customer, presence: true
+  validates :initiated_through, presence: true
+  validates :ticket_type, presence: true
+  validates :status, presence: true
+  validates :subject, presence: true
+  validates :department, presence: true
+  validates :agents, presence: true
+  validates :priority, presence: true
+  validates :description, presence: true
 end
