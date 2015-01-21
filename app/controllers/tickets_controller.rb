@@ -55,8 +55,10 @@ class TicketsController < ApplicationController
     when "create_customer"
       @label = "Create Customer"
     end
+    @csrf_token = view_context.form_authenticity_token
     respond_to do |format|
       format.json
+      format.js
     end
   end
 
