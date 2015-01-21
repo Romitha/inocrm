@@ -1,0 +1,25 @@
+.modal-header
+  %h3.margin-none Create new user
+%form.new_user{action: "/users", method: "post"}
+  .hide
+    <input type="hidden" value="✓" name="utf8">
+    <input type="hidden" value="{{csrf_token}}" name="authenticity_token">
+  .modal-body
+    .control-group.form-group.email.optional.user_email
+      %label.email.optional.control-label
+        Email
+      .controls
+        <input data-original-title="Email" class="string email optional has-tooltip form-control" data-placement="left" data-toggle="tooltip" id="user_email" name="user[email]" placeholder="Email" title="" value="" type="email">
+
+    .control-group.form-group.string.optional.user_user_name
+      %label.string.optional.control-label
+        User name
+      .controls
+        <input data-original-title="User Name" class="string optional has-tooltip form-control" data-placement="left" data-toggle="tooltip" id="user_user_name" name="user[user_name]" placeholder="User name" title="" type="text">
+
+    .control-group.form-group.hidden.user_is_customer
+      .controls
+        <input class="hidden form-control" id="user_is_customer" name="user[is_customer]" value="true" type="hidden">
+
+  .modal-footer
+    <input name="commit" value="Create User" type="submit" class="btn btn-success">
