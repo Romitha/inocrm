@@ -54,6 +54,12 @@
     .modal-content
       #load_for_model_box
 
+
+#customer_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "profile_modal", "aria-hidden" => true}
+  .modal-dialog
+    .modal-content
+      #load_for_model_box
+
 %script{type: "text/html", id: "load_for_customer_select_box_mustache"}
   = render "tickets/load_for_customer_select_box"
 
