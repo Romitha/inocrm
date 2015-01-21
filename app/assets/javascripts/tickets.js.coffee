@@ -16,7 +16,15 @@ window.Tickets =
     $(".find_customer").click ->
       find_customer = $(@).val()
       $.post("/tickets/find_customer", {find_by: find_customer}, (data)->
-        $('#load_for_customer_select_box').html Mustache.to_html($('#load_for_customer_select_box_mustache').html(), data)
+        switch find_customer
+          when "customer"
+            $('#load_for_customer_select_box').html Mustache.to_html($('#load_for_customer_select_box_mustache').html(), data)
+
+          when "create_customer"
+            $("#load_for_customer_select_box").empty()
+            $("#customer_modal").modal()
+            $('#load_for_model_box').html Mustache.to_html($('#load_for_create_user_for_mustache').html(), data)
+
       ).done( (date)->
         $('.chosen-select').chosen
           allow_single_deselect: true
