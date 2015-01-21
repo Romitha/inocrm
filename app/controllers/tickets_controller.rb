@@ -131,6 +131,7 @@ class TicketsController < ApplicationController
     end
     respond_to do |format|
       format.json
+      format.js
     end
   end
 
