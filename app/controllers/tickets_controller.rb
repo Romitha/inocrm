@@ -24,6 +24,7 @@ class TicketsController < ApplicationController
 
   def create
     @ticket = Ticket.new(ticket_params)
+    @organization = @ticket.organization
     @ticket.save
     respond_with(@ticket)
   end
