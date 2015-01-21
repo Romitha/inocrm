@@ -52,6 +52,10 @@
               = link_to tickets_path do
                 %span= image_tag "ticket.png", style: "width: 12%;"
                 %span Tickets
+            %li{role: "presentation"}
+              %li.divider
+              %li.dropdown-header Create Ticket
+              %li{role: "presentation"}= link_to "New Ticket", new_ticket_path
 
         - if user_signed_in?
           %li.dropdown.profile_image_dropdown
