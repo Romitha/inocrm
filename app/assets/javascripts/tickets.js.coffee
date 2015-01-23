@@ -4,6 +4,7 @@ window.Tickets =
     @ticket_attachment_upload()
     @prevent_enter()
     @check_submit()
+    # @create_customer()
     return
 
   chosen_select: ->
@@ -13,6 +14,7 @@ window.Tickets =
       width: '100%'
 
   load_customer: ->
+    __this = this
     $(".find_customer").click ->
       find_customer = $(@).val()
       $.post("/tickets/find_customer", {find_by: find_customer}, (data)->
@@ -24,6 +26,10 @@ window.Tickets =
             $("#load_for_customer_select_box").empty()
             $("#customer_modal").modal()
             $('#load_for_model_box').html Mustache.to_html($('#load_for_create_user_for_mustache').html(), data)
+            setTimeout ( ->
+              __this.create_customer()
+              return
+            ), 300
 
       ).done( (date)->
         $('.chosen-select').chosen
@@ -87,3 +93,24 @@ window.Tickets =
         else
           $("#ticket_attachment_upload").show()
         return
+
+  create_customer: ->
+    submit_button = $(".new_customer .btn-success")
+    input_field = $(".new_customer .form-control")
+
+    submit_button.prop "disabled", true
+    input_field.keyup ->
+      disabled = false
+      input_field.each ->
+        if $(@).val() == ""
+          disabled = true
+      submit_button.prop "disabled", disabled
+
+    submit_button.click (e)->
+      e.preventDefault()
+      $.post "/tickets/create_customer", $(".new_customer").serialize(), (data, textStatus, jqXHR)->
+        if data.errors
+          $("#new_customer_errors").html "<div class = 'alert alert-danger new_customer_error'>#{data.errors}</div>"
+        else
+          $(".new_customer_error").remove()
+          alert "New customer is successfully saved. You can continue add new customer"

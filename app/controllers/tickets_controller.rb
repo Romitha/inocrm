@@ -1,7 +1,7 @@
 class TicketsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_ticket, only: [:show, :edit, :update, :destroy]
-  before_action :set_organization_for_ticket, only: [:new, :edit]
+  before_action :set_organization_for_ticket, only: [:new, :edit, :create_customer]
 
   respond_to :html
 
@@ -59,6 +59,17 @@ class TicketsController < ApplicationController
     respond_to do |format|
       format.json
       format.js
+    end
+  end
+
+  def create_customer
+    request = params.require(:user).permit(:NIC, :email, :full_name, :is_customer, :primary_address, :primary_phone_number)
+    @user = @organization.users.build(request)
+    @user.user_name = "#{@user.first_name}_#{@user.last_name}_#{rand(100)}"
+    if @organization.save
+      render json: {success: "success"}
+    else
+      render json: {errors: @user.errors.full_messages.join(", ").to_json}
     end
   end
 
