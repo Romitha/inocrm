@@ -88,4 +88,31 @@ class User < ActiveRecord::Base
   end
 
   scope :customers, -> {select{|user| user.is_customer?}}
+
+  def full_name
+    "#{first_name} #{last_name}"
+  end
+
+  def full_name=(full_name)
+    splitted_names = full_name.strip.split(" ")
+    self.first_name = splitted_names[0]
+    self.last_name = splitted_names[1]
+  end
+
+  def primary_phone_number
+    contact_numbers.find_by_primary(true)
+  end
+
+  def primary_phone_number=(contact_number)
+    self.contact_numbers.build(category: "Land", value: contact_number, primary: true)
+  end
+
+  def primary_address
+    addresses.find_by_primary(true)
+  end
+
+  def primary_address=(address)
+    self.addresses.build(category: "Support", address: address, primary: true)
+  end
+
 end

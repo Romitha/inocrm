@@ -57,6 +57,7 @@ Rails.application.routes.draw do
     concerns :attachable
     collection do
       post "find_customer"
+      post "create_customer"
     end
   end
   # get 'auth/index'

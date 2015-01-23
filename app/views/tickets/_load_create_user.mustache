@@ -1,21 +1,47 @@
 .modal-header
-  %h3.margin-none Create new user
-%form.new_user{action: "/users", method: "post"}
+  %h3.margin-none Create new customer
+%form.new_customer{action: "/tickets/create_customer", method: "post"}
   .hide
     <input type="hidden" value="✓" name="utf8">
     <input type="hidden" value="{{csrf_token}}" name="authenticity_token">
-  .modal-body
+  .modal-body.fixed
+    #new_customer_errors
     .control-group.form-group.email.optional.user_email
       %label.email.optional.control-label
+        %abbr{title: "required"} *
         Email
       .controls
         <input data-original-title="Email" class="string email optional has-tooltip form-control" data-placement="left" data-toggle="tooltip" id="user_email" name="user[email]" placeholder="Email" title="" value="" type="email">
 
     .control-group.form-group.string.optional.user_user_name
       %label.string.optional.control-label
-        User name
+        %abbr{title: "required"} *
+        Full name
       .controls
-        <input data-original-title="User Name" class="string optional has-tooltip form-control" data-placement="left" data-toggle="tooltip" id="user_user_name" name="user[user_name]" placeholder="User name" title="" type="text">
+        <input data-original-title="User Name" class="string optional has-tooltip form-control" data-placement="left" data-toggle="tooltip" id="full_name" name="user[full_name]" placeholder="Full name (ex: Jeus Sam) like first name and last name" title="" type="text">
+
+    .col-md-5.padding0
+      .control-group.form-group.string.optional.user_user_name
+        %label.string.optional.control-label
+          %abbr{title: "required"} *
+          Phone Number
+        .controls
+          <input data-original-title="Primary phone number" class="string optional has-tooltip form-control" data-placement="left" data-toggle="tooltip" id="phone_number" name="user[primary_phone_number]" placeholder="Primary Phone number" title="" type="text">
+
+      .control-group.form-group.string.optional.user_user_name
+        %label.string.optional.control-label
+          %abbr{title: "required"} *
+          N.I.C Number
+        .controls
+          <input data-original-title="N.I.C number" class="string optional has-tooltip form-control" data-placement="left" data-toggle="tooltip" id="nic_number" name="user[NIC]" placeholder="N.I.C Number" title="" type="text">
+
+    .control-group.form-group.string.optional.user_user_name.col-md-7.padding-left1.padding-right0
+      %label.string.optional.control-label
+        %abbr{title: "required"} *
+        Address
+      .controls
+        <textarea data-original-title="Address" class="string optional has-tooltip form-control" data-placement="left" data-toggle="tooltip" id="address" name="user[primary_address]" placeholder="Primary Address" title="" rows=4></textarea>
+
 
     .control-group.form-group.hidden.user_is_customer
       .controls
