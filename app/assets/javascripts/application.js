@@ -21,6 +21,8 @@
 //= require jquery_nested_form
 //= require bootstrap-datepicker/core
 //= require bootstrap-datepicker/locales/bootstrap-datepicker.es
+//= require moment
+//= require bootstrap-datetimepicker
 //= require chosen-jquery
 //= require mustache
 //= require_tree .

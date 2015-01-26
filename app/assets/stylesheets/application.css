@@ -15,5 +15,6 @@
  *= require bootstrap-editable
  *= require bootstrap-datepicker3
  *= require jquery.Jcrop
+ *= require bootstrap-datetimepicker
  *= require_tree .
  */

@@ -17,14 +17,16 @@
     .row
       .col-md-4
         .radio_button
-          = f.input :initiated_through, as: :radio_buttons, collection: Ticket::INITIATED, label: "Initiated through", wrapper: :for_radio_button, input_html: {class: "sample"}
+          = f.input :initiated_through, as: :radio_buttons, collection: Ticket::INITIATED, label: "Initiated through", wrapper: :for_radio_button, input_html: {class: "input_check"}
       .col-md-4
         = f.input :ticket_type, collection: Ticket::TYPES, include_blank: false
       .col-md-4
         = f.input :status, collection: Ticket::STATUS, include_blank: false
     .row
-      .col-md-12
-        = f.input :subject, input_html: {class: "sample"}
+      .col-md-8
+        = f.input :subject, input_html: {class: "input_check"}
+      .col-md-4
+        = f.input :due_date_time, as: :string, input_html: {class: "datetimepicker", value: (DateTime.now+5).strftime("%m/%d/%Y %I:%M %p")}
     .row
       .col-md-4
         = f.association :department, include_blank: false
@@ -34,7 +36,7 @@
         = f.input :priority, collection: Ticket::PRIORITY, include_blank: false
     .row
       .col-md-12
-        = f.input :description, input_html: {class: "sample"}
+        = f.input :description, input_html: {class: "input_check"}
     .row
       .col-md-2
         .hello
@@ -43,6 +45,7 @@
               %span Attach any file
               = file.file_field :file_path, label: false, placeholder: "Upload any attachment",wrapper_html: {class: "margin-none"}
           = f.input :organization_id, as: :hidden, input_html: {value: organization.id}
+
       .col-md-10
       .pull-right
         = link_to "Cancel", "#", data: {dismiss: "modal"}, class: "btn btn-link"
@@ -58,3 +61,6 @@
 
 %script{type: "text/html", id: "load_for_create_user_for_mustache"}
   = render "tickets/load_create_user"
+
+%script{type: "text/html", id: "load_customer_summary_mustache"}
+  = render "tickets/load_customer_summary"
