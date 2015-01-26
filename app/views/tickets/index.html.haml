@@ -1,39 +1,6 @@
-%h1 Listing tickets
+- tickets = @tickets
+%h3 Tickets
 
-%table
-  %thead
-    %tr
-      %th Type
-      %th Status
-      %th Subject
-      %th Priority
-      %th Description
-      %th Deleted
-      %th Attachment
-      %th Organization
-      %th Department
-      %th User
-      %th
-      %th
-      %th
-      
-  %tbody
-    - @tickets.each do |ticket|
-      %tr
-        %td= ticket.ticket_type
-        %td= ticket.status
-        %td= ticket.subject
-        %td= ticket.priority
-        %td= ticket.description
-        %td= ticket.deleted
-        / %td= ticket.attachment
-        %td= ticket.organization
-        %td= ticket.department
-        %td= ticket.customer
-        %td= link_to 'Show', ticket
-        %td= link_to 'Edit', edit_ticket_path(ticket)
-        %td= link_to 'Destroy', ticket, :method => :delete, :data => { :confirm => 'Are you sure?' }
-
-%br
-
-= link_to 'New Ticket', new_ticket_path
+- tickets.each do |ticket|
+  .border-all.small_scale_padding1.small_scale_margin-bottom1.ticket_list
+    = render "tickets/ticket", ticket: ticket

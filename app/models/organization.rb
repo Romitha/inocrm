@@ -53,4 +53,8 @@ class Organization < ActiveRecord::Base
       data.save
     end
   end
+
+  def employees
+    users.order("created_at DESC").select{|user| !user.is_customer? }
+  end
 end
