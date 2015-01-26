@@ -1,5 +1,35 @@
-// Place all the styles related to the tickets controller here.
-// They will automatically be included in application.css.
-// You can use Sass (SCSS) here: http://sass-lang.com/
-
-
+.ticket_list {
+  position: relative;
+  .invisible_icons {
+    position: absolute;
+    right: -35px;
+    width: 35px;
+    height: 101.5%;
+    top: -1px;
+    display: none;
+    .icons {
+      width: 20px;
+      height: 20px;
+      margin: auto;
+      background-position: center center;
+      background-color: transparent;
+      background-repeat: no-repeat;
+      background-size: cover;
+      margin-top: 10px;
+    }
+    .ticket_merge {
+      background-image: url('ticket_merge.png');
+    }
+    .ticket_pick {
+      background-image: url('ticket_pick.png');
+    }
+    .ticket_sparm {
+      background-image: url('ticket_sparm.png');
+    }
+  }
+  &:hover {
+    .invisible_icons {
+      display: block;
+    }
+  }
+}

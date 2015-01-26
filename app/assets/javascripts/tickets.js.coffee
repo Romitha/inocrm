@@ -4,6 +4,7 @@ window.Tickets =
     @ticket_attachment_upload()
     @prevent_enter()
     @check_submit()
+    @ticket_customer_id_change()
     # @create_customer()
     return
 
@@ -21,6 +22,7 @@ window.Tickets =
         switch find_customer
           when "customer"
             $('#load_for_customer_select_box').html Mustache.to_html($('#load_for_customer_select_box_mustache').html(), data)
+            __this.ticket_customer_id_change()
 
           when "create_customer"
             $("#load_for_customer_select_box").empty()
@@ -79,15 +81,15 @@ window.Tickets =
 
   check_submit: ->
     $("#ticket_attachment_upload").hide()
-    $(".sample").keyup ->
-      $(".sample").each ->
+    $(".input_check").keyup ->
+      $(".input_check").each ->
         if $("#ticket_description").val().length is 0 or $("input[name='ticket[initiated_through]']:checked").length is 0 or $("#ticket_subject").val().length is 0            # alert $(@).val()
           $("#ticket_attachment_upload").hide()
         else
           $("#ticket_attachment_upload").show()
         return
-    $(".sample").click ->
-      $(".sample").each ->
+    $(".input_check").click ->
+      $(".input_check").each ->
         if $("#ticket_description").val().length is 0 or $("input[name='ticket[initiated_through]']:checked").length is 0 or $("#ticket_subject").val().length is 0
           $("#ticket_attachment_upload").hide()
         else
@@ -114,3 +116,14 @@ window.Tickets =
         else
           $(".new_customer_error").remove()
           alert "New customer is successfully saved. You can continue add new customer"
+
+  ticket_customer_id_change: ->
+    $("#ticket_customer_id").change ->
+      $(".more_about_user").remove()
+      $(@).parent().append("<p class='more_about_user'><a href='#' onclick='Tickets.customer_summary_view(#{$(@).val()});'>Do you want to know more?</a></p>")
+
+  customer_summary_view: (customer_id)->
+    $.post "/tickets/customer_summary", {customer_id: customer_id}, (data, textStatus, jqXHR)->
+      $("#customer_modal").modal()
+      $('#load_for_model_box').html Mustache.to_html($('#load_customer_summary_mustache').html(), data)
+      return

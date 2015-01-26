@@ -71,7 +71,7 @@
             = render "contact_numbers/contact_number", contact_number: contact_number
       .tab-pane.limit-height{id: "contact_persons#{organization.id}"}
         .fixed-height
-          - organization.users.order("created_at DESC").each do |user|
+          - organization.employees.each do |user|
             = render "users/user", user: user
 
       .tab-pane.limit-height{id: "designations#{organization.id}"}

@@ -6,7 +6,7 @@ class TicketsController < ApplicationController
   respond_to :html
 
   def index
-    @tickets = Ticket.all
+    @tickets = Ticket.order("created_at DESC")
     respond_with(@tickets)
   end
 
@@ -23,8 +23,12 @@ class TicketsController < ApplicationController
   end
 
   def create
-    @ticket = Ticket.new(ticket_params)
+    t_params = ticket_params
+    t_params["due_date_time"] = DateTime.strptime(t_params["due_date_time"], '%m/%d/%Y %I:%M %p') if t_params["due_date_time"].present?
+    @ticket = Ticket.new(t_params)
     @organization = @ticket.organization
+    @ticket.initiated_by = (current_user.user_name || current_user.email)
+    @ticket.initiated_by_id = current_user.id
     @ticket.save
     respond_with(@ticket)
   end
@@ -73,6 +77,12 @@ class TicketsController < ApplicationController
     end
   end
 
+  def customer_summary
+    @customer = User.find params[:customer_id]
+    # respond_with(@customer)
+      render json: {email: @customer.email, full_name: @customer.full_name, phone_number: @customer.primary_phone_number.try(:value), address: @customer.primary_address.try(:address), nic: @customer.NIC, avatar: view_context.image_tag((@customer.avatar.thumb.url || "no_image.jpg"), alt: @customer.email)}
+  end
+
   private
     def set_ticket
       @ticket = Ticket.find(params[:id])
@@ -83,6 +93,6 @@ class TicketsController < ApplicationController
     end
 
     def ticket_params
-      params.require(:ticket).permit(:type, :status, :subject, :priority, :description, :deleted, {document_attachment: [:file_path, :attachable_id, :attachable_type, :downloadable]}, :organization_id, :department_id, :agent_ids, :customer_id)
+      params.require(:ticket).permit(:initiated_through, :ticket_type, :status, :subject, :priority, :description, {document_attachment: [:file_path, :attachable_id, :attachable_type, :downloadable]}, :organization_id, :department_id, :agent_ids, :customer_id, :due_date_time)
     end
 end

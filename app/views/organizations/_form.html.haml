@@ -70,7 +70,7 @@
     .tab-pane.limit-height{id: "contact_persons#{organization.id}"}
       = link_to "Add Employee", new_user_path(organization_id: encrypt_org(organization.id)), class: "btn btn-primary btn-sm small_scale_margin-bottom1"
       .limit-height
-        - organization.users.order("created_at DESC").each do |user|
+        - organization.employees.each do |user|
           = render "users/user", user: user
 
     .tab-pane.limit-height{id: "designations#{organization.id}"}
