@@ -6,3 +6,6 @@ jQuery ->
     format: "dd M, yy"
     todayBtn: true
     todayHighlight: true
+
+  $('.datetimepicker').datetimepicker
+    sideBySide: true
