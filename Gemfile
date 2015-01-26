@@ -66,6 +66,9 @@ gem 'bootstrap-datepicker-rails'
 gem "jquery-fileupload-rails"
 gem 'jcrop-rails-v2'
 
+gem 'momentjs-rails', '>= 2.8.1'
+gem 'bootstrap3-datetimepicker-rails', '>= 3.1.3'
+
 # gem "handlebars_assets"
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
