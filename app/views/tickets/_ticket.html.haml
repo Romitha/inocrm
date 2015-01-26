@@ -1,0 +1,31 @@
+.row
+  .col-md-1
+    = image_tag (ticket.customer.avatar.try(:url) || "no_image.jpg"), alt: ticket.customer.full_name
+  .col-md-9.border-right
+    %h4.strong.margin-top0= link_to ticket.subject, ticket, target: "_blank"
+    %p From: #{link_to ticket.customer.email, profile_user_path(ticket.customer)} by #{link_to ticket.initiated_by, profile_user_path(ticket.initiated_by_id), target: "_blank"}
+    %p
+      Created:
+      %strong #{time_ago_in_words(ticket.created_at)}
+      ago via
+      %span.italic #{ticket.initiated_through}
+    %p= ticket.description
+  .col-md-2
+    Agent: #{ticket.assigned.try :user_name}
+    %br/
+    Status: #{ticket.status}
+    %br/
+    Priority: #{ticket.priority}
+    %br/
+    - if ticket.due_date_time
+      - if (ticket.due_date_time-5.5*3600).future?
+        Due Date:
+        %span.text-success #{distance_of_time_in_words_to_now(ticket.due_date_time-5.5*3600) if ticket.due_date_time}
+      - else
+        OverDue:
+        %span.text-danger #{time_ago_in_words(ticket.due_date_time-5.5*3600)} ago
+
+  .invisible_icons.border-all
+    .ticket_pick.icons
+    .ticket_merge.icons
+    .ticket_sparm.icons

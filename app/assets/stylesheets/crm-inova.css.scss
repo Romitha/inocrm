@@ -1,5 +1,7 @@
 // for sticky footer style
 
+$border-color: #aeaeae;
+
 body, html {
   height: 100%;
 }
@@ -313,4 +315,15 @@ img {
 }
 input[type="radio"], input[type="checkbox"] {
   vertical-align: sub;
+}
+
+.border-all {
+  border: 1px solid $border-color;
+}
+.border-left {
+  border-left: 1px solid $border-color;
+}
+
+.border-right {
+  border-right: 1px solid $border-color;
 }

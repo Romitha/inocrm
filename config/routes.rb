@@ -58,6 +58,7 @@ Rails.application.routes.draw do
     collection do
       post "find_customer"
       post "create_customer"
+      post "customer_summary"
     end
   end
   # get 'auth/index'

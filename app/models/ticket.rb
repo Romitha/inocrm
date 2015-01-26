@@ -16,13 +16,29 @@ class Ticket < ActiveRecord::Base
   PRIORITY = %w(Urgent high medium low )
   INITIATED = %w(phone carry-in online)
 
-  validates :customer, presence: true
-  validates :initiated_through, presence: true
-  validates :ticket_type, presence: true
-  validates :status, presence: true
-  validates :subject, presence: true
-  validates :department, presence: true
-  validates :agents, presence: true
-  validates :priority, presence: true
-  validates :description, presence: true
+  validates_presence_of [:due_date_time, :customer, :initiated_through, :ticket_type, :customer, :initiated_through, :ticket_type, :status, :subject, :department, :agents, :priority, :description,]
+
+  has_many :dyna_columns, as: :resourceable
+
+  [:initiated_by, :initiated_by_id].each do |dyna_method|
+    define_method(dyna_method) do
+      dyna_columns.find_by_data_key(dyna_method).try(:data_value)
+    end
+
+    define_method("#{dyna_method}=") do |value|
+      data = dyna_columns.find_or_initialize_by(data_key: dyna_method)
+      data.data_value = (value.class==Fixnum ? value : value.strip)
+    end
+  end
+
+  def assigned
+    assigned_ticket = agent_ticket_infos.find_by_visibility("assigned")
+    assigned_ticket && assigned_ticket.agent
+  end
+
+  after_create :set_assignee
+
+  def  set_assignee
+    agent_ticket_infos.first.update_attribute :visibility, "assigned"
+  end
 end
