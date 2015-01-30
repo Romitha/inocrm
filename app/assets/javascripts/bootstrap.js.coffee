@@ -9,3 +9,6 @@ jQuery ->
 
   $('.datetimepicker').datetimepicker
     sideBySide: true
+
+  $('.wysihtml5').each (i, elem)->
+    $(elem).wysihtml5()
