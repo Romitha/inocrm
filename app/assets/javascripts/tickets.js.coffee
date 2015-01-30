@@ -5,7 +5,7 @@ window.Tickets =
     @prevent_enter()
     @check_submit()
     @ticket_customer_id_change()
-    # @create_customer()
+    @filter_agent()
     return
 
   chosen_select: ->
@@ -127,3 +127,34 @@ window.Tickets =
       $("#customer_modal").modal()
       $('#load_for_model_box').html Mustache.to_html($('#load_customer_summary_mustache').html(), data)
       return
+
+  load_new_comment: (comment_method, ticket_id)->
+    _this = this
+    $.post "/tickets/comment_methods",
+      {comment_method: comment_method, ticket_id: ticket_id, to_email: $("#watcher").data("to-email"), customer: $("#reply").data("customer")},
+      (data, textStatus, jqXHR)->
+        $("#load_new_comment_for_ticket").html Mustache.to_html($("#load_new_comment_form_ticket_mustache").html(), data)
+        $('.wysihtml5').each (i, elem)->
+          $(elem).wysihtml5()
+        _this.create_comment_for_ticket()
+        return
+
+  create_comment_for_ticket: ->
+    $("#comment_create").click (e)->
+      e.preventDefault()
+      $.post( "/tickets/reply_ticket", $("#new_comment").serialize(), (data, textStatus, jqXHR)->
+        $(".comment_list").prepend Mustache.to_html($("#comment_mustache").html(), data)
+      ).fail( ->
+        alert "Something went wrong. Please try again or contact system administrator"
+      )
+
+  filter_agent: ->
+    agents = $("#ticket_agent_ids").html()
+    $("#ticket_agent_ids").empty()
+
+    $("#ticket_department_id").change ->
+      filtered_html = $(agents).filter("optgroup[label = '#{$(@).val()}']").html()
+      if filtered_html
+        $("#ticket_agent_ids").html(filtered_html)
+      else
+        $("#ticket_agent_ids").empty()

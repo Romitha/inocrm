@@ -23,13 +23,18 @@
     .ticket_pick {
       background-image: url('ticket_pick.png');
     }
-    .ticket_sparm {
-      background-image: url('ticket_sparm.png');
+    .ticket_print {
+      background-image: url('icon_print.png');
     }
   }
   &:hover {
     .invisible_icons {
       display: block;
     }
+  }
+}
+.ticket_icons {
+  img {
+    width: auto;
   }
 }
