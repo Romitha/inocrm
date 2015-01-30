@@ -11,7 +11,7 @@
       %strong #{time_ago_in_words(ticket.created_at)}
       ago via
       %span.italic #{ticket.initiated_through}
-    %p= ticket.description
+    .desc= ticket.description
   .col-md-2
     Dpartment: #{ticket.department.name}
     %br/
