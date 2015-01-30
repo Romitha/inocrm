@@ -160,7 +160,6 @@ window.Tickets =
       else
         $("#ticket_agent_ids").empty()
   description_more: ->
-    # $ ->
     showTotalChar = 200
     showChar = "Show (+)"
     hideChar = "Hide (-)"
@@ -169,7 +168,7 @@ window.Tickets =
       if content.length > showTotalChar
         con = content.substr(0, showTotalChar)
         hcon = content.substr(showTotalChar, content.length - showTotalChar)
-        txt = con + "<span class=\"dots\">...</span><span class=\"morectnt\"><span>" + hcon + "</span>&nbsp;&nbsp;<a href=\"\" class=\"showmoretxt\">" + showChar + "</a></span>"
+        txt = con + "<span class=\"dots\">...</span><span class=\"morectnt\"><span>" + hcon + "</span>&nbsp;&nbsp;<a href='#' class='showmoretxt'>" + showChar + "</a></span>"
         $(this).html txt
       return
 
