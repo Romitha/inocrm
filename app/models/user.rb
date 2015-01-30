@@ -29,6 +29,8 @@ class User < ActiveRecord::Base
   has_many :agent_ticket_infos, foreign_key: "agent_id"
   has_many :tickets, through: :agent_ticket_infos
 
+  has_many :comments, foreign_key: "agent_id"
+
   validates_uniqueness_of :user_name
 
   # validates_presence_of :password, if: Proc.new {|user| user.is_customer? }
