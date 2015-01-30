@@ -1,0 +1,37 @@
+%form{ method: "post", id: "new_comment", class: "simple_form new_comment", action: "{{comment_method}}", "accept-charset" => "UTF-8" }
+  .hide
+    <input type="hidden" value="✓" name="utf8">
+    <input type="hidden" value="{{csrf_token}}" name="authenticity_token">
+  .panel.panel-success
+    .panel-heading
+      {{subject}}
+    .panel-body
+      %p From: {{from}}
+      %p
+        Send to customer
+        %i {{customer}} :
+        %input{ type: "checkbox", value: "true", name: "more_in_ticket[send_customer]"}
+        %input{ type: "hidden", value: "{{from}}", name: "more_in_ticket[replied_by]"}
+        %input{ type: "hidden", value: "{{history}}", name: "comment[history]"}
+        %input{ type: "hidden", value: "{{ticket_id}}", name: "comment[ticket_id]"}
+
+      .send_customer{class: "{{hide_content}}"}
+
+      .control-group.form-group.string.required.comment_subject
+        %label{ for: "comment_subject", class: "string required control-label"}
+          %abbr{title: "required"} *
+          Subject
+
+        .controls
+          %input{ type: "text", name: "comment[subject]", id: "comment_subject", class: "string required form-control", placeholder: "Initiate with subject", value: "{{subject}}" }
+
+      .control-group.form-group.text.required.comment_content
+        %label{ for: "comment_content", class: "text required control-label"}
+          %abbr{title: "required"} *
+          Content
+
+        .controls
+          %textarea{ name: "comment[content]", id: "comment_content", class: "text required form-control wysihtml5"}
+            %i {{content}}
+      .controls
+        <input type="submit" name="submit" value="Say" class="btn btn-success" id="comment_create" />

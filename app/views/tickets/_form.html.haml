@@ -29,9 +29,9 @@
         = f.input :due_date_time, as: :string, input_html: {class: "datetimepicker", value: (DateTime.now+5).strftime("%m/%d/%Y %I:%M %p")}
     .row
       .col-md-4
-        = f.association :department, include_blank: false
+        = f.association :department, include_blank: true
       .col-md-4
-        = f.association :agents, label: "Agent", include_blank: false, collection: ticket.organization.departments, as: :grouped_select, group_method: :users , label_method: :email, value_method: :id  # agent
+        = f.association :agents, label: "Agent", include_blank: true, collection: ticket.organization.departments, as: :grouped_select, group_method: :users, group_label_method: :id , label_method: :email, value_method: :id  # agent
       .col-md-4
         = f.input :priority, collection: Ticket::PRIORITY, include_blank: false
     .row
