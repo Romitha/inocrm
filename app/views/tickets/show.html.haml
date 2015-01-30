@@ -40,7 +40,7 @@
         .col-md-3.padding-right0
           = link_to image_tag((ticket.customer.avatar.try(:url) || "no_image.jpg"), alt: ticket.customer.full_name, class: "media-object"), profile_user_path(ticket.customer)
         .col-md-9
-          = ticket.customer.full_name
+          = ticket.customer.try(:full_name)
       .row
         .col-md-3.padding-right0
           = image_tag "email.png", style: "width: 32px; height: 32px; float: right;"
@@ -50,7 +50,7 @@
         .col-md-3.padding-right0
           = image_tag "phone.png", style: "width: 32px; height: 32px; float: right;"
         .col-md-9
-          = ticket.customer.primary_phone_number.value
+          = ticket.customer.primary_phone_number.try(:value)
       .pull-right= link_to "More", profile_user_path(ticket.customer), target: "_blank"
 
     = panels panel_type: "danger", header_content: "Ticket info" do
