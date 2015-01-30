@@ -1,9 +1,23 @@
 .modal-header
-	%h3 Summary - {{email}}
+  %h3 {{email}}
 .modal-body
-	{{full_name}}
-	{{phone_number}}
-	{{address}}
-	{{nic}}
-	{{{avatar}}}
-{{email}}
+  .row
+    .col-md-9
+      Email : {{email}}
+      .row
+        .col-md-8
+          Full Name : {{full_name}}
+      .row
+        .col-md-8
+          Phone Number : {{phone_number}}
+      .row
+        .col-md-8
+          NIC : {{nic}}
+      .row
+        .col-md-8
+          Address : {{address}}
+    .col-md-3
+      {{{avatar}}}
+  .row
+    .col-md-3.pull-right
+      <a href="/users/{{id}}/profile" target="_blank">More>></a>

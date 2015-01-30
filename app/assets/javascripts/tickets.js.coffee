@@ -6,6 +6,7 @@ window.Tickets =
     @check_submit()
     @ticket_customer_id_change()
     @filter_agent()
+    @description_more()
     return
 
   chosen_select: ->
@@ -158,3 +159,27 @@ window.Tickets =
         $("#ticket_agent_ids").html(filtered_html)
       else
         $("#ticket_agent_ids").empty()
+  description_more: ->
+    # $ ->
+    showTotalChar = 200
+    showChar = "Show (+)"
+    hideChar = "Hide (-)"
+    $(".desc").each ->
+      content = $(this).text()
+      if content.length > showTotalChar
+        con = content.substr(0, showTotalChar)
+        hcon = content.substr(showTotalChar, content.length - showTotalChar)
+        txt = con + "<span class=\"dots\">...</span><span class=\"morectnt\"><span>" + hcon + "</span>&nbsp;&nbsp;<a href=\"\" class=\"showmoretxt\">" + showChar + "</a></span>"
+        $(this).html txt
+      return
+
+    $(".showmoretxt").click ->
+      if $(this).hasClass("sample")
+        $(this).removeClass "sample"
+        $(this).text showChar
+      else
+        $(this).addClass "sample"
+        $(this).text hideChar
+      $(this).parent().prev().toggle()
+      $(this).prev().toggle()
+      return
