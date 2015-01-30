@@ -68,6 +68,7 @@ gem 'jcrop-rails-v2'
 
 gem 'momentjs-rails', '>= 2.8.1'
 gem 'bootstrap3-datetimepicker-rails', '>= 3.1.3'
+gem 'bootstrap-wysihtml5-rails'
 
 # gem "handlebars_assets"
 # Use ActiveModel has_secure_password

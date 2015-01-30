@@ -16,5 +16,6 @@
  *= require bootstrap-datepicker3
  *= require jquery.Jcrop
  *= require bootstrap-datetimepicker
+ *= require bootstrap-wysihtml5
  *= require_tree .
  */

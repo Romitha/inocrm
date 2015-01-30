@@ -23,6 +23,7 @@
 //= require bootstrap-datepicker/locales/bootstrap-datepicker.es
 //= require moment
 //= require bootstrap-datetimepicker
+//= require bootstrap-wysihtml5
 //= require chosen-jquery
 //= require mustache
 //= require_tree .
