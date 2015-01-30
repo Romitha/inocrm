@@ -9,6 +9,8 @@ class Ticket < ActiveRecord::Base
   has_many :document_attachments, as: :attachable
   accepts_nested_attributes_for :document_attachments, allow_destroy: true
 
+  has_many :comments
+
   STATUS = %w(open pending closed spam )
 
   TYPES = %w(problem question feature_request lead )

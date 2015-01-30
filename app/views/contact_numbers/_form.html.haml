@@ -20,5 +20,5 @@
           - if contact_number.object.c_numberable_type == "User"
             .form-group.col-md-12
               = password_field_tag "current_user_password", nil, placeholder: "password", class: "form-control has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Password"
-            .col-md-12
-              = contact_number.submit "Add new contact_number", class: "btn btn-success pull-right", id: "submit_new_contact_number"
+          .col-md-12
+            = contact_number.submit "Add new contact_number", class: "btn btn-success pull-right", id: "submit_new_contact_number"

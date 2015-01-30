@@ -59,6 +59,8 @@ Rails.application.routes.draw do
       post "find_customer"
       post "create_customer"
       post "customer_summary"
+      post "comment_methods"
+      post "reply_ticket"
     end
   end
   # get 'auth/index'

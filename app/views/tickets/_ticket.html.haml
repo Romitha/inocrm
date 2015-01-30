@@ -1,6 +1,8 @@
 .row
   .col-md-1
-    = image_tag (ticket.customer.avatar.try(:url) || "no_image.jpg"), alt: ticket.customer.full_name
+    = link_to profile_user_path(ticket.customer), title: ticket.customer.email do
+      = image_tag((ticket.customer.avatar.try(:url) || "no_image.jpg"), alt: ticket.customer.full_name)
+      = truncate(ticket.customer.email, length: 10)
   .col-md-9.border-right
     %h4.strong.margin-top0= link_to ticket.subject, ticket, target: "_blank"
     %p From: #{link_to ticket.customer.email, profile_user_path(ticket.customer)} by #{link_to ticket.initiated_by, profile_user_path(ticket.initiated_by_id), target: "_blank"}
@@ -11,11 +13,13 @@
       %span.italic #{ticket.initiated_through}
     %p= ticket.description
   .col-md-2
-    Agent: #{ticket.assigned.try :user_name}
+    Dpartment: #{ticket.department.name}
     %br/
-    Status: #{ticket.status}
+    Agent: #{ticket.assigned.try(:user_name)}
     %br/
-    Priority: #{ticket.priority}
+    Status: #{link_to ticket.status, "#", class: "inline_edit", data: {type: "select", source: Ticket::STATUS, resource: "ticket", name: "status", url: ticket_path(ticket.id)} }
+    %br/
+    Priority: #{link_to ticket.priority, "#", class: "inline_edit", data: {type: "select", source: Ticket::PRIORITY, resource: "ticket", name: "priority", url: ticket_path(ticket.id)} }
     %br/
     - if ticket.due_date_time
       - if (ticket.due_date_time-5.5*3600).future?
@@ -28,4 +32,4 @@
   .invisible_icons.border-all
     .ticket_pick.icons
     .ticket_merge.icons
-    .ticket_sparm.icons
+    .ticket_print.icons

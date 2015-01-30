@@ -20,5 +20,5 @@
           - if address.object.addressable_type == "User"
             .form-group.col-md-12
               = password_field_tag "current_user_password", nil, placeholder: "password", class: "form-control has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Password"
-            .col-md-12
-              = address.submit "Add new address", class: "btn btn-success pull-right", id: "submit_new_address"
+          .col-md-12
+            = address.submit "Add new address", class: "btn btn-success pull-right", id: "submit_new_address"

@@ -34,8 +34,19 @@ class TicketsController < ApplicationController
   end
 
   def update
-    @ticket.update(ticket_params)
-    respond_with(@ticket)
+    t_params = ticket_params
+    t_params["due_date_time"] = DateTime.strptime(t_params["due_date_time"], '%m/%d/%Y %I:%M %p') if t_params["due_date_time"].present?
+    @ticket.update(t_params)
+    # respond_with(@ticket)
+    respond_to do |format|
+      if @ticket.update(t_params)
+        format.html {redirect_to @ticket, notice: "Successfully updated."}
+        format.json {render json: @ticket}
+      else
+        format.html {redirect_to @ticket, error: "Unable to update ticket. Please validate your inputs."}
+        format.json {render json: @ticket.errors}
+      end
+    end
   end
 
   def destroy
@@ -81,6 +92,46 @@ class TicketsController < ApplicationController
     @customer = User.find params[:customer_id]
     # respond_with(@customer)
       render json: {email: @customer.email, full_name: @customer.full_name, phone_number: @customer.primary_phone_number.try(:value), address: @customer.primary_address.try(:address), nic: @customer.NIC, avatar: view_context.image_tag((@customer.avatar.thumb.url || "no_image.jpg"), alt: @customer.email)}
+  end
+
+  def comment_methods
+    @ticket_id = params[:ticket_id]
+    @customer = params[:customer]
+    @to_email = params[:to_email]
+    case params[:comment_method]
+    when "reply"
+      @subject = "reply to: #{params[:to_email]}"
+      @from = current_user.email
+      @hide_content = "hide"
+      @content = "#{@from} replied to #{@to_email}"
+      @comment_method = reply_ticket_tickets_path
+      @history = @content
+    when "forward"
+      @subject = "Forward"
+      @from = current_user.email
+
+    end
+    @csrf_token = view_context.form_authenticity_token
+    respond_to do |format|
+      format.json
+    end
+  end
+
+  def reply_ticket
+    @ticket_id = params[:comment][:ticket_id]
+    ticket_params = params.require(:comment).permit(:subject, :content, :ticket_id, :history)
+    ticket_params[:history] = ticket_params[:history]+" on #{DateTime.now.strftime("%d %b, %Y at %H:%M:%S")}"
+    @comment = Comment.new ticket_params
+    @comment.agent = current_user
+    @comment.ticket = Ticket.find(@ticket_id)
+    if @comment.save
+      @result = @comment
+    else
+      @error = @comment.errors.full_messages.join(", ")
+    end
+    respond_to do |format|
+      format.json
+    end
   end
 
   private
