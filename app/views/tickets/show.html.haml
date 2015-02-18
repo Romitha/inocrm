@@ -45,7 +45,7 @@
         .col-md-3.padding-right0
           = image_tag "email.png", style: "width: 32px; height: 32px; float: right;"
         .col-md-9
-          = ticket.customer.email
+          .word_wrap= ticket.customer.email 
       .row
         .col-md-3.padding-right0
           = image_tag "phone.png", style: "width: 32px; height: 32px; float: right;"
