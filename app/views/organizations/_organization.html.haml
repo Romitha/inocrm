@@ -94,7 +94,7 @@
         .tab-pane.limit-height{id: "organization_departments#{organization.id}"}
           .fixed-height
             - organization.departments.order("created_at DESC").each do |department|
-              = render "departments/department", department: department
+              = render "departments/department", department: department, organization: organization
 
       - if organization.refers == "VSIS"
         .tab-pane.limit-height{id: "roles_and_permissions#{organization.id}"}
