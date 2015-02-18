@@ -1,7 +1,7 @@
 class OrganizationsController < ApplicationController
   load_and_authorize_resource
   before_action :authenticate_user!
-  before_action :set_organization, only: [:show, :edit, :update, :relate, :remove_relation, :dashboard, :option_for_vat_number]
+  before_action :set_organization, only: [:show, :edit, :update, :relate, :remove_relation, :dashboard, :option_for_vat_number, :demote_as_department, :remove_department_org]
 
   def index
     case params["category"]
@@ -93,6 +93,25 @@ class OrganizationsController < ApplicationController
       redirect_to to_url
   end
 
+  def demote_as_department
+    demote_params = params.require(:organization).permit(:department_org_id, :name)
+    respond_to do |format|
+      notice = "Please correct the problem and re-try."
+      if @organization.update_attributes(demote_params)
+        @organization.update_attribute(:vat_number, @organization.department_org.vat_number)
+        notice = "successfully demoted as department"
+      end
+      format.html {redirect_to @organization, notice: notice}
+    end
+  end
+
+  def remove_department_org
+    @organization.update_attribute :department_org_id, nil
+    respond_to do |format|
+      format.html {redirect_to @organization, notice: "Promoted as Organization from department"}
+    end
+  end
+
   def option_for_vat_number
     selected_organization = Organization.find_by_id params[:selected_organization_id]
     respond_to do |format|
@@ -130,6 +149,6 @@ class OrganizationsController < ApplicationController
     end
 
     def organization_params
-      params.require(:organization).permit(:name, :category, :description, :logo, :vat_number, :web_site, :code, :short_name, addresses_attributes: [:id, :category, :address, :primary, :_destroy],  contact_numbers_attributes: [:id, :category, :value, :_destroy])
+      params.require(:organization).permit(:name, :department_org_id, :category, :description, :logo, :vat_number, :web_site, :code, :short_name, addresses_attributes: [:id, :category, :address, :primary, :_destroy],  contact_numbers_attributes: [:id, :category, :value, :_destroy])
     end
 end

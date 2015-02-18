@@ -96,7 +96,7 @@
             = render "organizations/member", organization: member, relation: "Member", relation_organization: organization
 
       .tab-pane.limit-height{id: "organization_departments#{organization.id}"}
-        = render "departments/form", department: organization.departments.build
+        = render "departments/form", organization: organization unless organization.department_org
 
         .fixed-height
           - organization.departments.order("created_at DESC").each do |department|

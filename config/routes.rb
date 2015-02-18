@@ -37,6 +37,8 @@ Rails.application.routes.draw do
       put "relate"
       get "remove_relation"
       post "option_for_vat_number"
+      patch "demote_as_department"
+      delete "remove_department_org"
     end
     concerns :attachable
   end
