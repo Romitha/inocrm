@@ -5,4 +5,5 @@ $ ->
   RolesAndPermissions.setup()
   DocumentAttachment.setup()
   Tickets.setup()
+  Departments.setup()
   return

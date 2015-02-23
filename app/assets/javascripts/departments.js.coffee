@@ -1,3 +1,13 @@
-# Place all the behaviors and hooks related to the matching controller here.
-# All this logic will automatically be available in application.js.
-# You can use CoffeeScript in this file: http://coffeescript.org/
+window.Departments =
+  setup: ->
+    @show_more()
+    return
+
+  show_more: ->
+    $(".toggle_deparment_form").hide()
+    $('#demote_org_as_dep').change ->
+      if @checked
+        $(".toggle_deparment_form").show()
+      else
+        $(".toggle_deparment_form").hide()
+      return

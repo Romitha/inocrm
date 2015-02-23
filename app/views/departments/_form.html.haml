@@ -1,5 +1,9 @@
+- department = @department
+
 .col-md-12
+  %label{:for => "Demote as Department"} Demote as Department
   = check_box_tag "demote_org_as_dep", false, false
-  = simple_form_for organization, url: demote_as_department_organization_path(organization) do |f|
-    = f.input :department_org_id, collection: Organization.major_organization(organization.category).reject{|org| org.id==organization.id }
-    = f.submit "Demote", class: "btn btn-success"
+  .toggle_deparment_form
+    = simple_form_for organization, url: demote_as_department_organization_path(organization) do |f|
+      = f.input :department_org_id, collection: Organization.major_organization(organization.category).reject{|org| org.id==organization.id }
+      = f.submit "Demote", class: "btn btn-success"
