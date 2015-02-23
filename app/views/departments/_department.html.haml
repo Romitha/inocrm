@@ -1,8 +1,13 @@
-- if organization.department_org
-  .col-md-12
-    = organization.department_org.name
-    = link_to "Delete", remove_department_org_organization_path(organization), method: :delete
-  %hr
-  %hr
-.col-md-12
-  = department.name
+.row.margin-none
+  .fixed.pull-left
+    .span3
+      = link_to department do
+        = image_tag (department.logo.thumb.url || "organization_image.png"), class: "img-polaroid img-responsive ", height: '100%', width: '100%'
+  .col-md-11
+    = link_to department do
+      %div= department.name
+    %div= department.short_name
+    %div= department.web_site
+    = link_to "#" do
+      = glyph(:pencil)
+      = glyph(:remove)
