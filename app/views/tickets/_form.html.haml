@@ -12,8 +12,28 @@
           = attr[:label]
     #load_for_customer_select_box
       = f.association :customer, label: "Customer", collection: User.customers.map{|user| [user.email, user.id]}, include_blank: false # customer
-
+  
   .form-inputs
+    .row
+      .col-md-12
+        %div{:role => "tabpanel"}
+          %ul.nav.nav-tabs{:role => "tablist"}
+            %li.active{:role => "presentation"}
+              %li= link_to "Q&A", "#home", role: "tab", data: {toggle: "tab"}
+            %li.active{:role => "presentation"}
+              %li= link_to "Job info", "#home", role: "tab", data: {toggle: "tab"}
+            %li.active{:role => "presentation"}
+              %li= link_to "History", "#home", role: "tab", data: {toggle: "tab"}
+            %li.active{:role => "presentation"}
+              %li= link_to "Join", "#home", role: "tab", data: {toggle: "tab"}
+            %li.active{:role => "presentation"}
+              %li= link_to "More product info", "#home", role: "tab", data: {toggle: "tab"}
+            %li.active{:role => "presentation"}
+              %li= link_to "warranty", "#home", role: "tab", data: {toggle: "tab"}
+    .tab-content
+      #home.tab-pane.active{:role => "tabpanel"} 
+        = render "qa"
+
     .row
       .col-md-4
         .radio_button

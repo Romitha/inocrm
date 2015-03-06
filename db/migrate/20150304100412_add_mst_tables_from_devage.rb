@@ -1,0 +1,277 @@
+class AddNewTablesFromDevage < ActiveRecord::Migration
+  def change
+  	create_table :mst_country, id: false do |t|
+  		t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+  		t.string :Country
+  		t.string :code
+  		t.timestamps
+  	end
+
+    create_table :mst_currency, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.string :currency
+      t.string :code
+      t.string :symbol
+      t.integer :base_currency
+      t.timestamps
+    end
+
+    create_table :mst_inv_product, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :cat1_mast_id, "INT UNSIGNED"
+      t.column :cat2_mast_id, "INT UNSIGNED"
+      t.column :cat3_mast_id, "INT UNSIGNED"
+      t.decimal :serial_no
+      t.integer :serial_no_order
+      t.string :legacy_code
+      t.text :description       #varbinary
+      t.string :model_no
+      t.string :product_no
+      t.integer :unit_id
+      t.integer :FIFO
+      t.integer :active
+      t.integer :spare_part
+      t.string :spare_part_no
+      t.timestamps
+    end
+
+    create_table :mst_inv_reason, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.string :reason
+      t.timestamps
+    end
+
+    create_table :mst_organizations_types, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.string :code
+      t.string :name
+      t.timestamps
+    end
+
+    create_table :mst_spt_accessory, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.string :accessory
+      t.timestamps
+    end
+
+    create_table :mst_spt_action, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.integer :action_no
+      t.string :action_description        #text not string
+      t.string :task_id
+      t.column :groups_id, "INT UNSIGNED"
+      t.integer :hide
+      t.timestamps
+    end
+
+    create_table :mst_spt_additional_charge, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.string :additional_charge
+      t.decimal :default_cost_price
+      t.decimal :default_estimated_price
+      t.timestamps
+    end
+
+    create_table :mst_spt_contact_type, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.char :code          #not working
+      t.string :name
+      t.timestamps
+    end
+
+    create_table :mst_spt_customer_contact_type, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.string :name
+      t.integer :mobile     #mobile in int
+      t.integer :email      #email in int
+      t.timestamps
+    end
+
+    create_table :mst_spt_customer_feedback, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.string :feedback   #text not string
+      t.timestamps
+    end
+
+    create_table :mst_spt_estimation_status, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.char :code          #not working
+      t.string :name
+      t.timestamps
+    end
+
+    create_table :mst_spt_general_question, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.string :question           #text not string
+      t.char :answer_type          #not working
+      t.integer :active
+      t.column :action_id, "INT UNSIGNED"
+      t.timestamps
+    end
+
+    create_table :mst_spt_job_type, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.char :code          #not working
+      t.string :name
+      t.timestamps
+    end
+
+    create_table :mst_spt_payment_item, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.string :name
+      t.decimal :default_amount
+      t.timestamps
+    end
+
+    create_table :mst_spt_payment_rececived_type, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.char :code          #not working
+      t.string :name
+      t.timestamps
+    end
+
+    create_table :mst_spt_pop_status, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.char :code          #not working
+      t.string :name
+      t.timestamps
+    end
+
+    create_table :mst_spt_problematic_question, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :problem_category_id, "INT UNSIGNED"
+      t.string :question         #text not string
+      t.char :answer_type        #not working
+      t.integer :active
+      t.column :action_id, "INT UNSIGNED"
+      t.timestamps
+    end
+
+    create_table :mst_spt_prodcut_brand, id: false do |t|     #product_ brand not prodcut_brand
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.string :name
+      t.integer :sla_time
+      t.column :organization_id, "INT UNSIGNED"
+      t.integer :parts_return_days
+      t.string :warenty_date_formate
+      t.column :currency_id, "INT UNSIGNED"
+      t.timestamps
+    end
+
+    create_table :mst_spt_product_category, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :prodcut_brand_id, "INT UNSIGNED"         #product_ brand_id not prodcut_brand_id
+      t.string :name
+      t.integer :sla_time
+      t.timestamps
+    end
+
+    create_table :mst_spt_reason, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.string :reason         #text not string
+      t.integer :hold
+      t.integer :sla_pause
+      t.integer :re_asign_request
+      t.integer :terminate_job
+      t.integer :terminate_spare_part
+      t.integer :warenty_extended
+      t.integer :spare_part_unused
+      t.integer :reject_returned_part
+      t.integer :reject_close
+      t.integer :adjust_terminate_job_payment
+      t.timestamps
+    end
+
+    create_table :mst_spt_sbu, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.string :sbu         #text not string
+      t.timestamps
+    end
+
+    create_table :mst_spt_sbu_engineer, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :sbu_id, "INT UNSIGNED"
+      t.column :engineer_id, "INT UNSIGNED"
+      t.timestamps
+    end
+
+    create_table :mst_spt_spare_part_description, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.string :description         #text not string
+      t.timestamps
+    end
+
+    create_table :mst_spt_spare_part_status_action, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.char :code          #not working
+      t.string :name
+      t.integer :manufacture_type_index
+      t.integer :store_nc_type_index
+      t.integer :store_ch_type_index
+      t.integer :on_loan_type_index
+      t.timestamps
+    end
+
+    create_table :mst_spt_spare_part_status_use, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.char :code          #not working
+      t.string :name
+      t.timestamps
+    end
+
+    create_table :mst_spt_ticket_informed_method, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.char :code          #not working
+      t.string :name
+      t.timestamps
+    end
+
+    create_table :mst_spt_ticket_repair_type, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.char :code          #not working
+      t.string :name
+      t.timestamps
+    end
+
+    create_table :mst_spt_ticket_start_action, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.string :action         #text not string
+      t.integer :active
+      t.timestamps
+    end
+
+    create_table :mst_spt_ticket_status, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.char :code          #not working
+      t.string :name
+      t.timestamps
+    end
+
+    create_table :mst_spt_ticket_status_resolve, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.char :code          #not working
+      t.string :name
+      t.timestamps
+    end
+
+    create_table :mst_spt_ticket_type, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.char :code          #not working
+      t.string :name
+      t.timestamps
+    end
+
+    create_table :mst_spt_warranty_type, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.char :code          #not working
+      t.string :name
+      t.timestamps
+    end
+
+    create_table :mst_title, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.string :title
+      t.timestamps
+    end
+  end
+end
