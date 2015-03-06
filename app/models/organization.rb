@@ -60,10 +60,18 @@ class Organization < ActiveRecord::Base
 
   #it is used for @organization.departments or @organization.department_org
   # department_org says, org of department, cause @organization is also department. In other word, department is also a type of organization.
-  has_many :departments, class_name: "Organization", foreign_key: "department_org_id" # foreign_key refers belongs_to below.
-  belongs_to :department_org, class_name: "Organization" # org_department refers foreign_key above
+  # has_many :departments, class_name: "Organization", foreign_key: "department_org_id" # foreign_key refers belongs_to below.
+  # belongs_to :department_org, class_name: "Organization" # org_department refers foreign_key above
+
+  belongs_to :organization_type, foreign_key: "type_id"
 
   def self.major_organization(category)
     where(category: category, department_org_id: nil)
   end
+end
+
+class OrganizationType < ActiveRecord::Base
+  self.table_name = "mst_organizations_types"
+
+  has_many :organizations, foreign_key: "type_id"
 end

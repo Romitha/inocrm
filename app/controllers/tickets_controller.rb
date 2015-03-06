@@ -15,7 +15,7 @@ class TicketsController < ApplicationController
   end
 
   def new
-    @ticket = @organization.tickets.build
+    @ticket = Ticket.new
     respond_with(@ticket)
   end
 
