@@ -93,14 +93,9 @@
 
         .tab-pane.limit-height{id: "organization_departments#{organization.id}"}
           .fixed-height
-            - if organization.department_org
+            - if organization.organization_type.try(:code) == "DPT"
               .col-md-12
                 = organization.department_org.name
-                = link_to "Delete", "#"
-              %hr
-              %hr
-            - organization.departments.order("created_at DESC").each do |department|
-              = render "departments/department", department: department, organization: organization
 
       - if organization.refers == "VSIS"
         .tab-pane.limit-height{id: "roles_and_permissions#{organization.id}"}

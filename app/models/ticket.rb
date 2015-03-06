@@ -1,7 +1,9 @@
 class Ticket < ActiveRecord::Base
-  belongs_to :organization
-  belongs_to :department
-  belongs_to :customer, class_name: "User", foreign_key: "customer_id"
+
+  self.table_name = "spt_ticket"
+  # belongs_to :organization
+  # belongs_to :department
+  belongs_to :customer, class_name: "Customer", foreign_key: "customer_id"
 
   has_many :agent_ticket_infos
   has_many :agents, through: :agent_ticket_infos
@@ -43,4 +45,8 @@ class Ticket < ActiveRecord::Base
   def  set_assignee
     agent_ticket_infos.first.update_attribute :visibility, "assigned"
   end
+end
+
+class Customer < ActiveRecord::Base
+  self.table_name = "spt_customer"
 end

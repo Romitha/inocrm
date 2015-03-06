@@ -1,4 +1,7 @@
 class User < ActiveRecord::Base
+  # self.table_name = "users"
+
+  belongs_to :mst_title
 
   mount_uploader :avatar, AvatarUploader
 
@@ -117,4 +120,9 @@ class User < ActiveRecord::Base
     self.addresses.build(category: "Support", address: address, primary: true)
   end
 
+end
+
+class MstTitle < ActiveRecord::Base
+  self.table_name = "mst_title"
+  has_one :user
 end
