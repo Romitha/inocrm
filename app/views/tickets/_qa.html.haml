@@ -1,0 +1,39 @@
+.form-inputs
+  .row
+    .col-md-12
+      General
+  .row
+    .col-md-3
+      01.Restart and test the machine?
+    .col-md-2
+      .input-append
+        %span.radio-inline
+          %label{:for => "General restart mechine true"}
+            %input#general_restart_mechine_true.radio_buttons.required.input_check{:name => "general restart mechine", :type => "radio", :value => "phone"} Yes
+        %span.radio-inline
+          %label{:for => "General restart mechine false"}
+            %input#general_restart_mechine_false.radio_buttons.required.input_check{:name => "general restart mechine", :type => "radio", :value => "carry-in"} No
+  .row
+    .col-md-3
+      02.Last time saw the problem
+    .col-md-3
+      %input#general_problem_saw.form-control{:type => "text"}
+  .row
+    .col-md-12
+      Problem specific
+  .row
+    .col-md-3
+      01.Restart and test the machine?
+    .col-md-2
+      .input-append
+        %span.radio-inline
+          %label{:for => "Problem specific_restart mechine true"}
+            %input#problem_specific_restart_mechine_true.radio_buttons.required.input_check{:name => "problem specific_restart mechine", :type => "radio", :value => "phone"} Yes
+        %span.radio-inline
+          %label{:for => "Problem specific_restart mechine false"}
+            %input#problem_specific_restart_mechine_false.radio_buttons.required.input_check{:name => "problem specific_restart mechine", :type => "radio", :value => "carry-in"} No
+  .row
+    .col-md-3
+      02.Last time saw the problem
+    .col-md-3
+      %input#problem_specific_problem_saw.form-control{:type => "text"}

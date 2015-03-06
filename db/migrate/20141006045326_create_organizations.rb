@@ -16,6 +16,7 @@ class CreateOrganizations < ActiveRecord::Migration
       t.string :refers
       t.string :code
       t.string :category
+      t.integer :parent_organization_id
       t.timestamps
     end
   end

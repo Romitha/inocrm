@@ -2,6 +2,7 @@ class DeviseCreateUsers < ActiveRecord::Migration
   def change
     create_table(:users) do |t|
       ## Database authenticatable
+      
       t.string :email,              null: false, default: ""
       t.string :encrypted_password, null: false, default: ""
 
@@ -29,7 +30,25 @@ class DeviseCreateUsers < ActiveRecord::Migration
       # t.integer  :failed_attempts, default: 0, null: false # Only if lock strategy is :failed_attempts
       # t.string   :unlock_token # Only if unlock strategy is :email or :both
       # t.datetime :locked_at
+    [:first_name, :last_name, :NIC, :user_name, :name_title, :epf_no].each do |attribute|
+      t.string attribute
+    end
 
+    [:state, :status, :permissions, :active].each do |attribute|
+      t.integer attribute
+    end
+
+    [:created, :updated, :deleted].each do |attribute|
+      t.references attribute, polymorphic: true
+    end
+
+    [:deleted_at, :date_joined_at].each do |attribute|
+      t.datetime attribute
+    end
+
+    t.integer :organization_id
+
+     t.string :avatar
 
       t.timestamps
     end
