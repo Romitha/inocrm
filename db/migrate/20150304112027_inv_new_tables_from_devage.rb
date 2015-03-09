@@ -8,11 +8,11 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
   		t.string :remarks
   		t.integer :product_condition_id
   		t.integer :batch_serial_info_id
-  		t.integer :scavenge
-  		t.integer :parts_compleated
-  		t.integer :issuable_condition
-  		t.integer :used
-  		t.integer :repaired
+  		t.boolean :scavenge
+  		t.boolean :parts_compleated
+  		t.boolean :issuable_condition
+  		t.boolean :used
+  		t.boolean :repaired
   		t.decimal :additional_cost
 			t.timestamps
   	end
@@ -26,7 +26,7 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
   		t.string :remarks
   		t.string :srn_no
   		t.column :store_id, "INT UNSIGNED"
-  		t.integer :closed
+  		t.boolean :closed
 			t.timestamps
   	end
 
@@ -36,14 +36,14 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
   		t.column :product_id, "INT UNSIGNED"
   		t.decimal :quantity
   		t.string :remarks
-  		t.integer :returnable
-  		t.integer :return_compleated
-  		t.integer :issue_terminated
+  		t.boolean :returnable
+  		t.boolean :return_compleated
+  		t.boolean :issue_terminated
   		t.datetime :issue_terminated_date
   		t.column :issue_terminated_reason_id, "INT UNSIGNED"
   		t.column :issue_terminated_user_id, "INT UNSIGNED"
-  		t.integer :spare_part
-  		t.integer :closed
+  		t.boolean :spare_part
+  		t.boolean :closed
   		t.timestamps
   	end
     
@@ -55,7 +55,7 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.string :remarks
       t.string :srr_no
       t.column :user_groups_id, "INT UNSIGNED"
-      t.integer :closed
+      t.boolean :closed
       t.timestamps
     end
 
@@ -67,9 +67,9 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.integer :product_condition_id
       t.column :return_reason_id, "INT UNSIGNED"
       t.column :returnable_srn_item_id, "INT UNSIGNED"
-      t.integer :spare_part
+      t.boolean :spare_part
       t.string :remarks
-      t.integer :closed
+      t.boolean :closed
       t.timestamps
     end
   end
