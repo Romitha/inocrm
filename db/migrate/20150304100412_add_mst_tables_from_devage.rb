@@ -12,7 +12,7 @@ class AddNewTablesFromDevage < ActiveRecord::Migration
       t.string :currency
       t.string :code
       t.string :symbol
-      t.integer :base_currency
+      t.boolean :base_currency
       t.timestamps
     end
 
@@ -28,9 +28,9 @@ class AddNewTablesFromDevage < ActiveRecord::Migration
       t.string :model_no
       t.string :product_no
       t.integer :unit_id
-      t.integer :FIFO
-      t.integer :active
-      t.integer :spare_part
+      t.boolean :FIFO
+      t.boolean :active
+      t.boolean :spare_part
       t.string :spare_part_no
       t.timestamps
     end
@@ -60,7 +60,7 @@ class AddNewTablesFromDevage < ActiveRecord::Migration
       t.string :action_description        #text not string
       t.string :task_id
       t.column :groups_id, "INT UNSIGNED"
-      t.integer :hide
+      t.boolean :hide
       t.timestamps
     end
 
@@ -74,7 +74,7 @@ class AddNewTablesFromDevage < ActiveRecord::Migration
 
     create_table :mst_spt_contact_type, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
-      t.char :code          #not working
+      t.string :code, limit: 2
       t.string :name
       t.timestamps
     end
@@ -82,8 +82,8 @@ class AddNewTablesFromDevage < ActiveRecord::Migration
     create_table :mst_spt_customer_contact_type, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.string :name
-      t.integer :mobile     #mobile in int
-      t.integer :email      #email in int
+      t.boolean :mobile     
+      t.boolean :email      
       t.timestamps
     end
 
@@ -95,7 +95,7 @@ class AddNewTablesFromDevage < ActiveRecord::Migration
 
     create_table :mst_spt_estimation_status, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
-      t.char :code          #not working
+      t.string :code, limit: 3
       t.string :name
       t.timestamps
     end
@@ -103,15 +103,15 @@ class AddNewTablesFromDevage < ActiveRecord::Migration
     create_table :mst_spt_general_question, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.string :question           #text not string
-      t.char :answer_type          #not working
-      t.integer :active
+      t.string :code, limit: 2
+      t.boolean :active
       t.column :action_id, "INT UNSIGNED"
       t.timestamps
     end
 
     create_table :mst_spt_job_type, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
-      t.char :code          #not working
+      t.string :code, limit: 2
       t.string :name
       t.timestamps
     end
@@ -125,14 +125,14 @@ class AddNewTablesFromDevage < ActiveRecord::Migration
 
     create_table :mst_spt_payment_rececived_type, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
-      t.char :code          #not working
+      t.string :code, limit: 2
       t.string :name
       t.timestamps
     end
 
     create_table :mst_spt_pop_status, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
-      t.char :code          #not working
+      t.string :code, limit: 2
       t.string :name
       t.timestamps
     end
@@ -141,8 +141,8 @@ class AddNewTablesFromDevage < ActiveRecord::Migration
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :problem_category_id, "INT UNSIGNED"
       t.string :question         #text not string
-      t.char :answer_type        #not working
-      t.integer :active
+      t.string :code, limit: 2
+      t.boolean :active
       t.column :action_id, "INT UNSIGNED"
       t.timestamps
     end
@@ -160,7 +160,7 @@ class AddNewTablesFromDevage < ActiveRecord::Migration
 
     create_table :mst_spt_product_category, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
-      t.column :prodcut_brand_id, "INT UNSIGNED"         #product_ brand_id not prodcut_brand_id
+      t.column :prodcut_brand_id, "INT UNSIGNED"             #product_ brand_id not prodcut_brand_id
       t.string :name
       t.integer :sla_time
       t.timestamps
@@ -169,16 +169,16 @@ class AddNewTablesFromDevage < ActiveRecord::Migration
     create_table :mst_spt_reason, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.string :reason         #text not string
-      t.integer :hold
-      t.integer :sla_pause
-      t.integer :re_asign_request
-      t.integer :terminate_job
-      t.integer :terminate_spare_part
-      t.integer :warenty_extended
-      t.integer :spare_part_unused
-      t.integer :reject_returned_part
-      t.integer :reject_close
-      t.integer :adjust_terminate_job_payment
+      t.boolean :hold
+      t.boolean :sla_pause
+      t.boolean :re_asign_request
+      t.boolean :terminate_job
+      t.boolean :terminate_spare_part
+      t.boolean :warenty_extended
+      t.boolean :spare_part_unused
+      t.boolean :reject_returned_part
+      t.boolean :reject_close
+      t.boolean :adjust_terminate_job_payment
       t.timestamps
     end
 
@@ -203,7 +203,7 @@ class AddNewTablesFromDevage < ActiveRecord::Migration
 
     create_table :mst_spt_spare_part_status_action, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
-      t.char :code          #not working
+      t.string :code, limit: 3
       t.string :name
       t.integer :manufacture_type_index
       t.integer :store_nc_type_index
@@ -214,21 +214,21 @@ class AddNewTablesFromDevage < ActiveRecord::Migration
 
     create_table :mst_spt_spare_part_status_use, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
-      t.char :code          #not working
+      t.string :code, limit: 3
       t.string :name
       t.timestamps
     end
 
     create_table :mst_spt_ticket_informed_method, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
-      t.char :code          #not working
+      t.string :code, limit: 2
       t.string :name
       t.timestamps
     end
 
     create_table :mst_spt_ticket_repair_type, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
-      t.char :code          #not working
+      t.string :code, limit: 2
       t.string :name
       t.timestamps
     end
@@ -236,34 +236,34 @@ class AddNewTablesFromDevage < ActiveRecord::Migration
     create_table :mst_spt_ticket_start_action, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.string :action         #text not string
-      t.integer :active
+      t.boolean :active
       t.timestamps
     end
 
     create_table :mst_spt_ticket_status, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
-      t.char :code          #not working
+      t.string :code, limit: 3
       t.string :name
       t.timestamps
     end
 
     create_table :mst_spt_ticket_status_resolve, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
-      t.char :code          #not working
+      t.string :code, limit: 3
       t.string :name
       t.timestamps
     end
 
     create_table :mst_spt_ticket_type, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
-      t.char :code          #not working
+      t.string :code, limit: 2
       t.string :name
       t.timestamps
     end
 
     create_table :mst_spt_warranty_type, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
-      t.char :code          #not working
+      t.string :code, limit: 2
       t.string :name
       t.timestamps
     end

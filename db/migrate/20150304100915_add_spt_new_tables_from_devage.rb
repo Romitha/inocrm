@@ -12,23 +12,23 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
   		t.timestamps
   	end
 
-  	create_table :spt_act_action_ticket, id: false do |t|
+  	create_table :spt_act_assign_ticket, id: false do |t|
   		t.column :taken_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (taken_action_id)"    #check
   		t.column :sbu_id, "INT UNSIGNED"
   		t.column :asign_to, "INT UNSIGNED"
-  		t.integer :recorrection
-  		t.integer :regional_support_center_job
+  		t.boolean :recorrection
+  		t.boolean :regional_support_center_job
   		t.timestamps
   	end
 
   	create_table :spt_act_customer_feedback, id: false do |t|
   		t.column :taken_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (taken_action_id)"    #check
-  		t.integer :re_opened        										#_ not -
-  		t.integer :unit_return_customer
+  		t.boolean :re_opened        										      #_ not -
+  		t.boolean :unit_return_customer
   		t.column :payment_recived_id, "INT UNSIGNED"
-  		t.integer :payment_completed
+  		t.boolean :payment_completed
   		t.column :feedback_id, "INT UNSIGNED"
-  		t.string :feedback_description        					#text not string
+  		t.string :feedback_description        					      #text not string
   		t.timestamps
   	end
 
@@ -36,26 +36,26 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
   		t.column :taken_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (taken_action_id)"    #check
   		t.column :ticket_deliver_unit_id, "INT UNSIGNED"
   		t.column :deliver_to_id, "INT UNSIGNED"
-  		t.string :deliver_note        									#text not string
-  		t.string :recive_note        										#text not string
+  		t.string :deliver_note        									      #text not string
+  		t.string :recive_note        										      #text not string
   		t.timestamps
   	end
 
   	create_table :spt_act_edit_serial_request, id: false do |t|
   		t.column :taken_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (taken_action_id)"    #check
-  		t.string :reason        												#text not string
+  		t.string :reason        												      #text not string
   		t.timestamps
   	end
 
   	create_table :spt_act_finish_job, id: false do |t|
   		t.column :taken_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (taken_action_id)"    #check
-  		t.string :resolution        										#text not string
+  		t.string :resolution        										      #text not string
   		t.timestamps
   	end
 
   	create_table :spt_act_fsr, id: false do |t|
   		t.column :taken_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (taken_action_id)"    #check
-  		t.integer :print_fsr
+  		t.boolean :print_fsr
   		t.column :fsr_id, "INT UNSIGNED"
   		t.timestamps
   	end
@@ -63,28 +63,28 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
   	create_table :spt_act_hold, id: false do |t|
   		t.column :taken_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (taken_action_id)"    #check
   		t.column :reason_id, "INT UNSIGNED"
-  		t.integer :sla_pause
+  		t.boolean :sla_pause
   		t.timestamps
   	end
 
   	create_table :spt_act_hp_case_action, id: false do |t|
   		t.column :taken_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (taken_action_id)"    #check
   		t.string :case_id
-  		t.string :case_note        											#text not string
+  		t.string :case_note        											      #text not string
   		t.timestamps
   	end
 
   	create_table :spt_act_inform_customer, id: false do |t|
   		t.column :taken_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (taken_action_id)"    #check
   		t.column :contact_type_id, "INT UNSIGNED"
-  		t.string :note        													#text not string
+  		t.string :note        													      #text not string
   		t.timestamps
   	end
 
   	create_table :spt_act_job_estimate, id: false do |t|
   		t.column :taken_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (taken_action_id)"    #check
   		t.column :supplier_id, "INT UNSIGNED"
-  		t.string :note        													#text not string
+  		t.string :note        													      #text not string
   		t.column :ticket_estimation_id, "INT UNSIGNED"
   		t.timestamps
   	end
@@ -92,14 +92,14 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
   	create_table :spt_act_payment_received, id: false do |t|
   		t.column :taken_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (taken_action_id)"    #check
   		t.column :ticket_payment_received_id, "INT UNSIGNED"
-  		t.integer :invoice_completed
+  		t.boolean :invoice_completed
   		t.timestamps
   	end
 
   	create_table :spt_act_qc, id: false do |t|
   		t.column :taken_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (taken_action_id)"    #check
-  		t.integer :approved
-  		t.string :reject_reason        													#text not string
+  		t.boolean :approved
+  		t.string :reject_reason        												#text not string
   		t.timestamps
   	end
 
@@ -125,9 +125,9 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
 
   	create_table :spt_act_terminate_issue_invoice, id: false do |t|
   		t.column :taken_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (taken_action_id)"    #check
-  		t.integer :invoice_completed
-  		t.integer :unit_returned
-  		t.integer :payment_completed
+  		t.boolean :invoice_completed
+  		t.boolean :unit_returned
+  		t.boolean :payment_completed
   		t.column :payment_received_id, "INT UNSIGNED"
   		t.timestamps
   	end
@@ -135,8 +135,8 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
   	create_table :spt_act_terminate_job, id: false do |t|
   		t.column :taken_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (taken_action_id)"    #check
   		t.column :reason_id, "INT UNSIGNED"
-  		t.integer :foc_requested
-  		t.integer :foc_approved
+  		t.boolean :foc_requested
+  		t.boolean :foc_approved
   		t.column :foc_approved_action_id, "INT UNSIGNED"
   		t.timestamps
   	end
@@ -155,7 +155,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
 
   	create_table :spt_act_ticket_close_approve, id: false do |t|
   		t.column :taken_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (taken_action_id)"    #check
-  		t.integer :approved
+  		t.boolean :approved
   		t.column :reject_reason_id, "INT UNSIGNED"
   		t.column :job_belongs_to, "INT UNSIGNED"
   		t.timestamps
@@ -163,7 +163,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
 
   	create_table :spt_act_warranty_extend, id: false do |t|
   		t.column :taken_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (taken_action_id)"    #check
-  		t.integer :extended
+  		t.boolean :extended
   		t.column :reject_reason_id, "INT UNSIGNED"
   		t.string :reject_note        													#text not string
   		t.timestamps
@@ -180,7 +180,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
   		t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
   		t.column :contact_report_person_id, "INT UNSIGNED"
   		t.column :contact_type_id, "INT UNSIGNED"
-  		t.string :value        													#text not string
+  		t.string :value        													     #text not string
   		t.timestamps
   	end
 
@@ -188,12 +188,12 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
   		t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
   		t.column :customer_id, "INT UNSIGNED"
   		t.string :contract_no
-  		t.integer :contract_b2b
+  		t.boolean :contract_b2b
   		t.datetime :contract_start_at
   		t.datetime :contract_end_at
-  		t.string :remarks       													#text not string
+  		t.string :remarks       													   #text not string
   		t.integer :sla
-  		t.integer :active
+  		t.boolean :active
   		t.datetime :created_at
   		t.column :created_by, "INT UNSIGNED"
   		t.timestamps
@@ -204,7 +204,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
   		t.column :contract_id, "INT UNSIGNED"
   		t.column :product_serial_id, "INT UNSIGNED"
   		t.column :install_location_id, "INT UNSIGNED"
-  		t.string :remarks       													#text not string
+  		t.string :remarks       													   #text not string
   		t.integer :sla
   		t.timestamps
   	end
@@ -213,10 +213,10 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
   		t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
   		t.column :title_id, "INT UNSIGNED"
   		t.string :name
-  		t.string :address1       													#text not string
-  		t.string :address2       													#text not string
-  		t.string :address3       													#text not string
-  		t.string :address4       													#text not string
+  		t.string :address1       													   #text not string
+  		t.string :address2       													   #text not string
+  		t.string :address3       													   #text not string
+  		t.string :address4       													   #text not string
   		t.column :last_ticket_id, "INT UNSIGNED"
   		t.column :organization_id, "INT UNSIGNED"
   		t.timestamps
@@ -226,7 +226,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
   		t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
   		t.column :customer_id, "INT UNSIGNED"
   		t.column :contact_type_id, "INT UNSIGNED"
-  		t.string :value        													#text not string
+  		t.string :value        													     #text not string
   		t.timestamps
   	end
 
@@ -236,7 +236,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
   		t.column :created_by, "INT UNSIGNED"
   		t.integer :invoice_no
   		t.decimal :total_amount
-  		t.string :note        													#text not string
+  		t.string :note        													     #text not string
   		t.column :currency_id, "INT UNSIGNED"
   		t.timestamps
   	end
@@ -272,9 +272,9 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.string :product_no
       t.column :pop_status_id, "INT UNSIGNED"
       t.column :sold_country_id, "INT UNSIGNED"
-      t.string :pop_note                                  #text not string
-      t.string :pop_doc_url                                  #text not string
-      t.integer :coparate_product
+      t.string :pop_note                                      #text not string
+      t.string :pop_doc_url                                   #text not string
+      t.boolean :coparate_product
       t.datetime :sold_at
       t.column :sold_by, "INT UNSIGNED"
       t.column :inventory_serial_item_id, "INT UNSIGNED"
@@ -291,7 +291,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.integer :period_labour
       t.integer :coparate_onsight
       t.column :warranty_type_id, "INT UNSIGNED"
-      t.string :note                                  #text not string
+      t.string :note                                          #text not string
       t.string :care_pack_product_no
       t.string :care_pack_reg_no
       t.timestamps
@@ -300,7 +300,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     create_table :spt_regional_support_center, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :organization_id, "INT UNSIGNED"
-      t.integer :active
+      t.boolean :active
       t.timestamps
     end
 
@@ -319,10 +319,10 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.string :bundle_no
       t.datetime :created_at
       t.column :created_by, "INT UNSIGNED"
-      t.integer :deliverd
+      t.boolean :deliverd
       t.datetime :deliverd_at
       t.column :deliverd_by, "INT UNSIGNED"
-      t.string :note                                  #text not string
+      t.string :note                                          #text not string
       t.timestamps
     end
 
@@ -331,12 +331,12 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.datetime :created_at
       t.column :created_by, "INT UNSIGNED"
       t.integer :so_no
-      t.string :note                                  #text not string
+      t.string :note                                          #text not string
       t.decimal :po_no
       t.datetime :po_date
       t.column :product_brand_id, "INT UNSIGNED"
       t.decimal :amount
-      t.integer :invoiced
+      t.boolean :invoiced
       t.column :currency_id, "INT UNSIGNED"
       t.timestamps
     end
@@ -355,8 +355,8 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     create_table :spt_ticket, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.integer :ticket_no
-      t.integer :pop_updated_ticket
-      t.integer :contract_available
+      t.boolean :pop_updated_ticket
+      t.boolean :contract_available
       t.column :contract_id, "INT UNSIGNED"
       t.datetime :created_at
       t.column :created_by, "INT UNSIGNED"
@@ -364,21 +364,21 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.integer :sla_time
       t.column :status_id, "INT UNSIGNED"
       t.column :status_resolve_id, "INT UNSIGNED"
-      t.integer :status_hold
+      t.boolean :status_hold
       t.column :hold_reason_id, "INT UNSIGNED"
-      t.string :remarks                                  #text not string
-      t.string :resolution_summary                       #text not string
+      t.string :remarks                                       #text not string
+      t.string :resolution_summary                            #text not string
       t.column :owner_engineer_id, "INT UNSIGNED"
       t.column :problem_category_id, "INT UNSIGNED"
-      t.string :problem_description                       #text not string
-      t.string :other_accessories                         #text not string
+      t.string :problem_description                           #text not string
+      t.string :other_accessories                             #text not string
       t.column :informed_method_id, "INT UNSIGNED"
       t.column :job_type_id, "INT UNSIGNED"
       t.column :ticket_type_id, "INT UNSIGNED"
-      t.integer :regional_support_job
+      t.boolean :regional_support_job
       t.column :repair_type_id, "INT UNSIGNED"
       t.column :warranty_type_id, "INT UNSIGNED"
-      t.integer :cus_chargeable
+      t.boolean :cus_chargeable
       t.column :customer_id, "INT UNSIGNED"
       t.column :contact_person1_id, "INT UNSIGNED"
       t.column :contact_person2_id, "INT UNSIGNED"
@@ -387,22 +387,22 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.column :contact_type_id, "INT UNSIGNED"
       t.datetime :job_started_at
       t.column :job_started_action_id, "INT UNSIGNED"
-      t.string :job_start_note                             #text not string
-      t.integer :job_finished
-      t.integer :job_closed
+      t.string :job_start_note                                #text not string
+      t.boolean :job_finished
+      t.boolean :job_closed
       t.datetime :job_closed_at
       t.datetime :ticket_closed_at
-      t.integer :re_open_count                             #_ not - 
-      t.integer :ticket_close_approval_required
-      t.integer :ticket_close_approval_requested
-      t.integer :ticket_close_approved
-      t.integer :qc_passed
-      t.integer :re_assigned                               #_ not -
-      t.integer :terminated
-      t.integer :cus_payment_required
-      t.integer :cus_payment_completed
+      t.integer :re_open_count                                #_ not - 
+      t.boolean :ticket_close_approval_required
+      t.boolean :ticket_close_approval_requested
+      t.boolean :ticket_close_approved
+      t.boolean :qc_passed
+      t.boolean :re_assigned                                  #_ not -
+      t.boolean :terminated
+      t.boolean :cus_payment_required
+      t.boolean :cus_payment_completed
       t.decimal :final_amount_to_be_paid
-      t.integer :pop_updated
+      t.boolean :pop_updated
       t.column :base_currency_id, "INT UNSIGNED"
       t.column :manufacture_currency_id, "INT UNSIGNED"
       t.timestamps
@@ -412,7 +412,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :ticket_id, "INT UNSIGNED"
       t.column :accessory_id, "INT UNSIGNED"
-      t.string :note                                        #text not string
+      t.string :note                                          #text not string
       t.timestamps
     end
 
@@ -422,7 +422,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.column :action_id, "INT UNSIGNED"
       t.datetime :action_at
       t.column :action_by, "INT UNSIGNED"
-      t.integer :re_open_count                              #_ not - 
+      t.integer :re_open_count                                #_ not - 
       t.timestamps
     end
 
@@ -432,16 +432,16 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.column :created_by, "INT UNSIGNED"
       t.datetime :created_at
       t.column :deliver_to_id, "INT UNSIGNED"
-      t.integer :delivered_to_sup
+      t.boolean :delivered_to_sup
       t.datetime :delivered_to_sup_at
       t.column :delivered_to_sup_by, "INT UNSIGNED"
-      t.integer :collected
+      t.boolean :collected
       t.datetime :collected_at
       t.column :collected_by, "INT UNSIGNED"
-      t.integer :received
+      t.boolean :received
       t.datetime :received_at
       t.column :received_by, "INT UNSIGNED"
-      t.string :note                                        #text not string
+      t.string :note                                          #text not string
       t.timestamps
     end
 
@@ -452,17 +452,17 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.column :requested_by, "INT UNSIGNED"
       t.datetime :estimated_at
       t.column :estimated_by, "INT UNSIGNED"
-      t.string :note                                        #text not string
+      t.string :note                                          #text not string
       t.decimal :advance_payment_amount
-      t.integer :foc_requested
-      t.integer :approval_required
-      t.integer :approved
+      t.boolean :foc_requested
+      t.boolean :approval_required
+      t.boolean :approved
       t.datetime :approved_at
       t.column :approved_by, "INT UNSIGNED"
       t.decimal :approved_adv_pmnt_amount
-      t.integer :foc_approved
-      t.integer :cust_approval_required
-      t.integer :cust_approved
+      t.boolean :foc_approved
+      t.boolean :cust_approval_required
+      t.boolean :cust_approved
       t.datetime :cust_approved_at
       t.column :cust_approved_by, "INT UNSIGNED"
       t.column :adv_payment_received_id, "INT UNSIGNED"
@@ -477,7 +477,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.column :ticket_estimation_id, "INT UNSIGNED"
       t.decimal :cost_price
       t.decimal :estimated_price
-      t.integer :below_margine
+      t.boolean :below_margine
       t.decimal :approved_estimated_price
       t.column :additional_charge_id, "INT UNSIGNED"
       t.timestamps
@@ -491,7 +491,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.decimal :cost_price
       t.decimal :estimated_price
       t.integer :warranty_period
-      t.integer :below_margine
+      t.boolean :below_margine
       t.decimal :approved_estimated_price
       t.timestamps
     end
@@ -502,7 +502,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.column :ticket_estimation_id, "INT UNSIGNED"
       t.decimal :cost_price
       t.decimal :estimated_price
-      t.integer :below_margine
+      t.boolean :below_margine
       t.integer :warranty_period
       t.column :ticket_spare_part_id, "INT UNSIGNED"
       t.column :supplier_id, "INT UNSIGNED"
@@ -521,14 +521,14 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.float :down_time
       t.float :travel_hours
       t.float :engineer_time_travel
-      t.float :engineer_time_on_site                         #_ not - 
+      t.float :engineer_time_on_site                            #_ not - 
       t.decimal :other_mileage
       t.decimal :other_repairs
       t.string :resolution
-      t.char :completion_level                               #not working
-      t.integer :approved
+      t.string :code, limit: 1
+      t.boolean :approved
       t.column :approved_action_id, "INT UNSIGNED"
-      t.string :remarks                                      #text not string
+      t.string :remarks                                         #text not string
       t.timestamps
     end
 
@@ -537,7 +537,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.column :ticket_id, "INT UNSIGNED"
       t.column :ticket_action_id, "INT UNSIGNED"
       t.column :general_question_id, "INT UNSIGNED"
-      t.string :answer                                      #text not string
+      t.string :answer                                          #text not string
       t.timestamps
     end
 
@@ -559,11 +559,11 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.decimal :amount
       t.datetime :received_at
       t.column :received_by, "INT UNSIGNED"
-      t.string :note                                        #text not string
+      t.string :note                                           #text not string
       t.column :type_id, "INT UNSIGNED"
       t.column :invoice_id, "INT UNSIGNED"
       t.column :currency_id, "INT UNSIGNED"
-      t.string :answer                                      #text not string
+      t.string :answer                                         #text not string
       t.timestamps
     end
 
@@ -583,7 +583,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.timestamps
     end
 
-    create_table :spt_ticket_, id: false do |t|
+    create_table :spt_ticket_spare_part, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :ticket_id, "INT UNSIGNED"
       t.column :status_action_id, "INT UNSIGNED"
@@ -592,25 +592,25 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.string :spare_part_description 
       t.string :faulty_serial_no 
       t.string :faulty_ct_no 
-      t.string :note                                      #text not string
-      t.integer :cus_chargeable_part
-      t.integer :request_from_manufacture
-      t.integer :request_from_store
-      t.integer :terminated
+      t.string :note                                          #text not string
+      t.boolean :cus_chargeable_part
+      t.boolean :request_from_manufacture
+      t.boolean :request_from_store
+      t.boolean :terminated
       t.column :terminated_reason_id, "INT UNSIGNED"
       t.string :received_spare_part_no
       t.string :received_part_serial_no
       t.string :received_part_ct_no
-      t.integer :received_eng
+      t.boolean :received_eng
       t.datetime :repare_start
       t.datetime :repare_end
       t.string :return_part_serial_no
       t.string :return_part_ct_no
       t.column :status_use_id, "INT UNSIGNED"
       t.column :unused_reason_id, "INT UNSIGNED"
-      t.integer :part_returned
-      t.integer :returned_part_accepted
-      t.integer :close_approved
+      t.boolean :part_returned
+      t.boolean :returned_part_accepted
+      t.boolean :close_approved
       t.column :close_approved_action_id, "INT UNSIGNED"
       t.timestamps
     end
@@ -620,18 +620,18 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.column :spare_part_id, "INT UNSIGNED"
       t.string :event_no
       t.string :order_no
-      t.integer :event_closed
+      t.boolean :event_closed
       t.decimal :payment_expected_manufacture
-      t.integer :collect_pending_manufacture
-      t.integer :collected_manufacture
-      t.integer :received_manufacture
-      t.integer :issued
-      t.integer :ready_to_bundle
-      t.integer :bundled
+      t.boolean :collect_pending_manufacture
+      t.boolean :collected_manufacture
+      t.boolean :received_manufacture
+      t.boolean :issued
+      t.boolean :ready_to_bundle
+      t.boolean :bundled
       t.column :return_parts_bundle_id, "INT UNSIGNED"
       t.column :add_bundle_by, "INT UNSIGNED"
       t.datetime :add_bundle_at
-      t.integer :po_completed
+      t.boolean :po_completed
       t.column :manufacture_currency_id, "INT UNSIGNED"
       t.timestamps
     end
@@ -641,7 +641,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.column :spare_part_id, "INT UNSIGNED"
       t.column :status_id, "INT UNSIGNED"
       t.column :done_by, "INT UNSIGNED"
-      t.timestamps :done_at                               #not working
+      t.datetime :done_at                               
       t.timestamps
     end
 
@@ -650,25 +650,25 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.column :spare_part_id, "INT UNSIGNED"
       t.column :store_id, "INT UNSIGNED"
       t.column :inv_product_id, "INT UNSIGNED"
-      t.integer :part_of_main_product
+      t.boolean :part_of_main_product
       t.column :mst_inv_product_id, "INT UNSIGNED"
-      t.integer :estimation_required
+      t.boolean :estimation_required
       t.integer :ticket_estimation_part_id
-      t.integer :store_requested
+      t.boolean :store_requested
       t.datetime :store_requested_at
       t.column :store_requested_by, "INT UNSIGNED"
-      t.integer :store_request_approved
+      t.boolean :store_request_approved
       t.datetime :store_request_approved_at
       t.column :store_request_approved_by, "INT UNSIGNED"
       t.column :approved_inv_product_id, "INT UNSIGNED"
-      t.datetime :store_issued
+      t.boolean :store_issued
       t.datetime :store_issued_at
       t.column :store_issued_by, "INT UNSIGNED"
       t.column :inv_srn_id, "INT UNSIGNED"
       t.column :inv_srn_item_id, "INT UNSIGNED"
       t.column :inv_srr_id, "INT UNSIGNED"
       t.column :inv_srr_item_id, "INT UNSIGNED"
-      t.integer :return_part_damage
+      t.boolean :return_part_damage
       t.column :return_part_damage_reason_id, "INT UNSIGNED"
       t.timestamps
     end
