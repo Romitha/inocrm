@@ -1,6 +1,7 @@
 class CreateOrganizations < ActiveRecord::Migration
   def change
-    create_table :organizations do |t|
+    create_table :organizations, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.string :name
       t.string :short_name
       t.text :description

@@ -1,7 +1,8 @@
 class CreateEmployees < ActiveRecord::Migration
   def change
     ## Employee User table
-    create_table (:employees) do |t|
+    create_table(:employees, id: false) do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       # t.integer :user_id,       limit: 11,  null: false
       # t.integer :designation_id,    limit: 11
       t.string    :epf_no,        limit: 45

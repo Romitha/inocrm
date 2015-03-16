@@ -1,8 +1,8 @@
 class DeviseCreateUsers < ActiveRecord::Migration
   def change
-    create_table(:users) do |t|
+    create_table :users, id: false do |t|
       ## Database authenticatable
-      
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.string :email,              null: false, default: ""
       t.string :encrypted_password, null: false, default: ""
 

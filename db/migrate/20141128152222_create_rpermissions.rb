@@ -1,6 +1,7 @@
 class CreateRpermissions < ActiveRecord::Migration
   def change
-    create_table :rpermissions do |t|
+    create_table :rpermissions, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.string :name
       t.string :controller_resource
       t.string :controller_action

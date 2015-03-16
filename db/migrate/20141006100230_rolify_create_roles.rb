@@ -1,6 +1,7 @@
 class RolifyCreateRoles < ActiveRecord::Migration
   def change
-    create_table(:roles) do |t|
+    create_table(:roles, id:false) do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.string :name
       t.references :resource, :polymorphic => true
       t.boolean :parent_role
