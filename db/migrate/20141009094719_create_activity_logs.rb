@@ -1,6 +1,7 @@
 class CreateActivityLogs < ActiveRecord::Migration
   def change
-    create_table :activity_logs do |t|
+    create_table :activity_logs, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.string :user
       t.string :role
       t.string :browser

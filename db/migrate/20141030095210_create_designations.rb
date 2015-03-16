@@ -1,6 +1,7 @@
 class CreateDesignations < ActiveRecord::Migration
   def change
-    create_table :designations do |t|
+    create_table :designations, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.string :name
       t.text :description
       t.references :organization, index: true

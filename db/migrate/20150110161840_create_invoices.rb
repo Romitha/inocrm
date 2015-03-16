@@ -1,6 +1,7 @@
 class CreateInvoices < ActiveRecord::Migration
   def change
-    create_table :invoices do |t|
+    create_table :invoices, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.integer :invoice_number
       t.integer :paid
       t.integer :total
