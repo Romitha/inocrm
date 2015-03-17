@@ -1,3 +1,7 @@
-%h3 Submit ticket
-
+%h3 New ticket
+.serial_search.col-md-4
+  = form_tag find_by_serial_tickets_path, method: :post, remote: true do
+    = label_tag "Search By Serial"
+    = text_field_tag :serial_search, nil, class: "form-control"
+%hr
 = render 'form'

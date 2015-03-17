@@ -3,7 +3,7 @@ class TicketsController < ApplicationController
   before_action :set_ticket, only: [:show, :edit, :update, :destroy]
   before_action :set_organization_for_ticket, only: [:new, :edit, :create_customer]
 
-  respond_to :html
+  respond_to :html, :json
 
   def index
     @tickets = Ticket.order("created_at DESC")
@@ -15,7 +15,12 @@ class TicketsController < ApplicationController
   end
 
   def new
-    @ticket = Ticket.new
+    ticket_no = Ticket.order("created_at ASC").last.try(:ticket_no).to_i + 1
+    @status = TicketStatus.first
+    @ticket_logged_at = DateTime.now
+
+    ticket_initiated_attributes = {status_id: @status.id, ticket_no: ticket_no}
+    @ticket = Ticket.new ticket_initiated_attributes
     respond_with(@ticket)
   end
 
@@ -131,6 +136,14 @@ class TicketsController < ApplicationController
     end
     respond_to do |format|
       format.json
+      format.js
+    end
+  end
+
+  def find_by_serial
+    serial_no = params[:serial_search]
+    @product = Product.find_by_serial_no(serial_no)
+    respond_to do |format|
       format.js
     end
   end
