@@ -64,3 +64,40 @@
 
 / %script{type: "text/html", id: "load_customer_summary_mustache"}
 /   = render "tickets/load_customer_summary"
+- ticket = @ticket
+.row
+  .col-md-12
+    .ticket_no
+      Ticket No: #{ticket.ticket_no.to_s.rjust(5, "T0000")}
+    .ticket_status
+      Status: #{@status.name}
+    .ticket_logged_at
+      Ticket logged at: #{DateTime.now.strftime("%Y-%m-%d %H:%M")}
+    .ticket_logged_by
+      Ticket logged by: #{current_user.email}
+    .ticket_sla_time
+      SLA Time: #{ticket.sla_time}
+  .col-md-12
+    #product_load
+
+.row
+  .col-md-12
+    = simple_form_for ticket do |f|
+      = f.input :status_id, as: :hidden
+      = f.input :ticket_no, as: :hidden
+      = f.input :base_currency_id, as: :hidden, input_html: {value: TicketCurrency.find_by(base_currency: true).try(:id)}
+      .col-md-9
+        = f.association :job_type, wrapper_html: {class: "col-md-6"}
+        = f.association :inform_method, wrapper_html: {class: "col-md-6"}
+        = f.association :ticket_contact_type, wrapper_html: {class: "col-md-6"}
+        = f.association :problem_category, wrapper_html: {class: "col-md-6"}
+        = f.input :problem_description
+        = f.input :other_accessories
+        = f.input :remarks
+        = f.input :resolution_summary
+        = f.association :warranty_type, as: :radio_buttons
+      .col-md-3
+        = f.input :priority, collection: INOCRM_CONFIG["priority"]
+        = f.input :cus_chargeable, as: :radio_buttons
+        %hr
+        = f.association :ticket_type, as: :radio_buttons

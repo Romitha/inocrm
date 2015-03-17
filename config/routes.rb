@@ -63,6 +63,7 @@ Rails.application.routes.draw do
       post "customer_summary"
       post "comment_methods"
       post "reply_ticket"
+      post "find_by_serial"
     end
   end
   # get 'auth/index'

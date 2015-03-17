@@ -7,6 +7,10 @@
     .logo= link_to image_tag("logo.png", class: "small_scale_margin-top1"),root_url
     .navbar-collapse.collapse.navbar-responsive-collapse.navbar-right.fixed
       %ul.nav.navbar-nav
+        %li
+          = link_to "todo", "#", class: "dropdown-toggle todo text-hide nav-icon", data: {placement: "bottom"}, title: "To Do", rel: "tooltip"
+        %li
+          = link_to "Alert", "#", class: "dropdown-toggle alert text-hide nav-icon", data: {placement: "bottom"}, title: "Alert", rel: "tooltip"
         - if can? :dashboard, Organization
           %li.small_scale_margin-right10
             = link_to "Configuration", dashboard_organization_path(Organization.owner), class: "dropdown-toggle organization text-hide nav-icon", data: {placement: "bottom"}, title: "Configuration", rel: "tooltip"
@@ -46,16 +50,16 @@
               %li{role: "presentation"}= link_to "New Individual Customer", new_user_path(is_customer: true)#new_organization_path(category: Organization::TYPES[3])
 
         %li.dropdown.small_scale_margin-right10{role: "presentation"}
-          = link_to "Tickets", "#", class: "dropdown-toggle tickets text-hide nav-icon", id: "ticket_dropdown", data: {toggle: "dropdown", placement: "bottom"}, title: "Ticket", rel: "tooltip"
+          = link_to "Supports", "#", class: "dropdown-toggle tickets text-hide nav-icon", id: "ticket_dropdown", data: {toggle: "dropdown", placement: "bottom"}, title: "Support tickets", rel: "tooltip"
           %ul.dropdown-menu{"aria-labelledby" => "ticket_dropdown"}
             %li{role: "presentation"}
               = link_to tickets_path do
                 %span= image_tag "ticket.png", style: "width: 12%;"
-                %span Tickets
+                %span Supports
             %li{role: "presentation"}
               %li.divider
               %li.dropdown-header Create Ticket
-              %li{role: "presentation"}= link_to "New Ticket", new_ticket_path
+              %li{role: "presentation"}= link_to "New Support", new_ticket_path
 
         - if user_signed_in?
           %li.dropdown.profile_image_dropdown

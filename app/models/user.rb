@@ -1,7 +1,7 @@
 class User < ActiveRecord::Base
   # self.table_name = "users"
 
-  belongs_to :mst_title
+  belongs_to :mst_title, foreign_key: :title_id
 
   mount_uploader :avatar, AvatarUploader
 
@@ -124,5 +124,14 @@ end
 
 class MstTitle < ActiveRecord::Base
   self.table_name = "mst_title"
-  has_one :user
+  has_one :user, foreign_key: :title_id
+  has_one :customer, foreign_key: :title_id
+end
+
+class Customer < ActiveRecord::Base
+  self.table_name = "spt_customer"
+
+  has_many :tickets, foreign_key: :customer_id
+
+  belongs_to :mst_title, foreign_key: :title_id
 end
