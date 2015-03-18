@@ -132,7 +132,7 @@ class AddMstTablesFromDevage < ActiveRecord::Migration
 
     create_table :mst_spt_pop_status, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
-      t.string :code, limit: 2
+      t.string :code, limit: 3
       t.string :name
       t.timestamps
     end
