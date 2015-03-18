@@ -32,6 +32,8 @@ class Ticket < ActiveRecord::Base
 
   has_many :dyna_columns, as: :resourceable
 
+  validates_presence_of [:ticket_no, :pop_updated_ticket, :contract_available, :created_at, :created_by, :priority, :sla_time, :status_id, :status_resolve_id, :status_hold, :problem_category_id, :informed_method_id, :job_type_id, :ticket_type_id, :regional_support_job, :repair_type_id, :warranty_type_id, :cus_chargeable, :customer_id, :contact_person1_id, :job_finished, :job_closed, :re_open_count, :ticket_close_approval_required, :ticket_close_approval_requested, :ticket_close_approved, :qc_passed, :re_assigned, :terminated, :cus_payment_required, :cus_payment_completed, :pop_updated, :base_currency_id, :manufacture_currency_id, :cus_recieved_note_print_count, :cus_returned_note_print_count]
+
   [:initiated_by, :initiated_by_id].each do |dyna_method|
     define_method(dyna_method) do
       dyna_columns.find_by_data_key(dyna_method).try(:data_value)
@@ -71,42 +73,56 @@ class JobType < ActiveRecord::Base
   self.table_name = "mst_spt_job_type"
 
   has_many :tickets, foreign_key: :job_type_id
+
+  validates_presence_of [:code, :name]
 end
 
 class InformMethod < ActiveRecord::Base
   self.table_name = "mst_spt_ticket_informed_method"
 
   has_many :tickets, foreign_key: :informed_method_id
+
+  validates_presence_of [:code, :name]
 end
 
 class ProblemCategory < ActiveRecord::Base
   self.table_name = "spt_problem_category"
 
   has_many :tickets, foreign_key: :problem_category_id
+
+  validates_presence_of [:name]
 end
 
 class TicketContactType < ActiveRecord::Base
   self.table_name = "mst_spt_contact_type"
 
   has_many :tickets, foreign_key: :contact_type_id
+
+  validates_presence_of [:code, :name]
 end
 
 class TicketContract < ActiveRecord::Base
   self.table_name = "spt_contract"
 
   has_many :tickets, foreign_key: :contract_id
+
+  validates_presence_of [:customer_id, :sla, :active, :created_at, :created_by]
 end
 
 class TicketStatus < ActiveRecord::Base
   self.table_name = "mst_spt_ticket_status"
 
   has_many :tickets, foreign_key: :status_id
+
+  validates_presence_of [:code, :name]
 end
 
 class TicketCurrency < ActiveRecord::Base
   self.table_name = "mst_currency"
 
   has_many :tickets, foreign_key: :base_currency_id
+
+  validates_presence_of [:currency, :code, :symbol, :base_currency]
 end
 
 class TicketProductSerial < ActiveRecord::Base
@@ -114,5 +130,7 @@ class TicketProductSerial < ActiveRecord::Base
 
   belongs_to :ticket, foreign_key: :ticket_id
   belongs_to :product, foreign_key: :product_serial_id
+
+  validates_presence_of [:ticket_id, :product_serial_id]
 end
 
