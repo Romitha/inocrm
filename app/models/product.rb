@@ -6,6 +6,8 @@ class Product < ActiveRecord::Base
 
   belongs_to :product_brand, foreign_key: :product_brand_id
   belongs_to :product_category, foreign_key: :product_category_id
+
+  validates_presence_of [:serial_no, :product_brand_id, :product_category_id, :corparate_product]
 end
 
 class ProductBrand < ActiveRecord::Base
@@ -13,6 +15,8 @@ class ProductBrand < ActiveRecord::Base
 
   has_many :products, foreign_key: :product_brand_id
   has_many :product_categories, foreign_key: :product_brand_id
+
+  validates_presence_of [:name, :sla_time, :parts_return_days, :currency_id]
 end
 
 class ProductCategory < ActiveRecord::Base
@@ -21,4 +25,6 @@ class ProductCategory < ActiveRecord::Base
   has_many :products, foreign_key: :product_category_id
 
   belongs_to :product_brand, foreign_key: :product_brand_id
+
+  validates_presence_of [:product_brand_id, :name]
 end
