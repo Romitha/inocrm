@@ -59,39 +59,6 @@ class TicketsController < ApplicationController
     respond_with(@ticket)
   end
 
-  # post params and response json value
-  def find_customer
-    request = params[:find_by]
-    case request
-    when "customer"
-      @label = "Customer"
-      @customers = User.customers
-    when "invoice"
-      @label = "Invoice"
-    when "serial_number"
-      @label = "Product serial number"
-    when "related_ticket"
-      @label = "Related ticket"
-    when "create_customer"
-      @label = "Create Customer"
-    end
-    @csrf_token = view_context.form_authenticity_token
-    respond_to do |format|
-      format.json
-      format.js
-    end
-  end
-
-  def create_customer
-    request = params.require(:user).permit(:NIC, :email, :full_name, :is_customer, :primary_address, :primary_phone_number)
-    @user = @organization.users.build(request)
-    @user.user_name = "#{@user.first_name}_#{@user.last_name}_#{rand(100)}"
-    if @organization.save
-      render json: {success: "success"}
-    else
-      render json: {errors: @user.errors.full_messages.join(", ").to_json}
-    end
-  end
 
   def customer_summary
     @customer = User.find params[:customer_id]
@@ -159,6 +126,17 @@ class TicketsController < ApplicationController
     end
   end
 
+  def create_customer
+    request = params.require(:user).permit(:NIC, :email, :full_name, :is_customer, :primary_address, :primary_phone_number)
+    @user = @organization.users.build(request)
+    @user.user_name = "#{@user.first_name}_#{@user.last_name}_#{rand(100)}"
+    if @organization.save
+      render json: {success: "success"}
+    else
+      render json: {errors: @user.errors.full_messages.join(", ").to_json}
+    end
+  end
+
   def new_product_brand
     Product
     @new_product_brand = ProductBrand.new
@@ -180,7 +158,7 @@ class TicketsController < ApplicationController
     @new_product_brand = ProductBrand.new product_brand_params
     respond_to do |format|
       if @new_product_brand.save
-        @notice = "Great! #{@new_product_brand.name} is saved. You can create another new category."
+        @notice = "Great! #{@new_product_brand.name} is saved. You can create another new Brand."
         @new_product_brand = ProductBrand.new
         format.js {render :new_product_brand}
       else
@@ -204,11 +182,20 @@ class TicketsController < ApplicationController
   end
 
   def new_product
-    
+    @new_product = Product.new
   end
 
   def create_product
-    
+    @new_product = Product.new product_params
+    respond_to do |format|
+      if @new_product.save
+        @notice = "Great! #{@new_product.serial_no} is saved. You can create another new Product."
+        format.js {render :new_product}
+      else
+        format.js {render :new_product}
+      end
+      
+    end
   end
 
   private
@@ -229,7 +216,7 @@ class TicketsController < ApplicationController
     end
 
     def product_params
-      params.require(:product).permit(:serial_no, :product_brand_id, :product_category_id, :model_no, :product_no, :pop_status_id, :sold)
+      params.require(:product).permit(:serial_no, :product_brand_id, :product_category_id, :model_no, :product_no, :pop_status_id, :coparate_product)
     end
 
     def category_params

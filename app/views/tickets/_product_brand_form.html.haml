@@ -3,6 +3,7 @@
 %fieldset
   %legend Create New Product Brand
   = link_to "Create new Product Category", new_product_category_tickets_path, remote: true
+  = link_to "Create Product", new_product_tickets_path, remote: true
   = simple_form_for product_brand, url: create_product_brand_tickets_path, remote: true do |f|
     = f.input :name
     = f.input :sla_time

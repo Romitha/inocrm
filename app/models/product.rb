@@ -10,7 +10,7 @@ class Product < ActiveRecord::Base
   belongs_to :product_sold_country, foreign_key: :sold_country_id
   belongs_to :inv_serial_item, foreign_key: :inventory_serial_item_id
 
-  validates_presence_of [:serial_no, :product_brand_id, :product_category_id, :corparate_product]
+  validates_presence_of [:serial_no, :product_brand_id, :product_category_id, :coparate_product, :model_no, :product_no]
 end
 
 class ProductBrand < ActiveRecord::Base

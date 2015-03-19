@@ -1,14 +1,16 @@
+- if @notice
+  .alert.alert-success= @notice
 %fieldset
   %legend Create New Product
-  = simple_form_for product, url: "#" do |f|
+  = link_to "Create Product Brand", new_product_brand_tickets_path, remote: true
+  = link_to "Create new Product Category", new_product_category_tickets_path, remote: true
+  = simple_form_for product, url: create_product_tickets_path, remote: true do |f|
     = f.input :serial_no
     = f.input :model_no
     = f.input :product_no
     = f.association :product_brand
-    = f.association :product_category
-    = f.association :product_pop_status
-    = f.association :product_sold_country
-    = f.association :inv_serial_item
+    = f.association :product_category, collection: ProductBrand.all, as: :grouped_select, group_method: :product_categories, input_html: {class: "chosen-select"}
+    = f.association :product_pop_status, include_blank: false
+    = f.input :pop_note
     = f.input :coparate_product, as: :radio_buttons
-    = f.input :sold_at, as: :string
-    = f.submit "Save"
+    = f.submit "Next"
