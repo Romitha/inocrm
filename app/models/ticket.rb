@@ -34,6 +34,8 @@ class Ticket < ActiveRecord::Base
 
   validates_presence_of [:ticket_no, :pop_updated_ticket, :contract_available, :created_at, :created_by, :priority, :sla_time, :status_id, :status_resolve_id, :status_hold, :problem_category_id, :informed_method_id, :job_type_id, :ticket_type_id, :regional_support_job, :repair_type_id, :warranty_type_id, :cus_chargeable, :customer_id, :contact_person1_id, :job_finished, :job_closed, :re_open_count, :ticket_close_approval_required, :ticket_close_approval_requested, :ticket_close_approved, :qc_passed, :re_assigned, :terminated, :cus_payment_required, :cus_payment_completed, :pop_updated, :base_currency_id, :manufacture_currency_id, :cus_recieved_note_print_count, :cus_returned_note_print_count]
 
+  validates_numericality_of [:open_time_duration, :cus_returned_note_print_count, :open_time_duration_sla, :cus_recieved_note_print_count, :ticket_no, :priority, :sla_time, :inform_cp, :re_open_count]
+
   [:initiated_by, :initiated_by_id].each do |dyna_method|
     define_method(dyna_method) do
       dyna_columns.find_by_data_key(dyna_method).try(:data_value)
@@ -61,12 +63,16 @@ class TicketType < ActiveRecord::Base
   self.table_name = "mst_spt_ticket_type"
 
   has_many :tickets, foreign_key: :ticket_type_id
+
+  validates_presence_of [:code, :name]
 end
 
 class WarrantyType < ActiveRecord::Base
   self.table_name = "mst_spt_warranty_type"
 
   has_many :tickets, foreign_key: :warranty_type_id
+
+  validates_presence_of [:code, :name]
 end
 
 class JobType < ActiveRecord::Base
@@ -107,6 +113,8 @@ class TicketContract < ActiveRecord::Base
   has_many :tickets, foreign_key: :contract_id
 
   validates_presence_of [:customer_id, :sla, :active, :created_at, :created_by]
+
+  validates_numericality_of [:sla]
 end
 
 class TicketStatus < ActiveRecord::Base
