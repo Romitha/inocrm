@@ -21,6 +21,8 @@ class ProductBrand < ActiveRecord::Base
 
   validates_presence_of [:name, :sla_time, :parts_return_days, :currency_id]
   belongs_to :currency, foreign_key: :currency_id
+
+  validates_numericality_of [:sla_time, :parts_return_days]
 end
 
 class ProductCategory < ActiveRecord::Base
