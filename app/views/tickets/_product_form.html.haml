@@ -2,15 +2,20 @@
   .alert.alert-success= @notice
 %fieldset
   %legend Create New Product
-  = link_to "Create Product Brand", new_product_brand_tickets_path, remote: true
-  = link_to "Create new Product Category", new_product_category_tickets_path, remote: true
+  = link_to "Brand", new_product_brand_tickets_path, class: "glyphicon glyphicon-plus-sign", remote: true
+  = link_to "Category", new_product_category_tickets_path, class: "glyphicon glyphicon-plus-sign", remote: true
   = simple_form_for product, url: create_product_tickets_path, remote: true do |f|
-    = f.input :serial_no
-    = f.input :model_no
-    = f.input :product_no
-    = f.association :product_brand
-    = f.association :product_category, collection: ProductBrand.all, as: :grouped_select, group_method: :product_categories, input_html: {class: "chosen-select"}
-    = f.association :product_pop_status, include_blank: false
-    = f.input :pop_note
-    = f.input :coparate_product, as: :radio_buttons
-    = f.submit "Next"
+    .row
+      = f.association :product_brand, wrapper_html: {class:"col-md-6"}
+      = f.association :product_category, collection: ProductBrand.all, as: :grouped_select, group_method: :product_categories, input_html: {class: "chosen-select"}, wrapper_html: {class:"col-md-6"}
+    .row  
+      = f.input :model_no, wrapper_html: {class:"col-md-3"}
+      = f.input :serial_no, wrapper_html: {class:"col-md-3"}
+      = f.input :product_no, wrapper_html: {class:"col-md-3"}
+      = f.input :coparate_product, as: :radio_buttons, wrapper_html: {class:"col-md-3"}
+    .row
+      = f.association :product_pop_status, include_blank: false, wrapper_html: {class:"col-md-3"}
+      = f.input :pop_note, wrapper_html: {class:"col-md-9"}
+    .row
+      .col-md-12
+        = f.submit "Next"
