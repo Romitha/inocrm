@@ -1,0 +1,14 @@
+%fieldset
+  %legend Create New Product
+  = simple_form_for product, url: "#" do |f|
+    = f.input :serial_no
+    = f.input :model_no
+    = f.input :product_no
+    = f.association :product_brand
+    = f.association :product_category
+    = f.association :product_pop_status
+    = f.association :product_sold_country
+    = f.association :inv_serial_item
+    = f.input :coparate_product, as: :radio_buttons
+    = f.input :sold_at, as: :string
+    = f.submit "Save"

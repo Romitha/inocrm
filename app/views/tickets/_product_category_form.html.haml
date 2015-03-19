@@ -1,0 +1,10 @@
+- if @notice
+  .alert.alert-success= @notice
+%fieldset
+  %legend Create New Category
+  = link_to "Create Product Brand", new_product_brand_tickets_path, remote: true
+  = simple_form_for product_category, url: create_new_category_tickets_path, remote: true do |f|
+    = f.input :name
+    = f.association :product_brand
+    = f.input :sla_time
+    = f.submit "Save"

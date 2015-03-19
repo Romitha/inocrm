@@ -63,7 +63,15 @@ Rails.application.routes.draw do
       post "customer_summary"
       post "comment_methods"
       post "reply_ticket"
+
       post "find_by_serial"
+
+      get "new_product_brand"
+      get "new_product_category"
+
+      post "create_product_brand"
+      post "create_new_category"
+      post "create_new_product"
     end
   end
   # get 'auth/index'

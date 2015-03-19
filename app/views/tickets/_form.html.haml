@@ -65,20 +65,6 @@
 / %script{type: "text/html", id: "load_customer_summary_mustache"}
 /   = render "tickets/load_customer_summary"
 - ticket = @ticket
-.row
-  .col-md-12
-    .ticket_no
-      Ticket No: #{ticket.ticket_no.to_s.rjust(5, "T0000")}
-    .ticket_status
-      Status: #{@status.name}
-    .ticket_logged_at
-      Ticket logged at: #{DateTime.now.strftime("%Y-%m-%d %H:%M")}
-    .ticket_logged_by
-      Ticket logged by: #{current_user.email}
-    .ticket_sla_time
-      SLA Time: #{ticket.sla_time}
-  .col-md-12
-    #product_load
 
 .row
   .col-md-12
