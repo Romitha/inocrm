@@ -1,1 +1,12 @@
-$("#product_load").html("#{j render 'tickets/find_by_product_serial', product: @product}");
+- if @product.persisted?
+  $("#product_load").html("#{j render 'tickets/find_by_product_serial', product: @product}");
+- else
+  - if @product_brands.to_a.any?
+    - if @product_categories.to_a.any?
+      $("#product_load").html("#{j render 'tickets/product_form', product: @product}");
+    - else
+      $("#product_load").html("#{j render 'tickets/product_category_form', product_category: @new_product_category}");
+  - else
+    $("#product_load").html("#{j render 'tickets/product_brand_form', product_brand: @new_product_brand}");
+
+Organizations.enable_chosen();

@@ -142,10 +142,73 @@ class TicketsController < ApplicationController
 
   def find_by_serial
     serial_no = params[:serial_search]
-    @product = Product.find_by_serial_no(serial_no)
+    @product = Product.find_by_serial_no(serial_no) || Product.new(serial_no: serial_no)
+    @base_currency = Currency.find_by_base_currency(true)
+    if @product.persisted?
+      @product_brand = @product.product_brand
+      @product_category = @product.product_category
+    else
+      @product_brands = ProductBrand.all
+      @product_categories = ProductCategory.all
+
+      @new_product_brand = ProductBrand.new currency_id: @base_currency.try(:id)
+      @new_product_category = ProductCategory.new
+    end
     respond_to do |format|
       format.js
     end
+  end
+
+  def new_product_brand
+    Product
+    @new_product_brand = ProductBrand.new
+    respond_to do |format|
+      format.js
+    end
+  end
+
+  def new_product_category
+    Product
+    @new_product_category = ProductCategory.new
+    respond_to do |format|
+      format.js
+    end
+  end
+
+  def create_product_brand
+    Product
+    @new_product_brand = ProductBrand.new product_brand_params
+    respond_to do |format|
+      if @new_product_brand.save
+        @notice = "Great! #{@new_product_brand.name} is saved. You can create another new category."
+        @new_product_brand = ProductBrand.new
+        format.js {render :new_product_brand}
+      else
+        format.js {render :new_product_brand}
+      end
+    end
+  end
+
+  def create_new_category
+    Product
+    @new_product_category = ProductCategory.new category_params
+    respond_to do |format|
+      if @new_product_category.save
+        @notice = "Great! #{@new_product_category.name} is saved. You can create another new category."
+        @new_product_category = ProductCategory.new
+        format.js {render :new_product_category}
+      else
+        format.js {render :new_product_category}
+      end
+    end
+  end
+
+  def new_product
+    
+  end
+
+  def create_product
+    
   end
 
   private
@@ -159,5 +222,17 @@ class TicketsController < ApplicationController
 
     def ticket_params
       params.require(:ticket).permit(:initiated_through, :ticket_type, :status, :subject, :priority, :description, {document_attachment: [:file_path, :attachable_id, :attachable_type, :downloadable]}, :organization_id, :department_id, :agent_ids, :customer_id, :due_date_time)
+    end
+
+    def product_brand_params
+      params.require(:product_brand).permit(:name, :sla_time, :parts_return_days, :warenty_date_formate, :currency_id)
+    end
+
+    def product_params
+      params.require(:product).permit(:serial_no, :product_brand_id, :product_category_id, :model_no, :product_no, :pop_status_id, :sold)
+    end
+
+    def category_params
+      params.require(:product_category).permit(:name, :product_brand_id, :sla_time)
     end
 end
