@@ -3,9 +3,12 @@
 %fieldset
   %legend Create New Category
   = link_to "Create Product", new_product_tickets_path, remote: true
-  = link_to "Brand", new_product_brand_tickets_path, class: "glyphicon glyphicon-plus-sign", remote: true
   = simple_form_for product_category, url: create_new_category_tickets_path, remote: true do |f|
-    = f.association :product_brand, wrapper_html: {class:"col-md-4"}
+    .col-md-4
+      = f.association :product_brand, wrapper_html: {style: "width: 95%; float: left;"}
+      .add_sign
+        = link_to new_product_brand_tickets_path, remote: true, title: "New Product" do
+          %span.glyphicon.glyphicon-plus-sign
     = f.input :name, wrapper_html: {class:"col-md-4"}
     = f.input :sla_time, label:"Sla_Time (Hours)", wrapper_html: {class:"col-md-4"}
     = f.submit "Save"

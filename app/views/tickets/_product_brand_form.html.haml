@@ -3,7 +3,6 @@
 %fieldset
   %legend Create New Product Brand
   = link_to "Create Product", new_product_tickets_path, remote: true
-  = link_to "Category", new_product_category_tickets_path, class: "glyphicon glyphicon-plus-sign", remote: true
   = simple_form_for product_brand, url: create_product_brand_tickets_path, remote: true do |f|
     = f.input :name, wrapper_html: {class:"col-md-6"}
     = f.input :sla_time, label:"Sla_Time (Hours)", wrapper_html: {class:"col-md-6"}
