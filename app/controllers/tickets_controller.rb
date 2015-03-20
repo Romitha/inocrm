@@ -186,14 +186,26 @@ class TicketsController < ApplicationController
   end
 
   def create_product
+    ContactNumber
     @new_product = Product.new product_params
+    session[:next] = params[:next_to_customer]
     respond_to do |format|
       if @new_product.save
-        @notice = "Great! #{@new_product.serial_no} is saved. You can create another new Product."
-        format.js {render :new_product}
+        @notice = "Great! #{@new_product.serial_no} is saved. You can create new Customer."
+        @new_customer = Customer.new
+        format.js {render :new_customer}
       else
         format.js {render :new_product}
       end
+    end
+  end
+
+  def new_customer
+    User
+    ContactNumber
+    @new_customer = Customer.new
+    respond_to do |format|
+      format.js
       
     end
   end

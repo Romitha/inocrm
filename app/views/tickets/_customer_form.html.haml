@@ -1,0 +1,21 @@
+- if @notice
+  .alert.alert-success= @notice
+%fieldset
+  %legend New Customer
+  = link_to "Create Product Brand", new_product_brand_tickets_path, remote: true
+  = link_to "Create new Product Category", new_product_category_tickets_path, remote: true
+  = link_to "Create Product", new_product_tickets_path, remote: true
+
+  = simple_nested_form_for customer, url: "#" do |f|
+    = f.association :mst_title, collection: MstTitle.all.map{|t| [t.title, t.id]}
+    = f.input :name
+    = f.input :address1
+    = f.input :address2
+    = f.input :address3
+    = f.input :address4, label: "City"
+    = f.simple_fields_for :contact_type_values do |fc|
+      = fc.input :contact_type_id, collection: ContactType.all.map{|c| [c.name, c.id]}
+      = fc.input :value
+      = fc.link_to_remove "Remove this type"
+    = f.link_to_add "Add a type", :contact_type_values
+    = f.submit "Customer"

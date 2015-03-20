@@ -2,12 +2,19 @@
   .alert.alert-success= @notice
 %fieldset
   %legend Create New Product
-  = link_to "Brand", new_product_brand_tickets_path, class: "glyphicon glyphicon-plus-sign", remote: true
-  = link_to "Category", new_product_category_tickets_path, class: "glyphicon glyphicon-plus-sign", remote: true
+  = link_to "Create new Customer", new_customer_tickets_path, remote: true
   = simple_form_for product, url: create_product_tickets_path, remote: true do |f|
     .row
-      = f.association :product_brand, wrapper_html: {class:"col-md-6"}
-      = f.association :product_category, collection: ProductBrand.all, as: :grouped_select, group_method: :product_categories, input_html: {class: "chosen-select"}, wrapper_html: {class:"col-md-6"}
+      .col-md-6
+        = f.association :product_brand, wrapper_html: {style: "width: 95%; float: left;"}
+        .add_sign
+          = link_to new_product_brand_tickets_path, remote: true, title: "New Product" do
+            %span.glyphicon.glyphicon-plus-sign
+      .col-md-6
+        = f.association :product_category, collection: ProductBrand.all, as: :grouped_select, group_method: :product_categories, input_html: {class: "chosen-select"}, wrapper_html: {style: "width: 95%; float: left;"}
+        .add_sign
+          = link_to new_product_category_tickets_path, remote: true, title: "New Category" do
+            %span.glyphicon.glyphicon-plus-sign
     .row  
       = f.input :model_no, wrapper_html: {class:"col-md-3"}
       = f.input :serial_no, wrapper_html: {class:"col-md-3"}
@@ -18,4 +25,4 @@
       = f.input :pop_note, wrapper_html: {class:"col-md-9"}
     .row
       .col-md-12
-        = f.submit "Next"
+        = f.submit "Next", name: "next_to_customer"

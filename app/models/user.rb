@@ -133,5 +133,16 @@ class Customer < ActiveRecord::Base
 
   has_many :tickets, foreign_key: :customer_id
 
+  has_many :contact_type_values, foreign_key: :customer_id
+  has_many :contact_types, through: :contact_type_values
+  accepts_nested_attributes_for :contact_type_values, :allow_destroy => true
+
   belongs_to :mst_title, foreign_key: :title_id
+end
+
+class ContactTypeValue < ActiveRecord::Base
+  self.table_name = "spt_customer_contact_type"
+
+  belongs_to :customer
+  belongs_to :contact_type
 end
