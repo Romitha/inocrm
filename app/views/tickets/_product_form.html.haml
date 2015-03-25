@@ -1,5 +1,12 @@
 - if @notice
   .alert.alert-success= @notice
+- elsif product.errors.present?
+  .alert.alert-danger{:role => "alert"}
+    %button.close{"aria-label" => "Close", "data-dismiss" => "alert", :type => "button"}
+      %span{"aria-hidden" => "true"} &times;
+    %ul
+      - product.errors.full_messages.each do |error|
+        %li= error
 %fieldset
   %legend Create New Product
   = link_to "Create new Customer", new_customer_tickets_path, remote: true

@@ -23,6 +23,8 @@ class ProductBrand < ActiveRecord::Base
   belongs_to :currency, foreign_key: :currency_id
   belongs_to :sla_time, foreign_key: :sla_id
 
+  validates_uniqueness_of :name
+
   validates_numericality_of [:parts_return_days]
 end
 

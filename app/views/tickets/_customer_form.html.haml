@@ -1,5 +1,12 @@
 - if @notice
   .alert.alert-success= @notice
+- elsif customer.errors.present?
+  .alert.alert-danger{:role => "alert"}
+    %button.close{"aria-label" => "Close", "data-dismiss" => "alert", :type => "button"}
+      %span{"aria-hidden" => "true"} &times;
+    %ul
+      - customer.errors.full_messages.each do |error|
+        %li= error
 %fieldset
   %legend New Customer
   = link_to "Create Product Brand", new_product_brand_tickets_path, remote: true
@@ -16,21 +23,17 @@
       = f.input :address3, wrapper_html: {class:"col-md-3"}
       = f.input :address4, label: "City", wrapper_html: {class:"col-md-3"}
 
-    = f.simple_fields_for :contact_type_values do |fc|
-      .row
-        .col-md-4
+    .row
+      = f.simple_fields_for :contact_type_values do |fc|
+        .col-md-6
           .add_sign
             = fc.link_to_remove class: "remove_c_t_v_link" do
               %span.glyphicon.glyphicon-remove-sign
-          = fc.input :contact_type_id, collection: ContactType.all.map{|c| [c.name, c.id]}, wrapper_html: {style: "width: 95%; float: left;"}
-      .row
-        = fc.input :value, wrapper_html: {class:"col-md-4"}
-    .row
-      .col-md-12
-        .add_sign.pull-left{style: "width: 100%;"}
-          = f.link_to_add :contact_type_values do
-            Add a Contact
-            %span.glyphicon.glyphicon-plus-sign
-    .row
-      .col-md-12
-        = f.submit "Customer"
+          = fc.input :contact_type_id, collection: ContactType.all.map{|c| [c.name, c.id]}, wrapper_html: {class:"col-md-5"}
+          = fc.input :value, wrapper_html: {class:"col-md-6"}
+
+    .add_sign{style: "width: 100%;"}
+      = f.link_to_add :contact_type_values, style: "clear: both;display: block;" do
+        Add a Contact
+        %span.glyphicon.glyphicon-plus-sign
+    = f.submit "Customer"

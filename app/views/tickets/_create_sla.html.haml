@@ -1,4 +1,11 @@
+.modal-header
+  %button.close{"aria-label" => "Close", "data-dismiss" => "modal", :type => "button"}
+    %span{"aria-hidden" => "true"} &times;
+  = @header
 = simple_form_for new_sla, url: create_sla_tickets_path, remote: true do |f|
-	= f.input :sla_time
-	= f.input :description
-	= f.submit "Create", name: "create_sla"
+  .modal-body
+    = f.input :sla_time
+    = f.input :description
+  .modal-footer
+    = f.submit "Create", name: "create_sla", class: "btn btn-default"
+    %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
