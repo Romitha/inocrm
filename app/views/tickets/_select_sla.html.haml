@@ -1,7 +1,10 @@
 .modal-header
+  %button.close{"aria-label" => "Close", "data-dismiss" => "modal", :type => "button"}
+    %span{"aria-hidden" => "true"} &times;
   = @header
 .modal-body
   #sla_search
     = search_field_tag 'name', nil, class: "form-control search_sla", placeholder: "Type SLA Time"
   #render_sla
 .modal-footer
+  %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
