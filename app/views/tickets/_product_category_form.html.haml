@@ -10,5 +10,16 @@
         = link_to new_product_brand_tickets_path, remote: true, title: "New Product" do
           %span.glyphicon.glyphicon-plus-sign
     = f.input :name, wrapper_html: {class:"col-md-4"}
-    = f.input :sla_time, label:"Sla_Time (Hours)", wrapper_html: {class:"col-md-4"}
+    = f.input :sla_id, as: :hidden
+
+    = label_tag "Select SLA Time" do
+      = radio_button_tag "name", "sla_time", false, class: "radio_for_sla", data: {param: "select_sla"}
+      Select SLA Time
+    = label_tag "Create SLA Time" do
+      = radio_button_tag "name", "description", false, class: "radio_for_sla", data: {param: "create_sla"}
+      Create SLA Time
     = f.submit "Save"
+
+#toggle_sla.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "toggle_sla", "aria-hidden" => true}
+  .modal-dialog
+    .modal-content
