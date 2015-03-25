@@ -3,9 +3,6 @@ window.Tickets =
     @load_customer()
     @ticket_attachment_upload()
     @prevent_enter()
-    @check_submit()
-    @ticket_customer_id_change()
-    @filter_agent()
     @description_more()
     return
 
@@ -80,75 +77,6 @@ window.Tickets =
       event.preventDefault()  if event.keyCode is 10 or event.keyCode is 13
       return
 
-  check_submit: ->
-    $("#ticket_attachment_upload").hide()
-    $(".input_check").keyup ->
-      $(".input_check").each ->
-        if $("#ticket_description").val().length is 0 or $("input[name='ticket[initiated_through]']:checked").length is 0 or $("#ticket_subject").val().length is 0            # alert $(@).val()
-          $("#ticket_attachment_upload").hide()
-        else
-          $("#ticket_attachment_upload").show()
-        return
-    $(".input_check").click ->
-      $(".input_check").each ->
-        if $("#ticket_description").val().length is 0 or $("input[name='ticket[initiated_through]']:checked").length is 0 or $("#ticket_subject").val().length is 0
-          $("#ticket_attachment_upload").hide()
-        else
-          $("#ticket_attachment_upload").show()
-        return
-
-  create_customer: ->
-    submit_button = $(".new_customer .btn-success")
-    input_field = $(".new_customer .form-control")
-
-    submit_button.prop "disabled", true
-    input_field.keyup ->
-      disabled = false
-      input_field.each ->
-        if $(@).val() == ""
-          disabled = true
-      submit_button.prop "disabled", disabled
-
-    submit_button.click (e)->
-      e.preventDefault()
-      $.post "/tickets/create_customer", $(".new_customer").serialize(), (data, textStatus, jqXHR)->
-        if data.errors
-          $("#new_customer_errors").html "<div class = 'alert alert-danger new_customer_error'>#{data.errors}</div>"
-        else
-          $(".new_customer_error").remove()
-          alert "New customer is successfully saved. You can continue add new customer"
-
-  ticket_customer_id_change: ->
-    $("#ticket_customer_id").change ->
-      $(".more_about_user").remove()
-      $(@).parent().append("<p class='more_about_user'><a href='#' onclick='Tickets.customer_summary_view(#{$(@).val()});'>Do you want to know more?</a></p>")
-
-  customer_summary_view: (customer_id)->
-    $.post "/tickets/customer_summary", {customer_id: customer_id}, (data, textStatus, jqXHR)->
-      $("#customer_modal").modal()
-      $('#load_for_model_box').html Mustache.to_html($('#load_customer_summary_mustache').html(), data)
-      return
-
-  load_new_comment: (comment_method, ticket_id)->
-    _this = this
-    $.post "/tickets/comment_methods",
-      {comment_method: comment_method, ticket_id: ticket_id, to_email: $("#watcher").data("to-email"), customer: $("#reply").data("customer")},
-      (data, textStatus, jqXHR)->
-        $("#load_new_comment_for_ticket").html Mustache.to_html($("#load_new_comment_form_ticket_mustache").html(), data)
-        $('.wysihtml5').each (i, elem)->
-          $(elem).wysihtml5()
-        _this.create_comment_for_ticket()
-        return
-
-  create_comment_for_ticket: ->
-    $("#comment_create").click (e)->
-      e.preventDefault()
-      $.post( "/tickets/reply_ticket", $("#new_comment").serialize(), (data, textStatus, jqXHR)->
-        $(".comment_list").prepend Mustache.to_html($("#comment_mustache").html(), data)
-      ).fail( ->
-        alert "Something went wrong. Please try again or contact system administrator"
-      )
-
   filter_agent: ->
     agents = $("#ticket_agent_ids").html()
     $("#ticket_agent_ids").empty()
@@ -159,6 +87,7 @@ window.Tickets =
         $("#ticket_agent_ids").html(filtered_html)
       else
         $("#ticket_agent_ids").empty()
+
   description_more: ->
     showTotalChar = 200
     showChar = "Show (+)"
@@ -182,3 +111,17 @@ window.Tickets =
       $(this).parent().prev().toggle()
       $(this).prev().toggle()
       return
+
+  remove_c_t_v_link: ->
+    for n in [0, 1]
+      do (n) ->
+        $(".fields .remove_c_t_v_link:eq(0)").remove()
+
+  search_sla: ->
+    $(".search_sla").keyup ->
+      search_sla_value = $(@).val()
+      $.post "/tickets/select_sla", {search_sla: true, search_sla_value: search_sla_value}
+
+  radio_for_sla: ->
+    $(".radio_for_sla").click ->
+      $.post "/tickets/"+$(@).data('param')

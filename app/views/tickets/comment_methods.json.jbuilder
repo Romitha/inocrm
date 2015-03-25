@@ -1,9 +1,0 @@
-json.subject @subject
-json.from @from
-json.hide_content @hide_content
-json.customer @customer
-json.content @content
-json.comment_method @comment_method
-json.history @history
-json.csrf_token @csrf_token
-json.ticket_id @ticket_id

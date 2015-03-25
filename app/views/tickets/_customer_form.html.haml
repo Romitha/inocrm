@@ -20,7 +20,7 @@
       .row
         .col-md-4
           .add_sign
-            = fc.link_to_remove do
+            = fc.link_to_remove class: "remove_c_t_v_link" do
               %span.glyphicon.glyphicon-remove-sign
           = fc.input :contact_type_id, collection: ContactType.all.map{|c| [c.name, c.id]}, wrapper_html: {style: "width: 95%; float: left;"}
       .row

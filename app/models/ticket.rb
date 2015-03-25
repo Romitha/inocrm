@@ -19,9 +19,7 @@ class Ticket < ActiveRecord::Base
   # belongs_to :organization
   # belongs_to :department
   belongs_to :customer, class_name: "Customer", foreign_key: "customer_id"
-
-  has_many :agent_ticket_infos
-  has_many :agents, through: :agent_ticket_infos
+  belongs_to :sla_time, foreign_key: :sla_id
 
   has_many :document_attachments, as: :attachable
   accepts_nested_attributes_for :document_attachments, allow_destroy: true

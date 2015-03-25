@@ -15,12 +15,13 @@ class TicketsController < ApplicationController
   end
 
   def new
+    session[:ticket_initiated_attributes] = {}
     ticket_no = Ticket.order("created_at ASC").last.try(:ticket_no).to_i + 1
     @status = TicketStatus.first
     @ticket_logged_at = DateTime.now
 
-    ticket_initiated_attributes = {status_id: @status.id, ticket_no: ticket_no}
-    @ticket = Ticket.new ticket_initiated_attributes
+    session[:ticket_initiated_attributes] = {status_id: @status.id, ticket_no: ticket_no}
+    @ticket = Ticket.new session[:ticket_initiated_attributes]
     respond_with(@ticket)
   end
 
@@ -62,7 +63,7 @@ class TicketsController < ApplicationController
 
   def customer_summary
     @customer = User.find params[:customer_id]
-    # respond_with(@customer)
+
       render json: {id: @customer.id, email: @customer.email, full_name: @customer.full_name, phone_number: @customer.primary_phone_number.try(:value), address: @customer.primary_address.try(:address), nic: @customer.NIC, avatar: view_context.image_tag((@customer.avatar.thumb.url || "no_image.jpg"), alt: @customer.email)}
   end
 
@@ -109,11 +110,17 @@ class TicketsController < ApplicationController
 
   def find_by_serial
     serial_no = params[:serial_search]
-    @product = Product.find_by_serial_no(serial_no) || Product.new(serial_no: serial_no)
+    session[:product_id] = nil
+    session[:customer_id] = nil
+    @product = Product.find_by_serial_no(serial_no) || Product.new(serial_no: serial_no, corporate_product: false)
     @base_currency = Currency.find_by_base_currency(true)
     if @product.persisted?
       @product_brand = @product.product_brand
       @product_category = @product.product_category
+      session[:ticket_initiated_attributes].merge!({})
+
+
+      @ticket = Ticket.new session[:ticket_initiated_attributes]
     else
       @product_brands = ProductBrand.all
       @product_categories = ProductCategory.all
@@ -123,17 +130,6 @@ class TicketsController < ApplicationController
     end
     respond_to do |format|
       format.js
-    end
-  end
-
-  def create_customer
-    request = params.require(:user).permit(:NIC, :email, :full_name, :is_customer, :primary_address, :primary_phone_number)
-    @user = @organization.users.build(request)
-    @user.user_name = "#{@user.first_name}_#{@user.last_name}_#{rand(100)}"
-    if @organization.save
-      render json: {success: "success"}
-    else
-      render json: {errors: @user.errors.full_messages.join(", ").to_json}
     end
   end
 
@@ -188,9 +184,9 @@ class TicketsController < ApplicationController
   def create_product
     ContactNumber
     @new_product = Product.new product_params
-    session[:next] = params[:next_to_customer]
     respond_to do |format|
       if @new_product.save
+        session[:product_id] = @new_product.id
         @notice = "Great! #{@new_product.serial_no} is saved. You can create new Customer."
         @new_customer = Customer.new
         format.js {render :new_customer}
@@ -204,9 +200,50 @@ class TicketsController < ApplicationController
     User
     ContactNumber
     @new_customer = Customer.new
+    @new_customer.contact_type_values.build([{contact_type_id: 2}, {contact_type_id: 4}])
     respond_to do |format|
       format.js
+    end
+  end
+
+  def create_customer
+    User
+    ContactNumber
+    @new_customer = Customer.new customer_params
+    respond_to do |format|
+      if @new_customer.save
+        session[:product_id] = @new_customer.id
+        @new_customer = Customer.new
+        @new_customer.contact_type_values.build([{contact_type_id: 2}, {contact_type_id: 4}])
+        @notice = "Great! #{@new_customer.name} is saved. You can create new Customer."
+        format.js {render action: :new_customer}
+      else
+        format.js {render :new_customer}
+      end
       
+    end
+  end
+
+  def select_sla
+    if params[:search_sla]
+      @slas = SlaTime.where(sla_time: params[:search_sla_value].to_f)
+    else
+      @header = "Select SLA Time"
+
+    end
+  end
+
+  def create_sla
+    if params[:create_sla]
+      @new_sla = SlaTime.new sla_time_params
+      if @new_sla.save
+        session[:sla_id] = @new_sla.id
+        @new_sla = SlaTime.new
+        @modal_close = true
+      end
+    else
+      @new_sla = SlaTime.new
+      @header = "Create New SLA Time"
     end
   end
 
@@ -224,14 +261,22 @@ class TicketsController < ApplicationController
     end
 
     def product_brand_params
-      params.require(:product_brand).permit(:name, :sla_time, :parts_return_days, :warenty_date_formate, :currency_id)
+      params.require(:product_brand).permit(:sla_id, :name, :parts_return_days, :warenty_date_formate, :currency_id)
     end
 
     def product_params
-      params.require(:product).permit(:serial_no, :product_brand_id, :product_category_id, :model_no, :product_no, :pop_status_id, :coparate_product)
+      params.require(:product).permit(:serial_no, :product_brand_id, :product_category_id, :model_no, :product_no, :pop_status_id, :coparate_product, :pop_note)
     end
 
     def category_params
       params.require(:product_category).permit(:name, :product_brand_id, :sla_time)
+    end
+
+    def customer_params
+      params.require(:customer).permit(:name, :title_id, :address1, :address2, :address3, :address4, contact_type_values_attributes: [:id, :contact_type_id, :value, :_destroy])
+    end
+
+    def sla_time_params
+      params.require(:sla_time).permit(:sla_time, :description)
     end
 end

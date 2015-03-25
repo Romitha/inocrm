@@ -1,0 +1,7 @@
+.modal-header
+  = @header
+.modal-body
+  #sla_search
+    = search_field_tag 'name', nil, class: "form-control search_sla", placeholder: "Type SLA Time"
+  #render_sla
+.modal-footer

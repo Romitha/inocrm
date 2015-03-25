@@ -10,7 +10,7 @@ class Product < ActiveRecord::Base
   belongs_to :product_sold_country, foreign_key: :sold_country_id
   belongs_to :inv_serial_item, foreign_key: :inventory_serial_item_id
 
-  validates_presence_of [:serial_no, :product_brand_id, :product_category_id, :coparate_product, :model_no, :product_no]
+  validates_presence_of [:serial_no, :product_brand_id, :product_category_id, :model_no, :product_no]
 end
 
 class ProductBrand < ActiveRecord::Base
@@ -21,8 +21,9 @@ class ProductBrand < ActiveRecord::Base
 
   validates_presence_of [:name, :sla_time, :parts_return_days, :currency_id]
   belongs_to :currency, foreign_key: :currency_id
+  belongs_to :sla_time, foreign_key: :sla_id
 
-  validates_numericality_of [:sla_time, :parts_return_days]
+  validates_numericality_of [:parts_return_days]
 end
 
 class ProductCategory < ActiveRecord::Base
@@ -31,6 +32,7 @@ class ProductCategory < ActiveRecord::Base
   has_many :products, foreign_key: :product_category_id
 
   belongs_to :product_brand, foreign_key: :product_brand_id
+  belongs_to :sla_time, foreign_key: :sla_id
 
   validates_presence_of [:product_brand_id, :name]
 end

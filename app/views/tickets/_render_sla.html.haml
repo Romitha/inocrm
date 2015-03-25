@@ -1,0 +1,12 @@
+%table.table
+	%thead
+		%tr
+			%th hours
+			%th Description
+			%th Function
+	%tbody
+		- @slas.each do |sla|
+			%tr
+				%td= sla.sla_time
+				%td= sla.description
+				%td edit

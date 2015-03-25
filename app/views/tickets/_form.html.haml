@@ -1,69 +1,3 @@
-/ - organization = @organization
-/ - ticket = @ticket
-/ = simple_form_for(ticket) do |f|
-/   = f.error_notification
-
-/   = panels header_content: "Find or Create customer", panel_type: "success" do
-/     Find By
-/     - [{value: "customer", id: "customer", label: "Customer", checked: true}, {value: "invoice", id: "invoice", label: "Invoice", checked: false}, {value: "serial_number", id: "serial_number", label: "Product serial number", checked: false}, {value: "related_ticket", id: "related_ticket", label: "Related ticket", checked: false}, {value: "create_customer", id: "create_customer", label: "Create Customer", checked: false}].each do |attr|
-/       = label_tag attr[:label], class: "small_scale_margin-right1" do
-/         = radio_button_tag "find_customer", attr[:value], attr[:checked], id: attr[:id], class: "find_customer"
-/         %span
-/           = attr[:label]
-/     #load_for_customer_select_box
-/       = f.association :customer, label: "Customer", collection: User.customers.map{|user| [user.email, user.id]}, include_blank: false # customer
-
-/   .form-inputs
-/     .row
-/       .col-md-4
-/         .radio_button
-/           = f.input :initiated_through, as: :radio_buttons, collection: Ticket::INITIATED, label: "Initiated through", wrapper: :for_radio_button, input_html: {class: "input_check"}
-/       .col-md-4
-/         = f.input :ticket_type, collection: Ticket::TYPES, include_blank: false
-/       .col-md-4
-/         = f.input :status, collection: Ticket::STATUS, include_blank: false
-/     .row
-/       .col-md-8
-/         = f.input :subject, input_html: {class: "input_check"}
-/       .col-md-4
-/         = f.input :due_date_time, as: :string, input_html: {class: "datetimepicker", value: (DateTime.now+5).strftime("%m/%d/%Y %I:%M %p")}
-/     .row
-/       .col-md-4
-/         = f.association :department, include_blank: true
-/       .col-md-4
-/         = f.association :agents, label: "Agent", include_blank: true, collection: ticket.organization.departments, as: :grouped_select, group_method: :users, group_label_method: :id , label_method: :email, value_method: :id  # agent
-/       .col-md-4
-/         = f.input :priority, collection: Ticket::PRIORITY, include_blank: false
-/     .row
-/       .col-md-12
-/         = f.input :description, input_html: {class: "input_check"}
-/     .row
-/       .col-md-2
-/         .hello
-/           = f.simple_fields_for ticket.document_attachments.build, :html => { class: "form-horizontal fixed margin-bottom0" } do |file|
-/             #ticket_attachment_upload.btn.btn-info.btn-mini.fileinput-button
-/               %span Attach any file
-/               = file.file_field :file_path, label: false, placeholder: "Upload any attachment",wrapper_html: {class: "margin-none"}
-/           = f.input :organization_id, as: :hidden, input_html: {value: organization.id}
-
-/       .col-md-10
-/       .pull-right
-/         = link_to "Cancel", "#", data: {dismiss: "modal"}, class: "btn btn-link"
-/         = f.submit "save", class: "btn btn-success"
-
-/ #customer_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "profile_modal", "aria-hidden" => true}
-/   .modal-dialog
-/     .modal-content
-/       #load_for_model_box
-
-/ %script{type: "text/html", id: "load_for_customer_select_box_mustache"}
-/   = render "tickets/load_for_customer_select_box"
-
-/ %script{type: "text/html", id: "load_for_create_user_for_mustache"}
-/   = render "tickets/load_create_user"
-
-/ %script{type: "text/html", id: "load_customer_summary_mustache"}
-/   = render "tickets/load_customer_summary"
 - ticket = @ticket
 
 .row
@@ -72,18 +6,44 @@
       = f.input :status_id, as: :hidden
       = f.input :ticket_no, as: :hidden
       = f.input :base_currency_id, as: :hidden, input_html: {value: TicketCurrency.find_by(base_currency: true).try(:id)}
-      .col-md-9
-        = f.association :job_type, wrapper_html: {class: "col-md-6"}
-        = f.association :inform_method, wrapper_html: {class: "col-md-6"}
-        = f.association :ticket_contact_type, wrapper_html: {class: "col-md-6"}
-        = f.association :problem_category, wrapper_html: {class: "col-md-6"}
-        = f.input :problem_description
-        = f.input :other_accessories
+      .row
+        .col-md-3
+          %span.strong Product Serial:
+          %span= product.serial_no
+        .col-md-3
+          %span.strong Product Brand:
+          %span= product.product_brand.name
+      .row
+        .col-md-3
+          %span.strong Product No:
+          %span= product.product_no
+        .col-md-3
+          %span.strong Product Category:
+          %span= product.product_category.name
+      .row
+        .col-md-4
+          %span.strong Product Model:
+          %span= product.model_no
+        .col-md-12
+          %span.strong Pop Note:
+          %span= product.pop_note
+          %hr
+      .row
+        = f.input :priority, collection: INOCRM_CONFIG["priority"], wrapper_html: {class: "col-md-2"}
+        = f.association :problem_category, wrapper_html: {class: "col-md-2"}
+        .col-md-8
+          = f.input :problem_description
+
+        = f.input :other_accessories, wrapper_html: {class: "col-md-12"}
+      .row
+        = f.association :inform_method, wrapper_html: {class: "col-md-3"}
+
+        = f.association :job_type, wrapper_html: {class: "col-md-3"}
+      .row
+        = f.association :ticket_type, as: :radio_buttons, wrapper_html: {class: "col-md-3"}
+        = f.association :warranty_type, as: :radio_buttons, wrapper_html: {class: "col-md-6"}
+        = f.input :cus_chargeable, as: :radio_buttons, wrapper_html: {class: "col-md-3"}
+      .row
         = f.input :remarks
-        = f.input :resolution_summary
-        = f.association :warranty_type, as: :radio_buttons
-      .col-md-3
-        = f.input :priority, collection: INOCRM_CONFIG["priority"]
-        = f.input :cus_chargeable, as: :radio_buttons
-        %hr
-        = f.association :ticket_type, as: :radio_buttons
+        = f.association :ticket_contact_type, wrapper_html: {class: "col-md-6"}
+        = f.input :resolution_summary, wrapper_html: {class: "col-md-12"}
