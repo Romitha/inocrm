@@ -310,7 +310,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.column :sold_country_id, "INT UNSIGNED"
       t.text :pop_note                                      
       t.string :pop_doc_url                                   #250
-      t.boolean :coparate_product
+      t.boolean :corporate_product
       t.datetime :sold_at
       t.column :sold_by, "INT UNSIGNED"
       t.column :inventory_serial_item_id, "INT UNSIGNED"
@@ -325,7 +325,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.datetime :end_at
       t.integer :period_part
       t.integer :period_labour
-      t.integer :coparate_onsight
+      t.integer :corporate_onsight
       t.column :warranty_type_id, "INT UNSIGNED"
       t.text :note                                          
       t.string :care_pack_product_no

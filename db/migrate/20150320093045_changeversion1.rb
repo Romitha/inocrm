@@ -3,7 +3,7 @@ class Changeversion1 < ActiveRecord::Migration
   	create_table :mst_spt_sla, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.string :description
-      t.decimal :sla_time
+      t.decimal :sla_time, precision: 8, scale: 2
       t.datetime :created_at
       t.column :created_by, "INT UNSIGNED"
       t.timestamps

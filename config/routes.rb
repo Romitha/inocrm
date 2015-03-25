@@ -58,7 +58,6 @@ Rails.application.routes.draw do
   resources :tickets do
     concerns :attachable
     collection do
-      post "create_customer"
       post "customer_summary"
       post "comment_methods"
       post "reply_ticket"
@@ -74,6 +73,9 @@ Rails.application.routes.draw do
       post "create_new_category"
       post "create_new_product"
       post "create_product"
+      post "create_customer"
+      post "select_sla"
+      post "create_sla"
     end
   end
   # get 'auth/index'

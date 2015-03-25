@@ -1,3 +1,5 @@
 $("#product_load").html("#{j render 'tickets/customer_form', customer: @new_customer}");
 
 Organizations.enable_chosen();
+
+Tickets.remove_c_t_v_link();

@@ -14,4 +14,14 @@ class ContactType < ActiveRecord::Base
 	self.table_name = "mst_spt_customer_contact_type"
 	has_many :contact_type_values, foreign_key: :contact_type_id
   has_many :customers, through: :contact_type_values
+  accepts_nested_attributes_for :contact_type_values, :allow_destroy => true
+end
+
+class ContactTypeValue < ActiveRecord::Base
+  self.table_name = "spt_customer_contact_type"
+
+  belongs_to :customer
+  belongs_to :contact_type
+
+  validates_presence_of [:contact_type_id, :value]
 end
