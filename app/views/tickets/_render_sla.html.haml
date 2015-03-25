@@ -9,4 +9,4 @@
 			%tr
 				%td= sla.sla_time
 				%td= sla.description
-				%td edit
+				%td= link_to "select", "#", onclick: "Tickets.select_sla('#{sla.id}'); false;"

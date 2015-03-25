@@ -189,6 +189,7 @@ class TicketsController < ApplicationController
         session[:product_id] = @new_product.id
         @notice = "Great! #{@new_product.serial_no} is saved. You can create new Customer."
         @new_customer = Customer.new
+        @new_customer.contact_type_values.build([{contact_type_id: 2}, {contact_type_id: 4}])
         format.js {render :new_customer}
       else
         format.js {render :new_product}
