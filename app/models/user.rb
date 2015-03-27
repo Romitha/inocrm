@@ -136,7 +136,7 @@ class Customer < ActiveRecord::Base
 
   belongs_to :mst_title, foreign_key: :title_id
 
-  validates_presence_of [:name, :address1, :address2, :address3, :address4]
+  validates_presence_of [:name, :address1, :address4]
 end
 
 class ContactPerson1 < ActiveRecord::Base

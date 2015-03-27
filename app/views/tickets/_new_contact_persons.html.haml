@@ -1,10 +1,29 @@
 - customer = @new_customer
 #customer_details
-  = customer.name
-  = customer.address1
-  = customer.address2
-  = customer.address3
-  = customer.address4
+.table-responsive.col-md-6.table-borderless
+  %table.table
+    %tbody
+      %tr
+        %td.text-right
+          %strong Customer Name:
+        %td= customer.name
+        %td.text-right
+          %strong Problem Category:
+        %td=ticket.problem_category.try(:name)
+      %tr
+        %td.text-right
+          %strong Customer Address:
+        %td
+          = customer.address1
+          %br/
+          = customer.address2
+          %br/
+          = customer.address3
+          %br/
+          = customer.address4
+        %td.text-right
+          %strong Problem Description:
+        %td=ticket.problem_description
 %hr
 = link_to "contact person", contact_persons_tickets_path, remote: true
 #contact_persons
