@@ -1,0 +1,8 @@
+#select_contact_persons
+  = form_tag create_contact_persons_tickets_path, method: :post, remote: true do
+    = label_tag "Search By typing"
+    = text_field_tag search_contact_person, nil, class: "form-control"
+    = submit_tag "Search", name: "search_contact_person"
+#contact_persons
+  - contact_persons.each do |contact_person|
+    = contact_person.name

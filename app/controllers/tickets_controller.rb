@@ -263,7 +263,25 @@ class TicketsController < ApplicationController
   end
 
   def create_contact_persons
-    
+    User
+    case params[:data_param]
+    when "select_contact_person1"
+      @contact_persons = []
+      @search_contact_person = "search_contact_person1"
+    when "select_contact_person2"
+      @contact_persons = []
+      @search_contact_person = "search_contact_person2"
+    else
+      if params[:search_contact_person1]
+        @contact_persons = ContactPerson1.where("name like ?", "%#{params[:search_contact_person1]}%")
+        @search_contact_person = "search_contact_person1"
+      elsif params[:search_contact_person2]
+        @contact_persons = ContactPerson2.where("name like ?", "%#{params[:search_contact_person2]}%")
+        @search_contact_person = "search_contact_person2"
+      end
+    end
+
+    render :select_contact_person
   end
 
   def contact_persons

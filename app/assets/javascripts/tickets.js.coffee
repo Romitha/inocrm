@@ -132,3 +132,7 @@ window.Tickets =
 
   remove_serial_search: ->
     $(".serial_search").remove()
+
+  select_contact_person: ->
+    $("input[name='contact_person1'], input[name='contact_person2']").click ->
+      $.post "/tickets/create_contact_persons", {data_param: $(@).data("param")}
