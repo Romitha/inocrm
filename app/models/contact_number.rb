@@ -25,3 +25,13 @@ class ContactTypeValue < ActiveRecord::Base
 
   validates_presence_of [:contact_type_id, :value]
 end
+
+class ContactPersonContactType < ActiveRecord::Base
+  self.table_name = "spt_contact_report_person_contact_type"
+
+  belongs_to :contact_person1, foreign_key: :contact_report_person_id
+  belongs_to :contact_person2, foreign_key: :contact_report_person_id
+  belongs_to :report_person, foreign_key: :contact_report_person_id
+  belongs_to :contact_type, foreign_key: :contact_type_id
+
+end

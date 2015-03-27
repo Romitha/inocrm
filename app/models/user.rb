@@ -29,9 +29,6 @@ class User < ActiveRecord::Base
 
   has_many :customer_tickets, foreign_key: "customer_id", class_name: "Ticket"
 
-  has_many :agent_ticket_infos, foreign_key: "agent_id"
-  has_many :tickets, through: :agent_ticket_infos
-
   has_many :comments, foreign_key: "agent_id"
 
   validates_uniqueness_of :user_name
@@ -140,4 +137,43 @@ class Customer < ActiveRecord::Base
   belongs_to :mst_title, foreign_key: :title_id
 
   validates_presence_of [:name, :address1, :address2, :address3, :address4]
+end
+
+class ContactPerson1 < ActiveRecord::Base
+  self.table_name = "spt_contact_report_person"
+
+  has_many :tickets, foreign_key: :contact_person1_id
+  has_many :regular_customers
+
+  belongs_to :mst_title, foreign_key: :title_id
+end
+
+class ContactPerson2 < ActiveRecord::Base
+  self.table_name = "spt_contact_report_person"
+
+  has_many :tickets, foreign_key: :contact_person2_id
+  has_many :regular_customers
+
+  belongs_to :mst_title, foreign_key: :title_id
+end
+
+class RegularCustomer < ActiveRecord::Base
+  self.table_name = "spt_regular_customer"
+
+  belongs_to :customer, foreign_key: :customer_id
+  belongs_to :contact_person1, foreign_key: :contact_person1_id
+  belongs_to :contact_person2, foreign_key: :contact_person2_id
+  belongs_to :report_person, foreign_key: :reporter_id
+
+  belongs_to :mst_title, foreign_key: :title_id
+
+end
+
+class ReportPerson < ActiveRecord::Base
+  self.table_name = "spt_contact_report_person"
+  has_many :tickets, foreign_key: :reporter_id
+
+  belongs_to :mst_title, foreign_key: :title_id
+
+  has_many :contact_person_contact_types, foreign_key: :contact_report_person_id
 end

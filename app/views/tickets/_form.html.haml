@@ -2,48 +2,57 @@
 
 .row
   .col-md-12
-    = simple_form_for ticket do |f|
-      = f.input :status_id, as: :hidden
-      = f.input :ticket_no, as: :hidden
-      = f.input :base_currency_id, as: :hidden, input_html: {value: TicketCurrency.find_by(base_currency: true).try(:id)}
-      .row
-        .col-md-3
-          %span.strong Product Serial:
-          %span= product.serial_no
-        .col-md-3
-          %span.strong Product Brand:
-          %span= product.product_brand.name
-      .row
-        .col-md-3
-          %span.strong Product No:
-          %span= product.product_no
-        .col-md-3
-          %span.strong Product Category:
-          %span= product.product_category.name
-      .row
-        .col-md-4
-          %span.strong Product Model:
-          %span= product.model_no
-        .col-md-12
-          %span.strong Pop Note:
-          %span= product.pop_note
-          %hr
-      .row
-        = f.input :priority, collection: INOCRM_CONFIG["priority"], wrapper_html: {class: "col-md-2"}
-        = f.association :problem_category, wrapper_html: {class: "col-md-2"}
-        .col-md-8
-          = f.input :problem_description
+    - if @notice
+      .alert.alert-success= @notice
+    - elsif ticket.errors.present?
+      .alert.alert-danger{:role => "alert"}
+        %button.close{"aria-label" => "Close", "data-dismiss" => "alert", :type => "button"}
+          %span{"aria-hidden" => "true"} &times;
+        %ul
+          - ticket.errors.full_messages.each do |error|
+            %li= error
+.row
+  .col-md-3
+    %span.strong Product Serial:
+    %span= product.serial_no
+  .col-md-3
+    %span.strong Product Brand:
+    %span= product.product_brand.name
+.row
+  .col-md-3
+    %span.strong Product No:
+    %span= product.product_no
+  .col-md-3
+    %span.strong Product Category:
+    %span= product.product_category.name
+.row
+  .col-md-4
+    %span.strong Product Model:
+    %span= product.model_no
+  .col-md-12
+    %span.strong Pop Note:
+    %span= product.pop_note
+    %hr
 
-        = f.input :other_accessories, wrapper_html: {class: "col-md-12"}
-      .row
-        = f.association :inform_method, wrapper_html: {class: "col-md-3"}
+#form_frame
+  = simple_form_for ticket, remote: true do |f|
+    = f.input :status_id, as: :hidden
+    = f.input :ticket_no, as: :hidden
+    = f.input :base_currency_id, as: :hidden, input_html: {value: TicketCurrency.find_by(base_currency: true).try(:id)}
+    .row
+      = f.input :priority, collection: INOCRM_CONFIG["priority"], wrapper_html: {class: "col-md-2"}
+      = f.association :problem_category, wrapper_html: {class: "col-md-2"}
+      .col-md-8
+        = f.input :problem_description
 
-        = f.association :job_type, wrapper_html: {class: "col-md-3"}
-      .row
-        = f.association :ticket_type, as: :radio_buttons, wrapper_html: {class: "col-md-3"}
-        = f.association :warranty_type, as: :radio_buttons, wrapper_html: {class: "col-md-6"}
-        = f.input :cus_chargeable, as: :radio_buttons, wrapper_html: {class: "col-md-3"}
-      .row
-        = f.input :remarks
-        = f.association :ticket_contact_type, wrapper_html: {class: "col-md-6"}
-        = f.input :resolution_summary, wrapper_html: {class: "col-md-12"}
+      = f.input :other_accessories, wrapper_html: {class: "col-md-12"}
+    .row
+      = f.association :inform_method, wrapper_html: {class: "col-md-3"}
+
+      = f.association :job_type, wrapper_html: {class: "col-md-3"}
+    .row
+      = f.association :ticket_type, as: :radio_buttons, wrapper_html: {class: "col-md-3"}
+      = f.association :warranty_type, as: :radio_buttons, wrapper_html: {class: "col-md-6"}
+      = f.input :cus_chargeable, as: :radio_buttons, wrapper_html: {class: "col-md-3"}
+    = f.submit "Next"
+    = link_to "Cancel", new_ticket_path

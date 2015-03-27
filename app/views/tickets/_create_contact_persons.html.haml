@@ -1,0 +1,5 @@
+%fieldset
+  %legend= @header
+  = simple_form_for contact_person, url: "#", remote: true do |f|
+    = f.association :mst_title
+    = f.input :name

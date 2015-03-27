@@ -1,9 +1,9 @@
-%h3 New ticket
 - ticket = @ticket
+%h3 New ticket
 .row
   .col-md-6
     .ticket_no
-      Ticket No: #{ticket.ticket_no.to_s.rjust(5, "T0000")}
+      Ticket No: #{@ticket_no.to_s.rjust(5, INOCRM_CONFIG["ticket_no_format"])}
     .ticket_status
       Status: #{@status.name}
   .col-md-6.pull-right.text-right
@@ -17,7 +17,7 @@
   = form_tag find_by_serial_tickets_path, method: :post, remote: true do
     = label_tag "Search By Serial"
     = text_field_tag :serial_search, nil, class: "form-control"
-%hr
+  %hr
 .row
   .col-md-12
     #product_load
