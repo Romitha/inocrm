@@ -3,4 +3,4 @@
 - elsif @new_contact_person2
 	$("#contact_person").html("#{j render 'tickets/create_contact_persons', contact_person: @new_contact_person2}");
 - else
-	$("#form_frame").html("#{j render 'tickets/new_contact_persons'}");
+	$("#form_frame").html("#{j render 'tickets/new_contact_persons', ticket: @ticket}");

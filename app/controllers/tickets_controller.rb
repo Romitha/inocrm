@@ -250,9 +250,10 @@ class TicketsController < ApplicationController
     @new_customer = Customer.new customer_params
     respond_to do |format|
       if @new_customer.save
-        @new_customer.tickets << Ticket.find_by_id(session[:ticket_id])
+        @ticket = Ticket.find_by_id(session[:ticket_id])
+        @new_customer.tickets << @ticket
         session[:customer_id] = @new_customer.id
-        @notice = "Great! #{@new_customer.name} is saved. You can create new Customer."
+        @notice = "Great! #{@new_customer.name} is saved. You can add new contact person details."
         format.js {render :create_contact_persons}
       else
         format.js {render :new_customer}
@@ -269,6 +270,7 @@ class TicketsController < ApplicationController
     User
     respond_to do |format|
       @new_customer = Customer.find(session[:customer_id])
+      @ticket = @new_customer.tickets.find(session[:ticket_id])
       format.js {render :create_contact_persons}
     end
   end
