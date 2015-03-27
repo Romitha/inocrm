@@ -265,6 +265,14 @@ class TicketsController < ApplicationController
     
   end
 
+  def contact_persons
+    User
+    respond_to do |format|
+      @new_customer = Customer.find(session[:customer_id])
+      format.js {render :create_contact_persons}
+    end
+  end
+
   def select_sla
     if params[:search_sla]
       @slas = SlaTime.where(sla_time: params[:search_sla_value].to_f).present? ? SlaTime.where(sla_time: params[:search_sla_value].to_f) : SlaTime.all

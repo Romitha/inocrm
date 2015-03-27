@@ -68,6 +68,7 @@ Rails.application.routes.draw do
       get "new_product_category"
       get "new_product"
       get "new_customer"
+      get "contact_persons"
 
       post "create_product_brand"
       post "create_new_category"
