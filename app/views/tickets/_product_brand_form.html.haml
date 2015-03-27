@@ -24,7 +24,7 @@
         = label_tag "Create SLA Time" do
           = radio_button_tag "name", "description", false, class: "radio_for_sla", data: {param: "create_sla"}
           Create SLA Time
-        = f.submit "Save"
+    = f.submit "Save"
 
 #toggle_sla.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "toggle_sla", "aria-hidden" => true}
   .modal-dialog

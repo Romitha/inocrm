@@ -76,6 +76,8 @@ Rails.application.routes.draw do
       post "create_customer"
       post "select_sla"
       post "create_sla"
+
+      post "create_contact_persons"
     end
   end
   # get 'auth/index'

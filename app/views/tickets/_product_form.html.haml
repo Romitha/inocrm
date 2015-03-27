@@ -9,7 +9,6 @@
         %li= error
 %fieldset
   %legend Create New Product
-  = link_to "Create new Customer", new_customer_tickets_path, remote: true
   = simple_form_for product, url: create_product_tickets_path, remote: true do |f|
     .row
       .col-md-6
@@ -33,3 +32,4 @@
     .row
       .col-md-12
         = f.submit "Next", name: "next_to_customer"
+        = link_to "Cancel", new_ticket_path

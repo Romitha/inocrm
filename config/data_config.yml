@@ -5,3 +5,5 @@ priority:
   Normal: 3
   Low: 4
   Lowest: 5
+
+ticket_no_format: "T0000"

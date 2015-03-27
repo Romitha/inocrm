@@ -15,13 +15,19 @@ class TicketsController < ApplicationController
   end
 
   def new
+    session[:ticket_id] = nil
+    session[:product_category_id] = nil
+    session[:product_brand_id] = nil
+    session[:product_id] = nil
+    session[:customer_id] = nil
+    session[:serial_no] = nil
     session[:ticket_initiated_attributes] = {}
-    ticket_no = Ticket.order("created_at ASC").last.try(:ticket_no).to_i + 1
+    @ticket_no = (Ticket.order("created_at ASC").last.try(:ticket_no).to_i + 1)
     @status = TicketStatus.first
     @ticket_logged_at = DateTime.now
 
-    session[:ticket_initiated_attributes] = {status_id: @status.id, ticket_no: ticket_no}
-    @ticket = Ticket.new session[:ticket_initiated_attributes]
+    session[:ticket_initiated_attributes] = {ticket_no: @ticket_no, status_id: @status.id}
+    @ticket = Ticket.new(session[:ticket_initiated_attributes])
     respond_with(@ticket)
   end
 
@@ -29,14 +35,28 @@ class TicketsController < ApplicationController
   end
 
   def create
-    t_params = ticket_params
-    t_params["due_date_time"] = DateTime.strptime(t_params["due_date_time"], '%m/%d/%Y %I:%M %p') if t_params["due_date_time"].present?
-    @ticket = Ticket.new(t_params)
-    @organization = @ticket.organization
-    @ticket.initiated_by = (current_user.user_name || current_user.email)
-    @ticket.initiated_by_id = current_user.id
-    @ticket.save
-    respond_with(@ticket)
+    @new_ticket = Ticket.new ticket_params
+    @ticket = @new_ticket
+    respond_to do |format|
+
+      if @new_ticket.save
+        session[:ticket_id] = @new_ticket.id
+        session[:ticket_initiated_attributes] = {}
+        @new_ticket.products << Product.find_by_id(session[:product_id])
+        @notice = "Great! new ticket is initiated."
+
+        User
+        ContactNumber
+        @new_customer = Customer.new
+        @new_customer.contact_type_values.build([{contact_type_id: 2}, {contact_type_id: 4}])
+        format.js {render :new_customer}
+      else
+
+        @product = Product.find session[:product_id]
+        format.js {render :find_by_serial}
+      end
+
+    end
   end
 
   def update
@@ -112,12 +132,15 @@ class TicketsController < ApplicationController
     serial_no = params[:serial_search]
     session[:product_id] = nil
     session[:customer_id] = nil
+    session[:serial_no] = serial_no
     @product = Product.find_by_serial_no(serial_no) || Product.new(serial_no: serial_no, corporate_product: false)
     @base_currency = Currency.find_by_base_currency(true)
     if @product.persisted?
       @product_brand = @product.product_brand
       @product_category = @product.product_category
       session[:ticket_initiated_attributes].merge!({})
+
+      session[:product_id] = @product.id
 
 
       @ticket = Ticket.new session[:ticket_initiated_attributes]
@@ -134,6 +157,7 @@ class TicketsController < ApplicationController
   end
 
   def new_product_brand
+    session[:product_brand_id] = nil
     Product
     @new_product_brand = ProductBrand.new
     respond_to do |format|
@@ -142,6 +166,7 @@ class TicketsController < ApplicationController
   end
 
   def new_product_category
+    session[:product_category_id] = nil
     Product
     @new_product_category = ProductCategory.new
     respond_to do |format|
@@ -154,9 +179,11 @@ class TicketsController < ApplicationController
     @new_product_brand = ProductBrand.new product_brand_params
     respond_to do |format|
       if @new_product_brand.save
-        @notice = "Great! #{@new_product_brand.name} is saved. You can create another new Brand."
-        @new_product_brand = ProductBrand.new
-        format.js {render :new_product_brand}
+        session[:product_brand_id] = @new_product_brand.id
+        @notice = "Great! #{@new_product_brand.name} is saved. You can create new category."
+
+        @new_product_category = ProductCategory.new
+        format.js {render :new_product_category}
       else
         format.js {render :new_product_brand}
       end
@@ -168,9 +195,13 @@ class TicketsController < ApplicationController
     @new_product_category = ProductCategory.new category_params
     respond_to do |format|
       if @new_product_category.save
-        @notice = "Great! #{@new_product_category.name} is saved. You can create another new category."
-        @new_product_category = ProductCategory.new
-        format.js {render :new_product_category}
+        session[:product_category_id] = @new_product_category.id
+        @notice = "Great! #{@new_product_category.name} is saved. You can create new product."
+
+        @product_brands = ProductBrand.all
+        @product_categories = ProductCategory.all
+        @product = Product.new serial_no: session[:serial_no]
+        format.js {render :find_by_serial}
       else
         format.js {render :new_product_category}
       end
@@ -178,19 +209,25 @@ class TicketsController < ApplicationController
   end
 
   def new_product
+    session[:product_id] = nil
     @new_product = Product.new
   end
 
   def create_product
+    Ticket
     ContactNumber
     @new_product = Product.new product_params
     respond_to do |format|
       if @new_product.save
         session[:product_id] = @new_product.id
         @notice = "Great! #{@new_product.serial_no} is saved. You can create new Customer."
-        @new_customer = Customer.new
-        @new_customer.contact_type_values.build([{contact_type_id: 2}, {contact_type_id: 4}])
-        format.js {render :new_customer}
+        # @new_customer = Customer.new
+        # @new_customer.contact_type_values.build([{contact_type_id: 2}, {contact_type_id: 4}])
+        session[:ticket_initiated_attributes].merge!({})
+
+        @product = @new_product
+        @ticket = @product.tickets.build session[:ticket_initiated_attributes]
+        format.js {render :find_by_serial}
       else
         format.js {render :new_product}
       end
@@ -213,11 +250,10 @@ class TicketsController < ApplicationController
     @new_customer = Customer.new customer_params
     respond_to do |format|
       if @new_customer.save
-        session[:product_id] = @new_customer.id
-        @new_customer = Customer.new
-        @new_customer.contact_type_values.build([{contact_type_id: 2}, {contact_type_id: 4}])
+        @new_customer.tickets << Ticket.find_by_id(session[:ticket_id])
+        session[:customer_id] = @new_customer.id
         @notice = "Great! #{@new_customer.name} is saved. You can create new Customer."
-        format.js {render action: :new_customer}
+        format.js {render :create_contact_persons}
       else
         format.js {render :new_customer}
       end
@@ -225,12 +261,16 @@ class TicketsController < ApplicationController
     end
   end
 
+  def create_contact_persons
+    
+  end
+
   def select_sla
     if params[:search_sla]
-      @slas = SlaTime.where(sla_time: params[:search_sla_value].to_f)
+      @slas = SlaTime.where(sla_time: params[:search_sla_value].to_f).present? ? SlaTime.where(sla_time: params[:search_sla_value].to_f) : SlaTime.all
     else
       @header = "Select SLA Time"
-
+      @slas = SlaTime.all
     end
   end
 
@@ -258,7 +298,7 @@ class TicketsController < ApplicationController
     end
 
     def ticket_params
-      params.require(:ticket).permit(:initiated_through, :ticket_type, :status, :subject, :priority, :description, {document_attachment: [:file_path, :attachable_id, :attachable_type, :downloadable]}, :organization_id, :department_id, :agent_ids, :customer_id, :due_date_time)
+      params.require(:ticket).permit(:ticket_no, :serial_no, :base_currency_id, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id)
     end
 
     def product_brand_params

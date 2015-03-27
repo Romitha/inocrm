@@ -3,5 +3,6 @@
 - else
   $("#toggle_sla").modal();
   $("#toggle_sla .modal-content").html("#{j render 'select_sla'}");
+  $("#render_sla").html("#{j render 'render_sla', slas: @slas}");
 
   Tickets.search_sla();

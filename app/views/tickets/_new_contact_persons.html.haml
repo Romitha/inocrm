@@ -1,0 +1,25 @@
+- customer = @new_customer
+#customer_details
+  = customer.name
+  = customer.address1
+  = customer.address2
+  = customer.address3
+  = customer.address4
+%hr
+
+#contact_persons
+  .row
+    .col-md-6
+      = label_tag "Select contact person1" do
+        = radio_button_tag "contact_person1", "select", false, class: "radio_for_contact_person1", data: {param: "select_contact_person1"}
+        Select Contact Person1
+      = label_tag "Create contact person1" do
+        = radio_button_tag "contact_person1", "create", false, class: "radio_for_contact_person1", data: {param: "create_contact_person1"}
+        Create Contact Person1
+    .col-md-6
+      = label_tag "Select contact person2" do
+        = radio_button_tag "contact_person2", "select", false, class: "radio_for_contact_person2", data: {param: "select_contact_person2"}
+        Select Contact Person2
+      = label_tag "Create contact person2" do
+        = radio_button_tag "contact_person2", "create", false, class: "radio_for_contact_person2", data: {param: "create_contact_person2"}
+        Create Contact Person2

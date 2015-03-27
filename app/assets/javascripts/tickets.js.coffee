@@ -129,3 +129,6 @@ window.Tickets =
   select_sla: (id)->
     $("#product_brand_sla_id, #product_category_sla_id").val(id)
     $("#toggle_sla").modal("hide")
+
+  remove_serial_search: ->
+    $(".serial_search").remove()

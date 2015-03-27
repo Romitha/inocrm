@@ -13,7 +13,11 @@ class Ticket < ActiveRecord::Base
   belongs_to :ticket_currency, foreign_key: :base_currency_id
   belongs_to :customer, foreign_key: :customer_id
 
-  has_many :ticket_product_serial, foreign_key: :product_serial_id
+  belongs_to :contact_person1, foreign_key: :contact_person1_id
+  belongs_to :contact_person2, foreign_key: :contact_person2_id
+  belongs_to :report_person, foreign_key: :reporter_id
+
+  has_many :ticket_product_serial, foreign_key: :ticket_id
   has_many :products, through: :ticket_product_serial
 
   # belongs_to :organization
@@ -26,13 +30,11 @@ class Ticket < ActiveRecord::Base
 
   has_many :comments
 
-  validates_presence_of [:due_date_time, :customer, :initiated_through, :ticket_type, :customer, :initiated_through, :ticket_type, :status, :subject, :department, :agents, :priority, :description,]
-
   has_many :dyna_columns, as: :resourceable
 
-  validates_presence_of [:ticket_no, :pop_updated_ticket, :contract_available, :created_at, :created_by, :priority, :sla_time, :status_id, :status_resolve_id, :status_hold, :problem_category_id, :informed_method_id, :job_type_id, :ticket_type_id, :regional_support_job, :repair_type_id, :warranty_type_id, :cus_chargeable, :customer_id, :contact_person1_id, :job_finished, :job_closed, :re_open_count, :ticket_close_approval_required, :ticket_close_approval_requested, :ticket_close_approved, :qc_passed, :re_assigned, :terminated, :cus_payment_required, :cus_payment_completed, :pop_updated, :base_currency_id, :manufacture_currency_id, :cus_recieved_note_print_count, :cus_returned_note_print_count]
+  validates_presence_of [:ticket_no, :priority, :status_id, :problem_description, :informed_method_id, :job_type_id, :ticket_type_id, :warranty_type_id, :cus_chargeable, :base_currency_id]
 
-  validates_numericality_of [:open_time_duration, :cus_returned_note_print_count, :open_time_duration_sla, :cus_recieved_note_print_count, :ticket_no, :priority, :sla_time, :inform_cp, :re_open_count]
+  validates_numericality_of [:ticket_no, :priority]
 
   [:initiated_by, :initiated_by_id].each do |dyna_method|
     define_method(dyna_method) do
@@ -50,11 +52,6 @@ class Ticket < ActiveRecord::Base
     assigned_ticket && assigned_ticket.agent
   end
 
-  after_create :set_assignee
-
-  def  set_assignee
-    agent_ticket_infos.first.update_attribute :visibility, "assigned"
-  end
 end
 
 class TicketType < ActiveRecord::Base
@@ -136,7 +133,5 @@ class TicketProductSerial < ActiveRecord::Base
 
   belongs_to :ticket, foreign_key: :ticket_id
   belongs_to :product, foreign_key: :product_serial_id
-
-  validates_presence_of [:ticket_id, :product_serial_id]
 end
 
