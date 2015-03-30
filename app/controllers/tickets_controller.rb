@@ -336,7 +336,7 @@ class TicketsController < ApplicationController
     end
 
     def customer_params
-      params.require(:customer).permit(:name, :title_id, :address1, :address2, :address3, :address4, contact_type_values_attributes: [:id, :contact_type_id, :value, :_destroy])
+      params.require(:customer).permit(:name, :title_id, :address1, :address2, :address3, :address4,:district_id, contact_type_values_attributes: [:id, :contact_type_id, :value, :_destroy])
     end
 
     def sla_time_params

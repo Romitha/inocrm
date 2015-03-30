@@ -135,6 +135,8 @@ class Customer < ActiveRecord::Base
   belongs_to :mst_title, foreign_key: :title_id
 
   validates_presence_of [:name, :address1, :address4]
+
+  belongs_to :district, foreign_key: :district_id
 end
 
 class ContactPerson1 < ActiveRecord::Base
@@ -172,6 +174,13 @@ class ReportPerson < ActiveRecord::Base
   has_many :tickets, foreign_key: :reporter_id
 
   belongs_to :mst_title, foreign_key: :title_id
+
+  has_many :contact_person_contact_types, foreign_key: :contact_report_person_id
+end
+
+class District < ActiveRecord::Base
+  self.table_name = "mst_district"
+  has_many :customers, foreign_key: :district_id
 
   has_many :contact_person_contact_types, foreign_key: :contact_report_person_id
 end

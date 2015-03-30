@@ -18,10 +18,12 @@
       = f.association :mst_title, label:"Title", collection: MstTitle.all.map{|t| [t.title, t.id]},wrapper_html: {class:"col-md-1"}
       = f.input :name, wrapper_html: {class:"col-md-11"}
     .row
-      = f.input :address1, wrapper_html: {class:"col-md-3"}
-      = f.input :address2, wrapper_html: {class:"col-md-3"}
-      = f.input :address3, wrapper_html: {class:"col-md-3"}
-      = f.input :address4, label: "City", wrapper_html: {class:"col-md-3"}
+      = f.input :address1, wrapper_html: {class:"col-md-4"}
+      = f.input :address2, wrapper_html: {class:"col-md-4"}
+      = f.input :address3, wrapper_html: {class:"col-md-4"}
+    .row
+      = f.input :address4, label: "City", wrapper_html: {class:"col-md-6"}
+      = f.association :district, label:"District", wrapper_html: {class:"col-md-6"}
 
     .row
       = f.simple_fields_for :contact_type_values do |fc|
