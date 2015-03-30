@@ -43,8 +43,6 @@ class User < ActiveRecord::Base
     avatar.recreate_versions! if coord_x.present?
   end
 
-  TITLES = %w(Mr Mrs Miss Ms)
-
   def other_addresses
     addresses.where.not(primary: true)
   end
