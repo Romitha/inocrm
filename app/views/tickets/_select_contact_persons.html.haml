@@ -1,17 +1,52 @@
-#select_contact_persons
-  = form_tag create_contact_persons_tickets_path, method: :post, remote: true do
-    = label_tag "Search By typing"
-    = text_field_tag "search_contact_person", nil, class: "form-control"
-    = submit_tag "Search", name: "submit_contact_person"
-#contact_persons
-  - contact_persons.each do |contact_person|
-    = contact_person.mst_title.try(:title)
-    = contact_person.name
-    = contact_person.address1
-    = contact_person.address2
-    = contact_person.address3
-    = contact_person.address4
-    - contact_person.tickets.each do |ticket|
-      = ticket.ticket_no
-      = ticket.ticket_status.name
-    = link_to "select", "#", onclick: "Tickets.assign_contact_person(#{contact_person.id}); false;"
+.modal-header
+  = label_tag "Search By typing"
+  %button.close{"aria-label" => "Close", "data-dismiss" => "modal", :type => "button"}
+    %span{"aria-hidden" => "true"} &times;
+  = @header
+.modal-body
+  .row
+    .col-lg-12
+      #select_contact_persons
+        = form_tag create_contact_persons_tickets_path, method: :post, remote: true do
+          .input-group
+            = text_field_tag "search_contact_person", nil, class: "form-control"
+            %span.input-group-btn
+              = submit_tag "Search", name: "submit_contact_person", class: "btn btn-default"
+
+  #contact_persons
+    .row
+      .table-responsive.col-md-8.table-borderless
+        %table.table
+          %tbody
+            %tr
+              %td
+                Name
+              %td
+                Address
+              %td
+                Ticket
+              %td
+                Function
+                - contact_persons.last(3).each do |contact_person|
+                  %tr
+                    %td
+                      = contact_person.mst_title.try(:title)
+                      = contact_person.name
+                    %td
+                      = contact_person.address1
+                      %br/
+                      = contact_person.address2
+                      %br/
+                      = contact_person.address3
+                      %br/
+                      = contact_person.address4
+                    %td
+                      - contact_person.tickets.each do |ticket|
+                        = ticket.ticket_no.to_s.rjust(5, INOCRM_CONFIG["ticket_no_format"])
+                        = ticket.ticket_status.name
+                      %br/
+                      =link_to "More>>", "#"
+                    %td
+                      = link_to "select", "#", onclick: "Tickets.assign_contact_person(#{contact_person.id}); false;"
+.modal-footer
+  %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
