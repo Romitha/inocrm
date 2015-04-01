@@ -264,22 +264,45 @@ class TicketsController < ApplicationController
 
   def create_contact_persons
     User
+    ContactNumber
     case params[:data_param]
     when "select_contact_person1"
       @contact_persons = []
-      @search_contact_person = "search_contact_person1"
+      @submit_contact_person = "submit_contact_person1"
     when "select_contact_person2"
       @contact_persons = []
-      @search_contact_person = "search_contact_person2"
-    else
-      @contact_persons = Customer.where("name like ?", "%#{params[:search_contact_person]}%")
-    end
+      @submit_contact_person = "submit_contact_person2"
+    when "initiate_contact_person"
+      @contact_person_for_customer = params[:contact_person_id].present? ? Customer.find(params[:contact_person_id]) : Customer.new
+      @contact_person_attribs = {title_id: @contact_person_for_customer.title_id, name: @contact_person_for_customer.name}
+      @c_p_c_t_attribs = @contact_person_for_customer.contact_type_values.map{|c_t_v| {contact_type_id: c_t_v.contact_type_id, value: c_t_v.value}}
+      @ticket = Ticket.find_by_id(session[:ticket_id])
+      if params[:contact_person] == "1"
+        @build_contact_person = @ticket.build_contact_person1(@contact_person_attribs)
+        @contact_person_frame = "#contact_persons_form1"
+      elsif params[:contact_person] == "2"
+        @build_contact_person = @ticket.build_contact_person2(@contact_person_attribs).contact_person_contact_types.build(@c_p_c_t_attribs)
+        @contact_person_frame = "#contact_persons_form2"
+      end
 
+      @header = "Contact Person"
+    else
+      if params[:submit_contact_person1]
+        @submitted_contact_person = 1
+        @submit_contact_person = "submit_contact_person1"
+
+      elsif params[:submit_contact_person2]
+        @submitted_contact_person = 2
+        @submit_contact_person = "submit_contact_person2"
+      end
+      @contact_persons = params[:search_contact_person].present? ? Customer.where("name like ?", "%#{params[:search_contact_person]}%") : []
+    end
     render :select_contact_person
   end
 
   def contact_persons
     User
+    ContactNumber
     respond_to do |format|
       @new_customer = Customer.find(session[:customer_id])
       @ticket = @new_customer.tickets.find(session[:ticket_id])

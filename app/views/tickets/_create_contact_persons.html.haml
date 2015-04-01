@@ -1,5 +1,13 @@
 %fieldset
   %legend= @header
-  = simple_form_for contact_person, url: "#", remote: true do |f|
+  = simple_nested_form_for build_contact_person, url: "#", remote: true do |f|
     = f.association :mst_title
     = f.input :name
+    = f.simple_fields_for :contact_person_contact_types do |c|
+      .add_sign
+        = c.link_to_remove class: "remove_c_t_v_link" do
+          Remove
+      = c.association :contact_type
+      = c.input :value
+    = f.link_to_add :contact_person_contact_types do
+      Add

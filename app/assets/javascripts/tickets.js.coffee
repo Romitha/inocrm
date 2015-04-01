@@ -136,3 +136,8 @@ window.Tickets =
   select_contact_person: ->
     $("input[name='contact_person1'], input[name='contact_person2']").click ->
       $.post "/tickets/create_contact_persons", {data_param: $(@).data("param")}
+
+  assign_contact_person: (id, contact_person)->
+    title = $("#contact_person1_title_id").val(title)
+    name = $("#contact_person1_name").val(name)
+    $.post "/tickets/create_contact_persons", {data_param: "initiate_contact_person", contact_person_id: id, contact_person: contact_person}
