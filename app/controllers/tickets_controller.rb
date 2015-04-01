@@ -290,6 +290,12 @@ class TicketsController < ApplicationController
       end
 
       @header = "Contact Person"
+    when "assign_contact_person"
+      if params[:submit_contact_person1]
+        @contact_person = ContactPerson1.find(params[:contact_person_id])
+      elsif params[:submit_contact_person2]
+        @contact_person = ContactPerson2.find(params[:contact_person_id])
+      end
     else
       if params[:submit_contact_person1]
         @submitted_contact_person = 1
