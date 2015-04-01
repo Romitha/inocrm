@@ -30,29 +30,30 @@
               %th
                 Function
           %tbody
-            - contact_persons.last(3).each do |contact_person|
+            - customers.last(3).each do |customer|
               %tr
                 %td
-                  #{contact_person.mst_title.try(:title)} #{contact_person.name}
+                  #{customer.mst_title.try(:title)} #{customer.name}
                 %td
-                  = contact_person.address1
+                  = customer.address1
                   %br/
-                  = contact_person.address2
+                  = customer.address2
                   %br/
-                  = contact_person.address3
+                  = customer.address3
                   %br/
-                  = contact_person.address4
+                  = customer.address4
                 %td
-                  - contact_person.contact_type_values.each do |c_value|
+                  - customer.contact_type_values.each do |c_value|
                     #{c_value.contact_type.name}: #{c_value.value}
                     %br/
 
                 %td
-                  - contact_person.tickets.each do |ticket|
+                  - customer.tickets.each do |ticket|
                     #{ticket.ticket_no.to_s.rjust(5, INOCRM_CONFIG["ticket_no_format"])} #{ticket.ticket_status.name}
                   %br/
                   =link_to "More>>", "#"
                 %td
-                  = link_to "select", "#", onclick: "Tickets.assign_contact_person('#{contact_person.id}', '#{submitted_contact_person}'); false;"
+                  = link_to "select", "#", onclick: "Tickets.assign_contact_person('#{customer.id}', '#{submitted_contact_person}'); false;"
+
 .modal-footer
   %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close

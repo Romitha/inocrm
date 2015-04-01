@@ -268,9 +268,13 @@ class TicketsController < ApplicationController
     case params[:data_param]
     when "select_contact_person1"
       @contact_persons = []
+      @customers = []
+
       @submit_contact_person = "submit_contact_person1"
     when "select_contact_person2"
       @contact_persons = []
+      @customers = []
+
       @submit_contact_person = "submit_contact_person2"
     when "initiate_contact_person"
       @contact_person_for_customer = params[:contact_person_id].present? ? Customer.find(params[:contact_person_id]) : Customer.new
@@ -290,12 +294,14 @@ class TicketsController < ApplicationController
       if params[:submit_contact_person1]
         @submitted_contact_person = 1
         @submit_contact_person = "submit_contact_person1"
+        @contact_persons = params[:search_contact_person].present? ? ContactPerson1.where("name like ?", "%#{params[:search_contact_person]}%") : []
 
       elsif params[:submit_contact_person2]
         @submitted_contact_person = 2
         @submit_contact_person = "submit_contact_person2"
+        @contact_persons = params[:search_contact_person].present? ? ContactPerson2.where("name like ?", "%#{params[:search_contact_person]}%") : []
       end
-      @contact_persons = params[:search_contact_person].present? ? Customer.where("name like ?", "%#{params[:search_contact_person]}%") : []
+      @customers = params[:search_contact_person].present? ? Customer.where("name like ?", "%#{params[:search_contact_person]}%") : []
     end
     render :select_contact_person
   end

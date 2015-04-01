@@ -3,4 +3,4 @@
   $("#{@contact_person_frame}").html("#{j render 'tickets/create_contact_persons', build_contact_person: @build_contact_person}");
 - else
   $("#contact_person").modal();
-  $("#contact_person .modal-content").html("#{j render 'tickets/select_contact_persons', contact_persons: @contact_persons, submit_contact_person: @submit_contact_person, submitted_contact_person: @submitted_contact_person}");
+  $("#contact_person .modal-content").html("#{j render 'tickets/select_contact_persons', customers: @customers, contact_persons: @contact_persons, submit_contact_person: @submit_contact_person, submitted_contact_person: @submitted_contact_person}");
