@@ -35,6 +35,8 @@
       = label_tag "Create contact person1" do
         = radio_button_tag "contact_person1", "create", false, class: "radio_for_contact_person1", data: {param: "create_contact_person1"}
         Create Contact Person1
+      #contact_persons_form1
+
     .col-md-4
       = label_tag "Select contact person2" do
         = radio_button_tag "contact_person2", "select", false, class: "radio_for_contact_person2", data: {param: "select_contact_person2"}
@@ -49,6 +51,7 @@
       = label_tag "Create report person" do
         = radio_button_tag "report_person", "create", false, class: "radio_for_report_person", data: {param: "create_report_person"}
         Create Report Person
+      #contact_persons_form2
 
 
 #contact_person.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "contact_person", "aria-hidden" => true}
