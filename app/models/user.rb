@@ -184,6 +184,7 @@ class ReportPerson < ActiveRecord::Base
   has_many :contact_person_contact_types, foreign_key: :contact_report_person_id
   has_many :contact_types, through: :contact_person_contact_types
 end
+
 class District < ActiveRecord::Base
   self.table_name = "mst_district"
   has_many :customers, foreign_key: :district_id
