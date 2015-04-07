@@ -276,6 +276,11 @@ class TicketsController < ApplicationController
       @customers = []
 
       @submit_contact_person = "submit_contact_person2"
+    when "select_report_person"
+      @contact_persons = []
+      @customers = []
+
+      @submit_contact_person = "submit_report_person"
     when "initiate_contact_person"
       @contact_person_for_customer = params[:contact_person_id].present? ? Customer.find(params[:contact_person_id]) : Customer.new
       @contact_person_attribs = {title_id: @contact_person_for_customer.title_id, name: @contact_person_for_customer.name}
@@ -284,17 +289,34 @@ class TicketsController < ApplicationController
       if params[:contact_person] == "1"
         @build_contact_person = @ticket.build_contact_person1(@contact_person_attribs)
         @contact_person_frame = "#contact_persons_form1"
+        @submitted_contact_person = "one"
       elsif params[:contact_person] == "2"
-        @build_contact_person = @ticket.build_contact_person2(@contact_person_attribs).contact_person_contact_types.build(@c_p_c_t_attribs)
+        @build_contact_person = @ticket.build_contact_person2(@contact_person_attribs)
         @contact_person_frame = "#contact_persons_form2"
+        @submitted_contact_person = "two"
       end
 
       @header = "Contact Person"
     when "assign_contact_person"
-      if params[:submit_contact_person1]
-        @contact_person = ContactPerson1.find(params[:contact_person_id])
-      elsif params[:submit_contact_person2]
-        @contact_person = ContactPerson2.find(params[:contact_person_id])
+      @ticket = Ticket.find_by_id(session[:ticket_id])
+      if params[:contact_person] == "1"
+        puts params[:contact_person].class
+        @build_contact_person = ContactPerson1.find(params[:contact_person_id])
+        @ticket.update_attribute(:contact_person1_id, @build_contact_person.id)
+        @contact_person_frame = "#contact_persons_form1"
+        @submitted_contact_person = "one"
+
+      elsif params[:contact_person] == "2"
+        @build_contact_person = ContactPerson2.find(params[:contact_person_id])
+        @ticket.update_attribute(:contact_person2_id, @build_contact_person.id)
+        @contact_person_frame = "#contact_persons_form2"
+        @submitted_contact_person = "two"
+
+      elsif params[:contact_person] == "3"
+        @build_contact_person = ReportPerson.find(params[:contact_person_id])
+        @ticket.update_attribute(:reporter_id, @build_contact_person.id)
+        @contact_person_frame = "#report_persons_form"
+        @submitted_contact_person = "three"    
       end
     else
       if params[:submit_contact_person1]
@@ -306,10 +328,59 @@ class TicketsController < ApplicationController
         @submitted_contact_person = 2
         @submit_contact_person = "submit_contact_person2"
         @contact_persons = params[:search_contact_person].present? ? ContactPerson2.where("name like ?", "%#{params[:search_contact_person]}%") : []
+      elsif params[:submit_report_person]
+        @submitted_contact_person = 3
+        @submit_contact_person = "submit_report_person"
+        @contact_persons = params[:search_contact_person].present? ? ReportPerson.where("name like ?", "%#{params[:search_contact_person]}%") : []
       end
       @customers = params[:search_contact_person].present? ? Customer.where("name like ?", "%#{params[:search_contact_person]}%") : []
     end
     render :select_contact_person
+  end
+
+  def create_contact_person_record
+    @ticket = Ticket.find(session[:ticket_id])
+    ContactNumber
+
+    if params[:one]
+      if params[:persisted]
+        @new_contact_person = ContactPerson1.find(params[:persisted])
+        @new_contact_person.update(contact_person1_params)
+        @new_contact_person = ContactPerson1.find(params[:persisted])
+      else
+        @new_contact_person = ContactPerson1.new(contact_person1_params)
+      end
+      @ticket.contact_person1 = @new_contact_person
+      @submitted_contact_person = "one"
+    elsif params[:two]
+      if params[:persisted]
+        @new_contact_person = ContactPerson2.find(params[:persisted])
+        @new_contact_person.update(contact_person2_params)
+        @new_contact_person = ContactPerson2.find(params[:persisted])
+      else
+        @new_contact_person = ContactPerson2.new(contact_person2_params)
+      end
+      @ticket.contact_person2 = @new_contact_person
+      @submitted_contact_person = "two"
+
+    elsif params[:three]
+      if params[:persisted]
+        @new_contact_person = ReportPerson.find(params[:persisted])
+        @new_contact_person.update(report_person_params)
+        @new_contact_person = ReportPerson.find(params[:persisted])
+      else
+        @new_contact_person = ReportPerson.new(report_person_params)
+      end
+      @ticket.report_person = @new_contact_person
+      @submitted_contact_person = "three"      
+    end
+    respond_to do |format|
+      if @new_contact_person.save
+        @ticket.save
+      end
+      @build_contact_person = @new_contact_person
+      format.js      
+    end
   end
 
   def contact_persons
@@ -376,5 +447,17 @@ class TicketsController < ApplicationController
 
     def sla_time_params
       params.require(:sla_time).permit(:sla_time, :description)
+    end
+
+    def contact_person1_params
+      params.require(:contact_person1).permit(:title_id, :name, contact_person_contact_types_attributes: [:id, :contact_type_id, :value, :_destroy])
+    end
+
+    def contact_person2_params
+      params.require(:contact_person2).permit(:title_id, :name, contact_person_contact_types_attributes: [:id, :contact_type_id, :value, :_destroy])
+    end
+
+    def report_person_params
+      params.require(:report_person).permit(:title_id, :name, contact_person_contact_types_attributes: [:id, :contact_type_id, :value, :_destroy])
     end
 end

@@ -144,9 +144,10 @@ class ContactPerson1 < ActiveRecord::Base
 
   has_many :tickets, foreign_key: :contact_person1_id
   has_many :regular_customers
+
   has_many :contact_person_contact_types, foreign_key: :contact_report_person_id
   has_many :contact_types, through: :contact_person_contact_types
-  accepts_nested_attributes_for :contact_person_contact_types, allow_destroy: true
+  accepts_nested_attributes_for :contact_person_contact_types, allow_destroy: true, reject_if: :all_blank
 
   belongs_to :mst_title, foreign_key: :title_id
 end
@@ -159,6 +160,18 @@ class ContactPerson2 < ActiveRecord::Base
 
   has_many :contact_person_contact_types, foreign_key: :contact_report_person_id
   has_many :contact_types, through: :contact_person_contact_types
+  accepts_nested_attributes_for :contact_person_contact_types, allow_destroy: true, reject_if: :all_blank
+
+  belongs_to :mst_title, foreign_key: :title_id
+end
+
+class ReportPerson < ActiveRecord::Base
+  self.table_name = "spt_contact_report_person"
+  has_many :tickets, foreign_key: :reporter_id
+
+  has_many :contact_person_contact_types, foreign_key: :contact_report_person_id
+  has_many :contact_types, through: :contact_person_contact_types
+  accepts_nested_attributes_for :contact_person_contact_types, allow_destroy: true, reject_if: :all_blank
 
   belongs_to :mst_title, foreign_key: :title_id
 end
@@ -173,16 +186,6 @@ class RegularCustomer < ActiveRecord::Base
 
   belongs_to :mst_title, foreign_key: :title_id
 
-end
-
-class ReportPerson < ActiveRecord::Base
-  self.table_name = "spt_contact_report_person"
-  has_many :tickets, foreign_key: :reporter_id
-
-  belongs_to :mst_title, foreign_key: :title_id
-
-  has_many :contact_person_contact_types, foreign_key: :contact_report_person_id
-  has_many :contact_types, through: :contact_person_contact_types
 end
 
 class District < ActiveRecord::Base
