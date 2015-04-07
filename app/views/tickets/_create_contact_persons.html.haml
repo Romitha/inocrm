@@ -1,8 +1,17 @@
 %fieldset
   %legend= @header
-  = simple_nested_form_for build_contact_person, url: "#", remote: true do |f|
-    = f.association :mst_title
-    = f.input :name
+  = simple_nested_form_for build_contact_person, url: create_contact_person_record_tickets_path, method: :post, remote: true do |f|
+    - if build_contact_person.new_record?
+      = f.association :mst_title
+      = f.input :name
+
+    - else
+
+      = f.association :mst_title, as: :hidden
+      = f.input :name, as: :hidden
+      = hidden_field_tag 'persisted', build_contact_person.id
+      #{build_contact_person.mst_title.try(:title)} #{build_contact_person.name}
+
     = f.simple_fields_for :contact_person_contact_types do |c|
       .add_sign
         = c.link_to_remove class: "remove_c_t_v_link" do
@@ -11,3 +20,4 @@
       = c.input :value
     = f.link_to_add :contact_person_contact_types do
       Add
+    = f.submit "Add", class: "btn btn-default", name: submitted_contact_person

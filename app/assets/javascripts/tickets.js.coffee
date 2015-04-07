@@ -134,10 +134,9 @@ window.Tickets =
     $(".serial_search").remove()
 
   select_contact_person: ->
-    $("input[name='contact_person1'], input[name='contact_person2']").click ->
+    $("#contact_person1_select, #contact_person2_select, #report_person_select").click ->
+      $(@).parent().siblings(".contact_persons_form").empty()
       $.post "/tickets/create_contact_persons", {data_param: $(@).data("param")}
 
-  assign_contact_person: (id, contact_person)->
-    title = $("#contact_person1_title_id").val(title)
-    name = $("#contact_person1_name").val(name)
-    $.post "/tickets/create_contact_persons", {data_param: "initiate_contact_person", contact_person_id: id, contact_person: contact_person}
+  assign_contact_person: (id, contact_person, function_param)->
+    $.post "/tickets/create_contact_persons", {contact_person_id: id, contact_person: contact_person, data_param: function_param}
