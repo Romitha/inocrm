@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
 
 
+  resources :warranties
+
   resources :invoices
 
   root "organizations#index"
