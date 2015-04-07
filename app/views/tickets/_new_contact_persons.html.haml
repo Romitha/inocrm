@@ -61,7 +61,7 @@
         = radio_button_tag "report_person", "select", false, class: "radio_for_report_person", data: {param: "select_report_person"}
         Select Report Person
       = label_tag "Create report person" do
-        = radio_button_tag "report_person", "create", false, class: "radio_for_report_person", data: {param: "create_report_person"}
+        = radio_button_tag "report_person", "create", false, class: "radio_for_report_person", onclick: "Tickets.assign_contact_person('', '3', 'initiate_contact_person'); false;", data: {param: "create_report_person"}
         Create Report Person
       #report_persons_form.contact_persons_form
         - if ticket.report_person

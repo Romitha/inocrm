@@ -294,6 +294,10 @@ class TicketsController < ApplicationController
         @build_contact_person = @ticket.build_contact_person2(@contact_person_attribs)
         @contact_person_frame = "#contact_persons_form2"
         @submitted_contact_person = "two"
+      elsif params[:contact_person] == "3"
+        @build_contact_person = @ticket.build_report_person(@contact_person_attribs)
+        @contact_person_frame = "#report_persons_form"
+        @submitted_contact_person = "three"
       end
 
       @header = "Contact Person"
