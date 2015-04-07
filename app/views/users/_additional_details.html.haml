@@ -5,7 +5,7 @@
     .row
       .col-md-2.padding-right0
         .has-tooltip{data: {toggle: "tooltip", placement: "left"}, title: "Title"}
-          = f.input :name_title, label: false, collection: User::TITLES, input_html: {class: "chosen-select"}
+          = f.association :mst_title, label: false
       .col-md-5
         = f.input :first_name, label: false, placeholder: "First Name", input_html: {class: "input-sm has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "First Name"}
       .col-md-5

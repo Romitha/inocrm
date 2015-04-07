@@ -30,11 +30,11 @@ class DeviseCreateUsers < ActiveRecord::Migration
       # t.integer  :failed_attempts, default: 0, null: false # Only if lock strategy is :failed_attempts
       # t.string   :unlock_token # Only if unlock strategy is :email or :both
       # t.datetime :locked_at
-    [:first_name, :last_name, :NIC, :user_name, :name_title, :epf_no].each do |attribute|
+    [:first_name, :last_name, :NIC, :user_name, :epf_no].each do |attribute|
       t.string attribute
     end
 
-    [:state, :status, :permissions, :active].each do |attribute|
+    [:state, :status, :permissions, :active, :title_id].each do |attribute|
       t.integer attribute
     end
 
@@ -46,9 +46,9 @@ class DeviseCreateUsers < ActiveRecord::Migration
       t.datetime attribute
     end
 
-    t.integer :organization_id
+      t.integer :organization_id
 
-     t.string :avatar
+      t.string :avatar
 
       t.timestamps
     end
