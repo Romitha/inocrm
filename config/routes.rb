@@ -82,6 +82,7 @@ Rails.application.routes.draw do
 
       post "create_contact_persons"
       post "create_contact_person_record"
+      post "create_problem_category"
     end
   end
   # get 'auth/index'
