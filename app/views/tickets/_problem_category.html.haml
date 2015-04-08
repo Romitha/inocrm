@@ -1,2 +1,6 @@
 = link_to "Back", create_problem_category_tickets_path(status_param: "back"), remote: true, method: :post
-ok kanmani
+
+= simple_form_for @new_problem_category, url: create_problem_category_tickets_path(status_param: "create"), method: :post, remote: true do |f|
+  .row
+    = f.input :name, as: :string, wrapper_html: {class: "col-md-7"}
+  = f.submit "submit"

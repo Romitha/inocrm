@@ -40,10 +40,13 @@
     = f.input :ticket_no, as: :hidden
     = f.input :base_currency_id, as: :hidden, input_html: {value: TicketCurrency.find_by(base_currency: true).try(:id)}
     .row
-      = f.input :priority, collection: INOCRM_CONFIG["priority"], wrapper_html: {class: "col-md-2"}
-      = f.association :problem_category, wrapper_html: {class: "col-md-2"}
-      = link_to "Add", create_problem_category_tickets_path(status_param: "initiate"), remote: true, method: :post
-      .col-md-8
+      .col-md-4
+        = f.input :priority, collection: INOCRM_CONFIG["priority"], wrapper_html: {class: "col-md-6"}
+        = f.association :problem_category, wrapper_html: {class: "col-md-5"}
+        .add_sign
+          = link_to create_problem_category_tickets_path(status_param: "initiate"), remote: true,method: :post, title: "Add" do 
+            %span.glyphicon.glyphicon-plus-sign
+      .col-md-7
         = f.input :problem_description
 
       = f.input :other_accessories, wrapper_html: {class: "col-md-12"}
