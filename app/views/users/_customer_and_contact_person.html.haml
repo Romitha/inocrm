@@ -26,32 +26,48 @@
           %strong Problem Description:
         %td=ticket.problem_description
 
-#contact_persons_form1.contact_persons_form
-  - if ticket.contact_person1
-    %strong Name
-    #{ticket.contact_person1.mst_title.try(:title)} #{ticket.contact_person1.name}
-    %br/
-    - ticket.contact_person1.contact_person_contact_types.each do |ct|
-      %strong= ct.contact_type.try(:name)
-      = ct.value
-      %br/
-
-#contact_persons_form2.contact_persons_form
-  - if ticket.contact_person2
-    %strong Name
-    #{ticket.contact_person2.mst_title.try(:title)} #{ticket.contact_person2.name}
-    %br/
-    - ticket.contact_person2.contact_person_contact_types.each do |ct|
-      %strong= ct.contact_type.try(:name)
-      = ct.value
-      %br/
-
-#report_persons_form.contact_persons_form
-  - if ticket.report_person
-    %strong Name
-    #{ticket.report_person.mst_title.try(:title)} #{ticket.report_person.name}
-    %br/
-    - ticket.report_person.contact_person_contact_types.each do |ct|
-      %strong= ct.contact_type.try(:name)
-      = ct.value
-      %br/
+.table-responsive.col-md-6.table-borderless
+  %table.table
+    %tbody
+      %tr
+        %td.text-left
+        %td.text
+          %strong Name
+        %td.text
+          %strong Contact Type
+      %tr
+        %td.text-left
+          %strong ContactPerson-1
+        %td.text-left
+          #contact_persons_form1.contact_persons_form
+            - if ticket.contact_person1
+              #{ticket.contact_person1.mst_title.try(:title)} #{ticket.contact_person1.name}
+              %td.text-left
+                - ticket.contact_person1.contact_person_contact_types.each do |ct|
+                  %strong= ct.contact_type.try(:name)
+                  = ct.value
+                  %br/
+      %tr
+        %td.text-left
+          %strong ContactPerson-2
+        %td.text-left
+          #contact_persons_form2.contact_persons_form
+            - if ticket.contact_person2
+              #{ticket.contact_person2.mst_title.try(:title)} #{ticket.contact_person2.name}
+              %td.text-left
+                - ticket.contact_person2.contact_person_contact_types.each do |ct|
+                  %strong= ct.contact_type.try(:name)
+                  = ct.value
+                  %br/
+      %tr
+        %td.text-left
+          %strong ReportPerson
+        %td.text-left
+          #report_persons_form.contact_persons_form
+            - if ticket.report_person
+              #{ticket.report_person.mst_title.try(:title)} #{ticket.report_person.name}
+              %td.text-left
+                - ticket.report_person.contact_person_contact_types.each do |ct|
+                  %strong= ct.contact_type.try(:name)
+                  = ct.value
+                  %br/
