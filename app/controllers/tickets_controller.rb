@@ -426,7 +426,7 @@ class TicketsController < ApplicationController
       @new_problem_category = ProblemCategory.new
     elsif params[:status_param] == "create"
       @new_problem_category = ProblemCategory.new problem_category_params
-      @new_product_category.save
+      @new_problem_category.save
       @ticket = Ticket.find(session[:ticket_id])
       @product = Product.find(session[:product_id])
     elsif params[:status_param] == "back"
