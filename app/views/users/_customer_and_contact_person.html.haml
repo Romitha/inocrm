@@ -1,0 +1,57 @@
+- customer = @customer
+- ticket = @ticket
+
+.table-responsive.col-md-6.table-borderless
+  %table.table
+    %tbody
+      %tr
+        %td.text-right
+          %strong Customer Name:
+        %td= customer.name
+        %td.text-right
+          %strong Problem Category:
+        %td=ticket.problem_category.try(:name)
+      %tr
+        %td.text-right
+          %strong Customer Address:
+        %td
+          = customer.address1
+          %br/
+          = customer.address2
+          %br/
+          = customer.address3
+          %br/
+          = customer.address4
+        %td.text-right
+          %strong Problem Description:
+        %td=ticket.problem_description
+
+#contact_persons_form1.contact_persons_form
+  - if ticket.contact_person1
+    %strong Name
+    #{ticket.contact_person1.mst_title.try(:title)} #{ticket.contact_person1.name}
+    %br/
+    - ticket.contact_person1.contact_person_contact_types.each do |ct|
+      %strong= ct.contact_type.try(:name)
+      = ct.value
+      %br/
+
+#contact_persons_form2.contact_persons_form
+  - if ticket.contact_person2
+    %strong Name
+    #{ticket.contact_person2.mst_title.try(:title)} #{ticket.contact_person2.name}
+    %br/
+    - ticket.contact_person2.contact_person_contact_types.each do |ct|
+      %strong= ct.contact_type.try(:name)
+      = ct.value
+      %br/
+
+#report_persons_form.contact_persons_form
+  - if ticket.report_person
+    %strong Name
+    #{ticket.report_person.mst_title.try(:title)} #{ticket.report_person.name}
+    %br/
+    - ticket.report_person.contact_person_contact_types.each do |ct|
+      %strong= ct.contact_type.try(:name)
+      = ct.value
+      %br/
