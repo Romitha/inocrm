@@ -420,6 +420,21 @@ class TicketsController < ApplicationController
     end
   end
 
+  def create_problem_category
+    Ticket
+    if params[:status_param] == "initiate"
+      @new_problem_category = ProblemCategory.new
+    elsif params[:status_param] == "create"
+      @new_problem_category = ProblemCategory.new problem_category_params
+      @new_product_category.save
+      @ticket = Ticket.find(session[:ticket_id])
+      @product = Product.find(session[:product_id])
+    elsif params[:status_param] == "back"
+      @ticket = Ticket.new session[:ticket_initiated_attributes]
+      @product = Product.find(session[:product_id])
+    end
+  end
+
   private
     def set_ticket
       @ticket = Ticket.find(params[:id])
@@ -463,5 +478,9 @@ class TicketsController < ApplicationController
 
     def report_person_params
       params.require(:report_person).permit(:title_id, :name, contact_person_contact_types_attributes: [:id, :contact_type_id, :value, :_destroy])
+    end
+
+    def problem_category_params
+      params.require(:problem_category).permit(:name)
     end
 end
