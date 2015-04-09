@@ -1,5 +1,5 @@
 .modal-header
-  = label_tag "Search Contact Person"
+  = label_tag "Search Customer"
   %button.close{"aria-label" => "Close", "data-dismiss" => "modal", :type => "button"}
     %span{"aria-hidden" => "true"} &times;
   = @header
@@ -7,17 +7,15 @@
   .row
     .col-lg-12
       #select_contact_persons
-        = form_tag create_contact_persons_tickets_path, method: :post, remote: true do
+        = form_tag new_customer_tickets_path, method: :get, remote: true do
           .input-group
-            = text_field_tag "search_contact_person", nil, class: "form-control"
+            = text_field_tag "search_customer", nil, class: "form-control"
             %span.input-group-btn
-              = submit_tag "Search", name: submit_contact_person, class: "btn btn-default"
+              = submit_tag "Search", class: "btn btn-default"
   %br/
   %ul#myTab.nav.nav-tabs{:role => "tablist"}
-    %li.active{:role => "presentation"}
-      %a{"aria-controls" => "customer", "data-toggle" => "tab", :href => "#customer", :role => "tab"} Customer
-    %li{:role => "presentation"}
-      %a{"aria-controls" => "contact_Person", "data-toggle" => "tab", :href => "#contact_Person", :role => "tab"} Contact Person
+    %li.active{:role => "presentation"}= link_to "Customer", "#customer", role: "tab", data: {toggle: "tab"}
+    %li{:role => "presentation"}= link_to "Organization", "#organization", role: "tab", data: {toggle: "tab"}
 
   .tab-content
     #customer.tab-pane.active{:role => "tabpanel"}
@@ -35,6 +33,8 @@
                     Contacts
                   %th
                     Ticket
+                  %th
+                    Organization
                   %th
                     Function
               %tbody
@@ -59,11 +59,13 @@
                       - customer.tickets.each do |ticket|
                         #{ticket.ticket_no.to_s.rjust(5, INOCRM_CONFIG["ticket_no_format"])} #{ticket.ticket_status.name}
                       %br/
-                      =link_to "More>>", "#"
+                      = link_to "More>>", "#"
                     %td
-                      = link_to "select", "#", onclick: "Tickets.assign_contact_person('#{customer.id}', '#{submitted_contact_person}','initiate_contact_person'); false;"
+                      = link_to customer.organization.name, organization_path(customer.organization), target: "_blank" if customer.organization
+                    %td
+                      = link_to "select", "#", onclick: "Tickets.assign_customer('#{customer.id}', '', 'select'); false;"
 
-    #contact_Person.tab-pane{:role => "tabpanel"}
+    #organization.tab-pane{:role => "tabpanel"}
       .row
         .table-responsive.col-md-8.table-stiped.table
           %table.table
@@ -76,25 +78,28 @@
                 %th
                   Ticket
                 %th
-                  Function
+                  Customers
             %tbody
-              - contact_persons.last(3).each do |contact_person|
+              - organizations.last(3).each do |organization|
                 %tr
                   %td
-                    #{contact_person.mst_title.try(:title)} #{contact_person.name}
+                    = organization.name
 
                   %td
-                    - contact_person.contact_person_contact_types.each do |c_value|
-                      #{c_value.contact_type.name}: #{c_value.value}
-                      %br/
-
-                  %td
-                    - contact_person.tickets.each do |ticket|
-                      #{ticket.ticket_no.to_s.rjust(5, INOCRM_CONFIG["ticket_no_format"])} #{ticket.ticket_status.name}
+                    %strong Address:
+                    #{organization.addresses.primary_address.first}
+                    %br/
+                    %strong Contact Number:
+                    #{organization.contact_numbers.primary_contactnumber.first}
                     %br/
                     =link_to "More>>", "#"
+
                   %td
-                    = link_to "select", "#", onclick: "Tickets.assign_contact_person('#{contact_person.id}', '#{submitted_contact_person}', 'assign_contact_person'); false;"
+                    - organization.customers.each do |customer|
+                      #{customer.name} #{link_to "select", "#", onclick: "Tickets.assign_customer('#{customer.id}', '', 'select'); false;"}
+                      %br/
+                  %td
+                    = link_to "select", "#", onclick: "Tickets.assign_customer('', '#{organization.id}', 'create'); false;"
 
 .modal-footer
   %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close

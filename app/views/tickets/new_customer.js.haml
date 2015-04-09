@@ -1,4 +1,8 @@
-$("#form_frame").html("#{j render 'tickets/customer_form', customer: @new_customer}");
+- if params[:function_param] == "select" or params[:search_customer].present?
+	$("#customer_modal").modal();
+	$("#customer_modal .modal-content").html("#{j render 'tickets/select_customers', customers: @customers, organizations: @organizations}")
+- else
+	$("#form_frame").html("#{j render 'tickets/customer_form', customer: @new_customer, display_select_option: @display_select_option}");
 
 Organizations.enable_chosen();
 

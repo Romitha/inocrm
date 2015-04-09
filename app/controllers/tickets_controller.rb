@@ -84,7 +84,7 @@ class TicketsController < ApplicationController
   def customer_summary
     @customer = User.find params[:customer_id]
 
-      render json: {id: @customer.id, email: @customer.email, full_name: @customer.full_name, phone_number: @customer.primary_phone_number.try(:value), address: @customer.primary_address.try(:address), nic: @customer.NIC, avatar: view_context.image_tag((@customer.avatar.thumb.url || "no_image.jpg"), alt: @customer.email)}
+    render json: {id: @customer.id, email: @customer.email, full_name: @customer.full_name, phone_number: @customer.primary_phone_number.try(:value), address: @customer.primary_address.try(:address), nic: @customer.NIC, avatar: view_context.image_tag((@customer.avatar.thumb.url || "no_image.jpg"), alt: @customer.email)}
   end
 
   def comment_methods
@@ -237,6 +237,14 @@ class TicketsController < ApplicationController
   def new_customer
     User
     ContactNumber
+    if params[:function_param]
+      @customers = []
+      @organizations = []
+      @display_select_option = true if params[:function_param]=="create"
+    elsif params[:search_customer]
+      @customers = Customer.where("name like ?", "%#{params[:search_customer]}%")
+      @organizations = Organization.where("name like ?", "%#{params[:search_customer]}%")
+    end
     @new_customer = Customer.new
     @new_customer.contact_type_values.build([{contact_type_id: 2}, {contact_type_id: 4}])
     respond_to do |format|
@@ -247,16 +255,27 @@ class TicketsController < ApplicationController
   def create_customer
     User
     ContactNumber
-    @new_customer = Customer.new customer_params
+    @ticket = Ticket.find_by_id(session[:ticket_id])
     respond_to do |format|
-      if @new_customer.save
-        @ticket = Ticket.find_by_id(session[:ticket_id])
+      if params[:customer_id]
+        @new_customer = Customer.find params[:customer_id]
         @new_customer.tickets << @ticket
         session[:customer_id] = @new_customer.id
-        @notice = "Great! #{@new_customer.name} is saved. You can add new contact person details."
+        @notice = "Great! #{@new_customer.name} is added. You can add new contact person details."
+
         format.js {render :create_contact_persons}
       else
-        format.js {render :new_customer}
+        @new_customer = Customer.new customer_params
+        if @new_customer.save
+          @new_customer.tickets << @ticket
+          session[:customer_id] = @new_customer.id
+          @notice = "Great! #{@new_customer.name} is saved. You can add new contact person details."
+          format.js {render :create_contact_persons}
+        else
+          @display_select_option = true
+          format.js {render :new_customer}
+        end
+        
       end
       
     end
