@@ -140,3 +140,15 @@ window.Tickets =
 
   assign_contact_person: (id, contact_person, function_param)->
     $.post "/tickets/create_contact_persons", {contact_person_id: id, contact_person: contact_person, data_param: function_param}
+
+  customer_select: (function_param)->
+    $.get "/tickets/new_customer", {function_param: function_param}
+
+  assign_customer: (customer_id, organization_id, function_param)->
+    $.post "/tickets/create_customer", {customer_id: customer_id, organization_id: organization_id, function_param: function_param}
+
+  load_datapicker: ->
+    $('.datepicker').datepicker
+      format: "dd M, yy"
+      todayBtn: true
+      todayHighlight: true

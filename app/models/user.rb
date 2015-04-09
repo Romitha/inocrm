@@ -137,6 +137,8 @@ class Customer < ActiveRecord::Base
   validates_presence_of [:name, :address1, :address4]
 
   belongs_to :district, foreign_key: :district_id
+
+  belongs_to :organization
 end
 
 class ContactPerson1 < ActiveRecord::Base
