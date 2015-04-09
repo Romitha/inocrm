@@ -4,3 +4,29 @@
   = render "users/customer_and_contact_person", customer: customer, ticket: ticket
 %hr
 .row
+  = simple_form_for @warranty, remote: true do |f|
+    .row
+      .col-md-12
+        = f.association :warranty_type
+    .row
+      .col-md-6
+        = f.input :start_at, as: :string
+      .col-md-6
+        = f.input :end_at, as: :string
+    .row
+      .col-md-4
+        = f.input :period_part
+      .col-md-4
+        = f.input :period_labour
+      .col-md-4
+        = f.input :corporate_onsight
+    .row
+      .col-md-3
+        = f.input :care_pack_product_no
+      .col-md-3
+        = f.input :care_pack_reg_no
+      .col-md-6
+        = f.input :note
+    .row
+      .col-md-12
+        = f.submit "submit"
