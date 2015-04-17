@@ -20,9 +20,9 @@
           = f.association :warranty_type, as: :radio_buttons
       .row
         .col-md-6
-          = f.input :start_at, as: :string
+          = f.input :start_at, as: :string, input_html: {class: "datepicker"}
         .col-md-6
-          = f.input :end_at, as: :string
+          = f.input :end_at, as: :string, input_html: {class: "datepicker"}
       .row
         .col-md-4
           = f.input :period_part
