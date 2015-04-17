@@ -1,0 +1,42 @@
+- warranties = @warranties
+.modal-header
+  Search Contact Person
+  %button.close{"aria-label" => "Close", "data-dismiss" => "modal", :type => "button"}
+    %span{"aria-hidden" => "true"} &times;
+  = @header
+.modal-body
+  .row
+    .col-lg-12
+      #select_contact_persons
+        = form_tag warranties_path, method: :get, remote: true do
+          .input-group
+            / = text_field_tag "search_warranties", nil, class: "form-control"
+            = select_tag "search_warranties", options_from_collection_for_select(WarrantyType.all, "id", "name"), class: "chosen-select"
+            %span.input-group-btn
+              = submit_tag "Search", name: "search", class: "btn btn-link"
+
+  %table.table.table-responsive
+    %thead
+      %tr
+        %th Start at
+        %th End at
+        %th Period Part
+        %th period_labour
+        %th Corporate Onsight
+        %th Warranty Type
+        %th Note
+        %th Care pack Product No
+        %th Care pack Reg No
+
+    %tbody
+      - warranties.each do |warranty|
+        %tr
+          %td= warranty.start_at
+          %td= warranty.end_at
+          %td= warranty.period_part
+          %td= warranty.period_labour
+          %td= warranty.corporate_onsight
+          %td= warranty.warranty_type.try(:name)
+          %td= warranty.note
+          %td= warranty.care_pack_product_no
+          %td= warranty.care_pack_reg_no

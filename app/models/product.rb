@@ -57,3 +57,10 @@ class InvSerialItem < ActiveRecord::Base
 
   has_many :products, foreign_key: :inventory_serial_item_id
 end
+
+class Accessory < ActiveRecord::Base
+  self.table_name = "mst_spt_accessory"
+
+  has_many :ticket_accessories, foreign_key: :accessory_id
+  has_many :tickets, through: :ticket_accessories
+end

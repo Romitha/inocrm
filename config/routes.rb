@@ -71,6 +71,7 @@ Rails.application.routes.draw do
       get "new_product"
       get "new_customer"
       get "contact_persons"
+      get "remarks"
 
       post "create_product_brand"
       post "create_new_category"
@@ -83,6 +84,7 @@ Rails.application.routes.draw do
       post "create_contact_persons"
       post "create_contact_person_record"
       post "create_problem_category"
+      post "create_accessory"
     end
   end
   # get 'auth/index'

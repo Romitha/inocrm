@@ -1,0 +1,11 @@
+%h4 Warranty
+= warranty.product.try(:serial_no)
+= warranty.start_at.try(:strftime, "%b %d %y")
+= warranty.end_at.try(:strftime, "%b %d %y")
+= warranty.period_part
+= warranty.period_labour
+= warranty.corporate_onsight
+= warranty.warranty_type.try(:name)
+= warranty.note
+= warranty.care_pack_product_no
+= warranty.care_pack_reg_no

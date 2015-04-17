@@ -21,6 +21,7 @@ class TicketsController < ApplicationController
     session[:product_id] = nil
     session[:customer_id] = nil
     session[:serial_no] = nil
+    session[:warranty_id] = nil
     session[:ticket_initiated_attributes] = {}
     @ticket_no = (Ticket.order("created_at ASC").last.try(:ticket_no).to_i + 1)
     @status = TicketStatus.first
@@ -134,6 +135,7 @@ class TicketsController < ApplicationController
     session[:customer_id] = nil
     session[:serial_no] = serial_no
     @product = Product.find_by_serial_no(serial_no) || Product.new(serial_no: serial_no, corporate_product: false)
+    Warranty
     @base_currency = Currency.find_by_base_currency(true)
     if @product.persisted?
       @product_brand = @product.product_brand
@@ -441,6 +443,7 @@ class TicketsController < ApplicationController
 
   def create_problem_category
     Ticket
+    Warranty
     if params[:status_param] == "initiate"
       @new_problem_category = ProblemCategory.new
     elsif params[:status_param] == "create"
@@ -452,6 +455,28 @@ class TicketsController < ApplicationController
       @ticket = Ticket.new session[:ticket_initiated_attributes]
       @product = Product.find(session[:product_id])
     end
+  end
+
+  def create_accessory
+    Product
+    Ticket
+    Warranty
+    if params[:status_param] == "initiate"
+      @new_accessory = Accessory.new
+    elsif params[:status_param] == "create"
+      @new_accessory = Accessory.new accessory_params
+      @new_accessory.save
+      @ticket = Ticket.new session[:ticket_initiated_attributes]
+      @product = Product.find(session[:product_id])
+    elsif params[:status_param] == "back"
+      @ticket = Ticket.new session[:ticket_initiated_attributes]
+      @product = Product.find(session[:product_id])
+    end
+  end
+
+  def remarks
+    @ticket = Ticket.find(session[:id])
+    @warranty = Warranty.find(session[:warranty_id])
   end
 
   private

@@ -1,32 +1,46 @@
-.row
+- display_form = @display_form
+.row.refresh
   = link_to "", new_warranty_path, remote: true, class: "glyphicon glyphicon-refresh"
 .row
   = render "users/customer_and_contact_person", customer: customer, ticket: ticket
 %hr
-.row
-  = simple_form_for @warranty, remote: true do |f|
-    .row
-      .col-md-12
-        = f.association :warranty_type
-    .row
-      .col-md-6
-        = f.input :start_at, as: :string
-      .col-md-6
-        = f.input :end_at, as: :string
-    .row
-      .col-md-4
-        = f.input :period_part
-      .col-md-4
-        = f.input :period_labour
-      .col-md-4
-        = f.input :corporate_onsight
-    .row
-      .col-md-3
-        = f.input :care_pack_product_no
-      .col-md-3
-        = f.input :care_pack_reg_no
-      .col-md-6
-        = f.input :note
-    .row
-      .col-md-12
-        = f.submit "submit"
+#warranty_details
+  = label_tag "Select Warranty" do
+    = radio_button_tag "warranty_select", "select", false, class: "radio_for_warranty_select", onchange: "Warranties.warranty_select('select'); false;"
+    Select Warranty
+  = label_tag "New Warranty" do
+    = radio_button_tag "warranty_select", "create", false, class: "radio_for_warranty_select", onchange: "Warranties.warranty_create('display_form'); false;"
+    New Warranty
+
+  - if display_form
+    = simple_form_for @warranty, remote: true do |f|
+      = f.input :product_serial_id, as: :hidden
+      .row
+        .col-md-12
+          = f.association :warranty_type, as: :radio_buttons
+      .row
+        .col-md-6
+          = f.input :start_at, as: :string
+        .col-md-6
+          = f.input :end_at, as: :string
+      .row
+        .col-md-4
+          = f.input :period_part
+        .col-md-4
+          = f.input :period_labour
+        .col-md-4
+          = f.input :corporate_onsight
+      .row
+        .col-md-3
+          = f.input :care_pack_product_no
+        .col-md-3
+          = f.input :care_pack_reg_no
+        .col-md-6
+          = f.input :note
+      .row
+        .col-md-12
+          = f.submit "Next", class: "btn btn-success"
+
+  #warranties_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "warranties_modal", "aria-hidden" => true}
+    .modal-dialog
+      .modal-content

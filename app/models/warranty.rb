@@ -9,4 +9,6 @@ class WarrantyType < ActiveRecord::Base
   self.table_name = "mst_spt_warranty_type"
 
   has_many :warranties
+
+  has_many :tickets
 end

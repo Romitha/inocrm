@@ -1,0 +1,7 @@
+#remarks
+  = render "warranties/warranty", warranty: @warranty
+  %hr
+  = simple_form_for ticket, url: "#" do |f|
+    = f.input :remarks
+    = f.association :ticket_contact_type
+    = f.input :inform_cp, as: :select, label: "Inform to", collection: [["Contact Person1", 1], ["Contact Person2", 2]] 
