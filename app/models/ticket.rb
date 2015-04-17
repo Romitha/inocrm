@@ -20,6 +20,10 @@ class Ticket < ActiveRecord::Base
   has_many :ticket_product_serial, foreign_key: :ticket_id
   has_many :products, through: :ticket_product_serial
 
+  has_many :ticket_accessories, foreign_key: :ticket_id
+  has_many :accessories, through: :ticket_accessories
+  accepts_nested_attributes_for :ticket_accessories, allow_destroy: true
+
   # belongs_to :organization
   # belongs_to :department
   belongs_to :customer, class_name: "Customer", foreign_key: "customer_id"
@@ -58,14 +62,6 @@ class TicketType < ActiveRecord::Base
   self.table_name = "mst_spt_ticket_type"
 
   has_many :tickets, foreign_key: :ticket_type_id
-
-  validates_presence_of [:code, :name]
-end
-
-class WarrantyType < ActiveRecord::Base
-  self.table_name = "mst_spt_warranty_type"
-
-  has_many :tickets, foreign_key: :warranty_type_id
 
   validates_presence_of [:code, :name]
 end
@@ -135,3 +131,9 @@ class TicketProductSerial < ActiveRecord::Base
   belongs_to :product, foreign_key: :product_serial_id
 end
 
+class TicketAccessory < ActiveRecord::Base
+  self.table_name = "spt_ticket_accessory"
+
+  belongs_to :accessory
+  belongs_to :ticket
+end

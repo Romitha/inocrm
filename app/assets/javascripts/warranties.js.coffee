@@ -1,3 +1,13 @@
-# Place all the behaviors and hooks related to the matching controller here.
-# All this logic will automatically be available in application.js.
-# You can use CoffeeScript in this file: http://coffeescript.org/
+window.Warranties =
+  setup: ->
+    return
+
+  warranty_select: (function_param)->
+    $(".simple_form").remove()
+    $.get "/warranties", {function_param: function_param}
+
+  warranty_create: (function_param)->
+    $.get "/warranties/new", {function_param: function_param}
+
+  warranty_assign: (warranty_id)->
+    $.post "warranties/create", {warranty_id: warranty_id}

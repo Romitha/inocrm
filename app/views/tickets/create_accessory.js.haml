@@ -1,5 +1,5 @@
-- if params[:status_param] == "initiate" or (@new_problem_category and @new_problem_category.errors.present?)
-  $("#form_frame").html("#{j render 'tickets/problem_category'}");
+- if params[:status_param] == "initiate" or (@new_accessory and @new_accessory.errors.present?)
+  $("#form_frame").html("#{j render 'tickets/accessory'}");
 - elsif params[:status_param] == "create" or params[:status_param] == "back"
   $("#product_load").html("#{j render 'tickets/form', product: @product, ticket: @ticket}");
 

@@ -1,0 +1,4 @@
+$(".refresh").remove();
+$("#warranty_details").html("#{j render 'tickets/remarks_form', ticket: @ticket}");
+
+Tickets.chosen_select();
