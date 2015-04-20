@@ -61,6 +61,7 @@ end
 class Accessory < ActiveRecord::Base
   self.table_name = "mst_spt_accessory"
 
+  validates :accessory, presence: true, uniqueness: true
   has_many :ticket_accessories, foreign_key: :accessory_id
   has_many :tickets, through: :ticket_accessories
 end

@@ -527,4 +527,8 @@ class TicketsController < ApplicationController
     def problem_category_params
       params.require(:problem_category).permit(:name)
     end
+
+    def accessory_params
+      params.require(:accessory).permit(:accessory)
+    end
 end
