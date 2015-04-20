@@ -1,1 +1,6 @@
-yes..
+= link_to "Back", create_accessory_tickets_path(status_param: "back"), remote: true, method: :post
+
+= simple_form_for @new_accessory, url: create_accessory_tickets_path(status_param: "create"), method: :post, remote: true do |f|
+  .row
+    = f.input :accessory, as: :string, wrapper_html: {class: "col-md-7"}
+  = f.submit "submit"

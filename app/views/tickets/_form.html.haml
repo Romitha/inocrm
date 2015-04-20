@@ -47,22 +47,29 @@
         .add_sign
           = link_to create_problem_category_tickets_path(status_param: "initiate"), remote: true, method: :post, title: "Add" do
             %span.glyphicon.glyphicon-plus-sign
-      .col-md-7
+      .col-md-8
         = f.input :problem_description
+
+      = f.simple_fields_for :ticket_accessories do |fc|
+        .row
+          .col-md-12
+            = fc.input :ticket_id, as: :hidden
+            = fc.association :accessory, label_method: :accessory, value_method: :id, include_blank: false, wrapper_html: {class: "col-md-6"}
+            = fc.input :note, wrapper_html: {class: "col-md-5"}
+            .add_sign
+              = fc.link_to_remove class: "remove_c_t_v_link" do
+                %span.glyphicon.glyphicon-remove-sign
+    .row
       .col-md-12
-        = f.simple_fields_for :ticket_accessories do |fc|
-          = fc.input :ticket_id, as: :hidden
-          = fc.association :accessory
-          = fc.input :note
-          .add_sign
-            = fc.link_to_remove class: "remove_c_t_v_link" do
-              %span.glyphicon.glyphicon-remove-sign
         = f.link_to_add :ticket_accessories do
           %span.glyphicon.glyphicon-plus-sign
-        .add_sign
-          = link_to create_accessory_tickets_path(status_param: "initiate"), remote: true, method: :post, title: "Add" do
-            %span.glyphicon.glyphicon-plus-sign
+          Add Accessory
+        = link_to create_accessory_tickets_path(status_param: "initiate"), remote: true, method: :post, title: "Create Accessory" do
+          %span.glyphicon.glyphicon-plus-sign
+          Create Accessory
 
+        
+    .row
       = f.input :other_accessories, wrapper_html: {class: "col-md-12"}
     .row
       = f.association :inform_method, wrapper_html: {class: "col-md-3"}
