@@ -1,0 +1,2 @@
+class QAndAsController < ApplicationController
+end

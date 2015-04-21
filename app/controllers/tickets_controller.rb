@@ -536,7 +536,7 @@ class TicketsController < ApplicationController
     end
 
     def problem_category_params
-      params.require(:problem_category).permit(:name)
+      params.require(:problem_category).permit(:name, q_and_as_attributes: [:_destroy, :id, :active, :answer_type, :question, :action_id])
     end
 
     def accessory_params
