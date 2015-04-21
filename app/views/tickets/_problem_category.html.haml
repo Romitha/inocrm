@@ -1,6 +1,16 @@
 = link_to "Back", create_problem_category_tickets_path(status_param: "back"), remote: true, method: :post
 %h4 Problem Category
-= simple_form_for @new_problem_category, url: create_problem_category_tickets_path(status_param: "create"), method: :post, remote: true do |f|
+= simple_nested_form_for @new_problem_category, url: create_problem_category_tickets_path(status_param: "create"), method: :post, remote: true do |f|
   .row
     = f.input :name, as: :string, wrapper_html: {class: "col-md-7"}
+  %hr
+
+  %h4 Generate Questions
+  = f.simple_fields_for :q_and_as do |q_and_a|
+    = q_and_a.input :question
+    = q_and_a.input :answer_type, as: :radio_buttons, collection: INOCRM_CONFIG["answer_type_for_q_and_a"]
+    = q_and_a.input :active
+    = q_and_a.association :task_action , label_method: :action_description, value_method: :id, include_blank: false
+    = q_and_a.link_to_remove "remove"
+  = f.link_to_add "add", :q_and_as
   = f.submit "submit"

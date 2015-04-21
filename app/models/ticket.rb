@@ -87,6 +87,9 @@ class ProblemCategory < ActiveRecord::Base
 
   has_many :tickets, foreign_key: :problem_category_id
 
+  has_many :q_and_as, foreign_key: :problem_category_id
+  accepts_nested_attributes_for :q_and_as, allow_destroy: true
+
   validates_presence_of [:name]
 end
 
