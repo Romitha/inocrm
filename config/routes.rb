@@ -1,7 +1,11 @@
 Rails.application.routes.draw do
 
 
-  resources :warranties
+  resources :warranties do
+    collection do
+      post "select_for_warranty"
+    end
+  end
 
   resources :invoices
 
@@ -85,6 +89,9 @@ Rails.application.routes.draw do
       post "create_contact_person_record"
       post "create_problem_category"
       post "create_accessory"
+    end
+    member do
+      post "finalize_ticket_save"
     end
   end
   # get 'auth/index'

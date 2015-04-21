@@ -1,6 +1,6 @@
 class TicketsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_ticket, only: [:show, :edit, :update, :destroy]
+  before_action :set_ticket, only: [:show, :edit, :update, :destroy, :finalize_ticket_save]
   before_action :set_organization_for_ticket, only: [:new, :edit, :create_customer]
 
   respond_to :html, :json
@@ -475,8 +475,19 @@ class TicketsController < ApplicationController
   end
 
   def remarks
-    @ticket = Ticket.find(session[:id])
+    @ticket = Ticket.find(session[:ticket_id])
     @warranty = Warranty.find(session[:warranty_id])
+    @product = Product.find session[:product_id]
+  end
+
+  def finalize_ticket_save
+    if @ticket.update ticket_params
+      render plain: "ok"
+    else
+      @warranty = Warranty.find(session[:warranty_id])
+      @product = Product.find session[:product_id]
+      render :remarks
+    end
   end
 
   private
@@ -485,11 +496,11 @@ class TicketsController < ApplicationController
     end
 
     def set_organization_for_ticket
-    @organization = Organization.owner      
+      @organization = Organization.owner
     end
 
     def ticket_params
-      params.require(:ticket).permit(:ticket_no, :serial_no, :base_currency_id, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id)
+      params.require(:ticket).permit(:ticket_no, :serial_no, :base_currency_id, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy])
     end
 
     def product_brand_params
