@@ -152,3 +152,11 @@ window.Tickets =
       format: "dd M, yy"
       todayBtn: true
       todayHighlight: true
+
+  first_resolution_visible: ->
+    $(".ticket_resolution_summary").addClass("hide")
+    $("#first_resolution").click ->
+      if $(@).is(':checked')
+        $(".ticket_resolution_summary").removeClass("hide")
+      else
+        $(".ticket_resolution_summary").addClass("hide")

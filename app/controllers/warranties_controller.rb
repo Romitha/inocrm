@@ -4,8 +4,10 @@ class WarrantiesController < ApplicationController
   # before_action :set_warranty, only: [:]
 
   def index
+    @product = Product.find(session[:product_id])
     Warranty
-    @warranties = params[:search_warranties].present? ? WarrantyType.find(params[:search_warranties]).warranties : []
+    # @warranties = params[:search_warranties].present? ? WarrantyType.find(params[:search_warranties]).warranties : []
+    @warranties = @product.warranties
   end
 
   def new
@@ -25,6 +27,7 @@ class WarrantiesController < ApplicationController
       @warranty = Warranty.new warranty_params
       if @warranty.save
         session[:warranty_id] = @warranty.id
+
         render "tickets/remarks"
       else
         @display_form = true
@@ -32,7 +35,20 @@ class WarrantiesController < ApplicationController
         render :new
       end
     end
-    @ticket.warranty_type_id = @warranty.warranty_type_id
+    @ticket.update_attribute(:warranty_type_id, @warranty.warranty_type.id)
+    # @ticket.warranty_type_id = @warranty.warranty_type_id
+  end
+
+  def select_for_warranty
+    @warranty = Warranty.find params[:warranty_id]
+    @ticket = Ticket.find session[:ticket_id]
+    @product = Product.find session[:product_id]
+
+    @warranty.update_attribute(:product_serial_id, @product.id)
+    @ticket.update_attribute(:warranty_type_id, @warranty.warranty_type.id)
+    session[:warranty_id] = @warranty.id
+
+    render "tickets/remarks"
   end
 
   private
