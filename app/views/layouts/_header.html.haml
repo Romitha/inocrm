@@ -1,16 +1,17 @@
-.navbar.navbar-default.navbar-static-top.navbar-inverse
+%nav.navbar.navbar-default.navbar-static-top.navbar-inverse
   .container
-    %button.navbar-toggle(type="button" data-toggle="collapse" data-target=".navbar-responsive-collapse")
+    %button.navbar-toggle{type: "button", data: {toggle: "collapse", target: "#header-nav"}}
+      %span.sr-only Toggle Navigation
       %span.icon-bar
       %span.icon-bar
       %span.icon-bar
     .logo= link_to image_tag("logo.png", class: "small_scale_margin-top1"),root_url
-    .navbar-collapse.collapse.navbar-responsive-collapse.navbar-right.fixed
+    .navbar-collapse.collapse.navbar-responsive-collapse.navbar-right.fixed#header-nav
       %ul.nav.navbar-nav
         %li
           = link_to "todo", "#", class: "dropdown-toggle todo text-hide nav-icon", data: {placement: "bottom"}, title: "To Do", rel: "tooltip"
         %li
-          = link_to "Alert", "#", class: "dropdown-toggle alert text-hide nav-icon", data: {placement: "bottom"}, title: "Alert", rel: "tooltip"
+          = link_to "Alert", "#", class: "dropdown-toggle alert text-hide nav-icon margin-bottom0", data: {placement: "bottom"}, title: "Alert", rel: "tooltip"
         - if can? :dashboard, Organization
           %li.small_scale_margin-right10
             = link_to "Configuration", dashboard_organization_path(Organization.owner), class: "dropdown-toggle organization text-hide nav-icon", data: {placement: "bottom"}, title: "Configuration", rel: "tooltip"

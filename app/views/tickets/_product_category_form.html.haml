@@ -9,7 +9,7 @@
         %li= error
 %fieldset
   %legend Create New Category
-  = link_to "Create Product", new_product_tickets_path, remote: true
+  = link_to "Back", new_product_tickets_path, remote: true
   = simple_form_for product_category, url: create_new_category_tickets_path, remote: true do |f|
     .col-md-4
       = f.association :product_brand, wrapper_html: {style: "width: 95%; float: left;"}

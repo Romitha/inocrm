@@ -54,10 +54,10 @@
 
       = f.simple_fields_for :ticket_accessories do |fc|
         .row
-          .col-md-12
+          .col-md-8
             = fc.input :ticket_id, as: :hidden
-            = fc.association :accessory, label_method: :accessory, value_method: :id, include_blank: false, wrapper_html: {class: "col-md-6"}
-            = fc.input :note, wrapper_html: {class: "col-md-5"}
+            = fc.association :accessory, label_method: :accessory, value_method: :id, include_blank: false, wrapper_html: {class: "col-md-4"}
+            = fc.input :note, wrapper_html: {class: "col-md-7"}
             .add_sign
               = fc.link_to_remove class: "remove_c_t_v_link" do
                 %span.glyphicon.glyphicon-remove-sign
@@ -83,9 +83,10 @@
         %br/
         = f.select :job_type_id, options_from_collection_for_select(JobType.all, :id, :name), {},{class: "col-md-12 small_scale_margin-top5"}
     .row
-      = f.association :ticket_type, as: :radio_buttons, wrapper_html: {class: "col-md-3"}
-      = f.association :warranty_type, as: :radio_buttons, wrapper_html: {class: "col-md-6"}
-      = f.input :cus_chargeable, as: :radio_buttons, wrapper_html: {class: "col-md-3"}
+      = f.association :ticket_type, as: :radio_buttons, wrapper_html: {class: "col-md-3"}, wrapper: :append, input_html: {class: "ticket_type"}
+      = f.input :regional_support_job, label: "Regional", wrapper_html: {class: "col-md-1"}, wrapper: :append
+      = f.association :warranty_type, as: :radio_buttons, wrapper_html: {class: "col-md-6"}, wrapper: :append
+      = f.input :cus_chargeable, label: "Customer Chargeable", as: :radio_buttons, wrapper_html: {class: "col-md-2"}, wrapper: :append
     = f.submit "Next"
     = link_to "Cancel", new_ticket_path
     = link_to "Back", "#"

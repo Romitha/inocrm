@@ -36,7 +36,7 @@ class Ticket < ActiveRecord::Base
 
   has_many :dyna_columns, as: :resourceable
 
-  validates_presence_of [:ticket_no, :priority, :status_id, :problem_description, :informed_method_id, :job_type_id, :ticket_type_id, :warranty_type_id, :cus_chargeable, :base_currency_id]
+  validates_presence_of [:ticket_no, :priority, :status_id, :problem_description, :informed_method_id, :job_type_id, :ticket_type_id, :warranty_type_id, :base_currency_id]
 
   validates_numericality_of [:ticket_no, :priority]
 

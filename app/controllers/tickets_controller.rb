@@ -38,6 +38,7 @@ class TicketsController < ApplicationController
   def create
     @new_ticket = Ticket.new ticket_params
     @ticket = @new_ticket
+    Warranty
     respond_to do |format|
 
       if @new_ticket.save
@@ -500,7 +501,7 @@ class TicketsController < ApplicationController
     end
 
     def ticket_params
-      params.require(:ticket).permit(:ticket_no, :serial_no, :base_currency_id, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy])
+      params.require(:ticket).permit(:ticket_no, :serial_no, :base_currency_id, :regional_support_job, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy])
     end
 
     def product_brand_params

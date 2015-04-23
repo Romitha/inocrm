@@ -9,7 +9,7 @@
         %li= error
 %fieldset
   %legend Create New Product Brand
-  = link_to "Create Product", new_product_tickets_path, remote: true
+  = link_to "Back", new_product_tickets_path, remote: true
   = simple_nested_form_for product_brand, url: create_product_brand_tickets_path, remote: true do |f|
     = f.input :name, wrapper_html: {class:"col-md-4"}
     = f.input :parts_return_days, wrapper_html: {class:"col-md-4"}
