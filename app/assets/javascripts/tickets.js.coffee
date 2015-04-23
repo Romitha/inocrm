@@ -169,3 +169,13 @@ window.Tickets =
       selected = $("#product_product_brand_id :selected").text()
       filtered_option = $(category_list_html).filter("optgroup[label='#{selected}']").html()
       category_list.empty().html(filtered_option).trigger('chosen:updated')
+
+  regional_support_job_active: ->
+    $(".ticket_regional_support_job input[type='checkbox']").prop('checked', false)
+    $(".ticket_regional_support_job").addClass("hide")
+    $(".ticket_type").click ->
+      if $(@).attr("id") == "ticket_ticket_type_id_2"
+        $(".ticket_regional_support_job").removeClass("hide")
+      else
+        $(".ticket_regional_support_job").addClass("hide")
+        $(".ticket_regional_support_job input[type='checkbox']").prop('checked', false)

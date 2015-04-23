@@ -4,7 +4,7 @@
   = @header
 = simple_form_for new_sla, url: create_sla_tickets_path, remote: true do |f|
   .modal-body
-    = f.input :sla_time
+    = f.input :sla_time, label: "SLA Times (in hours)"
     = f.input :description
   .modal-footer
     = f.submit "Create", name: "create_sla", class: "btn btn-default"

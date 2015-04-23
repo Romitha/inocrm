@@ -58,3 +58,15 @@
   padding-top: 30px;
   width: 13px;
 }
+.radio_buttons {
+  .input-append {
+    .radio-inline:first-child {
+      padding-left: 0;
+    }
+  }
+}
+.input-append {
+  .checkbox {
+    margin-top: 0;
+  }
+}
