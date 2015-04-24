@@ -11,6 +11,9 @@
   = label_tag "New Warranty" do
     = radio_button_tag "warranty_select", "create", false, class: "radio_for_warranty_select", onchange: "Warranties.warranty_create('display_form'); false;"
     New Warranty
+  .row
+    .col-md-12
+      = link_to "Back", "#"
 
   - if display_form
     = simple_form_for @warranty, remote: true do |f|

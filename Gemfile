@@ -55,6 +55,8 @@ gem "nested_form"
 
 gem "mustache"
 
+gem 'kaminari'
+
 # gem 'chosen-sass-bootstrap-rails'
 gem "chosen-rails"
 

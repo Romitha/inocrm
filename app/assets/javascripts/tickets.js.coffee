@@ -160,3 +160,12 @@ window.Tickets =
         $(".ticket_resolution_summary").removeClass("hide")
       else
         $(".ticket_resolution_summary").addClass("hide")
+
+  filter_select: ->
+    category_list = $("#product_product_category_id")
+    category_list_html = category_list.html()
+    category_list.empty()
+    $("#product_product_brand_id").change ->
+      selected = $("#product_product_brand_id :selected").text()
+      filtered_option = $(category_list_html).filter("optgroup[label='#{selected}']").html()
+      category_list.empty().html(filtered_option).trigger('chosen:updated')
