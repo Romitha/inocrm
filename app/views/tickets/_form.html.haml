@@ -42,8 +42,10 @@
     = f.input :base_currency_id, as: :hidden, input_html: {value: TicketCurrency.find_by(base_currency: true).try(:id)}
     .row
       .col-md-4
-        = f.input :priority, collection: INOCRM_CONFIG["priority"], wrapper_html: {class: "col-md-6"}
-        = f.association :problem_category, wrapper_html: {class: "col-md-5"}
+        .col-md-5
+          %strong priority
+          = f.select :priority, INOCRM_CONFIG["priority"].collect{ |key,value| [ key, value ] }, {:selected => '3'}, class: "col-md-12 small_scale_margin-top5"
+        = f.association :problem_category, wrapper_html: {class: "col-md-6"}
         .add_sign
           = link_to create_problem_category_tickets_path(status_param: "initiate"), remote: true, method: :post, title: "Add" do
             %span.glyphicon.glyphicon-plus-sign
@@ -72,12 +74,18 @@
     .row
       = f.input :other_accessories, wrapper_html: {class: "col-md-12"}
     .row
-      = f.association :inform_method, wrapper_html: {class: "col-md-3"}
-
-      = f.association :job_type, wrapper_html: {class: "col-md-3"}
+      .col-md-2
+        %strong Informed Method
+        %br/
+        = f.select :informed_method_id, options_from_collection_for_select(InformMethod.all, :id, :name), {},{class: "col-md-12 small_scale_margin-top5"}
+      .col-md-2  
+        %strong Job Type
+        %br/
+        = f.select :job_type_id, options_from_collection_for_select(JobType.all, :id, :name), {},{class: "col-md-12 small_scale_margin-top5"}
     .row
       = f.association :ticket_type, as: :radio_buttons, wrapper_html: {class: "col-md-3"}
       = f.association :warranty_type, as: :radio_buttons, wrapper_html: {class: "col-md-6"}
       = f.input :cus_chargeable, as: :radio_buttons, wrapper_html: {class: "col-md-3"}
     = f.submit "Next"
     = link_to "Cancel", new_ticket_path
+    = link_to "Back", "#"

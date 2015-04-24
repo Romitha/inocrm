@@ -3,10 +3,37 @@
   = render "warranties/warranty", warranty: @warranty
   %hr
   = simple_form_for ticket, url: finalize_ticket_save_ticket_path(ticket), metho: :post, remote: true do |f|
-    = f.input :remarks
-    = f.association :ticket_contact_type
-    = f.input :inform_cp, as: :select, label: "Inform to", collection: [["Contact Person1", 1], ["Contact Person2", 2]]
-    = check_box_tag "first_resolution", nil
-    = label_tag "1st Level Resolution"
-    = f.input :resolution_summary, label: "Resolution"
-    = f.submit "Save", class: "btn btn-success"
+    .row
+      .col-md-2
+        %strong Contact By
+        %br/
+        = f.select :contact_type_id, options_from_collection_for_select(TicketContactType.all, :id, :name), {}, class: "col-md-12 small_scale_margin-top5"
+
+      .col-md-2
+        %strong Contact By
+        %br/
+        = f.select :inform_cp, [["Contact Person1", 1], ["Contact Person2", 2]], {}, class: "col-md-12 small_scale_margin-top5"
+
+      .col-md-8
+        = f.input :remarks
+    .row
+      .col-md-12
+        = check_box_tag "first_resolution", nil
+        = label_tag "1st Level Resolution"
+        = f.input :resolution_summary, label: "Resolution"
+    .row
+      .col-md-12
+        .btn-group
+          = f.submit "Save",class: "btn btn-success"
+          %button.btn.btn-success.dropdown-toggle{"aria-expanded" => "false", "data-toggle" => "dropdown", :type => "button"}
+            %span.caret
+            %span.sr-only Toggle Dropdown
+          %ul.dropdown-menu{:role => "menu"}
+            %li
+              = link_to "Save and View", '#'
+            %li
+              = link_to "Save and Print", '#' 
+            %li
+              = link_to "Cancel", '#'
+        = link_to "Back", "#"
+        

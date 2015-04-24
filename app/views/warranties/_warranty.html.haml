@@ -1,11 +1,24 @@
 %h4 Warranty
-= warranty.product.try(:serial_no)
-= warranty.start_at.try(:strftime, "%b %d %y")
-= warranty.end_at.try(:strftime, "%b %d %y")
-= warranty.period_part
-= warranty.period_labour
-= warranty.corporate_onsight
-= warranty.warranty_type.try(:name)
-= warranty.note
-= warranty.care_pack_product_no
-= warranty.care_pack_reg_no
+%table.table
+  %thead
+    %tr
+      %th Start Date
+      %th Exp.Date
+      %th Part
+      %th Labour
+      %th On-Sight
+      %th Warranty Type
+      %th Product No
+      %th Reg.No
+      %th Note
+  %tbody
+    %tr
+      %td= warranty.start_at.try(:strftime, "%b %d %y")
+      %td= warranty.end_at.try(:strftime, "%b %d %y")
+      %td= warranty.period_part
+      %td= warranty.period_labour
+      %td= warranty.corporate_onsight
+      %td= warranty.warranty_type.try(:name)
+      %td= warranty.care_pack_product_no
+      %td= warranty.care_pack_reg_no
+      %td= warranty.note

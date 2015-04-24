@@ -25,6 +25,9 @@
         %td=ticket.problem_description
 %hr
 = link_to "", contact_persons_tickets_path, remote: true, class: "glyphicon glyphicon-refresh"
+.row
+  .col-md-12
+    = link_to "Back", "#"
 #contact_persons
   .row
     .col-md-4
@@ -82,7 +85,7 @@
   - if ticket.contact_person1 and ticket.contact_person2 and ticket.report_person
     .row
       .col-md-4.pull-right
-        = link_to "Warranty", new_warranty_path, remote: true, class: "btn btn-sm btn-success pull-right"
+        = link_to "Next", new_warranty_path, remote: true, class: "btn btn-sm btn-success pull-right"
 
 #contact_person.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "contact_person", "aria-hidden" => true}
   .modal-dialog

@@ -6,6 +6,9 @@
 = label_tag "New Customer" do
   = radio_button_tag "customer_select", "create", false, class: "radio_for_customer_select", onchange: "Tickets.customer_select('create'); false;"
   New Customer
+.row
+  .col-md-12
+    = link_to "Back", "#"
 
 - if display_select_option
   #new_customer_form
@@ -39,14 +42,19 @@
               .add_sign
                 = fc.link_to_remove class: "remove_c_t_v_link" do
                   %span.glyphicon.glyphicon-remove-sign
-              = fc.input :contact_type_id, collection: ContactType.all.map{|c| [c.name, c.id]}, wrapper_html: {class:"col-md-5"}
-              = fc.input :value, wrapper_html: {class:"col-md-6"}
+              .col-md-4
+                %strong Contact Type
+                %br/
+                = fc.select :contact_type_id, ContactType.all.map {|c| [c.name, c.id]}, {}, class: "col-md-12 small_scale_margin-top5"
+
+              = fc.input :value, wrapper_html: {class:"col-md-7"}
 
         .add_sign{style: "width: 100%;"}
           = f.link_to_add :contact_type_values, style: "clear: both;display: block;" do
             Add a Contact Type
             %span.glyphicon.glyphicon-plus-sign
         = f.submit "Customer"
+
 
 #customer_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "customer_modal", "aria-hidden" => true}
   .modal-dialog
