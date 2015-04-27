@@ -6,7 +6,7 @@
 %hr
 #warranty_details
   = label_tag "Select Warranty" do
-    = radio_button_tag "warranty_select", "select", false, class: "radio_for_warranty_select", onchange: "Warranties.warranty_select('select'); false;"
+    = radio_button_tag "warranty_select", "select", false, class: "radio_for_warranty_select", onchange: "Warranties.warranty_create('select'); false;"
     Select Warranty
   = label_tag "New Warranty" do
     = radio_button_tag "warranty_select", "create", false, class: "radio_for_warranty_select", onchange: "Warranties.warranty_create('display_form'); false;"
@@ -43,6 +43,10 @@
       .row
         .col-md-12
           = f.submit "Next", class: "btn btn-success"
+  - else
+    = render "warranties/select_warranties", warranties: @warranties
+
+    = link_to "Next", select_for_warranty_warranties_path, method: :post, remote: true, class: "btn btn-success btn-sm pull-right"
 
   #warranties_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "warranties_modal", "aria-hidden" => true}
     .modal-dialog

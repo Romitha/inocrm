@@ -321,12 +321,38 @@ class TicketsController < ApplicationController
         @contact_person_frame = "#report_persons_form"
         @submitted_contact_person = "three"
       end
+      @build_contact_person.contact_person_contact_types.build @c_p_c_t_attribs
 
       @header = "Contact Person"
+    when "edit_create_contact_person"
+      @ticket = Ticket.find_by_id(session[:ticket_id])
+      if params[:contact_person] == "1"
+        found_contact_person = ContactPerson1.find(params[:contact_person_id])
+        @c_p_c_t_attribs = found_contact_person.contact_person_contact_types.map{|c_t_v| {contact_type_id: c_t_v.contact_type_id, value: c_t_v.value}}
+        @build_contact_person = ContactPerson1.new title_id: found_contact_person.title_id, name: found_contact_person.name
+        @build_contact_person.contact_person_contact_types.build @c_p_c_t_attribs
+        @contact_person_frame = "#contact_persons_form1"
+        @submitted_contact_person = "one"
+
+      elsif params[:contact_person] == "2"
+       found_contact_person = ContactPerson2.find(params[:contact_person_id])
+       @c_p_c_t_attribs = found_contact_person.contact_person_contact_types.map{|c_t_v| {contact_type_id: c_t_v.contact_type_id, value: c_t_v.value}}
+        @build_contact_person = ContactPerson2.new title_id: found_contact_person.title_id, name: found_contact_person.name
+        @build_contact_person.contact_person_contact_types.build @c_p_c_t_attribs
+        @contact_person_frame = "#contact_persons_form2"
+        @submitted_contact_person = "two"
+
+      elsif params[:contact_person] == "3"
+        found_contact_person = ReportPerson.find(params[:contact_person_id])
+        @c_p_c_t_attribs = found_contact_person.contact_person_contact_types.map{|c_t_v| {contact_type_id: c_t_v.contact_type_id, value: c_t_v.value}}
+        @build_contact_person = ReportPerson.new title_id: found_contact_person.title_id, name: found_contact_person.name
+        @build_contact_person.contact_person_contact_types.build @c_p_c_t_attribs
+        @contact_person_frame = "#report_persons_form"
+        @submitted_contact_person = "three"    
+      end
     when "assign_contact_person"
       @ticket = Ticket.find_by_id(session[:ticket_id])
       if params[:contact_person] == "1"
-        puts params[:contact_person].class
         @build_contact_person = ContactPerson1.find(params[:contact_person_id])
         @ticket.update_attribute(:contact_person1_id, @build_contact_person.id)
         @contact_person_frame = "#contact_persons_form1"
@@ -476,16 +502,18 @@ class TicketsController < ApplicationController
   end
 
   def remarks
+    QAndA
     @ticket = Ticket.find(session[:ticket_id])
-    @warranty = Warranty.find(session[:warranty_id])
+    @warranty = Warranty.find_by_id(session[:warranty_id])
     @product = Product.find session[:product_id]
   end
 
   def finalize_ticket_save
+    @ticket.status_id = TicketStatus.find_by_code("CLS").id if params[:first_resolution]
     if @ticket.update ticket_params
       render plain: "ok"
     else
-      @warranty = Warranty.find(session[:warranty_id])
+      @warranty = Warranty.find_by_id(session[:warranty_id])
       @product = Product.find session[:product_id]
       render :remarks
     end

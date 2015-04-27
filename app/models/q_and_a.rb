@@ -3,4 +3,17 @@ class QAndA < ActiveRecord::Base
 
   belongs_to :problem_category, foreign_key: :problem_category_id
   belongs_to :task_action, foreign_key: :action_id
+
+  has_many :q_and_answers, foreign_key: :problematic_question_id
+  has_many :tickets, through: :q_and_answers
+  accepts_nested_attributes_for :q_and_answers, allow_destroy: true
+end
+
+class QAndAnswer < ActiveRecord::Base
+  self.table_name = "spt_ticket_problematic_question_answer"
+
+  belongs_to :user_ticket_action, foreign_key: :ticket_action_id
+
+  belongs_to :q_and_a, foreign_key: :problematic_question_id
+  belongs_to :ticket
 end

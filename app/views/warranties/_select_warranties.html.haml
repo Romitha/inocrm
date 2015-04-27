@@ -1,44 +1,50 @@
-- warranties = @warranties
-.modal-header
-  Select warranty
-  %button.close{"aria-label" => "Close", "data-dismiss" => "modal", :type => "button"}
-    %span{"aria-hidden" => "true"} &times;
-  = @header
-.modal-body
-  / .row
-  /   .col-lg-12
-  /     #select_contact_persons
-  /       = form_tag warranties_path, method: :get, remote: true do
-  /         .input-group
-  /           / = text_field_tag "search_warranties", nil, class: "form-control"
-  /           = select_tag "search_warranties", options_from_collection_for_select(WarrantyType.all, "id", "name"), class: "chosen-select"
-  /           %span.input-group-btn
-  /             = submit_tag "Search", name: "search", class: "btn btn-link"
+/ - warranties = @warranties
+/ .modal-header
+/   Select warranty
+/   %button.close{"aria-label" => "Close", "data-dismiss" => "modal", :type => "button"}
+/     %span{"aria-hidden" => "true"} &times;
+/   = @header
+/ .modal-body
+/ .row
+/   .col-lg-12
+/     #select_contact_persons
+/       = form_tag warranties_path, method: :get, remote: true do
+/         .input-group
+/           / = text_field_tag "search_warranties", nil, class: "form-control"
+/           = select_tag "search_warranties", options_from_collection_for_select(WarrantyType.all, "id", "name"), class: "chosen-select"
+/           %span.input-group-btn
+/             = submit_tag "Search", name: "search", class: "btn btn-link"
 
-  %table.table.table-responsive
-    %thead
+%table.table.table-responsive.table-condensed.table-bordered
+  %thead
+    %tr
+      %th{colspan: 2} Warranty Date
+      %th{colspan: 3} Period in month
+      %th Warranty
+      %th{colspan: 2} Care pack
+      %th{colspan: 2} Note and function
+    %tr
+      %th Start
+      %th End
+      %th Part
+      %th labour
+      %th Onsight
+      %th Type
+      %th Product No
+      %th Reg No
+      %th Note
+      %th Function
+
+  %tbody
+    - warranties.each do |warranty|
       %tr
-        %th Start
-        %th End
-        %th Period Part
-        %th period labour
-        %th Corporate Onsight
-        %th Warranty Type
-        %th Note
-        %th Care pack Product No
-        %th Care pack Reg No
-        %td Function
-
-    %tbody
-      - warranties.each do |warranty|
-        %tr
-          %td= warranty.start_at.to_date.strftime("%b %d, %Y")
-          %td= warranty.end_at.to_date.strftime("%b %d, %Y")
-          %td= warranty.period_part
-          %td= warranty.period_labour
-          %td= warranty.corporate_onsight
-          %td= warranty.warranty_type.try(:name)
-          %td= warranty.note
-          %td= warranty.care_pack_product_no
-          %td= warranty.care_pack_reg_no
-          %td= link_to "Select", select_for_warranty_warranties_path(warranty_id: warranty.id), method: :post, remote: true
+        %td= warranty.start_at.to_date.strftime("%b %d, %Y")
+        %td= warranty.end_at.to_date.strftime("%b %d, %Y")
+        %td= warranty.period_part
+        %td= warranty.period_labour
+        %td= warranty.corporate_onsight
+        %td= warranty.warranty_type.try(:name)
+        %td= warranty.care_pack_product_no
+        %td= warranty.care_pack_reg_no
+        %td= warranty.note
+        %td= link_to "Select", select_for_warranty_warranties_path(warranty_id: warranty.id), method: :post, remote: true

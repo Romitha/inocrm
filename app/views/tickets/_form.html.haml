@@ -11,28 +11,12 @@
         %ul
           - ticket.errors.full_messages.each do |error|
             %li= error
-.row
-  .col-md-3
-    %span.strong Product Serial:
-    %span= product.serial_no
-  .col-md-3
-    %span.strong Product Brand:
-    %span= product.product_brand.name
-.row
-  .col-md-3
-    %span.strong Product No:
-    %span= product.product_no
-  .col-md-3
-    %span.strong Product Category:
-    %span= product.product_category.name
-.row
-  .col-md-4
-    %span.strong Product Model:
-    %span= product.model_no
-  .col-md-12
-    %span.strong Pop Note:
-    %span= product.pop_note
-    %hr
+
+= initiate_table table_type: "table-hover" do
+  = table_header ["Serial", "Brand", "Category", "Modal No", "Product No", "Pop Status", "Pop Note"]
+  = table_body [product.serial_no, product.product_brand.name, product.product_category.name, product.model_no, product.product_no, product.product_pop_status.name, product.pop_note]
+
+%hr
 
 #form_frame
   - ticket.ticket_accessories.build
@@ -49,31 +33,6 @@
         .add_sign
           = link_to create_problem_category_tickets_path(status_param: "initiate"), remote: true, method: :post, title: "Add" do
             %span.glyphicon.glyphicon-plus-sign
-      .col-md-8
-        = f.input :problem_description
-
-      = f.simple_fields_for :ticket_accessories do |fc|
-        .row
-          .col-md-8
-            = fc.input :ticket_id, as: :hidden
-            = fc.association :accessory, label_method: :accessory, value_method: :id, include_blank: false, wrapper_html: {class: "col-md-4"}
-            = fc.input :note, wrapper_html: {class: "col-md-7"}
-            .add_sign
-              = fc.link_to_remove class: "remove_c_t_v_link" do
-                %span.glyphicon.glyphicon-remove-sign
-    .row
-      .col-md-12
-        = f.link_to_add :ticket_accessories do
-          %span.glyphicon.glyphicon-plus-sign
-          Add Accessory
-        = link_to create_accessory_tickets_path(status_param: "initiate"), remote: true, method: :post, title: "Create Accessory" do
-          %span.glyphicon.glyphicon-plus-sign
-          Create Accessory
-
-        
-    .row
-      = f.input :other_accessories, wrapper_html: {class: "col-md-12"}
-    .row
       .col-md-2
         %strong Informed Method
         %br/
@@ -82,11 +41,38 @@
         %strong Job Type
         %br/
         = f.select :job_type_id, options_from_collection_for_select(JobType.all, :id, :name), {},{class: "col-md-12 small_scale_margin-top5"}
+      .col-md-4
+        = f.input :problem_description
+
     .row
-      = f.association :ticket_type, as: :radio_buttons, wrapper_html: {class: "col-md-3"}, wrapper: :append, input_html: {class: "ticket_type"}
-      = f.input :regional_support_job, label: "Regional", wrapper_html: {class: "col-md-1"}, wrapper: :append
+      .col-md-8
+        = f.simple_fields_for :ticket_accessories do |fc|
+          = fc.input :ticket_id, as: :hidden
+          = fc.association :accessory, label_method: :accessory, value_method: :id, include_blank: false, wrapper_html: {class: "col-md-4 padding-left0"}
+          = fc.input :note, wrapper_html: {class: "col-md-7"}
+          .add_sign
+            = fc.link_to_remove class: "remove_c_t_v_link" do
+              %span.glyphicon.glyphicon-remove-sign
+
+
+      = f.input :other_accessories, wrapper_html: {class: "col-md-4"}
+      .col-md-8
+        = f.link_to_add :ticket_accessories, class: "accessory_links" do
+          %span.glyphicon.glyphicon-plus-sign
+          Add Accessory
+        = link_to create_accessory_tickets_path(status_param: "initiate"), remote: true, method: :post, title: "Create Accessory", class: "accessory_links" do
+          %span.glyphicon.glyphicon-plus-sign
+          Create Accessory
+
+        
+    .row
+    .row
       = f.association :warranty_type, as: :radio_buttons, wrapper_html: {class: "col-md-6"}, wrapper: :append
       = f.input :cus_chargeable, label: "Customer Chargeable", as: :radio_buttons, wrapper_html: {class: "col-md-2"}, wrapper: :append
+      = f.association :ticket_type, as: :radio_buttons, wrapper_html: {class: "col-md-3"}, wrapper: :append, input_html: {class: "ticket_type"}
+      = f.input :regional_support_job, label: "Regional", wrapper_html: {class: "col-md-1"}, wrapper: :append
+    .row
+    .row
     = f.submit "Next"
     = link_to "Cancel", new_ticket_path
     = link_to "Back", "#"

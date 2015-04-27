@@ -145,7 +145,10 @@ window.Tickets =
     $.get "/tickets/new_customer", {function_param: function_param}
 
   assign_customer: (customer_id, organization_id, function_param)->
-    $.post "/tickets/create_customer", {customer_id: customer_id, organization_id: organization_id, function_param: function_param}
+    y = confirm("Are you sure?")
+    if y
+      $.post "/tickets/create_customer", {customer_id: customer_id, organization_id: organization_id, function_param: function_param}
+
 
   load_datapicker: ->
     $('.datepicker').datepicker
@@ -179,3 +182,6 @@ window.Tickets =
       else
         $(".ticket_regional_support_job").addClass("hide")
         $(".ticket_regional_support_job input[type='checkbox']").prop('checked', false)
+
+  touch_refresh: ->
+    $("#create_contact_person").trigger("click")

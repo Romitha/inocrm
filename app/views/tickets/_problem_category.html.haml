@@ -12,11 +12,11 @@
         = q_and_a.link_to_remove do
           %span.glyphicon.glyphicon-remove-sign
       .col-md-2
-        = q_and_a.input :answer_type, as: :radio_buttons, collection: INOCRM_CONFIG["answer_type_for_q_and_a"]
+        = q_and_a.input :answer_type, as: :radio_buttons, collection: INOCRM_CONFIG["answer_type_for_q_and_a"], wrapper: :append
       .col-md-1
-        = q_and_a.input :active
+        = q_and_a.input :active, wrapper: :append
       .col-md-8
-        = q_and_a.association :task_action , label_method: :action_description, value_method: :id, include_blank: false
+        = q_and_a.association :task_action, collection: TaskAction.where(action_no: [1,5,57,58]), label_method: :action_description, value_method: :id, include_blank: false
     .row
       .col-md-12
         = q_and_a.input :question
@@ -24,6 +24,5 @@
     .col-md-12
       = f.link_to_add :q_and_as do
         %span.glyphicon.glyphicon-plus-sign
-  .row
-    .col-md-12
-      = f.submit "submit"
+  
+  = f.submit "submit"

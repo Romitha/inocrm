@@ -1,4 +1,4 @@
-- if params[:data_param] == "initiate_contact_person" or params[:data_param] == "assign_contact_person" 
+- if params[:data_param] == "initiate_contact_person" or params[:data_param] == "assign_contact_person" or params[:data_param] == "edit_create_contact_person"
   $("#contact_person").modal("hide");
   $("#{@contact_person_frame}").html("#{j render 'tickets/create_contact_persons', build_contact_person: @build_contact_person, submitted_contact_person: @submitted_contact_person}");
 - else
