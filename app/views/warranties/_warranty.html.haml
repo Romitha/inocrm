@@ -1,20 +1,28 @@
 %h4 Warranty
-%table.table
+
+%table.table.table-responsive.table-condensed.table-bordered
   %thead
     %tr
-      %th Start Date
-      %th Exp.Date
+      %th{colspan: 2} Warranty Date
+      %th{colspan: 3} Period in month
+      %th Warranty
+      %th{colspan: 2} Care pack
+      %th{colspan: 2}
+    %tr
+      %th Start
+      %th End
       %th Part
-      %th Labour
-      %th On-Sight
-      %th Warranty Type
+      %th labour
+      %th Onsight
+      %th Type
       %th Product No
-      %th Reg.No
+      %th Reg No
       %th Note
+
   %tbody
     %tr
-      %td= warranty.start_at.try(:strftime, "%b %d %y")
-      %td= warranty.end_at.try(:strftime, "%b %d %y")
+      %td= warranty.start_at.to_date.strftime("%b %d, %Y")
+      %td= warranty.end_at.to_date.strftime("%b %d, %Y")
       %td= warranty.period_part
       %td= warranty.period_labour
       %td= warranty.corporate_onsight

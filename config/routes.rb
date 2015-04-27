@@ -7,7 +7,13 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :invoices
+  resources :q_and_as do
+    collection do
+      get "q_and_answer_record"
+
+      patch "q_and_answer_save"
+    end
+  end
 
   root "organizations#index"
 

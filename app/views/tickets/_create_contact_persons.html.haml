@@ -1,26 +1,27 @@
 %fieldset
   %legend= @header
-  = simple_nested_form_for build_contact_person, url: create_contact_person_record_tickets_path, method: :post, remote: true do |f|
-    .row
-      - if build_contact_person.new_record?
+  - if build_contact_person.new_record?
+    = simple_nested_form_for build_contact_person, url: create_contact_person_record_tickets_path, method: :post, remote: true do |f|
+      .row
         = f.association :mst_title, wrapper_html: {class:"col-md-3"}
         = f.input :name, wrapper_html: {class:"col-md-9"}
 
-      - else
-
-        = f.association :mst_title, as: :hidden
-        = f.input :name, as: :hidden
-        = hidden_field_tag 'persisted', build_contact_person.id
-        #{build_contact_person.mst_title.try(:title)} #{build_contact_person.name}
-
-    = f.simple_fields_for :contact_person_contact_types do |c|
-      .add_sign
-        = c.link_to_remove class: "remove_c_t_v_link" do
-          %span.glyphicon.glyphicon-remove-sign
-      .row
-        = c.association :contact_type, wrapper_html: {class:"col-md-5"}
-        = c.input :value, wrapper_html: {class:"col-md-6"}
-    = f.link_to_add :contact_person_contact_types do
-      %span.glyphicon.glyphicon-plus-sign
+      = f.simple_fields_for :contact_person_contact_types do |c|
+        .add_sign
+          = c.link_to_remove class: "remove_c_t_v_link" do
+            %span.glyphicon.glyphicon-remove-sign
+        .row
+          = c.association :contact_type, wrapper_html: {class:"col-md-5"}
+          = c.input :value, wrapper_html: {class:"col-md-6"}
+      = f.link_to_add :contact_person_contact_types do
+        %span.glyphicon.glyphicon-plus-sign
+        %br/
+      = f.submit "Confirm", class: "btn btn-default", name: submitted_contact_person
+  - else
+    %strong Name
+    #{build_contact_person.mst_title.try(:title)} #{build_contact_person.name}
+    %br/
+    - build_contact_person.contact_person_contact_types.each do |ct|
+      %strong= ct.contact_type.try(:name)
+      = ct.value
       %br/
-    = f.submit "Confirm", class: "btn btn-default", name: submitted_contact_person

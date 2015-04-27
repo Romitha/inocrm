@@ -1,11 +1,12 @@
 - customer = @new_customer
 .table-responsive.col-md-6.table-borderless
+  %h4 Customer and problem
   %table.table
     %tbody
       %tr
         %td.text-right
           %strong Customer Name:
-        %td= customer.name
+        %td #{customer.mst_title.try(:name)} #{customer.name}
         %td.text-right
           %strong Problem Category:
         %td=ticket.problem_category.try(:name)
@@ -23,11 +24,18 @@
         %td.text-right
           %strong Problem Description:
         %td=ticket.problem_description
+      %tr
+        %td.text-right
+          %strong Costomer Contacts
+        %td
+          - customer.contact_type_values.each do |ct|
+            #{ct.contact_type.try(:name)}: #{ct.value}
+            %br/
 %hr
-= link_to "", contact_persons_tickets_path, remote: true, class: "glyphicon glyphicon-refresh"
 .row
   .col-md-12
     = link_to "Back", "#"
+= link_to "", contact_persons_tickets_path, remote: true, class: "glyphicon glyphicon-refresh", id: "create_contact_person"
 #contact_persons
   .row
     .col-md-4
@@ -39,13 +47,14 @@
         Create Contact Person1
       #contact_persons_form1.contact_persons_form
         - if ticket.contact_person1
-          %strong Name
-          #{ticket.contact_person1.mst_title.try(:title)} #{ticket.contact_person1.name}
-          %br/
-          - ticket.contact_person1.contact_person_contact_types.each do |ct|
-            %strong= ct.contact_type.try(:name)
-            = ct.value
+          %fieldset
+            %strong Name
+            #{ticket.contact_person1.mst_title.try(:title)} #{ticket.contact_person1.name}
             %br/
+            - ticket.contact_person1.contact_person_contact_types.each do |ct|
+              %strong= ct.contact_type.try(:name)
+              = ct.value
+              %br/
 
 
     .col-md-4
@@ -57,13 +66,14 @@
         Create Contact Person2
       #contact_persons_form2.contact_persons_form
         - if ticket.contact_person2
-          %strong Name
-          #{ticket.contact_person2.mst_title.try(:title)} #{ticket.contact_person2.name}
-          %br/
-          - ticket.contact_person2.contact_person_contact_types.each do |ct|
-            %strong= ct.contact_type.try(:name)
-            = ct.value
+          %fieldset
+            %strong Name
+            #{ticket.contact_person2.mst_title.try(:title)} #{ticket.contact_person2.name}
             %br/
+            - ticket.contact_person2.contact_person_contact_types.each do |ct|
+              %strong= ct.contact_type.try(:name)
+              = ct.value
+              %br/
 
     .col-md-4
       = label_tag "Select report person" do
@@ -74,13 +84,14 @@
         Create Report Person
       #report_persons_form.contact_persons_form
         - if ticket.report_person
-          %strong Name
-          #{ticket.report_person.mst_title.try(:title)} #{ticket.report_person.name}
-          %br/
-          - ticket.report_person.contact_person_contact_types.each do |ct|
-            %strong= ct.contact_type.try(:name)
-            = ct.value
+          %fieldset
+            %strong Name
+            #{ticket.report_person.mst_title.try(:title)} #{ticket.report_person.name}
             %br/
+            - ticket.report_person.contact_person_contact_types.each do |ct|
+              %strong= ct.contact_type.try(:name)
+              = ct.value
+              %br/
 
   - if ticket.contact_person1 and ticket.contact_person2 and ticket.report_person
     .row

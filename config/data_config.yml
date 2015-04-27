@@ -9,5 +9,5 @@ priority:
 ticket_no_format: "T0000"
 
 answer_type_for_q_and_a:
-  radio_input: YN
+  yes_or_no: YN
   text: TX

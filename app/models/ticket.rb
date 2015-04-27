@@ -20,6 +20,9 @@ class Ticket < ActiveRecord::Base
   has_many :ticket_product_serial, foreign_key: :ticket_id
   has_many :products, through: :ticket_product_serial
 
+  has_many :q_and_answers, foreign_key: :ticket_id
+  has_many :q_and_as, through: :q_and_answers
+
   has_many :ticket_accessories, foreign_key: :ticket_id
   has_many :accessories, through: :ticket_accessories
   accepts_nested_attributes_for :ticket_accessories, allow_destroy: true
@@ -36,7 +39,7 @@ class Ticket < ActiveRecord::Base
 
   has_many :dyna_columns, as: :resourceable
 
-  validates_presence_of [:ticket_no, :priority, :status_id, :problem_description, :informed_method_id, :job_type_id, :ticket_type_id, :warranty_type_id, :base_currency_id]
+  validates_presence_of [:ticket_no, :priority, :status_id, :problem_description, :informed_method_id, :job_type_id, :ticket_type_id, :warranty_type_id, :base_currency_id, :problem_category_id]
 
   validates_numericality_of [:ticket_no, :priority]
 

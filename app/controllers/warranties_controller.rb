@@ -16,7 +16,12 @@ class WarrantiesController < ApplicationController
     @ticket = Ticket.find(session[:ticket_id])
     @customer = Customer.find(session[:customer_id])
     @warranty = Warranty.new(product_serial_id: session[:product_id])
-    @display_form = true if params[:function_param] == "display_form"
+    if params[:function_param] == "display_form"
+      @display_form = true
+    else
+      @product = Product.find(session[:product_id])
+      @warranties = @product.warranties
+    end
   end
 
   def create
@@ -28,7 +33,7 @@ class WarrantiesController < ApplicationController
       if @warranty.save
         session[:warranty_id] = @warranty.id
 
-        render "tickets/remarks"
+        render "q_and_as/q_and_answer_record"
       else
         @display_form = true
         @customer = Customer.find(session[:customer_id])
@@ -40,15 +45,19 @@ class WarrantiesController < ApplicationController
   end
 
   def select_for_warranty
-    @warranty = Warranty.find params[:warranty_id]
-    @ticket = Ticket.find session[:ticket_id]
     @product = Product.find session[:product_id]
+    @ticket = Ticket.find session[:ticket_id]
 
-    @warranty.update_attribute(:product_serial_id, @product.id)
-    @ticket.update_attribute(:warranty_type_id, @warranty.warranty_type.id)
-    session[:warranty_id] = @warranty.id
+    if params[:warranty_id]
+      @warranty = Warranty.find params[:warranty_id]
+      @warranty.update_attribute(:product_serial_id, @product.id)
+      @ticket.update_attribute(:warranty_type_id, @warranty.warranty_type.id)
+      session[:warranty_id] = @warranty.id
+    end
+    @problem_category = @ticket.problem_category
 
-    render "tickets/remarks"
+    # render "tickets/remarks"
+    render "q_and_as/q_and_answer_record"
   end
 
   private

@@ -1,2 +1,4 @@
 $("#contact_person").modal("hide");
 $("#{@contact_person_frame}").html("#{j render 'tickets/create_contact_persons', build_contact_person: @build_contact_person, submitted_contact_person: @submitted_contact_person}");
+
+Tickets.touch_refresh();
