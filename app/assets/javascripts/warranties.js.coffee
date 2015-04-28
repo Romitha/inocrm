@@ -11,3 +11,13 @@ window.Warranties =
 
   warranty_assign: (warranty_id)->
     $.post "warranties/create", {warranty_id: warranty_id}
+
+  update_datepicker: ->
+    $('.selectpicker').change ->
+      format_value = $(this).val()
+      $('.datepicker').datepicker 'remove'
+      $('.datepicker').datepicker
+        format: format_value
+        todayBtn: true
+        todayHighlight: true
+      return

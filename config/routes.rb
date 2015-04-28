@@ -95,6 +95,8 @@ Rails.application.routes.draw do
       post "create_contact_person_record"
       post "create_problem_category"
       post "create_accessory"
+
+      put "product_update"
     end
     member do
       post "finalize_ticket_save"

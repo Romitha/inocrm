@@ -19,8 +19,18 @@
     = simple_form_for @warranty, remote: true do |f|
       = f.input :product_serial_id, as: :hidden
       .row
-        .col-md-12
+        .col-md-6
           = f.association :warranty_type, as: :radio_buttons
+        .col-md-6
+          .strong
+            Date Format
+          %select.selectpicker{:name => "selValue", class: "small_scale_margin-top1"}
+            %option dd M, yy
+            %option dd, yyyy, M
+            %option M, yyyy, dd
+            %option M, dd, yyyy
+            %option yyyy, M, dd
+            %option yyyy, dd, M
       .row
         .col-md-6
           = f.input :start_at, as: :string, input_html: {class: "datepicker"}

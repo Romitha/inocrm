@@ -1,10 +1,12 @@
 - ticket = @ticket
 - problem_category = @problem_category
 - ticket_action_id = @ticket_action_id
+%h4 Q and A
 
 = simple_form_for problem_category, url: q_and_answer_save_q_and_as_path(problem_category_id: problem_category.id), remote: true do |f|
   = f.simple_fields_for :q_and_as do |q|
-    = q.object.question
+    .strong
+      = q.object.question
     = q.simple_fields_for :q_and_answers, q.object.q_and_answers.build do |qa|
       = qa.input :ticket_id, as: :hidden, input_html: {value: ticket.id}
       = qa.input :problematic_question_id, as: :hidden, input_html: {value: q.object.id}

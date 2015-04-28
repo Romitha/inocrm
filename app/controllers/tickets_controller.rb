@@ -519,6 +519,12 @@ class TicketsController < ApplicationController
     end
   end
 
+  def product_update
+    @product = Product.find(params[:product_id])
+    @product.update(product_params)
+    respond_with(@product)
+  end
+
   private
     def set_ticket
       @ticket = Ticket.find(params[:id])

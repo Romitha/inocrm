@@ -1,5 +1,7 @@
 - if @product.persisted?
   $("#product_load").html("#{j render 'tickets/form', product: @product, ticket: @ticket}");
+
+  Tickets.product_update();
 - else
   - if @product_brands.to_a.any?
     - if @product_categories.to_a.any?
