@@ -3,6 +3,8 @@ class Warranty < ActiveRecord::Base
   belongs_to :warranty_type
 
   belongs_to :product, foreign_key: :product_serial_id
+
+  validates :warranty_type_id, presence: true
 end
 
 class WarrantyType < ActiveRecord::Base

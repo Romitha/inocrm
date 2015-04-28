@@ -185,3 +185,6 @@ window.Tickets =
 
   touch_refresh: ->
     $("#create_contact_person").trigger("click")
+
+  product_update: ->
+    $('.inline_edit').editable()

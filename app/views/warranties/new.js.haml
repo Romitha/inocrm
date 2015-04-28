@@ -1,2 +1,4 @@
 $("#form_frame").html("#{j render 'form', customer: @customer, ticket: @ticket}");
 Tickets.load_datapicker();
+-if(@display_form)
+  Warranties.update_datepicker();
