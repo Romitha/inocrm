@@ -7,6 +7,7 @@
       = contact_type_value.value
       %br/
 
+
 = initiate_table table_type: "table-hover" do
   = table_header ["Priority", "Problem Category", "Problem description", "Warranty", "Ticket type", "Customer chargeable", "Informed Method"]
   = table_body [INOCRM_CONFIG["priority"].key(ticket.priority.to_i), ticket.problem_category.name, ticket.problem_description, ticket.warranty_type.name, ticket.ticket_type.name, ticket.cus_chargeable, ticket.inform_method.name]

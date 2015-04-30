@@ -3,7 +3,7 @@ jQuery ->
   $("a[rel~=tooltip], .has-tooltip").tooltip()
   $('.inline_edit').editable()
   $('.datepicker').datepicker
-    format: "dd M, yy"
+    format: "dd M, yyyy"
     todayBtn: true
     todayHighlight: true
 

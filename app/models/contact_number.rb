@@ -21,6 +21,7 @@ class ContactType < ActiveRecord::Base
   has_many :report_persons, through: :contact_person_contact_types
 
   accepts_nested_attributes_for :contact_type_values, :allow_destroy => true
+
 end
 
 class ContactTypeValue < ActiveRecord::Base
@@ -40,4 +41,5 @@ class ContactPersonContactType < ActiveRecord::Base
   belongs_to :report_person, foreign_key: :contact_report_person_id
   belongs_to :contact_type, foreign_key: :contact_type_id
 
+  validates_presence_of [:contact_type_id, :value]
 end
