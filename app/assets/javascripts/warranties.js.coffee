@@ -21,3 +21,19 @@ window.Warranties =
         todayBtn: true
         todayHighlight: true
       return
+
+  disabled_datepicker: ->
+    $("#warranty_end_at").prop('disabled', true);
+    $('#warranty_start_at').blur ->
+      _this = this
+      if $(this).val() != ''
+        $("#warranty_end_at").prop('disabled', false);
+        $('#warranty_end_at').datepicker 'remove'
+        $('#warranty_end_at').datepicker
+          format: $('.selectpicker').val() 
+          todayBtn: true
+          todayHighlight: true
+          startDate: $(_this).val()
+      else
+        $("#warranty_end_at").prop('disabled', true);
+    return
