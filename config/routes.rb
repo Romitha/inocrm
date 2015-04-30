@@ -10,8 +10,6 @@ Rails.application.routes.draw do
   resources :q_and_as do
     collection do
       get "q_and_answer_record"
-
-      patch "q_and_answer_save"
     end
   end
 
@@ -97,9 +95,10 @@ Rails.application.routes.draw do
       post "create_accessory"
 
       put "product_update"
-    end
-    member do
+      post "create_product_country"
       post "finalize_ticket_save"
+
+      post "q_and_answer_save"
     end
   end
   # get 'auth/index'

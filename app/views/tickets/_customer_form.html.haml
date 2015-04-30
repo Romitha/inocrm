@@ -1,4 +1,20 @@
 - display_select_option = @display_select_option
+- ticket = @ticket
+- customer_contact_types = capture do
+  - if existing_customer
+    - existing_customer.contact_type_values.each do |contact_type_value|
+      %strong= contact_type_value.contact_type.try(:name)
+      = contact_type_value.value
+      %br/
+
+= initiate_table table_type: "table-hover" do
+  = table_header ["Priority", "Problem Category", "Problem description", "Warranty", "Ticket type", "Customer chargeable", "Informed Method"]
+  = table_body [INOCRM_CONFIG["priority"].key(ticket.priority.to_i), ticket.problem_category.name, ticket.problem_description, ticket.warranty_type.name, ticket.ticket_type.name, ticket.cus_chargeable, ticket.inform_method.name]
+
+- if existing_customer
+  = initiate_table table_type: "table-hover" do
+    = table_header ["Name", "Address", "Contacts"]
+    = table_body ["#{existing_customer.mst_title.try(:name)} #{existing_customer.name}", "#{existing_customer.address1}, #{existing_customer.address2}, #{existing_customer.address3} #{existing_customer.address4}, #{existing_customer.district.try(:name)}", customer_contact_types]
 
 = label_tag "Select Customer" do
   = radio_button_tag "customer_select", "select", false, class: "radio_for_customer_select", onchange: "Tickets.customer_select('select'); false;"
@@ -6,9 +22,6 @@
 = label_tag "New Customer" do
   = radio_button_tag "customer_select", "create", false, class: "radio_for_customer_select", onchange: "Tickets.customer_select('create'); false;"
   New Customer
-.row
-  .col-md-12
-    = link_to "Back", "#"
 
 - if display_select_option
   #new_customer_form
@@ -55,6 +68,8 @@
             %span.glyphicon.glyphicon-plus-sign
         = f.submit "Customer"
 
+- if existing_customer
+  = link_to "Next", create_customer_tickets_path(customer_id: existing_customer.id), remote: true, method: :post
 
 #customer_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "customer_modal", "aria-hidden" => true}
   .modal-dialog

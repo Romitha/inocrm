@@ -1,39 +1,16 @@
 - customer = @customer
 - ticket = @ticket
-
+- customer_contact_types = capture do
+  - customer.contact_type_values.each do |contact_type_value|
+    %strong= contact_type_value.contact_type.try(:name)
+    = contact_type_value.value
+    %br/
 .row
   .col-md-6
     %h4 Customer and problem
-    %table.table.table-responsive.table-condensed
-      %tbody
-        %tr
-          %td.text-right
-            %strong Customer Name:
-          %td #{customer.mst_title.try(:name)} #{customer.name}
-          %td.text-right
-            %strong Problem Category:
-          %td=ticket.problem_category.try(:name)
-        %tr
-          %td.text-right
-            %strong Customer Address:
-          %td
-            = customer.address1
-            %br/
-            = customer.address2
-            %br/
-            = customer.address3
-            %br/
-            = customer.address4
-          %td.text-right
-            %strong Problem Description:
-          %td=ticket.problem_description
-        %tr
-          %td.text-right
-            %strong Costomer Contacts
-          %td
-            - customer.contact_type_values.each do |ct|
-              #{ct.contact_type.try(:name)}: #{ct.value}
-              %br/
+    = initiate_table table_type: "table-hover" do
+      = table_header ["Name", "Address", "Contacts"]
+      = table_body ["#{customer.mst_title.try(:name)} #{customer.name}", "#{customer.address1}, #{customer.address2}, #{customer.address3} #{customer.address4}, #{customer.district.try(:name)}", customer_contact_types]
 
   .col-md-6
     %h4 Contact Persons

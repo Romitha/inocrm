@@ -103,7 +103,7 @@ class AddMstTablesFromDevage < ActiveRecord::Migration
     create_table :mst_spt_general_question, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.text :question          
-      t.string :code, limit: 2
+      t.string :answer_type, limit: 2
       t.boolean :active
       t.column :action_id, "INT UNSIGNED"
       t.timestamps

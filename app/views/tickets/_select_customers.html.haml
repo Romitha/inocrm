@@ -11,7 +11,7 @@
           .input-group
             = text_field_tag "search_customer", nil, class: "form-control"
             %span.input-group-btn
-              = submit_tag "Search", class: "btn btn-default"
+              = submit_tag "Search", class: "btn btn-default", name: "select_customer"
   %br/
   %ul#myTab.nav.nav-tabs{:role => "tablist"}
     %li.active{:role => "presentation"}= link_to "Customer", "#customer", role: "tab", data: {toggle: "tab"}

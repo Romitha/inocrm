@@ -1,16 +1,20 @@
 - display_form = @display_form
 .row.refresh
   = link_to "", new_warranty_path, remote: true, class: "glyphicon glyphicon-refresh"
+
+= initiate_table table_type: "table-hover" do
+  = table_header ["Priority", "Problem Category", "Problem description", "Warranty", "Ticket type", "Customer chargeable", "Informed Method"]
+  = table_body [INOCRM_CONFIG["priority"].key(ticket.priority.to_i), ticket.problem_category.name, ticket.problem_description, ticket.warranty_type.name, ticket.ticket_type.name, ticket.cus_chargeable, ticket.inform_method.name]
 .row
   = render "users/customer_and_contact_person", customer: customer, ticket: ticket
 %hr
 #warranty_details
-  = label_tag "Select Warranty" do
-    = radio_button_tag "warranty_select", "select", false, class: "radio_for_warranty_select", onchange: "Warranties.warranty_create('select'); false;"
-    Select Warranty
-  = label_tag "New Warranty" do
-    = radio_button_tag "warranty_select", "create", false, class: "radio_for_warranty_select", onchange: "Warranties.warranty_create('display_form'); false;"
-    New Warranty
+  / = label_tag "Select Warranty" do
+  /   = radio_button_tag "warranty_select", "select", false, class: "radio_for_warranty_select", onchange: "Warranties.warranty_create('select'); false;"
+  /   Select Warranty
+  / = label_tag "New Warranty" do
+  /   = radio_button_tag "warranty_select", "create", false, class: "radio_for_warranty_select", onchange: "Warranties.warranty_create('display_form'); false;"
+  /   New Warranty
   .row
     .col-md-12
       = link_to "Back", "#"
@@ -53,8 +57,11 @@
       .row
         .col-md-12
           = f.submit "Next", class: "btn btn-success"
+          = link_to "Back", "#", onclick: "Warranties.warranty_create('select'); false;"
   - else
-    = render "warranties/select_warranties", warranties: @warranties
+    = link_to "New Warranty", "#", onclick: "Warranties.warranty_create('display_form'); false;"
+    - if @warranties.present?
+      = render "warranties/select_warranties", warranties: @warranties
 
     = link_to "Next", select_for_warranty_warranties_path, method: :post, remote: true, class: "btn btn-success btn-sm pull-right"
 

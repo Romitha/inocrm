@@ -22,6 +22,7 @@ class Ticket < ActiveRecord::Base
 
   has_many :q_and_answers, foreign_key: :ticket_id
   has_many :q_and_as, through: :q_and_answers
+  accepts_nested_attributes_for :q_and_answers, allow_destroy: true
 
   has_many :ticket_accessories, foreign_key: :ticket_id
   has_many :accessories, through: :ticket_accessories

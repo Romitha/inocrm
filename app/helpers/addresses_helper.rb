@@ -25,7 +25,14 @@ module AddressesHelper
   def table_body(body_array)
     content_tag :tbody do
       content_tag :tr do
-        body_array.map{|b| content_tag :td, b}.join.html_safe
+        body_array.map do |b|
+          if b.is_a?(Hash)
+            content_tag :td, b[:content], b.except(:content)
+          else
+            content_tag :td, b
+          end
+
+        end.join.html_safe
       end
     end
   end

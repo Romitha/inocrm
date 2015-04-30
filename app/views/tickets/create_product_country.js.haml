@@ -1,0 +1,6 @@
+- if params[:status_param] == "initiate" or (@new_product_country and @new_product_country.errors.present?)
+  $("#product_load").html("#{j render 'tickets/product_country_form'}");
+
+Organizations.enable_chosen();
+
+Tickets.remove_serial_search();
