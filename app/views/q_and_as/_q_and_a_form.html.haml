@@ -1,17 +1,19 @@
 - ticket = @ticket
 - problem_category = @problem_category
 - ticket_action_id = @ticket_action_id
-%h4 Q and A
+- ticket.problem_category.q_and_as.each do |q_and_a|
+  - ticket.q_and_answers.build problematic_question_id: q_and_a.id
 
-= simple_form_for problem_category, url: q_and_answer_save_q_and_as_path(problem_category_id: problem_category.id), remote: true do |f|
-  = f.simple_fields_for :q_and_as do |q|
-    .strong
-      = q.object.question
-    = q.simple_fields_for :q_and_answers, q.object.q_and_answers.build do |qa|
-      = qa.input :ticket_id, as: :hidden, input_html: {value: ticket.id}
-      = qa.input :problematic_question_id, as: :hidden, input_html: {value: q.object.id}
-      - if q.object.answer_type == "YN"
-        = qa.input :answer, as: :radio_buttons, collection: ["Yes", "No"], include_blank: false
-      - elsif q.object.answer_type == "TX"
+
+%h4 Q and A
+= simple_nested_form_for ticket, url: q_and_answer_save_tickets_path, remote: true do |f|
+  = f.simple_fields_for :q_and_answers do |qa|
+    .col-md-6
+      .strong= qa.object.q_and_a.question
+      = qa.input :problematic_question_id, as: :hidden
+      - if qa.object.q_and_a.answer_type == "YN"
+        = qa.input :answer, as: :radio_buttons, collection: ["Yes", "No"], include_blank: false, wrapper: :for_radio_button
+      - elsif qa.object.q_and_a.answer_type == "TX"
         = qa.input :answer
-  = f.submit
+
+  = f.submit "Next", class: "btn btn-sm btn-success", data: { disable_with: "Please wait..." }

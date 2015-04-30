@@ -18,14 +18,14 @@
             %li= error
 
 = initiate_table table_type: "table-hover" do
-  = table_header ["Serial", "Brand", "Category", "Modal No", "Product No", "Pop Status", "Pop Note"]
-  = table_body [product.serial_no, product.product_brand.name, product.product_category.name, product.model_no, product.product_no, popstatus, popnote]
+  = table_header ["Serial", "Brand", "Category", "Modal No", "Product No", "Sold Country", "Pop Status", "Pop Note"]
+  = table_body [product.serial_no, product.product_brand.name, product.product_category.name, product.model_no, product.product_no, product.product_sold_country.try(:Country), popstatus, popnote]
 
 %hr
 
 #form_frame
   - ticket.ticket_accessories.build
-  = simple_nested_form_for ticket, remote: true do |f|
+  = simple_nested_form_for ticket, remote: true, :authenticity_token => true do |f|
     = f.input :status_id, as: :hidden
     = f.input :ticket_no, as: :hidden
     = f.input :base_currency_id, as: :hidden, input_html: {value: TicketCurrency.find_by(base_currency: true).try(:id)}
@@ -52,7 +52,7 @@
     .row
       .col-md-8
         = f.simple_fields_for :ticket_accessories do |fc|
-          = fc.input :ticket_id, as: :hidden
+          / = fc.input :ticket_id, as: :hidden
           = fc.association :accessory, label_method: :accessory, value_method: :id, include_blank: false, wrapper_html: {class: "col-md-4 padding-left0"}
           = fc.input :note, wrapper_html: {class: "col-md-7"}
           .add_sign
@@ -78,6 +78,6 @@
       = f.input :regional_support_job, label: "Regional", wrapper_html: {class: "col-md-1"}, wrapper: :append
     .row
     .row
-    = f.submit "Next"
+    = f.submit "Next", data: {disable_with: "Please wait..."}
     = link_to "Cancel", new_ticket_path
     = link_to "Back", "#"

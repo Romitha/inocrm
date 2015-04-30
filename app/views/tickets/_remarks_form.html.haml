@@ -1,13 +1,9 @@
 = link_to "", remarks_tickets_path, remote: true, class: "glyphicon glyphicon-refresh"
 #remarks
-  - if @warranty
-    = render "warranties/warranty", warranty: @warranty
-    %hr
-
-  = render "q_and_as/q_and_answer", ticket: ticket
+  / = render "q_and_as/q_and_answer", ticket: ticket
   %hr
 
-  = simple_form_for ticket, url: finalize_ticket_save_ticket_path(ticket), method: :post, remote: true do |f|
+  = simple_form_for ticket, url: finalize_ticket_save_tickets_path, method: :post, remote: true do |f|
     .row
       .col-md-2
         %strong Contact By

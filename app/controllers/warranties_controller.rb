@@ -13,7 +13,7 @@ class WarrantiesController < ApplicationController
   def new
     session[:warranty_id] = nil
     ContactNumber
-    @ticket = Ticket.find(session[:ticket_id])
+    @ticket = Rails.cache.read(:new_ticket)
     @customer = Customer.find(session[:customer_id])
     @warranty = Warranty.new(product_serial_id: session[:product_id])
     if params[:function_param] == "display_form"
@@ -25,39 +25,60 @@ class WarrantiesController < ApplicationController
   end
 
   def create
-    @ticket = Ticket.find(session[:ticket_id])
+    @ticket = Rails.cache.read(:new_ticket)
+    @customer = Customer.find(session[:customer_id])
+    @product = Product.find(session[:product_id])
+    @warranties = @product.warranties
+    ContactNumber
     if params[:warranty_id]
       @warranty = Warranty.find(params[:warranty_id])
     else
       @warranty = Warranty.new warranty_params
       if @warranty.save
-        session[:warranty_id] = @warranty.id
-
-        render "q_and_as/q_and_answer_record"
+        Rails.cache.write(:created_warranty, @warranty)
+        @problem_category = @ticket.problem_category
+        @display_form = false
+        # render "q_and_as/q_and_answer_record"
       else
         @display_form = true
-        @customer = Customer.find(session[:customer_id])
-        render :new
       end
     end
-    @ticket.update_attribute(:warranty_type_id, @warranty.warranty_type.id)
+    @ticket.warranty_type_id = @warranty.warranty_type.id
+    Rails.cache.write(:new_ticket, @ticket)
+    render :new
     # @ticket.warranty_type_id = @warranty.warranty_type_id
   end
 
   def select_for_warranty
     @product = Product.find session[:product_id]
-    @ticket = Ticket.find session[:ticket_id]
+    @ticket = Rails.cache.read(:new_ticket)
 
     if params[:warranty_id]
       @warranty = Warranty.find params[:warranty_id]
       @warranty.update_attribute(:product_serial_id, @product.id)
-      @ticket.update_attribute(:warranty_type_id, @warranty.warranty_type.id)
+      @ticket.warranty_type_id = @warranty.warranty_type.id
       session[:warranty_id] = @warranty.id
     end
+    Rails.cache.write(:new_ticket, @ticket)
     @problem_category = @ticket.problem_category
 
     # render "tickets/remarks"
     render "q_and_as/q_and_answer_record"
+  end
+
+  def destroy
+    @ticket = Rails.cache.read(:new_ticket)
+    @customer = Customer.find(session[:customer_id])
+    @product = Product.find(session[:product_id])
+    @warranties = @product.warranties
+    ContactNumber
+
+    @warranty = Warranty.find(params[:id])
+
+    if @warranty.destroy
+      Rails.cache.delete(:created_warranty)
+      render :new
+    end
   end
 
   private

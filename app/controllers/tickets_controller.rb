@@ -1,6 +1,6 @@
 class TicketsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_ticket, only: [:show, :edit, :update, :destroy, :finalize_ticket_save]
+  before_action :set_ticket, only: [:show, :edit, :update, :destroy]
   before_action :set_organization_for_ticket, only: [:new, :edit, :create_customer]
 
   respond_to :html, :json
@@ -15,6 +15,8 @@ class TicketsController < ApplicationController
   end
 
   def new
+    Rails.cache.delete(:new_ticket)
+    Rails.cache.delete(:ticket_params)
     session[:ticket_id] = nil
     session[:product_category_id] = nil
     session[:product_brand_id] = nil
@@ -36,25 +38,33 @@ class TicketsController < ApplicationController
   end
 
   def create
+    # Rails.cache.write(:ticket_params, ticket_params)
     @new_ticket = Ticket.new ticket_params
-    @ticket = @new_ticket
+    Rails.cache.write(:new_ticket, @new_ticket)
+    @ticket = Rails.cache.read(:new_ticket)
+    @product = Product.find session[:product_id]
+
     Warranty
     respond_to do |format|
 
-      if @new_ticket.save
-        session[:ticket_id] = @new_ticket.id
+      if @new_ticket.valid?
+        # session[:ticket_id] = @new_ticket.id
         session[:ticket_initiated_attributes] = {}
-        @new_ticket.products << Product.find_by_id(session[:product_id])
+        # @new_ticket.products << Product.find_by_id(session[:product_id])
         @notice = "Great! new ticket is initiated."
 
         User
         ContactNumber
+        @existing_customer = @product.tickets.last.try(:customer)
+        Rails.cache.fetch(:existing_customer) do
+          @existing_customer
+        end
+        puts Rails.cache.read(:ticket_params).inspect
         @new_customer = Customer.new
         @new_customer.contact_type_values.build([{contact_type_id: 2}, {contact_type_id: 4}])
         format.js {render :new_customer}
       else
 
-        @product = Product.find session[:product_id]
         format.js {render :find_by_serial}
       end
 
@@ -144,7 +154,6 @@ class TicketsController < ApplicationController
       session[:ticket_initiated_attributes].merge!({})
 
       session[:product_id] = @product.id
-
 
       @ticket = Ticket.new session[:ticket_initiated_attributes]
     else
@@ -240,11 +249,14 @@ class TicketsController < ApplicationController
   def new_customer
     User
     ContactNumber
+    Warranty
+    @existing_customer = Rails.cache.fetch(:existing_customer)
     if params[:function_param]
+      @ticket = Rails.cache.read(:new_ticket)
       @customers = []
       @organizations = []
       @display_select_option = true if params[:function_param]=="create"
-    elsif params[:search_customer]
+    elsif params[:select_customer]
       @customers = Customer.where("name like ?", "%#{params[:search_customer]}%")
       @organizations = Organization.where("name like ?", "%#{params[:search_customer]}%")
     end
@@ -258,11 +270,12 @@ class TicketsController < ApplicationController
   def create_customer
     User
     ContactNumber
-    @ticket = Ticket.find_by_id(session[:ticket_id])
+    @ticket = Rails.cache.read(:new_ticket)
     respond_to do |format|
       if params[:customer_id]
         @new_customer = Customer.find params[:customer_id]
-        @new_customer.tickets << @ticket
+        @ticket.customer_id = @new_customer.id
+        Rails.cache.write(:new_ticket, @ticket)
         session[:customer_id] = @new_customer.id
         @notice = "Great! #{@new_customer.name} is added. You can add new contact person details."
 
@@ -307,7 +320,7 @@ class TicketsController < ApplicationController
       @contact_person_for_customer = params[:contact_person_id].present? ? Customer.find(params[:contact_person_id]) : Customer.new
       @contact_person_attribs = {title_id: @contact_person_for_customer.title_id, name: @contact_person_for_customer.name}
       @c_p_c_t_attribs = @contact_person_for_customer.contact_type_values.map{|c_t_v| {contact_type_id: c_t_v.contact_type_id, value: c_t_v.value}}
-      @ticket = Ticket.find_by_id(session[:ticket_id])
+      @ticket = Rails.cache.read(:new_ticket)
       if params[:contact_person] == "1"
         @build_contact_person = @ticket.build_contact_person1(@contact_person_attribs)
         @contact_person_frame = "#contact_persons_form1"
@@ -351,25 +364,31 @@ class TicketsController < ApplicationController
         @submitted_contact_person = "three"    
       end
     when "assign_contact_person"
-      @ticket = Ticket.find_by_id(session[:ticket_id])
       if params[:contact_person] == "1"
         @build_contact_person = ContactPerson1.find(params[:contact_person_id])
-        @ticket.update_attribute(:contact_person1_id, @build_contact_person.id)
+        @ticket = Rails.cache.read(:new_ticket)
+        @ticket.contact_person1_id = @build_contact_person.id
+        Rails.cache.write(:new_ticket, @ticket)
         @contact_person_frame = "#contact_persons_form1"
         @submitted_contact_person = "one"
 
       elsif params[:contact_person] == "2"
         @build_contact_person = ContactPerson2.find(params[:contact_person_id])
-        @ticket.update_attribute(:contact_person2_id, @build_contact_person.id)
+        @ticket = Rails.cache.read(:new_ticket)
+        @ticket.contact_person2_id = @build_contact_person.id
+        Rails.cache.write(:new_ticket, @ticket)
         @contact_person_frame = "#contact_persons_form2"
         @submitted_contact_person = "two"
 
       elsif params[:contact_person] == "3"
         @build_contact_person = ReportPerson.find(params[:contact_person_id])
-        @ticket.update_attribute(:reporter_id, @build_contact_person.id)
+        @ticket = Rails.cache.read(:new_ticket)
+        @ticket.reporter_id = @build_contact_person.id
+        Rails.cache.write(:new_ticket, @ticket)
         @contact_person_frame = "#report_persons_form"
         @submitted_contact_person = "three"    
       end
+      puts @ticket.inspect
     else
       if params[:submit_contact_person1]
         @submitted_contact_person = 1
@@ -391,8 +410,9 @@ class TicketsController < ApplicationController
   end
 
   def create_contact_person_record
-    @ticket = Ticket.find(session[:ticket_id])
+    @ticket = Rails.cache.read(:new_ticket)
     ContactNumber
+    Warranty
 
     if params[:one]
       if params[:persisted]
@@ -426,6 +446,7 @@ class TicketsController < ApplicationController
       @ticket.report_person = @new_contact_person
       @submitted_contact_person = "three"      
     end
+    Rails.cache.write(:new_ticket, @ticket)
     respond_to do |format|
       if @new_contact_person.save
         @ticket.save
@@ -440,7 +461,7 @@ class TicketsController < ApplicationController
     ContactNumber
     respond_to do |format|
       @new_customer = Customer.find(session[:customer_id])
-      @ticket = @new_customer.tickets.find(session[:ticket_id])
+      @ticket = Rails.cache.read(:new_ticket)
       format.js {render :create_contact_persons}
     end
   end
@@ -484,6 +505,21 @@ class TicketsController < ApplicationController
     end
   end
 
+  def create_product_country
+    @new_product = Product.new
+    if params[:status_param] == "initiate"
+      @new_product_country = ProductSoldCountry.new
+    elsif params[:status_param] == "create"
+      @new_product_country = ProductSoldCountry.new product_country_params
+      @new_product_country.save
+      @ticket = Ticket.new session[:ticket_initiated_attributes]
+      render :new_product
+    elsif params[:status_param] == "back"
+      @ticket = Ticket.new session[:ticket_initiated_attributes]
+      render :new_product
+    end
+  end
+
   def create_accessory
     Product
     Ticket
@@ -503,26 +539,56 @@ class TicketsController < ApplicationController
 
   def remarks
     QAndA
-    @ticket = Ticket.find(session[:ticket_id])
-    @warranty = Warranty.find_by_id(session[:warranty_id])
+    @ticket = Rails.cache.read(:new_ticket)
     @product = Product.find session[:product_id]
   end
 
   def finalize_ticket_save
+    @ticket = Rails.cache.read(:new_ticket)
+    @ticket_params = Rails.cache.read(:ticket_params)
     @ticket.status_id = TicketStatus.find_by_code("CLS").id if params[:first_resolution]
-    if @ticket.update ticket_params
-      render plain: "ok"
-    else
-      @warranty = Warranty.find_by_id(session[:warranty_id])
-      @product = Product.find session[:product_id]
-      render :remarks
+    QAndA
+    @ticket_params.merge! ticket_params
+    if @ticket.save
+      if @ticket.update @ticket_params
+        Rails.cache.delete(:new_ticket)
+        Rails.cache.delete(:ticket_params)
+        session[:ticket_id] = nil
+        session[:product_category_id] = nil
+        session[:product_brand_id] = nil
+        session[:product_id] = nil
+        session[:customer_id] = nil
+        session[:serial_no] = nil
+        session[:warranty_id] = nil
+        session[:ticket_initiated_attributes] = {}
+
+        render plain: @ticket.inspect
+      else
+        @product = Product.find session[:product_id]
+        render :remarks
+      end
     end
+    # render plain: @ticket_params.inspect
   end
 
   def product_update
     @product = Product.find(params[:product_id])
     @product.update(product_params)
     respond_with(@product)
+  end
+
+  def q_and_answer_save
+    @ticket = Rails.cache.read(:new_ticket)
+    QAndA
+    # @ticket_params = Rails.cache.read(:ticket_params)
+    # @ticket_params.merge!(ticket_params)
+    Rails.cache.write(:ticket_params, ticket_params)
+    # if @problem_category.update(problem_category_params)
+    # else
+    #   render :q_and_answer_record
+    # end
+    render :remarks
+    # render plain: Rails.cache.read(:ticket_params).inspect
   end
 
   private
@@ -535,7 +601,7 @@ class TicketsController < ApplicationController
     end
 
     def ticket_params
-      params.require(:ticket).permit(:ticket_no, :serial_no, :base_currency_id, :regional_support_job, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy])
+      params.require(:ticket).permit(:ticket_no, :serial_no, :base_currency_id, :regional_support_job, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :id])
     end
 
     def product_brand_params
@@ -543,7 +609,7 @@ class TicketsController < ApplicationController
     end
 
     def product_params
-      params.require(:product).permit(:serial_no, :product_brand_id, :product_category_id, :model_no, :product_no, :pop_status_id, :coparate_product, :pop_note)
+      params.require(:product).permit(:serial_no, :product_brand_id, :sold_country_id, :product_category_id, :model_no, :product_no, :pop_status_id, :coparate_product, :pop_note)
     end
 
     def category_params
@@ -576,5 +642,9 @@ class TicketsController < ApplicationController
 
     def accessory_params
       params.require(:accessory).permit(:accessory)
+    end
+
+    def product_country_params
+      params.require(:product_sold_country).permit(:code, :Country)
     end
 end

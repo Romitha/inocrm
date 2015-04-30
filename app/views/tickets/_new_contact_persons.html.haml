@@ -1,36 +1,25 @@
 - customer = @new_customer
-.table-responsive.col-md-6.table-borderless
-  %h4 Customer and problem
-  %table.table
-    %tbody
-      %tr
-        %td.text-right
-          %strong Customer Name:
-        %td #{customer.mst_title.try(:name)} #{customer.name}
-        %td.text-right
-          %strong Problem Category:
-        %td=ticket.problem_category.try(:name)
-      %tr
-        %td.text-right
-          %strong Customer Address:
-        %td
-          = customer.address1
-          %br/
-          = customer.address2
-          %br/
-          = customer.address3
-          %br/
-          = customer.address4
-        %td.text-right
-          %strong Problem Description:
-        %td=ticket.problem_description
-      %tr
-        %td.text-right
-          %strong Costomer Contacts
-        %td
-          - customer.contact_type_values.each do |ct|
-            #{ct.contact_type.try(:name)}: #{ct.value}
-            %br/
+- customer_contact_types = capture do
+  - customer.contact_type_values.each do |contact_type_value|
+    %strong= contact_type_value.contact_type.try(:name)
+    = contact_type_value.value
+    %br/
+
+= initiate_table table_type: "table-hover" do
+  = table_header ["Priority", "Problem Category", "Problem description", "Warranty", "Ticket type", "Customer chargeable", "Informed Method"]
+  = table_body [INOCRM_CONFIG["priority"].key(ticket.priority.to_i), ticket.problem_category.name, ticket.problem_description, ticket.warranty_type.name, ticket.ticket_type.name, ticket.cus_chargeable, ticket.inform_method.name]
+
+= label_tag "Select Customer" do
+  = radio_button_tag "customer_select", "select", false, class: "radio_for_customer_select", onchange: "Tickets.customer_select('select'); false;"
+  Select Customer
+= label_tag "New Customer" do
+  = radio_button_tag "customer_select", "create", false, class: "radio_for_customer_select", onchange: "Tickets.customer_select('create'); false;"
+  New Customer
+
+= initiate_table table_type: "table-hover" do
+  = table_header ["Name", "Address", "Contacts"]
+  = table_body ["#{customer.mst_title.try(:name)} #{customer.name}", "#{customer.address1}, #{customer.address2}, #{customer.address3} #{customer.address4}, #{customer.district.try(:name)}", customer_contact_types]
+
 %hr
 .row
   .col-md-12
@@ -99,5 +88,9 @@
         = link_to "Next", new_warranty_path, remote: true, class: "btn btn-sm btn-success pull-right"
 
 #contact_person.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "contact_person", "aria-hidden" => true}
+  .modal-dialog
+    .modal-content
+
+#customer_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "customer_modal", "aria-hidden" => true}
   .modal-dialog
     .modal-content

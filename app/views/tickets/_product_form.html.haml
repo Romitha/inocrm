@@ -28,7 +28,12 @@
       / = f.input :corporate_product, as: :radio_buttons, wrapper_html: {class:"col-md-3"}
     .row
       = f.association :product_pop_status, collection: ProductPopStatus.first(3), include_blank: false, wrapper_html: {class:"col-md-3"}
-      = f.input :pop_note, wrapper_html: {class:"col-md-9"}
+      .col-md-3
+        = f.association :product_sold_country, wrapper_html: {style: "width: 93%; float: left;"}, label_method: :Country, value_method: :id
+        .add_sign
+          = link_to create_product_country_tickets_path(status_param: "initiate"), method: :post, remote: true, title: "Country" do
+            %span.glyphicon.glyphicon-plus-sign
+      = f.input :pop_note, wrapper_html: {class:"col-md-6"}
     .row
       .col-md-12
         = f.submit "Next", name: "next_to_customer"
