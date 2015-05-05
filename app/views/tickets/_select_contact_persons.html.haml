@@ -23,6 +23,8 @@
     #customer.tab-pane.active{:role => "tabpanel"}
       #contact_persons
         .row
+          = paginate customers, remote: true, method: :get if customers.present?
+
           .table-responsive.col-md-8.table-stiped.table
             %table.table
               %thead
@@ -38,7 +40,7 @@
                   %th
                     Function
               %tbody
-                - customers.last(3).each do |customer|
+                - customers.each do |customer|
                   %tr
                     %td
                       #{customer.mst_title.try(:title)} #{customer.name}
