@@ -141,8 +141,8 @@ window.Tickets =
   assign_contact_person: (id, contact_person, function_param)->
     $.post "/tickets/create_contact_persons", {contact_person_id: id, contact_person: contact_person, data_param: function_param}
 
-  customer_select: (function_param)->
-    $.get "/tickets/new_customer", {function_param: function_param}
+  customer_select: (function_param, customer_id)->
+    $.get "/tickets/new_customer", {function_param: function_param, customer_id: customer_id}
 
   assign_customer: (customer_id, organization_id, function_param)->
     y = confirm("Are you sure?")
