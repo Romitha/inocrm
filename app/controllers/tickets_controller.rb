@@ -50,16 +50,15 @@ class TicketsController < ApplicationController
       if @new_ticket.valid?
         # session[:ticket_id] = @new_ticket.id
         session[:ticket_initiated_attributes] = {}
-        # @new_ticket.products << Product.find_by_id(session[:product_id])
+        @new_ticket.products << Product.find_by_id(session[:product_id])
         @notice = "Great! new ticket is initiated."
-
+        Rails.cache.write(:new_ticket, @new_ticket)
         User
         ContactNumber
         @existing_customer = @product.tickets.last.try(:customer)
         Rails.cache.fetch(:existing_customer) do
           @existing_customer
         end
-        puts Rails.cache.read(:ticket_params).inspect
         @new_customer = Customer.new
         @new_customer.contact_type_values.build([{contact_type_id: 2}, {contact_type_id: 4}])
         format.js {render :new_customer}
@@ -257,11 +256,19 @@ class TicketsController < ApplicationController
       @organizations = []
       @display_select_option = true if params[:function_param]=="create"
     elsif params[:select_customer]
-      @customers = Customer.where("name like ?", "%#{params[:search_customer]}%")
-      @organizations = Organization.where("name like ?", "%#{params[:search_customer]}%")
+      @customers = Kaminari.paginate_array(Customer.where("name like ?", "%#{params[:search_customer]}%")).page(params[:page]).per(INOCRM_CONFIG["pagination"]["customer_per_page"])
+      @organizations = Kaminari.paginate_array(Organization.where("name like ?", "%#{params[:search_customer]}%")).page(params[:page]).per(INOCRM_CONFIG["pagination"]["organization_per_page"])
     end
-    @new_customer = Customer.new
-    @new_customer.contact_type_values.build([{contact_type_id: 2}, {contact_type_id: 4}])
+    if params[:customer_id].present?
+      existed_customer = Customer.find params[:customer_id]
+      existed_customer_attribs = existed_customer.contact_type_values.map{|c| {contact_type_id: c.contact_type_id, value: c.value}}
+      @new_customer = Customer.new existed_customer.attributes.except("id")
+      # @new_customer.contact_type_values.build([{contact_type_id: 2}, {contact_type_id: 4}])
+      @new_customer.contact_type_values.build existed_customer_attribs
+    else
+      @new_customer = Customer.new
+      @new_customer.contact_type_values.build([{contact_type_id: 2}, {contact_type_id: 4}])
+    end
     respond_to do |format|
       format.js
     end
@@ -393,18 +400,18 @@ class TicketsController < ApplicationController
       if params[:submit_contact_person1]
         @submitted_contact_person = 1
         @submit_contact_person = "submit_contact_person1"
-        @contact_persons = params[:search_contact_person].present? ? ContactPerson1.where("name like ?", "%#{params[:search_contact_person]}%") : []
+        @contact_persons = params[:search_contact_person].present? ? Kaminari.paginate_array(ContactPerson1.where("name like ?", "%#{params[:search_contact_person]}%")).page(params[:page]).per(3) : []
 
       elsif params[:submit_contact_person2]
         @submitted_contact_person = 2
         @submit_contact_person = "submit_contact_person2"
-        @contact_persons = params[:search_contact_person].present? ? ContactPerson2.where("name like ?", "%#{params[:search_contact_person]}%") : []
+        @contact_persons = params[:search_contact_person].present? ? Kaminari.paginate_array(ContactPerson2.where("name like ?", "%#{params[:search_contact_person]}%")).page(params[:page]).per(3) : []
       elsif params[:submit_report_person]
         @submitted_contact_person = 3
         @submit_contact_person = "submit_report_person"
-        @contact_persons = params[:search_contact_person].present? ? ReportPerson.where("name like ?", "%#{params[:search_contact_person]}%") : []
+        @contact_persons = params[:search_contact_person].present? ? Kaminari.paginate_array(ReportPerson.where("name like ?", "%#{params[:search_contact_person]}%")).page(params[:page]).per(3) : []
       end
-      @customers = params[:search_contact_person].present? ? Customer.where("name like ?", "%#{params[:search_contact_person]}%") : []
+      @customers = params[:search_contact_person].present? ? Kaminari.paginate_array(Customer.where("name like ?", "%#{params[:search_contact_person]}%")).page(params[:page]).per(3) : []
     end
     render :select_contact_person
   end
@@ -553,6 +560,7 @@ class TicketsController < ApplicationController
       if @ticket.update @ticket_params
         Rails.cache.delete(:new_ticket)
         Rails.cache.delete(:ticket_params)
+        Rails.cache.delete(:created_warranty)
         session[:ticket_id] = nil
         session[:product_category_id] = nil
         session[:product_brand_id] = nil
@@ -580,8 +588,6 @@ class TicketsController < ApplicationController
   def q_and_answer_save
     @ticket = Rails.cache.read(:new_ticket)
     QAndA
-    # @ticket_params = Rails.cache.read(:ticket_params)
-    # @ticket_params.merge!(ticket_params)
     Rails.cache.write(:ticket_params, ticket_params)
     # if @problem_category.update(problem_category_params)
     # else
