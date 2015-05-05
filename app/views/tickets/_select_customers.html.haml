@@ -21,6 +21,7 @@
     #customer.tab-pane.active{:role => "tabpanel"}
       #contact_persons
         .row
+          = paginate customers, remote: true, method: :get if customers.present?
           .table-responsive.col-md-8.table-stiped.table
             %table.table
               %thead
@@ -38,7 +39,7 @@
                   %th
                     Function
               %tbody
-                - customers.last(3).each do |customer|
+                - customers.each do |customer|
                   %tr
                     %td
                       #{customer.mst_title.try(:title)} #{customer.name}
@@ -64,6 +65,7 @@
                       = link_to customer.organization.name, organization_path(customer.organization), target: "_blank" if customer.organization
                     %td
                       = link_to "select", "#", onclick: "Tickets.assign_customer('#{customer.id}', '', 'select'); false;"
+                      = link_to "edit", "#", onclick: "Tickets.customer_select('create', '#{customer.id}'); false;; false;"
 
     #organization.tab-pane{:role => "tabpanel"}
       .row
