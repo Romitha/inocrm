@@ -41,8 +41,13 @@ class TicketsController < ApplicationController
     # Rails.cache.write(:ticket_params, ticket_params)
     @new_ticket = Ticket.new ticket_params
     Rails.cache.write(:new_ticket, @new_ticket)
+
     @ticket = Rails.cache.read(:new_ticket)
+
     @product = Product.find session[:product_id]
+    @product_brand = @product.product_brand
+    @product_category = @product.product_category
+    @new_ticket.sla_id = (@product_category.sla_id || @product_brand.sla_id)
 
     Warranty
     respond_to do |format|
@@ -50,7 +55,9 @@ class TicketsController < ApplicationController
       if @new_ticket.valid?
         # session[:ticket_id] = @new_ticket.id
         session[:ticket_initiated_attributes] = {}
-        @new_ticket.products << Product.find_by_id(session[:product_id])
+        @new_ticket.products << @product
+
+
         @notice = "Great! new ticket is initiated."
         Rails.cache.write(:new_ticket, @new_ticket)
         User
@@ -71,13 +78,16 @@ class TicketsController < ApplicationController
   end
 
   def update
-    t_params = ticket_params
-    t_params["due_date_time"] = DateTime.strptime(t_params["due_date_time"], '%m/%d/%Y %I:%M %p') if t_params["due_date_time"].present?
-    @ticket.update(t_params)
+    # t_params = ticket_params
+    # t_params["due_date_time"] = DateTime.strptime(t_params["due_date_time"], '%m/%d/%Y %I:%M %p') if t_params["due_date_time"].present?
+    # @ticket.update(t_params)
     # respond_with(@ticket)
+    @ticket = Rails.cache.read(:new_ticket)
+    @ticket.attributes.merge! ticket_params
     respond_to do |format|
-      if @ticket.update(t_params)
+      if @ticket.valid?
         format.html {redirect_to @ticket, notice: "Successfully updated."}
+        Rails.cache.write(:new_ticket, @ticket)
         format.json {render json: @ticket}
       else
         format.html {redirect_to @ticket, error: "Unable to update ticket. Please validate your inputs."}
@@ -150,7 +160,7 @@ class TicketsController < ApplicationController
     if @product.persisted?
       @product_brand = @product.product_brand
       @product_category = @product.product_category
-      session[:ticket_initiated_attributes].merge!({})
+      session[:ticket_initiated_attributes].merge!({sla_id: (@product_category.sla_id || @product_brand.sla_id)})
 
       session[:product_id] = @product.id
 
@@ -570,7 +580,7 @@ class TicketsController < ApplicationController
         session[:warranty_id] = nil
         session[:ticket_initiated_attributes] = {}
 
-        render plain: @ticket.inspect
+        render js: "alert('Thank you. ticket is successfully registered.');"
       else
         @product = Product.find session[:product_id]
         render :remarks
@@ -587,14 +597,14 @@ class TicketsController < ApplicationController
 
   def q_and_answer_save
     @ticket = Rails.cache.read(:new_ticket)
+    @ticket.attributes = ticket_params
     QAndA
-    Rails.cache.write(:ticket_params, ticket_params)
-    # if @problem_category.update(problem_category_params)
-    # else
-    #   render :q_and_answer_record
-    # end
-    render :remarks
-    # render plain: Rails.cache.read(:ticket_params).inspect
+    if @ticket.valid?
+      Rails.cache.write(:ticket_params, ticket_params)
+      render :remarks
+    else
+      render js: "alert('Please complete required question');"
+    end
   end
 
   private
@@ -607,7 +617,7 @@ class TicketsController < ApplicationController
     end
 
     def ticket_params
-      params.require(:ticket).permit(:ticket_no, :serial_no, :base_currency_id, :regional_support_job, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :id])
+      params.require(:ticket).permit(:ticket_no, :sla_id, :serial_no, :base_currency_id, :regional_support_job, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :id])
     end
 
     def product_brand_params
@@ -619,7 +629,7 @@ class TicketsController < ApplicationController
     end
 
     def category_params
-      params.require(:product_category).permit(:name, :product_brand_id, :sla_time)
+      params.require(:product_category).permit(:name, :product_brand_id, :sla_id)
     end
 
     def customer_params

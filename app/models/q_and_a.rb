@@ -16,4 +16,6 @@ class QAndAnswer < ActiveRecord::Base
 
   belongs_to :q_and_a, foreign_key: :problematic_question_id
   belongs_to :ticket
+
+  validates_presence_of :answer, if: Proc.new{|q_and_answer| q_and_answer.q_and_a.try(:compulsory) == true}
 end
