@@ -12,7 +12,8 @@
     .ticket_logged_by
       Ticket logged by: #{current_user.email}
     .ticket_sla_time
-      SLA Time: #{ticket.sla_time}
+      SLA Time:
+      %span.sla_time #{ticket.sla_time}
 .serial_search
   = form_tag find_by_serial_tickets_path, method: :post, remote: true do
     = label_tag "Search By Serial"
