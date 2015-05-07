@@ -597,6 +597,21 @@ class TicketsController < ApplicationController
     respond_with(@product)
   end
 
+  def ticket_update
+    @ticket = Rails.cache.read(:new_ticket)
+    @ticket.attributes.merge! ticket_params
+    respond_to do |format|
+      if @ticket.valid?
+        format.html {redirect_to @ticket, notice: "Successfully updated."}
+        Rails.cache.write(:new_ticket, @ticket)
+        format.json {render json: @ticket}
+      else
+        format.html {redirect_to @ticket, error: "Unable to update ticket. Please validate your inputs."}
+        format.json {render json: @ticket.errors}
+      end
+    end
+  end
+
   def q_and_answer_save
     @ticket = Rails.cache.read(:new_ticket)
     @ticket.attributes = ticket_params
