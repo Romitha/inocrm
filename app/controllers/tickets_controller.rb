@@ -291,6 +291,7 @@ class TicketsController < ApplicationController
   def create_customer
     User
     ContactNumber
+    Warranty
     @ticket = Rails.cache.read(:new_ticket)
     respond_to do |format|
       if params[:customer_id]
@@ -321,6 +322,7 @@ class TicketsController < ApplicationController
   def create_contact_persons
     User
     ContactNumber
+    Warranty
     case params[:data_param]
     when "select_contact_person1"
       @contact_persons = []
@@ -355,7 +357,7 @@ class TicketsController < ApplicationController
         @contact_person_frame = "#report_persons_form"
         @submitted_contact_person = "three"
       end
-      @build_contact_person.contact_person_contact_types.build @c_p_c_t_attribs
+      @contact_person_for_customer.new_record? ? @build_contact_person.contact_person_contact_types.build([{contact_type_id: 2}, {contact_type_id: 4}]) : @build_contact_person.contact_person_contact_types.build(@c_p_c_t_attribs)
 
       @header = "Contact Person"
     when "edit_create_contact_person"
@@ -596,18 +598,21 @@ class TicketsController < ApplicationController
   def product_update
     @product = Product.find(params[:product_id])
     formatted_product_params = product_params
-    formatted_product_params["pop_note"] = "#{formatted_product_params['pop_note']} <span class='pop_note_e_time'>(edited on #{Time.now.strftime('%d %b, %Y at %H:%M:%S')})</span> by <span class='pop_note_created_by'>(#{current_user.email})</span><br/>#{@product.pop_note}" if formatted_product_params["pop_note"].present?
+    formatted_product_params["pop_note"] = "#{formatted_product_params['pop_note']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@product.pop_note}" if formatted_product_params["pop_note"].present?
     @product.update(formatted_product_params)
     respond_with(@product)
   end
 
   def ticket_update
     @ticket = Rails.cache.read(:new_ticket)
-    @ticket.attributes.merge! ticket_params
+    t_attributes = @ticket.attributes
+    t_attributes.merge! ticket_params
+    @ticket.attributes = t_attributes
     respond_to do |format|
       if @ticket.valid?
         format.html {redirect_to @ticket, notice: "Successfully updated."}
         Rails.cache.write(:new_ticket, @ticket)
+        puts Rails.cache.read(:new_ticket).inspect
         format.json {render json: @ticket}
       else
         format.html {redirect_to @ticket, error: "Unable to update ticket. Please validate your inputs."}
@@ -624,7 +629,7 @@ class TicketsController < ApplicationController
       Rails.cache.write(:ticket_params, ticket_params)
       render :remarks
     else
-      render js: "alert('Please complete required question');"
+      render js: "alert('Please complete required questions');"
     end
   end
 

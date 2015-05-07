@@ -80,6 +80,5 @@
       = f.input :regional_support_job, label: "Regional", wrapper_html: {class: "col-md-1"}, wrapper: :append
     .row
     .row
-    = f.submit "Next", data: {disable_with: "Please wait..."}
+    = f.submit "Next", data: {disable_with: "Please wait..."}, class: "btn btn-success"
     = link_to "Cancel", new_ticket_path
-    = link_to "Back", "#"
