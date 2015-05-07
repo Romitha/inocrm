@@ -188,3 +188,6 @@ window.Tickets =
 
   product_update: ->
     $('.inline_edit').editable()
+
+  disable_inline: ->
+    $('.disable').editable("disable")

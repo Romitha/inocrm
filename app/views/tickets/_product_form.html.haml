@@ -21,7 +21,7 @@
         .add_sign
           = link_to new_product_category_tickets_path, remote: true, title: "New Category" do
             %span.glyphicon.glyphicon-plus-sign
-      = f.input :serial_no, wrapper_html: {class:"col-md-2"}
+      = f.input :serial_no, wrapper_html: {class:"col-md-2"}, :readonly=>true
       = f.input :model_no, wrapper_html: {class:"col-md-2"}
       = f.input :product_no, wrapper_html: {class:"col-md-2"}
     .row  

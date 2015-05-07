@@ -2,9 +2,31 @@
 .row.refresh
   = link_to "", new_warranty_path, remote: true, class: "glyphicon glyphicon-refresh"
 
+- priority = link_to "#", class: "inline_edit", data: {type: "select", source: INOCRM_CONFIG["priority"].collect{ |key,value| {value: value, text: key} }, resource: "ticket", name: "priority", url: ticket_update_tickets_path, "original-title" => "Update priority"} do
+  = INOCRM_CONFIG["priority"].key(ticket.priority.to_i)
+
+- problemcategory = link_to "#", class: "inline_edit disable", data: {type: "select", source: ProblemCategory.all.collect{|warranty| {value: warranty.id, text: warranty.name}}, resource: "ticket", name: "problem_category_id", url: ticket_update_tickets_path, "original-title" => "Update problem category"} do
+  = ticket.problem_category.name
+
+- problemdescription = link_to "#", class: "inline_edit", data: {type: "text", resource: "ticket", name: "problem_description", url: ticket_update_tickets_path, "original-title" => "Update problem description"} do
+  = ticket.problem_description
+
+- warranty = link_to "#", class: "inline_edit", data: {type: "select", source: WarrantyType.all.collect{|warranty| {value: warranty.id, text: warranty.name}}, resource: "ticket", name: "warranty_type_id", url: ticket_update_tickets_path, "original-title" => "Update Warranty type"} do
+  = ticket.warranty_type.name
+
+- tickettype = link_to "#", class: "inline_edit", data: {type: "select", source: TicketType.all.collect{|warranty| {value: warranty.id, text: warranty.name}}, resource: "ticket", name: "ticket_type_id", url: ticket_update_tickets_path, "original-title" => "Update ticket type"} do
+  = ticket.ticket_type.name
+
+- customerchargeable = link_to "#", class: "inline_edit", data: {type: "select", source: [{value: 1, text: "yes"},{value: 0, text: "no"}], resource: "ticket", name: "cus_chargeable", url: ticket_update_tickets_path, "original-title" => "Update cus chargeable"} do
+  = ticket.cus_chargeable
+
+- informmethod = link_to "#", class: "inline_edit", data: {type: "select", source: InformMethod.all.collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "informed_method_id", url: ticket_update_tickets_path, "original-title" => "Update Informed method name"} do
+  = ticket.inform_method.name
+  
+
 = initiate_table table_type: "table-hover" do
   = table_header ["Priority", "Problem Category", "Problem description", "Warranty", "Ticket type", "Customer chargeable", "Informed Method"]
-  = table_body [INOCRM_CONFIG["priority"].key(ticket.priority.to_i), ticket.problem_category.name, ticket.problem_description, ticket.warranty_type.name, ticket.ticket_type.name, ticket.cus_chargeable, ticket.inform_method.name]
+  = table_body [priority, problemcategory, problemdescription, warranty, tickettype, customerchargeable, informmethod]
 .row
   = render "users/customer_and_contact_person", customer: customer, ticket: ticket
 %hr

@@ -151,29 +151,33 @@ class TicketsController < ApplicationController
 
   def find_by_serial
     serial_no = params[:serial_search]
-    session[:product_id] = nil
-    session[:customer_id] = nil
-    session[:serial_no] = serial_no
-    @product = Product.find_by_serial_no(serial_no) || Product.new(serial_no: serial_no, corporate_product: false)
-    Warranty
-    @base_currency = Currency.find_by_base_currency(true)
-    if @product.persisted?
-      @product_brand = @product.product_brand
-      @product_category = @product.product_category
-      session[:ticket_initiated_attributes].merge!({sla_id: (@product_category.sla_id || @product_brand.sla_id)})
-
-      session[:product_id] = @product.id
-
-      @ticket = Ticket.new session[:ticket_initiated_attributes]
+    if serial_no.blank?
+      render js: "alert('Please enter any serial no');"
     else
-      @product_brands = ProductBrand.all
-      @product_categories = ProductCategory.all
+      session[:product_id] = nil
+      session[:customer_id] = nil
+      session[:serial_no] = serial_no
+      @product = Product.find_by_serial_no(serial_no) || Product.new(serial_no: serial_no, corporate_product: false)
+      Warranty
+      @base_currency = Currency.find_by_base_currency(true)
+      if @product.persisted?
+        @product_brand = @product.product_brand
+        @product_category = @product.product_category
+        session[:ticket_initiated_attributes].merge!({sla_id: (@product_category.sla_id || @product_brand.sla_id)})
 
-      @new_product_brand = ProductBrand.new currency_id: @base_currency.try(:id)
-      @new_product_category = ProductCategory.new
-    end
-    respond_to do |format|
-      format.js
+        session[:product_id] = @product.id
+
+        @ticket = Ticket.new session[:ticket_initiated_attributes]
+      else
+        @product_brands = ProductBrand.all
+        @product_categories = ProductCategory.all
+
+        @new_product_brand = ProductBrand.new currency_id: @base_currency.try(:id)
+        @new_product_category = ProductCategory.new
+      end
+      respond_to do |format|
+        format.js
+      end
     end
   end
 
