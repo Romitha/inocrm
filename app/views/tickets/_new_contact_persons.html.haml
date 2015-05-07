@@ -44,9 +44,7 @@
   = table_body ["#{customer.mst_title.try(:name)} #{customer.name}", "#{customer.address1}, #{customer.address2}, #{customer.address3} #{customer.address4}, #{customer.district.try(:name)}", customer_contact_types]
 
 %hr
-.row
-  .col-md-12
-    = link_to "Back", "#"
+
 = link_to "", contact_persons_tickets_path, remote: true, class: "glyphicon glyphicon-refresh", id: "create_contact_person"
 #contact_persons
   .row
@@ -109,6 +107,9 @@
     .row
       .col-md-4.pull-right
         = link_to "Next", new_warranty_path, remote: true, class: "btn btn-sm btn-success pull-right"
+.row
+  .col-md-12
+    = link_to "Back", "#"
 
 #contact_person.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "contact_person", "aria-hidden" => true}
   .modal-dialog
