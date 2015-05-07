@@ -591,7 +591,9 @@ class TicketsController < ApplicationController
 
   def product_update
     @product = Product.find(params[:product_id])
-    @product.update(product_params)
+    formatted_product_params = product_params
+    formatted_product_params["pop_note"] = "#{formatted_product_params['pop_note']} <span class='pop_note_e_time'>(edited on #{Time.now.strftime('%d %b, %Y at %H:%M:%S')})</span> by <span class='pop_note_created_by'>(#{current_user.email})</span><br/>#{@product.pop_note}" if formatted_product_params["pop_note"].present?
+    @product.update(formatted_product_params)
     respond_with(@product)
   end
 
