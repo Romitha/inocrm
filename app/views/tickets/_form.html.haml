@@ -1,15 +1,11 @@
 - ticket = @ticket
-- popnote = link_to "#", class: "inline_edit", data: {type: "text", resource: "product", name: "pop_note", url: product_update_tickets_path(product_id: product.id), "original-title" => "Update pop note", value: ""} do
+- popnote = link_to "#", class: "inline_edit", data: {type: "textarea", resource: "product", name: "pop_note", url: product_update_tickets_path(product_id: product.id), "original-title" => "Update pop note", value: ""} do
   = simple_format product.pop_note
 
 - popstatus = link_to "#", class: "inline_edit", data: {type: "select", source: ProductPopStatus.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "product", name: "pop_status_id", url: product_update_tickets_path(product_id: product.id), "original-title" => "Update pop_status"} do
   = product.product_pop_status.name
 
-- productno = link_to "#", class: "inline_edit", data: {type: "text", resource: "product", name: "product_no", url: product_update_tickets_path(product_id: product.id), "original-title" => "Update product no"} do
-  = product.product_no
 
-- modelno = link_to "#", class: "inline_edit", data: {type: "text", resource: "product", name: "model_no", url: product_update_tickets_path(product_id: product.id), "original-title" => "Update model no"} do
-  = product.model_no
 
 .row
   .col-md-12
@@ -25,7 +21,7 @@
 
 = initiate_table table_type: "table-hover" do
   = table_header ["Serial", "Brand", "Category", "Modal No", "Product No", "Sold Country", "Pop Status", "Pop Note"]
-  = table_body [product.serial_no, product.product_brand.name, product.product_category.name, modelno, productno, product.product_sold_country.try(:Country), popstatus, popnote]
+  = table_body [product.serial_no, product.product_brand.name, product.product_category.name, product.model_no, product.product_no, product.product_sold_country.try(:Country), popstatus, popnote]
 
 %hr
 
