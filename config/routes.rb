@@ -95,6 +95,7 @@ Rails.application.routes.draw do
       post "create_accessory"
 
       put "product_update"
+      put "ticket_update"
       post "create_product_country"
       post "finalize_ticket_save"
 
