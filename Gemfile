@@ -1,8 +1,10 @@
 source 'https://rubygems.org'
 
-ruby "2.1.2"
+# ruby "2.1.2"
+ruby "2.2.0"
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '4.1.2'
+# gem 'rails', '4.1.2'
+gem 'rails', '4.2.1'
 # Use sqlite3 as the database for Active Record
 # gem 'sqlite3'
 # use postgresql for database active records
@@ -45,7 +47,7 @@ gem 'rmagick' # sudo apt-get install libmagickwand-dev and imagemagick if ubuntu
 
 gem "therubyracer"
 gem "less-rails" #Sprockets (what Rails 3.1 uses for its asset pipeline) supports LESS
-gem 'twitter-bootstrap-rails', :git => 'https://github.com/seyhunak/twitter-bootstrap-rails.git', branch: "bootstrap3"
+gem 'twitter-bootstrap-rails'#, :git => 'https://github.com/seyhunak/twitter-bootstrap-rails.git', branch: "bootstrap3"
 
 gem "rails-erd"
 
@@ -73,6 +75,10 @@ gem 'bootstrap3-datetimepicker-rails', '>= 3.1.3'
 gem 'bootstrap-wysihtml5-rails'
 
 gem 'dalli'
+
+# upgraded version
+gem 'web-console', group: :development
+gem 'responders'
 
 # gem "handlebars_assets"
 # Use ActiveModel has_secure_password

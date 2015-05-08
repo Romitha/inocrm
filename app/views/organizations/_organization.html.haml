@@ -29,7 +29,7 @@
             - if can? :edit, organization
               |
               = link_to edit_organization_path(organization), class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Edit #{organization.name}" do
-                %span= glyph(:pencil)
+                = glyph(:pencil, {:tag => :span})
 
     %blockquote.font1
       = organization.short_name
