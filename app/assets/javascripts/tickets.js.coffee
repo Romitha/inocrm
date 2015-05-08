@@ -4,7 +4,22 @@ window.Tickets =
     @ticket_attachment_upload()
     @prevent_enter()
     @description_more()
+    @initial_loaders()
     return
+
+  initial_loaders: ->
+    $('.inline_edit').editable()
+
+    $('.datepicker').datepicker
+      format: "dd M, yyyy"
+      todayBtn: true
+      todayHighlight: true
+
+    $('.datetimepicker').datetimepicker
+      sideBySide: true
+
+    $('.wysihtml5').each (i, elem)->
+      $(elem).wysihtml5()
 
   chosen_select: ->
     $('.chosen-select').chosen
