@@ -206,3 +206,8 @@ window.Tickets =
 
   disable_inline: ->
     $('.disable').editable("disable")
+
+  activate_tabbable: ->
+    $('#w_q_h_tab a').click (e) ->
+      e.preventDefault()
+      $(this).tab('show')
