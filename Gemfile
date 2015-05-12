@@ -8,7 +8,7 @@ gem 'rails', '4.2.1'
 # Use sqlite3 as the database for Active Record
 # gem 'sqlite3'
 # use postgresql for database active records
-gem 'mysql2' # sudo apt-get install libmysqlclient-dev Failed to build gem native extension
+gem 'mysql2' # sudo apt-get install libmysqlclient-dev mysql-client Failed to build gem native extension
 gem 'pg' # sudo apt-get install postgresql postgresql-contrib postgresql-server-dev-all if it failed to build gem native extension.
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 4.0.3'
@@ -74,7 +74,7 @@ gem 'momentjs-rails', '>= 2.8.1'
 gem 'bootstrap3-datetimepicker-rails', '>= 3.1.3'
 gem 'bootstrap-wysihtml5-rails'
 
-gem 'dalli'
+gem 'dalli' # sudo apt-get install memcached
 
 # upgraded version
 gem 'web-console', group: :development
