@@ -211,3 +211,6 @@ window.Tickets =
     $('#w_q_h_tab a').click (e) ->
       e.preventDefault()
       $(this).tab('show')
+  popnote_more: ->
+    $('.load_more').popover
+      html: true
