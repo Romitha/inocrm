@@ -1,6 +1,10 @@
 - ticket = @ticket
-- popnote = link_to "#", class: "inline_edit", data: {type: "textarea", resource: "product", name: "pop_note", url: product_update_tickets_path(product_id: product.id), "original-title" => "Update pop note", value: ""} do
-  = simple_format product.pop_note
+
+- popnote = capture do
+  = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "product", name: "pop_note", url: product_update_tickets_path(product_id: product.id), "original-title" => "Update pop note", value: ""} do
+    = simple_format product.pop_note.to_s.split('<br/>')[0]
+  %button.btn.btn-link.load_more{"data-container" => "body", "data-content" => product.pop_note, "data-placement" => "bottom", "data-toggle" => "popover", "data-trigger" =>"focus", :type => "button"}
+    More
 
 - popstatus = link_to "#", class: "inline_edit", data: {type: "select", source: ProductPopStatus.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "product", name: "pop_status_id", url: product_update_tickets_path(product_id: product.id), "original-title" => "Update pop_status"} do
   = product.product_pop_status.name
@@ -40,6 +44,9 @@
         .add_sign
           = link_to create_problem_category_tickets_path(status_param: "initiate"), remote: true, method: :post, title: "Add" do
             %span.glyphicon.glyphicon-plus-sign
+            = glyph(:user, {:tag => :span})
+            %span.glyph.user
+
       .col-md-2
         %strong Informed Method
         %br/
@@ -58,8 +65,8 @@
           = fc.association :accessory, label_method: :accessory, value_method: :id, include_blank: false, wrapper_html: {class: "col-md-4 padding-left0"}
           = fc.input :note, wrapper_html: {class: "col-md-7"}
           .add_sign
-            = fc.link_to_remove class: "remove_c_t_v_link" do
-              %span.glyphicon.glyphicon-remove-sign
+            = glyph(:plus, {:tag => :span})
+            %span.glyphicon-plus-sign
 
 
       = f.input :other_accessories, wrapper_html: {class: "col-md-4"}
@@ -80,5 +87,5 @@
       = f.input :regional_support_job, label: "Regional", wrapper_html: {class: "col-md-1"}, wrapper: :append
     .row
     .row
-    = f.submit "Next", data: {disable_with: "Please wait..."}, class: "btn btn-success"
     = link_to "Cancel", new_ticket_path
+    = f.submit "Next", data: {disable_with: "Please wait..."}, class: "btn btn-success"
