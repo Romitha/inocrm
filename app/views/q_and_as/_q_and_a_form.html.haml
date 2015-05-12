@@ -1,9 +1,9 @@
 - ticket = @ticket
 - problem_category = @problem_category
 - ticket_action_id = @ticket_action_id
-- ticket.problem_category.q_and_as.each do |q_and_a|
-  - ticket.q_and_answers.build problematic_question_id: q_and_a.id
-
+- unless ticket.q_and_answers.present?
+  - ticket.problem_category.q_and_as.each do |q_and_a|
+    - ticket.q_and_answers.build problematic_question_id: q_and_a.id
 
 %h4 Q and A
 = simple_nested_form_for ticket, url: q_and_answer_save_tickets_path, remote: true do |f|
@@ -16,4 +16,4 @@
       - elsif qa.object.q_and_a.answer_type == "TX"
         = qa.input :answer, required: qa.object.q_and_a.compulsory
 
-  = f.submit "Next", class: "btn btn-sm btn-success", data: { disable_with: "Please wait..." }
+  = f.submit "Save", class: "btn btn-sm btn-success", data: { disable_with: "Please wait..." }

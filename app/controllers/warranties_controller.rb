@@ -14,8 +14,10 @@ class WarrantiesController < ApplicationController
     session[:warranty_id] = nil
     ContactNumber
     @ticket = Rails.cache.read(:new_ticket)
+    @problem_category = @ticket.problem_category
     @customer = Customer.find(session[:customer_id])
     @warranty = Warranty.new(product_serial_id: session[:product_id])
+    QAndA
     if params[:function_param] == "display_form"
       @display_form = true
     else
@@ -62,8 +64,8 @@ class WarrantiesController < ApplicationController
     Rails.cache.write(:new_ticket, @ticket)
     @problem_category = @ticket.problem_category
 
-    # render "tickets/remarks"
-    render "q_and_as/q_and_answer_record"
+    render "tickets/remarks"
+    # render "q_and_as/q_and_answer_record"
   end
 
   def destroy

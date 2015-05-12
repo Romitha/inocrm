@@ -1,7 +1,7 @@
 $(".refresh").remove();
 $("body").removeClass("modal-open");
 $(".modal-backdrop").remove();
-$("#warranty_details").html("#{j render 'tickets/remarks_form', ticket: @ticket}");
+$("#tab_panel").html("#{j render 'tickets/remarks_form', ticket: @ticket}");
 
 Tickets.chosen_select();
 

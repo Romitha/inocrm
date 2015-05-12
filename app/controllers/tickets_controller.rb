@@ -167,7 +167,7 @@ class TicketsController < ApplicationController
 
         session[:product_id] = @product.id
 
-        @ticket = Ticket.new session[:ticket_initiated_attributes]
+        @ticket = (Rails.cache.read(:new_ticket) || Ticket.new(session[:ticket_initiated_attributes]))
       else
         @product_brands = ProductBrand.all
         @product_categories = ProductCategory.all
@@ -297,6 +297,11 @@ class TicketsController < ApplicationController
       if params[:customer_id]
         @new_customer = Customer.find params[:customer_id]
         @ticket.customer_id = @new_customer.id
+        @product = Product.find session[:product_id]
+        @ticket.contact_person1 = @product.tickets.last.try(:contact_person1)
+        @ticket.contact_person2 = @product.tickets.last.try(:contact_person2)
+        @ticket.report_person = @product.tickets.last.try(:report_person)
+
         Rails.cache.write(:new_ticket, @ticket)
         session[:customer_id] = @new_customer.id
         @notice = "Great! #{@new_customer.name} is added. You can add new contact person details."
@@ -567,30 +572,30 @@ class TicketsController < ApplicationController
   end
 
   def finalize_ticket_save
-    @ticket = Rails.cache.read(:new_ticket)
-    @ticket_params = Rails.cache.read(:ticket_params)
-    @ticket.status_id = TicketStatus.find_by_code("CLS").id if params[:first_resolution]
     QAndA
-    @ticket_params.merge! ticket_params
+    @ticket = Rails.cache.read(:new_ticket)
+    # @ticket_params = Rails.cache.read(:ticket_params)
+    @ticket.status_id = TicketStatus.find_by_code("CLS").id if params[:first_resolution]
+    # @ticket_params.merge! ticket_params
     if @ticket.save
-      if @ticket.update @ticket_params
-        Rails.cache.delete(:new_ticket)
-        Rails.cache.delete(:ticket_params)
-        Rails.cache.delete(:created_warranty)
-        session[:ticket_id] = nil
-        session[:product_category_id] = nil
-        session[:product_brand_id] = nil
-        session[:product_id] = nil
-        session[:customer_id] = nil
-        session[:serial_no] = nil
-        session[:warranty_id] = nil
-        session[:ticket_initiated_attributes] = {}
+    # if @ticket.update @ticket_params
+      Rails.cache.delete(:new_ticket)
+      Rails.cache.delete(:ticket_params)
+      Rails.cache.delete(:created_warranty)
+      session[:ticket_id] = nil
+      session[:product_category_id] = nil
+      session[:product_brand_id] = nil
+      session[:product_id] = nil
+      session[:customer_id] = nil
+      session[:serial_no] = nil
+      session[:warranty_id] = nil
+      session[:ticket_initiated_attributes] = {}
 
-        render js: "alert('Thank you. ticket is successfully registered.');"
-      else
-        @product = Product.find session[:product_id]
-        render :remarks
-      end
+      render js: "alert('Thank you. ticket is successfully registered.');"
+    else
+      @product = Product.find session[:product_id]
+      render :remarks
+    # end
     end
     # render plain: @ticket_params.inspect
   end
@@ -623,11 +628,13 @@ class TicketsController < ApplicationController
 
   def q_and_answer_save
     @ticket = Rails.cache.read(:new_ticket)
+    @ticket.q_and_answers.clear
     @ticket.attributes = ticket_params
     QAndA
     if @ticket.valid?
-      Rails.cache.write(:ticket_params, ticket_params)
-      render :remarks
+      Rails.cache.write(:new_ticket, @ticket)
+      # Rails.cache.write(:ticket_params, ticket_params)
+      render js: "alert('Q and A are successfully saved');"
     else
       render js: "alert('Please complete required questions');"
     end
