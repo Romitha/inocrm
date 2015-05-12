@@ -30,63 +30,68 @@
 .row
   = render "users/customer_and_contact_person", customer: customer, ticket: ticket
 %hr
-#warranty_details
-  / = label_tag "Select Warranty" do
-  /   = radio_button_tag "warranty_select", "select", false, class: "radio_for_warranty_select", onchange: "Warranties.warranty_create('select'); false;"
-  /   Select Warranty
-  / = label_tag "New Warranty" do
-  /   = radio_button_tag "warranty_select", "create", false, class: "radio_for_warranty_select", onchange: "Warranties.warranty_create('display_form'); false;"
-  /   New Warranty
-  .row
-    .col-md-12
-      = link_to "Back", "#"
 
-  - if display_form
-    = simple_form_for @warranty, remote: true do |f|
-      = f.input :product_serial_id, as: :hidden
-      .row
-        .col-md-6
-          = f.association :warranty_type, as: :radio_buttons
-        .col-md-6
-          .strong
-            Date Format
-          %select.selectpicker{:name => "selValue", class: "small_scale_margin-top1"}
-            %option dd M, yyyy
-            %option dd, yyyy, M
-            %option M, yyyy, dd
-            %option M, dd, yyyy
-            %option yyyy, M, dd
-            %option yyyy, dd, M
-      .row
-        .col-md-6
-          = f.input :start_at, as: :string, input_html: {class: "datepicker"}
-        .col-md-6
-          = f.input :end_at, as: :string, input_html: {class: "datepicker"}
-      .row
-        .col-md-4
-          = f.input :period_part
-        .col-md-4
-          = f.input :period_labour
-        .col-md-4
-          = f.input :corporate_onsight
-      .row
-        .col-md-3
-          = f.input :care_pack_product_no
-        .col-md-3
-          = f.input :care_pack_reg_no
-        .col-md-6
-          = f.input :note
-      .row
-        .col-md-12
-          = f.submit "Next", class: "btn btn-success"
-          = link_to "Back", "#", onclick: "Warranties.warranty_create('select'); false;"
-  - else
-    = link_to "New Warranty", "#", onclick: "Warranties.warranty_create('display_form'); false;"
-    - if @warranties.present?
-      = render "warranties/select_warranties", warranties: @warranties
+= tab_panel do
+  = tab_nav_tab({id: "w_q_h_tab", class: "sampler"}, warranty: {active_class: "active", content: "Warranty"}, q_and_a: {content: "Q And A"}, history: {content: "History"})
+  .tab-content
+    = tab_content active_class: "active", tabpointer: "warranty" do
+      #warranty_details
+        .row
+          .col-md-12
+            = link_to "Back", "#"
 
-    = link_to "Next", select_for_warranty_warranties_path, method: :post, remote: true, class: "btn btn-success btn-sm pull-right"
+        - if display_form
+          = simple_form_for @warranty, remote: true do |f|
+            = f.input :product_serial_id, as: :hidden
+            .row
+              .col-md-6
+                = f.association :warranty_type, as: :radio_buttons
+              .col-md-6
+                .strong
+                  Date Format
+                %select.selectpicker{:name => "selValue", class: "small_scale_margin-top1"}
+                  %option dd M, yyyy
+                  %option dd, yyyy, M
+                  %option M, yyyy, dd
+                  %option M, dd, yyyy
+                  %option yyyy, M, dd
+                  %option yyyy, dd, M
+            .row
+              .col-md-6
+                = f.input :start_at, as: :string, input_html: {class: "datepicker"}
+              .col-md-6
+                = f.input :end_at, as: :string, input_html: {class: "datepicker"}
+            .row
+              .col-md-4
+                = f.input :period_part
+              .col-md-4
+                = f.input :period_labour
+              .col-md-4
+                = f.input :corporate_onsight
+            .row
+              .col-md-3
+                = f.input :care_pack_product_no
+              .col-md-3
+                = f.input :care_pack_reg_no
+              .col-md-6
+                = f.input :note
+            .row
+              .col-md-12
+                = f.submit "Next", class: "btn btn-success"
+                = link_to "Back", "#", onclick: "Warranties.warranty_create('select'); false;"
+        - else
+          = link_to "New Warranty", "#", onclick: "Warranties.warranty_create('display_form'); false;"
+          - if @warranties.present?
+            = render "warranties/select_warranties", warranties: @warranties
 
-  #warranties_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "warranties_modal", "aria-hidden" => true}
-    .modal-dialog
-      .modal-content
+          = link_to "Next", select_for_warranty_warranties_path, method: :post, remote: true, class: "btn btn-success btn-sm pull-right"
+
+    = tab_content tabpointer: "q_and_a" do
+      this is q_and_a
+    = tab_content tabpointer: "history" do
+      this is history
+
+
+#warranties_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "warranties_modal", "aria-hidden" => true}
+  .modal-dialog
+    .modal-content
