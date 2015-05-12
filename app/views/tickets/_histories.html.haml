@@ -1,0 +1,5 @@
+- customer.tickets.each do |ticket|
+  = ticket.ticket_no
+  = ticket.remarks
+  = ticket.problem_category.try(:name)
+  = ticket.problem_description
