@@ -24,6 +24,7 @@
         = f.input :resolution_summary, label: "Resolution"
     .row
       .col-md-12
+        = link_to "Back", new_warranty_path, remote: true
         .btn-group
           = f.submit "Save",class: "btn btn-success"
           %button.btn.btn-success.dropdown-toggle{"aria-expanded" => "false", "data-toggle" => "dropdown", :type => "button"}
@@ -36,5 +37,3 @@
               = link_to "Save and Print", '#' 
             %li
               = link_to "Cancel", '#'
-        = link_to "Back", new_warranty_path, remote: true
-        

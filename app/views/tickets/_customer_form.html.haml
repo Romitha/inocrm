@@ -90,10 +90,11 @@
             %span.glyphicon.glyphicon-plus-sign
         = f.submit "Customer"
 
-= link_to "Back", find_by_serial_tickets_path(serial_search: ticket.products.first.serial_no), remote: true, method: :post
-- if existing_customer
-  .row
-  = link_to "Next", create_customer_tickets_path(customer_id: existing_customer.id), remote: true, method: :post, class: "btn-success btn", data: {disable_with: "Please wait..."}
+.row
+  .col-md-12
+    = link_to "Back", find_by_serial_tickets_path(serial_search: ticket.products.first.serial_no), remote: true, method: :post
+    - if existing_customer
+      = link_to "Next", create_customer_tickets_path(customer_id: existing_customer.id), remote: true, method: :post, class: "btn-success btn", data: {disable_with: "Please wait..."}
 
 #customer_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "customer_modal", "aria-hidden" => true}
   .modal-dialog

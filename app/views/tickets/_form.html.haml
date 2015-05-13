@@ -44,8 +44,6 @@
         .add_sign
           = link_to create_problem_category_tickets_path(status_param: "initiate"), remote: true, method: :post, title: "Add" do
             %span.glyphicon.glyphicon-plus-sign
-            = glyph(:user, {:tag => :span})
-            %span.glyph.user
 
       .col-md-2
         %strong Informed Method
@@ -65,8 +63,8 @@
           = fc.association :accessory, label_method: :accessory, value_method: :id, include_blank: false, wrapper_html: {class: "col-md-4 padding-left0"}
           = fc.input :note, wrapper_html: {class: "col-md-7"}
           .add_sign
-            = glyph(:plus, {:tag => :span})
-            %span.glyphicon-plus-sign
+            = fc.link_to_remove class: "remove_c_t_v_link" do
+              %span.glyphicon.glyphicon-remove-sign
 
 
       = f.input :other_accessories, wrapper_html: {class: "col-md-4"}
@@ -80,11 +78,11 @@
 
         
     .row
-    .row
-      = f.association :warranty_type, as: :radio_buttons, wrapper_html: {class: "col-md-6"}, wrapper: :append
-      = f.input :cus_chargeable, label: "Customer Chargeable", as: :radio_buttons, wrapper_html: {class: "col-md-2"}, wrapper: :append
-      = f.association :ticket_type, as: :radio_buttons, wrapper_html: {class: "col-md-3"}, wrapper: :append, input_html: {class: "ticket_type"}
-      = f.input :regional_support_job, label: "Regional", wrapper_html: {class: "col-md-1"}, wrapper: :append
+      .col-md-12
+        = f.association :warranty_type, as: :radio_buttons, wrapper_html: {class: "col-md-6"}, wrapper: :append
+        = f.input :cus_chargeable, label: "Customer Chargeable", as: :radio_buttons, wrapper_html: {class: "col-md-2"}, wrapper: :append
+        = f.association :ticket_type, as: :radio_buttons, wrapper_html: {class: "col-md-3"}, wrapper: :append, input_html: {class: "ticket_type"}
+        = f.input :regional_support_job, label: "Regional", wrapper_html: {class: "col-md-1"}, wrapper: :append
     .row
     .row
     = link_to "Cancel", new_ticket_path
