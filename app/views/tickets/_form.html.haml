@@ -23,9 +23,20 @@
           - ticket.errors.full_messages.each do |error|
             %li= error
 
-= initiate_table table_type: "table-hover" do
-  = table_header ["Serial", "Brand", "Category", "Modal No", "Product No", "Sold Country", "Pop Status", "Pop Note"]
-  = table_body [product.serial_no, product.product_brand.name, product.product_category.name, product.model_no, product.product_no, product.product_sold_country.try(:Country), popstatus, popnote]
+#tab_panel1
+  = tab_panel do
+    = tab_nav_tab({}, product_details: {active_class: "active", content: "Product"}, join_ticket: {content: "Join"}, history: {content: "History"})
+    .tab-content
+      = tab_content active_class: "active", tabpointer: "product_details" do
+        = initiate_table table_type: "table-hover" do
+          = table_header ["Serial", "Brand", "Category", "Modal No", "Product No", "Sold Country", "Pop Status", "Pop Note"]
+          = table_body [product.serial_no, product.product_brand.name, product.product_category.name, product.model_no, product.product_no, product.product_sold_country.try(:Country), popstatus, popnote]
+
+      = tab_content tabpointer: "history" do
+        = render "tickets/histories", customer: customer
+
+      = tab_content tabpointer: "join_ticket" do
+        ok
 
 %hr
 

@@ -1,5 +1,5 @@
 - if @product.persisted?
-  $("#product_load").html("#{j render 'tickets/form', product: @product, ticket: @ticket}");
+  $("#product_load").html("#{j render 'tickets/form', product: @product, ticket: @ticket, customer: @customer}");
   $(".ticket_sla_time .sla_time").html("#{@ticket.sla_time.try(:sla_time)} Hr(s)");
 
   Tickets.product_update();

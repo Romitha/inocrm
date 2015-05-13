@@ -43,7 +43,7 @@ module AddressesHelper
 
   def tab_nav_tab options={}, nav_tab_array # {home: {active_class: "active", content: "Home"}, }
     content_tag :ul, role: "tablist", class: "nav nav-tabs #{options[:class]}", id: "#{options[:id]}" do
-      nav_tab_array.collect{|k, v| content_tag(:li, class: v[:active_class], role: "presentation"){ link_to v[:content], "##{k.to_s}", role: "tab", "aria-controls" => k.to_s}}.join.html_safe      
+      nav_tab_array.collect{|k, v| content_tag(:li, class: v[:active_class], role: "presentation"){ link_to v[:content], "##{k.to_s}", role: "tab", "aria-controls" => k.to_s, data: {toggle: "tab"}}}.join.html_safe      
     end
   end
 
