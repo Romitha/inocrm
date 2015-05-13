@@ -168,6 +168,7 @@ class TicketsController < ApplicationController
         session[:product_id] = @product.id
 
         @ticket = (Rails.cache.read(:new_ticket) || Ticket.new(session[:ticket_initiated_attributes]))
+        @customer = @product.tickets.last.try(:customer)
       else
         @product_brands = ProductBrand.all
         @product_categories = ProductCategory.all
@@ -277,7 +278,7 @@ class TicketsController < ApplicationController
       existed_customer = Customer.find params[:customer_id]
       existed_customer_attribs = existed_customer.contact_type_values.map{|c| {contact_type_id: c.contact_type_id, value: c.value}}
       @new_customer = Customer.new existed_customer.attributes.except("id")
-      # @new_customer.contact_type_values.build([{contact_type_id: 2}, {contact_type_id: 4}])
+
       @new_customer.contact_type_values.build existed_customer_attribs
     else
       @new_customer = Customer.new

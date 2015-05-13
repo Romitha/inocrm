@@ -32,7 +32,7 @@
 %hr
 #tab_panel
   = tab_panel do
-    = tab_nav_tab({id: "w_q_h_tab"}, warranty: {active_class: "active", content: "Warranty"}, q_and_a: {content: "Q And A"}, history: {content: "History"})
+    = tab_nav_tab({id: "w_q_h_tab"}, warranty: {active_class: "active", content: "Warranty"}, q_and_a: {content: "Q And A"})
     .tab-content
       = tab_content active_class: "active", tabpointer: "warranty" do
         #warranty_details
@@ -84,8 +84,6 @@
 
       = tab_content tabpointer: "q_and_a" do
         = render "q_and_as/q_and_a_form"
-      = tab_content tabpointer: "history" do
-        = render "tickets/histories", customer: customer
 
 #warranties_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "warranties_modal", "aria-hidden" => true}
   .modal-dialog

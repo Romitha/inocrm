@@ -1,6 +1,5 @@
 $("#form_frame").html("#{j render 'form', customer: @customer, ticket: @ticket}");
 Tickets.load_datapicker();
-Tickets.activate_tabbable();
 - if(@display_form)
   Warranties.update_datepicker();
   Warranties.disabled_datepicker();
