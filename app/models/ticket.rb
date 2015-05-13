@@ -40,6 +40,9 @@ class Ticket < ActiveRecord::Base
 
   has_many :dyna_columns, as: :resourceable
 
+  has_many :joint_tickets
+  accepts_nested_attributes_for :joint_tickets, allow_destroy: true
+
   validates_presence_of [:ticket_no, :priority, :status_id, :problem_description, :informed_method_id, :job_type_id, :ticket_type_id, :warranty_type_id, :base_currency_id, :problem_category_id]
 
   validates_numericality_of [:ticket_no, :priority]
@@ -142,5 +145,11 @@ class TicketAccessory < ActiveRecord::Base
   self.table_name = "spt_ticket_accessory"
 
   belongs_to :accessory
+  belongs_to :ticket
+end
+
+class JointTicket < ActiveRecord::Base
+  self.table_name = "spt_joint_ticket"
+
   belongs_to :ticket
 end

@@ -25,7 +25,7 @@
 
 #tab_panel1
   = tab_panel do
-    = tab_nav_tab({}, product_details: {active_class: "active", content: "Product"}, join_ticket: {content: "Join"}, history: {content: "History"})
+    = tab_nav_tab({}, product_details: {active_class: "active", content: "Product"}, history: {content: "History"})
     .tab-content
       = tab_content active_class: "active", tabpointer: "product_details" do
         = initiate_table table_type: "table-hover" do
@@ -33,15 +33,13 @@
           = table_body [product.serial_no, product.product_brand.name, product.product_category.name, product.model_no, product.product_no, product.product_sold_country.try(:Country), popstatus, popnote]
 
       = tab_content tabpointer: "history" do
-        = render "tickets/histories", customer: customer
-
-      = tab_content tabpointer: "join_ticket" do
-        ok
+        #history_pagination
+          = render "tickets/histories", histories: @histories
 
 %hr
 
 #form_frame
-  - ticket.ticket_accessories.build
+  /- ticket.ticket_accessories.build
   = simple_nested_form_for ticket, remote: true, :authenticity_token => true do |f|
     = f.input :status_id, as: :hidden
     = f.input :ticket_no, as: :hidden
@@ -70,7 +68,6 @@
     .row
       .col-md-8
         = f.simple_fields_for :ticket_accessories do |fc|
-          / = fc.input :ticket_id, as: :hidden
           = fc.association :accessory, label_method: :accessory, value_method: :id, include_blank: false, wrapper_html: {class: "col-md-4 padding-left0"}
           = fc.input :note, wrapper_html: {class: "col-md-7"}
           .add_sign
