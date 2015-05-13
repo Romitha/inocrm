@@ -90,6 +90,7 @@
           .col-md-12
             = render "tickets/join_ticket", customer: customer, ticket: ticket
 
+  = link_to "Back", create_customer_tickets_path(customer_id: customer.id), remote: true, method: :post
 #warranties_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "warranties_modal", "aria-hidden" => true}
   .modal-dialog
     .modal-content
