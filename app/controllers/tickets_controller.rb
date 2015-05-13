@@ -17,6 +17,7 @@ class TicketsController < ApplicationController
   def new
     Rails.cache.delete(:new_ticket)
     Rails.cache.delete(:ticket_params)
+    Rails.cache.delete(:histories)
     session[:ticket_id] = nil
     session[:product_category_id] = nil
     session[:product_brand_id] = nil
