@@ -169,6 +169,8 @@ class TicketsController < ApplicationController
 
         @ticket = (Rails.cache.read(:new_ticket) || Ticket.new(session[:ticket_initiated_attributes]))
         @customer = @product.tickets.last.try(:customer)
+        @histories = Kaminari.paginate_array(@product.tickets).page(params[:page]).per(3)
+        Rails.cache.write(:histories, @histories)
       else
         @product_brands = ProductBrand.all
         @product_categories = ProductCategory.all
@@ -635,10 +637,25 @@ class TicketsController < ApplicationController
     if @ticket.valid?
       Rails.cache.write(:new_ticket, @ticket)
       # Rails.cache.write(:ticket_params, ticket_params)
-      render js: "alert('Q and A are successfully saved');"
+      # render js: "alert('Q and A are successfully saved');"
+      render "remarks"
     else
       render js: "alert('Please complete required questions');"
     end
+  end
+
+  def join_tickets
+    @ticket = Rails.cache.read(:new_ticket)
+    @ticket.joint_tickets.clear
+    if params[:ticket].present?
+      @ticket.attributes = ticket_params
+      Rails.cache.write(:new_ticket, @ticket)
+    end
+    render js: "alert('tickets joint updated.');"
+  end
+
+  def paginate_ticket_histories
+    @histories = Rails.cache.read(:histories).page(params[:page]).per(3)
   end
 
   private
@@ -651,7 +668,7 @@ class TicketsController < ApplicationController
     end
 
     def ticket_params
-      params.require(:ticket).permit(:ticket_no, :sla_id, :serial_no, :base_currency_id, :regional_support_job, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :id])
+      params.require(:ticket).permit(:ticket_no, :sla_id, :serial_no, :base_currency_id, :regional_support_job, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy])
     end
 
     def product_brand_params

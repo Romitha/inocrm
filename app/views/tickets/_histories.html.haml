@@ -1,5 +1,6 @@
-- customer.tickets.each do |ticket|
-  = ticket.ticket_no
-  = ticket.remarks
-  = ticket.problem_category.try(:name)
-  = ticket.problem_description
+= paginate histories, remote: true, method: :get, params: {controller: "tickets", action: "paginate_ticket_histories"}
+- histories.each do |history|
+  = history.ticket_no
+  = history.remarks
+  = history.problem_category.try(:name)
+  = history.problem_description

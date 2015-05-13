@@ -80,6 +80,7 @@ Rails.application.routes.draw do
       get "new_customer"
       get "contact_persons"
       get "remarks"
+      get "paginate_ticket_histories"
 
       post "create_product_brand"
       post "create_new_category"
@@ -100,6 +101,8 @@ Rails.application.routes.draw do
       post "finalize_ticket_save"
 
       post "q_and_answer_save"
+
+      post "join_tickets"
     end
   end
   # get 'auth/index'
