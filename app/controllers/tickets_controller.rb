@@ -524,6 +524,7 @@ class TicketsController < ApplicationController
   def create_problem_category
     Ticket
     Warranty
+    @histories = Rails.cache.read(:histories).page(params[:page]).per(3)
     if params[:status_param] == "initiate"
       @new_problem_category = ProblemCategory.new
     elsif params[:status_param] == "create"
@@ -556,6 +557,7 @@ class TicketsController < ApplicationController
     Product
     Ticket
     Warranty
+    @histories = Rails.cache.read(:histories).page(params[:page]).per(3)
     if params[:status_param] == "initiate"
       @new_accessory = Accessory.new
     elsif params[:status_param] == "create"
