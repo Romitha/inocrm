@@ -40,6 +40,9 @@
             = simple_form_for @warranty, remote: true do |f|
               = f.input :product_serial_id, as: :hidden
               .row
+                .col-md-12
+                  = link_to "Back", "#", onclick: "Warranties.warranty_create('select'); false;"
+              .row
                 .col-md-6
                   = f.association :warranty_type, as: :radio_buttons
                 .col-md-6
@@ -71,10 +74,8 @@
                   = f.input :care_pack_reg_no
                 .col-md-6
                   = f.input :note
-              .row
-                .col-md-12
-                  = link_to "Back", "#", onclick: "Warranties.warranty_create('select'); false;"
-                  = f.submit "Save", class: "btn btn-success"
+
+              = f.submit "Save", class: "btn btn-success pull-right"
           - else
             = link_to "New Warranty", "#", onclick: "Warranties.warranty_create('display_form'); false;"
             - if @warranties.present?

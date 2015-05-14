@@ -5,12 +5,31 @@
     - ticket.joint_tickets.build joint_ticket_id: t.id
 = simple_nested_form_for ticket, url: join_tickets_tickets_path, method: :post, remote: true do |f|
   / = hidden_field_tag "ticket[joint_tickets_attributes][][joint_ticket_id]", nil
-  = f.simple_fields_for :joint_tickets do |jt|
-    - ticket_detail = customer.tickets.find(jt.object.joint_ticket_id)
-    = ticket_detail.ticket_no
-    = ticket_detail.problem_category.name
-    - if ticket_detail.products.first
-      = ticket_detail.products.first.serial_no
-      = ticket_detail.products.first.model_no
-    = check_box_tag "ticket[joint_tickets_attributes][][joint_ticket_id]", jt.object.joint_ticket_id, joint_tickets.include?(jt.object.joint_ticket_id)
+  %table.table
+    %thead
+      %tr
+        %th
+          Ticket No
+        %th
+          Problem Category
+        %th
+          Serial No
+        %th
+          Model No
+
+    %tbody
+      = f.simple_fields_for :joint_tickets do |jt|
+        - ticket_detail = customer.tickets.find(jt.object.joint_ticket_id)
+        %tr
+          %td
+            = ticket_detail.ticket_no
+          %td
+            = ticket_detail.problem_category.try :name
+          - if ticket_detail.products.first
+            %td
+              = ticket_detail.products.first.serial_no
+            %td
+              = ticket_detail.products.first.model_no
+          %td
+            = check_box_tag "ticket[joint_tickets_attributes][][joint_ticket_id]", jt.object.joint_ticket_id, joint_tickets.include?(jt.object.joint_ticket_id)
   = f.submit "Join Ticket", class: "btn btn-info btn-sm"
