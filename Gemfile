@@ -43,7 +43,7 @@ gem "haml-rails"
 gem "carrierwave"
 gem "carrierwave-ftp", :require => 'carrierwave/storage/sftp' # SFTP only
 gem "mini_magick"
-gem 'rmagick' # sudo apt-get install libmagickwand-dev and imagemagick if ubuntu shows native library error
+gem 'rmagick' # sudo apt-get install imagemagick libmagickcore-dev libmagickwand-dev if ubuntu shows native library error
 
 gem "therubyracer"
 gem "less-rails" #Sprockets (what Rails 3.1 uses for its asset pipeline) supports LESS
