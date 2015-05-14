@@ -1,6 +1,23 @@
 = paginate histories, remote: true, method: :get, params: {controller: "tickets", action: "paginate_ticket_histories"}
-- histories.each do |history|
-  = history.ticket_no
-  = history.remarks
-  = history.problem_category.try(:name)
-  = history.problem_description
+%table.table
+  %thead
+    %tr
+      %th
+        Ticket No
+      %th
+        Remarks
+      %th
+        Problem Category
+      %th
+        Problem description
+  %tbody
+    - histories.each do |history|
+      %tr
+        %td
+          = history.ticket_no
+        %td
+          = history.remarks
+        %td
+          = history.problem_category.try(:name)
+        %td
+          = history.problem_description

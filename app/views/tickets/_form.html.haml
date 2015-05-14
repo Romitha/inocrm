@@ -3,8 +3,9 @@
 - popnote = capture do
   = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "product", name: "pop_note", url: product_update_tickets_path(product_id: product.id), "original-title" => "Update pop note", value: ""} do
     = simple_format product.pop_note.to_s.split('<br/>')[0]
-  %button.btn.btn-link.load_more{"data-container" => "body", "data-content" => product.pop_note, "data-placement" => "bottom", "data-toggle" => "popover", "data-trigger" =>"focus", :type => "button"}
-    More
+  -if product.pop_note.present?
+    %button.btn.btn-link.load_more{"data-container" => "body", "data-content" => product.pop_note, "data-placement" => "bottom", "data-toggle" => "popover", "data-trigger" =>"focus", :type => "button"}
+      More
 
 - popstatus = link_to "#", class: "inline_edit", data: {type: "select", source: ProductPopStatus.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "product", name: "pop_status_id", url: product_update_tickets_path(product_id: product.id), "original-title" => "Update pop_status"} do
   = product.product_pop_status.name
