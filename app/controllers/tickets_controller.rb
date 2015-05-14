@@ -256,6 +256,9 @@ class TicketsController < ApplicationController
 
         @product = @new_product
         @ticket = @product.tickets.build session[:ticket_initiated_attributes]
+
+        @histories = Kaminari.paginate_array(@product.tickets).page(params[:page]).per(3)
+        Rails.cache.write(:histories, @histories)
         format.js {render :find_by_serial}
       else
         format.js {render :new_product}
