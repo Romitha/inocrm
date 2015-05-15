@@ -58,9 +58,10 @@ class Ticket < ActiveRecord::Base
     end
   end
 
-  def assigned
-    assigned_ticket = agent_ticket_infos.find_by_visibility("assigned")
-    assigned_ticket && assigned_ticket.agent
+  before_create :update_ticket_no
+
+  def update_ticket_no
+    self.ticket_no = self.class.order("created_at desc").first.ticket_no+1
   end
 
 end
