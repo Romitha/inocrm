@@ -44,7 +44,7 @@
                   = link_to "Back", "#", onclick: "Warranties.warranty_create('select'); false;"
               .row
                 .col-md-6
-                  = f.association :warranty_type, as: :radio_buttons
+                  = f.association :warranty_type, as: :radio_buttons, wrapper: :append
                 .col-md-6
                   .strong
                     Date Format

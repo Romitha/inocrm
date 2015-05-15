@@ -5,8 +5,8 @@
         = link_to "#", class: "inline_edit", data: {type: "select", source: ContactNumber::TYPES.collect{|category| {value: category, text: category}}, resource: "contact_number", name: "category", url: polymorphic_path([contact_number.c_numberable, contact_number]), "original-title" => "Update contact_number"} do
           = contact_number.category
       .col-md-12
-        = link_to content_tag(:span, glyph(:trash)), polymorphic_path([contact_number.c_numberable, contact_number]), method: :delete, rel: "tooltip", data: {toggle: "tooltip", placement: "right", confirm: "Are you sure? do you want to delete?"}, title: "Delete"
-        = link_to content_tag(:span, glyph(:send)), polymorphic_path([:make_primary_contact_number, contact_number.c_numberable, contact_number]), method: :post, rel: "tooltip", data: {toggle: "tooltip", placement: "right", confirm: "Are you sure? do you want to make this as primary contact_number?"}, title: "Make Primary" unless contact_number.primary
+        = link_to content_tag(:span, glyph(:trash, {:tag => :span})), polymorphic_path([contact_number.c_numberable, contact_number]), method: :delete, rel: "tooltip", data: {toggle: "tooltip", placement: "right", confirm: "Are you sure? do you want to delete?"}, title: "Delete"
+        = link_to content_tag(:span, glyph(:send, {:tag => :span})), polymorphic_path([:make_primary_contact_number, contact_number.c_numberable, contact_number]), method: :post, rel: "tooltip", data: {toggle: "tooltip", placement: "right", confirm: "Are you sure? do you want to make this as primary contact_number?"}, title: "Make Primary" unless contact_number.primary
   .col-md-7
     = link_to "#", class: "inline_edit", data: {type: "text", resource: "contact_number", name: "value", url: polymorphic_path([contact_number.c_numberable, contact_number]), "original-title" => "Update contact_number"} do
       = contact_number.value

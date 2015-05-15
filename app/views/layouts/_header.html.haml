@@ -13,8 +13,12 @@
         %li
           = link_to "Alert", "#", class: "dropdown-toggle alert text-hide nav-icon margin-bottom0", data: {placement: "bottom"}, title: "Alert", rel: "tooltip"
         - if can? :dashboard, Organization
-          %li.small_scale_margin-right10
-            = link_to "Configuration", dashboard_organization_path(Organization.owner), class: "dropdown-toggle organization text-hide nav-icon", data: {placement: "bottom"}, title: "Configuration", rel: "tooltip"
+          %li.small_scale_margin-right10.dropdown{role: "presentation"}
+            = link_to "Configuration", dashboard_organization_path(Organization.owner), class: "dropdown-toggle organization text-hide nav-icon", data: {toggle: "dropdown", placement: "bottom"}, "aria-haspopup" => "true", "aria-expanded" => "true", title: "Configuration", rel: "tooltip"
+            %ul.dropdown-menu{"aria-labelledby" => "conf_dropdown"}
+              %li{role: "presentation"}
+                = link_to "#" do
+                  Admin board
 
         %li.dropdown.small_scale_margin-right10{role: "presentation"}
           = link_to "supplier", "#", id: "supplier_dropdown", class: "dropdown-toggle supplier text-hide nav-icon", data: {toggle: "dropdown", placement: "bottom"}, "aria-haspopup" => "true", "aria-expanded" => "true", title: "Supplier", rel: "tooltip"
@@ -59,7 +63,7 @@
                 %span Supports
             %li{role: "presentation"}
               %li.divider
-              %li.dropdown-header Create Ticket
+              / %li.dropdown-header Create Ticket
               %li{role: "presentation"}= link_to "New Support", new_ticket_path
 
         - if user_signed_in?

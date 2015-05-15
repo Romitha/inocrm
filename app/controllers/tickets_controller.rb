@@ -423,7 +423,6 @@ class TicketsController < ApplicationController
         @contact_person_frame = "#report_persons_form"
         @submitted_contact_person = "three"    
       end
-      puts @ticket.inspect
     else
       if params[:submit_contact_person1]
         @submitted_contact_person = 1
