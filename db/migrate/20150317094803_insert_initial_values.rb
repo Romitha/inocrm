@@ -15,7 +15,7 @@ class InsertInitialValues < ActiveRecord::Migration
     end
 
     [
-      ["CW", "Corparate Warranty"],
+      ["CW", "Corporate Warranty"],
       ["MW", "Manufacture Warranty"],
       ["NW", "Non Warranty"]
     ].each do |value|

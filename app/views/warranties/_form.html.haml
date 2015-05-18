@@ -47,7 +47,7 @@
                   = f.association :warranty_type, as: :radio_buttons, wrapper: :append
                 .col-md-6
                   .strong
-                    Date Format
+                    Warranty Date Format
                   %select.selectpicker{:name => "selValue", class: "small_scale_margin-top1"}
                     %option dd M, yyyy
                     %option dd, yyyy, M
@@ -74,7 +74,6 @@
                   = f.input :care_pack_reg_no
                 .col-md-6
                   = f.input :note
-
               = f.submit "Save", class: "btn btn-success pull-right"
           - else
             = link_to "New Warranty", "#", onclick: "Warranties.warranty_create('display_form'); false;"

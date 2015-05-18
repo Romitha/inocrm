@@ -38,12 +38,14 @@
     = table_header ["Name", "Address", "Contacts"]
     = table_body ["#{existing_customer.mst_title.try(:name)} #{existing_customer.name}", "#{existing_customer.address1}, #{existing_customer.address2}, #{existing_customer.address3} #{existing_customer.address4}, #{existing_customer.district.try(:name)}", customer_contact_types]
 
-= label_tag "Select Customer" do
+%strong Customer
+%br/
+= label_tag "Select Customer", class: "small_scale_margin-right1" do
   = radio_button_tag "customer_select", "select", false, class: "radio_for_customer_select", onchange: "Tickets.customer_select('select'); false;"
-  Select Customer
+  Select
 = label_tag "New Customer" do
   = radio_button_tag "customer_select", "create", false, class: "radio_for_customer_select", onchange: "Tickets.customer_select('create'); false;"
-  New Customer
+  New
 
 - if display_select_option
   #new_customer_form
@@ -88,7 +90,8 @@
           = f.link_to_add :contact_type_values, style: "clear: both;display: block;" do
             Add a Contact Type
             %span.glyphicon.glyphicon-plus-sign
-        = f.submit "Customer", class: "btn btn-success btn-sm"
+          %br/
+        = f.submit "Save", class: "btn btn-success btn-sm"
 - else
   .row
     .col-md-12

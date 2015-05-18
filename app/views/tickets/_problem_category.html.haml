@@ -1,4 +1,3 @@
-= link_to "Back", create_problem_category_tickets_path(status_param: "back"), remote: true, method: :post
 %h4 Problem Category
 = simple_nested_form_for @new_problem_category, url: create_problem_category_tickets_path(status_param: "create"), method: :post, remote: true do |f|
   .row
@@ -24,5 +23,5 @@
     .col-md-12
       = f.link_to_add :q_and_as do
         %span.glyphicon.glyphicon-plus-sign
-  
+  = link_to "Back", create_problem_category_tickets_path(status_param: "back"), remote: true, method: :post
   = f.submit "submit"
