@@ -9,7 +9,7 @@
         %li= error
 %fieldset
   %legend Product
-  = simple_form_for product, url: create_product_tickets_path, remote: true do |f|
+  = simple_form_for product, url: create_product_tickets_path, multipart: true, remote: true do |f|
     .row
       .col-md-3
         = f.association :product_brand, wrapper_html: {style: "width: 93%; float: left;"}
@@ -35,7 +35,8 @@
 
       .col-md-2
         %strong.small_scale_padding-bottom3{style: "display: block;"} Pop Note document
-        #preview_of_pop_doc_url
+        #preview_of_pop_doc_url{style: "word-wrap: break-word;"}
+          = product.pop_doc_url.file.filename if product.pop_doc_url.present?
         .upload_button
           #pop_doc_url_edit.btn.btn-info.btn-mini.fileinput-button{style: "min-height: 10px;"}
             %span Upload pop note
@@ -54,4 +55,4 @@
     .row
       .col-md-12
         = link_to "Cancel", new_ticket_path
-        = f.submit "Next", name: "next_to_customer"
+        = f.submit "Save", name: "next_to_customer", class: "btn btn-success btn-sm", data: {disable_with: "Please wait..."}

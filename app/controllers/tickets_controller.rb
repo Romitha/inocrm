@@ -245,23 +245,31 @@ class TicketsController < ApplicationController
   def create_product
     Ticket
     ContactNumber
-    @new_product = Product.new product_params
+
     respond_to do |format|
-      if @new_product.save
-        session[:product_id] = @new_product.id
-        @notice = "Great! #{@new_product.serial_no} is saved. You can create new Customer."
-        # @new_customer = Customer.new
-        # @new_customer.contact_type_values.build([{contact_type_id: 2}, {contact_type_id: 4}])
-        session[:ticket_initiated_attributes].merge!({})
+      if product_params[:pop_doc_url]
+        @new_product = Product.new product_params
 
-        @product = @new_product
-        @ticket = @product.tickets.build session[:ticket_initiated_attributes]
-
-        @histories = Kaminari.paginate_array(@product.tickets).page(params[:page]).per(3)
-        Rails.cache.write(:histories, @histories)
-        format.js {render :find_by_serial}
-      else
+        Rails.cache.write(:new_product_with_pop_doc_url, @new_product)
         format.js {render :new_product}
+      else
+        @new_product = (Rails.cache.read(:new_product_with_pop_doc_url) or Product.new)
+        @new_product.attributes = product_params
+        if @new_product.save
+          Rails.cache.delete(:new_product_with_pop_doc_url)
+          session[:product_id] = @new_product.id
+          @notice = "Great! #{@new_product.serial_no} is saved. You can create new Customer."
+          session[:ticket_initiated_attributes].merge!({})
+
+          @product = @new_product
+          @ticket = @product.tickets.build session[:ticket_initiated_attributes]
+
+          @histories = Kaminari.paginate_array(@product.tickets).page(params[:page]).per(3)
+          Rails.cache.write(:histories, @histories)
+          format.js {render :find_by_serial}
+        else
+          format.js {render :new_product}
+        end
       end
     end
   end
@@ -682,7 +690,7 @@ class TicketsController < ApplicationController
     end
 
     def product_params
-      params.require(:product).permit(:serial_no, :product_brand_id, :sold_country_id, :product_category_id, :model_no, :product_no, :pop_status_id, :coparate_product, :pop_note)
+      params.require(:product).permit(:serial_no, :pop_doc_url, :product_brand_id, :sold_country_id, :product_category_id, :model_no, :product_no, :pop_status_id, :coparate_product, :pop_note)
     end
 
     def category_params

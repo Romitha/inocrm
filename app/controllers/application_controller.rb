@@ -1,7 +1,7 @@
 class ApplicationController < ActionController::Base
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
-  protect_from_forgery with: :exception
+  # protect_from_forgery with: :exception
 
   # check_authorization
 
@@ -34,7 +34,11 @@ class ApplicationController < ActionController::Base
 
     def user_session_expired
       if request.xhr?
-        render js: "alert('session expired'); window.location.href='#{root_url}';" unless user_signed_in?
+        if verified_request?
+          render js: "alert('session expired'); window.location.href='#{root_url}';" unless user_signed_in?
+        else
+          render js: "alert('security token is expired to prevent from CSRF attack. Please refresh and continue. Sorry for inconvenience');"
+        end
       else
         authenticate_user!
       end

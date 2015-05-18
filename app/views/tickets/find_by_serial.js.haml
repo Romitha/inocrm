@@ -7,6 +7,7 @@
   - if @product_brands.to_a.any?
     - if @product_categories.to_a.any?
       $("#product_load").html("#{j render 'tickets/product_form', product: @product}");
+      Tickets.pop_url_doc_upload();
     - else
       $("#product_load").html("#{j render 'tickets/product_category_form', product_category: @new_product_category}");
   - else

@@ -1,7 +1,7 @@
 window.Tickets =
   setup: ->
     @load_customer()
-    @ticket_attachment_upload()
+    @pop_url_doc_upload()
     @prevent_enter()
     @description_more()
     @initial_loaders()
@@ -55,37 +55,34 @@ window.Tickets =
         alert "There are some errors. please try again"
       )
 
-  ticket_attachment_upload: ->
-    $("#ticket_attachment_upload").fileupload
+  pop_url_doc_upload: ->
+    $("#product_pop_doc_url").fileupload
       # url: '/users/profile/temp_save_user_profile_image'
       # type: "POST"
-      # maxFileSize: 1000000
-      dataType: "json"
-      # autoUpload: false
+      maxFileSize: 1000000
+      dataType: "script"
+      autoUpload: false
       add: (e, data) ->
-        types = /(\.|\/)(gif|jpe?g|png|doc|docx|pdf|ppt|pptx|xls|xlsx|csv)$/i
-        # maxsize = 1024*1024
+        types = /(\.|\/)(gif|jpe?g|png|pdf)$/i
+        maxsize = 1024*1024
         file = data.files[0]
         if types.test(file.type) || types.test(file.name)
-          data.context = $(tmpl('ticket_attachment_upload_tmpl', file))
-          $(".ticket_attachment_wrapper").html(data.context)
-          # data.submit()
-          jqXHR = data.submit().complete( (result, textStatus, jqXHR)->
-            # console.log result
-            setTimeout (->
-              $('#autoloadable_prepend').prepend Mustache.to_html($('#load_files').html(), result.responseJSON)
-              $(".ticket_attachment_wrapper").empty()
-              return
-            ), 3000
-          )
+          if maxsize > file.size
+            data.context = $(tmpl('pop_doc_url_upload', file))
+            $(".pop_doc_url_wrapper").html(data.context)
+            data.submit()
+          else
+            alert "Your image file is with #{file.size}KB is exceeding than limited size of #{maxsize}KB. Please select other image file not exceeding 1MB"
         else
-          alert("#{file.name} is not a recommended file format")
+          alert("#{file.name} is not a gif, jpg, jpeg, png  or pdf file")
+        # alert data.files[0]
       progress: (e, data) ->
         if data.context
           progress = parseInt(data.loaded/data.total*100, 10)
           data.context.find(".progress-bar").css("width", progress+"%").html(progress+"%")
           if progress==100
-            console.log "ok"
+            $("#ajax-loader").addClass("hide");
+            # $(".profile_image_wrapper").empty();
 
   prevent_enter: ->
     $("#new_ticket").keypress (event) ->
