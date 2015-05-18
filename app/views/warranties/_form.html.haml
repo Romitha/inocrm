@@ -32,7 +32,7 @@
 %hr
 #tab_panel
   = tab_panel do
-    = tab_nav_tab({id: "w_q_h_tab"}, warranty: {active_class: "active", content: "Warranty"}, q_and_a: {content: "Q And A"}, join_ticket: {content: "Join"})
+    = tab_nav_tab({id: "w_q_h_tab"}, warranty: {active_class: "active", content: "Warranty"}, join_ticket: {content: "Join"}, q_and_a: {content: "Q And A"})
     .tab-content
       = tab_content active_class: "active", tabpointer: "warranty" do
         #warranty_details
@@ -80,16 +80,14 @@
             = link_to "New Warranty", "#", onclick: "Warranties.warranty_create('display_form'); false;"
             - if @warranties.present?
               = render "warranties/select_warranties", warranties: @warranties
-            /= link_to "Back", create_customer_tickets_path(customer_id: customer.id), remote: true, method: :post
-            /= link_to "Next", select_for_warranty_warranties_path, method: :post, remote: true, class: "btn btn-success btn-sm pull-right"
-
-      = tab_content tabpointer: "q_and_a" do
-        = render "q_and_as/q_and_a_form"
 
       = tab_content tabpointer: "join_ticket" do
         .row
           .col-md-12
             = render "tickets/join_ticket", customer: customer, ticket: ticket
+
+      = tab_content tabpointer: "q_and_a" do
+        = render "q_and_as/q_and_a_form"
 
   = link_to "Back", create_customer_tickets_path(customer_id: customer.id), remote: true, method: :post
 #warranties_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "warranties_modal", "aria-hidden" => true}

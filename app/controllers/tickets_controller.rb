@@ -1,5 +1,4 @@
 class TicketsController < ApplicationController
-  before_action :authenticate_user!
   before_action :set_ticket, only: [:show, :edit, :update, :destroy]
   before_action :set_organization_for_ticket, only: [:new, :edit, :create_customer]
 
@@ -72,7 +71,8 @@ class TicketsController < ApplicationController
         format.js {render :new_customer}
       else
 
-        format.js {render :find_by_serial}
+        # format.js {render :find_by_serial}
+        format.js {render js: "alert('Please enter valid and required information.');"}
       end
 
     end
@@ -635,10 +635,11 @@ class TicketsController < ApplicationController
   end
 
   def q_and_answer_save
+    QAndA
     @ticket = Rails.cache.read(:new_ticket)
     @ticket.q_and_answers.clear
+    @ticket.ge_q_and_answers.clear
     @ticket.attributes = ticket_params
-    QAndA
     if @ticket.valid?
       Rails.cache.write(:new_ticket, @ticket)
       # Rails.cache.write(:ticket_params, ticket_params)
@@ -673,7 +674,7 @@ class TicketsController < ApplicationController
     end
 
     def ticket_params
-      params.require(:ticket).permit(:ticket_no, :sla_id, :serial_no, :base_currency_id, :regional_support_job, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy])
+      params.require(:ticket).permit(:ticket_no, :sla_id, :serial_no, :base_currency_id, :regional_support_job, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer])
     end
 
     def product_brand_params

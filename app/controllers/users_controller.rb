@@ -1,6 +1,5 @@
 class UsersController < ApplicationController
   load_and_authorize_resource except: [:assign_role]
-  before_action :authenticate_user!
   before_action :set_user, only: [:profile, :initiate_user_profile_edit, :update, :upload_avatar]
 
   def new

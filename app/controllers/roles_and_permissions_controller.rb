@@ -1,6 +1,5 @@
 class RolesAndPermissionsController < ApplicationController
 
-  before_action :authenticate_user!
 
   before_action :set_organization, only: [:new, :create, :edit, :load_permissions, :update]
 

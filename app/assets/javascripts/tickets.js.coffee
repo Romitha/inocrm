@@ -160,9 +160,9 @@ window.Tickets =
     $.get "/tickets/new_customer", {function_param: function_param, customer_id: customer_id}
 
   assign_customer: (customer_id, organization_id, function_param)->
-    y = confirm("Are you sure?")
-    if y
-      $.post "/tickets/create_customer", {customer_id: customer_id, organization_id: organization_id, function_param: function_param}
+    # y = confirm("Are you sure?")
+    # if y
+    $.post "/tickets/create_customer", {customer_id: customer_id, organization_id: organization_id, function_param: function_param}
 
 
   load_datapicker: ->

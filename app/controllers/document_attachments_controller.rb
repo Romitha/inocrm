@@ -1,6 +1,5 @@
 class DocumentAttachmentsController < ApplicationController
 
-  before_action :authenticate_user!
   before_action :set_document_attachment, only: [:update, :destroy]
   respond_to :html, :xml, :json
 

@@ -1,6 +1,6 @@
 class OrganizationsController < ApplicationController
   load_and_authorize_resource
-  before_action :authenticate_user!
+  # before_action :authenticate_user!
   before_action :set_organization, only: [:show, :edit, :update, :relate, :remove_relation, :dashboard, :option_for_vat_number, :demote_as_department, :remove_department_org]
 
   def index

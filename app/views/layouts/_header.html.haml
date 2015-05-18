@@ -14,8 +14,10 @@
           = link_to "Alert", "#", class: "dropdown-toggle alert text-hide nav-icon margin-bottom0", data: {placement: "bottom"}, title: "Alert", rel: "tooltip"
         - if can? :dashboard, Organization
           %li.small_scale_margin-right10.dropdown{role: "presentation"}
-            = link_to "Configuration", dashboard_organization_path(Organization.owner), class: "dropdown-toggle organization text-hide nav-icon", data: {toggle: "dropdown", placement: "bottom"}, "aria-haspopup" => "true", "aria-expanded" => "true", title: "Configuration", rel: "tooltip"
+            = link_to "Configuration", "#", class: "dropdown-toggle organization text-hide nav-icon", data: {toggle: "dropdown", placement: "bottom"}, "aria-haspopup" => "true", "aria-expanded" => "true", title: "Configuration", rel: "tooltip"
             %ul.dropdown-menu{"aria-labelledby" => "conf_dropdown"}
+              %li{role: "presentation"}
+                = link_to "Organization", dashboard_organization_path(Organization.owner)
               %li{role: "presentation"}
                 = link_to "#" do
                   Admin board

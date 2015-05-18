@@ -24,19 +24,15 @@ class Ticket < ActiveRecord::Base
   has_many :q_and_as, through: :q_and_answers
   accepts_nested_attributes_for :q_and_answers, allow_destroy: true
 
+  has_many :ge_q_and_answers
+  accepts_nested_attributes_for :ge_q_and_answers, allow_destroy: true
+
   has_many :ticket_accessories, foreign_key: :ticket_id
   has_many :accessories, through: :ticket_accessories
   accepts_nested_attributes_for :ticket_accessories, allow_destroy: true
 
-  # belongs_to :organization
-  # belongs_to :department
   belongs_to :customer, class_name: "Customer", foreign_key: "customer_id"
   belongs_to :sla_time, foreign_key: :sla_id
-
-  has_many :document_attachments, as: :attachable
-  accepts_nested_attributes_for :document_attachments, allow_destroy: true
-
-  has_many :comments
 
   has_many :dyna_columns, as: :resourceable
 
@@ -61,7 +57,7 @@ class Ticket < ActiveRecord::Base
   before_create :update_ticket_no
 
   def update_ticket_no
-    self.ticket_no = self.class.order("created_at desc").first.ticket_no+1
+    ticket_no = self.class.order("created_at desc").first.ticket_no+1
   end
 
 end

@@ -1,5 +1,4 @@
 class QAndAsController < ApplicationController
-  before_action :authenticate_user!
 
   def q_and_answer_record
     @ticket = Rails.cache.read(:new_ticket)

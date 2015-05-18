@@ -1,5 +1,4 @@
 class DepartmentsController < ApplicationController
-  before_action :authenticate_user!
   before_action :set_department, only: [:update, :destroy]
   respond_to :html, :xml, :json
 

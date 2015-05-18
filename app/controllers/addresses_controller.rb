@@ -1,5 +1,4 @@
 class AddressesController < ApplicationController
-  before_action :authenticate_user!
   before_action :set_address, only: [:show, :edit, :update, :destroy, :make_primary_address]
   respond_to :html, :xml, :json
 

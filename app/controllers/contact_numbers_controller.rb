@@ -1,5 +1,4 @@
 class ContactNumbersController < ApplicationController
-  before_action :authenticate_user!
   before_action :set_contact_number, only: [:update, :destroy, :make_primary_contact_number]
   respond_to :html, :xml, :json
 

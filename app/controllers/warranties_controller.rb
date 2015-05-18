@@ -1,5 +1,5 @@
 class WarrantiesController < ApplicationController
-  before_action :authenticate_user!
+  # before_action :user_session_expired
 
   # before_action :set_warranty, only: [:]
 
@@ -18,6 +18,8 @@ class WarrantiesController < ApplicationController
     @customer = Customer.find(session[:customer_id])
     @warranty = Warranty.new(product_serial_id: session[:product_id])
     QAndA
+
+    @ge_questions = GeQAndA.where(action_id: 1)
     if params[:function_param] == "display_form"
       @display_form = true
     else

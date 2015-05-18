@@ -7,6 +7,8 @@ class ApplicationController < ActionController::Base
 
   layout :layout_by_resource
 
+  before_filter :user_session_expired
+
   rescue_from CanCan::AccessDenied do |exception|
     redirect_to root_url, :alert => exception.message
   end
@@ -27,6 +29,14 @@ class ApplicationController < ActionController::Base
         "devise_template"
       else
         "application"
+      end
+    end
+
+    def user_session_expired
+      if request.xhr?
+        render js: "alert('session expired'); window.location.href='#{root_url}';" unless user_signed_in?
+      else
+        authenticate_user!
       end
     end
 end

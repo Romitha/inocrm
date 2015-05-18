@@ -25,11 +25,11 @@ class User < ActiveRecord::Base
   #2014_11_11
   belongs_to :organization
 
-  belongs_to :department
+  # belongs_to :department
 
   has_many :customer_tickets, foreign_key: "customer_id", class_name: "Ticket"
 
-  has_many :comments, foreign_key: "agent_id"
+  # has_many :comments, foreign_key: "agent_id"
 
   validates_uniqueness_of :user_name
 
