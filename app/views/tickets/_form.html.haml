@@ -26,7 +26,7 @@
 
 #tab_panel1
   = tab_panel do
-    = tab_nav_tab({}, product_details: {active_class: "active", content: "Product"}, history: {content: "History"})
+    = tab_nav_tab({}, product_details: {active_class: "active", content: "Ticket"}, history: {content: "History"})
     .tab-content
       = tab_content active_class: "active", tabpointer: "product_details" do
         = initiate_table table_type: "table-hover" do
@@ -64,23 +64,21 @@
         %br/
         = f.select :job_type_id, options_from_collection_for_select(JobType.all, :id, :name), {},{class: "col-md-12 small_scale_margin-top5"}
       .col-md-4
-        = f.input :problem_description, label:"Problem Description"
+        = f.input :problem_description, label:"Problem Description", input_html: {rows: 1}
 
     
     .row 
-      = f.input :other_accessories, wrapper_html: {class: "col-md-4"}
-      = f.simple_fields_for :ticket_accessories do |fc|
-        = fc.association :accessory, label_method: :accessory, value_method: :id, include_blank: false, wrapper_html: {class: "col-md-6"}
-        = fc.input :note, wrapper_html: {class: "col-md-5"}
-        .add_sign
-          = fc.link_to_remove class: "remove_c_t_v_link" do
-            %span.glyphicon.glyphicon-remove-sign
-            
-        
-
-      
+      = f.input :other_accessories, wrapper_html: {class: "col-md-4"}, input_html: {rows: 1}
       .col-md-8
-        = f.link_to_add :ticket_accessories, class: "accessory_links" do
+        = f.simple_fields_for :ticket_accessories do |fc|
+          = fc.association :accessory, label_method: :accessory, value_method: :id, include_blank: false, wrapper_html: {class: "col-md-6"}
+          = fc.input :note, wrapper_html: {class: "col-md-5"}
+          .add_sign
+            = fc.link_to_remove class: "remove_c_t_v_link" do
+              %span.glyphicon.glyphicon-remove-sign
+            
+      .col-md-8.pull-right
+        = f.link_to_add :ticket_accessories, class: "accessory_links small_scale_padding-right2" do
           %span.glyphicon.glyphicon-plus-sign
           Add Accessory
         = link_to create_accessory_tickets_path(status_param: "initiate"), remote: true, method: :post, title: "Create Accessory", class: "accessory_links" do

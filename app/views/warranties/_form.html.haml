@@ -1,6 +1,6 @@
 - display_form = @display_form
 .row.refresh
-  = link_to "", new_warranty_path, remote: true, class: "glyphicon glyphicon-refresh"
+  / = link_to "", new_warranty_path, remote: true, class: "glyphicon glyphicon-refresh"
 
 - priority = link_to "#", class: "inline_edit", data: {type: "select", source: INOCRM_CONFIG["priority"].collect{ |key,value| {value: value, text: key} }, resource: "ticket", name: "priority", url: ticket_update_tickets_path, "original-title" => "Update priority"} do
   = INOCRM_CONFIG["priority"].key(ticket.priority.to_i)
@@ -73,7 +73,7 @@
                 .col-md-3
                   = f.input :care_pack_reg_no
                 .col-md-6
-                  = f.input :note
+                  = f.input :note, input_html: {rows: 1}
               = f.submit "Save", class: "btn btn-success pull-right"
           - else
             = link_to "New Warranty", "#", onclick: "Warranties.warranty_create('display_form'); false;"

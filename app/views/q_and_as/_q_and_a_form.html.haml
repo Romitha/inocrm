@@ -30,7 +30,7 @@
       - if qa.object.q_and_a.answer_type == "YN"
         = qa.input :answer, as: :radio_buttons, collection: ["Yes", "No"], include_blank: false, wrapper: :for_radio_button
       - elsif qa.object.q_and_a.answer_type == "TX"
-        = qa.input :answer, required: qa.object.q_and_a.compulsory
+        = qa.input :answer, required: qa.object.q_and_a.compulsory, input_html: {rows: 1}
 
 
   = f.submit "Save and Next", class: "btn btn-sm btn-success", data: { disable_with: "Please wait..." }
