@@ -29,7 +29,7 @@
 
 
 = initiate_table table_type: "table-hover" do
-  = table_header ["Priority", "Problem Category", "Problem description", "Warranty", "Ticket type", "Customer chargeable", "Informed Method"]
+  = table_header ["Priority", "Problem category", "Problem description", "Warranty", "Ticket type", "Customer chargeable", "Informed method"]
   = table_body [priority, problemcategory, problemdescription, warranty, tickettype,customerchargeable, informmethod]
 
 %strong Customer
@@ -51,9 +51,8 @@
 #contact_persons
   .row
     .col-md-4
-      %strong contact person1
-      %br/
-      = label_tag "Select", class: "small_scale_margin-right1" do
+      %strong Contact person1
+      = label_tag "Select", class: "small_scale_margin-right1 small_scale_margin-left2" do
         = radio_button_tag "contact_person1", "select", false, class: "radio_for_contact_person1", data: {param: "select_contact_person1"}
         Select
       = label_tag "Create contact person1" do
@@ -72,9 +71,8 @@
 
 
     .col-md-4
-      %strong contact person2
-      %br/
-      = label_tag "Select contact person2", class: "small_scale_margin-right1" do
+      %strong Contact person2
+      = label_tag "Select contact person2", class: "small_scale_margin-right1 small_scale_margin-left2" do
         = radio_button_tag "contact_person2", "select", false, class: "radio_for_contact_person2", data: {param: "select_contact_person2"}
         Select
       = label_tag "Create contact person2" do
@@ -93,8 +91,7 @@
 
     .col-md-4
       %strong Report Person
-      %br/
-      = label_tag "Select report person", class: "small_scale_margin-right1" do
+      = label_tag "Select report person", class: "small_scale_margin-right1 small_scale_margin-left2" do
         = radio_button_tag "report_person", "select", false, class: "radio_for_report_person", data: {param: "select_report_person"}
         Select
       = label_tag "Create report person" do
@@ -114,7 +111,7 @@
     .col-md-12
       = link_to "Back", find_by_serial_tickets_path(serial_search: ticket.products.first.serial_no), remote: true, method: :post
       - if ticket.contact_person1 and ticket.contact_person2 and ticket.report_person
-        = link_to "Next", new_warranty_path, remote: true, class: "btn btn-sm btn-success"
+        = link_to "Next", new_warranty_path, remote: true, class: "btn btn-sm btn-success  small_scale_margin-top2 small_scale_margin-bottom2"
 
 #contact_person.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "contact_person", "aria-hidden" => true}
   .modal-dialog

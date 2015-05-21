@@ -25,7 +25,7 @@
   
 
 = initiate_table table_type: "table-hover" do
-  = table_header ["Priority", "Problem Category", "Problem description", "Warranty", "Ticket type", "Customer chargeable", "Informed Method"]
+  = table_header ["Priority", "Problem category", "Problem description", "Warranty", "Ticket type", "Customer chargeable", "Informed method"]
   = table_body [priority, problemcategory, problemdescription, warranty, tickettype, customerchargeable, informmethod]
 .row
   = render "users/customer_and_contact_person", customer: customer, ticket: ticket
@@ -39,15 +39,13 @@
           - if display_form
             = simple_form_for @warranty, remote: true do |f|
               = f.input :product_serial_id, as: :hidden
-              .row
-                .col-md-12
-                  = link_to "Back", "#", onclick: "Warranties.warranty_create('select'); false;"
+              
               .row
                 .col-md-6
                   = f.association :warranty_type, as: :radio_buttons, wrapper: :append
                 .col-md-6
                   .strong
-                    Warranty Date Format
+                    Warranty date format
                   %select.selectpicker{:name => "selValue", class: "small_scale_margin-top1"}
                     %option dd M, yyyy
                     %option dd, yyyy, M
@@ -66,12 +64,12 @@
                 .col-md-4
                   = f.input :period_labour
                 .col-md-4
-                  = f.input :corporate_onsight
+                  = f.input :corporate_onsight, label: "Corporate onsite"
               .row
                 .col-md-3
-                  = f.input :care_pack_product_no
+                  = f.input :care_pack_product_no, label: "Care pack product number"
                 .col-md-3
-                  = f.input :care_pack_reg_no
+                  = f.input :care_pack_reg_no, label: "Care pack reg number"
                 .col-md-6
                   = f.input :note, input_html: {rows: 1}
               = f.submit "Save", class: "btn btn-success pull-right"
@@ -79,6 +77,7 @@
             = link_to "New Warranty", "#", onclick: "Warranties.warranty_create('display_form'); false;"
             - if @warranties.present?
               = render "warranties/select_warranties", warranties: @warranties
+              = link_to "Back", create_customer_tickets_path(customer_id: customer.id), remote: true, method: :post
 
       = tab_content tabpointer: "join_ticket" do
         .row
@@ -88,7 +87,8 @@
       = tab_content tabpointer: "q_and_a" do
         = render "q_and_as/q_and_a_form"
 
-  = link_to "Back", create_customer_tickets_path(customer_id: customer.id), remote: true, method: :post
+  = link_to "Cancel", "#", onclick: "Warranties.warranty_create('select'); false;"
+  
 #warranties_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "warranties_modal", "aria-hidden" => true}
   .modal-dialog
     .modal-content

@@ -30,7 +30,7 @@
 
 
 = initiate_table table_type: "table-hover" do
-  = table_header ["Priority", "Problem Category", "Problem description", "Warranty", "Ticket type", "Customer chargeable", "Informed Method"]
+  = table_header ["Priority", "Problem category", "Problem description", "Warranty", "Ticket type", "Customer chargeable", "Informed method"]
   = table_body [priority, problemcategory, problemdescription, warranty, tickettype, customerchargeable, informmethod]
 
 - if existing_customer
@@ -39,8 +39,7 @@
     = table_body ["#{existing_customer.mst_title.try(:name)} #{existing_customer.name}", "#{existing_customer.address1}, #{existing_customer.address2}, #{existing_customer.address3} #{existing_customer.address4}, #{existing_customer.district.try(:name)}", customer_contact_types]
 
 %strong Customer
-%br/
-= label_tag "Select Customer", class: "small_scale_margin-right1" do
+= label_tag "Select Customer", class: "small_scale_margin-right1 small_scale_margin-left2" do
   = radio_button_tag "customer_select", "select", false, class: "radio_for_customer_select", onchange: "Tickets.customer_select('select'); false;"
   Select
 = label_tag "New Customer" do
@@ -97,7 +96,7 @@
     .col-md-12
       = link_to "Back", find_by_serial_tickets_path(serial_search: ticket.products.first.serial_no), remote: true, method: :post
       - if existing_customer
-        = link_to "Next", create_customer_tickets_path(customer_id: existing_customer.id), remote: true, method: :post, class: "btn-success btn", data: {disable_with: "Please wait..."}
+        = link_to "Next", create_customer_tickets_path(customer_id: existing_customer.id), remote: true, method: :post, class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2", data: {disable_with: "Please wait..."}
 
 #customer_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "customer_modal", "aria-hidden" => true}
   .modal-dialog

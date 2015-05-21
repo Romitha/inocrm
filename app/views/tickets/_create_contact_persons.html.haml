@@ -3,7 +3,7 @@
   - if build_contact_person.new_record?
     = simple_nested_form_for build_contact_person, url: create_contact_person_record_tickets_path, method: :post, remote: true do |f|
       .row
-        = f.association :mst_title, wrapper_html: {class:"col-md-3"}
+        = f.association :mst_title, wrapper_html: {class:"col-md-3"}, label: "Title"
         = f.input :name, wrapper_html: {class:"col-md-9"}
 
       = f.simple_fields_for :contact_person_contact_types do |c|

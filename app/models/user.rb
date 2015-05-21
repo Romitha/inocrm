@@ -151,7 +151,9 @@ class ContactPerson1 < ActiveRecord::Base
   has_many :contact_types, through: :contact_person_contact_types
   accepts_nested_attributes_for :contact_person_contact_types, allow_destroy: true, reject_if: :all_blank
 
+
   belongs_to :mst_title, foreign_key: :title_id
+  validates_presence_of [:title_id, :name]
 end
 
 class ContactPerson2 < ActiveRecord::Base
@@ -164,7 +166,9 @@ class ContactPerson2 < ActiveRecord::Base
   has_many :contact_types, through: :contact_person_contact_types
   accepts_nested_attributes_for :contact_person_contact_types, allow_destroy: true, reject_if: :all_blank
 
+
   belongs_to :mst_title, foreign_key: :title_id
+  validates_presence_of [:title_id, :name]
 end
 
 class ReportPerson < ActiveRecord::Base
@@ -175,7 +179,9 @@ class ReportPerson < ActiveRecord::Base
   has_many :contact_types, through: :contact_person_contact_types
   accepts_nested_attributes_for :contact_person_contact_types, allow_destroy: true, reject_if: :all_blank
 
+  
   belongs_to :mst_title, foreign_key: :title_id
+  validates_presence_of [:title_id, :name]
 end
 
 class RegularCustomer < ActiveRecord::Base

@@ -12,7 +12,7 @@
     - ticket.ge_q_and_answers.build general_question_id: ge_q_and_a.id
 
 = simple_nested_form_for ticket, url: q_and_answer_save_tickets_path, remote: true do |f|
-  %h4 General Questions
+  %h4 General questions
   = f.simple_fields_for :ge_q_and_answers do |qa|
     .col-md-6
       .strong= qa.object.ge_q_and_a.question
@@ -22,7 +22,7 @@
       - elsif qa.object.ge_q_and_a.answer_type == "TX"
         = qa.input :answer, required: qa.object.ge_q_and_a.compulsory
   %hr
-  %h4 Problematic Questions
+  %h4 Problematic questions
   = f.simple_fields_for :q_and_answers do |qa|
     .col-md-6
       .strong= qa.object.q_and_a.question
@@ -33,4 +33,4 @@
         = qa.input :answer, required: qa.object.q_and_a.compulsory, input_html: {rows: 1}
 
 
-  = f.submit "Save and Next", class: "btn btn-sm btn-success", data: { disable_with: "Please wait..." }
+  = f.submit "Save and next", class: "btn btn-sm btn-success", data: { disable_with: "Please wait..." }

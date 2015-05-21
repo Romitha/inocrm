@@ -21,9 +21,9 @@
         .add_sign
           = link_to new_product_category_tickets_path, remote: true, title: "New Category" do
             %span.glyphicon.glyphicon-plus-sign
-      = f.input :serial_no, wrapper_html: {class:"col-md-2"}, :readonly=>true
-      = f.input :model_no, wrapper_html: {class:"col-md-2"}
-      = f.input :product_no, wrapper_html: {class:"col-md-2"}
+      = f.input :serial_no, wrapper_html: {class:"col-md-2"}, :readonly=>true, label: "Serial number"
+      = f.input :model_no, wrapper_html: {class:"col-md-2"}, label: "Model number"
+      = f.input :product_no, wrapper_html: {class:"col-md-2"}, label: "Product number"
 
     .row
       = f.association :product_pop_status, collection: ProductPopStatus.first(3), include_blank: false, wrapper_html: {class:"col-md-3"}
@@ -34,7 +34,7 @@
             %span.glyphicon.glyphicon-plus-sign
 
       .col-md-2
-        %strong.small_scale_padding-bottom3{style: "display: block;"} Pop Note document
+        %strong.small_scale_padding-bottom3{style: "display: block;"} Pop note document
         #preview_of_pop_doc_url{style: "word-wrap: break-word;"}
           = product.pop_doc_url.file.filename if product.pop_doc_url.present?
         .upload_button

@@ -9,13 +9,13 @@
     %thead
       %tr
         %th
-          Ticket No
+          Ticket number
         %th
-          Problem Category
+          Problem category
         %th
-          Serial No
+          Serial number
         %th
-          Model No
+          Model number
 
     %tbody
       = f.simple_fields_for :joint_tickets do |jt|
@@ -32,4 +32,4 @@
               = ticket_detail.products.first.model_no
           %td
             = check_box_tag "ticket[joint_tickets_attributes][][joint_ticket_id]", jt.object.joint_ticket_id, joint_tickets.include?(jt.object.joint_ticket_id)
-  = f.submit "Join Ticket", class: "btn btn-info btn-sm"
+  = f.submit "Join ticket", class: "btn btn-info btn-sm"
