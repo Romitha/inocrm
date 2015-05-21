@@ -13,7 +13,7 @@ class WarrantiesController < ApplicationController
   def new
     session[:warranty_id] = nil
     ContactNumber
-    @ticket = Rails.cache.read(:new_ticket)
+    @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s])
     @problem_category = @ticket.problem_category
     @customer = Customer.find(session[:customer_id])
     @warranty = Warranty.new(product_serial_id: session[:product_id])
@@ -29,7 +29,7 @@ class WarrantiesController < ApplicationController
   end
 
   def create
-    @ticket = Rails.cache.read(:new_ticket)
+    @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s])
     @customer = Customer.find(session[:customer_id])
     @product = Product.find(session[:product_id])
     @warranties = @product.warranties
@@ -39,7 +39,7 @@ class WarrantiesController < ApplicationController
     else
       @warranty = Warranty.new warranty_params
       if @warranty.save
-        Rails.cache.write(:created_warranty, @warranty)
+        Rails.cache.write([:created_warranty, request.remote_ip.to_s], @warranty)
         @problem_category = @ticket.problem_category
         @display_form = false
         # render "q_and_as/q_and_answer_record"
@@ -55,7 +55,7 @@ class WarrantiesController < ApplicationController
 
   def select_for_warranty
     @product = Product.find session[:product_id]
-    @ticket = Rails.cache.read(:new_ticket)
+    @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s])
 
     if params[:warranty_id]
       @warranty = Warranty.find params[:warranty_id]
@@ -63,7 +63,7 @@ class WarrantiesController < ApplicationController
       @ticket.warranty_type_id = @warranty.warranty_type.id
       session[:warranty_id] = @warranty.id
     end
-    Rails.cache.write(:new_ticket, @ticket)
+    Rails.cache.write([:new_ticket, request.remote_ip.to_s], @ticket)
     @problem_category = @ticket.problem_category
 
     render "tickets/remarks"
@@ -71,7 +71,7 @@ class WarrantiesController < ApplicationController
   end
 
   def destroy
-    @ticket = Rails.cache.read(:new_ticket)
+    @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s])
     @customer = Customer.find(session[:customer_id])
     @product = Product.find(session[:product_id])
     @warranties = @product.warranties
@@ -80,7 +80,7 @@ class WarrantiesController < ApplicationController
     @warranty = Warranty.find(params[:id])
 
     if @warranty.destroy
-      Rails.cache.delete(:created_warranty)
+      Rails.cache.delete([:created_warranty, request.remote_ip.to_s])
       render :new
     end
   end
