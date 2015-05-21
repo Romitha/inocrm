@@ -1,7 +1,7 @@
 class QAndAsController < ApplicationController
 
   def q_and_answer_record
-    @ticket = Rails.cache.read(:new_ticket)
+    @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
     @problem_category = @ticket.problem_category
   end
 

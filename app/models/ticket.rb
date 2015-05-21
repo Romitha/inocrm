@@ -57,7 +57,7 @@ class Ticket < ActiveRecord::Base
   before_create :update_ticket_no
 
   def update_ticket_no
-    ticket_no = self.class.order("created_at desc").first.ticket_no+1
+    self.ticket_no = (self.class.order("created_at desc").first.ticket_no.to_i+1)
   end
 
 end
