@@ -32,5 +32,4 @@
       - elsif qa.object.q_and_a.answer_type == "TX"
         = qa.input :answer, required: qa.object.q_and_a.compulsory, input_html: {rows: 1}
 
-
-  = f.submit "Save and next", class: "btn btn-sm btn-success", data: { disable_with: "Please wait..." }
+  = f.submit "Next", class: "btn btn-sm btn-success", data: { disable_with: "Please wait..." }, class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2", "id"=>"save_next"

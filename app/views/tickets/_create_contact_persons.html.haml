@@ -7,12 +7,12 @@
         = f.input :name, wrapper_html: {class:"col-md-9"}
 
       = f.simple_fields_for :contact_person_contact_types do |c|
-        .add_sign
-          = c.link_to_remove class: "remove_c_t_v_link" do
-            %span.glyphicon.glyphicon-remove-sign
         .row
-          = c.association :contact_type, wrapper_html: {class:"col-md-5"}
+          = c.association :contact_type, wrapper_html: {class: "col-md-5"}
           = c.input :value, wrapper_html: {class:"col-md-6"}
+          .add_sign
+            = c.link_to_remove class: "remove_c_t_v_link" do
+              %span.glyphicon.glyphicon-remove-sign
       = f.link_to_add :contact_person_contact_types do
         %span.glyphicon.glyphicon-plus-sign
         %br/

@@ -32,4 +32,8 @@
               = ticket_detail.products.first.model_no
           %td
             = check_box_tag "ticket[joint_tickets_attributes][][joint_ticket_id]", jt.object.joint_ticket_id, joint_tickets.include?(jt.object.joint_ticket_id)
-  = f.submit "Join ticket", class: "btn btn-info btn-sm"
+  .row
+    .col-md-2
+      = link_to "Next", "#q_and_a", "data-toggle"=>"tab", "aria_controls"=>"q_and_a", class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2", "id"=>"join_next"
+    .col-md-10
+      = f.submit "Join ticket", class: "btn btn-info btn-sm pull-right "

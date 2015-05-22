@@ -58,7 +58,7 @@
           - customer.errors.full_messages.each do |error|
             %li= error
     %fieldset
-      %legend New Customer
+      %legend New customer
       = simple_nested_form_for customer, url: create_customer_tickets_path, method: :post, remote: true do |f|
         = f.input :organization_id, as: :hidden
         .row
@@ -79,7 +79,7 @@
                 = fc.link_to_remove class: "remove_c_t_v_link" do
                   %span.glyphicon.glyphicon-remove-sign
               .col-md-4
-                %strong Contact Type
+                %strong Contact type
                 %br/
                 = fc.select :contact_type_id, ContactType.all.map {|c| [c.name, c.id]}, {}, class: "col-md-12 small_scale_margin-top5"
 
@@ -87,10 +87,10 @@
 
         .add_sign{style: "width: 100%;"}
           = f.link_to_add :contact_type_values, style: "clear: both;display: block;" do
-            Add a Contact Type
+            Add a contact type
             %span.glyphicon.glyphicon-plus-sign
           %br/
-        = link_to "Cancel and Next", create_customer_tickets_path(customer_id: existing_customer.id), remote: true, method: :post, class: "btn btn-link", data: {disable_with: "Please wait..."}
+        = link_to "Cancel", create_customer_tickets_path(customer_id: existing_customer.id), remote: true, method: :post, class: "btn btn-link", data: {disable_with: "Please wait..."}
         = f.submit "Save", class: "btn btn-success btn-sm"
 - else
   .row

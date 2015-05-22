@@ -61,14 +61,14 @@
                 %br/
                 = f.select :job_type_id, options_from_collection_for_select(JobType.all, :id, :name), {},{class: "col-md-12 small_scale_margin-top3"}
               .col-md-4
-                = f.input :problem_description, label:"Problem Description", input_html: {rows: 1}
+                = f.input :problem_description, label:"Problem description", input_html: {rows: 1}
 
             .row 
               = f.input :other_accessories, wrapper_html: {class: "col-md-4"}, input_html: {rows: 1}
               .col-md-8
                 = f.simple_fields_for :ticket_accessories do |fc|
                   = fc.association :accessory, label_method: :accessory, value_method: :id, include_blank: false, wrapper_html: {class: "col-md-6"}
-                  = fc.input :note, wrapper_html: {class: "col-md-5"}
+                  = fc.input :note, wrapper_html: {class: "col-md-5"}, input_html: {rows: 1}
                   .add_sign
                     = fc.link_to_remove class: "remove_c_t_v_link" do
                       %span.glyphicon.glyphicon-remove-sign
@@ -84,7 +84,7 @@
             .row
               .col-md-12
                 = f.association :warranty_type, as: :radio_buttons, wrapper_html: {class: "col-md-6"}, wrapper: :append
-                = f.input :cus_chargeable, label: "Customer chargeable", as: :radio_buttons, wrapper_html: {class: "col-md-2"}, wrapper: :append
+                = f.input :cus_chargeable, label: "Customer chargeable", as: :radio_buttons, wrapper_html: {class: "col-md-2"}, wrapper: :append, checked: "true", required: true
                 = f.association :ticket_type, as: :radio_buttons, wrapper_html: {class: "col-md-3"}, wrapper: :append, input_html: {class: "ticket_type"}
                 = f.input :regional_support_job, label: "Regional", wrapper_html: {class: "col-md-1"}, wrapper: :append
             .row

@@ -12,12 +12,12 @@
   = simple_form_for product, url: create_product_tickets_path, multipart: true, remote: true do |f|
     .row
       .col-md-3
-        = f.association :product_brand, wrapper_html: {style: "width: 93%; float: left;"}
+        = f.association :product_brand, wrapper_html: {class: "col-md-11"}
         .add_sign
           = link_to new_product_brand_tickets_path, remote: true, title: "New Product" do
             %span.glyphicon.glyphicon-plus-sign
       .col-md-3
-        = f.association :product_category, collection: ProductBrand.all, as: :grouped_select, group_method: :product_categories, input_html: {class: "chosen-select"}, wrapper_html: {style: "width: 93%; float: left;"}
+        = f.association :product_category, collection: ProductBrand.all, as: :grouped_select, group_method: :product_categories, input_html: {class: "chosen-select"}, wrapper_html: {class: "col-md-11"}
         .add_sign
           = link_to new_product_category_tickets_path, remote: true, title: "New Category" do
             %span.glyphicon.glyphicon-plus-sign
@@ -26,9 +26,10 @@
       = f.input :product_no, wrapper_html: {class:"col-md-2"}, label: "Product number"
 
     .row
-      = f.association :product_pop_status, collection: ProductPopStatus.first(3), include_blank: false, wrapper_html: {class:"col-md-3"}
       .col-md-3
-        = f.association :product_sold_country, wrapper_html: {style: "width: 93%; float: left;"}, label_method: :Country, value_method: :id
+        = f.association :product_pop_status, collection: ProductPopStatus.first(3), include_blank: false, wrapper_html: {class: "col-md-11"}
+      .col-md-3
+        = f.association :product_sold_country, wrapper_html: {class: "col-md-11"}, label_method: :Country, value_method: :id
         .add_sign
           = link_to create_product_country_tickets_path(status_param: "initiate"), method: :post, remote: true, title: "Country" do
             %span.glyphicon.glyphicon-plus-sign
@@ -54,5 +55,5 @@
       = f.input :pop_note, wrapper_html: {class:"col-md-4"}
     .row
       .col-md-12
-        = link_to "Cancel", new_ticket_path
-        = f.submit "Save", name: "next_to_customer", class: "btn btn-success btn-sm", data: {disable_with: "Please wait..."}
+        = link_to "Cancel", new_ticket_path, class: "small_scale_margin-left1"
+        = f.submit "Save", name: "next_to_customer", class: "btn btn-success btn-sm small_scale_margin-left1", data: {disable_with: "Please wait..."}

@@ -1,7 +1,5 @@
-= link_to "", remarks_tickets_path, remote: true, class: "glyphicon glyphicon-refresh"
 #remarks
-  / = render "q_and_as/q_and_answer", ticket: ticket
-  %hr
+  / = render "q_and_as/q_and_answer", ticket: tickets
 
   = simple_form_for ticket, url: finalize_ticket_save_tickets_path, method: :post, remote: true do |f|
     .row
@@ -11,7 +9,7 @@
         = f.select :contact_type_id, options_from_collection_for_select(TicketContactType.all, :id, :name), {}, class: "col-md-12 small_scale_margin-top5"
 
       .col-md-2
-        %strong Contact By
+        %strong Informed to
         %br/
         = f.select :inform_cp, [["Contact Person1", 1], ["Contact Person2", 2]], {}, class: "col-md-12 small_scale_margin-top5"
 
@@ -26,14 +24,12 @@
       .col-md-12
         = link_to "Back", new_warranty_path, remote: true
         .btn-group
-          = f.submit "Save",class: "btn btn-success"
+          = f.submit "Save",class: "btn btn-success "
           %button.btn.btn-success.dropdown-toggle{"aria-expanded" => "false", "data-toggle" => "dropdown", :type => "button"}
             %span.caret
             %span.sr-only Toggle Dropdown
           %ul.dropdown-menu{:role => "menu"}
             %li
-              = link_to "Save and View", '#'
-            %li
-              = link_to "Save and Print", '#' 
+              = link_to "print and close", '#'
             %li
               = link_to "Cancel", '#'
