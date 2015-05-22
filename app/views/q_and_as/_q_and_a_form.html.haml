@@ -18,7 +18,7 @@
       .strong= qa.object.ge_q_and_a.question
       = qa.input :general_question_id, as: :hidden
       - if qa.object.ge_q_and_a.answer_type == "YN"
-        = qa.input :answer, as: :radio_buttons, collection: ["Yes", "No"], include_blank: false, wrapper: :for_radio_button
+        = qa.input :answer, as: :radio_buttons, collection: ["Yes", "No"], include_blank: false, wrapper: :for_radio_button, required: qa.object.ge_q_and_a.compulsory
       - elsif qa.object.ge_q_and_a.answer_type == "TX"
         = qa.input :answer, required: qa.object.ge_q_and_a.compulsory
   %hr
@@ -28,7 +28,7 @@
       .strong= qa.object.q_and_a.question
       = qa.input :problematic_question_id, as: :hidden
       - if qa.object.q_and_a.answer_type == "YN"
-        = qa.input :answer, as: :radio_buttons, collection: ["Yes", "No"], include_blank: false, wrapper: :for_radio_button
+        = qa.input :answer, as: :radio_buttons, collection: ["Yes", "No"], include_blank: false, wrapper: :for_radio_button, required: qa.object.q_and_a.compulsory, input_html: {rows: 1}
       - elsif qa.object.q_and_a.answer_type == "TX"
         = qa.input :answer, required: qa.object.q_and_a.compulsory, input_html: {rows: 1}
 
