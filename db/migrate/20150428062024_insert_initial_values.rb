@@ -236,7 +236,7 @@ class InsertInitialValues < ActiveRecord::Migration
     end
 
     [
-      ["Check outer condition?", "Any damage in the casing?", 1, 1, 1],
+      ["Check outer condition?", "YN", 1, 1, 1],
       ["Any damage in the casing?", "TX", 1, 1, 0]
     ].each do |value|
       execute("insert into mst_spt_general_question (question, answer_type, active, action_id, compulsory) values ('#{value[0]}', '#{value[1]}', '#{value[2]}', '#{value[3]}', '#{value[4]}')")
