@@ -1,3 +1,9 @@
-# Place all the behaviors and hooks related to the matching controller here.
-# All this logic will automatically be available in application.js.
-# You can use CoffeeScript in this file: http://coffeescript.org/
+window.QAndAs =
+  setup: ->
+    return
+
+  coloring_row: ->
+    $(".checked_row").each ->
+      if $(@).is(":checked")
+        $(@).parents().eq(1).addClass("success")
+    return

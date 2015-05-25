@@ -4,6 +4,8 @@ class TaskAction < ActiveRecord::Base
   has_many :q_and_as, foreign_key: :action_id
 
   has_many :ge_q_and_as, foreign_key: :action_id
+
+  has_one :user_ticket_action, foreign_key: :action_id
 end
 
 class UserTicketAction < ActiveRecord::Base
@@ -12,4 +14,7 @@ class UserTicketAction < ActiveRecord::Base
   has_many :q_and_answers, foreign_key: :ticket_action_id
 
   has_many :ge_q_and_answers, foreign_key: :ticket_action_id
+
+  belongs_to :ticket
+  belongs_to :task_action, foreign_key: :action_id
 end

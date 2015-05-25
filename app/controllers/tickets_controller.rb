@@ -595,12 +595,13 @@ class TicketsController < ApplicationController
 
   def finalize_ticket_save
     QAndA
+    TaskAction
     @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
     # @ticket_params = Rails.cache.read(:ticket_params)
     @ticket.status_id = TicketStatus.find_by_code("CLS").id if params[:first_resolution]
     # @ticket_params.merge! ticket_params
     if @ticket.save
-    # if @ticket.update @ticket_params
+      @ticket.create_user_ticket_action(action_at: DateTime.now, action_by: current_user.id, re_open_index: 1, action_id: 1)
       Rails.cache.delete([:new_ticket, request.remote_ip.to_s, session[:time_now]])
       Rails.cache.delete([:ticket_params, request.remote_ip.to_s, session[:time_now]])
       Rails.cache.delete([:created_warranty, request.remote_ip.to_s, session[:time_now]])

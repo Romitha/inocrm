@@ -462,7 +462,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.column :action_id, "INT UNSIGNED"
       t.datetime :action_at
       t.column :action_by, "INT UNSIGNED"
-      t.integer :re_open_count                              
+      t.integer :re_open_index
       t.timestamps
     end
 

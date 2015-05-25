@@ -37,7 +37,7 @@ class ApplicationController < ActionController::Base
         if verified_request?
           render js: "alert('session expired'); window.location.href='#{root_url}';" unless user_signed_in?
         else
-          render js: "alert('security token is expired to prevent from CSRF attack. Please refresh and continue. Sorry for inconvenience');"
+          render js: "alert('session expired'); window.location.href='#{root_url}';" unless user_signed_in?
         end
       else
         authenticate_user!

@@ -1,6 +1,6 @@
 - joint_tickets = ticket.joint_tickets.collect{|j| j.joint_ticket_id}
 
-- customer.tickets.each do |t|
+- customer.tickets.where(created_at: (Date.today-7)..Date.today).each do |t|
   - unless joint_tickets.include?(t.id)
     - ticket.joint_tickets.build joint_ticket_id: t.id
 = simple_nested_form_for ticket, url: join_tickets_tickets_path, method: :post, remote: true do |f|
@@ -31,7 +31,7 @@
             %td
               = ticket_detail.products.first.model_no
           %td
-            = check_box_tag "ticket[joint_tickets_attributes][][joint_ticket_id]", jt.object.joint_ticket_id, joint_tickets.include?(jt.object.joint_ticket_id)
+            = check_box_tag "ticket[joint_tickets_attributes][][joint_ticket_id]", jt.object.joint_ticket_id, joint_tickets.include?(jt.object.joint_ticket_id), class: "checked_row"
   .row
     .col-md-2
       = link_to "Next", "#q_and_a", "data-toggle"=>"tab", "aria_controls"=>"q_and_a", class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2", "id"=>"join_next"
