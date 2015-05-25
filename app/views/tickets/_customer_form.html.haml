@@ -90,7 +90,7 @@
             Add a contact type
             %span.glyphicon.glyphicon-plus-sign
           %br/
-        = link_to "Cancel", create_customer_tickets_path(customer_id: existing_customer.id), remote: true, method: :post, class: "btn btn-link", data: {disable_with: "Please wait..."}
+        = link_to "Cancel", create_customer_tickets_path(customer_id: existing_customer.id), remote: true, method: :post, class: "btn btn-link", data: {disable_with: "Please wait..."} if existing_customer
         = f.submit "Save", class: "btn btn-success btn-sm"
 - else
   .row

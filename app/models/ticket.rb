@@ -44,6 +44,7 @@ class Ticket < ActiveRecord::Base
   validates_presence_of [:ticket_no, :priority, :status_id, :problem_description, :informed_method_id, :job_type_id, :ticket_type_id, :warranty_type_id, :base_currency_id, :problem_category_id]
 
   validates_numericality_of [:ticket_no, :priority]
+  validates_inclusion_of :cus_chargeable, in: [:true, false]
 
   [:initiated_by, :initiated_by_id].each do |dyna_method|
     define_method(dyna_method) do
@@ -59,7 +60,7 @@ class Ticket < ActiveRecord::Base
   before_create :update_ticket_no
 
   def update_ticket_no
-    self.ticket_no = (self.class.order("created_at desc").first.ticket_no.to_i+1)
+    self.ticket_no = (self.class.order("created_at desc").first && self.class.order("created_at desc").first.ticket_no.to_i+1)
   end
 
 end
