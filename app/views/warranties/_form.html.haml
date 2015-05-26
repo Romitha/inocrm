@@ -23,10 +23,10 @@
 - informmethod = link_to "#", class: "inline_edit", data: {type: "select", source: InformMethod.all.collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "informed_method_id", url: ticket_update_tickets_path, "original-title" => "Update Informed method name"} do
   = ticket.inform_method.name
   
-
-= initiate_table table_type: "table-hover" do
-  = table_header ["Priority", "Problem category", "Problem description", "Warranty", "Ticket type", "Customer chargeable", "Informed method"]
-  = table_body [priority, problemcategory, problemdescription, warranty, tickettype, customerchargeable, informmethod]
+.ticket
+  = initiate_table table_type: "table-hover table-bordered" do
+    = table_header ["Priority", "Problem category", "Problem description", "Warranty", "Ticket type", "Customer chargeable", "Informed method"]
+    = table_body [priority, problemcategory, problemdescription, warranty, tickettype, customerchargeable, informmethod]
 .row
   = render "users/customer_and_contact_person", customer: customer, ticket: ticket
 %hr
@@ -93,6 +93,7 @@
         .row
           .col-md-12
             = render "q_and_as/q_and_a_form"
+            = link_to "Back", create_customer_tickets_path(customer_id: customer.id), remote: true, method: :post, "id"=>"qa_back"
             
   
 #warranties_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "warranties_modal", "aria-hidden" => true}

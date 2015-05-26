@@ -27,23 +27,22 @@
 - informmethod = link_to "#", class: "inline_edit", data: {type: "select", source: InformMethod.all.collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "informed_method_id", url: ticket_update_tickets_path, "original-title" => "Update Informed method name"} do
   = ticket.inform_method.name
 
-
-= initiate_table table_type: "table-hover" do
-  = table_header ["Priority", "Problem category", "Problem description", "Warranty", "Ticket type", "Customer chargeable", "Informed method"]
-  = table_body [priority, problemcategory, problemdescription, warranty, tickettype,customerchargeable, informmethod]
+.ticket
+  = initiate_table table_type: "table-hover table-bordered" do
+    = table_header ["Priority", "Problem category", "Problem description", "Warranty", "Ticket type", "Customer chargeable", "Informed method"]
+    = table_body [priority, problemcategory, problemdescription, warranty, tickettype,customerchargeable, informmethod]
 
 %strong Customer
-%br/
-= label_tag "Select Customer", class: "small_scale_margin-right1" do
+= label_tag "Select Customer", class: "small_scale_margin-right1 small_scale_margin-left2" do
   = radio_button_tag "customer_select", "select", false, class: "radio_for_customer_select", onchange: "Tickets.customer_select('select'); false;"
   Select
 = label_tag "New Customer" do
   = radio_button_tag "customer_select", "create", false, class: "radio_for_customer_select", onchange: "Tickets.customer_select('create'); false;"
   New
-
-= initiate_table table_type: "table-hover" do
-  = table_header ["Name", "Address", "Contacts"]
-  = table_body ["#{customer.mst_title.try(:name)} #{customer.name}", "#{customer.address1}, #{customer.address2}, #{customer.address3} #{customer.address4}, #{customer.district.try(:name)}", customer_contact_types]
+.contact
+  = initiate_table table_type: "table-hover table-bordered" do
+    = table_header ["Name", "Address", "Contacts"]
+    = table_body ["#{customer.mst_title.try(:name)} #{customer.name}", "#{customer.address1}, #{customer.address2}, #{customer.address3} #{customer.address4}, #{customer.district.try(:name)}", customer_contact_types]
 
 %hr
 

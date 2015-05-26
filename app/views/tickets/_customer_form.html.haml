@@ -28,15 +28,16 @@
 - informmethod = link_to "#", class: "inline_edit", data: {type: "select", source: InformMethod.all.collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "informed_method_id", url: ticket_update_tickets_path, "original-title" => "Update Informed method name"} do
   = ticket.inform_method.name
 
-
-= initiate_table table_type: "table-hover" do
-  = table_header ["Priority", "Problem category", "Problem description", "Warranty", "Ticket type", "Customer chargeable", "Informed method"]
-  = table_body [priority, problemcategory, problemdescription, warranty, tickettype, customerchargeable, informmethod]
+.ticket
+  = initiate_table table_type: "table-hover table-bordered" do
+    = table_header ["Priority", "Problem category", "Problem description", "Warranty", "Ticket type", "Customer chargeable", "Informed method"]
+    = table_body [priority, problemcategory, problemdescription, warranty, tickettype, customerchargeable, informmethod]
 
 - if existing_customer
-  = initiate_table table_type: "table-hover" do
-    = table_header ["Name", "Address", "Contacts"]
-    = table_body ["#{existing_customer.mst_title.try(:name)} #{existing_customer.name}", "#{existing_customer.address1}, #{existing_customer.address2}, #{existing_customer.address3} #{existing_customer.address4}, #{existing_customer.district.try(:name)}", customer_contact_types]
+  .contact
+    = initiate_table table_type: "table-hover table-bordered" do
+      = table_header ["Name", "Address", "Contacts"]
+      = table_body ["#{existing_customer.mst_title.try(:name)} #{existing_customer.name}", "#{existing_customer.address1}, #{existing_customer.address2}, #{existing_customer.address3} #{existing_customer.address4}, #{existing_customer.district.try(:name)}", customer_contact_types]
 
 %strong Customer
 = label_tag "Select Customer", class: "small_scale_margin-right1 small_scale_margin-left2" do
@@ -75,15 +76,15 @@
         .row
           = f.simple_fields_for :contact_type_values do |fc|
             .col-md-6
-              .add_sign
-                = fc.link_to_remove class: "remove_c_t_v_link" do
-                  %span.glyphicon.glyphicon-remove-sign
               .col-md-4
                 %strong Contact type
                 %br/
                 = fc.select :contact_type_id, ContactType.all.map {|c| [c.name, c.id]}, {}, class: "col-md-12 small_scale_margin-top5"
 
               = fc.input :value, wrapper_html: {class:"col-md-7"}
+              .add_sign
+                = fc.link_to_remove class: "remove_c_t_v_link" do
+                  %span.glyphicon.glyphicon-remove-sign
 
         .add_sign{style: "width: 100%;"}
           = f.link_to_add :contact_type_values, style: "clear: both;display: block;" do

@@ -29,68 +29,69 @@
     = tab_nav_tab({}, product_details: {active_class: "active", content: "Ticket"}, history: {content: "History"})
     .tab-content
       = tab_content active_class: "active", tabpointer: "product_details" do
-        = initiate_table table_type: "table-hover" do
-          = table_header ["Serial", "Brand", "Category", "Model number", "Product number", "Sold country", "Pop status", "Pop note"]
-          = table_body [product.serial_no, product.product_brand.name, product.product_category.name, product.model_no, product.product_no, product.product_sold_country.try(:Country), popstatus, popnote]
+        .product
+          = initiate_table table_type: "table-hover table-bordered"  do
+            = table_header ["Serial", "Brand", "Category", "Model number", "Product number", "Sold country", "Pop status", "Pop note"]
 
-
-        %hr
+            = table_body [product.serial_no, product.product_brand.name, product.product_category.name, product.model_no, product.product_no, product.product_sold_country.try(:Country), popstatus, popnote]
 
         #form_frame
-          /- ticket.ticket_accessories.build
-          = simple_nested_form_for ticket, remote: true, :authenticity_token => true do |f|
-            = f.input :status_id, as: :hidden
-            = f.input :ticket_no, as: :hidden
-            = f.input :base_currency_id, as: :hidden, input_html: {value: TicketCurrency.find_by(base_currency: true).try(:id)}
-            .row
-              .col-md-2
-                %strong Priority
-                = f.select :priority, INOCRM_CONFIG["priority"].collect{ |key,value| [ key, value ] }, {:selected => '3'}, class: "col-md-12 small_scale_margin-top3"
-              .col-md-2
-                = f.association :problem_category, wrapper_html: {class: "col-md-11"}, label:"Problem category"
-                .add_sign
-                  = link_to create_problem_category_tickets_path(status_param: "initiate"), remote: true, method: :post, title: "Add" do
-                    %span.glyphicon.glyphicon-plus-sign
-
-              .col-md-2
-                %strong Informed method
-                %br/
-                = f.select :informed_method_id, options_from_collection_for_select(InformMethod.all, :id, :name), {},{class: "col-md-12 small_scale_margin-top3"}
-              .col-md-2  
-                %strong Job type
-                %br/
-                = f.select :job_type_id, options_from_collection_for_select(JobType.all, :id, :name), {},{class: "col-md-12 small_scale_margin-top3"}
-              .col-md-4
-                = f.input :problem_description, label:"Problem description", input_html: {rows: 1}
-
-            .row 
-              = f.input :other_accessories, wrapper_html: {class: "col-md-4"}, input_html: {rows: 1}
-              .col-md-8
-                = f.simple_fields_for :ticket_accessories do |fc|
-                  = fc.association :accessory, label_method: :accessory, value_method: :id, include_blank: false, wrapper_html: {class: "col-md-6"}
-                  = fc.input :note, wrapper_html: {class: "col-md-5"}, input_html: {rows: 1}
+          %fieldset
+            %legend Ticket
+            /- ticket.ticket_accessories.build
+            = simple_nested_form_for ticket, remote: true, :authenticity_token => true do |f|
+              = f.input :status_id, as: :hidden
+              = f.input :ticket_no, as: :hidden
+              = f.input :base_currency_id, as: :hidden, input_html: {value: TicketCurrency.find_by(base_currency: true).try(:id)}
+              .row
+                .col-md-2
+                  %strong Priority
+                  = f.select :priority, INOCRM_CONFIG["priority"].collect{ |key,value| [ key, value ] }, {:selected => '3'}, class: "col-md-12 small_scale_margin-top3"
+                .col-md-2
+                  = f.association :problem_category, wrapper_html: {class: "col-md-11"}, label:"Problem category"
                   .add_sign
-                    = fc.link_to_remove class: "remove_c_t_v_link" do
-                      %span.glyphicon.glyphicon-remove-sign
-                    
-              .col-md-8.pull-right
-                = f.link_to_add :ticket_accessories, class: "accessory_links small_scale_padding-right2" do
-                  %span.glyphicon.glyphicon-plus-sign
-                  Add accessory
-                = link_to create_accessory_tickets_path(status_param: "initiate"), remote: true, method: :post, title: "Create Accessory", class: "accessory_links" do
-                  %span.glyphicon.glyphicon-plus-sign
-                  Create accessory
+                    = link_to create_problem_category_tickets_path(status_param: "initiate"), remote: true, method: :post, title: "Add" do
+                      %span.glyphicon.glyphicon-plus-sign
 
-            .row
-              .col-md-12
-                = f.association :warranty_type, as: :radio_buttons, wrapper_html: {class: "col-md-6"}, wrapper: :append
-                = f.input :cus_chargeable, label: "Customer chargeable", as: :radio_buttons, wrapper_html: {class: "col-md-2"}, wrapper: :append, required: true#, checked: "true"
-                = f.association :ticket_type, as: :radio_buttons, wrapper_html: {class: "col-md-3"}, wrapper: :append, input_html: {class: "ticket_type"}
-                = f.input :regional_support_job, label: "Regional", wrapper_html: {class: "col-md-1"}, wrapper: :append
-            .row
-            .row
-            = link_to "Cancel", new_ticket_path
-            = f.submit "Next", data: {disable_with: "Please wait..."}, class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2"
+                .col-md-2
+                  %strong Informed method
+                  %br/
+                  = f.select :informed_method_id, options_from_collection_for_select(InformMethod.all, :id, :name), {},{class: "col-md-12 small_scale_margin-top3"}
+                .col-md-2  
+                  %strong Job type
+                  %br/
+                  = f.select :job_type_id, options_from_collection_for_select(JobType.all, :id, :name), {},{class: "col-md-12 small_scale_margin-top3"}
+                .col-md-4
+                  = f.input :problem_description, label:"Problem description", input_html: {rows: 1}
+
+              .row 
+                = f.input :other_accessories, wrapper_html: {class: "col-md-4"}, input_html: {rows: 1}
+                .col-md-8
+                  = f.simple_fields_for :ticket_accessories do |fc|
+                    = fc.association :accessory, label_method: :accessory, value_method: :id, include_blank: false, wrapper_html: {class: "col-md-6"}
+                    = fc.input :note, wrapper_html: {class: "col-md-5"}, input_html: {rows: 1}
+                    .add_sign
+                      = fc.link_to_remove class: "remove_c_t_v_link" do
+                        %span.glyphicon.glyphicon-remove-sign
+                      
+                .col-md-8.pull-right
+                  = f.link_to_add :ticket_accessories, class: "accessory_links small_scale_padding-right2" do
+                    %span.glyphicon.glyphicon-plus-sign
+                    Add accessory
+                  = link_to create_accessory_tickets_path(status_param: "initiate"), remote: true, method: :post, title: "Create Accessory", class: "accessory_links" do
+                    %span.glyphicon.glyphicon-plus-sign
+                    Create accessory
+
+              .row
+                .col-md-12
+                  = f.association :warranty_type, as: :radio_buttons, wrapper_html: {class: "col-md-6"}, wrapper: :append
+                  = f.input :cus_chargeable, label: "Customer chargeable", as: :radio_buttons, wrapper_html: {class: "col-md-2"}, wrapper: :append, checked: "true", required: true
+                  = f.association :ticket_type, as: :radio_buttons, wrapper_html: {class: "col-md-3"}, wrapper: :append, input_html: {class: "ticket_type"}
+                  = f.input :regional_support_job, label: "Regional", wrapper_html: {class: "col-md-1"}, wrapper: :append
+              .row
+              .row
+              = link_to "Cancel", new_ticket_path
+              = f.submit "Next", data: {disable_with: "Please wait..."}, class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2"
 
       = tab_content tabpointer: "history" do
         #history_pagination
