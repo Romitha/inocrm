@@ -33,7 +33,9 @@ class WarrantiesController < ApplicationController
     @customer = Customer.find(session[:customer_id])
     @product = Product.find(session[:product_id])
     @warranties = @product.warranties
+    @ge_questions = GeQAndA.where(action_id: 1)
     ContactNumber
+    QAndA
     if params[:warranty_id]
       @warranty = Warranty.find(params[:warranty_id])
     else
@@ -42,13 +44,13 @@ class WarrantiesController < ApplicationController
         Rails.cache.write([:created_warranty, request.remote_ip.to_s, session[:time_now]], @warranty)
         @problem_category = @ticket.problem_category
         @display_form = false
-        # render "q_and_as/q_and_answer_record"
+        @ticket.warranty_type_id = @warranty.warranty_type.id
+        Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @ticket)
+
       else
         @display_form = true
       end
     end
-    @ticket.warranty_type_id = @warranty.warranty_type.id
-    Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @ticket)
     render :new
     # @ticket.warranty_type_id = @warranty.warranty_type_id
   end

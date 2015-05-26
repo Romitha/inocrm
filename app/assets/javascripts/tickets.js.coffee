@@ -186,8 +186,10 @@ window.Tickets =
       category_list.empty().html(filtered_option).trigger('chosen:updated')
 
   regional_support_job_active: ->
-    $(".ticket_regional_support_job input[type='checkbox']").prop('checked', false)
-    $(".ticket_regional_support_job").addClass("hide")
+    if !$("#ticket_ticket_type_id_2").is(":checked")
+      $(".ticket_regional_support_job input[type='checkbox']").prop('checked', false)
+      $(".ticket_regional_support_job").addClass("hide")
+
     $(".ticket_type").click ->
       if $(@).attr("id") == "ticket_ticket_type_id_2"
         $(".ticket_regional_support_job").removeClass("hide")
