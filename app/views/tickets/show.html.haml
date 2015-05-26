@@ -1,0 +1,9 @@
+- ticket = @ticket
+= ticket.ticket_no
+= INOCRM_CONFIG["priority"].key(ticket.priority.to_i)
+= ticket.problem_category.name
+= ticket.problem_description
+= ticket.warranty_type.name
+= ticket.ticket_type.name
+= ticket.cus_chargeable
+= ticket.inform_method.name

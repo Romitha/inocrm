@@ -73,7 +73,7 @@
                 .col-md-6
                   = f.input :note, input_html: {rows: 1}
               = link_to "Cancel", "#", onclick: "Warranties.warranty_create('select'); false;"
-              = f.submit "Save", class: "btn btn-success"
+              = f.submit "Save", class: "btn btn-info pull-right"
               = link_to "Next", "#", class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2", "id"=>"warranty_next"
 
           - else

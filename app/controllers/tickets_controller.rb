@@ -264,7 +264,7 @@ class TicketsController < ApplicationController
         if @new_product.save
           Rails.cache.delete([:new_product_with_pop_doc_url, request.remote_ip])
           session[:product_id] = @new_product.id
-          @notice = "Great! #{@new_product.serial_no} is saved. You can create new Customer."
+          @notice = "Great! #{@new_product.serial_no} is saved."
           session[:ticket_initiated_attributes].merge!({})
 
           @product = @new_product
@@ -616,7 +616,7 @@ class TicketsController < ApplicationController
       session[:ticket_initiated_attributes] = {}
       session[:time_now]
 
-      render js: "alert('Thank you. ticket is successfully registered.');"
+      render js: "alert('Thank you. ticket is successfully registered.'); window.location.href='#{ticket_path(@ticket)}';"
     else
       @product = Product.find session[:product_id]
       render :remarks

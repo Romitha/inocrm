@@ -24,7 +24,7 @@ class InsertInitialValues < ActiveRecord::Migration
 
     [
       ["IH", "In house"],
-      ["OS", "On site"]
+      ["OS", "On-site"]
     ].each do |value|
       execute("insert into mst_spt_ticket_type (code, name) values ('#{value[0]}', '#{value[1]}')")
     end
