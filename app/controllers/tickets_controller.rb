@@ -13,6 +13,7 @@ class TicketsController < ApplicationController
     # new_ticket, ticket_params, histories, existing_customer, new_product_with_pop_doc_url, created_warranty
 
   def show
+    Warranty
     respond_with(@ticket)
   end
 
