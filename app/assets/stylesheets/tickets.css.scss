@@ -139,7 +139,7 @@ table{
   font-size: 116%;
   font-weight: bold;
 
-  webkit-transform: rotate(-90deg);
+  -webkit-transform: rotate(-90deg);
 
   /* Firefox */
   -moz-transform: rotate(-90deg);
@@ -180,7 +180,7 @@ table{
   font-size: 116%;
   font-weight: bold;
 
-  webkit-transform: rotate(-90deg);
+  -webkit-transform: rotate(-90deg);
 
   /* Firefox */
   -moz-transform: rotate(-90deg);
@@ -221,7 +221,7 @@ table{
   font-size: 116%;
   font-weight: bold;
 
-  webkit-transform: rotate(-90deg);
+  -webkit-transform: rotate(-90deg);
 
   /* Firefox */
   -moz-transform: rotate(-90deg);
@@ -262,7 +262,7 @@ table{
   font-size: 116%;
   font-weight: bold;
 
-  webkit-transform: rotate(-90deg);
+  -webkit-transform: rotate(-90deg);
 
   /* Firefox */
   -moz-transform: rotate(-90deg);
@@ -275,4 +275,8 @@ table{
 
   /* Internet Explorer */
   filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+}
+
+.customer_validate{
+  color: #900303;
 }

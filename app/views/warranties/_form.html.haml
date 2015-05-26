@@ -60,11 +60,11 @@
                   = f.input :end_at, as: :string, input_html: {class: "datepicker"}
               .row
                 .col-md-4
-                  = f.input :period_part
+                  = f.input :period_part, input_html: {min: "0"}
                 .col-md-4
-                  = f.input :period_labour
+                  = f.input :period_labour, input_html: {min: "0"}
                 .col-md-4
-                  = f.input :corporate_onsight, label: "Corporate onsite"
+                  = f.input :corporate_onsight, label: "Corporate onsite", input_html: {min: "0"}
               .row
                 .col-md-3
                   = f.input :care_pack_product_no, label: "Care pack product number"

@@ -32,12 +32,12 @@
     = table_header ["Priority", "Problem category", "Problem description", "Warranty", "Ticket type", "Customer chargeable", "Informed method"]
     = table_body [priority, problemcategory, problemdescription, warranty, tickettype,customerchargeable, informmethod]
 
-%strong Customer
+%strong.customer_validate Customer
 = label_tag "Select Customer", class: "small_scale_margin-right1 small_scale_margin-left2" do
-  = radio_button_tag "customer_select", "select", false, class: "radio_for_customer_select", onchange: "Tickets.customer_select('select'); false;"
+  = radio_button_tag "customer_select", "select", false, class: "radio_for_customer_select", onchange: "Tickets.customer_select('select'); false;", required:true
   Select
 = label_tag "New Customer" do
-  = radio_button_tag "customer_select", "create", false, class: "radio_for_customer_select", onchange: "Tickets.customer_select('create'); false;"
+  = radio_button_tag "customer_select", "create", false, class: "radio_for_customer_select", onchange: "Tickets.customer_select('create'); false;", required:true
   New
 .contact
   = initiate_table table_type: "table-hover table-bordered" do

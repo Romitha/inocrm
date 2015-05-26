@@ -9,7 +9,7 @@ priority:
 ticket_no_format: "T0000"
 
 answer_type_for_q_and_a:
-  yes_or_no: YN
+  "yes/no" : "YN"
   text: TX
 
 pagination:

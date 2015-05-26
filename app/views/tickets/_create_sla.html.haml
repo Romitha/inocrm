@@ -7,5 +7,5 @@
     = f.input :sla_time, label: "SLA Times (in hours)"
     = f.input :description
   .modal-footer
-    = f.submit "Create", name: "create_sla", class: "btn btn-default"
-    %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+    %button.btn.btn-link{"data-dismiss" => "modal", :type => "button"} Cancel
+    = f.submit "Create", name: "create_sla", class: "btn btn-success"
