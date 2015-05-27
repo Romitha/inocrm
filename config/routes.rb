@@ -65,6 +65,7 @@ Rails.application.routes.draw do
     end
   end
 
+
   resources :tickets do
     concerns :attachable
     collection do
@@ -105,6 +106,9 @@ Rails.application.routes.draw do
       post "join_tickets"
     end
   end
+
+  resources :todos
+     
   # get 'auth/index'
 
   # The priority is based upon order of creation: first created -> highest priority.

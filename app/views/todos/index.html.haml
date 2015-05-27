@@ -1,0 +1,80 @@
+- done = capture do
+  = link_to "Do", "#" 
+- unclaim  = capture do
+  = link_to "Unclaim", "#" 
+- t0056  = capture do
+  = link_to "T0056", "#" 
+
+
+#todo_list 
+  %p To Do list (77)
+  %a{:href => todos_path} 
+    %i.fa.fa-repeat
+  
+
+#table
+  = tab_panel do
+    = tab_nav_tab({}, user_details: {active_class: "active", content: "User (32)"}, role: {content: "Manager (45)"})
+    .tab-content
+      = tab_content active_class: "active", tabpointer: "user_details" do
+        .product
+        %table.table
+          %thead
+            %tr
+              %th NO
+              %th Date
+              %th Priority
+              %th Module
+              %th Task title
+              %th Action    
+          %tbody    
+            %tr
+              %td 1
+              %td 1/1/2001
+              %td Normal
+              %td Suport
+              %td Suport-#{t0056}
+              %td #{done} #{unclaim}
+            %tr
+              %td 2
+              %td 1/1/2001
+              %td High
+              %td Sales
+              %td #{t0056}
+              %td #{done}
+      = tab_content tabpointer: "role" do
+        .product
+        %table.table
+          %thead
+            %tr
+              %th NO
+              %th Date
+              %th Priority
+              %th Module
+              %th Task title
+              %th Action    
+          %tbody    
+            %tr
+              %td 1
+              %td 1/1/2001
+              %td Normal
+              %td Suport
+              %td Suport-#{t0056}
+              %td #{done}
+            %tr
+              %td 2
+              %td 1/1/2001
+              %td High
+              %td Sales
+              %td #{t0056}
+              %td #{done}       
+
+#sort_by
+  %p Sort by
+#select_box
+  = select(:todolist, :sorted, options_for_select([["Date", "1"], ["Priority", "2"], ["Module", "3"]]))
+
+
+
+  
+
