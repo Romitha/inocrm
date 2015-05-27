@@ -74,27 +74,27 @@
                   = f.input :note, input_html: {rows: 1}
               = link_to "Cancel", "#", onclick: "Warranties.warranty_create('select'); false;"
               = f.submit "Save", class: "btn btn-info pull-right"
-              = link_to "Next", "#", class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2", "id"=>"warranty_next"
+              / = link_to "Next", "#", class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2", "id"=>"warranty_next"
 
           - else
             = link_to "New Warranty", "#", onclick: "Warranties.warranty_create('display_form'); false;"
             - if @warranties.present?
               = render "warranties/select_warranties", warranties: @warranties
-              = link_to "Back", create_customer_tickets_path(customer_id: customer.id), remote: true, method: :post
-              = link_to "Next", "#", class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2", "id"=>"next"
+            = link_to "Back", create_customer_tickets_path(customer_id: customer.id), remote: true, method: :post
+            = link_to "Next", "#", class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2", onclick: "Warranties.tab_trigger(); false;"
 
 
       = tab_content tabpointer: "join_ticket" do
         .row
           .col-md-12
             = render "tickets/join_ticket", customer: customer, ticket: ticket if ticket.joint_tickets.present?
+            = link_to "Back", create_customer_tickets_path(customer_id: customer.id), remote: true, method: :post
+            = link_to "Next", "#", class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2", onclick: "Warranties.tab_trigger(); false;"
           
       = tab_content tabpointer: "q_and_a" do
         .row
           .col-md-12
-            = render "q_and_as/q_and_a_form"
-            = link_to "Back", create_customer_tickets_path(customer_id: customer.id), remote: true, method: :post, "id"=>"qa_back"
-            
+            = render "q_and_as/q_and_a_form", customer: customer
   
 #warranties_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "warranties_modal", "aria-hidden" => true}
   .modal-dialog

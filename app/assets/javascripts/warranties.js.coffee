@@ -39,12 +39,5 @@ window.Warranties =
     return
 
   tab_trigger: ->
-    $('#next').on 'click', ->
-      $('#qa').trigger 'click'
-      $('#save_next').trigger 'click'
-    $('#warranty_next').on 'click', ->
-      $('#save_next').trigger 'click'
-      $('#qa').trigger 'click'
-    $('#join_next').on 'click', ->
-      $('#save_next').trigger 'click'
-      $('#qa').trigger 'click'
+    $('#qa').trigger 'click'
+    $("#save_next").click()

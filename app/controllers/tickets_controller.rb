@@ -45,8 +45,10 @@ class TicketsController < ApplicationController
 
   def create
     # Rails.cache.write(:ticket_params, ticket_params)
-    session[:time_now] = Time.now.strftime("%H%M%S")
-    @new_ticket = Ticket.new ticket_params
+    session[:time_now] ||= Time.now.strftime("%H%M%S")
+    @new_ticket = (Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]]) || Ticket.new)
+    @new_ticket.attributes = ticket_params
+
     Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @new_ticket)
 
     @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
@@ -60,16 +62,14 @@ class TicketsController < ApplicationController
     respond_to do |format|
 
       if @new_ticket.valid?
-        # session[:ticket_id] = @new_ticket.id
         session[:ticket_initiated_attributes] = {}
         @new_ticket.products << @product
-
 
         @notice = "Great! new ticket is initiated."
         Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @new_ticket)
         User
         ContactNumber
-        @existing_customer = @product.tickets.last.try(:customer)
+        @existing_customer = (Customer.find_by_id(session[:customer_id]) || @product.tickets.last.try(:customer))
         Rails.cache.fetch([:existing_customer, request.remote_ip.to_s, session[:time_now]]) do
           @existing_customer
         end
@@ -163,9 +163,9 @@ class TicketsController < ApplicationController
       render js: "alert('Please enter any serial no');"
     else
       session[:product_id] = nil
-      session[:customer_id] = nil
+      session[:customer_id] ||= nil
       session[:serial_no] = serial_no
-      @product = Product.find_by_serial_no(serial_no) || Product.new(serial_no: serial_no, corporate_product: false)
+      @product = (Product.find_by_serial_no(serial_no) || Product.new(serial_no: serial_no, corporate_product: false))
       Warranty
       @base_currency = Currency.find_by_base_currency(true)
       if @product.persisted?
@@ -320,21 +320,22 @@ class TicketsController < ApplicationController
         @new_customer = Customer.find params[:customer_id]
         @ticket.customer_id = @new_customer.id
         @product = Product.find session[:product_id]
-        @ticket.contact_person1 = @product.tickets.last.try(:contact_person1)
-        @ticket.contact_person2 = @product.tickets.last.try(:contact_person2)
-        @ticket.report_person = @product.tickets.last.try(:report_person)
-
+        @ticket.contact_person1 ||= @product.tickets.last.try(:contact_person1)
+        @ticket.contact_person2 ||= @product.tickets.last.try(:contact_person2)
+        @ticket.report_person ||= @product.tickets.last.try(:report_person)
+        puts @ticket.contact_person1
         Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @ticket)
         session[:customer_id] = @new_customer.id
-        @notice = "Great! #{@new_customer.name} is added. You can add new contact person details."
+        @notice = "Great! #{@new_customer.name} is added."
 
         format.js {render :create_contact_persons}
       else
         @new_customer = Customer.new customer_params
         if @new_customer.save
-          @new_customer.tickets << @ticket
+          @ticket.customer_id = @new_customer.id
           session[:customer_id] = @new_customer.id
-          @notice = "Great! #{@new_customer.name} is saved. You can add new contact person details."
+          Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @ticket)
+          @notice = "Great! #{@new_customer.name} is saved."
           format.js {render :create_contact_persons}
         else
           @display_select_option = true
@@ -497,9 +498,7 @@ class TicketsController < ApplicationController
     end
     Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @ticket)
     respond_to do |format|
-      if @new_contact_person.save
-        @ticket.save
-      end
+      @new_contact_person.save
       @build_contact_person = @new_contact_person
       format.js      
     end
@@ -556,7 +555,7 @@ class TicketsController < ApplicationController
   end
 
   def create_product_country
-    @new_product = Product.new
+    @new_product = Product.new serial_no: session[:serial_no]
     if params[:status_param] == "initiate"
       @new_product_country = ProductSoldCountry.new
     elsif params[:status_param] == "create"
@@ -598,9 +597,8 @@ class TicketsController < ApplicationController
     QAndA
     TaskAction
     @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
-    # @ticket_params = Rails.cache.read(:ticket_params)
     @ticket.status_id = TicketStatus.find_by_code("CLS").id if params[:first_resolution]
-    # @ticket_params.merge! ticket_params
+    @ticket.attributes = ticket_params
     if @ticket.save
       @ticket.create_user_ticket_action(action_at: DateTime.now, action_by: current_user.id, re_open_index: 1, action_id: 1)
       Rails.cache.delete([:new_ticket, request.remote_ip.to_s, session[:time_now]])
@@ -615,7 +613,7 @@ class TicketsController < ApplicationController
       session[:serial_no] = nil
       session[:warranty_id] = nil
       session[:ticket_initiated_attributes] = {}
-      session[:time_now]
+      session[:time_now]= nil
 
       render js: "alert('Thank you. ticket is successfully registered.'); window.location.href='#{ticket_path(@ticket)}';"
     else
