@@ -116,6 +116,7 @@ table{
 .product table::before{
 
     border-color: #dddddd;
+    background-color: #FFFF99;
     border-style: solid;
     border-width: 1px 0 2px 1px;
     color: white;
@@ -155,7 +156,8 @@ table{
 }
 
 .ticket table::before{
-
+    
+    background-color: #FFCC99;
     border-color: #dddddd;
     border-style: solid;
     border-width: 1px 0 2px 1px;
@@ -173,10 +175,10 @@ table{
 .ticket table::after{
 
   color: #393939;
-  content: "Ticket";
+  content: "Job";
   position: absolute;
-  top: 23px;
-  left: -33px;
+  top: 25px;
+  left: -25px;
   font-size: 116%;
   font-weight: bold;
 
@@ -196,7 +198,8 @@ table{
 }
 
 .contact table::before{
-
+    
+    background-color: #CCFFCC;
     border-color: #dddddd;
     border-style: solid;
     border-width: 1px 0 2px 1px;
@@ -214,10 +217,10 @@ table{
 .contact table::after{
 
   color: #393939;
-  content: "Contact";
+  content: "Customer";
   position: absolute;
-  top: 30px;
-  left: -39px;
+  top: 36px;
+  left: -46px;
   font-size: 116%;
   font-weight: bold;
 
@@ -237,7 +240,8 @@ table{
 }
 
 .contact_people table::before{
-
+    
+    background-color: #C2D1FF;
     border-color: #dddddd;
     border-style: solid;
     border-width: 1px 0 2px 1px;
@@ -257,7 +261,7 @@ table{
   color: #393939;
   content: "Contact people";
   position: absolute;
-  top: 54px;
+  top: 78px;
   left: -66px;
   font-size: 116%;
   font-weight: bold;
@@ -277,6 +281,6 @@ table{
   filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
 }
 
-.customer_validate{
+.name_validate{
   color: #900303;
 }

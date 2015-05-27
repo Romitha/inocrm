@@ -4,3 +4,4 @@
 - else
   $("#toggle_sla").modal();
   $("#toggle_sla .modal-content").html("#{j render 'create_sla', new_sla: @new_sla}");
+  Tickets.numbersonly();

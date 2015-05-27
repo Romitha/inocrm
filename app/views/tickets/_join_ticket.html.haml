@@ -1,40 +1,49 @@
 - joint_tickets = ticket.joint_tickets.collect{|j| j.joint_ticket_id}
 
-- customer.tickets.where(created_at: (Date.today-7)..Date.today).each do |t|
+- customer.tickets.where(created_at: [(Time.now.beginning_of_day-7.days)..Time.now.end_of_day]).each do |t|
   - unless joint_tickets.include?(t.id)
     - ticket.joint_tickets.build joint_ticket_id: t.id
-= simple_nested_form_for ticket, url: join_tickets_tickets_path, method: :post, remote: true do |f|
-  / = hidden_field_tag "ticket[joint_tickets_attributes][][joint_ticket_id]", nil
-  %table.table
-    %thead
-      %tr
-        %th
-          Ticket number
-        %th
-          Problem category
-        %th
-          Serial number
-        %th
-          Model number
-
-    %tbody
-      = f.simple_fields_for :joint_tickets do |jt|
-        - ticket_detail = customer.tickets.find(jt.object.joint_ticket_id)
+- if ticket.joint_tickets.present?
+  = simple_nested_form_for ticket, url: join_tickets_tickets_path, method: :post, remote: true do |f|
+    / = hidden_field_tag "ticket[joint_tickets_attributes][][joint_ticket_id]", nil
+    %table.table
+      %thead
         %tr
-          %td
-            = ticket_detail.ticket_no
-          %td
-            = ticket_detail.problem_category.try :name
-          - if ticket_detail.products.first
+          %th
+            Ticket number
+          %th
+            Ticket date
+          %th
+            Category
+          %th
+            Serial number
+          %th
+            Model number
+          %th
+            Problem category
+
+      %tbody
+        = f.simple_fields_for :joint_tickets do |jt|
+          - ticket_detail = customer.tickets.find(jt.object.joint_ticket_id)
+          %tr
             %td
-              = ticket_detail.products.first.serial_no
+              = ticket_detail.ticket_no
             %td
-              = ticket_detail.products.first.model_no
-          %td
-            = check_box_tag "ticket[joint_tickets_attributes][][joint_ticket_id]", jt.object.joint_ticket_id, joint_tickets.include?(jt.object.joint_ticket_id), class: "checked_row"
-  .row
-    .col-md-2
-      = link_to "Back", create_customer_tickets_path(customer_id: customer.id), remote: true, method: :post
-      = link_to "Next", "#q_and_a", "data-toggle"=>"tab", "aria_controls"=>"q_and_a", class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2", "id"=>"join_next"
-    .col-md-10
-      = f.submit "Join ticket", class: "btn btn-info btn-sm pull-right "
+              = ticket_detail.created_at.to_date.strftime("%m-%d-%Y")
+            %td
+              = ticket_detail.products.first.product_category.name
+            - if ticket_detail.products.first
+              %td
+                = ticket_detail.products.first.serial_no
+              %td
+                = ticket_detail.products.first.model_no
+            %td
+              = ticket_detail.problem_category.try :name
+            %td
+              = check_box_tag "ticket[joint_tickets_attributes][][joint_ticket_id]", jt.object.joint_ticket_id, joint_tickets.include?(jt.object.joint_ticket_id), class: "checked_row"
+    .row
+      .col-md-12
+        .pull-left
+          = link_to "Back", create_customer_tickets_path(customer_id: customer.id), remote: true, method: :post
+          = link_to "Next", "#", class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2", onclick: "Warranties.tab_trigger(); false;"
+        = f.submit "Join ticket", class: "btn btn-info btn-sm pull-right"

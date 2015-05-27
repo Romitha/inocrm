@@ -213,3 +213,13 @@ window.Tickets =
   popnote_more: ->
     $('.load_more').popover
       html: true
+
+  numbersonly: ->
+    $('.press').keydown (e) ->
+      unicode = if e.charCode then e.charCode else e.keyCode
+      if unicode != 8
+        #if the key isn't the backspace key (which we should allow)
+        if unicode < 48 or unicode > 57
+          return false
+        #disable key press
+      return

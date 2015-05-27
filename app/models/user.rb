@@ -134,7 +134,7 @@ class Customer < ActiveRecord::Base
 
   belongs_to :mst_title, foreign_key: :title_id
 
-  validates_presence_of [:name, :address1, :address4]
+  validates_presence_of [:title_id, :name, :address1, :address4]
 
   belongs_to :district, foreign_key: :district_id
 

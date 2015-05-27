@@ -25,13 +25,13 @@
 - customerchargeable = link_to "#", class: "inline_edit", data: {type: "select", source: [{value: 1, text: "yes"},{value: 0, text: "no"}], resource: "ticket", name: "cus_chargeable", url: ticket_update_tickets_path, "original-title" => "Update cus chargeable"} do
   = ticket.cus_chargeable
 
-- informmethod = link_to "#", class: "inline_edit", data: {type: "select", source: InformMethod.all.collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "informed_method_id", url: ticket_update_tickets_path, "original-title" => "Update Informed method name"} do
-  = ticket.inform_method.name
+- jobtype = link_to "#", class: "inline_edit", data: {type: "select", source: JobType.all.collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "job_type_id", url: ticket_update_tickets_path, "original-title" => "Update Job Type"} do
+  = ticket.job_type.name
 
 .ticket
   = initiate_table table_type: "table-hover table-bordered" do
-    = table_header ["Priority", "Problem category", "Problem description", "Warranty", "Ticket type", "Customer chargeable", "Informed method"]
-    = table_body [priority, problemcategory, problemdescription, warranty, tickettype, customerchargeable, informmethod]
+    = table_header ["Priority", "Problem category", "Problem description", "Warranty", "Ticket type", "Customer chargeable", "Job Type"]
+    = table_body [priority, problemcategory, problemdescription, warranty, tickettype, customerchargeable, jobtype]
 
 - if existing_customer
   .contact
@@ -39,7 +39,7 @@
       = table_header ["Name", "Address", "Contacts"]
       = table_body ["#{existing_customer.mst_title.try(:name)} #{existing_customer.name}", "#{existing_customer.address1}, #{existing_customer.address2}, #{existing_customer.address3} #{existing_customer.address4}, #{existing_customer.district.try(:name)}", customer_contact_types]
 
-%strong.customer_validate Customer
+%strong.name_validate Customer
 = label_tag "Select Customer", class: "small_scale_margin-right1 small_scale_margin-left2" do
   = radio_button_tag "customer_select", "select", false, class: "radio_for_customer_select", onchange: "Tickets.customer_select('select'); false;"
   Select
@@ -63,23 +63,27 @@
       = simple_nested_form_for customer, url: create_customer_tickets_path, method: :post, remote: true do |f|
         = f.input :organization_id, as: :hidden
         .row
-          = f.association :mst_title, label:"Title", collection: MstTitle.all.map{|t| [t.title, t.id]},wrapper_html: {class:"col-md-1"}
-          = f.input :name, wrapper_html: {class:"col-md-11"}
+          = f.association :mst_title, label:"Title", collection: MstTitle.all.map{|t| [t.title, t.id]},wrapper_html: {class:"col-md-2"}
+          = f.input :name, wrapper_html: {class:"col-md-10"}
+
         .row
-          = f.input :address1, wrapper_html: {class:"col-md-4"}
-          = f.input :address2, wrapper_html: {class:"col-md-4"}
-          = f.input :address3, wrapper_html: {class:"col-md-4"}
+          = f.input :address1, wrapper_html: {class:"col-md-6"}, label: "Address"
         .row
-          = f.input :address4, label: "City", wrapper_html: {class:"col-md-6"}
+          = f.input :address2, wrapper_html: {class:"col-md-6"}, label: false
+        .row
+          = f.input :address3, wrapper_html: {class:"col-md-6"}, label: false
+        .row
+
+          = f.input :address4, label: "City", wrapper_html: {class:"col-md-6"}, label: false, placeholder: "City"
+        .row
           = f.association :district, label:"District", wrapper_html: {class:"col-md-6"}
 
         .row
           = f.simple_fields_for :contact_type_values do |fc|
             .col-md-6
-              .col-md-4
-                %strong Contact type
-                %br/
-                = fc.select :contact_type_id, ContactType.all.map {|c| [c.name, c.id]}, {}, class: "col-md-12 small_scale_margin-top5"
+              .pull-left
+                =label_tag "Contact type"
+                = fc.select :contact_type_id, ContactType.all.map {|c| [c.name, c.id]}, {}, class: "col-md-12"
 
               = fc.input :value, wrapper_html: {class:"col-md-7"}
               .add_sign
@@ -90,7 +94,7 @@
           = f.link_to_add :contact_type_values, style: "clear: both;display: block;" do
             Add a contact type
             %span.glyphicon.glyphicon-plus-sign
-          %br/
+          %br
         = link_to "Cancel", create_customer_tickets_path(customer_id: existing_customer.id), remote: true, method: :post, class: "btn btn-link", data: {disable_with: "Please wait..."} if existing_customer
         = f.submit "Save", class: "btn btn-success btn-sm"
 - else
