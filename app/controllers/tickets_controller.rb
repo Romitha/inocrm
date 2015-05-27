@@ -516,7 +516,7 @@ class TicketsController < ApplicationController
 
   def select_sla
     if params[:search_sla]
-      @slas = SlaTime.where(sla_time: params[:search_sla_value].to_f).present? ? SlaTime.where(sla_time: params[:search_sla_value].to_f) : SlaTime.all
+      @slas = params[:search_sla_value].present? ? SlaTime.where(sla_time: params[:search_sla_value].to_f) : SlaTime.all
     else
       @header = "Select SLA Time"
       @slas = SlaTime.all
