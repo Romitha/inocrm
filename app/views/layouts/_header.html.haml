@@ -9,7 +9,7 @@
     .navbar-collapse.collapse.navbar-responsive-collapse.navbar-right.fixed#header-nav
       %ul.nav.navbar-nav
         %li
-          = link_to "todo", "#", class: "dropdown-toggle todo text-hide nav-icon", data: {placement: "bottom"}, title: "To Do", rel: "tooltip"
+          = link_to "todo", todos_path, class: "dropdown-toggle todo text-hide nav-icon", data: {placement: "bottom"}, title: "To Do", rel: "tooltip"
         %li
           = link_to "Alert", "#", class: "dropdown-toggle alert text-hide nav-icon margin-bottom0", data: {placement: "bottom"}, title: "Alert", rel: "tooltip"
         - if can? :dashboard, Organization
