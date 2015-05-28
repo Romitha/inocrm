@@ -31,7 +31,7 @@ class TicketsController < ApplicationController
     session[:serial_no] = nil
     session[:warranty_id] = nil
     session[:ticket_initiated_attributes] = {}
-    @ticket_no = (Ticket.order("created_at ASC").map{|t| t.ticket_no}.max.to_i + 1)
+    @ticket_no = (Ticket.order("created_at ASC").map{|t| t.ticket_no.to_i}.max + 1)
     @status = TicketStatus.first
     @ticket_logged_at = DateTime.now
 
