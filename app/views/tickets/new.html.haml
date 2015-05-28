@@ -3,7 +3,7 @@
 .row
   .col-md-6
     .ticket_no
-      Ticket No: #{@ticket_no.to_s.rjust(5, INOCRM_CONFIG["ticket_no_format"])}
+      Ticket No: #{@ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])}
     .ticket_status
       Status: #{@status.name}
   .col-md-6.pull-right.text-right
