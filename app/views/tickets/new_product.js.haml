@@ -1,4 +1,8 @@
-$("#product_load").html("#{j render 'tickets/product_form', product: @new_product}");
-Tickets.filter_select();
-Organizations.enable_chosen();
-Tickets.pop_url_doc_upload();
+- if params[:product][:pop_doc_url]
+  $("#preview_of_pop_doc_url").html("#{@new_product.pop_doc_url.file.filename if @new_product.pop_doc_url.present?}");
+  $(".pop_doc_url_wrapper").empty();
+- else
+  $("#product_load").html("#{j render 'tickets/product_form', product: @new_product}");
+  Tickets.filter_select();
+  Organizations.enable_chosen();
+  Tickets.pop_url_doc_upload();
