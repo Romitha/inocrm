@@ -246,7 +246,7 @@ class TicketsController < ApplicationController
 
   def new_product
     session[:product_id] = nil
-    @new_product = Product.new
+    @new_product = Product.new serial_no: session[:serial_no]
   end
 
   def create_product
