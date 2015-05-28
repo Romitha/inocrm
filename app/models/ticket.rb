@@ -60,7 +60,7 @@ class Ticket < ActiveRecord::Base
   before_create :update_ticket_no
 
   def update_ticket_no
-    self.ticket_no = (self.class.order("created_at asc").last ? self.class.order("created_at asc").map{|t| t.ticket_no}.max.to_i+1 : 1)
+    self.ticket_no = (self.class.order("created_at asc").map{|t| t.ticket_no.to_i}.max+1)
   end
 
 end
