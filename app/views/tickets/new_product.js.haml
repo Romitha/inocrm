@@ -1,5 +1,5 @@
 $("#product_load").html("#{j render 'tickets/product_form', product: @new_product}");
-
-Tickets.filter_select();
+- if !params[:product][:pop_doc_url] and !@new_product.errors.present?
+  Tickets.filter_select();
 Organizations.enable_chosen();
 Tickets.pop_url_doc_upload();
