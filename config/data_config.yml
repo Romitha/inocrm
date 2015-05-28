@@ -6,7 +6,7 @@ priority:
   Low: 4
   Lowest: 5
 
-ticket_no_format: "T0000"
+ticket_no_format: "T00000"
 
 answer_type_for_q_and_a:
   "yes/no" : "YN"
