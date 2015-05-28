@@ -79,7 +79,7 @@ window.Tickets =
       progress: (e, data) ->
         if data.context
           progress = parseInt(data.loaded/data.total*100, 10)
-          data.context.find(".progress-bar").css("width", progress+"%").html(progress+"%")
+          data.context.find(".progress-bar").css("width", progress+"%").html("<span class='sr-only'>"+progress+"% completed </span>")
           if progress==100
             $("#ajax-loader").addClass("hide");
             # $(".profile_image_wrapper").empty();
