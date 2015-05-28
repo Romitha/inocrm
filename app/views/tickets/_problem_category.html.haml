@@ -10,7 +10,7 @@
       .col-md-2
         = q_and_a.input :answer_type, as: :radio_buttons, collection: INOCRM_CONFIG["answer_type_for_q_and_a"], wrapper: :append
       .col-md-1
-        = q_and_a.input :active, wrapper: :append
+        = q_and_a.input :active, wrapper: :append, checked: true
       .col-md-4
         = q_and_a.association :task_action, collection: TaskAction.where(action_no: [1,5,57,58]), label_method: :action_description, value_method: :id, include_blank: false
       .col-md-5

@@ -7,6 +7,8 @@ class QAndA < ActiveRecord::Base
   has_many :q_and_answers, foreign_key: :problematic_question_id
   has_many :tickets, through: :q_and_answers
   accepts_nested_attributes_for :q_and_answers, allow_destroy: true
+
+  validates_presence_of :question
 end
 
 class QAndAnswer < ActiveRecord::Base
