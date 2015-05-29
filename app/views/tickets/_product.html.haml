@@ -3,68 +3,74 @@
 %br
 .row
   .col-md-4
-    %strong Product brand :-
-    = product.product_brand.name
+    Product brand :-
+    %strong
+      = product.product_brand.name
   .col-md-6
-    %strong Model number :-
-    = product.model_no
+    Model number :-
+    %strong
+      = product.model_no
 .row
   .col-md-4
-    %strong Product category :-
-    = product.product_category.name
+    Product category :-
+    %strong
+      = product.product_category.name
   .col-md-6
-    %strong Product number :-
-    = product.product_no
+    Product number :-
+    %strong
+      = product.product_no
 .row
   .col-md-12
-    %strong Problem category :-
-    = ticket.problem_category.name
+    Problem category :-
+    %strong
+      = ticket.problem_category.name
 .row
   .col-md-12
-    %strong Problem description :-
-    = ticket.problem_description
+    Problem description :-
+    %strong
+      = ticket.problem_description
 .row
   .col-md-12
-    %strong Accessories :-
+    Accessories :-
     - ticket.ticket_accessories.each do |a|
-      = a.accessory.accessory
+      %strong
+        = a.accessory.accessory
 .row
   .col-md-12
-    %strong Other accessories :-
-    = ticket.other_accessories
+    Other accessories :-
+    %strong
+      = ticket.other_accessories
 .row
   .col-md-4
-    %strong Informed method :-
-    = ticket.inform_method.name
+    Informed method :-
+    %strong
+      = ticket.inform_method.name
   .col-md-6
-    %strong Job type :-
-    = ticket.job_type.name
+    Job type :-
+    %strong
+      = ticket.job_type.name
 .row
   .col-md-12
-    %strong Ticket type :-
-    = ticket.ticket_type.name
+    Ticket type :-
+    %strong
+      = ticket.ticket_type.name
 .row
   .col-md-12
-    %strong Type of warranty :-
-    = ticket.warranty_type.name
+    Type of warranty :-
+    %strong
+      = ticket.warranty_type.name
 .row
   .col-md-12
-    %strong Sold country :-
-    = product.product_sold_country.try(:Country)
+    Sold country :-
+    %strong
+      = product.product_sold_country.try(:Country)
 .row
   .col-md-5
     .pull-left.small_scale_margin-right1
-      %strong Pop note :-
-    
-    = simple_format product.pop_note.to_s.split('<br/>')[0]
+      Pop note :-
+    %strong
+      = simple_format product.pop_note.to_s.split('<br/>')[0]
   .col-md-7
-    %strong Pop status :-
-    = product.product_pop_status.name
-
-
-
-
-
-
-
-
+    Pop status :-
+    %strong
+      = product.product_pop_status.name
