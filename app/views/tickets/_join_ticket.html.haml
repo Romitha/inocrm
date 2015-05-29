@@ -43,7 +43,4 @@
               = check_box_tag "ticket[joint_tickets_attributes][][joint_ticket_id]", jt.object.joint_ticket_id, joint_tickets.include?(jt.object.joint_ticket_id), class: "checked_row"
     .row
       .col-md-12
-        .pull-left
-          = link_to "Back", create_customer_tickets_path(customer_id: customer.id), remote: true, method: :post
-          = link_to "Next", "#", class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2", onclick: "Warranties.tab_trigger(); false;"
         = f.submit "Join ticket", class: "btn btn-info btn-sm pull-right"

@@ -44,20 +44,20 @@
               = f.input :ticket_no, as: :hidden
               = f.input :base_currency_id, as: :hidden, input_html: {value: TicketCurrency.find_by(base_currency: true).try(:id)}
               .row
-                .col-md-2
+                .col-md-2{style: "width: 13%;"}
                   %strong Priority
                   = f.select :priority, INOCRM_CONFIG["priority"].collect{ |key,value| [ key, value ] }, {:selected => '3'}, class: "col-md-12 small_scale_margin-top3"
-                .col-md-2
+                .col-md-3
                   = f.association :problem_category, wrapper_html: {class: "col-md-11"}, label:"Problem category"
                   .add_sign
                     = link_to create_problem_category_tickets_path(status_param: "initiate"), remote: true, method: :post, title: "Add" do
                       %span.glyphicon.glyphicon-plus-sign
 
-                .col-md-2
+                .col-md-2{style: "width: 14%;"}
                   %strong Informed method
                   %br/
                   = f.select :informed_method_id, options_from_collection_for_select(InformMethod.all, :id, :name), {},{class: "col-md-12 small_scale_margin-top3"}
-                .col-md-2  
+                .col-md-2{style: "width: 14%;"}
                   %strong Job type
                   %br/
                   = f.select :job_type_id, options_from_collection_for_select(JobType.all, :id, :name), {},{class: "col-md-12 small_scale_margin-top3"}

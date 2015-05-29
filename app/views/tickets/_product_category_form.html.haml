@@ -20,12 +20,13 @@
       = f.input :sla_id, as: :hidden
     .row
       .col-md-12
+        %strong SLA time
         = label_tag "Select SLA Time" do
           = radio_button_tag "name", "sla_time", false, class: "radio_for_sla", data: {param: "select_sla"}
-          Select sla time
-        = label_tag "Create SLA Time" do
+          Select
+        = label_tag "Create SLA Time", class: "small_scale_margin-left2" do
           = radio_button_tag "name", "description", false, class: "radio_for_sla", data: {param: "create_sla"}
-          Create sla time
+          Create
     .row
       .col-md-12
         = link_to "Back", new_product_tickets_path, remote: true

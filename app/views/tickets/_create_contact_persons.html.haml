@@ -16,7 +16,7 @@
       = f.link_to_add :contact_person_contact_types do
         %span.glyphicon.glyphicon-plus-sign
         %br/
-      = f.submit "Confirm", class: "btn btn-default", name: submitted_contact_person
+      = f.submit "Confirm", class: "btn btn-success", name: submitted_contact_person
   - else
     %strong Name
     #{build_contact_person.mst_title.try(:title)} #{build_contact_person.name}

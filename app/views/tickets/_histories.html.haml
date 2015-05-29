@@ -5,7 +5,15 @@
       %th
         Ticket number
       %th
-        Remarks
+        Created_at
+      %th
+        Created_by
+      %th
+        status
+      %th
+        Date resolve
+      %th
+        Payment pendidng
       %th
         Problem category
       %th
@@ -16,7 +24,15 @@
         %td
           = history.ticket_no
         %td
-          = history.remarks
+          = history.created_at.strftime("%m-%d-%Y")
+        %td
+          = history.created_by
+        %td
+          = history.ticket_status.name
+        %td
+          //= history.date_resolve
+        %td
+          //= history.payment_pending
         %td
           = history.problem_category.try(:name)
         %td
