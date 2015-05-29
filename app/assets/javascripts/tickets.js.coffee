@@ -138,8 +138,9 @@ window.Tickets =
     $(".radio_for_sla").click ->
       $.post "/tickets/"+$(@).data('param')
 
-  select_sla: (id)->
+  select_sla: (id, content)->
     $("#product_brand_sla_id, #product_category_sla_id").val(id)
+    $("#sla_content").html(content)
     $("#toggle_sla").modal("hide")
 
   remove_serial_search: ->

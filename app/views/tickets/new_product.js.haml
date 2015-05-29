@@ -1,4 +1,4 @@
-- if params[:product][:pop_doc_url]
+- if params[:product] and params[:product][:pop_doc_url]
   $("#preview_of_pop_doc_url").html("#{@new_product.pop_doc_url.file.filename if @new_product.pop_doc_url.present?}");
   $(".pop_doc_url_wrapper").empty();
 - else

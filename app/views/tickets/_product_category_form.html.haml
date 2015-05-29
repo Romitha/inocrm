@@ -27,6 +27,7 @@
         = label_tag "Create SLA Time", class: "small_scale_margin-left2" do
           = radio_button_tag "name", "description", false, class: "radio_for_sla", data: {param: "create_sla"}
           Create
+        #sla_content
     .row
       .col-md-12
         = link_to "Back", new_product_tickets_path, remote: true

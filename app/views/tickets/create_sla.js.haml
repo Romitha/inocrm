@@ -1,6 +1,7 @@
 - if @modal_close
   $("#toggle_sla").modal("hide");
   $("#product_brand_sla_id").val("#{session[:sla_id]}");
+  $("#sla_content").html("#{params[:sla_time][:sla_time]} Hr(s)");
 - else
   $("#toggle_sla").modal();
   $("#toggle_sla .modal-content").html("#{j render 'create_sla', new_sla: @new_sla}");

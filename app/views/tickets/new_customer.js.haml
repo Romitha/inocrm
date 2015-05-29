@@ -2,9 +2,10 @@
   $("#customer_modal").modal();
   $("#customer_modal .modal-content").html("#{j render 'tickets/select_customers', customers: @customers, organizations: @organizations}")
 - else
-  $("#form_frame").html("#{j render 'tickets/customer_form', customer: @new_customer, display_select_option: @display_select_option, existing_customer: @existing_customer}");
+  $("#form_frame").html("#{j render 'tickets/customer_form', customer: @new_customer, display_select_option: @display_select_option, existing_customer: @existing_customer, product: @product}");
   $("body").removeClass("modal-open");
   $(".modal-backdrop").remove();
+  $("#customer_title_id").chosen({disable_search: true});
 
 Organizations.enable_chosen();
 

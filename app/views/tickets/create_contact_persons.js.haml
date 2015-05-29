@@ -5,7 +5,7 @@
 - else
   $("body").removeClass("modal-open");
   $(".modal-backdrop").remove();
-  $("#form_frame").html("#{j render 'tickets/new_contact_persons', ticket: @ticket}");
+  $("#form_frame").html("#{j render 'tickets/new_contact_persons', ticket: @ticket, product: @product}");
 
 Tickets.select_contact_person();
 Tickets.product_update();

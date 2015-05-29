@@ -31,7 +31,7 @@ class TicketsController < ApplicationController
     session[:serial_no] = nil
     session[:warranty_id] = nil
     session[:ticket_initiated_attributes] = {}
-    @ticket_no = (Ticket.order("created_at ASC").map{|t| t.ticket_no.to_i}.max + 1)
+    @ticket_no = (Ticket.any? ? (Ticket.order("created_at ASC").map{|t| t.ticket_no.to_i}.max + 1) : 1)
     @status = TicketStatus.first
     @ticket_logged_at = DateTime.now
 
@@ -47,6 +47,7 @@ class TicketsController < ApplicationController
     # Rails.cache.write(:ticket_params, ticket_params)
     session[:time_now] ||= Time.now.strftime("%H%M%S")
     @new_ticket = (Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]]) || Ticket.new)
+    @new_ticket.ticket_accessories.clear
     @new_ticket.attributes = ticket_params
 
     Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @new_ticket)
@@ -63,7 +64,10 @@ class TicketsController < ApplicationController
 
       if @new_ticket.valid?
         session[:ticket_initiated_attributes] = {}
-        @new_ticket.products << @product
+
+        # unless @new_ticket.products.present?
+        #   @new_ticket.products << @product
+        # end
 
         @notice = "Great! new ticket is initiated."
         Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @new_ticket)
@@ -176,9 +180,10 @@ class TicketsController < ApplicationController
         session[:product_id] = @product.id
 
         @ticket = (Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]]) || Ticket.new(session[:ticket_initiated_attributes]))
+        # @ticket.ticket_accessories.uniq!{|ac| ac.id}
         @customer = @product.tickets.last.try(:customer)
-        @histories = Kaminari.paginate_array(@product.tickets).page(params[:page]).per(3)
-        Rails.cache.write([:histories, session[:product_id]], @histories)
+        Rails.cache.write([:histories, session[:product_id]], Kaminari.paginate_array(@product.tickets))
+        @histories = Rails.cache.read([:histories, session[:product_id]]).page(params[:page]).per(3)
       else
         @product_brands = ProductBrand.all
         @product_categories = ProductCategory.all
@@ -266,13 +271,16 @@ class TicketsController < ApplicationController
           Rails.cache.delete([:new_product_with_pop_doc_url, request.remote_ip])
           session[:product_id] = @new_product.id
           @notice = "Great! #{@new_product.serial_no} is saved."
-          session[:ticket_initiated_attributes].merge!({})
+          @product_brand = @new_product.product_brand
+          @product_category = @new_product.product_category
+          session[:ticket_initiated_attributes].merge!({sla_id: (@product_category.sla_id || @product_brand.sla_id)})
 
           @product = @new_product
           @ticket = @product.tickets.build session[:ticket_initiated_attributes]
 
-          @histories = Kaminari.paginate_array(@product.tickets).page(params[:page]).per(3)
-          Rails.cache.write([:histories, session[:product_id]], @histories)
+          @histories = Kaminari.paginate_array(@product.tickets)
+          Rails.cache.write([:histories, session[:product_id]], Kaminari.paginate_array(@product.tickets))
+          @histories = Rails.cache.read([:histories, session[:product_id]]).page(params[:page]).per(3)
           format.js {render :find_by_serial}
         else
           format.js {render :new_product}
@@ -314,12 +322,12 @@ class TicketsController < ApplicationController
     User
     ContactNumber
     Warranty
+    @product = Product.find session[:product_id]
     @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
     respond_to do |format|
       if params[:customer_id]
         @new_customer = Customer.find params[:customer_id]
         @ticket.customer_id = @new_customer.id
-        @product = Product.find session[:product_id]
         @ticket.contact_person1 ||= @product.tickets.last.try(:contact_person1)
         @ticket.contact_person2 ||= @product.tickets.last.try(:contact_person2)
         @ticket.report_person ||= @product.tickets.last.try(:report_person)
@@ -507,6 +515,7 @@ class TicketsController < ApplicationController
   def contact_persons
     User
     ContactNumber
+    @product = Product.find session[:product_id]
     respond_to do |format|
       @new_customer = Customer.find(session[:customer_id])
       @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
@@ -596,10 +605,12 @@ class TicketsController < ApplicationController
   def finalize_ticket_save
     QAndA
     TaskAction
+    @product = Product.find session[:product_id]
     @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
     @ticket.status_id = TicketStatus.find_by_code("CLS").id if params[:first_resolution]
     @ticket.attributes = ticket_params
     if @ticket.save
+      @ticket.products << @product
       @ticket.create_user_ticket_action(action_at: DateTime.now, action_by: current_user.id, re_open_index: 1, action_id: 1)
       Rails.cache.delete([:new_ticket, request.remote_ip.to_s, session[:time_now]])
       Rails.cache.delete([:ticket_params, request.remote_ip.to_s, session[:time_now]])
@@ -617,7 +628,6 @@ class TicketsController < ApplicationController
 
       render js: "alert('Thank you. ticket is successfully registered.'); window.location.href='#{ticket_path(@ticket)}';"
     else
-      @product = Product.find session[:product_id]
       render :remarks
     # end
     end

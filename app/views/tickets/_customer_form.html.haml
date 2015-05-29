@@ -65,7 +65,7 @@
       = simple_nested_form_for customer, url: create_customer_tickets_path, method: :post, remote: true do |f|
         = f.input :organization_id, as: :hidden
         .row
-          = f.association :mst_title, label:"Title", collection: MstTitle.all.map{|t| [t.title, t.id]},wrapper_html: {class:"col-md-2"}
+          = f.association :mst_title, label:"Title", collection: MstTitle.all.map{|t| [t.title, t.id]},wrapper_html: {class:"col-md-2"}, selected: 1
           = f.input :name, wrapper_html: {class:"col-md-10"}
 
         .row
@@ -102,7 +102,7 @@
 - else
   .row
     .col-md-12
-      = link_to "Back", find_by_serial_tickets_path(serial_search: ticket.products.first.serial_no), remote: true, method: :post
+      = link_to "Back", find_by_serial_tickets_path(serial_search: product.serial_no), remote: true, method: :post
       - if existing_customer
         = link_to "Next", create_customer_tickets_path(customer_id: existing_customer.id), remote: true, method: :post, class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2", data: {disable_with: "Please wait..."}
 

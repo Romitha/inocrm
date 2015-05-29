@@ -108,7 +108,7 @@
               %br/
   .row
     .col-md-12
-      = link_to "Back", find_by_serial_tickets_path(serial_search: ticket.products.first.serial_no), remote: true, method: :post
+      = link_to "Back", find_by_serial_tickets_path(serial_search: product.serial_no), remote: true, method: :post
       - if ticket.contact_person1 and ticket.contact_person2 and ticket.report_person
         = link_to "Next", new_warranty_path, remote: true, class: "btn btn-sm btn-success  small_scale_margin-top2 small_scale_margin-bottom2"
 
