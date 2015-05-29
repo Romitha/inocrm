@@ -3,21 +3,21 @@
   %thead
     %tr
       %th
-        Ticket number
+        Ticket no
       %th
-        Created_at
+        Created at
       %th
-        Created_by
-      %th
-        status
-      %th
-        Date resolve
-      %th
-        Payment pendidng
+        Status
       %th
         Problem category
       %th
         Problem description
+      %th
+        Closed at
+      %th
+        Payment pending
+      %th
+        Created by
   %tbody
     - histories.each do |history|
       %tr
@@ -26,14 +26,15 @@
         %td
           = history.created_at.try(:strftime, "%m-%d-%Y")
         %td
-          = history.created_by
-        %td
           = history.ticket_status.name
+        %td
+          = history.problem_category.try(:name)
+        %td
+          = history.problem_description
         %td
           //= history.date_resolve
         %td
           //= history.payment_pending
         %td
-          = history.problem_category.try(:name)
-        %td
-          = history.problem_description
+          = history.created_by
+        
