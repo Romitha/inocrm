@@ -22,7 +22,7 @@
     - histories.each do |history|
       %tr
         %td
-          = history.ticket_no
+          = history.ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
         %td
           = history.created_at.strftime("%m-%d-%Y")
         %td
