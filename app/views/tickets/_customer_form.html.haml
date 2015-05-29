@@ -28,6 +28,8 @@
 - jobtype = link_to "#", class: "inline_edit", data: {type: "select", source: JobType.all.collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "job_type_id", url: ticket_update_tickets_path, "original-title" => "Update Job Type"} do
   = ticket.job_type.name
 
+
+
 .ticket
   = initiate_table table_type: "table-hover table-bordered" do
     = table_header ["Priority", "Problem category", "Problem description", "Warranty", "Ticket type", "Customer chargeable", "Job Type"]
@@ -37,7 +39,7 @@
   .contact
     = initiate_table table_type: "table-hover table-bordered" do
       = table_header ["Name", "Address", "Contacts"]
-      = table_body ["#{existing_customer.mst_title.try(:name)} #{existing_customer.name}", "#{existing_customer.address1}, #{existing_customer.address2}, #{existing_customer.address3} #{existing_customer.address4}, #{existing_customer.district.try(:name)}", customer_contact_types]
+      = table_body ["#{existing_customer.mst_title.try(:name)} #{existing_customer.name}", "#{existing_customer.address1}, #{existing_customer.address2}, #{existing_customer.address3}, #{existing_customer.address4}, #{existing_customer.district.try(:name)}", customer_contact_types]
 
 %strong.name_validate Customer
 = label_tag "Select Customer", class: "small_scale_margin-right1 small_scale_margin-left2" do
@@ -67,11 +69,11 @@
           = f.input :name, wrapper_html: {class:"col-md-10"}
 
         .row
-          = f.input :address1, wrapper_html: {class:"col-md-6"}, label: "Address"
+          = f.input :address1, wrapper_html: {class:"col-md-6"}, label: "Address", placeholder: "Line 1"
         .row
-          = f.input :address2, wrapper_html: {class:"col-md-6"}, label: false
+          = f.input :address2, wrapper_html: {class:"col-md-6"}, label: false, placeholder: "Line 2"
         .row
-          = f.input :address3, wrapper_html: {class:"col-md-6"}, label: false
+          = f.input :address3, wrapper_html: {class:"col-md-6"}, label: false, placeholder: "Line 3"
         .row
 
           = f.input :address4, label: "City", wrapper_html: {class:"col-md-6"}, label: false, placeholder: "City"

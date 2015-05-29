@@ -80,6 +80,7 @@
 
           - else
             = link_to "New Warranty", "#", onclick: "Warranties.warranty_create('display_form'); false;"
+            %br
             - if @warranties.present?
               = render "warranties/select_warranties", warranties: @warranties
             = link_to "Back", create_customer_tickets_path(customer_id: customer.id), remote: true, method: :post
@@ -90,11 +91,13 @@
         .row
           .col-md-12
             = render "tickets/join_ticket", customer: customer, ticket: ticket# if ticket.joint_tickets.present?
+            = link_to "Back", create_customer_tickets_path(customer_id: customer.id), remote: true, method: :post
+            = link_to "Next", "#", class: "btn btn-success", onclick: "Warranties.tab_trigger(); false;"
       = tab_content tabpointer: "q_and_a" do
         .row
           .col-md-12
             = render "q_and_as/q_and_a_form", customer: customer
-  
+
 #warranties_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "warranties_modal", "aria-hidden" => true}
   .modal-dialog
     .modal-content
