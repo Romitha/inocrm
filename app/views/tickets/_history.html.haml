@@ -1,0 +1,47 @@
+/ = render "histories", histories: @histories
+%br
+.row
+  .col-md-4
+    %strong History
+%br
+  .col-md-4
+    %p Ticket
+  .col-md-4
+    %button Check History
+    = select(:todolist, :sorted, options_for_select([["S/N", "1"], ["Orig", "2"], ["Ref", "3"]]))
+.row
+  .col-md-3
+    %p Ticket No:#{ticket.ticket_no}
+  .col-md-3
+    %p Ticket Date:
+  .col-md-3
+    %p Ticket By:
+.row
+  .col-md-6
+    %p Problem Category:
+.row
+  .col-md-6
+    %p Description:
+    %p Customer:
+  .col-md-3
+    %p Status: 
+    %p *Ref
+.row
+  .col-md-6
+    %p Contact Person 1:
+    %p Contact Person 2:
+    %p Reported by:
+    %p Engineer:
+.row
+  .col-md-6
+    %p Part 1. Part No:
+  .col-md-3
+    %p Description:
+.row
+  .col-md-6
+    %p Resolution Summary:
+.row
+  .col-md-6
+    %p Date Resolved:
+  .col-md-3
+    %p Payment Pending:
