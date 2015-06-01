@@ -9,7 +9,7 @@
       .edit_organization
         - if current_page?(controller: "organizations", action: "show", id: organization.id)
           = link_to edit_organization_path(organization), class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Edit #{organization.name}" do
-            = glyph(:pencil)
+            = glyph(:pencil, {:tag => :span})
             = organization.name
         - else
           = link_to organization do

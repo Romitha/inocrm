@@ -92,8 +92,8 @@ class UsersController < ApplicationController
     respond_to do |format|
       if current_user.role_ids.include?(params[:set_role_id].to_i)#.map{ |role| r.name }.include?(params[:set_role_id])
         role = Role.find params[:set_role_id]
-        current_user.current_user_role_id, current_user.current_user_role_name = role.id, role.name
-        format.html { redirect_to root_url, notice: "Role #{role.name} is successfully set for you."}
+        current_user.update_attributes(current_user_role_id: role.id, current_user_role_name: role.name)
+        format.html { redirect_to root_url, notice: "Role #{current_user.current_user_role_name} is successfully set for you."}
       else
         format.html { redirect_to root_url, error: "Please set valid role assigned for you."}
       end

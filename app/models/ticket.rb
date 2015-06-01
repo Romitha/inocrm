@@ -34,7 +34,7 @@ class Ticket < ActiveRecord::Base
   belongs_to :customer, class_name: "Customer", foreign_key: "customer_id"
   belongs_to :sla_time, foreign_key: :sla_id
 
-  has_many :dyna_columns, as: :resourceable
+  has_many :dyna_columns, as: :resourceable, autosave: true
 
   has_many :joint_tickets
   accepts_nested_attributes_for :joint_tickets, allow_destroy: true
@@ -54,6 +54,7 @@ class Ticket < ActiveRecord::Base
     define_method("#{dyna_method}=") do |value|
       data = dyna_columns.find_or_initialize_by(data_key: dyna_method)
       data.data_value = (value.class==Fixnum ? value : value.strip)
+      data.save if data.persisted?
     end
   end
 
