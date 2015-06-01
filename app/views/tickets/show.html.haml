@@ -1,10 +1,49 @@
-- ticket = @ticket
-= ticket.ticket_no
-= INOCRM_CONFIG["priority"].key(ticket.priority.to_i)
-= ticket.problem_category.name
-= ticket.problem_description
-= ticket.warranty_type.name
-= ticket.ticket_type.name
-= ticket.cus_chargeable
-= ticket.inform_method.name
-= render "product", ticket: ticket
+.view_ticket_header
+  .row
+    .col-md-2
+      - ticket = @ticket
+      %p Ticket No:#{ticket.ticket_no}
+    .col-md-6
+      %p Status Assigned
+
+    .col-md-2
+      %p RE-OPEN
+    .col-md-2
+      %p RE-ASSIGN
+
+.view_ticket_body
+  .row
+    .col-md-8
+      %p Sereial No:#{ticket.products.first.serial_no }
+    .col-md-4
+      %strong Priority:
+      %br/ 
+      %strong SLA Remaining:
+      %br/
+      %p SLA:
+      %p SLA started:
+      %p SLA finished:
+      %p Ticket loged Date:
+      %p Ticket loged By:
+#table
+  = tab_panel do
+    = tab_nav_tab({}, job_Info: {active_class: "active", content: "Job Info"}, customer_contact: {content: "Customer Contact"}, history: {content: "History"}, join: {content: "Join"}, view_qa: {content: "Q & A"})
+    .tab-content
+      = tab_content active_class: "active", tabpointer: "job_Info" do
+        .job_Info
+        = render "product", ticket: ticket
+      = tab_content tabpointer: "customer_contact" do
+        .customer_contact
+          = render "customer_contact", ticket: ticket
+
+      = tab_content tabpointer: "history" do 
+        .history
+          = render "history", ticket: ticket
+
+      = tab_content tabpointer: "join" do
+        .join
+          = render "join", tickets: @tickets
+
+      = tab_content tabpointer: "view_qa" do
+        .view_qa
+          = render "view_qa", ticket: ticket

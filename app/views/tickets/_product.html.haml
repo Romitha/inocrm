@@ -1,65 +1,67 @@
-- product = ticket.products.first
-
-%br
-.row
-  .col-md-4
-    %strong Product brand :-
-    = product.product_brand.name
-  .col-md-6
-    %strong Model number :-
-    = product.model_no
-.row
-  .col-md-4
-    %strong Product category :-
-    = product.product_category.name
-  .col-md-6
-    %strong Product number :-
-    = product.product_no
-.row
-  .col-md-12
-    %strong Problem category :-
-    = ticket.problem_category.name
-.row
-  .col-md-12
-    %strong Problem description :-
-    = ticket.problem_description
-.row
-  .col-md-12
-    %strong Accessories :-
-    - ticket.ticket_accessories.each do |a|
-      = a.accessory.accessory
-.row
-  .col-md-12
-    %strong Other accessories :-
-    = ticket.other_accessories
-.row
-  .col-md-4
-    %strong Informed method :-
-    = ticket.inform_method.name
-  .col-md-6
-    %strong Job type :-
-    = ticket.job_type.name
-.row
-  .col-md-12
-    %strong Ticket type :-
-    = ticket.ticket_type.name
-.row
-  .col-md-12
-    %strong Type of warranty :-
-    = ticket.warranty_type.name
-.row
-  .col-md-12
-    %strong Sold country :-
-    = product.product_sold_country.try(:Country)
-.row
-  .col-md-5
-    .pull-left.small_scale_margin-right1
-      %strong Pop note :-
-    
-    = simple_format product.pop_note.to_s.split('<br/>')[0]
-  .col-md-7
-    %strong Pop status :-
-    = product.product_pop_status.name
+/ - product = ticket.products.first
+- ticket.products.each do |p|
+  %br
+  .row
+    .col-md-4
+      %strong Product brand :-
+      = p.product_brand.name
+    .col-md-6
+      %strong Model number :-
+      = p.model_no
+  .row
+    .col-md-4
+      %strong Product category :-
+      #{p.product_category.present? and p.product_category.name}
+    .col-md-6
+      %strong Product number :-
+      = p.product_no
+  .row
+    .col-md-12
+      %strong Problem category :-
+      = ticket.problem_category.name
+  .row
+    .col-md-12
+      %strong Problem description :-
+      = ticket.problem_description
+  .row
+    .col-md-12
+      %strong Accessories :-
+      - ticket.ticket_accessories.each do |a|
+        = a.accessory.accessory
+  .row
+    .col-md-12
+      %strong Other accessories :-
+      = ticket.other_accessories
+  .row
+    .col-md-4
+      %strong Informed method :-
+      = ticket.inform_method.name
+    .col-md-6
+      %strong Job type :-
+      = ticket.job_type.name
+  .row
+    .col-md-12
+      %strong Ticket type :-
+      = ticket.ticket_type.name
+  .row
+    .col-md-12
+      %strong Type of warranty :-
+      = ticket.warranty_type.name
+  .row
+    .col-md-12
+      %strong Sold country :-
+      / = product.product_sold_country.try(:Country)
+      #{p.product_sold_country and p.product_sold_country.Country}
+  .row
+    .col-md-5
+      .pull-left.small_scale_margin-right1
+        %strong Pop note :-
+      
+      = simple_format p.pop_note
+    .col-md-7
+      %strong Pop status :-
+      / = product.product_pop_status.name
+      #{p.product_pop_status and p.product_pop_status.name}
 
 
 
