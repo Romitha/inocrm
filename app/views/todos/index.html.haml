@@ -5,12 +5,19 @@
 - t0056  = capture do
   = link_to "T0056", "#" 
 
+.row
+  .col-xs-12.col-sm-6.col-md-8
+    #todo_list 
+      %p To Do list (77)
+      %a{:href => todos_path} 
+        %i.fa.fa-repeat
 
-#todo_list 
-  %p To Do list (77)
-  %a{:href => todos_path} 
-    %i.fa.fa-repeat
+  .col-xs-6.col-md-4
+    #sort_by
+      %p Sort by
+      = select(:todolist, :sorted, options_for_select([["Date", "1"], ["Priority", "2"], ["Module", "3"]]))
   
+
 
 #table
   = tab_panel do
@@ -69,10 +76,7 @@
               %td #{t0056}
               %td #{done}       
 
-#sort_by
-  %p Sort by
-#select_box
-  = select(:todolist, :sorted, options_for_select([["Date", "1"], ["Priority", "2"], ["Module", "3"]]))
+
 
 
 

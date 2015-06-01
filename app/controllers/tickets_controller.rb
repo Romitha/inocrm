@@ -7,6 +7,7 @@ class TicketsController < ApplicationController
   def index
     @tickets = Ticket.order("created_at DESC")
     respond_with(@tickets)
+
   end
 
   # available caches
