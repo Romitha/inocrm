@@ -35,8 +35,8 @@
             Designation :
             = user.designation.try :name
             %p
-            - if user.department.present?
-              Department : #{user.department.try :name}
+            / - if user.department.present?
+            /   Department : #{user.department.try :name}
         = link_to "Edit", initiate_user_profile_edit_user_path(template_params: "user_name_primary_details"), data: {toggle: "modal", target: "#user_edit_popup", userid: user.id}, remote: true, class: "pull-right"
     = panels panel_type: "default", header_content: "Primary Details"+(user.roles.present? ? "(#{user.roles.map{|r| r.name}.join(', ')})" : "") do
       .row

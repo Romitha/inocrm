@@ -27,7 +27,7 @@ class User < ActiveRecord::Base
 
   # belongs_to :department
 
-  has_many :customer_tickets, foreign_key: "customer_id", class_name: "Ticket"
+  # has_many :customer_tickets, foreign_key: "customer_id", class_name: "Ticket"
 
   # has_many :comments, foreign_key: "agent_id"
 
@@ -59,9 +59,9 @@ class User < ActiveRecord::Base
     contact_numbers.where.not(primary: true)    
   end
 
-  has_many :dyna_columns, as: :resourceable
+  has_many :dyna_columns, as: :resourceable, autosave: true
 
-  has_many :invoices, foreign_key: "customer_id"
+  # has_many :invoices, foreign_key: "customer_id"
 
   [:current_user_role_id, :current_user_role_name, :is_customer].each do |dyna_method|
     define_method(dyna_method) do
@@ -72,6 +72,7 @@ class User < ActiveRecord::Base
       data = dyna_columns.find_or_initialize_by(data_key: dyna_method)
       data.data_value = (value.class==Fixnum ? value : value.strip)
       @is_customer = data.data_value if dyna_method==:is_customer
+      data.save if data.persisted?
     end
   end
 
