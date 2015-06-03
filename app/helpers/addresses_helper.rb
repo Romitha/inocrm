@@ -37,6 +37,23 @@ module AddressesHelper
     end
   end
 
+  def multi_table_body &block
+    content_tag :tbody, &block
+  end
+
+  def multi_table_row body_array
+    content_tag :tr do
+      body_array.map do |b|
+        if b.is_a?(Hash)
+          content_tag :td, b[:content], b.except(:content)
+        else
+          content_tag :td, b
+        end
+
+      end.join.html_safe
+    end
+  end
+
   def tab_panel options={}, &block
     content_tag :div, role: "tabpanel", &block
   end
