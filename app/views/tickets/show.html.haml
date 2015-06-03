@@ -8,3 +8,19 @@
 = ticket.cus_chargeable
 = ticket.inform_method.name
 = render "product", ticket: ticket
+
+= tab_panel do
+  .row
+    .col-md-1.col-xs-3.col-sm-1
+      = tab_nav_tab({class: "tabs-left sideways"}, job_info: {content: "job info", link_id: "job_info", active_class: "active"}, contacts: {content: "Customer", link_id: "contacts"}, history: {content: "history", link_id: "history"}, join: {content: "join", link_id: "join"}, q_and_a: {content: "Q & A", link_id: "q_and_a"})
+    .col-md-11.col-xs-9.col-sm-11
+      / = tab_content tabpointer: :job_info, active_class: "active" do
+      /   = render "tickets/job_info"
+      / = tab_content tabpointer: :contacts do
+      /   = render "users/customers"
+      / = tab_content tabpointer: :history do
+      /   = render "tickets/view_histories"
+      / = tab_content tabpointer: :join do
+      /   = render "tickets/join"
+      / = tab_content tabpointer: :q_and_a do
+      /   = render "q_and_as/q_and_a"
