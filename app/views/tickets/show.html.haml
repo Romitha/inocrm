@@ -16,7 +16,7 @@
       .col-md-11.col-xs-9.col-sm-11
         .tab-content
           = tab_content tabpointer: :job_info, active_class: "active" do
-            = render "tickets/job_info", product: product
+            = render "tickets/job_info", product: product, ticket: ticket
           = tab_content tabpointer: :contacts do
             = render "users/view_customer", customer: customer
           = tab_content tabpointer: :warranties do
