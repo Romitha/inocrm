@@ -1,0 +1,43 @@
+- product = ticket.products.first
+
+%br
+.row
+  .col-md-6
+    .row
+      %strong Product
+    .row
+      %dl.dl-horizontal
+        %dt Brand
+        %dd= product.product_brand.name
+        %dt Category
+        %dd= product.product_category.name
+        %dt Model number
+        %dd= product.model_no
+        %dt Product number
+        %dd= product.product_no
+        %dt Accessories
+        - ticket.ticket_accessories.each do |a|
+          %dd
+            = a.accessory.accessory
+  .col-md-6
+    .row
+      .col-md-12
+        %dl.dl-horizontal
+          %dt Problem description
+          %dd= ticket.problem_description
+          %dt Informed method
+          %dd= ticket.inform_method.name
+          %dt Job type
+          %dd= ticket.job_type.name
+          %dt Ticket type
+          %dd= ticket.ticket_type.name
+          %dt Type of warranty
+          %dd= ticket.warranty_type.name
+          %dt Sold country
+          %dd= product.product_sold_country.try(:Country)
+          %dt POP note
+          %dd= simple_format product.pop_note
+          %dt POP status
+          %dd
+            = product.product_pop_status.name
+            = link_to "View POP", "#"
