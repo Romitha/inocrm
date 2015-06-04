@@ -506,9 +506,12 @@ class TicketsController < ApplicationController
     end
     Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @ticket)
     respond_to do |format|
-      @new_contact_person.save
-      @build_contact_person = @new_contact_person
-      format.js      
+      if @new_contact_person.save
+        @build_contact_person = @new_contact_person
+        format.js
+      else
+        format.js {render js: "alert('Please complete required fields. Thank you')"}
+      end
     end
   end
 
