@@ -1,49 +1,29 @@
-.view_ticket_header
-  .row
-    .col-md-2
-      - ticket = @ticket
-      %p Ticket No:#{ticket.ticket_no}
-    .col-md-6
-      %p Status Assigned
+- ticket = @ticket
+- product = ticket.products.first
+- warranties = product.warranties
+- customer = ticket.customer
+- histories = product.tickets
+- join_tickets = ticket.joint_tickets
+- pr_q_and_answers = ticket.q_and_answers
+- ge_q_and_as = ticket.ge_q_and_answers
 
-    .col-md-2
-      %p RE-OPEN
-    .col-md-2
-      %p RE-ASSIGN
 
-.view_ticket_body
-  .row
-    .col-md-8
-      %p Sereial No:#{ticket.products.first.serial_no }
-    .col-md-4
-      %strong Priority:
-      %br/ 
-      %strong SLA Remaining:
-      %br/
-      %p SLA:
-      %p SLA started:
-      %p SLA finished:
-      %p Ticket loged Date:
-      %p Ticket loged By:
-#table
+= tab_content tabpointer: :ticket_info, active_class: "active" do
   = tab_panel do
-    = tab_nav_tab({}, job_Info: {active_class: "active", content: "Job Info"}, customer_contact: {content: "Customer Contact"}, history: {content: "History"}, join: {content: "Join"}, view_qa: {content: "Q & A"})
-    .tab-content
-      = tab_content active_class: "active", tabpointer: "job_Info" do
-        .job_Info
-        = render "product", ticket: ticket
-      = tab_content tabpointer: "customer_contact" do
-        .customer_contact
-          = render "customer_contact", ticket: ticket
-
-      = tab_content tabpointer: "history" do 
-        .history
-          = render "history", ticket: ticket
-
-      = tab_content tabpointer: "join" do
-        .join
-          = render "join", tickets: @tickets
-
-      = tab_content tabpointer: "view_qa" do
-        .view_qa
-          = render "view_qa", ticket: ticket
+    .row
+      .col-md-1.col-xs-3.col-sm-1
+        = tab_nav_tab({class: "tabs-left sideways", id: "secondary_tab"}, job_info: {content: "job info", active_class: "active"}, contacts: {content: "Customer"}, warranties: {content: "Warranties"}, history: {content: "history"}, join: {content: "join"}, q_and_a: {content: "Q & A"})
+      .col-md-11.col-xs-9.col-sm-11
+        .tab-content
+          = tab_content tabpointer: :job_info, active_class: "active" do
+            = render "tickets/job_info", product: product
+          = tab_content tabpointer: :contacts do
+            = render "users/view_customer", customer: customer
+          = tab_content tabpointer: :warranties do
+            = render "warranties/view_warranties", warranties: warranties
+          = tab_content tabpointer: :history do
+            = render "tickets/view_histories", histories: histories
+          = tab_content tabpointer: :join do
+            = render "tickets/join", join_tickets: join_tickets
+          = tab_content tabpointer: :q_and_a do
+            = render "q_and_as/q_and_a", ge_q_and_as: ge_q_and_as, pr_q_and_as: pr_q_and_answers
