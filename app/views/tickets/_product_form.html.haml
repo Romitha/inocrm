@@ -27,7 +27,7 @@
 
     .row
       .col-md-3
-        = f.association :product_pop_status, collection: ProductPopStatus.first(3), include_blank: false, wrapper_html: {class: "col-md-11"}
+        = f.association :product_pop_status, collection: ProductPopStatus.first(3), include_blank: false, wrapper_html: {class: "col-md-11"}, label: "Product POP status"
       .col-md-3
         = f.association :product_sold_country, wrapper_html: {class: "col-md-11"}, label_method: :Country, value_method: :id
         .add_sign
@@ -35,7 +35,7 @@
             %span.glyphicon.glyphicon-plus-sign
 
       .col-md-2
-        %strong.small_scale_padding-bottom3{style: "display: block;"} Pop note document
+        %strong.small_scale_padding-bottom3{style: "display: block;"} POP note document
         #preview_of_pop_doc_url{style: "word-wrap: break-word;"}
           = product.pop_doc_url.file.filename if product.pop_doc_url.present?
         .upload_button
@@ -52,7 +52,7 @@
             .progress
               .progress-bar.progress-bar-success.progress-bar-striped{role: "progressbar", "aria-valuemax" => 100, "aria-valuemin" => 0, "aria-valuenow" => 0}
 
-      = f.input :pop_note, wrapper_html: {class:"col-md-4"}
+      = f.input :pop_note, wrapper_html: {class:"col-md-4"}, label: "POP note"
     .row
       .col-md-12
         = link_to "Cancel", new_ticket_path, class: "small_scale_margin-left1"
