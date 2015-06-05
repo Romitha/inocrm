@@ -14,6 +14,12 @@ class TicketsController < ApplicationController
 
   def show
     Warranty
+    ContactNumber
+    # @tickets = @ticket.joint_tickets
+    # Rails.cache.fetch([:histories, session[:product_id]], Kaminari.paginate_array(@product.tickets)) do
+      
+    # end
+    # @histories = Rails.cache.read([:histories, session[:product_id]]).page(params[:page]).per(3)
     respond_with(@ticket)
   end
 
