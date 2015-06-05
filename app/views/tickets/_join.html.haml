@@ -5,9 +5,9 @@
 .row
   .col-md-4
   .col-md-4
-    %p No of Join Tickets #{tickets.count}
+    %p No of Join Ticket(s) #{join_tickets.count}
 
--tickets.each do |jt|
+-join_tickets.each do |jt|
   .row
     .col-md-4
       Ticket No #{jt.ticket_no}
