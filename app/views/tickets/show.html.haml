@@ -7,6 +7,34 @@
 - pr_q_and_answers = ticket.q_and_answers
 - ge_q_and_as = ticket.ge_q_and_answers
 
+.view_ticket_header
+  .row.margin-none.bg-info
+    .fixed
+      .col-md-6.small_scale_padding-top8
+        Ticket No:#{ticket.ticket_no} 
+        &nbsp Status Assigned
+      .col-md-2.small_scale_padding-top8
+        %p Sereial No:#{product.serial_no }
+      .col-md-2.small_scale_padding-top8
+        %p RE-OPEN  
+      .col-md-2.small_scale_padding-top8
+        %p RE-ASSIGN
+
+.view_ticket_body
+  .row
+    .col-md-6
+      %p Date Sold:
+      %p Sold By:
+      %br/
+      %p SLA:
+      %p SLA Time:
+      %p SLA started:
+      %p SLA finished:
+
+    .col-md-6.pull-right.text-right
+      %strong Priority: #{ticket.priority}
+      %p Logged By: #{current_user.email}
+      %p Logged at: #{DateTime.now.strftime("%Y-%m-%d %H:%M")}
 
 = tab_content tabpointer: :ticket_info, active_class: "active" do
   = tab_panel do
@@ -18,7 +46,7 @@
           = tab_content tabpointer: :job_info, active_class: "active" do
             = render "tickets/job_info", product: product, ticket: ticket
           = tab_content tabpointer: :contacts do
-            = render "users/view_customer", customer: customer
+            = render "users/view_customer", customer: customer, ticket: ticket
           = tab_content tabpointer: :warranties do
             = render "warranties/view_warranties", warranties: warranties
           = tab_content tabpointer: :history do
