@@ -1,0 +1,40 @@
+%br
+.row
+  .col-md-4
+    %strong Customer Info
+    %p Customer #{customer.name}
+    %p Address #{customer.address1} #{customer.address2} #{customer.address3}
+.row
+  .col-md-4
+    - customer.contact_type_values.each do |contact_type_value|
+      = contact_type_value.contact_type.try(:name)
+      = contact_type_value.value
+      %br/
+%br
+.row
+  .col-md-4
+    %strong Contact Person
+.row
+  .col-md-4
+    %p Person 1
+    %p Name #{ticket.contact_person1.name}
+    - ticket.contact_person1.contact_person_contact_types.each do |contact_person_contact_type|
+      = contact_person_contact_type.contact_type.try(:name)
+      = contact_person_contact_type.value
+      %br/
+  .col-md-4
+    %p Person 2
+    %p Name #{ticket.contact_person2.name}
+    - ticket.contact_person2.contact_person_contact_types.each do |contact_person_contact_type|
+      = contact_person_contact_type.contact_type.try(:name)
+      = contact_person_contact_type.value
+      %br/
+%br
+.row
+  .col-md-4
+    %strong Reporter
+    %p Name #{ticket.report_person.name}
+    - ticket.report_person.contact_person_contact_types.each do |contact_person_contact_type|
+      = contact_person_contact_type.contact_type.try(:name)
+      = contact_person_contact_type.value
+      %br/
