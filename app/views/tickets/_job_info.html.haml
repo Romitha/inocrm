@@ -1,8 +1,7 @@
 %br
 .row
+  %h4 Product
   .col-md-6
-    .row
-      %strong Product
     .row
       %dl.dl-horizontal
         %dt Brand
@@ -13,6 +12,7 @@
         %dd= product.model_no
         %dt Product number
         %dd= product.product_no
+      %dl.dl-horizontal
         %dt Accessories
         - ticket.ticket_accessories.each do |a|
           %dd
@@ -21,8 +21,6 @@
     .row
       .col-md-12
         %dl.dl-horizontal
-          %dt Problem description
-          %dd= ticket.problem_description
           %dt Informed method
           %dd= ticket.inform_method.name
           %dt Job type
@@ -33,6 +31,10 @@
           %dd= ticket.warranty_type.name
           %dt Sold country
           %dd= product.product_sold_country.try(:Country)
+        %dl
+          %dt Problem description
+          %dd= ticket.problem_description
+        %dl
           %dt POP note
           %dd= simple_format product.pop_note
           %dt POP status

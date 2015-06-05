@@ -3,9 +3,9 @@
 - warranties = product.warranties
 - customer = ticket.customer
 - histories = product.tickets
-- join_tickets = ticket.joint_tickets
-- pr_q_and_answers = ticket.q_and_answers
-- ge_q_and_as = ticket.ge_q_and_answers
+- join_tickets = Ticket.where(id: ticket.joint_tickets.map(&:joint_ticket_id))
+- pr_q_and_answers = ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}
+- ge_q_and_as = ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}
 
 .view_ticket_header
   .row.margin-none.bg-info
@@ -32,7 +32,7 @@
       %p SLA finished:
 
     .col-md-6.pull-right.text-right
-      %strong Priority: #{ticket.priority}
+      %strong Priority: #{INOCRM_CONFIG["priority"].key ticket.priority}
       %p Logged By: #{current_user.email}
       %p Logged at: #{DateTime.now.strftime("%Y-%m-%d %H:%M")}
 

@@ -7,7 +7,7 @@
   .col-md-4
     %p No of Join Ticket(s) #{join_tickets.count}
 
--join_tickets.each do |jt|
+- join_tickets.each do |jt|
   .row
     .col-md-4
       Ticket No #{jt.ticket_no}
@@ -21,7 +21,7 @@
       Serial No #{jt.products.present? and jt.products.first.serial_no}
   .row 
     .col-md-4
-      Description #{jt.product_description}
+      Description #{jt.problem_description}
   .row 
     .col-md-4
       Customer #{jt.customer and jt.customer.name }
@@ -33,4 +33,4 @@
       Contact Person 2 #{jt.contact_person2 and jt.contact_person2.name}
   .row 
     .col-md-4
-      Engineer #{}
+      Report person #{jt.report_person && jt.report_person.name}

@@ -1,0 +1,18 @@
+.row
+  .col-md-6
+    %h4 General questions
+    - ge_q_and_as.each do |ge_q_and_a_key, ge_q_and_a_value_array|
+      = panels panel_type: "default", header_content: ge_q_and_a_key do
+        - ge_q_and_a_value_array.each do |ge_q_and_a_value|
+          %dl
+            %dt= ge_q_and_a_value.ge_q_and_a.question
+            %dd= ge_q_and_a_value.answer
+
+  .col-md-6
+    %h4 Problematic questions
+    - pr_q_and_as.each do |pr_q_and_a_key, pr_q_and_a_value_array|
+      = panels panel_type: "default", header_content: pr_q_and_a_key do
+        - pr_q_and_a_value_array.each do |pr_q_and_a_value|
+          %dl
+            %dt= pr_q_and_a_value.q_and_a.question
+            %dd= pr_q_and_a_value.answer
