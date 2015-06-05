@@ -1,36 +1,24 @@
 %br
 .row
-  .col-md-4
-    %strong Join Tickets
-.row
-  .col-md-4
-  .col-md-4
-    %p No of Join Ticket(s) #{join_tickets.count}
+  - join_tickets.each do |jt|
+    .col-xs-6
+      %p Ticket
+      .col-md-6.col-md-offset-1
+        %p NO #{jt.ticket_no}
+        %p Date #{jt.created_at.strftime("%Y-%m-%d")}
+        %p By #{jt.created_by}
 
-- join_tickets.each do |jt|
-  .row
-    .col-md-4
-      Ticket No #{jt.ticket_no}
-    .col-md-4
-      Ticket Date #{jt.created_at}
-    .col-md-4
-      Ticket By #{jt.created_by}
-  %br 
-  .row
-    .col-md-4
-      Serial No #{jt.products.present? and jt.products.first.serial_no}
-  .row 
-    .col-md-4
-      Description #{jt.problem_description}
-  .row 
-    .col-md-4
-      Customer #{jt.customer and jt.customer.name }
-  .row 
-    .col-md-4
-      Contact Person 1 #{jt.contact_person1 and jt.contact_person1.name}
-  .row 
-    .col-md-4
-      Contact Person 2 #{jt.contact_person2 and jt.contact_person2.name}
-  .row 
-    .col-md-4
-      Report person #{jt.report_person && jt.report_person.name}
+    .col-xs-12
+      %p Product
+      .col-md-6.col-md-offset-1
+        %p Category #{jt.products.present? and jt.products.first.product_category.name}
+        %p Model No #{jt.products.present? and jt.products.first.model_no}
+        %p Product No #{jt.products.present? and jt.products.first.product_no}
+        %p Serial No #{jt.products.present? and jt.products.first.serial_no}
+        %p Description #{jt.problem_description}
+        %br
+        .col-md-6.col-md-offset-1
+          %p Customer #{jt.customer and jt.customer.name }
+          %p Contact Person 1 #{jt.contact_person1 and jt.contact_person1.name}
+          %p Contact Person 2 #{jt.contact_person2 and jt.contact_person2.name}
+          %p Report Person
