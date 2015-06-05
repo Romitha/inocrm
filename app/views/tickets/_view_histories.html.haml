@@ -1,0 +1,34 @@
+.row
+  %dl.dl-horizontal
+    - histories.each do |history|
+      .col-md-6
+        %h4 Ticket
+        %dt No
+        %dd= history.ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
+        %dt Date
+        %dd= history.created_at.try(:strftime, "%m-%d-%Y")
+        %dt By
+        %dd= history.created_by
+        %dt Status
+        %dd= history.ticket_status.name
+        %dt Problem
+        %dd= history.problem_category.try(:name)
+        %dt Description
+        %dd= history.problem_description
+        %br
+        %dt Customer
+        %dd #{history.customer and history.customer.name }
+        %dt Contact person1
+        %dd #{history.contact_person1 and history.contact_person1.name}
+        %dt Contact person2
+        %dd #{history.contact_person2 and history.contact_person2.name}
+        %dt Report person
+        %dd #{history.report_person && history.report_person.name}
+        %br
+        %dt Engineer
+        %dd
+        %dt Reported by
+        %dd
+        %dt Resolution summary
+        %dd
+        %br
