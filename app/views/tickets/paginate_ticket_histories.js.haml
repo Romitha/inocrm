@@ -1,1 +1,1 @@
-$("#history_pagination").html("#{j render 'tickets/histories', histories: @histories}");
+$("#{@rendering_id}").html("#{j render 'tickets/'+@rendering_file, histories: @histories}");

@@ -1,3 +1,4 @@
+= paginate histories, remote: true, method: :get, params: {controller: "tickets", action: "paginate_ticket_histories", rendering_id: "#histories_pagination", per_page: 2, rendering_file: "view_histories"}
 .row
   %dl.dl-horizontal
     - histories.each do |history|

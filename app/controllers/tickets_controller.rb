@@ -17,6 +17,10 @@ class TicketsController < ApplicationController
     Warranty
     ContactNumber
     QAndA
+    @product = @ticket.products.first
+    session[:product_id] = @product.id
+    @histories = Rails.cache.fetch([:histories, session[:product_id]]){Kaminari.paginate_array(@product.tickets)}.page(params[:page]).per(2)
+    @join_tickets = Kaminari.paginate_array(Ticket.where(id: @ticket.joint_tickets.map(&:joint_ticket_id))).page(params[:page]).per(2)
     # @tickets = @ticket.joint_tickets
     # Rails.cache.fetch([:histories, session[:product_id]], Kaminari.paginate_array(@product.tickets)) do
       
@@ -697,7 +701,9 @@ class TicketsController < ApplicationController
   end
 
   def paginate_ticket_histories
-    @histories = Rails.cache.read([:histories, session[:product_id]]).page(params[:page]).per(3)
+    @rendering_id = params[:rendering_id]
+    @rendering_file = params[:rendering_file]
+    @histories = Rails.cache.read([:histories, session[:product_id]]).page(params[:page]).per(params[:per_page])
   end
 
   private
