@@ -4,7 +4,7 @@
       .col-md-6
         %h4 Ticket
         %dt No
-        %dd= jt.ticket_no
+        %dd= jt.ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
         %dt Date
         %dd= jt.created_at.strftime("%Y-%m-%d")
         %dt By

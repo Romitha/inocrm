@@ -11,7 +11,7 @@
   .row.margin-none.bg-info
     .fixed
       .col-md-5.small_scale_padding-top8
-        Ticket No:#{ticket.ticket_no} 
+        Ticket No :#{ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])}
         &nbsp Status Assigned
       .col-md-2.small_scale_padding-top8
         %strong Sereial No:#{product.serial_no }
