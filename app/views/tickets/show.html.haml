@@ -10,14 +10,14 @@
 .view_ticket_header
   .row.margin-none.bg-info
     .fixed
-      .col-md-6.small_scale_padding-top8
+      .col-md-5.small_scale_padding-top8
         Ticket No:#{ticket.ticket_no} 
         &nbsp Status Assigned
       .col-md-2.small_scale_padding-top8
-        %p Sereial No:#{product.serial_no }
-      .col-md-2.small_scale_padding-top8
+        %strong Sereial No:#{product.serial_no }
+      .col-md-2.pull-right.text-right.small_scale_padding-top8
         %p RE-OPEN  
-      .col-md-2.small_scale_padding-top8
+      .col-md-2.pull-right.text-right.small_scale_padding-top8
         %p RE-ASSIGN
 
 .view_ticket_body
