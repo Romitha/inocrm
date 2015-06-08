@@ -4,8 +4,8 @@
 - customer = ticket.customer
 - histories = product.tickets
 - join_tickets = Ticket.where(id: ticket.joint_tickets.map(&:joint_ticket_id))
-- pr_q_and_answers = ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}
-- ge_q_and_as = ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}
+- pr_q_and_answers = ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})}
+- ge_q_and_as = ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"General Questions" => v})}
 
 .view_ticket_header
   .row.margin-none.bg-info
@@ -48,7 +48,7 @@
           = tab_content tabpointer: :contacts do
             = render "users/view_customer", customer: customer, ticket: ticket
           = tab_content tabpointer: :warranties do
-            = render "warranties/view_warranties", warranties: warranties
+            = render "warranties/select_warranties", warranties: warranties
           = tab_content tabpointer: :history do
             = render "tickets/view_histories", histories: histories
           = tab_content tabpointer: :join do
