@@ -108,6 +108,8 @@ Rails.application.routes.draw do
   end
 
   resources :todos
+
+  resources :admins
      
   # get 'auth/index'
 
