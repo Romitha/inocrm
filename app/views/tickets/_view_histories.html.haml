@@ -4,7 +4,8 @@
       .col-md-6
         %h4 Ticket
         %dt No
-        %dd= history.ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
+        %dd
+          = link_to history.ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"]), history
         %dt Date
         %dd= history.created_at.try(:strftime, "%m-%d-%Y")
         %dt By
