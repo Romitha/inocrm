@@ -21,7 +21,11 @@
         %dd #{jt.products.present? and jt.products.first.product_no}
         %dt Serial No
         %dd #{jt.products.present? and jt.products.first.serial_no}
-        %dt Description
+        %dt Status
+        %dd= jt.ticket_status.name
+        %dt Problem Category
+        %dd= jt.problem_category.try(:name)
+        %dt Problem Description
         %dd #{jt.problem_description}
         %br
         %dt Customer
