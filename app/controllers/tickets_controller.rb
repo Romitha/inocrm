@@ -19,6 +19,8 @@ class TicketsController < ApplicationController
     QAndA
     @product = @ticket.products.first
     session[:product_id] = @product.id
+    Rails.cache.delete([:histories, session[:product_id]])
+    Rails.cache.delete([:join, @ticket.id])
     @histories = Rails.cache.fetch([:histories, session[:product_id]]){Kaminari.paginate_array(@product.tickets)}.page(params[:page]).per(2)
     @join_tickets = Rails.cache.fetch([:join, @ticket.id]){Kaminari.paginate_array(Ticket.where(id: @ticket.joint_tickets.map(&:joint_ticket_id)))}.page(params[:page]).per(2)
     # @tickets = @ticket.joint_tickets
@@ -102,19 +104,16 @@ class TicketsController < ApplicationController
   end
 
   def update
-    # t_params = ticket_params
-    # t_params["due_date_time"] = DateTime.strptime(t_params["due_date_time"], '%m/%d/%Y %I:%M %p') if t_params["due_date_time"].present?
+    t_params = ticket_params
+    t_params["remarks"] = "#{ticket_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" if ticket_params["remarks"].present?
     # @ticket.update(t_params)
     # respond_with(@ticket)
-    @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
-    @ticket.attributes.merge! ticket_params
     respond_to do |format|
-      if @ticket.valid?
+      if @ticket.update(t_params)
         format.html {redirect_to @ticket, notice: "Successfully updated."}
-        Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @ticket)
         format.json {render json: @ticket}
       else
-        format.html {redirect_to @ticket, error: "Unable to update ticket. Please validate your inputs."}
+        format.html {redirect_to @ticket, error: "Unable to update ticket. Please validate resposible fields as instructed."}
         format.json {render json: @ticket.errors}
       end
     end
