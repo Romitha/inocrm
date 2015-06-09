@@ -54,6 +54,6 @@
               = render "tickets/view_histories", histories: histories
           = tab_content tabpointer: :join do
             #join_pagination
-              = render "tickets/join", join_tickets: join_tickets
+              = render "tickets/join", join_tickets: join_tickets, ticket: ticket
           = tab_content tabpointer: :q_and_a do
             = render "q_and_as/q_and_a", ge_q_and_as: ge_q_and_as, pr_q_and_as: pr_q_and_answers
