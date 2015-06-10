@@ -95,5 +95,7 @@ group :development do
   gem 'capistrano-rvm'
 end
 
+gem 'httpi'
+
 # Use debugger
 # gem 'debugger', group: [:development, :test]

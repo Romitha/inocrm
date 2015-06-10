@@ -1,0 +1,18 @@
+.col-md-2.col-xs-12.col-sm-2
+  = tab_nav_tab({class: "tabs-left", id: "secondary_tab"}, job_info: {content: "job info", active_class: "active"}, contacts: {content: "Customer"}, warranties: {content: "Warranties"}, history: {content: "history"}, join: {content: "join"}, q_and_a: {content: "Q & A"})
+.col-md-10.col-xs-12.col-sm-10
+  .tab-content
+    = tab_content tabpointer: :job_info, active_class: "active" do
+      = render "tickets/job_info", product: product, ticket: ticket
+    = tab_content tabpointer: :contacts do
+      = render "users/view_customer", customer: customer, ticket: ticket
+    = tab_content tabpointer: :warranties do
+      = render "warranties/select_warranties", warranties: warranties
+    = tab_content tabpointer: :history do
+      #histories_pagination
+        = render "tickets/view_histories", histories: histories
+    = tab_content tabpointer: :join do
+      #join_pagination
+        = render "tickets/join", join_tickets: join_tickets, ticket: ticket
+    = tab_content tabpointer: :q_and_a do
+      = render "q_and_as/q_and_a", ge_q_and_as: ge_q_and_as, pr_q_and_as: pr_q_and_as

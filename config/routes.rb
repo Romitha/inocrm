@@ -104,6 +104,8 @@ Rails.application.routes.draw do
       post "q_and_answer_save"
 
       post "join_tickets"
+
+      get "assign_ticket"
     end
   end
 
