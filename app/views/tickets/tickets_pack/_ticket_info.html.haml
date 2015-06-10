@@ -1,4 +1,4 @@
-.col-md-2.col-xs-12.col-sm-2
+.col-md-2.col-xs-12.col-sm-2{style: "padding-left:0;"}
   = tab_nav_tab({class: "tabs-left", id: "secondary_tab"}, job_info: {content: "job info", active_class: "active"}, contacts: {content: "Customer"}, warranties: {content: "Warranties"}, history: {content: "history"}, join: {content: "join"}, q_and_a: {content: "Q & A"})
 .col-md-10.col-xs-12.col-sm-10
   .tab-content
@@ -16,3 +16,5 @@
         = render "tickets/join", join_tickets: join_tickets, ticket: ticket
     = tab_content tabpointer: :q_and_a do
       = render "q_and_as/q_and_a", ge_q_and_as: ge_q_and_as, pr_q_and_as: pr_q_and_as
+%h4 Remarks
+%p= simple_format ticket.remarks
