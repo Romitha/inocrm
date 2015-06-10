@@ -45,9 +45,9 @@
         = tab_content tabpointer: :ticket_info, active_class: "active" do
           = tab_panel do
             .row.small_scale_margin-top1
-              .col-md-2.col-xs-3.col-sm-2
+              .col-md-2.col-xs-12.col-sm-2
                 = tab_nav_tab({class: "tabs-left", id: "secondary_tab"}, job_info: {content: "job info", active_class: "active"}, contacts: {content: "Customer"}, warranties: {content: "Warranties"}, history: {content: "history"}, join: {content: "join"}, q_and_a: {content: "Q & A"})
-              .col-md-10.col-xs-9.col-sm-10
+              .col-md-10.col-xs-12.col-sm-10
                 .tab-content
                   = tab_content tabpointer: :job_info, active_class: "active" do
                     = render "tickets/job_info", product: product, ticket: ticket
@@ -78,12 +78,12 @@
                 = f.association :ticket_type, as: :radio_buttons, wrapper_html: {class: "col-md-3"}, wrapper: :append, input_html: {class: "ticket_type"}
                 = f.input :regional_support_job, label: "Regional Support Job", wrapper_html: {class: "col-md-2"}, wrapper: :append
             .row
-              .col-md-3.col-xs-3.col-sm-3
+              .col-md-3.col-xs-12.col-sm-12
                 %strong Job type
                 = f.select :job_type_id, options_from_collection_for_select(JobType.all, :id, :name), {},{class: "col-md-12 small_scale_margin-top3"}
             .row
             .row
-              .col-md-3.col-xs-3.col-sm-3
+              .col-md-3.col-xs-12.col-sm-12
                 = f.submit "Submit", data: {disable_with: "Please wait..."}, class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2"
           / .row
           /   .col-md-12

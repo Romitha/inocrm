@@ -288,3 +288,9 @@ table{
 dd{
   word-wrap: break-word;
 }
+@media (max-width: 768px) {
+  #secondary_tab li a {
+    text-align:center;
+  }
+
+}
