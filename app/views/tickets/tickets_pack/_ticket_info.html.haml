@@ -16,5 +16,6 @@
         = render "tickets/join", join_tickets: join_tickets, ticket: ticket
     = tab_content tabpointer: :q_and_a do
       = render "q_and_as/q_and_a", ge_q_and_as: ge_q_and_as, pr_q_and_as: pr_q_and_as
-%h4 Remarks
-%p= simple_format ticket.remarks
+.block_push{style: "clear: both;position: relative;height: 4em;"}
+  %h4 Remarks
+  %p= simple_format ticket.remarks
