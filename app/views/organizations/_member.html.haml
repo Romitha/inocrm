@@ -12,7 +12,7 @@
       .col-md-12
         %span
           = link_to edit_organization_path(organization), class: "has-tooltip", data: {toggle: "tooltip", placement: "right"}, title: "Edit #{organization.name}" do
-            = glyph(:pencil)
+            = glyph(:pencil, {tag: :span})
         %span
           = link_to remove_relation_organization_path(organization, relation: relation, relation_organization: relation_organization), class: "has-tooltip", data: {confirm: "Do you want to remove the relationship? Please consider of the vat number with high priority",toggle: "tooltip", placement: "right"}, title: "Remove parent relation of #{organization.name} from #{relation_organization.name}" do
             = glyph(:remove)
