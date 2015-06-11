@@ -17,6 +17,7 @@
         - ticket.ticket_accessories.each do |a|
           %dd
             = a.accessory.accessory
+        %dd.italic= ticket.other_accessories
   .col-md-6.col-xs-6.col-sm-6
     .row
       .col-md-12.col-xs-12.col-sm-12
@@ -40,4 +41,4 @@
           %dt POP status
           %dd
             = product.product_pop_status.name
-            = link_to "View POP", "#"
+            = link_to "View POP (#{product.pop_doc_url.file.try :filename})", product.pop_doc_url.url, target: "_blank" if product.pop_doc_url.file.present?

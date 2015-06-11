@@ -1,8 +1,8 @@
 .col-md-12
-  = link_to_if document_attachment.downloadable, document_attachment.file_path.file.try(:filename), document_attachment.file_path.url
+  = link_to_if document_attachment.downloadable, document_attachment.file_path.file.try(:filename), document_attachment.file_path.url, target: "_blank"
   - unless document_attachment.downloadable
-    = link_to content_tag(:span, glyph(:download)), polymorphic_path([document_attachment.attachable, document_attachment], "document_attachment[downloadable]" =>  true), method: :put, title: "enable the #{document_attachment.file_path.file.try(:filename)} downloadable"
+    = link_to content_tag(:span, glyph(:download, {tag: :span})), polymorphic_path([document_attachment.attachable, document_attachment], "document_attachment[downloadable]" =>  true), method: :put, title: "enable the #{document_attachment.file_path.file.try(:filename)} downloadable"
   - else
-    = link_to content_tag(:span, glyph(:download)), polymorphic_path([document_attachment.attachable, document_attachment], "document_attachment[downloadable]" => false), method: :put, title: "disable the #{document_attachment.file_path.file.try(:filename)} downloadable"
-  = link_to content_tag(:span, glyph(:trash)), polymorphic_path([document_attachment.attachable, document_attachment]), method: :delete, title: "remove #{document_attachment.file_path.file.try(:filename)}", data: {confirm: "Are you sure! do you want to remove this document? It cannot be undone."}
+    = link_to content_tag(:span, glyph(:download, {tag: :span})), polymorphic_path([document_attachment.attachable, document_attachment], "document_attachment[downloadable]" => false), method: :put, title: "disable the #{document_attachment.file_path.file.try(:filename)} downloadable"
+  = link_to content_tag(:span, glyph(:trash, {tag: :span})), polymorphic_path([document_attachment.attachable, document_attachment]), method: :delete, title: "remove #{document_attachment.file_path.file.try(:filename)}", data: {confirm: "Are you sure! do you want to remove this document? It cannot be undone."}
   %hr
