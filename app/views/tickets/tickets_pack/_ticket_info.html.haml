@@ -1,5 +1,5 @@
 .col-md-2.col-xs-12.col-sm-2{style: "padding-left:0;"}
-  = tab_nav_tab({class: "tabs-left", id: "secondary_tab"}, job_info: {content: "job info", active_class: "active"}, contacts: {content: "Customer"}, warranties: {content: "Warranties"}, history: {content: "history"}, join: {content: "join"}, q_and_a: {content: "Q & A"})
+  = tab_nav_tab({class: "tabs-left", id: "secondary_tab"}, job_info: {content: "Job Info", active_class: "active job_c"}, contacts: {content: "Customer", active_class: "customer_c"}, warranties: {content: "Warranties", active_class: "warranties_c"}, history: {content: "History", active_class: "history_c"}, join: {content: "Join", active_class: "join_c"}, q_and_a: {content: "Q & A", active_class: "qa_C"})
 .col-md-10.col-xs-12.col-sm-10
   .tab-content
     = tab_content tabpointer: :job_info, active_class: "active" do

@@ -15,43 +15,24 @@
           = contact_type_value.value
           %br
 .row
-  %dl.dl-horizontal
-    .col-md-4
-      %br
-      %h4 Contact Person 1
-      %dt Name
-      %dd #{ticket.contact_person1.name}
-      %dt
-        - ticket.contact_person1.contact_person_contact_types.each do |contact_person_contact_type|
-          = contact_person_contact_type.contact_type.try(:name)
-          %br
-      %dd
-        - ticket.contact_person1.contact_person_contact_types.each do |contact_person_contact_type|
-          = contact_person_contact_type.value
-          %br
-  %dl.dl-horizontal
-    .col-md-4
-      %h4 Contact Person 2
-      %dt Name
-      %dd #{ticket.contact_person2.name}
-      %dt
-        - ticket.contact_person2.contact_person_contact_types.each do |contact_person_contact_type|
-          = contact_person_contact_type.contact_type.try(:name)
-          %br
-      %dd
-        - ticket.contact_person2.contact_person_contact_types.each do |contact_person_contact_type|
-          = contact_person_contact_type.value
-          %br
-  %dl.dl-horizontal
-    .col-md-4
-      %h4 Reporter
-      %dt Name
-      %dd #{ticket.report_person.name}
-      %dt
-        - ticket.report_person.contact_person_contact_types.each do |contact_person_contact_type|
-          = contact_person_contact_type.contact_type.try(:name)
-          %br
-      %dd
-        - ticket.report_person.contact_person_contact_types.each do |contact_person_contact_type|
-          = contact_person_contact_type.value
-          %br
+  .col-md-4
+    %h4 Contact Person 1
+    %dt Name
+    %dd #{ticket.contact_person1.name}
+    - ticket.contact_person1.contact_person_contact_types.each do |contact_person_contact_type|
+      %dt= contact_person_contact_type.contact_type.try(:name)
+      %dd= contact_person_contact_type.value
+  .col-md-4
+    %h4 Contact Person 2
+    %dt Name
+    %dd #{ticket.contact_person2.name}
+    - ticket.contact_person2.contact_person_contact_types.each do |contact_person_contact_type|
+      %dt= contact_person_contact_type.contact_type.try(:name)
+      %dd= contact_person_contact_type.value
+  .col-md-4
+    %h4 Reporter
+    %dt Name
+    %dd #{ticket.report_person.name}
+    - ticket.report_person.contact_person_contact_types.each do |contact_person_contact_type|
+      %dt= contact_person_contact_type.contact_type.try(:name)
+      %dd= contact_person_contact_type.value
