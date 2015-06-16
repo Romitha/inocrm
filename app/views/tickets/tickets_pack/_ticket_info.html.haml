@@ -18,8 +18,9 @@
       = render "q_and_as/q_and_a", ge_q_and_as: ge_q_and_as, pr_q_and_as: pr_q_and_as
 .row
   .col-md-6{style: "clear: both;position: relative;height: 4em;"}
-    %h5 Remarks:
-    %p= simple_format ticket.remarks
+    -if ticket.remarks.present?
+      %h5 Remarks:
+      %p #{ticket.remarks}
   .col-md-6.pull-right.text-right.small_scale_padding-top1
     = link_to "#" do
       %button.btn.btn-default.btn-xs{:type => "button" , :style=>"color:green;"}

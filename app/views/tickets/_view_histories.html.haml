@@ -19,13 +19,13 @@
         %dd= history.problem_description
         %br
         %dt Customer
-        %dd #{history.customer and history.customer.mst_title.title} #{history.customer and history.customer.name }
+        %dd #{history.customer and history.customer.mst_title.title} #{history.customer and history.customer.name.capitalize }
         %dt Contact person1
-        %dd #{history.contact_person1 and history.contact_person1.mst_title.title} #{history.contact_person1 and history.contact_person1.name}
+        %dd #{history.contact_person1 and history.contact_person1.mst_title.title} #{history.contact_person1 and history.contact_person1.name.capitalize}
         %dt Contact person2
-        %dd #{history.contact_person2 and history.contact_person2.mst_title.title} #{history.contact_person2 and history.contact_person2.name}
+        %dd #{history.contact_person2 and history.contact_person2.mst_title.title} #{history.contact_person2 and history.contact_person2.name.capitalize}
         %dt Report person
-        %dd #{history.report_person and history.report_person.mst_title.title} #{history.report_person and history.report_person.name}
+        %dd #{history.report_person and history.report_person.mst_title.title} #{history.report_person and history.report_person.name.capitalize}
         %br
         %dt Engineer
         %dd

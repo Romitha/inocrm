@@ -3,7 +3,7 @@
     .col-md-6
       %h4 Customer Info
       %dt Customer
-      %dd #{customer.mst_title.title} #{customer.name}
+      %dd #{customer.mst_title.title} #{customer.name.capitalize}
       %dt Address
       %dd #{customer.address1} #{customer.address2} #{customer.address3}
       %dt
@@ -18,21 +18,21 @@
   .col-md-4
     %h4 Contact Person 1
     %dt Name
-    %dd #{ticket.contact_person1.mst_title.title} #{ticket.contact_person1.name}
+    %dd #{ticket.contact_person1.mst_title.title} #{ticket.contact_person1.name.capitalize}
     - ticket.contact_person1.contact_person_contact_types.each do |contact_person_contact_type|
       %dt= contact_person_contact_type.contact_type.try(:name)
       %dd= contact_person_contact_type.value
   .col-md-4
     %h4 Contact Person 2
     %dt Name
-    %dd #{ticket.contact_person2.mst_title.title} #{ticket.contact_person2.name}
+    %dd #{ticket.contact_person2.mst_title.title} #{ticket.contact_person2.name.capitalize}
     - ticket.contact_person2.contact_person_contact_types.each do |contact_person_contact_type|
       %dt= contact_person_contact_type.contact_type.try(:name)
       %dd= contact_person_contact_type.value
   .col-md-4
     %h4 Reporter
     %dt Name
-    %dd #{ticket.report_person.mst_title.title} #{ticket.report_person.name}
+    %dd #{ticket.report_person.mst_title.title} #{ticket.report_person.name.capitalize}
     - ticket.report_person.contact_person_contact_types.each do |contact_person_contact_type|
       %dt= contact_person_contact_type.contact_type.try(:name)
       %dd= contact_person_contact_type.value
