@@ -29,10 +29,10 @@
         %dd #{jt.problem_description}
         %br
         %dt Customer
-        %dd #{jt.customer and jt.customer.name }
+        %dd #{jt.customer and jt.customer.mst_title.title } #{jt.customer and jt.customer.name }
         %dt Contact person1
-        %dd #{jt.contact_person1 and jt.contact_person1.name}
+        %dd #{jt.contact_person1 and jt.contact_person1.mst_title.title } #{jt.contact_person1 and jt.contact_person1.name}
         %dt Contact person2
-        %dd #{jt.contact_person2 and jt.contact_person2.name}
+        %dd #{jt.contact_person2 and jt.contact_person2.mst_title.title} #{jt.contact_person2 and jt.contact_person2.name}
         %dt Report person
-        %dd #{jt.report_person && jt.report_person.name}
+        %dd #{jt.report_person && jt.report_person.mst_title.title} #{jt.report_person && jt.report_person.name}

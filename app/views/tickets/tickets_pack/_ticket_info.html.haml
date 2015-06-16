@@ -16,6 +16,12 @@
         = render "tickets/join", join_tickets: join_tickets, ticket: ticket
     = tab_content tabpointer: :q_and_a do
       = render "q_and_as/q_and_a", ge_q_and_as: ge_q_and_as, pr_q_and_as: pr_q_and_as
-.block_push{style: "clear: both;position: relative;height: 4em;"}
-  %h4 Remarks
-  %p= simple_format ticket.remarks
+.row
+  .col-md-6{style: "clear: both;position: relative;height: 4em;"}
+    %h5 Remarks:
+    %p= simple_format ticket.remarks
+  .col-md-6.pull-right.text-right.small_scale_padding-top1
+    = link_to "#" do
+      %button.btn.btn-default.btn-xs{:type => "button" , :style=>"color:green;"}
+        %span.glyphicon.glyphicon-print{"aria-hidden" => "true"}
+          %strong Print
