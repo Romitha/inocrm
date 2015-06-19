@@ -1,10 +1,22 @@
 class AddConstraintNameToTables < ActiveRecord::Migration
+  # add_foreign_key(from_table, to_table, options)
+  # remove_foreign_key(from_table, to_table, options)
+  # class Comment < ActiveRecord::Base
+  #   belongs_to :post
+  # end
+
+  # class Post < ActiveRecord::Base
+  #   has_many :comments, dependent: :delete_all
+  # end
+  # add_foreign_key(:comments, :posts)
+
   def change
     [
       {constraint_name: "fk_workflow_alert_users_users1", foreign_key: "user_id", reference_table: "users"},
       {constraint_name: "fk_workflow_alert_users_workflow_alerts1", foreign_key: "user_id", reference_table: "workflow_alerts"}
     ].each do |attr|
-      execute "ALTER TABLE `workflow_alert_users` ADD CONSTRAINT `#{attr[:constraint_name]}` FOREIGN KEY (`#{attr[:foreign_key]}`) REFERENCES `#{attr[:reference_table]}` (`id`)"
+      # execute "ALTER TABLE `workflow_alert_users` ADD CONSTRAINT `#{attr[:constraint_name]}` FOREIGN KEY (`#{attr[:foreign_key]}`) REFERENCES `#{attr[:reference_table]}` (`id`)"
+      add_foreign_key(:workflow_alert_users, attr[:reference_table].to_sym, name: attr[:constraint_name], column: attr[:foreign_key])
     end
 
     [
@@ -260,11 +272,11 @@ class AddConstraintNameToTables < ActiveRecord::Migration
       execute "ALTER TABLE `spt_regular_customer` ADD CONSTRAINT `#{attr[:constraint_name]}` FOREIGN KEY (`#{attr[:foreign_key]}`) REFERENCES `#{attr[:reference_table]}` (`id`)"
     end
 
-    #[
-      #{constraint_name: "fk_spt_franchise_agent_mst_organzation1", foreign_key: "organization_id", reference_table: "organizations"}
-    #].each do |attr|
-      #execute "ALTER TABLE `spt_regional_support_center` ADD CONSTRAINT `#{attr[:constraint_name]}` FOREIGN KEY (`#{attr[:foreign_key]}`) REFERENCES `#{attr[:reference_table]}` (`id`)"
-    #end
+    [
+      {constraint_name: "fk_spt_franchise_agent_mst_organzation1", foreign_key: "organization_id", reference_table: "organizations"}
+    ].each do |attr|
+      execute "ALTER TABLE `spt_regional_support_center` ADD CONSTRAINT `#{attr[:constraint_name]}` FOREIGN KEY (`#{attr[:foreign_key]}`) REFERENCES `#{attr[:reference_table]}` (`id`)"
+    end
 
     [
       {constraint_name: "fk_spt_product_serial_warranty_mst_spt_warranty_type1_idx", foreign_key: "warranty_type_id", reference_table: "mst_spt_warranty_type"},
@@ -346,7 +358,7 @@ class AddConstraintNameToTables < ActiveRecord::Migration
     end
 
     [
-      #{constraint_name: "fk_spt_customer_mst_organzation1", foreign_key: "organization_id", reference_table: "organizations"},
+      {constraint_name: "fk_spt_customer_mst_organzation1", foreign_key: "organization_id", reference_table: "organizations"},
       {constraint_name: "fk_spt_customer_mst_title1", foreign_key: "title_id", reference_table: "mst_title"},
       {constraint_name: "fk_spt_customer_mst_district1", foreign_key: "district_id", reference_table: "mst_district"}
     ].each do |attr|
@@ -354,7 +366,7 @@ class AddConstraintNameToTables < ActiveRecord::Migration
     end
 
     [
-      #{constraint_name: "fk_spt_contract_product_mst_organzation1", foreign_key: "installed_location_id", reference_table: "organizations"},
+      {constraint_name: "fk_spt_contract_product_mst_organzation1", foreign_key: "installed_location_id", reference_table: "organizations"},
       {constraint_name: "fk_spt_contract_product_spt_contract_info1", foreign_key: "contract_id", reference_table: "spt_contract"},
       {constraint_name: "fk_spt_product_contract_spt_product_serial10", foreign_key: "product_serial_id", reference_table: "spt_product_serial"}
     ].each do |attr|
@@ -567,7 +579,7 @@ class AddConstraintNameToTables < ActiveRecord::Migration
       {constraint_name: "fk_inventory_damage_grn_batch1", foreign_key: "grn_batch_id", reference_table: "inv_grn_batch"},
       {constraint_name: "fk_inventory_damage_grn_serial_item1", foreign_key: "grn_serial_item_id", reference_table: "inv_grn_serial_item"},
       {constraint_name: "fk_inventory_damage_mst_disposal_methods1", foreign_key: "disposal_method_id", reference_table: "mst_inv_disposal_method"},
-      #{constraint_name: "fk_Inventory_damage_mst_organzation1", foreign_key: "store_id", reference_table: "organzations"},
+      {constraint_name: "fk_Inventory_damage_mst_organzation1", foreign_key: "store_id", reference_table: "organizations"},
       {constraint_name: "fk_Inventory_damage_mst_product_condition1", foreign_key: "product_condition_id", reference_table: "mst_inv_product_condition"},
       {constraint_name: "fk_Inventory_damage_mst_reasons1", foreign_key: "damage_reason_id", reference_table: "mst_inv_reason"},
       {constraint_name: "fk_inv_damage_inv_inventory_serial_part1", foreign_key: "serial_part_id", reference_table: "inv_inventory_serial_part"},
@@ -582,7 +594,7 @@ class AddConstraintNameToTables < ActiveRecord::Migration
       {constraint_name: "fk_damage_request_users2", foreign_key: "approved1_by", reference_table: "users"},
       {constraint_name: "fk_damage_request_users3", foreign_key: "approved2_by", reference_table: "users"},
       {constraint_name: "fk_damage_source_mst_product10", foreign_key: "product_id", reference_table: "mst_inv_product"},
-      #{constraint_name: "fk_Inventory_damage_mst_organzation10", foreign_key: "store_id", reference_table: "organzations"},
+      {constraint_name: "fk_Inventory_damage_mst_organzation10", foreign_key: "store_id", reference_table: "organizations"},
       {constraint_name: "fk_Inventory_damage_mst_reasons10", foreign_key: "damage_reason_id", reference_table: "mst_inv_reason"}
     ].each do |attr|
       execute "ALTER TABLE `inv_damage_request` ADD CONSTRAINT `#{attr[:constraint_name]}` FOREIGN KEY (`#{attr[:foreign_key]}`) REFERENCES `#{attr[:reference_table]}` (`id`)"
@@ -602,7 +614,7 @@ class AddConstraintNameToTables < ActiveRecord::Migration
 
     [
       {constraint_name: "fk_damage_source_mst_product11", foreign_key: "product_id", reference_table: "mst_inv_product"},
-      #{constraint_name: "fk_Inventory_damage_mst_organzation11", foreign_key: "store_id", reference_table: "organzations"},
+      {constraint_name: "fk_Inventory_damage_mst_organzation11", foreign_key: "store_id", reference_table: "organizations"},
       {constraint_name: "fk_inventory_destroy_destroy_request1", foreign_key: "disposal_request_id", reference_table: "inv_disposal_request"},
       {constraint_name: "fk_Inventory_destroy_mst_destroy_methods1", foreign_key: "disposal_method_id", reference_table: "mst_inv_disposal_method"},
       {constraint_name: "fk_Inventory_destroy_users1", foreign_key: "created_by", reference_table: "users"},
@@ -617,8 +629,8 @@ class AddConstraintNameToTables < ActiveRecord::Migration
       {constraint_name: "fk_damage_source_mst_product100", foreign_key: "product_id", reference_table: "mst_inv_product"},
       {constraint_name: "fk_destroy_request_mst_destroy_methods1", foreign_key: "requested_disposal_method_id", reference_table: "mst_inv_disposal_method"},
       {constraint_name: "fk_destroy_request_mst_destroy_methods2", foreign_key: "approved_disposal_method_id", reference_table: "mst_inv_disposal_method"},
-      {constraint_name: "fk_disposal_request_mst_reasons1", foreign_key: "disposal_reason_id", reference_table: "mst_inv_reason"}
-      #{constraint_name: "fk_Inventory_damage_mst_organzation100", foreign_key: "store_id", reference_table: "organzations"}
+      {constraint_name: "fk_disposal_request_mst_reasons1", foreign_key: "disposal_reason_id", reference_table: "mst_inv_reason"},
+      {constraint_name: "fk_Inventory_damage_mst_organzation100", foreign_key: "store_id", reference_table: "organizations"}
     ].each do |attr|
       execute "ALTER TABLE `inv_disposal_request` ADD CONSTRAINT `#{attr[:constraint_name]}` FOREIGN KEY (`#{attr[:foreign_key]}`) REFERENCES `#{attr[:reference_table]}` (`id`)"
     end
@@ -645,8 +657,8 @@ class AddConstraintNameToTables < ActiveRecord::Migration
 
     [
       {constraint_name: "fk_gin_srn1", foreign_key: "srn_id", reference_table: "inv_srn"},
-      {constraint_name: "fk_inv_gin_users1", foreign_key: "created_by", reference_table: "users"}
-      #{constraint_name: "fk_srn_mst_organzation10", foreign_key: "store_id", reference_table: "organzations"}
+      {constraint_name: "fk_inv_gin_users1", foreign_key: "created_by", reference_table: "users"},
+      {constraint_name: "fk_srn_mst_organzation10", foreign_key: "store_id", reference_table: "organizations"}
     ].each do |attr|
       execute "ALTER TABLE `inv_gin` ADD CONSTRAINT `#{attr[:constraint_name]}` FOREIGN KEY (`#{attr[:foreign_key]}`) REFERENCES `#{attr[:reference_table]}` (`id`)"
     end
@@ -672,7 +684,7 @@ class AddConstraintNameToTables < ActiveRecord::Migration
     end
 
     [
-      #{constraint_name: "fk_grn_mst_organzation1", foreign_key: "store_id", reference_table: "organzations"},
+      {constraint_name: "fk_grn_mst_organzation1", foreign_key: "store_id", reference_table: "organizations"},
       {constraint_name: "fk_grn_srn1", foreign_key: "srn_id", reference_table: "inv_srn"},
       {constraint_name: "fk_inv_grn_users1", foreign_key: "created_by", reference_table: "users"}
     ].each do |attr|
@@ -711,7 +723,7 @@ class AddConstraintNameToTables < ActiveRecord::Migration
 
     [
       {constraint_name: "fk_Inventory_mst_bin1", foreign_key: "bin_id", reference_table: "mst_inv_bin"},
-      #{constraint_name: "fk_Inventory_mst_organzation1", foreign_key: "store_id", reference_table: "organzations"},
+      {constraint_name: "fk_Inventory_mst_organzation1", foreign_key: "store_id", reference_table: "organizations"},
       {constraint_name: "fk_Inventory_mst_product1", foreign_key: "product_id", reference_table: "mst_inv_product"},
       {constraint_name: "fk_inv_inventory_users1", foreign_key: "created_by", reference_table: "users"},
       {constraint_name: "fk_inv_inventory_users2", foreign_key: "updated_by", reference_table: "users"}
@@ -751,8 +763,8 @@ class AddConstraintNameToTables < ActiveRecord::Migration
     end
 
     [
-      {constraint_name: "fk_inv_prn_users1", foreign_key: "created_by", reference_table: "users"}
-      #{constraint_name: "fk_srn_mst_organzation13", foreign_key: "store_id", reference_table: "organzations"}
+      {constraint_name: "fk_inv_prn_users1", foreign_key: "created_by", reference_table: "users"},
+      {constraint_name: "fk_srn_mst_organzation13", foreign_key: "store_id", reference_table: "organizations"}
     ].each do |attr|
       execute "ALTER TABLE `inv_prn` ADD CONSTRAINT `#{attr[:constraint_name]}` FOREIGN KEY (`#{attr[:foreign_key]}`) REFERENCES `#{attr[:reference_table]}` (`id`)"
     end
@@ -772,9 +784,9 @@ class AddConstraintNameToTables < ActiveRecord::Migration
     end
 
     [
-      {constraint_name: "fk_inv_sbn_users1", foreign_key: "created_by", reference_table: "users"}
-      #{constraint_name: "fk_srn_mst_organzation12", foreign_key: "store_id", reference_table: "organzations"},
-      #{constraint_name: "fk_srn_mst_organzation21", foreign_key: "requested_location_id", reference_table: "organzations"}
+      {constraint_name: "fk_inv_sbn_users1", foreign_key: "created_by", reference_table: "users"},
+      {constraint_name: "fk_srn_mst_organzation12", foreign_key: "store_id", reference_table: "organizations"},
+      {constraint_name: "fk_srn_mst_organzation21", foreign_key: "requested_location_id", reference_table: "organizations"}
     ].each do |attr|
       execute "ALTER TABLE `inv_sbn` ADD CONSTRAINT `#{attr[:constraint_name]}` FOREIGN KEY (`#{attr[:foreign_key]}`) REFERENCES `#{attr[:reference_table]}` (`id`)"
     end
@@ -830,9 +842,9 @@ class AddConstraintNameToTables < ActiveRecord::Migration
 
     [
       {constraint_name: "fk_inv_srn_mst_inv_module1", foreign_key: "requested_module_id", reference_table: "mst_module"},
-      {constraint_name: "fk_inv_srn_users1", foreign_key: "created_by", reference_table: "users"}
-      #{constraint_name: "fk_srn_mst_organzation1", foreign_key: "store_id", reference_table: "organzations"},
-      #{constraint_name: "fk_srn_mst_organzation2", foreign_key: "requested_location_id", reference_table: "organzations"}
+      {constraint_name: "fk_inv_srn_users1", foreign_key: "created_by", reference_table: "users"},
+      {constraint_name: "fk_srn_mst_organzation1", foreign_key: "store_id", reference_table: "organizations"},
+      {constraint_name: "fk_srn_mst_organzation2", foreign_key: "requested_location_id", reference_table: "organizations"}
     ].each do |attr|
       execute "ALTER TABLE `inv_srn` ADD CONSTRAINT `#{attr[:constraint_name]}` FOREIGN KEY (`#{attr[:foreign_key]}`) REFERENCES `#{attr[:reference_table]}` (`id`)"
     end
@@ -856,9 +868,9 @@ class AddConstraintNameToTables < ActiveRecord::Migration
 
     [
       {constraint_name: "fk_inv_srr_mst_inv_module1", foreign_key: "requested_module_id", reference_table: "mst_module"},
-      {constraint_name: "fk_inv_srr_users1", foreign_key: "created_by", reference_table: "users"}
-      #{constraint_name: "fk_srn_mst_organzation11", foreign_key: "store_id", reference_table: "organzations"},
-      #{constraint_name: "fk_srn_mst_organzation20", foreign_key: "requested_location_id", reference_table: "organzations"}
+      {constraint_name: "fk_inv_srr_users1", foreign_key: "created_by", reference_table: "users"},
+      {constraint_name: "fk_srn_mst_organzation11", foreign_key: "store_id", reference_table: "organizations"},
+      {constraint_name: "fk_srn_mst_organzation20", foreign_key: "requested_location_id", reference_table: "organizations"}
     ].each do |attr|
       execute "ALTER TABLE `inv_srr` ADD CONSTRAINT `#{attr[:constraint_name]}` FOREIGN KEY (`#{attr[:foreign_key]}`) REFERENCES `#{attr[:reference_table]}` (`id`)"
     end
@@ -882,7 +894,7 @@ class AddConstraintNameToTables < ActiveRecord::Migration
     end
 
     [
-      #{constraint_name: "fk_Stock_Taking_mst_organzation1", foreign_key: "store_id", reference_table: "organzations"},
+      {constraint_name: "fk_stock_taking_mst_organzation1", foreign_key: "store_id", reference_table: "organizations"},
       {constraint_name: "fk_Stock_Taking_users1", foreign_key: "created_by", reference_table: "users"},
       {constraint_name: "fk_Stock_Taking_users2", foreign_key: "stock_taken_by", reference_table: "users"},
       {constraint_name: "fk_Stock_Taking_users3", foreign_key: "store_keeper_by", reference_table: "users"},
@@ -996,8 +1008,8 @@ class AddConstraintNameToTables < ActiveRecord::Migration
 
     [
       {constraint_name: "fk_mst_inv_rack_users1", foreign_key: "created_by", reference_table: "users"},
-      {constraint_name: "fk_mst_inv_rack_users2", foreign_key: "updated_by", reference_table: "users"}
-      #{constraint_name: "fk_mst_rack_mst_organzation1", foreign_key: "location_id", reference_table: "organzations"}
+      {constraint_name: "fk_mst_inv_rack_users2", foreign_key: "updated_by", reference_table: "users"},
+      {constraint_name: "fk_mst_rack_mst_organzation1", foreign_key: "location_id", reference_table: "organizations"}
     ].each do |attr|
       execute "ALTER TABLE `mst_inv_rack` ADD CONSTRAINT `#{attr[:constraint_name]}` FOREIGN KEY (`#{attr[:foreign_key]}`) REFERENCES `#{attr[:reference_table]}` (`id`)"
     end
@@ -1046,7 +1058,7 @@ class AddConstraintNameToTables < ActiveRecord::Migration
 
     [
       {constraint_name: "fk_mst_spt_prodcut_brand_mst_currency2", foreign_key: "currency_id", reference_table: "mst_currency"},
-      #{constraint_name: "fk_mst_spt_prodcut_brand_mst_organzation1", foreign_key: "organization_id", reference_table: "organizations"},
+      {constraint_name: "fk_mst_spt_prodcut_brand_mst_organzation1", foreign_key: "organization_id", reference_table: "organizations"},
       {constraint_name: "fk_mst_spt_product_brand_mst_spt_sla1", foreign_key: "sla_id", reference_table: "mst_spt_sla"}
 
     ].each do |attr|
