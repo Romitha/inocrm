@@ -13,16 +13,25 @@
           %a{:href => "index.html"}
             %i.fa.fa-dashboard.fa-fw
             Dashboard
-        %li
-          %a{:href => "#"}
-            %i.fa.fa-bar-chart-o.fa-fw
-            Charts
-            %span.fa.arrow
-          %ul.nav.nav-second-level
-            %li
-              %a{:href => "flot.html"} Flot Charts
-            %li
-              %a{:href => "morris.html"} Morris.js Charts
+        %li.panel-group
+          .panel-heading
+            = link_to "#panel1", data: {toggle: "collapse"} do
+              %i.fa.fa-bar-chart-o.fa-fw
+              Master information
+              %span.fa.arrow
+          #panel1.panel-collapse.collapse
+            %ul.nav.nav-second-level
+              %li.panel-group
+                .panel-heading
+                  = link_to "#panel11", data: {toggle: "collapse"} do
+                    %i.fa.fa-bar-chart-o.fa-fw
+                    Products
+                    %span.fa.arrow
+                #panel11.panel-collapse.collapse
+                  %ul.nav.nav-third-level
+                    %li= link_to "Brand", "#"
+              %li
+                %a{:href => "morris.html"} Morris.js Charts
           / /.nav-second-level
         %li
           %a{:href => "tables.html"}
@@ -32,24 +41,26 @@
           %a{:href => "forms.html"}
             %i.fa.fa-edit.fa-fw
             Forms
-        %li
-          %a{:href => "#"}
-            %i.fa.fa-wrench.fa-fw
-            UI Elements
-            %span.fa.arrow
-          %ul.nav.nav-second-level
-            %li
-              %a{:href => "panels-wells.html"} Panels and Wells
-            %li
-              %a{:href => "buttons.html"} Buttons
-            %li
-              %a{:href => "notifications.html"} Notifications
-            %li
-              %a{:href => "typography.html"} Typography
-            %li
-              %a{:href => "icons.html"} Icons
-            %li
-              %a{:href => "grid.html"} Grid
+        %li.panel-group
+          .panel-heading
+            = link_to "#panel2", data: {toggle: "collapse"} do
+              %i.fa.fa-bar-chart-o.fa-fw
+              UI Elements
+              %span.fa.arrow
+          #panel2.panel-collapse.collapse
+            %ul.nav.nav-second-level
+              %li
+                %a{:href => "panels-wells.html"} Panels and Wells
+              %li
+                %a{:href => "buttons.html"} Buttons
+              %li
+                %a{:href => "notifications.html"} Notifications
+              %li
+                %a{:href => "typography.html"} Typography
+              %li
+                %a{:href => "icons.html"} Icons
+              %li
+                %a{:href => "grid.html"} Grid
           / /.nav-second-level
         %li
           %a{:href => "#"}
@@ -92,7 +103,7 @@
   #page-wrapper
     .row
       .col-lg-12
-        %h1.page-header Dashboard
+        %h1.page-header.margin-top0 Dashboard
       / /.col-lg-12
     / /.row
     .row

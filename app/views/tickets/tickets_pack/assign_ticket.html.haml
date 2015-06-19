@@ -9,23 +9,46 @@
 = render "tickets/tickets_pack/ticket_header", ticket: ticket, product: product
 
 = tab_panel do
-  = tab_nav_tab({class: "small_scale_margin-bottom2"}, ticket_info: {content: "Ticket info", active_class: "active"}, assign_ticket: {content: "Assign ticket"})
+  = tab_nav_tab({class: "small_scale_margin-bottom2"}, ticket_info: {content: "Ticket info"}, assign_ticket: {content: "Assign ticket", active_class: "active"})
   .tab-content
-    = tab_content tabpointer: :ticket_info, active_class: "active" do
+    = tab_content tabpointer: :ticket_info do
       = tab_panel do
         = render "tickets/tickets_pack/ticket_info", ticket: ticket, product: product, customer: customer, warranties: warranties, histories: histories, join_tickets: join_tickets, ge_q_and_as: ge_q_and_as, pr_q_and_as: pr_q_and_answers
-    = tab_content tabpointer: :assign_ticket do
-      = simple_form_for ticket do |f|
-        .row
-          .col-md-12
-            = f.association :ticket_type, as: :radio_buttons, wrapper_html: {class: "col-md-3"}, wrapper: :append, input_html: {class: "ticket_type"}
-            = f.input :regional_support_job, label: "Regional Support Job", wrapper_html: {class: "col-md-2"}, wrapper: :append
-        .row.small_scale_margin-bottom2
-          .col-md-3.col-xs-12.col-sm-12
-            %strong Job type
-            = f.select :job_type_id, options_from_collection_for_select(JobType.all, :id, :name), {},{class: "col-md-12 small_scale_margin-top3"}
-        .row
-          .col-md-3.col-xs-12.col-sm-12
-        = f.input :remarks, input_html: {value: nil}, placeholder: "Please enter remarks"
-        %p= simple_format ticket.remarks
-        = f.submit "Submit", data: {disable_with: "Please wait..."}, class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2"
+    = tab_content tabpointer: :assign_ticket, active_class: "active" do
+      .row
+        = simple_nested_form_for ticket do |f|
+          = f.simple_fields_for "user_ticket_actions_attributes[]", @user_ticket_action do |u|
+            = u.input :action_id, as: :hidden
+            = u.input :action_by, as: :hidden, input_html: {value: current_user.id}
+            .row
+              .col-md-12.padding0
+                .checkbox
+                  %label
+                    = check_box_tag "ticket[user_ticket_actions_attributes[]][user_assign_ticket_actions_attributes][][recorrection]", nil, false, id: "pass_to_re_correction"
+                    %strong Pass to Re-correction
+            .row
+              .col-md-5.padding0
+                = f.association :ticket_type, as: :radio_buttons, wrapper_html: {class: "col-md-6"}, wrapper: :append, input_html: {class: "ticket_type"}
+                = f.input :regional_support_job, label: "Regional Support Job", wrapper_html: {class: "col-md-6"}, wrapper: :append
+              .col-md-6
+                .strong Job type
+                = f.select :job_type_id, options_from_collection_for_select(JobType.all, :id, :name)#, {},{class: "col-md-11"}
+            .row
+              .col-md-4
+                .pass_to_recorrection_hiddable
+                  = u.simple_fields_for "assign_regional_support_centers_attributes[]", @assign_regional_support_center do |ar|
+                    .row
+                      .col-md-12
+                        = ar.association :regional_support_center, collection: RegionalSupportCenter.all, label_method: :organization_id, value_method: :id, input_html: {id: "regional_support_center"}
+                = u.simple_fields_for "user_assign_ticket_actions_attributes[]", @user_assign_ticket_action do |ua|
+                  .pass_to_recorrection_hiddable
+                    .row
+                      .col-md-12
+                        = ua.association :mst_spt_sbu, label: "Assign SBU", input_html: {id: "assign_sbu"}
+                        = ua.input :assign_to, input_html: {id: "assign_to"}
+          .row
+            .col-md-12
+              = f.input :remarks, input_html: {value: nil}, placeholder: "Please enter remarks"
+              %p= simple_format ticket.remarks
+
+          = f.submit "Submit", data: {disable_with: "Please wait..."}, class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2"

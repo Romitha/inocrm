@@ -5,6 +5,9 @@ window.Tickets =
     @prevent_enter()
     @description_more()
     @initial_loaders()
+    @regional_support_job_active()
+    @pass_to_re_correction()
+    @pass_to_re_correction_trigger()
     return
 
   initial_loaders: ->
@@ -187,16 +190,18 @@ window.Tickets =
       category_list.empty().html(filtered_option).trigger('chosen:updated')
 
   regional_support_job_active: ->
+    _this = this
     if !$("#ticket_ticket_type_id_2").is(":checked")
       $(".ticket_regional_support_job input[type='checkbox']").prop('checked', false)
       $(".ticket_regional_support_job").addClass("hide")
-
     $(".ticket_type").click ->
       if $(@).attr("id") == "ticket_ticket_type_id_2"
         $(".ticket_regional_support_job").removeClass("hide")
       else
         $(".ticket_regional_support_job").addClass("hide")
         $(".ticket_regional_support_job input[type='checkbox']").prop('checked', false)
+      _this.pass_to_re_correction()
+
 
   touch_refresh: ->
     $("#create_contact_person").trigger("click")
@@ -220,3 +225,30 @@ window.Tickets =
       if String.fromCharCode(e.keyCode).match(/[^0-9\b]/g)
         return false
       return
+
+  pass_to_re_correction: ->
+    if $("#pass_to_re_correction").is(":checked")
+      $(".pass_to_recorrection_hiddable").each ->
+        $(@).addClass("hide")
+        $("#assign_sbu_chosen, #assign_sbu").val("")
+        $("#regional_support_center_chosen, #regional_support_center").val("")
+        $("#assign_to").val("")
+    else
+      $(".pass_to_recorrection_hiddable").each ->
+        $(@).removeClass("hide")
+
+    if $("#ticket_regional_support_job").is(":checked")
+      $("#regional_support_center_chosen, #regional_support_center").parents().eq(1).removeClass("hide")
+      $("#assign_sbu_chosen, #assign_sbu").parents().eq(1).addClass("hide")
+      $("#assign_sbu_chosen, #assign_sbu").val("")
+    else
+      $("#regional_support_center_chosen, #regional_support_center").parents().eq(1).addClass("hide")
+      $("#regional_support_center_chosen, #regional_support_center").val("")
+      $("#assign_sbu_chosen, #assign_sbu").parents().eq(1).removeClass("hide")
+
+  pass_to_re_correction_trigger: ->
+    $("#pass_to_re_correction").click =>
+      @pass_to_re_correction()
+
+    $("#ticket_regional_support_job").click =>
+      @pass_to_re_correction()

@@ -110,6 +110,7 @@ class TicketsController < ApplicationController
     t_params["remarks"] = "#{ticket_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" if ticket_params["remarks"].present?
     # @ticket.update(t_params)
     # respond_with(@ticket)
+    t_params[:user_ticket_actions_attributes].first[:action_at] = Time.now if t_params[:user_ticket_actions_attributes].present?
     respond_to do |format|
       if @ticket.update(t_params)
         format.html {redirect_to @ticket, notice: "Successfully updated."}
@@ -627,7 +628,7 @@ class TicketsController < ApplicationController
     @ticket.attributes = ticket_params
     if @ticket.save
       @ticket.products << @product
-      @ticket.create_user_ticket_action(action_at: DateTime.now, action_by: current_user.id, re_open_index: 1, action_id: 1)
+      @ticket.user_ticket_actions.create(action_at: DateTime.now, action_by: current_user.id, re_open_index: 1, action_id: 1)
       Rails.cache.delete([:new_ticket, request.remote_ip.to_s, session[:time_now]])
       Rails.cache.delete([:ticket_params, request.remote_ip.to_s, session[:time_now]])
       Rails.cache.delete([:created_warranty, request.remote_ip.to_s, session[:time_now]])
@@ -724,6 +725,9 @@ class TicketsController < ApplicationController
       @join_tickets = Rails.cache.fetch([:join, @ticket.id]){Kaminari.paginate_array(Ticket.where(id: @ticket.joint_tickets.map(&:joint_ticket_id)))}.page(params[:page]).per(2)
       @q_and_answers = @ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})}
       @ge_q_and_answers = @ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"General Questions" => v})}
+      @user_ticket_action = @ticket.user_ticket_actions.build(action_id: 2)
+      @user_assign_ticket_action = @user_ticket_action.user_assign_ticket_actions.build
+      @assign_regional_support_center = @user_ticket_action.assign_regional_support_centers.build
     end
     respond_to do |format|
       format.html {render "tickets/tickets_pack/assign_ticket"}
@@ -740,7 +744,7 @@ class TicketsController < ApplicationController
     end
 
     def ticket_params
-      params.require(:ticket).permit(:ticket_no, :sla_id, :serial_no, :base_currency_id, :regional_support_job, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer])
+      params.require(:ticket).permit(:ticket_no, :sla_id, :serial_no, :base_currency_id, :regional_support_job, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer], user_ticket_actions_attributes: [:id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, user_assign_ticket_actions_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy]])
     end
 
     def product_brand_params

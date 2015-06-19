@@ -39,7 +39,8 @@ class Ticket < ActiveRecord::Base
   has_many :joint_tickets
   accepts_nested_attributes_for :joint_tickets, allow_destroy: true
 
-  has_one :user_ticket_action, foreign_key: :action_id
+  has_many :user_ticket_actions#, foreign_key: :action_id
+  accepts_nested_attributes_for :user_ticket_actions, allow_destroy: true
 
   validates_presence_of [:ticket_no, :priority, :status_id, :problem_description, :informed_method_id, :job_type_id, :ticket_type_id, :warranty_type_id, :base_currency_id, :problem_category_id]
 

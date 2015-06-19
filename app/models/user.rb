@@ -204,3 +204,10 @@ class District < ActiveRecord::Base
 
   has_many :contact_person_contact_types, foreign_key: :contact_report_person_id
 end
+
+class Engineer < ActiveRecord::Base
+  self.table_name = "users"
+
+  has_many :spt_sbu_engineers, foreign_key: :engineer_id
+  has_many :mst_spt_sbus, through: :spt_sbu_engineers
+end
