@@ -190,10 +190,10 @@ class TicketsController < ApplicationController
         @product_brand = @product.product_brand
         @product_category = @product.product_category
         session[:ticket_initiated_attributes].merge!({sla_id: (@product_category.sla_id || @product_brand.sla_id)})
-
         session[:product_id] = @product.id
 
         @ticket = (Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]]) || Ticket.new(session[:ticket_initiated_attributes]))
+
         # @ticket.ticket_accessories.uniq!{|ac| ac.id}
         @customer = @product.tickets.last.try(:customer)
         Rails.cache.write([:histories, session[:product_id]], Kaminari.paginate_array(@product.tickets))
@@ -641,10 +641,18 @@ class TicketsController < ApplicationController
     @product = Product.find session[:product_id]
     @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
     @ticket.status_id = TicketStatus.find_by_code("CLS").id if params[:first_resolution]
-    @ticket.attributes = ticket_params
+    @ticket.attributes = ticket_params.merge({created_by: current_user.id, slatime: @ticket.sla_time.try(:sla_time), status_resolve_id: 1, repair_type_id: 1, manufacture_currency_id: 1, ticket_print_count: 0, ticket_complete_print_count: 0})
+    q_and_answers = @ticket.q_and_answers.to_a
+    ge_q_and_answers = @ticket.ge_q_and_answers.to_a
+    @ticket.q_and_answers.clear
+    @ticket.ge_q_and_answers.clear
+
     if @ticket.save
       @ticket.products << @product
-      @ticket.user_ticket_actions.create(action_at: DateTime.now, action_by: current_user.id, re_open_index: 1, action_id: 1)
+      ticket_user_action = @ticket.user_ticket_actions.create(action_at: DateTime.now, action_by: current_user.id, re_open_index: 1, action_id: 1)
+      q_and_answers.each{|q| q.ticket_action_id= ticket_user_action.id; @ticket.q_and_answers << q}
+      ge_q_and_answers.each{|q| q.ticket_action_id= ticket_user_action.id; @ticket.ge_q_and_answers << q}
+
       Rails.cache.delete([:new_ticket, request.remote_ip.to_s, session[:time_now]])
       Rails.cache.delete([:ticket_params, request.remote_ip.to_s, session[:time_now]])
       Rails.cache.delete([:created_warranty, request.remote_ip.to_s, session[:time_now]])
@@ -768,7 +776,7 @@ class TicketsController < ApplicationController
     end
 
     def ticket_params
-      params.require(:ticket).permit(:ticket_no, :sla_id, :serial_no, :base_currency_id, :regional_support_job, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer], user_ticket_actions_attributes: [:id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, user_assign_ticket_actions_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy]])
+      params.require(:ticket).permit(:ticket_no, :sla_id, :serial_no, :base_currency_id, :regional_support_job, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :ticket_action_id, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer], user_ticket_actions_attributes: [:id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, user_assign_ticket_actions_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy]])
     end
 
     def product_brand_params

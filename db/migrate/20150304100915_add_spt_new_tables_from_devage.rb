@@ -457,7 +457,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.integer :open_time_duration
       t.integer :open_time_duration_sla
       t.datetime :sla_finished_at
-      t.decimal :sla_time, null: false, precision: 8, scale: 2
+      t.decimal :slatime, null: false, precision: 8, scale: 2
       t.integer :last_hold_action_id
       t.timestamps
     end
