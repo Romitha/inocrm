@@ -105,9 +105,10 @@ Rails.application.routes.draw do
 
       post "join_tickets"
 
-      get "pop-note", :to => :pop_note
+      get "pop-approval", :to => :pop_note
 
       get "resolution"
+      get "assign-ticket", to: :assign_ticket
 
 
     end
