@@ -9,18 +9,42 @@
         %p= ticket.ticket_status.name
 .view_ticket_body
   .row
-    .col-md-6
+    .col-md-3
       %p Date Sold:
+    .col-md-3
       %p Sold By:
     .col-md-6.pull-right.text-right
       %strong Priority: #{INOCRM_CONFIG["priority"].key ticket.priority}
       %p Logged by: #{current_user.email}
-      %p Logged at: #{DateTime.now.strftime("%Y-%m-%d %H:%M")}
   .row
-    .fixed
-      .col-md-3
-        %p SLA Time:
-      .col-md-3
-        %p SLA Started:
-      .col-md-6
-        %p SLA Finished:
+    .col-md-2
+      %p SLA Time:
+    .col-md-2
+      %p SLA Started:
+    .col-md-2
+      %p SLA Finished:
+    .col-md-6.pull-right.text-right
+      %p Logged at: #{DateTime.now.strftime("%Y-%m-%d %H:%M")}
+
+  / .row
+  /   .col-md-2
+  /     %p Date Sold:
+  /     %p SLA Time:
+  /   .col-md-2
+  /     %p Sold By:
+  /     %p SLA Started:
+  /   .col-md-2
+  /     %p SLA Finished:
+  /   .col-md-6.pull-right.text-right
+  /     %strong Priority: #{INOCRM_CONFIG["priority"].key ticket.priority}
+  /     %p Logged by: #{current_user.email}
+  /     %p Logged at: #{DateTime.now.strftime("%Y-%m-%d %H:%M")}
+
+  / .row
+  /   / .fixed
+  /   .col-md-3
+  /     %p SLA Time:
+  /   .col-md-3
+  /     %p SLA Started:
+  /   .col-md-6
+  /     %p SLA Finished:
