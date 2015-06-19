@@ -60,7 +60,7 @@ unless(user)
     ["IH", "In house"],
     ["OS", "On-site"]
   ]
-  TicketType.create!(ticket_status.map{ |t| {code: t[0], name: t[1]} })
+  TicketType.create!(mst_spt_ticket_type.map{ |t| {code: t[0], name: t[1]} })
 
    mst_spt_ticket_status = [
     ["OPN", "Open"],
@@ -73,7 +73,7 @@ unless(user)
     ["TBC", "To Be Closed"],
     ["CLS", "Closed"]
   ]
-  TicketStatus.create!(ticket_status.map{ |t| {code: t[0], name: t[1]} })
+  TicketStatus.create!(mst_spt_ticket_status.map{ |t| {code: t[0], name: t[1]} })
 
   mst_spt_ticket_informed_method = [
     ["PH", "by phone"],
@@ -81,37 +81,37 @@ unless(user)
     ["ML", "by mail"],
     ["FX", "fax"]
   ]
-  InformMethod.create!(ticket_status.map{ |t| {code: t[0], name: t[1]} })
+  InformMethod.create!(mst_spt_ticket_informed_method.map{ |t| {code: t[0], name: t[1]} })
 
   mst_spt_job_type = [
     ["SW", "Software"],
     ["HW", "Hardware"],
     ["NW", "Network"]
   ]
-  JobType.create!(ticket_status.map{ |t| {code: t[0], name: t[1]} })
+  JobType.create!(mst_spt_job_type.map{ |t| {code: t[0], name: t[1]} })
 
   mst_spt_contact_type = [
     ["ML", "Email"],
     ["SM", "SMS"],
     ["CL", "Call"],
-    ["FX", "Fax"],
+    ["FX", "Fax"]
   ]
-  TicketContactType.create!(ticket_status.map{ |t| {code: t[0], name: t[1]} })
+  TicketContactType.create!(mst_spt_contact_type.map{ |t| {code: t[0], name: t[1]} })
 
   mst_currency = [
-    ["Sri Lankan Rupees", "LKR", "Rs", "1"],
-    ["United States Dollars", "USD", "$US", "0"]
+    ["Sri Lankan Rupees", "LKR", "Rs", true],
+    ["United States Dollars", "USD", "$US", false]
   ]
-  TicketCurrency.create!(ticket_status.map{ |t| {currency: t[0], code: t[1], symbol: t[2], base_currency: t[3]} })
-
+  TicketCurrency.create!(mst_currency.map{ |t| {currency: t[0], code: t[1], symbol: t[2], base_currency: t[3]} })
+  ContactNumber
   mst_spt_customer_contact_type = [
     ["Telephone", "0", "0"],
     ["Mobile", "1", "0"],
     ["Fax", "0", "0"],
     ["E-Mail", "0", "1"],
-    ["Skype", "0", "0"],
+    ["Skype", "0", "0"]
   ]
-  ContactType.create!(ticket_status.map{ |t| {name: t[0], mobile: t[1], email: t[2]} })
+  ContactType.create!(mst_spt_customer_contact_type.map{ |t| {name: t[0], mobile: t[1], email: t[2]} })
 
   mst_title = [
     ["Mr."],
@@ -119,7 +119,7 @@ unless(user)
     ["Ms."],
     ["Miss."]
   ]
-  MstTitle.create!(ticket_status.map{ |t| {title: t[0]} })
+  MstTitle.create!(mst_title.map{ |t| {title: t[0]} })
 
   mst_spt_action = [
     ["1", "Add ticket", "1", 0],
@@ -147,7 +147,7 @@ unless(user)
     ["23", "Job Estimate Request", "3", 0],
     ["24", "Estimation Customer Aproved", "3", 0],
     ["25", "Recieve Unit", "3", 0],
-    ["26", "Customer Inqure", "3", 0],
+    ["26", "Customer Inqure", nil, 0],
     ["27", "Job Estimation Done", "7", 0],
     ["28", "Invoice Advance Payment", "27,29", 0],
     ["29", "Delivere Unit To Supplier", "8", 0],
@@ -188,9 +188,13 @@ unless(user)
     ["64", "Reject Spare Part for Store", "16", 0],
     ["65", "Reject On-Loan Part for Store", "16", 0],
     ["66", "Reject Close Ticket", "13", 0],
-    ["67", "Quality Control Rejected", "28", 0]
+    ["67", "Quality Control Rejected", "28", 0],
+    ["68", "Print Ticket", "1", 0],
+    ["69", "Print Complete Ticket", "14", 0],
+    ["70", "Print FSR", "3,13", 0],
+    ["71", "Print Invoice", "27,29", 0]
   ]
-  TaskAction.create!(ticket_status.map{ |t| {action_no: t[0], action_description: t[1], task_id: t[2], hide: t[3] })
+  TaskAction.create!(mst_spt_action.map{ |t| {action_no: t[0], action_description: t[1], task_id: t[2], hide: t[3]} })
 
   mst_organizations_types = [
     ["HDO", "Head Office"],
@@ -198,8 +202,8 @@ unless(user)
     ["DPT", "Department"],
     ["STR", "Store"]
   ]
-  OrganizationType.create!(ticket_status.map{ |t| {code: t[0], name: t[1]} })
-
+  OrganizationType.create!(mst_organizations_types.map{ |t| {code: t[0], name: t[1]} })
+  Product
   mst_spt_pop_status = [
     ["NAP", "Not Applicable"],
     ["RCD", "Received"],
@@ -210,12 +214,12 @@ unless(user)
     ["RJC", "Rejected"],
     ["UPD", "Updated"]
   ]
-  ProductPopStatus.create!(ticket_status.map{ |t| {code: t[0], name: t[1]} })
-
+  ProductPopStatus.create!(mst_spt_pop_status.map{ |t| {code: t[0], name: t[1]} })
+  QAndA
   mst_spt_general_question = [
     ["Check outer condition?", "YN", 1, 1, 1],
     ["Any damage in the casing?", "TX", 1, 1, 0]
   ]
-  GeQAndA.create!(ticket_status.map{ |t| {question: t[0], answer_type: t[1], active: t[2], action_id: t[3], compulsory: t[4]} })
+  GeQAndA.create!(mst_spt_general_question.map{ |t| {question: t[0], answer_type: t[1], active: t[2], action_id: t[3], compulsory: t[4]} })
 
 end

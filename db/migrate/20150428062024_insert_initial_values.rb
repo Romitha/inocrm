@@ -251,5 +251,38 @@ class InsertInitialValues < ActiveRecord::Migration
     #   execute("insert into mst_title (title) values ('#{value[0]}')")
     # end
 
+    [
+      ["SPPT", "add_ticket", "/ticket/new", "SPT_SC_1", "Support - Edit Ticket", "h1", "map_ticket_id,map_supp_hd_user",nil],
+      ["SPPT", "assign_ticket", "/ticket/assign_ticket", "SPT_SC_2", "Support - Assign Ticket", "h1", "map_ticket_id", nil],
+      ["SPPT", "resolution", "", "SPT_SC_3", "Support - Resolution", "h1", "map_ticket_id,map_supp_engr_user", nil],
+      ["SPPT", "pop_approval", "", "SPT_SC_5", "Support - POP Approval", "h1", "map_ticket_id", nil],
+      ["SPPT", "edit_serial_no", "", "SPT_SC_6", "Support - Edit Serial No", "h1", "map_ticket_id", nil],
+      ["SPPT", "job_estimate", "", "SPT_SC_7", "Support - Job Estimation", "h1", "map_ticket_id", nil],
+      ["SPPT", "mark_delivered_colleted", "", "SPT_SC_8", "Support - Units To Be Delivered or Colleced for External Repaire", nil, "map_ticket_id,map_deliver_unit_id", nil],
+      ["SPPT_MFR_PART_REQUEST", "order_part", "", "SPT_SC_9", "Support - Order Part (Manufacture)", "h3", "map_ticket_id,map_request_spare_part_id,map_supp_engr_user", nil],
+      ["SPPT_MFR_PART_REQUEST", "receive_Issue_part", "", "SPT_SC_10", "Support - Receive or Issue Part (Manufacture)", "h3", "map_ticket_id,map_request_spare_part_id,map_supp_engr_user", nil],
+      ["SPPT_MFR_PART_RETURN", "return_manufacture_part", "", "SPT_SC_11", "Support - Return Part (Manufacture)", "h3", "map_ticket_id,map_request_spare_part_id,map_supp_engr_user", nil],
+      ["SPPT", "extend_warranty", "", "SPT_SC_12", "Support - Extend Warranty", "h1", "map_ticket_id", nil],
+      ["SPPT", "approve_close_ticket", "", "SPT_SC_13", "Support - Ticket Close Approval", "h1", "map_ticket_id,map_supp_engr_user", nil],
+      ["SPPT", "customer_feedback", "", "SPT_SC_14", "Support - Customer Feedback", "h1", "map_ticket_id,map_supp_engr_user", nil],
+      ["SPPT_PART_ESTIMATE", "part_estimate", "", "SPT_SC_15", "Support - Part Estimation (Store)", "h2", "map_ticket_id,map_part_estimation_id,map_supp_engr_user", nil],
+      ["SPPT_STORE_PART_REQUEST", "approve_store_part", "", "SPT_SC_16", "Support - Part Approval (Store)", "h2", "map_ticket_id,map_request_spare_part_id,map_request_onloan_spare_part_id,map_onloan_request,map_supp_engr_user", nil],
+      ["SPPT_STORE_PART_REQUEST", "issue_store_part", "", "SPT_SC_17", "Support - Issue Part (Store)", "h2", "map_ticket_id,map_request_spare_part_id,map_request_onloan_spare_part_id,map_onloan_request,map_supp_engr_user", nil],
+      ["SPPT_STORE_PART_RETURN", "return_store_part", "", "SPT_SC_18", "Support - Return Part (Store)", "h2", "map_ticket_id,map_request_spare_part_id,map_request_onloan_spare_part_id,map_onloan_request", nil],
+      ["SPPT", "approve_job_estimate", "", "SPT_SC_19", "Support - Job Estimation Approval", "h1", "map_ticket_id", nil],
+      ["SPPT_PART_ESTIMATE", "approve_part_estimate", "", "SPT_SC_20", "Support - Part Estimation Approval (Store)", "h2", "map_ticket_id,map_part_estimation_id,map_supp_engr_user", nil],
+      ["SPPT_MFR_PART_RETURN", "bundle_return_part", "", "SPT_SC_21", "Support - Return Parts To Be Bundled", nil, "map_ticket_id,map_request_spare_part_id", nil],
+      ["SPPT_MFR_PART_RETURN", "bundle_deliver", "", "SPT_SC_22", "Support - Return Parts Bundles To Be Delivered", nil, "map_bundle_id", nil],
+      ["SPPT_MFR_PART_REQUEST", "collect_part", "", "SPT_SC_23", "Support - Manufacture parts to be collected", nil, "map_ticket_id,map_request_spare_part_id", nil],
+      ["SPPT", "issue_customer_terminate", "", "SPT_SC_24", "Support - Terminated Job Return To Custormer", "h1", "map_ticket_id", nil],
+      ["SPPT", "customer_advance_payment", "", "SPT_SC_27", "", nil, nil, nil],
+      ["SPPT", "quality_control", "", "SPT_SC_28", "Support - Quality Control", "h1", "map_ticket_id,map_supp_engr_user", nil],
+      ["SPPT", "invoice_advance_payment", "", "SPT_SC_29", "Support - Advance Payment Invoice", "h1", "map_ticket_id,map_advance_payment_estimation_id", nil],
+      ["SPPT_MFR_PART_RETURN", "close_event", "", "SPT_SC_30", "Support - Close Event", "h1", "map_ticket_id,map_request_spare_part_id", nil],
+      ["SPPT", "approve_foc", "", "SPT_SC_31", "Support - FOC Approval", "h1", "map_ticket_id", nil],
+      ["SPPT", "final_job_estimate", "", "SPT_SC_33", "Support - Final Job Estimation", "h1", "map_ticket_id", nil]
+    ].each do |value|
+      execute("insert into workflow_mappings (process_name, task_name, url, screen, first_header_title, second_header_title_name, input_variables, output_variables) values ('#{value[0]}', '#{value[1]}', '#{value[2]}', '#{value[3]}', '#{value[4]}', '#{value[5]}', '#{value[6]}', '#{value[7]}')")
+    end
   end
 end

@@ -132,7 +132,8 @@ class TicketCurrency < ActiveRecord::Base
 
   has_many :tickets, foreign_key: :base_currency_id
 
-  validates_presence_of [:currency, :code, :symbol, :base_currency]
+  validates_presence_of [:currency, :code, :symbol]
+  validates_inclusion_of :base_currency, in: [true, false]
 end
 
 class TicketProductSerial < ActiveRecord::Base
