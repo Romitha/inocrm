@@ -314,8 +314,12 @@ class TicketsController < ApplicationController
       @organizations = []
       @display_select_option = true if params[:function_param]=="create"
     elsif params[:select_customer]
-      @customers = Kaminari.paginate_array(Customer.where("name like ?", "%#{params[:search_customer]}%")).page(params[:page]).per(INOCRM_CONFIG["pagination"]["customer_per_page"])
-      @organizations = Kaminari.paginate_array(Organization.where("name like ?", "%#{params[:search_customer]}%")).page(params[:page]).per(INOCRM_CONFIG["pagination"]["organization_per_page"])
+      search_customer = params[:search_customer].strip
+      customers_nameonly = Customer.where("name like ?", "%#{search_customer}%")
+      customers_nameandnum = ContactTypeValue.where("value like ?", "%#{search_customer}%").map{|c| c.customer}
+      customers_borth = customers_nameonly + customers_nameandnum
+      @customers = Kaminari.paginate_array(customers_borth.uniq).page(params[:page]).per(INOCRM_CONFIG["pagination"]["customer_per_page"])
+      @organizations = Kaminari.paginate_array(Organization.where("name like ?", "%#{search_customer}%")).page(params[:page]).per(INOCRM_CONFIG["pagination"]["organization_per_page"])
     end
     if params[:customer_id].present?
       existed_customer = Customer.find params[:customer_id]
@@ -464,17 +468,29 @@ class TicketsController < ApplicationController
     else
       if params[:submit_contact_person1]
         @submitted_contact_person = 1
+        search_contact_person = params[:search_contact_person].strip
         @submit_contact_person = "submit_contact_person1"
-        @contact_persons = Kaminari.paginate_array(ContactPerson1.where("name like ?", "%#{params[:search_contact_person]}%")).page(params[:page]).per(3)
+        contact_person1_name = ContactPerson1.where("name like ?", "%#{search_contact_person}%")
+        contact_person1_nameandnum = ContactPersonContactType.where("value like ?", "%#{search_contact_person}%").map{|c| c.contact_person1}
+        contact_person1_uniq = contact_person1_name + contact_person1_nameandnum
+        @contact_persons = Kaminari.paginate_array(contact_person1_uniq.uniq).page(params[:page]).per(3)
 
       elsif params[:submit_contact_person2]
         @submitted_contact_person = 2
+        search_contact_person = params[:search_contact_person].strip
         @submit_contact_person = "submit_contact_person2"
-        @contact_persons = Kaminari.paginate_array(ContactPerson2.where("name like ?", "%#{params[:search_contact_person]}%")).page(params[:page]).per(3)
+        contact_person2_name = ContactPerson2.where("name like ?", "%#{search_contact_person}%")
+        contact_person2_nameandnum = ContactPersonContactType.where("value like ?", "%#{search_contact_person}%").map{|c| c.contact_person2}
+        contact_person2_uniq = contact_person2_name + contact_person2_nameandnum
+        @contact_persons = Kaminari.paginate_array(contact_person2_uniq.uniq).page(params[:page]).per(3)
       elsif params[:submit_report_person]
         @submitted_contact_person = 3
+        search_contact_person = params[:search_contact_person].strip
         @submit_contact_person = "submit_report_person"
-        @contact_persons = Kaminari.paginate_array(ReportPerson.where("name like ?", "%#{params[:search_contact_person]}%")).page(params[:page]).per(3)
+        report_person_name = ReportPerson.where("name like ?", "%#{search_contact_person}%")
+        report_person_nameandnum = ContactPersonContactType.where("value like ?", "%#{search_contact_person}%").map{|c| c.report_person}
+        report_person_uniq = report_person_name + report_person_nameandnum
+        @contact_persons = Kaminari.paginate_array(report_person_uniq.uniq).page(params[:page]).per(3)
       end
       @customers = Kaminari.paginate_array(Customer.where("name like ?", "%#{params[:search_contact_person]}%")).page(params[:page]).per(3)
     end
@@ -732,6 +748,14 @@ class TicketsController < ApplicationController
     respond_to do |format|
       format.html {render "tickets/tickets_pack/assign_ticket"}
     end
+  end
+
+  def pop_note
+
+  end
+
+  def resolution
+    
   end
 
   private

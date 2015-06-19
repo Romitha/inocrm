@@ -9,7 +9,7 @@
       #select_contact_persons
         = form_tag create_contact_persons_tickets_path, method: :post, remote: true do
           .input-group
-            = text_field_tag "search_contact_person", nil, class: "form-control"
+            = text_field_tag "search_contact_person", nil, class: "form-control", placeholder: "search contact person by name or contact value"
             %span.input-group-btn
               = submit_tag "Search", name: submit_contact_person, class: "btn btn-default"
   %br/
