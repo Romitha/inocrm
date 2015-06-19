@@ -1,4 +1,4 @@
-spt_act_customer_feedbackclass AddSptNewTablesFromDevage < ActiveRecord::Migration
+class AddSptNewTablesFromDevage < ActiveRecord::Migration
   def change
     create_table :spt_act_action_taken, id: false do |t|
       t.column :ticket_action_id, "INT UNSIGNED NOT NULL"    #check
@@ -16,17 +16,17 @@ spt_act_customer_feedbackclass AddSptNewTablesFromDevage < ActiveRecord::Migrati
       t.column :ticket_action_id, "INT UNSIGNED NOT NULL"    #check
       t.column :sbu_id, "int(10) UNSIGNED"
       t.column :assign_to, "int(10) UNSIGNED"
-      t.boolean :recorrection, null: false, default: 0
-      t.boolean :regional_support_center_job, null: false, default: 0
+      t.boolean :recorrection, null: false, default: false
+      t.boolean :regional_support_center_job, null: false, default: false
       t.timestamps
     end
 
     create_table :spt_act_customer_feedback, id: false do |t|
       t.column :ticket_action_id, "INT UNSIGNED NOT NULL"    #check
-      t.boolean :re_opened, null: false, default: 0
-      t.boolean :unit_return_customer, null: false, default: 0
+      t.boolean :re_opened, null: false, default: false
+      t.boolean :unit_return_customer, null: false, default: false
       t.column :payment_received_id, "int(10) UNSIGNED"
-      t.boolean :payment_completed, null: false, default: 0
+      t.boolean :payment_completed, null: false, default: false
       t.column :feedback_id, "int(10) UNSIGNED"
       t.text :feedback_description
       t.timestamps
@@ -55,7 +55,7 @@ spt_act_customer_feedbackclass AddSptNewTablesFromDevage < ActiveRecord::Migrati
 
     create_table :spt_act_fsr, id: false do |t|
       t.column :ticket_action_id, "INT UNSIGNED NOT NULL"    #check
-      t.boolean :print_fsr, null: false, default: 0
+      t.boolean :print_fsr, null: false, default: false
       t.column :fsr_id, "int(10) UNSIGNED NOT NULL"
       t.timestamps
     end
@@ -63,7 +63,7 @@ spt_act_customer_feedbackclass AddSptNewTablesFromDevage < ActiveRecord::Migrati
     create_table :spt_act_hold, id: false do |t|
       t.column :ticket_action_id, "INT UNSIGNED NOT NULL"    #check
       t.column :reason_id, "int(10) UNSIGNED NOT NULL"
-      t.boolean :sla_pause, null: false, default: 0
+      t.boolean :sla_pause, null: false, default: false
       t.column :un_hold_action_id, "int(10) UNSIGNED"
       t.timestamps
     end
@@ -93,13 +93,13 @@ spt_act_customer_feedbackclass AddSptNewTablesFromDevage < ActiveRecord::Migrati
     create_table :spt_act_payment_received, id: false do |t|
       t.column :ticket_action_id, "INT UNSIGNED NOT NULL"    #check
       t.column :ticket_payment_received_id, "int(10) UNSIGNED NOT NULL"
-      t.boolean :invoice_completed, null: false, default: 0
+      t.boolean :invoice_completed, null: false, default: false
       t.timestamps
     end
 
     create_table :spt_act_qc, id: false do |t|
       t.column :ticket_action_id, "INT UNSIGNED NOT NULL"    #check
-      t.boolean :approved, null: false, default: 0
+      t.boolean :approved, null: false, default: false
       t.text :reject_reason
       t.timestamps
     end
@@ -126,9 +126,9 @@ spt_act_customer_feedbackclass AddSptNewTablesFromDevage < ActiveRecord::Migrati
 
     create_table :spt_act_terminate_issue_invoice, id: false do |t|
       t.column :ticket_action_id, "INT UNSIGNED NOT NULL"    #check
-      t.boolean :invoice_completed, null: false, default: 0
-      t.boolean :unit_returned, null: false, default: 0
-      t.boolean :payment_completed, null: false, default: 0
+      t.boolean :invoice_completed, null: false, default: false
+      t.boolean :unit_returned, null: false, default: false
+      t.boolean :payment_completed, null: false, default: false
       t.column :payment_received_id, "int(10) UNSIGNED"
       t.timestamps
     end
@@ -136,8 +136,8 @@ spt_act_customer_feedbackclass AddSptNewTablesFromDevage < ActiveRecord::Migrati
     create_table :spt_act_terminate_job, id: false do |t|
       t.column :ticket_action_id, "INT UNSIGNED NOT NULL"    #check
       t.column :reason_id, "int(10) UNSIGNED NOT NULL"
-      t.boolean :foc_requested, null: false, default: 1
-      t.boolean :foc_approved, null: false, default: 0
+      t.boolean :foc_requested, null: false, default: true
+      t.boolean :foc_approved, null: false, default: false
       t.column :foc_approved_action_id, "int(10) UNSIGNED"
       t.timestamps
     end
@@ -194,7 +194,7 @@ spt_act_customer_feedbackclass AddSptNewTablesFromDevage < ActiveRecord::Migrati
       t.datetime :contract_end_at
       t.text :remark
       t.column :sla_id, "int(10) UNSIGNED NOT NULL"
-      t.boolean :active, null: false, default: 0
+      t.boolean :active, null: false, default: false
       t.datetime :created_at
       t.column :created_by, "int(10) UNSIGNED NOT NULL"
       t.timestamps
@@ -313,7 +313,7 @@ spt_act_customer_feedbackclass AddSptNewTablesFromDevage < ActiveRecord::Migrati
       t.column :sold_country_id, "int(10) UNSIGNED"
       t.text :pop_note                                      
       t.string :pop_doc_url                                   #250
-      t.boolean :corporate_product, null: false, default: 0
+      t.boolean :corporate_product, null: false, default: false
       t.datetime :sold_at
       t.column :sold_by, "int(10) UNSIGNED"
       t.column :inventory_serial_item_id, "int(10) UNSIGNED"
@@ -339,7 +339,7 @@ spt_act_customer_feedbackclass AddSptNewTablesFromDevage < ActiveRecord::Migrati
     create_table :spt_regional_support_center, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :organization_id, "int(10) UNSIGNED NOT NULL"
-      t.boolean :active, null: false, default: 1
+      t.boolean :active, null: false, default: true
       t.timestamps
     end
 
@@ -365,7 +365,7 @@ spt_act_customer_feedbackclass AddSptNewTablesFromDevage < ActiveRecord::Migrati
       t.string :bundle_no
       t.datetime :created_at, null: false
       t.column :created_by, "int(10) UNSIGNED NOT NULL"
-      t.boolean :delivered, null: false, default: 0
+      t.boolean :delivered, null: false, default: false
       t.datetime :delivered_at
       t.column :delivered_by, "int(10) UNSIGNED NOT NULL"
       t.text :note                                         
@@ -382,7 +382,7 @@ spt_act_customer_feedbackclass AddSptNewTablesFromDevage < ActiveRecord::Migrati
       t.datetime :po_date
       t.column :product_brand_id, "int(10) UNSIGNED"
       t.decimal :amount, null: false, precision: 10, scale: 2
-      t.boolean :invoiced, null: false, default: 0
+      t.boolean :invoiced, null: false, default: false
       t.column :currency_id, "int(10) UNSIGNED NOT NULL"
       t.timestamps
     end
@@ -401,8 +401,8 @@ spt_act_customer_feedbackclass AddSptNewTablesFromDevage < ActiveRecord::Migrati
     create_table :spt_ticket, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.integer :ticket_no, null: false
-      t.boolean :pop_updated_ticket, null: false, default: 0
-      t.boolean :contract_available, null: false, default: 0
+      t.boolean :pop_updated_ticket, null: false, default: false
+      t.boolean :contract_available, null: false, default: false
       t.column :contract_id, "int(10) UNSIGNED"
       t.datetime :created_at, null: false
       t.column :created_by, "int(10) UNSIGNED NOT NULL"
@@ -410,7 +410,7 @@ spt_act_customer_feedbackclass AddSptNewTablesFromDevage < ActiveRecord::Migrati
       t.column :sla_id, "int(10) UNSIGNED NOT NULL"
       t.column :status_id, "int(10) UNSIGNED NOT NULL"
       t.column :status_resolve_id, "int(10) UNSIGNED NOT NULL"
-      t.boolean :status_hold, null: false, default: 0
+      t.boolean :status_hold, null: false, default: false
       t.column :hold_reason_id, "int(10) UNSIGNED"
       t.text :remarks                                       
       t.text :resolution_summary                            
@@ -421,10 +421,10 @@ spt_act_customer_feedbackclass AddSptNewTablesFromDevage < ActiveRecord::Migrati
       t.column :informed_method_id, "int(10) UNSIGNED NOT NULL"
       t.column :job_type_id, "int(10) UNSIGNED NOT NULL"
       t.column :ticket_type_id, "int(10) UNSIGNED NOT NULL"
-      t.boolean :regional_support_job, null: false, default: 0
+      t.boolean :regional_support_job, null: false, default: false
       t.column :repair_type_id, "int(10) UNSIGNED NOT NULL"
       t.column :warranty_type_id, "int(10) UNSIGNED NOT NULL"
-      t.boolean :cus_chargeable, null: false, default: 0
+      t.boolean :cus_chargeable, null: false, default: false
       t.column :customer_id, "int(10) UNSIGNED NOT NULL"
       t.column :contact_person1_id, "int(10) UNSIGNED NOT NULL"
       t.column :contact_person2_id, "int(10) UNSIGNED"
@@ -434,22 +434,22 @@ spt_act_customer_feedbackclass AddSptNewTablesFromDevage < ActiveRecord::Migrati
       t.datetime :job_started_at
       t.column :job_started_action_id, "int(10) UNSIGNED"
       t.text :job_start_note                               
-      t.boolean :job_finished, null: false, default: 0
+      t.boolean :job_finished, null: false, default: false
       t.datetime :job_finished_at
-      t.boolean :job_closed, null: false, default: 0
+      t.boolean :job_closed, null: false, default: false
       t.datetime :job_closed_at
       t.datetime :ticket_closed_at
       t.integer :re_open_count, null: false, default: 0                             
-      t.boolean :ticket_close_approval_required, null: false, default: 1
-      t.boolean :ticket_close_approval_requested, null: false, default: 0
-      t.boolean :ticket_close_approved, null: false, default: 0
-      t.boolean :qc_passed, null: false, default: 0
-      t.boolean :re_assigned, null: false, default: 0                                  
-      t.boolean :terminated, null: false, default: 0
-      t.boolean :cus_payment_required, null: false, default: 0
-      t.boolean :cus_payment_completed, null: false, default: 0
+      t.boolean :ticket_close_approval_required, null: false, default: true
+      t.boolean :ticket_close_approval_requested, null: false, default: false
+      t.boolean :ticket_close_approved, null: false, default: false
+      t.boolean :qc_passed, null: false, default: false
+      t.boolean :re_assigned, null: false, default: false
+      t.boolean :terminated, null: false, default: false
+      t.boolean :cus_payment_required, null: false, default: false
+      t.boolean :cus_payment_completed, null: false, default: false
       t.decimal :final_amount_to_be_paid, precision: 10, scale: 2
-      t.boolean :pop_updated, null: false, default: 0
+      t.boolean :pop_updated, null: false, default: false
       t.column :base_currency_id, "int(10) UNSIGNED NOT NULL"
       t.column :manufacture_currency_id, "int(10) UNSIGNED NOT NULL"
       t.integer :ticket_print_count, null: false, default: 0
@@ -486,13 +486,13 @@ spt_act_customer_feedbackclass AddSptNewTablesFromDevage < ActiveRecord::Migrati
       t.column :created_by, "int(10) UNSIGNED NOT NULL"
       t.datetime :created_at, null: false
       t.column :deliver_to_id, "int(10) UNSIGNED"
-      t.boolean :delivered_to_sup, null: false, default: 0
+      t.boolean :delivered_to_sup, null: false, default: false
       t.datetime :delivered_to_sup_at
       t.column :delivered_to_sup_by, "int(10) UNSIGNED"
-      t.boolean :collected, null: false, default: 0
+      t.boolean :collected, null: false, default: false
       t.datetime :collected_at
       t.column :collected_by, "int(10) UNSIGNED"
-      t.boolean :received, null: false, default: 0
+      t.boolean :received, null: false, default: false
       t.datetime :received_at
       t.column :received_by, "int(10) UNSIGNED"
       t.text :note                                         
@@ -508,14 +508,14 @@ spt_act_customer_feedbackclass AddSptNewTablesFromDevage < ActiveRecord::Migrati
       t.column :estimated_by, "int(10) UNSIGNED"
       t.text :note                                          
       t.decimal :advance_payment_amount, precision: 10, scale: 2
-      t.boolean :foc_requested, null: false, default: 0
-      t.boolean :approval_required, null: false, default: 0
-      t.boolean :approved, null: false, default: 0
+      t.boolean :foc_requested, null: false, default: false
+      t.boolean :approval_required, null: false, default: false
+      t.boolean :approved, null: false, default: false
       t.datetime :approved_at
       t.column :approved_by, "int(10) UNSIGNED"
       t.decimal :approved_adv_pmnt_amount, precision: 10, scale: 2
-      t.boolean :foc_approved, null: false, default: 0
-      t.boolean :cust_approval_required, null: false, default: 0
+      t.boolean :foc_approved, null: false, default: false
+      t.boolean :cust_approval_required, null: false, default: false
       t.boolean :cust_approved
       t.datetime :cust_approved_at
       t.column :cust_approved_by, "int(10) UNSIGNED"
@@ -531,7 +531,7 @@ spt_act_customer_feedbackclass AddSptNewTablesFromDevage < ActiveRecord::Migrati
       t.column :ticket_estimation_id, "int(10) UNSIGNED NOT NULL"
       t.decimal :cost_price, precision: 10, scale: 2
       t.decimal :estimated_price, precision: 10, scale: 2
-      t.boolean :below_margine, null: false, default: 0
+      t.boolean :below_margine, null: false, default: false
       t.decimal :approved_estimated_price, precision: 10, scale: 2
       t.column :additional_charge_id, "int(10) UNSIGNED NOT NULL"
       t.timestamps
@@ -545,7 +545,7 @@ spt_act_customer_feedbackclass AddSptNewTablesFromDevage < ActiveRecord::Migrati
       t.decimal :cost_price, precision: 10, scale: 2
       t.decimal :estimated_price, precision: 10, scale: 2
       t.integer :warranty_period
-      t.boolean :below_margine, null: false, default: 0
+      t.boolean :below_margine, null: false, default: false
       t.decimal :approved_estimated_price, precision: 10, scale: 2
       t.timestamps
     end
@@ -556,7 +556,7 @@ spt_act_customer_feedbackclass AddSptNewTablesFromDevage < ActiveRecord::Migrati
       t.column :ticket_estimation_id, "int(10) UNSIGNED NOT NULL"
       t.decimal :cost_price, precision: 10, scale: 2
       t.decimal :estimated_price, precision: 10, scale: 2
-      t.boolean :below_margine, null: false, default: 0
+      t.boolean :below_margine, null: false, default: false
       t.integer :warranty_period
       t.column :ticket_spare_part_id, "int(10) UNSIGNED NOT NULL"
       t.column :supplier_id, "int(10) UNSIGNED"
@@ -580,7 +580,7 @@ spt_act_customer_feedbackclass AddSptNewTablesFromDevage < ActiveRecord::Migrati
       t.decimal :other_repairs, precision: 10, scale: 2
       t.string :resolution
       t.string :code, limit: 1
-      t.boolean :approved, null: false, default: 0
+      t.boolean :approved, null: false, default: false
       t.column :approved_action_id, "int(10) UNSIGNED"
       t.text :remarks
       t.integer :print_count, null: false, default: 0                                  
@@ -605,23 +605,23 @@ spt_act_customer_feedbackclass AddSptNewTablesFromDevage < ActiveRecord::Migrati
       t.text :note
       t.column :store_id, "int(10) UNSIGNED"
       t.column :inv_product_id, "int(10) UNSIGNED"
-      t.boolean :part_of_main_product, null: false, default: 0
+      t.boolean :part_of_main_product, null: false, default: false
       t.column :main_inv_product_id, "int(10) UNSIGNED"
-      t.boolean :terminated, null: false, default: 0
+      t.boolean :terminated, null: false, default: false
       t.column :terminated_reason_id, "int(10) UNSIGNED"
       t.column :status_action_id, "int(10) UNSIGNED NOT NULL"
       t.column :status_use_id, "int(10) UNSIGNED NOT NULL"
-      t.boolean :approved, null: false, default: 0
+      t.boolean :approved, null: false, default: false
       t.datetime :approved_at
       t.column :approved_by, "int(10) UNSIGNED"
       t.column :appoved_inv_product_id, "int(10) UNSIGNED"
       t.column :approved_main_inv_product_id, "int(10) UNSIGNED"
-      t.boolean :issued, null: false, default: 0
+      t.boolean :issued, null: false, default: false
       t.datetime :isssued_at
       t.column :issued_by, "int(10) UNSIGNED"
       t.column :inv_srn_id, "int(10) UNSIGNED"
       t.column :inv_srn_item_id, "int(10) UNSIGNED"
-      t.boolean :received_eng, null: false, default: 0
+      t.boolean :received_eng, null: false, default: false
       t.datetime :received_eng_at
       t.column :received_eng_by, "int(10) UNSIGNED"
       t.datetime :repare_start
@@ -629,15 +629,15 @@ spt_act_customer_feedbackclass AddSptNewTablesFromDevage < ActiveRecord::Migrati
       t.string :return_part_serial_no 
       t.string :return_part_ct_no
       t.column :unused_reason_id, "int(10) UNSIGNED"
-      t.boolean :part_returned, null: false, default: 0
+      t.boolean :part_returned, null: false, default: false
       t.datetime :part_returned_at
       t.column :part_returned_by, "int(10) UNSIGNED"
       t.column :inv_srr_id, "int(10) UNSIGNED"
       t.column :inv_srr_item_id, "int(10) UNSIGNED"
-      t.boolean :ret_part_received, null: false, default: 0
+      t.boolean :ret_part_received, null: false, default: false
       t.datetime :ret_part_received_at
       t.column :ret_part_received_by, "int(10) UNSIGNED"
-      t.boolean :return_part_damage, null: false, default: 0
+      t.boolean :return_part_damage, null: false, default: false
       t.column :return_part_damage_reason_id, "int(10) UNSIGNED"
       t.timestamps
     end
@@ -692,10 +692,10 @@ spt_act_customer_feedbackclass AddSptNewTablesFromDevage < ActiveRecord::Migrati
       t.string :faulty_serial_no 
       t.string :faulty_ct_no 
       t.text :note                                          
-      t.boolean :cus_chargeable_part, null: false, default: 0
-      t.boolean :request_from_manufacture, null: false, default: 1
-      t.boolean :request_from_store, null: false, default: 0
-      t.boolean :terminated, null: false, default: 0
+      t.boolean :cus_chargeable_part, null: false, default: false
+      t.boolean :request_from_manufacture, null: false, default: true
+      t.boolean :request_from_store, null: false, default: false
+      t.boolean :terminated, null: false, default: false
       t.column :terminated_reason_id, "int(10) UNSIGNED"
       t.string :received_spare_part_no
       t.string :received_part_serial_no
@@ -707,9 +707,9 @@ spt_act_customer_feedbackclass AddSptNewTablesFromDevage < ActiveRecord::Migrati
       t.string :return_part_ct_no
       t.column :status_use_id, "int(10) UNSIGNED NOT NULL"
       t.column :unused_reason_id, "int(10) UNSIGNED"
-      t.boolean :part_returned, null: false, default: 0
-      t.boolean :returned_part_accepted, null: false, default: 0
-      t.boolean :close_approved, null: false, default: 0
+      t.boolean :part_returned, null: false, default: false
+      t.boolean :returned_part_accepted, null: false, default: false
+      t.boolean :close_approved, null: false, default: false
       t.column :close_approved_action_id, "int(10) UNSIGNED"
       t.timestamps
     end
@@ -719,18 +719,18 @@ spt_act_customer_feedbackclass AddSptNewTablesFromDevage < ActiveRecord::Migrati
       t.column :spare_part_id, "int(10) UNSIGNED NOT NULL"
       t.string :event_no
       t.string :order_no
-      t.boolean :event_closed, null: false, default: 0
+      t.boolean :event_closed, null: false, default: false
       t.decimal :payment_expected_manufacture, null: false
-      t.boolean :collect_pending_manufacture, null: false, default: 0
-      t.boolean :collected_manufacture, null: false, default: 0
-      t.boolean :received_manufacture, null: false, default: 0
-      t.boolean :issued, null: false, default: 0
-      t.boolean :ready_to_bundle, null: false, default: 0
-      t.boolean :bundled, null: false, default: 0
+      t.boolean :collect_pending_manufacture, null: false, default: false
+      t.boolean :collected_manufacture, null: false, default: false
+      t.boolean :received_manufacture, null: false, default: false
+      t.boolean :issued, null: false, default: false
+      t.boolean :ready_to_bundle, null: false, default: false
+      t.boolean :bundled, null: false, default: false
       t.column :return_parts_bundle_id, "int(10) UNSIGNED"
       t.column :add_bundle_by, "int(10) UNSIGNED"
       t.datetime :add_bundle_at
-      t.boolean :po_completed, null: false, default: 0
+      t.boolean :po_completed, null: false, default: false
       t.column :manufacture_currency_id, "int(10) UNSIGNED NOT NULL"
       t.timestamps
     end
@@ -749,25 +749,25 @@ spt_act_customer_feedbackclass AddSptNewTablesFromDevage < ActiveRecord::Migrati
       t.column :spare_part_id, "int(10) UNSIGNED NOT NULL"
       t.column :store_id, "int(10) UNSIGNED"
       t.column :inv_product_id, "int(10) UNSIGNED"
-      t.boolean :part_of_main_product, null: false, default: 0
+      t.boolean :part_of_main_product, null: false, default: false
       t.column :mst_inv_product_id, "int(10) UNSIGNED"
-      t.boolean :estimation_required, null: false, default: 0
+      t.boolean :estimation_required, null: false, default: false
       t.integer :ticket_estimation_part_id
-      t.boolean :store_requested, null: false, default: 0
+      t.boolean :store_requested, null: false, default: false
       t.datetime :store_requested_at
       t.column :store_requested_by, "int(10) UNSIGNED"
-      t.boolean :store_request_approved, null: false, default: 0
+      t.boolean :store_request_approved, null: false, default: false
       t.datetime :store_request_approved_at
       t.column :store_request_approved_by, "int(10) UNSIGNED"
       t.column :approved_inv_product_id, "int(10) UNSIGNED"
-      t.boolean :store_issued, null: false, default: 0
+      t.boolean :store_issued, null: false, default: false
       t.datetime :store_issued_at
       t.column :store_issued_by, "int(10) UNSIGNED"
       t.column :inv_srn_id, "int(10) UNSIGNED"
       t.column :inv_srn_item_id, "int(10) UNSIGNED"
       t.column :inv_srr_id, "int(10) UNSIGNED"
       t.column :inv_srr_item_id, "int(10) UNSIGNED"
-      t.boolean :return_part_damage, null: false, default: 0
+      t.boolean :return_part_damage, null: false, default: false
       t.column :return_part_damage_reason_id, "int(10) UNSIGNED"
       t.timestamps
     end

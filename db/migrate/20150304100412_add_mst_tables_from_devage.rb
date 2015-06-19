@@ -25,9 +25,9 @@ class AddMstTablesFromDevage < ActiveRecord::Migration
       t.string :model_no, null: true, default:nil
       t.string :product_no, null: true, default:nil
       t.column :unit_id, "INT UNSIGNED NOT NULL"
-      t.boolean :fifo, null:false, default:1
-      t.boolean :active, null:false, default:1
-      t.boolean :spare_part, null:false, default:0
+      t.boolean :fifo, null:false, default:true
+      t.boolean :active, null:false, default:true
+      t.boolean :spare_part, null:false, default:false
       t.string :spare_part_no, null:true, default:nil
       t.column :created_by, "INT UNSIGNED NOT NULL"
       t.column :updated_by, "INT UNSIGNED NULL"
@@ -37,10 +37,10 @@ class AddMstTablesFromDevage < ActiveRecord::Migration
     create_table :mst_inv_reason, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.text :reason, null:false
-      t.boolean :srn_issue_terminate, null:false, default:0
-      t.boolean :damage,  null:false, default:0
-      t.boolean :srr,  null:false, default:0
-      t.boolean :disposal,  null:false, default:0
+      t.boolean :srn_issue_terminate, null:false, default:false
+      t.boolean :damage,  null:false, default:false
+      t.boolean :srr,  null:false, default:false
+      t.boolean :disposal,  null:false, default:false
       t.column :created_by, "INT UNSIGNED NOT NULL"
       t.column :updated_by, "INT UNSIGNED"
       t.timestamps
@@ -65,7 +65,7 @@ class AddMstTablesFromDevage < ActiveRecord::Migration
       t.string :action_description, null:false                        #250
       t.string :task_id, null:true, default:nil
       t.column :groups_id,"INT UNSIGNED"
-      t.boolean :hide, null:false, default:0
+      t.boolean :hide, null:false, default:false
       t.timestamps
     end
 
@@ -87,8 +87,8 @@ class AddMstTablesFromDevage < ActiveRecord::Migration
     create_table :mst_spt_customer_contact_type, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.string :name, null:false, default:nil
-      t.boolean :mobile, null:false, default:0  
-      t.boolean :email, null:false, default:0      
+      t.boolean :mobile, null:false, default:false
+      t.boolean :email, null:false, default:false
       t.timestamps
     end
 
@@ -150,7 +150,7 @@ class AddMstTablesFromDevage < ActiveRecord::Migration
       t.string :answer_type, limit: 2, null:false, default:"YN"
       t.boolean :active, null:false, default:1
       t.column :action_id, "INT UNSIGNED NOT NULL"
-      t.boolean :compulsory, null:false, default:0
+      t.boolean :compulsory, null:false, default:false
       t.timestamps
     end
 
@@ -177,15 +177,15 @@ class AddMstTablesFromDevage < ActiveRecord::Migration
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.text :reason, null:false
       t.boolean :hold, null:false
-      t.boolean :sla_pause, null:false, default:0
-      t.boolean :re_assign_request, null:false, default:0
-      t.boolean :terminate_job, null:false, default:0
-      t.boolean :terminate_spare_part, null:false, default:0
-      t.boolean :warranty_extend, null:false, default:0
-      t.boolean :spare_part_unused, null:false, default:0
-      t.boolean :reject_returned_part, null:false, default:0
-      t.boolean :reject_close, null:false, default:0
-      t.boolean :adjust_terminate_job_payment, null:false, default:0
+      t.boolean :sla_pause, null:false, default:false
+      t.boolean :re_assign_request, null:false, default:false
+      t.boolean :terminate_job, null:false, default:false
+      t.boolean :terminate_spare_part, null:false, default:false
+      t.boolean :warranty_extend, null:false, default:false
+      t.boolean :spare_part_unused, null:false, default:false
+      t.boolean :reject_returned_part, null:false, default:false
+      t.boolean :reject_close, null:false, default:false
+      t.boolean :adjust_terminate_job_payment, null:false, default:false
       t.timestamps
     end
 
@@ -256,7 +256,7 @@ class AddMstTablesFromDevage < ActiveRecord::Migration
     create_table :mst_spt_ticket_start_action, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.string :action, null:false                      #250
-      t.boolean :active, null:false, default:1
+      t.boolean :active, null:false, default:true
       t.timestamps
     end
 
@@ -373,8 +373,8 @@ class AddMstTablesFromDevage < ActiveRecord::Migration
     create_table :mst_inv_product_condition, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.text :condition, " NOT NULL, PRIMARY KEY (id)"
-      t.column :created_by, "INT(10) UNSIGNED NULL"
-      t.column :updated_by, "INT(10) UNSIGNED NULL"
+      t.column :created_by, "INT UNSIGNED NULL"
+      t.column :updated_by, "INT UNSIGNED NULL"
       t.timestamps
     end
 
@@ -392,7 +392,7 @@ class AddMstTablesFromDevage < ActiveRecord::Migration
       t.column :product_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (product_id)"
       t.string :picture #***** image type can not be blob *****
       t.string :abc_class, limit:1
-      t.boolean :issue_fractional_allowed, null:false, default:0
+      t.boolean :issue_fractional_allowed, null:false, default:false
       t.column :secondary_unit_id, "INT UNSIGNED NULL"
       t.decimal :secondery_unit_convertion
       t.boolean :per_secondery_unit_conversion
