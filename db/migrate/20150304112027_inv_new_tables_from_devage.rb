@@ -87,7 +87,7 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.column :grn_item_id, "int(10) UNSIGNED NOT NULL"
       t.column :grn_batch_id, "int(10) UNSIGNED"
       t.column :grn_serial_item_id, "int(10) UNSIGNED"
-      t.boolean :spare_part, null: false, default: 0
+      t.boolean :spare_part, null: false, default: false
       t.column :serial_part_id, "int(10) UNSIGNED"
       t.decimal :quantity, null: false, precision: 13, scale: 3
       t.decimal :unit_cost, null: false, precision: 13, scale: 2
@@ -101,7 +101,7 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.decimal :repair_quantity, null: false, precision: 13, scale: 3
       t.decimal :spare_quantity, null: false, precision: 13, scale: 3
       t.decimal :disposal_quantity, null: false, precision: 13, scale: 3
-      t.decimal :disposed_quantity, null: false, precision: 13, scale: 3
+      t.decimal :disposed_quantity, null: false, precision: 13, scale: 3, default: 0.000
       t.column :disposal_method_id, "int(10) UNSIGNED"
       t.column :created_by, "int(10) UNSIGNED"
       t.timestamps
@@ -120,7 +120,7 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.column :approved2_by, "int(10) UNSIGNED"
       t.datetime :approved1_at
       t.datetime :approved2_at
-      t.string :status, limit:2, null: false
+      t.string :status, limit:2, null: false, default: "st"
       t.timestamps
     end
     
@@ -166,11 +166,11 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.column :product_id, "int(10) UNSIGNED NOT NULL"
       t.column :disposal_reason_id, "int(10) UNSIGNED NOT NULL"
       t.text :remarks
-      t.boolean :approved, null: false, default: 0
+      t.boolean :approved, null: false, default: false
       t.column :created_by, "int(10) UNSIGNED NOT NULL"
       t.column :approved_by, "int(10) UNSIGNED"
       t.datetime :approved_at
-      t.string :status, limit:2, null: false
+      t.string :status, limit:2, null: false, default: "st"
       t.column :requested_disposal_method_id, "int(10) UNSIGNED NOT NULL"
       t.column :approved_disposal_method_id, "int(10) UNSIGNED"
       t.timestamps
@@ -221,9 +221,9 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.decimal :standard_cost, null: false, precision: 13, scale: 2
       t.column :currency_id, "int(10) UNSIGNED NOT NULL"
       t.decimal :returned_quantity, null: false, precision: 13, scale: 2
-      t.boolean :returnable, null: false, default: 0
-      t.boolean :return_completed, null: false, default: 0
-      t.boolean :spare_part, null: false, default: 0
+      t.boolean :returnable, null: false, default: false
+      t.boolean :return_completed, null: false, default: false
+      t.boolean :spare_part, null: false, default: false
       t.timestamps
     end
 
@@ -257,8 +257,8 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.column :inventory_batch_id, "int(10) UNSIGNED NOT NULL"
       t.decimal :recieved_quantity, null: false, precision: 13, scale: 3
       t.decimal :remaining_quantity, null: false, precision: 13, scale: 3
-      t.decimal :reserved_quantity, null: false, precision: 13, scale: 3
-      t.decimal :damage_quantity, null: false, precision: 13, scale: 3
+      t.decimal :reserved_quantity, null: false, precision: 13, scale: 3, default: 0.000
+      t.decimal :damage_quantity, null: false, precision: 13, scale: 3, default: 0.000
       t.timestamps
     end
 
@@ -269,8 +269,8 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.column :product_id, "int(10) UNSIGNED NOT NULL"
       t.decimal :recieved_quantity, null: false, precision: 13, scale: 3
       t.decimal :remaining_quantity, null: false, precision: 13, scale: 3
-      t.decimal :reserved_quantity, null: false, precision: 13, scale: 3
-      t.decimal :damage_quantity, null: false, precision: 13, scale: 3
+      t.decimal :reserved_quantity, null: false, precision: 13, scale: 3, default: 0.000
+      t.decimal :damage_quantity, null: false, precision: 13, scale: 3, default: 0.000
       t.text :remarks
       t.decimal :unit_cost, null: false, precision: 13, scale: 2
       t.decimal :current_unit_cost, null: false, precision: 13, scale: 2
@@ -286,7 +286,7 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
     create_table :inv_grn_item_current_unit_cost_history, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :grn_item_id, "int(10) UNSIGNED NOT NULL"
-      t.decimal :current_unit_cost, null: false, precision: 13, scale: 3
+      t.decimal :current_unit_cost, null: false, precision: 13, scale: 2
       t.column :created_by, "int(10) UNSIGNED NOT NULL"
       t.timestamps
     end
@@ -304,7 +304,7 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.column :product_id, "int(10) UNSIGNED NOT NULL"
       t.decimal :stock_quantity, null: false, precision: 13, scale: 3
       t.decimal :available_quantity, null: false, precision: 13, scale: 3
-      t.decimal :reserved_quantity, null: false, precision: 13, scale: 3
+      t.decimal :reserved_quantity, null: false, precision: 13, scale: 3, default: 0.000
       t.decimal :reorder_level, precision: 13, scale: 3
       t.decimal :reorder_quantity, precision: 13, scale: 3
       t.decimal :max_quantity, precision: 13, scale: 3
@@ -339,20 +339,20 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.string :serial_no, null: false
       t.text :remarks
       t.column :product_condition_id, "int(10) UNSIGNED NOT NULL"
-      t.boolean :scavenge, null: false, default: 0
-      t.boolean :parts_not_completed, null: false, default: 0
-      t.boolean :damage, null: false, default: 0
-      t.boolean :used, null: false, default: 0
-      t.boolean :repaired, null: false, default: 0
-      t.boolean :reserved, null: false, default: 0
-      t.boolean :disposed, null: false, default: 0
+      t.boolean :scavenge, null: false, default: false
+      t.boolean :parts_not_completed, null: false, default: false
+      t.boolean :damage, null: false, default: false
+      t.boolean :used, null: false, default: false
+      t.boolean :repaired, null: false, default: false
+      t.boolean :reserved, null: false, default: false
+      t.boolean :disposed, null: false, default: false
       t.column :inv_status_id, "int(10) UNSIGNED NOT NULL"
       t.string :ct_no
       t.datetime :manufatured_date
       t.datetime :expiry_date
       t.column :created_by, "int(10) UNSIGNED NOT NULL"
       t.datetime :updated_at
-      t.column :updated_by, "int(10) UNSIGNED NOT NULL"
+      t.column :updated_by, "int(10) UNSIGNED"
       t.timestamps
     end
 
@@ -364,20 +364,20 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.string :serial_no, null: false
       t.text :remarks
       t.column :product_condition_id, "int(10) UNSIGNED NOT NULL"
-      t.boolean :scavenge, null: false, default: 0
-      t.boolean :parts_not_completed, null: false, default: 0
-      t.boolean :damage, null: false, default: 0
-      t.boolean :used, null: false, default: 0
-      t.boolean :repaired, null: false, default: 0
-      t.boolean :reserved, null: false, default: 0
-      t.boolean :disposed, null: false, default: 0
+      t.boolean :scavenge, null: false, default: false
+      t.boolean :parts_not_completed, null: false, default: false
+      t.boolean :damage, null: false, default: false
+      t.boolean :used, null: false, default: false
+      t.boolean :repaired, null: false, default: false
+      t.boolean :reserved, null: false, default: false
+      t.boolean :disposed, null: false, default: false
       t.column :inv_status_id, "int(10) UNSIGNED NOT NULL"
       t.string :ct_no
       t.datetime :manufatured_date
       t.datetime :expiry_date
       t.column :created_by, "int(10) UNSIGNED NOT NULL"
       t.datetime :updated_at
-      t.column :updated_by, "int(10) UNSIGNED NOT NULL"
+      t.column :updated_by, "int(10) UNSIGNED"
       t.timestamps
     end
 
@@ -388,7 +388,7 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.string :prn_no
       t.column :created_by, "int(10) UNSIGNED NOT NULL"
       t.text :remarks
-      t.boolean :closed, null: false, default: 0
+      t.boolean :closed, null: false, default: false
       t.timestamps
     end
 
@@ -406,7 +406,7 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.column :product_id, "int(10) UNSIGNED NOT NULL"
       t.decimal :quantity, null: false, precision: 13, scale: 3
       t.text :remarks
-      t.boolean :closed, null: false, default: 0
+      t.boolean :closed, null: false, default: false
       t.timestamps
     end
 
@@ -418,7 +418,7 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.text :remarks
       t.string :sbn_no
       t.column :created_by, "int(10) UNSIGNED NOT NULL"
-      t.boolean :closed, null: false, default: 0
+      t.boolean :closed, null: false, default: false
       t.timestamps
     end
 
@@ -429,7 +429,7 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.decimal :quantity, null: false, precision: 13, scale: 3
       t.text :remarks
       t.decimal :balance_quantity, null: false, precision: 13, scale: 3
-      t.boolean :closed, null: false, default: 0
+      t.boolean :closed, null: false, default: false
       t.timestamps
     end
 
@@ -444,7 +444,7 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.decimal :unit_cost, null: false, precision: 13, scale: 2
       t.column :currency_id, "int(10) UNSIGNED NOT NULL"
       t.decimal :balance_quantity, null: false, precision: 13, scale: 3
-      t.boolean :reserve_terminated, null: false, default: 0
+      t.boolean :reserve_terminated, null: false, default: false
       t.datetime :reserve_terminated_at
       t.column :reserve_terminated_by, "int(10) UNSIGNED"
       t.timestamps
@@ -456,7 +456,7 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.decimal :cost, null: false, precision: 13, scale: 2
       t.column :currency_id, "int(10) UNSIGNED NOT NULL"
       t.text :note
-      t.column :created_by, "int(10) UNSIGNED NOT NULL"
+      t.column :created_by, "int(10) UNSIGNED"
       t.timestamps
     end
 
@@ -493,7 +493,7 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.string :srn_no
       t.column :created_by, "int(10) UNSIGNED NOT NULL"
       t.column :requested_module_id, "int(10) UNSIGNED NOT NULL"
-      t.boolean :closed, null: false, default: 0
+      t.boolean :closed, null: false, default: false
       t.timestamps
     end
 
@@ -503,14 +503,14 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.column :product_id, "int(10) UNSIGNED NOT NULL"
       t.decimal :quantity, null: false, precision: 13, scale: 3
       t.text :remarks
-      t.boolean :returnable, null: false, default: 0
-      t.boolean :return_completed, default: 0
-      t.boolean :issue_terminated, null: false, default: 0
+      t.boolean :returnable, null: false, default: false
+      t.boolean :return_completed
+      t.boolean :issue_terminated, null: false, default: false
       t.datetime :issue_terminated_at
       t.column :issue_terminated_reason_id, "int(10) UNSIGNED NOT NULL"
       t.column :issue_terminated_by, "int(10) UNSIGNED NOT NULL"
-      t.boolean :spare_part, null: false, default: 0
-      t.boolean :closed, null: false, default: 0
+      t.boolean :spare_part, null: false, default: false
+      t.boolean :closed, null: false, default: false
       t.timestamps
     end
 
@@ -530,7 +530,7 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.text :remarks
       t.string :srr_no
       t.column :created_by, "int(10) UNSIGNED NOT NULL"
-      t.boolean :closed, null: false, default: 0
+      t.boolean :closed, null: false, default: false
       t.column :requested_module_id, "int(10) UNSIGNED NOT NULL"
       t.timestamps
     end
@@ -542,10 +542,10 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.decimal :quantity, null: false, precision: 13, scale: 3
       t.column :product_condition_id, "int(10) UNSIGNED NOT NULL"
       t.column :return_reason_id, "int(10) UNSIGNED NOT NULL"
-      t.column :returnable_srn_item_id, "int(10) UNSIGNED"
-      t.boolean :spare_part, null: false, default: 0
+      t.column :returnable_srn_item_id, "int(10) UNSIGNED NOT NULL"
+      t.boolean :spare_part, null: false, default: false
       t.text :remarks
-      t.boolean :closed, null: false, default: 0
+      t.boolean :closed, null: false, default: false
       t.timestamps
     end
 
@@ -562,19 +562,19 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
     create_table :inv_stock_taking, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :store_id, "int(10) UNSIGNED NOT NULL"
-      t.string :order_by, limit:2, null: false
+      t.string :order_by, limit:2, null: false, default: "IC"
       t.text :remarks
-      t.string :status, limit:2, null: false
-      t.boolean :cancel, null: false, default: 0
+      t.string :status, limit:2, null: false, default: "ST"
+      t.boolean :cancel, null: false, default: false
       t.column :created_by, "int(10) UNSIGNED NOT NULL"
       t.datetime :stock_taken_at
-      t.column :stock_taken_by, "int(10) UNSIGNED NOT NULL"
+      t.column :stock_taken_by, "int(10) UNSIGNED"
       t.string :attached_document_url
-      t.column :store_keeper_by, "int(10) UNSIGNED NOT NULL"
-      t.column :inspected1_by, "int(10) UNSIGNED NOT NULL"
-      t.column :inspected2_by, "int(10) UNSIGNED NOT NULL"
-      t.column :inspected3_by, "int(10) UNSIGNED NOT NULL"
-      t.column :inspected4_by, "int(10) UNSIGNED NOT NULL"
+      t.column :store_keeper_by, "int(10) UNSIGNED"
+      t.column :inspected1_by, "int(10) UNSIGNED"
+      t.column :inspected2_by, "int(10) UNSIGNED"
+      t.column :inspected3_by, "int(10) UNSIGNED"
+      t.column :inspected4_by, "int(10) UNSIGNED"
       t.datetime :reconciled_at
       t.integer :variance_count
       t.timestamps
@@ -586,16 +586,16 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.column :grn_item_id, "int(10) UNSIGNED NOT NULL"
       t.column :grn_batch_id, "int(10) UNSIGNED"
       t.column :grn_serial_item_id, "int(10) UNSIGNED"
-      t.decimal :sys_remaining_qnt, null: false, precision: 13, scale: 2
-      t.decimal :phys_remaining_qnt, precision: 13, scale: 2
-      t.decimal :sys_not_issue_cond_qnt, precision: 13, scale: 2
-      t.decimal :phy_not_issue_cond_qnt, precision: 13, scale: 2
+      t.decimal :sys_remaining_qnt, null: false, precision: 13, scale: 3
+      t.decimal :phys_remaining_qnt, precision: 13, scale: 3
+      t.decimal :sys_not_issue_cond_qnt, precision: 13, scale: 3
+      t.decimal :phy_not_issue_cond_qnt, precision: 13, scale: 3
       t.text :remarks
       t.text :variance_reason
-      t.decimal :req_remaining_qnt, precision: 13, scale: 2
-      t.decimal :req_not_issue_cond_qnt, precision: 13, scale: 2
-      t.decimal :appr_remaining_qnt, precision: 13, scale: 2
-      t.decimal :appr_not_issue_cond_qnt, precision: 13, scale: 2
+      t.decimal :req_remaining_qnt, precision: 13, scale: 3
+      t.decimal :req_not_issue_cond_qnt, precision: 13, scale: 3
+      t.decimal :appr_remaining_qnt, precision: 13, scale: 3
+      t.decimal :appr_not_issue_cond_qnt, precision: 13, scale: 3
       t.timestamps
     end
 
@@ -603,12 +603,12 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :stock_taking_id, "int(10) UNSIGNED NOT NULL"
       t.column :product_id, "int(10) UNSIGNED NOT NULL"
-      t.boolean :active_item, null: false, default: 0
-      t.decimal :sys_stock_quantity, null: false, precision: 13, scale: 2
-      t.decimal :sys_disposal_stock_qnt, null: false, precision: 13, scale: 2
-      t.decimal :phys_stock_qnt, precision: 13, scale: 2
-      t.decimal :physl_disposal_stock_qnt, precision: 13, scale: 2
-      t.boolean :print_with_grn, null: false, default: 0
+      t.boolean :active_item, null: false, default: true
+      t.decimal :sys_stock_quantity, null: false, precision: 13, scale: 3
+      t.decimal :sys_disposal_stock_qnt, null: false, precision: 13, scale: 3
+      t.decimal :phys_stock_qnt, precision: 13, scale: 3
+      t.decimal :physl_disposal_stock_qnt, precision: 13, scale: 3
+      t.boolean :print_with_grn, null: false, default: false
       t.integer :print_order_no
       t.text :remarks
       t.timestamps

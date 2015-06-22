@@ -72,8 +72,8 @@ class AddMstTablesFromDevage < ActiveRecord::Migration
     create_table :mst_spt_additional_charge, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.string :additional_charge, null:false
-      t.decimal :default_cost_price
-      t.decimal :default_estimated_price
+      t.decimal :default_cost_price, precision: 10, scale: 2
+      t.decimal :default_estimated_price, precision: 10, scale: 2
       t.timestamps
     end
 
@@ -125,7 +125,7 @@ class AddMstTablesFromDevage < ActiveRecord::Migration
     create_table :mst_spt_payment_item, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.string :name, null:false
-      t.decimal :default_amount
+      t.decimal :default_amount, precision: 10, scale: 2
       t.timestamps
     end
 
@@ -394,13 +394,13 @@ class AddMstTablesFromDevage < ActiveRecord::Migration
       t.string :abc_class, limit:1
       t.boolean :issue_fractional_allowed, null:false, default:false
       t.column :secondary_unit_id, "INT UNSIGNED"
-      t.decimal :secondery_unit_convertion
+      t.decimal :secondery_unit_convertion, precision: 13, scale: 6
       t.boolean :per_secondery_unit_conversion
       t.column :country_id, "INT UNSIGNED"
       t.column :manufacture_id, "INT UNSIGNED"
       t.boolean :need_serial
-      t.decimal :average_cost
-      t.decimal :standard_cost
+      t.decimal :average_cost, precision: 13, scale: 2
+      t.decimal :standard_cost, precision: 13, scale: 2
       t.column :currency_id, "INT UNSIGNED"
       t.text :remarks
       t.timestamps
@@ -425,9 +425,9 @@ class AddMstTablesFromDevage < ActiveRecord::Migration
     create_table :mst_inv_unit, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.text :description, null:false
-      t.string :unit, null:false
+      t.string :unit
       t.column :base_unit_id, "INT UNSIGNED"
-      t.decimal :base_unit_conversion
+      t.decimal :base_unit_conversion, precision: 13, scale: 6
       t.boolean :per_base_unit
       t.column :created_by, "INT UNSIGNED"
       t.column :updated_by, "INT UNSIGNED"

@@ -18,7 +18,7 @@ class WorkflowNewTablesFromDevage < ActiveRecord::Migration
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.string :heading, null: false
       t.text :alert, null: false
-      t.boolean :read, null: false, default: 0
+      t.boolean :read, null: false, default: false
       t.integer :priority, null: false, default: 1
       t.string :process_id, null: false
       t.string :task_id, null: false
@@ -60,12 +60,12 @@ class WorkflowNewTablesFromDevage < ActiveRecord::Migration
       # t.integer :suport_sla_time
       # t.decimal :external_job_profit_margin
       # t.decimal :internal_part_profit_margin
-      t.column :sup_sla_id, "int(10) UNSIGNED"
-      t.integer :inv_category_level
-      t.integer :sup_sla_time
-      t.decimal :sup_external_job_profit_margin
-      t.decimal :sup_internal_part_profit_margin
-      t.integer :sup_last_ticket_no
+      t.column :sup_sla_id, "int(10) UNSIGNED NOT NULL"
+      t.integer :inv_category_level, default: 3, null: false
+      t.integer :sup_sla_time, null: false
+      t.decimal :sup_external_job_profit_margin, null: false, precision: 5, scale: 2, default: 0.000
+      t.decimal :sup_internal_part_profit_margin, null: false, precision: 5, scale: 2, default: 0.000
+      t.integer :sup_last_ticket_no, null: false, default: 0
       t.timestamps
     end
 

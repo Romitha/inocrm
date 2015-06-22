@@ -64,7 +64,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.column :ticket_action_id, "INT UNSIGNED NOT NULL"    #check
       t.column :reason_id, "int(10) UNSIGNED NOT NULL"
       t.boolean :sla_pause, null: false, default: false
-      t.column :un_hold_action_id, "int(10) UNSIGNED"
+      t.column :un_hold_action_id, "int(10) UNSIGNED DEFAULT 0"
       t.timestamps
     end
 
@@ -192,7 +192,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.boolean :contract_b2b
       t.datetime :contract_start_at
       t.datetime :contract_end_at
-      t.text :remark
+      t.text :remarks
       t.column :sla_id, "int(10) UNSIGNED NOT NULL"
       t.boolean :active, null: false, default: false
       t.datetime :created_at
@@ -210,19 +210,19 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.timestamps
     end
 
-    create_table :spt_cus_recieved_note_print_history, id: false do |t|     #received not recieved
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
-      t.column :print_history_id, "int(10) UNSIGNED NOT NULL"
-      t.column :ticket_id, "int(10) UNSIGNED NOT NULL"
-      t.timestamps
-    end
+    #create_table :spt_cus_recieved_note_print_history, id: false do |t|     #received not recieved
+      #t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      #t.column :print_history_id, "int(10) UNSIGNED NOT NULL"
+      #t.column :ticket_id, "int(10) UNSIGNED NOT NULL"
+      #t.timestamps
+    #end
 
-    create_table :spt_cus_returned_note_print_history, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
-      t.column :print_history_id, "int(10) UNSIGNED NOT NULL"
-      t.column :ticket_id, "int(10) UNSIGNED NOT NULL"
-      t.timestamps
-    end
+    # create_table :spt_cus_returned_note_print_history, id: false do |t|
+    #   t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+    #   t.column :print_history_id, "int(10) UNSIGNED NOT NULL"
+    #   t.column :ticket_id, "int(10) UNSIGNED NOT NULL"
+    #   t.timestamps
+    # end
 
     create_table :spt_customer, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
@@ -246,12 +246,12 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.timestamps
     end
 
-    create_table :spt_fsr_print_history, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
-      t.column :print_history_id, "int(10) UNSIGNED NOT NULL"
-      t.column :fsr_id, "int(10) UNSIGNED NOT NULL"
-      t.timestamps
-    end
+    # create_table :spt_fsr_print_history, id: false do |t|
+    #   t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+    #   t.column :print_history_id, "int(10) UNSIGNED NOT NULL"
+    #   t.column :fsr_id, "int(10) UNSIGNED NOT NULL"
+    #   t.timestamps
+    # end
 
     create_table :spt_invoice, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
@@ -274,12 +274,12 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.timestamps
     end
 
-    create_table :spt_invoice_print_history, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
-      t.column :print_history_id, "int(10) UNSIGNED NOT NULL"
-      t.column :invoice_id, "int(10) UNSIGNED NOT NULL"
-      t.timestamps
-    end
+    # create_table :spt_invoice_print_history, id: false do |t|
+    #   t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+    #   t.column :print_history_id, "int(10) UNSIGNED NOT NULL"
+    #   t.column :invoice_id, "int(10) UNSIGNED NOT NULL"
+    #   t.timestamps
+    # end
 
     create_table :spt_joint_ticket, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
@@ -579,7 +579,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.decimal :other_mileage, precision: 10, scale: 2
       t.decimal :other_repairs, precision: 10, scale: 2
       t.string :resolution
-      t.string :code, limit: 1
+      t.string :completion_level, limit: 1
       t.boolean :approved, null: false, default: false
       t.column :approved_action_id, "int(10) UNSIGNED"
       t.text :remarks
@@ -720,7 +720,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.string :event_no
       t.string :order_no
       t.boolean :event_closed, null: false, default: false
-      t.decimal :payment_expected_manufacture, null: false
+      t.decimal :payment_expected_manufacture, null: false, precision: 10, scale: 2
       t.boolean :collect_pending_manufacture, null: false, default: false
       t.boolean :collected_manufacture, null: false, default: false
       t.boolean :received_manufacture, null: false, default: false

@@ -309,12 +309,12 @@ class AddConstraintNameToTables < ActiveRecord::Migration
       execute "ALTER TABLE `spt_joint_ticket` ADD CONSTRAINT `#{attr[:constraint_name]}` FOREIGN KEY (`#{attr[:foreign_key]}`) REFERENCES `#{attr[:reference_table]}` (`id`)"
     end
 
-    [
-      {constraint_name: "fk_spt_invoice_print_history_spt_invoice1", foreign_key: "invoice_id", reference_table: "spt_invoice"},
-      {constraint_name: "fk_spt_invoice_print_history_spt_print_history1", foreign_key: "print_history_id", reference_table: "spt_print_history"}
-    ].each do |attr|
-      execute "ALTER TABLE `spt_invoice_print_history` ADD CONSTRAINT `#{attr[:constraint_name]}` FOREIGN KEY (`#{attr[:foreign_key]}`) REFERENCES `#{attr[:reference_table]}` (`id`)"
-    end
+    # [
+    #   {constraint_name: "fk_spt_invoice_print_history_spt_invoice1", foreign_key: "invoice_id", reference_table: "spt_invoice"},
+    #   {constraint_name: "fk_spt_invoice_print_history_spt_print_history1", foreign_key: "print_history_id", reference_table: "spt_print_history"}
+    # ].each do |attr|
+    #   execute "ALTER TABLE `spt_invoice_print_history` ADD CONSTRAINT `#{attr[:constraint_name]}` FOREIGN KEY (`#{attr[:foreign_key]}`) REFERENCES `#{attr[:reference_table]}` (`id`)"
+    # end
 
     [
       {constraint_name: "fk_spt_invoice_item_spt_invoice1", foreign_key: "invoice_id", reference_table: "spt_invoice"}
@@ -329,26 +329,26 @@ class AddConstraintNameToTables < ActiveRecord::Migration
       execute "ALTER TABLE `spt_invoice` ADD CONSTRAINT `#{attr[:constraint_name]}` FOREIGN KEY (`#{attr[:foreign_key]}`) REFERENCES `#{attr[:reference_table]}` (`id`)"
     end
 
-    [
-      {constraint_name: "fk_spt_fsr_print_history_spt_ticket_fsr1", foreign_key: "fsr_id", reference_table: "spt_ticket_fsr"},
-      {constraint_name: "fk_spt_invoice_print_history_spt_print_history101", foreign_key: "print_history_id", reference_table: "spt_print_history"}
-    ].each do |attr|
-      execute "ALTER TABLE `spt_fsr_print_history` ADD CONSTRAINT `#{attr[:constraint_name]}` FOREIGN KEY (`#{attr[:foreign_key]}`) REFERENCES `#{attr[:reference_table]}` (`id`)"
-    end
+    # [
+    #   {constraint_name: "fk_spt_fsr_print_history_spt_ticket_fsr1", foreign_key: "fsr_id", reference_table: "spt_ticket_fsr"},
+    #   {constraint_name: "fk_spt_invoice_print_history_spt_print_history101", foreign_key: "print_history_id", reference_table: "spt_print_history"}
+    # ].each do |attr|
+    #   execute "ALTER TABLE `spt_fsr_print_history` ADD CONSTRAINT `#{attr[:constraint_name]}` FOREIGN KEY (`#{attr[:foreign_key]}`) REFERENCES `#{attr[:reference_table]}` (`id`)"
+    # end
 
-    [
-      {constraint_name: "fk_spt_cus_recieved_note_print_history_spt_ticket1_idx", foreign_key: "ticket_id", reference_table: "spt_ticket"},
-      {constraint_name: "fk_spt_invoice_print_history_spt_print_history100", foreign_key: "print_history_id", reference_table: "spt_print_history"}
-    ].each do |attr|
-      execute "ALTER TABLE `spt_cus_returned_note_print_history` ADD CONSTRAINT `#{attr[:constraint_name]}` FOREIGN KEY (`#{attr[:foreign_key]}`) REFERENCES `#{attr[:reference_table]}` (`id`)"
-    end
+    # [
+    #   {constraint_name: "fk_spt_cus_recieved_note_print_history_spt_ticket1_idx", foreign_key: "ticket_id", reference_table: "spt_ticket"},
+    #   {constraint_name: "fk_spt_invoice_print_history_spt_print_history100", foreign_key: "print_history_id", reference_table: "spt_print_history"}
+    # ].each do |attr|
+    #   execute "ALTER TABLE `spt_cus_returned_note_print_history` ADD CONSTRAINT `#{attr[:constraint_name]}` FOREIGN KEY (`#{attr[:foreign_key]}`) REFERENCES `#{attr[:reference_table]}` (`id`)"
+    # end
 
-    [
-      {constraint_name: "fk_spt_cus_recieved_note_print_history_spt_ticket1", foreign_key: "ticket_id", reference_table: "spt_ticket"},
-      {constraint_name: "fk_spt_invoice_print_history_spt_print_history10", foreign_key: "print_history_id", reference_table: "spt_print_history"}
-    ].each do |attr|
-      execute "ALTER TABLE `spt_cus_recieved_note_print_history` ADD CONSTRAINT `#{attr[:constraint_name]}` FOREIGN KEY (`#{attr[:foreign_key]}`) REFERENCES `#{attr[:reference_table]}` (`id`)"
-    end
+    # [
+    #   {constraint_name: "fk_spt_cus_recieved_note_print_history_spt_ticket1", foreign_key: "ticket_id", reference_table: "spt_ticket"},
+    #   {constraint_name: "fk_spt_invoice_print_history_spt_print_history10", foreign_key: "print_history_id", reference_table: "spt_print_history"}
+    # ].each do |attr|
+    #   execute "ALTER TABLE `spt_cus_recieved_note_print_history` ADD CONSTRAINT `#{attr[:constraint_name]}` FOREIGN KEY (`#{attr[:foreign_key]}`) REFERENCES `#{attr[:reference_table]}` (`id`)"
+    # end
 
     [
       {constraint_name: "fk_spt_customer_contact_type_mst_spt_customer_contact_type1_idx", foreign_key: "contact_type_id", reference_table: "mst_spt_customer_contact_type"},
