@@ -271,6 +271,7 @@ class TicketsController < ApplicationController
   def create_product
     Ticket
     ContactNumber
+    Warranty
 
     respond_to do |format|
       if product_params[:pop_doc_url]
@@ -572,6 +573,7 @@ class TicketsController < ApplicationController
   def create_sla
     if params[:create_sla]
       @new_sla = SlaTime.new sla_time_params
+      @new_sla.created_by = current_user.id
       if @new_sla.save
         session[:sla_id] = @new_sla.id
         @new_sla = SlaTime.new
