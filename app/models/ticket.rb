@@ -42,6 +42,10 @@ class Ticket < ActiveRecord::Base
   has_many :user_ticket_actions#, foreign_key: :action_id
   accepts_nested_attributes_for :user_ticket_actions, allow_destroy: true
 
+  has_many :ticket_extra_remarks, foreign_key: :ticket_id
+  has_many :extra_remarks, through: :ticket_extra_remarks
+  accepts_nested_attributes_for :ticket_extra_remarks, allow_destroy: true
+
   validates_presence_of [:ticket_no, :priority, :status_id, :problem_description, :informed_method_id, :job_type_id, :ticket_type_id, :warranty_type_id, :base_currency_id, :problem_category_id]
 
   validates_numericality_of [:ticket_no, :priority]
@@ -155,4 +159,18 @@ class JointTicket < ActiveRecord::Base
   self.table_name = "spt_joint_ticket"
 
   belongs_to :ticket
+end
+
+class ExtraRemark < ActiveRecord::Base
+  self.table_name = "mst_spt_extra_remark"
+
+  has_many :ticket_extra_remarks, foreign_key: :extra_remark_id
+  has_many :tickets, through: :ticket_extra_remarks
+end
+
+class TicketExtraRemark < ActiveRecord::Base
+  self.table_name = "spt_ticket_extra_remark"
+
+  belongs_to :ticket, foreign_key: :ticket_id
+  belongs_to :extra_remark, foreign_key: :extra_remark_id
 end

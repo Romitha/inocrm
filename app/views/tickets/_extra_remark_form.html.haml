@@ -1,0 +1,6 @@
+= simple_form_for @new_extra_remark, remote: true, url: create_extra_remark_tickets_path(status_param: "create"), method: :post do |f|
+  .modal-body
+    = f.input :extra_remark
+  .modal-footer
+    %button.btn.btn-link{"data-dismiss" => "modal", :type => "button"} Cancel
+    = f.submit "Save", class: "btn btn-success btn-sm"

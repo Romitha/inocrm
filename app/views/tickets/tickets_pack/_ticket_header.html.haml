@@ -18,7 +18,7 @@
       %p Logged by: #{current_user.email}
   .row
     .col-md-2
-      %p SLA Time:
+      %p SLA Time: #{pluralize ticket.slatime, 'Hr'}
     .col-md-2
       %p SLA Started:
     .col-md-2

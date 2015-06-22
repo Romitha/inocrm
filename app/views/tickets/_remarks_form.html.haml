@@ -1,7 +1,7 @@
 #remarks
   / = render "q_and_as/q_and_answer", ticket: tickets
 
-  = simple_form_for ticket, url: finalize_ticket_save_tickets_path, method: :post, remote: true do |f|
+  = simple_nested_form_for ticket, url: finalize_ticket_save_tickets_path, method: :post, remote: true do |f|
     .row
       .col-md-2
         %strong Contact By
@@ -15,6 +15,20 @@
 
       .col-md-8
         = f.input :remarks
+        = f.simple_fields_for :ticket_extra_remarks do |er|
+          = er.input :created_by, as: :hidden, input_html: {value: current_user.id}
+          = er.association :extra_remark, label_method: :extra_remark, value_method: :id, include_blank: false, wrapper_html: {class: "col-md-6"}
+          = er.input :note, wrapper_html: {class: "col-md-5"}, input_html: {rows: 1}
+          .add_sign
+            = er.link_to_remove class: "remove_c_t_v_link" do
+              %span.glyphicon.glyphicon-remove-sign
+        .col-md-8.pull-right
+          = f.link_to_add :ticket_extra_remarks, class: "accessory_links small_scale_padding-right2" do
+            %span.glyphicon.glyphicon-plus-sign
+            Add extra remarks
+          = link_to create_extra_remark_tickets_path(status_param: "initiate"), remote: true, method: :post, title: "Create Accessory", class: "accessory_links" do
+            %span.glyphicon.glyphicon-plus-sign
+            Create extra remarks
     .row
       .col-md-12
         = check_box_tag "first_resolution", nil
@@ -33,3 +47,7 @@
               = link_to "print and close", '#'
             %li
               = link_to "Cancel", new_ticket_path
+
+#new_extra_remark.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "new_extra_remark", "aria-hidden" => true}
+  .modal-dialog
+    .modal-content

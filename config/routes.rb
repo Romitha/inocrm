@@ -95,6 +95,7 @@ Rails.application.routes.draw do
       post "create_contact_person_record"
       post "create_problem_category"
       post "create_accessory"
+      post "create_extra_remark"
 
       put "product_update"
       put "ticket_update"

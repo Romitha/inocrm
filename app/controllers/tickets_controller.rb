@@ -18,6 +18,7 @@ class TicketsController < ApplicationController
     ContactNumber
     QAndA
     @product = @ticket.products.first
+    @warranties = @product.warranties
     session[:product_id] = @product.id
     Rails.cache.delete([:histories, session[:product_id]])
     Rails.cache.delete([:join, @ticket.id])
@@ -635,6 +636,24 @@ class TicketsController < ApplicationController
     end
   end
 
+  def create_extra_remark
+    Product
+    Ticket
+    Warranty
+    QAndA
+    if params[:status_param] == "initiate"
+      @new_extra_remark = ExtraRemark.new
+    elsif params[:status_param] == "create"
+      @new_extra_remark = ExtraRemark.new extra_remark_params
+      @new_extra_remark.save
+      @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
+      render "remarks"
+    elsif params[:status_param] == "back"
+      @ticket = Ticket.new session[:ticket_initiated_attributes]
+      @product = Product.find(session[:product_id])
+    end
+  end
+
   def remarks
     QAndA
     @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
@@ -745,9 +764,11 @@ class TicketsController < ApplicationController
   def assign_ticket
     ContactNumber
     QAndA
+    TaskAction
     @ticket = Ticket.find_by_id params[:ticket_id]
     if @ticket
       @product = @ticket.products.first
+      @warranties = @product.warranties
       session[:product_id] = @product.id
       Rails.cache.delete([:histories, session[:product_id]])
       Rails.cache.delete([:join, @ticket.id])
@@ -782,7 +803,7 @@ class TicketsController < ApplicationController
     end
 
     def ticket_params
-      params.require(:ticket).permit(:ticket_no, :sla_id, :serial_no, :base_currency_id, :regional_support_job, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :ticket_action_id, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer], user_ticket_actions_attributes: [:id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, user_assign_ticket_actions_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy]])
+      params.require(:ticket).permit(:ticket_no, :sla_id, :serial_no, :base_currency_id, :regional_support_job, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :ticket_action_id, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer], user_ticket_actions_attributes: [:id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, user_assign_ticket_actions_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy]], ticket_extra_remarks_attributes: [:id, :note, :created_by, :extra_remark_id])
     end
 
     def product_brand_params
@@ -827,5 +848,9 @@ class TicketsController < ApplicationController
 
     def product_country_params
       params.require(:product_sold_country).permit(:code, :Country)
+    end
+
+    def extra_remark_params
+      params.require(:extra_remark).permit(:extra_remark)
     end
 end
