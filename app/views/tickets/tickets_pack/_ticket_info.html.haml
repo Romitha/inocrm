@@ -17,13 +17,17 @@
     = tab_content tabpointer: :q_and_a do
       = render "q_and_as/q_and_a", ge_q_and_as: ge_q_and_as, pr_q_and_as: pr_q_and_as
 .row
-  .col-md-6{style: "clear: both;position: relative;"}
-    %h5 Extra Remarks:
+  .col-md-10{style: "clear: both;position: relative;"}
+    %strong Extra Remarks:
     %p 
-    %h5 Remarks:
+    %strong Remarks:
     %p #{simple_format ticket.remarks}
-  .col-md-6.pull-right.text-right.small_scale_padding-top1
+  .col-md-1.pull-right.text-right.small_scale_padding-top1
     = link_to "#" do
       %button.btn.btn-default.btn-xs{:type => "button" , :style=>"color:green;"}
         %span.glyphicon.glyphicon-print{"aria-hidden" => "true"}
           %strong Print
+  .col-md-1.pull-right.text-right.small_scale_padding-top1
+    = link_to "/assets/Support Ticket Resolution Process Diagram.jpg", :target => "_blank" do
+      %button.btn.btn-info.btn-xs{:type => "button"}
+        %strong Workflow
