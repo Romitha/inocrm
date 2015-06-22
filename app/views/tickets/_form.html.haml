@@ -90,8 +90,8 @@
                   = f.input :regional_support_job, label: "Regional", wrapper_html: {class: "col-md-1"}, wrapper: :append
               .row
               .row
-              = link_to "Cancel", new_ticket_path
-              = f.submit "Next", data: {disable_with: "Please wait..."}, class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2"
+              = link_to "Cancel", new_ticket_path, data: {disable_with: "Please wait..."}
+              = f.submit "Next", class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2", data: {disable_with: "Please wait..."}
 
       = tab_content tabpointer: "history" do
         #history_pagination

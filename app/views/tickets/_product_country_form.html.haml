@@ -3,5 +3,5 @@
 = simple_form_for @new_product_country, url: create_product_country_tickets_path(status_param: "create"), remote: true do |f|
   = f.input :code
   = f.input :Country
-  = link_to "Back", create_product_country_tickets_path(status_param: "back"), method: :post, remote: true, title: "Country"
-  = f.submit "Save", class: "btn btn-success btn-sm"
+  = link_to "Back", create_product_country_tickets_path(status_param: "back"), method: :post, remote: true, title: "Country", data: {disable_with: "Please wait..."}
+  = f.submit "Save",class: "btn btn-success btn-sm", data: {disable_with: "Please wait..."}

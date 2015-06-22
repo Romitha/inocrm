@@ -3,5 +3,5 @@
     %legend Create new accessory
     .row
       = f.input :accessory, as: :string, wrapper_html: {class: "col-md-7"}
-    = link_to "Back", create_accessory_tickets_path(status_param: "back"), remote: true, method: :post
-    = f.submit "Save", class: "btn btn-success"
+    = link_to "Back", create_accessory_tickets_path(status_param: "back"), remote: true, method: :post, data: {disable_with: "Please wait..."}
+    = f.submit "Save", class: "btn btn-success", data: {disable_with: "Please wait..."}

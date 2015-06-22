@@ -24,5 +24,5 @@
     .col-md-12
       = f.link_to_add :q_and_as do
         %span.glyphicon.glyphicon-plus-sign
-  = link_to "Back", create_problem_category_tickets_path(status_param: "back"), remote: true, method: :post
-  = f.submit "Save", class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2"
+  = link_to "Back", create_problem_category_tickets_path(status_param: "back"), remote: true, method: :post, data: {disable_with: "Please wait..."}
+  = f.submit "Save", class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2", data: {disable_with: "Please wait..."}

@@ -22,9 +22,9 @@
         = f.input :resolution_summary, label: "Resolution"
     .row
       .col-md-12
-        = link_to "Back", new_warranty_path, remote: true
+        = link_to "Back", new_warranty_path, remote: true, data: {disable_with: "Please wait..."}
         .btn-group
-          = f.submit "Save",class: "btn btn-success "
+          = f.submit "Save", class: "btn btn-success ", data: {disable_with: "Please wait..."}
           %button.btn.btn-success.dropdown-toggle{"aria-expanded" => "false", "data-toggle" => "dropdown", :type => "button"}
             %span.caret
             %span.sr-only Toggle Dropdown

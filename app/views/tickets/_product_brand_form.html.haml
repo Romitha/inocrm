@@ -28,8 +28,8 @@
         #sla_content
     .row
       .col-md-12
-        = link_to "Back", new_product_tickets_path, remote: true
-        = f.submit "Save", class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2"
+        = link_to "Back", new_product_tickets_path, remote: true, data: {disable_with: "Please wait..."}
+        = f.submit "Save", class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2", data: {disable_with: "Please wait..."}
 
 #toggle_sla.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "toggle_sla", "aria-hidden" => true}
   .modal-dialog

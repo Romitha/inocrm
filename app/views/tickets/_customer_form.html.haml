@@ -98,11 +98,11 @@
             %span.glyphicon.glyphicon-plus-sign
           %br
         = link_to "Cancel", create_customer_tickets_path(customer_id: existing_customer.id), remote: true, method: :post, class: "btn btn-link", data: {disable_with: "Please wait..."} if existing_customer
-        = f.submit "Save", class: "btn btn-success btn-sm"
+        = f.submit "Save", class: "btn btn-success btn-sm", data: {disable_with: "Please wait..."}
 - else
   .row
     .col-md-12
-      = link_to "Back", find_by_serial_tickets_path(serial_search: product.serial_no), remote: true, method: :post
+      = link_to "Back", find_by_serial_tickets_path(serial_search: product.serial_no), remote: true, method: :post, data: {disable_with: "Please wait..."}
       - if existing_customer
         = link_to "Next", create_customer_tickets_path(customer_id: existing_customer.id), remote: true, method: :post, class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2", data: {disable_with: "Please wait..."}
 
