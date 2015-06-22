@@ -492,7 +492,11 @@ class TicketsController < ApplicationController
         report_person_uniq = report_person_name + report_person_nameandnum
         @contact_persons = Kaminari.paginate_array(report_person_uniq.uniq).page(params[:page]).per(3)
       end
-      @customers = Kaminari.paginate_array(Customer.where("name like ?", "%#{params[:search_contact_person]}%")).page(params[:page]).per(3)
+      search_contact_person = params[:search_contact_person].strip
+      contact_customer_byname = Customer.where("name like ?", "%#{search_contact_person}%")
+      contact_customer_bynum =  ContactTypeValue.where("value like ?", "%#{search_contact_person}%").map{|c| c.customer}
+      contact_customer_byboth =  contact_customer_byname + contact_customer_bynum
+      @customers = Kaminari.paginate_array(contact_customer_byboth.uniq).page(params[:page]).per(3)
     end
     render :select_contact_person
   end
