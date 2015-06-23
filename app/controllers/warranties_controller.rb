@@ -89,6 +89,6 @@ class WarrantiesController < ApplicationController
 
   private
     def warranty_params
-      params.require(:warranty).permit(:start_at, :end_at, :product_serial_id, :warranty_type_id, :period_part, :period_labour, :corporate_onsight, :care_pack_product_no, :care_pack_reg_no, :note)
+      params.require(:warranty).permit(:start_at, :end_at, :product_serial_id, :warranty_type_id, :period_part, :period_labour, :period_onsight, :care_pack_product_no, :care_pack_reg_no, :note)
     end
 end
