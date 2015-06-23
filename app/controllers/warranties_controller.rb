@@ -76,6 +76,7 @@ class WarrantiesController < ApplicationController
     @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
     @customer = Customer.find(session[:customer_id])
     @product = Product.find(session[:product_id])
+    @ge_questions = GeQAndA.where(action_id: 1)
     @warranties = @product.warranties
     ContactNumber
 
