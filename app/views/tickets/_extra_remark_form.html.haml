@@ -3,4 +3,4 @@
     = f.input :extra_remark
   .modal-footer
     %button.btn.btn-link{"data-dismiss" => "modal", :type => "button"} Cancel
-    = f.submit "Save", class: "btn btn-success btn-sm"
+    = f.submit "Save", class: "btn btn-success btn-sm", data: {disable_with: "Please wait..."}

@@ -17,13 +17,25 @@
     = tab_content tabpointer: :q_and_a do
       = render "q_and_as/q_and_a", ge_q_and_as: ge_q_and_as, pr_q_and_as: pr_q_and_as
 .row
-  .col-md-6{style: "clear: both;position: relative;"}
-    %h5 Extra Remarks:
-    - ticket.ticket_extra_remarks.each do |ticket_extra_remark|
-      %p= ticket_extra_remark.extra_remark.try(:extra_remark)
-      %p= ticket_extra_remark.note
-    %h5 Remarks:
-    %p= simple_format ticket.remarks
+  .col-md-6{style: "clear: both;position: relative; margin-top:20px"}
+    %strong Extra Remarks:
+    %br
+    - if ticket.ticket_extra_remarks.present?
+      - ticket.ticket_extra_remarks.each do |ticket_extra_remark|
+        %dl.col-xs-offset-1
+          %dt{:style=>" font-style: italic;"}
+            = ticket_extra_remark.extra_remark.try(:extra_remark)
+          %dd= ticket_extra_remark.note
+    -else
+      .col-xs-offset-1
+        %p{:style=>"font-style: italic;"} Doesn't exist extra remarks..
+    %strong Remarks:
+    .col-md-offset-1
+      -if ticket.remarks.present?
+        = simple_format ticket.remarks
+      -else
+        %p{:style=>"font-style: italic;"} Doesn't exist remarks..
+    %br
   .col-md-1.pull-right.text-right.small_scale_padding-top1
     = link_to "#" do
       %button.btn.btn-default.btn-xs{:type => "button" , :style=>"color:green;"}
