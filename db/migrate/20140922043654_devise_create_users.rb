@@ -19,6 +19,7 @@ class DeviseCreateUsers < ActiveRecord::Migration
       t.datetime :last_sign_in_at
       t.string     :current_sign_in_ip
       t.string     :last_sign_in_ip
+      t.string     :name_title
 
       # Confirmable
       # t.string   :confirmation_token
@@ -38,8 +39,12 @@ class DeviseCreateUsers < ActiveRecord::Migration
       t.integer attribute
     end
 
-    [:created, :updated, :deleted].each do |attribute|
-      t.references attribute, polymorphic: true
+    [:created_id, :updated_id, :deleted_id].each do |attribute|
+      t.column attribute, "INT(10) UNSIGNED"
+    end
+
+    [:created_type, :updated_type, :deleted_type].each do |attribute|
+      t.string attribute
     end
 
     [:deleted_at, :date_joined_at].each do |attribute|

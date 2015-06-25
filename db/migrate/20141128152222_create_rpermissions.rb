@@ -10,8 +10,10 @@ class CreateRpermissions < ActiveRecord::Migration
     end
 
     create_table :roles_rpermissions, id: false do |t|
-      t.belongs_to :role
-      t.belongs_to :rpermission
+      # t.belongs_to :role
+      # t.belongs_to :rpermission
+      t.column :role_id, "INT(10) UNSIGNED"
+      t.column :rpermission_id, "INT(10) UNSIGNED"
     end
   end
 end

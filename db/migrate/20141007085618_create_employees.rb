@@ -14,9 +14,9 @@ class CreateEmployees < ActiveRecord::Migration
       t.integer   :terminated#,      limit: 1
       t.datetime  :deleted_at
 
-      t.references :delete, polymorphic: true
-      # t.integer   :deleted_id#,      limit: 11
-      # t.string    :deleted_type
+      #t.references :delete, polymorphic: true
+      t.column :delete_id, "int(10) UNSIGNED"
+      t.string :delete_type
 
       t.timestamps
     end

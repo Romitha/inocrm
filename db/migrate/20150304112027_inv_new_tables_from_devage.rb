@@ -104,7 +104,7 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.decimal :disposed_quantity, null: false, precision: 13, scale: 3, default: 0.000
       t.column :disposal_method_id, "int(10) UNSIGNED"
       t.column :created_by, "int(10) UNSIGNED"
-      t.timestamps
+      t.datetime :created_at, null: false
     end
 
     create_table :inv_damage_request, id: false do |t|
@@ -121,7 +121,7 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.datetime :approved1_at
       t.datetime :approved2_at
       t.string :status, limit:2, null: false, default: "st"
-      t.timestamps
+      t.datetime :created_at, null: false
     end
     
     create_table :inv_damage_request_source, id: false do |t|
@@ -135,12 +135,12 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.decimal :approved2_quantity, precision: 13, scale: 3
       t.decimal :unit_cost, null: false, precision: 13, scale: 2
       t.column :currency_id, "int(10) UNSIGNED NOT NULL"
-      t.decimal :approved1_repair_quantity, null: false, precision: 13, scale: 3
-      t.decimal :approved1_spare_quantity, null: false, precision: 13, scale: 3
-      t.decimal :approved1_disposal_quantity, null: false, precision: 13, scale: 3
-      t.decimal :approved2_repair_quantity, null: false, precision: 13, scale: 3
-      t.decimal :approved2_spare_quantity, null: false, precision: 13, scale: 3
-      t.decimal :approved2_disposal_quantity, null: false, precision: 13, scale: 3
+      t.decimal :approved1_repair_quantity, precision: 13, scale: 3
+      t.decimal :approved1_spare_quantity, precision: 13, scale: 3
+      t.decimal :approved1_disposal_quantity, precision: 13, scale: 3
+      t.decimal :approved2_repair_quantity, precision: 13, scale: 3
+      t.decimal :approved2_spare_quantity, precision: 13, scale: 3
+      t.decimal :approved2_disposal_quantity, precision: 13, scale: 3
       t.column :approved1_disposal_method_id, "int(10) UNSIGNED"
       t.column :approved2_disposal_method_id, "int(10) UNSIGNED"
       t.timestamps
@@ -157,7 +157,7 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.column :created_by, "int(10) UNSIGNED NOT NULL"
       t.datetime :inspected_at
       t.column :inspected_by, "int(10) UNSIGNED"
-      t.timestamps
+      t.datetime :created_at, null: false
     end
 
     create_table :inv_disposal_request, id: false do |t|
@@ -173,7 +173,7 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.string :status, limit:2, null: false, default: "st"
       t.column :requested_disposal_method_id, "int(10) UNSIGNED NOT NULL"
       t.column :approved_disposal_method_id, "int(10) UNSIGNED"
-      t.timestamps
+      t.datetime :created_at, null: false
     end
 
     create_table :inv_disposal_request_source, id: false do |t|
@@ -206,7 +206,7 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.column :srn_id, "int(10) UNSIGNED NOT NULL"
       t.column :created_by, "int(10) UNSIGNED NOT NULL"
       t.text :remarks
-      t.timestamps
+      t.datetime :created_at, null: false
     end
 
     create_table :inv_gin_item, id: false do |t|
@@ -217,10 +217,10 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.column :srn_item_id, "int(10) UNSIGNED NOT NULL"
       t.column :product_condition_id, "int(10) UNSIGNED NOT NULL"
       t.text :remarks
-      t.decimal :average_cost, null: false, precision: 13, scale: 2
-      t.decimal :standard_cost, null: false, precision: 13, scale: 2
-      t.column :currency_id, "int(10) UNSIGNED NOT NULL"
-      t.decimal :returned_quantity, null: false, precision: 13, scale: 2
+      t.decimal :average_cost, precision: 13, scale: 2
+      t.decimal :standard_cost, precision: 13, scale: 2
+      t.column :currency_id, "int(10) UNSIGNED"
+      t.decimal :returned_quantity, null: false, precision: 13, scale: 3
       t.boolean :returnable, null: false, default: false
       t.boolean :return_completed, null: false, default: false
       t.boolean :spare_part, null: false, default: false
@@ -234,9 +234,9 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.column :grn_batch_id, "int(10) UNSIGNED"
       t.column :grn_serial_item_id, "int(10) UNSIGNED"
       t.column :serial_part_id, "int(10) UNSIGNED"
-      t.decimal :issued_quantity, null: false, precision: 13, scale: 2
+      t.decimal :issued_quantity, null: false, precision: 13, scale: 3
       t.decimal :unit_cost, precision: 13, scale: 2
-      t.decimal :returned_quantity, null: false, precision: 13, scale: 2
+      t.decimal :returned_quantity, null: false, precision: 13, scale: 3
       t.timestamps
     end
 
@@ -248,7 +248,7 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.text :remarks
       t.column :srn_id, "int(10) UNSIGNED"
       t.column :po_id, "int(10) UNSIGNED"
-      t.timestamps
+      t.datetime :created_at, null: false
     end
 
     create_table :inv_grn_batch, id: false do |t|
@@ -278,8 +278,8 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.decimal :average_cost, precision: 13, scale: 2
       t.decimal :standard_cost, precision: 13, scale: 2
       t.column :po_item_id, "int(10) UNSIGNED"
-      t.decimal :po_unit_quantity, null: false, precision: 13, scale: 3
-      t.decimal :po_unit_cost, null: false, precision: 13, scale: 2
+      t.decimal :po_unit_quantity, precision: 13, scale: 3
+      t.decimal :po_unit_cost, precision: 13, scale: 2
       t.timestamps
     end
 
@@ -316,7 +316,7 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.column :created_by, "int(10) UNSIGNED NOT NULL"
       t.datetime :updatd_at
       t.column :updated_by, "int(10) UNSIGNED"
-      t.timestamps
+      t.datetime :created_at, null: false
     end
 
     create_table :inv_inventory_batch, id: false do |t|
@@ -325,14 +325,15 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.column :product_id, "int(10) UNSIGNED NOT NULL"
       t.string :lot_no
       t.string :batch_no
+      t.text :remarks
       t.datetime :manufatured_date
       t.datetime :expiry_date
       t.column :created_by, "int(10) UNSIGNED NOT NULL"
-      t.timestamps
+      t.datetime :created_at, null: false
     end
 
     create_table :inv_inventory_serial_item, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL, PRIMARY KEY (id)"
       t.column :inventory_id, "int(10) UNSIGNED NOT NULL"
       t.column :product_id, "int(10) UNSIGNED NOT NULL"
       t.column :batch_id, "int(10) UNSIGNED NOT NULL"
@@ -353,7 +354,7 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.column :created_by, "int(10) UNSIGNED NOT NULL"
       t.datetime :updated_at
       t.column :updated_by, "int(10) UNSIGNED"
-      t.timestamps
+      t.datetime :created_at, null: false
     end
 
 
@@ -378,7 +379,7 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.column :created_by, "int(10) UNSIGNED NOT NULL"
       t.datetime :updated_at
       t.column :updated_by, "int(10) UNSIGNED"
-      t.timestamps
+      t.datetime :created_at, null: false
     end
 
     create_table :inv_prn, id: false do |t|
@@ -389,7 +390,7 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.column :created_by, "int(10) UNSIGNED NOT NULL"
       t.text :remarks
       t.boolean :closed, null: false, default: false
-      t.timestamps
+      t.datetime :created_at, null: false
     end
 
     create_table :inv_prn_grn_item, id: false do |t|
@@ -419,7 +420,7 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.string :sbn_no
       t.column :created_by, "int(10) UNSIGNED NOT NULL"
       t.boolean :closed, null: false, default: false
-      t.timestamps
+      t.datetime :created_at, null: false
     end
 
     create_table :inv_sbn_item, id: false do |t|
@@ -456,8 +457,8 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.decimal :cost, null: false, precision: 13, scale: 2
       t.column :currency_id, "int(10) UNSIGNED NOT NULL"
       t.text :note
-      t.column :created_by, "int(10) UNSIGNED"
-      t.timestamps
+      t.column :created_by, "int(10) UNSIGNED NOT NULL"
+      t.datetime :created_at, null: false
     end
 
     create_table :inv_serial_part_additional_cost, id: false do |t|
@@ -467,7 +468,7 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.column :currency_id, "int(10) UNSIGNED NOT NULL"
       t.text :note
       t.column :created_by, "int(10) UNSIGNED NOT NULL"
-      t.timestamps
+      t.datetime :created_at, null: false
     end
 
     create_table :inv_serial_part_warranty, id: false do |t|
@@ -494,7 +495,7 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.column :created_by, "int(10) UNSIGNED NOT NULL"
       t.column :requested_module_id, "int(10) UNSIGNED NOT NULL"
       t.boolean :closed, null: false, default: false
-      t.timestamps
+      t.datetime :created_at, null: false
     end
 
     create_table :inv_srn_item, id: false do |t|
@@ -507,8 +508,8 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.boolean :return_completed
       t.boolean :issue_terminated, null: false, default: false
       t.datetime :issue_terminated_at
-      t.column :issue_terminated_reason_id, "int(10) UNSIGNED NOT NULL"
-      t.column :issue_terminated_by, "int(10) UNSIGNED NOT NULL"
+      t.column :issue_terminated_reason_id, "int(10) UNSIGNED"
+      t.column :issue_terminated_by, "int(10) UNSIGNED"
       t.boolean :spare_part, null: false, default: false
       t.boolean :closed, null: false, default: false
       t.timestamps
@@ -532,7 +533,7 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.column :created_by, "int(10) UNSIGNED NOT NULL"
       t.boolean :closed, null: false, default: false
       t.column :requested_module_id, "int(10) UNSIGNED NOT NULL"
-      t.timestamps
+      t.datetime :created_at, null: false
     end
 
     create_table :inv_srr_item, id: false do |t|
@@ -542,7 +543,7 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.decimal :quantity, null: false, precision: 13, scale: 3
       t.column :product_condition_id, "int(10) UNSIGNED NOT NULL"
       t.column :return_reason_id, "int(10) UNSIGNED NOT NULL"
-      t.column :returnable_srn_item_id, "int(10) UNSIGNED NOT NULL"
+      t.column :returnable_srn_item_id, "int(10) UNSIGNED"
       t.boolean :spare_part, null: false, default: false
       t.text :remarks
       t.boolean :closed, null: false, default: false
@@ -577,7 +578,7 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.column :inspected4_by, "int(10) UNSIGNED"
       t.datetime :reconciled_at
       t.integer :variance_count
-      t.timestamps
+      t.datetime :created_at, null: false
     end
 
     create_table :inv_stock_taking_grn_item, id: false do |t|
@@ -624,7 +625,7 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.column :warranty_type_id, "int(10) UNSIGNED NOT NULL"
       t.text :remarks
       t.column :created_by, "int(10) UNSIGNED NOT NULL"
-      t.timestamps
+      t.datetime :created_at, null: false
     end
   end
 end

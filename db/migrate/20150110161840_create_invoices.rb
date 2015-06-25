@@ -10,8 +10,9 @@ class CreateInvoices < ActiveRecord::Migration
       t.date :due_date
       t.string :invoice_type
 
-      t.references :customer, index: true
-
+      #t.references :customer, index: true
+      t.column :customer_id, "int(10) UNSIGNED"
+      #t.string :customer_type
       t.timestamps
     end
   end

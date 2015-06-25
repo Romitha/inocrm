@@ -2,14 +2,14 @@ class WorkflowNewTablesFromDevage < ActiveRecord::Migration
   def change
     create_table :workflow_alert_roles, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
-      t.column :alert_id, "int(10) UNSIGNED"
+      t.column :alert_id, "int(10) UNSIGNED NOT NULL"
       t.string :bpm_role_code, null: false
       t.timestamps
     end
 
     create_table :workflow_alert_users, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
-      t.integer :alert_id, unsigned: true, null: false
+      t.column :alert_id, "int(10) UNSIGNED NOT NULL"
       t.column :user_id, "int(10) UNSIGNED NOT NULL"
       t.timestamps
     end
@@ -62,7 +62,7 @@ class WorkflowNewTablesFromDevage < ActiveRecord::Migration
       # t.decimal :internal_part_profit_margin
       t.column :sup_sla_id, "int(10) UNSIGNED NOT NULL"
       t.integer :inv_category_level, default: 3, null: false
-      t.integer :sup_sla_time, null: false
+      #t.integer :sup_sla_time, null: false
       t.decimal :sup_external_job_profit_margin, null: false, precision: 5, scale: 2, default: 0.000
       t.decimal :sup_internal_part_profit_margin, null: false, precision: 5, scale: 2, default: 0.000
       t.integer :sup_last_ticket_no, null: false, default: 0
@@ -71,7 +71,7 @@ class WorkflowNewTablesFromDevage < ActiveRecord::Migration
 
     create_table :workflow_header_titles, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
-      t.integer :process_id, unsigned: true, null: false, default: 0
+      t.column :process_id, "INT UNSIGNED NOT NULL DEFAULT 0"
       t.string :h1, default: 0
       t.string :h2, default: 0
       t.string :h3, default: 0

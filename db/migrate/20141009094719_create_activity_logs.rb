@@ -9,7 +9,9 @@ class CreateActivityLogs < ActiveRecord::Migration
       t.string :ip_address
       t.string :event
       t.string :reference_url
-      t.references :reference
+      #t.references :reference
+      t.column :reference_id, "int(10) UNSIGNED"
+      #t.string :reference_type
       t.timestamps
     end
   end

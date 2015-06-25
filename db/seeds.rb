@@ -15,7 +15,7 @@ rpermissions = [
   ["Create new user for Organization", "User", "new_create"]
 ]
 
-organization = Organization.find_or_create_by name: "VS Information Systems", short_name: "VS Information Sys", code: "123456", web_site: "http://www.vsis.com", vat_number: "34358-90", refers: "VSIS", description: "VSIS is product owner of this application"
+organization = Organization.find_or_create_by name: "VS Information Systems", short_name: "VS Information Sys", code: "123456", web_site: "http://www.vsis.com", vat_number: "34358-90", refers: "VSIS", description: "VSIS is product owner of this application", type_id: 1
 user = User.find_by_email("admin@inovacrm.com")
 unless(user)
   user = User.create(email: "admin@inovacrm.com", password: "123456789", organization_id: organization.id)
@@ -63,17 +63,17 @@ unless(user)
   TicketType.create!(mst_spt_ticket_type.map{ |t| {code: t[0], name: t[1]} })
 
    mst_spt_ticket_status = [
-    ["OPN", "Open"],
-    ["ASN", "Assigned"],
-    ["RSL", "Being Resolved"],
-    ["QCT", "Quality Control"],
-    ["PMT", "Final Payment Calculation"],
-    ["CFB", "Customer Feedback and Issue"],
-    ["ROP", "Re-Open"],
-    ["TBC", "To Be Closed"],
-    ["CLS", "Closed"]
+    ["OPN", "Open", "00FF99"],
+    ["ASN", "Assigned", "CAA3D3"],
+    ["RSL", "Being Resolved", "81DAF5"],
+    ["QCT", "Quality Control", "F0FC7E"],
+    ["PMT", "Final Payment Calculation", "F9A763"],
+    ["CFB", "Customer Feedback and Issue", "8E87CE"],
+    ["ROP", "Re-Open", "FAC4FA"],
+    ["TBC", "To Be Closed", "9ED77C"],
+    ["CLS", "Closed", "FC737A"]
   ]
-  TicketStatus.create!(mst_spt_ticket_status.map{ |t| {code: t[0], name: t[1]} })
+  TicketStatus.create!(mst_spt_ticket_status.map{ |t| {code: t[0], name: t[1], colour: t[2]} })
 
   mst_spt_ticket_informed_method = [
     ["PH", "by phone"],

@@ -10,14 +10,15 @@ class CreateOrganizations < ActiveRecord::Migration
       t.string :logo
       t.string :vat_number
       t.string :web_site
-      t.integer :created_by
-      t.integer :updated_by
+      t.column :created_by, "int(10) UNSIGNED"
+      t.column :updated_by, "int(10) UNSIGNED"
       t.datetime :deleted_at
-      t.integer :deleted_by
+      t.column :deleted_by, "int(10) UNSIGNED"
       t.string :refers
       t.string :code
       t.string :category
-      t.integer :parent_organization_id
+      t.column :parent_organization_id, "int(10) UNSIGNED"
+      t.column :type_id, "int(10) UNSIGNED NOT NULL"
       t.timestamps
     end
   end

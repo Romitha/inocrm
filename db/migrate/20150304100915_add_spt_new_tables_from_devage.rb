@@ -1,19 +1,19 @@
 class AddSptNewTablesFromDevage < ActiveRecord::Migration
   def change
     create_table :spt_act_action_taken, id: false do |t|
-      t.column :ticket_action_id, "INT UNSIGNED NOT NULL"    #check
+      t.column :ticket_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (ticket_action_id)"   #check
       t.text :action, null: false
       t.timestamps
     end
 
     create_table :spt_act_assign_regional_support_center, id: false do |t|
-      t.column :ticket_action_id, "INT UNSIGNED NOT NULL"    #check
+      t.column :ticket_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (ticket_action_id)"    #check
       t.column :regional_support_center_id, "int(10) UNSIGNED NOT NULL"
       t.timestamps
     end
 
     create_table :spt_act_assign_ticket, id: false do |t|
-      t.column :ticket_action_id, "INT UNSIGNED NOT NULL"    #check
+      t.column :ticket_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (ticket_action_id)"     #check
       t.column :sbu_id, "int(10) UNSIGNED"
       t.column :assign_to, "int(10) UNSIGNED"
       t.boolean :recorrection, null: false, default: false
@@ -22,7 +22,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_act_customer_feedback, id: false do |t|
-      t.column :ticket_action_id, "INT UNSIGNED NOT NULL"    #check
+      t.column :ticket_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (ticket_action_id)"   #check
       t.boolean :re_opened, null: false, default: false
       t.boolean :unit_return_customer, null: false, default: false
       t.column :payment_received_id, "int(10) UNSIGNED"
@@ -33,35 +33,35 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_act_deliver_unit, id: false do |t|
-      t.column :ticket_action_id, "INT UNSIGNED NOT NULL"    #check
+      t.column :ticket_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (ticket_action_id)"    #check
       t.column :ticket_deliver_unit_id, "int(10) UNSIGNED NOT NULL"
       t.column :deliver_to_id, "int(10) UNSIGNED"
       t.text :deliver_note
-      t.text :recive_note
+      t.text :receive_note
       t.timestamps
     end
 
     create_table :spt_act_edit_serial_request, id: false do |t|
-      t.column :ticket_action_id, "INT UNSIGNED NOT NULL"    #check
+      t.column :ticket_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (ticket_action_id)"     #check
       t.text :reason, null: false
       t.timestamps
     end
 
     create_table :spt_act_finish_job, id: false do |t|
-      t.column :ticket_action_id, "INT UNSIGNED NOT NULL"    #check
+      t.column :ticket_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (ticket_action_id)"     #check
       t.text :resolution, null: false
       t.timestamps
     end
 
     create_table :spt_act_fsr, id: false do |t|
-      t.column :ticket_action_id, "INT UNSIGNED NOT NULL"    #check
+      t.column :ticket_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (ticket_action_id)"     #check
       t.boolean :print_fsr, null: false, default: false
       t.column :fsr_id, "int(10) UNSIGNED NOT NULL"
       t.timestamps
     end
 
     create_table :spt_act_hold, id: false do |t|
-      t.column :ticket_action_id, "INT UNSIGNED NOT NULL"    #check
+      t.column :ticket_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (ticket_action_id)"     #check
       t.column :reason_id, "int(10) UNSIGNED NOT NULL"
       t.boolean :sla_pause, null: false, default: false
       t.column :un_hold_action_id, "int(10) UNSIGNED DEFAULT 0"
@@ -69,21 +69,21 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_act_hp_case_action, id: false do |t|
-      t.column :ticket_action_id, "INT UNSIGNED NOT NULL"    #check
+      t.column :ticket_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (ticket_action_id)"     #check
       t.string :case_id, null: false
       t.text :case_note
       t.timestamps
     end
 
     create_table :spt_act_inform_customer, id: false do |t|
-      t.column :ticket_action_id, "INT UNSIGNED NOT NULL"    #check
+      t.column :ticket_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (ticket_action_id)"   #check
       t.column :contact_type_id, "int(10) UNSIGNED NOT NULL"
       t.text :note
       t.timestamps
     end
 
     create_table :spt_act_job_estimate, id: false do |t|
-      t.column :ticket_action_id, "INT UNSIGNED NOT NULL"    #check
+      t.column :ticket_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (ticket_action_id)"    #check
       t.column :supplier_id, "int(10) UNSIGNED"
       t.text :note
       t.column :ticket_estimation_id, "int(10) UNSIGNED"
@@ -91,33 +91,33 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_act_payment_received, id: false do |t|
-      t.column :ticket_action_id, "INT UNSIGNED NOT NULL"    #check
+      t.column :ticket_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (ticket_action_id)"    #check
       t.column :ticket_payment_received_id, "int(10) UNSIGNED NOT NULL"
       t.boolean :invoice_completed, null: false, default: false
       t.timestamps
     end
 
     create_table :spt_act_qc, id: false do |t|
-      t.column :ticket_action_id, "INT UNSIGNED NOT NULL"    #check
+      t.column :ticket_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (ticket_action_id)"    #check
       t.boolean :approved, null: false, default: false
       t.text :reject_reason
       t.timestamps
     end
 
     create_table :spt_act_re_assign_request, id: false do |t|  #syntex error _ not -
-      t.column :ticket_action_id, "INT UNSIGNED NOT NULL"    #check
+      t.column :ticket_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (ticket_action_id)"    #check
       t.column :reason_id, "int(10) UNSIGNED NOT NULL"
       t.timestamps
     end
 
     create_table :spt_act_request_on_loan_spare_part, id: false do |t|  #syntex error _ not -
-      t.column :ticket_action_id, "INT UNSIGNED NOT NULL"    #check
+      t.column :ticket_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (ticket_action_id)"    #check
       t.column :ticket_on_loan_spare_part_id, "int(10) UNSIGNED NOT NULL"
       t.timestamps
     end
 
     create_table :spt_act_request_spare_part, id: false do |t|
-      t.column :ticket_action_id, "INT UNSIGNED NOT NULL"    #check
+      t.column :ticket_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (ticket_action_id)"    #check
       t.column :ticket_spare_part_id, "int(10) UNSIGNED NOT NULL"
       t.column :terminate_reason_id, "int(10) UNSIGNED"
       t.column :reject_return_part_reason_id, "int(10) UNSIGNED"
@@ -125,7 +125,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_act_terminate_issue_invoice, id: false do |t|
-      t.column :ticket_action_id, "INT UNSIGNED NOT NULL"    #check
+      t.column :ticket_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (ticket_action_id)"    #check
       t.boolean :invoice_completed, null: false, default: false
       t.boolean :unit_returned, null: false, default: false
       t.boolean :payment_completed, null: false, default: false
@@ -134,7 +134,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_act_terminate_job, id: false do |t|
-      t.column :ticket_action_id, "INT UNSIGNED NOT NULL"    #check
+      t.column :ticket_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (ticket_action_id)"    #check
       t.column :reason_id, "int(10) UNSIGNED NOT NULL"
       t.boolean :foc_requested, null: false, default: true
       t.boolean :foc_approved, null: false, default: false
@@ -143,7 +143,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_act_terminate_job_payment, id: false do |t|
-      t.column :ticket_action_id, "INT(10) UNSIGNED NOT NULL"    #check
+      t.column :ticket_action_id, "INT(10) UNSIGNED NOT NULL, PRIMARY KEY (ticket_action_id)"    #check
       t.column :ticket_id, "int(10) UNSIGNED NOT NULL"
       t.column :payment_item_id, "int(10) UNSIGNED NOT NULL"
       t.decimal :amount, null: false, precision: 10, scale: 2
@@ -155,16 +155,16 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_act_ticket_close_approve, id: false do |t|
-      t.column :ticket_action_id, "INT UNSIGNED NOT NULL"    #check
-      t.boolean :approved, null: false
+      t.column :ticket_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (ticket_action_id)"    #check
+      t.boolean :approved, null: false, default: 0
       t.column :reject_reason_id, "int(10) UNSIGNED"
       t.column :job_belongs_to, "int(10) UNSIGNED"
       t.timestamps
     end
 
     create_table :spt_act_warranty_extend, id: false do |t|
-      t.column :ticket_action_id, "INT UNSIGNED NOT NULL"    #check
-      t.boolean :extended, null: false
+      t.column :ticket_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (ticket_action_id)"    #check
+      t.boolean :extended, null: false, default: 0
       t.column :reject_reason_id, "int(10) UNSIGNED"
       t.text :reject_note
       t.timestamps
@@ -197,7 +197,8 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.boolean :active, null: false, default: false
       t.datetime :created_at
       t.column :created_by, "int(10) UNSIGNED NOT NULL"
-      t.timestamps
+      t.datetime :created_at, null: false
+      t.datetime :updated_at
     end
 
     create_table :spt_contract_product, id: false do |t|
@@ -262,7 +263,8 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.text :note
       t.column :currency_id, "int(10) UNSIGNED NOT NULL"
       t.integer :print_count, null: false, default: 0
-      t.timestamps
+      t.datetime :created_at, null: false
+      t.datetime :updated_at
     end
 
     create_table :spt_invoice_item, id: false do |t|
@@ -361,15 +363,16 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
 
     create_table :spt_return_parts_bundle, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
-      t.column :product_brand_id, "int(10) UNSIGNED"
+      t.column :product_brand_id, "int(10) UNSIGNED NOT NULL"
       t.string :bundle_no
       t.datetime :created_at, null: false
       t.column :created_by, "int(10) UNSIGNED NOT NULL"
       t.boolean :delivered, null: false, default: false
       t.datetime :delivered_at
-      t.column :delivered_by, "int(10) UNSIGNED NOT NULL"
+      t.column :delivered_by, "int(10) UNSIGNED"
       t.text :note                                         
-      t.timestamps
+      t.datetime :created_at, null: false
+      t.datetime :updated_at
     end
 
     create_table :spt_so_po, id: false do |t|
@@ -384,7 +387,8 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.decimal :amount, null: false, precision: 10, scale: 2
       t.boolean :invoiced, null: false, default: false
       t.column :currency_id, "int(10) UNSIGNED NOT NULL"
-      t.timestamps
+      t.datetime :created_at, null: false
+      t.datetime :updated_at
     end
 
     create_table :spt_so_po_item, id: false do |t|
@@ -458,8 +462,9 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.integer :open_time_duration_sla
       t.datetime :sla_finished_at
       t.decimal :slatime, null: false, precision: 8, scale: 2
-      t.integer :last_hold_action_id
-      t.timestamps
+      t.column :last_hold_action_id, "int(10) UNSIGNED"
+      t.datetime :created_at, null: false
+      t.datetime :updated_at
     end
 
     create_table :spt_ticket_accessory, id: false do |t|
@@ -496,7 +501,8 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.datetime :received_at
       t.column :received_by, "int(10) UNSIGNED"
       t.text :note                                         
-      t.timestamps
+      t.datetime :created_at, null: false
+      t.datetime :updated_at
     end
 
     create_table :spt_ticket_estimation, id: false do |t|
@@ -578,13 +584,14 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.float :engineer_time_on_site                 
       t.decimal :other_mileage, precision: 10, scale: 2
       t.decimal :other_repairs, precision: 10, scale: 2
-      t.string :resolution
+      t.text :resolution
       t.string :completion_level, limit: 1
       t.boolean :approved, null: false, default: false
       t.column :approved_action_id, "int(10) UNSIGNED"
       t.text :remarks
       t.integer :print_count, null: false, default: 0                                  
-      t.timestamps
+      t.datetime :created_at, null: false
+      t.datetime :updated_at
     end
 
     create_table :spt_ticket_general_question_answer, id: false do |t|
@@ -700,7 +707,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.string :received_spare_part_no
       t.string :received_part_serial_no
       t.string :received_part_ct_no
-      t.boolean :received_eng
+      t.boolean :received_eng, null: false, default: 0
       t.datetime :repare_start
       t.datetime :repare_end
       t.string :return_part_serial_no
@@ -778,7 +785,8 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.column :extra_remark_id, "int(10) UNSIGNED NOT NULL"
       t.text :note
       t.column :created_by, "int(10) UNSIGNED NOT NULL"
-      t.timestamps
+      t.datetime :created_at, null: false
+      t.datetime :updated_at
     end
 
     create_table :spt_ticket_workflow_process, id: false do |t|

@@ -5,8 +5,9 @@ class CreateAddresses < ActiveRecord::Migration
       t.string :category
       t.text :address
       t.boolean :primary
-      t.references :addressable, polymorphic: true, index: true
-
+      #t.references :addressable, polymorphic: true, index: true, unsigned: true
+      t.column :addressable_id, "int(10) UNSIGNED"
+      t.string :addressable_type
       t.timestamps
     end
   end

@@ -44,17 +44,17 @@ class AddConstraintNameToTables < ActiveRecord::Migration
     end
 
     [
-      {constraint_name: "fk_spt_ticket_spare_part_status_mst_spt_spare_part_status1_idx", foreign_key: "status_id", reference_table: "mst_spt_spare_part_status_action"},
-      {constraint_name: "fk_spt_ticket_spare_part_status_spt_ticket_spare_part1_idx", foreign_key: "spare_part_id", reference_table: "spt_ticket_spare_part"},
-      {constraint_name: "fk_spt_ticket_spare_part_status_users1_idx", foreign_key: "done_by", reference_table: "users"}
+      {constraint_name: "fk_spt_ticket_spare_part_status_mst_spt_spare_part_status1", foreign_key: "status_id", reference_table: "mst_spt_spare_part_status_action"},
+      {constraint_name: "fk_spt_ticket_spare_part_status_spt_ticket_spare_part1", foreign_key: "spare_part_id", reference_table: "spt_ticket_spare_part"},
+      {constraint_name: "fk_spt_ticket_spare_part_status_users1", foreign_key: "done_by", reference_table: "users"}
     ].each do |attr|
       execute "ALTER TABLE `spt_ticket_spare_part_status_action` ADD CONSTRAINT `#{attr[:constraint_name]}` FOREIGN KEY (`#{attr[:foreign_key]}`) REFERENCES `#{attr[:reference_table]}` (`id`)"
     end
 
     [
-      {constraint_name: "fk_spt_ticket_spare_part_manufacture_mst_currency1_idx", foreign_key: "manufacture_currency_id", reference_table: "mst_currency"},
-      {constraint_name: "fk_spt_ticket_spare_part_manufacture_spt_ticket_spare_part1_idx", foreign_key: "spare_part_id", reference_table: "spt_ticket_spare_part"},
-      {constraint_name: "fk_spt_ticket_spare_part_manufacture_users1_idx", foreign_key: "add_bundle_by", reference_table: "users"},
+      {constraint_name: "fk_spt_ticket_spare_part_manufacture_mst_currency1", foreign_key: "manufacture_currency_id", reference_table: "mst_currency"},
+      {constraint_name: "fk_spt_ticket_spare_part_manufacture_spt_ticket_spare_part1", foreign_key: "spare_part_id", reference_table: "spt_ticket_spare_part"},
+      {constraint_name: "fk_spt_ticket_spare_part_manufacture_users1", foreign_key: "add_bundle_by", reference_table: "users"},
       {constraint_name: "fk_spt_ticket_spare_part_spt_return_parts_bundle10", foreign_key: "return_parts_bundle_id", reference_table: "spt_return_parts_bundle"}
     ].each do |attr|
       execute "ALTER TABLE `spt_ticket_spare_part_manufacture` ADD CONSTRAINT `#{attr[:constraint_name]}` FOREIGN KEY (`#{attr[:foreign_key]}`) REFERENCES `#{attr[:reference_table]}` (`id`)"
@@ -234,7 +234,8 @@ class AddConstraintNameToTables < ActiveRecord::Migration
       {constraint_name: "fk_spt_ticket_spt_reason1", foreign_key: "hold_reason_id", reference_table: "mst_spt_reason"},
       {constraint_name: "fk_spt_ticket_users1", foreign_key: "created_by", reference_table:"users"},
       {constraint_name: "fk_spt_ticket_users2", foreign_key: "owner_engineer_id", reference_table: "users"},
-      {constraint_name: "fk_spt_ticket_mst_spt_sla1", foreign_key: "sla_id", reference_table: "mst_spt_sla"}
+      {constraint_name: "fk_spt_ticket_mst_spt_sla1", foreign_key: "sla_id", reference_table: "mst_spt_sla"},
+      {constraint_name: "FK_spt_ticket_spt_ticket_action", foreign_key: "last_hold_action_id", reference_table:"spt_ticket_action"}
     ].each do |attr|
       execute "ALTER TABLE `spt_ticket` ADD CONSTRAINT `#{attr[:constraint_name]}` FOREIGN KEY (`#{attr[:foreign_key]}`) REFERENCES `#{attr[:reference_table]}` (`id`)"
     end
@@ -242,7 +243,7 @@ class AddConstraintNameToTables < ActiveRecord::Migration
     [
       {constraint_name: "fk_spt_so_po_item_spt_so_po1", foreign_key: "spt_so_po_id", reference_table: "spt_so_po"},
       {constraint_name: "fk_spt_so_po_item_spt_ticket_spare_part1", foreign_key: "ticket_spare_part_id", reference_table: "spt_ticket_spare_part"},
-      {constraint_name: "fk_spt_so_po_item_spt_ticket_spare_part_manufacture1_idx", foreign_key: "ticket_spare_part_item_id", reference_table: "spt_ticket_spare_part_manufacture"}
+      {constraint_name: "fk_spt_so_po_item_spt_ticket_spare_part_manufacture1", foreign_key: "ticket_spare_part_item_id", reference_table: "spt_ticket_spare_part_manufacture"}
     ].each do |attr|
       execute "ALTER TABLE `spt_so_po_item` ADD CONSTRAINT `#{attr[:constraint_name]}` FOREIGN KEY (`#{attr[:foreign_key]}`) REFERENCES `#{attr[:reference_table]}` (`id`)"
     end
@@ -368,6 +369,7 @@ class AddConstraintNameToTables < ActiveRecord::Migration
     [
       {constraint_name: "fk_spt_contract_product_mst_organzation1", foreign_key: "installed_location_id", reference_table: "organizations"},
       {constraint_name: "fk_spt_contract_product_spt_contract_info1", foreign_key: "contract_id", reference_table: "spt_contract"},
+      {constraint_name: "fk_spt_contract_product_mst_spt_sla1", foreign_key: "sla_id", reference_table: "mst_spt_sla"},
       {constraint_name: "fk_spt_product_contract_spt_product_serial10", foreign_key: "product_serial_id", reference_table: "spt_product_serial"}
     ].each do |attr|
       execute "ALTER TABLE `spt_contract_product` ADD CONSTRAINT `#{attr[:constraint_name]}` FOREIGN KEY (`#{attr[:foreign_key]}`) REFERENCES `#{attr[:reference_table]}` (`id`)"
@@ -376,7 +378,7 @@ class AddConstraintNameToTables < ActiveRecord::Migration
     [
       {constraint_name: "fk_spt_contract_info_mst_organzation1", foreign_key: "customer_id", reference_table: "organizations"},
       {constraint_name: "fk_spt_contract_users1", foreign_key: "created_by", reference_table: "users"},
-      {constraint_name: "fk_spt_contract_product_mst_spt_sla1", foreign_key: "sla_id", reference_table: "mst_spt_sla"}
+      {constraint_name: "fk_spt_contract_mst_spt_sla1", foreign_key: "sla_id", reference_table: "mst_spt_sla"}
     ].each do |attr|
       execute "ALTER TABLE `spt_contract` ADD CONSTRAINT `#{attr[:constraint_name]}` FOREIGN KEY (`#{attr[:foreign_key]}`) REFERENCES `#{attr[:reference_table]}` (`id`)"
     end
@@ -744,7 +746,7 @@ class AddConstraintNameToTables < ActiveRecord::Migration
       {constraint_name: "fk_inventory_serial_item_mst_product1", foreign_key: "product_id", reference_table: "mst_inv_product"},
       {constraint_name: "fk_inventory_serial_item_mst_product_condition1", foreign_key: "product_condition_id", reference_table: "mst_inv_product_condition"},
       {constraint_name: "fk_inv_inventory_serial_item_inv_inventory1", foreign_key: "inventory_id", reference_table: "inv_inventory"},
-      {constraint_name: "fk_inv_inventory_serial_item_mst_inv_serial_item_status1_idx", foreign_key: "inv_status_id", reference_table: "mst_inv_serial_item_status"},
+      {constraint_name: "fk_inv_inventory_serial_item_mst_inv_serial_item_status1", foreign_key: "inv_status_id", reference_table: "mst_inv_serial_item_status"},
       {constraint_name: "fk_inv_inventory_serial_item_users1", foreign_key: "created_by", reference_table: "users"},
       {constraint_name: "fk_inv_inventory_serial_item_users2", foreign_key: "updated_by", reference_table: "users"}
     ].each do |attr|
