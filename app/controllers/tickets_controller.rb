@@ -198,7 +198,7 @@ class TicketsController < ApplicationController
 
         # @ticket.ticket_accessories.uniq!{|ac| ac.id}
         @customer = @product.tickets.last.try(:customer)
-        Rails.cache.write([:histories, session[:product_id]], Kaminari.paginate_array(@product.tickets))
+        Rails.cache.write([:histories, session[:product_id]], Kaminari.paginate_array(@product.tickets.reject{|t| t==@ticket}))
         @histories = Rails.cache.read([:histories, session[:product_id]]).page(params[:page]).per(3)
       else
         @product_brands = ProductBrand.all
