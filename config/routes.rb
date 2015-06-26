@@ -120,7 +120,17 @@ Rails.application.routes.draw do
 
   resources :todos
 
-  resources :admins
+  resources :admins do
+    concerns :attachable
+    collection do
+      get "total-tickets", :to => :total_tickets
+      get "today-open-tickets", :to => :today_open_tickets
+      get "today-closed-tickets", :to => :today_closed_tickets
+      get "open-tickets", :to => :open_tickets
+      get "closed-tickets", :to => :closed_tickets
+      get "total-products", :to => :total_products
+    end
+  end
      
   # get 'auth/index'
 

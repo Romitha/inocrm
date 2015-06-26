@@ -1,0 +1,16 @@
+#wrapper
+  .navbar-default.sidebar{:role => "navigation"}
+    .sidebar-nav.navbar-collapse
+      %ul#side-menu.nav
+        %li
+          %a{:href => admins_path}
+            %i.fa.fa-dashboard.fa-fw
+            Dashboard
+        %li
+          %a{:href => total_tickets_admins_path}
+            %i.fa.fa-files-o.fa-fw
+            Tickets
+        %li
+          %a{:href => total_products_admins_path}
+            %i.fa.fa-files-o.fa-fw
+            Products
