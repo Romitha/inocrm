@@ -222,7 +222,7 @@ window.Tickets =
 
   numbersonly: ->
     $('.press').keydown (e) ->
-      if String.fromCharCode(e.keyCode).match(/[^0-9\b]/g)
+      if String.fromCharCode(e.keyCode).match(/[^\.0-9\b\.]+$/g)
         return false
       return
 
