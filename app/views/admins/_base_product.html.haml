@@ -1,0 +1,66 @@
+- products = @products
+-t_o = 0
+.row
+  .col-lg-12
+    %h1.page-header.margin-top0 Dashboard
+.row
+  .col-lg-3.col-md-6
+    .panel.panel-primary
+      .panel-heading
+        .row
+          .col-xs-3
+            %i.fa.fa-tasks.fa-5x
+          .col-xs-9.text-right
+            .huge
+            %div Today Open Tickets
+      %a{:href => today_open_tickets_admins_path}
+        .panel-footer
+          %span.pull-left View Details
+          %span.pull-right
+            %i.fa.fa-arrow-circle-right
+          .clearfix
+  .col-lg-3.col-md-6
+    .panel.panel-green
+      .panel-heading
+        .row
+          .col-xs-3
+            %i.fa.fa-tasks.fa-5x
+          .col-xs-9.text-right
+            .huge
+            %div Today Closed Tickets
+      %a{:href => today_closed_tickets_admins_path}
+        .panel-footer
+          %span.pull-left View Details
+          %span.pull-right
+            %i.fa.fa-arrow-circle-right
+          .clearfix
+  .col-lg-3.col-md-6
+    .panel.panel-yellow
+      .panel-heading
+        .row
+          .col-xs-3
+            %i.fa.fa-tasks.fa-5x
+          .col-xs-9.text-right
+            .huge
+            %div Open Tickets
+      %a{:href => open_tickets_admins_path}
+        .panel-footer
+          %span.pull-left View Details
+          %span.pull-right
+            %i.fa.fa-arrow-circle-right
+          .clearfix
+  .col-lg-3.col-md-6
+    .panel.panel-red
+      .panel-heading
+        .row
+          .col-xs-3
+            %i.fa.fa-tasks.fa-5x
+          .col-xs-9.text-right
+            .huge
+            %div Closed Tickets
+      %a{:href => closed_tickets_admins_path}
+        .panel-footer
+          %span.pull-left View Details
+          %span.pull-right
+            %i.fa.fa-arrow-circle-right
+          .clearfix

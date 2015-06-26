@@ -1,0 +1,29 @@
+- tickets = @tickets
+- t_o = t_c = o = c = 0
+=render 'menu'
+#page-wrapper
+  =render 'base_ticket'
+  .row
+    .col-lg-12
+      .panel.panel-default{:name => "view_tickets"}
+        .panel-heading
+          Total Tickets
+        .panel-body
+          .list-group
+            .list-group-item
+              %span
+                Ticket ID
+              %span{:style => "margin-left:300px;"}
+                Problem
+              %span.pull-right
+                Priority
+            - tickets.each do |ticket|
+              -if ticket.status_id == 1
+                .list-group-item
+                  %span
+                    #{ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])}
+                  %span{:style => "margin-left:300px;"}
+                    #{ticket.problem_description}
+                  %span.pull-right
+                    #{ticket.priority}
+
