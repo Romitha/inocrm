@@ -270,5 +270,91 @@ class InsertInitialValues < ActiveRecord::Migration
     ].each do |value|
       execute("insert into workflow_mappings (process_name, task_name, url, screen, first_header_title, second_header_title_name, input_variables, output_variables) values ('#{value[0]}', '#{value[1]}', '#{value[2]}', '#{value[3]}', '#{value[4]}', '#{value[5]}', '#{value[6]}', '#{value[7]}')")
     end
+
+    [
+      ["SPT", "Support"],
+      ["SLS", "Sales"],
+      ["INV", "Inventory"],
+      ["PCH", "Purchase"]
+    ].each do |value|
+      execute("insert into mst_module (code, name) values ('#{value[0]}', '#{value[1]}')")
+    end
+
+    [
+      [1, "supp_hd", "Help Desk"],
+      [1, "supp_mgr", "Support Manager"],
+      [1, "supp_engr", "Support Engineer"],
+      [1, "supp_coord", "Coordinator"],
+      [1, "supp_cus_rep", "Customer Support Representative"],
+      [1, "supp_acct", "Accountant"],
+      [1, "supp_charg_engr", "Chargeable Engineer"],
+      [1, "supp_sk", "Store keeper"],
+      [1, "supp_del_coord", "Delivery coordinator"],
+      [1, "supp_qc", "Quality Controler"]
+    ].each do |value|
+      execute("insert into mst_bpm_role (module_id, code, name) values ('#{value[0]}', '#{value[1]}', '#{value[2]}')")
+    end
+
+    [
+      [1, "Brand"],
+      [2, "Product"],
+      [3, "Category"]
+    ].each do |value|
+      execute("insert into mst_inv_category_caption (level, caption) values ('#{value[0]}', '#{value[1]}')")
+    end
+
+    [
+      ["Original"],
+      ["Good"],
+      ["Not Good"]
+    ].each do |value|
+      execute("insert into `mst_inv_product_condition` (`condition`) values ('#{value[0]}')")
+    end
+   
+    [
+      ["AV", "Available"],
+      ["NA", "Not Available"]
+    ].each do |value|
+      execute("insert into mst_inv_serial_item_status (code, name) values ('#{value[0]}', '#{value[1]}')")
+    end
+
+    [
+      ["MW", "Manufacture Warranty"],
+      ["CW", "Corparate Warranty"]
+    ].each do |value|
+      execute("insert into mst_inv_warranty_type (code, name) values ('#{value[0]}', '#{value[1]}')")
+    end
+
+    [
+      ["Marks on Cover / Display"],
+      ["Toner / Ink - Leak / Refill"],
+      ["Burn Marks"],
+      ["Physical Damage / Covers / Display"],
+      ["Tempered"]
+    ].each do |value|
+      execute("insert into mst_spt_extra_remark (extra_remark) values ('#{value[0]}')")
+    end
+
+    [
+      ["RQT", "Requested", "1", "1", "1", "1"],
+      ["ORD", "Ordered from Manufacturer", "2", "0", "3", "0"],
+      ["CLT", "Collected from Manufacturer", "3", "0", "3", "0"],
+      ["RCS", "Received from Manufacturer", "4", "0", "3", "0"],
+      ["ISS", "Issued", "5", "4", "6", "4"],
+      ["RCE", "Received by Engineer", "6", "5", "7", "5"],
+      ["RTN", "Part Return by Engineer", "7", "6", "0", "6"],
+      ["RPR", "Returned Part Reject", "8", "7", "0", "7"],
+      ["RPA", "Returned Part Accepted", "8", "7", "0", "7"],
+      ["BND", "Part Bundled", "10", "0", "0", "0"],
+      ["CLS", "Close", "11", "8", "8", "8"],
+      ["ECM", "Estimation Completed", "0", "0", "2", "0"],
+      ["CEA", "Cus. Estimation Approved", "0", "0", "3", "0"],
+      ["STR", "Request from Store", "0", "2", "4", "2"],
+      ["APS", "Approved Store Request", "0", "3", "5", "3"],
+      ["RJS", "Reject Store Request", "0", "3", "5", "3"],
+      ["RBN", "Ready to Bundle", "9", "0", "0", "0"]
+    ].each do |value|
+      execute("insert into mst_spt_spare_part_status_action (code, name, manufacture_type_index, store_nc_type_index, store_ch_type_index, on_loan_type_index) values ('#{value[0]}', '#{value[1]}', '#{value[2]}', '#{value[3]}', '#{value[4]}', '#{value[5]}')")
+    end
   end
 end
