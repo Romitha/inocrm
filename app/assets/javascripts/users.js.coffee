@@ -34,5 +34,29 @@ window.Users =
           progress = parseInt(data.loaded/data.total*100, 10)
           data.context.find(".progress-bar").css("width", progress+"%").html(progress+"%")
           if progress==100
-            $("#ajax-loader").addClass("hide");
+            $("#ajax-loader").addClass("hide")
             # $(".profile_image_wrapper").empty();
+
+  request_printer_application: (url, data, action, ticket_id, fsr_id, invoice_id)->
+    _this = this
+    parent_data = data
+    $.post "/tickets/get_template", (data)->
+      data = parent_data+data["print_template"]
+      console.log data
+      $.ajax
+        async: false
+        method: 'post'
+        url: url
+        data: data
+        timeout: 4000
+        success: (result)->
+          response = result
+          console.log response
+      _this.update_database_after_printer_application(action, ticket_id, fsr_id, invoice_id)
+      $("#ticket_print").text("Re-Print")
+
+  update_database_after_printer_application: (action, ticket_id, fsr_id, invoice_id)->
+    $.ajax
+      method: "post"
+      url: "/tickets/after_printer"
+      data: {ticket_action: action, ticket_id: ticket_id, fsr_id: fsr_id, invoice_id: invoice_id}

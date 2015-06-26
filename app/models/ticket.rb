@@ -46,6 +46,14 @@ class Ticket < ActiveRecord::Base
   has_many :extra_remarks, through: :ticket_extra_remarks
   accepts_nested_attributes_for :ticket_extra_remarks, allow_destroy: true
 
+  has_many :ticket_workflow_processes
+
+  belongs_to :ticket_status_resolve, foreign_key: :status_resolve_id
+  belongs_to :repair_type, foreign_key: :repair_type_id
+  belongs_to :manufacture_currency, class_name: "Currency", foreign_key: :manufacture_currency_id
+
+  has_many :ticket_spare_parts
+
   validates_presence_of [:ticket_no, :priority, :status_id, :problem_description, :informed_method_id, :job_type_id, :ticket_type_id, :warranty_type_id, :base_currency_id, :problem_category_id]
 
   validates_numericality_of [:ticket_no, :priority]
@@ -173,4 +181,31 @@ class TicketExtraRemark < ActiveRecord::Base
 
   belongs_to :ticket, foreign_key: :ticket_id
   belongs_to :extra_remark, foreign_key: :extra_remark_id
+end
+
+class TicketWorkflowProcess < ActiveRecord::Base
+  self.table_name = "spt_ticket_workflow_process"
+
+  belongs_to :ticket
+end
+
+class TicketStatusResolve < ActiveRecord::Base
+  self.table_name = "mst_spt_ticket_status_resolve"
+
+  has_many :tickets, foreign_key: :status_resolve_id
+
+end
+
+class WorkflowHeaderTitle < ActiveRecord::Base
+  self.table_name = "workflow_header_titles"
+
+  # has_many :tickets, foreign_key: :status_resolve_id
+
+end
+
+class PrintTemplate < ActiveRecord::Base
+  self.table_name = "mst_spt_templates"
+
+  # has_many :tickets, foreign_key: :status_resolve_id
+
 end

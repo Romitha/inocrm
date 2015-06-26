@@ -1,6 +1,7 @@
 class TicketsController < ApplicationController
   before_action :set_ticket, only: [:show, :edit, :update, :destroy]
   before_action :set_organization_for_ticket, only: [:new, :edit, :create_customer]
+  # layout :workflow_diagram, only: [:workflow_diagram]
 
   respond_to :html, :json
 
@@ -49,7 +50,7 @@ class TicketsController < ApplicationController
     session[:warranty_id] = nil
     session[:ticket_initiated_attributes] = {}
     @ticket_no = (Ticket.any? ? (Ticket.order("created_at ASC").map{|t| t.ticket_no.to_i}.max + 1) : 1)
-    @status = TicketStatus.first
+    @status = TicketStatus.find_by_code("OPN")
     @ticket_logged_at = DateTime.now
 
     session[:ticket_initiated_attributes] = {ticket_no: @ticket_no, status_id: @status.id}
@@ -186,7 +187,7 @@ class TicketsController < ApplicationController
       session[:serial_no] = serial_no
       @product = (Product.find_by_serial_no(serial_no) || Product.new(serial_no: serial_no, corporate_product: false))
       Warranty
-      @base_currency = Currency.find_by_base_currency(true)
+      #@base_currency = Currency.find_by_base_currency(true)
       if @product.persisted?
         @product_brand = @product.product_brand
         @product_category = @product.product_category
@@ -203,7 +204,7 @@ class TicketsController < ApplicationController
         @product_brands = ProductBrand.all
         @product_categories = ProductCategory.all
 
-        @new_product_brand = ProductBrand.new currency_id: @base_currency.try(:id)
+        @new_product_brand = ProductBrand.new# currency_id: @base_currency.try(:id)
         @new_product_category = ProductCategory.new
       end
       respond_to do |format|
@@ -665,39 +666,79 @@ class TicketsController < ApplicationController
     TaskAction
     @product = Product.find session[:product_id]
     @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
-    @ticket.status_id = TicketStatus.find_by_code("CLS").id if params[:first_resolution]
-    @ticket.attributes = ticket_params.merge({created_by: current_user.id, slatime: @ticket.sla_time.try(:sla_time), status_resolve_id: 1, repair_type_id: 1, manufacture_currency_id: 1, ticket_print_count: 0, ticket_complete_print_count: 0})
+    if params[:first_resolution]
+      @status_close_id = TicketStatus.find_by_code("CLS").id
+      @ticket.status_id = @status_close_id
+      @ticket.attributes = ticket_params.merge({ticket_closed_at: DateTime.now, open_time_duration: 0, open_time_duration_sla: 0, sla_finished_at: DateTime.now})
+      @status_resolve_id = TicketStatusResolve.find_by_code("FST").try(:id)
+    else
+      @status_resolve_id = TicketStatusResolve.find_by_code("NAP").try(:id)
+    end
+    @repair_type_id = RepairType.find_by_code("IN").try :id
+    @manufacture_currency_id = @product.product_brand.currency.id
+    @ticket.attributes = ticket_params.merge({created_by: current_user.id, slatime: @ticket.sla_time.try(:sla_time), status_resolve_id: @status_resolve_id, repair_type_id: @repair_type_id, manufacture_currency_id: @manufacture_currency_id, ticket_print_count: 0, ticket_complete_print_count: 0})
     q_and_answers = @ticket.q_and_answers.to_a
     ge_q_and_answers = @ticket.ge_q_and_answers.to_a
     @ticket.q_and_answers.clear
     @ticket.ge_q_and_answers.clear
 
-    if @ticket.save
-      @ticket.products << @product
-      ticket_user_action = @ticket.user_ticket_actions.create(action_at: DateTime.now, action_by: current_user.id, re_open_index: 1, action_id: 1)
-      q_and_answers.each{|q| q.ticket_action_id= ticket_user_action.id; @ticket.q_and_answers << q}
-      ge_q_and_answers.each{|q| q.ticket_action_id= ticket_user_action.id; @ticket.ge_q_and_answers << q}
+    continue = true
 
-      Rails.cache.delete([:new_ticket, request.remote_ip.to_s, session[:time_now]])
-      Rails.cache.delete([:ticket_params, request.remote_ip.to_s, session[:time_now]])
-      Rails.cache.delete([:created_warranty, request.remote_ip.to_s, session[:time_now]])
-      Rails.cache.delete([:existing_customer, request.remote_ip.to_s, session[:time_now]])
-      session[:ticket_id] = nil
-      session[:product_category_id] = nil
-      session[:product_brand_id] = nil
-      session[:product_id] = nil
-      session[:customer_id] = nil
-      session[:serial_no] = nil
-      session[:warranty_id] = nil
-      session[:ticket_initiated_attributes] = {}
-      session[:time_now]= nil
-
-      render js: "alert('Thank you. ticket is successfully registered.'); window.location.href='#{ticket_path(@ticket)}';"
-    else
-      render :remarks
-    # end
+    if @ticket.status_id != @status_close_id.try(:id)
+      bpm_response = view_context.send_request_process_data process_history: true, process_instance_id: 1, variable_id: "ticket_id"
+      if bpm_response[:status].upcase == "ERROR"
+        continue = false
+        render js: "alert('BPM error. Please continue after rectify BPM.');"
+      end
     end
-    # render plain: @ticket_params.inspect
+
+    if continue
+      if @ticket.save
+        @ticket.products << @product
+        @product.update_attribute :last_ticket_id, @ticket.id
+
+        ticket_user_action = @ticket.user_ticket_actions.create(action_at: DateTime.now, action_by: current_user.id, re_open_index: 0, action_id: TaskAction.find_by_action_no(1).id) # Add ticket action
+
+        q_and_answers.each{|q| q.ticket_action_id= ticket_user_action.id; @ticket.q_and_answers << q}
+        ge_q_and_answers.each{|q| q.ticket_action_id= ticket_user_action.id; @ticket.ge_q_and_answers << q}
+
+        Rails.cache.delete([:new_ticket, request.remote_ip.to_s, session[:time_now]])
+        Rails.cache.delete([:ticket_params, request.remote_ip.to_s, session[:time_now]])
+        Rails.cache.delete([:created_warranty, request.remote_ip.to_s, session[:time_now]])
+        Rails.cache.delete([:existing_customer, request.remote_ip.to_s, session[:time_now]])
+        session[:ticket_id] = nil
+        session[:product_category_id] = nil
+        session[:product_brand_id] = nil
+        session[:product_id] = nil
+        session[:customer_id] = nil
+        session[:serial_no] = nil
+        session[:warranty_id] = nil
+        session[:ticket_initiated_attributes] = {}
+        session[:time_now]= nil
+
+        unless @ticket.status_id == @status_close_id.try(:id)
+          # bpm output variables
+          ticket_id = @ticket.id
+          di_pop_approval_pending = ["RCD", "RPN", "APN", "LPN", "APV"].include?(@ticket.products.first.product_pop_status.try(:code)) ? "Y" : "N"
+          priority = @ticket.priority
+
+          bpm_response = view_context.send_request_process_data start_process: true, process_name: "sppt", query: {ticket_id: ticket_id, d1_pop_approval_pending: di_pop_approval_pending, priority: priority}
+
+          if bpm_response[:status].upcase == "SUCCESS"
+            @ticket.ticket_workflow_processes.create(process_id: bpm_response[:process_id], process_name: bpm_response[:process_name])
+            ticket_bpm_headers bpm_response[:process_id], @ticket.id, ""
+          else
+            @bpm_process_error = true
+          end
+        end
+        flash_message = @bpm_process_error ? "Ticket successfully saved. But BPM error. Please continue after rectifying BPM" : "Thank you. ticket is successfully registered."
+        render js: "alert('#{flash_message}'); window.location.href='#{ticket_path(@ticket)}';"
+
+      else
+        render :remarks
+      end
+     # render plain: @ticket_params.inspect
+    end
   end
 
   def product_update
@@ -793,6 +834,39 @@ class TicketsController < ApplicationController
     
   end
 
+  def after_printer
+
+    case params[:ticket_action]
+    when "print_ticket"
+      @ticket = Ticket.find(params[:ticket_id])
+      @ticket.update_attribute(:ticket_print_count, (@ticket.ticket_print_count+1))
+      @ticket.user_ticket_actions.create(action_id: TaskAction.find_by_action_no(68).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+    when "ticket_complete"
+      @ticket = Ticket.find(params[:ticket_id])
+      # @ticket.user_ticket_actions.create(action_id: TAskAction.find_by_action_no(68).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+    when "print_fsr"
+      "as"
+      #fsr_id references spt_ticket_fsr
+    when "print_invoice"
+      "as"
+      # invoice_id, references spt_invoice
+    end
+    render nothing: true
+  end
+
+  def get_template
+    print_template = PrintTemplate.first.try(:ticket)
+    render json: {print_template: print_template}
+  end
+
+  def workflow_diagram
+    @ticket_id = params[:ticket_id]
+    @ticket = Ticket.find @ticket_id
+    @workflow_processes = @ticket.ticket_workflow_processes.to_a
+    
+    render html: "true".html_safe, layout: "workflow_diagram"
+  end
+
   private
     def set_ticket
       @ticket = Ticket.find(params[:id])
@@ -852,5 +926,70 @@ class TicketsController < ApplicationController
 
     def extra_remark_params
       params.require(:extra_remark).permit(:extra_remark)
+    end
+
+    def ticket_bpm_headers(process_id, ticket_id, spare_part_id)
+      # h1 = [Ticket No] Customer Name(Max 20charactors)  [OP:IF terminated :Terminated][OP:If Re-Open-Count>0: RE-OPEN][Product Brand:HP][Job Type:Softwear][Ticket Type:In-House][OP: If Regional: Regional][OP: If Repaire Type = External : External Repaire]  
+      # Eg1: [T0012345] Inova IT Systems Pvt [HP][Hardwear][In-House]
+
+      # h2 = [Ticket No] Customer Name(Max 20charactors)  [Stock Part Description (Mac 15 Charactors)][OP:If Re-Open-Count>0: RE-OPEN][Product Brand:HP][Job Type:Softwear][Ticket Type:Inhouse][OP: If Regional: Regional][OP: If Repaire Type = External : External Repaire]
+      # Eg1:  [T0012345] Inova IT Systems Pvt [Hard Disc][HP][Hardwear][In-House]
+
+      # h3 = [Ticket No] Customer Name(Max 20charactors)  [Manufacture Part No-Part Description (Mac 15 Charactors)][OP:If Re-Open-Count>0: RE-OPEN][Product Brand:HP][Job Type:Softwear][Ticket Type:Inhouse][OP: If Regional: Regional][OP: If Repaire Type = External : External Repaire]
+      # Eg1:  [T0012345] Inova IT Systems Pvt [15896-Battery][HP][Hardwear][In-House]
+      @ticket = Ticket.find_by_id(ticket_id)
+
+      if process_id.present? and @ticket.present?
+        ticket_no = @ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
+        ticket_no  = "[#{ticket_no}]"
+
+        customer_name = "#{@ticket.customer.name}".truncate(23)
+
+        terminated = @ticket.terminated ? "[Terminated]" : ""
+
+        re_open = @ticket.re_open_count > 0 ? "[Re-Open]" : ""
+
+        product_brand = "[#{@ticket.products.first.product_brand.name.truncate(13)}]"
+
+        job_type = "[#{@ticket.job_type.name}]"
+
+        ticket_type = "[#{@ticket.ticket_type.name}]"
+
+        regional = @ticket.regional_support_job ? "[Regional]" : ""
+
+        repair_type = @ticket.repair_type.code == "EX" ? "[#{@ticket.repair_type.name}]" : ""
+
+        @h1 = "#{ticket_no}#{customer_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}"
+
+        if spare_part_id.present?
+          spare_part = @ticket.ticket_spare_parts.find_by_id(spare_part_id)
+          store_part = spare_part.ticket_spare_part_store
+          # store_part_name = (store_part && store_part.inventory_product) ? store_part.inventory_product.try(:description)) 
+
+          if store_part and store_part.inventory_product
+            store_part_name = "[#{store_part.inventory_product.description}]".truncate(18)
+
+            @h2 = "#{ticket_no}#{customer_name}#{store_part_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}"
+          else
+            @h2 = ""
+          end
+
+          if spare_part
+            spare_part_name = "[#{spare_part.spare_part_no}-#{spare_part.spare_part_description}]".truncate(18)
+            @h3 = "#{ticket_no}#{customer_name}#{spare_part_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}"
+          else
+            @h3 = ""
+          end
+
+        end
+
+        found_process_id = WorkflowHeaderTitle.where(process_id: process_id)
+        if found_process_id.present?
+          found_process_id.first.update(h1: @h1, h2: @h2, h3: @h3)
+        else
+          WorkflowHeaderTitle.create(process_id: process_id, h1: @h1, h2: @h2, h3: @h3)
+        end
+      end
+
     end
 end

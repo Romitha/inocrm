@@ -71,3 +71,15 @@ class Accessory < ActiveRecord::Base
   has_many :ticket_accessories, foreign_key: :accessory_id
   has_many :tickets, through: :ticket_accessories
 end
+
+class RepairType < ActiveRecord::Base
+  self.table_name = "mst_spt_ticket_repair_type"
+
+  has_many :tickets, foreign_key: :repair_type_id
+end
+
+class InventoryProduct < ActiveRecord::Base
+  self.table_name = "mst_inv_product"
+
+  has_many :ticket_spare_part_stores, foreign_key: :inv_product_id
+end

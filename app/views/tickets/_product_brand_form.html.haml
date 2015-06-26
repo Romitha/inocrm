@@ -11,10 +11,12 @@
   %legend Create new product brand
   = simple_nested_form_for product_brand, url: create_product_brand_tickets_path, remote: true do |f|
     .row
-      = f.input :name, wrapper_html: {class:"col-md-4"}
-      = f.input :parts_return_days, wrapper_html: {class:"col-md-4 press"}, input_html: {min: "0"}
-      = f.input :warenty_date_formate, wrapper_html: {class:"col-md-4"}, label: "Warranty date format"
-      = f.input :currency_id, as: :hidden, input_html: {value: Currency.find_by_base_currency(true).id}
+      = f.input :name, wrapper_html: {class:"col-md-3"}
+      = f.input :parts_return_days, wrapper_html: {class:"col-md-3 press"}, input_html: {min: "0"}
+      = f.input :warenty_date_formate, wrapper_html: {class:"col-md-3"}, label: "Warranty date format"
+      .col-md-2
+        = label_tag "Currency" 
+        = f.select :currency_id, options_from_collection_for_select(Currency.all, :id, :currency), {}
       = f.input :sla_id, as: :hidden
     .row
       .col-md-12

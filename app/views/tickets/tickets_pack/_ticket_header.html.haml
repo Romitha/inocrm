@@ -1,50 +1,46 @@
 .view_ticket_header
-  .row.margin-none.bg-info
+  .row.margin-none{style: "background-color: ##{ticket.ticket_status.colour};"}
     .fixed
-      .col-md-5.small_scale_padding-top8
-        Ticket No :#{ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])}
       .col-md-2.small_scale_padding-top8
-        %strong Sereial No:#{product.serial_no }
+        Ticket No :#{ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])}
+      .col-md-2.small_scale_padding-top4
+        - if ticket.status_hold
+          .label.label-danger HOLD
+        - if ticket.re_open_count.to_i > 0
+          .btn.btn-xs.btn-primary
+            Re-open
+            %span.badge= ticket.re_open_count.to_i
+        - if ticket.terminated
+          .label.label-danger TERMINATED
+      .col-md-2.small_scale_padding-top8
+        %strong Sereial No: #{product.serial_no }
       .col-md-2.pull-right.text-right.small_scale_padding-top8
-        %p= ticket.ticket_status.name
+        %p Status: #{ticket.ticket_status.name}
+      .col-md-3.pull-right.text-right.small_scale_padding-top8
+        %strong Resolve Status: #{ticket.ticket_status_resolve.try(:name)}
 .view_ticket_body
   .row
     .col-md-3
-      %p Date Sold:
-    .col-md-3
+      Date Sold:
+      - if ticket.cus_payment_required and !ticket.cus_payment_completed
+        %p
+          .label.label-primary{title: "#{number_to_currency(ticket.final_amount_to_be_paid.to_i, unit: ticket.ticket_currency.code, separator: ".", delimiter: "00", format: '%u %n')}"} Payment required
+    .col-md-2
       %p Sold By:
-    .col-md-6.pull-right.text-right
+    .col-md-2
+      %p Engineer:
+    .col-md-2.pull-right.text-right
       %strong Priority: #{INOCRM_CONFIG["priority"].key ticket.priority}
+    .col-md-3.pull-right.text-right
+      Logged at: #{ticket.created_at.strftime("%Y-%m-%d %H:%M")}
       %p Logged by: #{current_user.email}
   .row
-    .col-md-2
-      %p SLA Time: #{pluralize ticket.slatime, 'Hr'}
-    .col-md-2
-      %p SLA Started:
-    .col-md-2
+    .col-md-4
+      SLA Time: #{pluralize ticket.slatime, 'Hr'}
+      %p SLA Remaining: 
+    .col-md-4
+      SLA Started: #{ticket.created_at.strftime("%Y-%m-%d %H:%M")}
       %p SLA Finished:
-    .col-md-6.pull-right.text-right
-      %p Logged at: #{DateTime.now.strftime("%Y-%m-%d %H:%M")}
-
-  / .row
-  /   .col-md-2
-  /     %p Date Sold:
-  /     %p SLA Time:
-  /   .col-md-2
-  /     %p Sold By:
-  /     %p SLA Started:
-  /   .col-md-2
-  /     %p SLA Finished:
-  /   .col-md-6.pull-right.text-right
-  /     %strong Priority: #{INOCRM_CONFIG["priority"].key ticket.priority}
-  /     %p Logged by: #{current_user.email}
-  /     %p Logged at: #{DateTime.now.strftime("%Y-%m-%d %H:%M")}
-
-  / .row
-  /   / .fixed
-  /   .col-md-3
-  /     %p SLA Time:
-  /   .col-md-3
-  /     %p SLA Started:
-  /   .col-md-6
-  /     %p SLA Finished:
+    .col-md-4
+      Job Finished: #{ticket.job_finished_at.try :strftime, "%Y-%m-%d %H:%M"}
+      %p Ticket Closed:

@@ -1,4 +1,3 @@
-%br
 .row
   %h4 Product
   .col-md-6.col-xs-6.col-sm-6
@@ -27,12 +26,16 @@
           %dt Job type
           %dd= ticket.job_type.name
           %dt Ticket type
-          %dd= ticket.ticket_type.name
+          %dd #{ticket.ticket_type.name} #{"(Regional support job)" if ticket.regional_support_job}
           %dt Type of warranty
           %dd= ticket.warranty_type.name
-          %dt Sold country
-          %dd= product.product_sold_country.try(:Country)
+          %dt Customer chargeable
+          %dd= ticket.cus_chargeable ? "Yes" : "No"
+          %dt Repair type
+          %dd= ticket.repair_type.try(:name)
         %dl
+          %dt Problem Category
+          %dd= ticket.problem_category.name
           %dt Problem description
           %dd= ticket.problem_description
         %dl
@@ -42,3 +45,9 @@
           %dd
             = product.product_pop_status.name
             = link_to "View POP (#{product.pop_doc_url.file.try :filename})", product.pop_doc_url.url, target: "_blank" if product.pop_doc_url.file.present?
+          %dt Sold country
+          %dd= product.product_sold_country.try(:Country)
+.row
+  .col-md-12
+    %p.margin-none Ticket currency:#{ticket.ticket_currency.currency} 
+    %p Manufacture currency:#{ticket.manufacture_currency.currency}

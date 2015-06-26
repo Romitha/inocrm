@@ -96,6 +96,8 @@ Rails.application.routes.draw do
       post "create_problem_category"
       post "create_accessory"
       post "create_extra_remark"
+      post "after_printer"
+      post "get_template"
 
       put "product_update"
       put "ticket_update"
@@ -110,6 +112,7 @@ Rails.application.routes.draw do
 
       get "resolution"
       get "assign-ticket", to: :assign_ticket
+      get "workflow_diagram"
 
 
     end

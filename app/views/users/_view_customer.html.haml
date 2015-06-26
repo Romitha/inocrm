@@ -1,4 +1,4 @@
-.row
+.row.small_scale_margin-bottom1
   %dl.dl-horizontal
     .col-md-6
       %h4 Customer Info
@@ -16,23 +16,26 @@
           %br
 .row
   .col-md-4
-    %h4 Contact Person 1
+    %h4 Contact Person 1 #{raw("<span class='text-success'>(Inform to)</span>") if ticket.inform_cp == ticket.contact_person1.id}
     %dt Name
     %dd #{ticket.contact_person1.mst_title.title} #{ticket.contact_person1.name.capitalize}
     - ticket.contact_person1.contact_person_contact_types.each do |contact_person_contact_type|
       %dt= contact_person_contact_type.contact_type.try(:name)
       %dd= contact_person_contact_type.value
   .col-md-4
-    %h4 Contact Person 2
+    %h4 Contact Person 2 #{raw("<span class='text-success'>(Inform to)</span>") if ticket.inform_cp == ticket.contact_person2.id}
     %dt Name
     %dd #{ticket.contact_person2.mst_title.title} #{ticket.contact_person2.name.capitalize}
     - ticket.contact_person2.contact_person_contact_types.each do |contact_person_contact_type|
       %dt= contact_person_contact_type.contact_type.try(:name)
       %dd= contact_person_contact_type.value
   .col-md-4
-    %h4 Reporter
+    %h4 Reporter #{raw("<span class='text-success'>(Inform to)</span>") if ticket.inform_cp == ticket.report_person.id}
     %dt Name
     %dd #{ticket.report_person.mst_title.title} #{ticket.report_person.name.capitalize}
     - ticket.report_person.contact_person_contact_types.each do |contact_person_contact_type|
       %dt= contact_person_contact_type.contact_type.try(:name)
       %dd= contact_person_contact_type.value
+.row
+  .col-md-12.small_scale_margin-top1
+    .alert.alert-success.padding0 Contact By: #{ticket.ticket_contact_type.name}
