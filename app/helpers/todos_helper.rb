@@ -65,12 +65,21 @@ module TodosHelper
 
       when options[:task_list]
         request.url = "#{base_url}/#{task_list_path}"
-        # if owner is not empty? potential_owner = krisv
-        # if process_instance_id is not empty? process_instance_id = 1
-        request.query = {status: options[:status], processInstenceId: options[:process_instence_id]}.merge(options[:query])
+
+        compulsory_query = {status: options[:status]}
+        if options[:process_instance_id]
+          compulsory_query.merge!(processInstanceId: options[:process_instance_id])
+        end
+
+        if options[:potential_owner]
+          compulsory_query.merge!(potentialOwner: options[:potential_owner])
+        end
+
+        request.query = compulsory_query.merge(options[:query])
         response = HTTPI.get request
       end
       Hash.from_xml response.body
+      # request.url
     end
 
     def initiate_request

@@ -863,8 +863,19 @@ class TicketsController < ApplicationController
     @ticket_id = params[:ticket_id]
     @ticket = Ticket.find @ticket_id
     @workflow_processes = @ticket.ticket_workflow_processes.to_a
-    
-    render html: "true".html_safe, layout: "workflow_diagram"
+    @workflow_process_ids = @workflow_processes.map { |p| p.process_id }
+    @task_list = []
+    @workflow_process_ids.each do |workflow_process_id|
+
+      ["InProgress", "Reserved"].each do |status|
+        @task_list << view_context.send_request_process_data(task_list: true, status: status, process_instance_id: workflow_process_id, query: {})
+      end
+
+    end
+
+    @task_content = @task_list.map { |list| list[:content] and list[:content]["task_summary"]["name"] }
+
+    render "tickets/tickets_pack/workflow_index", layout: "workflow_diagram"
   end
 
   private
