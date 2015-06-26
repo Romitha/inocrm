@@ -36,4 +36,4 @@
         %td
           //= history.payment_pending
         %td
-          = history.created_by
+          = User.find(history.created_by).email

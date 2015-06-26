@@ -36,19 +36,6 @@ unless(user)
   Ticket
   Warranty
 
-  ticket_status = [
-    ["OPN", "Open"],
-    ["ASN", "Assigned"],
-    ["RSL", "Being Resolved"],
-    ["QCT", "Quality Control"],
-    ["PMT", "Final Payment Calculation"],
-    ["CFB", "Customer Feedback and Issue"],
-    ["ROP", "Re-Open"],
-    ["TBC", "To Be Closed"],
-    ["CLS", "Closed"]
-  ]
-  TicketStatus.create!(ticket_status.map{ |t| {code: t[0], name: t[1]} })
-
   warranty_types = [
     ["CW", "Corporate warranty"],
     ["MW", "Manufacture warranty"],

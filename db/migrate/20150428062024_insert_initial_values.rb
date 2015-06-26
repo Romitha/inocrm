@@ -1,20 +1,6 @@
 class InsertInitialValues < ActiveRecord::Migration
   def change
     # [
-    #   ["OPN", "Open"],
-    #   ["ASN", "Assigned"],
-    #   ["RSL", "Being Resolved"],
-    #   ["QCT", "Quality Control"],
-    #   ["PMT", "Final Payment Calculation"],
-    #   ["CFB", "Customer Feedback and Issue"],
-    #   ["ROP", "Re-Open"],
-    #   ["TBC", "To Be Closed"],
-    #   ["CLS", "Closed"]
-    # ].each do |value|
-    #   execute("insert into mst_spt_ticket_status (code,name) values ('#{value[0]}', '#{value[1]}')")
-    # end
-
-    # [
     #   ["CW", "Corporate warranty"],
     #   ["MW", "Manufacture warranty"],
     #   ["NW", "Non warranty"]
