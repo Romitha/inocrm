@@ -31,6 +31,8 @@
     - unless Organization::TYPES[2,3].include?(organization.category)
       .col-md-4
         = f.input :vat_number, placeholder: "Vat Number", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Vat Number"}
+    .col-md-4
+      = f.association :organization_type    
     .col-md-4.pull-right
       = f.input :web_site, placeholder: "Web Site", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Web Site"}
   .row

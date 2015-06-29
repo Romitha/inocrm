@@ -109,9 +109,9 @@ Rails.application.routes.draw do
       post "join_tickets"
       post "update_assign_ticket"
 
-      get "pop-approval", :to => :pop_note
-
-      get "resolution"
+      get "pop-approval", :to => :pop_approval
+      get "edit-ticket", :to => :edit_ticket
+      get "resolution", :to => :resolution
       get "assign-ticket", to: :assign_ticket
       get "workflow_diagram"
 

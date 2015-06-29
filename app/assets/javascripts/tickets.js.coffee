@@ -147,9 +147,6 @@ window.Tickets =
     $("#sla_content").html(content)
     $("#toggle_sla").modal("hide")
 
-  remove_serial_search: ->
-    $(".serial_search").remove()
-
   select_contact_person: ->
     $("#contact_person1_select, #contact_person2_select, #report_person_select").click ->
       $(@).parent().siblings(".contact_persons_form").empty()
@@ -221,9 +218,12 @@ window.Tickets =
     $('.load_more').popover
       html: true
 
+  remove_serial_search: ->
+    $(".serial_search").remove()
+
   numbersonly: ->
     $('.press').keydown (e) ->
-      if String.fromCharCode(e.keyCode).match(/[^\.0-9\b\.]+$/g)
+      if String.fromCharCode(e.keyCode).match(/[^0-9\.\b]/g)
         return false
       return
 

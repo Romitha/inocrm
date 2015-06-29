@@ -7,6 +7,7 @@ class Product < ActiveRecord::Base
   has_many :tickets, through: :ticket_product_serial
   has_many :warranties, foreign_key: :product_serial_id
 
+  belongs_to :warranty_type, foreign_key: :product_brand_id
   belongs_to :product_brand, foreign_key: :product_brand_id
   belongs_to :product_category, foreign_key: :product_category_id
   belongs_to :product_pop_status, foreign_key: :pop_status_id

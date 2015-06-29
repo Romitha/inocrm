@@ -41,7 +41,6 @@
               %legend New Warranty
               = simple_form_for @warranty, remote: true do |f|
                 = f.input :product_serial_id, as: :hidden
-                
                 .row
                   .col-md-6
                     = f.association :warranty_type, as: :radio_buttons, wrapper: :append
