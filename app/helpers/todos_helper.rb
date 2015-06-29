@@ -8,7 +8,7 @@ module TodosHelper
     else
       case 
       when args[:process_history]
-        response = {status: "success", value: response_hash["value"], variable_id: response_hash["variable_id"]}
+        response = {status: "success", value: response_hash["log_instance_list"]["variable_instance_log"]["value"], variable_id: response_hash["log_instance_list"]["variable_instance_log"]["variable_id"]}
 
       when args[:start_process]
         response = {status: response_hash["process_instance"]["status"], process_name: response_hash["process_instance"]["process_id"], process_id: response_hash["process_instance"]["id"]}
@@ -30,7 +30,7 @@ module TodosHelper
   # private
 
     def deployment_id
-      "lk.inova:INOCRM:0.0.5"
+      "lk.inova:INOCRM:0.0.3"
     end
 
     def base_url
@@ -55,7 +55,7 @@ module TodosHelper
 
       when options[:complete_task]
         request.url = "#{base_url}/#{complete_task_path(options[:task_id])}"
-        request.query = options[:query]
+        request.query = options[:query].inject({}){|init, (key, value)| init.merge("map_#{key}"=> value)}
         response = HTTPI.post request
 
       when options[:process_history]
@@ -67,15 +67,12 @@ module TodosHelper
         request.url = "#{base_url}/#{task_list_path}"
 
         compulsory_query = {status: options[:status]}
-        if options[:process_instance_id]
-          compulsory_query.merge!(processInstanceId: options[:process_instance_id])
-        end
+        
+        compulsory_query.merge!(processInstanceId: options[:process_instance_id]) if options[:process_instance_id]
+        compulsory_query.merge!(potentialOwner: options[:potential_owner]) if options[:potential_owner]
+        compulsory_query.merge!(options[:query]) if options[:query]
 
-        if options[:potential_owner]
-          compulsory_query.merge!(potentialOwner: options[:potential_owner])
-        end
-
-        request.query = compulsory_query.merge(options[:query])
+        request.query = compulsory_query
         response = HTTPI.get request
       end
       Hash.from_xml response.body

@@ -662,10 +662,12 @@ class TicketsController < ApplicationController
   end
 
   def finalize_ticket_save
+    WorkflowMapping
     QAndA
     TaskAction
     @product = Product.find session[:product_id]
     @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
+
     if params[:first_resolution]
       @status_close_id = TicketStatus.find_by_code("CLS").id
       @ticket.status_id = @status_close_id
@@ -674,6 +676,7 @@ class TicketsController < ApplicationController
     else
       @status_resolve_id = TicketStatusResolve.find_by_code("NAP").try(:id)
     end
+
     @repair_type_id = RepairType.find_by_code("IN").try :id
     @manufacture_currency_id = @product.product_brand.currency.id
     @ticket.attributes = ticket_params.merge({created_by: current_user.id, slatime: @ticket.sla_time.try(:sla_time), status_resolve_id: @status_resolve_id, repair_type_id: @repair_type_id, manufacture_currency_id: @manufacture_currency_id, ticket_print_count: 0, ticket_complete_print_count: 0})
@@ -817,13 +820,86 @@ class TicketsController < ApplicationController
       @join_tickets = Rails.cache.fetch([:join, @ticket.id]){Kaminari.paginate_array(Ticket.where(id: @ticket.joint_tickets.map(&:joint_ticket_id)))}.page(params[:page]).per(2)
       @q_and_answers = @ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})}
       @ge_q_and_answers = @ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"General Questions" => v})}
-      @user_ticket_action = @ticket.user_ticket_actions.build(action_id: 2)
+      @user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(2).id)
       @user_assign_ticket_action = @user_ticket_action.user_assign_ticket_actions.build
       @assign_regional_support_center = @user_ticket_action.assign_regional_support_centers.build
     end
     respond_to do |format|
       format.html {render "tickets/tickets_pack/assign_ticket"}
     end
+  end
+
+  def update_assign_ticket
+    @ticket = Ticket.find(params[:ticket_id])
+    TaskAction
+    continue = true
+
+    # ticket_id, process_id, task_id should not be null
+    # http://0.0.0.0:3000/tickets/assign-ticket?ticket_id=2&process_id=212&owner=supp_mgr&task_id=191
+    if params[:task_id] and params[:process_id] and params[:owner]
+
+      bpm_response = view_context.send_request_process_data process_history: true, process_instance_id: params[:process_id], variable_id: "ticket_id"
+      
+      if bpm_response[:status].upcase == "ERROR"
+        continue = false
+        @flash_message = "Bpm error."
+      end
+
+    else
+      continue = false
+    end
+
+    if continue
+
+      t_params = ticket_params
+      t_params["remarks"] = "#{ticket_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" if ticket_params["remarks"].present?
+      t_params["user_ticket_actions_attributes"].first.merge!("action_at" => DateTime.now.strftime("%Y-%m-%d %H:%M:%S"))
+
+      puts t_params
+      @ticket.attributes = t_params
+
+      user_ticket_action = @ticket.user_ticket_actions.last
+      user_ticket_action.user_assign_ticket_actions.first.regional_support_center_job = @ticket.regional_support_job
+      user_assign_ticket_action = user_ticket_action.user_assign_ticket_actions.first
+      h_assign_regional_support_center = user_ticket_action.assign_regional_support_centers.first
+
+      user_ticket_action.assign_regional_support_centers.reload unless !user_assign_ticket_action.recorrection and user_assign_ticket_action.regional_support_center_job
+
+      if @ticket.save
+
+        @ticket.update status_id: TicketStatus.find_by_code("ASN").id
+
+
+
+        if !user_assign_ticket_action.recorrection and user_assign_ticket_action.regional_support_center_job
+
+          regional_ticket_user_action = @ticket.user_ticket_actions.create(action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_id: TaskAction.find_by_action_no(4).id) #assign regional support center action.          
+
+          h_assign_regional_support_center.update(ticket_action_id: regional_ticket_user_action.id)
+
+        end
+
+        if !user_assign_ticket_action.recorrection
+          @ticket.update owner_engineer_id: user_assign_ticket_action.assign_to
+        end
+
+
+        # bpm output variables
+        d2_recorrection = user_assign_ticket_action.recorrection ? "Y" : "N"
+        d3_regional_support_job = user_assign_ticket_action.regional_support_center_job ? "Y" : "N"
+        supp_engr_user = user_assign_ticket_action.assign_to
+        supp_hd_user = @ticket.created_by
+
+        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: {d2_recorrection: d2_recorrection, d3_regional_support_job: d3_regional_support_job, supp_engr_user: supp_engr_user, supp_hd_user: supp_hd_user}
+
+        if bpm_response[:status].upcase == "SUCCESS"
+          @flash_message = "Successfully updated."
+        else
+          @flash_message = "ticket is updated. but Bpm error"
+        end
+      end
+    end
+    redirect_to todos_url, notice: @flash_message
   end
 
   def pop_note
@@ -873,7 +949,7 @@ class TicketsController < ApplicationController
 
     end
 
-    @task_content = @task_list.map { |list| list[:content] and list[:content]["task_summary"]["name"] }
+    @task_content = @task_list.map { |list| list[:content] and (list[:content]["task_summary"].is_a?(Hash) ? list[:content]["task_summary"]["name"] : list[:content]["task_summary"].map{|l| l["name"]}) }
 
     render "tickets/tickets_pack/workflow_index", layout: "workflow_diagram"
   end

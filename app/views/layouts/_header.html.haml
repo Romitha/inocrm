@@ -75,7 +75,7 @@
               %li= link_to "My Profile", profile_user_path(current_user)
               %li.divider
               %li.dropdown-header Switch to role
-              - current_user.roles.where.not(id: current_user.current_user_role_id).each do |role|
+              - current_user.roles.to_a.reject{|r| r.id == current_user.current_user_role_id.to_i}.each do |role|
                 %li= link_to role.name, assign_role_user_path(current_user.id, set_role_id: role.id)
               %li.divider
               %li= link_to "Sign Out", destroy_user_session_path, method: :delete
