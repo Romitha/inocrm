@@ -902,12 +902,77 @@ class TicketsController < ApplicationController
     redirect_to todos_url, notice: @flash_message
   end
 
-  def pop_note
+  def pop_approval
+    ContactNumber
+    QAndA
+    TaskAction
+    @ticket = Ticket.find_by_id params[:ticket_id]
+    if @ticket
+      @product = @ticket.products.first
+      @warranties = @product.warranties
+      session[:product_id] = @product.id
+      Rails.cache.delete([:histories, session[:product_id]])
+      Rails.cache.delete([:join, @ticket.id])
+      @histories = Rails.cache.fetch([:histories, session[:product_id]]){Kaminari.paginate_array(@product.tickets)}.page(params[:page]).per(2)
+      @join_tickets = Rails.cache.fetch([:join, @ticket.id]){Kaminari.paginate_array(Ticket.where(id: @ticket.joint_tickets.map(&:joint_ticket_id)))}.page(params[:page]).per(2)
+      @q_and_answers = @ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})}
+      @ge_q_and_answers = @ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"General Questions" => v})}
+      @user_ticket_action = @ticket.user_ticket_actions.build(action_id: 2)
+      @user_assign_ticket_action = @user_ticket_action.user_assign_ticket_actions.build
+      @assign_regional_support_center = @user_ticket_action.assign_regional_support_centers.build
+    end
+    respond_to do |format|
+      format.html {render "tickets/tickets_pack/pop_approval"}
+    end
 
   end
 
   def resolution
-    
+    ContactNumber
+    QAndA
+    TaskAction
+    @ticket = Ticket.find_by_id params[:ticket_id]
+    if @ticket
+      @product = @ticket.products.first
+      @warranties = @product.warranties
+      session[:product_id] = @product.id
+      Rails.cache.delete([:histories, session[:product_id]])
+      Rails.cache.delete([:join, @ticket.id])
+      @histories = Rails.cache.fetch([:histories, session[:product_id]]){Kaminari.paginate_array(@product.tickets)}.page(params[:page]).per(2)
+      @join_tickets = Rails.cache.fetch([:join, @ticket.id]){Kaminari.paginate_array(Ticket.where(id: @ticket.joint_tickets.map(&:joint_ticket_id)))}.page(params[:page]).per(2)
+      @q_and_answers = @ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})}
+      @ge_q_and_answers = @ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"General Questions" => v})}
+      @user_ticket_action = @ticket.user_ticket_actions.build(action_id: 2)
+      @user_assign_ticket_action = @user_ticket_action.user_assign_ticket_actions.build
+      @assign_regional_support_center = @user_ticket_action.assign_regional_support_centers.build
+    end
+    respond_to do |format|
+      format.html {render "tickets/tickets_pack/resolution"}
+    end
+  end
+
+  def edit_ticket
+    ContactNumber
+    QAndA
+    TaskAction
+    @ticket = Ticket.find_by_id params[:ticket_id]
+    if @ticket
+      @product = @ticket.products.first
+      @warranties = @product.warranties
+      session[:product_id] = @product.id
+      Rails.cache.delete([:histories, session[:product_id]])
+      Rails.cache.delete([:join, @ticket.id])
+      @histories = Rails.cache.fetch([:histories, session[:product_id]]){Kaminari.paginate_array(@product.tickets)}.page(params[:page]).per(2)
+      @join_tickets = Rails.cache.fetch([:join, @ticket.id]){Kaminari.paginate_array(Ticket.where(id: @ticket.joint_tickets.map(&:joint_ticket_id)))}.page(params[:page]).per(2)
+      @q_and_answers = @ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})}
+      @ge_q_and_answers = @ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"General Questions" => v})}
+      @user_ticket_action = @ticket.user_ticket_actions.build(action_id: 2)
+      @user_assign_ticket_action = @user_ticket_action.user_assign_ticket_actions.build
+      @assign_regional_support_center = @user_ticket_action.assign_regional_support_centers.build
+    end
+    respond_to do |format|
+      format.html {render "tickets/tickets_pack/edit_ticket"}
+    end
   end
 
   def after_printer
