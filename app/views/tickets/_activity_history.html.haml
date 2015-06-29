@@ -1,0 +1,23 @@
+.row
+  .col-md-12
+    .panel.panel-default
+      -ticket.user_ticket_actions.each do |action|
+        .panel-heading{:style => "height:35px;margin-bottom:12px"}
+          .row
+            .col-md-4
+              Activity:
+              = action.task_action.action_description
+            .col-md-4
+              Date Time:
+              = action.action_at.strftime("%Y-%m-%d %H:%M")
+            .col-md-4
+              %p By: #{ticket.customer.mst_title.title} #{ticket.customer.name.capitalize}
+        -if action.task_action.action_no == 2
+          .panel-body
+            .row
+              .col-md-4
+                %ul.list-unstyled
+                  %li Sbu:
+                  %li Assign to:
+                  %li Recorrection:
+                  %li Regional Support Center Job:

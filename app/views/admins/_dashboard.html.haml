@@ -4,12 +4,21 @@
 -ticket_types = @TicketTypes
 -job_types = @JobTypes
 -warranty_types = @WarrantyTypes
+-wc = o = c = charge = 0
 .row
   .col-lg-12
     %h2.page-header.margin-top0 Dashboard
 .row
-  .col-lg-12
-    %h4.page-header.margin-top0 Open Tickets: #{tickets.count}
+  .col-lg-6
+    - tickets.each do |ticket|
+      -if ticket.status_id != 9
+        -o = 1 + o
+    %h4.page-header.margin-top0 Open Tickets: #{o}
+  .col-lg-6
+    - tickets.each do |ticket|
+      -if [9, 8, 6, 5, 4].include?(ticket.status_id)
+        -c = 1 + c
+    %h4.page-header.margin-top0 Finished Tickets: #{c}
 .row
   .col-md-4
     .panel.panel-default
@@ -18,7 +27,8 @@
       .panel-body
         %ul.list-unstyled.pull-left
           -product_brands.each do |product_brand|
-            %li #{product_brand.name} : #{product_brand.products.count}
+            - ticket_count = product_brand.products.inject(0){|init, product| init+product.tickets.count}
+            %li #{product_brand.name} : #{ticket_count}
   .col-md-4
     .panel.panel-default
       .panel-heading
@@ -43,36 +53,47 @@
         %ul.list-unstyled.pull-left
           -warranty_types.each do |warranty_type|
             %li #{warranty_type.name} : #{warranty_type.tickets.count}
+          -tickets.each do |ticket|
+            -if ticket.status_id != 9 && ticket.warranty_type_id.present? && ticket.cus_chargeable == true
+              -wc = 1 + wc
+          %li Chargeable: #{wc}
   .col-md-4
     .panel.panel-default
       .panel-heading
         SLA Breaches
       .panel-body
         %ul.list-unstyled.pull-left
-          %li SLA Breached
-          %li SLA To-be Breached (To-day)
-          %li SLA To-be Breached
+          %li SLA Breached :
+          %li SLA To-be Breached (To-day) :
+          %li SLA To-be Breached :
   .col-md-4
     .panel.panel-default
       .panel-heading
-        Parts
+        Parts Return
       .panel-body
         %ul.list-unstyled.pull-left
-          %li Finished
-          %li Manufacture Part Return
-          %li Store Part Return
+          %li Manufacture Pending Part Return:
+          %li Store Pending Part Return:
+  .col-md-4
+    .panel.panel-default
+      .panel-heading
+        Payments
+      .panel-body
+        %ul.list-unstyled.pull-left
+          %li Customer Payment Pending:
+          %li Manufacture Payment Pending:
 .row
   .col-lg-12
-    %h4.page-header.margin-top0 Engineers
+    %h4.page-header.margin-top0 Engineers Ticket Allocation
 .row
   .col-md-12
     %table.table.table-hover
       %thead
         %tr
           %th Name
-          %th Number Of Open Tickets
-          %th Number Of Finished Tickets
-          %th Number Of Return Tickets
+          %th Open Tickets
+          %th Finished Tickets
+          %th Return Tickets
       %tbody
         %tr
           %td Isusru
