@@ -2,22 +2,23 @@
   .col-md-12
     .panel.panel-default
       -ticket.user_ticket_actions.each do |action|
-        .panel-heading{:style => "height:35px;margin-bottom:12px"}
-          .row
-            .col-md-4
-              Activity:
-              = action.task_action.action_description
-            .col-md-4
-              Date Time:
-              = action.action_at.try :strftime, "%Y-%m-%d %H:%M"
-            .col-md-4
-              %p By: #{Rails.cache.fetch([:action_by, action.action_by]){User.find(action.action_by)}.user_name.capitalize}
-        -if action.task_action.action_no == 2
-          .panel-body
+        - if action.persisted?
+          .panel-heading{:style => "height:35px;margin-bottom:12px"}
             .row
               .col-md-4
-                %ul.list-unstyled
-                  %li Sbu:
-                  %li Assign to:
-                  %li Recorrection:
-                  %li Regional Support Center Job:
+                Activity:
+                = action.task_action.action_description
+              .col-md-4
+                Date Time:
+                = action.action_at.try :strftime, "%Y-%m-%d %H:%M"
+              .col-md-4
+                %p By: #{Rails.cache.fetch([:action_by, action.action_by]){User.find(action.action_by)}.user_name}
+          -if action.task_action.action_no == 2
+            .panel-body
+              .row
+                .col-md-4
+                  %ul.list-unstyled
+                    %li Sbu:
+                    %li Assign to:
+                    %li Recorrection:
+                    %li Regional Support Center Job:
