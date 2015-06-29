@@ -110,7 +110,7 @@ Rails.application.routes.draw do
       post "update_assign_ticket"
 
       get "edit-ticket", :action => :edit_ticket
-      get "pop-approval", :action => :pop_note
+      get "pop-approval"#, :action => :pop_note
 
       get "resolution"
       get "assign-ticket", action: :assign_ticket
