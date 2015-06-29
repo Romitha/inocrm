@@ -852,10 +852,10 @@ class TicketsController < ApplicationController
     if continue
 
       t_params = ticket_params
-      t_params["remarks"] = "#{ticket_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" if ticket_params["remarks"].present?
+      t_params["remarks"] = "#{ticket_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" if t_params["remarks"].present?
+
       t_params["user_ticket_actions_attributes"].first.merge!("action_at" => DateTime.now.strftime("%Y-%m-%d %H:%M:%S"))
 
-      puts t_params
       @ticket.attributes = t_params
 
       user_ticket_action = @ticket.user_ticket_actions.last

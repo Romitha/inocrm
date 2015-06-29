@@ -30,7 +30,8 @@ module TodosHelper
   # private
 
     def deployment_id
-      "lk.inova:INOCRM:0.0.3"
+      # "lk.inova:INOCRM:0.0.3"
+      "lk.inova:INOCRM:0.0.7"
     end
 
     def base_url

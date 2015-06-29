@@ -109,10 +109,11 @@ Rails.application.routes.draw do
       post "join_tickets"
       post "update_assign_ticket"
 
-      get "pop-approval", :to => :pop_approval
-      get "edit-ticket", :to => :edit_ticket
-      get "resolution", :to => :resolution
-      get "assign-ticket", to: :assign_ticket
+      get "edit-ticket", :action => :edit_ticket
+      get "pop-approval", :action => :pop_note
+
+      get "resolution"
+      get "assign-ticket", action: :assign_ticket
       get "workflow_diagram"
 
 
@@ -128,12 +129,12 @@ Rails.application.routes.draw do
   resources :admins do
     concerns :attachable
     collection do
-      get "total-tickets", :to => :total_tickets
-      get "today-open-tickets", :to => :today_open_tickets
-      get "today-closed-tickets", :to => :today_closed_tickets
-      get "open-tickets", :to => :open_tickets
-      get "closed-tickets", :to => :closed_tickets
-      get "total-products", :to => :total_products
+      get "total-tickets", :action => :total_tickets
+      get "today-open-tickets", :action => :today_open_tickets
+      get "today-closed-tickets", :action => :today_closed_tickets
+      get "open-tickets", :action => :open_tickets
+      get "closed-tickets", :action => :closed_tickets
+      get "total-products", :action => :total_products
     end
   end
      
