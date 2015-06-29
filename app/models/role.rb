@@ -6,4 +6,29 @@ class Role < ActiveRecord::Base
   scopify
 
   validates :name, presence: true, uniqueness: true
+
+  has_many :module_roles, foreign_key: :role_id
+  has_many :bpm_module_roles, through: :module_roles
+end
+
+class ModuleRole < ActiveRecord::Base
+  self.table_name = "role_bpm_role"
+
+  belongs_to :role, foreign_key: :role_id
+  belongs_to :bpm_module_role, foreign_key: :bpm_role_id
+end
+
+class BpmModuleRole < ActiveRecord::Base
+  self.table_name = "mst_bpm_role"
+
+  belongs_to :bpm_module, foreign_key: :module_id
+
+  has_many :module_roles, foreign_key: :bpm_role_id
+  has_many :roles, through: :module_roles
+end
+
+class BpmModule < ActiveRecord::Base
+  self.table_name = "mst_module"
+
+  has_many :bpm_module_roles, foreign_key: :module_id
 end

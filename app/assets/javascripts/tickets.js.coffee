@@ -8,6 +8,7 @@ window.Tickets =
     @regional_support_job_active()
     @pass_to_re_correction()
     @pass_to_re_correction_trigger()
+    @filter_sbu_engineer()
     return
 
   initial_loaders: ->
@@ -227,24 +228,34 @@ window.Tickets =
       return
 
   pass_to_re_correction: ->
+
+    if $("#ticket_regional_support_job").is(":checked")
+      $("#regional_support_center_chosen, #regional_support_center").parents().eq(1).removeClass("hide")
+      $("#assign_sbu_chosen, #assign_sbu").parents().eq(1).addClass("hide")
+      $("#assign_sbu_chosen, #assign_sbu").val("")
+      $("#assign_to").val("")
+      $("#assign_to_for_regional").removeClass("hide")
+      $(".assign_to_for_regional_label").removeClass("hide")
+
+    else
+      $("#regional_support_center_chosen, #regional_support_center").parents().eq(1).addClass("hide")
+      $("#regional_support_center_chosen, #regional_support_center").val("")
+      $("#assign_sbu_chosen, #assign_sbu").parents().eq(1).removeClass("hide")
+      $("#assign_to_for_regional").addClass("hide").val("")
+      $(".assign_to_for_regional_label").addClass("hide")
+
     if $("#pass_to_re_correction").is(":checked")
       $(".pass_to_recorrection_hiddable").each ->
         $(@).addClass("hide")
         $("#assign_sbu_chosen, #assign_sbu").val("")
         $("#regional_support_center_chosen, #regional_support_center").val("")
         $("#assign_to").val("")
+      $("#assign_to_for_regional").addClass("hide").val("")
+      $(".assign_to_for_regional_label").addClass("hide")
     else
       $(".pass_to_recorrection_hiddable").each ->
         $(@).removeClass("hide")
-
-    if $("#ticket_regional_support_job").is(":checked")
-      $("#regional_support_center_chosen, #regional_support_center").parents().eq(1).removeClass("hide")
-      $("#assign_sbu_chosen, #assign_sbu").parents().eq(1).addClass("hide")
-      $("#assign_sbu_chosen, #assign_sbu").val("")
-    else
-      $("#regional_support_center_chosen, #regional_support_center").parents().eq(1).addClass("hide")
-      $("#regional_support_center_chosen, #regional_support_center").val("")
-      $("#assign_sbu_chosen, #assign_sbu").parents().eq(1).removeClass("hide")
+      # $("#assign_to_for_regional").removeClass("hide")
 
   pass_to_re_correction_trigger: ->
     $("#pass_to_re_correction").click =>
@@ -252,3 +263,25 @@ window.Tickets =
 
     $("#ticket_regional_support_job").click =>
       @pass_to_re_correction()
+
+  filter_sbu_engineer: ->
+    sbu_engineer = $("#assign_to").html()
+    $("#assign_to").empty()
+    sbu_engineer_for_regional = $("#assign_to_for_regional").html()
+    $("#assign_to_for_regional").empty()
+
+    $("#assign_sbu").change ->
+      selected_text = $("#assign_sbu option:selected").text()
+      filtered_html = $(sbu_engineer).filter("optgroup[label = '#{selected_text}']").html()
+      if filtered_html
+        $("#assign_to").html(filtered_html)
+      else
+        $("#assign_to").empty()
+
+    $("#regional_support_center").change ->
+      selected_text = $(@).val()
+      filtered_html = $(sbu_engineer_for_regional).filter("optgroup[label = '#{selected_text}']").html()
+      if filtered_html
+        $("#assign_to_for_regional").html(filtered_html)
+      else
+        $("#assign_to_for_regional").empty()

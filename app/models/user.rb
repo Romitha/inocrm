@@ -25,6 +25,12 @@ class User < ActiveRecord::Base
   #2014_11_11
   belongs_to :organization
 
+
+  has_many :sbu_engineers, foreign_key: :engineer_id
+  has_many :sbus, through: :sbu_engineers
+
+  has_many :sbu_regional_engineers, foreign_key: :engineer_id
+  has_many :regional_support_centers, through: :sbu_regional_engineers
   # belongs_to :department
 
   # has_many :customer_tickets, foreign_key: "customer_id", class_name: "Ticket"
@@ -205,9 +211,25 @@ class District < ActiveRecord::Base
   has_many :contact_person_contact_types, foreign_key: :contact_report_person_id
 end
 
-class Engineer < ActiveRecord::Base
-  self.table_name = "users"
+class SbuEngineer < ActiveRecord::Base
+  self.table_name = "mst_spt_sbu_engineer"
 
-  has_many :spt_sbu_engineers, foreign_key: :engineer_id
-  has_many :mst_spt_sbus, through: :spt_sbu_engineers
+  belongs_to :sbu
+  belongs_to :engineer, class_name: "User", foreign_key: :engineer_id
+end
+
+class SbuRegionalEngineer < ActiveRecord::Base
+  self.table_name = "spt_regional_support_center_engineer"
+
+  belongs_to :regional_support_center
+  belongs_to :engineer, class_name: "User", foreign_key: :engineer_id
+end
+
+class Sbu < ActiveRecord::Base
+  self.table_name = "mst_spt_sbu"
+
+  has_many :sbu_engineers#, foreign_key: :engineer_id
+  has_many :engineers, through: :sbu_engineers
+
+  has_many :user_assign_ticket_actions, foreign_key: :sbu_id
 end

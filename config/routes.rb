@@ -107,6 +107,7 @@ Rails.application.routes.draw do
       post "q_and_answer_save"
 
       post "join_tickets"
+      post "update_assign_ticket"
 
       get "pop-approval", :to => :pop_note
 
@@ -118,7 +119,11 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :todos
+  resources :todos do
+    collection do
+      get "to_do_call"
+    end
+  end
 
   resources :admins do
     concerns :attachable

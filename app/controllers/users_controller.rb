@@ -29,6 +29,7 @@ class UsersController < ApplicationController
     respond_to do |format|
       # if(session[:is_customer]=="true" ? @user.save(validate: false) : @user.save)
       if @user.save
+        # @user.roles << Role.second
         format.html {redirect_to profile_user_url(@user), notice: "Employee is successfully created"}
         session[:is_customer] = nil
       else
@@ -43,6 +44,9 @@ class UsersController < ApplicationController
         @template_params = template_param.to_s
         if current_user.valid_password?(params[:current_user_password])
           if @user.update_attributes user_params
+
+            @user.update_attributes(current_user_role_id: @user.roles.first.id, current_user_role_name: @user.roles.first.name) if @user.roles.count == 1
+
             flash[:notice] = "Profile is successfully updated"
             render js: "window.location.href='"+profile_user_url(@user)+"'" and return
             break

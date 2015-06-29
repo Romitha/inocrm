@@ -1,14 +1,11 @@
-- done = capture do
-  = link_to "Do", "#" 
-- unclaim  = capture do
-  = link_to "Unclaim", "#" 
-- t0056  = capture do
-  = link_to "T0056", "#" 
-
+- formatted_workflow_mapping_for_role = @formatted_workflow_mapping_for_role
+- formatted_workflow_mapping_for_user = @formatted_workflow_mapping_for_user
+- count = 0
+/ = formatted_workflow_mapping_for_role
 .row
   .col-xs-12.col-sm-6.col-md-8
     #todo_list 
-      %p To Do list (77)
+      %p To Do list (#{@formatted_workflow_mapping_for_user.count+@formatted_workflow_mapping_for_role.count})
       %a{:href => todos_path} 
         %i.fa.fa-repeat
 
@@ -21,34 +18,28 @@
 
 #table
   = tab_panel do
-    = tab_nav_tab({}, user_details: {active_class: "active", content: "User (32)"}, role: {content: "Manager (45)"})
+    = tab_nav_tab({}, user_details: {active_class: "active", content: "User (#{@formatted_workflow_mapping_for_user.count})"}, role: {content: "#{current_user.current_user_role_name} (#{@formatted_workflow_mapping_for_role.count})"})
     .tab-content
       = tab_content active_class: "active", tabpointer: "user_details" do
         .product
         %table.table
           %thead
             %tr
-              %th NO
+              %th No.
               %th Date
               %th Priority
               %th Module
               %th Task title
               %th Action    
-          %tbody    
-            %tr
-              %td 1
-              %td 1/1/2001
-              %td Normal
-              %td Suport
-              %td Suport-#{t0056}
-              %td #{done} #{unclaim}
-            %tr
-              %td 2
-              %td 1/1/2001
-              %td High
-              %td Sales
-              %td #{t0056}
-              %td #{done}
+          %tbody
+            - formatted_workflow_mapping_for_user.each do |formatted_workflow_mapping|
+              %tr
+                %td= count += 1
+                %td= formatted_workflow_mapping[:task_content]["created_on"].to_datetime.strftime("%Y-%m-%d %H:%M")
+                %td= INOCRM_CONFIG["priority"].key formatted_workflow_mapping[:task_content]["priority"].to_i
+                %td= formatted_workflow_mapping[:first_header_title].split("-").first.strip
+                %td #{formatted_workflow_mapping[:first_header_title]} #{formatted_workflow_mapping[:second_header_title]}
+                %td= link_to "Do", to_do_call_todos_path(url: formatted_workflow_mapping[:url], input_variables: formatted_workflow_mapping[:input_variables], task_id: formatted_workflow_mapping[:task_content]["id"], process_instance_id: formatted_workflow_mapping[:task_content]["process_instance_id"], owner: formatted_workflow_mapping[:task_content]["actual_owner"]), target: "_blank"
       = tab_content tabpointer: "role" do
         .product
         %table.table
@@ -61,24 +52,11 @@
               %th Task title
               %th Action    
           %tbody    
-            %tr
-              %td 1
-              %td 1/1/2001
-              %td Normal
-              %td Suport
-              %td Suport-#{t0056}
-              %td #{done}
-            %tr
-              %td 2
-              %td 1/1/2001
-              %td High
-              %td Sales
-              %td #{t0056}
-              %td #{done}       
-
-
-
-
-
-  
-
+            - formatted_workflow_mapping_for_role.each do |formatted_workflow_mapping|
+              %tr
+                %td= count += 1
+                %td= formatted_workflow_mapping[:task_content]["created_on"].to_datetime.strftime("%Y-%m-%d %H:%M")
+                %td= INOCRM_CONFIG["priority"].key formatted_workflow_mapping[:task_content]["priority"].to_i
+                %td= formatted_workflow_mapping[:first_header_title].split("-").first.strip
+                %td #{formatted_workflow_mapping[:first_header_title]} #{formatted_workflow_mapping[:second_header_title]}
+                %td= link_to "Do", to_do_call_todos_path(url: formatted_workflow_mapping[:url], input_variables: formatted_workflow_mapping[:input_variables], task_id: formatted_workflow_mapping[:task_content]["id"], process_instance_id: formatted_workflow_mapping[:task_content]["process_instance_id"], owner: formatted_workflow_mapping[:task_content]["actual_owner"]), target: "_blank"

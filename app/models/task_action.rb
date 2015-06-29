@@ -29,7 +29,7 @@ class UserAssignTicketAction < ActiveRecord::Base
   self.table_name = "spt_act_assign_ticket"
 
   belongs_to :user_ticket_action, foreign_key: :ticket_action_id
-  belongs_to :mst_spt_sbu, foreign_key: :sbu_id
+  belongs_to :sbu, foreign_key: :sbu_id
 end
 
 class AssignRegionalSupportCenter < ActiveRecord::Base
@@ -44,18 +44,9 @@ class RegionalSupportCenter < ActiveRecord::Base
   self.table_name = "spt_regional_support_center"
 
   has_many :assign_regional_support_centers
-end
 
-class MstSptSbu < ActiveRecord::Base
-  self.table_name = "mst_spt_sbu"
+  belongs_to :organization
 
-  has_many :spt_sbu_engineers, foreign_key: :sbu_id
-  has_many :engineers, through: :spt_sbu_engineers
-end
-
-class SptSbuEngineer < ActiveRecord::Base
-  self.table_name = "mst_spt_sbu_engineer"
-
-  belongs_to :mst_spt_sbu, foreign_key: :sbu_id
-  belongs_to :engineers, foreign_key: :engineer_id
+  has_many :sbu_regional_engineers#, foreign_key: :regional_support_center_id
+  has_many :engineers, through: :sbu_regional_engineers
 end
