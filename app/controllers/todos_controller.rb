@@ -11,7 +11,7 @@ class TodosController < ApplicationController
     @workflow_mapping_for_user = []
 
     if @potential_owner
-      ["InProgress", "Reserved"].each do |status|
+      ["InProgress", "Reserved", "Ready"].each do |status|
         @todo_list_for_role << view_context.send_request_process_data(task_list: true, status: status, potential_owner: @potential_owner, query: {})
       end
 
@@ -26,7 +26,7 @@ class TodosController < ApplicationController
     end
 
 
-    ["InProgress", "Reserved"].each do |status|
+    ["InProgress", "Reserved", "Ready"].each do |status|
       @todo_list_for_user << view_context.send_request_process_data(task_list: true, status: status, potential_owner: current_user.id, query: {})
     end
 

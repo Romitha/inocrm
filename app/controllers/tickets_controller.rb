@@ -689,7 +689,7 @@ class TicketsController < ApplicationController
 
     if @ticket.status_id != @status_close_id.try(:id)
       bpm_response = view_context.send_request_process_data process_history: true, process_instance_id: 1, variable_id: "ticket_id"
-      if bpm_response[:status].upcase == "ERROR"
+      if bpm_response[:status].try(:upcase) == "ERROR"
         continue = false
         render js: "alert('BPM error. Please continue after rectify BPM.');"
       end
@@ -725,9 +725,9 @@ class TicketsController < ApplicationController
           di_pop_approval_pending = ["RCD", "RPN", "APN", "LPN", "APV"].include?(@ticket.products.first.product_pop_status.try(:code)) ? "Y" : "N"
           priority = @ticket.priority
 
-          bpm_response = view_context.send_request_process_data start_process: true, process_name: "sppt", query: {ticket_id: ticket_id, d1_pop_approval_pending: di_pop_approval_pending, priority: priority}
+          bpm_response = view_context.send_request_process_data start_process: true, process_name: "SPPT", query: {ticket_id: ticket_id, d1_pop_approval_pending: di_pop_approval_pending, priority: priority}
 
-          if bpm_response[:status].upcase == "SUCCESS"
+          if bpm_response[:status].try(:upcase) == "SUCCESS"
             @ticket.ticket_workflow_processes.create(process_id: bpm_response[:process_id], process_name: bpm_response[:process_name])
             ticket_bpm_headers bpm_response[:process_id], @ticket.id, ""
           else
@@ -852,7 +852,7 @@ class TicketsController < ApplicationController
     if continue
 
       t_params = ticket_params
-      t_params["remarks"] = "#{ticket_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" if t_params["remarks"].present?
+      t_params["remarks"] = "#{t_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" if t_params["remarks"].present?
 
       t_params["user_ticket_actions_attributes"].first.merge!("action_at" => DateTime.now.strftime("%Y-%m-%d %H:%M:%S"))
 
@@ -890,7 +890,7 @@ class TicketsController < ApplicationController
         supp_engr_user = user_assign_ticket_action.assign_to
         supp_hd_user = @ticket.created_by
 
-        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: {d2_recorrection: d2_recorrection, d3_regional_support_job: d3_regional_support_job, supp_engr_user: supp_engr_user, supp_hd_user: supp_hd_user}
+        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: {d2_re_correction: d2_recorrection, d3_regional_support_job: d3_regional_support_job, supp_engr_user: supp_engr_user, supp_hd_user: supp_hd_user}
 
         if bpm_response[:status].upcase == "SUCCESS"
           @flash_message = "Successfully updated."
@@ -1008,7 +1008,7 @@ class TicketsController < ApplicationController
     @task_list = []
     @workflow_process_ids.each do |workflow_process_id|
 
-      ["InProgress", "Reserved"].each do |status|
+      ["Ready", "InProgress", "Reserved"].each do |status|
         @task_list << view_context.send_request_process_data(task_list: true, status: status, process_instance_id: workflow_process_id, query: {})
       end
 
