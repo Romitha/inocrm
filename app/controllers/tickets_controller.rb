@@ -852,10 +852,10 @@ class TicketsController < ApplicationController
     if continue
 
       t_params = ticket_params
-      t_params["remarks"] = "#{t_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" if t_params["remarks"].present?
+      t_params["remarks"] = t_params["remarks"].present? ? "#{t_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
 
       t_params["user_ticket_actions_attributes"].first.merge!("action_at" => DateTime.now.strftime("%Y-%m-%d %H:%M:%S"))
-
+      puts t_params
       @ticket.attributes = t_params
 
       user_ticket_action = @ticket.user_ticket_actions.last
@@ -1081,14 +1081,7 @@ class TicketsController < ApplicationController
     end
 
     def ticket_bpm_headers(process_id, ticket_id, spare_part_id)
-      # h1 = [Ticket No] Customer Name(Max 20charactors)  [OP:IF terminated :Terminated][OP:If Re-Open-Count>0: RE-OPEN][Product Brand:HP][Job Type:Softwear][Ticket Type:In-House][OP: If Regional: Regional][OP: If Repaire Type = External : External Repaire]  
-      # Eg1: [T0012345] Inova IT Systems Pvt [HP][Hardwear][In-House]
 
-      # h2 = [Ticket No] Customer Name(Max 20charactors)  [Stock Part Description (Mac 15 Charactors)][OP:If Re-Open-Count>0: RE-OPEN][Product Brand:HP][Job Type:Softwear][Ticket Type:Inhouse][OP: If Regional: Regional][OP: If Repaire Type = External : External Repaire]
-      # Eg1:  [T0012345] Inova IT Systems Pvt [Hard Disc][HP][Hardwear][In-House]
-
-      # h3 = [Ticket No] Customer Name(Max 20charactors)  [Manufacture Part No-Part Description (Mac 15 Charactors)][OP:If Re-Open-Count>0: RE-OPEN][Product Brand:HP][Job Type:Softwear][Ticket Type:Inhouse][OP: If Regional: Regional][OP: If Repaire Type = External : External Repaire]
-      # Eg1:  [T0012345] Inova IT Systems Pvt [15896-Battery][HP][Hardwear][In-House]
       @ticket = Ticket.find_by_id(ticket_id)
 
       if process_id.present? and @ticket.present?

@@ -14,10 +14,10 @@ module TodosHelper
         response = response_hash["process_instance"].blank? ? {} : {status: response_hash["process_instance"]["status"], process_name: response_hash["process_instance"]["process_id"], process_id: response_hash["process_instance"]["id"]}
 
       when args[:start_task]
-        response = {status: response_hash["status"]}
+        response = response_hash["response"] ? {status: response_hash["response"]["status"]} : {}
 
       when args[:complete_task]
-        response = {status: response_hash["status"]}
+        response = response_hash["response"] ? {status: response_hash["response"]["status"]} : {}
 
       when args[:task_list]
         response = {status: "success", content: response_hash["task_summary_list"]}
@@ -30,7 +30,9 @@ module TodosHelper
 
     def deployment_id
       # "lk.inova:INOCRM:0.0.3"
-      "lk.inova:INOCRM:0.0.7"
+      # "lk.inova:INOCRM:0.0.7"
+      "lk.inova:INOCRM:0.0.8"
+
     end
 
     def base_url
