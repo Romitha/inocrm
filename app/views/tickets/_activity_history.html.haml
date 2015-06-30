@@ -10,7 +10,7 @@
                 = action.task_action.action_description
               .col-md-4
                 Date Time:
-                = action.action_at.try :strftime, "%Y-%m-%d %H:%M"
+                = action.action_at.getlocal.strftime "%Y-%m-%d %H:%M"
               .col-md-4
                 %p By: #{Rails.cache.fetch([:action_by, action.action_by]){User.find(action.action_by)}.user_name}
           -if action.task_action.action_no == 2

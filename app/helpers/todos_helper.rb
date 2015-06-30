@@ -8,10 +8,10 @@ module TodosHelper
     else
       case 
       when args[:process_history]
-        response = {status: "success", value: response_hash["log_instance_list"]["variable_instance_log"]["value"], variable_id: response_hash["log_instance_list"]["variable_instance_log"]["variable_id"]}
+        response = response_hash["log_instance_list"].blank? ? {} : {status: "success", value: response_hash["log_instance_list"]["variable_instance_log"]["value"], variable_id: response_hash["log_instance_list"]["variable_instance_log"]["variable_id"]}
 
       when args[:start_process]
-        response = {status: response_hash["process_instance"]["status"], process_name: response_hash["process_instance"]["process_id"], process_id: response_hash["process_instance"]["id"]}
+        response = response_hash["process_instance"].blank? ? {} : {status: response_hash["process_instance"]["status"], process_name: response_hash["process_instance"]["process_id"], process_id: response_hash["process_instance"]["id"]}
 
       when args[:start_task]
         response = {status: response_hash["status"]}
@@ -21,7 +21,6 @@ module TodosHelper
 
       when args[:task_list]
         response = {status: "success", content: response_hash["task_summary_list"]}
-
       end
     end
   end
