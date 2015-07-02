@@ -77,6 +77,12 @@ class Ticket < ActiveRecord::Base
     self.ticket_no = (self.class.any? ? (self.class.order("created_at ASC").map{|t| t.ticket_no.to_i}.max + 1) : 1)
   end
 
+  after_update :flash_cache
+
+  def flash_cache
+
+  end
+
 end
 
 class TicketType < ActiveRecord::Base
