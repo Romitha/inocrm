@@ -1,7 +1,6 @@
 - print_request_type = PrintTemplate.first.try(:ticket_request_type)
 - printer_url  = INOCRM_CONFIG["printer_url"]
 - print_data = request_printer_application(print_request_type, print_ticket_tag_value(ticket))
-/ - print_data = request_printer_application(print_request_type, print_ticket_tag_value(ticket), "")
 
 - fsr_id = ''
 - invoice_id = ''

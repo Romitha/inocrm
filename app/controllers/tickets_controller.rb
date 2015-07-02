@@ -21,17 +21,16 @@ class TicketsController < ApplicationController
     @product = @ticket.products.first
     @warranties = @product.warranties
     session[:product_id] = @product.id
-    Rails.cache.delete([:histories, session[:product_id]])
-    Rails.cache.delete([:join, @ticket.id])
+    # Rails.cache.delete([:histories, session[:product_id]])
+    # Rails.cache.delete([:join, @ticket.id])
     @histories = Rails.cache.fetch([:histories, session[:product_id]]){Kaminari.paginate_array(@product.tickets.reject{|t| t == @ticket})}.page(params[:page]).per(2)
+
     @join_tickets = Rails.cache.fetch([:join, @ticket.id]){Kaminari.paginate_array(Ticket.where(id: @ticket.joint_tickets.map(&:joint_ticket_id)))}.page(params[:page]).per(2)
-    @q_and_answers = @ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})}
-    @ge_q_and_answers = @ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"General Questions" => v})}
-    # @tickets = @ticket.joint_tickets
-    # Rails.cache.fetch([:histories, session[:product_id]], Kaminari.paginate_array(@product.tickets)) do
-      
-    # end
-    # @histories = Rails.cache.read([:histories, session[:product_id]]).page(params[:page]).per(3)
+
+    @q_and_answers = Rails.cache.fetch([:q_and_answers, @ticket.id]){ @ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})} }
+
+    @ge_q_and_answers = Rails.cache.fetch([:ge_q_and_answers, @ticket.id]){ @ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"General Questions" => v})} }
+
     respond_with(@ticket)
   end
 
