@@ -37,45 +37,8 @@
       = tab_content active_class: "active", tabpointer: "warranty" do
         #warranty_details
           - if display_form
-            %fieldset
-              %legend New Warranty
-              = simple_form_for @warranty, remote: true do |f|
-                = f.input :product_serial_id, as: :hidden
-                .row
-                  .col-md-6
-                    = f.association :warranty_type, as: :radio_buttons, wrapper: :append
-                  .col-md-6
-                    .strong
-                      Warranty date format
-                    %select.selectpicker{:name => "selValue", class: "small_scale_margin-top1"}
-                      %option dd M, yyyy
-                      %option dd, yyyy, M
-                      %option M, yyyy, dd
-                      %option M, dd, yyyy
-                      %option yyyy, M, dd
-                      %option yyyy, dd, M
-                .row
-                  .col-md-6
-                    = f.input :start_at, as: :string, input_html: {class: "datepicker"}
-                  .col-md-6
-                    = f.input :end_at, as: :string, input_html: {class: "datepicker"}
-                .row
-                  .col-md-4
-                    = f.input :period_part, input_html: {min: "0"}, wrapper_html: {class:" press"}
-                  .col-md-4
-                    = f.input :period_labour, input_html: {min: "0"}, wrapper_html: {class:" press"}
-                  .col-md-4
-                    = f.input :period_onsight, label: "Corporate on-site", input_html: {min: "0"}, wrapper_html: {class:" press"}
-                .row
-                  .col-md-3
-                    = f.input :care_pack_product_no, label: "Care pack product number"
-                  .col-md-3
-                    = f.input :care_pack_reg_no, label: "Care pack reg number"
-                  .col-md-6
-                    = f.input :note, input_html: {rows: 1}
-                = link_to "Cancel", "#", onclick: "Warranties.warranty_create('select'); false;"
-                = f.submit "Save", class: "btn btn-info"
-                //= link_to "Next", "#", class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2", "id"=>"warranty_next"
+
+            = render "warranties/warranty_form", warranty: @warranty, display_form_for_pop: display_form_for_pop
 
           - else
             = link_to "New Warranty", "#", onclick: "Warranties.warranty_create('display_form'); false;"

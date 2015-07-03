@@ -1,4 +1,5 @@
 - created_warranty = Rails.cache.read([:created_warranty, request.remote_ip.to_s, session[:time_now]])
+- select_for_pop = params["function_param"]
 
 %table.table.table-responsive.table-condensed.table-bordered
   %thead
@@ -23,7 +24,7 @@
   %tbody
     - warranties.order("created_at ASC").each do |warranty|
       %tr{class: "#{'danger' if created_warranty.try(:id) == warranty.id } #{'success' if (warranty.start_at.to_date..warranty.end_at.to_date).include?(Date.today)}"}
-        %td #{(link_to "Remove", warranty_path(created_warranty), method: :delete, remote: true, data: {confirm: "Are you sure?"} if created_warranty.try(:id) == warranty.id)} #{warranty.start_at.to_date.strftime("%b %d, %Y")}
+        %td #{(link_to "Remove", warranty_path(created_warranty, function_param: select_for_pop), method: :delete, remote: true, data: {confirm: "Are you sure?"} if created_warranty.try(:id) == warranty.id)} #{warranty.start_at.to_date.strftime("%b %d, %Y")}
         %td= (warranty.end_at && warranty.end_at.to_date.strftime("%b %d, %Y"))
         %td= warranty.period_part
         %td= warranty.period_labour
