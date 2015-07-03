@@ -22,10 +22,13 @@ class WarrantiesController < ApplicationController
     @ge_questions = GeQAndA.where(action_id: 1)
     if params[:function_param] == "display_form"
       @display_form = true
-    else
-      @product = Product.find(session[:product_id])
-      @warranties = @product.warranties
+    elsif params[:function_param] == "display_form_for_pop"
+      @display_form_for_pop = true
+    elsif params[:function_param] == "select_for_pop"
+      @select_for_pop = true
     end
+    @product = Product.find((session[:product_id] or params[:product_id]))
+    @warranties = @product.warranties
   end
 
   def create
@@ -43,16 +46,21 @@ class WarrantiesController < ApplicationController
       if @warranty.save
         Rails.cache.write([:created_warranty, request.remote_ip.to_s, session[:time_now]], @warranty)
         @problem_category = @ticket.problem_category
-        @display_form = false
         @ticket.warranty_type_id = @warranty.warranty_type.id
         Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @ticket)
 
+        @select_for_pop = true if params[:function_param] == 'select_for_pop'
+
       else
-        @display_form = true
+        if params[:function_param] == 'select_for_pop'
+          @display_form_for_pop = true
+        else
+          @display_form = true
+        end
       end
     end
     render :new
-    # @ticket.warranty_type_id = @warranty.warranty_type_id
+
   end
 
   def select_for_warranty
@@ -84,6 +92,13 @@ class WarrantiesController < ApplicationController
 
     if @warranty.destroy
       Rails.cache.delete([:created_warranty, request.remote_ip.to_s, session[:time_now]])
+
+      if params[:function_param] == "select_for_pop"
+        @select_for_pop = true
+      else
+        @nothing = true
+      end
+
       render :new
     end
   end

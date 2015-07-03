@@ -6,8 +6,8 @@ window.Warranties =
     $(".simple_form").remove()
     $.get "/warranties", {function_param: function_param}
 
-  warranty_create: (function_param)->
-    $.get "/warranties/new", {function_param: function_param}
+  warranty_create: (function_param, product_id)->
+    $.get "/warranties/new", {function_param: function_param, product_id: product_id}
 
   warranty_assign: (warranty_id)->
     $.post "warranties/create", {warranty_id: warranty_id}

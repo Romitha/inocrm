@@ -14,26 +14,6 @@ class TicketsController < ApplicationController
   # available caches
     # new_ticket, ticket_params, histories, existing_customer, new_product_with_pop_doc_url, created_warranty
 
-  def show
-    Warranty
-    ContactNumber
-    QAndA
-    @product = @ticket.products.first
-    @warranties = @product.warranties
-    session[:product_id] = @product.id
-    # Rails.cache.delete([:histories, session[:product_id]])
-    # Rails.cache.delete([:join, @ticket.id])
-    @histories = Rails.cache.fetch([:histories, session[:product_id]]){Kaminari.paginate_array(@product.tickets.reject{|t| t == @ticket})}.page(params[:page]).per(2)
-
-    @join_tickets = Rails.cache.fetch([:join, @ticket.id]){Kaminari.paginate_array(Ticket.where(id: @ticket.joint_tickets.map(&:joint_ticket_id)))}.page(params[:page]).per(2)
-
-    @q_and_answers = Rails.cache.fetch([:q_and_answers, @ticket.id]){ @ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})} }
-
-    @ge_q_and_answers = Rails.cache.fetch([:ge_q_and_answers, @ticket.id]){ @ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"General Questions" => v})} }
-
-    respond_with(@ticket)
-  end
-
   def new
     Rails.cache.delete([:new_ticket, request.remote_ip.to_s, session[:time_now]])
     Rails.cache.delete([:ticket_params, request.remote_ip.to_s, session[:time_now]])
@@ -81,10 +61,6 @@ class TicketsController < ApplicationController
 
       if @new_ticket.valid?
         session[:ticket_initiated_attributes] = {}
-
-        # unless @new_ticket.products.present?
-        #   @new_ticket.products << @product
-        # end
 
         @notice = "Great! new ticket is initiated."
         Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @new_ticket)
@@ -686,7 +662,7 @@ class TicketsController < ApplicationController
 
     continue = true
 
-    if @ticket.status_id != @status_close_id.try(:id)
+    if @ticket.status_id != @status_close_id
       bpm_response = view_context.send_request_process_data process_history: true, process_instance_id: 1, variable_id: "ticket_id"
       if bpm_response[:status].try(:upcase) == "ERROR"
         continue = false
@@ -718,7 +694,7 @@ class TicketsController < ApplicationController
         session[:ticket_initiated_attributes] = {}
         session[:time_now]= nil
 
-        unless @ticket.status_id == @status_close_id.try(:id)
+        unless @ticket.status_id == @status_close_id
           # bpm output variables
           ticket_id = @ticket.id
           di_pop_approval_pending = ["RCD", "RPN", "APN", "LPN", "APV"].include?(@ticket.products.first.product_pop_status.try(:code)) ? "Y" : "N"
@@ -804,6 +780,26 @@ class TicketsController < ApplicationController
     end
   end
 
+   def show
+    Warranty
+    ContactNumber
+    QAndA
+    @product = @ticket.products.first
+    @warranties = @product.warranties
+    session[:product_id] = @product.id
+    # Rails.cache.delete([:histories, session[:product_id]])
+    # Rails.cache.delete([:join, @ticket.id])
+    @histories = Rails.cache.fetch([:histories, session[:product_id]]){Kaminari.paginate_array(@product.tickets.reject{|t| t == @ticket})}.page(params[:page]).per(2)
+
+    @join_tickets = Rails.cache.fetch([:join, @ticket.id]){Kaminari.paginate_array(Ticket.where(id: @ticket.joint_tickets.map(&:joint_ticket_id)))}.page(params[:page]).per(2)
+
+    @q_and_answers = Rails.cache.fetch([:q_and_answers, @ticket.id]){ @ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})} }
+
+    @ge_q_and_answers = Rails.cache.fetch([:ge_q_and_answers, @ticket.id]){ @ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"General Questions" => v})} }
+
+    respond_with(@ticket)
+  end
+
   def assign_ticket
     ContactNumber
     QAndA
@@ -816,9 +812,13 @@ class TicketsController < ApplicationController
       Rails.cache.delete([:histories, session[:product_id]])
       Rails.cache.delete([:join, @ticket.id])
       @histories = Rails.cache.fetch([:histories, session[:product_id]]){Kaminari.paginate_array(@product.tickets)}.page(params[:page]).per(2)
+
       @join_tickets = Rails.cache.fetch([:join, @ticket.id]){Kaminari.paginate_array(Ticket.where(id: @ticket.joint_tickets.map(&:joint_ticket_id)))}.page(params[:page]).per(2)
-      @q_and_answers = @ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})}
-      @ge_q_and_answers = @ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"General Questions" => v})}
+
+      @q_and_answers = Rails.cache.fetch([:q_and_answers, @ticket.id]){ @ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})} }
+
+      @ge_q_and_answers = Rails.cache.fetch([:ge_q_and_answers, @ticket.id]){ @ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"General Questions" => v})} }
+
       @user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(2).id)
       @user_assign_ticket_action = @user_ticket_action.user_assign_ticket_actions.build
       @assign_regional_support_center = @user_ticket_action.assign_regional_support_centers.build
@@ -898,7 +898,8 @@ class TicketsController < ApplicationController
         end
       end
     end
-    redirect_to todos_url, notice: @flash_message
+    # redirect_to todos_url, notice: @flash_message
+    redirect_to @ticket, notice: @flash_message
   end
 
   def pop_approval
@@ -906,6 +907,7 @@ class TicketsController < ApplicationController
     QAndA
     TaskAction
     @ticket = Ticket.find_by_id params[:ticket_id]
+    @new_warranty = Warranty.new
     if @ticket
       @product = @ticket.products.first
       @warranties = @product.warranties
@@ -913,17 +915,58 @@ class TicketsController < ApplicationController
       Rails.cache.delete([:histories, session[:product_id]])
       Rails.cache.delete([:join, @ticket.id])
       @histories = Rails.cache.fetch([:histories, session[:product_id]]){Kaminari.paginate_array(@product.tickets)}.page(params[:page]).per(2)
+
       @join_tickets = Rails.cache.fetch([:join, @ticket.id]){Kaminari.paginate_array(Ticket.where(id: @ticket.joint_tickets.map(&:joint_ticket_id)))}.page(params[:page]).per(2)
-      @q_and_answers = @ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})}
-      @ge_q_and_answers = @ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"General Questions" => v})}
-      @user_ticket_action = @ticket.user_ticket_actions.build(action_id: 2)
+
+      @q_and_answers = Rails.cache.fetch([:q_and_answers, @ticket.id]){ @ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})} }
+
+      @ge_q_and_answers = Rails.cache.fetch([:ge_q_and_answers, @ticket.id]){ @ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"General Questions" => v})} }
+
+      @user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(2).id)
       @user_assign_ticket_action = @user_ticket_action.user_assign_ticket_actions.build
       @assign_regional_support_center = @user_ticket_action.assign_regional_support_centers.build
     end
     respond_to do |format|
       format.html {render "tickets/tickets_pack/pop_approval"}
     end
+  end
 
+  def update_pop_approval
+    TaskAction
+    t_params = ticket_params.except('products_attributes')
+    product_params = ticket_params["products_attributes"]
+    product_id = product_params.keys.first
+
+    @ticket = Ticket.find params[:ticket_id]
+    @product = Product.find product_id
+
+    @ticket.attributes = t_params
+
+    # product_params[product_id]["pop_note"] = product_params[product_id]["pop_note"].present? ? "#{product_params[product_id]["pop_note"]} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@product.pop_note}" : @product.pop_note
+
+
+    @product.attributes = product_params[product_id]
+
+    @product.pop_note = "#{@product.pop_note} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@product.pop_note_was}" if @product.pop_note_changed?
+
+    @ticket.save
+    @product.save
+
+    if params["pop_completed"]
+
+      user_ticket_action = @ticket.user_ticket_actions.create(action_id: TaskAction.find_by_action_no(62).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+
+      # calling bpm
+      bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: {}
+
+      if bpm_response[:status].upcase == "SUCCESS"
+        @flash_message = "Successfully updated."
+      else
+        @flash_message = "ticket is updated. but Bpm error"
+      end
+    end
+
+    redirect_to @ticket, notice: @flash_message
   end
 
   def resolution
@@ -1028,7 +1071,7 @@ class TicketsController < ApplicationController
     end
 
     def ticket_params
-      params.require(:ticket).permit(:ticket_no, :sla_id, :serial_no, :base_currency_id, :regional_support_job, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :ticket_action_id, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer], user_ticket_actions_attributes: [:id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, user_assign_ticket_actions_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy]], ticket_extra_remarks_attributes: [:id, :note, :created_by, :extra_remark_id])
+      params.require(:ticket).permit(:ticket_no, :sla_id, :serial_no, :base_currency_id, :regional_support_job, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :ticket_action_id, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer], user_ticket_actions_attributes: [:id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, user_assign_ticket_actions_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy]], ticket_extra_remarks_attributes: [:id, :note, :created_by, :extra_remark_id], products_attributes: [:id, :sold_country_id, :pop_note, :pop_doc_url, :pop_status_id])
     end
 
     def product_brand_params

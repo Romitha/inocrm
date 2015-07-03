@@ -1,4 +1,3 @@
-- display_form = @display_form
 - ticket = @ticket
 - product = @product
 - warranties = @warranties
@@ -16,119 +15,38 @@
       = tab_panel do
         = render "tickets/tickets_pack/ticket_info", ticket: ticket, product: product, customer: customer, warranties: warranties, histories: histories, join_tickets: join_tickets, ge_q_and_as: ge_q_and_as, pr_q_and_as: pr_q_and_answers
     = tab_content tabpointer: :assign_ticket, active_class: "active" do    
-      = simple_form_for product, url: create_product_tickets_path, multipart: true, remote: true do |f|
-        .row
-          .col-md-3
-            = f.association :product_sold_country, wrapper_html: {class: "col-md-11"}, label_method: :Country, value_method: :id
-            .add_sign
-              = link_to create_product_country_tickets_path(status_param: "initiate"), method: :post, remote: true, title: "Country" do
-                %span.glyphicon.glyphicon-plus-sign
-          .col-md-3
-            = f.association :product_pop_status, collection: ProductPopStatus.first(3), include_blank: false, wrapper_html: {class: "col-md-11"}, label: "Product POP status"
-          .col-md-2
-            %strong.small_scale_padding-bottom3{style: "display: block;"} POP note document
-            #preview_of_pop_doc_url{style: "word-wrap: break-word;"}
-              = product.pop_doc_url.file.filename if product.pop_doc_url.present?
-            .upload_button
-              #pop_doc_url_edit.btn.btn-info.btn-mini.fileinput-button{style: "min-height: 10px;"}
-                %span Upload pop note
-                = f.file_field :pop_doc_url, accept: 'image/png,image/gif,image/jpeg,application/pdf'
+      .row
+        .col-md-12
+          #new_warranty_link
+            = link_to "New Warranty", "#", onclick: "Warranties.warranty_create('display_form_for_pop'); false;"
+          #form_frame
+            = render 'warranties/select_warranties', warranties: warranties
 
-            .pop_doc_url_wrapper
+      #product_load
+        = simple_nested_form_for ticket, url: update_pop_approval_tickets_path, method: :post do |f|
+          = hidden_field_tag :ticket_id, params[:ticket_id]
+          = hidden_field_tag :process_id, params[:process_id]
+          = hidden_field_tag :task_id, params[:task_id]
+          = hidden_field_tag :owner, params[:owner]
+          .row
+            .col-md-12
+              = f.association :warranty_type, as: :radio_buttons, wrapper_html: {class: "col-md-6"}, wrapper: :append
+              = f.input :cus_chargeable, label: "Customer chargeable", as: :radio_buttons, wrapper_html: {class: "col-md-2"}, wrapper: :append, required: true
+          = f.simple_fields_for "products_attributes[]", ticket.products.first do |p|
+            .row
+              .col-md-3
+                = p.association :product_pop_status, collection: ProductPopStatus.first(3), include_blank: false, wrapper_html: {class: "col-md-11"}, label: "Product POP status"
+              .col-md-3
+                = p.association :product_sold_country, wrapper_html: {class: "col-md-11"}, label_method: :Country, value_method: :id
 
-
-            %script#pop_doc_url_upload{type: "text/x-tmpl"}
-              .pop_doc_url_upload.span12
-                {%= o.name %}
-                .progress
-                  .progress-bar.progress-bar-success.progress-bar-striped{role: "progressbar", "aria-valuemax" => 100, "aria-valuemin" => 0, "aria-valuenow" => 0}
-          = f.input :pop_note, wrapper_html: {class:"col-md-4"}, label: "POP note"
-        .row
-          .col-md-6
-            = f.association :warranty_type, as: :radio_buttons, wrapper: :append
-        .row
-          - if display_form
-            %fieldset
-              %legend New Warranty
-              .row
-                .col-md-6
-                  = f.association :warranty_type, as: :radio_buttons, wrapper: :append
-                  / = f.input :cus_chargeable, label: "Customer chargeable", as: :radio_buttons, wrapper_html: {class: "col-md-2"}, wrapper: :append, required: true
-                .col-md-6
-                  .strong
-                    Warranty date format
-                  %select.selectpicker{:name => "selValue", class: "small_scale_margin-top1"}
-                    %option dd, M, yyyy
-                    %option dd, yyyy, M
-                    %option M, yyyy, dd
-                    %option M, dd, yyyy
-                    %option yyyy, M, dd
-                    %option yyyy, dd, M
-
-          - else
-            = link_to "New Warranty", "#", onclick: "Warranties.warranty_create('display_form'); false;"
-            - created_warranty = Rails.cache.read([:created_warranty, request.remote_ip.to_s, session[:time_now]])
-
-            %table.table.table-responsive.table-condensed.table-bordered
-              %thead
-                %tr
-                  %th{colspan: 2} Warranty date
-                  %th{colspan: 3} Period in month
-                  %th Warranty
-                  %th{colspan: 2} Care pack
-                  %th
-                %tr
-                  %th Start
-                  %th End
-                  %th Part
-                  %th labour
-                  %th Onsite
-                  %th Type
-                  %th Product number
-                  %th Reg number
-                  %th Note
-                  %th Function
-
-              %tbody
-                - warranties.order("created_at ASC").each do |warranty|
-                  %tr{class: "#{'danger' if created_warranty.try(:id) == warranty.id } #{'success' if (warranty.start_at.to_date..warranty.end_at.to_date).include?(Date.today)}"}
-                    %td #{(link_to "Remove", warranty_path(created_warranty), method: :delete, remote: true, data: {confirm: "Are you sure?"} if created_warranty.try(:id) == warranty.id)} #{warranty.start_at.to_date.strftime("%b %d, %Y")}
-                    %td= (warranty.end_at && warranty.end_at.to_date.strftime("%b %d, %Y"))
-                    %td= warranty.period_part
-                    %td= warranty.period_labour
-                    %td= warranty.period_onsight
-                    %td= warranty.warranty_type.try(:name)
-                    %td= warranty.care_pack_product_no
-                    %td= warranty.care_pack_reg_no
-                    %td= warranty.note
-
-        .row
-          .col-md-12
-
-            = link_to "Cancel", new_ticket_path, class: "small_scale_margin-left1", data: {disable_with: "Please wait..."}
-            = f.submit "Save", name: "next_to_customer", class: "btn btn-success btn-sm small_scale_margin-left1", data: {disable_with: "Please wait..."}
+              .col-md-2
+                = link_to "View POP (#{product.pop_doc_url.file.try :filename})", product.pop_doc_url.url, target: "_blank" if product.pop_doc_url.file.present?
+                = p.file_field :pop_doc_url, accept: 'image/png,image/gif,image/jpeg,application/pdf'
 
 
-
-
-
-      /  = simple_form_for ticket do |f|
-      /    .row
-      /      .col-md-12
-      /        = f.association :warranty_type, as: :radio_buttons, wrapper_html: {class: "col-md-6"}, wrapper: :append
-      
-      /   .row
-      /     .col-md-6
-      /       = f.association :warranty_type, as: :radio_buttons, wrapper: :append
-      /     .col-md-6
-      /       .strong
-      /         Warranty date format
-      /       %select.selectpicker{:name => "selValue", class: "small_scale_margin-top1"}
-      /         %option dd M, yyyy
-      /         %option dd, yyyy, M
-      /         %option M, yyyy, dd
-      /         %option M, dd, yyyy
-      /         %option yyyy, M, dd
-      /         %option yyyy, dd, M
-
-     
+              = p.input :pop_note, wrapper_html: {class:"col-md-4"}, label: "POP note", input_html: {value: nil}
+              = simple_format product.pop_note
+              = label_tag "pop_completed" do
+                Pop Completed
+                = check_box_tag "pop_completed"
+              = p.submit "Save", class: "btn btn-sm btn-success"

@@ -3,8 +3,8 @@ class Product < ActiveRecord::Base
 
   mount_uploader :pop_doc_url, PopDocUrlUploader
 
-  has_many :ticket_product_serial, foreign_key: :product_serial_id
-  has_many :tickets, through: :ticket_product_serial
+  has_many :ticket_product_serials, foreign_key: :product_serial_id
+  has_many :tickets, through: :ticket_product_serials
   has_many :warranties, foreign_key: :product_serial_id
 
   belongs_to :warranty_type, foreign_key: :product_brand_id

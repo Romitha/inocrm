@@ -17,12 +17,13 @@ class Ticket < ActiveRecord::Base
   belongs_to :contact_person2, foreign_key: :contact_person2_id
   belongs_to :report_person, foreign_key: :reporter_id
 
-  has_many :ticket_product_serial, foreign_key: :ticket_id
-  has_many :products, through: :ticket_product_serial
+  has_many :ticket_product_serials, foreign_key: :ticket_id
+  has_many :products, through: :ticket_product_serials
+  accepts_nested_attributes_for :products, allow_destroy: true
 
   has_many :q_and_answers, foreign_key: :ticket_id
   has_many :q_and_as, through: :q_and_answers
-  accepts_nested_attributes_for :q_and_answers, allow_destroy: true
+  accepts_nested_attributes_for :q_and_answers, allow_destroy: true, :reject_if => :all_blank
 
   has_many :ge_q_and_answers
   accepts_nested_attributes_for :ge_q_and_answers, allow_destroy: true
@@ -80,7 +81,7 @@ class Ticket < ActiveRecord::Base
   after_update :flash_cache
 
   def flash_cache
-
+    Rails.cache.delete([:join, self.id])
   end
 
 end
