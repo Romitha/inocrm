@@ -28,7 +28,7 @@
     .col-md-2
       %p Sold By:
     .col-md-2
-      %p Engineer:
+      %p Engineer: #{ticket.owner_engineer_id and User.find(ticket.owner_engineer_id).user_name}
     .col-md-2.pull-right.text-right
       %strong Priority: #{INOCRM_CONFIG["priority"].key ticket.priority}
     .col-md-3.pull-right.text-right

@@ -684,6 +684,7 @@ class TicketsController < ApplicationController
         Rails.cache.delete([:ticket_params, request.remote_ip.to_s, session[:time_now]])
         Rails.cache.delete([:created_warranty, request.remote_ip.to_s, session[:time_now]])
         Rails.cache.delete([:existing_customer, request.remote_ip.to_s, session[:time_now]])
+        Rails.cache.delete([:histories, session[:product_id]])
         session[:ticket_id] = nil
         session[:product_category_id] = nil
         session[:product_brand_id] = nil
@@ -788,7 +789,7 @@ class TicketsController < ApplicationController
     @warranties = @product.warranties
     session[:product_id] = @product.id
     # Rails.cache.delete([:histories, session[:product_id]])
-    # Rails.cache.delete([:join, @ticket.id])
+    Rails.cache.delete([:join, @ticket.id])
     @histories = Rails.cache.fetch([:histories, session[:product_id]]){Kaminari.paginate_array(@product.tickets.reject{|t| t == @ticket})}.page(params[:page]).per(2)
 
     @join_tickets = Rails.cache.fetch([:join, @ticket.id]){Kaminari.paginate_array(Ticket.where(id: @ticket.joint_tickets.map(&:joint_ticket_id)))}.page(params[:page]).per(2)
