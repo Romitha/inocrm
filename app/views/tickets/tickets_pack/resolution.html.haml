@@ -19,3 +19,66 @@
       = tab_panel do
         = render "tickets/tickets_pack/ticket_resolution", ticket: ticket, product: product, customer: customer, warranties: warranties
         = render "tickets/tickets_pack/resolution/re_assign"
+      .row
+        .col-md-12
+          .col-md-1
+            %strong Start At :
+          .col-md-3
+            YYYY/MM/DD HH:MM
+          %br
+          %br
+      %form.form-horizontal
+        .row
+          .col-md-12
+            .form-group
+              %label.col-sm-1.control-label Action
+              .col-sm-8
+                .dropdown
+                %button#dropdownMenu1.btn.btn-default.dropdown-toggle{"aria-expanded" => "true", "aria-haspopup" => "true", "data-toggle" => "dropdown", :type => "button"}
+                  Dropdown
+                  %span.caret
+                %ul.dropdown-menu{"aria-labelledby" => "dropdownMenu1"}
+                  %li
+                    %a{:href => "#"} xxxxxxxxxx
+                  %li
+                    %a{:href => "#"} xxxxxxxxxx
+                  %li
+                    %a{:href => "#"} xxxxxxxxxx
+                  %li
+                    %a{:href => "#"} xxxxxxxxxx
+        .row
+          .col-md-12
+            .form-group
+              %label.col-sm-1.control-label Note
+              .col-sm-10
+                %textarea.form-control{:rows => "2"}
+        .row
+          .col-md-1
+          .col-md-3
+            .checkbox
+            %label
+              %input{:type => "checkbox"}
+                Re-assign
+          .col-md-6
+            .row
+              %br
+              .form-group
+                %label.col-sm-1.control-label Reason
+                .col-sm-10
+                  .dropdown
+                  %button#dropdownMenu1.btn.btn-default.dropdown-toggle{"aria-expanded" => "true", "aria-haspopup" => "true", "data-toggle" => "dropdown", :type => "button"}
+                    Dropdown
+                    %span.caret
+                  %ul.dropdown-menu{"aria-labelledby" => "dropdownMenu1"}
+                    %li
+                      %a{:href => "#"} xxxxxxxxxx
+                    %li
+                      %a{:href => "#"} xxxxxxxxxx
+                    %li
+                      %a{:href => "#"} xxxxxxxxxx
+                    %li
+                      %a{:href => "#"} xxxxxxxxxx
+                  %button.btn.btn-default.btn-xs{:type => "button"}
+                    %span.glyphicon.glyphicon-plus
+          .col-md-1
+            %button.btn.btn-success{:type => "button"} Start

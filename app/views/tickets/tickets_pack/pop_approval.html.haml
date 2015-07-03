@@ -34,6 +34,7 @@
               = f.input :cus_chargeable, label: "Customer chargeable", as: :radio_buttons, wrapper_html: {class: "col-md-2"}, wrapper: :append, required: true
           = f.simple_fields_for "products_attributes[]", ticket.products.first do |p|
             .row
+              %br
               .col-md-3
                 = p.association :product_pop_status, collection: ProductPopStatus.first(3), include_blank: false, wrapper_html: {class: "col-md-11"}, label: "Product POP status"
               .col-md-3
@@ -45,8 +46,12 @@
 
 
               = p.input :pop_note, wrapper_html: {class:"col-md-4"}, label: "POP note", input_html: {value: nil}
-              = simple_format product.pop_note
-              = label_tag "pop_completed" do
-                Pop Completed
-                = check_box_tag "pop_completed"
-              = p.submit "Save", class: "btn btn-sm btn-success"
+            .row
+              .col-md-offset-8.col-md-4
+                = simple_format product.pop_note
+            .row
+              .col-md-6
+                = label_tag "pop_completed" do
+                  Pop Completed
+                  = check_box_tag "pop_completed"
+                = p.submit "Save", class: "btn btn-sm btn-success small_scale_margin-left2 small_scale_margin-bottom2"
