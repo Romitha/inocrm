@@ -49,11 +49,18 @@ class TodosController < ApplicationController
 
     @bpm_response_start_task = view_context.send_request_process_data start_task: true, task_id: task_id
 
-    @bpm_input_variables = []
-    input_variables.split(",").each do |input_variable|
-      @bpm_input_variables << view_context.send_request_process_data(process_history: true, process_instance_id: process_instance_id, variable_id: input_variable)
-    end
+    @bpm_response_exist = view_context.send_request_process_data task_list: true, status: "InProgress", query: {taskId: task_id}
 
-    redirect_to "#{url}?process_id=#{process_instance_id}&task_id=#{task_id}&owner=#{owner}&#{@bpm_input_variables.map{|e| e[:variable_id]+'='+e[:value]}.join('&')}"
+    if @bpm_response_exist[:content].present?
+      @bpm_input_variables = []
+      input_variables.split(",").each do |input_variable|
+        @bpm_input_variables << view_context.send_request_process_data(process_history: true, process_instance_id: process_instance_id, variable_id: input_variable)
+      end
+      @redirect_url = "#{url}?process_id=#{process_instance_id}&task_id=#{task_id}&owner=#{owner}&#{@bpm_input_variables.map{|e| e[:variable_id]+'='+e[:value]}.join('&')}"
+    else
+      @redirect_url = todos_url
+      @flash_message = "Task is not available."
+    end
+    redirect_to @redirect_url, notice: @flash_message
   end
 end
