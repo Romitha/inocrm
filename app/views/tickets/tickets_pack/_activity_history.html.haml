@@ -16,9 +16,24 @@
           -if action.task_action.action_no == 2
             .panel-body
               .row
-                .col-md-4
-                  %ul.list-unstyled
-                    %li Sbu:
-                    %li Assign to:
-                    %li Recorrection:
-                    %li Regional Support Center Job:
+                .col-md-3
+                  Sbu: #{action.user_assign_ticket_actions.first.try(:sbu).try(:sbu)}
+                .col-md-3
+                  Assign to: #{User.find(action.user_assign_ticket_actions.first.assign_to).user_name}
+                .col-md-3
+                  -if action.user_assign_ticket_actions.first.recorrection == true
+                    Recorrection: Yes
+                  -else
+                    Recorrection: No
+                .col-md-3
+                  -if action.user_assign_ticket_actions.first.recorrection == true
+                    Regional Support Center Job: Yes
+                  -else
+                    Regional Support Center Job: No
+          -if action.task_action.action_no == 4
+            .panel-body
+              .row
+                .col-md-6
+                  Regional Support Center: #{action.assign_regional_support_centers.first.regional_support_center.organization.name}
+                .col-md-6
+                  Created At: #{action.assign_regional_support_centers.first.created_at.strftime("%Y-%m-%d %H:%M")}
