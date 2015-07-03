@@ -49,6 +49,7 @@ class TodosController < ApplicationController
 
     @bpm_response_start_task = view_context.send_request_process_data start_task: true, task_id: task_id
 
+    # To avoid call completed task again, check the status
     @bpm_response_exist = view_context.send_request_process_data task_list: true, status: "InProgress", query: {taskId: task_id}
 
     if @bpm_response_exist[:content].present?
