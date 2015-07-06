@@ -28,14 +28,15 @@
       = label_tag(:r_type_aexternal, "External Repair")
   .form-group
     %label Activity
-    %select{:class => "activity_id"}
-      %option{:value => "1"} Re Assign
-      %option{:value => "2"} Create FSR
-      %option{:value => "3"} Action Taken
-      %option{:value => "4"} Delever Unit
-      %option{:value => "5"} Terminate Job
-      %option{:value => "5"} Edit FSR (Un Approved)
-      %option{:value => "6"} Request Spare Parts
+    %select{:class => "activity_id", :id => "template_caller"}
+      %option{:value => "re_assign"} Re Assign
+      %option{:value => "request_on_loan_spare_part"} Request On Loan Spare Part
+      %option{:value => "request_spare_part"} Request Spare Part
+      %option{:value => "current_activity"} Current Activity
+      %option{:value => "request_to_edit_serial_no"} Request To Edit Serial No
+      %option{:value => "terminate_job"} Terminate Job
+  .form-group
+    #resolution_templates
   .form-group
     %label Resolution Summary
-    %textarea.form-control
+    %textarea.form-control{:rows => "3"}
