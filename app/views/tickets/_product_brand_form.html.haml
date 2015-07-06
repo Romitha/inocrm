@@ -13,7 +13,7 @@
     .row
       = f.input :name, wrapper_html: {class:"col-md-3"}
       = f.input :parts_return_days, wrapper_html: {class:"col-md-3 press"}, input_html: {min: "0"}
-      = f.input :warranty_date_format, wrapper_html: {class:"col-md-3"}, label: "Warranty date format"
+      = f.input :warranty_date_format, wrapper_html: {class:"col-md-3"}, label: "Warranty date format", collection: ["dd M, yyyy","dd, yyyy, M","M, yyyy, dd", "M, dd, yyyy", "yyyy, M, dd", "yyyy, dd, M"]
       .col-md-2
         = label_tag "Currency" 
         = f.select :currency_id, options_from_collection_for_select(Currency.all, :id, :currency), {}

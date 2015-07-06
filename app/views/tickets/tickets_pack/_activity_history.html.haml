@@ -5,14 +5,16 @@
         - if action.persisted?
           .panel-heading{:style => "height:35px;margin-top:2px;"}
             .row
-              .col-md-4
+              .col-md-3
                 Activity:
                 = action.task_action.action_description
-              .col-md-4
+              .col-md-3
                 Date Time:
                 = action.action_at.getlocal.strftime "%Y-%m-%d %H:%M"
-              .col-md-4
+              .col-md-3
                 %p By: #{Rails.cache.fetch([:action_by, action.action_by]){User.find(action.action_by)}.user_name}
+              .col-md-3
+                %p Re-Open: #{action.re_open_index > 0 ? 'Yes ('+action.re_open_index+')' : 'No'}
           -if action.task_action.action_no == 2
             .panel-body
               .row

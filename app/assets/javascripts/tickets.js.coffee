@@ -9,6 +9,7 @@ window.Tickets =
     @pass_to_re_correction()
     @pass_to_re_correction_trigger()
     @filter_sbu_engineer()
+    @call_resolution_template()
     return
 
   initial_loaders: ->
@@ -285,3 +286,7 @@ window.Tickets =
         $("#assign_to_for_regional").html(filtered_html)
       else
         $("#assign_to_for_regional").empty()
+
+  call_resolution_template: (call_template)->
+    $("").click ->
+      $.post "/tickets/call_resolution_template", {call_template: call_template}
