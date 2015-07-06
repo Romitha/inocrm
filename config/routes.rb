@@ -109,6 +109,7 @@ Rails.application.routes.draw do
       post "join_tickets"
       post "update_assign_ticket"
       post "update_pop_approval"
+      post "call_resolution_template"
 
       get "edit-ticket", :action => :edit_ticket
       get "pop-approval"#, :action => :pop_note

@@ -1062,6 +1062,11 @@ class TicketsController < ApplicationController
     render "tickets/tickets_pack/workflow_index", layout: "workflow_diagram"
   end
 
+  def call_resolution_template
+    @call_template = params[:call_template]
+
+  end
+
   private
     def set_ticket
       @ticket = Ticket.find(params[:id])

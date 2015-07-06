@@ -8,7 +8,7 @@
           .label.label-danger HOLD
         - if ticket.re_open_count.to_i > 0
           .btn.btn-xs.btn-primary
-            Re-open
+            RE-OPEN
             %span.badge= ticket.re_open_count.to_i
         - if ticket.terminated
           .label.label-danger TERMINATED
@@ -17,16 +17,16 @@
       .col-md-2.pull-right.text-right.small_scale_padding-top8
         %p Status: #{ticket.ticket_status.name}
       .col-md-3.pull-right.text-right.small_scale_padding-top8
-        %strong Resolve Status: #{ticket.ticket_status_resolve.try(:name)}
+        %strong Resolve status: #{ticket.ticket_status_resolve.try(:name)}
 .view_ticket_body
   .row
     .col-md-3
-      Date Sold:
+      Sold at:
       - if ticket.cus_payment_required and !ticket.cus_payment_completed
         %p
           .label.label-primary{title: "#{number_to_currency(ticket.final_amount_to_be_paid.to_i, unit: ticket.ticket_currency.code, separator: ".", delimiter: "00", format: '%u %n')}"} Payment required
     .col-md-2
-      %p Sold By:
+      %p Sold by:
     .col-md-2
       %p Engineer: #{ticket.owner_engineer_id and User.find(ticket.owner_engineer_id).user_name}
     .col-md-2.pull-right.text-right
@@ -36,11 +36,11 @@
       %p Logged by: #{current_user.email}
   .row
     .col-md-4
-      SLA Time: #{pluralize ticket.slatime, 'Hr'}
-      %p SLA Remaining: 
+      SLA time: #{pluralize ticket.slatime, 'Hr'}
+      %p SLA remaining: 
     .col-md-4
-      SLA Started: #{ticket.created_at.strftime("%Y-%m-%d %H:%M")}
+      SLA started at: #{ticket.created_at.strftime("%Y-%m-%d %H:%M")}
       %p SLA Finished:
     .col-md-4
-      Job Finished: #{ticket.job_finished_at.try :strftime, "%Y-%m-%d %H:%M"}
-      %p Ticket Closed:
+      Job finished at: #{ticket.job_finished_at.try :strftime, "%Y-%m-%d %H:%M"}
+      %p Ticket closed at:
