@@ -288,5 +288,6 @@ window.Tickets =
         $("#assign_to_for_regional").empty()
 
   call_resolution_template: (call_template)->
-    $("").click ->
-      $.post "/tickets/call_resolution_template", {call_template: call_template}
+    $("#template_caller option").click ->
+      #alert $(@).val()
+      $.post "/tickets/call_resolution_template", {call_template: $(@).val()}
