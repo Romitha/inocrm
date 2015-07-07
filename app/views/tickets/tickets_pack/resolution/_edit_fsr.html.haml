@@ -1,0 +1,109 @@
+%fieldset
+  %legend Edit FSR
+  .row
+    .col-md-6
+      .form-group
+        %label.col-sm-4.control-label FSR No
+        .col-sm-5
+          .dropdown
+          %button#dropdownMenu1.btn.btn-default.dropdown-toggle{"aria-expanded" => "true", "aria-haspopup" => "true", "data-toggle" => "dropdown", :type => "button"}
+            Dropdown
+            %span.caret
+          %ul.dropdown-menu{"aria-labelledby" => "dropdownMenu1"}
+            %li
+              %a{:href => "#"} xxxxxxxxxx
+            %li
+              %a{:href => "#"} xxxxxxxxxx
+            %li
+              %a{:href => "#"} xxxxxxxxxx
+            %li
+              %a{:href => "#"} xxxxxxxxxx
+
+  %br
+  .row
+    .col-md-6
+      %h4.col-sm-4.control-label FSR Information
+  
+  %br
+  .form-group  
+    .row
+      .col-md-4
+        %label.col-sm-5.control-label Worked Started
+        .col-sm-7 
+          %input#exampleInputName2.datepicker.form-control{:type => "text"}                        
+      .col-md-4
+        %label.col-sm-5.control-label Worked Finished
+        .col-sm-7 
+          %input#exampleInputName2.datepicker.form-control{:type => "text"}
+      
+      .col-md-4
+        %label.col-sm-5.control-label FSR No: A123
+     
+    %br    
+    .row
+      .col-md-4
+        %label.col-sm-5.control-label Hours Worked
+        .col-sm-7
+          %input#exampleInputName2.form-control{:type => "text"}
+        
+      .col-md-4
+        %label.col-sm-5.control-label Down Time Hours
+        .col-sm-7
+          %input#exampleInputName2.form-control{:type => "text"}
+      
+    %br
+    .row
+      .col-md-4
+        %label.col-sm-5.control-label Travel Hours
+        .col-sm-7
+          %input#exampleInputName2.form-control{:type => "text"}
+
+  %br
+  .row
+    .col-md-6
+      %h4.col-sm-4.control-label For Invoicing
+
+  %br
+  .form-group  
+    .row
+      .col-md-4
+        %label.col-sm-5.control-label Engineer Time travel
+        .col-sm-7
+          %input#exampleInputName2.form-control{:type => "text"}
+      .col-md-4
+        %label.col-sm-5.control-label Engineer Time On Site
+        .col-sm-7
+          %input#exampleInputName2.form-control{:type => "text"}
+  
+    %br
+    .row
+      .col-md-4
+        %label.col-sm-5.control-label Other Charges Mileages
+        .col-sm-7
+          %input#exampleInputName2.form-control{:type => "text"}
+      .col-md-4
+        %label.col-sm-5.control-label Others charges repair
+        .col-sm-7
+          %input#exampleInputName2.form-control{:type => "text"}
+  
+    %br
+    .row
+      .col-md-12
+        %label.col-sm-2.control-label Resolution
+        .col-sm-10
+          %textarea.form-control{:rows => "2"}  
+  %br
+  .row
+    .col-md-4
+      %label.col-sm-4.control-label Engineer Time travel
+      .col-sm-8
+        .radio
+          %label
+            %input#optionsRadios1{:checked => "", :name => "optionsRadios", :type => "radio", :value => "option1"}
+              Partial
+            %input#optionsRadios2{:checked => "", :name => "optionsRadios", :type => "radio", :value => "option1"}
+              Full
+    .col-md-6
+      %label.col-sm-3.control-label Remarks
+      .col-sm-8
+        %input#exampleInputName2.form-control{:type => "text"}
