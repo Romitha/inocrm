@@ -1,4 +1,6 @@
 - ticket = @ticket
+- product_to_day_warranties = product.warranties.select{|w| (w.created_at.to_date..w.updated_at.to_date).include?(Date.today)}
+- selected_warranty_id = (product_to_day_warranties.present? ? (((product_to_day_warranties.any?{|w| w.warranty_type_id==1} and 1) or (product_to_day_warranties.any?{|w| w.warranty_type_id==2} and 2))) : 4 )
 
 - popnote = capture do
   = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "product", name: "pop_note", url: product_update_tickets_path(product_id: product.id), "original-title" => "Update pop note", value: ""} do
@@ -84,9 +86,9 @@
 
               .row
                 .col-md-12
-                  = f.association :warranty_type, as: :radio_buttons, wrapper_html: {class: "col-md-6"}, wrapper: :append
+                  = f.association :warranty_type, as: :radio_buttons, label: "Ticket warranty type", wrapper_html: {class: "col-md-12"}, wrapper: :append, checked: selected_warranty_id
                   = f.input :cus_chargeable, label: "Customer chargeable", as: :radio_buttons, wrapper_html: {class: "col-md-2"}, wrapper: :append, required: true
-                  = f.association :ticket_type, as: :radio_buttons, wrapper_html: {class: "col-md-3"}, wrapper: :append, input_html: {class: "ticket_type"}
+                  = f.association :ticket_type, as: :radio_buttons, wrapper_html: {class: "col-md-3"}, wrapper: :append, input_html: {class: "ticket_type"}, checked: 1
                   = f.input :regional_support_job, label: "Regional", wrapper_html: {class: "col-md-1"}, wrapper: :append
               .row
               .row

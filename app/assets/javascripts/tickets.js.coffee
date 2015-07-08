@@ -5,7 +5,7 @@ window.Tickets =
     @prevent_enter()
     @description_more()
     @initial_loaders()
-    @regional_support_job_active()
+    # @regional_support_job_active()
     @pass_to_re_correction()
     @pass_to_re_correction_trigger()
     @filter_sbu_engineer()
