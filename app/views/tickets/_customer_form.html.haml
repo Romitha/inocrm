@@ -23,30 +23,26 @@
   = ticket.ticket_type.name
 
 - customerchargeable = link_to "#", class: "inline_edit", data: {type: "select", source: [{value: 1, text: "yes"},{value: 0, text: "no"}], resource: "ticket", name: "cus_chargeable", url: ticket_update_tickets_path, "original-title" => "Update cus chargeable"} do
-  = ticket.cus_chargeable
+  - if ticket.cus_chargeable == false
+    no
+  - else
+    yes
 
 - jobtype = link_to "#", class: "inline_edit", data: {type: "select", source: JobType.all.collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "job_type_id", url: ticket_update_tickets_path, "original-title" => "Update Job Type"} do
   = ticket.job_type.name
 
 
 
+.ticket
+  = initiate_table table_type: "table-hover table-bordered" do
+    = table_header ["Priority", "Problem category", "Problem description", "Warranty", "Ticket type", "Customer chargeable", "Job Type"]
+    = table_body [priority, problemcategory, problemdescription, warranty, tickettype, customerchargeable, jobtype]
 
-.col-md-2.col-xs-12.col-sm-2{style: "padding-left:0;"}
-  = tab_nav_tab({class: "tabs-left", id: "secondary_tab"}, job_info: {content: "Job_info", active_class: "active job_c"}, customer: {content: "Customer", active_class: "customer_c"})
-.col-md-10.col-xs-12.col-sm-10
-  .tab-content
-    = tab_content tabpointer: :job_info, active_class: "active" do
-      = initiate_table table_type: "table-hover table-bordered" do
-        = table_header ["Priority", "Problem category", "Problem description", "Warranty", "Ticket type", "Customer chargeable", "Job Type"]
-        = table_body [priority, problemcategory, problemdescription, warranty, tickettype, customerchargeable, jobtype]
-    = tab_content tabpointer: :customer do
-      - if existing_customer
-        = initiate_table table_type: "table-hover table-bordered" do
-          = table_header ["Name", "Address", "Contacts"]
-          = table_body ["#{existing_customer.mst_title.try(:name)} #{existing_customer.name}", "#{existing_customer.address1}, #{existing_customer.address2}, #{existing_customer.address3}, #{existing_customer.address4}, #{existing_customer.district.try(:name)}", customer_contact_types]
-      
-
-
+- if existing_customer
+  .contact
+    = initiate_table table_type: "table-hover table-bordered" do
+      = table_header ["Name", "Address", "Contacts"]
+      = table_body ["#{existing_customer.mst_title.try(:name)} #{existing_customer.name}", "#{existing_customer.address1}, #{existing_customer.address2}, #{existing_customer.address3}, #{existing_customer.address4}, #{existing_customer.district.try(:name)}", customer_contact_types]
 
 %strong.name_validate Customer
 = label_tag "Select Customer", class: "small_scale_margin-right1 small_scale_margin-left2" do
