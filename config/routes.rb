@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
 
+  root "todos#index"
 
   resources :warranties do
     collection do
@@ -13,7 +14,6 @@ Rails.application.routes.draw do
     end
   end
 
-  root "organizations#index"
 
   devise_for :users, skip: [:registrations, :passwords, :confirmations], :controllers => {:sessions => 'sessions'}
 
