@@ -27,10 +27,21 @@
 - jobtype = link_to "#", class: "inline_edit", data: {type: "select", source: JobType.all.collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "job_type_id", url: ticket_update_tickets_path, "original-title" => "Update Job Type"} do
   = ticket.job_type.name
 
-.ticket
-  = initiate_table table_type: "table-hover table-bordered" do
-    = table_header ["Priority", "Problem category", "Problem description", "Warranty", "Ticket type", "Customer chargeable", "Job Type"]
-    = table_body [priority, problemcategory, problemdescription, warranty, tickettype,customerchargeable, jobtype]
+.col-md-2.col-xs-12.col-sm-2{style: "padding-left:0;"}
+  = tab_nav_tab({class: "tabs-left", id: "secondary_tab"}, job_info: {content: "Job_info", active_class: "active job_c"}, customer: {content: "Customer", active_class: "customer_c"})
+.col-md-10.col-xs-12.col-sm-10
+  .tab-content
+    = tab_content tabpointer: :job_info, active_class: "active" do
+      = initiate_table table_type: "table-hover table-bordered" do
+        = table_header ["Priority", "Problem category", "Problem description", "Warranty", "Ticket type", "Customer chargeable", "Job Type"]
+        = table_body [priority, problemcategory, problemdescription, warranty, tickettype,customerchargeable, jobtype]
+    = tab_content tabpointer: :customer do
+      = initiate_table table_type: "table-hover table-bordered" do
+        = table_header ["Name", "Address", "Contacts"]
+        = table_body ["#{customer.mst_title.try(:name)} #{customer.name}", "#{customer.address1}, #{customer.address2}, #{customer.address3}, #{customer.address4}, #{customer.district.try(:name)}", customer_contact_types]
+      
+
+
 
 %strong.name_validate Customer
 = label_tag "Select Customer", class: "small_scale_margin-right1 small_scale_margin-left2" do
@@ -39,10 +50,6 @@
 = label_tag "New Customer" do
   = radio_button_tag "customer_select", "create", false, class: "radio_for_customer_select", onchange: "Tickets.customer_select('create'); false;", required:true
   New
-.contact
-  = initiate_table table_type: "table-hover table-bordered" do
-    = table_header ["Name", "Address", "Contacts"]
-    = table_body ["#{customer.mst_title.try(:name)} #{customer.name}", "#{customer.address1}, #{customer.address2}, #{customer.address3}, #{customer.address4}, #{customer.district.try(:name)}", customer_contact_types]
 
 %hr
 

@@ -5,57 +5,56 @@
     %strong= contact_type_value.contact_type.try(:name)
     = contact_type_value.value
     %br/
-.row
-  .col-md-12
-    .col-md-12
-      .contact
-        = initiate_table table_type: "table-hover table-bordered" do
-          = table_header ["Name", "Address", "Contacts"]
-          = table_body ["#{customer.mst_title.try(:name)} #{customer.name}", "#{customer.address1}, #{customer.address2}, #{customer.address3}, #{customer.address4}, #{customer.district.try(:name)}", customer_contact_types]
 
-    .col-md-12
-      .contact_people
-        %table.table.table-responsive.table-condensed.table-bordered
-          %tbody
-            %tr
-              %td.text-left
-              %td.text
-                %strong Name
-              %td.text
-                %strong Contact type
-            %tr
-              %td.text-left
-                %strong Contact person-1
-              %td.text-left
-                #contact_persons_form1.contact_persons_form
-                  - if ticket.contact_person1
-                    #{ticket.contact_person1.mst_title.try(:title)} #{ticket.contact_person1.name}
-                    %td.text-left
-                      - ticket.contact_person1.contact_person_contact_types.each do |ct|
-                        %strong= ct.contact_type.try(:name)
-                        = ct.value
-                        %br/
-            %tr
-              %td.text-left
-                %strong Contact person-2
-              %td.text-left
-                #contact_persons_form2.contact_persons_form
-                  - if ticket.contact_person2
-                    #{ticket.contact_person2.mst_title.try(:title)} #{ticket.contact_person2.name}
-                    %td.text-left
-                      - ticket.contact_person2.contact_person_contact_types.each do |ct|
-                        %strong= ct.contact_type.try(:name)
-                        = ct.value
-                        %br/
-            %tr
-              %td.text-left
-                %strong Report person
-              %td.text-left
-                #report_persons_form.contact_persons_form
-                  - if ticket.report_person
-                    #{ticket.report_person.mst_title.try(:title)} #{ticket.report_person.name}
-                    %td.text-left
-                      - ticket.report_person.contact_person_contact_types.each do |ct|
-                        %strong= ct.contact_type.try(:name)
-                        = ct.value
-                        %br/
+
+= tab_content tabpointer: :customer do
+  = initiate_table table_type: "table-hover table-bordered" do
+    = table_header ["Name", "Address", "Contacts"]
+    = table_body ["#{customer.mst_title.try(:name)} #{customer.name}", "#{customer.address1}, #{customer.address2}, #{customer.address3}, #{customer.address4}, #{customer.district.try(:name)}", customer_contact_types]
+= tab_content tabpointer: :contact_type do
+  .col-md-12
+    .contact_people
+      %table.table.table-responsive.table-condensed.table-bordered
+        %tbody
+          %tr
+            %td.text-left
+            %td.text
+              %strong Name
+            %td.text
+              %strong Contact type
+          %tr
+            %td.text-left
+              %strong Contact person-1
+            %td.text-left
+              #contact_persons_form1.contact_persons_form
+                - if ticket.contact_person1
+                  #{ticket.contact_person1.mst_title.try(:title)} #{ticket.contact_person1.name}
+                  %td.text-left
+                    - ticket.contact_person1.contact_person_contact_types.each do |ct|
+                      %strong= ct.contact_type.try(:name)
+                      = ct.value
+                      %br/
+          %tr
+            %td.text-left
+              %strong Contact person-2
+            %td.text-left
+              #contact_persons_form2.contact_persons_form
+                - if ticket.contact_person2
+                  #{ticket.contact_person2.mst_title.try(:title)} #{ticket.contact_person2.name}
+                  %td.text-left
+                    - ticket.contact_person2.contact_person_contact_types.each do |ct|
+                      %strong= ct.contact_type.try(:name)
+                      = ct.value
+                      %br/
+          %tr
+            %td.text-left
+              %strong Report person
+            %td.text-left
+              #report_persons_form.contact_persons_form
+                - if ticket.report_person
+                  #{ticket.report_person.mst_title.try(:title)} #{ticket.report_person.name}
+                  %td.text-left
+                    - ticket.report_person.contact_person_contact_types.each do |ct|
+                      %strong= ct.contact_type.try(:name)
+                      = ct.value
+                      %br/
