@@ -85,11 +85,15 @@
                     Create accessory
 
               .row
-                .col-md-12
+                .col-md-6
                   = f.association :warranty_type, as: :radio_buttons, label: "Ticket warranty type", wrapper_html: {class: "col-md-12"}, wrapper: :append, checked: selected_warranty_id
-                  = f.input :cus_chargeable, label: "Customer chargeable", as: :radio_buttons, wrapper_html: {class: "col-md-2"}, wrapper: :append, required: true
-                  = f.association :ticket_type, as: :radio_buttons, wrapper_html: {class: "col-md-3"}, wrapper: :append, input_html: {class: "ticket_type"}, checked: 1
+                .col-md-2
+                .col-md-4
+                  = f.association :ticket_type, as: :radio_buttons, wrapper_html: {class: "col-md-8"}, wrapper: :append, input_html: {class: "ticket_type"}, checked: 1
                   = f.input :regional_support_job, label: "Regional", wrapper_html: {class: "col-md-1"}, wrapper: :append
+              .row
+                .col-md-12
+                  = f.input :cus_chargeable, label: "Customer chargeable", as: :radio_buttons, wrapper_html: {class: "col-md-2"}, wrapper: :append, required: true
               .row
               .row
               = link_to "Cancel", new_ticket_path, data: {disable_with: "Please wait..."}
