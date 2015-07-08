@@ -22,7 +22,10 @@
   = ticket.ticket_type.name
 
 - customerchargeable = link_to "#", class: "inline_edit", data: {type: "select", source: [{value: 1, text: "yes"},{value: 0, text: "no"}], resource: "ticket", name: "cus_chargeable", url: ticket_update_tickets_path, "original-title" => "Update cus chargeable"} do
-  = ticket.cus_chargeable
+  - if ticket.cus_chargeable == false
+    no
+  - else
+    yes
 
 - jobtype = link_to "#", class: "inline_edit", data: {type: "select", source: JobType.all.collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "job_type_id", url: ticket_update_tickets_path, "original-title" => "Update Job Type"} do
   = ticket.job_type.name
