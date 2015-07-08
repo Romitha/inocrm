@@ -46,7 +46,7 @@ class WarrantiesController < ApplicationController
       if @warranty.save
         Rails.cache.write([:created_warranty, request.remote_ip.to_s, session[:time_now]], @warranty)
         @problem_category = @ticket.problem_category
-        @ticket.warranty_type_id = @warranty.warranty_type.id
+        # @ticket.warranty_type_id = @warranty.warranty_type.id
         Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @ticket)
 
         @select_for_pop = true if params[:function_param] == 'select_for_pop'

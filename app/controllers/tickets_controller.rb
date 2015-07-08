@@ -640,6 +640,7 @@ class TicketsController < ApplicationController
     WorkflowMapping
     QAndA
     TaskAction
+    Warranty
     @product = Product.find session[:product_id]
     @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
 
@@ -661,12 +662,20 @@ class TicketsController < ApplicationController
     @ticket.ge_q_and_answers.clear
 
     continue = true
+    warranty_constraint = true
+
+    if ["CW", "MW"].include?(@ticket.warranty_type.code)
+      warranty_constraint = @product.warranties.select{|w| w.warranty_type_id == @ticket.warranty_type_id and (w.start_at.to_date..w.end_at.to_date).include?(Date.today)}.present?
+    end
 
     if @ticket.status_id != @status_close_id
       bpm_response = view_context.send_request_process_data process_history: true, process_instance_id: 1, variable_id: "ticket_id"
       if bpm_response[:status].try(:upcase) == "ERROR"
         continue = false
         render js: "alert('BPM error. Please continue after rectify BPM.');"
+      elsif not warranty_constraint
+        continue = false
+        render js: "alert('There are no present #{@ticket.warranty_type.name} for the product to initiate particular warranty related ticket.')"
       end
     end
 
