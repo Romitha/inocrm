@@ -39,7 +39,8 @@ unless(user)
   warranty_types = [
     ["CW", "Corporate warranty"],
     ["MW", "Manufacture warranty"],
-    ["NW", "Non warranty"]
+    ["NW", "Non warranty"],
+    ["UW", "UnKnown"]
   ]
   WarrantyType.create!(warranty_types.map{ |w| {code: w[0], name: w[1]} })
 
@@ -179,7 +180,9 @@ unless(user)
     ["68", "Print Ticket", "1", false],
     ["69", "Print Complete Ticket", "14", false],
     ["70", "Print FSR", "3,13", false],
-    ["71", "Print Invoice", "27,29", false]
+    ["71", "Print Invoice", "27,29", false],
+    ["72", "Change Ticket Warranty Type or Customer Chargeable", "3", false],
+    ["73", "Change Ticket Repair Type", "3", false]
   ]
   TaskAction.create!(mst_spt_action.map{ |t| {action_no: t[0], action_description: t[1], task_id: t[2], hide: t[3]} })
 

@@ -3,7 +3,8 @@ class InsertInitialValues < ActiveRecord::Migration
     # [
     #   ["CW", "Corporate warranty"],
     #   ["MW", "Manufacture warranty"],
-    #   ["NW", "Non warranty"]
+    #   ["NW", "Non warranty"],
+    #   ["UW", "UnKnown"]
     # ].each do |value|
     #   execute("insert into mst_spt_warranty_type (code, name) values ('#{value[0]}', '#{value[1]}')")
     # end
