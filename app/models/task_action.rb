@@ -23,6 +23,8 @@ class UserTicketAction < ActiveRecord::Base
 
   has_many :assign_regional_support_centers, foreign_key: :ticket_action_id
   accepts_nested_attributes_for :assign_regional_support_centers, allow_destroy: true
+
+  has_many :hp_cases, foreign_key: :ticket_action_id
 end
 
 class UserAssignTicketAction < ActiveRecord::Base
@@ -49,4 +51,10 @@ class RegionalSupportCenter < ActiveRecord::Base
 
   has_many :sbu_regional_engineers#, foreign_key: :regional_support_center_id
   has_many :engineers, through: :sbu_regional_engineers
+end
+
+class HpCase < ActiveRecord::Base
+  self.table_name = "spt_act_hp_case_action"
+
+  belongs_to :user_ticket_action, foreign_key: :ticket_action_id
 end

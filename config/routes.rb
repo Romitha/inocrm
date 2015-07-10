@@ -117,8 +117,10 @@ Rails.application.routes.draw do
       get "resolution"
       get "assign-ticket", action: :assign_ticket
       get "workflow_diagram"
+    end
 
-
+    member do
+      post "update_start_action"
     end
   end
 

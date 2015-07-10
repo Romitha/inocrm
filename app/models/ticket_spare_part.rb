@@ -12,3 +12,9 @@ class TicketSparePartStore < ActiveRecord::Base
   belongs_to :ticket_spare_part, foreign_key: :spare_part_id
   belongs_to :inventory_product, foreign_key: :inv_product_id
 end
+
+class TicketFsr < ActiveRecord::Base
+  self.table_name = "spt_ticket_fsr"
+
+  belongs_to :ticket
+end

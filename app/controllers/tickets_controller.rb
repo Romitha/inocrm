@@ -1065,14 +1065,17 @@ class TicketsController < ApplicationController
 
     end
 
-    @task_content = @task_list.map { |list| list[:content] and (list[:content]["task_summary"].is_a?(Hash) ? list[:content]["task_summary"]["name"] : list[:content]["task_summary"].map{|l| l["name"]}) }
+    @task_content = @task_list.map { |list| list[:content] and (list[:content]["task_summary"].is_a?(Hash) ? list[:content]["task_summary"]["name"] : list[:content]["task_summary"].map{|l| {l["name"] => l["created_on"]}}) }
 
     render "tickets/tickets_pack/workflow_index", layout: "workflow_diagram"
   end
 
   def call_resolution_template
     @call_template = params[:call_template]
+  end
 
+  def update_start_action
+    
   end
 
   private
@@ -1085,7 +1088,7 @@ class TicketsController < ApplicationController
     end
 
     def ticket_params
-      params.require(:ticket).permit(:ticket_no, :sla_id, :serial_no, :base_currency_id, :regional_support_job, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :ticket_action_id, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer], user_ticket_actions_attributes: [:id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, user_assign_ticket_actions_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy]], ticket_extra_remarks_attributes: [:id, :note, :created_by, :extra_remark_id], products_attributes: [:id, :sold_country_id, :pop_note, :pop_doc_url, :pop_status_id])
+      params.require(:ticket).permit(:ticket_no, :sla_id, :serial_no, :job_started_at, :ticket_start_action, :job_start_note, :base_currency_id, :regional_support_job, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :ticket_action_id, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer], user_ticket_actions_attributes: [:id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, user_assign_ticket_actions_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy]], ticket_extra_remarks_attributes: [:id, :note, :created_by, :extra_remark_id], products_attributes: [:id, :sold_country_id, :pop_note, :pop_doc_url, :pop_status_id])
     end
 
     def product_brand_params

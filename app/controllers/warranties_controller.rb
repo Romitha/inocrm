@@ -14,8 +14,8 @@ class WarrantiesController < ApplicationController
     session[:warranty_id] = nil
     ContactNumber
     @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
-    @problem_category = @ticket.problem_category
-    @customer = Customer.find(session[:customer_id])
+    @problem_category = @ticket.try :problem_category
+    @customer = Customer.find_by_id(session[:customer_id])
     @warranty = Warranty.new(product_serial_id: session[:product_id])
     QAndA
 
@@ -32,20 +32,20 @@ class WarrantiesController < ApplicationController
   end
 
   def create
+    ContactNumber
+    QAndA
     @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
-    @customer = Customer.find(session[:customer_id])
+    @customer = Customer.find_by_id(session[:customer_id])
     @product = Product.find(session[:product_id])
     @warranties = @product.warranties
     @ge_questions = GeQAndA.where(action_id: 1)
-    ContactNumber
-    QAndA
     if params[:warranty_id]
       @warranty = Warranty.find(params[:warranty_id])
     else
       @warranty = Warranty.new warranty_params
       if @warranty.save
         Rails.cache.write([:created_warranty, request.remote_ip.to_s, session[:time_now]], @warranty)
-        @problem_category = @ticket.problem_category
+        @problem_category = @ticket.try :problem_category
         # @ticket.warranty_type_id = @warranty.warranty_type.id
         Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @ticket)
 
@@ -81,12 +81,13 @@ class WarrantiesController < ApplicationController
   end
 
   def destroy
+    ContactNumber
+    QAndA
     @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
-    @customer = Customer.find(session[:customer_id])
-    @product = Product.find(session[:product_id])
+    @customer = Customer.find_by_id(session[:customer_id])
+    @product = Product.find_by_id(session[:product_id])
     @ge_questions = GeQAndA.where(action_id: 1)
     @warranties = @product.warranties
-    ContactNumber
 
     @warranty = Warranty.find(params[:id])
 
