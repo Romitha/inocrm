@@ -1,4 +1,4 @@
 #main_image
   %h2{align: "center"}= @ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
 - @task_content.compact.flatten.each do |task_content|
-  %div{id: task_content}
+  %div{id: task_content.to_a.flatten[0], title: "#{task_content.to_a.flatten[1].to_time.strftime('%Y-%b-%d %H:%M')} (#{(Date.today - task_content.to_a.flatten[1].to_date).to_i} #{'day'.pluralize((Date.today - task_content.to_a.flatten[1].to_date).to_i)})"}

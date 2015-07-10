@@ -55,6 +55,12 @@ class Ticket < ActiveRecord::Base
 
   has_many :ticket_spare_parts
 
+  belongs_to :ticket_start_action, foreign_key: :job_started_action_id
+  belongs_to :ticket_repair_type, foreign_key: :repair_type_id
+  belongs_to :reason, foreign_key: :hold_reason_id
+
+  has_many :ticket_fsr
+
   validates_presence_of [:ticket_no, :priority, :status_id, :problem_description, :informed_method_id, :job_type_id, :ticket_type_id, :warranty_type_id, :base_currency_id, :problem_category_id]
 
   validates_numericality_of [:ticket_no, :priority]
@@ -207,5 +213,29 @@ class PrintTemplate < ActiveRecord::Base
   self.table_name = "mst_spt_templates"
 
   # has_many :tickets, foreign_key: :status_resolve_id
+
+end
+
+class TicketStartAction < ActiveRecord::Base
+  self.table_name = "mst_spt_ticket_start_action"
+
+  has_many :tickets, foreign_key: :job_started_action_id
+  accepts_nested_attributes_for :tickets, allow_destroy: true
+
+end
+
+class TicketRepairType < ActiveRecord::Base
+  self.table_name = "mst_spt_ticket_repair_type"
+
+  has_many :tickets, foreign_key: :job_started_action_id
+  accepts_nested_attributes_for :tickets, allow_destroy: true
+
+end
+
+class Reason < ActiveRecord::Base
+  self.table_name = "mst_spt_reason"
+
+  has_many :tickets, foreign_key: :hold_reason_id
+  accepts_nested_attributes_for :tickets, allow_destroy: true
 
 end

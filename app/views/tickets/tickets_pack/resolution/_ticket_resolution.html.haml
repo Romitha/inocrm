@@ -1,46 +1,32 @@
-/ -if ticket.user_ticket_actions.first.task_action.action_no == 5
-/   %form
-/     .form-group
-/       = label_tag "Action" 
-/       = select :action_no, options_from_collection_for_select(ticket.user_ticket_actions.all, :id, :action_id), {}
-/     .form-group
-/       %label Note
-/       %textarea.form-control
-/     .form-inline
-/       .col-md-4.checkbox
-/         %label
-/           %input{:type => "checkbox"}
-/             Re Assign
-/       %button.btn.btn-default{:type => "submit"} Start
-/     .form-group
-/       %label Reason
-/       %input.form-control{:type => "text"}
-/ -else
-.form-inline
-  .col-md-6
-    = label_tag "Ticket Type" 
-    In-House
-  .col-md-6
-    = label_tag "Repair Type" 
-    = radio_button_tag(:r_type, "internal")
-    = label_tag(:r_type_internal, "Internal Repair")
-    = radio_button_tag(:r_type, "external")
-    = label_tag(:r_type_aexternal, "External Repair")
-.form-group
-  %label Activity
-  %select{:class => "activity_id", :id => "template_caller"}
-    %option{:value => "start_action"} Start Action
-    %option{:value => "re_assign"} Re Assign
-    %option{:value => "request_on_loan_spare_part"} Request On Loan Spare Part
-    %option{:value => "request_spare_part"} Request Spare Part
-    %option{:value => "request_to_edit_serial_no"} Request To Edit Serial No
-    %option{:value => "terminate_job"} Terminate Job 
-    %option{:value => "hp_case_id"} HP Case ID
-    %option{:value => "recieve_unit"} Recieve Unit
-    %option{:value => "deliver_unit"} Deliver Unit
+
+.row
+  .col-md-4
+    Ticket Type:
+    %strong= ticket.ticket_type.name
+  .col-md-4
+    Warranty type:
+    %strong= ticket.warranty_type.name
+  .col-md-4
+    Repair type:
+    %strong= ticket.ticket_repair_type.name
+.row
+  .col-md-12
+    .form-group
+      %label Activity
+      %select{:class => "activity_id", :id => "template_caller"}
+        - unless ticket.user_ticket_actions.find_by_action_id(TaskAction.find_by_action_no(5).id).present?
+          %option{:value => "start_action"} Start Action
+        %option{:value => "re_assign"} Re Assign
+        %option{:value => "update_warranty"} Set warranty
+        %option{:value => "update_repair_type"} Set repair type
+        %option{:value => "request_on_loan_spare_part"} Request On Loan Spare Part
+        %option{:value => "request_spare_part"} Request Spare Part
+        %option{:value => "request_to_edit_serial_no"} Request To Edit Serial No
+        %option{:value => "terminate_job"} Terminate Job 
+        %option{:value => "hp_case_id"} HP Case ID
+        %option{:value => "recieve_unit"} Recieve Unit
+        %option{:value => "deliver_unit"} Deliver Unit
+
 .form-group
   #resolution_templates
-    =render "tickets/tickets_pack/resolution/start_action"
-.form-group
-  %label Resolution Summary
-  %textarea.form-control{:rows => "3"}
+    =render "tickets/tickets_pack/resolution/start_action", ticket: ticket unless ticket.user_ticket_actions.find_by_action_id(TaskAction.find_by_action_no(5).id).present?

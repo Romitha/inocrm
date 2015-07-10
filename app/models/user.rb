@@ -31,11 +31,6 @@ class User < ActiveRecord::Base
 
   has_many :sbu_regional_engineers, foreign_key: :engineer_id
   has_many :regional_support_centers, through: :sbu_regional_engineers
-  # belongs_to :department
-
-  # has_many :customer_tickets, foreign_key: "customer_id", class_name: "Ticket"
-
-  # has_many :comments, foreign_key: "agent_id"
 
   validates_uniqueness_of :user_name
 
