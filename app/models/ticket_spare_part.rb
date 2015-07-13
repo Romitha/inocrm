@@ -18,3 +18,9 @@ class TicketFsr < ActiveRecord::Base
 
   belongs_to :ticket
 end
+
+class TicketDeliveryUnit < ActiveRecord::Base
+  self.table_name = "spt_ticket_delivery_unit"
+
+  belongs_to :ticket
+end
