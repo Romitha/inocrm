@@ -33,7 +33,8 @@ module ApplicationHelper
       "PRODUCT_NO=#{ticket.products.first.product_no}",
       "PROBLEM_DESC1=#{ticket.problem_description.to_s[0..100]}",
       "PROBLEM_DESC2=#{ticket.problem_description.to_s[101..200]}",
-      "WARRANTY=#{'X' if ticket.warranty_type.code == 'CW' or ticket.warranty_type.code == 'MW'}",
+      # "WARRANTY=#{'X' if ticket.warranty_type.code == 'CW' or ticket.warranty_type.code == 'MW'}",
+      "WARRANTY=#{'X' if ticket.products.first.warranties.any?{|w| (w.start_at.to_date..w.end_at.to_date).include?(ticket.created_at.to_date)}}",
       "CHARGEABLE=#{'X' if ticket.cus_chargeable}",
       "NEED_POP=#{'X' if ticket.products.first.product_pop_status.code != 'NAP'}",
       "EXTRA_REMARK1=#{ticket.ticket_extra_remarks.first.try(:extra_remark).try(:extra_remark)}",
@@ -54,3 +55,7 @@ module ApplicationHelper
 
   end
 end
+
+if ["CW", "MW"].include?(@ticket.warranty_type.code)
+      warranty_constraint = @product.warranties.select{|w| w.warranty_type_id == @ticket.warranty_type_id and (w.start_at.to_date..w.end_at.to_date).include?(Date.today)}.present?
+    end

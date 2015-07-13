@@ -3,7 +3,7 @@
 - selected_warranty_id = (product_to_day_warranties.present? ? (((product_to_day_warranties.any?{|w| w.warranty_type_id==1} and 1) or (product_to_day_warranties.any?{|w| w.warranty_type_id==2} and 2))) : 4 )
 
 - popnote = capture do
-  = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "product", name: "pop_note", url: product_update_tickets_path(product_id: product.id), "original-title" => "Update pop note", value: ""} do
+  = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "product", name: "pop_note", url: product_update_tickets_path(product_id: product.id), "original-title" => "Update pop note", value: ""}, style: "line-height: 6px;" do
     = simple_format product.pop_note.to_s.split('<br/>')[0]
   -if product.pop_note.present?
     %button.btn.btn-link.load_more{"data-container" => "body", "data-content" => product.pop_note, "data-placement" => "bottom", "data-toggle" => "popover", "data-trigger" =>"focus", :type => "button"}
@@ -39,7 +39,6 @@
         #form_frame
           %fieldset
             %legend Ticket
-            /- ticket.ticket_accessories.build
             = simple_nested_form_for ticket, remote: true, :authenticity_token => true do |f|
               = f.input :status_id, as: :hidden
               = f.input :ticket_no, as: :hidden
