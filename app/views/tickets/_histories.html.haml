@@ -17,6 +17,8 @@
       %th
         Payment pending
       %th
+        Remarks
+      %th
         Created by
   %tbody
     - histories.each do |history|
@@ -35,5 +37,7 @@
           //= history.date_resolve
         %td
           //= history.payment_pending
+        %td
+          = simple_format history.remarks.split("<br/>").first
         %td
           = User.find_by_id(history.created_by).try(:email)

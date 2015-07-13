@@ -27,10 +27,10 @@
   = ticket.job_type.name
 
 .col-md-2.col-xs-12.col-sm-2{style: "padding-left:0;"}
-  = tab_nav_tab({class: "tabs-left", id: "secondary_tab"}, job_info: {content: "Job_info", active_class: "active job_c"}, customer: {content: "Customer", active_class: "customer_c"}, contact_type: {content: "Contact Type", active_class: "contact_type_c"})
+  = tab_nav_tab({class: "tabs-left", id: "secondary_tab"}, job_info: {content: "Job_info", active_class: "job_c"}, customer: {content: "Customer", active_class: "customer_c"}, contact_type: {content: "Contact Type", active_class: "active contact_type_c"})
 .col-md-10.col-xs-12.col-sm-10
   .tab-content
-    = tab_content tabpointer: :job_info, active_class: "active" do
+    = tab_content tabpointer: :job_info do
       = initiate_table table_type: "table-hover table-bordered" do
         = table_header ["Priority", "Problem category", "Problem description", "Warranty", "Ticket type", "Customer chargeable", "Job Type"]
         = table_body [priority, problemcategory, problemdescription, warranty, tickettype, customerchargeable, jobtype]

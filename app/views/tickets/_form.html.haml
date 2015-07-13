@@ -86,7 +86,7 @@
                 .col-md-6
                   = f.association :warranty_type, as: :radio_buttons, label: "Ticket warranty type", wrapper_html: {class: "col-md-12"}, wrapper: :append, checked: (ticket.warranty_type_id or selected_warranty_id)
                 .col-md-offset-2.col-md-4
-                  = f.association :ticket_type, as: :radio_buttons, wrapper_html: {class: "col-md-8"}, wrapper: :append, input_html: {class: "ticket_type"}, checked: 1
+                  = f.association :ticket_type, as: :radio_buttons, wrapper_html: {class: "col-md-8"}, wrapper: :append, input_html: {class: "ticket_type"}, checked: (ticket.ticket_type_id or 1)
                   = f.input :regional_support_job, label: "Regional", wrapper_html: {class: "col-md-1"}, wrapper: :append
               .row
                 .col-md-12
