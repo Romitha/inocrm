@@ -55,7 +55,3 @@ module ApplicationHelper
 
   end
 end
-
-if ["CW", "MW"].include?(@ticket.warranty_type.code)
-      warranty_constraint = @product.warranties.select{|w| w.warranty_type_id == @ticket.warranty_type_id and (w.start_at.to_date..w.end_at.to_date).include?(Date.today)}.present?
-    end
