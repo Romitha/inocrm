@@ -1,5 +1,5 @@
 class TicketsController < ApplicationController
-  before_action :set_ticket, only: [:show, :edit, :update, :destroy]
+  before_action :set_ticket, only: [:show, :edit, :update, :destroy, :update_change_ticket_cus_warranty, :update_change_ticket_repair_type]
   before_action :set_organization_for_ticket, only: [:new, :edit, :create_customer]
   # layout :workflow_diagram, only: [:workflow_diagram]
 
@@ -942,6 +942,7 @@ class TicketsController < ApplicationController
 
   def update_pop_approval
     TaskAction
+    Warranty
     t_params = ticket_params.except('products_attributes')
     product_params = ticket_params["products_attributes"]
     product_id = product_params.keys.first
@@ -957,25 +958,34 @@ class TicketsController < ApplicationController
     @product.attributes = product_params[product_id]
 
     @product.pop_note = "#{@product.pop_note} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@product.pop_note_was}" if @product.pop_note_changed?
+    warranty_constraint = true
 
-    @ticket.save
-    @product.save
-
-    if params["pop_completed"]
-
-      user_ticket_action = @ticket.user_ticket_actions.create(action_id: TaskAction.find_by_action_no(62).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
-
-      # calling bpm
-      bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: {}
-
-      if bpm_response[:status].upcase == "SUCCESS"
-        @flash_message = "Successfully updated."
-      else
-        @flash_message = "ticket is updated. but Bpm error"
-      end
+    if ["CW", "MW"].include?(@ticket.warranty_type.code)
+      warranty_constraint = @product.warranties.select{|w| w.warranty_type_id == @ticket.warranty_type_id and (w.start_at.to_date..w.end_at.to_date).include?(Date.today)}.present?
     end
 
-    redirect_to @ticket, notice: @flash_message
+    if warranty_constraint
+      @ticket.save
+      @product.save
+
+      if params["pop_completed"]
+
+        user_ticket_action = @ticket.user_ticket_actions.create(action_id: TaskAction.find_by_action_no(62).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+
+        # calling bpm
+        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: {}
+
+        if bpm_response[:status].upcase == "SUCCESS"
+          @flash_message = "Successfully updated."
+        else
+          @flash_message = "ticket is updated. but Bpm error"
+        end
+      end
+
+      redirect_to @ticket, notice: @flash_message
+    else
+      redirect_to pop_approval_tickets_path, notice: "There are no present #{@ticket.warranty_type.name} for the product to initiate particular warranty related ticket.')"  
+    end
   end
 
   def resolution
@@ -983,6 +993,7 @@ class TicketsController < ApplicationController
     QAndA
     TaskAction
     @ticket = Ticket.find_by_id params[:ticket_id]
+    session[:ticket_id] = @ticket.id
     if @ticket
       @product = @ticket.products.first
       @warranties = @product.warranties
@@ -1065,16 +1076,109 @@ class TicketsController < ApplicationController
 
     end
 
-    @task_content = @task_list.map { |list| list[:content] and (list[:content]["task_summary"].is_a?(Hash) ? list[:content]["task_summary"]["name"] : list[:content]["task_summary"].map{|l| {l["name"] => l["created_on"]}}) }
+    @task_content = @task_list.map { |list| list[:content] and (list[:content]["task_summary"].is_a?(Hash) ? list[:content]["task_summary"]["name"] : list[:content]["task_summary"].map{|l| l["name"]}) }
 
     render "tickets/tickets_pack/workflow_index", layout: "workflow_diagram"
   end
 
   def call_resolution_template
     @call_template = params[:call_template]
+    @ticket = Ticket.find session[:ticket_id]
   end
 
   def update_start_action
+
+  end
+
+  def update_change_ticket_cus_warranty
+    t_params = ticket_params
+    t_params["remarks"] = t_params["remarks"].present? ? "#{t_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
+    @redirect_url = todos_url
+    @flash_message = "Ticket Warranty Type and Customer Chargeable Updated."
+    if @ticket.update t_params
+      redirect_to @redirect_url, notice: @flash_message
+    else
+
+    end
+  end 
+
+  def update_change_ticket_repair_type
+    t_params = ticket_params
+    t_params["remarks"] = t_params["remarks"].present? ? "#{t_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
+    @redirect_url = todos_url
+    @flash_message = "Ticket Repair type Updated."
+    if @ticket.update t_params
+      redirect_to @redirect_url, notice: @flash_message
+    else
+
+    end
+  end
+
+  def update_hold
+    
+  end
+
+  def update_un_hold
+    
+  end
+
+  def update_edit_serial_no_request
+    
+  end
+
+  def update_create_fsr
+    
+  end
+
+  def update_edit_fsr
+    
+  end
+
+  def update_terminate_job
+    
+  end
+
+  def update_action_taken
+    
+  end
+
+  def update_request_spare_part
+    
+  end
+
+  def update_request_on_loan_spare_part
+    
+  end
+
+  def update_re_assign
+    
+  end
+
+  def update_warranty
+    
+  end
+
+  def update_repair_type
+    
+  end
+
+  def update_hp_case_id
+    
+  end
+
+  def update_resolved_job
+    
+  end
+
+  def update_deliver_unit
+    
+  end
+
+  def update_job_estimation_request
+    
+  end
+
+  def update_recieve_unit
     
   end
 
@@ -1088,7 +1192,7 @@ class TicketsController < ApplicationController
     end
 
     def ticket_params
-      params.require(:ticket).permit(:ticket_no, :sla_id, :serial_no, :job_started_at, :ticket_start_action, :job_start_note, :base_currency_id, :regional_support_job, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :ticket_action_id, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer], user_ticket_actions_attributes: [:id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, user_assign_ticket_actions_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy]], ticket_extra_remarks_attributes: [:id, :note, :created_by, :extra_remark_id], products_attributes: [:id, :sold_country_id, :pop_note, :pop_doc_url, :pop_status_id])
+      params.require(:ticket).permit(:ticket_no, :sla_id, :serial_no, :base_currency_id, :regional_support_job, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :ticket_action_id, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer], user_ticket_actions_attributes: [:id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, user_assign_ticket_actions_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy]], ticket_extra_remarks_attributes: [:id, :note, :created_by, :extra_remark_id], products_attributes: [:id, :sold_country_id, :pop_note, :pop_doc_url, :pop_status_id])
     end
 
     def product_brand_params

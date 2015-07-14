@@ -1,0 +1,8 @@
+%fieldset
+  %legend Change Ticket Warranty Type or Customer Chargeable
+  = simple_nested_form_for ticket, url: update_change_ticket_cus_warranty_ticket_path(ticket), method: :post do |f|
+    = f.association :warranty_type, as: :radio_buttons, label: "Ticket warranty type", wrapper_html: {class: "col-md-8"}, wrapper: :append, checked: (ticket.warranty_type_id or selected_warranty_id)
+    = f.input :cus_chargeable, label: "Customer chargeable", as: :radio_buttons, wrapper_html: {class: "col-md-4"}, wrapper: :append, required: true
+    = f.input :remarks, input_html: {value: nil}
+    = simple_format ticket.remarks
+    = f.submit "Save", class: "btn btn-success btn-sm"
