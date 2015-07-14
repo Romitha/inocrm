@@ -121,6 +121,23 @@ Rails.application.routes.draw do
 
     member do
       post "update_start_action"
+      post "update_re_assign"
+      post 'update_change_ticket_cus_warranty'
+      post 'update_change_ticket_repair_type'
+      post 'update_hold'
+      post 'update_un_hold'
+      post 'update_edit_serial_no_request'
+      post 'update_create_fsr'
+      post 'update_edit_fsr'
+      post 'update_terminate_job'
+      post 'update_action_taken'
+      post 'update_request_spare_part'
+      post 'update_request_on_loan_spare_part'
+      post 'update_hp_case_id'
+      post 'update_resolved_job'
+      post 'update_deliver_unit'
+      post 'update_job_estimation_request'
+      post 'update_recieve_unit'
     end
   end
 
