@@ -25,6 +25,11 @@ class UserTicketAction < ActiveRecord::Base
   accepts_nested_attributes_for :assign_regional_support_centers, allow_destroy: true
 
   has_many :hp_cases, foreign_key: :ticket_action_id
+
+  has_many :action_warranty_repair_types, foreign_key: :ticket_action_id
+
+  has_many :ticket_re_assign_requests, foreign_key: :ticket_action_id
+  accepts_nested_attributes_for :ticket_re_assign_requests, allow_destroy: true
 end
 
 class UserAssignTicketAction < ActiveRecord::Base

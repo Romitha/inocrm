@@ -31,7 +31,8 @@ module TodosHelper
     def deployment_id
       # "lk.inova:INOCRM:0.0.3"
       # "lk.inova:INOCRM:0.0.7"
-      "lk.inova:INOCRM:0.0.8"
+      # "lk.inova:INOCRM:0.0.8"
+      "lk.inova:INOCRM:0.0.9"
 
     end
 
@@ -107,19 +108,35 @@ module TodosHelper
       "task/query"
     end
 
-    # def task_list_path(process_instance_id, owner_id, status)
-    #   s = ""
-    #   # if status
-    #   #   s = "#{s}&status=#{status}"
-    #   # end
-    #   if owner_id
-    #     s = "&potentialOwner=#{owner_id}"
-    #   end
-    #   if process_instance_id
-    #     s = "#{s}&processInstenceId=#{process_instance_id}"
-    #   end
+  def initialize_bpm_variables
+    {
+      d4_job_complete: "N",
+      d5_re_assigned: "N",
+      d6_close_approval_required: "N",
+      d7_close_approval_requested: "N",
+      d8_job_finished: "N",
+      d9_qc_required: "N",
+      d10_job_estimate_required_final: "N",
+      d11_terminate_job: "N",
+      d12_need_to_invoice: "N",
+      d13_job_estimate_requested_external: "N",
+      d15_part_estimate_required: "N",
+      d16_request_manufacture_part: "N",
+      d17_request_store_part: "N", 
+      d20_advance_payment_required: "N",
+      d21_edit_serial_no: "N",
+      d22_deliver_unit: "N", 
+      d23_delivery_items_pending: "N", 
+      d24_return_store_part: "N",
+      d32_return_manufacture_part: "N",
+      part_estimation_id: "-",
+      request_spare_part_id: "-",
+      request_onloan_spare_part_id: "-",
+      onloan_request: "N",
+      advance_payment_estimation_id: "-",
+      deliver_unit_id: "-",
+      supp_engr_user: "-"
 
-    #   # status, (owner or process_id)
-    #   "task/query?status=#{status}#{s}"
-    # end
+    }
+  end
 end

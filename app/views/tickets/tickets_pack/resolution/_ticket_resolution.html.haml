@@ -1,4 +1,5 @@
 - present_of_start_ticket_action =  ticket.user_ticket_actions.find_by_action_id(TaskAction.find_by_action_no(5).id).present?
+- TicketSparePart
 .row
   .col-md-3
     Ticket Type:
@@ -16,50 +17,46 @@
     Repair type:
     %strong= ticket.ticket_repair_type.name
 .row
-  .col-md-12.small_scale_margin-top1
-    %label Activity
-    %select{:class => "activity_id", :id => "template_caller"}
-      - unless present_of_start_ticket_action
-        %option{:value => "start_action"} Start Action
-      - unless ticket.job_finished
-        %option{:value => "re_assign"} Re Assign 
-      / # model not created
-      / - if present_of_start_ticket_action and not ticket.job_finished
-      %option{:value => "change_ticket_cus_warranty"} Change Ticket Warranty Type or Customer Chargeable
-      / - if present_of_start_ticket_action and not ticket.job_finished
-      %option{:value => "change_ticket_repair_type"} Change Ticket Repair Type
-      - if present_of_start_ticket_action and ticket.status_hold==0
-        %option{:value => "hold"} Hold
-        / # model not created
-      - if present_of_start_ticket_action and ticket.status_hold==1
-        %option{:value => "un_hold"} Un Hold 
-        / # view not found
-      - if present_of_start_ticket_action and not ticket.job_finished
-        %option{:value => "edit_serial_no_request"} Edit Serial No Request
-        // # view not found
-      - if present_of_start_ticket_action and not ticket.job_finished and ticket.ticket_type.code == 'OS'
-        %option{:value => "create_fsr"} Create FSR
-      / - if present_of_start_ticket_action and ticket.ticket_fsrs.find_by_approved(:false).present? and not ticket.job_finished
-      %option{:value => "edit_fsr"} Edit FSR 
-      - if present_of_start_ticket_action and not ticket.job_finished
-        %option{:value => "terminate_job"} Terminate Job
-      - if present_of_start_ticket_action
-        %option{:value => "action_taken"} Action Taken
-      - if present_of_start_ticket_action and not ticket.job_finished and  ticket.ticket_type.code == 'IN'
-        %option{:value => "request_spare_part"} Request Spare Part
-      - if ticket.ticket_spare_parts.present?
-        %option{:value => "request_on_loan_spare_part"} Request On Loan Spare Part
-      - if present_of_start_ticket_action
-        %option{:value => "hp_case_id"} HP Case Action
-      - if present_of_start_ticket_action and not ticket.job_finished
-        %option{:value => "resolved_job"} Resolve the Job
-      - if present_of_start_ticket_action and ticket.ticket_repair_type == "EX" and not ticket.ojb_finished
-        %option{:value => "deliver_unit"} Deliver Unit
-      - if present_of_start_ticket_action and ticket.cus_chargeable and ticket.ticket_repair_type=="EX" and not ticket.job_finished
-        %option{:value => "job_estimation_request"} Job Estimate Request
-        / # view not found
-      - if present_of_start_ticket_action and ticket.cus_chargeable and ticket.ticket_repair_type=="EX" and ticket.ticket_delivery_units.present? and not ticket.job_finished
-        %option{:value => "recieve_unit"} Receive Unit
+  .col-md-12
+    .form-group
+      %label Activity
+      %select{:class => "activity_id", :id => "template_caller"}
+        - unless present_of_start_ticket_action
+          %option{:value => "start_action"} Start Action
+        - unless ticket.job_finished
+          %option{:value => "re_assign"} Re Assign
+        - if present_of_start_ticket_action and not ticket.job_finished
+          %option{:value => "change_ticket_cus_warranty"} Change Ticket Warranty Type or Customer Chargeable
+        - if present_of_start_ticket_action and not ticket.job_finished
+          %option{:value => "change_ticket_repair_type"} Change Ticket Repair Type
+        - if present_of_start_ticket_action and ticket.status_hold==0
+          %option{:value => "hold"} Hold
+        - if present_of_start_ticket_action and ticket.status_hold==1
+          / %option{:value => "un_hold"} Un Hold # view not found
+        - if present_of_start_ticket_action and not ticket.job_finished
+          / %option{:value => "edit_serial_no_request"} Edit Serial No Request # view not found
+        - if present_of_start_ticket_action and not ticket.job_finished and ticket.ticket_type.code == 'OS'
+          %option{:value => "create_fsr"} Create FSR
+        - if present_of_start_ticket_action and ticket.ticket_fsrs.find_by_approved(:false).present? and not ticket.job_finished
+          %option{:value => "edit_fsr"} Edit FSR
+        - if present_of_start_ticket_action and not ticket.job_finished
+          %option{:value => "terminate_job"} Terminate Job
+        - if present_of_start_ticket_action
+          %option{:value => "action_taken"} Action Taken
+        - if present_of_start_ticket_action and not ticket.job_finished and  ticket.ticket_type.code == "IN"
+          %option{:value => "request_spare_part"} Request Spare Part
+        - if ticket.ticket_spare_parts.present?
+          %option{:value => "request_on_loan_spare_part"} Request On Loan Spare Part
+        - if present_of_start_ticket_action
+          %option{:value => "hp_case_id"} HP Case Action
+        - if present_of_start_ticket_action and not ticket.job_finished
+          %option{:value => "resolved_job"} Resolve the Job
+        - if present_of_start_ticket_action and ticket.ticket_repair_type == "EX" and not ticket.job_finished
+          %option{:value => "deliver_unit"} Deliver Unit
+        - if present_of_start_ticket_action and ticket.cus_chargeable and ticket.ticket_repair_type=="EX" and not ticket.job_finished
+          / %option{:value => "job_estimation_request"} Job Estimate Request # view not found
+        - if present_of_start_ticket_action and ticket.cus_chargeable and ticket.ticket_repair_type=="EX" and ticket.ticket_delivery_units.present? and not ticket.job_finished
+          %option{:value => "recieve_unit"} Receive Unit
 
 .form-group
   #resolution_templates

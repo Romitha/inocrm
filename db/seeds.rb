@@ -30,7 +30,7 @@ unless(user)
   user.update_attribute :current_user_role_name, admin.name
 
   # Rpermission.find_or_create_by!(rpermissions.map { |rp| {name: rp[0], controller_resource: rp[1], controller_action: rp[2]} })
-  rpermissions.each { |rp| Rpermission.find_or_create_by! name: rp[0], controller_resource: rp[1], controller_action: rp[2] }
+  rpermissions.each { |rp| Rpermission.create_with(controller_resource: rp[1], controller_action: rp[2]).find_or_create_by(name: rp[0]) }
   admin.rpermission_ids = [1,2,3,4,5,6,7]
   default_user.rpermission_ids = [2, 4, 5]
 
@@ -44,14 +44,14 @@ unless(user)
     ["UW", "UnKnown"]
   ]
   # WarrantyType.find_or_create_by!(warranty_types.map{ |w| {code: w[0], name: w[1]} })
-  warranty_types.each{ |w| WarrantyType.find_or_create_by! code: w[0], name: w[1]}
+  warranty_types.each{ |w| WarrantyType.create_with(name: w[1]).find_or_create_by(code: w[0])}
 
   mst_spt_ticket_type = [
     ["IH", "In house"],
     ["OS", "On-site"]
   ]
   # TicketType.find_or_create_by!(mst_spt_ticket_type.map{ |t| {code: t[0], name: t[1]} })
-  mst_spt_ticket_type.each{ |t| TicketType.find_or_create_by! code: t[0], name: t[1]}
+  mst_spt_ticket_type.each{ |t| TicketType.create_with(name: t[1]).find_or_create_by(code: t[0])}
 
    mst_spt_ticket_status = [
     ["OPN", "Open", "00FF99"],
@@ -65,7 +65,7 @@ unless(user)
     ["CLS", "Closed", "FC737A"]
   ]
   # TicketStatus.find_or_create_by!(mst_spt_ticket_status.map{ |t| {code: t[0], name: t[1], colour: t[2]} })
-  mst_spt_ticket_status.each{ |t| TicketStatus.find_or_create_by! code: t[0], name: t[1], colour: t[2]}
+  mst_spt_ticket_status.each{ |t| TicketStatus.create_with(name: t[1], colour: t[2]).find_or_create_by(code: t[0])}
 
   mst_spt_ticket_informed_method = [
     ["PH", "by phone"],
@@ -74,7 +74,7 @@ unless(user)
     ["FX", "fax"]
   ]
   # InformMethod.find_or_create_by!(mst_spt_ticket_informed_method.map{ |t| {code: t[0], name: t[1]} })
-  mst_spt_ticket_informed_method.each{ |t| InformMethod.find_or_create_by! code: t[0], name: t[1]}
+  mst_spt_ticket_informed_method.each{ |t| InformMethod.create_with(name: t[1]).find_or_create_by(code: t[0])}
 
   mst_spt_job_type = [
     ["SW", "Software"],
@@ -91,14 +91,14 @@ unless(user)
     ["FX", "Fax"]
   ]
   # TicketContactType.find_or_create_by!(mst_spt_contact_type.map{ |t| {code: t[0], name: t[1]} })
-  mst_spt_contact_type.each{ |t| TicketContactType.find_or_create_by! code: t[0], name: t[1]}
+  mst_spt_contact_type.each{ |t| TicketContactType.create_with(name: t[1]).find_or_create_by(code: t[0])}
 
   mst_currency = [
     ["Sri Lankan Rupees", "LKR", "Rs", true],
     ["United States Dollars", "USD", "$US", false]
   ]
   # TicketCurrency.find_or_create_by!(mst_currency.map{ |t| {currency: t[0], code: t[1], symbol: t[2], base_currency: t[3]} })
-  mst_currency.each{ |t| TicketCurrency.find_or_create_by! currency: t[0], code: t[1], symbol: t[2], base_currency: t[3]}
+  mst_currency.each{ |t| TicketCurrency.create_with(currency: t[0], symbol: t[2], base_currency: t[3]).find_or_create_by(code: t[1])}
   ContactNumber
   mst_spt_customer_contact_type = [
     ["Telephone", false, false],
@@ -108,7 +108,7 @@ unless(user)
     ["Skype", false, false]
   ]
   # ContactType.find_or_create_by!(mst_spt_customer_contact_type.map{ |t| {name: t[0], mobile: t[1], email: t[2]} })
-  mst_spt_customer_contact_type.each{ |t| ContactType.find_or_create_by! name: t[0], mobile: t[1], email: t[2]}
+  mst_spt_customer_contact_type.each{ |t| ContactType.create_with(name: t[0]).find_or_create_by(mobile: t[1], email: t[2])}
 
   mst_title = [
     ["Mr."],

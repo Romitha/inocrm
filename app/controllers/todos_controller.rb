@@ -20,7 +20,6 @@ class TodosController < ApplicationController
       @task_content_for_role.each do |task_content|
         @workflow_mapping_for_role << {workflow_mapping: Rails.cache.fetch([:workflow_mapping_role, task_content["name"]]){WorkflowMapping.where(task_name: task_content["name"], process_name: task_content["process_id"]).first}, workflow_header: Rails.cache.fetch([:workflow_header, task_content["process_instance_id"]]){WorkflowHeaderTitle.find_by_process_id(task_content["process_instance_id"])}, task_content: task_content}
       end
-      puts @workflow_mapping_for_role
       @formatted_workflow_mapping_for_role = @workflow_mapping_for_role.map{|w| {process_name: w[:workflow_mapping].process_name, task_name: w[:workflow_mapping].task_name, url: w[:workflow_mapping].url, first_header_title: w[:workflow_mapping].first_header_title, second_header_title_name: w[:workflow_mapping].second_header_title_name, input_variables: w[:workflow_mapping].input_variables, second_header_title: (w[:workflow_header].send(w[:workflow_mapping].second_header_title_name.to_sym) if w[:workflow_header]), task_content: w[:task_content]}}
       
     end
@@ -57,6 +56,12 @@ class TodosController < ApplicationController
       input_variables.split(",").each do |input_variable|
         @bpm_input_variables << view_context.send_request_process_data(process_history: true, process_instance_id: process_instance_id, variable_id: input_variable)
       end
+      session[:process_id] = process_instance_id
+      session[:task_id] = task_id
+      session[:owner] = owner
+      session[:bpm_input_variables] = @bpm_input_variables.map{|e| [e[:variable_id], e[:value]]}
+
+
       @redirect_url = "#{url}?process_id=#{process_instance_id}&task_id=#{task_id}&owner=#{owner}&#{@bpm_input_variables.map{|e| e[:variable_id]+'='+e[:value]}.join('&')}"
     else
       @redirect_url = todos_url
