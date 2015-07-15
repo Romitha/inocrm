@@ -1,13 +1,19 @@
 %fieldset
   %legend Start Action
-  = simple_nested_form_for ticket, url: update_start_action_ticket_path(ticket), method: :post do |f|
+  #error_msg
+  = simple_nested_form_for ticket, url: update_start_action_ticket_path(ticket), method: :post, html: {id: "start_action_form"} do |f|
+    = hidden_field_tag :process_id, session[:process_id]
+    = hidden_field_tag :task_id, session[:task_id]
+    = hidden_field_tag :owner, session[:owner]
+    - session[:bpm_input_variables].each do |bpm_input_variable|
+      = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
     .row
       .col-md-12
         %h5.strong Start at: #{DateTime.now.strftime('%Y-%m-%d %H:%M')}
         = f.input :job_started_at, as: :hidden, input_html: {value: DateTime.now.strftime("%Y-%m-%d %H:%M")}
     .row
-      = f.association :ticket_start_action, label_method: :action, value_method: :id, wrapper_html: {class: "col-md-5"}
-      = f.input :job_start_note, wrapper_html: {class: "col-md-7"}
+      = f.association :ticket_start_action, label_method: :action, value_method: :id, wrapper_html: {class: "col-md-5"}, required: true
+      = f.input :job_start_note, wrapper_html: {class: "col-md-7"}, required: true
     = f.input :remarks, input_html: {value: nil}
     = simple_format ticket.remarks
-    = f.submit "Save", class: "btn btn-success btn-sm"
+    = f.submit "Save", class: "btn btn-success btn-sm", id: "update_start_action"

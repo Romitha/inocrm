@@ -10,6 +10,7 @@ window.Tickets =
     @pass_to_re_correction_trigger()
     @filter_sbu_engineer()
     @call_resolution_template()
+    @validate_start_action()
     return
 
   initial_loaders: ->
@@ -291,3 +292,17 @@ window.Tickets =
     $("#template_caller option").click ->
       #alert $(@).val()
       $.post "/tickets/call_resolution_template", {call_template: $(@).val()}
+
+  validate_start_action: ->
+    # job_start_note = $("#ticket_job_start_note").val()
+    # job_started_action = $("#ticket_job_started_action_id option:selected").val()
+    $("#update_start_action").click (e)->
+      e.preventDefault()
+      if !($("#ticket_job_started_action_id").val() and $("#ticket_job_start_note").val())
+        $("#error_msg").html("<div class='alert alert-danger'>Please complete required fields</div>")
+        setTimeout (->
+          $("#error_msg").empty()
+          return
+        ), 2000
+      else
+        $("#start_action_form").submit()

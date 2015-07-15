@@ -38,6 +38,6 @@
         %td
           //= history.payment_pending
         %td
-          = simple_format history.remarks.split("<br/>").first
+          = history.remarks and simple_format(history.remarks.split("<br/>").first)
         %td
           = User.find_by_id(history.created_by).try(:email)

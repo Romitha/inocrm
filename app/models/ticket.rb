@@ -232,6 +232,8 @@ class TicketRepairType < ActiveRecord::Base
   has_many :tickets, foreign_key: :job_started_action_id
   accepts_nested_attributes_for :tickets, allow_destroy: true
 
+  has_many :action_warranty_repair_types, foreign_key: :ticket_repair_type_id
+
 end
 
 class Reason < ActiveRecord::Base
@@ -239,5 +241,15 @@ class Reason < ActiveRecord::Base
 
   has_many :tickets, foreign_key: :hold_reason_id
   accepts_nested_attributes_for :tickets, allow_destroy: true
+
+  has_many :ticket_re_assign_requests
+  accepts_nested_attributes_for :ticket_re_assign_requests, allow_destroy: true
+end
+
+class TicketReAssignRequest < ActiveRecord::Base
+  self.table_name = "spt_act_re_assign_request"
+
+ belongs_to :reason
+ belongs_to :user_ticket_action, foreign_key: :ticket_action_id
 
 end
