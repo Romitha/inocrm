@@ -1238,6 +1238,8 @@ class TicketsController < ApplicationController
       redirect_to @redirect_url, notice: @flash_message
     else
 
+    if [1, 2].include?(warranty_id)
+      warranty_constraint = @ticket.products.first.warranties.select{|w| w.warranty_type_id == warranty_id and (w.start_at.to_date..w.end_at.to_date).include?(Date.today)}.present?
     end
   end
 
@@ -1249,7 +1251,49 @@ class TicketsController < ApplicationController
     if @ticket.update t_params
       redirect_to @redirect_url, notice: @flash_message
     else
+      redirect_to resolution_tickets_url(process_id: params[:process_id], task_id: params[:task_id], owner: params[:owner], ticket_id: @ticket.id, supp_engr_user: params[:supp_engr_user]), notice: "ticket repair type is faild to updated."
+    end
+  end
 
+  def update_re_assign
+    continue = true
+
+    # ticket_id, process_id, task_id should not be null
+    # http://0.0.0.0:3000/tickets/assign-ticket?ticket_id=2&process_id=212&owner=supp_mgr&task_id=191
+    if params[:task_id] and params[:process_id] and params[:owner]
+
+      bpm_response = view_context.send_request_process_data process_history: true, process_instance_id: params[:process_id], variable_id: "ticket_id"
+      
+      if bpm_response[:status].upcase == "ERROR"
+        continue = false
+        @flash_message = "Bpm error."
+      end
+
+    else
+      continue = false
+    end
+
+    if continue
+      if @ticket.update append_remark_ticket_params(@ticket)
+
+        # bpm output variables
+
+        bpm_variables = view_context.initialize_bpm_variables.merge(d4_job_complete: "Y", d5_re_assigned: "Y")
+
+        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+        if bpm_response[:status].upcase == "SUCCESS"
+          @flash_message = "Successfully updated."
+        else
+          @flash_message = "ticket is updated. but Bpm error"
+        end
+
+        redirect_to @ticket, notice: @flash_message
+      else
+        redirect_to @ticket, alert: @flash_message
+      end    
+    else
+      redirect_to @ticket, alert: @flash_message
     end
   end
 
