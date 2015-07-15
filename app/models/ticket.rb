@@ -59,7 +59,8 @@ class Ticket < ActiveRecord::Base
   belongs_to :ticket_repair_type, foreign_key: :repair_type_id
   belongs_to :reason, foreign_key: :hold_reason_id
 
-  has_many :ticket_fsr
+  has_many :ticket_fsrs
+  accepts_nested_attributes_for :ticket_fsrs, allow_destroy: true
   has_many :ticket_delivery_units
 
   validates_presence_of [:ticket_no, :priority, :status_id, :problem_description, :informed_method_id, :job_type_id, :ticket_type_id, :warranty_type_id, :base_currency_id, :problem_category_id]

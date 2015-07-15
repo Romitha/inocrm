@@ -1,5 +1,8 @@
 class TicketsController < ApplicationController
-  before_action :set_ticket, only: [:show, :edit, :update, :destroy, :update_change_ticket_cus_warranty, :update_change_ticket_repair_type]
+  before_action :set_ticket, only: [:show, :edit, :update, :destroy, :update_change_ticket_cus_warranty, :update_change_ticket_repair_type, 
+    :update_start_action, :update_re_assign, :update_hold, :update_create_fsr, :update_edit_serial_no_request, :update_edit_fsr, 
+    :update_terminate_job, :update_action_taken, :update_request_spare_part, :update_request_on_loan_spare_part, :update_warranty,
+    :update_repair_type, :update_hp_case_id, :update_resolved_job, :update_deliver_unit, :update_job_estimation_request, :update_recieve_unit, :update_un_hold]
   before_action :set_organization_for_ticket, only: [:new, :edit, :create_customer]
   # layout :workflow_diagram, only: [:workflow_diagram]
 
@@ -1087,7 +1090,27 @@ class TicketsController < ApplicationController
   end
 
   def update_start_action
+    t_params = ticket_params
+    t_params["remarks"] = t_params["remarks"].present? ? "#{t_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
+    @redirect_url = todos_url
+    @flash_message = "Start Action Updated."
+    if @ticket.update t_params
+      redirect_to @redirect_url, notice: @flash_message
+    else
 
+    end
+  end
+
+  def update_re_assign
+    t_params = ticket_params
+    t_params["remarks"] = t_params["remarks"].present? ? "#{t_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
+    @redirect_url = todos_url
+    @flash_message = "Re-Assign Reason Updated."
+    if @ticket.update t_params
+      redirect_to @redirect_url, notice: @flash_message
+    else
+
+    end
   end
 
   def update_change_ticket_cus_warranty
@@ -1115,71 +1138,197 @@ class TicketsController < ApplicationController
   end
 
   def update_hold
-    
-  end
+    t_params = ticket_params
+    t_params["remarks"] = t_params["remarks"].present? ? "#{t_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
+    @redirect_url = todos_url
+    @flash_message = "Ticket Hold Reason Updated."
+    if @ticket.update t_params
+      redirect_to @redirect_url, notice: @flash_message
+    else
 
-  def update_un_hold
-    
-  end
-
-  def update_edit_serial_no_request
-    
+    end
   end
 
   def update_create_fsr
-    
+    t_params = ticket_params
+    t_params["remarks"] = t_params["remarks"].present? ? "#{t_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
+    @redirect_url = todos_url
+    @flash_message = "Update FSR."
+    if @ticket.update t_params
+      redirect_to @redirect_url, notice: @flash_message
+    else
+
+    end
+  end
+
+  def update_un_hold
+    t_params = ticket_params
+    t_params["remarks"] = t_params["remarks"].present? ? "#{t_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
+    @redirect_url = todos_url
+    @flash_message = "Update Un Hold."
+    if @ticket.update t_params
+      redirect_to @redirect_url, notice: @flash_message
+    else
+
+    end
+  end
+
+  def update_edit_serial_no_request
+    t_params = ticket_params
+    t_params["remarks"] = t_params["remarks"].present? ? "#{t_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
+    @redirect_url = todos_url
+    @flash_message = "Update Edit Serial No Request."
+    if @ticket.update t_params
+      redirect_to @redirect_url, notice: @flash_message
+    else
+
+    end
   end
 
   def update_edit_fsr
-    
+    TicketSparePart
+    t_params = ticket_params
+    t_params["remarks"] = t_params["remarks"].present? ? "#{t_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
+    @redirect_url = organizations_url
+    @flash_message = "Update Edit FSR."
+    if @ticket.update t_params
+      redirect_to @redirect_url, notice: @flash_message
+    else
+      redirect_to root_url, alert: "failed"
+
+    end
   end
 
   def update_terminate_job
-    
+    t_params = ticket_params
+    t_params["remarks"] = t_params["remarks"].present? ? "#{t_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
+    @redirect_url = todos_url
+    @flash_message = "Update Terminate Job."
+    if @ticket.update t_params
+      redirect_to @redirect_url, notice: @flash_message
+    else
+
+    end
   end
 
   def update_action_taken
-    
+    t_params = ticket_params
+    t_params["remarks"] = t_params["remarks"].present? ? "#{t_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
+    @redirect_url = todos_url
+    @flash_message = "Update Action Taken."
+    if @ticket.update t_params
+      redirect_to @redirect_url, notice: @flash_message
+    else
+
+    end
   end
 
   def update_request_spare_part
-    
+    t_params = ticket_params
+    t_params["remarks"] = t_params["remarks"].present? ? "#{t_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
+    @redirect_url = todos_url
+    @flash_message = "Update Request Spare Part."
+    if @ticket.update t_params
+      redirect_to @redirect_url, notice: @flash_message
+    else
+
+    end
   end
 
   def update_request_on_loan_spare_part
-    
-  end
+    t_params = ticket_params
+    t_params["remarks"] = t_params["remarks"].present? ? "#{t_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
+    @redirect_url = todos_url
+    @flash_message = "Update Request On Loan Spare Part."
+    if @ticket.update t_params
+      redirect_to @redirect_url, notice: @flash_message
+    else
 
-  def update_re_assign
-    
+    end
   end
 
   def update_warranty
-    
+    t_params = ticket_params
+    t_params["remarks"] = t_params["remarks"].present? ? "#{t_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
+    @redirect_url = todos_url
+    @flash_message = "Update Warranty."
+    if @ticket.update t_params
+      redirect_to @redirect_url, notice: @flash_message
+    else
+
+    end
   end
 
   def update_repair_type
-    
+    t_params = ticket_params
+    t_params["remarks"] = t_params["remarks"].present? ? "#{t_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
+    @redirect_url = todos_url
+    @flash_message = "Update Repair Type."
+    if @ticket.update t_params
+      redirect_to @redirect_url, notice: @flash_message
+    else
+
+    end
   end
 
   def update_hp_case_id
-    
+    t_params = ticket_params
+    t_params["remarks"] = t_params["remarks"].present? ? "#{t_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
+    @redirect_url = todos_url
+    @flash_message = "Update hp Case Id."
+    if @ticket.update t_params
+      redirect_to @redirect_url, notice: @flash_message
+    else
+
+    end
   end
 
   def update_resolved_job
-    
+    t_params = ticket_params
+    t_params["remarks"] = t_params["remarks"].present? ? "#{t_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
+    @redirect_url = todos_url
+    @flash_message = "Update Resolved Job."
+    if @ticket.update t_params
+      redirect_to @redirect_url, notice: @flash_message
+    else
+
+    end
   end
 
   def update_deliver_unit
-    
+    t_params = ticket_params
+    t_params["remarks"] = t_params["remarks"].present? ? "#{t_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
+    @redirect_url = todos_url
+    @flash_message = "Update Deliver Unit."
+    if @ticket.update t_params
+      redirect_to @redirect_url, notice: @flash_message
+    else
+
+    end
   end
 
   def update_job_estimation_request
-    
+    t_params = ticket_params
+    t_params["remarks"] = t_params["remarks"].present? ? "#{t_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
+    @redirect_url = todos_url
+    @flash_message = "Upadate Job Estimation Request ."
+    if @ticket.update t_params
+      redirect_to @redirect_url, notice: @flash_message
+    else
+
+    end
   end
 
   def update_recieve_unit
-    
+    t_params = ticket_params
+    t_params["remarks"] = t_params["remarks"].present? ? "#{t_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
+    @redirect_url = todos_url
+    @flash_message = "Update Recieve Unit."
+    if @ticket.update t_params
+      redirect_to @redirect_url, notice: @flash_message
+    else
+
+    end
   end
 
   private
@@ -1192,7 +1341,7 @@ class TicketsController < ApplicationController
     end
 
     def ticket_params
-      params.require(:ticket).permit(:ticket_no, :sla_id, :serial_no, :base_currency_id, :regional_support_job, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :ticket_action_id, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer], user_ticket_actions_attributes: [:id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, user_assign_ticket_actions_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy]], ticket_extra_remarks_attributes: [:id, :note, :created_by, :extra_remark_id], products_attributes: [:id, :sold_country_id, :pop_note, :pop_doc_url, :pop_status_id])
+      params.require(:ticket).permit(:ticket_no, :sla_id, :serial_no, :base_currency_id, :regional_support_job, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :ticket_action_id, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer], user_ticket_actions_attributes: [:id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, user_assign_ticket_actions_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy]], ticket_extra_remarks_attributes: [:id, :note, :created_by, :extra_remark_id], products_attributes: [:id, :sold_country_id, :pop_note, :pop_doc_url, :pop_status_id], ticket_fsrs_attributes: [:work_started_at, :work_finished_at, :hours_worked, :down_time, :travel_hours, :engineer_time_travel, :engineer_time_on_site, :resolution, :completion_level])
     end
 
     def product_brand_params
