@@ -1,11 +1,11 @@
 %fieldset
   %legend Create FSR
-  .form_group
-    .row
-      .col-md-12      
-        %label.col-sm-10.control-label FSR No: A123
-        .col-sm-2
-          .checkbox
-          %label
-            %input{:type => "checkbox"}
-              Print FSR
+  = simple_nested_form_for ticket, url: update_create_fsr_ticket_path(ticket), method: :post do |f|
+    .col-md-10
+      %strong FSR No: 
+    = f.check_box :ticket_fsr
+    %strong Print FSR
+    = f.input :remarks, input_html: {value: nil}
+    = simple_format ticket.remarks
+    = f.submit "Save", class: "btn btn-success btn-sm"
+

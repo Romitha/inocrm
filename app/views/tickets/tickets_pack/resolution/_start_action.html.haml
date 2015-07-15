@@ -1,6 +1,6 @@
 %fieldset
   %legend Start Action
-  = simple_nested_form_for ticket, url: update_start_action_ticket_path(ticket) do |f|
+  = simple_nested_form_for ticket, url: update_start_action_ticket_path(ticket), method: :post do |f|
     .row
       .col-md-12
         %h5.strong Start at: #{DateTime.now.strftime('%Y-%m-%d %H:%M')}

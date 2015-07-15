@@ -1,58 +1,68 @@
 %fieldset
-  %legend Terminate Job
-  .row
-    .col-md-6
-      .form-group
-        %label.col-sm-4.control-label Terminate Reason
-        .col-sm-5
-          .dropdown
-          %button#dropdownMenu1.btn.btn-default.dropdown-toggle{"aria-expanded" => "true", "aria-haspopup" => "true", "data-toggle" => "dropdown", :type => "button"}
-            Dropdown
-            %span.caret
-          %ul.dropdown-menu{"aria-labelledby" => "dropdownMenu1"}
-            %li
-              %a{:href => "#"} xxxxxxxxxx
-            %li
-              %a{:href => "#"} xxxxxxxxxx
-            %li
-              %a{:href => "#"} xxxxxxxxxx
-            %li
-              %a{:href => "#"} xxxxxxxxxx
-          %button.btn.btn-default.btn-xs{:type => "button"}
-            %span.glyphicon.glyphicon-plus
-  %br
-  .row
-    .col-md-4
-      .radio
-        %label
-          %input#optionsRadios1{:checked => "", :name => "optionsRadios", :type => "radio", :value => "option1"}
-            FOC
-          %input#optionsRadios2{:checked => "", :name => "optionsRadios", :type => "radio", :value => "option2"}
-            Payment Required
-    .col-md-4
-      .form-group
-        %label.col-sm-5.control-label Payment Type
-        .col-sm-6
-          .dropdown
-          %button#dropdownMenu2.btn.btn-default.dropdown-toggle{"aria-expanded" => "true", "aria-haspopup" => "true", "data-toggle" => "dropdown", :type => "button"}
-            Dropdown
-            %span.caret
-          %ul.dropdown-menu{"aria-labelledby" => "dropdownMenu1"}
-            %li
-              %a{:href => "#"} xxxxxxxxxx
-            %li
-              %a{:href => "#"} xxxxxxxxxx
-            %li
-              %a{:href => "#"} xxxxxxxxxx
-            %li
-              %a{:href => "#"} xxxxxxxxxx
-          %button.btn.btn-default.btn-xs{:type => "button"}
-            %span.glyphicon.glyphicon-plus
-    .col-md-4
-      .form-group
-        %label.col-sm-4.control-label Amount (Rs)
-        .col-sm-5
-          %input#exampleInputName2.form-control{:type => "text"}
-        .col-xs-sm-5
-          %button.btn.btn-default.btn-xs{:type => "button"}
-            %span.glyphicon.glyphicon-plus
+  %legend Terminate Reason
+  = simple_nested_form_for ticket, url: update_terminate_job_ticket_path(ticket), method: :post do |f|
+    .row
+      = f.association :ticket_start_action, label_method: :action, value_method: :id, wrapper_html: {class: "col-md-5"}
+      = f.input :job_start_note, wrapper_html: {class: "col-md-7"}
+    = f.input :remarks, input_html: {value: nil}
+    = simple_format ticket.remarks
+    = f.submit "Save", class: "btn btn-success btn-sm"
+
+/ %fieldset
+/   %legend Terminate Job
+/   .row
+/     .col-md-6
+/       .form-group
+/         %label.col-sm-4.control-label Terminate Reason
+/         .col-sm-5
+/           .dropdown
+/           %button#dropdownMenu1.btn.btn-default.dropdown-toggle{"aria-expanded" => "true", "aria-haspopup" => "true", "data-toggle" => "dropdown", :type => "button"}
+/             Dropdown
+/             %span.caret
+/           %ul.dropdown-menu{"aria-labelledby" => "dropdownMenu1"}
+/             %li
+/               %a{:href => "#"} xxxxxxxxxx
+/             %li
+/               %a{:href => "#"} xxxxxxxxxx
+/             %li
+/               %a{:href => "#"} xxxxxxxxxx
+/             %li
+/               %a{:href => "#"} xxxxxxxxxx
+/           %button.btn.btn-default.btn-xs{:type => "button"}
+/             %span.glyphicon.glyphicon-plus
+/   %br
+/   .row
+/     .col-md-4
+/       .radio
+/         %label
+/           %input#optionsRadios1{:checked => "", :name => "optionsRadios", :type => "radio", :value => "option1"}
+/             FOC
+/           %input#optionsRadios2{:checked => "", :name => "optionsRadios", :type => "radio", :value => "option2"}
+/             Payment Required
+/     .col-md-4
+/       .form-group
+/         %label.col-sm-5.control-label Payment Type
+/         .col-sm-6
+/           .dropdown
+/           %button#dropdownMenu2.btn.btn-default.dropdown-toggle{"aria-expanded" => "true", "aria-haspopup" => "true", "data-toggle" => "dropdown", :type => "button"}
+/             Dropdown
+/             %span.caret
+/           %ul.dropdown-menu{"aria-labelledby" => "dropdownMenu1"}
+/             %li
+/               %a{:href => "#"} xxxxxxxxxx
+/             %li
+/               %a{:href => "#"} xxxxxxxxxx
+/             %li
+/               %a{:href => "#"} xxxxxxxxxx
+/             %li
+/               %a{:href => "#"} xxxxxxxxxx
+/           %button.btn.btn-default.btn-xs{:type => "button"}
+/             %span.glyphicon.glyphicon-plus
+/     .col-md-4
+/       .form-group
+/         %label.col-sm-4.control-label Amount (Rs)
+/         .col-sm-5
+/           %input#exampleInputName2.form-control{:type => "text"}
+/         .col-xs-sm-5
+/           %button.btn.btn-default.btn-xs{:type => "button"}
+/             %span.glyphicon.glyphicon-plus  

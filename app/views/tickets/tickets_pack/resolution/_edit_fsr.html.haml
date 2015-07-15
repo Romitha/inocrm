@@ -1,109 +1,28 @@
 %fieldset
   %legend Edit FSR
-  .row
-    .col-md-6
-      .form-group
-        %label.col-sm-4.control-label FSR No
-        .col-sm-5
-          .dropdown
-          %button#dropdownMenu1.btn.btn-default.dropdown-toggle{"aria-expanded" => "true", "aria-haspopup" => "true", "data-toggle" => "dropdown", :type => "button"}
-            Dropdown
-            %span.caret
-          %ul.dropdown-menu{"aria-labelledby" => "dropdownMenu1"}
-            %li
-              %a{:href => "#"} xxxxxxxxxx
-            %li
-              %a{:href => "#"} xxxxxxxxxx
-            %li
-              %a{:href => "#"} xxxxxxxxxx
-            %li
-              %a{:href => "#"} xxxxxxxxxx
-
-  %br
-  .row
-    .col-md-6
-      %h4.col-sm-4.control-label FSR Information
-  
-  %br
-  .form-group  
-    .row
-      .col-md-4
-        %label.col-sm-5.control-label Worked Started
-        .col-sm-7 
-          %input#exampleInputName2.datepicker.form-control{:type => "text"}                        
-      .col-md-4
-        %label.col-sm-5.control-label Worked Finished
-        .col-sm-7 
-          %input#exampleInputName2.datepicker.form-control{:type => "text"}
-      
-      .col-md-4
-        %label.col-sm-5.control-label FSR No: A123
-     
-    %br    
-    .row
-      .col-md-4
-        %label.col-sm-5.control-label Hours Worked
-        .col-sm-7
-          %input#exampleInputName2.form-control{:type => "text"}
-        
-      .col-md-4
-        %label.col-sm-5.control-label Down Time Hours
-        .col-sm-7
-          %input#exampleInputName2.form-control{:type => "text"}
-      
-    %br
-    .row
-      .col-md-4
-        %label.col-sm-5.control-label Travel Hours
-        .col-sm-7
-          %input#exampleInputName2.form-control{:type => "text"}
-
-  %br
-  .row
-    .col-md-6
-      %h4.col-sm-4.control-label For Invoicing
-
-  %br
-  .form-group  
-    .row
-      .col-md-4
-        %label.col-sm-5.control-label Engineer Time travel
-        .col-sm-7
-          %input#exampleInputName2.form-control{:type => "text"}
-      .col-md-4
-        %label.col-sm-5.control-label Engineer Time On Site
-        .col-sm-7
-          %input#exampleInputName2.form-control{:type => "text"}
-  
-    %br
-    .row
-      .col-md-4
-        %label.col-sm-5.control-label Other Charges Mileages
-        .col-sm-7
-          %input#exampleInputName2.form-control{:type => "text"}
-      .col-md-4
-        %label.col-sm-5.control-label Others charges repair
-        .col-sm-7
-          %input#exampleInputName2.form-control{:type => "text"}
-  
-    %br
-    .row
-      .col-md-12
-        %label.col-sm-2.control-label Resolution
-        .col-sm-10
-          %textarea.form-control{:rows => "2"}  
-  %br
-  .row
-    .col-md-4
-      %label.col-sm-4.control-label Engineer Time travel
-      .col-sm-8
-        .radio
-          %label
-            %input#optionsRadios1{:checked => "", :name => "optionsRadios", :type => "radio", :value => "option1"}
-              Partial
-            %input#optionsRadios2{:checked => "", :name => "optionsRadios", :type => "radio", :value => "option1"}
-              Full
-    .col-md-6
-      %label.col-sm-3.control-label Remarks
-      .col-sm-8
-        %input#exampleInputName2.form-control{:type => "text"}
+  = simple_nested_form_for ticket, url: update_edit_fsr_ticket_path(ticket), method: :post do |f|
+    = f.simple_fields_for "ticket_fsrs_attributes[]", ticket.ticket_fsrs.build do |fsr|
+      %strong FSR Infomation 
+      .row
+        .col-md-4
+          = fsr.input :work_started_at, as: :string, input_html: {class: "datepicker"}
+        .col-md-4
+          = fsr.input :work_finished_at, as: :string, input_html: {class: "datepicker"}
+        .col-md-4
+          = fsr.label :fsr_no, wrapper_html: {class: "col-md-5"}
+          %strong dad
+      .row
+        = fsr.input :hours_worked, wrapper_html: {class: "col-md-5"}
+        = fsr.input :down_time, wrapper_html: {class: "col-md-5"}
+      .row
+        = fsr.input :travel_hours, wrapper_html: {class: "col-md-5"}
+      %strong For Invoice
+      .row
+        = fsr.input :engineer_time_travel, wrapper_html: {class: "col-md-5"}
+        = fsr.input :engineer_time_on_site, wrapper_html: {class: "col-md-5"}
+      .row
+        = fsr.input :resolution, input_html: {value: nil}, wrapper_html: {class: "col-md-9"}
+        = fsr.input :completion_level, as: :radio_buttons, label: "Completion Level", wrapper_html: {class: "col-md-3"}, collection: ["Full","Patial"], wrapper: :append
+    = f.input :remarks, input_html: {value: nil}
+    = simple_format ticket.remarks
+    = f.submit "Save", class: "btn btn-success btn-sm"
