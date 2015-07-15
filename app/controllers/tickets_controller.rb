@@ -793,7 +793,7 @@ class TicketsController < ApplicationController
     end
   end
 
-   def show
+  def show
     Warranty
     ContactNumber
     QAndA
@@ -1236,7 +1236,7 @@ class TicketsController < ApplicationController
     @flash_message = "Ticket Hold Reason Updated."
     if @ticket.update t_params
       redirect_to @redirect_url, notice: @flash_message
-    else
+    end
 
     if [1, 2].include?(warranty_id)
       warranty_constraint = @ticket.products.first.warranties.select{|w| w.warranty_type_id == warranty_id and (w.start_at.to_date..w.end_at.to_date).include?(Date.today)}.present?
