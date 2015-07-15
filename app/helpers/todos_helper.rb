@@ -8,7 +8,14 @@ module TodosHelper
     else
       case 
       when args[:process_history]
-        response = response_hash["log_instance_list"].blank? ? {} : {status: "success", value: response_hash["log_instance_list"]["variable_instance_log"]["value"], variable_id: response_hash["log_instance_list"]["variable_instance_log"]["variable_id"]}
+
+        if response_hash["log_instance_list"].blank?
+          response = {}
+        elsif response_hash["log_instance_list"]["variable_instance_log"].is_a?(Hash)
+          response = {status: "success", value: response_hash["log_instance_list"]["variable_instance_log"]["value"], variable_id: response_hash["log_instance_list"]["variable_instance_log"]["variable_id"]}
+        elsif response_hash["log_instance_list"]["variable_instance_log"].is_a?(Array)
+          response = {status: "success", value: response_hash["log_instance_list"]["variable_instance_log"].last["value"], variable_id: response_hash["log_instance_list"]["variable_instance_log"].last["variable_id"]}
+        end
 
       when args[:start_process]
         response = response_hash["process_instance"].blank? ? {} : {status: response_hash["process_instance"]["status"], process_name: response_hash["process_instance"]["process_id"], process_id: response_hash["process_instance"]["id"]}

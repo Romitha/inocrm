@@ -11,6 +11,9 @@ window.Tickets =
     @filter_sbu_engineer()
     @call_resolution_template()
     @validate_start_action()
+    @action_taken_text()
+    @hp_case_validation()
+    @job_finished_validation()
     return
 
   initial_loaders: ->
@@ -306,3 +309,46 @@ window.Tickets =
         ), 2000
       else
         $("#start_action_form").submit()
+
+  action_taken_text: ->
+    $("#action_taken_submit").click (e)->
+      e.preventDefault()
+      error = false
+      if !$("#action_taken_text").val()
+        error = true
+      if $("#resolution_summary_text").length > 0 and !$("#resolution_summary_text").val()
+        error = true
+      if error
+        $("#error_msg").html("<div class='alert alert-danger'>Please complete required fields</div>")
+        setTimeout (->
+          $("#error_msg").empty()
+          return
+        ), 2000
+      else
+        $("#action_taken_form").submit()
+
+  hp_case_validation: ->
+    $("#hp_case_submit").click (e)->
+      e.preventDefault()
+      if !$("#hp_case_text").val()
+        $("#error_msg").html("<div class='alert alert-danger'>Please complete required fields</div>")
+        setTimeout (->
+          $("#error_msg").empty()
+          return
+        ), 2000
+      else
+        $("#hp_case_form").submit()
+
+  job_finished_validation: ->
+    # job_start_note = $("#ticket_job_start_note").val()
+    # job_started_action = $("#ticket_job_started_action_id option:selected").val()
+    $("#job_finish_submit").click (e)->
+      e.preventDefault()
+      if !($("#resolution_text").val() and $("#resolution_summary_text").val())
+        $("#error_msg").html("<div class='alert alert-danger'>Please complete required fields</div>")
+        setTimeout (->
+          $("#error_msg").empty()
+          return
+        ), 2000
+      else
+        $("#job_finish_form").submit()

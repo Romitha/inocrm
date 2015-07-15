@@ -800,6 +800,9 @@ class TicketsController < ApplicationController
     @product = @ticket.products.first
     @warranties = @product.warranties
     session[:product_id] = @product.id
+    session[:process_id] = nil
+    session[:task_id] = nil
+    session[:owner] = nil
     # Rails.cache.delete([:histories, session[:product_id]])
     Rails.cache.delete([:join, @ticket.id])
     @histories = Rails.cache.fetch([:histories, session[:product_id]]){Kaminari.paginate_array(@product.tickets.reject{|t| t == @ticket})}.page(params[:page]).per(2)
@@ -1087,13 +1090,19 @@ class TicketsController < ApplicationController
   end
 
   def call_resolution_template
+    TaskAction
     @call_template = params[:call_template]
     @ticket = Ticket.find session[:ticket_id]
+    @user_ticket_action = @ticket.user_ticket_actions.build
     case @call_template
     when "re_assign"
-      TaskAction
-      @user_ticket_action = @ticket.user_ticket_actions.build
       @re_assign_request = @user_ticket_action.ticket_re_assign_requests.build
+    when "action_taken"
+      @ticket_action_taken = @user_ticket_action.ticket_action_takens.build
+    when "hp_case_id"
+      @hp_case = @user_ticket_action.hp_cases.build
+    when "resolved_job"
+      @ticket_finish_job = @user_ticket_action.ticket_finish_jobs.build
     end
   end
 
@@ -1138,9 +1147,9 @@ class TicketsController < ApplicationController
           @flash_message = "ticket is updated. but Bpm error"
         end
 
-        redirect_to resolution_tickets_url(process_id: params[:process_id], task_id: params[:task_id], owner: params[:owner], ticket_id: @ticket.id, supp_engr_user: params[:supp_engr_user]), notice: @flash_message
+        redirect_to @ticket, notice: @flash_message
       else
-        redirect_to resolution_tickets_url(process_id: params[:process_id], task_id: params[:task_id], owner: params[:owner], ticket_id: @ticket.id, supp_engr_user: params[:supp_engr_user]), notice: "start action failed to updated."
+        redirect_to @ticket, notice: "start action failed to updated."
       end
     else
       redirect_to todos_url, notice: @flash_message
@@ -1348,15 +1357,152 @@ class TicketsController < ApplicationController
   end
 
   def update_action_taken
-    t_params = ticket_params
-    t_params["remarks"] = t_params["remarks"].present? ? "#{t_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
-    @redirect_url = todos_url
-    @flash_message = "Update Action Taken."
-    if @ticket.update t_params
-      redirect_to @redirect_url, notice: @flash_message
-    else
 
+
+    TaskAction
+    continue = true
+
+    # ticket_id, process_id, task_id should not be null
+    # http://0.0.0.0:3000/tickets/assign-ticket?ticket_id=2&process_id=212&owner=supp_mgr&task_id=191
+    if params[:task_id] and params[:process_id] and params[:owner]
+
+      bpm_response = view_context.send_request_process_data process_history: true, process_instance_id: params[:process_id], variable_id: "ticket_id"
+
+      if bpm_response[:status].upcase == "ERROR"
+        continue = false
+        @flash_message = "Bpm error."
+      end
+
+    else
+      continue = false
     end
+
+    if continue
+      if @ticket.update append_remark_ticket_params(@ticket)
+
+        # bpm output variables
+
+        bpm_variables = view_context.initialize_bpm_variables.merge(supp_engr_user: current_user.id, d7_close_approval_requested: (@ticket.ticket_close_approval_requested ? "Y" : "N") )
+
+        @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
+
+        @ticket.user_ticket_actions.create(action_id: TaskAction.find_by_action_no(55).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count) if @ticket.ticket_close_approval_requested
+
+        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+        if bpm_response[:status].upcase == "SUCCESS"
+          @flash_message = "Successfully updated."
+        else
+          @flash_message = "ticket is updated. but Bpm error"
+        end
+      else
+        @flash_message = "ticket is failed to updated."
+      end
+    else
+      @flash_message = @flash_message
+    end
+    redirect_to @ticket, notice: @flash_message
+  end
+
+  def update_resolved_job
+    TaskAction
+    continue = true
+
+    # ticket_id, process_id, task_id should not be null
+    # http://0.0.0.0:3000/tickets/assign-ticket?ticket_id=2&process_id=212&owner=supp_mgr&task_id=191
+    if params[:task_id] and params[:process_id] and params[:owner]
+
+      bpm_response = view_context.send_request_process_data process_history: true, process_instance_id: params[:process_id], variable_id: "ticket_id"
+
+      if bpm_response[:status].upcase == "ERROR"
+        continue = false
+        @flash_message = "Bpm error."
+      end
+
+    else
+      continue = false
+    end
+
+    if continue
+      if @ticket.update append_remark_ticket_params(@ticket)
+
+        # bpm output variables
+          # d4_Job_Completed = true,
+          # (D8) d8_job_finished =  true,
+          # if DB.spt_ticket.ticket_type_id=IH (in House) then (D9) d9_qc_required = true, 
+          # if DB.spt_ticket.cus_chargeable=true(chargable) then (D10) d10_job_estimate_required_final = true, 
+          # if DB.spt_ticket.cus_chargeable=true (chargable) then (D12) d12_need_to_invoice = true,  
+          # if (FSR,Count>0 or Parts.count>0) then (D6) d6_close_approval_ required  = true and DB.spt_ticket.ticket_close_approval_required = true, 
+
+          # Set DB.spt_ticket.status_resolve_id=  RSV (Resolved) 
+          # if DB.spt_ticket.ticket_type_id=IH (in House) then DB.spt_ticket.status_id=  QCT (Quality Control) Else if (D10) d10_job_estimate_required_final = true then DB.spt_ticket.status_id=  PMT (Final Payment Calculation) else DB.spt_ticket.status_id=  CFB (Customer Feedback).
+          #  Set Action (21) Resolve the Job (Finish the Job), DB.spt_act_finish_job.
+
+        bpm_variables = view_context.initialize_bpm_variables.merge(supp_engr_user: current_user.id, d7_close_approval_requested: (@ticket.ticket_close_approval_requested ? "Y" : "N") )
+
+        @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
+
+        @ticket.user_ticket_actions.create(action_id: TaskAction.find_by_action_no(55).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count) if @ticket.ticket_close_approval_requested
+
+        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+        if bpm_response[:status].upcase == "SUCCESS"
+          @flash_message = "Successfully updated."
+        else
+          @flash_message = "ticket is updated. but Bpm error"
+        end
+      else
+        @flash_message = "ticket is failed to updated."
+      end
+    else
+      @flash_message = @flash_message
+    end
+    redirect_to @ticket, notice: @flash_message
+  end
+
+  def update_hp_case_id
+
+    TaskAction
+    continue = true
+
+    # ticket_id, process_id, task_id should not be null
+    # http://0.0.0.0:3000/tickets/assign-ticket?ticket_id=2&process_id=212&owner=supp_mgr&task_id=191
+    if params[:task_id] and params[:process_id] and params[:owner]
+
+      bpm_response = view_context.send_request_process_data process_history: true, process_instance_id: params[:process_id], variable_id: "ticket_id"
+
+      if bpm_response[:status].upcase == "ERROR"
+        continue = false
+        @flash_message = "Bpm error."
+      end
+
+    else
+      continue = false
+    end
+
+    if continue
+      if @ticket.update append_remark_ticket_params(@ticket)
+
+        # bpm output variables
+
+        bpm_variables = view_context.initialize_bpm_variables.merge(supp_engr_user: current_user.id)
+
+        @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
+
+        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+        if bpm_response[:status].upcase == "SUCCESS"
+          @flash_message = "Successfully updated."
+        else
+          @flash_message = "ticket is updated. but Bpm error"
+        end
+      else
+        @flash_message = "ticket is failed to updated."
+      end
+    else
+      @flash_message = @flash_message
+    end
+    redirect_to @ticket, notice: @flash_message
   end
 
   def update_request_spare_part
@@ -1400,30 +1546,6 @@ class TicketsController < ApplicationController
     t_params["remarks"] = t_params["remarks"].present? ? "#{t_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
     @redirect_url = todos_url
     @flash_message = "Update Repair Type."
-    if @ticket.update t_params
-      redirect_to @redirect_url, notice: @flash_message
-    else
-
-    end
-  end
-
-  def update_hp_case_id
-    t_params = ticket_params
-    t_params["remarks"] = t_params["remarks"].present? ? "#{t_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
-    @redirect_url = todos_url
-    @flash_message = "Update hp Case Id."
-    if @ticket.update t_params
-      redirect_to @redirect_url, notice: @flash_message
-    else
-
-    end
-  end
-
-  def update_resolved_job
-    t_params = ticket_params
-    t_params["remarks"] = t_params["remarks"].present? ? "#{t_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
-    @redirect_url = todos_url
-    @flash_message = "Update Resolved Job."
     if @ticket.update t_params
       redirect_to @redirect_url, notice: @flash_message
     else
@@ -1477,7 +1599,7 @@ class TicketsController < ApplicationController
     end
 
     def ticket_params
-      params.require(:ticket).permit(:ticket_no, :sla_id, :serial_no, :base_currency_id, :regional_support_job, :job_started_action_id, :job_start_note, :job_started_at, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, :status_resolve_id, ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :ticket_action_id, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer], user_ticket_actions_attributes: [:id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, user_assign_ticket_actions_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy], ticket_re_assign_requests_attributes: [:reason_id, :_destroy]], ticket_extra_remarks_attributes: [:id, :note, :created_by, :extra_remark_id], products_attributes: [:id, :sold_country_id, :pop_note, :pop_doc_url, :pop_status_id], ticket_fsrs_attributes: [:work_started_at, :work_finished_at, :hours_worked, :down_time, :travel_hours, :engineer_time_travel, :engineer_time_on_site, :resolution, :completion_level])
+      params.require(:ticket).permit(:ticket_no, :sla_id, :serial_no, :base_currency_id, :ticket_close_approval_required, :ticket_close_approval_requested, :regional_support_job, :job_started_action_id, :job_start_note, :job_started_at, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, :status_resolve_id, ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :ticket_action_id, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer], user_ticket_actions_attributes: [:id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, user_assign_ticket_actions_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy], ticket_re_assign_requests_attributes: [:reason_id, :_destroy], ticket_action_takens_attributes: [:action, :_destroy]], ticket_extra_remarks_attributes: [:id, :note, :created_by, :extra_remark_id], products_attributes: [:id, :sold_country_id, :pop_note, :pop_doc_url, :pop_status_id], ticket_fsrs_attributes: [:work_started_at, :work_finished_at, :hours_worked, :down_time, :travel_hours, :engineer_time_travel, :engineer_time_on_site, :resolution, :completion_level])
     end
 
     def product_brand_params
