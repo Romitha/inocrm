@@ -32,14 +32,15 @@
               %th Task title
               %th Action    
           %tbody
-            - formatted_workflow_mapping_for_user.each do |formatted_workflow_mapping|
-              %tr
-                %td= count += 1
-                %td= formatted_workflow_mapping[:task_content]["created_on"].to_datetime.strftime("%Y-%m-%d %H:%M")
-                %td= INOCRM_CONFIG["priority"].key formatted_workflow_mapping[:task_content]["priority"].to_i
-                %td= formatted_workflow_mapping[:first_header_title].split("-").first.strip
-                %td #{formatted_workflow_mapping[:first_header_title]} #{formatted_workflow_mapping[:second_header_title]}
-                %td= link_to "Do", to_do_call_todos_path(url: formatted_workflow_mapping[:url], input_variables: formatted_workflow_mapping[:input_variables], task_id: formatted_workflow_mapping[:task_content]["id"], process_instance_id: formatted_workflow_mapping[:task_content]["process_instance_id"], owner: formatted_workflow_mapping[:task_content]["actual_owner"]), target: "_blank"
+            - if formatted_workflow_mapping_for_user.is_a?(Array)
+              - formatted_workflow_mapping_for_user.sort{|pf, lf| pf[:task_content]["created_on"].to_time <=> lf[:task_content]["created_on"].to_time}.each do |formatted_workflow_mapping|
+                %tr
+                  %td= count += 1
+                  %td= formatted_workflow_mapping[:task_content]["created_on"].to_time.strftime("%Y-%m-%d %H:%M")
+                  %td= INOCRM_CONFIG["priority"].key formatted_workflow_mapping[:task_content]["priority"].to_i
+                  %td= formatted_workflow_mapping[:first_header_title].split("-").first.strip
+                  %td #{formatted_workflow_mapping[:first_header_title]} #{formatted_workflow_mapping[:second_header_title]}
+                  %td= link_to "Do", to_do_call_todos_path(url: formatted_workflow_mapping[:url], input_variables: formatted_workflow_mapping[:input_variables], task_id: formatted_workflow_mapping[:task_content]["id"], process_instance_id: formatted_workflow_mapping[:task_content]["process_instance_id"], owner: formatted_workflow_mapping[:task_content]["actual_owner"]), target: "_blank"
       = tab_content tabpointer: "role" do
         .product
         %table.table
@@ -50,13 +51,14 @@
               %th Priority
               %th Module
               %th Task title
-              %th Action    
-          %tbody    
-            - (formatted_workflow_mapping_for_role and formatted_workflow_mapping_for_role).try(:each) do |formatted_workflow_mapping|
-              %tr
-                %td= count += 1
-                %td= formatted_workflow_mapping[:task_content]["created_on"].to_datetime.strftime("%Y-%m-%d %H:%M")
-                %td= INOCRM_CONFIG["priority"].key formatted_workflow_mapping[:task_content]["priority"].to_i
-                %td= formatted_workflow_mapping[:first_header_title].split("-").first.strip
-                %td #{formatted_workflow_mapping[:first_header_title]} #{formatted_workflow_mapping[:second_header_title]}
-                %td= link_to "Do", to_do_call_todos_path(url: formatted_workflow_mapping[:url], input_variables: formatted_workflow_mapping[:input_variables], task_id: formatted_workflow_mapping[:task_content]["id"], process_instance_id: formatted_workflow_mapping[:task_content]["process_instance_id"], owner: formatted_workflow_mapping[:task_content]["actual_owner"]), target: "_blank"
+              %th Action
+          %tbody
+            - if formatted_workflow_mapping_for_role.is_a?(Array)
+              - formatted_workflow_mapping_for_role.sort{|pf, lf| pf[:task_content]["created_on"].to_time <=> lf[:task_content]["created_on"].to_time}.each do |formatted_workflow_mapping|
+                %tr
+                  %td= count += 1
+                  %td= formatted_workflow_mapping[:task_content]["created_on"].to_time.strftime("%Y-%m-%d %H:%M")
+                  %td= INOCRM_CONFIG["priority"].key formatted_workflow_mapping[:task_content]["priority"].to_i
+                  %td= formatted_workflow_mapping[:first_header_title].split("-").first.strip
+                  %td #{formatted_workflow_mapping[:first_header_title]} #{formatted_workflow_mapping[:second_header_title]}
+                  %td= link_to "Do", to_do_call_todos_path(url: formatted_workflow_mapping[:url], input_variables: formatted_workflow_mapping[:input_variables], task_id: formatted_workflow_mapping[:task_content]["id"], process_instance_id: formatted_workflow_mapping[:task_content]["process_instance_id"], owner: formatted_workflow_mapping[:task_content]["actual_owner"]), target: "_blank"

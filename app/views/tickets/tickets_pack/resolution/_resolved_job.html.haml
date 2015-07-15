@@ -1,14 +1,25 @@
 %fieldset
-  %legend Resolved Jobs (Finished Jobs)
-  .form-group
-    .row
-      .col-md-12
-        %label.col-sm-2.control-label Finished Date time : 
-        %label.col-sm-6.control-label YYYY/MM/DD HH:MM 
+  %legend Resolve the Job (Finish)
+  #error_msg
+  = simple_form_for ticket, url: update_resolved_job_ticket_path(ticket), method: :post, html: {id: "job_finish_form"} do |f|
+    = hidden_field_tag :process_id, session[:process_id]
+    = hidden_field_tag :task_id, session[:task_id]
+    = hidden_field_tag :owner, session[:owner]
 
-    %br
-    .row
-      .col-md-12
-        %label.col-sm-2.control-label Resolution
-        .col-sm-10
-          %textarea.form-control{:rows => "2"}
+    = f.simple_fields_for "user_ticket_actions_attributes[]", @user_ticket_action do |uf|
+      = uf.input :action_id, as: :hidden, input_html: {value: TaskAction.find_by_action_no(21).id}
+      = uf.input :action_at, as: :hidden, input_html: {value: DateTime.now.strftime("%d-%m-%Y %H:%M")}
+      = uf.input :action_by, as: :hidden, input_html: {value: current_user.id}
+      = uf.input :re_open_index, as: :hidden, input_html: {value: ticket.re_open_count}
+
+      = uf.simple_fields_for "ticket_finish_jobs_attributes[]", @ticket_finish_job do |rf|
+        = rf.input :resolution, required: true, input_html: {id: "resolution_text"}
+    = f.input :remarks, input_html: {value: nil}
+    = simple_format ticket.remarks
+
+    = f.input :resolution_summary, required: true, input_html: {id: "resolution_summary_text"}
+
+    = label_tag "Request to close the Ticket"
+    = f.check_box :ticket_close_approval_requested, checked: false
+
+    = f.submit "Save", class: "btn btn-success", id: "job_finish_submit"

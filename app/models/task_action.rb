@@ -30,6 +30,12 @@ class UserTicketAction < ActiveRecord::Base
 
   has_many :ticket_re_assign_requests, foreign_key: :ticket_action_id
   accepts_nested_attributes_for :ticket_re_assign_requests, allow_destroy: true
+
+  has_many :ticket_action_takens, foreign_key: :ticket_action_id
+  accepts_nested_attributes_for :ticket_action_takens, allow_destroy: true
+
+  has_many :ticket_finish_jobs, foreign_key: :ticket_action_id
+  accepts_nested_attributes_for :ticket_finish_jobs, allow_destroy: true
 end
 
 class UserAssignTicketAction < ActiveRecord::Base
@@ -60,6 +66,18 @@ end
 
 class HpCase < ActiveRecord::Base
   self.table_name = "spt_act_hp_case_action"
+
+  belongs_to :user_ticket_action, foreign_key: :ticket_action_id
+end
+
+class TicketActionTaken < ActiveRecord::Base
+  self.table_name = "spt_act_action_taken"
+
+  belongs_to :user_ticket_action, foreign_key: :ticket_action_id
+end
+
+class TicketFinishJob < ActiveRecord::Base
+  self.table_name = "spt_act_finish_job"
 
   belongs_to :user_ticket_action, foreign_key: :ticket_action_id
 end
