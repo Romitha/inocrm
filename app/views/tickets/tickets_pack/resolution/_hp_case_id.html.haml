@@ -1,15 +1,11 @@
+-TaskAction
 %fieldset
-  %legend HP Case ID
-  .row
-    .col-md-6
-      .form-group
-        %label.col-sm-4.control-label Case ID
-        .col-sm-4
-          %input#exampleInputName2.form-control{:type => "text"}
-  %br
-  .row
-    .col-md-6
-      .form-group
-        %label.col-sm-4.control-label Case Note
-        .col-sm-7
-          %textarea.form-control{:rows => "3"}
+  %legend HP Case
+  =simple_nested_form_for HpCase.new, url: update_hp_case_id_ticket_path(ticket), method: :post do |f|
+    .row.col-md-12
+      = f.input :case_id, wrapper_html: {class: "col-md-5"}, label: "Case Id"
+    .row.col-md-12
+      = f.input :case_note, wrapper_html: {class: "col-md-7"}
+    = f.input :remarks, input_html: {value: nil}
+    = simple_format ticket.remarks
+    = f.submit "Save", class: "btn btn-success btn-sm", id: "update_start_action"

@@ -62,4 +62,6 @@ class HpCase < ActiveRecord::Base
   self.table_name = "spt_act_hp_case_action"
 
   belongs_to :user_ticket_action, foreign_key: :ticket_action_id
+
+  validates_presence_of :case_id
 end
