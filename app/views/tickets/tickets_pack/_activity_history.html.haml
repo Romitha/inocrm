@@ -15,27 +15,62 @@
                 %p By: #{Rails.cache.fetch([:action_by, action.action_by]){User.find(action.action_by)}.user_name}
               .col-md-3
                 %p Re-Open: #{action.re_open_index > 0 ? 'Yes ('+action.re_open_index+')' : 'No'}
+
           -if action.task_action.action_no == 2
             .panel-body
-              .row
-                .col-md-3
-                  Sbu: #{action.user_assign_ticket_actions.first.try(:sbu).try(:sbu)}
-                .col-md-3
-                  Assign to: #{User.find(action.user_assign_ticket_actions.first.assign_to).user_name}
-                .col-md-3
-                  -if action.user_assign_ticket_actions.first.recorrection == true
-                    Recorrection: Yes
-                  -else
-                    Recorrection: No
-                .col-md-3
-                  -if action.user_assign_ticket_actions.first.recorrection == true
-                    Regional Support Center Job: Yes
-                  -else
-                    Regional Support Center Job: No
-          -if action.task_action.action_no == 4
+              - action.user_assign_ticket_actions.each do |a|
+                .row 
+                  .col-md-3
+                    Sbu: #{a.try(:sbu).try(:sbu)}
+                  .col-md-3
+                    Assign to: #{User.find(a.assign_to).user_name}
+                  .col-md-3
+                    -if a.recorrection == true
+                      Recorrection: Yes
+                    -else
+                      Recorrection: No
+                  .col-md-3
+                    -if a.recorrection == true
+                      Regional Support Center Job: Yes
+                    -else
+                      Regional Support Center Job: No
+
+          -if action.task_action.action_no == 6
             .panel-body
-              .row
-                .col-md-6
-                  Regional Support Center: #{action.assign_regional_support_centers.first.regional_support_center.organization.name}
-                .col-md-6
-                  Created At: #{action.assign_regional_support_centers.first.created_at.strftime("%Y-%m-%d %H:%M")}
+              -action.ticket_re_assign_requests.each do |r|
+                .row
+                  .col-md-3
+                    Reason: #{Reason.find(r.reason_id).reason}
+
+          -if action.task_action.action_no == 13
+            .panel-body
+              -action.ticket_action_takens.each do |ac|
+                .row
+                  .col-md-3
+                    Action: #{ac.action}
+
+          -if action.task_action.action_no == 20
+            .panel-body
+              -action.hp_cases.each do |h|
+                .row
+                  .col-md-3
+                    Case Note: #{h.case_note}
+
+          -if action.task_action.action_no == 21
+            .panel-body
+              -action.ticket_finish_jobs.each do |f|
+                .row
+                  .col-md-3
+                    Resolution: #{f.resolution}
+
+
+
+
+          / -if action.task_action.action_no == 4
+          /   .panel-body
+          /     - action.assign_regional_support_centers.each do |c|
+          /       .row
+          /         .col-md-6
+          /           Regional Support Center: #{c.regional_support_center.organization.name}
+          /         .col-md-6
+          /           Created At: #{c.created_at.strftime("%Y-%m-%d %H:%M")}
