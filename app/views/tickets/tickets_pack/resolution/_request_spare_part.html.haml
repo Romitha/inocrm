@@ -1,98 +1,18 @@
 %fieldset
   %legend Request Spare Part
-  .row
-    .col-md-6
-      .form-group
-        %label.col-sm-4.control-label FSR No
-        .col-sm-5
-          .dropdown
-          %button#dropdownMenu1.btn.btn-default.dropdown-toggle{"aria-expanded" => "true", "aria-haspopup" => "true", "data-toggle" => "dropdown", :type => "button"}
-            Dropdown
-            %span.caret
-          %ul.dropdown-menu{"aria-labelledby" => "dropdownMenu1"}
-            %li
-              %a{:href => "#"} xxxxxxxxxx
-            %li
-              %a{:href => "#"} xxxxxxxxxx
-            %li
-              %a{:href => "#"} xxxxxxxxxx
-            %li
-              %a{:href => "#"} xxxxxxxxxx
-  %br
-  .row
-    .col-md-6
-      .form-group
-        %label.col-sm-4.control-label Spare Part No
-        .col-sm-7
-          %input#exampleInputName2.form-control{:type => "text"}
-    .col-md-6
-      .checkbox
-      %label
-        %input{:type => "checkbox"}
-          Customer Chargeable Part(Non Warranty)
-      
-  %br
-  .row
-    .col-md-6
-      .form-group
-        %label.col-sm-4.control-label Spare Part Discription
-        .col-sm-2
-          .dropdown
-          %button#dropdownMenu1.btn.btn-default.dropdown-toggle{"aria-expanded" => "true", "aria-haspopup" => "true", "data-toggle" => "dropdown", :type => "button"}
-            Dropdown
-            %span.caret
-          %ul.dropdown-menu{"aria-labelledby" => "dropdownMenu1"}
-            %li
-              %a{:href => "#"} xxxxxxxxxx
-            %li
-              %a{:href => "#"} xxxxxxxxxx
-            %li
-              %a{:href => "#"} xxxxxxxxxx
-            %li
-              %a{:href => "#"} xxxxxxxxxx
-    .col-md-6
-      .radio
-      %label
-        %input#optionsRadios1{:checked => "", :name => "optionsRadios", :type => "radio", :value => "option1"}
-          Request From Store
-        %input#optionsRadios1{:checked => "", :name => "optionsRadios", :type => "radio", :value => "option2"}
-          Request From Warranty(Manufacture)
-  %br
-  .row
-    .col-md-6
-      .form-group
-        %label.col-sm-4.control-label Faulty Serial No
-        .col-sm-7
-          %input#exampleInputName2.form-control{:type => "text"}
-    .col-md-6
-      .checkbox
-      %label
-        %input{:type => "checkbox"}
-          Part of a Main Product
-  %br
-  .row
-    .col-md-6
-      .form-group
-        %label.col-sm-4.control-label Faulty CT No
-        .col-sm-7
-          %input#exampleInputName2.form-control{:type => "text"}
-    .col-md-6
-      Store : xxxxxxxx
-      %br
-      Item Code : xxxxxxxx
-  %br
-  .row
-    .col-md-6
-      .form-group
-        %label.col-sm-4.control-label Note
-        .col-sm-7
-          %textarea.form-control{:rows => "2"}
-    .col-md-6
-      Item Description : xxxxxxxx
-      %br
-      Model No : xxxxxxxx
-      Product No : xxxxxxxx
-      %br
-      Available Qunt : xxxxxxxx
-      Unit : xxxxxxxx
-      Part No : xxxxxxxx
+  = simple_nested_form_for ticket, url: update_request_spare_part_ticket_path(ticket), method: :post do |f|
+    = f.simple_fields_for "ticket_spare_parts_attributes[]", ticket.ticket_spare_parts.build do |spr|
+      .row.col-md-12
+        = spr.input :fsr_id, wrapper_html: {class: "col-md-3"}, label: "FSR No"
+      .row.col-md-12
+        = spr.input :spare_part_no, wrapper_html: {class: "col-md-3"}
+      .row.col-md-12
+        = spr.input :spare_part_description, wrapper_html: {class: "col-md-3"}, label: "Part Description"
+        = spr.label "Customer Chargeable part"
+        = spr.check_box :cus_chargeable_part, {}, true, false
+      .row.col-md-12
+        = spr.input :faulty_serial_no, wrapper_html: {class: "col-md-3"}, label: "Fault Serial No"
+      .row.col-md-12
+        = spr.input :faulty_ct_no, wrapper_html: {class: "col-md-3"}, label: "Fault CT No"
+      .row.col-md-12
+        = spr.input :note, wrapper_html: {class: "col-md-6"}, label: "Note"
