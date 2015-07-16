@@ -4,6 +4,8 @@ class TicketSparePart < ActiveRecord::Base
   belongs_to :ticket
 
   has_one :ticket_spare_part_store, foreign_key: :spare_part_id
+
+  validates_presence_of :fsr_id, :spare_part_no, :spare_part_description
 end
 
 class TicketSparePartStore < ActiveRecord::Base
