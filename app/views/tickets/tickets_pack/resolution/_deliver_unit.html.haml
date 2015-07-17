@@ -1,16 +1,11 @@
 %fieldset
   %legend Deliver Unit
-  .row
-    .col-md-6
-      .form-group
-        %label.col-sm-6.control-label Delivery Date Time:
-    .col-md-6
-      .form-group
-        %label.col-sm-6.control-label Deliver To:
-  %br
-  .row
-    .col-md-6
-      .form-group
-        %label.col-sm-4.control-label Delivery Note
-        .col-sm-8
-          %textarea.form-control{:rows => "3"}
+  = simple_nested_form_for ticket, url: update_deliver_unit_ticket_path(ticket), method: :post do |f|
+    = f.simple_fields_for "ticket_delivery_units_attributes[]", ticket.ticket_delivery_units.build do |du|
+      .row.col-md-12
+        .col-md-6
+          %p Unit Collected Date Time: #{du.object.collected_by}
+        .col-md-6
+          = du.input :deliver_to_id, label_method: :action, value_method: :id, required: true
+      .row.col-md-12
+        = du.input :note, input_html: {value: nil}, wrapper_html: {class: "col-md-9"}
