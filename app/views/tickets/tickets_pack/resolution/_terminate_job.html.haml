@@ -1,68 +1,35 @@
 %fieldset
   %legend Terminate Reason
   = simple_nested_form_for ticket, url: update_terminate_job_ticket_path(ticket), method: :post do |f|
-    .row
-      = f.association :ticket_start_action, label_method: :action, value_method: :id, wrapper_html: {class: "col-md-5"}
-      = f.input :job_start_note, wrapper_html: {class: "col-md-7"}
+    = hidden_field_tag :process_id, session[:process_id]
+    = hidden_field_tag :task_id, session[:task_id]
+    = hidden_field_tag :owner, session[:owner]
+
+    = f.simple_fields_for "user_ticket_actions_attributes[]", @user_ticket_action do |uf|
+      = uf.input :action_id, as: :hidden, input_html: {value: TaskAction.find_by_action_no(7).id}
+      = uf.input :action_at, as: :hidden, input_html: {value: DateTime.now.strftime("%d-%m-%Y %H:%M")}
+      = uf.input :action_by, as: :hidden, input_html: {value: current_user.id}
+      = uf.input :re_open_index, as: :hidden, input_html: {value: ticket.re_open_count}
+
+      = uf.simple_fields_for :ticket_terminate_job do |rf|
+        = rf.association :reason, required: true, include_blank: false, label_method: :reason, value_method: :id
+        = rf.input :foc_requested, as: :radio_buttons, collection: {"FOC" => false, "Payment required" => true}, wrapper: :append
+
+      = uf.simple_fields_for :ticket_terminate_job_payments do |tf|
+        = tf.input :ticket_id, as: :hidden, input_html: {value: ticket.id}
+        = tf.input :amount
+        = tf.association :payment_item
+        = tf.input :currency_id, as: :hidden, input_html: {value: Currency.find_by_base_currency(true).id}
+
+        .add_sign
+          = tf.link_to_remove class: "remove_c_t_v_link" do
+            %span.glyphicon.glyphicon-remove-sign
+
+      = uf.link_to_add :ticket_terminate_job_payments, class: "small_scale_padding-right2" do
+        %span.glyphicon.glyphicon-plus-sign
+        Add payment
+
     = f.input :remarks, input_html: {value: nil}
     = simple_format ticket.remarks
-    = f.submit "Save", class: "btn btn-success btn-sm"
 
-/ %fieldset
-/   %legend Terminate Job
-/   .row
-/     .col-md-6
-/       .form-group
-/         %label.col-sm-4.control-label Terminate Reason
-/         .col-sm-5
-/           .dropdown
-/           %button#dropdownMenu1.btn.btn-default.dropdown-toggle{"aria-expanded" => "true", "aria-haspopup" => "true", "data-toggle" => "dropdown", :type => "button"}
-/             Dropdown
-/             %span.caret
-/           %ul.dropdown-menu{"aria-labelledby" => "dropdownMenu1"}
-/             %li
-/               %a{:href => "#"} xxxxxxxxxx
-/             %li
-/               %a{:href => "#"} xxxxxxxxxx
-/             %li
-/               %a{:href => "#"} xxxxxxxxxx
-/             %li
-/               %a{:href => "#"} xxxxxxxxxx
-/           %button.btn.btn-default.btn-xs{:type => "button"}
-/             %span.glyphicon.glyphicon-plus
-/   %br
-/   .row
-/     .col-md-4
-/       .radio
-/         %label
-/           %input#optionsRadios1{:checked => "", :name => "optionsRadios", :type => "radio", :value => "option1"}
-/             FOC
-/           %input#optionsRadios2{:checked => "", :name => "optionsRadios", :type => "radio", :value => "option2"}
-/             Payment Required
-/     .col-md-4
-/       .form-group
-/         %label.col-sm-5.control-label Payment Type
-/         .col-sm-6
-/           .dropdown
-/           %button#dropdownMenu2.btn.btn-default.dropdown-toggle{"aria-expanded" => "true", "aria-haspopup" => "true", "data-toggle" => "dropdown", :type => "button"}
-/             Dropdown
-/             %span.caret
-/           %ul.dropdown-menu{"aria-labelledby" => "dropdownMenu1"}
-/             %li
-/               %a{:href => "#"} xxxxxxxxxx
-/             %li
-/               %a{:href => "#"} xxxxxxxxxx
-/             %li
-/               %a{:href => "#"} xxxxxxxxxx
-/             %li
-/               %a{:href => "#"} xxxxxxxxxx
-/           %button.btn.btn-default.btn-xs{:type => "button"}
-/             %span.glyphicon.glyphicon-plus
-/     .col-md-4
-/       .form-group
-/         %label.col-sm-4.control-label Amount (Rs)
-/         .col-sm-5
-/           %input#exampleInputName2.form-control{:type => "text"}
-/         .col-xs-sm-5
-/           %button.btn.btn-default.btn-xs{:type => "button"}
-/             %span.glyphicon.glyphicon-plus  
+    = f.submit "Save", class: "btn btn-success"

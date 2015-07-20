@@ -14,6 +14,7 @@ window.Tickets =
     @action_taken_text()
     @hp_case_validation()
     @job_finished_validation()
+    @select_fsr()
     return
 
   initial_loaders: ->
@@ -352,3 +353,7 @@ window.Tickets =
         ), 2000
       else
         $("#job_finish_form").submit()
+
+  select_fsr: ->
+    $("#select_fsr option").click ->
+      $.post "/tickets/call_resolution_template", {call_template: "edit_fsr", select_fsr_id: $(@).val()}

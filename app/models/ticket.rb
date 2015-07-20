@@ -63,6 +63,9 @@ class Ticket < ActiveRecord::Base
   accepts_nested_attributes_for :ticket_fsrs, allow_destroy: true
   has_many :ticket_delivery_units
 
+  has_many :ticket_terminate_job_payments
+  accepts_nested_attributes_for :ticket_terminate_job_payments, allow_destroy: true
+
   validates_presence_of [:ticket_no, :priority, :status_id, :problem_description, :informed_method_id, :job_type_id, :ticket_type_id, :warranty_type_id, :base_currency_id, :problem_category_id]
 
   validates_numericality_of [:ticket_no, :priority]
@@ -244,6 +247,12 @@ class Reason < ActiveRecord::Base
 
   has_many :ticket_re_assign_requests
   accepts_nested_attributes_for :ticket_re_assign_requests, allow_destroy: true
+
+  has_many :ticket_terminate_jobs
+  accepts_nested_attributes_for :ticket_terminate_jobs, allow_destroy: true
+
+  has_many :act_holds
+  accepts_nested_attributes_for :act_holds, allow_destroy: true
 end
 
 class TicketReAssignRequest < ActiveRecord::Base

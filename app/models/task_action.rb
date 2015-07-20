@@ -24,18 +24,32 @@ class UserTicketAction < ActiveRecord::Base
   has_many :assign_regional_support_centers, foreign_key: :ticket_action_id
   accepts_nested_attributes_for :assign_regional_support_centers, allow_destroy: true
 
-  has_many :hp_cases, foreign_key: :ticket_action_id
+  has_one :hp_case, foreign_key: :ticket_action_id
+  accepts_nested_attributes_for :hp_case, allow_destroy: true
 
-  has_many :action_warranty_repair_types, foreign_key: :ticket_action_id
+  has_one :action_warranty_repair_type, foreign_key: :ticket_action_id
+  accepts_nested_attributes_for :action_warranty_repair_type, allow_destroy: true
 
-  has_many :ticket_re_assign_requests, foreign_key: :ticket_action_id
-  accepts_nested_attributes_for :ticket_re_assign_requests, allow_destroy: true
+  has_one :ticket_re_assign_request, foreign_key: :ticket_action_id
+  accepts_nested_attributes_for :ticket_re_assign_request, allow_destroy: true
 
-  has_many :ticket_action_takens, foreign_key: :ticket_action_id
-  accepts_nested_attributes_for :ticket_action_takens, allow_destroy: true
+  has_one :ticket_action_taken, foreign_key: :ticket_action_id
+  accepts_nested_attributes_for :ticket_action_taken, allow_destroy: true
 
-  has_many :ticket_finish_jobs, foreign_key: :ticket_action_id
-  accepts_nested_attributes_for :ticket_finish_jobs, allow_destroy: true
+  has_one :ticket_finish_job, foreign_key: :ticket_action_id
+  accepts_nested_attributes_for :ticket_finish_job, allow_destroy: true
+
+  has_one :ticket_terminate_job, foreign_key: :ticket_action_id
+  accepts_nested_attributes_for :ticket_terminate_job, allow_destroy: true
+
+  has_many :ticket_terminate_job_payments, foreign_key: :ticket_action_id
+  accepts_nested_attributes_for :ticket_terminate_job_payments, allow_destroy: true
+
+  has_one :act_hold, foreign_key: :ticket_action_id
+  accepts_nested_attributes_for :act_hold, allow_destroy: true
+
+  has_one :act_fsr, foreign_key: :ticket_action_id
+  accepts_nested_attributes_for :act_fsr, allow_destroy: true
 end
 
 class UserAssignTicketAction < ActiveRecord::Base
@@ -82,4 +96,41 @@ class TicketFinishJob < ActiveRecord::Base
   self.table_name = "spt_act_finish_job"
 
   belongs_to :user_ticket_action, foreign_key: :ticket_action_id
+end
+
+class TicketTerminateJob < ActiveRecord::Base
+  self.table_name = "spt_act_terminate_job"
+
+  belongs_to :user_ticket_action, foreign_key: :ticket_action_id
+  belongs_to :reason, foreign_key: :reason_id
+end
+
+class TicketTerminateJobPayment < ActiveRecord::Base
+  self.table_name = "spt_act_terminate_job_payment"
+
+  belongs_to :user_ticket_action, foreign_key: :ticket_action_id
+  belongs_to :ticket, foreign_key: :ticket_id
+  belongs_to :payment_item, foreign_key: :payment_item_id
+end
+
+class PaymentItem < ActiveRecord::Base
+  self.table_name = "mst_spt_payment_item"
+
+  has_many :ticket_terminate_job_payments, foreign_key: :payment_item_id
+  accepts_nested_attributes_for :ticket_terminate_job_payments, allow_destroy: true
+end
+
+class ActHold < ActiveRecord::Base
+  self.table_name = "spt_act_hold"
+
+  belongs_to :user_ticket_action, foreign_key: :ticket_action_id
+  belongs_to :reason, foreign_key: :reason_id
+end
+
+class ActFsr < ActiveRecord::Base
+  self.table_name = "spt_act_fsr"
+
+  belongs_to :user_ticket_action, foreign_key: :ticket_action_id
+  belongs_to :ticket_fsr, foreign_key: :fsr_id
+  accepts_nested_attributes_for :ticket_fsr, allow_destroy: true
 end

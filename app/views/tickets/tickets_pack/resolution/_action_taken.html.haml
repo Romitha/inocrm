@@ -12,7 +12,7 @@
       = uf.input :action_by, as: :hidden, input_html: {value: current_user.id}
       = uf.input :re_open_index, as: :hidden, input_html: {value: ticket.re_open_count}
 
-      = uf.simple_fields_for "ticket_action_takens_attributes[]", @ticket_action_taken do |rf|
+      = uf.simple_fields_for :ticket_action_taken do |rf|
         = rf.input :action, required: true, input_html: {id: "action_taken_text"}
     = f.input :remarks, input_html: {value: nil}
     = simple_format ticket.remarks
