@@ -33,6 +33,7 @@ unless(user)
   rpermissions.each { |rp| Rpermission.create_with(controller_resource: rp[1], controller_action: rp[2]).find_or_create_by(name: rp[0]) }
   admin.rpermission_ids = [1,2,3,4,5,6,7]
   default_user.rpermission_ids = [2, 4, 5]
+end
 
   Ticket
   Warranty
@@ -42,16 +43,12 @@ unless(user)
     ["MW", "Manufacture warranty"],
     ["NW", "Non warranty"],
     ["UW", "UnKnown"]
-  ]
-  # WarrantyType.find_or_create_by!(warranty_types.map{ |w| {code: w[0], name: w[1]} })
-  warranty_types.each{ |w| WarrantyType.create_with(name: w[1]).find_or_create_by(code: w[0])}
+  ].each{ |w| WarrantyType.create_with(name: w[1]).find_or_create_by(code: w[0])}
 
   mst_spt_ticket_type = [
     ["IH", "In house"],
     ["OS", "On-site"]
-  ]
-  # TicketType.find_or_create_by!(mst_spt_ticket_type.map{ |t| {code: t[0], name: t[1]} })
-  mst_spt_ticket_type.each{ |t| TicketType.create_with(name: t[1]).find_or_create_by(code: t[0])}
+  ].each{ |t| TicketType.create_with(name: t[1]).find_or_create_by(code: t[0])}
 
    mst_spt_ticket_status = [
     ["OPN", "Open", "00FF99"],
@@ -63,61 +60,48 @@ unless(user)
     ["ROP", "Re-Open", "FAC4FA"],
     ["TBC", "To Be Closed", "9ED77C"],
     ["CLS", "Closed", "FC737A"]
-  ]
-  # TicketStatus.find_or_create_by!(mst_spt_ticket_status.map{ |t| {code: t[0], name: t[1], colour: t[2]} })
-  mst_spt_ticket_status.each{ |t| TicketStatus.create_with(name: t[1], colour: t[2]).find_or_create_by(code: t[0])}
+  ].each{ |t| TicketStatus.create_with(name: t[1], colour: t[2]).find_or_create_by(code: t[0])}
 
   mst_spt_ticket_informed_method = [
     ["PH", "by phone"],
     ["CR", "carry in"],
     ["ML", "by mail"],
     ["FX", "fax"]
-  ]
-  # InformMethod.find_or_create_by!(mst_spt_ticket_informed_method.map{ |t| {code: t[0], name: t[1]} })
-  mst_spt_ticket_informed_method.each{ |t| InformMethod.create_with(name: t[1]).find_or_create_by(code: t[0])}
+  ].each{ |t| InformMethod.create_with(name: t[1]).find_or_create_by(code: t[0])}
 
   mst_spt_job_type = [
     ["SW", "Software"],
     ["HW", "Hardware"],
     ["NW", "Network"]
-  ]
-  # JobType.find_or_create_by!(mst_spt_job_type.map{ |t| {code: t[0], name: t[1]} })
-  mst_spt_job_type.each{ |t| JobType.create_with(name: t[1]).find_or_create_by(code: t[0]) }
+  ].each{ |t| JobType.create_with(name: t[1]).find_or_create_by(code: t[0]) }
 
   mst_spt_contact_type = [
     ["ML", "Email"],
     ["SM", "SMS"],
     ["CL", "Call"],
     ["FX", "Fax"]
-  ]
-  # TicketContactType.find_or_create_by!(mst_spt_contact_type.map{ |t| {code: t[0], name: t[1]} })
-  mst_spt_contact_type.each{ |t| TicketContactType.create_with(name: t[1]).find_or_create_by(code: t[0])}
+  ].each{ |t| TicketContactType.create_with(name: t[1]).find_or_create_by(code: t[0])}
 
   mst_currency = [
     ["Sri Lankan Rupees", "LKR", "Rs", true],
     ["United States Dollars", "USD", "$US", false]
-  ]
-  # TicketCurrency.find_or_create_by!(mst_currency.map{ |t| {currency: t[0], code: t[1], symbol: t[2], base_currency: t[3]} })
-  mst_currency.each{ |t| TicketCurrency.create_with(currency: t[0], symbol: t[2], base_currency: t[3]).find_or_create_by(code: t[1])}
+  ].each{ |t| TicketCurrency.create_with(currency: t[0], symbol: t[2], base_currency: t[3]).find_or_create_by(code: t[1])}
   ContactNumber
+
   mst_spt_customer_contact_type = [
     ["Telephone", false, false],
     ["Mobile", true, false],
     ["Fax", false, false],
     ["E-Mail", false, true],
     ["Skype", false, false]
-  ]
-  # ContactType.find_or_create_by!(mst_spt_customer_contact_type.map{ |t| {name: t[0], mobile: t[1], email: t[2]} })
-  mst_spt_customer_contact_type.each{ |t| ContactType.create_with(name: t[0]).find_or_create_by(mobile: t[1], email: t[2])}
+  ].each{ |t| ContactType.create_with(name: t[0]).find_or_create_by(mobile: t[1], email: t[2])}
 
   mst_title = [
     ["Mr."],
     ["Mrs."],
     ["Ms."],
     ["Miss."]
-  ]
-  # MstTitle.find_or_create_by!(mst_title.map{ |t| {title: t[0]} })
-  mst_title.each{ |t| MstTitle.find_or_create_by! title: t[0]}
+  ].each{ |t| MstTitle.find_or_create_by! title: t[0]}
 
   mst_spt_action = [
     ["1", "Add ticket", "1", false],
@@ -193,18 +177,15 @@ unless(user)
     ["71", "Print Invoice", "27,29", false],
     ["72", "Change Ticket Warranty Type or Customer Chargeable", "3", false],
     ["73", "Change Ticket Repair Type", "3", false]
-  ]
-  # TaskAction.find_or_create_by!(mst_spt_action.map{ |t| {action_no: t[0], action_description: t[1], task_id: t[2], hide: t[3]} })
-  mst_spt_action.each{ |t| TaskAction.create_with(action_description: t[1], task_id: t[2], hide: t[3]).find_or_create_by(action_no: t[0]) }
+  ].each{ |t| TaskAction.create_with(action_description: t[1], task_id: t[2], hide: t[3]).find_or_create_by(action_no: t[0]) }
 
   mst_organizations_types = [
     ["HDO", "Head Office"],
     ["BRN", "Branch"],
     ["DPT", "Department"],
     ["STR", "Store"]
-  ]
-  # OrganizationType.find_or_create_by!(mst_organizations_types.map{ |t| {code: t[0], name: t[1]} })
-  mst_organizations_types.each{ |t| OrganizationType.find_or_create_by! code: t[0], name: t[1]}
+  ].each{ |t| OrganizationType.create_with(name: t[1]).find_or_create_by(code: t[0])}
+
   Product
   mst_spt_pop_status = [
     ["NAP", "Not Applicable"],
@@ -215,15 +196,10 @@ unless(user)
     ["APV", "Approved"],
     ["RJC", "Rejected"],
     ["UPD", "Updated"]
-  ]
-  # ProductPopStatus.find_or_create_by!(mst_spt_pop_status.map{ |t| {code: t[0], name: t[1]} })
-  mst_spt_pop_status.each{ |t| ProductPopStatus.find_or_create_by! code: t[0], name: t[1]}
+  ].each{ |t| ProductPopStatus.create_with(name: t[1]).find_or_create_by(code: t[0])}
+
   QAndA
   mst_spt_general_question = [
     ["Check outer condition?", "YN", true, 1, true],
     ["Any damage in the casing?", "TX", true, 1, false]
-  ]
-  # GeQAndA.find_or_create_by!(mst_spt_general_question.map{ |t| {question: t[0], answer_type: t[1], active: t[2], action_id: t[3], compulsory: t[4]} })
-  mst_spt_general_question.each{ |t| GeQAndA.find_or_create_by! question: t[0], answer_type: t[1], active: t[2], action_id: t[3], compulsory: t[4]}
-
-end
+  ].each{ |t| GeQAndA.create_with(answer_type: t[1], active: t[2], action_id: t[3], compulsory: t[4]).find_or_create_by(question: t[0])}

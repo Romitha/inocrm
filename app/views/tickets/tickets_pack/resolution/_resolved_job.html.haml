@@ -12,14 +12,15 @@
       = uf.input :action_by, as: :hidden, input_html: {value: current_user.id}
       = uf.input :re_open_index, as: :hidden, input_html: {value: ticket.re_open_count}
 
-      = uf.simple_fields_for "ticket_finish_jobs_attributes[]", @ticket_finish_job do |rf|
+      = uf.simple_fields_for :ticket_finish_job do |rf|
         = rf.input :resolution, required: true, input_html: {id: "resolution_text"}
     = f.input :remarks, input_html: {value: nil}
     = simple_format ticket.remarks
 
     = f.input :resolution_summary, required: true, input_html: {id: "resolution_summary_text"}
 
-    = label_tag "Request to close the Ticket"
-    = f.check_box :ticket_close_approval_requested, checked: false
+    - if(ticket.ticket_fsrs.any? or ticket.ticket_spare_parts.any?)
+      = label_tag "Request to close the Ticket"
+      = f.check_box :ticket_close_approval_requested, checked: false
 
     = f.submit "Save", class: "btn btn-success", id: "job_finish_submit"

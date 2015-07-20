@@ -14,7 +14,7 @@
       = uf.input :action_by, as: :hidden, input_html: {value: current_user.id}
       = uf.input :re_open_index, as: :hidden, input_html: {value: ticket.re_open_count}
 
-      = uf.simple_fields_for "ticket_re_assign_requests_attributes[]", @re_assign_request do |rf|
+      = uf.simple_fields_for :ticket_re_assign_request do |rf|
         = rf.association :reason, label_method: :reason, value_method: :id, include_blank: false
     = f.input :remarks, input_html: {value: nil}
     = simple_format ticket.remarks

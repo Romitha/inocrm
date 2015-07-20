@@ -12,7 +12,7 @@
       = uf.input :action_by, as: :hidden, input_html: {value: current_user.id}
       = uf.input :re_open_index, as: :hidden, input_html: {value: ticket.re_open_count}
 
-      = uf.simple_fields_for "hp_cases_attributes[]", @hp_case do |rf|
+      = uf.simple_fields_for :hp_case do |rf|
         = rf.input :case_id, required: true, input_html: {id: "hp_case_text"}
         = rf.input :case_note
     = f.input :remarks, input_html: {value: nil}

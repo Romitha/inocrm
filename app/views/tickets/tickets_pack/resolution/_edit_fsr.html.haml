@@ -1,13 +1,15 @@
 %fieldset
   %legend Edit FSR
-  = simple_nested_form_for ticket, url: update_edit_fsr_ticket_path(ticket), method: :post do |f|
-    = f.simple_fields_for "ticket_fsrs_attributes[]", ticket.ticket_fsrs.build do |fsr|
-      %strong FSR Infomation 
+  = select_tag "select_fsr", options_from_collection_for_select(@select_fsrs, "id", "id")
+  - if @display_form
+    = simple_nested_form_for @ticket_fsr, url: update_edit_fsr_ticket_path(ticket), method: :post do |fsr|
+      = fsr.input :ticket_id, as: :hidden
+      = hidden_field_tag :ticket_fsr_id, @ticket_fsr.id
       .row
         .col-md-4
-          = fsr.input :work_started_at, as: :string, input_html: {class: "datepicker"}
+          = fsr.input :work_started_at, as: :string, input_html: {class: "datepicker", value: (@ticket_fsr.work_started_at and @ticket_fsr.work_started_at.strftime("%d %b, %Y"))}
         .col-md-4
-          = fsr.input :work_finished_at, as: :string, input_html: {class: "datepicker"}
+          = fsr.input :work_finished_at, as: :string, input_html: {class: "datepicker", value: (@ticket_fsr.work_finished_at and @ticket_fsr.work_finished_at.strftime("%d %b, %Y"))}
         .col-md-4
           %p FSR No: #{fsr.object.id}
       .row
@@ -15,13 +17,11 @@
         = fsr.input :down_time, wrapper_html: {class: "col-md-5"}
       .row
         = fsr.input :travel_hours, wrapper_html: {class: "col-md-5"}
-      %strong For Invoice
       .row
         = fsr.input :engineer_time_travel, wrapper_html: {class: "col-md-5"}
         = fsr.input :engineer_time_on_site, wrapper_html: {class: "col-md-5"}
       .row
         = fsr.input :resolution, input_html: {value: nil}, wrapper_html: {class: "col-md-9"}
-        = fsr.input :completion_level, as: :radio_buttons, label: "Completion Level", wrapper_html: {class: "col-md-3"}, collection: ["Full","Patial"], wrapper: :append
-    = f.input :remarks, input_html: {value: nil}
-    = simple_format ticket.remarks
-    = f.submit "Save", class: "btn btn-success btn-sm"
+        = simple_format @ticket_fsr.resolution
+        = fsr.input :completion_level, as: :radio_buttons, label: "Completion Level", wrapper_html: {class: "col-md-3"}, collection: {"Full" => "F","Patial" => "P"}, wrapper: :append
+      = fsr.submit "Save", class: "btn btn-success btn-sm"
