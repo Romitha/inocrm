@@ -1,6 +1,7 @@
 %fieldset
   %legend Create FSR
   = simple_nested_form_for ticket, url: update_create_fsr_ticket_path(ticket), method: :post do |f|
+    - @ticket_fsr_no = (TicketFsr.any? ? (TicketFsr.order("created_at ASC").map{|f| f.id.to_i}.max + 1) : 1)
     = hidden_field_tag :process_id, session[:process_id]
     = hidden_field_tag :task_id, session[:task_id]
     = hidden_field_tag :owner, session[:owner]
@@ -12,7 +13,12 @@
       = uf.input :re_open_index, as: :hidden, input_html: {value: ticket.re_open_count}
 
       = uf.simple_fields_for :act_fsr do |rf|
-        = rf.check_box :print_fsr
+        .row.col.md-12
+          .col-md-6
+            %p FSR No: #{@ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])}
+          .col-md-6
+            Print FSR:
+            = rf.check_box :print_fsr
 
     = f.simple_fields_for :ticket_fsrs do |tf|
       = tf.input :created_by, as: :hidden, input_html: {value: current_user.id}

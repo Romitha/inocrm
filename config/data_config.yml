@@ -7,6 +7,7 @@ priority:
   Lowest: 5
 
 ticket_no_format: "T00000"
+fsr_no_format: "F00000"
 
 answer_type_for_q_and_a:
   "yes/no" : "YN"
