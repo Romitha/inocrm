@@ -1,6 +1,7 @@
 %fieldset
   %legend Edit FSR
-  = select_tag "select_fsr", options_from_collection_for_select(@select_fsrs, :id, :id)
+  / = select_tag "select_fsr", options_from_collection_for_select(@select_fsrs, "id", "id")
+  = select_tag "select_fsr", options_for_select(TicketFsr.all.map { |fsr| [ fsr.id.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"]) , fsr.id] }), {:prompt => "- Select FSR No -"}
   - if @display_form
     = simple_nested_form_for @ticket_fsr, url: update_edit_fsr_ticket_path(ticket), method: :post do |fsr|
       = fsr.input :ticket_id, as: :hidden
