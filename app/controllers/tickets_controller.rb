@@ -1117,6 +1117,8 @@ class TicketsController < ApplicationController
         @display_form = true
       end
       # @ticket_fsr =
+    when "serial_request"
+      @serial_request = @user_ticket_action.build_serial_request
     end
   end
 
@@ -1269,7 +1271,7 @@ class TicketsController < ApplicationController
     else
       redirect_to @ticket, alert: "Ticket is failed to update."
     end
-   end
+  end
 
   def update_un_hold
 
