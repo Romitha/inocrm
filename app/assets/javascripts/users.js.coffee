@@ -37,26 +37,33 @@ window.Users =
             $("#ajax-loader").addClass("hide")
             # $(".profile_image_wrapper").empty();
 
-  request_printer_application: (url, data, action, ticket_id, fsr_id, invoice_id)->
+  request_printer_application: (print_object, print_object_id, request_type, tag_value, action)->
     _this = this
-    parent_data = data
-    $.post "/tickets/get_template", (data)->
-      data = parent_data+data["print_template"]
-      console.log data
+    $.post "/tickets/get_template", {print_object: print_object, print_object_id: print_object_id, request_type: request_type, tag_value: tag_value}, (data)->
       $.ajax
         async: false
         method: 'post'
-        url: url
-        data: data
+        url: data["url"]
+        data: data["request_printer_template"]
         timeout: 4000
         success: (result)->
-          response = result
-          console.log response
-      _this.update_database_after_printer_application(action, ticket_id, fsr_id, invoice_id)
+      _this.update_database_after_printer_application(action, print_object_id)
       $("#ticket_print").text("Re-Print")
 
-  update_database_after_printer_application: (action, ticket_id, fsr_id, invoice_id)->
+  update_database_after_printer_application: (action, print_object_id)->
     $.ajax
       method: "post"
       url: "/tickets/after_printer"
-      data: {ticket_action: action, ticket_id: ticket_id, fsr_id: fsr_id, invoice_id: invoice_id}
+      data: {ticket_action: action, print_object_id: print_object_id}
+
+  update_create_fsr: ->
+    _this = this
+    $("#create_fsr_submit").click (e) ->
+      e.preventDefault()
+      $.post $("#create_fsr_form").attr("action"), $("#create_fsr_form").serialize(), (data) ->
+        if data["print_fsr"]
+          _this.request_printer_application('fsr', data['fsr_id'], 'fsr_request_type', 'print_fsr_tag_value', 'print_fsr')
+          alert "Fsr is being printed."
+        else
+          alert "Fsr is created."
+        window.location.href= "/tickets/#{data['ticket_id']}"

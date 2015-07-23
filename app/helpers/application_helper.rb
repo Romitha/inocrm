@@ -1,13 +1,13 @@
 module ApplicationHelper
 
-  def request_printer_application print_request_type, tag_values
+  def request_printer_application print_request_type, tag_values, print_template
     # 3$|#REQUEST_TYPE=PRINT_TICKET$|#DATETIME=2015/06/21 12:10 PM$|#DUPLICATE=$|#TICKET_REF=T0005$|#.....$|#TEMPLATE=< xml data >
     delim = "$|#"
     request_type = "REQUEST_TYPE="
     template = "TEMPLATE="
     if tag_values.is_a? Array
-      rq_str = "#{delim.length}#{delim}#{request_type}#{print_request_type}#{delim}#{tag_values.join(delim)}#{delim}#{template}"
-      # rq_str = "#{delim.length}#{delim}#{request_type}#{print_request_type}#{delim}#{tag_values.join(delim)}#{delim}#{template}#{print_template}"
+      # rq_str = "#{delim.length}#{delim}#{request_type}#{print_request_type}#{delim}#{tag_values.join(delim)}#{delim}#{template}"
+      rq_str = "#{delim.length}#{delim}#{request_type}#{print_request_type}#{delim}#{tag_values.join(delim)}#{delim}#{template}#{print_template}"
 
     else
       raise ArgumentError, 'tag_values type is not array'
@@ -43,7 +43,7 @@ module ApplicationHelper
       "EXTRA_REMARK4=#{ticket.ticket_extra_remarks.fourth.try(:extra_remark).try(:extra_remark)}",
       "EXTRA_REMARK5=#{ticket.ticket_extra_remarks.fifth.try(:extra_remark).try(:extra_remark)}",
       "EXTRA_REMARK6=",
-      "REMARK=#{ticket.remarks}",
+      "REMARK=#{ticket.remarks.split('<span class=\'pop_note_e_time\'>') if ticket.remarks.present?}",
       "ACCESSORY1=#{ticket.accessories.first.try(:accessory)}",
       "ACCESSORY2=#{ticket.accessories.second.try(:accessory)}",
       "ACCESSORY3=#{ticket.accessories.third.try(:accessory)}",
@@ -53,5 +53,26 @@ module ApplicationHelper
       "ACCESSORY_OTHER=#{ticket.other_accessories}"
     ]
 
+  end
+
+  def print_fsr_tag_value fsr
+    [
+      "DUPLICATE=#{fsr.print_count > 0 ? 'D' : ''}",
+      "FSR_NO=#{fsr.id.to_s.rjust(6, INOCRM_CONFIG['fsr_no_format'])}",
+      "COMPANY_NAME=#{fsr.ticket.customer.mst_title.title} #{fsr.ticket.customer.name}",
+      "ADDRESS=#{fsr.ticket.customer.address1} #{fsr.ticket.customer.address2} #{fsr.ticket.customer.address3} #{fsr.ticket.customer.address4}",
+      "TICKET_REF=#{fsr.ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG['ticket_no_format'])}",
+      "ENGINEER=#{fsr.ticket.owner_engineer_id and User.find(fsr.ticket.owner_engineer_id).user_name}",
+      "SERIAL_NO=#{fsr.ticket.products.first.serial_no}",
+      "PRODUCT_DETAILS=#{[fsr.ticket.products.first.product_brand.name, fsr.ticket.products.first.product_category.name, fsr.ticket.products.first.model_no, fsr.ticket.products.first.product_no].join(' / ')}",
+      "PRODUCT_BRAND=#{fsr.ticket.products.first.product_brand.name}",
+      "PRODUCT_CATEGORY=#{fsr.ticket.products.first.product_category.name}",
+      "MODEL_NO=#{fsr.ticket.products.first.model_no}",
+      "PRODUCT_NO=#{fsr.ticket.products.first.product_no}",
+      "PROBLEM_DESC1=#{fsr.ticket.problem_description.to_s[0..100]}",
+      "PROBLEM_DESC2=#{fsr.ticket.problem_description.to_s[101..200]}",
+      "TICKET_CREATED_DATE=#{fsr.ticket.created_at.strftime(INOCRM_CONFIG['long_date_format'])}",
+      "TICKET_CREATED_TIME=#{fsr.ticket.created_at.strftime(INOCRM_CONFIG['time_format'])}"
+    ]    
   end
 end

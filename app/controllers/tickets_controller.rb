@@ -1048,11 +1048,11 @@ class TicketsController < ApplicationController
 
     case params[:ticket_action]
     when "print_ticket"
-      @ticket = Ticket.find(params[:ticket_id])
+      @ticket = Ticket.find(params[:print_object_id])
       @ticket.update_attribute(:ticket_print_count, (@ticket.ticket_print_count+1))
       @ticket.user_ticket_actions.create(action_id: TaskAction.find_by_action_no(68).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
     when "ticket_complete"
-      @ticket = Ticket.find(params[:ticket_id])
+      @ticket = Ticket.find(params[:print_object_id])
       # @ticket.user_ticket_actions.create(action_id: TAskAction.find_by_action_no(68).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
     when "print_fsr"
       "as"
@@ -1065,8 +1065,19 @@ class TicketsController < ApplicationController
   end
 
   def get_template
-    print_template = PrintTemplate.first.try(:ticket)
-    render json: {print_template: print_template}
+    print_object = case params[:print_object]
+    when "ticket"
+      Ticket.find_by_id params[:print_object_id]
+    when "fsr"
+      TicketSparePart
+      TicketFsr.find_by_id params[:print_object_id]
+    end
+    print_template_object = PrintTemplate.first
+    print_template = print_template_object.try(params[:print_object].to_sym) # example :ticket, :fsr
+    request_type = print_template_object.try(params[:request_type].to_sym) # example ticket_request_type
+    url = INOCRM_CONFIG["printer_url"]
+    request_printer_template = view_context.request_printer_application(request_type, view_context.send(params[:tag_value], print_object), print_template) # print_ticket_tag_value
+    render json: {request_printer_template: request_printer_template, url: url}
   end
 
   def workflow_diagram
@@ -1295,18 +1306,24 @@ class TicketsController < ApplicationController
     # @ticket.user_ticket_actions.reload
     ticket_fsr = @ticket.ticket_fsrs.last
     ticket_fsr.save
+    last_ticket_fsr = @ticket.ticket_fsrs.last
     act_fsr = user_ticket_action.act_fsr
     act_fsr.fsr_id = ticket_fsr.id
 
     user_ticket_action.save
+    print_fsr = false
 
     if act_fsr and act_fsr.print_fsr
       user_ticket_action1 = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(70).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
       user_ticket_action1.build_act_fsr(fsr_id: act_fsr.ticket_fsr.id)
       user_ticket_action1.save
+      print_fsr = true
     end
-
-    redirect_to @ticket, notice: "Ticket is successfully to update."
+    if request.xhr?
+      render json: {print_fsr: print_fsr, fsr_id: last_ticket_fsr.id, ticket_id: @ticket.id}
+    else
+      redirect_to @ticket, notice: "Ticket is successfully to update."
+    end
   end
 
   def update_edit_fsr
