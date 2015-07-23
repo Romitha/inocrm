@@ -1,6 +1,6 @@
 %fieldset
   %legend Create FSR
-  = simple_nested_form_for ticket, url: update_create_fsr_ticket_path(ticket), method: :post do |f|
+  = simple_nested_form_for ticket, url: update_create_fsr_ticket_path(ticket), method: :post, html: {id: "create_fsr_form"} do |f|
     - @ticket_fsr_no = (TicketFsr.any? ? (TicketFsr.order("created_at ASC").map{|f| f.id.to_i}.max + 1) : 1)
     = hidden_field_tag :process_id, session[:process_id]
     = hidden_field_tag :task_id, session[:task_id]
@@ -23,4 +23,4 @@
     = f.simple_fields_for :ticket_fsrs do |tf|
       = tf.input :created_by, as: :hidden, input_html: {value: current_user.id}
 
-    = f.submit "Save", class: "btn btn-success"
+    = f.submit "Save", class: "btn btn-success", id: "create_fsr_submit"
