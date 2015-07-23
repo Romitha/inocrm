@@ -1117,7 +1117,7 @@ class TicketsController < ApplicationController
         @display_form = true
       end
       # @ticket_fsr =
-    when "serial_request"
+    when "edit_serial_no_request"
       @serial_request = @user_ticket_action.build_serial_request
     end
   end
