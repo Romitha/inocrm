@@ -50,6 +50,9 @@ class UserTicketAction < ActiveRecord::Base
 
   has_one :act_fsr, foreign_key: :ticket_action_id
   accepts_nested_attributes_for :act_fsr, allow_destroy: true
+
+  has_one :serial_request, foreign_key: :ticket_action_id
+  accepts_nested_attributes_for :serial_request, allow_destroy: true
 end
 
 class UserAssignTicketAction < ActiveRecord::Base
@@ -131,4 +134,10 @@ class ActFsr < ActiveRecord::Base
   belongs_to :user_ticket_action, foreign_key: :ticket_action_id
   belongs_to :ticket_fsr, foreign_key: :fsr_id
   accepts_nested_attributes_for :ticket_fsr, allow_destroy: true
+end
+
+class SerialRequest < ActiveRecord::Base
+  self.table_name = "spt_act_edit_serial_request"
+
+  belongs_to :user_ticket_action, foreign_key: :ticket_action_id
 end

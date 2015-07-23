@@ -1,0 +1,20 @@
+%fieldset
+  %legend Edit Serial No Request
+  #error_msg
+  = simple_form_for ticket, url: update_edit_serial_no_request_ticket_path(ticket), method: :post, html: {id: "update_edit_serial_no_request_form"} do |f|
+    = hidden_field_tag :process_id, session[:process_id]
+    = hidden_field_tag :task_id, session[:task_id]
+    = hidden_field_tag :owner, session[:owner]
+
+    = f.simple_fields_for "user_ticket_actions_attributes[]", @user_ticket_action do |uf|
+      = uf.input :action_id, as: :hidden, input_html: {value: TaskAction.find_by_action_no(10).id}
+      = uf.input :action_at, as: :hidden, input_html: {value: DateTime.now.strftime("%d-%m-%Y %H:%M")}
+      = uf.input :action_by, as: :hidden, input_html: {value: current_user.id}
+      = uf.input :re_open_index, as: :hidden, input_html: {value: ticket.re_open_count}
+
+      = uf.simple_fields_for :serial_request do |esr|
+        = esr.input :reason
+    = f.input :remarks, input_html: {value: nil}
+    = simple_format ticket.remarks
+
+    = f.submit "Save", class: "btn btn-success", id: "serial_request_submit"
