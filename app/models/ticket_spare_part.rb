@@ -26,8 +26,10 @@ class TicketFsr < ActiveRecord::Base
   accepts_nested_attributes_for :act_fsr, allow_destroy: true
 end
 
-class TicketDeliveryUnit < ActiveRecord::Base
+class TicketDeliverUnit < ActiveRecord::Base
   self.table_name = "spt_ticket_deliver_unit"
 
   belongs_to :ticket
+
+  belongs_to :organization, foreign_key: :deliver_to_id
 end

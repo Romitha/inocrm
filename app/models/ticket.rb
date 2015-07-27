@@ -61,7 +61,9 @@ class Ticket < ActiveRecord::Base
 
   has_many :ticket_fsrs
   accepts_nested_attributes_for :ticket_fsrs, allow_destroy: true
-  has_many :ticket_delivery_units
+
+  has_many :ticket_deliver_units
+  accepts_nested_attributes_for :ticket_deliver_units, allow_destroy: true
 
   has_many :ticket_terminate_job_payments
   accepts_nested_attributes_for :ticket_terminate_job_payments, allow_destroy: true

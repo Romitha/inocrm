@@ -1134,8 +1134,11 @@ class TicketsController < ApplicationController
         @display_form = true
       end
       # @ticket_fsr =
+    when "recieve_unit"
+      @recieve_unit = @user_ticket_action.build_recieve_unit
     when "deliver_unit"
       @deliver_unit = @user_ticket_action.build_deliver_unit
+      @ticket.ticket_deliver_units.build
     when "edit_serial_no_request"
       @serial_request = @user_ticket_action.build_serial_request
     end
