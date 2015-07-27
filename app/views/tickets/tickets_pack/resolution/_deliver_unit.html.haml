@@ -1,7 +1,7 @@
 %fieldset
   %legend Deliver Unit
   #error_msg
-  = simple_form_for ticket, url: update_deliver_unit_ticket_path(ticket), method: :post, html: {id: "update_deliver_unit_form"} do |f|
+  = simple_nested_form_for ticket, url: update_deliver_unit_ticket_path(ticket), method: :post, html: {id: "update_deliver_unit_form"} do |f|
     = hidden_field_tag :process_id, session[:process_id]
     = hidden_field_tag :task_id, session[:task_id]
     = hidden_field_tag :owner, session[:owner]
@@ -12,18 +12,20 @@
       = uf.input :action_by, as: :hidden, input_html: {value: current_user.id}
       = uf.input :re_open_index, as: :hidden, input_html: {value: ticket.re_open_count}
 
-      = uf.simple_fields_for :deliver_unit do |du|
-        .row.col-md-12
-          .col-md-6
-            %p Unit Collected Date Time: #{DateTime.now.strftime('%Y-%m-%d %H:%M')}
-          .col-md-6
-            Deliver To
-            = collection_select(:deliver_unit, :deliver_to_id, DeliverUnit.all, :id, :deliver_to_id)
+    = f.simple_fields_for :ticket_deliver_units do |du|
+      .row.col-md-12
+        .col-md-6
+          %p Unit Collected Date Time: #{DateTime.now.strftime('%Y-%m-%d %H:%M')}
+        .col-md-6
+          / Deliver To
+          / = collection_select(:deliver_unit, :deliver_to_id, DeliverUnit.all, :id, :deliver_to_id)
+          = du.association :organization
+          = du.input :created_at, as: :hidden
+          = du.input :created_by, as: :hidden
 
-            / = du.input :deliver_to_id, label_method: :action, value_method: :id, required: true
-        .row.col-md-12
-          .col-md-12
-            = du.input :note, input_html: {value: nil}
+      .row.col-md-12
+        .col-md-12
+          = du.input :note, input_html: {value: nil}
     = f.input :remarks, input_html: {value: nil}
     = simple_format ticket.remarks
 

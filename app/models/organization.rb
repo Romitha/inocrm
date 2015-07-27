@@ -9,6 +9,9 @@ class Organization < ActiveRecord::Base
   accepts_nested_attributes_for :contact_numbers, allow_destroy: true
 
   has_many :designations
+  has_many :ticket_deliver_units, foreign_key: :deliver_to_id
+  accepts_nested_attributes_for :ticket_deliver_units, allow_destroy: true
+
 
   # has_many :departments
 
