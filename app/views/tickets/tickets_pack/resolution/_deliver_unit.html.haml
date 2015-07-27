@@ -1,11 +1,41 @@
 %fieldset
   %legend Deliver Unit
-  = simple_nested_form_for ticket, url: update_deliver_unit_ticket_path(ticket), method: :post do |f|
-    = f.simple_fields_for "ticket_delivery_units_attributes[]", ticket.ticket_delivery_units.build do |du|
-      .row.col-md-12
-        .col-md-6
-          %p Unit Collected Date Time: #{du.object.collected_by}
-        .col-md-6
-          = du.input :deliver_to_id, label_method: :action, value_method: :id, required: true
-      .row.col-md-12
-        = du.input :note, input_html: {value: nil}, wrapper_html: {class: "col-md-9"}
+  #error_msg
+  = simple_form_for ticket, url: update_deliver_unit_ticket_path(ticket), method: :post, html: {id: "update_deliver_unit_form"} do |f|
+    = hidden_field_tag :process_id, session[:process_id]
+    = hidden_field_tag :task_id, session[:task_id]
+    = hidden_field_tag :owner, session[:owner]
+
+    = f.simple_fields_for "user_ticket_actions_attributes[]", @user_ticket_action do |uf|
+      = uf.input :action_id, as: :hidden, input_html: {value: TaskAction.find_by_action_no(10).id}
+      = uf.input :action_at, as: :hidden, input_html: {value: DateTime.now.strftime("%d-%m-%Y %H:%M")}
+      = uf.input :action_by, as: :hidden, input_html: {value: current_user.id}
+      = uf.input :re_open_index, as: :hidden, input_html: {value: ticket.re_open_count}
+
+      = uf.simple_fields_for :deliver_unit do |du|
+        .row.col-md-12
+          .col-md-6
+            %p Unit Collected Date Time: #{DateTime.now.strftime('%Y-%m-%d %H:%M')}
+          .col-md-6
+            Deliver To
+            = collection_select(:deliver_unit, :deliver_to_id, DeliverUnit.all, :id, :deliver_to_id)
+
+            / = du.input :deliver_to_id, label_method: :action, value_method: :id, required: true
+        .row.col-md-12
+          .col-md-12
+            = du.input :note, input_html: {value: nil}
+    = f.input :remarks, input_html: {value: nil}
+    = simple_format ticket.remarks
+
+    = f.submit "Save", class: "btn btn-success", id: "deliver_unit_submit"
+/ %fieldset
+/   %legend Deliver Unit
+/   = simple_nested_form_for ticket, url: update_deliver_unit_ticket_path(ticket), method: :post do |f|
+/     = f.simple_fields_for "spt_act_deliver_unit_attributes[]", ticket.ticket_delivery_units.build do |du|
+/       .row.col-md-12
+/         .col-md-6
+/           %p Unit Collected Date Time: #{DateTime.now.strftime('%Y-%m-%d %H:%M')}
+/         .col-md-6
+/           = du.input :deliver_to_id, label_method: :action, value_method: :id, required: true
+/       .row.col-md-12
+/         = du.input :note, input_html: {value: nil}, wrapper_html: {class: "col-md-9"}
