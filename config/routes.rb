@@ -156,6 +156,7 @@ Rails.application.routes.draw do
       get "open-tickets", :action => :open_tickets
       get "closed-tickets", :action => :closed_tickets
       get "total-products", :action => :total_products
+      get "reason"
     end
   end
      
