@@ -34,7 +34,7 @@
         - if present_of_start_ticket_action and ticket.status_hold
           %option{:value => "un_hold"} Un Hold
         - if present_of_start_ticket_action and not ticket.job_finished
-          / %option{:value => "edit_serial_no_request"} Edit Serial No Request # view not found
+          %option{:value => "edit_serial_no_request"} Edit Serial No Request
         - if present_of_start_ticket_action and ticket.ticket_type.code == 'OS'  and not ticket.job_finished
           %option{:value => "create_fsr"} Create FSR
         - if present_of_start_ticket_action and ticket.ticket_fsrs.find_by_approved(:false).present? and not ticket.job_finished
