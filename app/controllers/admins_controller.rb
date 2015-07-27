@@ -26,4 +26,10 @@ class AdminsController < ApplicationController
   def total_products
     @products = Product.all
   end
+
+
+  def reason
+    @reason = Reason.new
+    render "admins/master_data/reason"
+  end
 end
