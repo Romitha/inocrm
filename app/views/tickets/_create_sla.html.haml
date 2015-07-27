@@ -4,7 +4,7 @@
   = @header
 = simple_form_for new_sla, url: create_sla_tickets_path, remote: true do |f|
   .modal-body
-    = f.input :sla_time, label: "SLA Times (in Hours)", input_html: {min: "0"}, wrapper_html: {class:"press"}
+    = f.input :sla_time, label: "SLA Times (in Hours)", input_html: {min: "0", class: "only_float"}
     = f.input :description
   .modal-footer
     %button.btn.btn-link{"data-dismiss" => "modal", :type => "button"} Cancel

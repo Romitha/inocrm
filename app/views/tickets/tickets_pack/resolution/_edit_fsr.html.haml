@@ -9,26 +9,28 @@
       .row
         .col-md-2.small_scale_margin-top2
           %p FSR No: #{fsr.object.id.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])}
+        = fsr.input :completion_level, as: :radio_buttons, label: false, wrapper_html: {class: "col-md-2 small_scale_margin-top2 small_scale_margin-left3"}, collection: {"Full" => "F","Patial" => "P"}, wrapper: :append
         .col-md-4
           = fsr.input :work_started_at, as: :string, input_html: {class: "datepicker", value: (@ticket_fsr.work_started_at and @ticket_fsr.work_started_at.strftime("%d %b, %Y"))}
-        .col-md-4
+        .col-md-3
           = fsr.input :work_finished_at, as: :string, input_html: {class: "datepicker", value: (@ticket_fsr.work_finished_at and @ticket_fsr.work_finished_at.strftime("%d %b, %Y"))}
       .row
-        = fsr.input :hours_worked, wrapper_html: {class: "col-md-5"}
-        = fsr.input :down_time, wrapper_html: {class: "col-md-5"}
-      .row
-        = fsr.input :travel_hours, wrapper_html: {class: "col-md-5"}
-      .row
-        = fsr.input :engineer_time_travel, wrapper_html: {class: "col-md-5"}
-        = fsr.input :engineer_time_on_site, wrapper_html: {class: "col-md-5"}
+        = fsr.input :hours_worked, input_html: {min: "0", class: "only_float"}, wrapper_html: {class: "col-md-2"}
+        = fsr.input :down_time, input_html: {min: "0", class: "only_float"}, wrapper_html: {class: "col-md-2"}
+        = fsr.input :travel_hours, input_html: {min: "0", class: "only_float"}, wrapper_html: {class: "col-md-2"}
+        = fsr.input :engineer_time_travel, input_html: {min: "0", class: "only_float"}, wrapper_html: {class: "col-md-3"}
+        = fsr.input :engineer_time_on_site, input_html: {min: "0", class: "only_float"}, wrapper_html: {class: "col-md-3"}
       .row
         = fsr.input :resolution, input_html: {value: nil}, wrapper_html: {class: "col-md-6"}
         = fsr.input :remarks, input_html: {value: nil}, wrapper_html: {class: "col-md-6"}, label: "Remarks (Fsr)"
-        = fsr.input :completion_level, as: :radio_buttons, label: "Completion Level", wrapper_html: {class: "col-md-2 small_scale_margin-top2 small_scale_margin-left3"}, collection: {"Full" => "F","Patial" => "P"}, wrapper: :append
+        
       .row
         = fsr.simple_fields_for :ticket do |t|
-          = t.input :remarks, as: :text, label: "Remarks (Ticket)", input_html: {value: nil}, wrapper_html: {class: "col-md-6"}
-          = simple_format t.object.remarks
+          = t.input :remarks, as: :text, label: "Remarks (Ticket)", input_html: {value: nil}, wrapper_html: {class: "col-md-12"}
+      .row
+        .col-md-6
+          = fsr.simple_fields_for :ticket do |s|
+            = simple_format s.object.remarks
       .row
         .col-md-3
           = simple_format @ticket_fsr.resolution

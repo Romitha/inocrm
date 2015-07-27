@@ -1,0 +1,26 @@
+= simple_form_for @reason, url: "#" do |f|
+	.row
+		.col-md-6
+			= f.input :reason, input_html: {rows: 1}
+		.col-md-1
+			= f.input :hold
+		.col-md-1
+			= f.input :sla_pause
+		.col-md-2
+			= f.input :re_assign_request
+	.row
+		.col-md-2
+			= f.input :terminate_job
+		.col-md-2
+			= f.input :terminate_spare_part
+		.col-md-2
+			= f.input :warranty_extend
+		.col-md-2
+			= f.input :spare_part_unused
+		.col-md-2
+			= f.input :reject_returned_part
+	.row
+		.col-md-2
+			= f.input :reject_close
+		.col-md-3
+			= f.input :adjust_terminate_job_payment
