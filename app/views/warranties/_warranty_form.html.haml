@@ -24,11 +24,11 @@
         = f.input :end_at, as: :string, input_html: {class: "datepicker"}
     .row
       .col-md-4
-        = f.input :period_part, input_html: {min: "0"}, wrapper_html: {class:" press"}
+        = f.input :period_part, input_html: {min: "0", class: "only_float"}
       .col-md-4
-        = f.input :period_labour, input_html: {min: "0"}, wrapper_html: {class:" press"}
+        = f.input :period_labour, input_html: {min: "0", class: "only_float"}
       .col-md-4
-        = f.input :period_onsight, label: "Corporate on-site", input_html: {min: "0"}, wrapper_html: {class:" press"}
+        = f.input :period_onsight, label: "Corporate on-site", input_html: {min: "0", class: "only_float"}
     .row
       .col-md-3
         = f.input :care_pack_product_no, label: "Care pack product number"

@@ -43,7 +43,9 @@ window.Warranties =
     $("#save_next").click()
 
   numbersonly: ->
-    $('.press').keydown (e) ->
-      if String.fromCharCode(e.keyCode).match(/[^0-9\b]/g)
-        return false
+    $('.only_float').keydown (e) ->
+      # if String.fromCharCode(e.keyCode).match(/[^0-9\.\b]/g)
+      #   return false
+      # $(@).regexMask(/^((1?[0-9])|([12][0-4]))(\.[05]?)?$/)
+      $(@).regexMask('float-enus')
       return
