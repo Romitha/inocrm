@@ -355,5 +355,5 @@ window.Tickets =
         $("#job_finish_form").submit()
 
   select_fsr: ->
-    $("#select_fsr option").click ->
+    $("#select_fsr").change ->
       $.post "/tickets/call_resolution_template", {call_template: "edit_fsr", select_fsr_id: $(@).val()}

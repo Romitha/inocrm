@@ -4,7 +4,7 @@
   = select_tag "select_fsr", options_for_select(TicketFsr.all.map { |fsr| [ fsr.id.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"]) , fsr.id] }), {:prompt => "- Select FSR No -"}
   - if @display_form
     = simple_nested_form_for @ticket_fsr, url: update_edit_fsr_ticket_path(ticket), method: :post do |fsr|
-      = fsr.input :ticket_id, as: :hidden
+      / = fsr.input :ticket_id, as: :hidden
       = hidden_field_tag :ticket_fsr_id, @ticket_fsr.id
       .row
         .col-md-2.small_scale_margin-top2
@@ -22,8 +22,13 @@
         = fsr.input :engineer_time_travel, wrapper_html: {class: "col-md-5"}
         = fsr.input :engineer_time_on_site, wrapper_html: {class: "col-md-5"}
       .row
-        = fsr.input :resolution, input_html: {value: nil}, wrapper_html: {class: "col-md-8"}
+        = fsr.input :resolution, input_html: {value: nil}, wrapper_html: {class: "col-md-6"}
+        = fsr.input :remarks, input_html: {value: nil}, wrapper_html: {class: "col-md-6"}, label: "Remarks (Fsr)"
         = fsr.input :completion_level, as: :radio_buttons, label: "Completion Level", wrapper_html: {class: "col-md-2 small_scale_margin-top2 small_scale_margin-left3"}, collection: {"Full" => "F","Patial" => "P"}, wrapper: :append
+      .row
+        = fsr.simple_fields_for :ticket do |t|
+          = t.input :remarks, as: :text, label: "Remarks (Ticket)", input_html: {value: nil}, wrapper_html: {class: "col-md-6"}
+          = simple_format t.object.remarks
       .row
         .col-md-3
           = simple_format @ticket_fsr.resolution

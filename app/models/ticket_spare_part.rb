@@ -19,6 +19,7 @@ class TicketFsr < ActiveRecord::Base
   self.table_name = "spt_ticket_fsr"
 
   belongs_to :ticket
+  accepts_nested_attributes_for :ticket
   # validates_presence_of [:work_started_at, :work_finished_at, :hours_worked, :hours_worked, :down_time, :travel_hours, :engineer_time_travel, :engineer_time_on_site, :resolution, :completion_level]
 
   has_one :act_fsr, foreign_key: :fsr_id
@@ -26,7 +27,7 @@ class TicketFsr < ActiveRecord::Base
 end
 
 class TicketDeliveryUnit < ActiveRecord::Base
-  self.table_name = "spt_ticket_delivery_unit"
+  self.table_name = "spt_ticket_deliver_unit"
 
   belongs_to :ticket
 end
