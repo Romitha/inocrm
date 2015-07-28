@@ -151,4 +151,7 @@ class DeliverUnit < ActiveRecord::Base
   self.table_name = "spt_act_deliver_unit"
 
   belongs_to :user_ticket_action, foreign_key: :ticket_action_id
+
+  belongs_to :ticket_delivery_unit, foreign_key: :ticket_deliver_unit_id
+
 end
