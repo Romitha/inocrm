@@ -32,4 +32,5 @@ class TicketDeliverUnit < ActiveRecord::Base
   belongs_to :ticket
 
   belongs_to :organization, foreign_key: :deliver_to_id
+  has_many :deliver_units, foreign_key: :ticket_deliver_unit_id
 end

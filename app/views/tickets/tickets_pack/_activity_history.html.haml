@@ -37,31 +37,27 @@
 
           -if action.task_action.action_no == 6
             .panel-body
-              -action.ticket_re_assign_requests.each do |r|
-                .row
-                  .col-md-3
-                    Reason: #{Reason.find(r.reason_id).reason}
+              .row
+                .col-md-3
+                  Reason: #{action.ticket_re_assign_request.reason.reason}
 
           -if action.task_action.action_no == 13
             .panel-body
-              -action.ticket_action_takens.each do |ac|
-                .row
-                  .col-md-3
-                    Action: #{ac.action}
+              .row
+                .col-md-3
+                  Action: #{action.ticket_action_taken.action}
 
           -if action.task_action.action_no == 20
             .panel-body
-              -action.hp_cases.each do |h|
-                .row
-                  .col-md-3
-                    Case Note: #{h.case_note}
+              .row
+                .col-md-3
+                  Case Note: #{action.hp_case.try :case_note}
 
           -if action.task_action.action_no == 21
             .panel-body
-              -action.ticket_finish_jobs.each do |f|
-                .row
-                  .col-md-3
-                    Resolution: #{f.resolution}
+              .row
+                .col-md-3
+                  Resolution: #{action.ticket_finish_job.try :resolution}
 
 
 
