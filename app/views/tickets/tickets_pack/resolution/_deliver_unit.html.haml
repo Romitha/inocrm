@@ -16,11 +16,8 @@
       = du.association :organization, include_blank: false
       = du.input :created_at, as: :hidden, input_html: {value: DateTime.now.strftime("%d-%m-%Y %H:%M")}
       = du.input :created_by, as: :hidden, input_html: {value: current_user.id}
-
-      .row.col-md-12
-        .col-md-12
-          = du.input :note, input_html: {value: nil}
-          = simple_format du.object.note
+      = du.input :note, input_html: {value: nil}
+      = simple_format du.object.note
     = f.input :remarks, input_html: {value: nil}
     = simple_format ticket.remarks
 
