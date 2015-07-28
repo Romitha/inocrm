@@ -2,6 +2,7 @@
   %legend Recieve Unit
   #error_msg
   = simple_nested_form_for ticket, url: update_recieve_unit_ticket_path(ticket), method: :post, html: {id: "update_deliver_unit_form"} do |f|
+
     = hidden_field_tag :process_id, session[:process_id]
     = hidden_field_tag :task_id, session[:task_id]
     = hidden_field_tag :owner, session[:owner]
@@ -17,11 +18,14 @@
       = du.input :received_at, as: :hidden, input_html: {value: DateTime.now.strftime("%d-%m-%Y %H:%M")}
       .row
         .col-md-12
-          Organization: #{@recieve_unit.organization.name}
-          %div Unit collection date time: #{@recieve_unit.collected_at.try :strftime, "%d-%m-%Y %H:%M"}
-          %div Unit collected by: #{User.find_by_id(@recieve_unit.collected_by).try :email}
-          = du.input :note, input_html: {value: nil}
-          = simple_format du.object.note
+          .col-md-4
+            Organization: #{@recieve_unit.organization.name}
+          .col-md-4
+            %div Unit collection date time: #{@recieve_unit.collected_at.try :strftime, "%d-%m-%Y %H:%M"}
+          .col-md-4
+            %div Unit collected by: #{User.find_by_id(@recieve_unit.collected_by).try :email}
+      = du.input :note, input_html: {value: nil}
+      = simple_format du.object.note
     = f.input :remarks, input_html: {value: nil}
     = simple_format ticket.remarks
 
