@@ -54,6 +54,7 @@ class Ticket < ActiveRecord::Base
   belongs_to :manufacture_currency, class_name: "Currency", foreign_key: :manufacture_currency_id
 
   has_many :ticket_spare_parts
+  accepts_nested_attributes_for :ticket_spare_parts, allow_destroy: true
 
   belongs_to :ticket_start_action, foreign_key: :job_started_action_id
   belongs_to :ticket_repair_type, foreign_key: :repair_type_id
@@ -67,6 +68,11 @@ class Ticket < ActiveRecord::Base
 
   has_many :ticket_terminate_job_payments
   accepts_nested_attributes_for :ticket_terminate_job_payments, allow_destroy: true
+
+  has_many :ticket_estimations, foreign_key: :ticket_id
+  accepts_nested_attributes_for :ticket_estimations, allow_destroy: true
+
+  has_many :ticket_estimation_externals, foreign_key: :ticket_id
 
   validates_presence_of [:ticket_no, :priority, :status_id, :problem_description, :informed_method_id, :job_type_id, :ticket_type_id, :warranty_type_id, :base_currency_id, :problem_category_id]
 
