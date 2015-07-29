@@ -344,3 +344,22 @@ abbr{
   height: 28px;
   padding-top: 4px;
 }
+
+.tt-menu {
+  background-color: white;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.176);
+  -moz-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.176);
+  -ms-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.176);
+  -o-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.176);
+  width: 100%;
+
+  .tt-suggestion {
+    padding: 3px;
+    cursor: pointer;
+    &:hover {
+      background-color: #0097CF;
+      color: white;
+    }
+  }
+}

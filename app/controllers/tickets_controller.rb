@@ -1783,14 +1783,34 @@ class TicketsController < ApplicationController
   end
 
   def update_request_spare_part
-    t_params = ticket_params
-    t_params["remarks"] = t_params["remarks"].present? ? "#{t_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
-    @redirect_url = todos_url
-    @flash_message = "Update Request Spare Part."
-    if @ticket.update t_params
-      redirect_to @redirect_url, notice: @flash_message
-    else
+    @ticket_spare_part = TicketSparePart.new ticket_spare_part_params
+    action_id = ""
+    if @ticket_spare_part.save
 
+      SparePartDescription.find_or_create_by(description: @ticket_spare_part.spare_part_description)
+      @ticket_spare_part.ticket_spare_part_status_actions.create(status_id: @ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
+
+      if @ticket_spare_part.request_from == "M"
+        action_id = TaskAction.find_by_action_no(14).id
+        @ticket_spare_part.create_ticket_spare_part_manufacture(payment_expected_manufacture: 0, manufacture_currency_id: @ticket_spare_part.ticket.manufacture_currency_id)
+      elsif @ticket_spare_part.request_from == "S"
+        action_id = TaskAction.find_by_action_no(15).id
+        @ticket_spare_part.create_ticket_spare_part_store
+      end
+        
+      user_ticket_action = @ticket_spare_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket_spare_part.ticket.re_open_count, action_id: action_id)
+      user_ticket_action.build_request_spare_part(ticket_spare_part_id: @ticket_spare_part.id)
+      user_ticket_action.save
+      redirect_to @ticket_spare_part.ticket, notice: "Successfully updated."
+    else
+      redirect_to @ticket_spare_part.ticket, alert: "Errors in updating. Please re-try."
+    end
+  end
+
+  def suggesstion_data
+    TicketSparePart
+    respond_to do |format|
+      format.json {render json: SparePartDescription.all.map { |s| s.description }}
     end
   end
 
@@ -1869,6 +1889,10 @@ class TicketsController < ApplicationController
 
     def ticket_fsr_params
       params.require(:ticket_fsr).permit(:travel_hours, :work_started_at, :work_finished_at, :hours_worked, :down_time, :engineer_time_travel, :engineer_time_on_site, :resolution, :completion_level, :remarks, :ticket_id, ticket_attributes: [:remarks, :id])
+    end
+
+    def ticket_spare_part_params
+      params.require(:ticket_spare_part).permit(:spare_part_no, :spare_part_description, :ticket_id, :ticket_fsr, :cus_chargeable_part, :request_from, :faulty_serial_no, :faulty_ct_no, :note, :status_action_id, :status_use_id)
     end
 
     def ticket_bpm_headers(process_id, ticket_id, spare_part_id)

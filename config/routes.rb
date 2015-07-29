@@ -117,6 +117,7 @@ Rails.application.routes.draw do
       get "resolution"
       get "assign-ticket", action: :assign_ticket
       get "workflow_diagram"
+      get "suggesstion_data"
     end
 
     member do
@@ -157,6 +158,12 @@ Rails.application.routes.draw do
       get "closed-tickets", :action => :closed_tickets
       get "total-products", :action => :total_products
       get "reason"
+    end
+  end
+
+  resources :inventories, except: [:index, :show, :create, :new, :update, :destroy, :edit] do
+    collection do
+      get "inventory_in_modal"
     end
   end
      
