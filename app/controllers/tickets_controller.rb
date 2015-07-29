@@ -1136,9 +1136,18 @@ class TicketsController < ApplicationController
     when "recieve_unit"
       @recieve_unit = @ticket.ticket_deliver_units.where(received: false).first
     when "deliver_unit"
+      TicketEstimation
       @ticket_deliver_unit = @ticket.ticket_deliver_units.build
+      @report_bys = @ticket.ticket_estimation_externals.select{|ts| (ts.ticket_estimation.status_id == EstimationStatus.find_by_code("EST").id) and (ts.ticket_estimation.cust_approved or ( !ts.ticket_estimation.cust_approval_required and ts.ticket_estimation.approved ) or ( !ts.ticket_estimation.cust_approval_required and !ts.ticket_estimation.approval_required ))}.map { |ts| [ts.organization.name, ts.organization.id] }
+
     when "edit_serial_no_request"
       @serial_request = @user_ticket_action.build_serial_request
+    when "job_estimation_request"
+      @ticket_estimation = @ticket.ticket_estimations.build
+      @user_ticket_action.build_job_estimation
+
+    when "request_spare_part"
+      @ticket_spare_part = @ticket.ticket_spare_parts.build
     end
   end
 
@@ -1676,6 +1685,8 @@ class TicketsController < ApplicationController
 
         bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
+        ticket_bpm_headers params[:process_id], @ticket.id, ""
+
         if bpm_response[:status].upcase == "SUCCESS"
           @flash_message = "Successfully updated."
         else
@@ -1713,6 +1724,64 @@ class TicketsController < ApplicationController
     redirect_to @ticket, notice: @flash_message
   end
 
+  def update_job_estimation_request
+    TaskAction
+    continue = true
+
+    # ticket_id, process_id, task_id should not be null
+    # http://0.0.0.0:3000/tickets/assign-ticket?ticket_id=2&process_id=212&owner=supp_mgr&task_id=191
+    if params[:task_id] and params[:process_id] and params[:owner]
+
+      bpm_response = view_context.send_request_process_data process_history: true, process_instance_id: params[:process_id], variable_id: "ticket_id"
+
+      if bpm_response[:status].upcase == "ERROR"
+        continue = false
+        @flash_message = "Bpm error."
+      end
+
+    else
+      continue = false
+    end
+
+    if continue
+
+      if @ticket.update append_remark_ticket_params(@ticket)
+
+        user_ticket_action = @ticket.user_ticket_actions.last
+        job_estimate = user_ticket_action.job_estimation
+        ticket_estimation = @ticket.ticket_estimations.last
+
+        job_estimate.note = ticket_estimation.note
+        job_estimate.save
+
+        ticket_estimation.ticket_estimation_externals.build(ticket_id: @ticket.id, repair_by_id: job_estimate.supplier_id)
+        ticket_estimation.save
+
+        # bpm output variables
+
+        bpm_variables = view_context.initialize_bpm_variables.merge(supp_engr_user: current_user.id, d13_job_estimate_requested_external: "Y")
+
+        @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
+        @ticket.update_attribute(:status_resolve_id, TicketStatusResolve.find_by_code("ERQ").id)
+
+        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+        if bpm_response[:status].upcase == "SUCCESS"
+          @flash_message = "Successfully updated."
+        else
+          @flash_message = "ticket is updated. but Bpm error"
+        end
+
+        @flash_message = "successfully updated"
+      else
+        @flash_message = "Unable to update."
+      end
+    else
+      @flash_message = @flash_message
+    end
+    redirect_to @ticket, alert: @flash_message
+  end
+
   def update_request_spare_part
     t_params = ticket_params
     t_params["remarks"] = t_params["remarks"].present? ? "#{t_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
@@ -1737,18 +1806,6 @@ class TicketsController < ApplicationController
     end
   end
 
-  def update_job_estimation_request
-    t_params = ticket_params
-    t_params["remarks"] = t_params["remarks"].present? ? "#{t_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
-    @redirect_url = todos_url
-    @flash_message = "Upadate Job Estimation Request ."
-    if @ticket.update t_params
-      redirect_to @redirect_url, notice: @flash_message
-    else
-
-    end
-  end
-
   private
     def set_ticket
       @ticket = Ticket.find(params[:id])
@@ -1759,7 +1816,7 @@ class TicketsController < ApplicationController
     end
 
     def ticket_params
-      params.require(:ticket).permit(:ticket_no, :sla_id, :serial_no, :status_hold, :repair_type_id, :base_currency_id, :ticket_close_approval_required, :ticket_close_approval_requested, :regional_support_job, :job_started_action_id, :job_start_note, :job_started_at, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, :status_resolve_id, ticket_deliver_units_attributes: [:deliver_to_id, :note, :created_at, :created_by, :received, :id, :received_at], ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :ticket_action_id, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer], user_ticket_actions_attributes: [:id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, user_assign_ticket_actions_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy], ticket_re_assign_request_attributes: [:reason_id, :_destroy], ticket_action_taken_attributes: [:action, :_destroy], ticket_terminate_job_attributes: [:id, :reason_id, :foc_requested, :_destroy], act_hold_attributes: [:id, :reason_id, :_destroy, :un_hold_action_id], hp_case_attributes: [:id, :case_id, :case_note], ticket_finish_job_attributes: [:resolution, :_destroy], ticket_terminate_job_payments_attributes: [:id, :amount, :payment_item_id, :_destroy, :ticket_id, :currency_id], act_fsr_attributes: [:print_fsr], serial_request_attributes: [:reason]], ticket_extra_remarks_attributes: [:id, :note, :created_by, :extra_remark_id], products_attributes: [:id, :sold_country_id, :pop_note, :pop_doc_url, :pop_status_id], ticket_fsrs_attributes: [:work_started_at, :work_finished_at, :hours_worked, :down_time, :travel_hours, :engineer_time_travel, :engineer_time_on_site, :resolution, :completion_level, :created_by])
+      params.require(:ticket).permit(:ticket_no, :sla_id, :serial_no, :status_hold, :repair_type_id, :base_currency_id, :ticket_close_approval_required, :ticket_close_approval_requested, :regional_support_job, :job_started_action_id, :job_start_note, :job_started_at, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, :status_resolve_id, ticket_deliver_units_attributes: [:deliver_to_id, :note, :created_at, :created_by, :received, :id, :received_at], ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :ticket_action_id, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer], ticket_estimations_attributes: [:note, :currency_id, :status_id, :requested_at, :requested_by], user_ticket_actions_attributes: [:id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, user_assign_ticket_actions_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy], ticket_re_assign_request_attributes: [:reason_id, :_destroy], ticket_action_taken_attributes: [:action, :_destroy], ticket_terminate_job_attributes: [:id, :reason_id, :foc_requested, :_destroy], act_hold_attributes: [:id, :reason_id, :_destroy, :un_hold_action_id], hp_case_attributes: [:id, :case_id, :case_note], ticket_finish_job_attributes: [:resolution, :_destroy], ticket_terminate_job_payments_attributes: [:id, :amount, :payment_item_id, :_destroy, :ticket_id, :currency_id], act_fsr_attributes: [:print_fsr], serial_request_attributes: [:reason], job_estimation_attributes: [:supplier_id]], ticket_extra_remarks_attributes: [:id, :note, :created_by, :extra_remark_id], products_attributes: [:id, :sold_country_id, :pop_note, :pop_doc_url, :pop_status_id], ticket_fsrs_attributes: [:work_started_at, :work_finished_at, :hours_worked, :down_time, :travel_hours, :engineer_time_travel, :engineer_time_on_site, :resolution, :completion_level, :created_by])
     end
 
     def product_brand_params
@@ -1838,7 +1895,9 @@ class TicketsController < ApplicationController
 
         repair_type = @ticket.repair_type.code == "EX" ? "[#{@ticket.repair_type.name}]" : ""
 
-        @h1 = "#{ticket_no}#{customer_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}"
+        delivery_stage = @ticket.ticket_deliver_units.any?{|d| !d.received} ? "[to-be collected]" : (@ticket.ticket_deliver_units.any?{|d| !d.delivered} ? "[to-be delivered]" : "")
+
+        @h1 = "#{ticket_no}#{customer_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}#{delivery_stage}"
 
         if spare_part_id.present?
           spare_part = @ticket.ticket_spare_parts.find_by_id(spare_part_id)

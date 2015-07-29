@@ -5,7 +5,11 @@ class TicketSparePart < ActiveRecord::Base
 
   has_one :ticket_spare_part_store, foreign_key: :spare_part_id
 
-  validates_presence_of :fsr_id, :spare_part_no, :spare_part_description
+  belongs_to :ticket_fsr, foreign_key: :fsr_id
+
+  has_many :request_spare_parts
+
+  # validates_presence_of :fsr_id, :spare_part_no, :spare_part_description
 end
 
 class TicketSparePartStore < ActiveRecord::Base
@@ -24,6 +28,8 @@ class TicketFsr < ActiveRecord::Base
 
   has_one :act_fsr, foreign_key: :fsr_id
   accepts_nested_attributes_for :act_fsr, allow_destroy: true
+
+  has_many :ticket_spare_parts, foreign_key: :fsr_id
 end
 
 class TicketDeliverUnit < ActiveRecord::Base

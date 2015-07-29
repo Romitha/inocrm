@@ -67,7 +67,11 @@ class Organization < ActiveRecord::Base
   # has_many :departments, class_name: "Organization", foreign_key: "department_org_id" # foreign_key refers belongs_to below.
   # belongs_to :department_org, class_name: "Organization" # org_department refers foreign_key above
 
-  belongs_to :organization_type, foreign_key: "type_id"
+  belongs_to :organization_type, foreign_key: :type_id
+
+  has_many :ticket_estimation_externals, foreign_key: :repair_by_id
+
+  has_many :job_estimations, foreign_key: :supplier_id
 
   def self.major_organization(category)
     where(category: category, department_org_id: nil)
