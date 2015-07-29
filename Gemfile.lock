@@ -152,6 +152,8 @@ GEM
       nokogiri (>= 1.5.9)
     mail (2.6.3)
       mime-types (>= 1.16, < 3)
+    migration_comments (0.3.2)
+      activerecord (>= 2.3.2)
     mime-types (2.5)
     mini_magick (4.2.3)
     mini_portile (0.6.2)
@@ -293,6 +295,7 @@ DEPENDENCIES
   jquery-rails
   kaminari
   less-rails
+  migration_comments
   mini_magick
   momentjs-rails (>= 2.8.1)
   mustache

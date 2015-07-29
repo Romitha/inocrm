@@ -359,3 +359,23 @@ window.Tickets =
   select_fsr: ->
     $("#select_fsr").change ->
       $.post "/tickets/call_resolution_template", {call_template: "edit_fsr", select_fsr_id: $(@).val()}
+
+  suggestion_data: ->
+
+    $.ajax
+      dataType: "json"
+      url: "/tickets/suggesstion_data.json"
+      async: false
+      success: (data)->
+
+        states = new Bloodhound(
+          datumTokenizer: Bloodhound.tokenizers.whitespace
+          queryTokenizer: Bloodhound.tokenizers.whitespace
+          local: data
+        )
+        $('#ticket_spare_part_spare_part_description.typeahead').typeahead {
+          highlight: true
+          limit: 10
+        },
+          name: 'state'
+          source: states

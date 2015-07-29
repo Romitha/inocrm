@@ -6,8 +6,14 @@ class TicketSparePart < ActiveRecord::Base
   has_one :ticket_spare_part_store, foreign_key: :spare_part_id
 
   belongs_to :ticket_fsr, foreign_key: :fsr_id
+  belongs_to :spare_part_status_action, foreign_key: :status_action_id
+  belongs_to :spare_part_status_use, foreign_key: :status_id
 
   has_many :request_spare_parts
+  has_many :ticket_spare_part_status_actions, foreign_key: :spare_part_id
+
+  has_one :ticket_spare_part_manufacture, foreign_key: :spare_part_id
+  has_one :ticket_spare_part_store, foreign_key: :spare_part_id
 
   # validates_presence_of :fsr_id, :spare_part_no, :spare_part_description
 end
@@ -39,4 +45,41 @@ class TicketDeliverUnit < ActiveRecord::Base
 
   belongs_to :organization, foreign_key: :deliver_to_id
   has_many :deliver_units, foreign_key: :ticket_deliver_unit_id
+end
+
+class SparePartDescription < ActiveRecord::Base
+  self.table_name = "mst_spt_spare_part_description"
+end
+
+class TicketSparePartManufacture < ActiveRecord::Base
+  self.table_name = "spt_ticket_spare_part_manufacture"
+
+  belongs_to :ticket_spare_part, foreign_key: :spare_part_id
+end
+
+class TicketSparePartStore < ActiveRecord::Base
+  self.table_name = "spt_ticket_spare_part_store"
+
+  belongs_to :ticket_spare_part, foreign_key: :spare_part_id
+end
+
+class SparePartStatusAction < ActiveRecord::Base
+  self.table_name = "mst_spt_spare_part_status_action"
+
+  has_many :ticket_spare_parts, foreign_key: :status_action_id
+  has_many :ticket_spare_part_status_actions, foreign_key: :status_id
+end
+
+class SparePartStatusUse < ActiveRecord::Base
+  self.table_name = "mst_spt_spare_part_status_use"
+
+  belongs_to :ticket_spare_part, foreign_key: :spare_part_id
+  belongs_to :spare_part_status_action, foreign_key: :status_id
+end
+
+class TicketSparePartStatusAction < ActiveRecord::Base
+  self.table_name = "spt_ticket_spare_part_status_action"
+
+  has_many :ticket_spare_part, foreign_key: :status_use_id
+  belongs_to :spare_part_status_action, foreign_key: :status_id
 end

@@ -21,6 +21,7 @@
 //= require jquery_nested_form
 //= require bootstrap-datepicker/core
 //= require bootstrap-datepicker/locales/bootstrap-datepicker.es
+//= bootstrap3-typeahead.min.js
 //= require moment
 //= require bootstrap-datetimepicker
 //= require bootstrap-wysihtml5
