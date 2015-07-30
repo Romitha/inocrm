@@ -1,9 +1,9 @@
-.row
-  .col-md-12
-    .panel.panel-default
-      -ticket.user_ticket_actions.each do |action|
-        - if action.persisted?
-          .panel-heading
+.container.col-md-12
+  -ticket.user_ticket_actions.each do |action|
+    - if action.persisted?
+      .panel-group
+        .panel.panel-info
+          .panel-heading 
             .row
               .col-md-3
                 Activity:
@@ -16,14 +16,15 @@
               .col-md-3
                 %p Re-Open: #{action.re_open_index > 0 ? 'Yes ('+action.re_open_index+')' : 'No'}
 
-          -if action.task_action.action_no == 2
-            .panel-body
+        
+          -if action.action_id == 2
+            .panel-body 
               - action.user_assign_ticket_actions.each do |a|
-                .row 
+                .row
                   .col-md-3
                     Sbu: #{a.try(:sbu).try(:sbu)}
                   .col-md-3
-                    Assign to: #{User.find(a.assign_to).user_name}
+                    Assign to: #{User.find_by_id(a.assign_to).try(:user_name)}
                   .col-md-3
                     -if a.recorrection == true
                       Recorrection: Yes
@@ -35,38 +36,148 @@
                     -else
                       Regional Support Center Job: No
 
-          -if action.task_action.action_no == 6
+          -if action.action_id == 4
+            .panel-body
+              - action.assign_regional_support_centers.each do |b|
+                .row
+                  .col-md-4
+                    Regional Support Center: #{Organization.find(b.regional_support_center.organization_id).name}
+
+          -if action.action_id == 6
             .panel-body
               .row
-                .col-md-3
+                .col-md-4
                   Reason: #{action.ticket_re_assign_request.reason.reason}
 
-          -if action.task_action.action_no == 13
+          -if action.action_id == 7
             .panel-body
               .row
-                .col-md-3
+                .col-md-4
+                  Reason: #{action.ticket_terminate_job.reason.reason}
+
+          -if action.action_id == 8
+            .panel-body 
+              .row
+                .col-md-4
+                  Reason: #{action.act_hold.reason.reason}
+
+          -if action.action_id == 10
+            .panel-body 
+              .row
+                .col-md-4
+                  Reason: #{action.try(:serial_request).try(:reason)}
+
+          -if action.action_id == 11
+            .panel-body 
+              .row
+                .col-md-4
+                  FSR No : #{action.act_fsr.fsr_id.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])}
+                .col-md-4
+                  -if action.act_fsr.print_fsr == true
+                    Print FSR : Yes
+                  - else
+                    Print FSR : No
+  
+
+          -if action.action_id == 13
+            .panel-body 
+              .row
+                .col-md-4
                   Action: #{action.ticket_action_taken.action}
 
-          -if action.task_action.action_no == 20
-            .panel-body
+          -if action.action_id == 20
+            .panel-body 
               .row
-                .col-md-3
+                .col-md-4
                   Case Note: #{action.hp_case.try :case_note}
 
-          -if action.task_action.action_no == 21
-            .panel-body
+          -if action.action_id == 21
+            .panel-body 
               .row
-                .col-md-3
+                .col-md-4
                   Resolution: #{action.ticket_finish_job.try :resolution}
 
+          -if action.action_id == 22
+            .panel-body 
+              .row
+                .col-md-4
+                  Deliver Note: #{action.deliver_unit.deliver_note}
 
+          -if action.action_id == 25
+            .panel-body 
+              .row
+                .col-md-4
+                Receive Note: #{action.deliver_unit.receive_note}
 
+          -if action.action_id == 29
+            .panel-body 
+              .row
+                .col-md-4
+                  -if action.deliver_unit.ticket_deliver_unit.delivered_to_sup == true
+                    Deliver To Supplier: Yes
+                  -else
+                    Deliver To Supplier: No
+                .col-md-4
+                  Deliver To Supplier By: #{action.deliver_unit.ticket_deliver_unit.delivered_to_sup_by}
 
-          / -if action.task_action.action_no == 4
-          /   .panel-body
-          /     - action.assign_regional_support_centers.each do |c|
-          /       .row
-          /         .col-md-6
-          /           Regional Support Center: #{c.regional_support_center.organization.name}
-          /         .col-md-6
-          /           Created At: #{c.created_at.strftime("%Y-%m-%d %H:%M")}
+          -if action.action_id == 30
+            .panel-body 
+              .row
+                .col-md-4
+                  -if action.deliver_unit.ticket_deliver_unit.collected == true
+                    Collect Unit From Supplier: Yes
+                  -else
+                    Collect Unit From Supplier: No
+                .col-md-4
+                  Deliver To Supplier By: #{action.deliver_unit.ticket_deliver_unit.collected_by}
+                  
+
+            
+
+            
+
+/ .row
+/   .col-md-12
+/     .panel-group
+/       .panel.panel-primary
+/         -ticket.user_ticket_actions.each do |action|
+/           - if action.persisted?
+/             .panel-heading
+/               .row
+/                 .col-md-3
+/                   Activity:
+/                   = action.task_action.action_description
+/                 .col-md-3
+/                   Date Time:
+/                   = action.action_at.getlocal.strftime "%Y-%m-%d %H:%M"
+/                 .col-md-3
+/                   %p By: #{Rails.cache.fetch([:action_by, action.action_by]){User.find(action.action_by)}.user_name}
+/                 .col-md-3
+/                   %p Re-Open: #{action.re_open_index > 0 ? 'Yes ('+action.re_open_index+')' : 'No'}
+
+/             .panel-body
+
+/               -if action.task_action.action_no == 2
+/                 - action.user_assign_ticket_actions.each do |a|
+/                   .row 
+/                     .col-md-3
+/                       Sbu: #{a.try(:sbu).try(:sbu)}
+/                     .col-md-3
+/                       Assign to: #{User.find(a.assign_to).user_name}
+/                     .col-md-3
+/                       -if a.recorrection == true
+/                         Recorrection: Yes
+/                       -else
+/                         Recorrection: No
+/                     .col-md-3
+/                       -if a.recorrection == true
+/                         Regional Support Center Job: Yes
+/                       -else
+/                         Regional Support Center Job: No
+
+/               -if action.task_action.action_no == 6
+/                 .row
+/                   .col-md-4
+/                     Reason: #{action.ticket_re_assign_request.reason.reason}
+
+/             
