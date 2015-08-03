@@ -32,6 +32,8 @@ class Organization < ActiveRecord::Base
   scope :individual_customers, -> {where(category: TYPES[3])}
   scope :owner, -> {where(refers: "VSIS").first}
 
+  scope :stores, -> { where(type_id: 4)}
+
   validates_format_of :web_site, :with => URI::regexp(%w(http https))
 
   # self join table tricks
@@ -72,6 +74,8 @@ class Organization < ActiveRecord::Base
   has_many :ticket_estimation_externals, foreign_key: :repair_by_id
 
   has_many :job_estimations, foreign_key: :supplier_id
+
+  has_many :inventories, foreign_key: :store_id
 
   def self.major_organization(category)
     where(category: category, department_org_id: nil)
