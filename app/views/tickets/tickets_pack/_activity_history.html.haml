@@ -85,6 +85,27 @@
                 .col-md-4
                   Action: #{action.ticket_action_taken.action}
 
+          -if action.action_id == 14
+            .panel-body
+              .row
+                .col-md-4
+                  Payment Expected Manufacture : #{action.request_spare_part.ticket_spare_part.ticket_spare_part_manufacture.try(:payment_expected_manufacture)}
+
+          -if action.action_id == 15
+            .panel-body
+              .row
+                .col-md-4
+                  Store Requested By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_requested_by)).try(:user_name)}
+                .col-md-4
+                  Store Request Approved By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_request_approved_by)).try(:user_name)}
+                .col-md-4
+                  Store Issued By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_issued_by)).try(:user_name)}
+
+          -if action.action_id == 19
+            .panel-body
+              .row
+                .col-md-4
+                  action.ticket.reason.find_by_id(action.request_spare_part.ticket_spare_part.terminated_reason_id).try(:reason)
           -if action.action_id == 20
             .panel-body 
               .row
@@ -102,6 +123,23 @@
               .row
                 .col-md-4
                   Deliver Note: #{action.deliver_unit.deliver_note}
+
+          -if action.action_id == 23
+            .panel-body
+              .row
+                .col-md-4
+                  Note: #{action.job_estimation.note}
+
+          -if action.action_id == 24
+            .panel-body
+              .row
+                .col-md-4
+                  Customer Approved By: #{TicketEstimation.find_by_id(action.job_estimation.ticket_estimation_id).try(:cust_approved_by)}
+                .col-md-4
+                  -if TicketEstimation.find_by_id(action.job_estimation.ticket_estimation_id).cust_approved == true
+                    Customer Approved: Yes
+                  -else
+                    Customer Approved: No
 
           -if action.action_id == 25
             .panel-body 
@@ -130,54 +168,3 @@
                     Collect Unit From Supplier: No
                 .col-md-4
                   Deliver To Supplier By: #{action.deliver_unit.ticket_deliver_unit.collected_by}
-                  
-
-            
-
-            
-
-/ .row
-/   .col-md-12
-/     .panel-group
-/       .panel.panel-primary
-/         -ticket.user_ticket_actions.each do |action|
-/           - if action.persisted?
-/             .panel-heading
-/               .row
-/                 .col-md-3
-/                   Activity:
-/                   = action.task_action.action_description
-/                 .col-md-3
-/                   Date Time:
-/                   = action.action_at.getlocal.strftime "%Y-%m-%d %H:%M"
-/                 .col-md-3
-/                   %p By: #{Rails.cache.fetch([:action_by, action.action_by]){User.find(action.action_by)}.user_name}
-/                 .col-md-3
-/                   %p Re-Open: #{action.re_open_index > 0 ? 'Yes ('+action.re_open_index+')' : 'No'}
-
-/             .panel-body
-
-/               -if action.task_action.action_no == 2
-/                 - action.user_assign_ticket_actions.each do |a|
-/                   .row 
-/                     .col-md-3
-/                       Sbu: #{a.try(:sbu).try(:sbu)}
-/                     .col-md-3
-/                       Assign to: #{User.find(a.assign_to).user_name}
-/                     .col-md-3
-/                       -if a.recorrection == true
-/                         Recorrection: Yes
-/                       -else
-/                         Recorrection: No
-/                     .col-md-3
-/                       -if a.recorrection == true
-/                         Regional Support Center Job: Yes
-/                       -else
-/                         Regional Support Center Job: No
-
-/               -if action.task_action.action_no == 6
-/                 .row
-/                   .col-md-4
-/                     Reason: #{action.ticket_re_assign_request.reason.reason}
-
-/             
