@@ -1,6 +1,41 @@
+- display_results = @display_results
+- inventories = @inventories
 .modal-header
   %h3 Select inventory
 .modal-body
-  asdf
-  - if @display_results
-    display result
+  #search_frame
+    = form_tag search_inventories_inventories_path, remote: true, method: :get do
+      .store
+        = label_tag "Store"
+        = select_tag "search_inventory[store_id]", options_from_collection_for_select(Organization.stores, :id, :name), include_blank: true
+      .brand
+        = label_tag InventoryCategoryCaption.first.caption
+        = select_tag "search_inventory[brand]", options_from_collection_for_select(InventoryCategory1.all, :id, :name), include_blank: true
+      .product
+        = label_tag InventoryCategoryCaption.second.caption
+        = select_tag "search_inventory[product]", option_groups_from_collection_for_select(InventoryCategory1.all, :inventory_category2s, :name, :id, :name), include_blank: true
+      .category
+        = label_tag InventoryCategoryCaption.third.caption
+        = select_tag "search_inventory[mst_inv_product][category3_id]", option_groups_from_collection_for_select(InventoryCategory2.all, :inventory_category3s, :name, :id, :name), include_blank: true
+      .serial_code
+        = label_tag "Serial Code"
+        = text_field_tag "search_inventory[mst_inv_product][serial_no]"
+      .part_no
+        = label_tag "Part No"
+        = text_field_tag "search_inventory[mst_inv_product][spare_part_no]"
+      .model_no
+        = label_tag "Model No"
+        = text_field_tag "search_inventory[mst_inv_product][model_no]"
+      .description
+        = label_tag "Description"
+        = text_field_tag "search_inventory[mst_inv_product][description]"
+      .product_no
+        = label_tag "Product No"
+        = text_field_tag "search_inventory[mst_inv_product][product_no]"
+      .search
+        = submit_tag "Search"
+
+  - if display_results
+    - inventories.each do |inventory|
+      = inventory.inventory_product.serial_no
+      = link_to "select", "#"

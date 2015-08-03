@@ -164,6 +164,7 @@ Rails.application.routes.draw do
   resources :inventories, except: [:index, :show, :create, :new, :update, :destroy, :edit] do
     collection do
       get "inventory_in_modal"
+      get "search_inventories"
     end
   end
      
