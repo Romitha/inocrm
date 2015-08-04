@@ -1,2 +1,37 @@
-$("#inventory_modal").modal();
-$("#inventory_modal .modal-content").html("#{j render 'inventory_in_modal'}");
+- if @inventory
+  $("#inventory_modal").modal('hide');
+
+  - @content_for = capture do
+    %table
+      %thead
+        %tr
+          %th Store
+          %th Item Code
+          %th Item Description
+          %th Model No
+          %th Product No
+          %th Part No
+          %th Available Qnty
+
+      %tbody
+        %tr
+          %td
+            = @inventory.organization.name
+          %td
+            = @inventory.inventory_product.serial_no
+          %td
+            = @inventory.inventory_product.description
+          %td
+            = @inventory.inventory_product.model_no
+          %td
+            = @inventory.inventory_product.product_no
+          %td
+            = @inventory.inventory_product.spare_part_no
+          %td
+            = @inventory.available_quantity
+
+
+  $(".#{session[:select_frame]}").html('#{j @content_for}');
+- else
+  $("#inventory_modal").modal();
+  $("#inventory_modal .modal-content").html("#{j render 'inventory_in_modal'}");

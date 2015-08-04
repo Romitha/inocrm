@@ -17,14 +17,21 @@
     .row
       = f.input :spare_part_description, wrapper_html: {class: "col-md-3"}, label: "Part Description", input_html: {class: "typeahead", autocomplete: "off", spellcheck: "false"}, placeholder: "Part number", required: true
 
-      = f.input :cus_chargeable_part, as: :boolean, checked_value: true, unchecked_value: false, wrapper: :append, wrapper_html: {class: "col-md-3"}, input_html: {checked: (true if @ticket_spare_part.ticket.warranty_type.code == "NW"), disabled: (true if @ticket_spare_part.ticket.warranty_type.code == "NW")}
+      = f.input :cus_chargeable_part, as: :boolean, checked_value: true, unchecked_value: false, wrapper: :append, wrapper_html: {class: "col-md-3"}, input_html: {checked: (true if(@ticket_spare_part.ticket.cus_chargeable or @ticket_spare_part.ticket.warranty_type.code == "NW" or @ticket_spare_part.ticket.warranty_type.code == "UW")), disabled: (true if @ticket_spare_part.ticket.cus_chargeable or @ticket_spare_part.ticket.warranty_type.code == "NW" or @ticket_spare_part.ticket.warranty_type.code == "UW")}
+
       .col-md-3
-        = f.input :request_from, as: :radio_buttons, collection: {"Manufacture" => "M", "Store" => "S"}, wrapper: :append, wrapper_html: {class: "col-md-12"}, disabled: ("M" unless @ticket_spare_part.ticket.warranty_type.code == "MW")
-        = link_to "select", inventory_in_modal_inventories_path, remote: true
+        = f.input :request_from, as: :radio_buttons, collection: {"Manufacture" => "M", "Store" => "S"}, wrapper: :append, wrapper_html: {class: "col-md-12"}, disabled: ("M" if @ticket_spare_part.ticket.cus_chargeable or @ticket_spare_part.ticket.warranty_type.code == "NW" or @ticket_spare_part.ticket.warranty_type.code == "UW"), checked: ("S" if @ticket_spare_part.ticket.cus_chargeable or @ticket_spare_part.ticket.warranty_type.code == "NW" or @ticket_spare_part.ticket.warranty_type.code == "UW")
+
+        = link_to "select", inventory_in_modal_inventories_path(select_frame: "request_from"), remote: true
+
+        .request_from
+
       .col-md-3
         = label_tag "Part of main product"
         = check_box_tag :part_of_main_product
-        = link_to "select", inventory_in_modal_inventories_path, remote: true
+        = link_to "select", inventory_in_modal_inventories_path(select_frame: "main_product"), remote: true
+
+        .main_product
 
     .row
       = f.input :faulty_serial_no, wrapper_html: {class: "col-md-3"}, label: "Faulty Serial No"

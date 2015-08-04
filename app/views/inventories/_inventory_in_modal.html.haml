@@ -38,4 +38,4 @@
   - if display_results
     - inventories.each do |inventory|
       = inventory.inventory_product.serial_no
-      = link_to "select", "#"
+      = link_to "select", inventory_in_modal_inventories_path(select_inventory: true, inventory_id: inventory.id, select_frame: session[:select_frame]), remote: true
