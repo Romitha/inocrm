@@ -6,4 +6,5 @@ $ ->
   DocumentAttachment.setup()
   Tickets.setup()
   Departments.setup()
+  Inventories.setup()
   return

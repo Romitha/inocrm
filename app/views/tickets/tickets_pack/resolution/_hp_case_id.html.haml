@@ -1,5 +1,5 @@
 %fieldset
-  %legend HP Case ID
+  %legend HP Case Action
   #error_msg
   = simple_form_for ticket, url: update_hp_case_id_ticket_path(ticket), method: :post, html: {id: "hp_case_form"} do |f|
     = hidden_field_tag :process_id, session[:process_id]
@@ -13,7 +13,7 @@
       = uf.input :re_open_index, as: :hidden, input_html: {value: ticket.re_open_count}
 
       = uf.simple_fields_for :hp_case do |rf|
-        = rf.input :case_id, required: true, input_html: {id: "hp_case_text"}
+        = rf.input :case_id, label:'Case id', required: true, input_html: {id: "hp_case_text"}
         = rf.input :case_note
     = f.input :remarks, input_html: {value: nil}
     = simple_format ticket.remarks
