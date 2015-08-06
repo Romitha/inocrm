@@ -5,6 +5,16 @@ class InventoriesController < ApplicationController
     session[:select_frame] = params[:select_frame]
     if params[:select_inventory] and params[:inventory_id] and session[:select_frame]
       @inventory = Inventory.find params[:inventory_id]
+
+      if session[:select_frame] == "main_product"
+        session[:store_id] = @inventory.store_id
+        session[:inv_product_id] = @inventory.product_id
+
+      elsif session[:select_frame] == "request_from"
+        session[:mst_store_id] = @inventory.store_id
+        session[:mst_inv_product_id] = @inventory.product_id
+
+      end
     end
   end
 

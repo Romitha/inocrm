@@ -32,6 +32,11 @@
 
 
   $(".#{session[:select_frame]}").html('#{j @content_for}');
+  $("#store_id").val("#{session[:store_id]}");
+  $("#mst_store_id").val("#{session[:mst_store_id]}");
+  $("#inv_product_id").val("#{session[:inv_product_id]}");
+  $("#mst_inv_product_id").val("#{session[:mst_inv_product_id]}");
+
 - else
   $("#inventory_modal").modal();
   $("#inventory_modal .modal-content").html("#{j render 'inventory_in_modal'}");

@@ -1147,6 +1147,11 @@ class TicketsController < ApplicationController
       @user_ticket_action.build_job_estimation
 
     when "request_spare_part"
+      session[:store_id] = nil
+      session[:inv_product_id] = nil
+      session[:mst_store_id] = nil
+      session[:mst_inv_product_id] = nil
+
       @ticket_spare_part = @ticket.ticket_spare_parts.build
     end
   end
@@ -1772,7 +1777,6 @@ class TicketsController < ApplicationController
           @flash_message = "ticket is updated. but Bpm error"
         end
 
-        @flash_message = "successfully updated"
       else
         @flash_message = "Unable to update."
       end
@@ -1783,28 +1787,132 @@ class TicketsController < ApplicationController
   end
 
   def update_request_spare_part
-    @ticket_spare_part = TicketSparePart.new ticket_spare_part_params
-    action_id = ""
-    if @ticket_spare_part.save
 
-      SparePartDescription.find_or_create_by(description: @ticket_spare_part.spare_part_description)
-      @ticket_spare_part.ticket_spare_part_status_actions.create(status_id: @ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
+    TaskAction
+    WorkflowMapping
+    continue = true
 
-      if @ticket_spare_part.request_from == "M"
-        action_id = TaskAction.find_by_action_no(14).id
-        @ticket_spare_part.create_ticket_spare_part_manufacture(payment_expected_manufacture: 0, manufacture_currency_id: @ticket_spare_part.ticket.manufacture_currency_id)
-      elsif @ticket_spare_part.request_from == "S"
-        action_id = TaskAction.find_by_action_no(15).id
-        @ticket_spare_part.create_ticket_spare_part_store
+    # ticket_id, process_id, task_id should not be null
+    # http://0.0.0.0:3000/tickets/assign-ticket?ticket_id=2&process_id=212&owner=supp_mgr&task_id=191
+    if params[:task_id] and params[:process_id] and params[:owner]
+
+      bpm_response = view_context.send_request_process_data process_history: true, process_instance_id: params[:process_id], variable_id: "ticket_id"
+
+      if bpm_response[:status].upcase == "ERROR"
+        continue = false
+        @flash_message = "Bpm error."
       end
-        
-      user_ticket_action = @ticket_spare_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket_spare_part.ticket.re_open_count, action_id: action_id)
-      user_ticket_action.build_request_spare_part(ticket_spare_part_id: @ticket_spare_part.id)
-      user_ticket_action.save
-      redirect_to @ticket_spare_part.ticket, notice: "Successfully updated."
+
     else
-      redirect_to @ticket_spare_part.ticket, alert: "Errors in updating. Please re-try."
+      continue = false
     end
+
+    if continue
+      f_ticket_spare_part_params = ticket_spare_part_params
+      f_ticket_spare_part_params[:ticket_attributes][:remarks] = f_ticket_spare_part_params[:ticket_attributes][:remarks].present? ? "#{f_ticket_spare_part_params[:ticket_attributes][:remarks]} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
+      @ticket_spare_part = TicketSparePart.new f_ticket_spare_part_params
+      action_id = ""
+      if @ticket_spare_part.save
+
+        SparePartDescription.find_or_create_by(description: @ticket_spare_part.spare_part_description)
+
+        if @ticket_spare_part.request_from == "M"
+
+          # @ticket_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code("RQT").id        
+
+          action_id = TaskAction.find_by_action_no(14).id
+          @ticket_spare_part.create_ticket_spare_part_manufacture(payment_expected_manufacture: 0, manufacture_currency_id: @ticket_spare_part.ticket.manufacture_currency_id)
+        elsif @ticket_spare_part.request_from == "S"
+
+          @ticket_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code("RQT").id if @ticket_spare_part.cus_chargeable_part
+          action_id = TaskAction.find_by_action_no(15).id
+
+          @ticket_spare_part_store = @ticket_spare_part.create_ticket_spare_part_store(store_id: params[:store_id], inv_product_id: params[:inv_product_id], mst_inv_product_id: params[:mst_inv_product_id], estimation_required: @ticket_spare_part.cus_chargeable_part, part_of_main_product: params[:part_of_main_product], store_requested: !@ticket_spare_part.cus_chargeable_part, store_requested_at: ( !@ticket_spare_part.cus_chargeable_part ? DateTime.now : nil), store_requested_by: ( !@ticket_spare_part.cus_chargeable_part ? current_user.id : nil))
+        end
+        @ticket_spare_part.ticket_spare_part_status_actions.create(status_id: @ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
+
+        @ticket_spare_part.ticket.update_attribute :status_resolve_id, TicketStatusResolve.find_by_code("POD").id
+          
+        user_ticket_action = @ticket_spare_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket_spare_part.ticket.re_open_count, action_id: action_id)
+        user_ticket_action.build_request_spare_part(ticket_spare_part_id: @ticket_spare_part.id)
+        user_ticket_action.save
+
+
+        if @ticket_spare_part.request_from == "S" and @ticket_spare_part.cus_chargeable_part
+
+          action_id = TaskAction.find_by_action_no(33).id
+          user_ticket_action = @ticket_spare_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket_spare_part.ticket.re_open_count, action_id: action_id)
+          user_ticket_action.build_request_spare_part(ticket_spare_part_id: @ticket_spare_part.id)
+
+          @ticket_estimation = @ticket_spare_part.ticket.ticket_estimations.build requested_at: DateTime.now, requested_by: current_user.id, approval_required: true, status_id: EstimationStatus.find_by_code("RQS").id, currency_id: @ticket_spare_part.ticket.base_currency_id
+          ticket_estimation_part = @ticket_estimation.ticket_estimation_parts.build ticket_id: @ticket_spare_part.ticket.id, ticket_spare_part_id: @ticket_spare_part.id
+
+          user_ticket_action.save
+          @ticket_estimation.save
+
+          @ticket_spare_part_store.update_attribute :ticket_estimation_part_id, ticket_estimation_part.id
+
+        end
+
+        # bpm output variables
+
+        bpm_variables = view_context.initialize_bpm_variables.merge(supp_engr_user: current_user.id, request_spare_part_id: @ticket_spare_part.id, onloan_request: "N", d15_part_estimate_required: (@ticket_spare_part.cus_chargeable_part ? "Y" : "N"), part_estimation_id: (@ticket_spare_part.cus_chargeable_part ? @ticket_estimation.id : "-"), d16_request_manufacture_part: (@ticket_spare_part.request_from == "M" ? "Y" : "N"), d17_request_store_part: ((@ticket_spare_part.request_from == "S" and !@ticket_spare_part.cus_chargeable_part) ? "Y" : "N"))
+
+        @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
+
+        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+        # bpm output variables
+        ticket_id = @ticket.id
+        request_spare_part_id = @ticket_spare_part.id
+        supp_engr_user = current_user.id
+        priority = @ticket.priority
+
+        part_estimation_id = @ticket_estimation.try(:id)
+
+        request_onloan_spare_part_id = "-"
+        onloan_request = "N"
+
+        if @ticket_spare_part.request_from == "M"
+          # Create Process "SPPT_MFR_PART_REQUEST",
+
+          bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT_MFR_PART_REQUEST", query: {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, supp_engr_user: supp_engr_user, priority: priority}
+
+        elsif @ticket_spare_part.request_from == "S"
+          if @ticket_spare_part.cus_chargeable_part
+            # part_estimation_id = DB.spt_ticket_estimation.id,
+            # Create Process "SPPT_PART_ESTIMATE"
+
+            bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT_PART_ESTIMATE", query: {ticket_id: ticket_id, part_estimation_id: part_estimation_id, supp_engr_user: supp_engr_user, priority: priority}
+          else
+            # Create Process "SPPT_STORE_PART_REQUEST"
+
+            bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT_STORE_PART_REQUEST", query: {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, request_onloan_spare_part_id: request_onloan_spare_part_id, onloan_request: onloan_request, supp_engr_user: supp_engr_user, priority: priority}
+          end
+        end
+
+        if bpm_response1[:status].try(:upcase) == "SUCCESS"
+          @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name])
+          ticket_bpm_headers bpm_response1[:process_id], @ticket.id, ""
+        else
+          @bpm_process_error = true
+        end
+
+        if bpm_response[:status].upcase == "SUCCESS"
+          @flash_message = "Successfully updated."
+        else
+          @flash_message = "ticket is updated. but Bpm error"
+        end
+        
+        @flash_message = "#{@flash_message} Unable to start new process." if @bpm_process_error
+
+      else
+        @flash_message = "Errors in updating. Please re-try."
+      end
+    else
+      @flash_message = @flash_message
+    end
+    redirect_to @ticket, notice: @flash_message
   end
 
   def suggesstion_data
@@ -1892,8 +2000,10 @@ class TicketsController < ApplicationController
     end
 
     def ticket_spare_part_params
-      params.require(:ticket_spare_part).permit(:spare_part_no, :spare_part_description, :ticket_id, :ticket_fsr, :cus_chargeable_part, :request_from, :faulty_serial_no, :faulty_ct_no, :note, :status_action_id, :status_use_id)
-    end
+    params.require(:ticket_spare_part).permit(:spare_part_no,
+    :spare_part_description, :ticket_id, :ticket_fsr, :cus_chargeable_part,
+    :request_from, :faulty_serial_no, :faulty_ct_no, :note, :status_action_id,
+    :status_use_id, ticket_attributes: [:remarks, :id]) end
 
     def ticket_bpm_headers(process_id, ticket_id, spare_part_id)
 
