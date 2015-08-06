@@ -9,7 +9,7 @@ gem 'rails', '4.2.1'
 # gem 'sqlite3'
 # use postgresql for database active records
 gem 'mysql2' # sudo apt-get install libmysqlclient-dev mysql-client Failed to build gem native extension
-gem 'pg' # sudo apt-get install postgresql postgresql-contrib postgresql-server-dev-all if it failed to build gem native extension.
+# gem 'pg' # sudo apt-get install postgresql postgresql-contrib postgresql-server-dev-all if it failed to build gem native extension.
 # Use SCSS for stylesheets
 gem "migration_comments"
 gem 'sass-rails', '~> 4.0.3'
