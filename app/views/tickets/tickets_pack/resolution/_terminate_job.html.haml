@@ -1,5 +1,5 @@
 %fieldset
-  %legend Terminate Reason
+  %legend Terminate Job
   = simple_nested_form_for ticket, url: update_terminate_job_ticket_path(ticket), method: :post do |f|
     = hidden_field_tag :process_id, session[:process_id]
     = hidden_field_tag :task_id, session[:task_id]

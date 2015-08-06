@@ -203,3 +203,24 @@ end
     ["Check outer condition?", "YN", true, 1, true],
     ["Any damage in the casing?", "TX", true, 1, false]
   ].each{ |t| GeQAndA.create_with(answer_type: t[1], active: t[2], action_id: t[3], compulsory: t[4]).find_or_create_by(question: t[0])}
+
+  TicketSparePart
+  spare_part_status_action = [
+    ["RQT", "Requested", "1", "1", "1", "1"],
+    ["ORD", "Ordered from Manufacturer", "2", "0", "3", "0"],
+    ["CLT", "Collected from Manufacturer", "3", "0", "3", "0"],
+    ["RCS", "Received from Manufacturer", "4", "0", "3", "0"],
+    ["ISS", "Issued", "5", "4", "6", "4"],
+    ["RCE", "Received by Engineer", "6", "5", "7", "5"],
+    ["RTN", "Part Return by Engineer", "7", "6", "0", "6"],
+    ["RPR", "Returned Part Reject", "8", "7", "0", "7"],
+    ["RPA", "Returned Part Accepted", "8", "7", "0", "7"],
+    ["BND", "Part Bundled", "10", "0", "0", "0"],
+    ["CLS", "Close", "11", "8", "8", "8"],
+    ["ECM", "Estimation Completed", "0", "0", "2", "0"],
+    ["CEA", "Cus. Estimation Approved", "0", "0", "3", "0"],
+    ["STR", "Request from Store", "0", "2", "4", "2"],
+    ["APS", "Approved Store Request", "0", "3", "5", "3"],
+    ["RJS", "Reject Store Request", "0", "3", "5", "3"],
+    ["RBN", "Ready to Bundle", "9", "0", "0", "0"]
+  ].each{ |t| SparePartStatusAction.create_with(name: t[1], manufacture_type_index: t[2], store_nc_type_index: t[3], store_ch_type_index: t[4], on_loan_type_index: t[5]).find_or_create_by(code: t[0])}

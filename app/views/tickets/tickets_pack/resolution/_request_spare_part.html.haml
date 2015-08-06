@@ -31,14 +31,15 @@
       .col-md-3
         = f.input :request_from, as: :radio_buttons, collection: {"Manufacture" => "M", "Store" => "S"}, wrapper: :append, wrapper_html: {class: "col-md-12"}, disabled: ("M" if @ticket_spare_part.ticket.cus_chargeable or @ticket_spare_part.ticket.warranty_type.code == "NW" or @ticket_spare_part.ticket.warranty_type.code == "UW"), checked: ("S" if @ticket_spare_part.ticket.cus_chargeable or @ticket_spare_part.ticket.warranty_type.code == "NW" or @ticket_spare_part.ticket.warranty_type.code == "UW")
 
-        = link_to "select", inventory_in_modal_inventories_path(select_frame: "request_from"), remote: true
+        = link_to "select", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true, class: "hide"
 
         .request_from
 
       .col-md-3
-        = label_tag "Part of main product"
-        = check_box_tag :part_of_main_product
-        = link_to "select", inventory_in_modal_inventories_path(select_frame: "main_product"), remote: true
+        .part.hide
+          = label_tag "Part of main product"
+          = check_box_tag :part_of_main_product
+        = link_to "select", inventory_in_modal_inventories_path(select_frame: "main_product"), id: "part_of_main_product_select", remote: true, class: "hide"
 
         .main_product
 
