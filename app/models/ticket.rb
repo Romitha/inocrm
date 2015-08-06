@@ -72,6 +72,9 @@ class Ticket < ActiveRecord::Base
   has_many :ticket_estimations, foreign_key: :ticket_id
   accepts_nested_attributes_for :ticket_estimations, allow_destroy: true
 
+  has_many :ticket_estimation_parts, foreign_key: :ticket_estimation_id
+  accepts_nested_attributes_for :ticket_estimation_parts, allow_destroy: true
+
   has_many :ticket_estimation_externals, foreign_key: :ticket_id
 
   validates_presence_of [:ticket_no, :priority, :status_id, :problem_description, :informed_method_id, :job_type_id, :ticket_type_id, :warranty_type_id, :base_currency_id, :problem_category_id]

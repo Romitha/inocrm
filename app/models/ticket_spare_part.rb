@@ -2,6 +2,7 @@ class TicketSparePart < ActiveRecord::Base
   self.table_name = "spt_ticket_spare_part"
 
   belongs_to :ticket
+  accepts_nested_attributes_for :ticket, allow_destroy: true
 
   has_one :ticket_spare_part_store, foreign_key: :spare_part_id
 

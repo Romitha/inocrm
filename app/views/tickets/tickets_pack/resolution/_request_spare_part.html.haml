@@ -9,6 +9,11 @@
     = f.input :ticket_id, as: :hidden
     = f.input :status_action_id, as: :hidden, input_html: {value: SparePartStatusAction.find_by_code("RQT").id}
     = f.input :status_use_id, as: :hidden, input_html: {value: SparePartStatusUse.find_by_code("NAP").id}
+    = hidden_field_tag :store_id
+    = hidden_field_tag :mst_store_id
+    = hidden_field_tag :inv_product_id
+    = hidden_field_tag :mst_inv_product_id
+
     - if ticket.ticket_type.code == 'OS'
       .row
         = f.association :ticket_fsr, collection: ticket.ticket_fsrs.map{|tf| [tf.id, tf.id]}#, wrapper_html: {class: "col-md-3"}, label: "FSR No"
@@ -16,8 +21,12 @@
       = f.input :spare_part_no, wrapper_html: {class: "col-md-3"}, required: true
     .row
       = f.input :spare_part_description, wrapper_html: {class: "col-md-3"}, label: "Part Description", input_html: {class: "typeahead", autocomplete: "off", spellcheck: "false"}, placeholder: "Part number", required: true
-
-      = f.input :cus_chargeable_part, as: :boolean, checked_value: true, unchecked_value: false, wrapper: :append, wrapper_html: {class: "col-md-3"}, input_html: {checked: (true if(@ticket_spare_part.ticket.cus_chargeable or @ticket_spare_part.ticket.warranty_type.code == "NW" or @ticket_spare_part.ticket.warranty_type.code == "UW")), disabled: (true if @ticket_spare_part.ticket.cus_chargeable or @ticket_spare_part.ticket.warranty_type.code == "NW" or @ticket_spare_part.ticket.warranty_type.code == "UW")}
+      %div.col-md-3{class: "#{('hide' if @ticket_spare_part.ticket.cus_chargeable or @ticket_spare_part.ticket.warranty_type.code == 'NW' or @ticket_spare_part.ticket.warranty_type.code == 'UW')}"}
+        = f.input :cus_chargeable_part, as: :boolean, checked_value: true, unchecked_value: false, wrapper: :append, wrapper_html: {class: "col-md-3"}, input_html: {checked: (true if(@ticket_spare_part.ticket.cus_chargeable or @ticket_spare_part.ticket.warranty_type.code == "NW" or @ticket_spare_part.ticket.warranty_type.code == "UW"))}
+      - if @ticket_spare_part.ticket.cus_chargeable or @ticket_spare_part.ticket.warranty_type.code == 'NW' or @ticket_spare_part.ticket.warranty_type.code == 'UW'
+        .col-md-3
+          = label_tag "Customer chargeable"
+          = check_box_tag :cus_chargeable_part, nil, true, disabled: true
 
       .col-md-3
         = f.input :request_from, as: :radio_buttons, collection: {"Manufacture" => "M", "Store" => "S"}, wrapper: :append, wrapper_html: {class: "col-md-12"}, disabled: ("M" if @ticket_spare_part.ticket.cus_chargeable or @ticket_spare_part.ticket.warranty_type.code == "NW" or @ticket_spare_part.ticket.warranty_type.code == "UW"), checked: ("S" if @ticket_spare_part.ticket.cus_chargeable or @ticket_spare_part.ticket.warranty_type.code == "NW" or @ticket_spare_part.ticket.warranty_type.code == "UW")
@@ -39,6 +48,10 @@
       = f.input :faulty_ct_no, wrapper_html: {class: "col-md-3"}, label: "Fault CT No"
     .row
       = f.input :note, wrapper_html: {class: "col-md-6"}, label: "Note"
+    .row
+      = f.simple_fields_for :ticket do |ft|
+        = ft.input :remarks, wrapper_html: {class: "col-md-12"}, input_html: {value: nil}
+        = simple_format ft.object.remarks
     = f.submit "Save", class: "btn btn-success"
 
 #inventory_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "inventory_modal", "aria-hidden" => true}

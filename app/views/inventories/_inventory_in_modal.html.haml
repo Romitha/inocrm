@@ -7,31 +7,31 @@
     = form_tag search_inventories_inventories_path, remote: true, method: :get do
       .store
         = label_tag "Store"
-        = select_tag "search_inventory[store_id]", options_from_collection_for_select(Organization.stores, :id, :name), include_blank: true
+        = select_tag "search_inventory[store_id]", options_from_collection_for_select(Organization.stores, :id, :name, (params[:search_inventory] and params[:search_inventory][:store_id])), include_blank: true
       .brand
         = label_tag InventoryCategoryCaption.first.caption
-        = select_tag "search_inventory[brand]", options_from_collection_for_select(InventoryCategory1.all, :id, :name), include_blank: true
+        = select_tag "search_inventory[brand]", options_from_collection_for_select(InventoryCategory1.all, :id, :name, (params[:search_inventory] and params[:search_inventory][:brand])), include_blank: true
       .product
         = label_tag InventoryCategoryCaption.second.caption
-        = select_tag "search_inventory[product]", option_groups_from_collection_for_select(InventoryCategory1.all, :inventory_category2s, :name, :id, :name), include_blank: true
+        = select_tag "search_inventory[product]", option_groups_from_collection_for_select(InventoryCategory1.all, :inventory_category2s, :name, :id, :name, (params[:search_inventory] and params[:search_inventory][:product])), include_blank: true
       .category
         = label_tag InventoryCategoryCaption.third.caption
-        = select_tag "search_inventory[mst_inv_product][category3_id]", option_groups_from_collection_for_select(InventoryCategory2.all, :inventory_category3s, :name, :id, :name), include_blank: true
+        = select_tag "search_inventory[mst_inv_product][category3_id]", option_groups_from_collection_for_select(InventoryCategory2.all, :inventory_category3s, :name, :id, :name, (params[:search_inventory] and params[:search_inventory][:mst_inv_product][:category3_id])), include_blank: true
       .serial_code
         = label_tag "Serial Code"
-        = text_field_tag "search_inventory[mst_inv_product][serial_no]"
+        = text_field_tag "search_inventory[mst_inv_product][serial_no]", (params[:search_inventory] and params[:search_inventory][:mst_inv_product][:serial_no])
       .part_no
         = label_tag "Part No"
-        = text_field_tag "search_inventory[mst_inv_product][spare_part_no]"
+        = text_field_tag "search_inventory[mst_inv_product][spare_part_no]", (params[:search_inventory] and params[:search_inventory][:mst_inv_product][:spare_part_no])
       .model_no
         = label_tag "Model No"
-        = text_field_tag "search_inventory[mst_inv_product][model_no]"
+        = text_field_tag "search_inventory[mst_inv_product][model_no]", (params[:search_inventory] and params[:search_inventory][:mst_inv_product][:model_no])
       .description
         = label_tag "Description"
-        = text_field_tag "search_inventory[mst_inv_product][description]"
+        = text_field_tag "search_inventory[mst_inv_product][description]", (params[:search_inventory] and params[:search_inventory][:mst_inv_product][:description])
       .product_no
         = label_tag "Product No"
-        = text_field_tag "search_inventory[mst_inv_product][product_no]"
+        = text_field_tag "search_inventory[mst_inv_product][product_no]", (params[:search_inventory] and params[:search_inventory][:mst_inv_product][:product_no])
       .search
         = submit_tag "Search"
 
