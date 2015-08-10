@@ -43,9 +43,9 @@
           %option{:value => "terminate_job"} Terminate Job
         - if present_of_start_ticket_action
           %option{:value => "action_taken"} Action Taken
-        / - if present_of_start_ticket_action and not ticket.job_finished and  ticket.ticket_repair_type.code == "IN" and (ticket.ticket_type.code == 'OS' ? ticket.ticket_fsrs.any? : true)
-        %option{:value => "request_spare_part"} Request Spare Part
-        - if ticket.ticket_spare_parts.present?
+        - if present_of_start_ticket_action and not ticket.job_finished and  ticket.ticket_repair_type.code == "IN" and (ticket.ticket_type.code == 'OS' ? ticket.ticket_fsrs.any? : true)
+          %option{:value => "request_spare_part"} Request Spare Part
+        - if present_of_start_ticket_action and not ticket.job_finished
           %option{:value => "request_on_loan_spare_part"} Request On Loan Spare Part
         - if present_of_start_ticket_action
           %option{:value => "hp_case_id"} HP Case Action
