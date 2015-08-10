@@ -2,33 +2,28 @@
   $("#inventory_modal").modal('hide');
 
   - @content_for = capture do
-    %table
-      %thead
-        %tr
-          %th Store
-          %th Item Code
-          %th Item Description
-          %th Model No
-          %th Product No
-          %th Part No
-          %th Available Qnty
-
-      %tbody
-        %tr
-          %td
-            = @inventory.organization.name
-          %td
-            = @inventory.inventory_product.serial_no
-          %td
-            = @inventory.inventory_product.description
-          %td
-            = @inventory.inventory_product.model_no
-          %td
-            = @inventory.inventory_product.product_no
-          %td
-            = @inventory.inventory_product.spare_part_no
-          %td
-            = @inventory.available_quantity
+    %dl.dl-horizontal
+      %dt Store
+      %dd
+        = @inventory.organization.name
+      %dt Item Code
+      %dd
+        = @inventory.inventory_product.serial_no
+      %dt Item Description
+      %dd
+        = @inventory.inventory_product.description
+      %dt Model No
+      %dd
+        = @inventory.inventory_product.model_no
+      %dt Product No
+      %dd
+        = @inventory.inventory_product.product_no
+      %dt Part No
+      %dd
+        = @inventory.inventory_product.spare_part_no
+      %dt Available Qnty
+      %dd
+        = @inventory.available_quantity
 
 
   $(".#{session[:select_frame]}").html('#{j @content_for}');
