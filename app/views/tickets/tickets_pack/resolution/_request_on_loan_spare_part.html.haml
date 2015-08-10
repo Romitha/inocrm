@@ -1,43 +1,34 @@
 %fieldset
   %legend Request On Loan Spare Part
-  .row
-    .col-md-6
-      .form-group
-        %label.col-sm-4.control-label Spare Part No
-        .col-sm-5
-          .dropdown
-          %button#dropdownMenu1.btn.btn-default.dropdown-toggle{"aria-expanded" => "true", "aria-haspopup" => "true", "data-toggle" => "dropdown", :type => "button"}
-            Dropdown
-            %span.caret
-          %ul.dropdown-menu{"aria-labelledby" => "dropdownMenu1"}
-            %li
-              %a{:href => "#"} xxxxxxxxxx
-            %li
-              %a{:href => "#"} xxxxxxxxxx
-            %li
-              %a{:href => "#"} xxxxxxxxxx
-            %li
-              %a{:href => "#"} xxxxxxxxxx
-    .col-md-6
-      Store : xxxxxxxx
-      %br
-      Item Code : xxxxxxxx
-  %br
-  .row
-    .col-md-6
-      %strong Part Description : xxxxxxxx
-    .col-md-6
-      Item Description : xxxxxxxx
-  .row
-    .col-md-6
-      .form-group
-        %label.col-sm-4.control-label Note
-        .col-sm-7
-          %textarea.form-control{:rows => "2"}
-    .col-md-6
-      Model No : xxxxxxxx
-      Product No : xxxxxxxx
-      Part No : xxxxxxxx
-      %br
-      Available Qunt : xxxxxxxx
-      Unit : xxxxxxxx
+  = simple_nested_form_for @ticket_on_loan_spare_part, url: update_request_on_loan_spare_part_ticket_path(ticket), method: :post do |f|
+
+    = hidden_field_tag :process_id, session[:process_id]
+    = hidden_field_tag :task_id, session[:task_id]
+    = hidden_field_tag :owner, session[:owner]
+
+    = f.input :ticket_id, as: :hidden
+    = f.input :status_action_id, as: :hidden, input_html: {value: SparePartStatusAction.find_by_code("RQT").id}
+    = f.input :status_use_id, as: :hidden, input_html: {value: SparePartStatusUse.find_by_code("NAP").id}
+
+    = f.input :store_id, as: :hidden
+    = hidden_field_tag :mst_store_id
+    = f.input :inv_product_id, as: :hidden
+    = f.input :main_inv_product_id, as: :hidden
+
+    = f.association :ticket_spare_part, collection: ticket.ticket_spare_parts.map{|tsp| [tsp.spare_part_no, tsp.id]}
+    .ticket_spare_part_description_wrapper
+      - @ticket_on_loan_spare_part.ticket.ticket_spare_parts.each do |ticket_spare_part|
+        %div{class: "ticket_spare_part_#{ticket_spare_part.id} hide ticket_spare_part_description"}
+          = ticket_spare_part.spare_part_description
+    = f.input :note
+    .spare_part_select
+      = link_to "select", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true
+      .request_from
+      = f.input :part_of_main_product, as: :boolean, checked_value: true, unchecked_value: false
+      = link_to "select", inventory_in_modal_inventories_path(select_frame: "main_product"), id: "part_of_main_product_select", remote: true
+      .main_product
+      = f.submit "Save", class: "btn btn-success"
+
+#inventory_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "inventory_modal", "aria-hidden" => true}
+  .modal-dialog.modal-lg
+    .modal-content
