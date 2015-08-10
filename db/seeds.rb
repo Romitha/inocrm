@@ -224,3 +224,68 @@ end
     ["RJS", "Reject Store Request", "0", "3", "5", "3"],
     ["RBN", "Ready to Bundle", "9", "0", "0", "0"]
   ].each{ |t| SparePartStatusAction.create_with(name: t[1], manufacture_type_index: t[2], store_nc_type_index: t[3], store_ch_type_index: t[4], on_loan_type_index: t[5]).find_or_create_by(code: t[0])}
+
+  {
+    1 => {store_nc_type_index: 0, on_loan_type_index: 0},
+    5 => {store_nc_type_index: 3, on_loan_type_index: 3},
+    6 => {store_nc_type_index: 4, on_loan_type_index: 4},
+    7 => {store_nc_type_index: 5, on_loan_type_index: 5},
+    8 => {store_nc_type_index: 6, on_loan_type_index: 6},
+    9 => {store_nc_type_index: 6, on_loan_type_index: 6},
+    11 => {store_nc_type_index: 8, on_loan_type_index: 8},
+    14 => {store_nc_type_index: 2, on_loan_type_index: 2},
+    15 => {store_nc_type_index: 2, on_loan_type_index: 2},
+    16 => {store_nc_type_index: 2, on_loan_type_index: 2}
+  }.each do |k, v|
+    SparePartStatusAction.find(k).update(v)
+  end
+
+  WorkflowMapping
+  workflow_mappings = [
+    ["SPPT", "add_ticket", "/tickets/edit-ticket", "SPT_SC_1", "Support - Edit Ticket", "h1", "ticket_id,supp_hd_user",nil],
+    ["SPPT", "assign_ticket", "/tickets/assign-ticket", "SPT_SC_2", "Support - Assign Ticket", "h1", "ticket_id", nil],
+    ["SPPT", "resolution", "/tickets/resolution", "SPT_SC_3", "Support - Resolution", "h1", "ticket_id,supp_engr_user", nil],
+    ["SPPT", "pop_approval", "/tickets/pop-approval", "SPT_SC_5", "Support - POP Approval", "h1", "ticket_id", nil],
+    ["SPPT", "edit_serial_no", "", "SPT_SC_6", "Support - Edit Serial No", "h1", "ticket_id", nil],
+    ["SPPT", "job_estimate", "", "SPT_SC_7", "Support - Job Estimation", "h1", "ticket_id", nil],
+    ["SPPT", "mark_delivered_colleted", "", "SPT_SC_8", "Support - Units To Be Delivered or Colleced for External Repaire", "h1", "ticket_id,deliver_unit_id", nil],
+    ["SPPT_MFR_PART_REQUEST", "order_part", "", "SPT_SC_9", "Support - Order Part (Manufacture)", "h3", "ticket_id,request_spare_part_id,supp_engr_user", nil],
+    ["SPPT_MFR_PART_REQUEST", "receive_Issue_part", "", "SPT_SC_10", "Support - Receive or Issue Part (Manufacture)", "h3", "ticket_id,request_spare_part_id,supp_engr_user", nil],
+    ["SPPT_MFR_PART_RETURN", "return_manufacture_part", "", "SPT_SC_11", "Support - Return Part (Manufacture)", "h3", "ticket_id,request_spare_part_id,supp_engr_user", nil],
+    ["SPPT", "extend_warranty", "", "SPT_SC_12", "Support - Extend Warranty", "h1", "ticket_id", nil],
+    ["SPPT", "approve_close_ticket", "", "SPT_SC_13", "Support - Ticket Close Approval", "h1", "ticket_id,supp_engr_user", nil],
+    ["SPPT", "customer_feedback", "", "SPT_SC_14", "Support - Customer Feedback", "h1", "ticket_id,supp_engr_user", nil],
+    ["SPPT_PART_ESTIMATE", "part_estimate", "", "SPT_SC_15", "Support - Part Estimation (Store)", "h2", "ticket_id,part_estimation_id,supp_engr_user", nil],
+    ["SPPT_STORE_PART_REQUEST", "approve_store_part", "", "SPT_SC_16", "Support - Part Approval (Store)", "h2", "ticket_id,request_spare_part_id,request_onloan_spare_part_id,onloan_request,supp_engr_user", nil],
+    ["SPPT_STORE_PART_REQUEST", "issue_store_part", "", "SPT_SC_17", "Support - Issue Part (Store)", "h2", "ticket_id,request_spare_part_id,request_onloan_spare_part_id,onloan_request,supp_engr_user", nil],
+    ["SPPT_STORE_PART_RETURN", "return_store_part", "", "SPT_SC_18", "Support - Return Part (Store)", "h2", "ticket_id,request_spare_part_id,request_onloan_spare_part_id,onloan_request", nil],
+    ["SPPT", "approve_job_estimate", "", "SPT_SC_19", "Support - Job Estimation Approval", "h1", "ticket_id", nil],
+    ["SPPT_PART_ESTIMATE", "approve_part_estimate", "", "SPT_SC_20", "Support - Part Estimation Approval (Store)", "h2", "ticket_id,part_estimation_id,supp_engr_user", nil],
+    ["SPPT_MFR_PART_RETURN", "bundle_return_part", "", "SPT_SC_21", "Support - Return Parts To Be Bundled", nil, "ticket_id,request_spare_part_id", nil],
+    ["SPPT_MFR_PART_RETURN", "bundle_deliver", "", "SPT_SC_22", "Support - Return Parts Bundles To Be Delivered", nil, "bundle_id", nil],
+    ["SPPT_MFR_PART_REQUEST", "collect_part", "", "SPT_SC_23", "Support - Manufacture parts to be collected", nil, "ticket_id,request_spare_part_id", nil],
+    ["SPPT", "issue_customer_terminate", "", "SPT_SC_24", "Support - Terminated Job Return To Custormer", "h1", "ticket_id", nil],
+    ["SPPT", "customer_advance_payment", "", "SPT_SC_27", "", nil, nil, nil],
+    ["SPPT", "quality_control", "", "SPT_SC_28", "Support - Quality Control", "h1", "ticket_id,supp_engr_user", nil],
+    ["SPPT", "invoice_advance_payment", "", "SPT_SC_29", "Support - Advance Payment Invoice", "h1", "ticket_id,advance_payment_estimation_id", nil],
+    ["SPPT_MFR_PART_RETURN", "close_event", "", "SPT_SC_30", "Support - Close Event", "h1", "ticket_id,request_spare_part_id", nil],
+    ["SPPT", "approve_foc", "", "SPT_SC_31", "Support - FOC Approval", "h1", "ticket_id", nil],
+    ["SPPT", "final_job_estimate", "", "SPT_SC_33", "Support - Final Job Estimation", "h1", "ticket_id", nil]
+  ].each{ |t| WorkflowMapping.create_with(process_name: t[0], url: t[2], screen: t[3], first_header_title: t[4],second_header_title_name: t[5], input_variables: t[6], output_variables: t[7]).find_or_create_by(task_name: t[1])}
+
+  WorkflowMapping.find(7).update(second_header_title_name: "h1")
+
+  Inventory
+  mst_inv_category_caption = [
+    [1, "Brand", 2],
+    [2, "Product", 2],
+    [3, "Category", 2]
+  ].each{ |t| InventoryCategoryCaption.create_with(caption: t[1], code_length: t[2]).find_or_create_by(level: t[0])}
+
+  {
+      1 => {code_length: 2},
+      2 => {code_length: 2},
+      3 => {code_length: 2}
+    }.each do |k, v|
+      InventoryCategoryCaption.find(k).update(v)
+    end
