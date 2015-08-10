@@ -33,17 +33,16 @@
 
     .row
       .col-md-2
-        = f.input :cus_chargeable_part, as: :boolean, checked_value: true, unchecked_value: false, wrapper: :append, wrapper_html: {class: "col-md-12"}, input_html: {checked: (true if(@ticket_spare_part.ticket.cus_chargeable or @ticket_spare_part.ticket.warranty_type.code == "NW" or @ticket_spare_part.ticket.warranty_type.code == "UW"))}
+        = f.input :cus_chargeable_part, as: :boolean, checked_value: true, unchecked_value: false, wrapper: :append,wrapper_html: {class: "col-md-12"}, input_html: {checked: (true if(@ticket_spare_part.ticket.cus_chargeable or @ticket_spare_part.ticket.warranty_type.code == "NW" or @ticket_spare_part.ticket.warranty_type.code == "UW"))}
         - if @ticket_spare_part.ticket.cus_chargeable or @ticket_spare_part.ticket.warranty_type.code == 'NW' or @ticket_spare_part.ticket.warranty_type.code == 'UW'
           .col-md-3
             = label_tag "Customer chargeable"
             = check_box_tag :cus_chargeable_part, nil, true, disabled: true
 
       .col-md-5
-        .row
-          = f.input :request_from, as: :radio_buttons, collection: {"Manufacture" => "M", "Store" => "S"}, wrapper: :append, wrapper_html: {class: "col-md-12"}, disabled: ("M" if @ticket_spare_part.ticket.cus_chargeable or @ticket_spare_part.ticket.warranty_type.code == "NW" or @ticket_spare_part.ticket.warranty_type.code == "UW"), checked: ("S" if @ticket_spare_part.ticket.cus_chargeable or @ticket_spare_part.ticket.warranty_type.code == "NW" or @ticket_spare_part.ticket.warranty_type.code == "UW")
-
-        = link_to "select", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true, class: "hide"
+        = f.input :request_from, as: :radio_buttons, collection: {"Manufacture" => "M", "Store" => "S"}, wrapper: :append, disabled: ("M" if @ticket_spare_part.ticket.cus_chargeable or @ticket_spare_part.ticket.warranty_type.code == "NW" or @ticket_spare_part.ticket.warranty_type.code == "UW"), checked: ("S" if @ticket_spare_part.ticket.cus_chargeable or @ticket_spare_part.ticket.warranty_type.code == "NW" or @ticket_spare_part.ticket.warranty_type.code == "UW"), wrapper_html: {class: "col-md-5 padding-left0"}
+        .spare_part_select
+          = link_to "select", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true, class: "hide"
 
         .request_from
 
@@ -53,18 +52,17 @@
           = label_tag "Part of main product"
           %br
           = check_box_tag :part_of_main_product
-          %br
           = link_to "select", inventory_in_modal_inventories_path(select_frame: "main_product"), id: "part_of_main_product_select", remote: true, class: "hide"
 
         .main_product
 
     %br
-    .row.col-md-12
-      .col-md-6{style: "margin-top:1;"}
-        = f.input :note, label: "Note"
+    .row
+      .col-md-6{style: "margin-top:9px;"}
+        = f.input :note, label: "Note",wrapper_html: {class: "col-md-12"}
       .col-md-6
         = f.simple_fields_for :ticket do |ft|
-          = ft.input :remarks, input_html: {value: nil}
+          = ft.input :remarks, input_html: {value: nil},wrapper_html: {class: "col-md-12"}
           = simple_format ft.object.remarks
     .row.col-md-12
       .col-md-3
@@ -73,3 +71,5 @@
 #inventory_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "inventory_modal", "aria-hidden" => true}
   .modal-dialog.modal-lg
     .modal-content
+
+/ {style: "margin-top:1;"}
