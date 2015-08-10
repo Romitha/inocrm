@@ -92,6 +92,8 @@ class TicketOnLoanSparePart < ActiveRecord::Base
 
   belongs_to :ticket_spare_part, foreign_key: :ref_spare_part_id
   belongs_to :ticket, foreign_key: :ticket_id
+  accepts_nested_attributes_for :ticket, allow_destroy: true
+
   belongs_to :user, foreign_key: :requested_by
   belongs_to :organization, foreign_key: :store_id
   belongs_to :inventory_product, foreign_key: :inv_product_id

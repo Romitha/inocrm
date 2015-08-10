@@ -60,17 +60,23 @@ window.Inventories =
         $(".part").removeClass("hide")
         $("#part_of_main_product_select").removeClass("hide")
 
-  disable_part: ->
-    if $("#part_of_main_product").is(":checked")
+  disable_upon_check: ->
+    part_of_main_product = $("#part_of_main_product, #ticket_on_loan_spare_part_part_of_main_product")
+    if part_of_main_product.is(":checked")
       $("#part_of_main_product_select").removeClass("hide")
-    $("#part_of_main_product").click ->
-      if $("#part_of_main_product").is(":checked")
-        $("#part_of_main_product_select").removeClass("hide")
-      else
-        $("#part_of_main_product_select").addClass("hide")
-        $("#mst_store_id").val("")
-        $("#mst_inv_product_id").val("")
-        $(".main_product").empty()
+    else
+      $("#part_of_main_product_select").addClass("hide")
+      $("#mst_store_id").val("")
+      $("#mst_inv_product_id, #ticket_on_loan_spare_part_main_inv_product_id").val("")
+      $(".main_product").empty()
+
+  disable_part: ->
+    part_of_main_product = $("#part_of_main_product, #ticket_on_loan_spare_part_part_of_main_product")
+    _this = this
+    _this.disable_upon_check()
+
+    part_of_main_product.click ->
+      _this.disable_upon_check()
 
   submit_spare_part: ->
     submit_form = $("#new_ticket_spare_part")
@@ -99,6 +105,7 @@ window.Inventories =
         submit_form.submit()
 
   submit_on_loan_spare_part: ->
+    @disable_part()
     submit_form = $("#new_ticket_on_loan_spare_part")
 
     $("input[type='submit']", submit_form).click (e)->
