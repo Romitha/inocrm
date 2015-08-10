@@ -5,7 +5,6 @@ window.Tickets =
     @prevent_enter()
     @description_more()
     @initial_loaders()
-    # @regional_support_job_active()
     @pass_to_re_correction()
     @pass_to_re_correction_trigger()
     @filter_sbu_engineer()
@@ -379,3 +378,12 @@ window.Tickets =
         },
           name: 'state'
           source: states
+
+  display_description_ticket_on_load_spare_part: ->
+    $("#ticket_on_loan_spare_part_ref_spare_part_id").change ->
+      ticket_spare_part_id = $(@).val()
+      if ticket_spare_part_id
+        $(".ticket_spare_part_#{ticket_spare_part_id}").removeClass("hide").siblings().addClass("hide")
+      else
+        $(".ticket_spare_part_description").each ->
+          $(@).addClass("hide")

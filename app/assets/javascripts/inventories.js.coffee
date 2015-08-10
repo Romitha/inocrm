@@ -97,3 +97,26 @@ window.Inventories =
 
       else
         submit_form.submit()
+
+  submit_on_loan_spare_part: ->
+    submit_form = $("#new_ticket_on_loan_spare_part")
+
+    $("input[type='submit']", submit_form).click (e)->
+      e.preventDefault()
+      spare_part_no = $("input[name='ticket_spare_part[spare_part_no]']", submit_form)
+      spare_part_description = $("input[name='ticket_spare_part[spare_part_description]']", submit_form)
+      request_from = $("input[name='ticket_spare_part[request_from]']:checked", submit_form)
+      part_of_main_product = $("input[name='ticket_on_loan_spare_part[part_of_main_product]']:checked", submit_form)
+
+
+      if $("input[name='ticket_on_loan_spare_part[store_id]']", submit_form).val() == ""
+        alert "Please select store"
+
+      else if part_of_main_product.val() and $("input[name='mst_store_id']", submit_form).val() == ""
+        alert "Please select main product store"
+
+      else if $("input[name='mst_store_id']", submit_form).val() and ( !$("input[name='ticket_on_loan_spare_part[store_id]']", submit_form).val() or ($("input[name='ticket_on_loan_spare_part[store_id]']", submit_form).val() != $("input[name='mst_store_id']", submit_form).val()))
+        alert "Please select same store for the main product!"
+
+      else
+        submit_form.submit()

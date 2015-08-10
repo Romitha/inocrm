@@ -1153,6 +1153,13 @@ class TicketsController < ApplicationController
       session[:mst_inv_product_id] = nil
 
       @ticket_spare_part = @ticket.ticket_spare_parts.build
+    when "request_on_loan_spare_part"
+      session[:store_id] = nil
+      session[:inv_product_id] = nil
+      session[:mst_store_id] = nil
+      session[:mst_inv_product_id] = nil
+
+      @ticket_on_loan_spare_part = @ticket.ticket_on_loan_spare_parts.build
     end
   end
 

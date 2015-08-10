@@ -56,6 +56,9 @@ class Ticket < ActiveRecord::Base
   has_many :ticket_spare_parts
   accepts_nested_attributes_for :ticket_spare_parts, allow_destroy: true
 
+  has_many :ticket_on_loan_spare_parts
+  accepts_nested_attributes_for :ticket_on_loan_spare_parts, allow_destroy: true
+
   belongs_to :ticket_start_action, foreign_key: :job_started_action_id
   belongs_to :ticket_repair_type, foreign_key: :repair_type_id
   belongs_to :reason, foreign_key: :hold_reason_id
