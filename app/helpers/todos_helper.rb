@@ -40,7 +40,8 @@ module TodosHelper
       # "lk.inova:INOCRM:0.0.7"
       # "lk.inova:INOCRM:0.0.8"
       # "lk.inova:INOCRM:0.0.9"
-      "lk.inova:INOCRM:0.0.0.1"
+      # "lk.inova:INOCRM:0.0.0.1"
+      "lk.inova:INOCRM:0.0.0.3"
     end
 
     def base_url

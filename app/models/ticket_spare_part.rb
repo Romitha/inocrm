@@ -84,3 +84,10 @@ class TicketSparePartStatusAction < ActiveRecord::Base
   has_many :ticket_spare_part, foreign_key: :status_use_id
   belongs_to :spare_part_status_action, foreign_key: :status_id
 end
+
+class TicketOnLoanSparePart < ActiveRecord::Base
+  self.table_name = "spt_ticket_on_loan_spare_part"
+
+  belongs_to :ticket_spare_part, foreign_key: :ref_spare_part_id
+  belongs_to :ticket, foreign_key: :ticket_id
+end
