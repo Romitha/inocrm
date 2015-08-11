@@ -2007,12 +2007,15 @@ class TicketsController < ApplicationController
     end
 
     def ticket_spare_part_params
-    params.require(:ticket_spare_part).permit(:spare_part_no,
-    :spare_part_description, :ticket_id, :ticket_fsr, :cus_chargeable_part,
-    :request_from, :faulty_serial_no, :faulty_ct_no, :note, :status_action_id,
-    :status_use_id, ticket_attributes: [:remarks, :id]) end
+      params.require(:ticket_spare_part).permit(:spare_part_no, :spare_part_description, :ticket_id, :ticket_fsr, :cus_chargeable_part, :request_from, :faulty_serial_no, :faulty_ct_no, :note, :status_action_id, :status_use_id, ticket_attributes: [:remarks, :id])
+    end
+
+    def ticket_on_loan_spare_part_params
+      params.require(:ticket_on_loan_spare_part).permit(:ref_spare_part_id, :note, :ticket_id, :status_action_id, :status_use_id, :store_id, :inv_product_id, :main_inv_product_id, :part_of_main_product, ticket_attributes: [:remarks, :id])
+    end
 
     def ticket_bpm_headers(process_id, ticket_id, spare_part_id)
+      TicketSparePart
 
       @ticket = Ticket.find_by_id(ticket_id)
 
@@ -2022,7 +2025,7 @@ class TicketsController < ApplicationController
 
         customer_name = "#{@ticket.customer.name}".truncate(23)
 
-        terminated = @ticket.terminated ? "[Terminated]" : ""
+        terminated = @ticket.ticket_terminated ? "[Terminated]" : ""
 
         re_open = @ticket.re_open_count > 0 ? "[Re-Open]" : ""
 
