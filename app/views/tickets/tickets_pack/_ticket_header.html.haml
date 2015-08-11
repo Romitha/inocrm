@@ -10,7 +10,7 @@
           .btn.btn-xs.btn-primary
             RE-OPEN
             %span.badge= ticket.re_open_count.to_i
-        - if ticket.terminated
+        - if ticket.ticket_terminated
           .label.label-danger TERMINATED
       .col-md-2.small_scale_padding-top8
         %strong Sereial No: #{product.serial_no }
