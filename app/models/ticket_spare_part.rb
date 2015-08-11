@@ -101,6 +101,8 @@ class TicketOnLoanSparePart < ActiveRecord::Base
 
   has_many :ticket_on_loan_spare_part_status_actions, foreign_key: :on_loan_spare_part_id
   accepts_nested_attributes_for :ticket_on_loan_spare_part_status_actions, allow_destroy: true
+
+  has_many :request_on_loan_spare_parts, foreign_key: :ticket_on_loan_spare_part_id
 end
 
 class TicketOnLoanSparePartStatusAction < ActiveRecord::Base

@@ -62,6 +62,9 @@ class UserTicketAction < ActiveRecord::Base
 
   has_one :request_spare_part, foreign_key: :ticket_action_id
   accepts_nested_attributes_for :request_spare_part, allow_destroy: true
+
+  has_one :request_on_loan_spare_part, foreign_key: :ticket_action_id
+  accepts_nested_attributes_for :request_on_loan_spare_part, allow_destroy: true
 end
 
 class UserAssignTicketAction < ActiveRecord::Base
@@ -177,5 +180,14 @@ class RequestSparePart < ActiveRecord::Base
   belongs_to :user_ticket_action, foreign_key: :ticket_action_id
 
   belongs_to :ticket_spare_part
+
+end
+
+class RequestOnLoanSparePart < ActiveRecord::Base
+  self.table_name = "spt_act_request_on_loan_spare_part"
+
+  belongs_to :user_ticket_action, foreign_key: :ticket_action_id
+
+  belongs_to :ticket_on_loan_spare_part, foreign_key: :ticket_on_loan_spare_part_id
 
 end
