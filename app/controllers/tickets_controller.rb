@@ -1834,7 +1834,7 @@ class TicketsController < ApplicationController
           @ticket_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code("RQT").id if @ticket_spare_part.cus_chargeable_part
           action_id = TaskAction.find_by_action_no(15).id
 
-          @ticket_spare_part_store = @ticket_spare_part.create_ticket_spare_part_store(store_id: params[:store_id], inv_product_id: params[:inv_product_id], mst_inv_product_id: params[:mst_inv_product_id], estimation_required: @ticket_spare_part.cus_chargeable_part, part_of_main_product: params[:part_of_main_product], store_requested: !@ticket_spare_part.cus_chargeable_part, store_requested_at: ( !@ticket_spare_part.cus_chargeable_part ? DateTime.now : nil), store_requested_by: ( !@ticket_spare_part.cus_chargeable_part ? current_user.id : nil))
+          @ticket_spare_part_store = @ticket_spare_part.create_ticket_spare_part_store(store_id: params[:store_id], inv_product_id: params[:inv_product_id], mst_inv_product_id: params[:mst_inv_product_id], estimation_required: @ticket_spare_part.cus_chargeable_part, part_of_main_product: (params[:part_of_main_product] || 0), store_requested: !@ticket_spare_part.cus_chargeable_part, store_requested_at: ( !@ticket_spare_part.cus_chargeable_part ? DateTime.now : nil), store_requested_by: ( !@ticket_spare_part.cus_chargeable_part ? current_user.id : nil))
         end
         @ticket_spare_part.ticket_spare_part_status_actions.create(status_id: @ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
 
@@ -1930,14 +1930,30 @@ class TicketsController < ApplicationController
   end
 
   def update_request_on_loan_spare_part
-    t_params = ticket_params
-    t_params["remarks"] = t_params["remarks"].present? ? "#{t_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
-    @redirect_url = todos_url
-    @flash_message = "Update Request On Loan Spare Part."
-    if @ticket.update t_params
-      redirect_to @redirect_url, notice: @flash_message
-    else
+    
+    TaskAction
+    WorkflowMapping
+    continue = true
 
+    # ticket_id, process_id, task_id should not be null
+    # http://0.0.0.0:3000/tickets/assign-ticket?ticket_id=2&process_id=212&owner=supp_mgr&task_id=191
+    if params[:task_id] and params[:process_id] and params[:owner]
+
+      bpm_response = view_context.send_request_process_data process_history: true, process_instance_id: params[:process_id], variable_id: "ticket_id"
+
+      if bpm_response[:status].upcase == "ERROR"
+        continue = false
+        @flash_message = "Bpm error."
+      end
+
+    else
+      continue = false
+    end
+
+    if continue
+      f_ticket_on_loan_spare_part_params = ticket_on_loan_spare_part_params
+      f_ticket_on_loan_spare_part_params[:ticket_attributes][:remarks] = f_ticket_on_loan_spare_part_params[:ticket_attributes][:remarks].present? ? "#{f_ticket_on_loan_spare_part_params[:ticket_attributes][:remarks]} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
+      @ticket_spare_part = TicketOnLoanSparePart.new f_ticket_on_loan_spare_part_params
     end
   end
 
