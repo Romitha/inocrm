@@ -41,24 +41,28 @@ window.Inventories =
         $(".part").addClass("hide")
         $("#request_from_select").addClass("hide")
 
-  disable_manufacture: ->
-    $("#ticket_spare_part_request_from_m").click ->
-      if $("#ticket_spare_part_request_from_m").is(":checked")
-        $("#request_from_select").addClass("hide")
+  disable_upon_manufacture: ->
+    if $("#ticket_spare_part_request_from_m").is(":checked")
+      $("#request_from_select").addClass("hide")
 
-        $(".request_from").empty()
-        $(".main_product").empty()
-        $("#store_id").val("")
-        $("#mst_store_id").val("")
-        $("#inv_product_id").val("")
-        $("#mst_inv_product_id").val("")
-        $(".part").addClass("hide")
-        $("#part_of_main_product").attr('checked', false)
-        $("#part_of_main_product_select").addClass("hide")
-      else
-        $("#request_from_select").removeClass("hide")
-        $(".part").removeClass("hide")
-        $("#part_of_main_product_select").removeClass("hide")
+      $(".request_from").empty()
+      $(".main_product").empty()
+      $("#store_id").val("")
+      $("#mst_store_id").val("")
+      $("#inv_product_id").val("")
+      $("#mst_inv_product_id").val("")
+      $(".part").addClass("hide")
+      $("#part_of_main_product").attr('checked', false)
+      $("#part_of_main_product_select").addClass("hide")
+    else
+      $("#request_from_select").removeClass("hide")
+      $(".part").removeClass("hide")
+      $("#part_of_main_product_select").removeClass("hide")
+
+  disable_manufacture: ->
+    _this = this
+    $("#ticket_spare_part_request_from_m").click ->
+      _this.disable_upon_manufacture()
 
   disable_upon_check: ->
     part_of_main_product = $("#part_of_main_product, #ticket_on_loan_spare_part_part_of_main_product")
