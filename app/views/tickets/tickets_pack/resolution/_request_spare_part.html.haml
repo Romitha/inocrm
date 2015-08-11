@@ -33,7 +33,7 @@
 
     .row
       .col-md-2
-        = f.input :cus_chargeable_part, as: :boolean, checked_value: true, unchecked_value: false, wrapper: :append,wrapper_html: {class: "col-md-12"}, input_html: {checked: (true if(@ticket_spare_part.ticket.cus_chargeable or @ticket_spare_part.ticket.warranty_type.code == "NW" or @ticket_spare_part.ticket.warranty_type.code == "UW"))}
+        = f.input :cus_chargeable_part, as: :boolean, checked_value: true, unchecked_value: false, wrapper: :append, wrapper_html: {class: "col-md-12 #{'hide' if(@ticket_spare_part.ticket.cus_chargeable or @ticket_spare_part.ticket.warranty_type.code == 'NW' or @ticket_spare_part.ticket.warranty_type.code == 'UW')}"}, input_html: {checked: (true if(@ticket_spare_part.ticket.cus_chargeable or @ticket_spare_part.ticket.warranty_type.code == "NW" or @ticket_spare_part.ticket.warranty_type.code == "UW"))}
         - if @ticket_spare_part.ticket.cus_chargeable or @ticket_spare_part.ticket.warranty_type.code == 'NW' or @ticket_spare_part.ticket.warranty_type.code == 'UW'
           .col-md-3
             = label_tag "Customer chargeable"
@@ -62,7 +62,7 @@
         = f.input :note, label: "Note",wrapper_html: {class: "col-md-12"}
       .col-md-6
         = f.simple_fields_for :ticket do |ft|
-          = ft.input :remarks, input_html: {value: nil},wrapper_html: {class: "col-md-12"}
+          = ft.input :remarks, input_html: {value: nil},wrapper_html: {class: "col-md-12 padding0"}
           = simple_format ft.object.remarks
     .row.col-md-12
       .col-md-3
