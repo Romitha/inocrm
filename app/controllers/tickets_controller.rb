@@ -1953,8 +1953,68 @@ class TicketsController < ApplicationController
     if continue
       f_ticket_on_loan_spare_part_params = ticket_on_loan_spare_part_params
       f_ticket_on_loan_spare_part_params[:ticket_attributes][:remarks] = f_ticket_on_loan_spare_part_params[:ticket_attributes][:remarks].present? ? "#{f_ticket_on_loan_spare_part_params[:ticket_attributes][:remarks]} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
-      @ticket_spare_part = TicketOnLoanSparePart.new f_ticket_on_loan_spare_part_params
+      @ticket_on_loan_spare_part = TicketOnLoanSparePart.new f_ticket_on_loan_spare_part_params
+
+      if @ticket_on_loan_spare_part.save
+
+        action_id = TaskAction.find_by_action_no(18).id
+
+
+        @ticket_on_loan_spare_part.ticket_on_loan_spare_part_status_actions.create(status_id: @ticket_on_loan_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
+
+        @ticket_on_loan_spare_part.ticket.update_attribute :status_resolve_id, TicketStatusResolve.find_by_code("POD").id
+
+        user_ticket_action = @ticket_on_loan_spare_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket_on_loan_spare_part.ticket.re_open_count, action_id: action_id)
+        user_ticket_action.build_request_on_loan_spare_part(ticket_on_loan_spare_part_id: @ticket_on_loan_spare_part.id)
+        user_ticket_action.save
+
+
+        # bpm output variables
+
+        bpm_variables = view_context.initialize_bpm_variables.merge(supp_engr_user: current_user.id, request_onloan_spare_part_id: @ticket_on_loan_spare_part.id, onloan_request: "Y", d17_request_store_part: "Y")
+
+        @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
+
+        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+        # bpm output variables
+        ticket_id = @ticket.id
+        request_spare_part_id = "-"
+        supp_engr_user = current_user.id
+        priority = @ticket.priority
+
+        part_estimation_id = "-"
+
+        request_onloan_spare_part_id = @ticket_on_loan_spare_part.id
+        onloan_request = "Y"
+
+        # Create Process "SPPT_STORE_PART_REQUEST"
+
+        bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT_STORE_PART_REQUEST", query: {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, request_onloan_spare_part_id: request_onloan_spare_part_id, onloan_request: onloan_request, supp_engr_user: supp_engr_user, priority: priority}
+
+
+        if bpm_response1[:status].try(:upcase) == "SUCCESS"
+          @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name])
+          ticket_bpm_headers bpm_response1[:process_id], @ticket.id, ""
+        else
+          @bpm_process_error = true
+        end
+
+        if bpm_response[:status].upcase == "SUCCESS"
+          @flash_message = "Successfully updated."
+        else
+          @flash_message = "ticket is updated. but Bpm error"
+        end
+
+        @flash_message = "#{@flash_message} Unable to start new process." if @bpm_process_error
+
+      else
+        @flash_message = "Errors in updating. Please re-try."
+      end
+    else
+      @flash_message = @flash_message
     end
+    redirect_to @ticket, notice: @flash_message
   end
 
   private
