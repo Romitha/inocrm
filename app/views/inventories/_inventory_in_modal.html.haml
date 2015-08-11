@@ -35,10 +35,40 @@
         .col-md-4.product_no
           = label_tag "Product No"
           = text_field_tag "search_inventory[mst_inv_product][product_no]", (params[:search_inventory] and params[:search_inventory][:mst_inv_product][:product_no])
-      .search
-        = submit_tag "Search"
+      .row
+        .col-md-1
+          .search
+            = submit_tag "Search"
+
+
 
   - if display_results
-    - inventories.each do |inventory|
-      = inventory.inventory_product.serial_no
-      = link_to "select", inventory_in_modal_inventories_path(select_inventory: true, inventory_id: inventory.id, select_frame: session[:select_frame]), remote: true
+    %hr
+    %table.table.table-striped
+      %thead
+        %tr
+          %th Product Id
+          %th Store
+          %th Item Code
+          %th Item Description
+          %th Model No
+          %th Product No
+          %th Part No
+          %th Unit Id
+          %th Available Qnty
+      %tbody
+      - inventories.each do |inventory|
+        %tr
+          %td= inventory.inventory_product.id
+          %td= inventory.organization.name
+          %td= inventory.inventory_product.serial_no
+          %td= inventory.inventory_product.description
+          %td= inventory.inventory_product.model_no
+          %td= inventory.inventory_product.product_no
+          %td= inventory.inventory_product.spare_part_no
+          %td= inventory.inventory_product.unit_id
+          %td= inventory.available_quantity
+          %td= link_to "select", inventory_in_modal_inventories_path(select_inventory: true, inventory_id: inventory.id, select_frame: session[:select_frame]), remote: true
+
+.modal-footer
+  = link_to "Close", "#", class: "btn btn-default", "data-dismiss" => "modal"
