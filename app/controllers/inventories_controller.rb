@@ -29,10 +29,16 @@ class InventoriesController < ApplicationController
         @inventories = Inventory.includes(:inventory_product).where(parent_query.merge(mst_inv_product: mst_inv_product))
       else
         @inventories = Inventory.where(parent_query)
-        # parent_query
       end
       format.js {render :inventory_in_modal}
-      # format.js {render js: "alert('#{parent_query}');"}
     end
   end
+
+  private
+    def ticket_spare_part_params
+      t_spare_part = params.require(:ticket_spare_part).permit(:spare_part_no, :spare_part_description, :ticket_id, :ticket_fsr, :cus_chargeable_part, :request_from, :faulty_serial_no, :faulty_ct_no, :note, :status_action_id, :status_use_id, ticket_attributes: [:remarks, :id])
+      t_spare_part[:note] = t_spare_part[:note].present? ? "#{t_spare_part[:note]} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket_spare_part.note}" : @ticket_spare_part.note
+
+      t_spare_part
+    end
 end
