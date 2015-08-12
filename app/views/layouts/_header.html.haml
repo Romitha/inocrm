@@ -26,11 +26,11 @@
           = link_to "supplier", "#", id: "supplier_dropdown", class: "dropdown-toggle supplier text-hide nav-icon", data: {toggle: "dropdown", placement: "bottom"}, "aria-haspopup" => "true", "aria-expanded" => "true", title: "Supplier", rel: "tooltip"
           %ul.dropdown-menu{"aria-labelledby" => "supplier_dropdown"}
             %li{role: "presentation"}
-              = link_to root_path(category: "organization_suppliers") do
+              = link_to organizations_path(category: "organization_suppliers") do
                 %span= image_tag "organization_suppliers.png", style: "width: 12%;"
                 %span Organization Suppliers
             %li{role: "presentation"}
-              = link_to root_path(category: "individual_suppliers") do
+              = link_to organizations_path(category: "individual_suppliers") do
                 %span= image_tag "individual_supplier.png", style: "width: 12%;"
                 %span Individual Suppliers
             - if can? :new, Organization
@@ -43,7 +43,7 @@
           = link_to "Customers", "#", class: "dropdown-toggle customers text-hide nav-icon", id: "customer_dropdown", data: {toggle: "dropdown", placement: "bottom"}, title: "Customer", rel: "tooltip"
           %ul.dropdown-menu{"aria-labelledby" => "customer_dropdown"}
             %li{role: "presentation"}
-              = link_to root_path(category: "organization_customers") do
+              = link_to organizations_path(category: "organization_customers") do
                 %span= image_tag "organization_customers.png", style: "width: 12%;"
                 %span Organizaion Customers
             %li{role: "presentation"}

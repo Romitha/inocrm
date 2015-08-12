@@ -267,6 +267,18 @@ class Reason < ActiveRecord::Base
 
   has_many :act_holds
   accepts_nested_attributes_for :act_holds, allow_destroy: true
+
+  has_many :unused_reasons, class_name: "TicketSparePart", foreign_key: :unused_reason_id
+  accepts_nested_attributes_for :unused_reasons, allow_destroy: true
+
+  has_many :part_terminated_reasons, class_name: "TicketSparePart", foreign_key: :part_terminated_reason_id
+  accepts_nested_attributes_for :part_terminated_reasons, allow_destroy: true
+
+  has_many :on_loan_unused_reasons, class_name: "TicketOnLoanSparePart", foreign_key: :unused_reason_id
+  accepts_nested_attributes_for :on_loan_unused_reasons, allow_destroy: true
+
+  has_many :on_loan_part_terminated_reasons, class_name: "TicketOnLoanSparePart", foreign_key: :part_terminated_reason_id
+  accepts_nested_attributes_for :on_loan_part_terminated_reasons, allow_destroy: true
 end
 
 class TicketReAssignRequest < ActiveRecord::Base

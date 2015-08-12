@@ -1,0 +1,53 @@
+- ticket.ticket_spare_parts.each do |ticket_spare_part|
+  - if ticket_spare_part.ticket_spare_part_store
+    Requested: #{ticket_spare_part.ticket_spare_part_store.store_requested_at.try(:strftime, "%Y-%m-%d %H:%M")}
+    Request type:
+    Action Status:
+    Repair time: 
+    Part Status:
+    Return part:
+
+  - if ticket_spare_part.ticket_spare_part_manufacture
+    Requested: #{ticket_spare_part.ticket_spare_part_manufacture.payment_expected_manufacture}
+
+  Spare Part No:
+  Part Event No:
+  Store:
+  FSR No:
+  Description:
+  Part Ordered No:
+  Item Code:
+  Item Description:
+  Manufacture:
+  Received Spare Part No:
+  Model No:
+  Product No:
+  Part No:
+  Unit:
+  Faulty Serial No:
+  Faulty CT No:
+
+  = simple_form_for ticket_spare_part, url: "#" do |f|
+    = f.input :received_part_serial_no
+    = f.input :received_part_ct_no
+    = f.input :repare_start, as: :string
+    = f.input :repare_end, as: :string
+    = f.association :unused_reason
+    = f.input :return_part_serial_no
+    = f.input :return_part_ct_no
+    = f.input :note
+    = f.input :part_terminated
+    = f.association :part_terminated_reason
+
+- ticket.ticket_on_loan_spare_parts.each do |ticket_on_loan_spare_part|
+  = simple_form_for ticket_on_loan_spare_part, url: "#" do |f|
+    = f.input :return_part_serial_no
+    = f.input :return_part_ct_no
+    = f.input :repare_start, as: :string
+    = f.input :repare_end, as: :string
+    = f.association :unused_reason
+    = f.input :return_part_serial_no
+    = f.input :return_part_ct_no
+    = f.input :note
+    = f.input :part_terminated
+    = f.association :part_terminated_reason

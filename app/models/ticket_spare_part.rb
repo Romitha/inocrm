@@ -4,8 +4,6 @@ class TicketSparePart < ActiveRecord::Base
   belongs_to :ticket
   accepts_nested_attributes_for :ticket, allow_destroy: true
 
-  has_one :ticket_spare_part_store, foreign_key: :spare_part_id
-
   belongs_to :ticket_fsr, foreign_key: :fsr_id
   belongs_to :spare_part_status_action, foreign_key: :status_action_id
   belongs_to :spare_part_status_use, foreign_key: :status_id
@@ -16,7 +14,9 @@ class TicketSparePart < ActiveRecord::Base
   has_one :ticket_spare_part_manufacture, foreign_key: :spare_part_id
   has_one :ticket_spare_part_store, foreign_key: :spare_part_id
 
-  # validates_presence_of :fsr_id, :spare_part_no, :spare_part_description
+  belongs_to :unused_reason, -> { where(spare_part_unused: true) }, class_name: "Reason", foreign_key: :unused_reason_id
+
+  belongs_to :part_terminated_reason, -> { where(terminate_spare_part: true) }, class_name: "Reason", foreign_key: :part_terminated_reason_id
 end
 
 class TicketSparePartStore < ActiveRecord::Base
@@ -103,6 +103,10 @@ class TicketOnLoanSparePart < ActiveRecord::Base
   accepts_nested_attributes_for :ticket_on_loan_spare_part_status_actions, allow_destroy: true
 
   has_many :request_on_loan_spare_parts, foreign_key: :ticket_on_loan_spare_part_id
+
+  belongs_to :unused_reason, -> { where(spare_part_unused: true) }, class_name: "Reason", foreign_key: :unused_reason_id
+
+  belongs_to :part_terminated_reason, -> { where(terminate_spare_part: true) }, class_name: "Reason", foreign_key: :part_terminated_reason_id
 end
 
 class TicketOnLoanSparePartStatusAction < ActiveRecord::Base
