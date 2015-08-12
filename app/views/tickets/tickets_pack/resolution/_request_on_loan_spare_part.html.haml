@@ -16,22 +16,42 @@
     = f.input :main_inv_product_id, as: :hidden
 
     = f.association :ticket_spare_part, collection: ticket.ticket_spare_parts.map{|tsp| [tsp.spare_part_no, tsp.id]}, prompt: "Please select spare part"
-    .ticket_spare_part_description_wrapper
-      - @ticket_on_loan_spare_part.ticket.ticket_spare_parts.each do |ticket_spare_part|
-        %div{class: "ticket_spare_part_#{ticket_spare_part.id} hide ticket_spare_part_description"}
-          = ticket_spare_part.spare_part_description
-    .spare_part_select
-      = link_to "select", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true
-      .request_from
-      = f.input :part_of_main_product, as: :boolean, checked_value: true, unchecked_value: false
-      = link_to "select", inventory_in_modal_inventories_path(select_frame: "main_product"), id: "part_of_main_product_select", remote: true
-      .main_product
-    = f.input :note
-    .col-md-6
-      = f.simple_fields_for :ticket do |ft|
-        = ft.input :remarks, input_html: {value: nil}, wrapper_html: {class: "col-md-12"}
-        = simple_format ft.object.remarks
-    = f.submit "Save", class: "btn btn-success"
+    .row.col-md-12
+      .col-md-4
+        = label_tag "Request Form"
+        = link_to "select", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true
+
+      .col-md-4
+        .part.hide
+          = label_tag "Part of main product"
+          %br
+          = check_box_tag :part_of_main_product
+          = link_to "select", inventory_in_modal_inventories_path(select_frame: "main_product"), id: "part_of_main_product_select", remote: true, class: "hide"
+
+      .ticket_spare_part_description_wrapper
+        - @ticket_on_loan_spare_part.ticket.ticket_spare_parts.each do |ticket_spare_part|
+          %div{class: "ticket_spare_part_#{ticket_spare_part.id} hide ticket_spare_part_description"}
+            .col-md-4
+              %strong Description
+              = ticket_spare_part.spare_part_description
+
+    .row.col-md-12
+      .col-md-4
+        .request_from
+      .col-md-4
+        .main_product
+      .col-md-4
+
+    .row.col-md-12
+      .col-md-6{style: "margin-top:9px;"}
+        = f.input :note, label: "Note"
+      .col-md-6{style: "margin-top:9px;"}
+        = f.simple_fields_for :ticket do |ft|
+          = ft.input :remarks, input_html: {value: nil}
+          = simple_format ft.object.remarks
+    .row.col-md-12
+      .col-md-3
+        = f.submit "Save", class: "btn btn-success"
 
 #inventory_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "inventory_modal", "aria-hidden" => true}
   .modal-dialog.modal-lg
