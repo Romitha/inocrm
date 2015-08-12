@@ -70,7 +70,8 @@
           - organization.contact_numbers.nonprimary_contactnumber.order("created_at DESC").each do |contact_number|
             = render "contact_numbers/contact_number", contact_number: contact_number
       .tab-pane.limit-height{id: "contact_persons#{organization.id}"}
-        .fixed-height
+        / .fixed-height
+        .limit-height
           - organization.employees.each do |user|
             = render "users/user", user: user
 
