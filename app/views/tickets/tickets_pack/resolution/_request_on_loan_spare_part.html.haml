@@ -24,7 +24,6 @@
       .col-md-4
         .part.hide
           = label_tag "Part of main product"
-          %br
           = check_box_tag :part_of_main_product
           = link_to "select", inventory_in_modal_inventories_path(select_frame: "main_product"), id: "part_of_main_product_select", remote: true, class: "hide"
 
