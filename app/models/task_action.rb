@@ -65,6 +65,16 @@ class UserTicketAction < ActiveRecord::Base
 
   has_one :request_on_loan_spare_part, foreign_key: :ticket_action_id
   accepts_nested_attributes_for :request_on_loan_spare_part, allow_destroy: true
+
+  after_create :flush_cache
+
+  def cached_task_action
+    Rails.cache.fetch([self.id, :task_action]){ self.task_action }
+  end
+
+  def flush_cache
+    Rails.cache.delete([self.ticket.id, :user_ticket_actions])
+  end
 end
 
 class UserAssignTicketAction < ActiveRecord::Base
