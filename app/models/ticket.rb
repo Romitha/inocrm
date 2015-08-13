@@ -283,6 +283,9 @@ class Reason < ActiveRecord::Base
 
   has_many :on_loan_part_terminated_reasons, class_name: "TicketOnLoanSparePart", foreign_key: :part_terminated_reason_id
   accepts_nested_attributes_for :on_loan_part_terminated_reasons, allow_destroy: true
+
+  has_many :action_warranty_extends, foreign_key: :reject_reason_id
+  accepts_nested_attributes_for :action_warranty_extends, allow_destroy: true
 end
 
 class TicketReAssignRequest < ActiveRecord::Base

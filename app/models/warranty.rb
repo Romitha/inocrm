@@ -27,3 +27,12 @@ class ActionWarrantyRepairType < ActiveRecord::Base
   belongs_to :warranty_type, foreign_key: :ticket_warranty_type_id
 
 end
+
+class ActionWarrantyExtend < ActiveRecord::Base
+  self.table_name = "spt_act_warranty_extend"
+
+  belongs_to :user_ticket_action, foreign_key: :ticket_action_id
+
+  belongs_to :reject_reason, class_name: "Reason", foreign_key: :reject_reason_id
+
+end

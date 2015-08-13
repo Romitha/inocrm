@@ -12,6 +12,8 @@ class InventoryProduct < ActiveRecord::Base
 
   belongs_to :inventory, foreign_key: :product_id
 
+  belongs_to :inventory_unit, foreign_key: :unit_id
+
   has_one :inventory_product_info, foreign_key: :product_id
 
 end
@@ -55,5 +57,12 @@ class Manufacture < ActiveRecord::Base
   self.table_name = "mst_inv_manufacture"
 
   has_one :inventory_product_info, foreign_key: :manufacture_id
+
+end
+
+class InventoryUnit < ActiveRecord::Base
+  self.table_name = "mst_inv_unit"
+
+  has_many :inventory_products, foreign_key: :unit_id
 
 end
