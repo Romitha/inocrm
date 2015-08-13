@@ -6,7 +6,7 @@ class TicketSparePart < ActiveRecord::Base
 
   belongs_to :ticket_fsr, foreign_key: :fsr_id
   belongs_to :spare_part_status_action, foreign_key: :status_action_id
-  belongs_to :spare_part_status_use, foreign_key: :status_id
+  belongs_to :spare_part_status_use, foreign_key: :status_use_id
 
   has_many :request_spare_parts
   has_many :ticket_spare_part_status_actions, foreign_key: :spare_part_id
@@ -24,6 +24,8 @@ class TicketSparePartStore < ActiveRecord::Base
 
   belongs_to :ticket_spare_part, foreign_key: :spare_part_id
   belongs_to :inventory_product, foreign_key: :inv_product_id
+  belongs_to :store, -> { where(type_id: 4) }, class_name: "Organization", foreign_key: :store_id
+
 end
 
 class TicketFsr < ActiveRecord::Base
@@ -76,7 +78,8 @@ end
 class SparePartStatusUse < ActiveRecord::Base
   self.table_name = "mst_spt_spare_part_status_use"
 
-  belongs_to :ticket_spare_part, foreign_key: :spare_part_id
+  has_many :ticket_spare_parts, foreign_key: :status_use_id
+
   belongs_to :spare_part_status_action, foreign_key: :status_id
 end
 

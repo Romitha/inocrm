@@ -117,6 +117,10 @@ class User < ActiveRecord::Base
     self.addresses.build(category: "Support", address: address, primary: true)
   end
 
+  def self.cached_find_by_id id
+    Rails.cache.fetch(["User", :find_by_id]){ find_by_id id }
+  end
+
 end
 
 class MstTitle < ActiveRecord::Base

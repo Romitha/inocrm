@@ -66,6 +66,9 @@ class UserTicketAction < ActiveRecord::Base
   has_one :request_on_loan_spare_part, foreign_key: :ticket_action_id
   accepts_nested_attributes_for :request_on_loan_spare_part, allow_destroy: true
 
+  has_one :action_warranty_extend, foreign_key: :ticket_action_id
+  accepts_nested_attributes_for :action_warranty_extend, allow_destroy: true
+
   after_create :flush_cache
 
   def cached_task_action

@@ -77,6 +77,8 @@ class Organization < ActiveRecord::Base
 
   has_many :inventories, foreign_key: :store_id
 
+  has_many :ticket_spare_part_stores, foreign_key: :store_id
+
   def self.major_organization(category)
     where(category: category, department_org_id: nil)
   end

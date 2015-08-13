@@ -57,18 +57,41 @@
             .col-md-3
               %strong
                 Part No:
+            %hr
             .col-md-3
               %strong
                 Unit:
+              = ticket_spare_part.ticket_spare_part_store.inventory_product.inventory_unit and ticket_spare_part.ticket_spare_part_store.inventory_product.inventory_unit.unit
             .col-md-3
               %strong
                 Store:
-            Requested: #{ticket_spare_part.ticket_spare_part_store.store_requested_at.try(:strftime, "%Y-%m-%d %H:%M")}
-            Request type:
-            Action Status:
-            Repair time: 
-            Part Status:
-            Return part:
+              = ticket_spare_part.ticket_spare_part_store.store.try(:name)
+            .col-md-3
+              %strong
+                Requested:
+              - if ticket_spare_part.ticket_spare_part_store.store_requested_at
+                #{ticket_spare_part.ticket_spare_part_store.store_requested_at.try(:strftime, "%Y-%m-%d %H:%M")} by #{User.cached_find_by_id(ticket_spare_part.ticket_spare_part_store.store_requested_by).try(:email)}
+
+            .col-md-3
+              %strong
+                Request type:
+              = ticket_spare_part.ticket_spare_part_store ? "Store / " : "Manufacture / "
+              = ticket_spare_part.cus_chargeable_part ? "Chargeable" : "Non-chargeable"
+            %hr
+            .col-md-3
+              %strong
+                Action Status:
+              = ticket_spare_part.spare_part_status_action.name
+            .col-md-3
+              %strong
+                Repair time: 
+            .col-md-3
+              %strong
+                Part Status:
+              = ticket_spare_part.spare_part_status_use.name
+            .col-md-3
+              %strong
+                Return part:
 
           - if ticket_spare_part.ticket_spare_part_manufacture
             Part Ordered No:
@@ -87,11 +110,111 @@
         = f.input :return_part_serial_no
         = f.input :return_part_ct_no
         = f.input :note
-        = f.input :part_terminated, wrapper: :append
-        = f.association :part_terminated_reason
+        - if ticket_spare_part.ticket_spare_part_store and ticket_spare_part.ticket_spare_part_store.store_requested
+          = f.input :part_terminated, wrapper: :append
+          = f.association :part_terminated_reason
 
   - ticket.ticket_on_loan_spare_parts.each do |ticket_on_loan_spare_part|
-    = collapse collapse_type: "info", header_content: "Ticket on loan spare part: #{ticket_on_loan_spare_part.id}", collapse_link: "ticket_spare_part_link_#{ticket_on_loan_spare_part.id}", collapse_id: "ticket_spare_part_id", labelledby: "ticket_spare_part_lby_#{ticket_on_loan_spare_part.id}" do
+    = collapse collapse_type: "info", header_content: "Ticket on loan spare part: #{ticket_on_loan_spare_part.id}", collapse_link: "ticket_on_loan_spare_part_link_#{ticket_on_loan_spare_part.id}", collapse_id: "ticket_spare_part_id", labelledby: "ticket_spare_on_loan_part_lby_#{ticket_on_loan_spare_part.id}" do
+
+      .alert.alert-warning
+        .row
+          - if ticket_on_loan_spare_part.ticket_spare_part
+            .col-md-3
+              %strong
+                Spare Part No:
+              = ticket_on_loan_spare_part.ticket_spare_part.spare_part_no
+            .col-md-3
+              %strong
+                FSR No:
+              = ticket_on_loan_spare_part.ticket_spare_part.ticket_fsr and ticket_on_loan_spare_part.ticket_spare_part.ticket_fsr.id.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])
+            .col-md-3
+              %strong
+                Faulty Serial No:
+              = ticket_on_loan_spare_part.ticket_spare_part.faulty_serial_no
+            .col-md-3
+              %strong
+                Faulty CT No:
+              = ticket_on_loan_spare_part.ticket_spare_part.faulty_ct_no
+            %hr
+            .col-md-3
+              %strong
+                Received Spare Part No:
+              = ticket_on_loan_spare_part.ticket_spare_part.received_spare_part_no
+            .col-md-3
+              %strong
+                Description:
+              = ticket_on_loan_spare_part.ticket_spare_part.spare_part_description
+
+            - if ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store
+              .col-md-3
+                %strong
+                  Item Code:
+                = ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.serial_no
+              .col-md-3
+                %strong
+                  Item Description:
+                = ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.description
+              %hr
+              .col-md-3
+                %strong
+                  Manufacture:
+                = ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.inventory_product_info and ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.inventory_product_info.manufacture.try(:manufacture)
+              .col-md-3
+                %strong
+                  Model No:
+                = ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.try(:model_no)
+              .col-md-3
+                %strong
+                  Product No:
+                = ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.try(:product_no)
+              .col-md-3
+                %strong
+                  Part No:
+              %hr
+              .col-md-3
+                %strong
+                  Unit:
+                = ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.inventory_unit and ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.inventory_unit.unit
+              .col-md-3
+                %strong
+                  Store:
+                = ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.store.try(:name)
+              .col-md-3
+                %strong
+                  Requested:
+                - if ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.store_requested_at
+                  #{ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.store_requested_at.try(:strftime, "%Y-%m-%d %H:%M")} by #{User.cached_find_by_id(ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.store_requested_by).try(:email)}
+
+              .col-md-3
+                %strong
+                  Request type:
+                = ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store ? "Store / " : "Manufacture / "
+                = ticket_on_loan_spare_part.ticket_spare_part.cus_chargeable_part ? "Chargeable" : "Non-chargeable"
+              %hr
+              .col-md-3
+                %strong
+                  Action Status:
+                = ticket_on_loan_spare_part.ticket_spare_part.spare_part_status_action.name
+              .col-md-3
+                %strong
+                  Repair time: 
+              .col-md-3
+                %strong
+                  Part Status:
+                = ticket_on_loan_spare_part.ticket_spare_part.spare_part_status_use.name
+              .col-md-3
+                %strong
+                  Return part:
+
+            - if ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_manufacture
+              Part Ordered No:
+              Requested: #{ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_manufacture.payment_expected_manufacture}
+              .col-md-3
+                %strong
+                  Part Event No:
+                = ticket_on_loan_spare_part.ticket_spare_part.event_no
+
       = simple_form_for ticket_on_loan_spare_part, url: "#" do |f|
         = f.input :return_part_serial_no
         = f.input :return_part_ct_no
