@@ -60,6 +60,9 @@ class UserTicketAction < ActiveRecord::Base
   has_one :job_estimation, foreign_key: :ticket_action_id
   accepts_nested_attributes_for :job_estimation, allow_destroy: true
 
+  has_one :act_job_estimation, foreign_key: :ticket_action_id
+  accepts_nested_attributes_for :job_estimation, allow_destroy: true
+
   has_one :request_spare_part, foreign_key: :ticket_action_id
   accepts_nested_attributes_for :request_spare_part, allow_destroy: true
 
@@ -179,6 +182,17 @@ class DeliverUnit < ActiveRecord::Base
 end
 
 class JobEstimation < ActiveRecord::Base
+  self.table_name = "spt_act_job_estimate"
+
+  belongs_to :user_ticket_action, foreign_key: :ticket_action_id
+
+  belongs_to :ticket_estimation, foreign_key: :ticket_estimation_id
+
+  belongs_to :organization, foreign_key: :supplier_id
+
+end
+
+class ActJobEstimation < ActiveRecord::Base
   self.table_name = "spt_act_job_estimate"
 
   belongs_to :user_ticket_action, foreign_key: :ticket_action_id
