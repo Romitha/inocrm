@@ -1,5 +1,5 @@
 .container.col-md-12{style: "max-height: 466px;overflow: auto;"}
-  -ticket.user_ticket_actions.each do |action|
+  -ticket.cached_user_ticket_actions.each do |action|
     - if action.persisted?
       .panel-group
         .panel.panel-info
@@ -7,7 +7,7 @@
             .row
               .col-md-3
                 Activity:
-                = action.task_action.action_description
+                = action.cached_task_action.action_description
               .col-md-3
                 Date Time:
                 = action.action_at.getlocal.strftime "%Y-%m-%d %H:%M"

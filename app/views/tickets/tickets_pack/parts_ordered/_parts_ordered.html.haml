@@ -1,53 +1,105 @@
-- ticket.ticket_spare_parts.each do |ticket_spare_part|
-  - if ticket_spare_part.ticket_spare_part_store
-    Requested: #{ticket_spare_part.ticket_spare_part_store.store_requested_at.try(:strftime, "%Y-%m-%d %H:%M")}
-    Request type:
-    Action Status:
-    Repair time: 
-    Part Status:
-    Return part:
+- Inventory
+= collapse_wrapper collapse_id: "ticket_spare_part_id" do
+  - ticket.ticket_spare_parts.each do |ticket_spare_part|
+    = collapse collapse_type: "info", header_content: "Ticket spare part: #{ticket_spare_part.spare_part_no}", collapse_link: "ticket_spare_part_link_#{ticket_spare_part.id}", collapse_id: "ticket_spare_part_id", labelledby: "ticket_spare_part_lby_#{ticket_spare_part.id}" do
 
-  - if ticket_spare_part.ticket_spare_part_manufacture
-    Requested: #{ticket_spare_part.ticket_spare_part_manufacture.payment_expected_manufacture}
+      .alert.alert-warning
+        .row
+          .col-md-3
+            %strong
+              Spare Part No:
+            = ticket_spare_part.spare_part_no
+          .col-md-3
+            %strong
+              FSR No:
+            = ticket_spare_part.ticket_fsr and ticket_spare_part.ticket_fsr.id.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])
+          .col-md-3
+            %strong
+              Faulty Serial No:
+            = ticket_spare_part.faulty_serial_no
+          .col-md-3
+            %strong
+              Faulty CT No:
+            = ticket_spare_part.faulty_ct_no
+          %hr
+          .col-md-3
+            %strong
+              Received Spare Part No:
+            = ticket_spare_part.received_spare_part_no
+          .col-md-3
+            %strong
+              Description:
+            = ticket_spare_part.spare_part_description
 
-  Spare Part No:
-  Part Event No:
-  Store:
-  FSR No:
-  Description:
-  Part Ordered No:
-  Item Code:
-  Item Description:
-  Manufacture:
-  Received Spare Part No:
-  Model No:
-  Product No:
-  Part No:
-  Unit:
-  Faulty Serial No:
-  Faulty CT No:
 
-  = simple_form_for ticket_spare_part, url: "#" do |f|
-    = f.input :received_part_serial_no
-    = f.input :received_part_ct_no
-    = f.input :repare_start, as: :string
-    = f.input :repare_end, as: :string
-    = f.association :unused_reason
-    = f.input :return_part_serial_no
-    = f.input :return_part_ct_no
-    = f.input :note
-    = f.input :part_terminated
-    = f.association :part_terminated_reason
+          - if ticket_spare_part.ticket_spare_part_store
+            .col-md-3
+              %strong
+                Item Code:
+              = ticket_spare_part.ticket_spare_part_store.inventory_product.serial_no
+            .col-md-3
+              %strong
+                Item Description:
+              = ticket_spare_part.ticket_spare_part_store.inventory_product.description
+            %hr
+            .col-md-3
+              %strong
+                Manufacture:
+              = ticket_spare_part.ticket_spare_part_store.inventory_product.inventory_product_info and ticket_spare_part.ticket_spare_part_store.inventory_product.inventory_product_info.manufacture.try(:manufacture)
+            .col-md-3
+              %strong
+                Model No:
+              = ticket_spare_part.ticket_spare_part_store.inventory_product.try(:model_no)
+            .col-md-3
+              %strong
+                Product No:
+              = ticket_spare_part.ticket_spare_part_store.inventory_product.try(:product_no)
+            .col-md-3
+              %strong
+                Part No:
+            .col-md-3
+              %strong
+                Unit:
+            .col-md-3
+              %strong
+                Store:
+            Requested: #{ticket_spare_part.ticket_spare_part_store.store_requested_at.try(:strftime, "%Y-%m-%d %H:%M")}
+            Request type:
+            Action Status:
+            Repair time: 
+            Part Status:
+            Return part:
 
-- ticket.ticket_on_loan_spare_parts.each do |ticket_on_loan_spare_part|
-  = simple_form_for ticket_on_loan_spare_part, url: "#" do |f|
-    = f.input :return_part_serial_no
-    = f.input :return_part_ct_no
-    = f.input :repare_start, as: :string
-    = f.input :repare_end, as: :string
-    = f.association :unused_reason
-    = f.input :return_part_serial_no
-    = f.input :return_part_ct_no
-    = f.input :note
-    = f.input :part_terminated
-    = f.association :part_terminated_reason
+          - if ticket_spare_part.ticket_spare_part_manufacture
+            Part Ordered No:
+            Requested: #{ticket_spare_part.ticket_spare_part_manufacture.payment_expected_manufacture}
+            .col-md-3
+              %strong
+                Part Event No:
+              = ticket_spare_part.event_no
+
+      = simple_form_for ticket_spare_part, url: "#" do |f|
+        = f.input :received_part_serial_no
+        = f.input :received_part_ct_no
+        = f.input :repare_start, as: :string
+        = f.input :repare_end, as: :string
+        = f.association :unused_reason
+        = f.input :return_part_serial_no
+        = f.input :return_part_ct_no
+        = f.input :note
+        = f.input :part_terminated, wrapper: :append
+        = f.association :part_terminated_reason
+
+  - ticket.ticket_on_loan_spare_parts.each do |ticket_on_loan_spare_part|
+    = collapse collapse_type: "info", header_content: "Ticket on loan spare part: #{ticket_on_loan_spare_part.id}", collapse_link: "ticket_spare_part_link_#{ticket_on_loan_spare_part.id}", collapse_id: "ticket_spare_part_id", labelledby: "ticket_spare_part_lby_#{ticket_on_loan_spare_part.id}" do
+      = simple_form_for ticket_on_loan_spare_part, url: "#" do |f|
+        = f.input :return_part_serial_no
+        = f.input :return_part_ct_no
+        = f.input :repare_start, as: :string
+        = f.input :repare_end, as: :string
+        = f.association :unused_reason
+        = f.input :return_part_serial_no
+        = f.input :return_part_ct_no
+        = f.input :note
+        = f.input :part_terminated
+        = f.association :part_terminated_reason

@@ -9,6 +9,25 @@ module AddressesHelper
     end
   end
 
+  def collapse_wrapper(options = {}, &block)
+    opt = options
+    content_tag(:div, class: "panel-group", id: "#{opt[:collapse_id]}", role: "tablist", "aria-multiselectable"=>"true", &block)
+  end
+
+  def collapse(options = {}, &block)
+    opt = options
+    content_tag :div, class: "panel panel-#{opt[:collapse_type] || 'default'}" do
+      (content_tag :div, class: "panel-heading", role: "tab", id: opt[:labelledby] do
+        content_tag :h4, class: "panel-title" do
+          link_to (opt[:header_content] || "insert header"),"##{opt[:collapse_link]}", class: "collapsed", aria: {controls: opt[:collapse_link], expanded: "false"}, data: {parent: "##{opt[:collapse_id]}", toggle: "collapse"}, role: "button"
+        end
+      end)+
+      (content_tag :div, id: opt[:collapse_link], class: "panel-collapse collapse #{opt[:collapse_in]}", role: "tabpanel", aria: {labelledby: opt[:labelledby], expanded: "false"} do
+        content_tag(:div, class: "panel-body", &block)
+      end)
+    end
+  end
+
   def initiate_table(options={}, &block)
     opt = options
     content_tag :table, class: "table table-responsive #{opt[:table_type]}", &block

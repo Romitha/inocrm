@@ -12,6 +12,17 @@ class InventoryProduct < ActiveRecord::Base
 
   belongs_to :inventory, foreign_key: :product_id
 
+  has_one :inventory_product_info, foreign_key: :product_id
+
+end
+
+class InventoryProductInfo < ActiveRecord::Base
+  self.table_name = "mst_inv_product_info"
+
+  belongs_to :inventory_product, foreign_key: :product_id
+
+  belongs_to :manufacture, foreign_key: :manufacture_id
+
 end
 
 class InventoryCategory3 < ActiveRecord::Base
@@ -38,4 +49,11 @@ end
 
 class InventoryCategoryCaption < ActiveRecord::Base
   self.table_name = "mst_inv_category_caption"
+end
+
+class Manufacture < ActiveRecord::Base
+  self.table_name = "mst_inv_manufacture"
+
+  has_one :inventory_product_info, foreign_key: :manufacture_id
+
 end

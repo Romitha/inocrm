@@ -98,12 +98,16 @@ class Ticket < ActiveRecord::Base
   end
 
   before_create :update_ticket_no
+  after_update :flash_cache
 
   def update_ticket_no
     self.ticket_no = (self.class.any? ? (self.class.order("created_at ASC").map{|t| t.ticket_no.to_i}.max + 1) : 1)
   end
 
-  after_update :flash_cache
+
+  def cached_user_ticket_actions
+    Rails.cache.fetch([self.id, :user_ticket_actions]){ self.user_ticket_actions.to_a }
+  end
 
   def flash_cache
     Rails.cache.delete([:join, self.id])
