@@ -75,6 +75,8 @@ class Organization < ActiveRecord::Base
 
   has_many :job_estimations, foreign_key: :supplier_id
 
+  has_many :act_job_estimations, foreign_key: :supplier_id
+
   has_many :inventories, foreign_key: :store_id
 
   has_many :ticket_spare_part_stores, foreign_key: :store_id
