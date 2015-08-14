@@ -198,30 +198,28 @@
                   .col-md-4
                     Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
 
-          -if action.action_id == 18
+          -if action.action_id == 18 and action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part
             .panel-body
               .row
                 .col-md-4
-                  Spare Part No: #{action.request_spare_part.ticket_spare_part.spare_part_no}
+                  Spare Part No: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.spare_part_no}
                 .col-md-4
-                  Spare Part Description: #{action.request_spare_part.ticket_spare_part.spare_part_description}
+                  Spare Part Description: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.spare_part_description}
                 .col-md-4 
-                  -if action.request_spare_part.ticket_spare_part.cus_chargeable_part == true
+                  -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.cus_chargeable_part
                     Customer Chargeable: Yes
                   -else
                     Customer Chargeable: No
               .row
                 .col-md-4
-                  -if action.request_spare_part.ticket_spare_part.request_from == 'M'
+                  -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'M'
                     Request From Manufacture
-                  -if action.request_spare_part.ticket_spare_part.request_from == 'S'
+                  -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'S'
                     Request From Store
-                
-                -if action.request_spare_part.ticket_spare_part.request_from == 'S'
-                  .col-md-4
-                    Store Id: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.store_id}
-                  .col-md-4
-                    Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
+                    .col-md-4
+                      Store Id: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_id)}
+                    .col-md-4
+                      Product Item Code: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:inventory_product).try(:generated_item_code)}
 
           -if action.action_id == 19
             .panel-body
