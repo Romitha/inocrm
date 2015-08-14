@@ -27,7 +27,7 @@ class User < ActiveRecord::Base
 
 
   has_many :sbu_engineers, foreign_key: :engineer_id
-  has_many :sbus, through: :sbu_engineers
+  has_many :sbus, through: :sbu_engineers, source: :sbu
 
   has_many :sbu_regional_engineers, foreign_key: :engineer_id
   has_many :regional_support_centers, through: :sbu_regional_engineers
@@ -210,13 +210,6 @@ class District < ActiveRecord::Base
   has_many :contact_person_contact_types, foreign_key: :contact_report_person_id
 end
 
-class SbuEngineer < ActiveRecord::Base
-  self.table_name = "mst_spt_sbu_engineer"
-
-  belongs_to :sbu
-  belongs_to :engineer, class_name: "User", foreign_key: :engineer_id
-end
-
 class SbuRegionalEngineer < ActiveRecord::Base
   self.table_name = "spt_regional_support_center_engineer"
 
@@ -224,11 +217,50 @@ class SbuRegionalEngineer < ActiveRecord::Base
   belongs_to :engineer, class_name: "User", foreign_key: :engineer_id
 end
 
+class SbuEngineer < ActiveRecord::Base
+  self.table_name = "mst_spt_sbu_engineer"
+
+  belongs_to :sbu, foreign_key: :engineer_id
+  belongs_to :engineer, class_name: "User", foreign_key: :engineer_id
+end
+
 class Sbu < ActiveRecord::Base
   self.table_name = "mst_spt_sbu"
 
-  has_many :sbu_engineers#, foreign_key: :engineer_id
-  has_many :engineers, through: :sbu_engineers
+  has_many :sbu_engineers, foreign_key: :engineer_id
+  has_many :engineers, through: :sbu_engineers, source: :engineer
+
+# class Pet < ActiveRecord::Base
+#   has_many :dogs
+# end
+
+# class Dog < ActiveRecord::Base
+#   belongs_to :pet
+#   has_many :breeds
+# end
+
+# class Dog::Breed < ActiveRecord::Base
+#   belongs_to :dog
+# end
+
+# In this case, we've chosen to namespace the Dog::Breed, because we want to access Dog.find(123).breeds as a nice and convenient association.
+
+# Now, if we now want to create a has_many :dog_breeds, :through => :dogs association on Pet, we suddenly have a problem. Rails won't be able to find a :dog_breeds association on Dog, so Rails can't possibly know which Dog association you want to use. Enter :source:
+
+# class Pet < ActiveRecord::Base
+#   has_many :dogs
+#   has_many :dog_breeds, :through => :dogs, :source => :breeds
+# end
+
+# With :source, we're telling Rails to look for an association called :breeds on the Dog model (as that's the model used for :dogs), and use that.
 
   has_many :user_assign_ticket_actions, foreign_key: :sbu_id
 end
+
+# class Engineer < ActiveRecord::Base
+#   self.table_name = "mst_spt_sbu"
+
+#   has_many :sbu_engineers, foreign_key: :engineer_id
+
+#   has_many :sbus, through: :sbu_engineers
+# end
