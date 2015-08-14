@@ -994,6 +994,7 @@ class TicketsController < ApplicationController
   end
 
   def resolution
+    Inventory
     Warranty
     ContactNumber
     QAndA
