@@ -16,6 +16,10 @@ class InventoryProduct < ActiveRecord::Base
 
   has_one :inventory_product_info, foreign_key: :product_id
 
+  def generated_item_code
+   "#{id}-#{serial_no}"
+  end
+
 end
 
 class InventoryProductInfo < ActiveRecord::Base

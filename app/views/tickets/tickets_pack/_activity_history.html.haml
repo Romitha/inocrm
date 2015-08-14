@@ -100,10 +100,35 @@
             .panel-body
               .row
                 .col-md-4
+                  Spare Part No: #{action.request_spare_part.ticket_spare_part.spare_part_no}
+                .col-md-4
+                  Spare Part Description: #{action.request_spare_part.ticket_spare_part.spare_part_description}
+                .col-md-4
+                  -if action.request_spare_part.ticket_spare_part.cus_chargeable_part == true
+                    Customer Chargeable: Yes
+                  -else
+                    Customer Chargeable: No
+              .row
+                .col-md-4
+                  -if action.request_spare_part.ticket_spare_part.request_from == 'M'
+                    Request From Manufacture
+                  -if action.request_spare_part.ticket_spare_part.request_from == 'S'
+                    Request From Store
+                .col-md-4
                   Payment Expected Manufacture : #{action.request_spare_part.ticket_spare_part.ticket_spare_part_manufacture.try(:payment_expected_manufacture)}
 
           -if action.action_id == 15
             .panel-body
+              .row
+                .col-md-4
+                  Spare Part No: #{action.request_spare_part.ticket_spare_part.spare_part_no}
+                .col-md-4
+                  Spare Part Description: #{action.request_spare_part.ticket_spare_part.spare_part_description}
+                .col-md-4
+                  -if action.request_spare_part.ticket_spare_part.cus_chargeable_part == true
+                    Customer Chargeable: Yes
+                  -else
+                    Customer Chargeable: No
               .row
                 .col-md-4
                   Store Requested By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_requested_by)).try(:user_name)}
@@ -111,6 +136,17 @@
                   Store Request Approved By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_request_approved_by)).try(:user_name)}
                 .col-md-4
                   Store Issued By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_issued_by)).try(:user_name)}
+              .row
+                .col-md-4
+                  -if action.request_spare_part.ticket_spare_part.request_from == 'M'
+                    Request From Manufacture
+                  -if action.request_spare_part.ticket_spare_part.request_from == 'S'
+                    Request From Store
+                -if action.request_spare_part.ticket_spare_part.request_from == 'S'
+                  .col-md-4
+                    Store Id: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.store_id}
+                  .col-md-4
+                    Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
 
           -if action.action_id == 16
             .panel-body
@@ -160,7 +196,7 @@
                   .col-md-4
                     Store Id: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.store_id}
                   .col-md-4
-                    Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}4
+                    Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
 
           -if action.action_id == 18
             .panel-body
@@ -302,6 +338,28 @@
                   Spare Part Description: #{action.request_spare_part.ticket_spare_part.spare_part_description}
                 .col-md-4
                   Note: #{action.request_spare_part.ticket_spare_part.note}
+              .row
+                .col-md-4
+                  -if action.request_spare_part.ticket_spare_part.cus_chargeable_part == true
+                    Customer Chargeable: Yes
+                  -else
+                    Customer Chargeable: No
+                .col-md-4
+                  -if action.request_spare_part.ticket_spare_part.request_from == 'M'
+                    Request From Manufacture
+                  -if action.request_spare_part.ticket_spare_part.request_from == 'S'
+                    Request From Store
+              .row
+                -if action.request_spare_part.ticket_spare_part.request_from == 'S'
+                  .col-md-4
+                    Store Id: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.store_id}
+                  .col-md-4
+                    Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
+
+          / -if action.action_id == 32
+          /   .panel-body
+          /     .row
+          /       .col-md-4
 
           -if action.action_id == 33
             .panel-body 
@@ -315,6 +373,17 @@
                     Customer Chargeable: Yes
                   -else
                     Customer Chargeable: No
+                .row
+                  .col-md-4
+                    -if action.request_spare_part.ticket_spare_part.request_from == 'M'
+                      Request From Manufacture
+                    -if action.request_spare_part.ticket_spare_part.request_from == 'S'
+                      Request From Store
+                  -if action.request_spare_part.ticket_spare_part.request_from == 'S'
+                    .col-md-4
+                      Store Id: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.store_id}
+                    .col-md-4
+                      Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
 
           -if action.action_id == 34
             .panel-body 
@@ -326,16 +395,21 @@
                 .col-md-4
                   Reason: #{ticket.reason.find_by_id(action.request_spare_part.ticket_spare_part.part_terminated_reason_id).try(:reason)}
               .row
-                .col-md-4
-                  -if action.request_spare_part.ticket_spare_part.request_from == 'M'
-                    Request From Manufacture
-                  -if action.request_spare_part.ticket_spare_part.request_from == 'S'
-                    Request From Store
-                .col-md-4 
+                .col-md-3
                   -if action.request_spare_part.ticket_spare_part.cus_chargeable_part == true
                     Customer Chargeable: Yes
                   -else
                     Customer Chargeable: No
+                .col-md-3
+                  -if action.request_spare_part.ticket_spare_part.request_from == 'M'
+                    Request From Manufacture
+                  -if action.request_spare_part.ticket_spare_part.request_from == 'S'
+                    Request From Store
+                -if action.request_spare_part.ticket_spare_part.request_from == 'S'
+                  .col-md-2
+                    Store Id: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.store_id}
+                  .col-md-4
+                    Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
 
           -if action.action_id == 36
             .panel-body 
@@ -380,6 +454,11 @@
                     Request From Manufacture
                   -if action.request_spare_part.ticket_spare_part.request_from == 'S'
                     Request From Store
+                -if action.request_spare_part.ticket_spare_part.request_from == 'S'
+                  .col-md-2
+                    Store Id: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.store_id}
+                  .col-md-4
+                    Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
 
           -if action.action_id == 38
             .panel-body 
@@ -459,9 +538,108 @@
               .row
                 .col-md-4
 
-
           -if action.action_id == 44
             .panel-body 
               .row
                 .col-md-4
+
+          -if action.action_id == 45
+            .panel-body
+              .row
+                .col-md-4
+                  Spare Part No: #{action.request_spare_part.ticket_spare_part.spare_part_no}
+                .col-md-4
+                  Spare Part Description: #{action.request_spare_part.ticket_spare_part.spare_part_description}
+
+          -if action.action_id == 46
+            .panel-body
+              .row
+                .col-md-4
+                  Bundled id: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_manufacture.return_parts_bundle_id}
+                .col-md-4
+                  Bundled by: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_manufacture.add_bundle_by).try(:user_name)}
+
+          -if action.action_id == 47
+            .panel-body
+              .row
+                .col-md-4
+
+          -if action.action_id == 48
+            .panel-body
+              .row
+                .col-md-4
+
+          -if action.action_id == 49
+            .panel-body
+              .row
+                .col-md-4
+
+          -if action.action_id == 50
+            .panel-body
+              .row
+                .col-md-4
+
+          -if action.action_id == 51
+            .panel-body
+              .row
+                .col-md-4
+
+          -if action.action_id == 52
+            .panel-body
+              .row
+                .col-md-4
+
+          -if action.action_id == 53
+            .panel-body
+              .row
+                .col-md-4
+
+          -if action.action_id == 54
+            .panel-body
+              .row
+                .col-md-4
+
+          -if action.action_id == 56
+            .panel-body
+              .row
+                .col-md-4
+
+          -if action.action_id == 57
+            .panel-body
+              .row
+                .col-md-4
                   
+          -if action.action_id == 58
+            .panel-body
+              .row
+                .col-md-4
+
+          -if action.action_id == 60
+            .panel-body
+              .row
+                .col-md-4
+
+          -if action.action_id == 61
+            .panel-body
+              .row
+                .col-md-4
+
+          -if action.action_id == 64
+            .panel-body
+              .row
+                .col-md-4
+
+          -if action.action_id == 65
+            .panel-body
+              .row
+                .col-md-4
+
+          -if action.action_id == 66
+            .panel-body
+              .row
+                .col-md-4
+
+          -if action.action_id == 67
+            .panel-body
+              .row
+                .col-md-4
