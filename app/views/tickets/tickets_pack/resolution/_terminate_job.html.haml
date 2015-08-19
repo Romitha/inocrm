@@ -14,21 +14,21 @@
       = uf.simple_fields_for :ticket_terminate_job do |rf|
         = rf.association :reason, required: true, include_blank: false, label_method: :reason, value_method: :id
         = rf.input :foc_requested, as: :radio_buttons, collection: {"FOC" => false, "Payment required" => true}, wrapper: :append
+      .row.col-md-12
+        = uf.simple_fields_for :ticket_terminate_job_payments do |tf|
+          = tf.input :ticket_id, as: :hidden, input_html: {value: ticket.id}
+          = tf.input :amount, wrapper_html: {class: "col-md-4"}
+          = tf.association :payment_item, wrapper_html: {class: "col-md-4"}
+          = tf.input :currency_id, as: :hidden, input_html: {value: Currency.find_by_base_currency(true).id}
 
-      = uf.simple_fields_for :ticket_terminate_job_payments do |tf|
-        = tf.input :ticket_id, as: :hidden, input_html: {value: ticket.id}
-        = tf.input :amount
-        = tf.association :payment_item
-        = tf.input :currency_id, as: :hidden, input_html: {value: Currency.find_by_base_currency(true).id}
-
-        .add_sign
-          = tf.link_to_remove class: "remove_c_t_v_link" do
-            %span.glyphicon.glyphicon-remove-sign
-
-      = uf.link_to_add :ticket_terminate_job_payments, class: "small_scale_padding-right2" do
-        %span.glyphicon.glyphicon-plus-sign
-        Add payment
-
+          .add_sign.col-md-4
+            = tf.link_to_remove class: "remove_c_t_v_link" do
+              %span.glyphicon.glyphicon-remove-sign
+              %br
+      .row.col-md-12
+        = uf.link_to_add :ticket_terminate_job_payments, class: "small_scale_padding-right2" do
+          %span.glyphicon.glyphicon-plus-sign
+          Add payment
     = f.input :remarks, input_html: {value: nil}
     = simple_format ticket.remarks
 
