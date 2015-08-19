@@ -16,7 +16,7 @@
 
     - if ticket.ticket_type.code == 'OS'
       .row
-        = f.association :ticket_fsr, collection: ticket.ticket_fsrs.map{|tf| [tf.id, tf.id]}#, wrapper_html: {class: "col-md-3"}, label: "FSR No"
+        = f.association :ticket_fsr, collection: ticket.ticket_fsrs.map{|tf| [tf.id, tf.id]}, wrapper_html: {class: "col-md-12"}
     .row
       .col-md-3
         = f.input :spare_part_no, wrapper_html: {class: "col-md-12"}, required: true
