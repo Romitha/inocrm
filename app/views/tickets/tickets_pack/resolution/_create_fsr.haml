@@ -16,11 +16,12 @@
         .row.col.md-12
           .col-md-6
             %p FSR No: #{@ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])}
-          .col-md-6
+        .row.col.md-12
+          .col-md-2
             Print FSR:
             = rf.check_box :print_fsr
-
-    = f.simple_fields_for :ticket_fsrs do |tf|
-      = tf.input :created_by, as: :hidden, input_html: {value: current_user.id}
-
-    = f.submit "Save", class: "btn btn-success", id: "create_fsr_submit"
+          .col-md-0
+            = f.simple_fields_for :ticket_fsrs do |tf|
+              = tf.input :created_by, as: :hidden, input_html: {value: current_user.id}
+          .col-md-6
+            = f.submit "Save", class: "btn btn-success", id: "create_fsr_submit"

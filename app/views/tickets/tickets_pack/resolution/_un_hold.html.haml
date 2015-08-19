@@ -12,11 +12,23 @@
       = uf.input :re_open_index, as: :hidden, input_html: {value: ticket.re_open_count}
 
     = f.input :status_hold, as: :hidden, input_html: {value: false}
+    .row.col.md-12
+      .col-md-4
+        %strong Hold at: 
+        #{ticket.user_ticket_actions.where(action_id:TaskAction.find_by_action_no(8).id).last.act_hold.created_at.strftime("%d-%m-%Y %H:%M")}
+      .col-md-4
+        %strong Hold by: 
+        #{User.cached_find_by_id(ticket.user_ticket_actions.where(action_id:TaskAction.find_by_action_no(8).id).last.action_by).email}
+      .col-md-4
+        %strong Hold reason: 
+        #{ticket.user_ticket_actions.where(action_id:TaskAction.find_by_action_no(8).id).last.act_hold.reason.reason}
+    .row.col.md-12
+      .col-md-4
+        -if ticket.user_ticket_actions.where(action_id:TaskAction.find_by_action_no(8).id).last.act_hold.sla_pause == true
+          %strong SLA pause: Yes
+        -else
+          %strong SLA pause: No
 
+      .col-md-4
+        %strong Hold time duration:
     = f.submit "Save", class: "btn btn-success"
-
-hold at
-hold by
-hold reason
-sla pause
-hold time duration
