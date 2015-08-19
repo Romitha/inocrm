@@ -1,53 +1,111 @@
+%hr
 .row
-  %h4 Product
+  .col-md-2.col-xs-2.col-sm-2.small_scale_margin-left2
+    %h4 Product
   .col-md-6.col-xs-6.col-sm-6
-    .row
-      %dl.dl-horizontal
-        %dt Brand
-        %dd= product.product_brand.name
-        %dt Category
-        %dd= product.product_category.name
-        %dt Model number
-        %dd= product.model_no
-        %dt Product number
-        %dd= product.product_no
-      %dl.dl-horizontal
-        %dt Accessories
-        - ticket.ticket_accessories.each do |a|
-          %dd
-            = a.accessory.accessory
-        %dd.italic= ticket.other_accessories
-  .col-md-6.col-xs-6.col-sm-6
-    .row
-      .col-md-12.col-xs-12.col-sm-12
-        %dl.dl-horizontal
-          %dt Informed method
-          %dd= ticket.inform_method.name
-          %dt Job type
-          %dd= ticket.job_type.name
-          %dt Ticket type
-          %dd #{ticket.ticket_type.name} #{"(Regional support job)" if ticket.regional_support_job}
-          %dt Type of warranty
-          %dd= ticket.warranty_type.name
-          %dt Customer chargeable
-          %dd= ticket.cus_chargeable ? "Yes" : "No"
-          %dt Repair type
-          %dd= ticket.repair_type.try(:name)
-        %dl
-          %dt Problem Category
-          %dd= ticket.problem_category.name
-          %dt Problem description
-          %dd= ticket.problem_description
-        %dl
-          %dt POP note
-          %dd= simple_format product.pop_note
-          %dt POP status
-          %dd
-            = product.product_pop_status.name
-            = link_to "View POP (#{product.pop_doc_url.file.try :filename})", product.pop_doc_url.url, target: "_blank" if product.pop_doc_url.file.present?
-          %dt Sold country
-          %dd= product.product_sold_country.try(:Country)
+    %dl.dl-horizontal
+      %dt Brand
+      %dd= product.product_brand.name
+      %dt Category
+      %dd= product.product_category.name
+      %dt Model number
+      %dd= product.model_no
+      %dt Product number
+      %dd= product.product_no
+%hr
 .row
-  .col-md-12
-    %p.margin-none Ticket currency:#{ticket.ticket_currency.currency} 
-    %p Manufacture currency:#{ticket.manufacture_currency.currency}
+  .col-md-2.col-xs-2.col-sm-2.small_scale_margin-left2
+    %h4 Accessories
+  .col-md-6.col-xs-6.col-sm-6
+    %dl.dl-horizontal
+      - ticket.ticket_accessories.each do |a|
+        %dd
+          = a.accessory.accessory
+      %dd.italic= ticket.other_accessories
+%hr
+.row
+  .col-md-2.col-xs-2.col-sm-2.small_scale_margin-left2
+    %h4 Ticket Info
+  .col-md-4.col-xs-4.col-sm-4
+    %dl.dl-horizontal
+      %dt Informed method
+      %dd= ticket.inform_method.name
+      %dt Job type
+      %dd= ticket.job_type.name
+      %dt Ticket type
+      %dd #{ticket.ticket_type.name} #{"(Regional support job)" if ticket.regional_support_job}
+      %dt Type of warranty
+      %dd= ticket.warranty_type.name
+      %dt Customer chargeable
+      %dd= ticket.cus_chargeable ? "Yes" : "No"
+      %dt Repair type
+      %dd= ticket.repair_type.try(:name)
+  .col-md-5.col-xs-5.col-sm-5
+    %dl.dl-horizontal
+      %dt Ticket currency
+      %dd= ticket.ticket_currency.currency
+      %dt Manufacture currency
+      %dd= ticket.manufacture_currency.currency
+%hr
+.row
+  .col-md-2.col-xs-2.col-sm-2.small_scale_margin-left2
+    %h4 Problem Info
+  .col-md-4.col-xs-4.col-sm-4
+    %dl.dl-horizontal
+      %dt Problem Category
+      %dd= ticket.problem_category.name
+      %dt Problem description
+      %dd= ticket.problem_description
+%hr
+.row
+  .col-md-2.col-xs-2.col-sm-2.small_scale_margin-left2
+    %h4 POP Info
+  .col-md-4.col-xs-4.col-sm-4
+    %dl.dl-horizontal   
+      %dt POP status
+      %dd
+        = product.product_pop_status.name
+        = link_to "View POP (#{product.pop_doc_url.file.try :filename})", product.pop_doc_url.url, target: "_blank" if product.pop_doc_url.file.present?
+      %dt Sold country
+      %dd= product.product_sold_country.try(:Country)
+  .col-md-5.col-xs-5.col-sm-5
+    %dl.dl-horizontal
+      %dt POP note
+      %dd= simple_format product.pop_note
+%hr
+.row
+  .col-md-2.col-xs-2.col-sm-2.small_scale_margin-left2
+    %h4 Extra Remarks
+  .col-md-5.col-xs-5.col-sm-5
+    %dl.dl-horizontal
+      - if ticket.ticket_extra_remarks.present?
+        - ticket.ticket_extra_remarks.each do |ticket_extra_remark|
+          %dt= ticket_extra_remark.extra_remark.try(:extra_remark)
+          %dd= ticket_extra_remark.note
+      -else
+        %dd{:style=>"font-style: italic;"} Doesn't exist extra remarks..
+%hr
+.row
+  .col-md-1.col-xs-1.col-sm-1.small_scale_margin-left2
+    %h4 Remarks
+  .col-md-6.col-xs-6.col-sm-6
+    %dl.dl-horizontal
+      -if ticket.remarks.present?
+        %dd= simple_format ticket.remarks
+      -else
+        %dd{:style=>"font-style: italic;"} Doesn't exist remarks..
+%hr
+.row
+  .col-md-3.col-xs-3.col-sm-3.small_scale_margin-left2
+    %h4 Resolution Summary
+  .col-md-4.col-xs-4.col-sm-4
+    %dd= ticket.resolution_summary
+.row
+  .col-md.pull-right.text-right.small_scale_padding-top1.small_scale_padding-bottom1
+    = link_to "#", onclick: "Users.request_printer_application('ticket', '#{ticket.id}', 'ticket_request_type', 'print_ticket_tag_value', 'print_ticket'); false;", id: "ticket_print", data: {disable_with: "Printing..."}, class: "btn btn-default" do
+      = ticket.ticket_print_count.to_i > 0 ? "Re-Print" : "Print"
+
+  .col-md-2.pull-right.text-right.small_scale_padding-top1.small_scale_padding-bottom1
+    = link_to workflow_diagram_tickets_path(ticket_id: ticket.id), :target => "_blank" do
+      %button.btn.btn-info.btn-xs{:type => "button"}
+        %strong Workflow

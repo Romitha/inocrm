@@ -27,33 +27,40 @@
       = render "tickets/tickets_pack/fsr",ticket: ticket
     = tab_content tabpointer: :activity_history do
       = render "tickets/tickets_pack/activity_history", ticket: ticket, customer: customer
-.row
-  .col-md-6{style: "clear: both;position: relative; margin-top:20px"}
-    %strong Extra Remarks:
-    - if ticket.ticket_extra_remarks.present?
-      - ticket.ticket_extra_remarks.each do |ticket_extra_remark|
-        %dl.col-xs-offset-1
-          %dt{:style=>" font-style: italic;"}= ticket_extra_remark.extra_remark.try(:extra_remark)
-          %dd= ticket_extra_remark.note
-    -else
-      .col-xs-offset-1
-        %p{:style=>"font-style: italic;"} Doesn't exist extra remarks..
-    %strong Remarks:
-    .col-md-offset-1
-      -if ticket.remarks.present?
-        = simple_format ticket.remarks
-      -else
-        %p{:style=>"font-style: italic;"} Doesn't exist remarks..
+/ .row{style: "clear: both;position: relative; margin-left:202px; margin-right:2px"}
+/   %hr
+/   .col-md-2.col-xs-2.col-sm-2.small_scale_margin-left1
+/     %h4 Extra Remarks
+/   .col-md-5.col-xs-5.col-sm-5
+/     %dl.dl-horizontal
+/       - if ticket.ticket_extra_remarks.present?
+/         - ticket.ticket_extra_remarks.each do |ticket_extra_remark|
+/           %dt= ticket_extra_remark.extra_remark.try(:extra_remark)
+/           %dd= ticket_extra_remark.note
+/       -else
+/         %dd{:style=>"font-style: italic;"} Doesn't exist extra remarks..
+/ .row{style: "clear: both;position: relative; margin-left:202px; margin-right:2px"}
+/   %hr
+/   .col-md-1.col-xs-1.col-sm-1.small_scale_margin-left1
+/     %h4 Remarks
+/   .col-md-6.col-xs-6.col-sm-6
+/     %dl.dl-horizontal
+/       -if ticket.remarks.present?
+/         %dd= simple_format ticket.remarks
+/       -else
+/         %dd{:style=>"font-style: italic;"} Doesn't exist remarks..
+/ .row{style: "clear: both;position: relative; margin-left:202px; margin-right:2px"}
+/   %hr
+/   .col-md-3.col-xs-3.col-sm-3.small_scale_margin-left1
+/     %h4 Resolution Summary
+/   .col-md-4.col-xs-4.col-sm-4
+/     %dd= ticket.resolution_summary
+/ .row
+/   .col-md-1.pull-right.text-right.small_scale_padding-top1.small_scale_padding-bottom1
+/     = link_to "#", onclick: "Users.request_printer_application('ticket', '#{ticket.id}', 'ticket_request_type', 'print_ticket_tag_value', 'print_ticket'); false;", id: "ticket_print", data: {disable_with: "Printing..."}, class: "btn btn-default" do
+/       = ticket.ticket_print_count.to_i > 0 ? "Re-Print" : "Print"
 
-  .col-md-1.pull-right.text-right.small_scale_padding-top1
-    = link_to "#", onclick: "Users.request_printer_application('ticket', '#{ticket.id}', 'ticket_request_type', 'print_ticket_tag_value', 'print_ticket'); false;", id: "ticket_print", data: {disable_with: "Printing..."}, class: "btn btn-default" do
-      = ticket.ticket_print_count.to_i > 0 ? "Re-Print" : "Print"
-
-  .col-md-1.pull-right.text-right.small_scale_padding-top1
-    = link_to workflow_diagram_tickets_path(ticket_id: ticket.id), :target => "_blank" do
-      %button.btn.btn-info.btn-xs{:type => "button"}
-        %strong Workflow
-.row
-  .col-md-12
-    .strong Resolution Summary:
-    %p= ticket.resolution_summary
+/   .col-md-1.pull-right.text-right.small_scale_padding-top1.small_scale_padding-bottom1
+/     = link_to workflow_diagram_tickets_path(ticket_id: ticket.id), :target => "_blank" do
+/       %button.btn.btn-info.btn-xs{:type => "button"}
+/         %strong Workflow
