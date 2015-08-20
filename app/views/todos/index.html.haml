@@ -25,61 +25,43 @@
         .product
           - if formatted_workflow_mapping_for_user.is_a?(Array)
             - formatted_workflow_mapping_for_user.sort{|pf, lf| pf[:task_content]["created_on"].to_time <=> lf[:task_content]["created_on"].to_time}.each do |formatted_workflow_mapping|
-
-              .col-md-12{class: "text-#{level[INOCRM_CONFIG["priority"].key(formatted_workflow_mapping[:task_content]["priority"].to_i)]} bg-#{level[INOCRM_CONFIG["priority"].key(formatted_workflow_mapping[:task_content]["priority"].to_i)]}"}
-                .row
-                  .col-md-2.col-xs-2
-                    %img{:src => "assets/#{INOCRM_CONFIG["priority"].key formatted_workflow_mapping[:task_content]["priority"].to_i}.png"}
+              .col-md-12.col-xs-12.col-sm-12{class: "text-#{level[INOCRM_CONFIG["priority"].key(formatted_workflow_mapping[:task_content]["priority"].to_i)]} bg-#{level[INOCRM_CONFIG["priority"].key(formatted_workflow_mapping[:task_content]["priority"].to_i)]}", :style => "margin-top: 5px;", data: {toggle: "tooltip", placement: "right"}, title: "#{INOCRM_CONFIG["priority"].key formatted_workflow_mapping[:task_content]["priority"].to_i}"}
+                .col-md-1.col-xs-1.col-sm-1
+                  %img{:src => "assets/#{INOCRM_CONFIG["priority"].key formatted_workflow_mapping[:task_content]["priority"].to_i}.png", :style => "width: 80px; margin-top: 4px;"}
+                    .d{style: "top:34px; margin-left: 8px; position: absolute;"}
                       = formatted_workflow_mapping[:task_content]["created_on"].to_time.strftime("%Y-%m-%d")
+                    .t{style: "top:52px; margin-left: 11px; position: absolute;"}
                       = formatted_workflow_mapping[:task_content]["created_on"].to_time.strftime("%H:%M %p")
-                    / <img class="media-object" src="assets/highest.png">
-                    / = formatted_workflow_mapping[:task_content]["created_on"].to_time.strftime("%Y-%m-%d")
-                    / %br
-                    / = formatted_workflow_mapping[:task_content]["created_on"].to_time.strftime("%H:%M %p")
-                  .col-md-10
-                    / = INOCRM_CONFIG["priority"].key formatted_workflow_mapping[:task_content]["priority"].to_i
-                    .row.text_header{style: "font-weight: bold;"}
-                      = formatted_workflow_mapping[:first_header_title]
-                      = formatted_workflow_mapping[:second_header_title]
-                    .row
-                      %h4
-                        .label{class: "label-#{level[INOCRM_CONFIG["priority"].key(formatted_workflow_mapping[:task_content]["priority"].to_i)]}"}
-                          = formatted_workflow_mapping[:first_header_title].split("-").first.strip
-                    .row
-                      = link_to to_do_call_todos_path(url: formatted_workflow_mapping[:url], input_variables: formatted_workflow_mapping[:input_variables], task_id: formatted_workflow_mapping[:task_content]["id"], process_instance_id: formatted_workflow_mapping[:task_content]["process_instance_id"], owner: formatted_workflow_mapping[:task_content]["actual_owner"]), target: "_blank" do
+                .col-md-5.col-xs-5.col-sm-5.text_header{style: "font-weight: bold; margin-top: 3px;"}
+                  = formatted_workflow_mapping[:first_header_title]
+                  = formatted_workflow_mapping[:second_header_title]
+                  .row.col-md-12.col-xs-12.col-sm-12
+                    .label{class: "label-#{level[INOCRM_CONFIG["priority"].key(formatted_workflow_mapping[:task_content]["priority"].to_i)]}"}
+                      = formatted_workflow_mapping[:first_header_title].split("-").first.strip
+                    .row.col-md-12.col-xs-12.col-sm-12
+                      = link_to to_do_call_todos_path(url: formatted_workflow_mapping[:url],input_variables: formatted_workflow_mapping[:input_variables], task_id: formatted_workflow_mapping[:task_content]["id"], process_instance_id: formatted_workflow_mapping[:task_content]["process_instance_id"], owner: formatted_workflow_mapping[:task_content]["actual_owner"]), target: "_blank" do
                         = glyph(:ok, {:tag => :span})
-
-
+                      = glyph(:remove, {:tag => :span})
       = tab_content tabpointer: "role" do
         .product
           - if formatted_workflow_mapping_for_role.is_a?(Array)
             - formatted_workflow_mapping_for_role.sort{|pf, lf| pf[:task_content]["created_on"].to_time <=> lf[:task_content]["created_on"].to_time}.each do |formatted_workflow_mapping|
+              .col-md-12.col-xs-12.col-sm-12{class: "text-#{level[INOCRM_CONFIG["priority"].key(formatted_workflow_mapping[:task_content]["priority"].to_i)]} bg-#{level[INOCRM_CONFIG["priority"].key(formatted_workflow_mapping[:task_content]["priority"].to_i)]}", :style => "margin-top: 5px;", data: {toggle: "tooltip", placement: "right"}, title: "#{INOCRM_CONFIG["priority"].key formatted_workflow_mapping[:task_content]["priority"].to_i}"}
+                .col-md-1.col-xs-1.col-sm-1
+                  / %img{:src => "assets/#{INOCRM_CONFIG["priority"].key formatted_workflow_mapping[:task_content]["priority"].to_i}.png", :style => "width: 80px; margin-top: 4px;"}
 
-              .col-md-12{class: "text-#{level[INOCRM_CONFIG["priority"].key(formatted_workflow_mapping[:task_content]["priority"].to_i)]} bg-#{level[INOCRM_CONFIG["priority"].key(formatted_workflow_mapping[:task_content]["priority"].to_i)]}"}
-                .row
-                  .col-md-2.col-xs-2
-                    %img{:src => "assets/#{INOCRM_CONFIG["priority"].key formatted_workflow_mapping[:task_content]["priority"].to_i}.png" }
-                      = formatted_workflow_mapping[:task_content]["created_on"].to_time.strftime("%Y-%m-%d")
-                      = formatted_workflow_mapping[:task_content]["created_on"].to_time.strftime("%H:%M %p")
-                    / <img class="media-object" src="assets/highest.png">
-                    / = formatted_workflow_mapping[:task_content]["created_on"].to_time.strftime("%Y-%m-%d")
-                    / %br
-                    / = formatted_workflow_mapping[:task_content]["created_on"].to_time.strftime("%H:%M %p")
-                  .col-md-10
-                    / = INOCRM_CONFIG["priority"].key formatted_workflow_mapping[:task_content]["priority"].to_i
-                    .row.text_header{style: "font-weight: bold;"}
-                      = formatted_workflow_mapping[:first_header_title]
-                      = formatted_workflow_mapping[:second_header_title]
-                    .row
-                      .label{class: "label-#{level[INOCRM_CONFIG["priority"].key(formatted_workflow_mapping[:task_content]["priority"].to_i)]}"}
-                        = formatted_workflow_mapping[:first_header_title].split("-").first.strip
-                    .row
-                      = link_to to_do_call_todos_path(url: formatted_workflow_mapping[:url], input_variables: formatted_workflow_mapping[:input_variables], task_id: formatted_workflow_mapping[:task_content]["id"], process_instance_id: formatted_workflow_mapping[:task_content]["process_instance_id"], owner: formatted_workflow_mapping[:task_content]["actual_owner"]), target: "_blank" do
+                  = image_tag "#{INOCRM_CONFIG["priority"].key(formatted_workflow_mapping[:task_content]["priority"].to_i) || 'calendar-256'}.png", :style => "width: 80px; margin-top: 4px;"
+                  .d{style: "top:34px; margin-left: 8px; position: absolute;"}
+                    = formatted_workflow_mapping[:task_content]["created_on"].to_time.strftime("%Y-%m-%d")
+                  .t{style: "top:52px; margin-left: 11px; position: absolute;"}
+                    = formatted_workflow_mapping[:task_content]["created_on"].to_time.strftime("%H:%M %p")
+                .col-md-5.col-xs-5.col-sm-5.text_header{style: "font-weight: bold; margin-top: 3px;"}
+                  = formatted_workflow_mapping[:first_header_title]
+                  = formatted_workflow_mapping[:second_header_title]
+                  .row.col-md-12.col-xs-12.col-sm-12
+                    .label{class: "label-#{level[INOCRM_CONFIG["priority"].key(formatted_workflow_mapping[:task_content]["priority"].to_i)]}"}
+                      = formatted_workflow_mapping[:first_header_title].split("-").first.strip
+                    .row.col-md-12.col-xs-12.col-sm-12
+                      = link_to to_do_call_todos_path(url: formatted_workflow_mapping[:url],input_variables: formatted_workflow_mapping[:input_variables], task_id: formatted_workflow_mapping[:task_content]["id"], process_instance_id: formatted_workflow_mapping[:task_content]["process_instance_id"], owner: formatted_workflow_mapping[:task_content]["actual_owner"]), target: "_blank" do
                         = glyph(:ok, {:tag => :span})
-                / %tr
-                /   %td= count += 1
-                /   %td= formatted_workflow_mapping[:task_content]["created_on"].to_time.strftime("%Y-%m-%d %H:%M")
-                /   %td= INOCRM_CONFIG["priority"].key formatted_workflow_mapping[:task_content]["priority"].to_i
-                /   %td= formatted_workflow_mapping[:first_header_title].split("-").first.strip
-                /   %td #{formatted_workflow_mapping[:first_header_title]} #{formatted_workflow_mapping[:second_header_title]}
-                /   %td= link_to "Do", to_do_call_todos_path(url: formatted_workflow_mapping[:url], input_variables: formatted_workflow_mapping[:input_variables], task_id: formatted_workflow_mapping[:task_content]["id"], process_instance_id: formatted_workflow_mapping[:task_content]["process_instance_id"], owner: formatted_workflow_mapping[:task_content]["actual_owner"]), target: "_blank"
+                      = glyph(:remove, {:tag => :span})
