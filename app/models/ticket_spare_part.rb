@@ -17,6 +17,8 @@ class TicketSparePart < ActiveRecord::Base
   belongs_to :unused_reason, -> { where(spare_part_unused: true) }, class_name: "Reason", foreign_key: :unused_reason_id
 
   belongs_to :part_terminated_reason, -> { where(terminate_spare_part: true) }, class_name: "Reason", foreign_key: :part_terminated_reason_id
+
+
 end
 
 class TicketSparePartStore < ActiveRecord::Base
@@ -64,6 +66,8 @@ class TicketSparePartStore < ActiveRecord::Base
   self.table_name = "spt_ticket_spare_part_store"
 
   belongs_to :ticket_spare_part, foreign_key: :spare_part_id
+
+  belongs_to :ticket_estimation_part, foreign_key: :ticket_estimation_part_id
 end
 
 class SparePartStatusAction < ActiveRecord::Base
@@ -86,7 +90,7 @@ end
 class TicketSparePartStatusAction < ActiveRecord::Base
   self.table_name = "spt_ticket_spare_part_status_action"
 
-  has_many :ticket_spare_part, foreign_key: :status_use_id
+  belongs_to :ticket_spare_part, foreign_key: :spare_part_id
   belongs_to :spare_part_status_action, foreign_key: :status_id
 end
 

@@ -2,6 +2,14 @@
   = tab_nav_tab({class: "tabs-left", id: "secondary_tab"}, job_info: {content: "Job Info", active_class: "active job_c"}, contacts: {content: "Customer", active_class: "customer_c"}, warranties: {content: "Warranties", active_class: "warranties_c"}, history: {content: "Product History", active_class: "history_c"}, join: {content: "Join", active_class: "join_c"}, q_and_a: {content: "Q & A", active_class: "qa_C"}, parts_odered: {content: "Parts Ordered", active_class: "parts_odered_c"}, estimation: {content: "Estimation", active_class: "estimation_c"},payment_recived: {content: "Payment Recived", active_class: "payment_recived_c"}, fsr: {content: "FSR", active_class: "fsr_c"}, activity_history: {content: "Activity History", active_class: "activity_history_c"})
 .col-md-10.col-xs-12.col-sm-10
   .tab-content
+    .row
+      .pull-right
+        = link_to "#", onclick: "Users.request_printer_application('ticket', '#{ticket.id}', 'ticket_request_type', 'print_ticket_tag_value', 'print_ticket'); false;", id: "ticket_print", data: {disable_with: "Printing..."}, class: "btn btn-default" do
+          = ticket.ticket_print_count.to_i > 0 ? "Re-Print" : "Print"
+
+      .pull-right.small_scale_padding-right1
+        = link_to workflow_diagram_tickets_path(ticket_id: ticket.id), :target => "_blank", class: "btn btn-info" do
+          Workflow
     = tab_content tabpointer: :job_info, active_class: "active" do
       = render "tickets/job_info", product: product, ticket: ticket
     = tab_content tabpointer: :contacts do

@@ -239,7 +239,7 @@ class Sbu < ActiveRecord::Base
 #   has_many :breeds
 # end
 
-# class Dog::Breed < ActiveRecord::Base
+# class Breed < ActiveRecord::Base
 #   belongs_to :dog
 # end
 
