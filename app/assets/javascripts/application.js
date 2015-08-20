@@ -33,6 +33,10 @@ $.fn.editable.defaults.ajaxOptions = {type: "PUT"};
 
 
 
+// flash timeout
+$("#fade" ).delay(2000).fadeOut(1000);
+
+
 
 
 
