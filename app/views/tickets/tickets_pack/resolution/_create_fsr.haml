@@ -23,5 +23,5 @@
           .col-md-0
             = f.simple_fields_for :ticket_fsrs do |tf|
               = tf.input :created_by, as: :hidden, input_html: {value: current_user.id}
-          .col-md-6
+          .col-md-6{style: "position: relative; left:-98px;"}
             = f.submit "Save", class: "btn btn-success", id: "create_fsr_submit"
