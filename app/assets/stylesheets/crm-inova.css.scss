@@ -20,7 +20,7 @@ textarea{
   resize: none;
 }
 
-@for $index from 0 through 10 {
+@for $index from 0 through 12 {
   .small_scale_padding#{$index} {
     padding: ($index * 1%) !important;
   }
@@ -362,4 +362,9 @@ abbr{
       color: white;
     }
   }
+}
+
+
+.position_relative {
+  position: relative;
 }

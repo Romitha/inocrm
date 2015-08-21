@@ -34,6 +34,10 @@ class InventoriesController < ApplicationController
     end
   end
 
+  def update_part_order
+    
+  end
+
   private
     def ticket_spare_part_params
       t_spare_part = params.require(:ticket_spare_part).permit(:spare_part_no, :spare_part_description, :ticket_id, :ticket_fsr, :cus_chargeable_part, :request_from, :faulty_serial_no, :faulty_ct_no, :note, :status_action_id, :status_use_id, ticket_attributes: [:remarks, :id])

@@ -1832,7 +1832,7 @@ class TicketsController < ApplicationController
           @ticket_spare_part.create_ticket_spare_part_manufacture(payment_expected_manufacture: 0, manufacture_currency_id: @ticket_spare_part.ticket.manufacture_currency_id)
         elsif @ticket_spare_part.request_from == "S"
 
-          @ticket_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code("RQT").id if @ticket_spare_part.cus_chargeable_part
+          @ticket_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code("STR").id unless @ticket_spare_part.cus_chargeable_part
           action_id = TaskAction.find_by_action_no(15).id
 
           @ticket_spare_part_store = @ticket_spare_part.create_ticket_spare_part_store(store_id: params[:store_id], inv_product_id: params[:inv_product_id], mst_inv_product_id: params[:mst_inv_product_id], estimation_required: @ticket_spare_part.cus_chargeable_part, part_of_main_product: (params[:part_of_main_product] || 0), store_requested: !@ticket_spare_part.cus_chargeable_part, store_requested_at: ( !@ticket_spare_part.cus_chargeable_part ? DateTime.now : nil), store_requested_by: ( !@ticket_spare_part.cus_chargeable_part ? current_user.id : nil))
