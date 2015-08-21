@@ -17,6 +17,15 @@
     - eca = ticket_spare_part.spare_part_status_action.code == "ECA"
     - iss = ticket_spare_part.spare_part_status_action.code == "ISS"
 
+    - ord = ticket_spare_part.spare_part_status_action.code == "ORD"
+    - clt = ticket_spare_part.spare_part_status_action.code == "CLT"
+    - rcs = ticket_spare_part.spare_part_status_action.code == "RCS"
+    - rtn = ticket_spare_part.spare_part_status_action.code == "RTN"
+    - rpa = ticket_spare_part.spare_part_status_action.code == "RPA"
+    - bnd = ticket_spare_part.spare_part_status_action.code == "BND"
+    - cls = ticket_spare_part.spare_part_status_action.code == "CLS"
+    - aps = ticket_spare_part.spare_part_status_action.code == "APS"
+
     = collapse collapse_type: "info", header_content: "Ticket spare part: #{ticket_spare_part.spare_part_no} - #{ticket_spare_part.spare_part_description}", collapse_link: "ticket_spare_part_link_#{ticket_spare_part.id}", collapse_id: "ticket_spare_part_id", labelledby: "ticket_spare_part_lby_#{ticket_spare_part.id}" do
 
       .alert.alert-warning
@@ -41,6 +50,13 @@
               Action Status:
             = ticket_spare_part.spare_part_status_action.name
             = link_to "history", "#", tabindex: "0", rel: "popover", title: "Action History", data: {toggle: "popover", trigger: "click", content: ticket_spare_part.ticket_spare_part_status_actions.map { |tsp| "#{tsp.spare_part_status_action.name} <span class='text-muted text3'>#{User.cached_find_by_id(tsp.done_by).email}-#{tsp.done_at.strftime('%Y-%m-%d %H:%M %P')}</span>" }.join("<br/>"), placement: "bottom", html: true}
+            %strong Pending: 
+            - if manufacture_warranty
+              = SparePartStatusAction.find_by_manufacture_type_index(ticket_spare_part.spare_part_status_action.manufacture_type_index+1).name unless (ticket_spare_part.spare_part_status_action.manufacture_type_index+1 > 11) or (ticket_spare_part.spare_part_status_action.manufacture_type_index == 0)
+            - elsif store_warranty
+              = SparePartStatusAction.find_by_store_nc_type_index(ticket_spare_part.spare_part_status_action.store_nc_type_index+1).name unless (ticket_spare_part.spare_part_status_action.store_nc_type_index+1 > 7) or (ticket_spare_part.spare_part_status_action.store_nc_type_index == 0)
+            - else store_non_warranty
+              = SparePartStatusAction.find_by_store_ch_type_index(ticket_spare_part.spare_part_status_action.store_ch_type_index+1).name unless (ticket_spare_part.spare_part_status_action.store_ch_type_index+1 > 8) or (ticket_spare_part.spare_part_status_action.store_ch_type_index == 0)
           %hr
 
           .col-md-3
@@ -160,8 +176,7 @@
           = f.input :repare_start, as: :string
           = f.input :repare_end, as: :string
 
-        = f.input :note
-
+        = f.input :note if !(ord or clt or rcs or rtn or rpa or bnd or cls or aps or (str and store_non_warranty) )
 
         = f.submit "store request" if store_non_warranty and eca
 
@@ -194,6 +209,15 @@
             - cea = ticket_spare_part.spare_part_status_action.code == "CEA"
             - eca = ticket_spare_part.spare_part_status_action.code == "ECA"
             - iss = ticket_spare_part.spare_part_status_action.code == "ISS"
+
+            - ord = ticket_spare_part.spare_part_status_action.code == "ORD"
+            - clt = ticket_spare_part.spare_part_status_action.code == "CLT"
+            - rcs = ticket_spare_part.spare_part_status_action.code == "RCS"
+            - rtn = ticket_spare_part.spare_part_status_action.code == "RTN"
+            - rpa = ticket_spare_part.spare_part_status_action.code == "RPA"
+            - bnd = ticket_spare_part.spare_part_status_action.code == "BND"
+            - cls = ticket_spare_part.spare_part_status_action.code == "CLS"
+            - aps = ticket_spare_part.spare_part_status_action.code == "APS"
 
             .col-md-3
               %strong
@@ -329,7 +353,7 @@
         = f.input :return_part_serial_no if rce or rpr
         = f.input :return_part_ct_no if rce or rpr
 
-        = f.input :note
+        = f.input :note if !(ord or clt or rcs or rtn or rpa or bnd or cls or aps or (str and store_non_warranty) )
 
         = f.input :part_terminated if str
         = f.association :part_terminated_reason

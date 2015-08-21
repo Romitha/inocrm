@@ -1,7 +1,7 @@
 class TodosController < ApplicationController
   def index
-    Rails.cache.delete([:workflow_mapping_role, "assign_ticket"])
-    Rails.cache.delete([:workflow_mapping_user, "assign_ticket"])
+    # Rails.cache.delete([:workflow_mapping_role, "assign_ticket"])
+    # Rails.cache.delete([:workflow_mapping_user, "assign_ticket"])
 
     @potential_owner = current_user.roles.find_by_id(current_user.current_user_role_id).bpm_module_roles.first.try :code
     @todo_list_for_role = []
@@ -21,6 +21,8 @@ class TodosController < ApplicationController
         @workflow_mapping_for_role << {workflow_mapping: Rails.cache.fetch([:workflow_mapping_role, task_content["name"]]){WorkflowMapping.where(task_name: task_content["name"], process_name: task_content["process_id"]).first}, workflow_header: Rails.cache.fetch([:workflow_header, task_content["process_instance_id"]]){WorkflowHeaderTitle.find_by_process_id(task_content["process_instance_id"])}, task_content: task_content}
       end
       @formatted_workflow_mapping_for_role = @workflow_mapping_for_role.map{|w| {process_name: w[:workflow_mapping].process_name, task_name: w[:workflow_mapping].task_name, url: w[:workflow_mapping].url, first_header_title: w[:workflow_mapping].first_header_title, second_header_title_name: w[:workflow_mapping].second_header_title_name, input_variables: w[:workflow_mapping].input_variables, second_header_title: (w[:workflow_header].send(w[:workflow_mapping].second_header_title_name.to_sym) if w[:workflow_header]), task_content: w[:task_content]}}
+
+      # @formatted_workflow_mapping_for_role = @formatted_workflow_mapping_for_role_without_pagi.page(params[:page]).per(20)
       
     end
 
@@ -37,6 +39,16 @@ class TodosController < ApplicationController
 
     @formatted_workflow_mapping_for_user = @workflow_mapping_for_user.map{|w| {process_name: w[:workflow_mapping].process_name, task_name: w[:workflow_mapping].task_name, url: w[:workflow_mapping].url, first_header_title: w[:workflow_mapping].first_header_title, second_header_title_name: w[:workflow_mapping].second_header_title_name, input_variables: w[:workflow_mapping].input_variables, second_header_title: (w[:workflow_header].send(w[:workflow_mapping].second_header_title_name.to_sym) if w[:workflow_header]), task_content: w[:task_content]}}
 
+    # @formatted_workflow_mapping_for_user = @formatted_workflow_mapping_for_user_without_pagi.page(params[:page]).per(20)
+
+  end
+
+  def work_flow_mapping_for_user_for_pagi
+    
+  end
+
+  def work_flow_mapping_for_role_for_pagi
+    
   end
 
   def to_do_call
