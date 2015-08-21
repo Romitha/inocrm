@@ -24,7 +24,7 @@
   .row
     .col-md-3.small_scale_padding-top1
       .panel-group
-        .panel.panel-info
+        .panel{style: "border: 1px solid #dddddd;"}
           .panel-body{style: "background-color: ##{ticket.ticket_status.colour};"}
             %strong Engineer:
             %span.has-tooltip{:title => "#{ticket.owner_engineer_id and User.cached_find_by_id(ticket.owner_engineer_id).email}", "data-placement" => "bottom"}
@@ -38,11 +38,11 @@
             %br
             %strong Customer chargeable:
             = ticket.cus_chargeable ? "Yes" : "No"
-          .panel-heading 
+          .panel-heading{style: "text-align: center"}
             Engineer
     .col-md-3.small_scale_padding-top1
       .panel-group
-        .panel.panel-info
+        .panel{style: "border: 1px solid #dddddd;"}
           .panel-body{style: "background-color: ##{ticket.ticket_status.colour};"}
             %strong SLA time:
             #{pluralize ticket.slatime, 'Hr'}
@@ -53,11 +53,11 @@
             #{ticket.sla_finished_at.try :strftime, "%Y-%m-%d %H:%M"}
             %br
             %strong Remaining:
-          .panel-heading 
+          .panel-heading{style: "text-align: center"}
             SLA
     .col-md-3.small_scale_padding-top1
       .panel-group
-        .panel.panel-info
+        .panel{style: "border: 1px solid #dddddd;"}
           .panel-body{style: "background-color: ##{ticket.ticket_status.colour};"}
             %strong Created at:
             #{ticket.created_at.try :strftime, "%Y-%m-%d %H:%M"}
@@ -70,11 +70,11 @@
             %br
             %strong Updated:
             #{ticket.updated_at.try :strftime, "%Y-%m-%d %H:%M"}
-          .panel-heading 
+          .panel-heading{style: "text-align: center"}
             Ticket info
     .col-md-3.small_scale_padding-top1
       .panel-group
-        .panel.panel-info
+        .panel{style: "border: 1px solid #dddddd;"}
           .panel-body{style: "background-color: ##{ticket.ticket_status.colour};"}
             %strong Logged at:
             #{ticket.created_at.try :strftime, "%Y-%m-%d %H:%M"}
@@ -88,6 +88,5 @@
             %br
             %strong Status:
             #{ticket.ticket_status.name}
-          .panel-heading 
+          .panel-heading{style: "text-align: center;"}
             Logged
-             
