@@ -3,10 +3,8 @@
   %h3.margin-none Addresses - Primary details
 .modal-body
   / - if user.addresses.present?
-  .limit-height
-    = render "addresses/form", address: user.addresses.build
-    .fixed-height
-      - user.addresses.primary_address.order("created_at DESC").each do |address|
-        = render "addresses/address", address: address
-      - user.addresses.non_primary_address.order("created_at DESC").each do |address|
-        = render "addresses/address", address: address
+  = render "addresses/form", address: user.addresses.build
+  - user.addresses.primary_address.order("created_at DESC").each do |address|
+    = render "addresses/address", address: address
+  - user.addresses.non_primary_address.order("created_at DESC").each do |address|
+    = render "addresses/address", address: address

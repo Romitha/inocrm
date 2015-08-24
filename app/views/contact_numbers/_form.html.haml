@@ -14,7 +14,7 @@
           = contact_number.input :c_numberable_type, as: :hidden
           = contact_number.input :c_numberable_id, as: :hidden
 
-        = contact_number.input :value, wrapper_html: {class: "col-md-8 pull-right"},input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Type the contact number"}
+        = contact_number.input :value, wrapper_html: {class: "col-md-8 pull-right"},input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Type the contact number", autocomplete: false, value: nil}
 
         - if contact_number.object.c_numberable_type == "User"
           .form-group.col-md-12

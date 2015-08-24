@@ -1,27 +1,9 @@
-/*#wrap {width:100%; }
-#todo_list {  width: 15%;
-  text-align: left;
-  margin-left: 30px;
-  vertical-align: top;
-  margin-top: 60px;}
-
-.fa.fa-repeat {text-align: left;
-  vertical-align: top;
-  margin-left:89px;
-  margin-top:-24px;}
-
-#sort_by {    width: 15%;
-  margin-top: -223px;
-  margin-left: 73%;
-  position: absolute;}
-
-#select_box {    width: 15%;
-  margin-top: -223px;
-  margin-left: 78%;
-  position: absolute;}
-
-#table {      width: 70%;
-  margin-left: 10%;
-  margin-top: 16px;}*/ 
-
-
+.to_do_list_link {
+  display: block;
+  overflow: auto;
+  &:hover {
+    -webkit-box-shadow: 3px 3px 4px 0px rgba(50, 50, 50, 0.74);
+    -moz-box-shadow:    3px 3px 4px 0px rgba(50, 50, 50, 0.74);
+    box-shadow:         3px 3px 4px 0px rgba(50, 50, 50, 0.74);
+  }
+}

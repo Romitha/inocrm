@@ -4,9 +4,9 @@
 = collapse_wrapper collapse_id: "ticket_spare_part_id" do
   - ticket.ticket_spare_parts.each do |ticket_spare_part|
 
-    - manufacture_warranty = ticket_spare_part.ticket_spare_part_manufacture and not ticket_spare_part.cus_chargeable_part
-    - store_warranty = ticket_spare_part.ticket_spare_part_store and not ticket_spare_part.cus_chargeable_part
-    - store_non_warranty = ticket_spare_part.ticket_spare_part_store and ticket_spare_part.cus_chargeable_part
+    - manufacture_warranty = ticket_spare_part.ticket_spare_part_manufacture.present?
+    - store_warranty = (ticket_spare_part.ticket_spare_part_store and not ticket_spare_part.cus_chargeable_part)
+    - store_non_warranty = (ticket_spare_part.ticket_spare_part_store and ticket_spare_part.cus_chargeable_part)
 
     - rce = ticket_spare_part.spare_part_status_action.code == "RCE"
     - rpr = ticket_spare_part.spare_part_status_action.code == "RPR"
@@ -14,7 +14,6 @@
     - str = ticket_spare_part.spare_part_status_action.code == "STR"
     - ecm = ticket_spare_part.spare_part_status_action.code == "ECM"
     - cea = ticket_spare_part.spare_part_status_action.code == "CEA"
-    - eca = ticket_spare_part.spare_part_status_action.code == "ECA"
     - iss = ticket_spare_part.spare_part_status_action.code == "ISS"
 
     - ord = ticket_spare_part.spare_part_status_action.code == "ORD"
@@ -52,11 +51,11 @@
             = link_to "history", "#", tabindex: "0", rel: "popover", title: "Action History", data: {toggle: "popover", trigger: "click", content: ticket_spare_part.ticket_spare_part_status_actions.map { |tsp| "#{tsp.spare_part_status_action.name} <span class='text-muted text3'>#{User.cached_find_by_id(tsp.done_by).email}-#{tsp.done_at.strftime('%Y-%m-%d %H:%M %P')}</span>" }.join("<br/>"), placement: "bottom", html: true}
             %strong Pending: 
             - if manufacture_warranty
-              = SparePartStatusAction.find_by_manufacture_type_index(ticket_spare_part.spare_part_status_action.manufacture_type_index+1).name unless (ticket_spare_part.spare_part_status_action.manufacture_type_index+1 > 11) or (ticket_spare_part.spare_part_status_action.manufacture_type_index == 0)
+              = SparePartStatusAction.find_by_manufacture_type_index(ticket_spare_part.spare_part_status_action.manufacture_type_index+1).name_next unless (ticket_spare_part.spare_part_status_action.manufacture_type_index+1 > 11) or (ticket_spare_part.spare_part_status_action.manufacture_type_index == 0)
             - elsif store_warranty
-              = SparePartStatusAction.find_by_store_nc_type_index(ticket_spare_part.spare_part_status_action.store_nc_type_index+1).name unless (ticket_spare_part.spare_part_status_action.store_nc_type_index+1 > 7) or (ticket_spare_part.spare_part_status_action.store_nc_type_index == 0)
+              = SparePartStatusAction.find_by_store_nc_type_index(ticket_spare_part.spare_part_status_action.store_nc_type_index+1).name_next unless (ticket_spare_part.spare_part_status_action.store_nc_type_index+1 > 7) or (ticket_spare_part.spare_part_status_action.store_nc_type_index == 0)
             - else store_non_warranty
-              = SparePartStatusAction.find_by_store_ch_type_index(ticket_spare_part.spare_part_status_action.store_ch_type_index+1).name unless (ticket_spare_part.spare_part_status_action.store_ch_type_index+1 > 8) or (ticket_spare_part.spare_part_status_action.store_ch_type_index == 0)
+              = SparePartStatusAction.find_by_store_ch_type_index(ticket_spare_part.spare_part_status_action.store_ch_type_index+1).name_next unless (ticket_spare_part.spare_part_status_action.store_ch_type_index+1 > 8) or (ticket_spare_part.spare_part_status_action.store_ch_type_index == 0)
           %hr
 
           .col-md-3
@@ -159,6 +158,9 @@
 
       = simple_form_for ticket_spare_part, url: "#" do |f|
 
+        = hidden_field_tag :process_id, session[:process_id]
+        = hidden_field_tag :task_id, session[:task_id]
+        = hidden_field_tag :owner, session[:owner]
 
         - if (rce and (manufacture_warranty or store_warranty or store_non_warranty)) or (manufacture_warranty and rpr) or (store_non_warranty and rpr)
           = f.input :received_part_serial_no
@@ -178,7 +180,7 @@
 
         = f.input :note if !(ord or clt or rcs or rtn or rpa or bnd or cls or aps or (str and store_non_warranty) )
 
-        = f.submit "store request" if store_non_warranty and eca
+        = f.submit "store request" if store_non_warranty and cea
 
         = f.submit "recieved" if iss and (manufacture_warranty or store_warranty or store_non_warranty)
 
@@ -198,6 +200,7 @@
       .alert.alert-warning
         .row
           - ticket_spare_part = ticket_on_loan_spare_part.ticket_spare_part
+          - store_non_warranty = (ticket_spare_part.ticket_spare_part_store and ticket_spare_part.cus_chargeable_part)
 
           - if ticket_spare_part
 
@@ -341,6 +344,10 @@
                 = ticket_spare_part.ticket_spare_part_manufacture.event_closed ? "Yes" : "No"
 
       = simple_form_for ticket_on_loan_spare_part, url: "#" do |f|
+
+        = hidden_field_tag :process_id, session[:process_id]
+        = hidden_field_tag :task_id, session[:task_id]
+        = hidden_field_tag :owner, session[:owner]
 
         = f.input :return_part_serial_no if rce or rpr
         = f.input :return_part_ct_no if rce or rpr

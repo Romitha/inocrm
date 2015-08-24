@@ -1,7 +1,6 @@
 - level = {"Low" => "info", "Highest" => "danger", "High" => "warning", "Normal" => "success"}
 
-= link_to to_do_call_todos_path(url: formatted_workflow_mapping[:url], input_variables: formatted_workflow_mapping[:input_variables], task_id: formatted_workflow_mapping[:task_content]["id"], process_instance_id: formatted_workflow_mapping[:task_content]["process_instance_id"], owner: formatted_workflow_mapping[:task_content]["actual_owner"]), {class: "text-#{level[INOCRM_CONFIG["priority"].key(formatted_workflow_mapping[:task_content]["priority"].to_i)]} bg-#{level[INOCRM_CONFIG["priority"].key(formatted_workflow_mapping[:task_content]["priority"].to_i)]}"}, target: "_blank" do
-
+= link_to to_do_call_todos_path(url: formatted_workflow_mapping[:url],input_variables: formatted_workflow_mapping[:input_variables], task_id: formatted_workflow_mapping[:task_content]["id"], process_instance_id: formatted_workflow_mapping[:task_content]["process_instance_id"], owner: formatted_workflow_mapping[:task_content]["actual_owner"]), target: "_blank", class: "to_do_list_link" do
   .col-md-12.small_scale_padding1{class: "text-#{level[INOCRM_CONFIG["priority"].key(formatted_workflow_mapping[:task_content]["priority"].to_i)]} bg-#{level[INOCRM_CONFIG["priority"].key(formatted_workflow_mapping[:task_content]["priority"].to_i)]}", :style => "margin-top: 5px;", data: {toggle: "tooltip", placement: "right"}, title: "#{INOCRM_CONFIG["priority"].key formatted_workflow_mapping[:task_content]["priority"].to_i}"}
 
     .col-md-1.position_relative{style: "background: transparent url(#{image_path (INOCRM_CONFIG['priority'].key(formatted_workflow_mapping[:task_content]['priority'].to_i) || 'calendar-256')+'.png'}) no-repeat scroll left top / contain; height: 95px;"}
@@ -20,7 +19,3 @@
         .col-md-12
           .label{class: "label-#{level[INOCRM_CONFIG["priority"].key(formatted_workflow_mapping[:task_content]["priority"].to_i)]}"}
             = formatted_workflow_mapping[:first_header_title].split("-").first.strip
-      .row
-        .col-md-12
-          = glyph(:ok, {:tag => :span})
-          = glyph(:remove, {:tag => :span})
