@@ -165,6 +165,8 @@ Rails.application.routes.draw do
     collection do
       get "inventory_in_modal"
       get "search_inventories"
+      put "update_part_order"
+      put "update_onloan_part_order"
     end
   end
      

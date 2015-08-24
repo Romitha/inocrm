@@ -156,11 +156,13 @@
                 Part Event Closed:
               = ticket_spare_part.ticket_spare_part_manufacture.event_closed ? "Yes" : "No"
 
-      = simple_form_for ticket_spare_part, url: "#" do |f|
+      = simple_form_for ticket_spare_part, url: update_part_order_inventories_path, method: :put do |f|
 
         = hidden_field_tag :process_id, session[:process_id]
         = hidden_field_tag :task_id, session[:task_id]
         = hidden_field_tag :owner, session[:owner]
+
+        = hidden_field_tag :ticket_spare_part_id, ticket_spare_part.id
 
         - if (rce and (manufacture_warranty or store_warranty or store_non_warranty)) or (manufacture_warranty and rpr) or (store_non_warranty and rpr)
           = f.input :received_part_serial_no
@@ -178,20 +180,21 @@
           = f.input :repare_start, as: :string
           = f.input :repare_end, as: :string
 
-        = f.input :note if !(ord or clt or rcs or rtn or rpa or bnd or cls or aps or (str and store_non_warranty) )
+        = f.input :note, input_html: {value: nil} if !(ord or clt or rcs or rtn or rpa or bnd or cls or aps or (str and store_non_warranty) )
+        = simple_format ticket_spare_part.note
 
-        = f.submit "store request" if store_non_warranty and cea
+        = f.submit "store request", name: "store_request" if store_non_warranty and cea
 
-        = f.submit "recieved" if iss and (manufacture_warranty or store_warranty or store_non_warranty)
+        = f.submit "recieved", name: "recieved" if iss and (manufacture_warranty or store_warranty or store_non_warranty)
 
-        = f.submit "return" if manufacture_warranty and (rce or rpr)
+        = f.submit "return", name: "return" if manufacture_warranty and (rce or rpr)
 
         - if (rqt and manufacture_warranty) or (store_warranty and str) or (store_non_warranty and (rqt or ecm or cea))
           = f.input :part_terminated, wrapper: :append
 
           = f.label "Part terminate reason"
           = f.select :part_terminated_reason_id, Reason.where(terminate_spare_part: true).map{|r| [r.name, r.id]} # showing part_terminated is cheched through javascript
-          = f.submit "terminate"
+          = f.submit "terminate", name: "terminate"
 
 
   - ticket.ticket_on_loan_spare_parts.each do |ticket_on_loan_spare_part|
@@ -343,28 +346,31 @@
                   Part Event Closed:
                 = ticket_spare_part.ticket_spare_part_manufacture.event_closed ? "Yes" : "No"
 
-      = simple_form_for ticket_on_loan_spare_part, url: "#" do |f|
+      = simple_form_for ticket_on_loan_spare_part, url: update_onloan_part_order_inventories_path, method: :put do |f|
 
         = hidden_field_tag :process_id, session[:process_id]
         = hidden_field_tag :task_id, session[:task_id]
         = hidden_field_tag :owner, session[:owner]
 
-        = f.input :return_part_serial_no if rce or rpr
-        = f.input :return_part_ct_no if rce or rpr
+        = hidden_field_tag :ticket_on_loan_spare_part_id, ticket_on_loan_spare_part.id
 
-        = f.input :repare_start, as: :string
-        = f.input :repare_end, as: :string
+        - if rce or rpr
+          = f.input :return_part_serial_no
+          = f.input :return_part_ct_no
+        - if rce or rpr
+          = f.association :unused_reason
 
-        = f.association :unused_reason if rce or rpr
+          = f.input :return_part_serial_no
+          = f.input :return_part_ct_no
 
-        = f.input :return_part_serial_no if rce or rpr
-        = f.input :return_part_ct_no if rce or rpr
+        - if str or iss or rce or rpr
+          = f.input :note, input_html: {value: nil}
+          = simple_format ticket_spare_part.note
 
-        = f.input :note if !(ord or clt or rcs or rtn or rpa or bnd or cls or aps or (str and store_non_warranty) )
+        - if str
+          = f.input :part_terminated
+          = f.select :part_terminated_reason_id, Reason.where(terminate_spare_part: true).map{|r| [r.name, r.id]} # showing part_terminated is cheched through javascript
 
-        = f.input :part_terminated if str
-        = f.association :part_terminated_reason
-
-        = f.submit "terminate" if str
-        = f.submit "recieved" if iss
-        = f.submit "return" if rce
+        = f.submit "terminate", name: "terminate" if str
+        = f.submit "recieved", name: "recieved" if iss
+        = f.submit "return", name: "return" if rce or rpr
