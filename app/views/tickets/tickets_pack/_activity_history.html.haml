@@ -1,5 +1,5 @@
 .container.col-md-12{style: "max-height: 466px;overflow: auto;"}
-  -ticket.user_ticket_actions.each do |action|
+  - ticket.cached_user_ticket_actions.each do |action|
     - if action.persisted?
       .panel-group
         .panel.panel-info
@@ -235,7 +235,7 @@
                     Customer Chargeable: No
               .row
                 .col-md-4
-                  action.ticket.reason.find_by_id(action.request_spare_part.ticket_spare_part.terminated_reason_id).try(:reason)
+                  = action.request_spare_part.ticket_spare_part.part_terminated_reason.try(:reason)
               .row
                 .col-md-4
                   -if action.request_spare_part.ticket_spare_part.request_from == 'M'
