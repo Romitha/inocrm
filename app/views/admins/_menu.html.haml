@@ -2,20 +2,86 @@
   .navbar-default.sidebar{:role => "navigation"}
     .sidebar-nav.navbar-collapse
       %ul#side-menu.nav
+
         %li
-          %a{:href => admins_path}
-            %i.fa.fa-dashboard.fa-fw
-            Dashboard
+          %a{:href => "#"}
+            %i.fa.fa-files-o.fa-fw
+            About us
+
         %li
-          %a{:href => total_tickets_admins_path}
+          %a{:href => "#"}
+            %i.fa.fa-files-o.fa-fw
+            Organizations
+
+        %li
+          %a{:href => "#"}
+            %i.fa.fa-files-o.fa-fw
+            Users
+
+        %li
+          %a{:href => "#"}
             %i.fa.fa-files-o.fa-fw
             Tickets
 
         %li
-          %a{:href => reason_admins_path}
-            %i.fa.fa-files-o.fa-fw
-            reason
+          %a{:href =>"#collapseListGroup","aria-controls"=>"collapseListGroup","aria-expanded"=>"false","data-toggle"=>"collapse","role"=>"button"}
+
+            ticket dropdown
+          .collapse#collapseListGroup
+            %ul.list-group{style: "margin-bottom:0px;"}
+              %li.list-group-item
+                Brand
+              %li.list-group-item
+                Category
+              %li.list-group-item
+                Accessories
+              %li.list-group-item
+                Extra-remarks
+              %li.list-group-item
+                Problem categories
+              %li.list-group-item
+                Q & A's
+              %li.list-group-item
+                Reasons
+
         %li
-          %a{:href => total_products_admins_path}
+          %a{:href => "#"}
             %i.fa.fa-files-o.fa-fw
-            Products
+            Roles
+
+        %li
+          %a{:href => "#"}
+            %i.fa.fa-files-o.fa-fw
+            Permissions
+
+        %li
+          %a{:href => "#"}
+            %i.fa.fa-files-o.fa-fw
+            Sales
+
+        %li
+          %a{:href => "#"}
+            %i.fa.fa-files-o.fa-fw
+            Inventory
+
+        / == pervious view ==
+
+        / %li
+        /   %a{:href => admins_path}
+        /     %i.fa.fa-dashboard.fa-fw
+        /     Dashboard
+
+        / %li
+        /   %a{:href => total_tickets_admins_path}
+        /     %i.fa.fa-files-o.fa-fw
+        /     Tickets
+
+        / %li
+        /   %a{:href => reason_admins_path}
+        /     %i.fa.fa-files-o.fa-fw
+        /     reason
+
+        / %li
+        /   %a{:href => total_products_admins_path}
+        /     %i.fa.fa-files-o.fa-fw
+        /     Products
