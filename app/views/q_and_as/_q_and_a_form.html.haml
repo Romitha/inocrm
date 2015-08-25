@@ -4,7 +4,7 @@
 - ge_questions = @ge_questions
 - unless ticket.q_and_answers.present?
   - ticket.problem_category.q_and_as.each do |q_and_a|
-    - if q_and_a.task_action.action_no == 1
+    - if q_and_a.task_action.action_no == action_no
       - ticket.q_and_answers.build problematic_question_id: q_and_a.id
 
 - unless ticket.ge_q_and_answers.present?

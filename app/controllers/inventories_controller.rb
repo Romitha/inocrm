@@ -43,6 +43,20 @@ class InventoriesController < ApplicationController
 
     continue = true
 
+    save_ticket_spare_part = Proc.new do |spare_part_status, action_id_no|
+
+      ticket_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code(spare_part_status).id
+
+      ticket_spare_part.ticket_spare_part_status_actions.create(status_id: ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
+
+      action_id = TaskAction.find_by_action_no(action_id_no).id
+      user_ticket_action = ticket_spare_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: ticket_spare_part.ticket.re_open_count, action_id: action_id)
+
+      user_ticket_action.build_request_spare_part(ticket_spare_part_id: ticket_spare_part.id)
+
+      user_ticket_action.save
+    end
+
     # ticket_id, process_id, task_id should not be null
     # http://0.0.0.0:3000/tickets/assign-ticket?ticket_id=2&process_id=212&owner=supp_mgr&task_id=191
     if params[:task_id] and params[:process_id] and params[:owner]
@@ -73,16 +87,8 @@ class InventoriesController < ApplicationController
     if params[:terminate]
       if (manufacture_warranty and rqt) or (store_warranty and str) or (store_non_warranty and (rqt or ecm or cea))
 
-        ticket_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code("CLS").id
+        save_ticket_spare_part["CLS", 19]
 
-        ticket_spare_part.ticket_spare_part_status_actions.create(status_id: ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
-
-        action_id = TaskAction.find_by_action_no(19).id
-        user_ticket_action = ticket_spare_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: ticket_spare_part.ticket.re_open_count, action_id: action_id)
-
-        user_ticket_action.build_request_spare_part(ticket_spare_part_id: ticket_spare_part.id)
-
-        user_ticket_action.save
         @flash_message = "Termination is successfully done."
       end
     
@@ -91,18 +97,7 @@ class InventoriesController < ApplicationController
       if continue
         if manufacture_warranty and (rce or rpr)
 
-
-          ticket_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code("RTN").id
-
-          ticket_spare_part.ticket_spare_part_status_actions.create(status_id: ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
-
-          action_id = TaskAction.find_by_action_no(17).id
-          user_ticket_action = ticket_spare_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: ticket_spare_part.ticket.re_open_count, action_id: action_id)
-
-          user_ticket_action.build_request_spare_part(ticket_spare_part_id: ticket_spare_part.id)
-
-          user_ticket_action.save
-
+          save_ticket_spare_part["RTN", 17]
 
           # bpm output variables
           bpm_variables = view_context.initialize_bpm_variables.merge(d32_return_manufacture_part: "Y")
@@ -137,17 +132,7 @@ class InventoriesController < ApplicationController
 
         elsif (store_warranty and (rce or rpr)) or (store_non_warranty and (rce or rpr))
 
-          ticket_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code("RTN").id
-
-          ticket_spare_part.ticket_spare_part_status_actions.create(status_id: ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
-
-          action_id = TaskAction.find_by_action_no(17).id
-          user_ticket_action = ticket_spare_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: ticket_spare_part.ticket.re_open_count, action_id: action_id)
-
-          user_ticket_action.build_request_spare_part(ticket_spare_part_id: ticket_spare_part.id)
-
-          user_ticket_action.save
-
+          save_ticket_spare_part["RTN", 17]
 
           # bpm output variables
           bpm_variables = view_context.initialize_bpm_variables.merge(d24_return_store_part: "Y")
@@ -191,17 +176,7 @@ class InventoriesController < ApplicationController
       if continue
         if store_non_warranty and cea
 
-          ticket_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code("STR").id
-
-          ticket_spare_part.ticket_spare_part_status_actions.create(status_id: ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
-
-          action_id = TaskAction.find_by_action_no(15).id
-          user_ticket_action = ticket_spare_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: ticket_spare_part.ticket.re_open_count, action_id: action_id)
-
-          user_ticket_action.build_request_spare_part(ticket_spare_part_id: ticket_spare_part.id)
-
-          user_ticket_action.save
-
+          save_ticket_spare_part["STR", 15]
 
           # bpm output variables
           bpm_variables = view_context.initialize_bpm_variables.merge(d17_request_store_part: "Y")
@@ -243,16 +218,8 @@ class InventoriesController < ApplicationController
 
       if iss and (manufacture_warranty or store_warranty or store_non_warranty)
 
-        ticket_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code("RCE").id
+        save_ticket_spare_part["RCE", 16]
 
-        ticket_spare_part.ticket_spare_part_status_actions.create(status_id: ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
-
-        action_id = TaskAction.find_by_action_no(16).id
-        user_ticket_action = ticket_spare_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: ticket_spare_part.ticket.re_open_count, action_id: action_id)
-
-        user_ticket_action.build_request_spare_part(ticket_spare_part_id: ticket_spare_part.id)
-
-        user_ticket_action.save
       end
     end
     redirect_to todos_url, notice: @flash_message
@@ -265,6 +232,20 @@ class InventoriesController < ApplicationController
     @ticket = ticket_on_loan_spare_part.ticket
 
     continue = true
+
+    save_ticket_on_loan_spare_part = Proc.new do |onloan_spare_part_status, action_id_no|
+
+      ticket_on_loan_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code(onloan_spare_part_status).id
+
+      ticket_on_loan_spare_part.ticket_on_loan_spare_part_status_actions.create(status_id: ticket_on_loan_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
+
+      action_id = TaskAction.find_by_action_no(action_id_no).id
+      user_ticket_action = ticket_on_loan_spare_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: ticket_on_loan_spare_part.ticket.re_open_count, action_id: action_id)
+
+      user_ticket_action.build_request_on_loan_spare_part(ticket_on_loan_spare_part_id: ticket_on_loan_spare_part.id)
+
+      user_ticket_action.save
+    end
 
     # ticket_id, process_id, task_id should not be null
     # http://0.0.0.0:3000/tickets/assign-ticket?ticket_id=2&process_id=212&owner=supp_mgr&task_id=191
@@ -294,17 +275,8 @@ class InventoriesController < ApplicationController
     
     if params[:terminate]
       if str
-
-        ticket_on_loan_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code("CLS").id
-
-        ticket_on_loan_spare_part.ticket_on_loan_spare_part_status_actions.create(status_id: ticket_on_loan_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
-
-        action_id = TaskAction.find_by_action_no(53).id
-        user_ticket_action = ticket_on_loan_spare_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: ticket_on_loan_spare_part.ticket.re_open_count, action_id: action_id)
-
-        user_ticket_action.build_request_on_loan_spare_part(ticket_on_loan_spare_part_id: ticket_on_loan_spare_part.id)
-
-        user_ticket_action.save
+        save_ticket_on_loan_spare_part["CLS", 53]
+        @flash_message = "Terminate action is Successfully done."
       end
     
     elsif params[:return]
@@ -312,17 +284,7 @@ class InventoriesController < ApplicationController
       if continue
         if rce or rpr
 
-          ticket_on_loan_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code("RTN").id
-
-          ticket_on_loan_spare_part.ticket_on_loan_spare_part_status_actions.create(status_id: ticket_on_loan_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
-
-          action_id = TaskAction.find_by_action_no(52).id
-          user_ticket_action = ticket_on_loan_spare_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: ticket_on_loan_spare_part.ticket.re_open_count, action_id: action_id)
-
-          user_ticket_action.build_request_on_loan_spare_part(ticket_on_loan_spare_part_id: ticket_on_loan_spare_part.id)
-
-          user_ticket_action.save
-
+          save_ticket_on_loan_spare_part["RTN", 52]
 
           # bpm output variables
           bpm_variables = view_context.initialize_bpm_variables.merge(d24_return_store_part: "Y", onloan_request: "Y")
@@ -364,17 +326,8 @@ class InventoriesController < ApplicationController
     elsif params[:recieved]
 
       if iss
-
-        ticket_on_loan_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code("RCE").id
-
-        ticket_on_loan_spare_part.ticket_on_loan_spare_part_status_actions.create(status_id: ticket_on_loan_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
-
-        action_id = TaskAction.find_by_action_no(51).id
-        user_ticket_action = ticket_on_loan_spare_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: ticket_on_loan_spare_part.ticket.re_open_count, action_id: action_id)
-
-        user_ticket_action.build_request_on_loan_spare_part(ticket_on_loan_spare_part_id: ticket_on_loan_spare_part.id)
-
-        user_ticket_action.save
+        save_ticket_on_loan_spare_part["RCE", 51]
+        @flash_message = "Recieve action is Successfully done."
       end
 
     end

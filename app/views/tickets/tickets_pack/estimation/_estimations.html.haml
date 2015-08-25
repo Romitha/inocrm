@@ -1,0 +1,33 @@
+%strong All Estimations
+%table.table.table-responsive.table-condensed.table-bordered
+  %thead
+    %tr
+      %th
+      %th
+      %th
+      %th{colspan: 3, class: "text-center"} Estimated amount
+    %tr
+      %th No
+      %th Requested date
+      %th No of parts
+      %th Parts
+      %th Additional
+      %th Total
+      %th Min. advanced payment
+      %th Estimation status
+      %th select
+
+  %tbody
+    - ticket.ticket_estimations.each do |estimation|
+      %tr
+        %td= estimation.id
+        %td= estimation.requested_at
+        %td= estimation.ticket_estimation_parts.count
+        %td= estimation.ticket_estimation_parts.sum(:estimated_price)
+        %td= estimation.ticket_estimation_parts.sum(:cost_price)
+        %td= estimation.ticket_estimation_parts.sum(:estimated_price) + estimation.ticket_estimation_parts.sum(:cost_price)
+        %td= estimation.advance_payment_amount
+        %td= estimation.estimation_status.name
+        %td
+          = link_to "#" do
+            = estimation.id
