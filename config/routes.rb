@@ -11,6 +11,7 @@ Rails.application.routes.draw do
   resources :q_and_as do
     collection do
       get "q_and_answer_record"
+      patch "update_ticket_q_and_a"
     end
   end
 

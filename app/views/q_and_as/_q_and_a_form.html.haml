@@ -2,36 +2,59 @@
 - problem_category = @problem_category
 - ticket_action_id = @ticket_action_id
 - ge_questions = @ge_questions
-- unless ticket.q_and_answers.present?
-  - ticket.problem_category.q_and_as.each do |q_and_a|
-    - if q_and_a.task_action.action_no == action_no
-      - ticket.q_and_answers.build problematic_question_id: q_and_a.id
 
-- unless ticket.ge_q_and_answers.present?
+- pr_q_and_answers = []
+- ge_q_and_answers = []
+
+- if !ticket.q_and_answers.any?{|q_and_answer| q_and_answer.q_and_a.task_action.action_no == action_no}
+  - ticket.problem_category.q_and_as.includes(:task_action).where(mst_spt_action: {action_no: action_no}).each do |q_and_a|
+    - pr_q_and_answers << ticket.q_and_answers.build(problematic_question_id: q_and_a.id)
+
+- elsif ticket.persisted?
+  - pr_q_and_answers = ticket.q_and_answers.includes(:q_and_a).where(mst_spt_problematic_question: {action_id: action_no})
+
+- elsif !ticket.persisted? and ticket.q_and_answers.present?
+  - pr_q_and_answers = ticket.q_and_answers
+
+- if !ticket.ge_q_and_answers.any?{|ge_q_and_answer| ge_q_and_answer.ge_q_and_a.task_action.action_no == action_no}
   - ge_questions.each do |ge_q_and_a|
-    - ticket.ge_q_and_answers.build general_question_id: ge_q_and_a.id
+    - ge_q_and_answers << ticket.ge_q_and_answers.build(general_question_id: ge_q_and_a.id)
 
-= simple_nested_form_for ticket, url: q_and_answer_save_tickets_path, remote: true do |f|
+- elsif ticket.persisted?
+  - ge_q_and_answers = ticket.ge_q_and_answers.includes(:ge_q_and_a).where(mst_spt_general_question: {action_id: action_no})
+
+- elsif !ticket.persisted? and ticket.ge_q_and_answers.present?
+  - ge_q_and_answers = ticket.ge_q_and_answers
+
+= simple_nested_form_for ticket, url: url, remote: remote do |f|
+  = hidden_field_tag :ticket_id, ticket.id
+
   %h4 General questions
-  = f.simple_fields_for :ge_q_and_answers do |qa|
-    .col-md-6
-      .strong= qa.object.ge_q_and_a.question
+  - ge_q_and_answers.each_with_index do |ge_q_and_answer, index|
+    = f.simple_fields_for "ge_q_and_answers_attributes[#{index}]", ge_q_and_answer do |qa|
+      = qa.input :id, as: :hidden
       = qa.input :general_question_id, as: :hidden
-      - if qa.object.ge_q_and_a.answer_type == "YN"
-        = qa.input :answer, as: :radio_buttons, collection: ["Yes", "No"], include_blank: false, wrapper: :for_radio_button, required: qa.object.ge_q_and_a.compulsory
-      - elsif qa.object.ge_q_and_a.answer_type == "TX"
-        = qa.input :answer, required: qa.object.ge_q_and_a.compulsory
+      = qa.input :ticket_action_id, as: :hidden, input_html: {value: action_no}
+      .col-md-6
+        .strong= qa.object.ge_q_and_a.question
+
+        - if qa.object.ge_q_and_a.answer_type == "YN"
+          = qa.input :answer, as: :radio_buttons, collection: ["Yes", "No"], include_blank: false, wrapper: :for_radio_button, required: qa.object.ge_q_and_a.compulsory, input_html: {name: "ticket[ge_q_and_answers_attributes][#{index}][answer]"}
+        - elsif qa.object.ge_q_and_a.answer_type == "TX"
+          = qa.input :answer, required: qa.object.ge_q_and_a.compulsory
   %hr
   %h4 Problematic questions
-  = f.simple_fields_for :q_and_answers do |qa|
-    .col-md-6
-      .strong= qa.object.q_and_a.question
+  - pr_q_and_answers.each_with_index do |pr_q_and_answer, index|
+    = f.simple_fields_for "q_and_answers_attributes[#{index}]", pr_q_and_answer do |qa|
+      = qa.input :id, as: :hidden
       = qa.input :problematic_question_id, as: :hidden
-      - if qa.object.q_and_a.answer_type == "YN"
-        = qa.input :answer, as: :radio_buttons, collection: ["Yes", "No"], include_blank: false, wrapper: :for_radio_button, required: qa.object.q_and_a.compulsory, input_html: {rows: 1}
-      - elsif qa.object.q_and_a.answer_type == "TX"
-        = qa.input :answer, required: qa.object.q_and_a.compulsory, input_html: {rows: 1}
+      = qa.input :ticket_action_id, as: :hidden, input_html: {value: action_no}
+      .col-md-6
+        .strong= qa.object.q_and_a.question
+        - if qa.object.q_and_a.answer_type == "YN"
+          = qa.input :answer, as: :radio_buttons, collection: ["Yes", "No"], include_blank: false, wrapper: :for_radio_button, required: qa.object.q_and_a.compulsory, input_html: {rows: 1}, input_html: {name: "ticket[q_and_answers_attributes][#{index}][answer]"}
+        - elsif qa.object.q_and_a.answer_type == "TX"
+          = qa.input :answer, required: qa.object.q_and_a.compulsory, input_html: {rows: 1}
   .row
     .col-md-12
-      = link_to "Back", create_customer_tickets_path(customer_id: customer.id), remote: true, method: :post
-      = f.submit "Next", class: "btn btn-sm btn-success", data: { disable_with: "Please wait..." }, class: "btn btn-success", "id"=>"save_next"
+      = f.submit "#{current_page?(controller: 'warranties', action: 'new') ? 'Next' : 'Save'}", class: "btn btn-sm btn-success", data: { disable_with: "Please wait..." }, class: "btn btn-success", "id"=>"save_next"
