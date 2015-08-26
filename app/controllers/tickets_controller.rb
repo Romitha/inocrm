@@ -1015,6 +1015,8 @@ class TicketsController < ApplicationController
       @user_ticket_action = @ticket.user_ticket_actions.build(action_id: 2)
       @user_assign_ticket_action = @user_ticket_action.user_assign_ticket_actions.build
       @assign_regional_support_center = @user_ticket_action.assign_regional_support_centers.build
+
+      @ge_questions = GeQAndA.where(action_id: 5)
     end
     respond_to do |format|
       format.html {render "tickets/tickets_pack/resolution"}
