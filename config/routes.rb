@@ -38,6 +38,9 @@ Rails.application.routes.draw do
 
   resources :users, concerns: :polymophicable, only: []
   resources :organizations, concerns: :polymophicable do
+    collection do
+      get "organization"
+    end
     resources :designations
     resources :departments
     resources :roles_and_permissions do

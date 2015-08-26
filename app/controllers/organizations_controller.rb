@@ -16,6 +16,7 @@ class OrganizationsController < ApplicationController
     else
       @organizations = Organization.where(refers: nil).order("created_at DESC")
     end
+
   end
 
   def new
@@ -141,6 +142,10 @@ class OrganizationsController < ApplicationController
     respond_to do |format|
       format.html
     end
+  end
+
+  def organization
+    
   end
 
   private
