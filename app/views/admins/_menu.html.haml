@@ -9,7 +9,7 @@
             About us
 
         %li
-          %a{:href => "#"}
+          %a{:href => organization_organizations_path}
             %i.fa.fa-files-o.fa-fw
             Organizations
 
@@ -19,14 +19,9 @@
             Users
 
         %li
-          %a{:href => "#"}
+          %a{:href =>"#collapseListGroup","aria-controls"=>"collapseListGroup","aria-expanded"=>"false","data-toggle"=>"collapse","role"=>"button"}
             %i.fa.fa-files-o.fa-fw
             Tickets
-
-        %li
-          %a{:href =>"#collapseListGroup","aria-controls"=>"collapseListGroup","aria-expanded"=>"false","data-toggle"=>"collapse","role"=>"button"}
-
-            ticket dropdown
           .collapse#collapseListGroup
             %ul.list-group{style: "margin-bottom:0px;"}
               %li.list-group-item
@@ -43,6 +38,27 @@
                 Q & A's
               %li.list-group-item
                 Reasons
+
+        / %li
+        /   %a{:href =>"#collapseListGroup","aria-controls"=>"collapseListGroup","aria-expanded"=>"false","data-toggle"=>"collapse","role"=>"button"}
+
+        /     ticket dropdown
+        /   .collapse#collapseListGroup
+        /     %ul.list-group{style: "margin-bottom:0px;"}
+        /       %li.list-group-item
+        /         Brand
+        /       %li.list-group-item
+        /         Category
+        /       %li.list-group-item
+        /         Accessories
+        /       %li.list-group-item
+        /         Extra-remarks
+        /       %li.list-group-item
+        /         Problem categories
+        /       %li.list-group-item
+        /         Q & A's
+        /       %li.list-group-item
+        /         Reasons
 
         %li
           %a{:href => "#"}
