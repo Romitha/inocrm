@@ -1,12 +1,81 @@
+/  pervious view
+/ - estimation.ticket_estimation_externals.each do |estimation_external|
+/   Repaired by: #{estimation_external.repaired_by_id}
+/   %br/
+/   Cost price: #{estimation_external.cost_price}
+/   %br/
+/   Estimated price (Rs): #{estimation_external.estimated_price}
+/   %br/
+/   Profit margin:
+
+.row
+  .col-md-12
+    %h4 Selected Estimation
+
 - estimation.ticket_estimation_externals.each do |estimation_external|
-  Repaired by: #{estimation_external.repaired_by_id}
-  %br/
-  Cost price: #{estimation_external.cost_price}
-  %br/
-  Estimated price (Rs): #{estimation_external.estimated_price}
-  %br/
-  Profit margin: 
-  %br/
+
+  .row
+    .col-md-4
+      Repaired By (Organization): #{estimation_external.repair_by_id}
+    .col-md-6
+      Status : #{estimation.estimation_status.name}
+  .row
+    .col-md-4
+      Cost Price (#{estimation.ticket.ticket_currency.code}): #{estimation_external.cost_price}
+    - if estimation.approved
+      .col-md-6
+        Customer Approval : Approved
+    - else
+      .col-md-6
+        Customer Approval : Rejected
+
+  .row
+    .col-md-4
+      Estimated Price (#{estimation.ticket.ticket_currency.code}): #{estimation_external.estimated_price}
+    .col-md-6
+      Profit Margin : --
+
+
+  .row
+    .col-md-4
+      Additional Charges: #{number_with_precision estimation.ticket_estimation_externals.sum(:estimated_price), precision: 2}
+
+    .col-md-4
+      Cost Price (#{estimation.ticket.ticket_currency.code}):
+
+    .col-md-4
+      Estimated Price (#{estimation.ticket.ticket_currency.code}):
+  .row
+    .col-md-4.col-md-offset-4
+      Total  (#{estimation.ticket.ticket_currency.code}): xxx
+    .col-md-4
+      Total  (#{estimation.ticket.ticket_currency.code}): xxx
+
+  .row
+    .col-md-12
+      %strong Total Estimated Price (#{estimation.ticket.ticket_currency.code}) :
+  .row
+    .col-md-4
+      Min. Advance Payment (#{estimation.ticket.ticket_currency.code}): #{estimation.advance_payment_amount}
+    .col-md-6
+      Advance Payment Recieved (#{estimation.ticket.ticket_currency.code}): #{estimation.adv_payment_received_id}
+
+  .row
+    .col-md-6
+      Warranty Start Date: #{estimation_external.warranty_period}
+  .row
+    .col-md-6
+      Warranty End Date: #{estimation_external.warranty_period}
+  .row
+    .col-md-6
+      Note: #{estimation.note}
+
+  .row
+    .col-md-4.col-md-offset-8
+      %button.btn.btn-success
+        send mail
+
+
 
 %fieldset
   %legend Estimation customer approval
