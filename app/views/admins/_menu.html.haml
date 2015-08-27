@@ -4,12 +4,12 @@
       %ul#side-menu.nav
 
         %li
-          %a{:href => about_us_admins_path}
+          = link_to about_us_admins_path, class: (current_page?(action: 'about_us') ? 'active' : '' ) do
             %i.fa.fa-files-o.fa-fw
-            About us
+            About Us
 
         %li
-          %a{:href => organizations_admins_path}
+          = link_to organizations_admins_path, class: (current_page?(action: 'organizations') ? 'active' : '' ) do
             %i.fa.fa-files-o.fa-fw
             Organizations
 
