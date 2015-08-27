@@ -223,7 +223,6 @@ class InventoriesController < ApplicationController
       end
     end
     redirect_to todos_url, notice: @flash_message
-
   end
 
   def update_onloan_part_order
@@ -329,10 +328,26 @@ class InventoriesController < ApplicationController
         save_ticket_on_loan_spare_part["RCE", 51]
         @flash_message = "Recieve action is Successfully done."
       end
-
     end
+    redirect_to todos_url, notice: @flash_message
+  end
 
+  def load_estimation
+    @estimation_type = params[:estimation_type]
+    @estimation = TicketEstimation.find params[:estimation_id]
+  end
 
+  def update_estimation_customer_approval
+    @estimation = TicketEstimation.find estimation_params[:id]
+
+    if @estimation.update estimation_params.merge(cust_approved_at: DateTime.now)
+
+      @flash_message = {notice: "Sorry! unable to update"}
+    else
+
+      @flash_message = {error: "Sorry! unable to update"}
+    end
+    redirect_to todos_url, @flash_message
   end
 
   private
@@ -341,5 +356,9 @@ class InventoriesController < ApplicationController
       t_spare_part[:note] = t_spare_part[:note].present? ? "#{t_spare_part[:note]} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{ticket_spare_part.note}" : ticket_spare_part.note
 
       t_spare_part
+    end
+
+    def estimation_params
+      params.require(:ticket_estimation).permit(:note, :id, :cust_approved, :cust_approved_by)
     end
 end

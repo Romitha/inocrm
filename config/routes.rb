@@ -171,6 +171,8 @@ Rails.application.routes.draw do
       get "search_inventories"
       put "update_part_order"
       put "update_onloan_part_order"
+      get "load_estimation"
+      patch "update_estimation_customer_approval"
     end
   end
      

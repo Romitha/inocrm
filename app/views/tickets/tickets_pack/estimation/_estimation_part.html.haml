@@ -1,0 +1,84 @@
+%strong Selected Estimation
+%center.strong.br Status : #{estimation.estimation_status.name}
+%center.strong Customer Approval :- /Approved/Rejected
+%br Replaced Parts
+- estimation.ticket_estimation_parts.each do |estimation_part|
+  %fieldset
+    %legend Part No #{estimation_part.ticket_spare_part.try(:spare_part_no)}
+    .row
+      .col-md-12
+        Supplier : #{estimation_part.supplier.try :name}
+    .row
+      .col-md-6
+        Cost Price (#{estimation.ticket.ticket_currency.code}) : #{estimation_part.cost_price}
+      .col-md-6
+        Estimate Price (#{estimation.ticket.ticket_currency.code}) : #{estimation_part.estimated_price}
+    .row
+      .col-md-12
+        Part No : #{estimation_part.ticket_spare_part.try(:spare_part_no)}
+    .row
+      .col-md-4
+        Part Description : #{estimation_part.ticket_spare_part.try(:spare_part_description)}
+      .col-md-8
+        Warranty Period Months : #{estimation_part.warranty_period}
+    .row
+      .col-md-4
+        Started : #{estimation_part.created_at}
+      .col-md-4
+        Expierd : #{estimation_part.created_at}
+
+    - if estimation_part.ticket_spare_part.try(:ticket_spare_part_store).present?
+      .row
+        .col-md-12
+          %strong Requested Part
+      .row
+        .col-md-12
+          Store : #{estimation_part.ticket_spare_part.ticket_spare_part_store.try(:store).try(:name)}
+      .row
+        .col-md-12
+          Item Code : #{estimation_part.ticket_spare_part.ticket_spare_part_store.try(:inventory_product).try(:generated_item_code)}
+      .row
+        .col-md-12
+          Item Description : #{estimation_part.ticket_spare_part.ticket_spare_part_store.try(:inventory_product).try(:description)}
+      .row
+        .col-md-12
+          Available Qnt : #{estimation_part.ticket_spare_part.ticket_spare_part_store.try(:inventory_product).try(:inventory).try(:available_quantity)}
+        .col-md-12
+          Unit : #{estimation_part.ticket_spare_part.ticket_spare_part_store.try(:inventory_product).try(:inventory_unit).try(:unit)}
+    .row
+      .col-md-12
+        Note : #{simple_format estimation_part.ticket_spare_part.try(:note)}
+
+  .row
+    .col-md-4
+      Additional Charges : #{number_with_precision estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2}
+    .col-md-4
+      Cost Price(#{estimation.ticket.ticket_currency.code}) : #{estimation_part.cost_price}
+    .col-md-4
+      Estimate Price(#{estimation.ticket.ticket_currency.code}) : #{estimation_part.estimated_price}
+  .row
+    .col-md-4
+      Total (#{estimation.ticket.ticket_currency.code}) : xxxx
+    .col-md-4
+      Total (#{estimation.ticket.ticket_currency.code}) : xxxx
+  .row
+    .col-md-12
+      %strong Total Estimated Price (#{estimation.ticket.ticket_currency.code}) : #{number_with_precision(estimation.ticket_estimation_parts.sum(:estimated_price) + estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2)}
+  .row
+    .col-md-4
+      Mid.Advanced Payment (#{estimation.ticket.ticket_currency.code}) : xxxx
+    .col-md-4
+      Advanced Payment Recieved (#{estimation.ticket.ticket_currency.code}) : xxxx
+  .row
+    .col-md-12
+      Note : #{estimation.note}
+%fieldset
+  %legend Estimation customer approval
+  = simple_form_for estimation, url: update_estimation_customer_approval_inventories_path do |f|
+    = f.input :id, as: :hidden
+    / = f.input :cust_approved_at, as: :hidden, input_html: {value: DateTime.now}
+    = f.input :cust_approved_by, as: :hidden, input_html: {value: current_user.id}
+
+    = f.input :cust_approved, as: :radio_buttons, collection: {approved: true, rejected: false}, wrapper: :append, label: false
+    = f.input :note
+    = f.submit "Save", class: "btn btn-success btn-sm"
