@@ -18,6 +18,8 @@ class TicketSparePart < ActiveRecord::Base
 
   belongs_to :part_terminated_reason, -> { where(terminate_spare_part: true) }, class_name: "Reason", foreign_key: :part_terminated_reason_id
 
+  has_many :ticket_estimation_parts, foreign_key: :ticket_spare_part_id
+
   after_save :flush_cache
 
   def flush_cache

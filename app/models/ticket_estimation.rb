@@ -14,6 +14,9 @@ class TicketEstimation < ActiveRecord::Base
   has_many :ticket_estimation_parts, foreign_key: :ticket_estimation_id
   accepts_nested_attributes_for :ticket_estimation_parts, allow_destroy: true
 
+  has_many :ticket_estimation_additionals, foreign_key: :ticket_estimation_id
+  accepts_nested_attributes_for :ticket_estimation_additionals, allow_destroy: true
+
   belongs_to :estimation_status, foreign_key: :status_id
   belongs_to :currency, foreign_key: :currency_id
 
@@ -46,5 +49,24 @@ class TicketEstimationPart < ActiveRecord::Base
   has_many :ticket_spare_part_stores, foreign_key: :ticket_estimation_part_id
 
   belongs_to :supplier, class_name: "Organization", foreign_key: :supplier_id
+
+  belongs_to :ticket_spare_part, foreign_key: :ticket_spare_part_id
+
+end
+
+class TicketEstimationAdditional < ActiveRecord::Base
+  self.table_name = "spt_ticket_estimation_additional"
+
+  belongs_to :ticket_estimation, foreign_key: :ticket_estimation_id
+  belongs_to :ticket, foreign_key: :ticket_id
+
+  belongs_to :additional_charge, foreign_key: :additional_charge_id
+
+end
+
+class AdditionalCharge < ActiveRecord::Base
+  self.table_name = "mst_spt_additional_charge"
+
+  has_many :ticket_estimation_additionals, foreign_key: :additional_charge_id
 
 end
