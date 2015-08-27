@@ -38,9 +38,6 @@ Rails.application.routes.draw do
 
   resources :users, concerns: :polymophicable, only: []
   resources :organizations, concerns: :polymophicable do
-    collection do
-      get "organization"
-    end
     resources :designations
     resources :departments
     resources :roles_and_permissions do
@@ -162,6 +159,8 @@ Rails.application.routes.draw do
       get "closed-tickets", :action => :closed_tickets
       get "total-products", :action => :total_products
       get "reason"
+      get "organizations"
+      get "about-us", :action => :about_us
     end
   end
 
