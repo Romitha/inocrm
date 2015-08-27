@@ -32,4 +32,13 @@ class AdminsController < ApplicationController
     @reason = Reason.new
     render "admins/master_data/reason"
   end
+
+  def organizations
+
+  end
+
+  def about_us
+
+  end
+
 end
