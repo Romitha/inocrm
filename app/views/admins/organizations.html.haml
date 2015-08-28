@@ -1,3 +1,113 @@
-=render 'menu'
-#page-wrapper
-  =render 'organization'
+- org_sup_count = Organization.organization_suppliers.count
+- org_cus_count = Organization.organization_customers.count
+
+- ind_sup_count = Organization.individual_suppliers.count
+- ind_cus_count = Organization.individual_customers.count
+
+.row.col-md-12{style: "text-align: center;"}
+  .col-md-5
+    .panel-group{style: "border: 1px solid #000000;"}
+      .panel-body{style: "background-color: #359EE8; color: white;"}
+        .row.col-md-12
+          .col-md-6
+            %h1 #{org_sup_count}
+            %h4 Organizations
+          .col-md-6
+            %h1 #{ind_sup_count}
+            %h4 Indivuduals
+      .panel-heading
+        %strong Suppliers
+  .col-md-2
+  .col-md-5
+    .panel-group{style: "border: 1px solid #000000;"}
+      .panel-body{style: "background-color: #FA9507; color: white;"}
+        .row.col-md-12
+          .col-md-6
+            %h1 #{org_cus_count}
+            %h4 Organizations
+          .col-md-6
+            %h1 #{ind_cus_count}
+            %h4 Indivuduals
+      .panel-heading
+        %strong Customers
+
+.row.col-md-12
+  .col-md-7
+
+  .col-md-2
+    = select_tag "#", options_for_select([["Suppliers", "1"], ["Customers", "2"], ["Organizations", "3"], ["Indivuduals", "4"]]), {:prompt => "- All -"}
+    / %select{:id => "c_template_caller"}
+    /   %option{:value => "all"} All
+    /   %option{:value => "suppliers"} Suppliers
+    /   %option{:value => "customers"} Customers
+    /   %option{:value => "organizations"} Organizations
+    /   %option{:value => "indivuduals"} Indivuduals
+  .col-md-3
+
+/ .form-group
+/   #category_templates
+- org = Array[Organization.organization_suppliers, Organization.organization_customers, Organization.individual_suppliers, Organization.individual_customers]
+- org.each do |orglist|
+  - orglist.each do |organization|
+    .row
+      .col-lg-1
+        = link_to organization do
+          = image_tag (organization.logo.thumb.url || "organization_image.png"), class: "img-responsive img-thumbnail"
+      .col-lg-11
+        %h4.strong
+          .edit_organization
+            - if current_page?(controller: "organizations", action: "show", id: organization.id)
+              = link_to edit_organization_path(organization), class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Edit #{organization.name}" do
+                = glyph(:pencil, {:tag => :span})
+                = organization.name
+            - else
+              = link_to organization do
+                %span
+                  - case organization.category
+                  - when Organization::TYPES[0]
+                    = image_tag("organization_suppliers.png", style: "width: 2%;", alt: organization.name, title: "Supplier (organization)")
+                  - when Organization::TYPES[1]
+                    = image_tag("organization_customers.png", style: "width: 2%;", alt: organization.name, title: "Customer (organization)")
+                  - when Organization::TYPES[2]
+                    = image_tag("individual_supplier.png", style: "width: 2%;", alt: organization.name, title: "Supplier (Individual)")
+                  - when Organization::TYPES[3]
+                    = image_tag("individual_customer.png", style: "width: 2%;", alt: organization.name, title: "Customer (Individual)")
+                  - else
+                    = image_tag("home.png", style: "width: 2%;", alt: organization.name, title: "Home")
+                = content_tag(:span, organization.name, class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "More about #{organization.name}")
+                - if can? :edit, organization
+                  |
+                  = link_to edit_organization_path(organization), class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Edit #{organization.name}" do
+                    = glyph(:pencil, {:tag => :span})
+                    
+        %blockquote.font1.text-muted
+          = organization.short_name
+        %blockquote.font1
+          = organization.organization_type.name
+        .row{style: "text-align: center;"}
+          .col-sm-1
+            -if organization.category.split('_').first == "organization"
+              .label.label-info
+                = organization.category.split('_').first
+            -else
+              .label.label-warning
+                = organization.category.split('_').first
+          .col-sm-1{style: "margin-left: 5px;"}
+            -if organization.category.split('_').second == "customer"
+              .label.label-success
+                = organization.category.split('_').second
+            -else
+              .label.label-primary
+                = organization.category.split('_').second
+        %br
+    .row
+      .col-lg-6.padding-left0= "Vat Number: #{organization.vat_number}" if organization.vat_number
+      .col-lg-6.pull-right.padding0.text-right= link_to "Visit website",organization.web_site, data: {toggle: "tooltip", placement: "bottom"}, title: organization.web_site, rel: "tooltip", :target => "_blank" 
+    .row.small_scale_margin-top1
+      .col-lg-12.padding0
+        .panel.panel-default
+          .panel-body.show-limit
+            %p= organization.description
+            .hide_screen
+              = link_to "More >>", "#", onclick: "Organizations.toggle_more(); return false;", class: "hide more_toggle"
+

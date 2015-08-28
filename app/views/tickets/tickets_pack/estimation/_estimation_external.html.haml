@@ -77,13 +77,14 @@
 
 
 
-%fieldset
-  %legend Estimation customer approval
-  = simple_form_for estimation, url: update_estimation_customer_approval_inventories_path do |f|
-    = f.input :id, as: :hidden
-    / = f.input :cust_approved_at, as: :hidden, input_html: {value: DateTime.now}
-    = f.input :cust_approved_by, as: :hidden, input_html: {value: current_user.id}
+- if estimation.ticket_repair_type.code == "EX"
+  %fieldset
+    %legend Estimation customer approval
+    = simple_form_for estimation, url: update_estimation_customer_approval_inventories_path do |f|
+      = f.input :id, as: :hidden
+      / = f.input :cust_approved_at, as: :hidden, input_html: {value: DateTime.now}
+      = f.input :cust_approved_by, as: :hidden, input_html: {value: current_user.id}
 
-    = f.input :cust_approved, as: :radio_buttons, collection: {approved: true, rejected: false}, wrapper: :append, label: false
-    = f.input :note
-    = f.submit "Save", class: "btn btn-success btn-sm"
+      = f.input :cust_approved, as: :radio_buttons, collection: {approved: true, rejected: false}, wrapper: :append, label: false
+      = f.input :note
+      = f.submit "Save", class: "btn btn-success btn-sm"

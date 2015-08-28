@@ -1,103 +1,73 @@
-#wrapper
-  .navbar-default.sidebar{:role => "navigation"}
-    .sidebar-nav.navbar-collapse
-      %ul#side-menu.nav
+.navbar-default
+  .sidebar-nav
+    %ul#side-menu.nav
 
-        %li
-          = link_to about_us_admins_path, class: (current_page?(action: 'about_us') ? 'active' : '' ) do
-            %i.fa.fa-files-o.fa-fw
-            About Us
+      %li
+        = link_to about_us_admins_path, class: "text6 #{current_page?(action: 'about_us') ? 'active' : ''}" do
+          %span.icon-cube
+          About us
 
-        %li
-          = link_to organizations_admins_path, class: (current_page?(action: 'organizations') ? 'active' : '' ) do
-            %i.fa.fa-files-o.fa-fw
-            Organizations
+      %li
+        = link_to organizations_admins_path, class: "text6 #{current_page?(action: 'organizations') ? 'active' : ''}" do
+          %span.icon-sitemap
+          Organizations
 
-        %li
-          %a{:href => "#"}
-            %i.fa.fa-files-o.fa-fw
-            Users
+      %li
+        = link_to "#", class: "text6" do
+          %span.icon-group
+          Users
 
-        %li
-          %a{:href =>"#collapseListGroup","aria-controls"=>"collapseListGroup","aria-expanded"=>"false","data-toggle"=>"collapse","role"=>"button"}
-            %i.fa.fa-files-o.fa-fw
-            Tickets
-          .collapse#collapseListGroup
-            %ul.list-group{style: "margin-bottom:0px;"}
-              %li.list-group-item
+      %li
+        = link_to "#collapseListGroup", "aria-controls"=>"collapseListGroup", "aria-expanded"=>"false", "data-toggle"=>"collapse","role"=>"button", class: "text6" do
+          %span.icon-tty
+          Tickets
+        .collapse#collapseListGroup
+          %ul.nav.child-level
+            %li
+              = link_to "#", class: "text5" do
+                %span.icon-group
                 Brand
-              %li.list-group-item
+            %li
+              = link_to "#", class: "text5" do
+                %span.icon-group
                 Category
-              %li.list-group-item
+            %li
+              = link_to "#", class: "text5" do
+                %span.icon-group
                 Accessories
-              %li.list-group-item
+            %li
+              = link_to "#", class: "text5" do
+                %span.icon-group
                 Extra-remarks
-              %li.list-group-item
+            %li
+              = link_to "#", class: "text5" do
+                %span.icon-group
                 Problem categories
-              %li.list-group-item
+            %li
+              = link_to "#", class: "text5" do
+                %span.icon-group
                 Q & A's
-              %li.list-group-item
+            %li
+              = link_to "#", class: "text5" do
+                %span.icon-group
                 Reasons
 
-        / %li
-        /   %a{:href =>"#collapseListGroup","aria-controls"=>"collapseListGroup","aria-expanded"=>"false","data-toggle"=>"collapse","role"=>"button"}
+      %li
+        = link_to "#", class: "text6" do
+          %span.icon-paper-plane-o
+          Roles
 
-        /     ticket dropdown
-        /   .collapse#collapseListGroup
-        /     %ul.list-group{style: "margin-bottom:0px;"}
-        /       %li.list-group-item
-        /         Brand
-        /       %li.list-group-item
-        /         Category
-        /       %li.list-group-item
-        /         Accessories
-        /       %li.list-group-item
-        /         Extra-remarks
-        /       %li.list-group-item
-        /         Problem categories
-        /       %li.list-group-item
-        /         Q & A's
-        /       %li.list-group-item
-        /         Reasons
+      %li
+        = link_to "#", class: "text6" do
+          %span.icon-shield
+          Permissions
 
-        %li
-          %a{:href => "#"}
-            %i.fa.fa-files-o.fa-fw
-            Roles
+      %li
+        = link_to "#", class: "text6" do
+          %span.icon-exchange
+          Sales
 
-        %li
-          %a{:href => "#"}
-            %i.fa.fa-files-o.fa-fw
-            Permissions
-
-        %li
-          %a{:href => "#"}
-            %i.fa.fa-files-o.fa-fw
-            Sales
-
-        %li
-          %a{:href => "#"}
-            %i.fa.fa-files-o.fa-fw
-            Inventory
-
-        / == pervious view ==
-
-        / %li
-        /   %a{:href => admins_path}
-        /     %i.fa.fa-dashboard.fa-fw
-        /     Dashboard
-
-        / %li
-        /   %a{:href => total_tickets_admins_path}
-        /     %i.fa.fa-files-o.fa-fw
-        /     Tickets
-
-        / %li
-        /   %a{:href => reason_admins_path}
-        /     %i.fa.fa-files-o.fa-fw
-        /     reason
-
-        / %li
-        /   %a{:href => total_products_admins_path}
-        /     %i.fa.fa-files-o.fa-fw
-        /     Products
+      %li
+        = link_to "#", class: "text6" do
+          %span.icon-list-alt
+          Inventory

@@ -1,4 +1,7 @@
 class AdminsController < ApplicationController
+
+  layout "admins"
+
   def index
   	@tickets = Ticket.order("created_at DESC")
     @products = Product.all

@@ -20,7 +20,7 @@
     - ticket.ticket_estimations.each do |estimation|
       %tr
         %td
-          = link_to load_estimation_inventories_path(estimation_id: estimation.id, estimation_type: "#{ticket.cus_chargeable ? 'external' : 'part' }"), remote: true do
+          = link_to load_estimation_inventories_path(estimation_id: estimation.id, estimation_type: "#{ticket.ticket_repair_type.code == 'EX' ? 'external' : 'part' }"), remote: true do
             = estimation.id
         %td= estimation.requested_at
         %td= estimation.ticket_estimation_parts.count
