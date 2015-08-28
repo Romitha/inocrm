@@ -2,6 +2,14 @@
 %center.strong.br Status : #{estimation.estimation_status.name}
 %center.strong Customer Approval :- /Approved/Rejected
 %br Replaced Parts
+- if estimation.cust_approval_required
+  approved:
+  = estimation.approved
+  approved at:
+  = estimation.approved_at
+  approved by:
+  = estimation.approved_by
+
 - estimation.ticket_estimation_parts.each do |estimation_part|
   %fieldset
     %legend Part No #{estimation_part.ticket_spare_part.try(:spare_part_no)}
@@ -26,6 +34,7 @@
         Started : #{estimation_part.created_at}
       .col-md-4
         Expierd : #{estimation_part.created_at}
+
 
     - if estimation_part.ticket_spare_part.try(:ticket_spare_part_store).present?
       .row
@@ -72,13 +81,15 @@
   .row
     .col-md-12
       Note : #{estimation.note}
-%fieldset
-  %legend Estimation customer approval
-  = simple_form_for estimation, url: update_estimation_customer_approval_inventories_path do |f|
-    = f.input :id, as: :hidden
-    / = f.input :cust_approved_at, as: :hidden, input_html: {value: DateTime.now}
-    = f.input :cust_approved_by, as: :hidden, input_html: {value: current_user.id}
 
-    = f.input :cust_approved, as: :radio_buttons, collection: {approved: true, rejected: false}, wrapper: :append, label: false
-    = f.input :note
-    = f.submit "Save", class: "btn btn-success btn-sm"
+- if estimation.ticket.ticket_repair_type.code == "EX"
+  %fieldset
+    %legend Estimation customer approval
+    = simple_form_for estimation, url: update_estimation_customer_approval_inventories_path do |f|
+      = f.input :id, as: :hidden
+      / = f.input :cust_approved_at, as: :hidden, input_html: {value: DateTime.now}
+      = f.input :cust_approved_by, as: :hidden, input_html: {value: current_user.id}
+
+      = f.input :cust_approved, as: :radio_buttons, collection: {approved: true, rejected: false}, wrapper: :append, label: false
+      = f.input :note
+      = f.submit "Save", class: "btn btn-success btn-sm"

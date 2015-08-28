@@ -1,3 +1,33 @@
-=render 'menu'
-#page-wrapper
-  =render 'about_us'
+- organization = Organization.owner
+.row
+  .col-lg-1
+    = link_to organization do
+      = image_tag (organization.logo.thumb.url || "organization_image.png"), class: "img-responsive img-thumbnail"
+  .col-lg-11
+    %h4.strong
+      .edit_organization
+        - if current_page?(controller: "organizations", action: "show", id: organization.id)
+          = link_to edit_organization_path(organization), class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Edit #{organization.name}" do
+            = glyph(:pencil, {:tag => :span})
+            = organization.name
+        - else
+          = link_to organization do
+            = image_tag("home.png", style: "width: 2%;", alt: organization.name, title: "Home")
+
+            = content_tag(:span, organization.name, class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "More about #{organization.name}")
+            - if can? :edit, organization
+              |
+              = link_to edit_organization_path(organization), class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Edit #{organization.name}" do
+                = glyph(:pencil, {:tag => :span})
+
+    %blockquote.font1
+      = organization.short_name
+
+.row
+  .col-lg-6= "Vat Number: #{organization.vat_number}" if organization.vat_number
+  .col-lg-6.text-right= link_to "Visit website",organization.web_site, data: {toggle: "tooltip", placement: "bottom"}, title: organization.web_site, rel: "tooltip", :target => "_blank" 
+.row
+  .col-md-12
+    .panel.panel-default
+      .panel-body
+        %p= organization.description

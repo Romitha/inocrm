@@ -338,9 +338,20 @@ class InventoriesController < ApplicationController
   end
 
   def update_estimation_customer_approval
+    Ticket
     @estimation = TicketEstimation.find estimation_params[:id]
+    @estimation.attributes = estimation_params
 
-    if @estimation.update estimation_params.merge(cust_approved_at: DateTime.now)
+    @estimation.status_id = TicketStatus.find_by_code("CLS").id
+
+    if @estimation.cust_approved
+
+    else
+
+    end
+
+
+    if @estimation.save
 
       @flash_message = {notice: "Sorry! unable to update"}
     else
