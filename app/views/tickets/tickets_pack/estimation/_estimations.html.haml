@@ -17,11 +17,11 @@
       %th Estimation status
 
   %tbody
-    - ticket.ticket_estimations.each do |estimation|
+    - ticket.ticket_estimations.each_with_index do |estimation, index|
       %tr
         %td
           = link_to load_estimation_inventories_path(estimation_id: estimation.id, estimation_type: "#{ticket.ticket_repair_type.code == 'EX' ? 'external' : 'part' }"), remote: true do
-            = estimation.id
+            = index+1
         %td= estimation.requested_at
         %td= estimation.ticket_estimation_parts.count
         %td= number_with_precision estimation.ticket_estimation_parts.sum(:estimated_price), precision: 2

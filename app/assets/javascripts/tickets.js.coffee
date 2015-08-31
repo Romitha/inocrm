@@ -14,6 +14,7 @@ window.Tickets =
     @hp_case_validation()
     @job_finished_validation()
     @select_fsr()
+    @fade_flash_msg()
     return
 
   initial_loaders: ->
@@ -387,3 +388,6 @@ window.Tickets =
       else
         $(".ticket_spare_part_description").each ->
           $(@).addClass("hide")
+
+  fade_flash_msg: ->
+    $("#fade").delay(2000).fadeOut(1000)
