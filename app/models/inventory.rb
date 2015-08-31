@@ -10,7 +10,7 @@ class InventoryProduct < ActiveRecord::Base
 
   belongs_to :inventory_category3, foreign_key: :category3_id
 
-  belongs_to :inventory, foreign_key: :product_id
+  has_many :inventories, foreign_key: :product_id
 
   belongs_to :inventory_unit, foreign_key: :unit_id
 

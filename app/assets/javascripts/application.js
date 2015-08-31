@@ -32,16 +32,6 @@ $.fn.editable.defaults.mode = 'inline';
 $.fn.editable.defaults.ajaxOptions = {type: "PUT"};
 
 
-
-// flash timeout
-$("#fade" ).delay(2000).fadeOut(1000);
-
-
-
-
-
-
-
 $.fn.regexMask = function (mask) { 
 	if (!mask) { 
 		throw 'mandatory mask argument missing';
