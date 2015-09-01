@@ -1,0 +1,26 @@
+%h4 Problem category
+= simple_nested_form_for @new_problem_category, url: tickets_q_and_a_admins_path(status_param: "create"), method: :get, remote: true do |f|
+  .row.col-md-12
+    = f.input :name, as: :string, wrapper_html: {class: "col-md-7"}
+  %hr
+
+  %h4 Generate questions
+  = f.simple_fields_for :q_and_as do |q_and_a|
+    .row.col-md-12
+      .col-md-3
+        = q_and_a.input :answer_type, as: :radio_buttons, collection: INOCRM_CONFIG["answer_type_for_q_and_a"], wrapper: :append, checked: "YN"
+      .col-md-1
+        = q_and_a.input :active, wrapper: :append, input_html: {checked: true}
+      .col-md-2
+        = q_and_a.input :compulsory, wrapper: :append, input_html: {checked: true}
+      .col-md-3
+        = q_and_a.association :task_action, collection: TaskAction.where(action_no: [1,5,57,58]), label_method: :action_description, value_method: :id, include_blank: false
+      .col-md-3
+        = q_and_a.input :question, wrapper_html: {class: "col-md-11"}, input_html: {rows: 1}
+        .add_sign
+          = q_and_a.link_to_remove do
+            %span.glyphicon.glyphicon-remove-sign
+  .row.col-md-12
+    = f.link_to_add :q_and_as do
+      %span.glyphicon.glyphicon-plus-sign
+  = f.submit "Save", class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2", data: {disable_with: "Please wait..."}

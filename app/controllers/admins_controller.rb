@@ -30,7 +30,6 @@ class AdminsController < ApplicationController
     @products = Product.all
   end
 
-
   def reason
     @reason = Reason.new
     render "admins/master_data/reason"
@@ -42,6 +41,22 @@ class AdminsController < ApplicationController
 
   def about_us
 
+  end
+
+  def q_and_a
+    Ticket
+    ProblemCategory
+    Warranty
+    @new_problem_category = ProblemCategory.new
+    if params[:status_param] == "create"
+      @new_problem_category = ProblemCategory.new problem_category_params
+      @new_problem_category.save
+    end
+
+  end
+
+  def problem_category_params
+    params.require(:problem_category).permit(:name, q_and_as_attributes: [:_destroy, :id, :active, :answer_type, :question, :action_id, :compulsory])
   end
 
 end
