@@ -44,7 +44,7 @@
                 %span.icon-group
                 Problem categories
             %li
-              = link_to "#", class: "text5" do
+              = link_to tickets_q_and_a_admins_path, class: "text5 #{current_page?(action: 'q_and_a') ? 'active' : ''}" do
                 %span.icon-group
                 Q & A's
             %li
