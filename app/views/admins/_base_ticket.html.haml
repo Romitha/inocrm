@@ -1,82 +1,140 @@
 - tickets = @tickets
+- ticket_status = TicketStatus.all #to access data in ticket status table
 - t_o = t_c = o = c = 0
-.row
-  .col-lg-12
-    %h1.page-header.margin-top0 Dashboard
-.row
+- t_highest = t_high = t_normal = t_low = 0 # get count of priority levels(highest,high,normal,low) in a status(open ,close)
+
+/ to get icons from icon-fonts.scss
+- icon = { 1 => "icon-folder-open", 2 => "icon-user",12 => "icon-hour-glass", 13 => "icon-cutlery", 14 => "icon-bar-graph-2",15 => "icon-speech-bubble",16 => "icon-open",17 => "icon-download",18 => "icon-warning"}
+
+- ticket_status.each do |status|
+
+  / - h = tickets.where(status_id: status.id).group(:priority).count
+  / - h.each do |key, val|
+  /   =  "#{key} => #{val}"
+
   .col-lg-3.col-md-6
-    .panel.panel-primary
+    .panel{style:"background-color:##{status.colour};"}
       .panel-heading
-        .row
-          .col-xs-3
-            %i.fa.fa-tasks.fa-5x
-          .col-xs-9.text-right
-            - tickets.each do |ticket|
-              -if ticket.created_at.to_date == Date.today
-                -if ticket.status_id == 1
-                  -t_o = 1 + t_o
-            .huge #{t_o}
-            %div Today Open Tickets
-      %a{:href => today_open_tickets_admins_path}
+        - tickets.each do |ticket|
+          -if ticket.status_id == status.id
+            -t_c = 1 + t_c #ticket count
+
+            -if ticket.priority == 3
+              - t_highest = 1 + t_highest
+            -if ticket.priority == 2
+              - t_high = 1 + t_high
+            -if ticket.priority == 1
+              - t_normal = 1 + t_normal
+            -if ticket.priority == 0
+              - t_low = 1 + t_low
+
+        / set icon & text colour
+        .row{style: "color:white;"}
+          .col-md-4.margin-top2
+            %i.font4{class: "#{icon[status.id]}"}
+
+          .col-md-8
+            .text-right.font1{style: "font-size: 200%;"} #{t_c}
+            .text-left
+              highest : #{t_highest}
+              %br
+              high : #{t_high}
+              %br
+              normal : #{t_normal}
+              %br
+              low : #{t_low}
+
+      %a{:href => "#"}
         .panel-footer
-          %span.pull-left View Details
+          %span.pull-left #{status.name}
           %span.pull-right
             %i.fa.fa-arrow-circle-right
           .clearfix
-  .col-lg-3.col-md-6
-    .panel.panel-green
-      .panel-heading
-        .row
-          .col-xs-3
-            %i.fa.fa-tasks.fa-5x
-          .col-xs-9.text-right
-            - tickets.each do |ticket|
-              -if ticket.created_at.to_date == Date.today
-                -if ticket.status_id == 9
-                  -t_c = 1 + t_c
-            .huge #{t_c}
-            %div Today Closed Tickets
-      %a{:href => today_closed_tickets_admins_path}
-        .panel-footer
-          %span.pull-left View Details
-          %span.pull-right
-            %i.fa.fa-arrow-circle-right
-          .clearfix
-  .col-lg-3.col-md-6
-    .panel.panel-yellow
-      .panel-heading
-        .row
-          .col-xs-3
-            %i.fa.fa-tasks.fa-5x
-          .col-xs-9.text-right
-            - tickets.each do |ticket|
-              -if ticket.status_id == 1
-                -o = 1 + o
-            %br
-            .huge #{o}
-            %div Open Tickets
-      %a{:href => open_tickets_admins_path}
-        .panel-footer
-          %span.pull-left View Details
-          %span.pull-right
-            %i.fa.fa-arrow-circle-right
-          .clearfix
-  .col-lg-3.col-md-6
-    .panel.panel-red
-      .panel-heading
-        .row
-          .col-xs-3
-            %i.fa.fa-tasks.fa-5x
-          .col-xs-9.text-right
-            - tickets.each do |ticket|
-              -if ticket.status_id == 9
-                -c = 1 + c
-            %br
-            .huge #{c}
-            %div Closed Tickets
-      %a{:href => closed_tickets_admins_path}
-        .panel-footer
-          %span.pull-left View Details
-          %span.pull-right
-            %i.fa.fa-arrow-circle-right
-          .clearfix
+
+  / to start from the begin
+  - t_highest = t_high = t_normal = t_low = 0
+  - t_c = 0
+
+/ previous code
+/ - tickets = @tickets
+/ - t_o = t_c = o = c = 0
+/ .row
+/   .col-lg-12
+/     %h1.page-header.margin-top0 Dashboard
+/ .row
+/   .col-lg-3.col-md-6
+/     .panel.panel-primary
+/       .panel-heading
+/         .row
+/           .col-xs-3
+/             %i.fa.fa-tasks.fa-5x
+/           .col-xs-9.text-right
+/             - tickets.each do |ticket|
+/               -if ticket.created_at.to_date == Date.today
+/                 -if ticket.status_id == 1
+/                   -t_o = 1 + t_o
+/             .huge #{t_o}
+/             %div Today Open Tickets
+/       %a{:href => today_open_tickets_admins_path}
+/         .panel-footer
+/           %span.pull-left View Details
+/           %span.pull-right
+/             %i.fa.fa-arrow-circle-right
+/           .clearfix
+/   .col-lg-3.col-md-6
+/     .panel.panel-green
+/       .panel-heading
+/         .row
+/           .col-xs-3
+/             %i.fa.fa-tasks.fa-5x
+/           .col-xs-9.text-right
+/             - tickets.each do |ticket|
+/               -if ticket.created_at.to_date == Date.today
+/                 -if ticket.status_id == 9
+/                   -t_c = 1 + t_c
+/             .huge #{t_c}
+/             %div Today Closed Tickets
+/       %a{:href => today_closed_tickets_admins_path}
+/         .panel-footer
+/           %span.pull-left View Details
+/           %span.pull-right
+/             %i.fa.fa-arrow-circle-right
+/           .clearfix
+/   .col-lg-3.col-md-6
+/     .panel.panel-yellow
+/       .panel-heading
+/         .row
+/           .col-xs-3
+/             %i.fa.fa-tasks.fa-5x
+/           .col-xs-9.text-right
+/             - tickets.each do |ticket|
+/               -if ticket.status_id == 1
+/                 -o = 1 + o
+/             %br
+/             .huge #{o}
+/             %div Open Tickets
+/       %a{:href => open_tickets_admins_path}
+/         .panel-footer
+/           %span.pull-left View Details
+/           %span.pull-right
+/             %i.fa.fa-arrow-circle-right
+/           .clearfix
+/   .col-lg-3.col-md-6
+/     .panel.panel-red
+/       .panel-heading
+/         .row
+/           .col-xs-3
+/             %i.fa.fa-tasks.fa-5x
+/           .col-xs-9.text-right
+/             - tickets.each do |ticket|
+/               -if ticket.status_id == 9
+/                 -c = 1 + c
+/             %br
+/             .huge #{c}
+/             %div Closed Tickets
+/       %a{:href => closed_tickets_admins_path}
+/         .panel-footer
+/           %span.pull-left View Details
+/           %span.pull-right
+/             %i.fa.fa-arrow-circle-right
+/           .clearfix
