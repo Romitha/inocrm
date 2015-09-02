@@ -1,23 +1,22 @@
-.col-md-12
-  = simple_form_for contact_number, url: polymorphic_path([contact_number.c_numberable, contact_number]) do |contact_number|
-    .row
-      = panels panel_type: "success", header_content: "Add contact_number" do
-        - if contact_number.object.errors.present?
-          %ul.alert.alert-danger
-            - contact_number.object.errors.full_messages.each do |error|
-              %li= error
-        .col-md-3
-          .has-tooltip{data: {toggle: "tooltip", placement: "left"}, title: "Type"}
-            = contact_number.input :category, collection: ContactNumber::TYPES, include_blank: false, input_html: {class: "chosen-select"}
-          = contact_number.label :primary
-          = contact_number.check_box :primary
-          = contact_number.input :c_numberable_type, as: :hidden
-          = contact_number.input :c_numberable_id, as: :hidden
+= simple_form_for contact_number, url: polymorphic_path([contact_number.c_numberable, contact_number]) do |contact_number|
+  .row
+    = panels panel_type: "success", header_content: "Add contact_number" do
+      - if contact_number.object.errors.present?
+        %ul.alert.alert-danger
+          - contact_number.object.errors.full_messages.each do |error|
+            %li= error
+      .col-md-3
+        .has-tooltip{data: {toggle: "tooltip", placement: "left"}, title: "Type"}
+          = contact_number.input :category, collection: ContactNumber::TYPES, include_blank: false, input_html: {class: "chosen-select"}
+        = contact_number.label :primary
+        = contact_number.check_box :primary
+        = contact_number.input :c_numberable_type, as: :hidden
+        = contact_number.input :c_numberable_id, as: :hidden
 
-        = contact_number.input :value, wrapper_html: {class: "col-md-8 pull-right"},input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Type the contact number", autocomplete: false, value: nil}
+      = contact_number.input :value, wrapper_html: {class: "col-md-8 pull-right"},input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Type the contact number", autocomplete: false, value: nil}
 
-        - if contact_number.object.c_numberable_type == "User"
-          .form-group.col-md-12
-            = password_field_tag "current_user_password", nil, placeholder: "password", class: "form-control has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Password"
-        .col-md-12
-          = contact_number.submit "Add new contact_number", class: "btn btn-success pull-right", id: "submit_new_contact_number"
+      - if contact_number.object.c_numberable_type == "User"
+        .form-group.col-md-12
+          = password_field_tag "current_user_password", nil, placeholder: "password", class: "form-control has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Password"
+      .col-md-12
+        = contact_number.submit "Add new contact_number", class: "btn btn-success pull-right", id: "submit_new_contact_number"
