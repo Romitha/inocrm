@@ -18,9 +18,15 @@
           Users
 
       %li
-        = link_to "#collapseListGroup", "aria-controls"=>"collapseListGroup", "aria-expanded"=>"false", "data-toggle"=>"collapse","role"=>"button", class: "text6" do
-          %span.icon-tty
-          Tickets
+        .btn.navbar-btn
+          = link_to total_tickets_admins_path,style: "text-decoration:none;","role"=>"button", class: "text6" do
+            %span.icon-tty
+            Tickets
+
+        .btn.navbar-btn
+          = link_to "#collapseListGroup","id"=>"submenu",style: "text-decoration:none;", "aria-controls"=>"collapseListGroup", "aria-expanded"=>"false", "data-toggle"=>"collapse","role"=>"button", class: "text6" do
+            %span.icon-chevron-left
+
         .collapse#collapseListGroup
           %ul.nav.child-level
             %li
