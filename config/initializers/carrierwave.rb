@@ -6,6 +6,7 @@
 # end
 user = 'dev'
 password = 'dev123'
+stfp_server = "192.168.1.146"
 
 case Rails.env
 when "production"

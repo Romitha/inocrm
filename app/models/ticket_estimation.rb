@@ -20,6 +20,7 @@ class TicketEstimation < ActiveRecord::Base
   belongs_to :estimation_status, foreign_key: :status_id
   belongs_to :currency, foreign_key: :currency_id
 
+  belongs_to :ticket_payment_received, foreign_key: :adv_payment_received_id
 end
 
 class TicketEstimationExternal < ActiveRecord::Base
@@ -68,5 +69,12 @@ class AdditionalCharge < ActiveRecord::Base
   self.table_name = "mst_spt_additional_charge"
 
   has_many :ticket_estimation_additionals, foreign_key: :additional_charge_id
+
+end
+
+class TicketPaymentReceived < ActiveRecord::Base
+  self.table_name = "spt_ticket_payment_received"
+
+  has_many :ticket_estimations, foreign_key: :adv_payment_received_id
 
 end

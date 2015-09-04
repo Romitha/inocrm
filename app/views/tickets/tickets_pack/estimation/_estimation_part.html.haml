@@ -1,3 +1,5 @@
+- total_estimation = 0
+
 %strong Selected Estimation
 %center.strong.br Status : #{estimation.estimation_status.name}
 %center.strong Customer Approval :- #{estimation.cust_approved ? 'Approved' : (estimation.cust_approved.nil? ? '' : 'Rejected') }
@@ -21,8 +23,10 @@
         Cost Price (#{estimation.ticket.ticket_currency.code}) : #{estimation_part.cost_price}
       .col-md-6
         - if estimation.approval_required
+          - total_estimation = total_estimation + estimation_part.approved_estimated_price.to_i
           Estimate Price (#{estimation.ticket.ticket_currency.code}) : #{estimation_part.approved_estimated_price}
         - else
+          - total_estimation = total_estimation + estimation_part.estimated_price.to_i
           Estimate Price (#{estimation.ticket.ticket_currency.code}) : #{estimation_part.estimated_price}
     .row
       .col-md-12
@@ -60,33 +64,45 @@
       .col-md-12
         Note : #{simple_format estimation_part.ticket_spare_part.try(:note)}
 
+- estimation.ticket_estimation_additionals.each do |ticket_estimation_additional|
+  .row
+    .col-md-4
+      Additional Charges : #{ticket_estimation_additional.additional_charge.try(:additional_charge)}
+    .col-md-4
+      Cost Price(#{estimation.ticket.ticket_currency.code}) : #{ticket_estimation_additional.cost_price}
+    .col-md-4
+      - if estimation.approval_required
+        Estimate Price (#{estimation.ticket.ticket_currency.code}) : #{ticket_estimation_additional.approved_estimated_price}
+      - else
+        Estimate Price (#{estimation.ticket.ticket_currency.code}) : #{ticket_estimation_additional.estimated_price}
 
-  .row
-    .col-md-4
-      Additional Charges : #{number_with_precision estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2}
-    .col-md-4
-      Cost Price(#{estimation.ticket.ticket_currency.code}) : #{estimation_part.cost_price}
-    .col-md-4
-      Estimate Price(#{estimation.ticket.ticket_currency.code}) : #{estimation_part.estimated_price}
-  .row
-    .col-md-4
-      Total (#{estimation.ticket.ticket_currency.code}) : xxxx
-    .col-md-4
-      Total (#{estimation.ticket.ticket_currency.code}) : xxxx
-    .col-md-4
-      Total (#{estimation.ticket.ticket_currency.code}) : xxxx
+.row
+  .col-md-4
+    / Total (#{estimation.ticket.ticket_currency.code}) : xxxx
+  .col-md-4
+    Total (#{estimation.ticket.ticket_currency.code}) : #{number_with_precision estimation.ticket_estimation_additionals.sum(:cost_price), precision: 2}
+  .col-md-4
+    - if estimation.approval_required
+      - total_estimation = total_estimation + estimation.ticket_estimation_additionals.sum(:approved_estimated_price).to_i
+      Total (#{estimation.ticket.ticket_currency.code}) : #{number_with_precision estimation.ticket_estimation_additionals.sum(:approved_estimated_price), precision: 2}
+    - else
+      - total_estimation = total_estimation + estimation.ticket_estimation_additionals.sum(:estimated_price).to_i
+      Total (#{estimation.ticket.ticket_currency.code}) : #{number_with_precision estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2}
 
-  .row
-    .col-md-12
-      %strong Total Estimated Price (#{estimation.ticket.ticket_currency.code}) : #{number_with_precision(estimation.ticket_estimation_parts.sum(:estimated_price) + estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2)}
-  .row
-    .col-md-4
+.row
+  .col-md-12
+    %strong Total Estimated Price (#{estimation.ticket.ticket_currency.code}) : #{number_with_precision total_estimation, precision: 2}
+.row
+  .col-md-4
+    - if estimation.approval_required
+      Min.Advanced Payment (#{estimation.ticket.ticket_currency.code}) : #{number_with_precision estimation.approved_adv_pmnt_amount, precision: 2}
+    - else
       Min.Advanced Payment (#{estimation.ticket.ticket_currency.code}) : #{number_with_precision estimation.advance_payment_amount, precision: 2}
-    .col-md-4
-      Advanced Payment Recieved (#{estimation.ticket.ticket_currency.code}) : xxxx
-  .row
-    .col-md-12
-      Note : #{estimation.note}
+  .col-md-4
+    Advanced Payment Recieved (#{estimation.ticket.ticket_currency.code}) : #{number_with_precision estimation.ticket_payment_received.try(:amount).to_i, precision: 2}
+.row
+  .col-md-12
+    Note : #{estimation.note}
 
 - if estimation.ticket.ticket_repair_type.code == "EX"
   %fieldset
