@@ -24,3 +24,5 @@ time_format: "%H:%M"
 printer_url: "http://127.0.0.1:1963"
 # non_secured: "http://127.0.0.1:1963"
 # secured: "https://print.doc.lk:1967"
+
+icon: ["icon-folder-open","icon-user-tie","icon-hour-glass","icon-bug","icon-bar-graph-2","icon-speech-bubble","icon-open","icon-download","icon-warning"]

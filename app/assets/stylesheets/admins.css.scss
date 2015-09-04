@@ -5,3 +5,18 @@
     }
   }
 }
+.with_submenu {
+  a {
+    display: inline-block !important;
+    &.dropdown-label {
+      width: 78%;
+    }
+  }
+}
+.text-decor {
+  font-weight: bold;
+  color: white;
+  -moz-text-shadow:2px 2px 2px black;
+  -webkit-text-shadow:2px 2px 2px black;
+  text-shadow:2px 2px 2px black;
+}

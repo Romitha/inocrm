@@ -1,10 +1,8 @@
-# Place all the behaviors and hooks related to the matching controller here.
-# All this logic will automatically be available in application.js.
-# You can use CoffeeScript in this file: http://coffeescript.org/
+window.Admins =
+  setup: ->
+    @admin_menu_dropdown()
+    return
 
-
-$("#submenu").click ->
-	$("span",this).toggleClass("icon-chevron-left icon-chevron-down");
-
-$("#submenu").dblclick ->
-	$("span",this).toggleClass("icon-chevron-left icon-chevron-down");
+  admin_menu_dropdown: ->
+    $(".with_submenu a.pull-right").click ->
+      $("span",this).toggleClass("icon-chevron-left icon-chevron-down");

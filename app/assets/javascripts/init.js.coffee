@@ -7,4 +7,5 @@ $ ->
   Tickets.setup()
   Departments.setup()
   Inventories.setup()
+  Admins.setup()
   return

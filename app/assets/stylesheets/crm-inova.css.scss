@@ -125,7 +125,7 @@ textarea{
 @for $index from 0 through 12 {  
   .text#{$index}{
     font-size: ($index * 0.25em) !important;
-    line-height: ($index * 0.25em * 1.5) !important;
+    line-height: ($index * 0.25em * 1.1) !important;
   }
 }
 

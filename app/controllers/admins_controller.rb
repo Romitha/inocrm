@@ -12,7 +12,8 @@ class AdminsController < ApplicationController
     @WarrantyTypes = WarrantyType.all
   end
   def total_tickets
-  	@tickets = Ticket.order("created_at DESC")
+    Ticket
+    @ticket_statuses = TicketStatus.all
   end
   def today_open_tickets
   	@tickets = Ticket.order("created_at DESC")

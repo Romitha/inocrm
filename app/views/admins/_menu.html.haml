@@ -17,17 +17,15 @@
           %span.icon-group
           Users
 
-      %li
-        .btn.navbar-btn
-          = link_to total_tickets_admins_path,style: "text-decoration:none;","role"=>"button", class: "text6" do
-            %span.icon-tty
-            Tickets
+      %li.with_submenu
+        = link_to total_tickets_admins_path, class: "text6 dropdown-label" do
+          %span.icon-tty
+          Tickets
 
-        .btn.navbar-btn
-          = link_to "#collapseListGroup","id"=>"submenu",style: "text-decoration:none;", "aria-controls"=>"collapseListGroup", "aria-expanded"=>"false", "data-toggle"=>"collapse","role"=>"button", class: "text6" do
-            %span.icon-chevron-left
+        = link_to "#submenu", "role" => "button", "data-toggle" => "collapse", "aria-expanded" => "false", "aria-controls" => "collapseExample", class: "text6 pull-right" do
+          %span.icon-chevron-left
 
-        .collapse#collapseListGroup
+        .collapse#submenu
           %ul.nav.child-level
             %li
               = link_to "#", class: "text5" do
