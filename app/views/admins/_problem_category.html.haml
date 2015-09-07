@@ -1,5 +1,11 @@
 %h4 Problem category
-= simple_nested_form_for @new_problem_category, url: tickets_q_and_a_admins_path(status_param: "create"), method: :get, remote: true do |f|
+- if @new_problem_category.errors.present?
+  .alert.alert-danger
+    %ul
+      - @new_problem_category.errors.full_messages.each do |error|
+        %li= error
+= simple_nested_form_for @new_problem_category, url: tickets_q_and_a_admins_path, method: :post do |f|
+  = f.hidden_field :status_param, value: "create"
   .row.col-md-12
     = f.input :name, as: :string, wrapper_html: {class: "col-md-7"}
   %hr
@@ -14,7 +20,8 @@
       .col-md-2
         = q_and_a.input :compulsory, wrapper: :append, input_html: {checked: true}
       .col-md-3
-        = q_and_a.association :task_action, collection: TaskAction.where(action_no: [1,5,57,58]), label_method: :action_description, value_method: :id, include_blank: false
+        = q_and_a.association :task_action, collection: TaskAction.all, label_method: :action_description, value_method: :id, include_blank: false
+        / where(action_no: [1,5,57,58])
       .col-md-4
         = q_and_a.input :question, wrapper_html: {class: "col-md-11"}, input_html: {rows: 1}
         .add_sign

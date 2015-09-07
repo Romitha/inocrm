@@ -6,7 +6,7 @@
   }
 }
 .with_submenu {
-  a {
+  > a {
     display: inline-block !important;
     &.dropdown-label {
       width: 78%;

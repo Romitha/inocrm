@@ -48,10 +48,16 @@ class AdminsController < ApplicationController
     Ticket
     ProblemCategory
     Warranty
-    @new_problem_category = ProblemCategory.new
     if params[:status_param] == "create"
       @new_problem_category = ProblemCategory.new problem_category_params
-      @new_problem_category.save
+
+      if @new_problem_category.save
+        @new_problem_category = ProblemCategory.new
+        params[:status_param] = nil
+      end
+
+    else
+      @new_problem_category = ProblemCategory.new
     end
 
   end
