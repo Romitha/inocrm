@@ -45,6 +45,24 @@ class AdminsController < ApplicationController
   end
 
   def q_and_a
+    # Ticket
+    # ProblemCategory
+    # Warranty
+    # if params[:status_param] == "create"
+    #   @new_problem_category = ProblemCategory.new problem_category_params
+
+    #   if @new_problem_category.save
+    #     @new_problem_category = ProblemCategory.new
+    #     params[:status_param] = nil
+    #   end
+
+    # else
+    #   @new_problem_category = ProblemCategory.new
+    # end
+
+  end
+
+  def problem_category
     Ticket
     ProblemCategory
     Warranty

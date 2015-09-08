@@ -44,11 +44,11 @@
                 %span.icon-group
                 Extra-remarks
             %li
-              = link_to "#", class: "text5" do
+              = link_to tickets_problem_category_admins_path, class: "text5 #{current_page?(action: 'problem_category') ? 'active' : ''}" do
                 %span.icon-group
                 Problem categories
             %li
-              = link_to tickets_q_and_a_admins_path, class: "text5 #{current_page?(action: 'q_and_a') ? 'active' : ''}" do
+              = link_to "#", class: "text5" do
                 %span.icon-group
                 Q & A's
             %li

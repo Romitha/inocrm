@@ -162,6 +162,7 @@ Rails.application.routes.draw do
       get "organizations"
       get "about-us", :action => :about_us
       match "tickets/q_and_a", to: "admins#q_and_a", via: [:get, :post]
+      match "tickets/problem_category", to: "admins#problem_category", via: [:get, :post]
       # namespace "/tickets" do
       #   get 'q_and_a', :action => :ticket_q_and_a
       # end

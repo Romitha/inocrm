@@ -1,33 +1,105 @@
-%h4 Problem category
-- if @new_problem_category.errors.present?
-  .alert.alert-danger
-    %ul
-      - @new_problem_category.errors.full_messages.each do |error|
-        %li= error
-= simple_nested_form_for @new_problem_category, url: tickets_q_and_a_admins_path, method: :post do |f|
-  = f.hidden_field :status_param, value: "create"
-  .row.col-md-12
-    = f.input :name, as: :string, wrapper_html: {class: "col-md-7"}
-  %hr
+.row.col-md-6
+  %fieldset{:style => "border: 1px black solid; \nmargin-left: 1em; padding: 0.2em 0.8em "}
+    %legend Problematic Questions
+    = collapse_wrapper collapse_id: "problematic_question_id" do
+      - QAndA.all.each do |qa|
 
-  %h4 Generate questions
-  = f.simple_fields_for :q_and_as do |q_and_a|
+        -if qa.active == false
+          = collapse collapse_type: "default", header_content: "#{qa.problem_category.name}", collapse_link: "problematic_question_link_#{qa.id}", collapse_id: "problematic_question_id", labelledby: "problematic_question_lby_#{qa.id}" do
+
+            .alert.alert-warning
+              .row
+                .col-md-7
+                  %strong
+                    =qa.question
+                .col-md-5
+                  %strong
+                    Answer type:
+                    =qa.answer_type
+                .col-md-3
+                  %span.badge
+                    =qa.task_action.action_description
+        -if qa.compulsory == true
+          = collapse collapse_type: "danger", header_content: "#{qa.problem_category.name}", collapse_link: "problematic_question_link_#{qa.id}", collapse_id: "problematic_question_id", labelledby: "problematic_question_lby_#{qa.id}" do
+
+            .alert.alert-warning
+              .row
+                .col-md-7
+                  %strong
+                    =qa.question
+                .col-md-5
+                  %strong
+                    Answer type:
+                    =qa.answer_type
+                .col-md-3
+                  %span.badge
+                    =qa.task_action.action_description
+        -if qa.compulsory == false
+          = collapse collapse_type: "info", header_content: "#{qa.problem_category.name}", collapse_link: "problematic_question_link_#{qa.id}", collapse_id: "problematic_question_id", labelledby: "problematic_question_lby_#{qa.id}" do
+
+            .alert.alert-warning
+              .row
+                .col-md-7
+                  %strong
+                    =qa.question
+                .col-md-5
+                  %strong
+                    Answer type:
+                    =qa.answer_type
+                .col-md-3
+                  %span.badge
+                    =qa.task_action.action_description
+
+.row.col-md-6
+  %fieldset{:style => "border: 1px black solid; \nmargin-left: 1em; padding: 0.2em 0.8em "}
+    %legend General Questions
+    = collapse_wrapper collapse_id: "general_question_id" do
+      - GeQAndA.all.each do |gqa|
+        = collapse collapse_type: "info", header_content: "#{gqa.question}", collapse_link: "general_question_link_#{gqa.id}", collapse_id: "general_question_id", labelledby: "general_question_lby_#{gqa.id}" do
+
+          .alert.alert-warning
+            .row
+              .col-md-5
+                %strong
+                  =gqa.question
+              .col-md-5
+                %strong
+                  Answer type:
+                  =gqa.answer_type
+              .col-md-4
+                %span.badge
+                  =gqa.task_action.action_description
+.row.col-md-12
+  %h4 Problem category
+  - if @new_problem_category.errors.present?
+    .alert.alert-danger
+      %ul
+        - @new_problem_category.errors.full_messages.each do |error|
+          %li= error
+  = simple_nested_form_for @new_problem_category, url: tickets_problem_category_admins_path, method: :post do |f|
+    = hidden_field_tag :status_param, "create"
     .row.col-md-12
-      .col-md-2
-        = q_and_a.input :answer_type, as: :radio_buttons, collection: INOCRM_CONFIG["answer_type_for_q_and_a"], wrapper: :append, checked: "YN"
-      .col-md-1
-        = q_and_a.input :active, wrapper: :append, input_html: {checked: true}
-      .col-md-2
-        = q_and_a.input :compulsory, wrapper: :append, input_html: {checked: true}
-      .col-md-3
-        = q_and_a.association :task_action, collection: TaskAction.all, label_method: :action_description, value_method: :id, include_blank: false
-        / where(action_no: [1,5,57,58])
-      .col-md-4
-        = q_and_a.input :question, wrapper_html: {class: "col-md-11"}, input_html: {rows: 1}
-        .add_sign
-          = q_and_a.link_to_remove do
-            %span.glyphicon.glyphicon-remove-sign
-  .row.col-md-12
-    = f.link_to_add :q_and_as do
-      %span.glyphicon.glyphicon-plus-sign
-  = f.submit "Save", class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2", data: {disable_with: "Please wait..."}
+      = f.input :name, as: :string, wrapper_html: {class: "col-md-7"}
+    %hr
+
+    %h4 Generate questions
+    = f.simple_fields_for :q_and_as do |q_and_a|
+      .row.col-md-12
+        .col-md-2
+          = q_and_a.input :answer_type, as: :radio_buttons, collection: INOCRM_CONFIG["answer_type_for_q_and_a"], wrapper: :append, checked: "YN"
+        .col-md-1
+          = q_and_a.input :active, wrapper: :append, input_html: {checked: true}
+        .col-md-2
+          = q_and_a.input :compulsory, wrapper: :append, input_html: {checked: true}
+        .col-md-3
+          = q_and_a.association :task_action, collection: TaskAction.all, label_method: :action_description, value_method: :id, include_blank: false
+          / where(action_no: [1,5,57,58])
+        .col-md-4
+          = q_and_a.input :question, wrapper_html: {class: "col-md-11"}, input_html: {rows: 1}
+          .add_sign
+            = q_and_a.link_to_remove do
+              %span.glyphicon.glyphicon-remove-sign
+    .row.col-md-12
+      = f.link_to_add :q_and_as do
+        %span.glyphicon.glyphicon-plus-sign
+    = f.submit "Save", class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2", data: {disable_with: "Please wait..."}
