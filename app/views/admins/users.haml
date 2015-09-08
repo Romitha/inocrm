@@ -2,37 +2,39 @@
 
 .row
   - users_details.each do |user_details|
-    .col-md-3
-      .panel.panel-default
-        .panel-boby{style: "padding:5% 0%;padding-right:5%;"}
-          .row.padding-left1
-            .col-md-12
-              .row
-                .col-md-4
-                  = image_tag (user_details.avatar.thumb.url || "organization_image.png"), class: "img-responsive img-thumbnail"
+    = link_to profile_user_path(user_details.id),:target => "_blank" do
+      .col-md-3
+        .panel.panel-default
+          .panel-boby{style: "padding:5% 0%;padding-right:5%;"}
+            .row.padding-left1
+              .col-md-12
+                .row
+                  .col-md-4
+                    = image_tag (user_details.avatar.thumb.url || "no_image.jpg"), class: "img-responsive img-thumbnail"
 
-                .col-md-8.text4.padding-top1
-                  .row
-                    .col-md-12
-                      %strong #{user_details.first_name}
-                      %strong #{user_details.last_name}
-                  .row
-                    .col-md-12
-                      %strong #{user_details.name_title}
+                  .col-md-8.text4.padding-top1
+                    .row
+                      .col-md-12
+                        / %strong #{user_details.mst_title.title}
+                        %strong= user_details.first_name
+                        %strong= user_details.last_name
+                    .row.margin-top1
+                      .col-md-12
+                        %strong= user_details.designation.name
 
-              .row.margin-top1
-                .col-md-12
-                  %strong NIC :
-                  %em #{user_details.NIC}
-              .row
-                .col-md-12
-                  %strong EPF No :
-                  %em #{user_details.epf_no}
-              .row
-                .col-md-12
-                  %strong Date Joined :
-                  %em #{user_details.date_joined_at}
-              .row
-                .col-md-12
-                  %strong Email:
-                  %em #{user_details.email}
+                .row.margin-top1
+                  .col-md-12
+                    %strong NIC :
+                    %em= user_details.NIC
+                .row
+                  .col-md-12
+                    %strong EPF No :
+                    %em= user_details.epf_no
+                .row
+                  .col-md-12
+                    %strong Date Joined :
+                    %em= user_details.date_joined_at.try(:strftime, "%Y-%m-%d")
+                .row
+                  .col-md-12
+                    %strong Email:
+                    %em= user_details.email
