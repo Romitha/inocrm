@@ -59,12 +59,12 @@
         %li.dropdown.small_scale_margin-right10{role: "presentation"}
           = link_to "Supports", "#", class: "dropdown-toggle tickets text-hide nav-icon", id: "ticket_dropdown", data: {toggle: "dropdown", placement: "bottom"}, title: "Support tickets", rel: "tooltip"
           %ul.dropdown-menu{"aria-labelledby" => "ticket_dropdown"}
+            / %li{role: "presentation"}
+            /   = link_to tickets_path do
+            /     %span= image_tag "ticket.png", style: "width: 12%;"
+            /     %span Supports
             %li{role: "presentation"}
-              = link_to tickets_path do
-                %span= image_tag "ticket.png", style: "width: 12%;"
-                %span Supports
-            %li{role: "presentation"}
-              %li.divider
+              / %li.divider
               / %li.dropdown-header Create Ticket
               %li{role: "presentation"}= link_to "New Support", new_ticket_path
 
