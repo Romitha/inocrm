@@ -160,6 +160,7 @@ Rails.application.routes.draw do
       get "total-products", :action => :total_products
       get "reason"
       get "organizations"
+      get "users"
       get "about-us", :action => :about_us
       match "tickets/q_and_a", to: "admins#q_and_a", via: [:get, :post]
       match "tickets/problem_category", to: "admins#problem_category", via: [:get, :post]
