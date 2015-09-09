@@ -45,10 +45,6 @@ class AdminsController < ApplicationController
 
   end
 
-  def users
-
-  end
-
   def q_and_a
     # Ticket
     # ProblemCategory
