@@ -1,0 +1,88 @@
+- p_q_and_a = @p_q_and_a.group_by{|p| p.task_action.action_description}
+- g_q_and_a = @g_q_and_a.group_by{|p| p.task_action.action_description}
+
+.col-md-6
+  %fieldset
+    %legend Problematic Questions
+    .row
+      .col-md-2.col-xs-12.col-sm-2
+        = tab_nav_tab({class: "tabs-left", id: "secondary_tab"}, p_q_and_a.keys.inject({}){|i, k| i.merge("p_#{k.parameterize.underscore}" => {content: k, active_class: "#{'active' if k == p_q_and_a.keys.first}"})})
+
+      .col-md-10.col-xs-12.col-sm-10
+        .tab-content
+          - counter = 0
+          - p_q_and_a.each do |k, v|
+            = tab_content tabpointer: "p_#{k.parameterize.underscore}", active_class: "#{'active' if k == p_q_and_a.keys.first}" do
+              = collapse_wrapper collapse_id: "#{k.parameterize.underscore}-problematic_question_id" do
+                - v.group_by{|pqa| pqa.problem_category.name }.each do |p, qa|
+                  - counter += 1
+                  = collapse collapse_type: "info", header_content: "#{p}", collapse_link: "problematic_question_link_#{p.parameterize.underscore}_#{counter}", collapse_id: "#{k.parameterize.underscore}-problematic_question_id", labelledby: "problematic_question_lby_#{p.parameterize.underscore}" do
+                    - qa.each do |s_qa|
+                      .alert{class: "alert-#{s_qa.compulsory ? 'danger' : 'warning'}"}
+                        .row
+                          .col-md-7
+                            %strong
+                              =s_qa.question
+                          .col-md-5
+                            %strong
+                              Answer type:
+                              =s_qa.answer_type
+                          .col-md-3
+                            %span.badge
+                              = s_qa.compulsory ? 'Compulsory' : 'Optional'
+
+    .row
+      .col-md-12
+        %h4 Problem category
+        - if @new_problem_category.errors.present?
+          .alert.alert-danger
+            %ul
+              - @new_problem_category.errors.full_messages.each do |error|
+                %li= error
+        = simple_nested_form_for @new_problem_category, url: tickets_problem_category_admins_path, method: :post do |f|
+          = hidden_field_tag :status_param, "create"
+          .row.col-md-12
+            = f.input :name, as: :string, wrapper_html: {class: "col-md-7"}
+          %hr
+
+          %h4 Generate questions
+          = f.simple_fields_for :q_and_as do |q_and_a|
+            .row.col-md-12
+              .col-md-2
+                = q_and_a.input :answer_type, as: :radio_buttons, collection: INOCRM_CONFIG["answer_type_for_q_and_a"], wrapper: :append, checked: "YN"
+              .col-md-1
+                = q_and_a.input :active, wrapper: :append, input_html: {checked: true}
+              .col-md-2
+                = q_and_a.input :compulsory, wrapper: :append, input_html: {checked: true}
+              .col-md-3
+                = q_and_a.association :task_action, collection: TaskAction.all, label_method: :action_description, value_method: :id, include_blank: false
+              .col-md-4
+                = q_and_a.input :question, wrapper_html: {class: "col-md-11"}, input_html: {rows: 1}
+                .add_sign
+                  = q_and_a.link_to_remove do
+                    %span.glyphicon.glyphicon-remove-sign
+          .row.col-md-12
+            = f.link_to_add :q_and_as do
+              %span.glyphicon.glyphicon-plus-sign
+          = f.submit "Save", class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2", data: {disable_with: "Please wait..."}
+
+.col-md-6
+  %fieldset
+    %legend General Questions
+    .row
+      .col-md-2.col-xs-12.col-sm-2
+        = tab_nav_tab({class: "tabs-left", id: "secondary_tab"}, g_q_and_a.keys.inject({}){|i, k| i.merge("g_#{k.parameterize.underscore}" => {content: k, active_class: "#{'active' if k == g_q_and_a.keys.first}"})})
+
+      .col-md-10.col-xs-12.col-sm-10
+        .tab-content
+          - g_q_and_a.each do |k, v|
+            = tab_content tabpointer: "g_#{k.parameterize.underscore}", active_class: "#{'active' if k == g_q_and_a.keys.first}" do
+              = collapse_wrapper collapse_id: "#{k.parameterize.underscore}-general_question_id" do
+                - v.each do |gqa|
+                  = collapse collapse_type: "#{ !gqa.active ? 'default' : (gqa.compulsory ? 'danger' : 'warning')}", header_content: "#{gqa.question}", collapse_link: "general_question_link_#{gqa.id}", collapse_id: "#{k.parameterize.underscore}-general_question_id", labelledby: "general_question_lby_#{gqa.id}" do
+
+                    .row
+                      .col-md-12
+                        %strong
+                          Answer type:
+                          =gqa.answer_type

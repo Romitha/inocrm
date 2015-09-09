@@ -11,6 +11,7 @@ class AdminsController < ApplicationController
     @Warranties = Warranty.all
     @WarrantyTypes = WarrantyType.all
   end
+
   def total_tickets
     Ticket
     @ticket_statuses = TicketStatus.all
@@ -77,11 +78,17 @@ class AdminsController < ApplicationController
         @new_problem_category = ProblemCategory.new
         params[:status_param] = nil
       end
-
     else
       @new_problem_category = ProblemCategory.new
     end
 
+    @p_q_and_a = QAndA.includes(:task_action)
+    @g_q_and_a = GeQAndA.all
+
+  end
+
+  def employees
+    @users = User.all
   end
 
 
