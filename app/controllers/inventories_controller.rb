@@ -339,24 +339,56 @@ class InventoriesController < ApplicationController
 
   def update_estimation_customer_approval
     Ticket
+    status_action_id = SparePartStatusAction.find_by_code("CLS").id
+
     @estimation = TicketEstimation.find estimation_params[:id]
     @estimation.attributes = estimation_params
 
-    @estimation.status_id = TicketStatus.find_by_code("CLS").id
+    @estimation.status_id = EstimationStatus.find_by_code("CLS").id
+    @estimation.cust_approved_at = DateTime.now
+    @estimation.cust_approved_by = current_user.id
+
+    continue = true
 
     if @estimation.cust_approved
+      if ( !@estimation.approval_required and @estimation.advance_payment_amount > 0) or ( @estimation.approval_required and @estimation.approved_adv_pmnt_amount > 0)
 
-    else
+        continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
 
+        if continue
+          # bpm output variables
+          bpm_variables = view_context.initialize_bpm_variables.merge(d20_advance_payment_required: "Y", advance_payment_estimation_id: @estimation.id)
+
+          @estimation.ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @estimation.ticket.ticket_status.code == "ASN"
+
+          bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+          if bpm_response[:status].upcase == "SUCCESS"
+            @flash_message = {notice: "Successfully updated"}
+          else
+            @flash_message = {error: "ticket is updated. but Bpm error"}
+          end
+        end
+      end
+
+      status_action_id = SparePartStatusAction.find_by_code("CEA").id
     end
 
+    if continue
 
-    if @estimation.save
+      @estimation.ticket_estimation_parts.each do |ticket_estimation_part|
+        ticket_estimation_part.ticket_spare_part.update(status_action_id: status_action_id)
 
-      @flash_message = {notice: "Sorry! unable to update"}
-    else
+        ticket_estimation_part.ticket_spare_part.ticket_spare_part_status_actions.create(status_id: status_action_id, done_by: current_user.id, done_at: DateTime.now)
+      end
 
-      @flash_message = {error: "Sorry! unable to update"}
+      if @estimation.save
+
+        @flash_message = {notice: "Successfully updated"}
+      else
+
+        @flash_message = {error: "Sorry! unable to update"}
+      end
     end
     redirect_to todos_url, @flash_message
   end

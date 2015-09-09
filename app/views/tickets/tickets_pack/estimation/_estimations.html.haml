@@ -9,8 +9,8 @@
     %tr
       %th No
       %th Requested date
-      %th No of parts
-      %th Parts
+      %th #{ticket.ticket_repair_type.code == 'EX' ? 'Repaired by' : 'No of parts' }
+      %th #{ticket.ticket_repair_type.code == 'EX' ? 'Repair' : 'Parts' }
       %th Additional
       %th Total
       %th Min. advanced payment
@@ -23,11 +23,33 @@
           = link_to load_estimation_inventories_path(estimation_id: estimation.id, estimation_type: "#{ticket.ticket_repair_type.code == 'EX' ? 'external' : 'part' }"), remote: true do
             = index+1
         %td= estimation.requested_at
-        %td= estimation.ticket_estimation_parts.count
-        %td= number_with_precision estimation.ticket_estimation_parts.sum(:estimated_price), precision: 2
-        %td= number_with_precision estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2
-        %td= number_with_precision(estimation.ticket_estimation_parts.sum(:estimated_price) + estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2)
-        %td= number_with_precision estimation.advance_payment_amount, precision: 2
+        %td
+          - if ticket.ticket_repair_type.code == 'EX'
+            = estimation.ticket_estimation_externals.first.try(:organization).try(:name)
+          - else
+            = estimation.ticket_estimation_parts.count
+        %td
+          - if estimation.approval_required
+            = number_with_precision estimation.ticket_estimation_parts.sum(:approved_estimated_price), precision: 2
+          - else
+            = number_with_precision estimation.ticket_estimation_parts.sum(:estimated_price), precision: 2
+
+        %td
+          - if estimation.approval_required
+            = number_with_precision estimation.ticket_estimation_additionals.sum(:approved_estimated_price), precision: 2
+          - else
+            = number_with_precision estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2
+
+        %td
+          - if estimation.approval_required
+            = number_with_precision(estimation.ticket_estimation_parts.sum(:approved_estimated_price) + estimation.ticket_estimation_additionals.sum(:approved_estimated_price), precision: 2)
+          - else
+            = number_with_precision(estimation.ticket_estimation_parts.sum(:estimated_price) + estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2)
+        %td
+          - if estimation.approval_required
+            = number_with_precision estimation.approved_adv_pmnt_amount, precision: 2
+          - else
+            = number_with_precision estimation.advance_payment_amount, precision: 2
         %td= estimation.estimation_status.name
 
 #estimation_ajax_frame

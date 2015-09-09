@@ -146,6 +146,7 @@ Rails.application.routes.draw do
   resources :todos do
     collection do
       get "to_do_call"
+      get "work_flow_mapping_sort"
     end
   end
 

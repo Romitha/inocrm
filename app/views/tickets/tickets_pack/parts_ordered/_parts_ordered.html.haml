@@ -198,7 +198,7 @@
 
 
   - ticket.ticket_on_loan_spare_parts.each do |ticket_on_loan_spare_part|
-    = collapse collapse_type: "info", header_content: "Ticket on loan spare part: #{ticket_on_loan_spare_part.id}", collapse_link: "ticket_on_loan_spare_part_link_#{ticket_on_loan_spare_part.id}", collapse_id: "ticket_spare_part_id", labelledby: "ticket_spare_on_loan_part_lby_#{ticket_on_loan_spare_part.id}" do
+    = collapse collapse_type: "info", header_content: "Ticket on loan spare part: #{ticket_on_loan_spare_part.ticket_spare_part.try(:spare_part_no)} - #{ticket_on_loan_spare_part.ticket_spare_part.try(:spare_part_description)}", collapse_link: "ticket_on_loan_spare_part_link_#{ticket_on_loan_spare_part.id}", collapse_id: "ticket_spare_part_id", labelledby: "ticket_spare_on_loan_part_lby_#{ticket_on_loan_spare_part.id}" do
 
       .alert.alert-warning
         .row

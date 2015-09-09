@@ -846,22 +846,7 @@ class TicketsController < ApplicationController
   def update_assign_ticket
     @ticket = Ticket.find(params[:ticket_id])
     TaskAction
-    continue = true
-
-    # ticket_id, process_id, task_id should not be null
-    # http://0.0.0.0:3000/tickets/assign-ticket?ticket_id=2&process_id=212&owner=supp_mgr&task_id=191
-    if params[:task_id] and params[:process_id] and params[:owner]
-
-      bpm_response = view_context.send_request_process_data process_history: true, process_instance_id: params[:process_id], variable_id: "ticket_id"
-      
-      if bpm_response[:status].upcase == "ERROR"
-        continue = false
-        @flash_message = "Bpm error."
-      end
-
-    else
-      continue = false
-    end
+    continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
 
     if continue
 
@@ -1169,22 +1154,7 @@ class TicketsController < ApplicationController
   def update_start_action
 
     TaskAction
-    continue = true
-
-    # ticket_id, process_id, task_id should not be null
-    # http://0.0.0.0:3000/tickets/assign-ticket?ticket_id=2&process_id=212&owner=supp_mgr&task_id=191
-    if params[:task_id] and params[:process_id] and params[:owner]
-
-      bpm_response = view_context.send_request_process_data process_history: true, process_instance_id: params[:process_id], variable_id: "ticket_id"
-
-      if bpm_response[:status].upcase == "ERROR"
-        continue = false
-        @flash_message = "Bpm error."
-      end
-
-    else
-      continue = false
-    end
+    continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
 
     if continue
       if @ticket.update(append_remark_ticket_params(@ticket))
@@ -1241,7 +1211,7 @@ class TicketsController < ApplicationController
       redirect_to resolution_tickets_url, alert: "Selected warranty is not presently applicable to ticket."
     end
 
-  end 
+  end
 
   def update_change_ticket_repair_type
     if @ticket.update append_remark_ticket_params(@ticket)
@@ -1255,22 +1225,7 @@ class TicketsController < ApplicationController
   end
 
   def update_re_assign
-    continue = true
-
-    # ticket_id, process_id, task_id should not be null
-    # http://0.0.0.0:3000/tickets/assign-ticket?ticket_id=2&process_id=212&owner=supp_mgr&task_id=191
-    if params[:task_id] and params[:process_id] and params[:owner]
-
-      bpm_response = view_context.send_request_process_data process_history: true, process_instance_id: params[:process_id], variable_id: "ticket_id"
-      
-      if bpm_response[:status].upcase == "ERROR"
-        continue = false
-        @flash_message = "Bpm error."
-      end
-
-    else
-      continue = false
-    end
+    continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
 
     if continue
       if @ticket.update append_remark_ticket_params(@ticket)
@@ -1379,22 +1334,7 @@ class TicketsController < ApplicationController
 
   def update_terminate_job
     TaskAction
-    continue = true
-
-    # ticket_id, process_id, task_id should not be null
-    # http://0.0.0.0:3000/tickets/assign-ticket?ticket_id=2&process_id=212&owner=supp_mgr&task_id=191
-    if params[:task_id] and params[:process_id] and params[:owner]
-
-      bpm_response = view_context.send_request_process_data process_history: true, process_instance_id: params[:process_id], variable_id: "ticket_id"
-      
-      if bpm_response[:status].upcase == "ERROR"
-        continue = false
-        @flash_message = "Bpm error."
-      end
-
-    else
-      continue = false
-    end
+    continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
 
     if continue
       if @ticket.update append_remark_ticket_params(@ticket)
@@ -1452,22 +1392,7 @@ class TicketsController < ApplicationController
   def update_action_taken
 
     TaskAction
-    continue = true
-
-    # ticket_id, process_id, task_id should not be null
-    # http://0.0.0.0:3000/tickets/assign-ticket?ticket_id=2&process_id=212&owner=supp_mgr&task_id=191
-    if params[:task_id] and params[:process_id] and params[:owner]
-
-      bpm_response = view_context.send_request_process_data process_history: true, process_instance_id: params[:process_id], variable_id: "ticket_id"
-
-      if bpm_response[:status].upcase == "ERROR"
-        continue = false
-        @flash_message = "Bpm error."
-      end
-
-    else
-      continue = false
-    end
+    continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
 
     if continue
       if @ticket.update append_remark_ticket_params(@ticket)
@@ -1499,22 +1424,7 @@ class TicketsController < ApplicationController
   def update_resolved_job
     TaskAction
     TicketSparePart
-    continue = true
-
-    # ticket_id, process_id, task_id should not be null
-    # http://0.0.0.0:3000/tickets/assign-ticket?ticket_id=2&process_id=212&owner=supp_mgr&task_id=191
-    if params[:task_id] and params[:process_id] and params[:owner]
-
-      bpm_response = view_context.send_request_process_data process_history: true, process_instance_id: params[:process_id], variable_id: "ticket_id"
-
-      if bpm_response[:status].upcase == "ERROR"
-        continue = false
-        @flash_message = "Bpm error."
-      end
-
-    else
-      continue = false
-    end
+    continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
 
     if continue
       if @ticket.update append_remark_ticket_params(@ticket)
@@ -1570,22 +1480,7 @@ class TicketsController < ApplicationController
   def update_hp_case_id
 
     TaskAction
-    continue = true
-
-    # ticket_id, process_id, task_id should not be null
-    # http://0.0.0.0:3000/tickets/assign-ticket?ticket_id=2&process_id=212&owner=supp_mgr&task_id=191
-    if params[:task_id] and params[:process_id] and params[:owner]
-
-      bpm_response = view_context.send_request_process_data process_history: true, process_instance_id: params[:process_id], variable_id: "ticket_id"
-
-      if bpm_response[:status].upcase == "ERROR"
-        continue = false
-        @flash_message = "Bpm error."
-      end
-
-    else
-      continue = false
-    end
+    continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
 
     if continue
       if @ticket.update append_remark_ticket_params(@ticket)
@@ -1615,22 +1510,7 @@ class TicketsController < ApplicationController
   def update_edit_serial_no_request
 
     TaskAction
-    continue = true
-
-    # ticket_id, process_id, task_id should not be null
-    # http://0.0.0.0:3000/tickets/assign-ticket?ticket_id=2&process_id=212&owner=supp_mgr&task_id=191
-    if params[:task_id] and params[:process_id] and params[:owner]
-
-      bpm_response = view_context.send_request_process_data process_history: true, process_instance_id: params[:process_id], variable_id: "ticket_id"
-
-      if bpm_response[:status].upcase == "ERROR"
-        continue = false
-        @flash_message = "Bpm error."
-      end
-
-    else
-      continue = false
-    end
+    continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
 
     if continue
       if @ticket.update append_remark_ticket_params(@ticket)
@@ -1659,22 +1539,7 @@ class TicketsController < ApplicationController
 
   def update_deliver_unit
     TaskAction
-    continue = true
-
-    # ticket_id, process_id, task_id should not be null
-    # http://0.0.0.0:3000/tickets/assign-ticket?ticket_id=2&process_id=212&owner=supp_mgr&task_id=191
-    if params[:task_id] and params[:process_id] and params[:owner]
-
-      bpm_response = view_context.send_request_process_data process_history: true, process_instance_id: params[:process_id], variable_id: "ticket_id"
-
-      if bpm_response[:status].upcase == "ERROR"
-        continue = false
-        @flash_message = "Bpm error."
-      end
-
-    else
-      continue = false
-    end
+    continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
 
     if continue
 
@@ -1741,22 +1606,7 @@ class TicketsController < ApplicationController
 
   def update_job_estimation_request
     TaskAction
-    continue = true
-
-    # ticket_id, process_id, task_id should not be null
-    # http://0.0.0.0:3000/tickets/assign-ticket?ticket_id=2&process_id=212&owner=supp_mgr&task_id=191
-    if params[:task_id] and params[:process_id] and params[:owner]
-
-      bpm_response = view_context.send_request_process_data process_history: true, process_instance_id: params[:process_id], variable_id: "ticket_id"
-
-      if bpm_response[:status].upcase == "ERROR"
-        continue = false
-        @flash_message = "Bpm error."
-      end
-
-    else
-      continue = false
-    end
+    continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
 
     if continue
 
@@ -1800,22 +1650,7 @@ class TicketsController < ApplicationController
 
     TaskAction
     WorkflowMapping
-    continue = true
-
-    # ticket_id, process_id, task_id should not be null
-    # http://0.0.0.0:3000/tickets/assign-ticket?ticket_id=2&process_id=212&owner=supp_mgr&task_id=191
-    if params[:task_id] and params[:process_id] and params[:owner]
-
-      bpm_response = view_context.send_request_process_data process_history: true, process_instance_id: params[:process_id], variable_id: "ticket_id"
-
-      if bpm_response[:status].upcase == "ERROR"
-        continue = false
-        @flash_message = "Bpm error."
-      end
-
-    else
-      continue = false
-    end
+    continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
 
     if continue
       f_ticket_spare_part_params = ticket_spare_part_params
@@ -1936,22 +1771,7 @@ class TicketsController < ApplicationController
     
     TaskAction
     WorkflowMapping
-    continue = true
-
-    # ticket_id, process_id, task_id should not be null
-    # http://0.0.0.0:3000/tickets/assign-ticket?ticket_id=2&process_id=212&owner=supp_mgr&task_id=191
-    if params[:task_id] and params[:process_id] and params[:owner]
-
-      bpm_response = view_context.send_request_process_data process_history: true, process_instance_id: params[:process_id], variable_id: "ticket_id"
-
-      if bpm_response[:status].upcase == "ERROR"
-        continue = false
-        @flash_message = "Bpm error."
-      end
-
-    else
-      continue = false
-    end
+    continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
 
     if continue
       f_ticket_on_loan_spare_part_params = ticket_on_loan_spare_part_params
