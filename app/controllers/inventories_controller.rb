@@ -337,7 +337,7 @@ class InventoriesController < ApplicationController
     @estimation = TicketEstimation.find params[:estimation_id]
   end
 
-  def update_estimation_customer_approval
+  def update_estimation_part_customer_approval
     Ticket
     status_action_id = SparePartStatusAction.find_by_code("CLS").id
 
@@ -383,6 +383,58 @@ class InventoriesController < ApplicationController
       end
 
       if @estimation.save
+
+        @flash_message = {notice: "Successfully updated"}
+      else
+
+        @flash_message = {error: "Sorry! unable to update"}
+      end
+    end
+    redirect_to todos_url, @flash_message
+  end
+
+  def update_estimation_external_customer_approval
+    Ticket
+
+    @estimation = TicketEstimation.find estimation_params[:id]
+    @estimation.attributes = estimation_params
+
+    @estimation.status_id = EstimationStatus.find_by_code("CLS").id
+    @estimation.cust_approved_at = DateTime.now
+    @estimation.cust_approved_by = current_user.id
+
+    continue = true
+
+    if @estimation.cust_approved
+      if ( !@estimation.approval_required and @estimation.advance_payment_amount > 0) or ( @estimation.approval_required and @estimation.approved_adv_pmnt_amount > 0)
+
+        continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+
+        if continue
+          # bpm output variables
+          bpm_variables = view_context.initialize_bpm_variables.merge(d20_advance_payment_required: "Y", advance_payment_estimation_id: @estimation.id)
+
+          @estimation.ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @estimation.ticket.ticket_status.code == "ASN"
+
+          bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+          if bpm_response[:status].upcase == "SUCCESS"
+            @flash_message = {notice: "Successfully updated"}
+          else
+            @flash_message = {error: "ticket is updated. but Bpm error"}
+          end
+        end
+      end
+    end
+
+    if continue
+
+      if @estimation.save
+
+        user_ticket_action = @estimation.ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(24).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @estimation.ticket.re_open_count)
+        user_ticket_action.build_act_job_estimation(supplier_id: @estimation.ticket_estimation_externals.first.try(:organization).try(:id), ticket_estimation_id: @estimation.id)
+
+        user_ticket_action.save
 
         @flash_message = {notice: "Successfully updated"}
       else

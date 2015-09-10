@@ -117,6 +117,7 @@ Rails.application.routes.draw do
 
       get "resolution"
       get "assign-ticket", action: :assign_ticket
+      get "estimate_job"
       get "workflow_diagram"
       get "suggesstion_data"
     end
@@ -178,7 +179,9 @@ Rails.application.routes.draw do
       put "update_part_order"
       put "update_onloan_part_order"
       get "load_estimation"
-      patch "update_estimation_customer_approval"
+      patch "update_estimation_part_customer_approval"
+      patch "update_estimation_external_customer_approval"
+
     end
   end
      

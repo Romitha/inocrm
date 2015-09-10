@@ -1,3 +1,4 @@
+- total_estimated = total_additional_cost = total_additional_estimated = 0
 .row
   .col-md-12
     %h4 Selected Estimation
@@ -5,72 +6,74 @@
 - estimation.ticket_estimation_externals.each do |estimation_external|
 
   .row
-    .col-md-4
-      Repaired By (Organization): #{estimation_external.organization.name}
     .col-md-6
       Status : #{estimation.estimation_status.name}
-  .row
-    .col-md-4
-      Cost Price (#{estimation.ticket.ticket_currency.code}): #{estimation_external.cost_price}
-    - if estimation.approved
+    - if estimation.cust_approved
       .col-md-6
         Customer Approval : Approved
+    - elsif estimation.cust_approved.nil?
+      .col-md-6
+        Customer Approval :
     - else
       .col-md-6
         Customer Approval : Rejected
-
   .row
     .col-md-4
-      Estimated Price (#{estimation.ticket.ticket_currency.code}): #{estimation_external.estimated_price}
-    .col-md-6
-      Profit Margin : --
-
-
-  .row
+      Repaired By (Organization): #{estimation_external.organization.name}
     .col-md-4
-      Additional Charges: #{number_with_precision estimation.ticket_estimation_externals.sum(:estimated_price), precision: 2}
+      Cost Price (#{estimation.ticket.ticket_currency.code}): #{number_with_precision estimation_external.cost_price, precision: 2}
+    .col-md-4
+      Estimated Price (#{estimation.ticket.ticket_currency.code}): #{number_with_precision (estimation.approval_required ? estimation_external.approved_estimated_price : estimation_external.estimated_price), precision: 2}
 
-    .col-md-4
-      Cost Price (#{estimation.ticket.ticket_currency.code}):
-
-    .col-md-4
-      Estimated Price (#{estimation.ticket.ticket_currency.code}):
-  .row
-    .col-md-4.col-md-offset-4
-      Total  (#{estimation.ticket.ticket_currency.code}): xxx
-    .col-md-4
-      Total  (#{estimation.ticket.ticket_currency.code}): xxx
+      - total_estimated += (estimation.approval_required ? estimation_external.approved_estimated_price : estimation_external.estimated_price)
 
   .row
     .col-md-12
-      %strong Total Estimated Price (#{estimation.ticket.ticket_currency.code}) :
+
+- estimation.ticket_estimation_additionals.each do |ticket_estimation_additional|
   .row
     .col-md-4
-      Min. Advance Payment (#{estimation.ticket.ticket_currency.code}): #{estimation.advance_payment_amount}
-    .col-md-6
-      Advance Payment Recieved (#{estimation.ticket.ticket_currency.code}): #{estimation.adv_payment_received_id}
+      Additional Charges: #{ticket_estimation_additional.additional_charge.try(:additional_charge)}
 
-  .row
-    .col-md-6
-      Warranty Start Date: #{estimation_external.warranty_period}
-  .row
-    .col-md-6
-      Warranty End Date: #{estimation_external.warranty_period}
-  .row
-    .col-md-6
-      Note: #{estimation.note}
+    .col-md-4
+      Cost Price (#{estimation.ticket.ticket_currency.code}): #{number_with_precision ticket_estimation_additional.cost_price, precision: 2}
+      - total_additional_cost += (ticket_estimation_additional.cost_price)
 
-  .row
-    .col-md-4.col-md-offset-8
-      %button.btn.btn-success
-        send mail
+    .col-md-4
+      Estimated Price (#{estimation.ticket.ticket_currency.code}): #{number_with_precision (estimation.approval_required ? ticket_estimation_additional.approved_estimated_price : ticket_estimation_additional.estimated_price), precision: 2}
+      - total_additional_estimated += (estimation.approval_required ? ticket_estimation_additional.approved_estimated_price : ticket_estimation_additional.estimated_price)
 
+.row
+  .col-md-4.col-md-offset-4
+    Aditional Total Cost  (#{estimation.ticket.ticket_currency.code}): #{number_with_precision total_additional_cost, precision: 2}
+  .col-md-4
+    Additional Total Estimated Price (#{estimation.ticket.ticket_currency.code}): #{number_with_precision total_additional_estimated, precision: 2}
+
+.row
+  .col-md-12
+    %strong Total Estimated Price (#{estimation.ticket.ticket_currency.code}) : #{number_with_precision (total_estimated + total_additional_estimated), precision: 2}
+.row
+  .col-md-4
+    Min. Advance Payment (#{estimation.ticket.ticket_currency.code}): #{number_with_precision (estimation.approval_required ? estimation.approved_adv_pmnt_amount : estimation.advance_payment_amount), precision: 2}
+  .col-md-6
+    Advance Payment Recieved (#{estimation.ticket.ticket_currency.code}): #{number_with_precision estimation.ticket_payment_received.try(:amount).to_i, precision: 2}
+
+.row
+  .col-md-6
+    Warranty period (In Months): #{estimation_external.warranty_period}
+.row
+  .col-md-6
+    Note: #{estimation.note}
 
 
 - if (estimation.estimation_status.code == "EST") and estimation.cust_approval_required
   %fieldset
     %legend Estimation customer approval
-    = simple_form_for estimation, url: update_estimation_customer_approval_inventories_path do |f|
+    = simple_form_for estimation, url: update_estimation_part_customer_approval_inventories_path do |f|
+
+      = hidden_field_tag :process_id, session[:process_id]
+      = hidden_field_tag :task_id, session[:task_id]
+      = hidden_field_tag :owner, session[:owner]
       = f.input :id, as: :hidden
       / = f.input :cust_approved_at, as: :hidden, input_html: {value: DateTime.now}
       = f.input :cust_approved_by, as: :hidden, input_html: {value: current_user.id}
