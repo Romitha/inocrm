@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
 
-  root "organizations#index"
+  root "todos#index"
 
   resources :warranties do
     collection do
