@@ -87,6 +87,9 @@ class AdminsController < ApplicationController
     @users = User.all
   end
 
+  def accessories
+  end
+
 
 
   def problem_category_params
