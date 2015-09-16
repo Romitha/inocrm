@@ -118,6 +118,8 @@ Rails.application.routes.draw do
       get "resolution"
       get "assign-ticket", action: :assign_ticket
       get "estimate_job"
+      get "delivety_unit"
+      get "low_margin_estimate"
       get "workflow_diagram"
       get "suggesstion_data"
     end

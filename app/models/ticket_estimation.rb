@@ -29,8 +29,10 @@ class TicketEstimationExternal < ActiveRecord::Base
   belongs_to :ticket
 
   belongs_to :ticket_estimation#, foreign_key: :ticket_estimation_id
+  accepts_nested_attributes_for :ticket_estimation, allow_destroy: true
 
   belongs_to :organization, foreign_key: :repair_by_id
+  accepts_nested_attributes_for :organization, allow_destroy: true
 
 end
 
