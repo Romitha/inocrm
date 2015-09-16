@@ -167,3 +167,7 @@ module TodosHelper
     end
   end
 end
+
+
+# bpm affecting methods
+# finalize_ticket_save

@@ -16,5 +16,25 @@
       = tab_panel do
         = render "tickets/tickets_pack/ticket_info", ticket: ticket, product: product, customer: customer, warranties: warranties, histories: histories, join_tickets: join_tickets, ge_q_and_as: ge_q_and_as, pr_q_and_as: pr_q_and_answers
 
-    = tab_content tabpointer: :assign_ticket, active_class: "active" do
-      %strong Under construction
+    = tab_content tabpointer: :estimate_job, active_class: "active" do
+      = simple_nested_form_for ticket, url: "#" do |f|
+        = f.simple_fields_for :ticket_estimation_externals do |te|
+          = te.input :id, as: :hidden
+          = te.association :organization
+          = te.input :cost_price
+          = te.input :estimated_price
+          = te.input :warranty_period
+          = te.simple_fields_for :ticket_estimation do |est|
+            = est.input :id, as: :hidden
+            = est.input :advance_payment_amount
+            = est.input :note
+        %fieldset
+          %legend Estimation additionals
+          = f.simple_fields_for :ticket_estimation_additionals do |ta|
+            = ta.input :cost_price
+            = ta.input :estimated_price
+            = ta.link_to_remove class: "remove_c_t_v_link" do
+              %span.glyphicon.glyphicon-remove-sign
+          = f.link_to_add :ticket_estimation_additionals, class: "accessory_links small_scale_padding-right2" do
+            %span.glyphicon.glyphicon-plus-sign
+            Add accessory

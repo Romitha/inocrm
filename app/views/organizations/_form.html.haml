@@ -103,12 +103,11 @@
           - organization.members.order("created_at DESC").each do |member|
             = render "organizations/member", organization: member, relation: "Member", relation_organization: organization
 
-      .tab-pane.limit-height{id: "organization_departments#{organization.id}"}
-        / = render "departments/form", organization: organization unless organization.department_org
-
-        .fixed-height
-          / - organization.departments.order("created_at DESC").each do |department|
-          /   = render "departments/department", department: department, organization: organization
+    .tab-pane.limit-height{id: "organization_departments#{organization.id}"}
+      - organization.members.each do |org|
+        - if org.organization_type.try(:code) == "DPT"
+          .col-md-12
+            = org.name
 
     - if organization.refers == "VSIS"
       .tab-pane.limit-height{id: "roles_and_permissions#{organization.id}"}

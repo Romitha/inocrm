@@ -25,7 +25,10 @@
     .col-md-4
       Estimated Price (#{estimation.ticket.ticket_currency.code}): #{number_with_precision (estimation.approval_required ? estimation_external.approved_estimated_price : estimation_external.estimated_price), precision: 2}
 
-      - total_estimated += (estimation.approval_required ? estimation_external.approved_estimated_price : estimation_external.estimated_price)
+      - total_estimated += (estimation.approval_required ? estimation_external.approved_estimated_price : estimation_external.estimated_price).to_i
+  .row
+    .col-md-6
+      Warranty period (In Months): #{estimation_external.warranty_period}
 
   .row
     .col-md-12
@@ -41,13 +44,13 @@
 
     .col-md-4
       Estimated Price (#{estimation.ticket.ticket_currency.code}): #{number_with_precision (estimation.approval_required ? ticket_estimation_additional.approved_estimated_price : ticket_estimation_additional.estimated_price), precision: 2}
-      - total_additional_estimated += (estimation.approval_required ? ticket_estimation_additional.approved_estimated_price : ticket_estimation_additional.estimated_price)
+      - total_additional_estimated += (estimation.approval_required ? ticket_estimation_additional.approved_estimated_price : ticket_estimation_additional.estimated_price).to_i
 
 .row
   .col-md-4.col-md-offset-4
-    Aditional Total Cost  (#{estimation.ticket.ticket_currency.code}): #{number_with_precision total_additional_cost, precision: 2}
+    Total Additional Cost  (#{estimation.ticket.ticket_currency.code}): #{number_with_precision total_additional_cost, precision: 2}
   .col-md-4
-    Additional Total Estimated Price (#{estimation.ticket.ticket_currency.code}): #{number_with_precision total_additional_estimated, precision: 2}
+    Total Additional Estimated Price (#{estimation.ticket.ticket_currency.code}): #{number_with_precision total_additional_estimated, precision: 2}
 
 .row
   .col-md-12
@@ -58,9 +61,6 @@
   .col-md-6
     Advance Payment Recieved (#{estimation.ticket.ticket_currency.code}): #{number_with_precision estimation.ticket_payment_received.try(:amount).to_i, precision: 2}
 
-.row
-  .col-md-6
-    Warranty period (In Months): #{estimation_external.warranty_period}
 .row
   .col-md-6
     Note: #{estimation.note}
