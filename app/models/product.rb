@@ -79,9 +79,3 @@ class RepairType < ActiveRecord::Base
 
   has_many :tickets, foreign_key: :repair_type_id
 end
-
-class InventoryProduct < ActiveRecord::Base
-  self.table_name = "mst_inv_product"
-
-  has_many :ticket_spare_part_stores, foreign_key: :inv_product_id
-end

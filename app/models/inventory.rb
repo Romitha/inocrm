@@ -16,6 +16,8 @@ class InventoryProduct < ActiveRecord::Base
 
   has_one :inventory_product_info, foreign_key: :product_id
 
+  has_many :ticket_spare_part_stores, foreign_key: :inv_product_id
+
   def generated_item_code
    "#{id}-#{serial_no}"
   end
