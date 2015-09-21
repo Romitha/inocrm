@@ -28,13 +28,9 @@
         .collapse#submenu
           %ul.nav.child-level
             %li
-              = link_to "#", class: "text5" do
+              = link_to tickets_brands_and_categories_admins_path, class: "text5 #{current_page?(action: 'brands_and_categories') ? 'active' : ''}" do
                 %span.icon-group
-                Brand
-            %li
-              = link_to "#", class: "text5" do
-                %span.icon-group
-                Category
+                Brands & Categories
             %li
               = link_to accessories_admins_path, class: "text5" do
                 %span.icon-group
