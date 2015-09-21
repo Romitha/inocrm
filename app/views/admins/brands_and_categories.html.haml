@@ -83,7 +83,8 @@
         .col-md-2
           %strong currency
           = f.select :currency_id, options_from_collection_for_select(Currency.all, :id, :currency)
-      %hr    
+      %hr
+      %h4 Add Categories
       = f.simple_fields_for :product_categories do |p_category|
         .row.col-md-12
           .col-md-3
@@ -95,5 +96,6 @@
               = p_category.link_to_remove do
                 %span.glyphicon.glyphicon-remove-sign
       .row.col-md-12
-        = f.link_to_add( "Add Category", :product_categories )
+        = f.link_to_add :product_categories do
+          %span.glyphicon.glyphicon-plus-sign
       = f.submit "Save", class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2", data: {disable_with: "Please wait..."}
