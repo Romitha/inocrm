@@ -105,6 +105,9 @@ class AdminsController < ApplicationController
   def accessories
   end
 
+  def brands_and_categories_params
+    params.require(:product_brand).permit(:name, :sla_id, :parts_return_days, :warranty_date_format, :currency_id, product_categories_attributes: [:name, :sla_id, :_destroy, :id])
+  end
 
   def brands_and_categories_params
     params.require(:product_brand).permit(:name, :sla_id, :parts_return_days, :warranty_date_format, :currency_id, product_categories_attributes: [:name, :sla_id, :_destroy, :id])
