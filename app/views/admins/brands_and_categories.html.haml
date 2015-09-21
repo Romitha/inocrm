@@ -1,0 +1,99 @@
+- product_brands = @product_brands
+%ul.nav.nav-pills.nav-stacked.col-md-2.col-xs-12.col-sm-2{style: "padding-left:0;"}
+  - ProductBrand.all.each do |brand|
+    - if brand.name == ProductBrand.first.name
+      %li.active
+        %a{"data-toggle" => "tab", :href => "##{brand.name}"} #{brand.name}
+    - else
+      %li
+        %a{"data-toggle" => "tab", :href => "##{brand.name}"} #{brand.name}
+
+.tab-content.col-md-10.col-xs-12.col-sm-10
+  - product_brands.each do |brand|
+    - if brand.name == ProductBrand.first.name
+      .tab-pane.fade.in.active{:id => "#{brand.name}"}
+        %h3{style: "padding-bottom: 25px;"} #{brand.name}
+        .row
+          .col-md-4
+            %strong Parts Return Days : #{brand.parts_return_days}
+          .col-md-4
+            %strong currency : #{brand.currency.currency}
+        .row
+          .col-md-4
+            %strong SLA #{brand.sla_time.sla_time} Hours
+        .row
+          .col-md-4.col-md-offset-1
+            %strong #{brand.sla_time.description}
+        %hr
+        - brand.product_categories.each do |category|
+          .row
+            .col-md-4
+              %h4 #{category.name}
+          .row
+            .col-md-4
+              - if SlaTime.find_by_id(category.sla_id).try(:sla_time).present?
+                %strong SLA #{SlaTime.find_by_id(category.sla_id).try(:sla_time)} Hours
+          .row
+            .col-md-4.col-md-offset-1
+              %strong #{SlaTime.find_by_id(category.sla_id).try(:description)}
+
+    - else
+      .tab-pane.fade{:id => "#{brand.name}"}
+        %h3{style: "padding-bottom: 25px;"} #{brand.name}
+        .row
+          .col-md-4
+            %strong Parts Return Days : #{brand.parts_return_days}
+          .col-md-4
+            %strong currency : #{brand.currency.currency}
+        .row
+          .col-md-4
+            %strong SLA #{brand.sla_time.sla_time} Hours
+        .row
+          .col-md-4.col-md-offset-1
+            %strong #{brand.sla_time.description}
+        
+        - brand.product_categories.each do |category|
+          %hr
+          .row
+            .col-md-4
+              %h4 #{category.name}
+          .row
+            .col-md-4
+              - if SlaTime.find_by_id(category.sla_id).try(:sla_time).present?
+                %strong SLA #{SlaTime.find_by_id(category.sla_id).try(:sla_time)} Hours
+          .row
+            .col-md-4.col-md-offset-1
+              %strong #{SlaTime.find_by_id(category.sla_id).try(:description)}
+.row
+  %fieldset
+    %legend New brand & categories
+    
+    = simple_nested_form_for @brand, url: tickets_brands_and_categories_admins_path, method: :post do |f|
+      = hidden_field_tag :status_param, "create"
+      .row.col-md-12
+        .col-md-2
+          = f.input :name, label: "Brand"
+        .col-md-2
+          %strong SLA
+          = f.select :sla_id, options_from_collection_for_select(SlaTime.all, :id, :sla_time)
+        .col-md-2
+          = f.input :parts_return_days, label: "Part return days"
+        .col-md-3 
+          = f.input :warranty_date_format, label: "Warranty date format", collection: ["dd M, yyyy","dd, yyyy, M","M, yyyy, dd", "M, dd, yyyy", "yyyy, M, dd", "yyyy, dd, M"]
+        .col-md-2
+          %strong currency
+          = f.select :currency_id, options_from_collection_for_select(Currency.all, :id, :currency)
+      %hr    
+      = f.simple_fields_for :product_categories do |p_category|
+        .row.col-md-12
+          .col-md-3
+            = p_category.input :name, label: "Category" 
+          .col-md-4
+            %strong SLA
+            = p_category.select :sla_id, options_from_collection_for_select(SlaTime.all, :id, :sla_time), wrapper_html: {class: "col-md-11"}, input_html: {rows: 1}
+            .add_sign
+              = p_category.link_to_remove do
+                %span.glyphicon.glyphicon-remove-sign
+      .row.col-md-12
+        = f.link_to_add( "Add Category", :product_categories )
+      = f.submit "Save", class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2", data: {disable_with: "Please wait..."}

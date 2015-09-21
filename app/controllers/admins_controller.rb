@@ -45,22 +45,19 @@ class AdminsController < ApplicationController
 
   end
 
-  def q_and_a
-    # Ticket
-    # ProblemCategory
-    # Warranty
-    # if params[:status_param] == "create"
-    #   @new_problem_category = ProblemCategory.new problem_category_params
-
-    #   if @new_problem_category.save
-    #     @new_problem_category = ProblemCategory.new
-    #     params[:status_param] = nil
-    #   end
-
-    # else
-    #   @new_problem_category = ProblemCategory.new
-    # end
-
+  def brands_and_categories
+    Product
+    ProductCategory
+    @product_brands = ProductBrand.all
+    if params[:status_param] == "create"
+      @brand = ProductBrand.new(brands_and_categories_params)
+      if @brand.save
+        @brand = ProductBrand.new
+        params[:status_param] = nil
+      end
+    else
+      @brand = ProductBrand.new
+    end
   end
 
   def problem_category
@@ -83,6 +80,24 @@ class AdminsController < ApplicationController
 
   end
 
+  def q_and_a
+    # Ticket
+    # ProblemCategory
+    # Warranty
+    # if params[:status_param] == "create"
+    #   @new_problem_category = ProblemCategory.new problem_category_params
+
+    #   if @new_problem_category.save
+    #     @new_problem_category = ProblemCategory.new
+    #     params[:status_param] = nil
+    #   end
+
+    # else
+    #   @new_problem_category = ProblemCategory.new
+    # end
+
+  end
+
   def employees
     @users = User.all
   end
@@ -91,6 +106,9 @@ class AdminsController < ApplicationController
   end
 
 
+  def brands_and_categories_params
+    params.require(:product_brand).permit(:name, :sla_id, :parts_return_days, :warranty_date_format, :currency_id, product_categories_attributes: [:name, :sla_id, :_destroy, :id])
+  end
 
   def problem_category_params
     params.require(:problem_category).permit(:name, q_and_as_attributes: [:_destroy, :id, :active, :answer_type, :question, :action_id, :compulsory])
