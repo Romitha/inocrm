@@ -796,6 +796,7 @@ class TicketsController < ApplicationController
     Warranty
     ContactNumber
     QAndA
+    Inventory
     @product = @ticket.products.first
     @warranties = @product.warranties
     session[:product_id] = @product.id
@@ -819,6 +820,7 @@ class TicketsController < ApplicationController
     ContactNumber
     QAndA
     TaskAction
+    Inventory
     @ticket = Ticket.find_by_id params[:ticket_id]
     if @ticket
       @product = @ticket.products.first
@@ -905,6 +907,7 @@ class TicketsController < ApplicationController
     ContactNumber
     QAndA
     TaskAction
+    Inventory
     @ticket = Ticket.find_by_id params[:ticket_id]
     @new_warranty = Warranty.new
     if @ticket
@@ -984,6 +987,7 @@ class TicketsController < ApplicationController
     ContactNumber
     QAndA
     TaskAction
+    Inventory
     ticket_id = (params[:ticket_id] or session[:ticket_id])
     @ticket = Ticket.find_by_id ticket_id
     session[:ticket_id] = @ticket.id
@@ -1012,6 +1016,7 @@ class TicketsController < ApplicationController
     ContactNumber
     QAndA
     TaskAction
+    Inventory
     @ticket = Ticket.find_by_id params[:ticket_id]
     if @ticket
       @product = @ticket.products.first
@@ -1037,6 +1042,7 @@ class TicketsController < ApplicationController
     QAndA
     TaskAction
     TicketEstimation
+    Inventory
     @ticket = Ticket.find_by_id params[:ticket_id]
     if @ticket
       @product = @ticket.products.first
@@ -1060,6 +1066,7 @@ class TicketsController < ApplicationController
     QAndA
     TaskAction
     TicketSparePart
+    Inventory
     @ticket = Ticket.find_by_id params[:ticket_id]
     if @ticket
       @product = @ticket.products.first
