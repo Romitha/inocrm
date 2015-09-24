@@ -9,7 +9,7 @@
 = render "tickets/tickets_pack/ticket_header", ticket: ticket, product: product
 
 = tab_panel do
-  = tab_nav_tab({class: "small_scale_margin-bottom1"}, ticket_info: {content: "Ticket info"}, assign_ticket: {content: "Resolution", active_class: "active"}, order_mf: {content: "Order M F"}, receive_and_issued: {content: "Receive and Issued"}, return_to_stores: {content: "Return To Stores"}, parts_ordered: {content: "Parts Ordered"}, estimation1: {content: "Estimation"}, q_and_as: {content: "Q & A"})
+  = tab_nav_tab({class: "small_scale_margin-bottom1"}, ticket_info: {content: "Ticket info"}, assign_ticket: {content: "Resolution", active_class: "active"}, order_mf: {content: "Order M F"}, receive_and_issued: {content: "Receive and Issued"}, return_to_stores: {content: "Return To Stores"}, parts_ordered: {content: "Parts Ordered"}, estimation1: {content: "Estimation"}, q_and_as: {content: "Q & A"}, create_parts_bundle: {content: "Create parts bundle"}, close_event: {content:"Close Event"}, return_parts_bundle: {content:"Return Parts Bundle"}, create_parts_bundle: {content:"Create Parts Bundle"} )
   .tab-content
     = tab_content tabpointer: :ticket_info do
       = tab_panel do
@@ -35,3 +35,13 @@
     = tab_content tabpointer: :q_and_as do
       = tab_panel do
         = render "q_and_as/q_and_a_form", action_no: 5, url: update_ticket_q_and_a_q_and_as_path, remote: false
+
+    = tab_content tabpointer: :create_parts_bundle do
+      = tab_panel do
+        = render "tickets/tickets_pack/create_parts_bundle/create_parts_bundle"
+    = tab_content tabpointer: :return_parts_bundle do
+      = tab_panel do
+        = render "tickets/tickets_pack/return_parts_bundle/return_parts_bundle"
+    = tab_content tabpointer: :close_event do
+      = tab_panel do
+        = render "tickets/tickets_pack/close_event/close_event"
