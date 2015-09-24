@@ -116,9 +116,12 @@ Rails.application.routes.draw do
       get "pop-approval"#, :action => :pop_note
 
       get "resolution"
-      get "order_mf"
-      get "receive_and_issued"
+      get "order_manufacture_parts", :action => :order_mf
+      get "received_and_issued"
       get "return_to_stores"
+      get "create_parts_bundle"
+      get "return_parts_bundle"
+      get "close_event"
       get "assign-ticket", action: :assign_ticket
       get "estimate_job"
       get "deliver_unit"
