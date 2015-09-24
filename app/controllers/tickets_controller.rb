@@ -1012,6 +1012,15 @@ class TicketsController < ApplicationController
     end
   end
 
+  def order_mf
+  end
+
+  def receive_and_issued
+  end
+
+  def return_to_stores
+  end
+
   def edit_ticket
     ContactNumber
     QAndA
