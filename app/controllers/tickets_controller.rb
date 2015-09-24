@@ -1021,6 +1021,15 @@ class TicketsController < ApplicationController
   def return_to_stores
   end
 
+  def create_parts_bundle
+  end
+
+  def return_parts_bundle
+  end
+
+  def close_event
+  end
+
   def edit_ticket
     ContactNumber
     QAndA

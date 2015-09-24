@@ -125,6 +125,11 @@ Rails.application.routes.draw do
       get "low_margin_estimate"
       get "workflow_diagram"
       get "suggesstion_data"
+
+      get "create_parts_bundle"
+      get "return_parts_bundle"
+      get "close_event"
+
     end
 
     member do
