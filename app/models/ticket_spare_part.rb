@@ -12,6 +12,7 @@ class TicketSparePart < ActiveRecord::Base
   has_many :ticket_spare_part_status_actions, foreign_key: :spare_part_id
 
   has_one :ticket_spare_part_manufacture, foreign_key: :spare_part_id
+  accepts_nested_attributes_for :ticket_spare_part_manufacture, allow_destroy: true
   has_one :ticket_spare_part_store, foreign_key: :spare_part_id
 
   belongs_to :unused_reason, -> { where(spare_part_unused: true) }, class_name: "Reason", foreign_key: :unused_reason_id
@@ -69,6 +70,8 @@ class TicketSparePartManufacture < ActiveRecord::Base
   self.table_name = "spt_ticket_spare_part_manufacture"
 
   belongs_to :ticket_spare_part, foreign_key: :spare_part_id
+  belongs_to :manufacture_currency, class_name: "Currency", foreign_key: :manufacture_currency_id
+
 end
 
 class SparePartStatusAction < ActiveRecord::Base
