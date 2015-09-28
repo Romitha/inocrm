@@ -1177,6 +1177,10 @@ class TicketsController < ApplicationController
     ticket_id = (params[:ticket_id] or session[:ticket_id])
     @ticket = Ticket.find_by_id ticket_id
     session[:ticket_id] = @ticket.id
+
+    request_spare_part_id = (params[:request_spare_part_id] or session[:request_spare_part_id])
+    @spare_part = TicketSparePart.find_by_id request_spare_part_id
+
     if @ticket
       @product = @ticket.products.first
       @warranties = @product.warranties

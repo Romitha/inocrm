@@ -1,1 +1,40 @@
-Close event
+- ticket = @ticket
+- spare_part = @spare_part
+.row.col-md-12
+  .col-md-12
+    Activity: Close Event
+.row.col-md-12{style: "margin-top: 15px;"}
+  .col-md-4
+    Spare Part No: #{spare_part.ticket_spare_part_manufacture.try(:spare_part_id)}
+    %br
+    Part Description: #{spare_part.spare_part_description}
+    %br
+    Part Order No: #{spare_part.ticket_spare_part_manufacture.try(:order_no)}
+    %br
+    Part Serial No: #{spare_part.faulty_serial_no}
+    %br
+    Part CT No: #{spare_part.faulty_ct_no}
+  .col-md-4
+    Status: #{spare_part.spare_part_status_action.try(:name)}
+    %br
+    Un Used Return Reason: #{Reason.find_by_id(spare_part.unused_reason_id).try(:reason)}
+    %br
+    Part Event No: #{spare_part.ticket_spare_part_manufacture.try(:event_no)}
+    %br
+    Return Part Serial No: #{spare_part.return_part_serial_no}
+    %br
+    Return CT No: #{spare_part.return_part_ct_no}
+  .col-md-4
+    Product Brand: 
+.row.col-md-12{style: "margin-top: 20px;"}
+  = simple_nested_form_for spare_part, url: close_event_tickets_path(status_param: "create"), method: :post, remote: true do |f|
+    = f.simple_fields_for :ticket_spare_part_manufacture do |tm|
+      .col-md-6
+        = label_tag "Event Closed (Claim Completed)"
+        = tm.check_box :event_closed
+      .col-md-6
+        = label_tag "Payment Expected #{Currency.find_by_id(spare_part.ticket_spare_part_manufacture.try(:manufacture_currency_id).try(:code))}"
+        = tm.input :manufacture_currency_id
+      .col-md-6
+        = tm.submit "Save", class: "btn btn-success pull-right", id: "update_ticket_spare_part_manufacture"
+        = button_tag "Cancel", type: :reset

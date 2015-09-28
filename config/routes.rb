@@ -121,17 +121,14 @@ Rails.application.routes.draw do
       get "return_to_stores"
       get "create_parts_bundle"
       get "return_parts_bundle"
-      get "close_event"
+      # get "close_event"
+      match "close_event", to: "tickets#close_event", via: [:get, :post]
       get "assign-ticket", action: :assign_ticket
       get "estimate_job"
       get "deliver_unit"
       get "low_margin_estimate"
       get "workflow_diagram"
       get "suggesstion_data"
-
-      get "create_parts_bundle"
-      get "return_parts_bundle"
-      get "close_event"
 
     end
 
