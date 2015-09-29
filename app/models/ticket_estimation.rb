@@ -4,6 +4,7 @@ class TicketEstimation < ActiveRecord::Base
   belongs_to :ticket
 
   has_many :ticket_estimation_externals, foreign_key: :ticket_estimation_id
+  accepts_nested_attributes_for :ticket_estimation_externals, allow_destroy: true
 
   has_many :job_estimations, foreign_key: :ticket_estimation_id
   accepts_nested_attributes_for :job_estimations, allow_destroy: true

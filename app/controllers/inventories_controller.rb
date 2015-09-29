@@ -1,5 +1,7 @@
 class InventoriesController < ApplicationController
 
+  before_action :find_ticket, only: [:update_low_margin_estimate, :update_estimate_job, :update_delivery_unit]
+
   def inventory_in_modal
     Inventory
     session[:select_frame] = params[:select_frame]
@@ -445,7 +447,109 @@ class InventoriesController < ApplicationController
     redirect_to todos_url, @flash_message
   end
 
+  def update_estimate_job
+
+    Ticket
+    Organization
+    @ticket_estimation = TicketEstimation.find params[:ticket_estimation_id]
+    @ticket_estimation_external = TicketEstimationExternal.find params[:ticket_estimation_external_id]
+
+    @ticket.update(ticket_params)
+
+    @ticket_estimation.update_attributes(estimated_at: DateTime.now, estimated_by: current_user.id)
+
+    if params[:estimation_completed]
+
+      continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+
+      if continue
+
+        d14_val = ((@ticket_estimation_external.estimated_price - @ticket_estimation_external.cost_price)*100/@ticket_estimation_external.cost_price) < CompanyConfig.first.try(:sup_external_job_profit_margin).to_f 
+        # Set Action (27) Job Estimation Done, DB.spt_act_job_estimate. Set supp_engr_user = supp_engr_user (Input variable)
+
+        user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(27).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+        user_ticket_action.build_act_job_estimation(ticket_estimation_id: @ticket_estimation.id, supplier_id: @ticket_estimation_external.repair_by_id)
+
+        user_ticket_action.save
+
+        if !d14_val
+          @ticket.update_attribute(:status_resolve_id, TicketStatusResolve.find_by_code("EST").id)# (Estimated).
+          @ticket_estimation.update_attribute(:status_id, EstimationStatus.find_by_code("EST").id)#EST (Estimated).
+        else
+          @ticket_estimation.update_attribute(:approval_required, true)
+        end       
+
+        # bpm output variables
+        bpm_variables = view_context.initialize_bpm_variables.merge(d14_job_estimate_external_below_margin: (d14_val ? "Y" : "N"))
+
+        @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
+
+        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+        if bpm_response[:status].upcase == "SUCCESS"
+          @flash_message = {notice: "Successfully updated"}
+        else
+          @flash_message = {error: "ticket is updated. but Bpm error"}
+        end
+      end
+    end
+    redirect_to todos_url, notice: "Successfully updated."
+  end
+
+  def update_low_margin_estimate
+
+    Ticket
+    Organization
+    @ticket_estimation = TicketEstimation.find params[:ticket_estimation_id]
+    @ticket_estimation_external = TicketEstimationExternal.find params[:ticket_estimation_external_id]
+
+    @ticket.update(ticket_params)
+    @ticket_estimation.update_attributes(approved_at: DateTime.now, approved_by: current_user.id)
+
+    if params[:estimation_completed]
+
+      continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+
+      if continue
+        # Set Action (41) Job Estimation Done, DB.spt_act_job_estimate. Set supp_engr_user = supp_engr_user (Input variable)
+
+        user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(41).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+        user_ticket_action.build_act_job_estimation(ticket_estimation_id: @ticket_estimation.id, supplier_id: @ticket_estimation_external.repair_by_id)
+
+        user_ticket_action.save
+
+        @ticket.update_attribute(:status_resolve_id, TicketStatusResolve.find_by_code("EST").id)# (Estimated).
+        @ticket_estimation.update_attribute(:status_id, EstimationStatus.find_by_code("EST").id)#EST (Estimated).
+        @ticket_estimation.update_attribute(:approved, true)
+
+        # bpm output variables
+        bpm_variables = view_context.initialize_bpm_variables
+
+        @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
+
+        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+        if bpm_response[:status].upcase == "SUCCESS"
+          @flash_message = {notice: "Successfully updated"}
+        else
+          @flash_message = {error: "ticket is updated. but Bpm error"}
+        end
+      end
+    end
+    redirect_to todos_url, notice: "Successfully updated."
+  end
+
+  def update_delivery_unit
+    
+  end
+
+
   private
+
+    def find_ticket
+      @ticket = Ticket.find params[:ticket_id]
+    end
+
     def ticket_spare_part_params ticket_spare_part
       t_spare_part = params.require(:ticket_spare_part).permit(:spare_part_no, :spare_part_description, :ticket_id, :ticket_fsr, :cus_chargeable_part, :request_from, :faulty_serial_no, :faulty_ct_no, :note, :status_action_id, :part_terminated, :status_use_id, ticket_attributes: [:remarks, :id])
       t_spare_part[:note] = t_spare_part[:note].present? ? "#{t_spare_part[:note]} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{ticket_spare_part.note}" : ticket_spare_part.note
@@ -455,5 +559,9 @@ class InventoriesController < ApplicationController
 
     def estimation_params
       params.require(:ticket_estimation).permit(:note, :id, :cust_approved, :cust_approved_by)
+    end
+
+    def ticket_params
+      params.require(:ticket).permit(ticket_estimations_attributes: [:id, :advance_payment_amount, :note, ticket_estimation_externals_attributes: [:id, :repair_by_id, :cost_price, :estimated_price, :warranty_period], ticket_estimation_additionals_attributes: [:ticket_id, :additional_charge_id, :cost_price, :estimated_price, :_destroy, :id]])
     end
 end

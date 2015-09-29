@@ -3,6 +3,7 @@ window.Inventories =
     @filter_product()
     @filter_category()
     @filter_store()
+    # @calculate_cost_price()
 
   filter_product: -> 
     category_list = $("#search_inventory_product")
@@ -131,3 +132,43 @@ window.Inventories =
 
       else
         submit_form.submit()
+
+  calculate_cost_price: ->
+    total_cost_price = 0
+    total_estimated_price = 0
+    total_margin_price = 0
+    $(".est_external_cost_price, .est_add_cost_price").each ->
+      total_cost_price = total_cost_price + parseInt($(@).val())
+      $(@).parents().eq(2).find(".append_cost_price").html(parseInt($(@).val()))
+
+    $(".est_external_estimated_price, .est_add_estimated_price").each ->
+      total_estimated_price = total_estimated_price + parseInt($(@).val())
+      $(@).parents().eq(2).find(".append_estimated_price").html(parseInt($(@).val()))
+      cost_price = parseInt($(@).parents().eq(2).siblings().find(".append_cost_price").text())
+      append_total = (parseInt($(@).val()) - cost_price)*100/cost_price
+
+      ap_total = Math.round(append_total * 100)/100
+      if (Math.round(append_total * 100)/100) < parseInt($("#db_margin").html())
+        $(@).parents().eq(3).find(".append_profit_margin").css("color", "red")
+      else
+        $(@).parents().eq(3).find(".append_profit_margin").css("color", "black")
+
+      if isNaN(ap_total)
+        $(@).parents().eq(3).find(".append_profit_margin").html("")
+      else
+        $(@).parents().eq(3).find(".append_profit_margin").html(ap_total+"%")
+
+    total_margin_price = (total_estimated_price - total_cost_price)*100/total_cost_price                                                                         
+
+    $("#total_estimated_price").html(total_estimated_price)
+    $("#total_cost_price").html(total_cost_price)
+    t_profit_price = Math.round(total_margin_price * 100)/100
+    if t_profit_price < parseInt($("#db_margin").html())
+      $("#total_margin_price").css("color", "red")
+    else
+      $("#total_margin_price").css("color", "black")
+
+    if isNaN(t_profit_price)
+      $("#total_margin_price").html("")
+    else
+      $("#total_margin_price").html(t_profit_price+"%")
