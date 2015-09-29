@@ -20,8 +20,8 @@
 
       .row
         .col-md-12
-          %strong Type of warranty:
-          = ticket.warranty_type.name
+          %strong Type of warranty: #{ticket.warranty_type.name}
+        .col-md-12{style: "margin-top: 20px;"}
           = simple_nested_form_for ticket, url: update_estimate_job_inventories_path, method: :put do |f|
             = hidden_field_tag :ticket_id, ticket.id
             = hidden_field_tag :process_id, session[:process_id]
@@ -38,16 +38,16 @@
                     .col-md-3
                       = te.association :organization, label: "Repaired by (Organization)"
                     .col-md-2
-                      = te.input :cost_price, input_html: {class: "est_external_cost_price", oninput: "Inventories.calculate_cost_price();"}
+                      = te.input :cost_price, input_html: {class: "est_external_cost_price only_float", oninput: "Inventories.calculate_cost_price();"}
                       .append_cost_price.hide
                     .col-md-2
-                      = te.input :estimated_price, input_html: {class: "est_external_estimated_price", oninput: "Inventories.calculate_cost_price();"}
+                      = te.input :estimated_price, input_html: {class: "est_external_estimated_price only_float", oninput: "Inventories.calculate_cost_price();"}
                       .append_estimated_price.hide
                     .col-md-2
-                      = te.input :warranty_period
+                      = te.input :warranty_period, input_html: {class: "only_float"}
                     .col-md-2
                       %strong Profit:
-                      .append_profit_margin
+                      .append_profit_margin{style: "font-weight:bold;font-size:125%;"}
 
 
                 .row
@@ -65,15 +65,15 @@
                             .col-md-3
                               = ta.association :additional_charge, :label =>"Repair by", label_method: :additional_charge, value_method: :id
                             .col-md-3
-                              = ta.input :cost_price, input_html: {class: "est_add_cost_price", oninput: "Inventories.calculate_cost_price();"}
+                              = ta.input :cost_price, input_html: {class: "est_add_cost_price only_float", oninput: "Inventories.calculate_cost_price();"}
                               .append_cost_price.hide
 
                             .col-md-3
-                              = ta.input :estimated_price, input_html: {class: "est_add_estimated_price", oninput: "Inventories.calculate_cost_price();"}
+                              = ta.input :estimated_price, input_html: {class: "est_add_estimated_price only_float", oninput: "Inventories.calculate_cost_price();"}
                               .append_estimated_price.hide
                             .col-md-2
                               %strong Profit:
-                              .append_profit_margin
+                              .append_profit_margin{style: "font-weight:bold;font-size:125%;"}
 
                       .row
                         .col-md-12
@@ -83,20 +83,22 @@
                 .row
                   .col-md-3
                     = t.input :id, as: :hidden
-                    = t.input :advance_payment_amount
-                  .col-md-3
+                    = t.input :advance_payment_amount , input_html: {class: "only_float"}
+
+                  .col-md-3.col-md-offset-6
                     %strong Total cost price:
                     %span#total_cost_price
-                  .col-md-3
+                    %br
                     %strong Total estimated price:
                     %span#total_estimated_price
-                  .col-md-3
+                    %br
                     %strong Total profit:
-                    %span#total_margin_price
+                    %span#total_margin_price{style: "font-weight:bold;"}
                     %span (
-                    %span#db_margin= CompanyConfig.first.try(:sup_external_job_profit_margin).to_f
+                    %span#db_margin{style: "font-weight:bold;"}= CompanyConfig.first.try(:sup_external_job_profit_margin).to_f
                     %span )
                     %span %
+
                   .col-md-12
                     = t.input :note
 

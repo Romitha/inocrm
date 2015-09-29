@@ -1179,7 +1179,7 @@ class TicketsController < ApplicationController
     session[:ticket_id] = @ticket.id
 
     request_spare_part_id = (params[:request_spare_part_id] or session[:request_spare_part_id])
-    @spare_part = TicketSparePart.find_by_id request_spare_part_id
+    @spare_part = TicketSparePart.find request_spare_part_id
 
     if @ticket
       @product = @ticket.products.first
@@ -1969,7 +1969,7 @@ class TicketsController < ApplicationController
 
         # bpm output variables
 
-        bpm_variables = view_context.initialize_bpm_variables.merge(supp_engr_user: current_user.id, request_spare_part_id: @ticket_spare_part.id, onloan_request: "N", d15_part_estimate_required: (@ticket_spare_part.cus_chargeable_part ? "Y" : "N"), part_estimation_id: (@ticket_spare_part.cus_chargeable_part ? @ticket_estimation.id : "-"), d16_request_manufacture_part: (@ticket_spare_part.request_from == "M" ? "Y" : "N"), d17_request_store_part: ((@ticket_spare_part.request_from == "S" and !@ticket_spare_part.cus_chargeable_part) ? "Y" : "N"))
+        bpm_variables = view_context.initialize_bpm_variables.merge(supp_engr_user: current_user.id, request_spare_part_id: @ticket_spare_part.id, onloan_request: "N", d15_part_estimate_required: (@ticket_spare_part.cus_chargeable_part ? "Y" : "N"), part_estimation_id: (@ticket_spare_part.cus_chargeable_part ? @ticket_estimation.try(:id) : "-"), d16_request_manufacture_part: (@ticket_spare_part.request_from == "M" ? "Y" : "N"), d17_request_store_part: ((@ticket_spare_part.request_from == "S" and !@ticket_spare_part.cus_chargeable_part) ? "Y" : "N"))
 
         @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
 

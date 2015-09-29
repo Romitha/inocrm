@@ -1,4 +1,3 @@
-#2014_10_28
 window.Users =
   setup: ->
     @user_profile_upload()
