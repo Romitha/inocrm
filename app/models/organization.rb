@@ -94,3 +94,9 @@ class OrganizationType < ActiveRecord::Base
 
   has_many :organizations, foreign_key: "type_id"
 end
+
+class CompanyConfig < ActiveRecord::Base
+  self.table_name = "company_config"
+
+  # has_many :organizations, foreign_key: "type_id"
+end

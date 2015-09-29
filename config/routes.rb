@@ -193,6 +193,8 @@ Rails.application.routes.draw do
       get "load_estimation"
       patch "update_estimation_part_customer_approval"
       patch "update_estimation_external_customer_approval"
+      put "update_estimate_job"
+      put "update_low_margin_estimate"
 
     end
   end
