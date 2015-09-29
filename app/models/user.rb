@@ -220,14 +220,14 @@ end
 class SbuEngineer < ActiveRecord::Base
   self.table_name = "mst_spt_sbu_engineer"
 
-  belongs_to :sbu, foreign_key: :engineer_id
+  belongs_to :sbu, foreign_key: :sbu_id
   belongs_to :engineer, class_name: "User", foreign_key: :engineer_id
 end
 
 class Sbu < ActiveRecord::Base
   self.table_name = "mst_spt_sbu"
 
-  has_many :sbu_engineers, foreign_key: :engineer_id
+  has_many :sbu_engineers, foreign_key: :sbu_id
   has_many :engineers, through: :sbu_engineers, source: :engineer
 
 # class Pet < ActiveRecord::Base

@@ -1,5 +1,6 @@
 window.Warranties =
   setup: ->
+    @numbersonly()
     return
 
   warranty_select: (function_param)->

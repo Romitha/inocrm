@@ -8,4 +8,5 @@ $ ->
   Departments.setup()
   Inventories.setup()
   Admins.setup()
+  Warranties.setup()
   return

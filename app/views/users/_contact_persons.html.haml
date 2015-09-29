@@ -8,8 +8,8 @@
             Name
           %th
             Contacts
-          %th
-            Ticket
+          / %th
+          /   Ticket
           %th
             Function
       %tbody
@@ -23,11 +23,11 @@
                 #{c_value.contact_type.name}: #{c_value.value}
                 %br/
 
-            %td
-              - contact_person.tickets.each do |ticket|
-                #{ticket.ticket_no.to_s.rjust(5, INOCRM_CONFIG["ticket_no_format"])} #{ticket.ticket_status.name}
-              %br/
-              =link_to "More>>", "#"
+            / %td
+            /   - contact_person.tickets.each do |ticket|
+            /     #{ticket.ticket_no.to_s.rjust(5, INOCRM_CONFIG["ticket_no_format"])} #{ticket.ticket_status.name}
+            /   %br/
+            /   =link_to "More>>", "#"
             %td
               = link_to "select", "#", onclick: "Tickets.assign_contact_person('#{contact_person.id}', '#{submitted_contact_person}', 'assign_contact_person'); false;"
               = link_to "edit", "#", onclick: "Tickets.assign_contact_person('#{contact_person.id}', '#{submitted_contact_person}', 'edit_create_contact_person'); false;"
