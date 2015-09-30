@@ -1394,7 +1394,7 @@ class TicketsController < ApplicationController
     when "deliver_unit"
       TicketEstimation
       @ticket_deliver_unit = @ticket.ticket_deliver_units.build
-      @report_bys = @ticket.ticket_estimation_externals.select{|ts| (ts.ticket_estimation.status_id == EstimationStatus.find_by_code("EST").id) and (ts.ticket_estimation.cust_approved or ( !ts.ticket_estimation.cust_approval_required and ts.ticket_estimation.approved ) or ( !ts.ticket_estimation.cust_approval_required and !ts.ticket_estimation.approval_required ))}.map { |ts| [ts.organization.name, ts.organization.id] }
+      @report_bys = @ticket.ticket_estimation_externals.select{|ts| ((ts.ticket_estimation.status_id == EstimationStatus.find_by_code("EST").id) or (ts.ticket_estimation.status_id == EstimationStatus.find_by_code("CLS").id) or (ts.ticket_estimation.status_id == EstimationStatus.find_by_code("APP").id)) and ((ts.ticket_estimation.cust_approved) or ( !ts.ticket_estimation.cust_approval_required)) }.map { |ts| [ts.organization.name, ts.organization.id] }
 
     when "edit_serial_no_request"
       @serial_request = @user_ticket_action.build_serial_request

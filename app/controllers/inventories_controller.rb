@@ -358,6 +358,7 @@ class InventoriesController < ApplicationController
         continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
 
         if continue
+          @estimation.status_id = EstimationStatus.find_by_code("APP").id
           # bpm output variables
           bpm_variables = view_context.initialize_bpm_variables.merge(d20_advance_payment_required: "Y", advance_payment_estimation_id: @estimation.id)
 
@@ -413,6 +414,8 @@ class InventoriesController < ApplicationController
         continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
 
         if continue
+          @estimation.status_id = EstimationStatus.find_by_code("APP").id
+
           # bpm output variables
           bpm_variables = view_context.initialize_bpm_variables.merge(d20_advance_payment_required: "Y", advance_payment_estimation_id: @estimation.id)
 
@@ -461,10 +464,21 @@ class InventoriesController < ApplicationController
     if params[:estimation_completed]
 
       continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+      d14_val = false
 
       if continue
 
-        d14_val = ((@ticket_estimation_external.estimated_price - @ticket_estimation_external.cost_price)*100/@ticket_estimation_external.cost_price) < CompanyConfig.first.try(:sup_external_job_profit_margin).to_f 
+        t_cost_price = @ticket_estimation_external.cost_price.to_f + @ticket_estimation.ticket_estimation_additionals.sum(:cost_price).to_f
+        t_est_price = @ticket_estimation_external.estimated_price.to_f + @ticket_estimation.ticket_estimation_additionals.sum(:estimated_price).to_f
+
+        if t_est_price > 0
+          @ticket_estimation.update_attribute(:cust_approval_required, true)
+          d14_val = (((t_est_price - t_cost_price)*100/t_cost_price) < CompanyConfig.first.try(:sup_external_job_profit_margin).to_f)
+        else
+          @ticket_estimation.update_attribute(:cust_approval_required, false)
+          d14_val = false
+        end
+             
         # Set Action (27) Job Estimation Done, DB.spt_act_job_estimate. Set supp_engr_user = supp_engr_user (Input variable)
 
         user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(27).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
@@ -518,6 +532,13 @@ class InventoriesController < ApplicationController
 
         user_ticket_action.save
 
+        t_est_price = @ticket_estimation_external.approved_estimated_price.to_f + @ticket_estimation.ticket_estimation_additionals.sum(:approved_estimated_price).to_f
+        if t_est_price > 0
+          @ticket_estimation.update_attribute(:cust_approval_required, true)
+        else
+          @ticket_estimation.update_attribute(:cust_approval_required, false)
+        end
+
         @ticket.update_attribute(:status_resolve_id, TicketStatusResolve.find_by_code("EST").id)# (Estimated).
         @ticket_estimation.update_attribute(:status_id, EstimationStatus.find_by_code("EST").id)#EST (Estimated).
         @ticket_estimation.update_attribute(:approved, true)
@@ -562,6 +583,6 @@ class InventoriesController < ApplicationController
     end
 
     def ticket_params
-      params.require(:ticket).permit(ticket_estimations_attributes: [:id, :advance_payment_amount, :note, ticket_estimation_externals_attributes: [:id, :repair_by_id, :cost_price, :estimated_price, :warranty_period], ticket_estimation_additionals_attributes: [:ticket_id, :additional_charge_id, :cost_price, :estimated_price, :_destroy, :id]])
+      params.require(:ticket).permit(ticket_estimations_attributes: [:id, :advance_payment_amount, :note, :approved_adv_pmnt_amount, ticket_estimation_externals_attributes: [:id, :repair_by_id, :cost_price, :estimated_price, :warranty_period, :approved_estimated_price], ticket_estimation_additionals_attributes: [:ticket_id, :additional_charge_id, :cost_price, :estimated_price, :_destroy, :id, :approved_estimated_price]])
     end
 end

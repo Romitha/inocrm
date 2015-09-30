@@ -304,3 +304,12 @@ print_template = [
 PrintTemplate.create_with(invoice: print_template[1], invoice_request_type: print_template[2], ticket: print_template[3], ticket_request_type: print_template[4], ticket_complete: print_template[5], ticket_complete_request_type: print_template[6], fsr: print_template[7], fsr_request_type: print_template[8]).find_or_create_by(id: print_template[0])
 
 PrintTemplate.first.update(ticket: print_template[3], ticket_complete: print_template[5], fsr: print_template[7])
+
+{
+  ["RQS", "Requested"],
+  ["EST", "Estimated"],
+  ["CLS", "Closed"],
+  ["APP", "Advance Payment Pending"]
+}.each do |k, v|
+  EstimationStatus.create_with(name: t[1]]).find_or_create_by(code: t[0])}
+end

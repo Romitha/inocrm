@@ -3,7 +3,7 @@ window.Inventories =
     @filter_product()
     @filter_category()
     @filter_store()
-    # @calculate_cost_price()
+    @calculate_cost_price()
 
   filter_product: -> 
     category_list = $("#search_inventory_product")
@@ -148,7 +148,7 @@ window.Inventories =
       append_total = (parseInt($(@).val()) - cost_price)*100/cost_price
 
       ap_total = Math.round(append_total * 100)/100
-      if (Math.round(append_total * 100)/100) < parseInt($("#db_margin").html())
+      if ap_total < parseInt($("#db_margin").html())
         $(@).parents().eq(3).find(".append_profit_margin").css("color", "red")
       else
         $(@).parents().eq(3).find(".append_profit_margin").css("color", "black")
