@@ -10,7 +10,7 @@
 = render "tickets/tickets_pack/ticket_header", ticket: ticket, product: product
 
 = tab_panel do
-  = tab_nav_tab({class: "small_scale_margin-bottom2"}, ticket_info: {content: "Ticket info"}, estimate_job: {content: "Estimate job", active_class: "active"})
+  = tab_nav_tab({class: "small_scale_margin-bottom2"}, ticket_info: {content: "Ticket info"}, estimate_job: {content: "Estimate external job", active_class: "active"})
   .tab-content
     = tab_content tabpointer: :ticket_info do
       = tab_panel do
@@ -44,7 +44,7 @@
                       = te.input :estimated_price, input_html: {class: "est_external_estimated_price only_float", oninput: "Inventories.calculate_cost_price();"}
                       .append_estimated_price.hide
                     .col-md-2
-                      = te.input :warranty_period, input_html: {class: "only_float"}
+                      = te.input :warranty_period, input_html: {class: "only_float"}, label: "Warranty period (in months)"
                     .col-md-2
                       %strong Profit:
                       .append_profit_margin{style: "font-weight:bold;font-size:125%;"}

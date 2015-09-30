@@ -52,7 +52,7 @@
         - if present_of_start_ticket_action and not ticket.job_finished
           %option{:value => "resolved_job"} Resolve the Job
 
-        - if present_of_start_ticket_action and ticket.ticket_repair_type.code == "EX" and not (ticket.ticket_deliver_units.any?{|d| !d.received} or ticket.job_finished) and ticket.ticket_estimations.any?{|ts| (ts.status_id == EstimationStatus.find_by_code("EST").id) and (ts.cust_approved or ( !ts.cust_approval_required and ts.approved ) or ( !ts.cust_approval_required and !ts.approval_required ))}
+        - if present_of_start_ticket_action and ticket.ticket_repair_type.code == "EX" and not (ticket.ticket_deliver_units.any?{|d| !d.received} or ticket.job_finished) and ticket.ticket_estimations.any?{|ts| ((ts.status_id == EstimationStatus.find_by_code("EST").id) or (ts.status_id == EstimationStatus.find_by_code("CLS").id) or (ts.status_id == EstimationStatus.find_by_code("APP").id)) and ((ts.cust_approved) or ( !ts.cust_approval_required))}
           %option{:value => "deliver_unit"} Deliver Unit
 
         //- if present_of_start_ticket_action and ticket.cus_chargeable and ticket.ticket_repair_type.code=="EX" and not ticket.job_finished

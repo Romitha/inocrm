@@ -94,13 +94,14 @@ class InsertInitialValues < ActiveRecord::Migration
     #   execute("insert into mst_spt_job_type (code, name) values ('#{value[0]}', '#{value[1]}')")
     # end
 
-    [
-      ["RQS", "Requested"],
-      ["EST", "Estimated"],
-      ["CLS", "Closed"]
-    ].each do |value|
-      execute("insert into mst_spt_estimation_status (code, name) values ('#{value[0]}', '#{value[1]}')")
-    end
+    # [
+    #   ["RQS", "Requested"],
+    #   ["EST", "Estimated"],
+    #   ["CLS", "Closed"],
+    #   ["APP", "Advance Payment Pending"]
+    # ].each do |value|
+    #   execute("insert into mst_spt_estimation_status (code, name) values ('#{value[0]}', '#{value[1]}')")
+    # end
 
     # [
     #   ["Telephone", "0", "0"],
