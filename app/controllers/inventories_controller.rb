@@ -561,7 +561,63 @@ class InventoriesController < ApplicationController
   end
 
   def update_delivery_unit
-    
+    TicketSparePart
+
+    @ticket_deliver_unit = TicketDeliverUnit.find params[:ticket_deliver_id]
+
+    @ticket.attributes = ticket_params
+
+    @ticket.ticket_deliver_units.select{|d| d.changed?}.each do |t_d_u|
+
+      ticket_deliver_unit = t_d_u
+      ticket_deliver_unit_note = ticket_deliver_unit.note_change.last
+
+      if ticket_deliver_unit.delivered_to_sup_changed? and ticket_deliver_unit.delivered_to_sup
+
+        @ticket_deliver_unit.update(delivered_to_sup_at: DateTime.now, delivered_to_sup_by: current_user.id)
+
+        # Set Action (29) Delivered Unit To Supplier, DB.spt_act_deliver_unit
+        user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(29).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+        user_ticket_action.build_deliver_unit(ticket_deliver_unit_id: @ticket_deliver_unit.id, deliver_to_id: @ticket_deliver_unit.deliver_to_id, deliver_note: ticket_deliver_unit_note)
+
+        user_ticket_action.save
+      end
+
+      
+      if ticket_deliver_unit.collected
+          continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+
+        if continue
+          @ticket_deliver_unit.update(collected_at: DateTime.now, collected_by: current_user.id)
+
+          #  Set Action (30) Collected Unit From Supplier, DB.spt_act_deliver_unit
+          user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(30).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+          user_ticket_action.build_deliver_unit(ticket_deliver_unit_id: @ticket_deliver_unit.id, deliver_to_id: @ticket_deliver_unit.deliver_to_id, deliver_note: ticket_deliver_unit_note)
+
+          user_ticket_action.save
+
+
+          # bpm output variables
+          bpm_variables = view_context.initialize_bpm_variables
+
+          @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
+
+          bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+          if bpm_response[:status].upcase == "SUCCESS"
+            @flash_message = {notice: "Successfully updated"}
+          else
+            @flash_message = {error: "ticket is updated. but Bpm error"}
+          end
+        end
+      end
+      ticket_deliver_unit.note = "#{ticket_deliver_unit_note} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket_deliver_unit.note}"
+    end
+
+    @ticket.save
+    # latest_note = @ticket_deliver_unit.note
+    # @ticket_deliver_unit.update(note: "#{ticket_deliver_unit_note} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{latest_note}")
+    redirect_to todos_url, notice: "Successfully updated."
   end
 
 
@@ -583,6 +639,6 @@ class InventoriesController < ApplicationController
     end
 
     def ticket_params
-      params.require(:ticket).permit(ticket_estimations_attributes: [:id, :advance_payment_amount, :note, :approved_adv_pmnt_amount, ticket_estimation_externals_attributes: [:id, :repair_by_id, :cost_price, :estimated_price, :warranty_period, :approved_estimated_price], ticket_estimation_additionals_attributes: [:ticket_id, :additional_charge_id, :cost_price, :estimated_price, :_destroy, :id, :approved_estimated_price]])
+      params.require(:ticket).permit(ticket_estimations_attributes: [:id, :advance_payment_amount, :note, :approved_adv_pmnt_amount, ticket_estimation_externals_attributes: [:id, :repair_by_id, :cost_price, :estimated_price, :warranty_period, :approved_estimated_price], ticket_estimation_additionals_attributes: [:ticket_id, :additional_charge_id, :cost_price, :estimated_price, :_destroy, :id, :approved_estimated_price]], ticket_deliver_units_attributes: [:id, :note, :collected, :delivered_to_sup])
     end
 end

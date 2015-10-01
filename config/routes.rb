@@ -123,12 +123,14 @@ Rails.application.routes.draw do
       get "return_parts_bundle"
       # get "close_event"
       match "close_event", to: "tickets#close_event", via: [:get, :post]
+
       get "assign-ticket", action: :assign_ticket
       get "estimate_job"
       get "deliver_unit"
       get "low_margin_estimate"
       get "workflow_diagram"
       get "suggesstion_data"
+      get "edit_serial"
 
     end
 
@@ -195,6 +197,8 @@ Rails.application.routes.draw do
       patch "update_estimation_external_customer_approval"
       put "update_estimate_job"
       put "update_low_margin_estimate"
+      put "update_delivery_unit"
+      put "update_edit_serial"
 
     end
   end
