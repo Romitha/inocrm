@@ -172,3 +172,11 @@ window.Inventories =
       $("#total_margin_price").html("")
     else
       $("#total_margin_price").html(t_profit_price+"%")
+
+  calculate_approved_price: ->
+    total_approved_amount = 0
+
+    $(".approved_amount,.approved_estimate").each ->
+      total_approved_amount = total_approved_amount + parseInt($(@).val())
+
+    $("#total_approved_amount").html(total_approved_amount)

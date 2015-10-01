@@ -52,7 +52,44 @@
                     .col-md-3
                       = t.input :id, as: :hidden
                       %strong Approved amount:
-                      = te.input :approved_estimated_price
+                      = te.input :approved_estimated_price, label: false, input_html: {class: "approved_amount", oninput: "Inventories.calculate_approved_price();"}
+
+                  .row
+                    .col-md-12
+                      %fieldset
+                        %legend Estimation additionals
+
+                        = t.simple_fields_for :ticket_estimation_additionals do |ta|
+                          = ta.input :ticket_id, as: :hidden, input_html: {value: ticket.id}
+                          .col-md-12
+                            .row
+                              .col-md-3.col-xs-3.col-sm-3
+                                %strong Additional charge:
+                                = ta.object.additional_charge.try(:additional_charge)
+                              .col-md-3.col-xs-3.col-sm-3
+
+                                %strong Cost price:
+                                = ta.object.cost_price
+                              .col-md-3.col-xs-3.col-sm-3
+
+                                %strong Estimated price:
+                                = ta.object.estimated_price
+                              .col-md-3.col-xs-3.col-sm-3
+                                = ta.input :approved_estimated_price, input_html: {class: "approved_estimate", oninput: "Inventories.calculate_approved_price();"}
+                        .col-md-12
+                          .row
+                            .col-md-3.col-xs-3.col-sm-3
+                            .col-md-3.col-xs-3.col-sm-3
+                              %strong Cost price total:
+                              = t.object.ticket_estimation_additionals.sum(:cost_price)
+                            .col-md-3.col-xs-3.col-sm-3
+                              %strong Estimated price total:
+                              = t.object.ticket_estimation_additionals.sum(:estimated_price)
+                            .col-md-3.col-xs-3.col-sm-3
+                              %strong Approved price total:
+                              %span#total_approved_amount
+                              / = t.object.ticket_estimation_additionals.sum(:approved_estimated_price)
+
                   .row
                     .col-md-12
                       = t.input :note
@@ -62,41 +99,6 @@
                       = t.object.advance_payment_amount
                     .col-md-6
                       = t.input :approved_adv_pmnt_amount
-
-                .row
-                  .col-md-12
-                    %fieldset
-                      %legend Estimation additionals
-
-                      = t.simple_fields_for :ticket_estimation_additionals do |ta|
-                        = ta.input :ticket_id, as: :hidden, input_html: {value: ticket.id}
-                        .col-md-12
-                          .row
-                            .col-md-3.col-xs-3.col-sm-3
-                              %strong Additional charge:
-                              = ta.object.additional_charge.try(:additional_charge)
-                            .col-md-3.col-xs-3.col-sm-3
-
-                              %strong Cost price:
-                              = ta.object.cost_price
-                            .col-md-3.col-xs-3.col-sm-3
-
-                              %strong Estimated price:
-                              = ta.object.estimated_price
-                            .col-md-3.col-xs-3.col-sm-3
-                              = ta.input :approved_estimated_price
-                      .col-md-12
-                        .row
-                          .col-md-3.col-xs-3.col-sm-3
-                          .col-md-3.col-xs-3.col-sm-3
-                            %strong Cost price total:
-                            = t.object.ticket_estimation_additionals.sum(:cost_price)
-                          .col-md-3.col-xs-3.col-sm-3
-                            %strong Estimated price total:
-                            = t.object.ticket_estimation_additionals.sum(:estimated_price)
-                          .col-md-3.col-xs-3.col-sm-3
-                            %strong Approved price total:
-                            = t.object.ticket_estimation_additionals.sum(:approved_estimated_price)
 
                 = label_tag "Estimation complete"
                 = check_box_tag :estimation_completed
