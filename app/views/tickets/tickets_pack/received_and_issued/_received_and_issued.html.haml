@@ -1,0 +1,81 @@
+- request_spare_part_id = (params[:request_spare_part_id] or session[:request_spare_part_id])
+- spare_part = TicketSparePart.find request_spare_part_id
+
+/ = tab_panel do
+/   = tab_nav_tab({class: "small_scale_margin-bottom1"}, current_activity: {content: "Current Activity", active_class: "active"}, activity_history: {content: "Activity History"}, parts_ordered: {content: "Parts Ordered"})
+/   .tab-content
+/     = tab_content tabpointer: :current_activity, active_class: "active" do
+/       = tab_panel do
+.row
+  .col-md-4
+    %strong Activity:
+    Recieve / Issue
+  .col-md-4
+    %strong Order No:
+    #{spare_part.ticket_spare_part_manufacture.order_no}
+  .col-md-4
+    %strong Event No:
+    #{spare_part.ticket_spare_part_manufacture.event_no}
+
+.row{style: "margin-top:5px;"}
+  .col-md-12
+    %strong Part Status:
+    #{spare_part.spare_part_status_action.name}
+.row
+  .col-md-4
+    %strong Spare Part No:
+    #{spare_part.spare_part_no}
+  .col-md-4
+    %strong Product Brand:
+    HP
+
+.row
+  .col-md-4
+    %strong Part Description:
+    #{spare_part.spare_part_description}
+  .col-md-4
+    %strong Faulty Serial No:
+    #{spare_part.faulty_serial_no}
+  .col-md-4
+    %strong Faulty CT No:
+    #{spare_part.faulty_ct_no}
+
+.row{style: "margin-top:10px;"}
+  / .col-md-4
+  /   %strong Order No:
+  /   #{spare_part.ticket_spare_part_manufacture.order_no}
+  / .col-md-4
+  /   %strong Event No:
+  /   #{spare_part.ticket_spare_part_manufacture.event_no}
+
+.row{style: "margin-top:15px;"}
+  .col-md-6
+    = simple_nested_form_for spare_part, url: received_and_issued_tickets_path(status_param: "update"), method: :post, remote: true do |f|
+      = f.simple_fields_for :ticket_spare_part do |ts|
+        = ts.input :id, as: :hidden
+        = ts.input :received_part_serial_no
+        = ts.input :received_part_ct_no
+        = ts.input :note
+        / = ts.submit "Save", class: "btn btn-success"
+.row
+  .col-md-6
+    Note:
+    #{spare_part.note}
+
+.row
+  .col-md-1
+    Hold
+    %input{"type" => "checkbox"}
+  .col-md-3
+    %button Release Hold State
+
+.row{style: "margin-bottom:15px;"}
+  .col-md-12
+    %fieldset
+      %legend Hold
+      .row
+        .col-md-8
+          * Hold Reason:
+          %select
+            %option xxxxxx
+          SLA Paused
