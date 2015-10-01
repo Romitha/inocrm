@@ -59,7 +59,7 @@
         - if present_of_start_ticket_action and !ticket.ticket_estimations.any?{|ts| (ts.status_id == EstimationStatus.find_by_code("RQS").id) } and ticket.ticket_repair_type.code=="EX" and not ticket.job_finished
           %option{:value => "job_estimation_request"} Job Estimate Request (External)
 
-        - if present_of_start_ticket_action and ticket.ticket_repair_type.code=="EX" and ticket.ticket_deliver_units.any?{|d| !d.received} and not ticket.job_finished
+        - if present_of_start_ticket_action and ticket.ticket_repair_type.code=="EX" and ticket.ticket_deliver_units.any?{|d| (d.collected and !d.received)} and not ticket.job_finished
           %option{:value => "recieve_unit"} Receive Unit
 
 .form-group

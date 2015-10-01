@@ -988,6 +988,7 @@ class TicketsController < ApplicationController
     QAndA
     TaskAction
     Inventory
+    TicketSparePart
     ticket_id = (params[:ticket_id] or session[:ticket_id])
     @ticket = Ticket.find_by_id ticket_id
     session[:ticket_id] = @ticket.id
@@ -1001,6 +1002,7 @@ class TicketsController < ApplicationController
       @join_tickets = Rails.cache.fetch([:join, @ticket.id]){Kaminari.paginate_array(Ticket.where(id: @ticket.joint_tickets.map(&:joint_ticket_id)))}.page(params[:page]).per(2)
       @q_and_answers = @ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})}
       @ge_q_and_answers = @ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"General Questions" => v})}
+
       @user_ticket_action = @ticket.user_ticket_actions.build(action_id: 2)
       @user_assign_ticket_action = @user_ticket_action.user_assign_ticket_actions.build
       @assign_regional_support_center = @user_ticket_action.assign_regional_support_centers.build
@@ -1227,6 +1229,29 @@ class TicketsController < ApplicationController
     end
   end
 
+  def edit_serial
+    ContactNumber
+    QAndA
+    TaskAction
+    Inventory
+    @ticket = Ticket.find_by_id params[:ticket_id]
+    if @ticket
+      @product = @ticket.products.first
+      @warranties = @product.warranties
+      session[:product_id] = @product.id
+      Rails.cache.delete([:histories, session[:product_id]])
+      Rails.cache.delete([:join, @ticket.id])
+      @histories = Rails.cache.fetch([:histories, session[:product_id]]){Kaminari.paginate_array(@product.tickets)}.page(params[:page]).per(2)
+      @join_tickets = Rails.cache.fetch([:join, @ticket.id]){Kaminari.paginate_array(Ticket.where(id: @ticket.joint_tickets.map(&:joint_ticket_id)))}.page(params[:page]).per(2)
+      @q_and_answers = @ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})}
+      @ge_q_and_answers = @ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"General Questions" => v})}
+
+    end
+    respond_to do |format|
+      format.html {render "tickets/tickets_pack/edit_serial"}
+    end
+  end
+
   def estimate_job
     ContactNumber
     QAndA
@@ -1390,7 +1415,7 @@ class TicketsController < ApplicationController
         @display_form = true
       end
     when "recieve_unit"
-      @recieve_unit = @ticket.ticket_deliver_units.where(received: false).first
+      @recieve_unit = @ticket.ticket_deliver_units.where(received: false, collected: true).first
     when "deliver_unit"
       TicketEstimation
       @ticket_deliver_unit = @ticket.ticket_deliver_units.build
@@ -2118,7 +2143,7 @@ class TicketsController < ApplicationController
     end
 
     def ticket_params
-      params.require(:ticket).permit(:ticket_no, :sla_id, :serial_no, :status_hold, :repair_type_id, :base_currency_id, :ticket_close_approval_required, :ticket_close_approval_requested, :regional_support_job, :job_started_action_id, :job_start_note, :job_started_at, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, :status_resolve_id, ticket_deliver_units_attributes: [:deliver_to_id, :note, :created_at, :created_by, :received, :id, :received_at], ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :ticket_action_id, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer], ticket_estimations_attributes: [:note, :currency_id, :status_id, :requested_at, :requested_by], user_ticket_actions_attributes: [:id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, user_assign_ticket_actions_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy], ticket_re_assign_request_attributes: [:reason_id, :_destroy], ticket_action_taken_attributes: [:action, :_destroy], ticket_terminate_job_attributes: [:id, :reason_id, :foc_requested, :_destroy], act_hold_attributes: [:id, :reason_id, :_destroy, :un_hold_action_id], hp_case_attributes: [:id, :case_id, :case_note], ticket_finish_job_attributes: [:resolution, :_destroy], ticket_terminate_job_payments_attributes: [:id, :amount, :payment_item_id, :_destroy, :ticket_id, :currency_id], act_fsr_attributes: [:print_fsr], serial_request_attributes: [:reason], job_estimation_attributes: [:supplier_id]], ticket_extra_remarks_attributes: [:id, :note, :created_by, :extra_remark_id], products_attributes: [:id, :sold_country_id, :pop_note, :pop_doc_url, :pop_status_id], ticket_fsrs_attributes: [:work_started_at, :work_finished_at, :hours_worked, :down_time, :travel_hours, :engineer_time_travel, :engineer_time_on_site, :resolution, :completion_level, :created_by])
+      params.require(:ticket).permit(:ticket_no, :sla_id, :serial_no, :status_hold, :repair_type_id, :base_currency_id, :ticket_close_approval_required, :ticket_close_approval_requested, :regional_support_job, :job_started_action_id, :job_start_note, :job_started_at, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, :status_resolve_id, ticket_deliver_units_attributes: [:deliver_to_id, :note, :created_at, :created_by, :received, :id, :received_at, :received_by], ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :ticket_action_id, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer], ticket_estimations_attributes: [:note, :currency_id, :status_id, :requested_at, :requested_by], user_ticket_actions_attributes: [:id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, user_assign_ticket_actions_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy], ticket_re_assign_request_attributes: [:reason_id, :_destroy], ticket_action_taken_attributes: [:action, :_destroy], ticket_terminate_job_attributes: [:id, :reason_id, :foc_requested, :_destroy], act_hold_attributes: [:id, :reason_id, :_destroy, :un_hold_action_id], hp_case_attributes: [:id, :case_id, :case_note], ticket_finish_job_attributes: [:resolution, :_destroy], ticket_terminate_job_payments_attributes: [:id, :amount, :payment_item_id, :_destroy, :ticket_id, :currency_id], act_fsr_attributes: [:print_fsr], serial_request_attributes: [:reason], job_estimation_attributes: [:supplier_id]], ticket_extra_remarks_attributes: [:id, :note, :created_by, :extra_remark_id], products_attributes: [:id, :sold_country_id, :pop_note, :pop_doc_url, :pop_status_id], ticket_fsrs_attributes: [:work_started_at, :work_finished_at, :hours_worked, :down_time, :travel_hours, :engineer_time_travel, :engineer_time_on_site, :resolution, :completion_level, :created_by])
     end
 
     def product_brand_params
@@ -2183,6 +2208,7 @@ class TicketsController < ApplicationController
 
     def ticket_bpm_headers(process_id, ticket_id, spare_part_id)
       TicketSparePart
+      WorkflowMapping
 
       @ticket = Ticket.find_by_id(ticket_id)
 
