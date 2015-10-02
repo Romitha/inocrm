@@ -45,7 +45,7 @@ class UsersController < ApplicationController
         if current_user.valid_password?(params[:current_user_password])
           if @user.update_attributes user_params
 
-            @user.update_attributes(current_user_role_id: @user.roles.first.id, current_user_role_name: @user.roles.first.name) if @user.roles.count == 1
+            @user.update_attributes(current_user_role_id: @user.roles.first.id, current_user_role_name: @user.roles.first.name) if @user.roles.present? and !@user.current_user_role_id.present? and !@user.current_user_role_name.present?#count == 1
 
             flash[:notice] = "Profile is successfully updated"
             render js: "window.location.href='"+profile_user_url(@user)+"'" and return
