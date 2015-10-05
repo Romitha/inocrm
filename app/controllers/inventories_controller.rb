@@ -620,6 +620,9 @@ class InventoriesController < ApplicationController
     redirect_to todos_url, notice: "Successfully updated."
   end
 
+  def omp_update_hold
+    
+  end
 
   private
 

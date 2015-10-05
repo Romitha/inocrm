@@ -15,6 +15,9 @@ class TicketSparePart < ActiveRecord::Base
   accepts_nested_attributes_for :ticket_spare_part_manufacture, allow_destroy: true
   has_one :ticket_spare_part_store, foreign_key: :spare_part_id
 
+  has_many :ticket_on_loan_spare_parts, foreign_key: :ref_spare_part_id
+  accepts_nested_attributes_for :ticket_on_loan_spare_parts, allow_destroy: true
+
   belongs_to :unused_reason, -> { where(spare_part_unused: true) }, class_name: "Reason", foreign_key: :unused_reason_id
 
   belongs_to :part_terminated_reason, -> { where(terminate_spare_part: true) }, class_name: "Reason", foreign_key: :part_terminated_reason_id

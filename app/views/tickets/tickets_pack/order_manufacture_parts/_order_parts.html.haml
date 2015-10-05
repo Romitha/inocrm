@@ -1,0 +1,13 @@
+%fieldset
+  %legend Order Parts
+  = simple_nested_form_for spare_part, url: update_order_mfp_part_order_tickets_path, method: :post, remote: true do |f|
+    = f.simple_fields_for :ticket_spare_part_manufacture do |tm|
+
+      = hidden_field_tag :process_id, session[:process_id]
+      = hidden_field_tag :task_id, session[:task_id]
+      = hidden_field_tag :owner, session[:owner]
+      = hidden_field_tag :request_spare_part_id, session[:request_spare_part_id]
+      = tm.input :event_no
+      = tm.input :order_no
+    = f.input :note
+    = f.submit "Save", class: "btn btn-success"

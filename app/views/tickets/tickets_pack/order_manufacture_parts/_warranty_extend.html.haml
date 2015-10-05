@@ -1,0 +1,12 @@
+- ticket = spare_part.ticket
+%fieldset
+  %legend Warranty Extend
+  = simple_form_for ticket, url: update_order_mfp_wrrnty_extnd_rqst_tickets_path, method: :post do |f|
+    = hidden_field_tag :process_id, session[:process_id]
+    = hidden_field_tag :task_id, session[:task_id]
+    = hidden_field_tag :owner, session[:owner]
+    = hidden_field_tag :request_spare_part_id, session[:request_spare_part_id]
+    = f.simple_fields_for "user_ticket_actions_attributes[]", @user_ticket_action  do |uf|
+      = uf.simple_fields_for :action_warranty_extend do |aw|
+        = aw.input :reject_note
+    = f.submit "Save", class: "btn btn-success"

@@ -1,0 +1,11 @@
+%fieldset
+  %legend Terminate Part Ordering
+  = simple_nested_form_for spare_part, url: update_order_mfp_termnt_prt_order_tickets_path, method: :post, remote: true do |f|
+    = hidden_field_tag :process_id, session[:process_id]
+    = hidden_field_tag :task_id, session[:task_id]
+    = hidden_field_tag :owner, session[:owner]
+    = hidden_field_tag :request_spare_part_id, session[:request_spare_part_id]
+
+    = f.association :part_terminated_reason,label: "Terminate Reason", collection: Reason.where(terminate_spare_part: true), label_method: :reason, value_method: :id
+    = f.input :note
+    = f.submit "Save", class: "btn btn-success"
