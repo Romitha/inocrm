@@ -1,0 +1,62 @@
+- ticket = @ticket
+- product = @product
+- warranties = @warranties
+- customer = ticket.customer
+- histories = @histories
+- join_tickets = @join_tickets
+- pr_q_and_answers = @q_and_answers
+- ge_q_and_as = @ge_q_and_answers
+- spare_part = @spare_part
+
+- present_of_start_ticket_action =  ticket.user_ticket_actions.find_by_action_id(TaskAction.find_by_action_no(5).id).present?
+
+.row.col-md-12
+  .col-md-4
+    %strong FSR No:
+    #{spare_part.fsr_id.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])}
+  .col-md-4
+    %strong Product Brand:
+    #{product.product_brand.name}
+  .col-md-4
+    %strong Part Status:
+    #{spare_part.spare_part_status_action.try(:name)}
+.row.col-md-12{style: "margin-top: 10px;"}
+  .col-md-4
+    %strong Spare Part No:
+    #{spare_part.ticket_spare_part_manufacture.try(:spare_part_id)}
+  .col-md-4
+    %strong Faulty Serial No:
+    #{spare_part.faulty_serial_no}
+  .col-md-4
+    %strong Terminated Reason:
+    #{Reason.find_by_id(spare_part.part_terminated_reason_id).try(:reason)}
+.row.col-md-12{style: "margin-top: 10px;"}
+  .col-md-4
+    %strong Part Description:
+    #{spare_part.spare_part_description}
+  .col-md-4
+    %strong Faulty CT No:
+    #{spare_part.faulty_ct_no}
+  .col-md-4
+    %strong Terminated By:
+.row.col-md-12{style: "margin-top: 10px;"}
+  .col-md-4
+    %strong Terminated At:
+.row.col-md-12{style: "margin-top: 20px;"}
+  .form-group
+    %label Activity
+    %select{:class => "activity_id", :id => "mf_template_caller"}
+      / - if present_of_start_ticket_action and not ticket.job_finished
+      %option{:value => "hold"} Hold
+      / - if present_of_start_ticket_action and not ticket.job_finished
+      %option{:value => "order_parts"} Order Parts
+      / - if present_of_start_ticket_action and not ticket.job_finished
+      %option{:value => "warranty_extend"} Warranty Extend Request
+      / - if present_of_start_ticket_action and not ticket.job_finished
+      %option{:value => "request_from_store"} Request From Store
+      / - if present_of_start_ticket_action and not ticket.job_finished
+      %option{:value => "terminate_order"} Terminate Order
+      / - if present_of_start_ticket_action and not ticket.job_finished
+      %option{:value => "edit_serial_no_request"} Edit Serial No Request
+  .form-group
+    #mf_order_templates

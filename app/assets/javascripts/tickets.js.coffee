@@ -9,6 +9,8 @@ window.Tickets =
     @pass_to_re_correction_trigger()
     @filter_sbu_engineer()
     @call_resolution_template()
+    @call_mf_order_template()
+    # @call_omp_template()
     @validate_start_action()
     @action_taken_text()
     @hp_case_validation()
@@ -298,6 +300,10 @@ window.Tickets =
     $("#template_caller").change ->
       # alert "hi"
       $.post "/tickets/call_resolution_template", {call_template: $(@).val()}
+
+  call_mf_order_template: (call_template)->
+    $("#mf_template_caller").change ->
+      $.post "/tickets/call_mf_order_template", {call_template: $(@).val()}
 
   validate_start_action: ->
     # job_start_note = $("#ticket_job_start_note").val()

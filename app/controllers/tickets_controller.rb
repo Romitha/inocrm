@@ -1024,6 +1024,11 @@ class TicketsController < ApplicationController
     ticket_id = (params[:ticket_id] or session[:ticket_id])
     @ticket = Ticket.find_by_id ticket_id
     session[:ticket_id] = @ticket.id
+
+    request_spare_part_id = (params[:request_spare_part_id] or session[:request_spare_part_id])
+    @spare_part = TicketSparePart.find request_spare_part_id
+    # @spare_part = @ticket.ticket_spare_parts.find request_spare_part_id
+    session[:request_spare_part_id] = params[:request_spare_part_id]
     if @ticket
       @product = @ticket.products.first
       @warranties = @product.warranties
@@ -1442,6 +1447,39 @@ class TicketsController < ApplicationController
 
       @ticket_on_loan_spare_part = @ticket.ticket_on_loan_spare_parts.build
     end
+  end
+
+  def call_mf_order_template
+    TaskAction
+    TicketSparePart
+    @call_template = params[:call_template]
+    @ticket = Ticket.find session[:ticket_id]
+    @user_ticket_action = @ticket.user_ticket_actions.build
+    @spare_part = TicketSparePart.find session[:request_spare_part_id]
+    case @call_template
+    when "hold"
+      @act_hold = @user_ticket_action.build_act_hold
+    when "warranty_extend"
+      @warranty_extend = @user_ticket_action.build_action_warranty_extend
+    end
+  end
+
+  def update_order_mfp_hold
+  end
+
+  def update_order_mfp_part_order
+  end
+
+  def update_order_mfp_wrrnty_extnd_rqst
+  end
+
+  def update_order_mfp_rqst_from_store
+  end
+
+  def update_order_mfp_termnt_prt_order
+  end
+
+  def update_order_mfp_edit_serial_no
   end
 
   def update_start_action

@@ -111,7 +111,7 @@ Rails.application.routes.draw do
       post "update_assign_ticket"
       post "update_pop_approval"
       post "call_resolution_template"
-
+      post "call_mf_order_template"
       get "edit-ticket", :action => :edit_ticket
       get "pop-approval"#, :action => :pop_note
 
@@ -121,6 +121,14 @@ Rails.application.routes.draw do
       get "return_to_stores"
       get "create_parts_bundle"
       get "return_parts_bundle"
+
+      # post "order_manufacture_parts_edit_serial_no"
+      post "update_order_mfp_hold"
+      post "update_order_mfp_part_order"
+      post "update_order_mfp_wrrnty_extnd_rqst"
+      post "update_order_mfp_rqst_from_store"
+      post "update_order_mfp_termnt_prt_order"
+      post "update_order_mfp_edit_serial_no"
       # get "close_event"
       match "close_event", to: "tickets#close_event", via: [:get, :post]
 

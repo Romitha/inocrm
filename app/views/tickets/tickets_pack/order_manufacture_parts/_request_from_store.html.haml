@@ -1,0 +1,44 @@
+%fieldset
+  %legend Request From Store
+  = simple_nested_form_for spare_part, url: update_order_mfp_rqst_from_store_tickets_path, method: :post, remote: true do |f|
+    - if f.object.ticket_spare_part_store
+      .row.col-md-12
+        .col-md-6
+          = f.input :cus_chargeable_part, wrapper: :append
+        .col-md-6
+          = f.simple_fields_for :ticket_on_loan_spare_parts do |tm|
+
+            = hidden_field_tag :process_id, session[:process_id]
+            = hidden_field_tag :task_id, session[:task_id]
+            = hidden_field_tag :owner, session[:owner]
+            = hidden_field_tag :request_spare_part_id, session[:request_spare_part_id]
+            = tm.input :part_of_main_product 
+      .row.col-md-12{style: "margin-top:10px;"}
+        .col-md-6
+          %strong Store: 
+          #{f.object.ticket_spare_part_store.store.try(:name)}
+          %br
+          %strong Item Code:
+          %br
+          %strong Item Description:
+          %br
+          %strong Available Qty:
+          %strong Unit:
+        .col-md-6
+          = f.simple_fields_for :ticket_on_loan_spare_parts do |tm|
+            .row.col-md-12
+              %strong Main Product of the Part
+            .row.col-md-12{style: "margin-top:10px;"}
+              %strong Item Code:
+              #{tm.object.main_inventory_product.inventory_category3.try(:code)}
+              %br
+              %strong Item Description:
+              #{tm.object.main_inventory_product.try(:description)}
+              %br
+              %strong Available Qty:
+              %strong Unit:
+              #{tm.object.main_inventory_product.inventory_unit.try(:unit)}
+      .row.col-md-12{style: "margin-top:10px;"}
+        = f.input :note
+      .row.col-md-12
+        = f.submit "Save", class: "btn btn-success"
