@@ -1,0 +1,63 @@
+- request_spare_part_id = (params[:request_spare_part_id] or session[:request_spare_part_id])
+- spare_part = TicketSparePart.find request_spare_part_id
+
+.row
+  .col-md-4
+    Activity:
+
+.row
+  .col-md-4
+    Part Status: #{spare_part.spare_part_status_action.name}
+
+.row
+  .col-md-4
+    Spare Part No: #{spare_part.spare_part_no}
+  .col-md-4
+    Status: Used #{spare_part.spare_part_status_use.name}
+  .col-md-4
+    Product Brand: HP
+
+.row
+  .col-md-4
+    Part Description: #{spare_part.spare_part_description}
+  .col-md-4
+    Un Used Return Reason : #{spare_part.spare_part_description}
+
+.row
+  .col-md-4
+    Received Spare Part  No: #{spare_part.received_spare_part_no}
+  .col-md-4
+    Part Event No: #{spare_part.ticket_spare_part_manufacture.event_no}
+
+.row
+  .col-md-4
+    Part Serial No: xxxxxxxxxx
+  .col-md-4
+    Return Part Serial No: #{spare_part.return_part_serial_no}
+
+.row
+  .col-md-4
+    Part CT No: xxxxxxxxxx
+  .col-md-4
+    Return CT No: #{spare_part.return_part_ct_no}
+
+
+.row{style: "margin-top:15px;"}
+  .col-md-6
+    = simple_form_for spare_part, url: return_to_stores_tickets_path, method: :post, remote: true do |f|
+
+      = f.input :id, as: :hidden
+      = f.input :part_returned, as: :radio_buttons, label: "Reject returnable Part", wrapper: :append, required: true ,id:"id_reject_reason", input_html: {onClick: "Inventories.accept_returned_part(this);"}      
+
+      = f.simple_fields_for :reason do |rs|
+        .reason.hide
+          .row{style: "margin-bottom:15px;"}
+            .col-md-12
+              %fieldset
+                %legend Reject Returned Part (from Engineer)
+                .row
+                  .col-md-8
+                    Reject Reason
+                    = rs.select :part_terminated_reason_id, Reason.where(terminate_spare_part: true).map{|r| [r.name, r.id]}
+      = f.input :note
+      = f.submit "Save", class: "btn btn-success"

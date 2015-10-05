@@ -5,6 +5,7 @@ window.Inventories =
     @filter_store()
     @calculate_cost_price()
 
+
   filter_product: -> 
     category_list = $("#search_inventory_product")
     category_list_html = category_list.html()
@@ -180,3 +181,10 @@ window.Inventories =
       total_approved_amount = total_approved_amount + parseInt($(@).val())
 
     $("#total_approved_amount").html(total_approved_amount)
+
+  accept_returned_part: (elem)->
+
+    if $(elem).val() == "false"
+      $(".reason").addClass("hide")
+    else
+      $(".reason").removeClass("hide")
