@@ -27,7 +27,7 @@
   .col-md-4
     Received Spare Part  No: #{spare_part.received_spare_part_no}
   .col-md-4
-    Part Event No: #{spare_part.ticket_spare_part_manufacture.event_no}
+    Part Event No: #{spare_part.ticket_spare_part_manufacture.try(:event_no)}
 
 .row
   .col-md-4

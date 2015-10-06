@@ -1070,9 +1070,9 @@ class TicketsController < ApplicationController
       @join_tickets = Rails.cache.fetch([:join, @ticket.id]){Kaminari.paginate_array(Ticket.where(id: @ticket.joint_tickets.map(&:joint_ticket_id)))}.page(params[:page]).per(2)
       @q_and_answers = @ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})}
       @ge_q_and_answers = @ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"General Questions" => v})}
-      @user_ticket_action = @ticket.user_ticket_actions.build(action_id: 2)
-      @user_assign_ticket_action = @user_ticket_action.user_assign_ticket_actions.build
-      @assign_regional_support_center = @user_ticket_action.assign_regional_support_centers.build
+      # @user_ticket_action = @ticket.user_ticket_actions.build(action_id: 2)
+      # @user_assign_ticket_action = @user_ticket_action.user_assign_ticket_actions.build
+      # @assign_regional_support_center = @user_ticket_action.assign_regional_support_centers.build
 
       @ge_questions = GeQAndA.where(action_id: 5)
     end
@@ -1088,6 +1088,7 @@ class TicketsController < ApplicationController
     QAndA
     TaskAction
     Inventory
+    TicketSparePart
     ticket_id = (params[:ticket_id] or session[:ticket_id])
     @ticket = Ticket.find_by_id ticket_id
     session[:ticket_id] = @ticket.id
@@ -1101,14 +1102,11 @@ class TicketsController < ApplicationController
       @join_tickets = Rails.cache.fetch([:join, @ticket.id]){Kaminari.paginate_array(Ticket.where(id: @ticket.joint_tickets.map(&:joint_ticket_id)))}.page(params[:page]).per(2)
       @q_and_answers = @ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})}
       @ge_q_and_answers = @ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"General Questions" => v})}
-      @user_ticket_action = @ticket.user_ticket_actions.build(action_id: 2)
-      @user_assign_ticket_action = @user_ticket_action.user_assign_ticket_actions.build
-      @assign_regional_support_center = @user_ticket_action.assign_regional_support_centers.build
 
       @ge_questions = GeQAndA.where(action_id: 5)
     end
     respond_to do |format|
-      format.html {render "tickets/tickets_pack/return_to_stores"}
+      format.html {render "tickets/tickets_pack/return_to_stores/return_to_stores"}
     end
   end
 
