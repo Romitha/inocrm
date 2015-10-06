@@ -46,6 +46,7 @@
   .form-group
     %label Activity
     %select{:class => "activity_id", :id => "mf_template_caller"}
+      %option{:value => ""}
       / - if present_of_start_ticket_action and not ticket.job_finished
       %option{:value => "hold"} Hold
       / - if present_of_start_ticket_action and not ticket.job_finished
