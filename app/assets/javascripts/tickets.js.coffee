@@ -17,6 +17,7 @@ window.Tickets =
     @job_finished_validation()
     @select_fsr()
     @fade_flash_msg()
+    @call_extend_warranty_template()
     return
 
   initial_loaders: ->
@@ -304,6 +305,10 @@ window.Tickets =
   call_mf_order_template: (call_template)->
     $("#mf_template_caller").change ->
       $.post "/tickets/call_mf_order_template", {call_template: $(@).val()}
+
+  call_extend_warranty_template: ->
+    $("#extend_warranty_select").change ->
+      $.post "/tickets/extend_warranty", {switch_to: $(":selected", @).val()}
 
   validate_start_action: ->
     # job_start_note = $("#ticket_job_start_note").val()
