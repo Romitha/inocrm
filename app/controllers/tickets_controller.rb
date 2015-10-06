@@ -908,6 +908,7 @@ class TicketsController < ApplicationController
     QAndA
     TaskAction
     Inventory
+    TicketSparePart
     @ticket = Ticket.find_by_id params[:ticket_id]
     @new_warranty = Warranty.new
     if @ticket
@@ -1070,14 +1071,11 @@ class TicketsController < ApplicationController
       @join_tickets = Rails.cache.fetch([:join, @ticket.id]){Kaminari.paginate_array(Ticket.where(id: @ticket.joint_tickets.map(&:joint_ticket_id)))}.page(params[:page]).per(2)
       @q_and_answers = @ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})}
       @ge_q_and_answers = @ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"General Questions" => v})}
-      # @user_ticket_action = @ticket.user_ticket_actions.build(action_id: 2)
-      # @user_assign_ticket_action = @user_ticket_action.user_assign_ticket_actions.build
-      # @assign_regional_support_center = @user_ticket_action.assign_regional_support_centers.build
 
       @ge_questions = GeQAndA.where(action_id: 5)
     end
     respond_to do |format|
-      format.html {render "tickets/tickets_pack/received_and_issued"}
+      format.html {render "tickets/tickets_pack/received_and_issued/received_and_issued"}
     end
   end
 
@@ -1237,6 +1235,7 @@ class TicketsController < ApplicationController
     QAndA
     TaskAction
     Inventory
+    TicketSparePart
     @ticket = Ticket.find_by_id params[:ticket_id]
     if @ticket
       @product = @ticket.products.first
@@ -1489,6 +1488,7 @@ class TicketsController < ApplicationController
     TicketSparePart
     @call_template = params[:call_template]
     @ticket = Ticket.find session[:ticket_id]
+    @product = @ticket.products.first
     @user_ticket_action = @ticket.user_ticket_actions.build
     @spare_part = TicketSparePart.find session[:request_spare_part_id]
     case @call_template

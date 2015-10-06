@@ -198,6 +198,8 @@ class TicketProductSerial < ActiveRecord::Base
 
   belongs_to :ticket, foreign_key: :ticket_id
   belongs_to :product, foreign_key: :product_serial_id
+
+  belongs_to :ref_product_serial, class_name: "Product"
 end
 
 class TicketAccessory < ActiveRecord::Base

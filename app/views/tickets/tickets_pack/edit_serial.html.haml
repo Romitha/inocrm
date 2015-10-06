@@ -20,7 +20,7 @@
         .col-md-12
           Old Serial No: #{product.serial_no}
 
-      .row{style: "margin-top:15px;"}
+      .row
         .col-md-12
           = simple_form_for product, url: product_update_tickets_path, remote: true do |f|
             = f.input :serial_no, label: "New serial No"

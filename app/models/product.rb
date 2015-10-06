@@ -4,8 +4,12 @@ class Product < ActiveRecord::Base
   mount_uploader :pop_doc_url, PopDocUrlUploader
 
   has_many :ticket_product_serials, foreign_key: :product_serial_id
+  accepts_nested_attributes_for :ticket_product_serials, allow_destroy: true
+
   has_many :tickets, through: :ticket_product_serials
   has_many :warranties, foreign_key: :product_serial_id
+  has_many :ref_product_serials, class_name: "TicketProductSerial", foreign_key: :ref_product_serial_id
+  accepts_nested_attributes_for :ref_product_serials, allow_destroy: true
 
   belongs_to :warranty_type, foreign_key: :product_brand_id
   belongs_to :product_brand, foreign_key: :product_brand_id

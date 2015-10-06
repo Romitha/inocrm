@@ -112,15 +112,7 @@ Rails.application.routes.draw do
       post "update_pop_approval"
       post "call_resolution_template"
       post "call_mf_order_template"
-      get "edit-ticket", :action => :edit_ticket
-      get "pop-approval"#, :action => :pop_note
 
-      get "resolution"
-      get "order_manufacture_parts", :action => :order_mf
-      get "received_and_issued"
-      get "return_to_stores"
-      get "create_parts_bundle"
-      get "return_parts_bundle"
 
       # post "order_manufacture_parts_edit_serial_no"
       post "update_order_mfp_hold"
@@ -132,8 +124,15 @@ Rails.application.routes.draw do
 
       post "update_received_and_issued"
       # get "close_event"
-      match "close_event", to: "tickets#close_event", via: [:get, :post]
 
+      get "edit-ticket", :action => :edit_ticket
+      get "pop-approval"#, :action => :pop_note
+      get "resolution"
+      get "order_manufacture_parts", :action => :order_mf
+      get "received_and_issued"
+      get "return_to_stores"
+      get "create_parts_bundle"
+      get "return_parts_bundle"
       get "assign-ticket", action: :assign_ticket
       get "estimate_job"
       get "deliver_unit"
@@ -142,6 +141,7 @@ Rails.application.routes.draw do
       get "suggesstion_data"
       get "edit_serial"
       match "extend_warranty", to: "tickets#extend_warranty", via: [:get, :post]
+      match "close_event", to: "tickets#close_event", via: [:get, :post]
 
     end
 
