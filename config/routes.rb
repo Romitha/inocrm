@@ -129,6 +129,8 @@ Rails.application.routes.draw do
       post "update_order_mfp_rqst_from_store"
       post "update_order_mfp_termnt_prt_order"
       post "update_order_mfp_edit_serial_no"
+
+      post "update_received_and_issued"
       # get "close_event"
       match "close_event", to: "tickets#close_event", via: [:get, :post]
 
