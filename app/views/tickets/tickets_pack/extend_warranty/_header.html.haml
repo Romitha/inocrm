@@ -1,0 +1,6 @@
+= select_tag "extend_warranty_select", options_for_select({"Warranty extended" => :warranty_extended, "Reject warranty extended" => :r_warranty_extended, "Edit serial no" => :edit_serial_no}), include_blank: true
+
+#extend_warranty_frame
+#warranty_grid
+  - product.warranties.each do |warranty|
+    = render "warranties/warranty", warranty: warranty

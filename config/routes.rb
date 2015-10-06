@@ -139,6 +139,7 @@ Rails.application.routes.draw do
       get "workflow_diagram"
       get "suggesstion_data"
       get "edit_serial"
+      match "extend_warranty", to: "tickets#extend_warranty", via: [:get, :post]
 
     end
 

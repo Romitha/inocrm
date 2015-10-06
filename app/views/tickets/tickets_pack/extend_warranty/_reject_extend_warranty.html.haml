@@ -1,0 +1,7 @@
+%fieldset
+  %legend Reject extend warranty
+  = simple_form_for @reject_warranty_extend, url: "#" do |f|
+    = f.association :reject_reason, label_method: :reason, value_method: :id
+    = f.input :reject_note
+    = f.input :extended, as: :hidden
+    = f.submit "Save"

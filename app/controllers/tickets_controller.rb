@@ -1330,6 +1330,43 @@ class TicketsController < ApplicationController
     end
   end
 
+  def extend_warranty
+    ContactNumber
+    QAndA
+    TaskAction
+    TicketSparePart
+    Inventory
+    @ticket = Ticket.find_by_id params[:ticket_id] if params[:ticket_id].present?
+    if @ticket
+      @product = @ticket.products.first
+      @warranties = @product.warranties
+      session[:product_id] = @product.id
+      Rails.cache.delete([:histories, session[:product_id]])
+      Rails.cache.delete([:join, @ticket.id])
+      @histories = Rails.cache.fetch([:histories, session[:product_id]]){Kaminari.paginate_array(@product.tickets)}.page(params[:page]).per(2)
+      @join_tickets = Rails.cache.fetch([:join, @ticket.id]){Kaminari.paginate_array(Ticket.where(id: @ticket.joint_tickets.map(&:joint_ticket_id)))}.page(params[:page]).per(2)
+      @q_and_answers = @ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})}
+      @ge_q_and_answers = @ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"General Questions" => v})}
+
+    end
+
+    case params[:switch_to]
+    when "warranty_extended"
+      @warranty = Warranty.new
+      @render_template = "tickets/tickets_pack/extend_warranty/warranty_form"
+    when "r_warranty_extended"
+      @reject_warranty_extend = ActionWarrantyExtend.new
+      @render_template = "tickets/tickets_pack/extend_warranty/reject_extend_warranty"
+
+    when "edit_serial_no"
+
+    end
+    respond_to do |format|
+      format.js {render "tickets/tickets_pack/extend_warranty/extend_warranty"}
+      format.html {render "tickets/tickets_pack/extend_warranty/extend_warranty"}
+    end
+  end
+
   def after_printer
 
     case params[:ticket_action]
@@ -1670,20 +1707,6 @@ class TicketsController < ApplicationController
     if continue
       if @ticket.update append_remark_ticket_params(@ticket)
 
-        # bpm output variables
-          # Set (D4) d4_job_Complete = true, 
-          # (D8) d8_job_finished =  true,
-          # DB.spt_ticket.job_finished=true, 
-          # (D11) d11_terminate_job = true, 
-          # if DB.spt_ticket.ticket_type_id=IH (in House) then (D9)  d9_qc_required= true, 
-          # DB.spt_ticket.cus_payment_required=true, 
-          # if (DB.spt_ticket.cus_chargable or DB.spt_ticket.cus_payment_required) then (D10) d10_job_estimate_required_final = true, 
-          # if (DB.spt_ticket.cus_chargable or DB.spt_ticket.cus_payment_required) then (D12) d12_need_to_invoice = true, 
-          # if (FSR,Count>0 or Parts.count>0) then (D6) d6_close_approval_ required  = true and DB.spt_ticket.ticket_close_approval_required = true, 
-          # DB.spt_ticket.status_resolve_id =  TER(Terminated) and 
-          # if DB.spt_ticket.ticket_type_id=IH (in House) then DB.spt_ticket.status_id=  QCT (Quality Control) Else if (D10) d10_job_estimate_required_final = true then DB.spt_ticket.status_id=  PMT (Final Payment Calculation) else DB.spt_ticket.status_id=  CFB (Customer Feedback). 
-          # Set Action (7) Terminate Job, DB.spt_act_terminate_job, DB.spt_act_terminate_job_payment.
-
         @ticket.job_finished = true
         @ticket.cus_payment_required = true
         @ticket.ticket_close_approval_required = (@ticket.ticket_spare_parts.any? or @ticket.ticket_fsrs.any?)
@@ -1759,20 +1782,6 @@ class TicketsController < ApplicationController
 
     if continue
       if @ticket.update append_remark_ticket_params(@ticket)
-
-        # bpm output variables
-          # (D4)d4_Job_Completed = true,
-          # (D8) d8_job_finished =  true,
-          # if DB.spt_ticket.ticket_type_id=IH (in House) then (D9) d9_qc_required = true, 
-          # if DB.spt_ticket.cus_chargeable=true(chargable) then (D10) d10_job_estimate_required_final = true, 
-          # if DB.spt_ticket.cus_chargeable=true (chargable) then (D12) d12_need_to_invoice = true,  
-          # if (FSR,Count>0 or Parts.count>0) then (D6) d6_close_approval_ required  = true and DB.spt_ticket.ticket_close_approval_required = true, 
-
-          # Set DB.spt_ticket.status_resolve_id=  RSV (Resolved) 
-          # if DB.spt_ticket.ticket_type_id=IH (in House) then DB.spt_ticket.status_id=  QCT (Quality Control) Else if (D10) d10_job_estimate_required_final = true then DB.spt_ticket.status_id=  PMT (Final Payment Calculation) else DB.spt_ticket.status_id=  CFB (Customer Feedback).
-          #  Set Action (21) Resolve the Job (Finish the Job), DB.spt_act_finish_job.
-
-          # if "Request to close the ticket" is checked then Set (D7) d7_close_approval_requested = true and DB.spt_ticket.ticket_close_approval_requested = true and Set Action (55) Request to Close Ticket.
 
         bpm_variables = view_context.initialize_bpm_variables.merge(supp_engr_user: current_user.id, d7_close_approval_requested: (@ticket.ticket_close_approval_requested ? "Y" : "N"), d4_job_complete: "Y", d8_job_finished: "Y", d9_qc_required: (@ticket.ticket_type.code == "IH" ? "Y" : "N"), d10_job_estimate_required_final: (@ticket.cus_chargeable ? "Y" : "N"), d12_need_to_invoice: (@ticket.cus_chargeable ? "Y" : "N"), d6_close_approval_required: ((@ticket.ticket_fsrs.any? or @ticket.ticket_spare_parts.any?) ? "Y" : "N"))
 
@@ -2242,6 +2251,10 @@ class TicketsController < ApplicationController
 
     def ticket_on_loan_spare_part_params
       params.require(:ticket_on_loan_spare_part).permit(:ref_spare_part_id, :note, :ticket_id, :status_action_id, :status_use_id, :store_id, :inv_product_id, :main_inv_product_id, :part_of_main_product, ticket_attributes: [:remarks, :id])
+    end
+
+    def act_warranty_extend_params
+      params.require(:action_warranty_extend).permit(:reject_reason_id, :reject_note, :extended)
     end
 
     def ticket_bpm_headers(process_id, ticket_id, spare_part_id)
