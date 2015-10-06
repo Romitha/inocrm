@@ -9,5 +9,6 @@
       = hidden_field_tag :request_spare_part_id, session[:request_spare_part_id]
       = tm.input :event_no
       = tm.input :order_no
-    = f.input :note
+    = f.input :note, input_html: {value: nil}
+    = simple_format spare_part.note
     = f.submit "Save", class: "btn btn-success"
