@@ -9,7 +9,7 @@
     %strong Serial No:
     = f.object.serial_no
     %br/
-    = f.input :serial_no
+    = f.input :serial_no, label:"New Serial No"
     = f.simple_fields_for :ticket_product_serials do |sr|
       - if sr.object.ticket_id == ticket.id
         = sr.association :ref_product_serial, value_method: :id, label_method: :serial_no

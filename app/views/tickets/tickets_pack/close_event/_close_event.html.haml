@@ -1,54 +1,55 @@
 - ticket = @ticket
 - spare_part = @spare_part
+- product = @product
 .row.col-md-12
   .col-md-12
     %strong Activity: Close Event
-.row.col-md-12{style: "margin-top: 10px;"}
-  .col-md-3
+.row.col-md-12{style: "margin-top: 15px;"}
+  .col-md-4
     %strong Spare Part No:
     #{spare_part.ticket_spare_part_manufacture.try(:spare_part_id)}
-  .col-md-3
+  .col-md-4
+    %strong Status:
+    #{spare_part.spare_part_status_action.try(:name)}
+  .col-md-4
+    %strong Product Brand:
+    #{product.product_brand.name}
+
+.row.col-md-12{style: "margin-top: 5px;"}
+  .col-md-4
     %strong Part Description:
     #{spare_part.spare_part_description}
-  .col-md-3
+  .col-md-4
+    %strong Un Used Return Reason:
+    #{Reason.find_by_id(spare_part.unused_reason_id).try(:reason)}
+.row.col-md-12{style: "margin-top: 5px;"}
+  .col-md-4
     %strong Part Order No:
     #{spare_part.ticket_spare_part_manufacture.try(:order_no)}
-  .col-md-3
+  .col-md-4
+    %strong Part Event No:
+    #{spare_part.ticket_spare_part_manufacture.try(:event_no)}
+.row.col-md-12{style: "margin-top: 5px;"}
+  .col-md-4
     %strong Part Serial No:
     #{spare_part.faulty_serial_no}
-.row.col-md-12{style: "margin-top: 10px;"}
-  .col-md-3
+  .col-md-4
+    %strong Return Part Serial No:
+    #{spare_part.return_part_serial_no}
+.row.col-md-12{style: "margin-top: 5px;"}
+  .col-md-4
     %strong Part CT No:
     #{spare_part.faulty_ct_no}
   .col-md-3
-    %strong Status:
-    #{spare_part.spare_part_status_action.try(:name)}
-  .col-md-3
-    %strong Used Return Reason:
-    #{Reason.find_by_id(spare_part.unused_reason_id).try(:reason)}
-  .col-md-3
-    %strong Part Event No:
-    #{spare_part.ticket_spare_part_manufacture.try(:event_no)}
-.row.col-md-12{style: "margin-top: 10px;"}
-  .col-md-3
-    %strong Return Part Serial No:
-    #{spare_part.return_part_serial_no}
-  .col-md-3
     %strong Return CT No:
     #{spare_part.return_part_ct_no}
-  .col-md-3
-    %strong Product Brand:
-
 
 .row.col-md-12{style: "margin-top: 20px;"}
   = simple_nested_form_for spare_part, url: close_event_tickets_path(status_param: "create"), method: :post, remote: true do |f|
     = f.simple_fields_for :ticket_spare_part_manufacture do |tm|
-
-      .col-md-12
-        = label_tag "Payment Expected #{Currency.find_by_id(spare_part.ticket_spare_part_manufacture.try(:manufacture_currency_id).try(:code))}"
-        = tm.input :manufacture_currency_id, label: false, input_html: {class: "only_float"}
-
-      .col-md-12{style: "margin-bottom: 20px;"}
-        = label_tag "Event Closed (Claim Completed)"
-        = tm.check_box :event_closed
-        = tm.submit "Save", class: "btn btn-success"
+      = label_tag "Event Closed (Claim Completed)"
+      = tm.check_box :event_closed
+      = label_tag "Payment Expected #{Currency.find_by_id(spare_part.ticket_spare_part_manufacture.try(:manufacture_currency_id).try(:code))}"
+      = tm.input :manufacture_currency_id, label: false, input_html: {class: "only_float"}
+    = f.input :note
+    = f.submit "Save", class: "btn btn-success"

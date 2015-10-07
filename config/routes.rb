@@ -113,6 +113,12 @@ Rails.application.routes.draw do
       post "call_resolution_template"
       post "call_mf_order_template"
 
+      get "resolution"
+      get "order_manufacture_parts_edit_serial_no", :action => :order_mf
+      get "received_and_issued"
+      get "return_to_stores"
+      get "create_parts_bundle"
+      get "return_parts_bundle"
 
       # post "order_manufacture_parts_edit_serial_no"
       post "update_order_mfp_hold"
