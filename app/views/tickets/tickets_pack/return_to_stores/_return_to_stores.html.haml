@@ -1,3 +1,7 @@
+/ :javascript
+/   function render_partial() {
+/     $('#partial-area').html('j render :accept_return_part => "accept_return_part" ')
+/   }
 - request_spare_part_id = (params[:request_spare_part_id] or session[:request_spare_part_id])
 - spare_part = TicketSparePart.find request_spare_part_id
 - product = @product
@@ -56,27 +60,53 @@
 .row{style: "margin-top:15px;"}
   .col-md-6
     = simple_form_for spare_part, url: return_to_stores_tickets_path, method: :post, remote: true do |f|
-      = f.input :returned_part_accepted, as: :radio_buttons
-      / = f.radio_button :returned_part_accepted, 'email', :checked => true
-      / = label :returned_part_accepted, 'Email'
-      / = f.radio_button :returned_part_accepted, 'sms'
-      / = label :returned_part_rejected, 'SMS'
+      = f.input :returned_part_accepted, as: :radio_buttons, collection: {"Accept Returned Part" => true, "Reject Return Part" => false}, label:""
+#reject
+  %fieldset
+    %legend Reject Return Part
+    = simple_nested_form_for spare_part, url: update_order_mfp_part_order_tickets_path, method: :post, remote: true do |f|
+      = hidden_field_tag :process_id, session[:process_id]
+      = hidden_field_tag :task_id, session[:task_id]
+      = hidden_field_tag :owner, session[:owner]
+      = hidden_field_tag :request_spare_part_id, session[:request_spare_part_id]
+      = hidden_field_tag :status_action_id, :value => "RPR"
+      = f.input :note, input_html: {value: nil}
+      = simple_format spare_part.note
+      = f.submit "Save", class: "btn btn-success"
 
-      / = f.input :returned_part_accepted, as: :radio_buttons, collection: ["Accept Return Part", "Reject Return Part"]
+#accept
+  %fieldset
+    %legend Ready to Bundle (Return to Manufacture)
+    = simple_nested_form_for spare_part, url: update_order_mfp_part_order_tickets_path, method: :post, remote: true do |f|
+      = hidden_field_tag :process_id, session[:process_id]
+      = hidden_field_tag :task_id, session[:task_id]
+      = hidden_field_tag :owner, session[:owner]
+      = hidden_field_tag :request_spare_part_id, session[:request_spare_part_id]
+      = f.input :note, input_html: {value: nil}
+      = simple_format spare_part.note
+      = f.submit "Save", class: "btn btn-success"
 
 
-/       = f.input :id, as: :hidden
-/       = f.input :part_returned, as: :radio_buttons, label: "Reject returnable Part", wrapper: :append, required: true ,id:"id_reject_reason", input_html: {onClick: "Inventories.accept_returned_part(this);"}      
 
-/       = f.simple_fields_for :reason do |rs|
-/         .reason.hide
-/           .row{style: "margin-bottom:15px;"}
-/             .col-md-12
-/               %fieldset
-/                 %legend Reject Returned Part (from Engineer)
-/                 .row
-/                   .col-md-8
-/                     Reject Reason
-/                     = rs.select :part_terminated_reason_id, Reason.where(terminate_spare_part: true).map{|r| [r.name, r.id]}
-/       = f.input :note
-/       = f.submit "Save", class: "btn btn-success"
+
+
+/ &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&77
+/ .row{style: "margin-top:15px;"}
+/   .col-md-6
+/     = simple_form_for spare_part, url: return_to_stores_tickets_path, method: :post, remote: true do |f|
+/       - if f.object.returned_part_accepted == true
+/         = label :returned_part_accepted, 'Accept Returned Part'
+/         = radio_button :returned_part_accepted, :field, :value, :onclick => "render_partial();", :checked => true
+/         = label :returned_part_accepted, 'Reject Return Part'
+/         = radio_button :returned_part_accepted, :field, :value, :onclick => "render_partial();"
+/         / =render 'return_to_stores/accept_return_part'
+/       - else
+/         = label :returned_part_accepted, 'Accept Returned Part'
+/         = radio_button :returned_part_accepted, :field, :value, :onclick => "render_partial();"
+/         = label :returned_part_accepted, 'Reject Return Part'
+/         = radio_button :returned_part_accepted, :field, :value, :onclick => "render_partial();", :checked => true
+/         / =render 'return_to_stores/reject_return_part'
+
+/ .row{style: "margin-top:15px;"}
+/   .col-md-6
+/     #partial-area
