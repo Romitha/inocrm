@@ -114,12 +114,13 @@ Rails.application.routes.draw do
       post "call_mf_order_template"
 
       # post "order_manufacture_parts_edit_serial_no"
-      post "update_order_mfp_hold"
+      # post "update_order_mfp_hold"
       post "update_order_mfp_part_order"
       post "update_order_mfp_wrrnty_extnd_rqst"
       post "update_order_mfp_rqst_from_store"
       post "update_order_mfp_termnt_prt_order"
-      post "update_order_mfp_edit_serial_no"
+      # post "update_order_mfp_edit_serial_no"
+      post "update_edit_serial"
 
       post "update_received_and_issued"
       # get "close_event"
@@ -131,7 +132,7 @@ Rails.application.routes.draw do
       get "received_and_issued"
       get "return_to_stores"
       get "create_parts_bundle"
-      get "return_parts_bundle"
+      get "deliver_parts_bundle"
       get "assign-ticket", action: :assign_ticket
       get "estimate_job"
       get "deliver_unit"
@@ -141,7 +142,7 @@ Rails.application.routes.draw do
       get "edit_serial"
       match "extend_warranty", to: "tickets#extend_warranty", via: [:get, :post]
       match "close_event", to: "tickets#close_event", via: [:get, :post]
-
+      get "check_fsr"
     end
 
     member do

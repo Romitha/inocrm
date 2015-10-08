@@ -1,3 +1,4 @@
+- task_id = TaskAction.find_by_action_no(8).id
 %fieldset
   %legend Un Hold
   = simple_form_for ticket, url: update_un_hold_ticket_path(ticket), method: :post do |f|
@@ -15,20 +16,21 @@
     .row.col.md-12
       .col-md-4
         %strong Hold at: 
-        #{ticket.user_ticket_actions.where(action_id:TaskAction.find_by_action_no(8).id).last.act_hold.created_at.strftime("%d-%m-%Y %H:%M")}
+        #{ticket.user_ticket_actions.where(action_id: task_id).last.act_hold.created_at.strftime("%d-%m-%Y %H:%M")}
       .col-md-4
         %strong Hold by: 
-        #{User.cached_find_by_id(ticket.user_ticket_actions.where(action_id:TaskAction.find_by_action_no(8).id).last.action_by).email}
+        #{User.cached_find_by_id(ticket.user_ticket_actions.where(action_id: task_id).last.action_by).email}
       .col-md-4
         %strong Hold reason: 
-        #{ticket.user_ticket_actions.where(action_id:TaskAction.find_by_action_no(8).id).last.act_hold.reason.reason}
+        #{ticket.user_ticket_actions.where(action_id: task_id).last.act_hold.reason.reason}
     .row.col.md-12
       .col-md-4
-        -if ticket.user_ticket_actions.where(action_id:TaskAction.find_by_action_no(8).id).last.act_hold.sla_pause == true
+        -if ticket.user_ticket_actions.where(action_id: task_id).last.act_hold.sla_pause == true
           %strong SLA pause: Yes
         -else
           %strong SLA pause: No
 
       .col-md-4
         %strong Hold time duration:
+        #{time_ago_in_words(ticket.user_ticket_actions.where(action_id: task_id).last.act_hold.created_at)}
     = f.submit "Save", class: "btn btn-success"

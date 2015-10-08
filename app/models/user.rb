@@ -118,7 +118,7 @@ class User < ActiveRecord::Base
   end
 
   def self.cached_find_by_id id
-    Rails.cache.fetch(["User", :find_by_id]){ find_by_id id }
+    Rails.cache.fetch(["User", :find_by_id, id]){ find_by_id id }
   end
 
 end

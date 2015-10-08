@@ -1,6 +1,6 @@
 %fieldset
   %legend Terminate Part Ordering
-  = simple_nested_form_for spare_part, url: update_order_mfp_termnt_prt_order_tickets_path, method: :post, remote: true do |f|
+  = simple_nested_form_for @spare_part, url: update_order_mfp_termnt_prt_order_tickets_path, method: :post do |f|
     = hidden_field_tag :process_id, session[:process_id]
     = hidden_field_tag :task_id, session[:task_id]
     = hidden_field_tag :owner, session[:owner]

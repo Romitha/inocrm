@@ -47,8 +47,10 @@
     %label Activity
     %select{:class => "activity_id", :id => "mf_template_caller"}
       %option{:value => ""}
-      / - if present_of_start_ticket_action and not ticket.job_finished
-      %option{:value => "hold"} Hold
+      - if ticket.status_hold
+        %option{:value => "un_hold"} Un hold
+      - else
+        %option{:value => "hold"} Hold
       / - if present_of_start_ticket_action and not ticket.job_finished
       %option{:value => "order_parts"} Order Parts
       / - if present_of_start_ticket_action and not ticket.job_finished
@@ -58,6 +60,6 @@
       / - if present_of_start_ticket_action and not ticket.job_finished
       %option{:value => "terminate_order"} Terminate Order
       / - if present_of_start_ticket_action and not ticket.job_finished
-      %option{:value => "edit_serial_no_request"} Edit Serial No Request
+      %option{:value => "edit_serial_no_request"} Edit Serial No
   .form-group
     #mf_order_templates

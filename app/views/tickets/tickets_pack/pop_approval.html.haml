@@ -36,7 +36,7 @@
             .row
               %br
               .col-md-3
-                = p.association :product_pop_status, collection: ProductPopStatus.first(3), include_blank: false, wrapper_html: {class: "col-md-11"}, label: "Product POP status"
+                = p.association :product_pop_status, collection: ProductPopStatus.offset(3), include_blank: false, wrapper_html: {class: "col-md-11"}, label: "Product POP status"
               .col-md-3
                 = p.association :product_sold_country, wrapper_html: {class: "col-md-11"}, label_method: :Country, value_method: :id
 
