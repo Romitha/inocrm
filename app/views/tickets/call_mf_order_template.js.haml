@@ -1,1 +1,1 @@
-$("#mf_order_templates").html("#{j render 'tickets/tickets_pack/order_manufacture_parts/'+@call_template, ticket: @ticket, spare_part: @spare_part, product: @product}");
+$("#mf_order_templates").html("#{j render @call_template, ticket: @ticket, spare_part: @spare_part, product: @product}");

@@ -30,14 +30,14 @@
               %strong Main Product of the Part
             .row.col-md-12{style: "margin-top:10px;"}
               %strong Item Code:
-              #{tm.object.main_inventory_product.inventory_category3.try(:code)}
+              #{tm.object.main_inventory_product.try(:inventory_category3).try(:code)}
               %br
               %strong Item Description:
               #{tm.object.main_inventory_product.try(:description)}
               %br
               %strong Available Qty:
               %strong Unit:
-              #{tm.object.main_inventory_product.inventory_unit.try(:unit)}
+              #{tm.object.main_inventory_product.try(:inventory_unit).try(:unit)}
       .row.col-md-12{style: "margin-top:10px;"}
         = f.input :note
       .row.col-md-12

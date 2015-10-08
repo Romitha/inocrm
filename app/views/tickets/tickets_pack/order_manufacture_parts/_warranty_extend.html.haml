@@ -1,7 +1,6 @@
-- ticket = spare_part.ticket
 %fieldset
   %legend Warranty Extend
-  = simple_form_for ticket, url: update_order_mfp_wrrnty_extnd_rqst_tickets_path, method: :post do |f|
+  = simple_form_for @ticket, url: update_order_mfp_wrrnty_extnd_rqst_tickets_path, method: :post do |f|
     = hidden_field_tag :process_id, session[:process_id]
     = hidden_field_tag :task_id, session[:task_id]
     = hidden_field_tag :owner, session[:owner]

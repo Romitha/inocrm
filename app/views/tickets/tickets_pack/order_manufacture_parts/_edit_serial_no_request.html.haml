@@ -1,10 +1,12 @@
+- ticket = @ticket
+- product = @product
 %fieldset
   %legend Edit Serial No
-  = simple_nested_form_for product, url: update_order_mfp_edit_serial_no_tickets_path, method: :post do |f|
+  = simple_nested_form_for product, url: update_edit_serial_tickets_path, method: :post do |f|
     = hidden_field_tag :process_id, session[:process_id]
     = hidden_field_tag :task_id, session[:task_id]
     = hidden_field_tag :owner, session[:owner]
-    = hidden_field_tag :request_spare_part_id, session[:request_spare_part_id]
+    = hidden_field_tag :product_id, f.object.id
 
     %strong Serial No:
     = f.object.serial_no
@@ -13,5 +15,7 @@
     = f.simple_fields_for :ticket_product_serials do |sr|
       - if sr.object.ticket_id == ticket.id
         = sr.association :ref_product_serial, value_method: :id, label_method: :serial_no
-
+    - if @complete_task
+      = label_tag "Task completed"
+      = check_box_tag "complete_task" # this is for extend_warranty purpose. this can be used anywhere as render
     = f.submit "Save", class: "btn btn-success"

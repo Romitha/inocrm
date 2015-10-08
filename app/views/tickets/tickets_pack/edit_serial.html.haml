@@ -16,21 +16,4 @@
       = tab_panel do
         = render "tickets/tickets_pack/ticket_info", ticket: ticket, product: product, customer: customer, warranties: warranties, histories: histories, join_tickets: join_tickets, ge_q_and_as: ge_q_and_as, pr_q_and_as: pr_q_and_answers
     = tab_content tabpointer: :edit_serial, active_class: "active" do
-      .row
-        .col-md-12
-          Old Serial No: #{product.serial_no}
-
-      .row
-        .col-md-12
-          = simple_form_for product, url: product_update_tickets_path, remote: true do |f|
-            = f.input :serial_no, label: "New serial No"
-            = hidden_field_tag :pop_doc_url, product.pop_doc_url
-            = hidden_field_tag :product_brand_id, product.product_brand_id
-            = hidden_field_tag :sold_country_id, product.sold_country_id
-            = hidden_field_tag :product_category_id, product.product_category_id
-            = hidden_field_tag :model_no, product.model_no
-            = hidden_field_tag :product_no, product.product_no
-            = hidden_field_tag :pop_status_id, product.pop_status_id
-            = #hidden_field_tag :coparate_product, product.coparate_product
-            = hidden_field_tag :pop_note, product.pop_note
-            = f.submit "Save", class: "btn btn-success"
+      = render "tickets/tickets_pack/order_manufacture_parts/edit_serial_no_request"

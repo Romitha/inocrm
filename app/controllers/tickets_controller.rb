@@ -1254,6 +1254,43 @@ class TicketsController < ApplicationController
     end
   end
 
+  def update_edit_serial
+    Ticket
+    @product = Product.find params[:product_id]
+    @ticket = @product.tickets.first
+
+    if @product.update product_params
+
+      # Set Action (35) "Edit Serial No".
+      user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(35).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+      user_ticket_action.save
+
+      if params[:complete_task]
+        continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+
+        if continue
+
+          # bpm output variables
+          bpm_variables = view_context.initialize_bpm_variables
+
+          @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
+
+          bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+          if bpm_response[:status].upcase == "SUCCESS"
+            @flash_message = {notice: "Successfully updated"}
+          else
+            @flash_message = {error: "product is updated. but Bpm error"}
+          end
+        end
+      end
+      @flash_message = {notice: "Successfully updated"}
+    else
+      @flash_message = {error: "Unable to updated."}
+    end
+    redirect_to todos_url, @flash_message
+  end
+
   def estimate_job
     ContactNumber
     QAndA
@@ -1333,7 +1370,7 @@ class TicketsController < ApplicationController
     TaskAction
     TicketSparePart
     Inventory
-    @ticket = Ticket.find_by_id params[:ticket_id] if params[:ticket_id].present?
+    @ticket = Ticket.find_by_id (params[:ticket_id] || session[:ticket_id])# if params[:ticket_id].present?
     if @ticket
       @product = @ticket.products.first
       @warranties = @product.warranties
@@ -1356,11 +1393,97 @@ class TicketsController < ApplicationController
       @render_template = "tickets/tickets_pack/extend_warranty/reject_extend_warranty"
 
     when "edit_serial_no"
-
+      @render_template = "tickets/tickets_pack/order_manufacture_parts/edit_serial_no_request"
+      @complete_task = true
     end
     respond_to do |format|
       format.js {render "tickets/tickets_pack/extend_warranty/extend_warranty"}
       format.html {render "tickets/tickets_pack/extend_warranty/extend_warranty"}
+    end
+  end
+
+  def extend_warranty_update_serial_no
+     
+  end
+
+  def extend_warranty_update_extend_warranty
+    Ticket
+    @warranty = Warranty.new warranty_params
+
+    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    if continue
+      if @warranty.save
+
+        # Set Action (39) "Warranty Extended". DB.spt_act_warranty_extend
+        user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(39).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+        user_ticket_action.build_action_warranty_extend(extended: true)
+        user_ticket_action.save
+
+        # bpm output variables
+        bpm_variables = view_context.initialize_bpm_variables
+
+        @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
+
+        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+        if bpm_response[:status].upcase == "SUCCESS"
+          @flash_message = {notice: "Successfully updated"}
+        else
+          @flash_message = {error: "ticket is updated. but Bpm error"}
+        end
+      else
+        @flash_message = {error: "Unable to update"}
+      end
+    end
+    redirect_to todos_url, @flash_message
+  end
+
+  def extend_warranty_update_reject_extend_warranty
+    Ticket
+    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    if continue
+
+      # Set Action (40) "Reject Warranty Extend". DB.spt_act_warranty_extend
+      user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(40).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+      user_ticket_action.build_action_warranty_extend(act_warranty_extend_params)
+      user_ticket_action.save
+
+      # bpm output variables
+      bpm_variables = view_context.initialize_bpm_variables
+
+      @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
+
+      bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+      if bpm_response[:status].upcase == "SUCCESS"
+        @flash_message = {notice: "Successfully updated"}
+      else
+        @flash_message = {error: "ticket is updated. but Bpm error"}
+      end
+    else
+      @flash_message = {error: "Unable to update."}
+    end
+    redirect_to todos_url, @flash_message
+  end
+
+  def check_fsr
+    ContactNumber
+    QAndA
+    TaskAction
+    TicketSparePart
+    Inventory
+    @ticket = Ticket.find_by_id (params[:ticket_id] || session[:ticket_id])# if params[:ticket_id].present?
+    if @ticket
+      @product = @ticket.products.first
+      @warranties = @product.warranties
+      session[:product_id] = @product.id
+      Rails.cache.delete([:histories, session[:product_id]])
+      Rails.cache.delete([:join, @ticket.id])
+      @histories = Rails.cache.fetch([:histories, session[:product_id]]){Kaminari.paginate_array(@product.tickets)}.page(params[:page]).per(2)
+      @join_tickets = Rails.cache.fetch([:join, @ticket.id]){Kaminari.paginate_array(Ticket.where(id: @ticket.joint_tickets.map(&:joint_ticket_id)))}.page(params[:page]).per(2)
+      @q_and_answers = @ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})}
+      @ge_q_and_answers = @ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"General Questions" => v})}
+
     end
   end
 
@@ -1486,23 +1609,56 @@ class TicketsController < ApplicationController
   def call_mf_order_template
     TaskAction
     TicketSparePart
+    Warranty
     @call_template = params[:call_template]
     @ticket = Ticket.find session[:ticket_id]
     @product = @ticket.products.first
     @user_ticket_action = @ticket.user_ticket_actions.build
     @spare_part = TicketSparePart.find session[:request_spare_part_id]
+
     case @call_template
     when "hold"
       @act_hold = @user_ticket_action.build_act_hold
+      @call_template = 'tickets/tickets_pack/resolution/'+@call_template
+    when "un_hold"
+      @call_template = 'tickets/tickets_pack/resolution/'+@call_template
     when "warranty_extend"
       @warranty_extend = @user_ticket_action.build_action_warranty_extend
+      @call_template = 'tickets/tickets_pack/order_manufacture_parts/'+@call_template
+    else
+      @call_template = 'tickets/tickets_pack/order_manufacture_parts/'+@call_template
     end
   end
 
-  def update_order_mfp_hold
-  end
-
   def update_order_mfp_part_order
+    Ticket
+
+    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    if continue
+      if @Ticket.save
+
+        # Set Action (39) "Warranty Extended". DB.spt_act_warranty_extend
+        user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(39).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+        user_ticket_action.build_action_warranty_extend(extended: true)
+        user_ticket_action.save
+
+        # bpm output variables
+        bpm_variables = view_context.initialize_bpm_variables
+
+        @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
+
+        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+        if bpm_response[:status].upcase == "SUCCESS"
+          @flash_message = {notice: "Successfully updated"}
+        else
+          @flash_message = {error: "ticket is updated. but Bpm error"}
+        end
+      else
+        @flash_message = {error: "Unable to update"}
+      end             
+    end
+    redirect_to todos_url, @flash_message       
   end
 
   def update_order_mfp_wrrnty_extnd_rqst
@@ -1512,9 +1668,6 @@ class TicketsController < ApplicationController
   end
 
   def update_order_mfp_termnt_prt_order
-  end
-
-  def update_order_mfp_edit_serial_no
   end
 
   def update_start_action
@@ -1620,7 +1773,7 @@ class TicketsController < ApplicationController
   def update_hold
     TaskAction
  
-    if @ticket.update append_remark_ticket_params(@ticket)
+    if !@ticket.status_hold and @ticket.update append_remark_ticket_params(@ticket)
 
       act_hold = @ticket.user_ticket_actions.last.act_hold
 
@@ -1638,7 +1791,7 @@ class TicketsController < ApplicationController
 
   def update_un_hold
 
-    if @ticket.update ticket_params
+    if @ticket.status_hold and @ticket.update ticket_params
 
       user_ticket_action = @ticket.user_ticket_actions.find_by_id(@ticket.last_hold_action_id)
 
@@ -2076,7 +2229,7 @@ class TicketsController < ApplicationController
 
         if bpm_response1[:status].try(:upcase) == "SUCCESS"
           @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name])
-          ticket_bpm_headers bpm_response1[:process_id], @ticket.id, ""
+          ticket_bpm_headers bpm_response1[:process_id], @ticket.id, request_spare_part_id
         else
           @bpm_process_error = true
         end
@@ -2196,7 +2349,7 @@ class TicketsController < ApplicationController
     end
 
     def product_params
-      params.require(:product).permit(:serial_no, :pop_doc_url, :product_brand_id, :sold_country_id, :product_category_id, :model_no, :product_no, :pop_status_id, :coparate_product, :pop_note)
+      params.require(:product).permit(:serial_no, :pop_doc_url, :product_brand_id, :sold_country_id, :product_category_id, :model_no, :product_no, :pop_status_id, :coparate_product, :pop_note, ticket_product_serials_attributes: [:id, :ref_product_serial_id])
     end
 
     def category_params
