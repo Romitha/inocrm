@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   resources :warranties do
     collection do
       post "select_for_warranty"
+      post "extend_warranty_update_extend_warranty"
     end
   end
 
@@ -124,6 +125,7 @@ Rails.application.routes.draw do
 
       post "update_received_and_issued"
       # get "close_event"
+      post "extend_warranty_update_reject_extend_warranty"
 
       get "edit-ticket", :action => :edit_ticket
       get "pop-approval"#, :action => :pop_note

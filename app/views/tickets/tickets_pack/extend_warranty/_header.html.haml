@@ -2,5 +2,5 @@
 
 #extend_warranty_frame
 #warranty_grid
-  - product.warranties.each do |warranty|
-    = render "warranties/warranty", warranty: warranty
+  / - product.warranties.each do |warranty|
+  = render "warranties/select_warranties", warranties: product.warranties

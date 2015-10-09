@@ -1402,45 +1402,10 @@ class TicketsController < ApplicationController
     end
   end
 
-  def extend_warranty_update_serial_no
-     
-  end
-
-  def extend_warranty_update_extend_warranty
-    Ticket
-    @warranty = Warranty.new warranty_params
-
-    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
-    if continue
-      if @warranty.save
-
-        # Set Action (39) "Warranty Extended". DB.spt_act_warranty_extend
-        user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(39).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
-        user_ticket_action.build_action_warranty_extend(extended: true)
-        user_ticket_action.save
-
-        # bpm output variables
-        bpm_variables = view_context.initialize_bpm_variables
-
-        @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
-
-        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
-
-        if bpm_response[:status].upcase == "SUCCESS"
-          @flash_message = {notice: "Successfully updated"}
-        else
-          @flash_message = {error: "ticket is updated. but Bpm error"}
-        end
-      else
-        @flash_message = {error: "Unable to update"}
-      end
-    end
-    redirect_to todos_url, @flash_message
-  end
-
   def extend_warranty_update_reject_extend_warranty
     Ticket
     continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    @ticket = Ticket.find params[:ticket_id]
     if continue
 
       # Set Action (40) "Reject Warranty Extend". DB.spt_act_warranty_extend
@@ -1458,7 +1423,7 @@ class TicketsController < ApplicationController
       if bpm_response[:status].upcase == "SUCCESS"
         @flash_message = {notice: "Successfully updated"}
       else
-        @flash_message = {error: "ticket is updated. but Bpm error"}
+        @flash_message = {error: "reject warranty is updated. but Bpm error"}
       end
     else
       @flash_message = {error: "Unable to update."}
@@ -1683,7 +1648,7 @@ class TicketsController < ApplicationController
 
       # Set Action (32) Request To Warranty Extend, DB.spt_act_warranty_extend.
       user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(32).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
-      user_ticket_action.build_act_warranty_extend
+      user_ticket_action.build_action_warranty_extend
       user_ticket_action.save
 
 

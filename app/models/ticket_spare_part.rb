@@ -9,6 +9,8 @@ class TicketSparePart < ActiveRecord::Base
   belongs_to :spare_part_status_use, foreign_key: :status_use_id
 
   has_many :request_spare_parts
+  accepts_nested_attributes_for :request_spare_parts, allow_destroy: true
+
   has_many :ticket_spare_part_status_actions, foreign_key: :spare_part_id
 
   has_one :ticket_spare_part_manufacture, foreign_key: :spare_part_id
