@@ -1,10 +1,16 @@
 %fieldset
   %legend New Warranty
-  = simple_form_for @warranty do |f|
-    = f.input :product_serial_id, as: :hidden
+  = simple_form_for @warranty, url: extend_warranty_update_extend_warranty_warranties_path, method: :post do |f|
+    = f.input :product_serial_id, as: :hidden, input_html: {value: @product.id}
+    = hidden_field_tag :process_id, session[:process_id]
+    = hidden_field_tag :task_id, session[:task_id]
+    = hidden_field_tag :owner, session[:owner]
+    - session[:bpm_input_variables].each do |bpm_input_variable|
+      = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+
     .row
       .col-md-6
-        = f.association :warranty_type, as: :radio_buttons, wrapper: :append, collection: WarrantyType.all
+        = f.association :warranty_type, as: :radio_buttons, wrapper: :append, collection: WarrantyType.first(2)
       .col-md-6
         .strong
           Warranty date format
