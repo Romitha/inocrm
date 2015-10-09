@@ -9,24 +9,27 @@
         = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
       .row
         .col-md-6
-          = f.input :cus_chargeable_part, wrapper: :append
+          = f.input :cus_chargeable_part, wrapper: :append, label: "Customer Chargeable Part (Non Warranty)"
+          .row
+            .col-md-6
+              %strong Store: 
+              #{f.object.ticket_spare_part_store.store.try(:name)}
+              %br
+              %strong Item Code:
+              #{f.object.ticket_spare_part_store.inventory_product.inventory_category3.try(:code)}
+              %br
+              %strong Item Description:
+              #{f.object.ticket_spare_part_store.inventory_product.try(:description)}
+              %br
+              %strong Available Qty:
+              #{f.object.ticket_spare_part_store.inventory_product.try(:inventories).try(:sum ,:available_quantity)}
+              %strong Unit:
+              #{f.object.ticket_spare_part_store.inventory_product.inventory_unit.try(:unit)}
+          
         .col-md-6
           = f.simple_fields_for :ticket_on_loan_spare_parts do |tm|
 
-            = tm.input :part_of_main_product 
-      .row
-        .col-md-6
-          %strong Store: 
-          #{f.object.ticket_spare_part_store.store.try(:name)}
-          %br
-          %strong Item Code:
-          %br
-          %strong Item Description:
-          %br
-          %strong Available Qty:
-          %strong Unit:
-        .col-md-6
-          = f.simple_fields_for :ticket_on_loan_spare_parts do |tm|
+            = tm.input :part_of_main_product, wrapper: :append, label: "Part of a Main Product"
             .row.col-md-12
               %strong Main Product of the Part
             .row.col-md-12{style: "margin-top:10px;"}
