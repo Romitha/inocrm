@@ -1632,42 +1632,198 @@ class TicketsController < ApplicationController
 
   def update_order_mfp_part_order
     Ticket
+    spt_ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
+    @ticket = spt_ticket_spare_part.ticket
 
     continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
-    if continue
-      if @Ticket.save
 
-        # Set Action (39) "Warranty Extended". DB.spt_act_warranty_extend
-        user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(39).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
-        user_ticket_action.build_action_warranty_extend(extended: true)
-        user_ticket_action.save
+    if continue and (spt_ticket_spare_part.status_action_id != SparePartStatusAction.find_by_code("CLS").id) and spt_ticket_spare_part.update(ticket_spare_part_params)
 
-        # bpm output variables
-        bpm_variables = view_context.initialize_bpm_variables
+      spt_ticket_spare_part.update_attributes status_action_id: SparePartStatusAction.find_by_code("ORD").id
 
-        @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
+      spt_ticket_spare_part.ticket_spare_part_manufacture.update_attributes collect_pending_manufacture: true
 
-        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+      spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
 
-        if bpm_response[:status].upcase == "SUCCESS"
-          @flash_message = {notice: "Successfully updated"}
-        else
-          @flash_message = {error: "ticket is updated. but Bpm error"}
-        end
+      # Set Action (31) Order Spare Part from Sup, DB.spt_act_request_spare_part.
+      user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(31).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+      user_ticket_action.build_request_spare_part(ticket_spare_part_id: spt_ticket_spare_part.id)
+      user_ticket_action.save
+
+
+      # bpm output variables
+      d30_parts_collection_pending = TicketSparePart.any?{|sp| sp.id != spt_ticket_spare_part.id and sp.ticket_spare_part_manufacture.try(:collect_pending_manufacture)} ? "Y" : "N"
+      bpm_variables = view_context.initialize_bpm_variables.merge(d30_parts_collection_pending: d30_parts_collection_pending)
+
+      @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
+
+      bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+      if bpm_response[:status].upcase == "SUCCESS"
+        @flash_message = {notice: "Successfully updated"}
       else
-        @flash_message = {error: "Unable to update"}
-      end             
+        @flash_message = {error: "ticket is updated. but Bpm error"}
+      end
+    else
+      @flash_message = {error: "Unable to update"}
     end
-    redirect_to todos_url, @flash_message       
+
+    redirect_to todos_url, @flash_message
+
   end
 
   def update_order_mfp_wrrnty_extnd_rqst
+    Ticket
+    spt_ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
+    @ticket = spt_ticket_spare_part.ticket
+
+    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+
+    if continue and (spt_ticket_spare_part.status_action_id != SparePartStatusAction.find_by_code("CLS").id)
+
+      # Set Action (32) Request To Warranty Extend, DB.spt_act_warranty_extend.
+      user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(32).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+      user_ticket_action.build_act_warranty_extend
+      user_ticket_action.save
+
+
+      # bpm output variables
+      bpm_variables = view_context.initialize_bpm_variables.merge(d26_serial_no_change_warranty_extend_requested: "Y", d27_warranty_extend_requested: "Y")
+
+      @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
+
+      bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+      if bpm_response[:status].upcase == "SUCCESS"
+        @flash_message = {notice: "Successfully updated"}
+      else
+        @flash_message = {error: "ticket is updated. but Bpm error"}
+      end
+    else
+      @flash_message = {error: "Unable to update"}
+    end
+
+    redirect_to todos_url, @flash_message
+
   end
 
   def update_order_mfp_rqst_from_store
+    Ticket
+    spt_ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
+    @ticket = spt_ticket_spare_part.ticket
+    d29_part_estimate_required_2= ""
+
+    # bpm output variables
+    ticket_id = @ticket.id
+    request_spare_part_id = spt_ticket_spare_part.id
+    supp_engr_user = params[:supp_engr_user]
+    priority = @ticket.priority
+
+    # part_estimation_id = @ticket_estimation.try(:id)
+
+    request_onloan_spare_part_id = "-"
+    onloan_request = "N"
+
+    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+
+    if continue and (spt_ticket_spare_part.status_action_id != SparePartStatusAction.find_by_code("CLS").id) and spt_ticket_spare_part.update(ticket_spare_part_params)
+
+      ticket_estimation_part = TicketEstimationPart.new
+      if spt_ticket_spare_part.cus_chargeable_part
+        d29_part_estimate_required_2  = "Y"
+
+        #create record spt_ticket_estimation
+        @ticket_estimation = @ticket.ticket_estimations.create(requested_at: DateTime.now, requested_by: current_user.id, status_id: SparePartStatusAction.find_by_code("RQS").id, currency_id: @ticket.base_currency_id)
+
+        #create record spt_ticket_estimation_part
+        ticket_estimation_part = @ticket_estimation.ticket_estimation_parts.create(ticket_id: @ticket.id, ticket_spare_part_id: spt_ticket_spare_part.id)
+
+        @bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT_PART_ESTIMATE", query: {ticket_id: ticket_id, part_estimation_id: @ticket_estimation.try(:id), supp_engr_user: supp_engr_user, priority: priority}
+      else
+        spt_ticket_spare_part.update_attributes status_action_id: SparePartStatusAction.find_by_code("STR").id
+        spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)   
+
+        @bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT_STORE_PART_REQUEST", query: {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, request_onloan_spare_part_id: request_onloan_spare_part_id, onloan_request: onloan_request, supp_engr_user: supp_engr_user, priority: priority}            
+      end
+
+      #create record spt_ticket_spare_part_store
+      spt_ticket_spare_part.create_ticket_spare_part_store(estimation_required: spt_ticket_spare_part.cus_chargeable_part, ticket_estimation_part_id: ticket_estimation_part.id)
+
+      #delete record spt_ticket_spare_part_manufacture
+      spt_ticket_spare_part.ticket_spare_part_manufacture.delete
+
+
+      # Set Action (15) Request Spare Part from Store, DB.spt_act_request_spare_part.
+      user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(15).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+      user_ticket_action.build_request_spare_part(ticket_spare_part_id: spt_ticket_spare_part.id)
+      user_ticket_action.save
+
+
+      # bpm output variables
+      bpm_variables = view_context.initialize_bpm_variables.merge(d28_request_store_part_2: "Y", d29_part_estimate_required_2: d29_part_estimate_required_2)
+
+      @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
+
+      bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+
+      if @bpm_response1[:status].try(:upcase) == "SUCCESS"
+        @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name])
+        ticket_bpm_headers @bpm_response1[:process_id], @ticket.id, request_spare_part_id
+      else
+        @bpm_process_error = true
+      end
+
+      if bpm_response[:status].upcase == "SUCCESS"
+        @flash_message = "Successfully updated."
+      else
+        @flash_message = "ticket is updated. but Bpm error"
+      end
+
+      @flash_message = "#{@flash_message} Unable to start new process." if @bpm_process_error
+
+    else
+      @flash_message = {error: "Unable to update"}
+    end
+
+    redirect_to todos_url, @flash_message
+
   end
 
   def update_order_mfp_termnt_prt_order
+
+    Ticket
+    spt_ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
+    @ticket = spt_ticket_spare_part.ticket
+
+    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+
+    if continue and (spt_ticket_spare_part.status_action_id != SparePartStatusAction.find_by_code("CLS").id) and spt_ticket_spare_part.update(ticket_spare_part_params)
+
+      spt_ticket_spare_part.update_attributes status_action_id: SparePartStatusAction.find_by_code("CLS").id
+
+      spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
+
+      # Set Action (34) Terminate Spare Part Order, DB.spt_act_request_spare_part.
+      user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(34).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+      user_ticket_action.build_request_spare_part(ticket_spare_part_id: spt_ticket_spare_part.id, part_terminate_reason_id: spt_ticket_spare_part.part_terminate_reason_id)
+      user_ticket_action.save
+
+      @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
+    end
+
+    # bpm output variables
+    bpm_variables = view_context.initialize_bpm_variables.merge(d25_terminate_order_part: "Y")
+    bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+    if bpm_response[:status].upcase == "SUCCESS"
+      @flash_message = {notice: "Successfully updated"}
+    else
+      @flash_message = {error: "ticket is updated. but Bpm error"}
+    end
+
+    redirect_to todos_url, @flash_message
+
   end
 
   def update_start_action
@@ -2397,7 +2553,7 @@ class TicketsController < ApplicationController
     end
 
     def ticket_spare_part_params
-      params.require(:ticket_spare_part).permit(:spare_part_no, :spare_part_description, :ticket_id, :ticket_fsr, :cus_chargeable_part, :request_from, :faulty_serial_no, :faulty_ct_no, :note, :status_action_id, :status_use_id, ticket_attributes: [:remarks, :id])
+      params.require(:ticket_spare_part).permit(:spare_part_no, :spare_part_description, :ticket_id, :ticket_fsr, :cus_chargeable_part, :request_from, :faulty_serial_no, :faulty_ct_no, :note, :status_action_id, :status_use_id, ticket_attributes: [:remarks, :id], ticket_spare_part_manufacture_attributes: [:event_no, :order_no])
     end
 
     def ticket_on_loan_spare_part_params

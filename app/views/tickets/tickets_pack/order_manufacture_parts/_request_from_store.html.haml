@@ -2,18 +2,19 @@
   %legend Request From Store
   = simple_nested_form_for spare_part, url: update_order_mfp_rqst_from_store_tickets_path, method: :post, remote: true do |f|
     - if f.object.ticket_spare_part_store
-      .row.col-md-12
+      = hidden_field_tag :process_id, session[:process_id]
+      = hidden_field_tag :task_id, session[:task_id]
+      = hidden_field_tag :owner, session[:owner]
+      - session[:bpm_input_variables].each do |bpm_input_variable|
+        = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+      .row
         .col-md-6
           = f.input :cus_chargeable_part, wrapper: :append
         .col-md-6
           = f.simple_fields_for :ticket_on_loan_spare_parts do |tm|
 
-            = hidden_field_tag :process_id, session[:process_id]
-            = hidden_field_tag :task_id, session[:task_id]
-            = hidden_field_tag :owner, session[:owner]
-            = hidden_field_tag :request_spare_part_id, session[:request_spare_part_id]
             = tm.input :part_of_main_product 
-      .row.col-md-12{style: "margin-top:10px;"}
+      .row
         .col-md-6
           %strong Store: 
           #{f.object.ticket_spare_part_store.store.try(:name)}
@@ -38,7 +39,9 @@
               %strong Available Qty:
               %strong Unit:
               #{tm.object.main_inventory_product.try(:inventory_unit).try(:unit)}
-      .row.col-md-12{style: "margin-top:10px;"}
-        = f.input :note
-      .row.col-md-12
-        = f.submit "Save", class: "btn btn-success"
+      .row
+        .col-md-12
+          = f.input :note
+      .row
+        .col-md-12
+          = f.submit "Save", class: "btn btn-success"
