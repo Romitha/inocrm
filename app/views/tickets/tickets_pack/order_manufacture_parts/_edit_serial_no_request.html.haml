@@ -13,10 +13,15 @@
     %strong Serial No:
     = f.object.serial_no
     %br/
-    = f.input :serial_no, label:"New Serial No"
-    = f.simple_fields_for :ticket_product_serials do |sr|
-      - if sr.object.ticket_id == ticket.id
-        = sr.association :ref_product_serial, value_method: :id, label_method: :serial_no
+    %br/
+
+    .row
+      .col-md-4
+        = f.input :serial_no, label:"New Serial No"
+      .col-md-4
+        = f.simple_fields_for :ticket_product_serials do |sr|
+          - if sr.object.ticket_id == ticket.id
+            = sr.association :ref_product_serial, value_method: :id, label_method: :serial_no
     - if @complete_task
       = label_tag "Task completed"
       = check_box_tag "complete_task" # this is for extend_warranty purpose. this can be used anywhere as render
