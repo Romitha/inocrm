@@ -346,3 +346,15 @@ dd{
   padding-top: 28px;
   width: 13px;
 }
+
+.table_border{
+
+  border-style:solid;
+  border-width:0px thin thin thin;
+
+  .row{
+
+    border-style:solid;
+    border-width:thin 0px 0px 0px;
+  }
+}
