@@ -67,7 +67,7 @@ window.Inventories =
       _this.disable_upon_manufacture()
 
   disable_upon_check: ->
-    part_of_main_product = $("#part_of_main_product, #ticket_on_loan_spare_part_part_of_main_product")
+    part_of_main_product = $("#part_of_main_product, #ticket_on_loan_spare_part_part_of_main_product, #order_man_rqst_frm_str_part_of_main_product")
     if part_of_main_product.is(":checked")
       $("#part_of_main_product_select").removeClass("hide")
     else
@@ -77,7 +77,7 @@ window.Inventories =
       $(".main_product").empty()
 
   disable_part: ->
-    part_of_main_product = $("#part_of_main_product, #ticket_on_loan_spare_part_part_of_main_product")
+    part_of_main_product = $("#part_of_main_product, #ticket_on_loan_spare_part_part_of_main_product, #order_man_rqst_frm_str_part_of_main_product")
     _this = this
     _this.disable_upon_check()
 
@@ -85,7 +85,8 @@ window.Inventories =
       _this.disable_upon_check()
 
   submit_spare_part: ->
-    submit_form = $("#new_ticket_spare_part")
+    submit_form = $("#new_ticket_spare_part, .simple_form edit_ticket_spare_part")
+    _this = this
 
     $("input[type='submit']", submit_form).click (e)->
       e.preventDefault()
@@ -104,11 +105,14 @@ window.Inventories =
       else if part_of_main_product.val() and $("input[name='mst_store_id']", submit_form).val() == ""
         alert "Please select main product store"
 
-      else if $("input[name='mst_store_id']", submit_form).val() and ( !$("input[name='store_id']", submit_form).val() or ($("input[name='store_id']", submit_form).val() != $("input[name='mst_store_id']", submit_form).val()))
+      else if _this.match_store_and_mst_store_ids
         alert "Please select same store for the main product!"
 
       else
         submit_form.submit()
+
+  match_store_and_mst_store_ids: ->
+    $("input[name='mst_store_id']").val() and ( !$("input[name='store_id']").val() or ($("input[name='store_id']").val() != $("input[name='mst_store_id']").val()))
 
   submit_on_loan_spare_part: ->
     @disable_part()

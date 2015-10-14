@@ -1590,6 +1590,9 @@ class TicketsController < ApplicationController
     when "warranty_extend"
       @warranty_extend = @user_ticket_action.build_action_warranty_extend
       @call_template = 'tickets/tickets_pack/order_manufacture_parts/'+@call_template
+    when "request_from_store"
+      @spare_part.build_ticket_spare_part_store
+      @call_template = 'tickets/tickets_pack/order_manufacture_parts/'+@call_template
     else
       @call_template = 'tickets/tickets_pack/order_manufacture_parts/'+@call_template
     end
@@ -1599,14 +1602,15 @@ class TicketsController < ApplicationController
     Ticket
     spt_ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
     @ticket = spt_ticket_spare_part.ticket
+    spt_ticket_spare_part.attributes = ticket_spare_part_params(spt_ticket_spare_part)
 
     continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
 
-    if continue and (spt_ticket_spare_part.status_action_id != SparePartStatusAction.find_by_code("CLS").id) and spt_ticket_spare_part.update(ticket_spare_part_params)
+    if continue and (spt_ticket_spare_part.status_action_id != SparePartStatusAction.find_by_code("CLS").id) and spt_ticket_spare_part.save
 
       spt_ticket_spare_part.update_attributes status_action_id: SparePartStatusAction.find_by_code("ORD").id
 
-      spt_ticket_spare_part.ticket_spare_part_manufacture.update_attributes collect_pending_manufacture: true
+      spt_ticket_spare_part.ticket_spare_part_manufacture.update_attributes collect_pending_manufacture: true if spt_ticket_spare_part.ticket_spare_part_manufacture
 
       spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
 
@@ -1627,10 +1631,10 @@ class TicketsController < ApplicationController
       if bpm_response[:status].upcase == "SUCCESS"
         @flash_message = {notice: "Successfully updated"}
       else
-        @flash_message = {error: "ticket is updated. but Bpm error"}
+        @flash_message = {alert: "ticket is updated. but Bpm error"}
       end
     else
-      @flash_message = {error: "Unable to update"}
+      @flash_message = {alert: "Unable to update"}
     end
 
     redirect_to todos_url, @flash_message
@@ -1712,7 +1716,7 @@ class TicketsController < ApplicationController
       end
 
       #create record spt_ticket_spare_part_store
-      spt_ticket_spare_part.create_ticket_spare_part_store(estimation_required: spt_ticket_spare_part.cus_chargeable_part, ticket_estimation_part_id: ticket_estimation_part.id)
+      spt_ticket_spare_part.ticket_spare_part_store.update(estimation_required: spt_ticket_spare_part.cus_chargeable_part, ticket_estimation_part_id: ticket_estimation_part.id)
 
       #delete record spt_ticket_spare_part_manufacture
       spt_ticket_spare_part.ticket_spare_part_manufacture.delete
@@ -1740,12 +1744,12 @@ class TicketsController < ApplicationController
       end
 
       if bpm_response[:status].upcase == "SUCCESS"
-        @flash_message = "Successfully updated."
+        @flash_message = {error: "Successfully updated."}
       else
-        @flash_message = "ticket is updated. but Bpm error"
+        @flash_message = {error: "ticket is updated. but Bpm error"}
       end
 
-      @flash_message = "#{@flash_message} Unable to start new process." if @bpm_process_error
+      @flash_message = {error: "#{@flash_message} Unable to start new process."} if @bpm_process_error
 
     else
       @flash_message = {error: "Unable to update"}
@@ -2356,20 +2360,20 @@ class TicketsController < ApplicationController
         end
 
         if bpm_response[:status].upcase == "SUCCESS"
-          @flash_message = "Successfully updated."
+          @flash_message = {notice: "Successfully updated."}
         else
-          @flash_message = "ticket is updated. but Bpm error"
+          @flash_message = {alert: "ticket is updated. but Bpm error"}
         end
         
-        @flash_message = "#{@flash_message} Unable to start new process." if @bpm_process_error
+        @flash_message = {alert: "#{@flash_message} Unable to start new process."} if @bpm_process_error
 
       else
-        @flash_message = "Errors in updating. Please re-try."
+        @flash_message = {alert: "Errors in updating. Please re-try."}
       end
     else
       @flash_message = @flash_message
     end
-    redirect_to @ticket, notice: @flash_message
+    redirect_to @ticket, @flash_message
   end
 
   def suggesstion_data
@@ -2517,8 +2521,11 @@ class TicketsController < ApplicationController
       params.require(:ticket_fsr).permit(:travel_hours, :work_started_at, :work_finished_at, :hours_worked, :down_time, :engineer_time_travel, :engineer_time_on_site, :resolution, :completion_level, :remarks, :ticket_id, ticket_attributes: [:remarks, :id])
     end
 
-    def ticket_spare_part_params
-      params.require(:ticket_spare_part).permit(:spare_part_no, :spare_part_description, :ticket_id, :ticket_fsr, :cus_chargeable_part, :request_from, :faulty_serial_no, :faulty_ct_no, :note, :status_action_id, :status_use_id, ticket_attributes: [:remarks, :id], ticket_spare_part_manufacture_attributes: [:event_no, :order_no])
+    def ticket_spare_part_params(spt_ticket_spare_part)
+      tspt_params = params.require(:ticket_spare_part).permit(:spare_part_no, :spare_part_description, :ticket_id, :ticket_fsr, :cus_chargeable_part, :request_from, :faulty_serial_no, :faulty_ct_no, :note, :status_action_id, :status_use_id, ticket_attributes: [:remarks, :id], ticket_spare_part_manufacture_attributes: [:event_no, :order_no, :id], ticket_spare_part_store_attributes: [:part_of_main_product, :id])
+
+      tspt_params[:note] = tspt_params[:note].present? ? "#{tspt_params[:note]} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{spt_ticket_spare_part.note}" : spt_ticket_spare_part.note
+      tspt_params
     end
 
     def ticket_on_loan_spare_part_params

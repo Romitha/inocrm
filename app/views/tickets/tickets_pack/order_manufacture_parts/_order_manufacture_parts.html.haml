@@ -13,7 +13,7 @@
 .row.col-md-12
   .col-md-4
     %strong FSR No:
-    #{spare_part.fsr_id.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])}
+    = spare_part.fsr_id.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"]) if spare_part.fsr_id
   .col-md-4
     %strong Product Brand:
     #{product.product_brand.name}
@@ -23,7 +23,7 @@
 .row.col-md-12{style: "margin-top: 10px;"}
   .col-md-4
     %strong Spare Part No:
-    #{spare_part.ticket_spare_part_manufacture.try(:spare_part_id)}
+    #{spare_part.spare_part_no}
   .col-md-4
     %strong Faulty Serial No:
     #{spare_part.faulty_serial_no}
@@ -57,7 +57,7 @@
       / - if present_of_start_ticket_action and not ticket.job_finished
       %option{:value => "warranty_extend"} Warranty Extend Request
       / - if present_of_start_ticket_action and not ticket.job_finished
-      - if (spare_part.status_action_id != SparePartStatusAction.find_by_code("CLS").id)
+      - if (spare_part.status_action_id != SparePartStatusAction.find_by_code("CLS").id) and not spare_part.ticket_spare_part_store.present?
         %option{:value => "request_from_store"} Request From Store
       / - if present_of_start_ticket_action and not ticket.job_finished
       %option{:value => "terminate_order"} Terminate Order

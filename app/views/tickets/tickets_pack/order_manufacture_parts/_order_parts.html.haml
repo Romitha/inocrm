@@ -1,13 +1,13 @@
 %fieldset
   %legend Order Parts
-  = simple_nested_form_for spare_part, url: update_order_mfp_part_order_tickets_path, method: :post, remote: true do |f|
-    = f.simple_fields_for :ticket_spare_part_manufacture do |tm|
+  = simple_nested_form_for spare_part, url: update_order_mfp_part_order_tickets_path, method: :post do |f|
+    = hidden_field_tag :process_id, session[:process_id]
+    = hidden_field_tag :task_id, session[:task_id]
+    = hidden_field_tag :owner, session[:owner]
+    - session[:bpm_input_variables].each do |bpm_input_variable|
+      = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
-      = hidden_field_tag :process_id, session[:process_id]
-      = hidden_field_tag :task_id, session[:task_id]
-      = hidden_field_tag :owner, session[:owner]
-      - session[:bpm_input_variables].each do |bpm_input_variable|
-        = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+    = f.simple_fields_for :ticket_spare_part_manufacture do |tm|
       = tm.input :event_no
       = tm.input :order_no
     = f.input :note, input_html: {value: nil}
