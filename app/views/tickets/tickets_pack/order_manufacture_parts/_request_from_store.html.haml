@@ -1,50 +1,42 @@
 %fieldset
   %legend Request From Store
   = simple_nested_form_for spare_part, url: update_order_mfp_rqst_from_store_tickets_path, method: :post, remote: true do |f|
-    - if f.object.ticket_spare_part_store
-      = hidden_field_tag :process_id, session[:process_id]
-      = hidden_field_tag :task_id, session[:task_id]
-      = hidden_field_tag :owner, session[:owner]
-      - session[:bpm_input_variables].each do |bpm_input_variable|
-        = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
-      .row
-        .col-md-6
-          = f.input :cus_chargeable_part, wrapper: :append, label: "Customer Chargeable Part (Non Warranty)"
-          .row
-            .col-md-6
-              %strong Store: 
-              #{f.object.ticket_spare_part_store.store.try(:name)}
-              %br
-              %strong Item Code:
-              #{f.object.ticket_spare_part_store.inventory_product.inventory_category3.try(:code)}
-              %br
-              %strong Item Description:
-              #{f.object.ticket_spare_part_store.inventory_product.try(:description)}
-              %br
-              %strong Available Qty:
-              #{f.object.ticket_spare_part_store.inventory_product.try(:inventories).try(:sum ,:available_quantity)}
-              %strong Unit:
-              #{f.object.ticket_spare_part_store.inventory_product.inventory_unit.try(:unit)}
-          
-        .col-md-6
-          = f.simple_fields_for :ticket_on_loan_spare_parts do |tm|
 
-            = tm.input :part_of_main_product, wrapper: :append, label: "Part of a Main Product"
-            .row.col-md-12
-              %strong Main Product of the Part
-            .row.col-md-12{style: "margin-top:10px;"}
-              %strong Item Code:
-              #{tm.object.main_inventory_product.try(:inventory_category3).try(:code)}
-              %br
-              %strong Item Description:
-              #{tm.object.main_inventory_product.try(:description)}
-              %br
-              %strong Available Qty:
-              %strong Unit:
-              #{tm.object.main_inventory_product.try(:inventory_unit).try(:unit)}
+    = hidden_field_tag :process_id, session[:process_id]
+    = hidden_field_tag :task_id, session[:task_id]
+    = hidden_field_tag :owner, session[:owner]
+    - session[:bpm_input_variables].each do |bpm_input_variable|
+      = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+
+    = hidden_field_tag :store_id
+    = hidden_field_tag :mst_store_id
+    = hidden_field_tag :inv_product_id
+    = hidden_field_tag :mst_inv_product_id
+    .row
+      .col-md-6
+        = f.input :cus_chargeable_part, wrapper: :append, label: "Customer Chargeable Part (Non Warranty)"
+        .spare_part_select
+          = link_to "select", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true
+
+        .request_from
+
+      .col-md-6
+        = f.simple_fields_for :ticket_spare_part_store do |tm|
+
+          = tm.input :part_of_main_product, wrapper: :append, label: "Part of a Main Product", input_html: {id: "order_man_rqst_frm_str_part_of_main_product"}
+          .part
+
+            = link_to "select", inventory_in_modal_inventories_path(select_frame: "main_product"), id: "part_of_main_product_select", remote: true, class: "hide"
+
+          .main_product
+
       .row
         .col-md-12
           = f.input :note
       .row
         .col-md-12
-          = f.submit "Save", class: "btn btn-success"
+          = f.submit "Save", class: "btn btn-success", onclick: "if(Inventories.match_store_and_mst_store_ids()){alert('Store and main part is not matching'); false;}"
+
+#inventory_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "inventory_modal", "aria-hidden" => true}
+  .modal-dialog.modal-lg
+    .modal-content

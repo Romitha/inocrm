@@ -402,3 +402,28 @@ window.Tickets =
 
   fade_flash_msg: ->
     $("#fade").delay(2000).fadeOut(1000)
+
+  check_validation: (tag_attrib, validation_method)->
+    if validation_method == "presence"
+      $(tag_attrib).val() != ""
+    if validation_method == "checked"
+      $(tag_attrib).is(":checked")
+
+  presence_validater: (elem, elems...)->
+    _this = this
+    active_elems = elems[0]
+    $(".help-block").remove()
+    submit = true
+    for presence in active_elems.presence
+      do (presence) ->
+        unless _this.check_validation(presence, "presence")
+          $(presence).parents(".form-group").addClass("has-error")
+          $(presence).after("<span class='help-block'>Can't be blank</span>")
+          submit = false
+          console.log presence
+        else
+          $(presence).parents(".form-group").removeClass("has-error")
+          console.log presence
+
+
+    $(elem).parents("form").submit() if submit
