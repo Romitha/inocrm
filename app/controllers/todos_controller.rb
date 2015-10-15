@@ -1,7 +1,5 @@
 class TodosController < ApplicationController
   def index
-    # Rails.cache.delete([:workflow_mapping_role, "assign_ticket"])
-    # Rails.cache.delete([:workflow_mapping_user, "assign_ticket"])
 
     @potential_owner = current_user.roles.find_by_id(current_user.current_user_role_id).bpm_module_roles.first.try :code
     @todo_list_for_role = []
@@ -11,10 +9,6 @@ class TodosController < ApplicationController
     @workflow_mapping_for_user = []
 
     if @potential_owner
-      # if Rails.cache.fetch([:formatted_workflow_mapping_for_role])
-      #   @formatted_workflow_mapping_for_role = Rails.cache.fetch([:formatted_workflow_mapping_for_role])
-      # else
-      # end
       ["InProgress", "Reserved", "Ready"].each do |status|
         @todo_list_for_role << view_context.send_request_process_data(task_list: true, status: status, potential_owner: @potential_owner, query: {})
       end
@@ -26,16 +20,8 @@ class TodosController < ApplicationController
       end
       @formatted_workflow_mapping_for_role = @workflow_mapping_for_role.map{|w| {process_name: w[:workflow_mapping].process_name, task_name: w[:workflow_mapping].task_name, url: w[:workflow_mapping].url, first_header_title: w[:workflow_mapping].first_header_title, second_header_title_name: w[:workflow_mapping].second_header_title_name, input_variables: w[:workflow_mapping].input_variables, second_header_title: (w[:workflow_header].send(w[:workflow_mapping].second_header_title_name.to_sym) if w[:workflow_header]), task_content: w[:task_content]}}
 
-      # Rails.cache.fetch([:formatted_workflow_mapping_for_role]){ @formatted_workflow_mapping_for_role }
-
-      # @formatted_workflow_mapping_for_role = @formatted_workflow_mapping_for_role_without_pagi.page(params[:page]).per(20)
-      
     end
 
-    # if Rails.cache.fetch([:formatted_workflow_mapping_for_user])
-    #   @formatted_workflow_mapping_for_user = Rails.cache.fetch([:formatted_workflow_mapping_for_user])
-    # else
-    # end
     ["InProgress", "Reserved", "Ready"].each do |status|
       @todo_list_for_user << view_context.send_request_process_data(task_list: true, status: status, potential_owner: current_user.id, query: {})
     end
@@ -86,5 +72,6 @@ class TodosController < ApplicationController
       @flash_message = "Task is not available."
     end
     redirect_to @redirect_url, notice: @flash_message
+    puts session[:bpm_input_variables].inspect
   end
 end

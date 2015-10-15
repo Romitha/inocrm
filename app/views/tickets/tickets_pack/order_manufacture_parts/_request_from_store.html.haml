@@ -1,6 +1,6 @@
 %fieldset
   %legend Request From Store
-  = simple_nested_form_for spare_part, url: update_order_mfp_rqst_from_store_tickets_path, method: :post, remote: true do |f|
+  = simple_nested_form_for spare_part, url: update_order_mfp_rqst_from_store_tickets_path, method: :post do |f|
 
     = hidden_field_tag :process_id, session[:process_id]
     = hidden_field_tag :task_id, session[:task_id]
@@ -8,10 +8,6 @@
     - session[:bpm_input_variables].each do |bpm_input_variable|
       = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
-    = hidden_field_tag :store_id
-    = hidden_field_tag :mst_store_id
-    = hidden_field_tag :inv_product_id
-    = hidden_field_tag :mst_inv_product_id
     .row
       .col-md-6
         = f.input :cus_chargeable_part, wrapper: :append, label: "Customer Chargeable Part (Non Warranty)"
@@ -22,6 +18,10 @@
 
       .col-md-6
         = f.simple_fields_for :ticket_spare_part_store do |tm|
+          = hidden_field_tag :store_id
+          = hidden_field_tag :mst_store_id
+          = hidden_field_tag :inv_product_id
+          = hidden_field_tag :mst_inv_product_id
 
           = tm.input :part_of_main_product, wrapper: :append, label: "Part of a Main Product", input_html: {id: "order_man_rqst_frm_str_part_of_main_product"}
           .part
@@ -32,10 +32,11 @@
 
       .row
         .col-md-12
-          = f.input :note
+          = f.input :note, input_html: {value: nil}
+          = simple_format f.object.note
       .row
         .col-md-12
-          = f.submit "Save", class: "btn btn-success", onclick: "if(Inventories.match_store_and_mst_store_ids()){alert('Store and main part is not matching'); false;}"
+          = f.submit "Save", class: "btn btn-success"#, onclick: "Inventories.request_from_store()"
 
 #inventory_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "inventory_modal", "aria-hidden" => true}
   .modal-dialog.modal-lg

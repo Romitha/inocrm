@@ -6,7 +6,7 @@
     = hidden_field_tag :function_param, warranty_create
     .row
       .col-md-6
-        = f.association :warranty_type, as: :radio_buttons, wrapper: :append, collection: WarrantyType.where(id: [1,2])
+        = f.association :warranty_type, as: :radio_buttons, wrapper: :append, collection: WarrantyType.where(id: [1,2]), checked: WarrantyType.find_by_code("MW").id
       .col-md-6
         .strong
           Warranty date format

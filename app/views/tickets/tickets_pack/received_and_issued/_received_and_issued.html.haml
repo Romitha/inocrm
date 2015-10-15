@@ -36,14 +36,17 @@
     %strong Event No:
     #{spare_part.ticket_spare_part_manufacture.try(:event_no)}
 
-.row.col-md-12{style: "margin-top:15px;"}
-  .form-group
-    = simple_nested_form_for spare_part, url: update_received_and_issued_tickets_path, method: :post, remote: true do |f|
-      = f.input :id, as: :hidden
-      = f.input :received_part_serial_no, wrapper_html: {class: "col-md-6"}
-      = f.input :received_part_ct_no, wrapper_html: {class: "col-md-6"}
-      / - if hold_checked == true
-      /   = f.input :received_part_ct_no
-      / = select_tag "hold_select", options_from_collection_for_select(Reason.where(hold: true), :id, :name)
-      = f.input :note, wrapper_html: {class: "col-md-12"}
-      = f.submit "Save", class: "btn btn-success"
+.row
+  = simple_nested_form_for spare_part, url: update_received_and_issued_tickets_path, method: :post do |f|
+
+    = hidden_field_tag :process_id, session[:process_id]
+    = hidden_field_tag :task_id, session[:task_id]
+    = hidden_field_tag :owner, session[:owner]
+    - session[:bpm_input_variables].each do |bpm_input_variable|
+      = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+
+    = f.input :received_part_serial_no, wrapper_html: {class: "col-md-6"}
+    = f.input :received_part_ct_no, wrapper_html: {class: "col-md-6"}
+    = f.input :note, wrapper_html: {class: "col-md-12"}, input_html: {value: nil}
+    .col-md-12= simple_format f.object.note
+    = f.submit "Save", class: "btn btn-success"

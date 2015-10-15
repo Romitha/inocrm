@@ -1079,6 +1079,14 @@ class TicketsController < ApplicationController
     end
   end
 
+  def update_received_and_issued
+    spt_ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
+
+    spt_ticket_spare_part.update ticket_spare_part_params(spt_ticket_spare_part)
+
+
+  end
+
   def return_to_stores
     Inventory
     Warranty
@@ -1370,7 +1378,8 @@ class TicketsController < ApplicationController
     TaskAction
     TicketSparePart
     Inventory
-    @ticket = Ticket.find_by_id (params[:ticket_id] || session[:ticket_id])# if params[:ticket_id].present?
+    session[:ticket_id] ||= params[:ticket_id]
+    @ticket = Ticket.find(params[:ticket_id] || session[:ticket_id])# if params[:ticket_id].present?
     if @ticket
       @product = @ticket.products.first
       @warranties = @product.warranties
@@ -1678,6 +1687,7 @@ class TicketsController < ApplicationController
 
   def update_order_mfp_rqst_from_store
     Ticket
+    TicketEstimation
     spt_ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
     @ticket = spt_ticket_spare_part.ticket
     d29_part_estimate_required_2= ""
@@ -1695,20 +1705,22 @@ class TicketsController < ApplicationController
 
     continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
 
-    if continue and (spt_ticket_spare_part.status_action_id != SparePartStatusAction.find_by_code("CLS").id) and spt_ticket_spare_part.update(ticket_spare_part_params)
+    if continue and (spt_ticket_spare_part.status_action_id != SparePartStatusAction.find_by_code("CLS").id) and spt_ticket_spare_part.update(ticket_spare_part_params(spt_ticket_spare_part))
 
       ticket_estimation_part = TicketEstimationPart.new
       if spt_ticket_spare_part.cus_chargeable_part
         d29_part_estimate_required_2  = "Y"
 
         #create record spt_ticket_estimation
-        @ticket_estimation = @ticket.ticket_estimations.create(requested_at: DateTime.now, requested_by: current_user.id, status_id: SparePartStatusAction.find_by_code("RQS").id, currency_id: @ticket.base_currency_id)
+        @ticket_estimation = @ticket.ticket_estimations.create(requested_at: DateTime.now, requested_by: current_user.id, status_id: SparePartStatusAction.find_by_code("RQT").id, currency_id: @ticket.base_currency_id)
 
         #create record spt_ticket_estimation_part
         ticket_estimation_part = @ticket_estimation.ticket_estimation_parts.create(ticket_id: @ticket.id, ticket_spare_part_id: spt_ticket_spare_part.id)
 
         @bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT_PART_ESTIMATE", query: {ticket_id: ticket_id, part_estimation_id: @ticket_estimation.try(:id), supp_engr_user: supp_engr_user, priority: priority}
       else
+        d29_part_estimate_required_2  = "Y" # this is a work around to avoid bpm error
+
         spt_ticket_spare_part.update_attributes status_action_id: SparePartStatusAction.find_by_code("STR").id
         spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)   
 
@@ -1716,7 +1728,7 @@ class TicketsController < ApplicationController
       end
 
       #create record spt_ticket_spare_part_store
-      spt_ticket_spare_part.ticket_spare_part_store.update(estimation_required: spt_ticket_spare_part.cus_chargeable_part, ticket_estimation_part_id: ticket_estimation_part.id)
+      spt_ticket_spare_part.ticket_spare_part_store.update(store_id: params[:store_id], inv_product_id: params[:inv_product_id], mst_inv_product_id: params[:mst_inv_product_id], estimation_required: spt_ticket_spare_part.cus_chargeable_part, ticket_estimation_part_id: ticket_estimation_part.id, store_requested: !spt_ticket_spare_part.cus_chargeable_part, store_requested_at: ( !spt_ticket_spare_part.cus_chargeable_part ? DateTime.now : nil), store_requested_by: ( !spt_ticket_spare_part.cus_chargeable_part ? current_user.id : nil))
 
       #delete record spt_ticket_spare_part_manufacture
       spt_ticket_spare_part.ticket_spare_part_manufacture.delete
@@ -1767,7 +1779,7 @@ class TicketsController < ApplicationController
 
     continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
 
-    if continue and (spt_ticket_spare_part.status_action_id != SparePartStatusAction.find_by_code("CLS").id) and spt_ticket_spare_part.update(ticket_spare_part_params)
+    if continue and (spt_ticket_spare_part.status_action_id != SparePartStatusAction.find_by_code("CLS").id) and spt_ticket_spare_part.update(ticket_spare_part_params(spt_ticket_spare_part))
 
       spt_ticket_spare_part.update_attributes status_action_id: SparePartStatusAction.find_by_code("CLS").id
 
@@ -1775,7 +1787,7 @@ class TicketsController < ApplicationController
 
       # Set Action (34) Terminate Spare Part Order, DB.spt_act_request_spare_part.
       user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(34).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
-      user_ticket_action.build_request_spare_part(ticket_spare_part_id: spt_ticket_spare_part.id, part_terminate_reason_id: spt_ticket_spare_part.part_terminate_reason_id)
+      user_ticket_action.build_request_spare_part(ticket_spare_part_id: spt_ticket_spare_part.id, part_terminate_reason_id: spt_ticket_spare_part.part_terminated_reason_id)
       user_ticket_action.save
 
       @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
@@ -2269,7 +2281,8 @@ class TicketsController < ApplicationController
     continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
 
     if continue
-      f_ticket_spare_part_params = ticket_spare_part_params
+      @ticket_spare_part = TicketSparePart.new
+      f_ticket_spare_part_params = ticket_spare_part_params(@ticket_spare_part)
       f_ticket_spare_part_params[:ticket_attributes][:remarks] = f_ticket_spare_part_params[:ticket_attributes][:remarks].present? ? "#{f_ticket_spare_part_params[:ticket_attributes][:remarks]} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
       @ticket_spare_part = TicketSparePart.new f_ticket_spare_part_params
       action_id = ""
@@ -2371,7 +2384,7 @@ class TicketsController < ApplicationController
         @flash_message = {alert: "Errors in updating. Please re-try."}
       end
     else
-      @flash_message = @flash_message
+      @flash_message = {alert: "Errors in updating. Please re-try."}
     end
     redirect_to @ticket, @flash_message
   end
@@ -2522,7 +2535,7 @@ class TicketsController < ApplicationController
     end
 
     def ticket_spare_part_params(spt_ticket_spare_part)
-      tspt_params = params.require(:ticket_spare_part).permit(:spare_part_no, :spare_part_description, :ticket_id, :ticket_fsr, :cus_chargeable_part, :request_from, :faulty_serial_no, :faulty_ct_no, :note, :status_action_id, :status_use_id, ticket_attributes: [:remarks, :id], ticket_spare_part_manufacture_attributes: [:event_no, :order_no, :id], ticket_spare_part_store_attributes: [:part_of_main_product, :id])
+      tspt_params = params.require(:ticket_spare_part).permit(:spare_part_no, :spare_part_description, :ticket_id, :ticket_fsr, :cus_chargeable_part, :request_from, :faulty_serial_no, :faulty_ct_no, :note, :status_action_id, :status_use_id, :part_terminated_reason_id, ticket_attributes: [:remarks, :id], ticket_spare_part_manufacture_attributes: [:event_no, :order_no, :id], ticket_spare_part_store_attributes: [:part_of_main_product, :id])
 
       tspt_params[:note] = tspt_params[:note].present? ? "#{tspt_params[:note]} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{spt_ticket_spare_part.note}" : spt_ticket_spare_part.note
       tspt_params

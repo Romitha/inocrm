@@ -79,34 +79,35 @@
           %hr
 
           - if ticket_spare_part.ticket_spare_part_store
-            .col-md-3
-              %strong
-                Item Code:
-              = ticket_spare_part.ticket_spare_part_store.inventory_product.serial_no
-            .col-md-3
-              %strong
-                Item Description:
-              = ticket_spare_part.ticket_spare_part_store.inventory_product.description
-            .col-md-3
-              %strong
-                Manufacture:
-              = ticket_spare_part.ticket_spare_part_store.inventory_product.inventory_product_info and ticket_spare_part.ticket_spare_part_store.inventory_product.inventory_product_info.manufacture.try(:manufacture)
-            .col-md-3
-              %strong
-                Model No:
-              = ticket_spare_part.ticket_spare_part_store.inventory_product.try(:model_no)
-            %hr
-            .col-md-3
-              %strong
-                Product No:
-              = ticket_spare_part.ticket_spare_part_store.inventory_product.try(:product_no)
-            .col-md-3
-              %strong
-                Part No:
-            .col-md-3
-              %strong
-                Unit:
-              = ticket_spare_part.ticket_spare_part_store.inventory_product.inventory_unit and ticket_spare_part.ticket_spare_part_store.inventory_product.inventory_unit.unit
+            - if ticket_spare_part.ticket_spare_part_store.inventory_product
+              .col-md-3
+                %strong
+                  Item Code:
+                = ticket_spare_part.ticket_spare_part_store.inventory_product.serial_no
+              .col-md-3
+                %strong
+                  Item Description:
+                = ticket_spare_part.ticket_spare_part_store.inventory_product.description
+              .col-md-3
+                %strong
+                  Manufacture:
+                = ticket_spare_part.ticket_spare_part_store.inventory_product.inventory_product_info and ticket_spare_part.ticket_spare_part_store.inventory_product.inventory_product_info.manufacture.try(:manufacture)
+              .col-md-3
+                %strong
+                  Model No:
+                = ticket_spare_part.ticket_spare_part_store.inventory_product.try(:model_no)
+              %hr
+              .col-md-3
+                %strong
+                  Product No:
+                = ticket_spare_part.ticket_spare_part_store.inventory_product.try(:product_no)
+              .col-md-3
+                %strong
+                  Part No:
+              .col-md-3
+                %strong
+                  Unit:
+                = ticket_spare_part.ticket_spare_part_store.inventory_product.inventory_unit and ticket_spare_part.ticket_spare_part_store.inventory_product.inventory_unit.unit
             .col-md-3
               %strong
                 Store:
@@ -193,7 +194,7 @@
           = f.input :part_terminated, wrapper: :append
 
           = f.label "Part terminate reason"
-          = f.select :part_terminated_reason_id, Reason.where(terminate_spare_part: true).map{|r| [r.name, r.id]} # showing part_terminated is cheched through javascript
+          = f.select :part_terminated_reason_id, Reason.where(terminate_spare_part: true).map{|r| [r.reason, r.id]} # showing part_terminated is cheched through javascript
           = f.submit "terminate", name: "terminate"
 
 
@@ -369,7 +370,7 @@
 
         - if str
           = f.input :part_terminated
-          = f.select :part_terminated_reason_id, Reason.where(terminate_spare_part: true).map{|r| [r.name, r.id]} # showing part_terminated is cheched through javascript
+          = f.select :part_terminated_reason_id, Reason.where(terminate_spare_part: true).map{|r| [r.reason, r.id]} # showing part_terminated is cheched through javascript
 
         = f.submit "terminate", name: "terminate" if str
         = f.submit "recieved", name: "recieved" if iss
