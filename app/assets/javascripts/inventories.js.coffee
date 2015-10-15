@@ -105,7 +105,7 @@ window.Inventories =
       else if part_of_main_product.val() and $("input[name='mst_store_id']", submit_form).val() == ""
         alert "Please select main product store"
 
-      else if _this.match_store_and_mst_store_ids
+      else if $("input[name='mst_store_id']").val() and ( !$("input[name='store_id']").val() or ($("input[name='store_id']").val() != $("input[name='mst_store_id']").val()))
         alert "Please select same store for the main product!"
 
       else
@@ -113,6 +113,11 @@ window.Inventories =
 
   match_store_and_mst_store_ids: ->
     $("input[name='mst_store_id']").val() and ( !$("input[name='store_id']").val() or ($("input[name='store_id']").val() != $("input[name='mst_store_id']").val()))
+
+  request_from_store: ->
+    if this.match_store_and_mst_store_ids
+      alert "Please select same store for the main product!"
+      false
 
   submit_on_loan_spare_part: ->
     @disable_part()
@@ -163,7 +168,7 @@ window.Inventories =
       else
         $(@).parents().eq(3).find(".append_profit_margin").html(ap_total+"%")
 
-    total_margin_price = (total_estimated_price - total_cost_price)*100/total_cost_price                                                                         
+    total_margin_price = (total_estimated_price - total_cost_price)*100/total_cost_price
 
     $("#total_estimated_price").html(total_estimated_price)
     $("#total_cost_price").html(total_cost_price)

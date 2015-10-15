@@ -233,7 +233,7 @@ spare_part_status_action = [
   8 => {store_nc_type_index: 6, on_loan_type_index: 6},
   9 => {store_nc_type_index: 6, on_loan_type_index: 6},
   11 => {store_nc_type_index: 8, on_loan_type_index: 8},
-  14 => {store_nc_type_index: 2, on_loan_type_index: 2},
+  14 => {store_nc_type_index: 1, on_loan_type_index: 1},
   15 => {store_nc_type_index: 2, on_loan_type_index: 2},
   16 => {store_nc_type_index: 2, on_loan_type_index: 2}
 }.each do |k, v|

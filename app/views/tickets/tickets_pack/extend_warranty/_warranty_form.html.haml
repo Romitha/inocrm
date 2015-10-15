@@ -10,7 +10,7 @@
 
     .row
       .col-md-6
-        = f.association :warranty_type, as: :radio_buttons, wrapper: :append, collection: WarrantyType.first(2)
+        = f.association :warranty_type, as: :radio_buttons, wrapper: :append, collection: WarrantyType.first(2), checked: WarrantyType.find_by_code("MW").id
       .col-md-6
         .strong
           Warranty date format

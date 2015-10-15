@@ -7,7 +7,7 @@
     - session[:bpm_input_variables].each do |bpm_input_variable|
       = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
-    = f.association :part_terminated_reason,label: "Terminate Reason", collection: Reason.where(terminate_spare_part: true), label_method: :reason, value_method: :id
+    = f.association :part_terminated_reason,label: "Terminate Reason", collection: Reason.where(terminate_spare_part: true), label_method: :reason, value_method: :id if @spare_part.status_action_id != SparePartStatusAction.find_by_code("CLS").id
     = f.input :note, input_html: {value: nil}
     = simple_format spare_part.note
     = f.submit "Save", class: "btn btn-success"

@@ -1,5 +1,5 @@
 .row
-  .col-md-12
+  .col-md-12.padding0
     - ge_q_and_as.merge(pr_q_and_as){|key, ge, pe| ge.merge(pe)}.each do |key, value|
       = panels panel_type: "default", header_content: key do
         - value.each do |value_key, value_value|

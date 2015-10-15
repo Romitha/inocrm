@@ -19,7 +19,7 @@
     #{product.product_brand.name}
   .col-md-4
     %strong Part Status:
-    #{spare_part.spare_part_status_action.try(:name)}
+    #{spare_part.spare_part_status_action.try(:name)} #{"(Terminated)" if spare_part.part_terminated}
 .row.col-md-12{style: "margin-top: 10px;"}
   .col-md-4
     %strong Spare Part No:
@@ -29,7 +29,7 @@
     #{spare_part.faulty_serial_no}
   .col-md-4
     %strong Terminated Reason:
-    #{Reason.find_by_id(spare_part.part_terminated_reason_id).try(:reason)}
+    #{spare_part.part_terminated_reason.try(:reason)}
 .row.col-md-12{style: "margin-top: 10px;"}
   .col-md-4
     %strong Part Description:
@@ -37,11 +37,7 @@
   .col-md-4
     %strong Faulty CT No:
     #{spare_part.faulty_ct_no}
-  .col-md-4
-    %strong Terminated By:
-.row.col-md-12{style: "margin-top: 10px;"}
-  .col-md-4
-    %strong Terminated At:
+
 .row.col-md-12{style: "margin-top: 20px;"}
   .form-group
     %label Activity
