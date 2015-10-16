@@ -120,6 +120,7 @@ Rails.application.routes.draw do
       post "update_order_mfp_wrrnty_extnd_rqst"
       post "update_order_mfp_rqst_from_store"
       post "update_order_mfp_termnt_prt_order"
+      post "update_approved_part"
       # post "update_order_mfp_edit_serial_no"
       post "update_edit_serial"
 
@@ -135,6 +136,7 @@ Rails.application.routes.draw do
       get "return_to_stores"
       get "create_parts_bundle"
       get "deliver_parts_bundle"
+      get "approved_parts"
       get "assign-ticket", action: :assign_ticket
       get "estimate_job"
       get "deliver_unit"
