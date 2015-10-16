@@ -4,6 +4,7 @@ window.Inventories =
     @filter_category()
     @filter_store()
     @calculate_cost_price()
+    @terminate_func()
 
 
   filter_product: -> 
@@ -197,3 +198,13 @@ window.Inventories =
       $(".reason").addClass("hide")
     else
       $(".reason").removeClass("hide")
+
+  terminate_func: ->
+    $(".part_terminated_reason_check").click ->
+
+      if $(@).is(":checked")
+        $(@).parents(".control-group").siblings(".part_terminated_reason").removeClass("hide")
+
+      else
+        $(@).parents(".control-group").siblings(".part_terminated_reason").find(".part_terminated_select").val("")
+        $(@).parents(".control-group").siblings(".part_terminated_reason").addClass("hide")
