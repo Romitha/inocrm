@@ -42,7 +42,7 @@ class TicketSparePartStore < ActiveRecord::Base
   belongs_to :inventory_product, foreign_key: :inv_product_id
   belongs_to :ticket_estimation_part, foreign_key: :ticket_estimation_part_id
   belongs_to :store, -> { where(type_id: 4) }, class_name: "Organization", foreign_key: :store_id
-
+  belongs_to :main_inventory_product, class_name: "InventoryProduct", foreign_key: :main_inv_product_id
 end
 
 class TicketFsr < ActiveRecord::Base
@@ -111,7 +111,7 @@ class TicketOnLoanSparePart < ActiveRecord::Base
   belongs_to :ticket_spare_part, foreign_key: :ref_spare_part_id
   belongs_to :ticket, foreign_key: :ticket_id
   accepts_nested_attributes_for :ticket, allow_destroy: true
-
+  belongs_to :spare_part_status_action, foreign_key: :status_action_id
   belongs_to :user, foreign_key: :requested_by
   belongs_to :organization, foreign_key: :store_id
   belongs_to :inventory_product, foreign_key: :inv_product_id
