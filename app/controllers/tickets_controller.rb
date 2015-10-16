@@ -2427,7 +2427,7 @@ class TicketsController < ApplicationController
         @flash_message = {alert: "Errors in updating. Please re-try."}
       end
     else
-      @flash_message = {alert: "Errors in updating. Please re-try."}
+      @flash_message = {alert: "Unable to continue with BPM. Please rectify BPM"}
     end
     redirect_to @ticket, @flash_message
   end
