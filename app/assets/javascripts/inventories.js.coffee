@@ -8,6 +8,7 @@ window.Inventories =
     @accept_returned_part_func()
 
 
+
   filter_product: -> 
     category_list = $("#search_inventory_product")
     category_list_html = category_list.html()
