@@ -63,27 +63,30 @@
 .row
   .col-md-6
     = simple_form_for spare_part, url: return_to_stores_tickets_path, method: :post, remote: true do |f|
-      = f.input :returned_part_accepted, as: :radio_buttons, collection: {"Accept Returned Part" => true, "Reject Return Part" => false}, label:false, input_html: {class: "sample"}
+      = f.input :returned_part_accepted, as: :radio_buttons, collection: {"Accept Returned Part" => true, "Reject Return Part" => false}, label:false, input_html: {class: "sample accept_returned_parts"}
 #reject
-  %fieldset
-    %legend Reject Return Part
-    = simple_nested_form_for spare_part, url: "#", method: :post, remote: true do |f|
-      = hidden_field_tag :process_id, session[:process_id]
-      = hidden_field_tag :task_id, session[:task_id]
-      = hidden_field_tag :owner, session[:owner]
-      - session[:bpm_input_variables].each do |bpm_input_variable|
-        = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+  = simple_nested_form_for spare_part, url: "#", method: :post, remote: true do |f|
+    = hidden_field_tag :process_id, session[:process_id]
+    = hidden_field_tag :task_id, session[:task_id]
+    = hidden_field_tag :owner, session[:owner]
+    - session[:bpm_input_variables].each do |bpm_input_variable|
+      = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
-      #request_spare_parts
-        = f.simple_fields_for :request_spare_parts do |rp|
-          = rp.association :reject_return_part_reason, label_method: :reason, value_method: :id
+    .reason
+      %fieldset
+        %legend Reject Return Part
+        #request_spare_parts
+          = f.simple_fields_for :request_spare_parts do |rp|
+            = rp.association :reject_return_part_reason, label_method: :reason, value_method: :id
 
+    %fieldset
+      %legend Ready to Bundle
       #ticket_spare_part_manufacture
         = f.simple_fields_for :ticket_spare_part_manufacture do |rm|
           = rm.input :event_closed, wrapper: :append
           = rm.input :ready_to_bundle, wrapper: :append
           = rm.input :payment_expected_manufacture, label: "Payment Expected (#{spare_part.ticket.manufacture_currency.try(:code)}):"
 
-      = f.input :note, input_html: {value: nil}
-      = simple_format spare_part.note
-      = f.submit "Save", class: "btn btn-success", onclick: "Tickets.presence_validater(this, {presence: ['#ticket_spare_part_note'], checked: ['b']}); return false;"
+    = f.input :note, input_html: {value: nil}
+    = simple_format spare_part.note
+    = f.submit "Save", class: "btn btn-success", onclick: "Tickets.presence_validater(this, {presence: ['#ticket_spare_part_note'], checked: ['b']}); return false;"

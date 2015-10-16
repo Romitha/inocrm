@@ -5,6 +5,7 @@ window.Inventories =
     @filter_store()
     @calculate_cost_price()
     @terminate_func()
+    @accept_returned_part_func()
 
 
   filter_product: -> 
@@ -192,12 +193,12 @@ window.Inventories =
 
     $("#total_approved_amount").html(total_approved_amount)
 
-  accept_returned_part: (elem)->
-
-    if $(elem).val() == "false"
-      $(".reason").addClass("hide")
-    else
-      $(".reason").removeClass("hide")
+  accept_returned_part_func: ->
+    $(".accept_returned_parts").click ->
+      if $(@).val() == "false"
+        $(".reason").removeClass("hide")
+      else
+        $(".reason").addClass("hide")
 
   terminate_func: ->
     $(".part_terminated_reason_check").click ->
