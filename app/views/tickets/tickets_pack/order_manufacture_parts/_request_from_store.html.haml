@@ -23,20 +23,20 @@
           = hidden_field_tag :inv_product_id
           = hidden_field_tag :mst_inv_product_id
 
-          = tm.input :part_of_main_product, wrapper: :append, label: "Part of a Main Product", input_html: {id: "order_man_rqst_frm_str_part_of_main_product"}
-          .part
+          = tm.input :part_of_main_product, wrapper: :append, label: "Part of a Main Product", input_html: { id: "order_man_rqst_frm_str_part_of_main_product" }
 
+          .part
             = link_to "select", inventory_in_modal_inventories_path(select_frame: "main_product"), id: "part_of_main_product_select", remote: true, class: "hide"
 
           .main_product
 
-      .row
-        .col-md-12
-          = f.input :note, input_html: {value: nil}
-          = simple_format f.object.note
-      .row
-        .col-md-12
-          = f.submit "Save", class: "btn btn-success"#, onclick: "Inventories.request_from_store()"
+    .row
+      .col-md-12
+        = f.input :note, input_html: {value: nil}
+        = simple_format f.object.note
+    .row
+      .col-md-12
+        = f.submit "Save", class: "btn btn-success"#, onclick: "Inventories.request_from_store()"
 
 #inventory_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "inventory_modal", "aria-hidden" => true}
   .modal-dialog.modal-lg

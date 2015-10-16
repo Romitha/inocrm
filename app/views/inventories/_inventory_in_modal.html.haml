@@ -19,22 +19,23 @@
           = label_tag InventoryCategoryCaption.third.caption
           = select_tag "search_inventory[mst_inv_product][category3_id]", option_groups_from_collection_for_select(InventoryCategory2.all, :inventory_category3s, :name, :id, :name, (params[:search_inventory] and params[:search_inventory][:mst_inv_product][:category3_id])), include_blank: true
       .row
-        .col-md-4.serial_code
-          = label_tag "Serial Code"
-          = text_field_tag "search_inventory[mst_inv_product][serial_no]", (params[:search_inventory] and params[:search_inventory][:mst_inv_product][:serial_no])
-        .col-md-4.part_no
-          = label_tag "Part No"
-          = text_field_tag "search_inventory[mst_inv_product][spare_part_no]", (params[:search_inventory] and params[:search_inventory][:mst_inv_product][:spare_part_no])
-        .col-md-4.model_no
-          = label_tag "Model No"
-          = text_field_tag "search_inventory[mst_inv_product][model_no]", (params[:search_inventory] and params[:search_inventory][:mst_inv_product][:model_no])
+        .col-md-3.serial_code
+          = #label_tag "Serial Code"
+          = text_field_tag "search_inventory[mst_inv_product][serial_no]", (params[:search_inventory] and params[:search_inventory][:mst_inv_product][:serial_no]), :placeholder => "Serial Code"
+        .col-md-3.part_no
+          = #label_tag "Part No"
+          = text_field_tag "search_inventory[mst_inv_product][spare_part_no]", (params[:search_inventory] and params[:search_inventory][:mst_inv_product][:spare_part_no]), :placeholder => "Part No"
+        .col-md-3.model_no
+          = #label_tag "Model No"
+          = text_field_tag "search_inventory[mst_inv_product][model_no]", (params[:search_inventory] and params[:search_inventory][:mst_inv_product][:model_no]), :placeholder => "Model No"
+        .col-md-3.product_no
+          = #label_tag "Product No"
+          = text_field_tag "search_inventory[mst_inv_product][product_no]", (params[:search_inventory] and params[:search_inventory][:mst_inv_product][:product_no]), :placeholder => "Product No"
       .row
-        .col-md-4.description
+        .col-md-3.description
           = label_tag "Description"
           = text_field_tag "search_inventory[mst_inv_product][description]", (params[:search_inventory] and params[:search_inventory][:mst_inv_product][:description])
-        .col-md-4.product_no
-          = label_tag "Product No"
-          = text_field_tag "search_inventory[mst_inv_product][product_no]", (params[:search_inventory] and params[:search_inventory][:mst_inv_product][:product_no])
+
       .row
         .col-md-1
           .search

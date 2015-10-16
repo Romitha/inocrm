@@ -49,6 +49,7 @@
               Action Status:
             = ticket_spare_part.spare_part_status_action.name
             = link_to "history", "#", tabindex: "0", rel: "popover", title: "Action History", data: {toggle: "popover", trigger: "click", content: ticket_spare_part.ticket_spare_part_status_actions.map { |tsp| "#{tsp.spare_part_status_action.name} <span class='text-muted text3'>#{User.cached_find_by_id(tsp.done_by).email}-#{tsp.done_at.strftime('%Y-%m-%d %H:%M %P')}</span>" }.join("<br/>"), placement: "bottom", html: true}
+            %br/
             %strong Pending: 
             - if manufacture_warranty
               = SparePartStatusAction.find_by_manufacture_type_index(ticket_spare_part.spare_part_status_action.manufacture_type_index+1).name_next unless (ticket_spare_part.spare_part_status_action.manufacture_type_index+1 > 11) or (ticket_spare_part.spare_part_status_action.manufacture_type_index == 0)
@@ -191,10 +192,12 @@
         = f.submit "return", name: "return" if manufacture_warranty and (rce or rpr)
 
         - if (rqt and manufacture_warranty) or (store_warranty and str) or (store_non_warranty and (rqt or ecm or cea))
-          = f.input :part_terminated, wrapper: :append
+          = f.input :part_terminated, wrapper: :append, input_html:{class: "part_terminated_reason_check"}
 
-          = f.label "Part terminate reason"
-          = f.select :part_terminated_reason_id, Reason.where(terminate_spare_part: true).map{|r| [r.reason, r.id]} # showing part_terminated is cheched through javascript
+          .part_terminated_reason.hide
+
+            = f.label "Part terminate reason"
+            = f.select :part_terminated_reason_id, Reason.where(terminate_spare_part: true).map{|r| [r.reason, r.id]}, {include_blank: true}, {class: "part_terminated_select"} # showing part_terminated is cheched through javascript
           = f.submit "terminate", name: "terminate"
 
 
