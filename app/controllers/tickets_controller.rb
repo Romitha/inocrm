@@ -1051,6 +1051,49 @@ class TicketsController < ApplicationController
     end
   end
 
+  def approved_parts
+    Inventory
+    Warranty
+    ContactNumber
+    QAndA
+    TaskAction
+    Inventory
+    ticket_id = (params[:ticket_id] or session[:ticket_id])
+    @ticket = Ticket.find_by_id ticket_id
+    session[:ticket_id] = @ticket.id
+
+    request_spare_part_id = (params[:request_spare_part_id] or session[:request_spare_part_id])
+    @onloan_request = (params[:onloan_request] or session[:onloan_request])
+    @spare_part = TicketSparePart.find request_spare_part_id
+    # @spare_part = @ticket.ticket_spare_parts.find request_spare_part_id
+    session[:request_spare_part_id] = params[:request_spare_part_id]
+
+    request_onloan_spare_part_id = (params[:request_onloan_spare_part_id] or session[:request_onloan_spare_part_id])
+    @onloan_spare_part = TicketOnLoanSparePart.find request_onloan_spare_part_id
+    # @spare_part = @ticket.ticket_spare_parts.find request_spare_part_id
+    session[:request_onloan_spare_part_id] = params[:request_onloan_spare_part_id]
+
+    if @ticket
+      @product = @ticket.products.first
+      @warranties = @product.warranties
+      session[:product_id] = @product.id
+      Rails.cache.delete([:histories, session[:product_id]])
+      Rails.cache.delete([:join, @ticket.id])
+      @histories = Rails.cache.fetch([:histories, session[:product_id]]){Kaminari.paginate_array(@product.tickets)}.page(params[:page]).per(2)
+      @join_tickets = Rails.cache.fetch([:join, @ticket.id]){Kaminari.paginate_array(Ticket.where(id: @ticket.joint_tickets.map(&:joint_ticket_id)))}.page(params[:page]).per(2)
+      @q_and_answers = @ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})}
+      @ge_q_and_answers = @ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"General Questions" => v})}
+      @user_ticket_action = @ticket.user_ticket_actions.build(action_id: 2)
+      @user_assign_ticket_action = @user_ticket_action.user_assign_ticket_actions.build
+      @assign_regional_support_center = @user_ticket_action.assign_regional_support_centers.build
+
+      @ge_questions = GeQAndA.where(action_id: 5)
+    end
+    respond_to do |format|
+      format.html {render "tickets/tickets_pack/approved_parts"}
+    end
+  end
+
   def received_and_issued
     Inventory
     Warranty
@@ -2469,6 +2512,9 @@ class TicketsController < ApplicationController
     redirect_to @ticket, notice: @flash_message
   end
 
+  def update_approved_parts
+
+  end
   private
     def set_ticket
       @ticket = Ticket.find(params[:id])
