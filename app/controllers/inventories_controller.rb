@@ -43,7 +43,7 @@ class InventoriesController < ApplicationController
 
     ticket_spare_part.update(ticket_spare_part_params(ticket_spare_part))
 
-    continue = true
+    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
 
     save_ticket_spare_part = Proc.new do |spare_part_status, action_id_no|
 
@@ -57,21 +57,6 @@ class InventoriesController < ApplicationController
       user_ticket_action.build_request_spare_part(ticket_spare_part_id: ticket_spare_part.id)
 
       user_ticket_action.save
-    end
-
-    # ticket_id, process_id, task_id should not be null
-    # http://0.0.0.0:3000/tickets/assign-ticket?ticket_id=2&process_id=212&owner=supp_mgr&task_id=191
-    if params[:task_id] and params[:process_id] and params[:owner]
-
-      bpm_response = view_context.send_request_process_data process_history: true, process_instance_id: params[:process_id], variable_id: "ticket_id"
-
-      if bpm_response[:status].upcase == "ERROR"
-        continue = false
-        @flash_message = "Bpm error."
-      end
-
-    else
-      continue = false
     end
 
     manufacture_warranty = ticket_spare_part.ticket_spare_part_manufacture.present?
@@ -91,7 +76,7 @@ class InventoriesController < ApplicationController
 
         save_ticket_spare_part["CLS", 19]
 
-        @flash_message = "Termination is successfully done."
+        flash[:notice] = "Termination is successfully done."
       end
     
     elsif params[:return]
@@ -125,12 +110,12 @@ class InventoriesController < ApplicationController
           end
 
           if bpm_response[:status].upcase == "SUCCESS"
-            @flash_message = "Successfully updated."
+            flash[:notice] = "Successfully updated."
           else
-            @flash_message = "ticket is updated. but Bpm error"
+            flash[:error] = "ticket is updated. but Bpm error"
           end
           
-          @flash_message = "#{@flash_message} Unable to start new process." if @bpm_process_error
+          flash[:error] = "#{@flash_message} Unable to start new process." if @bpm_process_error
 
         elsif (store_warranty and (rce or rpr)) or (store_non_warranty and (rce or rpr))
 
@@ -162,14 +147,16 @@ class InventoriesController < ApplicationController
           end
 
           if bpm_response[:status].upcase == "SUCCESS"
-            @flash_message = "Successfully updated."
+            flash[:notice] = "Successfully updated."
           else
-            @flash_message = "ticket is updated. but Bpm error"
+            flash[:error] = "ticket is updated. but Bpm error"
           end
           
-          @flash_message = "#{@flash_message} Unable to start new process." if @bpm_process_error
+          flash[:error] = "#{@flash_message} Unable to start new process." if @bpm_process_error
 
         end
+      else
+        flash[:error] = "Bpm error. ticket is not updated"
       end
 
 
@@ -206,14 +193,16 @@ class InventoriesController < ApplicationController
           end
 
           if bpm_response[:status].upcase == "SUCCESS"
-            @flash_message = "Successfully updated."
+            flash[:notice] = "Successfully updated."
           else
-            @flash_message = "ticket is updated. but Bpm error"
+            flash[:error] = "ticket is updated. but Bpm error"
           end
           
-          @flash_message = "#{@flash_message} Unable to start new process." if @bpm_process_error
+          flash[:error] = "#{@flash_message} Unable to start new process." if @bpm_process_error
 
         end
+      else
+        flash[:error] = "Bpm error. ticket is not updated"
       end    
 
     elsif params[:recieved]
@@ -224,7 +213,7 @@ class InventoriesController < ApplicationController
 
       end
     end
-    redirect_to todos_url, notice: @flash_message
+    redirect_to todos_url
   end
 
   def update_onloan_part_order
@@ -232,7 +221,7 @@ class InventoriesController < ApplicationController
     ticket_on_loan_spare_part = TicketOnLoanSparePart.find params[:ticket_on_loan_spare_part_id]
     @ticket = ticket_on_loan_spare_part.ticket
 
-    continue = true
+    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
 
     save_ticket_on_loan_spare_part = Proc.new do |onloan_spare_part_status, action_id_no|
 
@@ -246,21 +235,6 @@ class InventoriesController < ApplicationController
       user_ticket_action.build_request_on_loan_spare_part(ticket_on_loan_spare_part_id: ticket_on_loan_spare_part.id)
 
       user_ticket_action.save
-    end
-
-    # ticket_id, process_id, task_id should not be null
-    # http://0.0.0.0:3000/tickets/assign-ticket?ticket_id=2&process_id=212&owner=supp_mgr&task_id=191
-    if params[:task_id] and params[:process_id] and params[:owner]
-
-      bpm_response = view_context.send_request_process_data process_history: true, process_instance_id: params[:process_id], variable_id: "ticket_id"
-
-      if bpm_response[:status].upcase == "ERROR"
-        continue = false
-        @flash_message = "Bpm error."
-      end
-
-    else
-      continue = false
     end
 
     str = ticket_on_loan_spare_part.spare_part_status_action.code == "STR" # Request from Store
@@ -321,6 +295,8 @@ class InventoriesController < ApplicationController
           @flash_message = "#{@flash_message} Unable to start new process." if @bpm_process_error
 
         end
+      else
+        @flash_message = "Bpm error. ticket is not updated"
       end
 
 
@@ -371,6 +347,8 @@ class InventoriesController < ApplicationController
           else
             @flash_message = {error: "ticket is updated. but Bpm error"}
           end
+        else
+          @flash_message = "Bpm error. ticket is not updated"
         end
       end
 
@@ -428,6 +406,8 @@ class InventoriesController < ApplicationController
           else
             @flash_message = {error: "ticket is updated. but Bpm error"}
           end
+        else
+          @flash_message = "Bpm error. ticket is not updated"
         end
       end
     end
@@ -505,6 +485,8 @@ class InventoriesController < ApplicationController
         else
           @flash_message = {error: "ticket is updated. but Bpm error"}
         end
+      else
+        @flash_message = "Bpm error. ticket is not updated"
       end
     end
     redirect_to todos_url, notice: "Successfully updated."
@@ -609,6 +591,8 @@ class InventoriesController < ApplicationController
           else
             @flash_message = {error: "ticket is updated. but Bpm error"}
           end
+        else
+          @flash_message = "Bpm error. ticket is not updated"
         end
       end
       ticket_deliver_unit.note = "#{ticket_deliver_unit_note} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket_deliver_unit.note}"
@@ -634,6 +618,8 @@ class InventoriesController < ApplicationController
       t_spare_part = params.require(:ticket_spare_part).permit(:spare_part_no, :spare_part_description, :ticket_id, :ticket_fsr, :cus_chargeable_part, :request_from, :faulty_serial_no, :faulty_ct_no, :note, :status_action_id, :part_terminated, :status_use_id, :part_terminated_reason_id, ticket_attributes: [:remarks, :id])
       t_spare_part[:note] = t_spare_part[:note].present? ? "#{t_spare_part[:note]} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{ticket_spare_part.note}" : ticket_spare_part.note
 
+      t_spare_part[:repare_start] = Time.strptime(t_spare_part[:repare_start],'%m/%d/%Y %I:%M %p') if t_spare_part[:repare_start].present?
+      t_spare_part[:repare_end] = Time.strptime(t_spare_part[:repare_end],'%m/%d/%Y %I:%M %p') if t_spare_part[:repare_end].present?
       t_spare_part
     end
 

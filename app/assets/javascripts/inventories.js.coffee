@@ -6,8 +6,10 @@ window.Inventories =
     @calculate_cost_price()
     @terminate_func()
     @accept_returned_part_func()
-
-
+    @received_part_status()
+    @check_return_serial_and_return_ct()
+    @keypress_return_serial_and_return_ct()
+    return
 
   filter_product: -> 
     category_list = $("#search_inventory_product")
@@ -24,8 +26,6 @@ window.Inventories =
       $("#search_inventory_brand").val("")
       $("#search_inventory_mst_inv_product_category3_id").val("")
 
-      
-
   filter_category: -> 
     category_list = $("#search_inventory_mst_inv_product_category3_id")
     category_list_html = category_list.html()
@@ -35,13 +35,12 @@ window.Inventories =
       filtered_option = $(category_list_html).filter("optgroup[label='#{selected}']").html()
       category_list.html("<option></option>"+filtered_option).trigger('chosen:updated')
 
-
   disable_store: ->
     $("#ticket_spare_part_request_from_s").click ->
       if $("#ticket_spare_part_request_from_s").is(":checked")
         $(".part").removeClass("hide")
         $("#request_from_select").removeClass("hide")
-        
+
       else
         $(".part").addClass("hide")
         $("#request_from_select").addClass("hide")
@@ -49,7 +48,6 @@ window.Inventories =
   disable_upon_manufacture: ->
     if $("#ticket_spare_part_request_from_m").is(":checked")
       $("#request_from_select").addClass("hide")
-
       $(".request_from").empty()
       $(".main_product").empty()
       $("#store_id").val("")
@@ -120,6 +118,7 @@ window.Inventories =
   request_from_store: ->
     if this.match_store_and_mst_store_ids
       alert "Please select same store for the main product!"
+    else
       false
 
   submit_on_loan_spare_part: ->
@@ -132,7 +131,6 @@ window.Inventories =
       spare_part_description = $("input[name='ticket_spare_part[spare_part_description]']", submit_form)
       request_from = $("input[name='ticket_spare_part[request_from]']:checked", submit_form)
       part_of_main_product = $("input[name='ticket_on_loan_spare_part[part_of_main_product]']:checked", submit_form)
-
 
       if $("input[name='ticket_on_loan_spare_part[store_id]']", submit_form).val() == ""
         alert "Please select store"
@@ -210,3 +208,59 @@ window.Inventories =
       else
         $(@).parents(".control-group").siblings(".part_terminated_reason").find(".part_terminated_select").val("")
         $(@).parents(".control-group").siblings(".part_terminated_reason").addClass("hide")
+
+  accept_returned_part: (elem)->
+    if $(elem).val() == "false"
+      $(".reason").addClass("hide")
+    else
+      $(".reason").removeClass("hide")
+
+  received_part_status: ->
+    _this = this
+    $(".received_part_status").chosen().change ->
+      return_part_serial_no_input = $(@).parents("form").find(".return_part_serial_no")
+      return_part_ct_no_input = $(@).parents("form").find(".return_part_ct_no")
+      $(@).parents("form").find(".unused_reason").prop("disabled", true).trigger("chosen:updated")
+
+
+      if $(@).val() == "2" #used
+        faulty_serial_no = $(@).parents(".panel-body").find(".faulty_serial_no").text()
+        faulty_ct_no = $(@).parents(".panel-body").find(".faulty_ct_no").text()
+
+        return_part_serial_no_input.prop("readonly", true)
+        return_part_ct_no_input.prop("readonly", true)
+
+        return_part_serial_no_input.val(faulty_serial_no)
+        return_part_ct_no_input.val(faulty_ct_no)
+
+      else if $(@).val() == "3" #un used
+        $(@).parents("form").find(".unused_reason").prop("disabled", false).trigger("chosen:updated")
+      else
+        return_part_serial_no_input.prop("readonly", false)
+        return_part_ct_no_input.prop("readonly", false)
+
+      _this.check_return_serial_and_return_ct()
+
+  check_return_serial_and_return_ct: ->
+    $(".return_part_serial_no_text").each ->
+      if $(@).parents("form").find(".received_part_status").val() == "2"
+        $(@).text($(@).parents("form").find(".faulty_serial_no_input").val())
+        $(@).parents("form").find(".return_part_serial_no").val($(@).parents("form").find(".faulty_serial_no_input").val())
+      else
+        $(@).text($(@).parents("form").find(".received_part_serial_no_input").val())
+        $(@).parents("form").find(".return_part_serial_no").val($(@).parents("form").find(".received_part_serial_no_input").val())
+
+    $(".return_part_ct_no_text").each ->
+      if $(@).parents("form").find(".received_part_status").val() == "2"
+        $(@).text($(@).parents("form").find(".faulty_ct_no_input").val())
+        $(@).parents("form").find(".return_part_ct_no").val($(@).parents("form").find(".faulty_ct_no_input").val())
+      else
+        $(@).text($(@).parents("form").find(".received_part_ct_no_input").val())
+        $(@).parents("form").find(".return_part_ct_no").val($(@).parents("form").find(".received_part_ct_no_input").val())
+        
+
+  keypress_return_serial_and_return_ct: ->
+    _this = this
+    $(".faulty_serial_no_input, .received_part_serial_no_input, .faulty_ct_no_input, .received_part_ct_no_input").each ->
+      $(@).keyup ->
+        _this.check_return_serial_and_return_ct()

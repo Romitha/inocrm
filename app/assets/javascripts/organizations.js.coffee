@@ -4,6 +4,7 @@ window.Organizations =
     @load_vat_number_option()
     # @toggle_tapbar()
     @organization_logo_upload()
+    @chosen_select_disable_search()
     return
 
   show_more_less: ->
@@ -23,6 +24,14 @@ window.Organizations =
       allow_single_deselect: true
       no_results_text: 'No results matched'
       width: '100%'
+    return
+
+  chosen_select_disable_search: ->
+    $('.chosen-select_disable_search').chosen
+      disable_search: true
+      width: '100%'
+    return
+
   initiate_datepicker: ->
     $('.datepicker').datepicker
       format: "dd M, yyyy"

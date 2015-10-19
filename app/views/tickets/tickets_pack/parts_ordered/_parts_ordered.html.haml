@@ -66,11 +66,11 @@
           .col-md-3
             %strong
               Faulty Serial No:
-            = ticket_spare_part.faulty_serial_no
+            .faulty_serial_no= ticket_spare_part.faulty_serial_no
           .col-md-3
             %strong
               Faulty CT No:
-            = ticket_spare_part.faulty_ct_no
+            .faulty_ct_no= ticket_spare_part.faulty_ct_no
           - if ticket_spare_part.ticket_spare_part_store
             .col-md-3
               %strong
@@ -135,24 +135,27 @@
           %hr
           .col-md-3
             %strong
-              Part Status:
+              Part receive status:
             = ticket_spare_part.spare_part_status_use.name
           .col-md-3
             %strong
               Return part:
 
           - if ticket_spare_part.ticket_spare_part_manufacture
-            Part Ordered No:
-            Requested: #{ticket_spare_part.ticket_spare_part_manufacture.payment_expected_manufacture}
             .col-md-3
               %strong
-                Part Event No:
-              = ticket_spare_part.ticket_spare_part_manufacture.event_no
+                Requested:
+              = ticket_spare_part.ticket_spare_part_manufacture.payment_expected_manufacture
             .col-md-3
               %strong
                 Part Order No:
               = ticket_spare_part.ticket_spare_part_manufacture.order_no
+            
             %hr
+            .col-md-3
+              %strong
+                Part Event No:
+              = ticket_spare_part.ticket_spare_part_manufacture.event_no
             .col-md-3
               %strong
                 Part Event Closed:
@@ -163,33 +166,50 @@
         = hidden_field_tag :process_id, session[:process_id]
         = hidden_field_tag :task_id, session[:task_id]
         = hidden_field_tag :owner, session[:owner]
+        - session[:bpm_input_variables].each do |bpm_input_variable|
+          = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
         = hidden_field_tag :ticket_spare_part_id, ticket_spare_part.id
 
+
         - if (rce and (manufacture_warranty or store_warranty or store_non_warranty)) or (manufacture_warranty and rpr) or (store_non_warranty and rpr)
-          = f.input :received_part_serial_no
-          = f.input :received_part_ct_no
-          = f.input :return_part_serial_no
-          = f.input :return_part_ct_no
+          .row
 
-          = f.label "Received part status"
-          = f.select :status_use_id, SparePartStatusUse.all.map{|s| [s.name, s.id]}
+            = f.input :faulty_serial_no, wrapper_html: {class: "col-md-6"}, required: true, input_html: {class: "faulty_serial_no_input"}
+            = f.input :faulty_ct_no, wrapper_html: {class: "col-md-6"}, required: true, input_html: {class: "faulty_ct_no_input"}
 
-          = f.label "Unuse reason"
-          = f.select :unused_reason_id, Reason.where(spare_part_unused: true).map{|r| [r.name, r.id]} # showing status_use_id.code is UUS through javascript
+            = f.input :received_part_serial_no, wrapper_html: {class: "col-md-6"}, required: true, input_html: {class: "received_part_serial_no_input"}
+            = f.input :received_part_ct_no, wrapper_html: {class: "col-md-6"}, required: true, input_html: {class: "received_part_ct_no_input"}
 
         - if (rce and (manufacture_warranty or store_warranty or store_non_warranty)) or (rpr and store_non_warranty)
-          = f.input :repare_start, as: :string
-          = f.input :repare_end, as: :string
+          .row
+            = f.input :repare_start, as: :string, input_html: {class: "datetimepicker"}, wrapper_html: {class: "position_relative col-md-6"}, required: true
+            = f.input :repare_end, as: :string, input_html: {class: "datetimepicker"}, wrapper_html: {class: "position_relative col-md-6"}, required: true
+          .row
+            = f.association :spare_part_status_use, collection: SparePartStatusUse.offset(1).map{|s| [s.name, s.id]}, required: true, selected: 2, wrapper_html: {class: "col-md-6"}, label: "Received part status", input_html: {class: "received_part_status chosen-select_disable_search"}
+            = f.association :unused_reason, label_method: :reason, value_method: :id, required: true, wrapper_html: {class: "col-md-6"}, input_html: {class: "unused_reason chosen-select_disable_search"}, disabled: true
+
+        - if (rce and (manufacture_warranty or store_warranty or store_non_warranty)) or (manufacture_warranty and rpr) or (store_non_warranty and rpr)
+          .row
+            .col-md-6
+              %strong Return part serial no:
+              %span.return_part_serial_no_text= f.object.return_part_serial_no
+
+            .col-md-6
+              %strong Return part ct no:
+              %span.return_part_ct_no_text= f.object.return_part_ct_no
+            = f.input :return_part_serial_no, as: :hidden, wrapper_html: {class: "col-md-6"}, required: true, input_html: {class: "return_part_serial_no"}
+            = f.input :return_part_ct_no, as: :hidden, wrapper_html: {class: "col-md-6"}, required: true, input_html: {class: "return_part_ct_no"}
+
 
         = f.input :note, input_html: {value: nil} if !(ord or clt or rcs or rtn or rpa or bnd or cls or aps or (str and store_non_warranty) )
         = simple_format ticket_spare_part.note
 
-        = f.submit "store request", name: "store_request" if store_non_warranty and cea
+        = f.submit "store request", name: "store_request", class: "btn btn-sm btn-success" if store_non_warranty and cea
 
-        = f.submit "recieved", name: "recieved" if iss and (manufacture_warranty or store_warranty or store_non_warranty)
+        = f.submit "recieved", name: "recieved", class: "btn btn-sm btn-success" if iss and (manufacture_warranty or store_warranty or store_non_warranty)
 
-        = f.submit "return", name: "return" if manufacture_warranty and (rce or rpr)
+        = f.submit "return", name: "return", class: "btn btn-sm btn-success" if manufacture_warranty and (rce or rpr)
 
         - if (rqt and manufacture_warranty) or (store_warranty and str) or (store_non_warranty and (rqt or ecm or cea))
           = f.input :part_terminated, wrapper: :append, input_html:{class: "part_terminated_reason_check"}
@@ -259,11 +279,11 @@
             .col-md-3
               %strong
                 Faulty Serial No:
-              = ticket_spare_part.faulty_serial_no
+              .faulty_serial_no= ticket_spare_part.faulty_serial_no
             .col-md-3
               %strong
                 Faulty CT No:
-              = ticket_spare_part.faulty_ct_no
+              .faulty_ct_no= ticket_spare_part.faulty_ct_no
             - if ticket_spare_part.ticket_spare_part_store
               .col-md-3
                 %strong
@@ -327,7 +347,7 @@
             %hr
             .col-md-3
               %strong
-                Part Status:
+                Part receive status:
               = ticket_spare_part.spare_part_status_use.name
             .col-md-3
               %strong
@@ -359,8 +379,8 @@
         = hidden_field_tag :ticket_on_loan_spare_part_id, ticket_on_loan_spare_part.id
 
         - if rce or rpr
-          = f.input :return_part_serial_no
-          = f.input :return_part_ct_no
+          = f.input :return_part_serial_no, input_html: {class: "return_part_serial_no"}
+          = f.input :return_part_ct_no, input_html: {class: "return_part_ct_no"}
         - if rce or rpr
           = f.association :unused_reason
 

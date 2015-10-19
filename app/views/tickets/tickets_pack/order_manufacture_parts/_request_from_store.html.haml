@@ -1,6 +1,6 @@
 %fieldset
   %legend Request From Store
-  = simple_nested_form_for spare_part, url: update_order_mfp_rqst_from_store_tickets_path, method: :post do |f|
+  = simple_nested_form_for spare_part, url: update_order_mfp_return_manufacture_part_tickets_path, method: :post do |f|
 
     = hidden_field_tag :process_id, session[:process_id]
     = hidden_field_tag :task_id, session[:task_id]

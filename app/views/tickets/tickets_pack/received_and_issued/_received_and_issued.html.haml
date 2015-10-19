@@ -3,8 +3,7 @@
 - ticket_for_sp = spare_part.ticket
 .row
   .col-md-4
-    %strong Activity:
-    Recieve / Issue
+    %strong Activity: #{spare_part.ticket_spare_part_manufacture.try(:received_manufacture) ? "Issue part" : "Recieve part"}
 .row{style: "margin-top:5px;"}
   .col-md-12
     %strong Part Status:
@@ -49,4 +48,4 @@
     = f.input :received_part_ct_no, wrapper_html: {class: "col-md-6"}
     = f.input :note, wrapper_html: {class: "col-md-12"}, input_html: {value: nil}
     .col-md-12= simple_format f.object.note
-    = f.submit "Save", class: "btn btn-success"
+    %div{title: "#{'Part not yet collected' unless spare_part.ticket_spare_part_manufacture.try(:collected_manufacture)}"}= f.submit "Save", class: "btn btn-success", disabled: !spare_part.ticket_spare_part_manufacture.try(:collected_manufacture)

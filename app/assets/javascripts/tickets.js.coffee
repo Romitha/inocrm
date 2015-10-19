@@ -18,6 +18,8 @@ window.Tickets =
     @select_fsr()
     @fade_flash_msg()
     @call_extend_warranty_template()
+    @ticket_info_ajax_loader()
+    @remote_true_loader()
     return
 
   initial_loaders: ->
@@ -33,12 +35,6 @@ window.Tickets =
 
     $('.wysihtml5').each (i, elem)->
       $(elem).wysihtml5()
-
-  chosen_select: ->
-    $('.chosen-select').chosen
-      allow_single_deselect: true
-      no_results_text: 'No results matched'
-      width: '100%'
 
   load_customer: ->
     __this = this
@@ -425,5 +421,26 @@ window.Tickets =
           $(presence).parents(".form-group").removeClass("has-error")
           console.log presence
 
-
     $(elem).parents("form").submit() if submit
+
+  ajax_loader: ->
+    $(".screener").addClass("fade")
+
+  remove_ajax_loader: ->
+    $(".screener").removeClass("fade")
+
+  ticket_info_ajax_loader: ->
+    _this = this
+    $(".ajax_loader").click ->
+      __this = this
+      _this.ajax_loader()
+      $.get "/tickets/ajax_show", {partial_template_for_show: $(__this).data("partial-template-for-show"), ticket_id: $(__this).data("ticket-id")}
+      # setTimeout (->
+      #   return
+      # ), 500
+
+  
+  remote_true_loader: ->
+    _this = this
+    $("[data-remote]").on "ajax:success", (e, data, status, xhr) ->
+      _this.ajax_loader()

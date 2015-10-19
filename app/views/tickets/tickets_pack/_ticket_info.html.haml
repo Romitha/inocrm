@@ -1,5 +1,5 @@
 .col-md-2.col-xs-12.col-sm-2{style: "padding-left:0;"}
-  = tab_nav_tab({class: "tabs-left", id: "secondary_tab"}, job_info: {content: "Job Info", active_class: "active job_c"}, contacts: {content: "Customer", active_class: "customer_c"}, warranties: {content: "Warranties", active_class: "warranties_c"}, history: {content: "Product History", active_class: "history_c"}, join: {content: "Join", active_class: "join_c"}, q_and_a: {content: "Q & A", active_class: "qa_C"}, parts_odered: {content: "Parts Ordered", active_class: "parts_odered_c"}, estimation: {content: "Estimation", active_class: "estimation_c"},payment_recived: {content: "Payment Recived", active_class: "payment_recived_c"}, fsr: {content: "FSR", active_class: "fsr_c"}, activity_history: {content: "Activity History", active_class: "activity_history_c"})
+  = tab_nav_tab({class: "tabs-left", id: "secondary_tab"}, job_info: {content: "Job Info", active_class: "active job_c", link_class: "ajax_loader", data: {ticket_id: ticket.id, partial_template_for_show: "job_info"}}, contacts: {content: "Customer", active_class: "customer_c", link_class: "ajax_loader", data: {ticket_id: ticket.id, partial_template_for_show: "contacts"}}, warranties: {content: "Warranties", active_class: "warranties_c", link_class: "ajax_loader", data: {ticket_id: ticket.id, partial_template_for_show: "warranties"}}, history: {content: "Product History", active_class: "history_c", link_class: "ajax_loader", data: {ticket_id: ticket.id, partial_template_for_show: "history"}}, join: {content: "Join", active_class: "join_c", link_class: "ajax_loader", data: {ticket_id: ticket.id, partial_template_for_show: "join"}}, q_and_a: {content: "Q & A", active_class: "qa_C", link_class: "ajax_loader", data: {ticket_id: ticket.id, partial_template_for_show: "q_and_a"}}, parts_odered: {content: "Parts Ordered", active_class: "parts_odered_c", link_class: "ajax_loader", data: {ticket_id: ticket.id, partial_template_for_show: ""}}, estimation: {content: "Estimation", active_class: "estimation_c", link_class: "ajax_loader", data: {ticket_id: ticket.id, partial_template_for_show: ""}},payment_recived: {content: "Payment Recived", active_class: "payment_recived_c", link_class: "ajax_loader", data: {ticket_id: ticket.id, partial_template_for_show: ""}}, fsr: {content: "FSR", active_class: "fsr_c", link_class: "ajax_loader", data: {ticket_id: ticket.id, partial_template_for_show: ""}}, activity_history: {content: "Activity History", active_class: "activity_history_c", link_class: "ajax_loader", data: {ticket_id: ticket.id, partial_template_for_show: "activity_history"}})
 .col-md-10.col-xs-12.col-sm-10
   .tab-content
     .row.small_scale_margin-bottom1
@@ -13,25 +13,25 @@
     = tab_content tabpointer: :job_info, active_class: "active" do
       = render "tickets/job_info", product: product, ticket: ticket
     = tab_content tabpointer: :contacts do
-      = render "users/view_customer", customer: customer, ticket: ticket
+      / = render "users/view_customer", customer: customer, ticket: ticket
     = tab_content tabpointer: :warranties do
-      = render "warranties/select_warranties", warranties: warranties
+      / = render "warranties/select_warranties", warranties: warranties
     = tab_content tabpointer: :history do
       #histories_pagination
-        = render "tickets/view_histories", histories: histories
+        / = render "tickets/view_histories", histories: histories
     = tab_content tabpointer: :join do
       #join_pagination
-        = render "tickets/join", join_tickets: join_tickets, ticket: ticket
+        / = render "tickets/join", join_tickets: join_tickets, ticket: ticket
     = tab_content tabpointer: :q_and_a do
-      = render "q_and_as/q_and_a", ge_q_and_as: ge_q_and_as, pr_q_and_as: pr_q_and_as
+      / = render "q_and_as/q_and_a", ge_q_and_as: ge_q_and_as, pr_q_and_as: pr_q_and_as
     = tab_content tabpointer: :parts_odered do
       this is sample ticket
       / = render "tickets/tickets_pack/parts_ordered/parts_ordered",ticket: ticket
     = tab_content tabpointer: :estimation do
       / = render "tickets/tickets_pack/estimation/estimation",ticket: ticket
     = tab_content tabpointer: :payment_recived do
-      = render "tickets/tickets_pack/payment_recieved",ticket: ticket
+      / = render "tickets/tickets_pack/payment_recieved",ticket: ticket
     = tab_content tabpointer: :fsr do
-      = render "tickets/tickets_pack/fsr",ticket: ticket
+      / = render "tickets/tickets_pack/fsr",ticket: ticket
     = tab_content tabpointer: :activity_history do
-      = render "tickets/tickets_pack/activity_history", ticket: ticket, customer: customer
+      / = render "tickets/tickets_pack/activity_history", ticket: ticket, customer: customer

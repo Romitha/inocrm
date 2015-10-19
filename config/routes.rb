@@ -118,7 +118,7 @@ Rails.application.routes.draw do
       # post "update_order_mfp_hold"
       post "update_order_mfp_part_order"
       post "update_order_mfp_wrrnty_extnd_rqst"
-      post "update_order_mfp_rqst_from_store"
+      post "update_order_mfp_return_manufacture_part"
       post "update_order_mfp_termnt_prt_order"
       post "update_approved_part"
       # post "update_order_mfp_edit_serial_no"
@@ -133,7 +133,7 @@ Rails.application.routes.draw do
       get "resolution"
       get "order_manufacture_parts", :action => :order_mf
       get "received_and_issued"
-      get "return_to_stores"
+      get "return_manufacture_part"
       get "create_parts_bundle"
       get "deliver_parts_bundle"
       get "approved_parts"
@@ -147,6 +147,8 @@ Rails.application.routes.draw do
       match "extend_warranty", to: "tickets#extend_warranty", via: [:get, :post]
       match "close_event", to: "tickets#close_event", via: [:get, :post]
       get "check_fsr"
+
+      get "ajax_show"
     end
 
     member do
