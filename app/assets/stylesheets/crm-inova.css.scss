@@ -368,3 +368,30 @@ abbr{
 .position_relative {
   position: relative;
 }
+
+.screener {
+  background-color: #ffffff;
+  opacity: 0.5;
+  height: 100%;
+  position: fixed;
+  width: 100%;
+  z-index: 1060;
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  bottom: 0;
+
+  left: 0;
+  outline: 0 none;
+  overflow: hidden;
+
+  right: 0;
+  top: 0;
+  display: none;
+  &.fade {
+    display: block;
+    background-image: asset-url("ajax_loader.gif");
+    background-repeat: no-repeat;
+    background-position: center center;
+  }
+}
