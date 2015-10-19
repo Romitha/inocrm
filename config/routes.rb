@@ -133,7 +133,7 @@ Rails.application.routes.draw do
       get "resolution"
       get "order_manufacture_parts", :action => :order_mf
       get "received_and_issued"
-      get "return_manufacture_part"
+      get "return_to_stores"
       get "create_parts_bundle"
       get "deliver_parts_bundle"
       get "approved_parts"
