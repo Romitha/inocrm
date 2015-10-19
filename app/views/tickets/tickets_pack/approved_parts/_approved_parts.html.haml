@@ -1,146 +1,48 @@
-- ticket = @ticket
-- product = @product
-- warranties = @warranties
-- customer = ticket.customer
-- histories = @histories
-- join_tickets = @join_tickets
-- pr_q_and_answers = @q_and_answers
-- ge_q_and_as = @ge_q_and_answers
-- spare_part = @spare_part
-- onloan_request = @onloan_request
-- onloan_spare_part = @onloan_spare_part
+.row.col-md-12
+  %strong ON-LOAN Part Request
+.row.col-md-12
+  .col-md-6
+    %strong Part No:
+    #{spare_part.spare_part_no}
+  .col-md-6
+    %strong Part Status:
+    #{spare_part.spare_part_status_action.try(:name)}
+.row.col-md-12
+  .col-md-6
+    %strong Part Description:
+    #{spare_part.spare_part_description}
+  .col-md-6
+    - if spare_part.part_terminated == true
+      %strong Terminated
+    - else
+      %strong Not Terminated
+      %br
+.row.col-md-12
+  .form-group
+    = simple_nested_form_for spare_part, url: update_approved_part_tickets_path, method: :post, remote: true do |f|
+      = f.simple_fields_for :ticket_spare_part_store do |sto|
+        .row
+          .col-md-6
+            - if spare_part.status_action_id == 11
+              = sto.input :store_request_approved, as: :radio_buttons, collection: {"Approved" => true, "Reject" => false}, label:"", :disabled => true
+            - else
+              = sto.input :store_request_approved, as: :radio_buttons, collection: {"Approved" => true, "Reject" => false}, label:""
+          .col-md-6
+            = sto.input :part_of_main_product, as: :radio_buttons, collection: {"Part of a Main Product" => true, "Seperate Product" => false}, label:""
+        .row
+          .col-md-6
+            - if spare_part.ticket_spare_part_store.store_request_approved == true
+              = link_to "Item", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true
+              .request_from
+          .col-md-6
+            - if spare_part.ticket_spare_part_store.part_of_main_product == true
+              = link_to "Item", inventory_in_modal_inventories_path(select_frame: "main_product"), id: "part_of_main_product_select", remote: true
+              .main_product
+        .col-md-12
+          = f.input :note
+        .col-md-12
+          = f.submit "Save", class: "btn btn-success btn-sm"
 
-- if onloan_request == 'Y'
-  .row.col-md-12
-    %strong ON-LOAN Part Request
-  .row.col-md-12
-    .col-md-6
-      %strong Part No: 
-      #{onloan_spare_part.ticket_spare_part.spare_part_no}
-    .col-md-6
-      %strong Part Status:
-      #{onloan_spare_part.spare_part_status_action.try(:name)}
-  .row.col-md-12
-    .col-md-6
-      %strong Part Description:
-      #{onloan_spare_part.ticket_spare_part.spare_part_description} 
-    .col-md-6
-      - if onloan_spare_part.part_terminated == true
-        %strong Terminated
-      - else
-        %strong Not Terminated
-        %br
-  .row.col-md-12
-    .form-group
-      = simple_nested_form_for spare_part, url: update_approved_parts_tickets_path, method: :post, remote: true do |f|
-        = f.simple_fields_for :ticket_on_loan_spare_parts do |on|
-          .row
-            .col-md-6
-              - if on.object.status_action_id == 11
-                = on.input :approved, as: :radio_buttons, collection: {"Approved" => true, "Reject" => false}, label:"", :disabled => true
-              -else
-                = on.input :approved, as: :radio_buttons, collection: {"Approved" => true, "Reject" => false}, label:"", :class => "this_radio_value_true"
-            .col-md-6
-              = on.input :part_of_main_product, as: :radio_buttons, collection: {"Part of a Main Product" => true, "Seperate Product" => false}, label:""
-          .row
-            .col-md-6
-              - if on.object.approved == true
-                %strong Store: 
-                #{on.object.store_id} 
-                %br
-                %strong Item Code:
-                #{onloan_spare_part.inventory_product.try(:inventory_category3).try(:code)}
-                %br
-                %strong Item Description:
-                #{onloan_spare_part.inventory_product.try(:inventory_category3).try(:name)}
-                %br
-                %p Model No: #{onloan_spare_part.inventory_product.model_no} Product No: #{onloan_spare_part.inventory_product.product_no} Part No: #{onloan_spare_part.inventory_product.spare_part_no}
-                %br
-                %p Available Qnt: #{onloan_spare_part.inventory_product.try(:inventories).try(:sum ,:available_quantity)} Unit: #{onloan_spare_part.inventory_product.inventory_unit.try(:unit)}
-                %br
-
-            .col-md-6
-              - if on.object.part_of_main_product == true
-                %strong Item Code:
-                #{onloan_spare_part.main_inventory_product.try(:inventory_category3).try(:code)}
-                %br
-                %strong Item Description:
-                #{onloan_spare_part.main_inventory_product.try(:inventory_category3).try(:name)}
-                %br
-                %p Model No: #{onloan_spare_part.main_inventory_product.try(:model_no)} Product No: #{onloan_spare_part.main_inventory_product.try(:product_no)} Part No: #{onloan_spare_part.main_inventory_product.try(:spare_part_no)}
-                %br
-                %p Available Qnt: #{onloan_spare_part.main_inventory_product.try(:inventories).try(:sum ,:available_quantity)} Unit: #{onloan_spare_part.main_inventory_product.try(:inventory_unit).try(:unit)}
-                %br
-          .row
-            .col-md-6
-              = f.input :note
-            .col-md-6
-              = f.submit "Save", class: "btn btn-success btn-sm"
-
-- else
-  .row.col-md-12
-    %strong Request Part
-  .row.col-md-12
-    .col-md-6
-      %strong Part No: 
-      #{spare_part.spare_part_no}
-    .col-md-6
-      %strong Part Status:
-      #{spare_part.spare_part_status_action.try(:name)}
-  .row.col-md-12
-    .col-md-6
-      %strong Part Description:
-      #{spare_part.spare_part_description} 
-    .col-md-6
-      - if spare_part.part_terminated == true
-        %strong Terminated
-      - else
-        %strong Not Terminated
-  .row.col-md-12
-    .form-group
-      / - spare_part.build_ticket_spare_part_store
-      = simple_nested_form_for spare_part, url: update_approved_part_tickets_path, method: :post do |f|
-        = f.simple_fields_for :ticket_spare_part_store do |sto|
-          - if sto.object.persisted?
-            .row
-              .col-md-6
-                - if spare_part.status_action_id == 11
-                  = sto.input :store_request_approved, as: :radio_buttons, collection: {"Approved" => true, "Reject" => false}, label:"", :disabled => true
-                -else
-                  = sto.input :store_request_approved, as: :radio_buttons, collection: {"Approved" => true, "Reject" => false}, label:""
-              .col-md-6
-                = sto.input :part_of_main_product, as: :radio_buttons, collection: {"Part of a Main Product" => true, "Seperate Product" => false}, label:""
-            .row
-              .col-md-6
-                - if spare_part.ticket_spare_part_store.store_request_approved == true
-                  %strong Store: 
-                  #{spare_part.ticket_spare_part_store.store_id} 
-                  %br
-                  %strong Item Code:
-                  #{spare_part.ticket_spare_part_store.inventory_product.try(:inventory_category3).try(:code)}
-                  %br
-                  %strong Item Description:
-                  #{spare_part.ticket_spare_part_store.inventory_product.try(:inventory_category3).try(:name)}
-                  %br
-                  %p Model No: #{spare_part.ticket_spare_part_store.inventory_product.model_no} Product No: #{spare_part.ticket_spare_part_store.inventory_product.product_no} Part No: #{spare_part.ticket_spare_part_store.inventory_product.spare_part_no}
-                  %br
-                  %p Available Qnt: #{spare_part.ticket_spare_part_store.inventory_product.try(:inventories).try(:sum ,:available_quantity)} Unit: #{spare_part.ticket_spare_part_store.inventory_product.inventory_unit.try(:unit)}
-                  %br
-
-              .col-md-6
-                - if spare_part.ticket_spare_part_store.part_of_main_product == true
-                  %strong Item Code:
-                  #{spare_part.ticket_spare_part_store.main_inventory_product.try(:inventory_category3).try(:code)}
-                  %br
-                  %strong Item Description:
-                  #{spare_part.ticket_spare_part_store.main_inventory_product.try(:inventory_category3).try(:name)}
-                  %br
-                  %p Model No: #{spare_part.ticket_spare_part_store.main_inventory_product.try(:model_no)} Product No: #{spare_part.ticket_spare_part_store.main_inventory_product.try(:product_no)} Part No: #{spare_part.ticket_spare_part_store.main_inventory_product.try(:spare_part_no)}
-                  %br
-                  %p Available Qnt: #{spare_part.ticket_spare_part_store.main_inventory_product.try(:inventories).try(:sum ,:available_quantity)} Unit: #{spare_part.ticket_spare_part_store.main_inventory_product.try(:inventory_unit).try(:unit)}
-                  %br
-            .row
-              .col-md-12
-                = f.input :note
-              .col-md-12
-                = f.submit "Save", class: "btn btn-success btn-sm"
+#inventory_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "inventory_modal", "aria-hidden" => true}
+  .modal-dialog.modal-lg
+    .modal-content

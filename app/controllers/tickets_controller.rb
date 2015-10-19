@@ -1151,6 +1151,7 @@ class TicketsController < ApplicationController
       Rails.cache.delete([:histories, session[:product_id]])
       Rails.cache.delete([:join, @ticket.id])
     end
+
     respond_to do |format|
       format.html {render "tickets/tickets_pack/approved_parts"}
     end
