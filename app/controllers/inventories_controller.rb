@@ -417,6 +417,8 @@ class InventoriesController < ApplicationController
         else
           @flash_message = "Bpm error. ticket is not updated"
         end
+      else
+        @flash_message = "Bpm error. ticket is not updated"
       end
 
 

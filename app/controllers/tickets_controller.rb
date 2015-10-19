@@ -920,6 +920,77 @@ class TicketsController < ApplicationController
     
   end
 
+  def ajax_show
+    Warranty
+    ContactNumber
+    QAndA
+    Inventory
+    @ticket = Ticket.find params[:ticket_id]
+
+    @rendering_dom = "#"+params[:partial_template_for_show]
+
+    case params[:partial_template_for_show]
+
+    when "job_info"
+      customer = @ticket.customer
+      product = @ticket.products.first
+
+      @render_template = "tickets/job_info"
+      @variables = {product: product, ticket: @ticket}
+      
+    when "contacts"
+      customer = @ticket.customer
+
+      @render_template = "users/view_customer"
+      @variables = {customer: customer, ticket: @ticket}
+
+    when "warranties"
+      product = @ticket.products.first
+      warranties = product.warranties
+
+      @render_template = "warranties/select_warranties"
+      @variables = {warranties: warranties}
+
+    when "history"
+      product = @ticket.products.first
+      histories = Rails.cache.fetch([:histories, session[:product_id]]){Kaminari.paginate_array(product.tickets.reject{|t| t == @ticket})}.page(params[:page]).per(2)
+
+      @render_template = "tickets/view_histories"
+      @variables = {histories: histories}
+
+      @rendering_dom = "#history #histories_pagination"
+
+    when "join"
+      @join_tickets = Rails.cache.fetch([:join, @ticket.id]){Kaminari.paginate_array(Ticket.where(id: @ticket.joint_tickets.map(&:joint_ticket_id)))}.page(params[:page]).per(2)
+
+      @render_template = "tickets/join"
+      @variables = {join_tickets: @join_tickets, ticket: @ticket}
+      @rendering_dom = "#history #join_pagination"
+
+    when "q_and_a"
+      product = @ticket.products.first
+      ge_q_and_as = Rails.cache.fetch([:ge_q_and_answers, @ticket.id]){ @ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"General Questions" => v})} }
+
+      pr_q_and_as = Rails.cache.fetch([:q_and_answers, @ticket.id]){ @ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})} }
+
+      @render_template = "q_and_as/q_and_a"
+      @variables = {ge_q_and_as: ge_q_and_as, pr_q_and_as: pr_q_and_as}
+
+    when "activity_history"
+
+      product = @ticket.products.first
+      ge_q_and_as = Rails.cache.fetch([:ge_q_and_answers, @ticket.id]){ @ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"General Questions" => v})} }
+
+      pr_q_and_as = Rails.cache.fetch([:q_and_answers, @ticket.id]){ @ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})} }
+
+      @render_template = "tickets/tickets_pack/activity_history"
+      @variables = {ticket: @ticket, customer: customer}
+    else
+      render js: "alert('template is unavailable');"
+    end
+    
+  end
+
   def assign_ticket
     ContactNumber
     QAndA
@@ -2547,7 +2618,6 @@ class TicketsController < ApplicationController
       session[:product_id] = @product.id
       Rails.cache.delete([:histories, session[:product_id]])
       Rails.cache.delete([:join, @ticket.id])
-    end
 
     respond_to do |format|
       format.html {render "tickets/tickets_pack/issue_store_part"}
