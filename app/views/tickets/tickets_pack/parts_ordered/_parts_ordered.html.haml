@@ -218,7 +218,7 @@
 
             = f.label "Part terminate reason"
             = f.select :part_terminated_reason_id, Reason.where(terminate_spare_part: true).map{|r| [r.reason, r.id]}, {include_blank: true}, {class: "part_terminated_select"} # showing part_terminated is cheched through javascript
-          = f.submit "terminate", name: "terminate"
+          = f.submit "terminate", name: "terminate", class: "btn btn-sm btn-success"
 
 
   - ticket.ticket_on_loan_spare_parts.each do |ticket_on_loan_spare_part|
