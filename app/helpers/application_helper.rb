@@ -75,4 +75,78 @@ module ApplicationHelper
       "TICKET_CREATED_TIME=#{fsr.ticket.created_at.strftime(INOCRM_CONFIG['time_format'])}"
     ]    
   end
+
+  def ticket_bpm_headers(process_id, ticket_id, spare_part_id = nil, onloan_spare_part_id = nil)
+    TicketSparePart
+    WorkflowMapping
+
+    @ticket = Ticket.find_by_id(ticket_id)
+
+    if process_id.present? and @ticket.present?
+      ticket_no = @ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
+      ticket_no  = "[#{ticket_no}]"
+
+      customer_name = "#{@ticket.customer.name}".truncate(23)
+
+      terminated = @ticket.ticket_terminated ? "[Terminated]" : ""
+
+      re_open = @ticket.re_open_count > 0 ? "[Re-Open]" : ""
+
+      product_brand = "[#{@ticket.products.first.product_brand.name.truncate(13)}]"
+
+      job_type = "[#{@ticket.job_type.name}]"
+
+      ticket_type = "[#{@ticket.ticket_type.name}]"
+
+      regional = @ticket.regional_support_job ? "[Regional]" : ""
+
+      repair_type = @ticket.repair_type.code == "EX" ? "[#{@ticket.repair_type.name}]" : ""
+
+      delivery_stage = @ticket.ticket_deliver_units.any?{|d| !d.received} ? "[to-be collected]" : (@ticket.ticket_deliver_units.any?{|d| !d.delivered} ? "[to-be delivered]" : "")
+
+      @h1 = "#{ticket_no}#{customer_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}#{delivery_stage}"
+
+      if spare_part_id.present?
+        spare_part = @ticket.ticket_spare_parts.find_by_id(spare_part_id)
+        store_part = spare_part.ticket_spare_part_store
+        # store_part_name = (store_part && store_part.inventory_product) ? store_part.inventory_product.try(:description))
+
+        if store_part and store_part.inventory_product
+          store_part_name = "[#{store_part.inventory_product.description}]".truncate(18)
+
+          @h2 = "#{ticket_no}#{customer_name}#{store_part_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}"
+        else
+          @h2 = ""
+        end
+
+        if spare_part
+          spare_part_name = "[#{spare_part.spare_part_no}-#{spare_part.spare_part_description}]".truncate(18)
+          @h3 = "#{ticket_no}#{customer_name}#{spare_part_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}"
+        else
+          @h3 = ""
+        end
+
+      end
+
+      if onloan_spare_part_id.present?
+        onloan_spare_part = @ticket.ticket_on_loan_spare_parts.find_by_id(onloan_spare_part_id)
+
+        if onloan_spare_part and onloan_spare_part.inventory_product
+          store_part_name = "[#{onloan_spare_part.inventory_product.description}]".truncate(18)
+
+          @h2 = "#{ticket_no}#{customer_name}#{store_part_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}"
+        else
+          @h2 = ""
+        end
+      end
+
+      found_process_id = WorkflowHeaderTitle.where(process_id: process_id)
+      if found_process_id.present?
+        found_process_id.first.update(h1: @h1, h2: @h2, h3: @h3)
+      else
+        WorkflowHeaderTitle.create(process_id: process_id, h1: @h1, h2: @h2, h3: @h3)
+      end
+    end
+
+  end
 end

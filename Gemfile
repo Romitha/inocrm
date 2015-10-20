@@ -98,5 +98,8 @@ end
 
 gem 'httpi'
 
+gem "websocket-rails"
+# gem "em-http-request"
+
 # Use debugger
 # gem 'debugger', group: [:development, :test]

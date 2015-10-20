@@ -1,4 +1,6 @@
 module TodosHelper
+  HTTPI.adapter = :net_http
+
   def send_request_process_data *args
     args = args.extract_options!
     response_hash = send_request args

@@ -15,6 +15,7 @@
 //= require jquery-fileupload/basic
 //= require jquery-fileupload/vendor/tmpl
 //= require jquery.Jcrop
+//= require websocket_rails/main
 //= require twitter/bootstrap
 //= require bootstrap-editable
 //= require bootstrap-editable-rails
@@ -32,7 +33,7 @@ $.fn.editable.defaults.mode = 'inline';
 $.fn.editable.defaults.ajaxOptions = {type: "PUT"};
 
 
-$.fn.regexMask = function (mask) { 
+$.fn.regexMask = function (mask) {
 	if (!mask) { 
 		throw 'mandatory mask argument missing';
 	} 

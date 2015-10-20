@@ -44,12 +44,14 @@ Rails.application.configure do
   config.assets.initialize_on_precompile = false
 
   config.action_mailer.smtp_settings = {
-    address: "tipsanit.railsplayground.net",
-    port: 25,
-    domain: "tipsanity.com",
-    user_name: "no_reply@tipsanity.com",
-    password: "FHnhaM!q@lrc",
-    authentication: :login,
-    enable_starttls_auto: false
+    # address: "tipsanit.railsplayground.net",
+    # port: 25,
+    # domain: "tipsanity.com",
+    # user_name: "no_reply@tipsanity.com",
+    # password: "FHnhaM!q@lrc",
+    # authentication: :login,
+    # enable_starttls_auto: false
   }
+
+  config.middleware.delete Rack::Lock
 end

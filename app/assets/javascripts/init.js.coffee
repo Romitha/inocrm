@@ -9,4 +9,5 @@ $ ->
   Inventories.setup()
   Admins.setup()
   Warranties.setup()
+  Lives.setup()
   return
