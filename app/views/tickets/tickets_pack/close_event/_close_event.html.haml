@@ -45,11 +45,11 @@
     #{spare_part.return_part_ct_no}
 
 .row.col-md-12{style: "margin-top: 20px;"}
-  = simple_nested_form_for spare_part, url: close_event_tickets_path(status_param: "create"), method: :post, remote: true do |f|
+  = simple_nested_form_for spare_part, url: close_event_tickets_path(status_param: "create"), method: :post do |f|
     = f.simple_fields_for :ticket_spare_part_manufacture do |tm|
       = label_tag "Event Closed (Claim Completed)"
       = tm.check_box :event_closed
-      = label_tag "Payment Expected #{Currency.find_by_id(spare_part.ticket_spare_part_manufacture.try(:manufacture_currency_id).try(:code))}"
+      = label_tag "Payment Expected (#{spare_part.ticket.ticket_currency.try(:currency)})"
       = tm.input :manufacture_currency_id, label: false, input_html: {class: "only_float"}
     = f.input :note
     = f.submit "Save", class: "btn btn-success"

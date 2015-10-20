@@ -10,8 +10,9 @@
       %ul.nav.navbar-nav
         %li
           = link_to "todo", todos_path, class: "dropdown-toggle todo text-hide nav-icon", data: {placement: "bottom"}, title: "To Do", rel: "tooltip"
-        %li
-          = link_to "Alert", "#", class: "dropdown-toggle alert text-hide nav-icon margin-bottom0", data: {placement: "bottom"}, title: "Alert", rel: "tooltip"
+        %li#websocket_alert_list
+          = link_to "Alert", "#", class: "dropdown-toggle alert text-hide nav-icon margin-bottom0", title: "Alert", rel: "tooltip", id: "websocket_alert"
+
         - if can? :dashboard, Organization
           %li.small_scale_margin-right10.dropdown{role: "presentation"}
             = link_to "Configuration", "#", class: "dropdown-toggle organization text-hide nav-icon", data: {toggle: "dropdown", placement: "bottom"}, "aria-haspopup" => "true", "aria-expanded" => "true", title: "Configuration", rel: "tooltip"

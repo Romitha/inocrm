@@ -104,7 +104,7 @@ class InventoriesController < ApplicationController
 
           if bpm_response1[:status].try(:upcase) == "SUCCESS"
             @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name])
-            ticket_bpm_headers bpm_response1[:process_id], @ticket.id, ""
+            view_context.ticket_bpm_headers bpm_response1[:process_id], @ticket.id, request_spare_part_id
           else
             @bpm_process_error = true
           end
@@ -141,7 +141,7 @@ class InventoriesController < ApplicationController
 
           if bpm_response1[:status].try(:upcase) == "SUCCESS"
             @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name])
-            ticket_bpm_headers bpm_response1[:process_id], @ticket.id, ""
+            view_context.ticket_bpm_headers bpm_response1[:process_id], @ticket.id, request_spare_part_id
           else
             @bpm_process_error = true
           end
@@ -187,7 +187,7 @@ class InventoriesController < ApplicationController
 
           if bpm_response1[:status].try(:upcase) == "SUCCESS"
             @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name])
-            ticket_bpm_headers bpm_response1[:process_id], @ticket.id, ""
+            view_context.ticket_bpm_headers bpm_response1[:process_id], @ticket.id, request_spare_part_id
           else
             @bpm_process_error = true
           end
@@ -281,7 +281,7 @@ class InventoriesController < ApplicationController
 
           if bpm_response1[:status].try(:upcase) == "SUCCESS"
             @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name])
-            ticket_bpm_headers bpm_response1[:process_id], @ticket.id, ""
+            view_context.ticket_bpm_headers bpm_response1[:process_id], @ticket.id, "", request_onloan_spare_part_id
           else
             @bpm_process_error = true
           end
@@ -615,7 +615,7 @@ class InventoriesController < ApplicationController
     end
 
     def ticket_spare_part_params ticket_spare_part
-      t_spare_part = params.require(:ticket_spare_part).permit(:spare_part_no, :spare_part_description, :ticket_id, :ticket_fsr, :cus_chargeable_part, :request_from, :faulty_serial_no, :faulty_ct_no, :note, :status_action_id, :part_terminated, :status_use_id, :part_terminated_reason_id, ticket_attributes: [:remarks, :id])
+      t_spare_part = params.require(:ticket_spare_part).permit(:spare_part_no, :spare_part_description, :ticket_id, :ticket_fsr, :cus_chargeable_part, :request_from, :faulty_serial_no, :faulty_ct_no, :note, :status_action_id, :part_terminated, :status_use_id, :part_terminated_reason_id, :received_spare_part_no, :received_part_serial_no, :received_part_ct_no, :repare_start, :repare_end, :return_part_serial_no, :return_part_ct_no, ticket_attributes: [:remarks, :id])
       t_spare_part[:note] = t_spare_part[:note].present? ? "#{t_spare_part[:note]} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{ticket_spare_part.note}" : ticket_spare_part.note
 
       t_spare_part[:repare_start] = Time.strptime(t_spare_part[:repare_start],'%m/%d/%Y %I:%M %p') if t_spare_part[:repare_start].present?

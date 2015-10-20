@@ -716,12 +716,15 @@ class TicketsController < ApplicationController
 
           if bpm_response[:status].try(:upcase) == "SUCCESS"
             @ticket.ticket_workflow_processes.create(process_id: bpm_response[:process_id], process_name: bpm_response[:process_name])
-            ticket_bpm_headers bpm_response[:process_id], @ticket.id, ""
+            view_context.ticket_bpm_headers bpm_response[:process_id], @ticket.id, ""
           else
             @bpm_process_error = true
           end
         end
         flash_message = @bpm_process_error ? "Ticket successfully saved. But BPM error. Please continue after rectifying BPM" : "Thank you. ticket is successfully registered."
+
+        WebsocketRails[:posts].trigger 'new', {task_name: "Ticket", task_id: @ticket.id, task_verb: "created.", by: current_user.email, at: Time.now.strftime('%d/%m/%Y at %H:%M:%S')}
+
         render js: "alert('#{flash_message}'); window.location.href='#{ticket_path(@ticket)}';"
 
       else
@@ -803,16 +806,7 @@ class TicketsController < ApplicationController
     session[:process_id] = nil
     session[:task_id] = nil
     session[:owner] = nil
-    # Rails.cache.delete([:histories, session[:product_id]])
     Rails.cache.delete([:join, @ticket.id])
-    # @histories = Rails.cache.fetch([:histories, session[:product_id]]){Kaminari.paginate_array(@product.tickets.reject{|t| t == @ticket})}.page(params[:page]).per(2)
-
-    # @join_tickets = Rails.cache.fetch([:join, @ticket.id]){Kaminari.paginate_array(Ticket.where(id: @ticket.joint_tickets.map(&:joint_ticket_id)))}.page(params[:page]).per(2)
-
-    # @q_and_answers = Rails.cache.fetch([:q_and_answers, @ticket.id]){ @ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})} }
-
-    # @ge_q_and_answers = Rails.cache.fetch([:ge_q_and_answers, @ticket.id]){ @ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"General Questions" => v})} }
-
     respond_with(@ticket)
   end
 
@@ -821,6 +815,7 @@ class TicketsController < ApplicationController
     ContactNumber
     QAndA
     Inventory
+    TaskAction
     @ticket = Ticket.find params[:ticket_id]
 
     @rendering_dom = "#"+params[:partial_template_for_show]
@@ -874,13 +869,11 @@ class TicketsController < ApplicationController
 
     when "activity_history"
 
-      product = @ticket.products.first
-      ge_q_and_as = Rails.cache.fetch([:ge_q_and_answers, @ticket.id]){ @ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"General Questions" => v})} }
-
-      pr_q_and_as = Rails.cache.fetch([:q_and_answers, @ticket.id]){ @ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})} }
+      # product = @ticket.products.first
+      @user_ticket_actions = @ticket.cached_user_ticket_actions
 
       @render_template = "tickets/tickets_pack/activity_history"
-      @variables = {ticket: @ticket, customer: customer}
+      @variables = {ticket: @ticket}
     else
       render js: "alert('template is unavailable');"
     end
@@ -899,13 +892,6 @@ class TicketsController < ApplicationController
       session[:product_id] = @product.id
       Rails.cache.delete([:histories, session[:product_id]])
       Rails.cache.delete([:join, @ticket.id])
-      # @histories = Rails.cache.fetch([:histories, session[:product_id]]){Kaminari.paginate_array(@product.tickets)}.page(params[:page]).per(2)
-
-      # @join_tickets = Rails.cache.fetch([:join, @ticket.id]){Kaminari.paginate_array(Ticket.where(id: @ticket.joint_tickets.map(&:joint_ticket_id)))}.page(params[:page]).per(2)
-
-      # @q_and_answers = Rails.cache.fetch([:q_and_answers, @ticket.id]){ @ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})} }
-
-      # @ge_q_and_answers = Rails.cache.fetch([:ge_q_and_answers, @ticket.id]){ @ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"General Questions" => v})} }
 
       @user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(2).id)
       @user_assign_ticket_action = @user_ticket_action.user_assign_ticket_actions.build
@@ -964,14 +950,15 @@ class TicketsController < ApplicationController
         bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: {d2_re_correction: d2_recorrection, d3_regional_support_job: d3_regional_support_job, supp_engr_user: supp_engr_user, supp_hd_user: supp_hd_user}
 
         if bpm_response[:status].upcase == "SUCCESS"
-          @flash_message = "Successfully updated."
+          flash[:notice] = "Successfully updated."
+          WebsocketRails[:posts].trigger 'new', {task_name: "Assign ticket", task_id: @ticket.id, task_verb: "updated.", by: current_user.email, at: Time.now.strftime('%d/%m/%Y at %H:%M:%S')}
         else
-          @flash_message = "ticket is updated. but Bpm error"
+          flash[:error] = "ticket is updated. but Bpm error"
         end
       end
     end
     # redirect_to todos_url, notice: @flash_message
-    redirect_to @ticket, notice: @flash_message
+    redirect_to @ticket
   end
 
   def pop_approval
@@ -988,14 +975,6 @@ class TicketsController < ApplicationController
       session[:product_id] = @product.id
       Rails.cache.delete([:histories, session[:product_id]])
       Rails.cache.delete([:join, @ticket.id])
-      # @histories = Rails.cache.fetch([:histories, session[:product_id]]){Kaminari.paginate_array(@product.tickets)}.page(params[:page]).per(2)
-
-      # @join_tickets = Rails.cache.fetch([:join, @ticket.id]){Kaminari.paginate_array(Ticket.where(id: @ticket.joint_tickets.map(&:joint_ticket_id)))}.page(params[:page]).per(2)
-
-      # @q_and_answers = Rails.cache.fetch([:q_and_answers, @ticket.id]){ @ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})} }
-
-      # @ge_q_and_answers = Rails.cache.fetch([:ge_q_and_answers, @ticket.id]){ @ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"General Questions" => v})} }
-
       @user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(2).id)
       @user_assign_ticket_action = @user_ticket_action.user_assign_ticket_actions.build
       @assign_regional_support_center = @user_ticket_action.assign_regional_support_centers.build
@@ -1014,11 +993,6 @@ class TicketsController < ApplicationController
 
     @ticket = Ticket.find params[:ticket_id]
     @product = Product.find product_id
-
-    @ticket.attributes = t_params
-
-    # product_params[product_id]["pop_note"] = product_params[product_id]["pop_note"].present? ? "#{product_params[product_id]["pop_note"]} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@product.pop_note}" : @product.pop_note
-
 
     @product.attributes = product_params[product_id]
 
@@ -1041,13 +1015,15 @@ class TicketsController < ApplicationController
         bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: {}
 
         if bpm_response[:status].upcase == "SUCCESS"
-          @flash_message = "Successfully updated."
+          flash[:notice] = "Successfully updated."
         else
-          @flash_message = "ticket is updated. but Bpm error"
+          flash[:error] = "ticket is updated. but Bpm error"
         end
       end
 
-      redirect_to @ticket, notice: @flash_message
+      WebsocketRails[:posts].trigger 'new', {task_name: "Pop approval", task_id: @ticket.id, task_verb: "updated.", by: current_user.email, at: Time.now.strftime('%d/%m/%Y at %H:%M:%S')}
+
+      redirect_to @ticket
     else
       redirect_to pop_approval_tickets_path, notice: "There are no present #{@ticket.warranty_type.name} for the product to initiate particular warranty related ticket.')"  
     end
@@ -1070,10 +1046,6 @@ class TicketsController < ApplicationController
       session[:product_id] = @product.id
       Rails.cache.delete([:histories, session[:product_id]])
       Rails.cache.delete([:join, @ticket.id])
-      # @histories = Rails.cache.fetch([:histories, session[:product_id]]){Kaminari.paginate_array(@product.tickets)}.page(params[:page]).per(2)
-      # @join_tickets = Rails.cache.fetch([:join, @ticket.id]){Kaminari.paginate_array(Ticket.where(id: @ticket.joint_tickets.map(&:joint_ticket_id)))}.page(params[:page]).per(2)
-      # @q_and_answers = @ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})}
-      # @ge_q_and_answers = @ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"General Questions" => v})}
 
       @user_ticket_action = @ticket.user_ticket_actions.build(action_id: 2)
       @user_assign_ticket_action = @user_ticket_action.user_assign_ticket_actions.build
@@ -1107,15 +1079,6 @@ class TicketsController < ApplicationController
       session[:product_id] = @product.id
       Rails.cache.delete([:histories, session[:product_id]])
       Rails.cache.delete([:join, @ticket.id])
-      # @histories = Rails.cache.fetch([:histories, session[:product_id]]){Kaminari.paginate_array(@product.tickets)}.page(params[:page]).per(2)
-      # @join_tickets = Rails.cache.fetch([:join, @ticket.id]){Kaminari.paginate_array(Ticket.where(id: @ticket.joint_tickets.map(&:joint_ticket_id)))}.page(params[:page]).per(2)
-      # @q_and_answers = @ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})}
-      # @ge_q_and_answers = @ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"General Questions" => v})}
-      # @user_ticket_action = @ticket.user_ticket_actions.build(action_id: 2)
-      # @user_assign_ticket_action = @user_ticket_action.user_assign_ticket_actions.build
-      # @assign_regional_support_center = @user_ticket_action.assign_regional_support_centers.build
-
-      # @ge_questions = GeQAndA.where(action_id: 5)
     end
     respond_to do |format|
       format.html {render "tickets/tickets_pack/order_mf"}
@@ -1222,6 +1185,9 @@ class TicketsController < ApplicationController
         bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
         if bpm_response[:status].upcase == "SUCCESS"
+
+          WebsocketRails[:posts].trigger 'new', {task_name: "Spare part", task_id: spt_ticket_spare_part.id, task_verb: "received and issued.", by: current_user.email, at: Time.now.strftime('%d/%m/%Y at %H:%M:%S')}
+
           flash[:notice]= "Successfully updated"
         else
           flash[:error]= "Issue part is updated. but Bpm error"
@@ -1233,7 +1199,7 @@ class TicketsController < ApplicationController
     redirect_to todos_url
   end
 
-  def return_to_stores
+  def return_manufacture_part
     Inventory
     Warranty
     ContactNumber
@@ -1252,8 +1218,65 @@ class TicketsController < ApplicationController
       Rails.cache.delete([:join, @ticket.id])
     end
     respond_to do |format|
-      format.html {render "tickets/tickets_pack/return_to_stores/return_to_stores"}
+      format.html {render "tickets/tickets_pack/return_manufacture_part/return_manufacture_part"}
     end
+  end
+
+  def update_return_manufacture_part
+    spt_ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
+    @ticket = spt_ticket_spare_part.ticket
+
+    spt_ticket_spare_part.update ticket_spare_part_params(spt_ticket_spare_part)
+
+    if spt_ticket_spare_part.try(:part_returned) and spt_ticket_spare_part.status_action_id == SparePartStatusAction.find_by_code("RTN").id
+      spt_ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("RCS").id) 
+
+      spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)   
+
+      spt_ticket_spare_part.ticket_spare_part_manufacture and spt_ticket_spare_part.ticket_spare_part_manufacture.update(received_manufacture: true)
+
+      #Set Action (37) Receive Spare part from Manufacture, DB.spt_act_request_spare_part.
+      user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(37).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+      user_ticket_action.build_request_spare_part(ticket_spare_part_id: spt_ticket_spare_part.id)
+      user_ticket_action.save   
+      
+      flash[:notice]= "Successfully updated"
+
+    elsif spt_ticket_spare_part.try(:part_returned) and spt_ticket_spare_part.status_action_id == SparePartStatusAction.find_by_code("RPA").id
+      continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+
+      if continue
+
+        spt_ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("ISS").id) 
+        spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now) 
+
+        spt_ticket_spare_part.ticket_spare_part_manufacture and spt_ticket_spare_part.ticket_spare_part_manufacture.update(issued: true)
+
+        #Set Action (38) Issue Spare part, DB.spt_act_request_spare_part
+        user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(38).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+        user_ticket_action.build_request_spare_part(ticket_spare_part_id: spt_ticket_spare_part.id)
+        user_ticket_action.save 
+
+        # bpm output variables
+        bpm_variables = view_context.initialize_bpm_variables
+
+        @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
+
+        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+        if bpm_response[:status].upcase == "SUCCESS"
+
+          WebsocketRails[:posts].trigger 'new', {task_name: "Spare part", task_id: spt_ticket_spare_part.id, task_verb: "return manufacture part.", by: current_user.email, at: Time.now.strftime('%d/%m/%Y at %H:%M:%S')}
+
+          flash[:notice]= "Successfully updated"
+        else
+          flash[:error]= "Issue part is updated. but Bpm error"
+        end
+      else
+        flash[:error]= "Unable to update."
+      end
+    end
+    redirect_to todos_url
   end
 
   def create_parts_bundle
@@ -1316,7 +1339,6 @@ class TicketsController < ApplicationController
 
     if @ticket
       @product = @ticket.products.first
-      @warranties = @product.warranties
       session[:product_id] = @product.id
       Rails.cache.delete([:histories, session[:product_id]])
       Rails.cache.delete([:join, @ticket.id])
@@ -1324,6 +1346,10 @@ class TicketsController < ApplicationController
     respond_to do |format|
       format.html {render "tickets/tickets_pack/close_event"}
     end
+  end
+
+  def update_close_event
+    
   end
 
   def edit_ticket
@@ -1394,6 +1420,8 @@ class TicketsController < ApplicationController
           end
         end
       end
+      WebsocketRails[:posts].trigger 'new', {task_name: "Serial no for", task_id: @ticket.id, task_verb: "updated.", by: current_user.email, at: Time.now.strftime('%d/%m/%Y at %H:%M:%S')}
+
       @flash_message = {notice: "Successfully updated"}
     else
       @flash_message = {error: "Unable to updated."}
@@ -1488,10 +1516,6 @@ class TicketsController < ApplicationController
       session[:product_id] = @product.id
       Rails.cache.delete([:histories, session[:product_id]])
       Rails.cache.delete([:join, @ticket.id])
-      # @histories = Rails.cache.fetch([:histories, session[:product_id]]){Kaminari.paginate_array(@product.tickets)}.page(params[:page]).per(2)
-      # @join_tickets = Rails.cache.fetch([:join, @ticket.id]){Kaminari.paginate_array(Ticket.where(id: @ticket.joint_tickets.map(&:joint_ticket_id)))}.page(params[:page]).per(2)
-      # @q_and_answers = @ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})}
-      # @ge_q_and_answers = @ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"General Questions" => v})}
 
     end
 
@@ -1852,7 +1876,7 @@ class TicketsController < ApplicationController
 
       if @bpm_response1[:status].try(:upcase) == "SUCCESS"
         @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name])
-        ticket_bpm_headers @bpm_response1[:process_id], @ticket.id, request_spare_part_id
+        view_context.ticket_bpm_headers @bpm_response1[:process_id], @ticket.id, request_spare_part_id
       else
         @bpm_process_error = true
       end
@@ -2295,7 +2319,7 @@ class TicketsController < ApplicationController
 
         bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
-        ticket_bpm_headers params[:process_id], @ticket.id, ""
+        view_context.ticket_bpm_headers params[:process_id], @ticket.id, ""
 
         if bpm_response[:status].upcase == "SUCCESS"
           @flash_message = "Successfully updated."
@@ -2469,7 +2493,7 @@ class TicketsController < ApplicationController
 
         if bpm_response1[:status].try(:upcase) == "SUCCESS"
           @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name])
-          ticket_bpm_headers bpm_response1[:process_id], @ticket.id, request_spare_part_id
+          view_context.ticket_bpm_headers bpm_response1[:process_id], @ticket.id, request_spare_part_id
         else
           @bpm_process_error = true
         end
@@ -2549,7 +2573,7 @@ class TicketsController < ApplicationController
 
         if bpm_response1[:status].try(:upcase) == "SUCCESS"
           @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name])
-          ticket_bpm_headers bpm_response1[:process_id], @ticket.id, ""
+          view_context.ticket_bpm_headers bpm_response1[:process_id], @ticket.id, ""
         else
           @bpm_process_error = true
         end
@@ -2655,68 +2679,6 @@ class TicketsController < ApplicationController
 
     def act_warranty_extend_params
       params.require(:action_warranty_extend).permit(:reject_reason_id, :reject_note, :extended)
-    end
-
-    def ticket_bpm_headers(process_id, ticket_id, spare_part_id)
-      TicketSparePart
-      WorkflowMapping
-
-      @ticket = Ticket.find_by_id(ticket_id)
-
-      if process_id.present? and @ticket.present?
-        ticket_no = @ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
-        ticket_no  = "[#{ticket_no}]"
-
-        customer_name = "#{@ticket.customer.name}".truncate(23)
-
-        terminated = @ticket.ticket_terminated ? "[Terminated]" : ""
-
-        re_open = @ticket.re_open_count > 0 ? "[Re-Open]" : ""
-
-        product_brand = "[#{@ticket.products.first.product_brand.name.truncate(13)}]"
-
-        job_type = "[#{@ticket.job_type.name}]"
-
-        ticket_type = "[#{@ticket.ticket_type.name}]"
-
-        regional = @ticket.regional_support_job ? "[Regional]" : ""
-
-        repair_type = @ticket.repair_type.code == "EX" ? "[#{@ticket.repair_type.name}]" : ""
-
-        delivery_stage = @ticket.ticket_deliver_units.any?{|d| !d.received} ? "[to-be collected]" : (@ticket.ticket_deliver_units.any?{|d| !d.delivered} ? "[to-be delivered]" : "")
-
-        @h1 = "#{ticket_no}#{customer_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}#{delivery_stage}"
-
-        if spare_part_id.present?
-          spare_part = @ticket.ticket_spare_parts.find_by_id(spare_part_id)
-          store_part = spare_part.ticket_spare_part_store
-          # store_part_name = (store_part && store_part.inventory_product) ? store_part.inventory_product.try(:description)) 
-
-          if store_part and store_part.inventory_product
-            store_part_name = "[#{store_part.inventory_product.description}]".truncate(18)
-
-            @h2 = "#{ticket_no}#{customer_name}#{store_part_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}"
-          else
-            @h2 = ""
-          end
-
-          if spare_part
-            spare_part_name = "[#{spare_part.spare_part_no}-#{spare_part.spare_part_description}]".truncate(18)
-            @h3 = "#{ticket_no}#{customer_name}#{spare_part_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}"
-          else
-            @h3 = ""
-          end
-
-        end
-
-        found_process_id = WorkflowHeaderTitle.where(process_id: process_id)
-        if found_process_id.present?
-          found_process_id.first.update(h1: @h1, h2: @h2, h3: @h3)
-        else
-          WorkflowHeaderTitle.create(process_id: process_id, h1: @h1, h2: @h2, h3: @h3)
-        end
-      end
-
     end
 
     def append_remark_ticket_params(ticket)

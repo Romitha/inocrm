@@ -294,8 +294,9 @@ window.Tickets =
         $("#assign_to_for_regional").empty()
 
   call_resolution_template: (call_template)->
+    _this = this
     $("#template_caller").change ->
-      # alert "hi"
+      _this.ajax_loader()
       $.post "/tickets/call_resolution_template", {call_template: $(@).val()}
 
   call_mf_order_template: (call_template)->
@@ -402,8 +403,11 @@ window.Tickets =
   check_validation: (tag_attrib, validation_method)->
     if validation_method == "presence"
       $(tag_attrib).val() != ""
-    if validation_method == "checked"
+
+    else if validation_method == "checked"
       $(tag_attrib).is(":checked")
+    else
+      true
 
   presence_validater: (elem, elems...)->
     _this = this
@@ -412,14 +416,15 @@ window.Tickets =
     submit = true
     for presence in active_elems.presence
       do (presence) ->
-        unless _this.check_validation(presence, "presence")
+        validater = _this.check_validation(presence, "presence")
+
+        if validater
+          $(presence).parents(".form-group").removeClass("has-error")
+
+        else
           $(presence).parents(".form-group").addClass("has-error")
           $(presence).after("<span class='help-block'>Can't be blank</span>")
           submit = false
-          console.log presence
-        else
-          $(presence).parents(".form-group").removeClass("has-error")
-          console.log presence
 
     $(elem).parents("form").submit() if submit
 
@@ -427,7 +432,9 @@ window.Tickets =
     $(".screener").addClass("fade")
 
   remove_ajax_loader: ->
-    $(".screener").removeClass("fade")
+    setTimeout (->
+      $(".screener").removeClass("fade")
+    ), 200
 
   ticket_info_ajax_loader: ->
     _this = this
@@ -444,3 +451,4 @@ window.Tickets =
     _this = this
     $("[data-remote]").on "ajax:success", (e, data, status, xhr) ->
       _this.ajax_loader()
+    return

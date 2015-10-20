@@ -9,6 +9,9 @@ class QAndAsController < ApplicationController
     QAndA
     @ticket = Ticket.find params[:ticket_id]
     if @ticket.update problem_category_params
+
+      WebsocketRails[:posts].trigger 'new', {task_name: "Q and A for the ticket", task_id: @ticket.id, task_verb: "updated.", by: current_user.email, at: Time.now.strftime('%d/%m/%Y at %H:%M:%S')}
+
       redirect_to todos_url, notice: "Successfully updated."
     else
       redirect_to todos_url, alert: "Successfully updated."
