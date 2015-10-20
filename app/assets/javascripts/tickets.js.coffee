@@ -19,7 +19,7 @@ window.Tickets =
     @fade_flash_msg()
     @call_extend_warranty_template()
     @ticket_info_ajax_loader()
-    @remote_true_loader()
+    # @remote_true_loader()
     return
 
   initial_loaders: ->
