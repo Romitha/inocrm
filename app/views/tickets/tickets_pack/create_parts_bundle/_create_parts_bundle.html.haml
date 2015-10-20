@@ -1,6 +1,10 @@
 - spare_part_count = TicketSparePart.count
-- spare_part = @spare_part
+- #spare_part = @spare_part
 - id_val = @id
+
+- request_spare_part_id = (params[:request_spare_part_id] or session[:request_spare_part_id])
+- spare_part = TicketSparePart.find request_spare_part_id
+
 .row{style:"margin-right:0%;margin-left:0%;"}
   .col-md-12
 
@@ -14,7 +18,7 @@
         %strong Total No of Parts:
         #{spare_part_count}
 
-    .row
+    .row.small_scale_padding-top1
       .col-md-12.table_border
         .row
           .col-md-1.col-xs-1
@@ -75,7 +79,7 @@
           .col-md-1.col-xs-1
             "+"
 
-    .row
+    .row.small_scale_padding-top1
       .col-md-4
         %strong Addded To Bundle Parts
       .col-md-4
@@ -84,7 +88,7 @@
 
 
 
-    .row
+    .row.small_scale_padding-top1
       .col-md-12.table_border
         .row
           .col-md-1.col-xs-1
@@ -122,6 +126,109 @@
             001
           .col-md-1.col-xs-1
             001
+          .col-md-1.col-xs-1
+            "-"
+
+        .row
+          .col-md-1.col-xs-1
+            001
+          .col-md-2.col-xs-2
+            2015-10-4
+          .col-md-1.col-xs-1
+            001
+          .col-md-3.col-xs-3
+            This is Description This is Description
+          .col-md-1.col-xs-1
+            001
+          .col-md-1.col-xs-1
+            This is Part Status
+          .col-md-1.col-xs-1
+            001
+          .col-md-1.col-xs-1
+            001
+          .col-md-1.col-xs-1
+            "-"
+
+    .row.small_scale_padding-top1
+      .col-md-6
+        %strong Bundle
+      .col-md-6
+        %strong Bundle To:
+        = select_tag "manufacture_name", options_for_select(Manufacture.all.map { |mn| [ mn.manufacture , mn.id] }),{:prompt => " "}
+
+
+    .row
+      .col-md-12
+        %strong Manufacture Name:
+
+    .row.small_scale_padding-top1
+      .col-md-6.table_border
+        .row
+          .col-md-2.col-xs-2
+            No.
+          .col-md-3.col-xs-3
+            Date Bundled
+          .col-md-2.col-xs-2
+            Bundle No
+          .col-md-3.col-xs-3
+            Bundled By
+          .col-md-2.col-xs-2
+            Select
+        .row
+          .col-md-2.col-xs-2
+            001
+          .col-md-3.col-xs-3
+            2015-01-01
+          .col-md-2.col-xs-2
+            001
+          .col-md-3.col-xs-3
+            XXXX
+          .col-md-2.col-xs-2
+            "Select"
+
+
+    .row.small_scale_padding-top1
+      .col-md-12
+        = simple_form_for :bundle, url: create_parts_bundle_tickets_path do |f|
+          .row
+            .col-md-4
+              = f.input :bundle_no
+            .col-md-4
+              %strong Bundle Date:
+              #{spare_part.ticket_spare_part_manufacture.add_bundle_at}
+            .col-md-4
+              %strong Bundle By:
+              #{spare_part.ticket_spare_part_manufacture.add_bundle_by}
+          .row
+            .col-md-6
+              = f.input :note
+
+    .row
+      .col-md-4
+        %strong Show Existing Parts
+      .col-md-4
+        %strong Total No of Parts:
+        #{spare_part_count}
+
+    .row.small_scale_padding-top1
+      .col-md-12.table_border
+        .row
+          .col-md-1.col-xs-1
+            No.
+          .col-md-2.col-xs-2
+            Date Returned
+          .col-md-1.col-xs-1
+            Part No
+          .col-md-3.col-xs-3
+            Description
+          .col-md-1.col-xs-1
+            Serial No
+          .col-md-1.col-xs-1
+            Part Status
+          .col-md-1.col-xs-1
+            Event No
+          .col-md-1.col-xs-1
+            Ticket No
           .col-md-1.col-xs-1
             "-"
 
