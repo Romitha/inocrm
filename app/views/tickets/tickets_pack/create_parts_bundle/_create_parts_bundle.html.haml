@@ -195,10 +195,10 @@
               = f.input :bundle_no
             .col-md-4
               %strong Bundle Date:
-              #{spare_part.ticket_spare_part_manufacture.add_bundle_at}
+              #{spare_part.ticket_spare_part_manufacture.try(:add_bundle_at)}
             .col-md-4
               %strong Bundle By:
-              #{spare_part.ticket_spare_part_manufacture.add_bundle_by}
+              #{spare_part.ticket_spare_part_manufacture.try(:add_bundle_by)}
           .row
             .col-md-6
               = f.input :note
