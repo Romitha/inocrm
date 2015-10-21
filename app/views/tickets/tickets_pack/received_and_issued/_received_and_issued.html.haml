@@ -1,6 +1,17 @@
 - request_spare_part_id = (params[:request_spare_part_id] or session[:request_spare_part_id])
 - spare_part = TicketSparePart.find request_spare_part_id
 - ticket_for_sp = spare_part.ticket
+
+
+.row
+  .col-md-12
+    .btn-group.pull-right{"data-toggle"=>"buttons"}
+      %label.btn.btn-warning{class: "#{ticket.status_hold ? 'active' : ''}"}
+        %input#hold_button{type: "checkbox", value: "#{ticket.status_hold ? 'un_hold' : 'hold'}"}
+          - if ticket.status_hold
+            Un Hold
+          - else
+            Hold
 .row
   .col-md-4
     %strong Activity: #{spare_part.ticket_spare_part_manufacture.try(:received_manufacture) ? "Issue part" : "Recieve part"}
@@ -49,3 +60,12 @@
     = f.input :note, wrapper_html: {class: "col-md-12"}, input_html: {value: nil}
     .col-md-12= simple_format f.object.note
     %div{title: "#{'Part not yet collected' unless spare_part.ticket_spare_part_manufacture.try(:collected_manufacture)}"}= f.submit "Save", class: "btn btn-success", disabled: !spare_part.ticket_spare_part_manufacture.try(:collected_manufacture)
+
+
+#hold_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "hold_modal", "aria-hidden" => true}
+  .modal-dialog
+    .modal-content
+      .modal-header
+        = link_to "X", "#", class: "close", data: {dismiss: "modal"}, "aria-label"=>"Close"
+        %h4.modal-title Hold and Unhold
+      .modal-body

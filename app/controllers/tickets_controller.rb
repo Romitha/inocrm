@@ -1212,8 +1212,8 @@ class TicketsController < ApplicationController
     session[:ticket_id] = @ticket.id
     if @ticket
       @product = @ticket.products.first
-      @warranties = @product.warranties
-      session[:product_id] = @product.id
+      @ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
+      @ticket_spare_part.request_spare_parts.build
       Rails.cache.delete([:histories, session[:product_id]])
       Rails.cache.delete([:join, @ticket.id])
     end
@@ -1237,7 +1237,7 @@ class TicketsController < ApplicationController
 
       #Set Action (37) Receive Spare part from Manufacture, DB.spt_act_request_spare_part.
       user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(37).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
-      user_ticket_action.build_request_spare_part(ticket_spare_part_id: spt_ticket_spare_part.id)
+      user_ticket_action.build_request_spare_part(ticket_spare_part_id: spt_ticket_spare_part.id, reject_return_part_reason_id: params[:manual_reject_return_part_reason_id])
       user_ticket_action.save   
       
       flash[:notice]= "Successfully updated"
@@ -1254,7 +1254,7 @@ class TicketsController < ApplicationController
 
         #Set Action (38) Issue Spare part, DB.spt_act_request_spare_part
         user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(38).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
-        user_ticket_action.build_request_spare_part(ticket_spare_part_id: spt_ticket_spare_part.id)
+        user_ticket_action.build_request_spare_part(ticket_spare_part_id: spt_ticket_spare_part.id, reject_return_part_reason_id: params[:manual_reject_return_part_reason_id])
         user_ticket_action.save 
 
         # bpm output variables
@@ -1706,6 +1706,19 @@ class TicketsController < ApplicationController
     end
   end
 
+  def hold_unhold
+    @ticket = Ticket.find session[:ticket_id]
+    @user_ticket_action = @ticket.user_ticket_actions.build
+    @call_template = params[:call_template]
+    case @call_template
+    when "hold"
+      @act_hold = @user_ticket_action.build_act_hold
+      @call_template = 'tickets/tickets_pack/resolution/'+@call_template
+    when "un_hold"
+      @call_template = 'tickets/tickets_pack/resolution/'+@call_template
+    end
+  end
+
   def call_mf_order_template
     TaskAction
     TicketSparePart
@@ -2046,7 +2059,9 @@ class TicketsController < ApplicationController
       @ticket.save
       act_hold.update_attribute(:sla_pause, act_hold.reason.sla_pause)
 
+      WebsocketRails[:posts].trigger 'new', {task_name: "Hold for ticket", task_id: @ticket.id, task_verb: "updated.", by: current_user.email, at: Time.now.strftime('%d/%m/%Y at %H:%M:%S')}
       redirect_to @ticket, notice: "Ticket is successfully updated."
+
     else
       redirect_to @ticket, alert: "Ticket is failed to update."
     end
@@ -2059,6 +2074,8 @@ class TicketsController < ApplicationController
       user_ticket_action = @ticket.user_ticket_actions.find_by_id(@ticket.last_hold_action_id)
 
       user_ticket_action.act_hold.update(un_hold_action_id: @ticket.user_ticket_actions.last.id)
+
+      WebsocketRails[:posts].trigger 'new', {task_name: "Un hold for ticket", task_id: @ticket.id, task_verb: "updated.", by: current_user.email, at: Time.now.strftime('%d/%m/%Y at %H:%M:%S')}
 
       redirect_to @ticket, notice: "Ticket is successfully updated."
     else
@@ -2664,10 +2681,10 @@ class TicketsController < ApplicationController
     end
 
     def ticket_spare_part_params(spt_ticket_spare_part)
-      tspt_params = params.require(:ticket_spare_part).permit(:spare_part_no, :spare_part_description, :ticket_id, :ticket_fsr, :cus_chargeable_part, :request_from, :faulty_serial_no, :received_part_serial_no, :received_part_ct_no, :faulty_ct_no, :note, :status_action_id, :status_use_id, :part_terminated_reason_id, ticket_attributes: [:remarks, :id], ticket_spare_part_manufacture_attributes: [:event_no, :order_no, :id], ticket_spare_part_store_attributes: [:part_of_main_product, :id])
+      tspt_params = params.require(:ticket_spare_part).permit(:spare_part_no, :spare_part_description, :ticket_id, :ticket_fsr, :cus_chargeable_part, :request_from, :faulty_serial_no, :received_part_serial_no, :received_part_ct_no, :repare_start, :repare_end, :faulty_ct_no, :note, :status_action_id, :status_use_id, :part_terminated_reason_id, :returned_part_accepted, ticket_attributes: [:remarks, :id], ticket_spare_part_manufacture_attributes: [:id, :event_no, :order_no, :id, :event_closed, :ready_to_bundle, :payment_expected_manufacture], ticket_spare_part_store_attributes: [:part_of_main_product, :id], request_spare_parts_attributes: [:reject_return_part_reason_id])
 
-      t_spare_part[:repare_start] = Time.strptime(t_spare_part[:repare_start],'%m/%d/%Y %I:%M %p') if t_spare_part[:repare_start].present?
-      t_spare_part[:repare_end] = Time.strptime(t_spare_part[:repare_end],'%m/%d/%Y %I:%M %p') if t_spare_part[:repare_end].present?
+      tspt_params[:repare_start] = Time.strptime(tspt_params[:repare_start],'%m/%d/%Y %I:%M %p') if tspt_params[:repare_start].present?
+      tspt_params[:repare_end] = Time.strptime(tspt_params[:repare_end],'%m/%d/%Y %I:%M %p') if tspt_params[:repare_end].present?
 
       tspt_params[:note] = tspt_params[:note].present? ? "#{tspt_params[:note]} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{spt_ticket_spare_part.note}" : spt_ticket_spare_part.note
       tspt_params

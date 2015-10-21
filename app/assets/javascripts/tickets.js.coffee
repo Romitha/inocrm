@@ -20,6 +20,7 @@ window.Tickets =
     @call_extend_warranty_template()
     @ticket_info_ajax_loader()
     @remote_true_loader()
+    @toggle_hold_unhold()
     return
 
   initial_loaders: ->
@@ -302,6 +303,10 @@ window.Tickets =
   call_mf_order_template: (call_template)->
     $("#mf_template_caller").change ->
       $.post "/tickets/call_mf_order_template", {call_template: $(@).val()}
+
+  toggle_hold_unhold: ->
+    $("#hold_button").change ->
+      $.post "/tickets/hold_unhold", {call_template: $(@).val()}
 
   call_extend_warranty_template: ->
     $("#extend_warranty_select").change ->

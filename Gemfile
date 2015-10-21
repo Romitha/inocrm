@@ -99,6 +99,7 @@ end
 gem 'httpi'
 
 gem "websocket-rails"
+gem 'redis-rails'
 # gem "em-http-request"
 
 # Use debugger

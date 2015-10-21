@@ -15,7 +15,9 @@ WebsocketRails.setup do |config|
   # Change to true to enable standalone server mode
   # Start the standalone server with rake websocket_rails:start_server
   # * Requires Redis
+  # (sudo apt-get install redis-server && gem 'redis-rails' && sudo /etc/init.d redis-server start)
   config.standalone = false
+  # config.standalone = true
 
   # Change to true to enable channel synchronization between
   # multiple server instances.
