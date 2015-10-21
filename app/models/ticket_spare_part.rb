@@ -78,6 +78,7 @@ class TicketSparePartManufacture < ActiveRecord::Base
 
   belongs_to :ticket_spare_part, foreign_key: :spare_part_id
   belongs_to :manufacture_currency, class_name: "Currency", foreign_key: :manufacture_currency_id
+  belongs_to :return_parts_bundle
 
 end
 
@@ -133,5 +134,14 @@ class TicketOnLoanSparePartStatusAction < ActiveRecord::Base
   belongs_to :user, foreign_key: :done_by
   belongs_to :spare_part_status_action, foreign_key: :status_id
   belongs_to :ticket_on_loan_spare_part, foreign_key: :on_loan_spare_part_id
+
+end
+
+class ReturnPartsBundle < ActiveRecord::Base
+  self.table_name = "spt_return_parts_bundle"
+
+  belongs_to :product_brand
+
+  has_many :ticket_spare_part_manufactures
 
 end

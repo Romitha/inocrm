@@ -1142,6 +1142,41 @@ class TicketsController < ApplicationController
     end
   end
 
+  def estimate_part
+    Inventory
+    Warranty
+    ContactNumber
+    QAndA
+    TaskAction
+    Inventory
+    ticket_id = (params[:ticket_id] or session[:ticket_id])
+    @ticket = Ticket.find_by_id ticket_id
+    session[:ticket_id] = @ticket.id
+
+    request_spare_part_id = (params[:request_spare_part_id] or session[:request_spare_part_id])
+    @onloan_request = (params[:onloan_request] or session[:onloan_request])
+    @spare_part = TicketSparePart.find request_spare_part_id
+    # @spare_part = @ticket.ticket_spare_parts.find request_spare_part_id
+    session[:request_spare_part_id] = params[:request_spare_part_id]
+
+    request_onloan_spare_part_id = (params[:request_onloan_spare_part_id] or session[:request_onloan_spare_part_id])
+    @onloan_spare_part = TicketOnLoanSparePart.find request_onloan_spare_part_id
+    # @spare_part = @ticket.ticket_spare_parts.find request_spare_part_id
+    session[:request_onloan_spare_part_id] = params[:request_onloan_spare_part_id]
+
+    if @ticket
+      @product = @ticket.products.first
+      @warranties = @product.warranties
+      session[:product_id] = @product.id
+      Rails.cache.delete([:histories, session[:product_id]])
+      Rails.cache.delete([:join, @ticket.id])
+    end
+
+    respond_to do |format|
+      format.html {render "tickets/tickets_pack/estimate_parts"}
+    end
+  end
+
   def update_received_and_issued
     spt_ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
     @ticket = spt_ticket_spare_part.ticket
@@ -1308,9 +1343,16 @@ class TicketsController < ApplicationController
     QAndA
     TaskAction
     Inventory
+    TicketSparePart
     ticket_id = (params[:ticket_id] or session[:ticket_id])
     @ticket = Ticket.find_by_id ticket_id
     session[:ticket_id] = @ticket.id
+
+    bundle_id = (params[:bundle_id] or session[:bundle_id])
+    @return_bundle = ReturnPartsBundle.find bundle_id
+    # @spare_part = @ticket.ticket_spare_parts.find request_spare_part_id
+    session[:bundle_id] = params[:bundle_id]
+
     if @ticket
       @product = @ticket.products.first
       @warranties = @product.warranties
@@ -1321,6 +1363,10 @@ class TicketsController < ApplicationController
     respond_to do |format|
       format.html {render "tickets/tickets_pack/return_parts_bundle"}
     end
+  end
+
+  def update_return_parts_bundle
+
   end
 
   def close_event
