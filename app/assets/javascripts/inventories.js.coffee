@@ -5,6 +5,7 @@ window.Inventories =
     @filter_store()
     @calculate_cost_price()
     @terminate_func()
+    @accept_returned_part()
     @accept_returned_part_func()
     @received_part_status()
     @check_return_serial_and_return_ct()
@@ -193,11 +194,21 @@ window.Inventories =
     $("#total_approved_amount").html(total_approved_amount)
 
   accept_returned_part_func: ->
-    $(".accept_returned_parts").click ->
-      if $(@).val() == "false"
-        $(".reason").removeClass("hide")
-      else
-        $(".reason").addClass("hide")
+    _this = this
+    $(".accept_returned_part").change ->
+      _this.accept_returned_part()
+
+  accept_returned_part: ->
+    accept_returned_part_value = $(".accept_returned_part input:checked").val()
+    if accept_returned_part_value == "true"
+      $("#request_spare_parts").addClass("hide")
+      $("#request_spare_parts select").val("")
+      $("#ticket_spare_part_manufacture").removeClass("hide")
+    else
+      $("#request_spare_parts").removeClass("hide")
+      $("#ticket_spare_part_manufacture").addClass("hide")
+      $("#ticket_spare_part_manufacture input.input_toggler").val("")
+      $("#ticket_spare_part_manufacture input[type='checkbox']").removeProp("checked")
 
   terminate_func: ->
     $(".part_terminated_reason_check").click ->
@@ -208,12 +219,6 @@ window.Inventories =
       else
         $(@).parents(".control-group").siblings(".part_terminated_reason").find(".part_terminated_select").val("")
         $(@).parents(".control-group").siblings(".part_terminated_reason").addClass("hide")
-
-  accept_returned_part: (elem)->
-    if $(elem).val() == "false"
-      $(".reason").addClass("hide")
-    else
-      $(".reason").removeClass("hide")
 
   received_part_status: ->
     _this = this

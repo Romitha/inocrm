@@ -128,6 +128,7 @@ Rails.application.routes.draw do
       # get "close_event"
       post "extend_warranty_update_reject_extend_warranty"
       post "update_return_manufacture_part"
+      post "hold_unhold"
 
       get "edit-ticket", :action => :edit_ticket
       get "pop-approval"#, :action => :pop_note
