@@ -32,6 +32,8 @@ class ProductBrand < ActiveRecord::Base
   has_many :product_categories, foreign_key: :product_brand_id
   accepts_nested_attributes_for :product_categories, allow_destroy: true
 
+  has_many :return_parts_bundles
+
   validates_presence_of [:name, :sla_time, :parts_return_days, :currency_id]
   belongs_to :currency, foreign_key: :currency_id
   belongs_to :sla_time, foreign_key: :sla_id
