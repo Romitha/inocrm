@@ -31,7 +31,7 @@
       - return_bundle.ticket_spare_part_manufactures.each do |bundle_parts|
         %tr
           %th #{bundle_parts.id}
-          %td #{bundle_parts.return_parts_bundle.created_at.to_date.strftime("%Y-%m-%d")}
+          %td #{bundle_parts.return_parts_bundle.try(:created_at).try(:strftime, "%m-%d-%Y")}
           %td #{bundle_parts.ticket_spare_part.spare_part_no}
           %td #{bundle_parts.ticket_spare_part.spare_part_description}
           /#{TicketOnLoanSparePart.find_by_id(bundle_parts.ticket_spare_part.ticket_on_loan_spare_parts.ref_spare_part_id).try(:return_part_serial_no)}
