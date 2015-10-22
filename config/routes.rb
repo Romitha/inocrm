@@ -124,6 +124,7 @@ Rails.application.routes.draw do
       post "update_return_parts_bundle"
       # post "update_order_mfp_edit_serial_no"
       post "update_edit_serial"
+      post "update_close_event"
 
       post "update_received_and_issued"
       # get "close_event"
@@ -150,7 +151,7 @@ Rails.application.routes.draw do
       get "suggesstion_data"
       get "edit_serial"
       match "extend_warranty", to: "tickets#extend_warranty", via: [:get, :post]
-      match "close_event", to: "tickets#close_event", via: [:get, :post]
+      get "close_event"#, to: "tickets#close_event", via: [:get, :post]
       get "check_fsr"
 
       get "ajax_show"

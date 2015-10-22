@@ -19,11 +19,11 @@
       %br
 .row.col-md-12
   .form-group
-    = simple_nested_form_for spare_part, url: update_approved_part_tickets_path, method: :post, remote: true do |f|
+    = simple_nested_form_for spare_part, url: update_approved_part_tickets_path, method: :post do |f|
       = f.simple_fields_for :ticket_spare_part_store do |sto|
         .row
           .col-md-6
-            - if spare_part.status_action_id == 11
+            - if spare_part.spare_part_status_action.id == SparePartStatusAction.find_by_code("CLS")
               = sto.input :store_request_approved, as: :radio_buttons, collection: {"Approved" => true, "Reject" => false}, label:"", :disabled => true
             - else
               = sto.input :store_request_approved, as: :radio_buttons, collection: {"Approved" => true, "Reject" => false}, label:""

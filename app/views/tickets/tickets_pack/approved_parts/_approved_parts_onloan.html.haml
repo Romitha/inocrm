@@ -19,7 +19,7 @@
       %br
 .row.col-md-12
   .form-group
-    = simple_nested_form_for onloan_spare_part, url: update_approved_part_tickets_path, method: :post, remote: true do |f|
+    = simple_nested_form_for onloan_spare_part, url: update_approved_part_tickets_path, method: :post do |f|
       .row
         .col-md-6
           - if f.object.status_action_id == 11

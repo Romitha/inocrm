@@ -1,55 +1,58 @@
-- ticket = @ticket
 - spare_part = @spare_part
 - product = @product
-.row.col-md-12
+.row
   .col-md-12
     %strong Activity: Close Event
-.row.col-md-12{style: "margin-top: 15px;"}
-  .col-md-4
+.row
+  .col-md-3
     %strong Spare Part No:
     #{spare_part.ticket_spare_part_manufacture.try(:spare_part_id)}
-  .col-md-4
+  .col-md-3
     %strong Status:
     #{spare_part.spare_part_status_action.try(:name)}
-  .col-md-4
+  .col-md-3
     %strong Product Brand:
     #{product.product_brand.name}
-
-.row.col-md-12{style: "margin-top: 5px;"}
-  .col-md-4
-    %strong Part Description:
-    #{spare_part.spare_part_description}
-  .col-md-4
+  .col-md-3
     %strong Un Used Return Reason:
     #{Reason.find_by_id(spare_part.unused_reason_id).try(:reason)}
-.row.col-md-12{style: "margin-top: 5px;"}
-  .col-md-4
+
+.row
+  .col-md-3
     %strong Part Order No:
     #{spare_part.ticket_spare_part_manufacture.try(:order_no)}
-  .col-md-4
+  .col-md-3
     %strong Part Event No:
     #{spare_part.ticket_spare_part_manufacture.try(:event_no)}
-.row.col-md-12{style: "margin-top: 5px;"}
-  .col-md-4
+  .col-md-3
     %strong Part Serial No:
     #{spare_part.faulty_serial_no}
-  .col-md-4
+  .col-md-3
     %strong Return Part Serial No:
     #{spare_part.return_part_serial_no}
-.row.col-md-12{style: "margin-top: 5px;"}
-  .col-md-4
+.row
+  .col-md-3
     %strong Part CT No:
     #{spare_part.faulty_ct_no}
   .col-md-3
     %strong Return CT No:
     #{spare_part.return_part_ct_no}
+  .col-md-6
+    %strong Part Description:
+    #{spare_part.spare_part_description}
 
-.row.col-md-12{style: "margin-top: 20px;"}
-  = simple_nested_form_for spare_part, url: close_event_tickets_path(status_param: "create"), method: :post do |f|
-    = f.simple_fields_for :ticket_spare_part_manufacture do |tm|
-      = label_tag "Event Closed (Claim Completed)"
-      = tm.check_box :event_closed
-      = label_tag "Payment Expected (#{spare_part.ticket.ticket_currency.try(:currency)})"
-      = tm.input :manufacture_currency_id, label: false, input_html: {class: "only_float"}
-    = f.input :note
-    = f.submit "Save", class: "btn btn-success"
+.row.small_scale_margin-top1
+  .col-md-12
+    = simple_nested_form_for spare_part, url: update_close_event_tickets_path, method: :post do |f|
+      = f.simple_fields_for :ticket_spare_part_manufacture do |tm|
+        = hidden_field_tag :process_id, session[:process_id]
+        = hidden_field_tag :task_id, session[:task_id]
+        = hidden_field_tag :owner, session[:owner]
+        - session[:bpm_input_variables].each do |bpm_input_variable|
+          = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+
+        = tm.input :event_closed, label: "Event Closed (Claim Completed)", wrapper: :append
+        = tm.input :payment_expected_manufacture, label: "Payment Expected (#{spare_part.ticket.ticket_currency.try(:currency)})", input_html: {class: "only_float"}
+      = f.input :note, input_html: {value: nil}
+      = simple_format f.object.note
+      = f.submit "Save", class: "btn btn-success"

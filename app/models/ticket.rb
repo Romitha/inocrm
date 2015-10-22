@@ -111,6 +111,7 @@ class Ticket < ActiveRecord::Base
 
   def cached_user_ticket_actions
     Rails.cache.fetch([self.id, :user_ticket_actions]){ self.user_ticket_actions.to_a }
+    # .includes(:hp_case, :action_warranty_repair_type, :ticket_re_assign_request, :ticket_action_taken, :ticket_finish_job, :ticket_terminate_job, :act_hold, :act_fsr, :serial_request, :deliver_unit, :job_estimation, :act_job_estimation, :request_spare_part, :request_on_loan_spare_part, :action_warranty_extend)
   end
 
   def cached_ticket_spare_parts
