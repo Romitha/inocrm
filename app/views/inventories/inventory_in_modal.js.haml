@@ -27,10 +27,12 @@
 
 
   $(".#{session[:select_frame]}").html('#{j @content_for}');
-  $("#store_id, #ticket_on_loan_spare_part_store_id").val("#{session[:store_id]}");
-  $("#mst_store_id").val("#{session[:mst_store_id]}");
-  $("#inv_product_id, #ticket_on_loan_spare_part_inv_product_id").val("#{session[:inv_product_id]}");
-  $("#mst_inv_product_id, #ticket_on_loan_spare_part_main_inv_product_id").val("#{session[:mst_inv_product_id]}");
+  - if session[:select_frame] == "request_from"
+    $("#store_id, #ticket_on_loan_spare_part_store_id").val("#{session[:store_id]}");
+    $("#inv_product_id, #ticket_on_loan_spare_part_inv_product_id").val("#{session[:inv_product_id]}");
+  - elsif session[:select_frame] == "main_product"
+    $("#mst_store_id").val("#{session[:mst_store_id]}");
+    $("#mst_inv_product_id, #ticket_on_loan_spare_part_main_inv_product_id").val("#{session[:mst_inv_product_id]}");
 
 - else
   $("#inventory_modal").modal();

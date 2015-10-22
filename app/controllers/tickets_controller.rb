@@ -1096,20 +1096,17 @@ class TicketsController < ApplicationController
     @ticket = Ticket.find_by_id ticket_id
     session[:ticket_id] = @ticket.id
 
-    request_spare_part_id = (params[:request_spare_part_id] or session[:request_spare_part_id])
-    @onloan_request = (params[:onloan_request] or session[:onloan_request])
-    @spare_part = TicketSparePart.find request_spare_part_id
-    # @spare_part = @ticket.ticket_spare_parts.find request_spare_part_id
-    session[:request_spare_part_id] = params[:request_spare_part_id]
+    request_spare_part_id = params[:request_spare_part_id]
+    @onloan_request = params[:onloan_request]
+    # @spare_part = TicketSparePart.find request_spare_part_id
+    @spare_part = @ticket.ticket_spare_parts.find request_spare_part_id
 
-    request_onloan_spare_part_id = (params[:request_onloan_spare_part_id] or session[:request_onloan_spare_part_id])
-    @onloan_spare_part = TicketOnLoanSparePart.find request_onloan_spare_part_id
-    # @spare_part = @ticket.ticket_spare_parts.find request_spare_part_id
-    session[:request_onloan_spare_part_id] = params[:request_onloan_spare_part_id]
+    if @onloan_request == 'Y'
+      @onloan_spare_part = @spare_part.ticket_on_loan_spare_parts.find params[:request_onloan_spare_part_id]
+    end
 
     if @ticket
       @product = @ticket.products.first
-      @warranties = @product.warranties
       session[:product_id] = @product.id
       Rails.cache.delete([:histories, session[:product_id]])
       Rails.cache.delete([:join, @ticket.id])
@@ -1400,7 +1397,10 @@ class TicketsController < ApplicationController
   end
 
   def update_close_event
-    
+    ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
+    if ticket_spare_part.update ticket_spare_part_params(ticket_spare_part) 
+
+    end
   end
 
   def edit_ticket
