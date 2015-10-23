@@ -140,6 +140,8 @@ Rails.application.routes.draw do
       get "return_manufacture_part"
       get "create_parts_bundle"
       get "return_parts_bundle"
+      get "terminate_invoice"
+
       get "deliver_parts_bundle"
       get "approved_parts"
       get "assign-ticket", action: :assign_ticket
