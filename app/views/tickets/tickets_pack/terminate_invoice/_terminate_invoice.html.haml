@@ -1,0 +1,84 @@
+- ticket = @ticket
+- user_ticket_action = @ticket.user_ticket_actions.find_by_action_id 7
+.row
+  .col-md-12
+    Terminated Reason :
+    #{user_ticket_action.try(:ticket_terminate_job).try(:reason).try(:reason)}
+
+.row
+  .col-md-12
+    = simple_nested_form_for :terminate_invoice, url: terminate_invoice_tickets_path, method: :post do |f|
+      %fieldset
+        %legend
+
+        .row.small_scale_margin-bottom1
+          .col-md-6
+            Payment Type:
+
+          .col-md-6
+            Payment Amount (Rs):
+            #{user_ticket_action.try(:ticket_terminate_job_payments).try(:amount)}
+
+        = f.simple_fields_for :ajusted do |a|
+          .row
+            = a.input :ajust_amount , as: :boolean , wrapper_html: {class: "col-md-2"}, wrapper: :append
+          .row
+            .col-md-6
+              = a.input :amount , label: "Ajusted Payment Amount (Rs):"
+          .row
+            .col-md-6
+              = a.label "Ajust Reason : "
+              = a.select :part_terminated_reason_id, Reason.where(terminate_spare_part: true).map{|r| [r.reason, r.id]}, {include_blank: true},label: "Ajust Reason : "
+
+      .row
+        .col-md-12.small_scale_margin-bottom1
+          Final Amount To Be Paid (Rs):
+
+      - if ticket.cus_payment_required
+        %fieldset
+          %legend
+          = f.simple_fields_for :payment do |py|
+
+            .row.small_scale_margin-bottom1
+              .col-md-6
+                Payment Type : Final Payment
+
+            .row
+              .col-md-6
+                = py.input :recieved_amount , label: "Recieved Amount (Rs):"
+            .row
+              .col-md-6
+                = py.input :note
+            .row
+              = py.input :payment_completed , as: :boolean ,label: "Payment Completed", wrapper_html: {class: "col-md-2"}, wrapper: :append
+              = py.input :invoicing_completed , as: :boolean, label: "Invoicing Completed", wrapper_html: {class: "col-md-2"}, wrapper: :append
+              .col-md-2
+                = button_tag "View Invoice" , class: "btn btn-success"
+              .col-md-2
+                = button_tag "Print Invoice" , class: "btn btn-success"
+
+      .row.small_scale_margin-bottom1
+        .col-md-6.col-md-offset-1
+          .row
+            .col-md-12
+              Informed To Customer:
+          .row
+            .col-md-12
+              Informed by:
+          .row
+            .col-md-12
+              Informed at:
+          .row.small_scale_margin-bottom1
+            .col-md-12
+              Informed Note:
+          .row
+            .col-md-3
+              = button_tag "Inform Customer" , class: "btn btn-success"
+            .col-md-3
+              = button_tag "Print Delivery Note" , class: "btn btn-success"
+
+
+        = f.input :unit_returned , as: :boolean, label: "Unit Returned to Customer",wrapper_html: {class: "col-md-4"}, wrapper: :append if ticket.ticket_type.code == 'HI'
+      .row.small_scale_margin-bottom1
+        .col-md-12
+          = f.submit "Save", class: "btn btn-success"

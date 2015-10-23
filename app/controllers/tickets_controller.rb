@@ -1371,6 +1371,39 @@ class TicketsController < ApplicationController
 
   end
 
+  def terminate_invoice
+    Inventory
+    Warranty
+    ContactNumber
+    QAndA
+    TaskAction
+    Inventory
+    ticket_id = (params[:ticket_id] or session[:ticket_id])
+    @ticket = Ticket.find_by_id ticket_id
+    session[:ticket_id] = @ticket.id
+    if @ticket
+      @product = @ticket.products.first
+      @warranties = @product.warranties
+      session[:product_id] = @product.id
+      Rails.cache.delete([:histories, session[:product_id]])
+      Rails.cache.delete([:join, @ticket.id])
+
+      #@histories = Rails.cache.fetch([:histories, session[:product_id]]){Kaminari.paginate_array(@product.tickets)}.page(params[:page]).per(2)
+      #@join_tickets = Rails.cache.fetch([:join, @ticket.id]){Kaminari.paginate_array(Ticket.where(id: @ticket.joint_tickets.map(&:joint_ticket_id)))}.page(params[:page]).per(2)
+      #@q_and_answers = @ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})}
+      #@ge_q_and_answers = @ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"General Questions" => v})}
+
+      #UserTicketAction.where(ticket_id: 22).where(action_id: 5)
+      #@user_assign_ticket_action = @user_ticket_action.user_assign_ticket_actions.build
+      #@assign_regional_support_center = @user_ticket_action.assign_regional_support_centers.build
+
+      @ge_questions = GeQAndA.where(action_id: 5)
+    end
+    respond_to do |format|
+      format.html {render "tickets/tickets_pack/terminate_invoice"}
+    end
+  end
+
   def close_event
     Inventory
     Warranty
@@ -1635,6 +1668,9 @@ class TicketsController < ApplicationController
       # @q_and_answers = @ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})}
       # @ge_q_and_answers = @ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"General Questions" => v})}
 
+    end
+    respond_to do |format|
+      format.html {render "tickets/tickets_pack/check_fsr"}
     end
   end
 
