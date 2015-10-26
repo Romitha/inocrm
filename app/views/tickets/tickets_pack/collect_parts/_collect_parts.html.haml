@@ -1,0 +1,36 @@
+- manufacture_parts = TicketSparePartManufacture.all
+.row.col-md-12
+  .col-md-3
+    %strong Parts to be Collected
+  .col-md-9
+    %label Manufacture Name :
+    = select("brands", "brand_id", ProductBrand.all.collect {|b| [ b.name, b.id ] }, { include_blank: true })
+.row.col-md-12{style: "margin-top: 15px; margin-left: 2px; "}
+  %table.table.table-bordered
+    %thead
+      %tr
+        %th No
+        %th Date Returned
+        %th Part No
+        %th Description
+        %th Serial No
+        %th Part Status
+        %th Eventl No
+        %th Ticket No
+        %th Collected
+    %tbody
+      - manufacture_parts.each do |bundle_parts|
+        %tr
+          %th #{bundle_parts.id}
+          / %td
+          %td #{bundle_parts.return_parts_bundle.try(:created_at).try(:strftime, "%m-%d-%Y")}
+          / %td #{bundle_parts.return_parts_bundle.try(:created_at).try(:to_date).try(:strftime("%Y-%m-%d"))}
+          %td #{bundle_parts.ticket_spare_part.spare_part_no}
+          %td #{bundle_parts.ticket_spare_part.spare_part_description}
+          /#{TicketOnLoanSparePart.find_by_id(bundle_parts.ticket_spare_part.ticket_on_loan_spare_parts.ref_spare_part_id).try(:return_part_serial_no)}
+          %td
+          %td #{SparePartStatusAction.find_by_id(bundle_parts.ticket_spare_part.status_action_id).try(:name)}
+          %td #{bundle_parts.event_no}
+          %td #{bundle_parts.ticket_spare_part.ticket_id}
+          %td 
+            = check_box_tag(:bundle_parts)

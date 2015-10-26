@@ -1117,6 +1117,34 @@ class TicketsController < ApplicationController
     end
   end
 
+  def collect_parts
+    Inventory
+    Warranty
+    ContactNumber
+    QAndA
+    TaskAction
+    Inventory
+    TicketSparePart
+    ticket_id = (params[:ticket_id] or session[:ticket_id])
+    @ticket = Ticket.find_by_id ticket_id
+    session[:ticket_id] = @ticket.id
+    request_spare_part_id = (params[:request_spare_part_id] or session[:request_spare_part_id])
+    @spare_part = TicketSparePart.find request_spare_part_id
+    # @spare_part = @ticket.ticket_spare_parts.find request_spare_part_id
+    session[:request_spare_part_id] = params[:request_spare_part_id]
+
+    if @ticket
+      @product = @ticket.products.first
+      @warranties = @product.warranties
+      session[:product_id] = @product.id
+      Rails.cache.delete([:histories, session[:product_id]])
+      Rails.cache.delete([:join, @ticket.id])
+    end
+    respond_to do |format|
+      format.html {render "tickets/tickets_pack/collect_parts"}
+    end
+  end
+
   def received_and_issued
     Inventory
     Warranty
