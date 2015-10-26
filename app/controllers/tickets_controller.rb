@@ -1085,7 +1085,7 @@ class TicketsController < ApplicationController
     end
   end
 
-  def approved_parts
+  def approved_store_parts
     Inventory
     Warranty
     ContactNumber
@@ -1339,7 +1339,7 @@ class TicketsController < ApplicationController
     redirect_to todos_url
   end
 
-  def create_parts_bundle
+  def bundle_return_part
     Inventory
     Warranty
     ContactNumber
@@ -1366,7 +1366,7 @@ class TicketsController < ApplicationController
     end
   end
 
-  def return_parts_bundle
+  def deliver_bundle
     Inventory
     Warranty
     ContactNumber
