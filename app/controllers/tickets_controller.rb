@@ -1113,7 +1113,7 @@ class TicketsController < ApplicationController
     end
 
     respond_to do |format|
-      format.html {render "tickets/tickets_pack/approved_parts"}
+      format.html {render "tickets/tickets_pack/approved_parts/approved_parts"}
     end
   end
 
@@ -1209,31 +1209,20 @@ class TicketsController < ApplicationController
     QAndA
     TaskAction
     Inventory
-    ticket_id = (params[:ticket_id] or session[:ticket_id])
+    ticket_id = params[:ticket_id]
     @ticket = Ticket.find_by_id ticket_id
-    session[:ticket_id] = @ticket.id
-
-    request_spare_part_id = (params[:request_spare_part_id] or session[:request_spare_part_id])
-    @onloan_request = (params[:onloan_request] or session[:onloan_request])
-    @spare_part = TicketSparePart.find request_spare_part_id
-    # @spare_part = @ticket.ticket_spare_parts.find request_spare_part_id
-    session[:request_spare_part_id] = params[:request_spare_part_id]
-
-    request_onloan_spare_part_id = (params[:request_onloan_spare_part_id] or session[:request_onloan_spare_part_id])
-    @onloan_spare_part = TicketOnLoanSparePart.find request_onloan_spare_part_id
-    # @spare_part = @ticket.ticket_spare_parts.find request_spare_part_id
-    session[:request_onloan_spare_part_id] = params[:request_onloan_spare_part_id]
 
     if @ticket
+      @estimation = TicketEstimation.find params[:part_estimation_id]
+      @estimation.ticket_estimation_parts.build
       @product = @ticket.products.first
-      @warranties = @product.warranties
       session[:product_id] = @product.id
       Rails.cache.delete([:histories, session[:product_id]])
       Rails.cache.delete([:join, @ticket.id])
     end
 
     respond_to do |format|
-      format.html {render "tickets/tickets_pack/estimate_parts"}
+      format.html {render "tickets/tickets_pack/estimate_part/estimate_part"}
     end
   end
 
@@ -1719,7 +1708,7 @@ class TicketsController < ApplicationController
     TaskAction
     TicketSparePart
     Inventory
-    @ticket = Ticket.find_by_id (params[:ticket_id] || session[:ticket_id])# if params[:ticket_id].present?
+    @ticket = Ticket.find_by_id params[:ticket_id]# if params[:ticket_id].present?
     if @ticket
       @product = @ticket.products.first
       @warranties = @product.warranties
