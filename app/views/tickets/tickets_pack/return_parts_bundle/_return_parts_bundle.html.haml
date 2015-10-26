@@ -41,7 +41,7 @@
           %td #{bundle_parts.ticket_spare_part.ticket_id}
 .row.col-md-12{style: "margin-top: 15px;"}
   .col-md-6
-    = simple_form_for :return_bundle, url: "#" do |f|
+    = simple_form_for :return_bundle, url: update_deliver_bundle_tickets_path do |f|
       = f.input :bundle_no
       %P #{return_bundle.note}
       = f.submit "Deliver Bundle", class: "btn btn-success btn-sm"

@@ -121,7 +121,8 @@ Rails.application.routes.draw do
       post "update_order_mfp_return_manufacture_part"
       post "update_order_mfp_termnt_prt_order"
       post "update_approved_part"
-      post "update_return_parts_bundle"
+      post "update_deliver_bundle"
+      post "update_bundle_return_part"
       # post "update_order_mfp_edit_serial_no"
       post "update_edit_serial"
       post "update_close_event"
@@ -135,15 +136,15 @@ Rails.application.routes.draw do
       get "edit-ticket", :action => :edit_ticket
       get "pop-approval"#, :action => :pop_note
       get "resolution"
-      get "order_manufacture_parts", :action => :order_mf
+      get "order_parts", :action => :order_mf
       get "received_and_issued"
       get "return_manufacture_part"
-      get "create_parts_bundle"
-      get "return_parts_bundle"
+      get "bundle_return_part"
+      get "deliver_bundle"
       get "terminate_invoice"
       get "collect_parts"
       get "deliver_parts_bundle"
-      get "approved_parts"
+      get "approved_store_parts"
       get "assign-ticket", action: :assign_ticket
       get "estimate_job"
       get "estimate_part"
