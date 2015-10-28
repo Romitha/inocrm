@@ -5,33 +5,55 @@
   - session[:bpm_input_variables].each do |bpm_input_variable|
     = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
-  = label_tag "Estimation complete"
-  = check_box_tag :estimation_completed
-
-  = f.input :note, input_html: {value: nil}
-  = simple_format estimation.note
-
   = f.simple_fields_for :ticket_estimation_parts do |t|
     %fieldset
       %legend Part No #{t.object.ticket_spare_part.try(:spare_part_no)}
       .row
-        .col-md-12
+        .col-md-12.tyyt
           Part No : #{t.object.ticket_spare_part.try(:spare_part_no)}
       .row
         .col-md-4
           Part Description : #{t.object.ticket_spare_part.try(:spare_part_description)}
 
-    = t.association :supplier
-    = t.input :cost_price
-    = t.input :estimated_price
-    = t.input :warranty_period
+      .row
+        .col-md-3
+          = t.association :supplier
+        .col-md-3
+          = t.input :cost_price, input_html: {class: "only_float"}
+        .col-md-3
+          = t.input :estimated_price, input_html: {class: "only_float"}
+        .col-md-3
+          = t.input :warranty_period, input_html: {class: "only_float"}
 
   = f.simple_fields_for :ticket_estimation_additionals do |a|
-    = a.input :ticket_id, as: :hidden, input_html: {value: estimation.ticket.id}
-    = a.association :additional_charge, value_method: :id, label_method: :additional_charge
-    = a.input :cost_price
-    = a.input :estimated_price
-    = a.link_to_remove "Remove"
-  = f.link_to_add "Add", :ticket_estimation_additionals
-  = f.input :advance_payment_amount
-  = f.submit "Save", class: "btn btn-success btn-sm"
+
+    .row
+      = a.input :ticket_id, as: :hidden, input_html: {value: estimation.ticket.id}
+      .col-md-3
+        = a.association :additional_charge, value_method: :id, label_method: :additional_charge
+      .col-md-3
+        = a.input :cost_price, input_html: {class: "only_float"}
+      .col-md-3
+        = a.input :estimated_price, input_html: {class: "only_float"}
+
+      .add_sign.col-md-3{style: "padding-top:2.5%;"}
+        = a.link_to_remove class: "remove_c_t_v_link" do
+          %span.glyphicon.glyphicon-remove-sign
+          %br
+
+  = f.link_to_add :ticket_estimation_additionals, class: "small_scale_padding-right2" do
+    %span.glyphicon.glyphicon-plus-sign
+    Add
+  .row
+    .col-md-3
+      = f.input :advance_payment_amount, input_html: {class: "only_float"}
+    .col-md-9
+      = f.input :note, input_html: {value: nil}
+      = simple_format estimation.note
+
+  .row
+    .col-md-1
+      = f.submit "Save", class: "btn btn-success btn-sm"
+    .col-md-3
+      = label_tag "Estimation complete"
+      = check_box_tag :estimation_completed
