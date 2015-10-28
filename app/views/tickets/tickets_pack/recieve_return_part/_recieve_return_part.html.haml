@@ -1,0 +1,202 @@
+.row
+  .col-md-12
+    %strong
+      %u Recieve Returned Part
+
+.row
+  .col-md-4
+    %strong Date Issued:
+    #{onloan_spare_part.try(:isssued_at)}
+  .col-md-4
+    %strong Date Returned:
+    #{onloan_spare_part.try(:part_returned_at)}
+
+.row
+  .col-md-4
+    %strong Issued By:
+    #{onloan_spare_part.try(:issued_by)}
+  .col-md-4
+    %strong Returned By:
+    #{onloan_spare_part.try(:part_returned_by)}
+
+.row
+  .col-md-12
+    %strong
+      %u Issued Part
+
+.row
+  .col-md-4
+    %strong Part No:
+    #{spare_part.try(:spare_part_no)}
+.row
+  .col-md-4
+    %strong Part Description:
+    #{spare_part.try(:spare_part_description)}
+
+.row
+  .col-md-6
+    .row
+      .col-md-12
+        %strong Store:
+        #{spare_part.try(:ticket_spare_part_store).try(:store).try(:name)}
+    .row
+      .col-md-12
+        %strong Item Code :
+        #{spare_part.try(:ticket_spare_part_store).try(:main_inventory_product).try(:serial_no)}
+        - # generated_item_code!
+    .row
+      .col-md-12
+        %strong Item Description:
+        #{spare_part.try(:ticket_spare_part_store).try(:main_inventory_product).try(:description)}
+    .row
+      .col-md-12
+        %strong Unit :
+        #{spare_part.try(:ticket_spare_part_store).try(:main_inventory_product).try(:inventory_unit).try(:unit)}
+
+    .row
+      .col-md-8
+        %strong Serial No :
+        #{spare_part.try(:ticket_spare_part_store).try(:main_inventory_product).try(:serial_no)}
+      .col-md-4
+        %strong CT No :
+        xxxx.xxx
+
+    .row
+      .col-md-6
+        %a{"data-toggle" => "collapse", "href"=>"#issued_part"}
+          more info
+
+    .row.small_scale_margin-bottom1
+      #issued_part.collapse
+        .col-md-6
+          .row
+            .col-md-12
+              %strong GRN Date: issued_part
+          .row
+            .col-md-12
+              %strong Batch No:
+            .col-md-6
+              %strong Lot No:
+          .row
+            .col-md-12
+              %strong Status:
+          .row
+            .col-md-6
+              %strong Scavenge:
+            .col-md-6
+              %strong Parts Completed:
+          .row
+            .col-md-12
+              %strong Damage:
+          .row
+            .col-md-12
+              %strong Repaired:
+          .row
+            .col-md-12
+              %strong Remarks:
+
+
+
+  .col-md-6
+    .row
+      .col-md-12
+        %strong Main Product of the Part
+
+    - item = if onloan_spare_part.try(:part_of_main_product) then onloan_spare_part else spare_part
+
+      .row
+        .col-md-12
+          %strong Item Code:
+          #{item.try(:main_inventory_product).try(:serial_no)}
+      .row
+        .col-md-12
+          %strong Item Description:
+          #{item.try(:main_inventory_product).try(:description)}
+      .row
+        .col-md-12
+          %strong Unit :
+          #{item.try(:main_inventory_product).try(:serial_no).try(:inventory_unit).try(:unit)}
+      .row
+        .col-md-8
+          %strong Serial No :
+          #{item.try(:main_inventory_product).try(:serial_no)}
+        .col-md-4
+          %strong CT No :
+          xxxx.xxx
+
+    .row
+      .col-md-6
+        %a{"data-toggle" => "collapse", "href"=>"#main_part"}
+          more info
+
+    .row.small_scale_margin-bottom1
+      #main_part.collapse
+        .col-md-6
+          .row
+            .col-md-12
+              %strong GRN Date: main_part
+              xxx
+          .row
+            .col-md-12
+              %strong Batch No:
+              xxx
+            .col-md-6
+              %strong Lot No:
+          .row
+            .col-md-12
+              %strong Status:
+          .row
+            .col-md-6
+              %strong Scavenge:
+            .col-md-6
+              %strong Parts Completed:
+          .row
+            .col-md-12
+              %strong Damage:
+          .row
+            .col-md-12
+              %strong Repaired:
+          .row
+            .col-md-12
+              %strong Remarks:
+
+.row
+  .col-md-12
+    .row
+      .col-md-6
+        %strong
+          %u Returned Part
+    .row
+      .col-md-4
+        %strong Serial No :
+        xxxx.xxx
+      .col-md-4
+        %strong CT No :
+        xxxx.xxx
+
+    .row.small_scale_margin-bottom1
+      .col-md-4
+        %strong Use Status of the part:
+      .col-md-4
+        %strong Un Used Reason:
+
+    .row
+      .col-md-12
+        = simple_nested_form_for :return_part, url: recieve_return_part_tickets_path, method: :post do |f|
+          .row
+
+            = f.input :damage , as: :boolean , wrapper_html: {class: "col-md-3"}, wrapper: :append
+            .col-md-4
+              = f.label "Damage Reason : "
+              = f.select :damage_reason , Reason.where(terminate_spare_part: true).map{|r| [r.reason, r.id]}, {include_blank: true},label: "Damage Reason : "
+
+          .row
+            = f.input :returned_part_accepted, as: :radio_buttons, collection: {"Same Part Returned" => true, "Different Part Returned" => false}, label:false, wrapper: :append, wrapper_html: {class: "col-md-4"}
+            .col-md-4
+              = button_tag "Edit part" , class: "btn btn-success"
+          .row
+            = f.input :note, label: "Note",wrapper_html: {class: "col-md-8"}
+
+          .row.small_scale_margin-bottom1
+            .col-md-4
+              = f.submit "Save", class: "btn btn-success"

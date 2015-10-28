@@ -1145,6 +1145,40 @@ class TicketsController < ApplicationController
     end
   end
 
+  def recieve_return_part
+    ContactNumber
+    QAndA
+    TaskAction
+    TicketSparePart
+    Inventory
+
+    @ticket = Ticket.find_by_id (params[:ticket_id] || session[:ticket_id])
+    # if params[:ticket_id].present?
+
+    request_spare_part_id = params[:request_spare_part_id]
+
+    @spare_part = @ticket.ticket_spare_parts.find request_spare_part_id
+
+    if params[:onloan_request] == "Y"
+      @onloan_spare_part = @spare_part.ticket_on_loan_spare_parts.find params[:request_onloan_spare_part_id]
+    end
+      # @histories = Rails.cache.fetch([:histories, session[:product_id]]){Kaminari.paginate_array(@product.tickets)}.page(params[:page]).per(2)
+      # @join_tickets = Rails.cache.fetch([:join, @ticket.id]){Kaminari.paginate_array(Ticket.where(id: @ticket.joint_tickets.map(&:joint_ticket_id)))}.page(params[:page]).per(2)
+      # @q_and_answers = @ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})}
+      # @ge_q_and_answers = @ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"General Questions" => v})}
+
+    if @ticket
+      @product = @ticket.products.first
+      @warranties = @product.warranties
+      session[:product_id] = @product.id
+      Rails.cache.delete([:histories, session[:product_id]])
+      Rails.cache.delete([:join, @ticket.id])
+    end
+    respond_to do |format|
+      format.html {render "tickets/tickets_pack/recieve_return_part"}
+    end
+  end
+
   def received_and_issued
     Inventory
     Warranty
