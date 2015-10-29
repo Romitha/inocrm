@@ -1,0 +1,19 @@
+- ticket = @ticket
+- product = @product
+- onloan_request = @onloan_request
+- spare_part = @spare_part
+- onloan_spare_part = @onloan_spare_part
+= render "tickets/tickets_pack/ticket_header", ticket: ticket, product: product
+
+= tab_panel do
+  = tab_nav_tab({class: "small_scale_margin-bottom1"}, ticket_info: {content: "Ticket info"}, approved_store_parts: {content: "Approved store parts", active_class: "active"} )
+  .tab-content
+    = tab_content tabpointer: :ticket_info do
+      = tab_panel do
+        = render "tickets/tickets_pack/ticket_info", ticket: ticket, product: product
+    = tab_content tabpointer: :approved_store_parts, active_class: "active" do
+      = tab_panel do
+        - if onloan_request == 'Y'
+          = render "tickets/tickets_pack/approved_store_parts/approved_store_parts_onloan", onloan_spare_part: onloan_spare_part
+        - else
+          = render "tickets/tickets_pack/approved_store_parts/approved_store_parts", spare_part: spare_part

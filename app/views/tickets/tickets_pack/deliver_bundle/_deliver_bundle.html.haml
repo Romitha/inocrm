@@ -4,7 +4,7 @@
     #{return_bundle.bundle_no}
     %br
     %strong Bundled Date:
-    #{return_bundle.created_at.to_date.strftime("%Y-%m-%d")}
+    #{return_bundle.created_at.try(:strftime, "%Y-%m-%d")}
   .col-md-6
     %strong Brand Name:
     #{return_bundle.try(:product_brand).try(:name)}
@@ -28,17 +28,17 @@
         %th Eventl No
         %th Ticket No
     %tbody
-      - return_bundle.ticket_spare_part_manufactures.each do |bundle_parts|
+      - return_bundle.ticket_spare_part_manufactures.each do |bundle_part|
         %tr
-          %th #{bundle_parts.id}
-          %td #{bundle_parts.return_parts_bundle.try(:created_at).try(:strftime, "%m-%d-%Y")}
-          %td #{bundle_parts.ticket_spare_part.spare_part_no}
-          %td #{bundle_parts.ticket_spare_part.spare_part_description}
-          /#{TicketOnLoanSparePart.find_by_id(bundle_parts.ticket_spare_part.ticket_on_loan_spare_parts.ref_spare_part_id).try(:return_part_serial_no)}
+          %th #{bundle_part.id}
+          %td #{bundle_part.return_parts_bundle.try(:created_at).try(:strftime, "%m-%d-%Y")}
+          %td #{bundle_part.ticket_spare_part.spare_part_no}
+          %td #{bundle_part.ticket_spare_part.spare_part_description}
+          /#{TicketOnLoanSparePart.find_by_id(bundle_part.ticket_spare_part.ticket_on_loan_spare_parts.ref_spare_part_id).try(:return_part_serial_no)}
           %td
-          %td #{SparePartStatusAction.find_by_id(bundle_parts.ticket_spare_part.status_action_id).try(:name)}
-          %td #{bundle_parts.event_no}
-          %td #{bundle_parts.ticket_spare_part.ticket_id}
+          %td #{SparePartStatusAction.find_by_id(bundle_part.ticket_spare_part.status_action_id).try(:name)}
+          %td #{bundle_part.event_no}
+          %td #{bundle_part.ticket_spare_part.ticket_id}
 .row.col-md-12{style: "margin-top: 15px;"}
   .col-md-6
     = simple_form_for :return_bundle, url: update_deliver_bundle_tickets_path do |f|

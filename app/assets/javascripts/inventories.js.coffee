@@ -10,6 +10,7 @@ window.Inventories =
     @received_part_status()
     @check_return_serial_and_return_ct()
     @keypress_return_serial_and_return_ct()
+    @bundle_load()
     return
 
   filter_product: -> 
@@ -265,3 +266,8 @@ window.Inventories =
     $(".faulty_serial_no_input, .received_part_serial_no_input, .faulty_ct_no_input, .received_part_ct_no_input").each ->
       $(@).keyup ->
         _this.check_return_serial_and_return_ct()
+
+  bundle_load: ->
+    $("#brand_name").change ->
+      #jQuery.get( url [, data ] [, success ] [, dataType ] )
+      $.get $(@).data("url"), {brand_name: $(":selected", @).text()}

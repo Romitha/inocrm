@@ -1091,14 +1091,13 @@ class TicketsController < ApplicationController
     ContactNumber
     QAndA
     TaskAction
-    Inventory
-    ticket_id = (params[:ticket_id] or session[:ticket_id])
+    ticket_id = params[:ticket_id]
     @ticket = Ticket.find_by_id ticket_id
     session[:ticket_id] = @ticket.id
 
     request_spare_part_id = params[:request_spare_part_id]
     @onloan_request = params[:onloan_request]
-    # @spare_part = TicketSparePart.find request_spare_part_id
+
     @spare_part = @ticket.ticket_spare_parts.find request_spare_part_id
 
     if @onloan_request == 'Y'
@@ -1107,41 +1106,46 @@ class TicketsController < ApplicationController
 
     if @ticket
       @product = @ticket.products.first
-      session[:product_id] = @product.id
-      Rails.cache.delete([:histories, session[:product_id]])
+
+      Rails.cache.delete([:histories, @product.id])
       Rails.cache.delete([:join, @ticket.id])
     end
 
     respond_to do |format|
-      format.html {render "tickets/tickets_pack/approved_parts/approved_parts"}
+      format.html {render "tickets/tickets_pack/approved_store_parts/approved_store_parts"}
     end
   end
 
   def collect_parts
-    Inventory
+
     Warranty
-    ContactNumber
-    QAndA
     TaskAction
     Inventory
     TicketSparePart
-    ticket_id = (params[:ticket_id] or session[:ticket_id])
-    @ticket = Ticket.find_by_id ticket_id
-    session[:ticket_id] = @ticket.id
-    request_spare_part_id = (params[:request_spare_part_id] or session[:request_spare_part_id])
-    @spare_part = TicketSparePart.find request_spare_part_id
-    # @spare_part = @ticket.ticket_spare_parts.find request_spare_part_id
-    session[:request_spare_part_id] = params[:request_spare_part_id]
+    Product
 
-    if @ticket
-      @product = @ticket.products.first
-      @warranties = @product.warranties
-      session[:product_id] = @product.id
-      Rails.cache.delete([:histories, session[:product_id]])
-      Rails.cache.delete([:join, @ticket.id])
-    end
-    respond_to do |format|
-      format.html {render "tickets/tickets_pack/collect_parts"}
+    unless request.xhr?
+      ticket_id = params[:ticket_id]
+      @ticket = Ticket.find_by_id ticket_id
+      session[:ticket_id] = @ticket.id
+      request_spare_part_id = params[:request_spare_part_id]
+      # @spare_part = TicketSparePart.find request_spare_part_id
+      @spare_part = @ticket.ticket_spare_parts.find request_spare_part_id
+
+      @manufacture_parts = ReturnPartsBundle.all
+
+      if @ticket
+        @product = @ticket.products.first
+        Rails.cache.delete([:histories, @product.id])
+        Rails.cache.delete([:join, @ticket.id])
+      end
+    render "tickets/tickets_pack/collect_parts/collect_parts"
+    else
+      if params[:brand_name]
+        @manufacture_parts = ReturnPartsBundle.includes(:product_brand).where(mst_spt_product_brand: {name: params[:brand_name]})
+      end
+      render "tickets/tickets_pack/collect_parts/collect_parts.js.haml"
+
     end
   end
 
@@ -1152,7 +1156,7 @@ class TicketsController < ApplicationController
     TicketSparePart
     Inventory
 
-    @ticket = Ticket.find_by_id (params[:ticket_id] || session[:ticket_id])
+    @ticket = Ticket.find_by_id params[:ticket_id]
     # if params[:ticket_id].present?
 
     request_spare_part_id = params[:request_spare_part_id]
@@ -1169,14 +1173,9 @@ class TicketsController < ApplicationController
       session[:product_id] = @product.id
       Rails.cache.delete([:histories, session[:product_id]])
       Rails.cache.delete([:join, @ticket.id])
-      # @histories = Rails.cache.fetch([:histories, session[:product_id]]){Kaminari.paginate_array(@product.tickets)}.page(params[:page]).per(2)
-      # @join_tickets = Rails.cache.fetch([:join, @ticket.id]){Kaminari.paginate_array(Ticket.where(id: @ticket.joint_tickets.map(&:joint_ticket_id)))}.page(params[:page]).per(2)
-      # @q_and_answers = @ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})}
-      # @ge_q_and_answers = @ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"General Questions" => v})}
-
     end
     respond_to do |format|
-      format.html {render "tickets/tickets_pack/recieve_return_part"}
+      format.html {render "tickets/tickets_pack/recieve_return_part/recieve_return_part"}
     end
   end
 
@@ -1398,11 +1397,11 @@ class TicketsController < ApplicationController
     TaskAction
     Inventory
     TicketSparePart
-    ticket_id = (params[:ticket_id] or session[:ticket_id])
+    ticket_id = params[:ticket_id]
     @ticket = Ticket.find_by_id ticket_id
     session[:ticket_id] = @ticket.id
 
-    bundle_id = (params[:bundle_id] or session[:bundle_id])
+    bundle_id = params[:bundle_id]
     @return_bundle = ReturnPartsBundle.find bundle_id
     # @spare_part = @ticket.ticket_spare_parts.find request_spare_part_id
     session[:bundle_id] = params[:bundle_id]
@@ -1415,7 +1414,7 @@ class TicketsController < ApplicationController
       Rails.cache.delete([:join, @ticket.id])
     end
     respond_to do |format|
-      format.html {render "tickets/tickets_pack/return_parts_bundle"}
+      format.html {render "tickets/tickets_pack/deliver_bundle/deliver_bundle"}
     end
   end
 
@@ -1463,11 +1462,11 @@ class TicketsController < ApplicationController
     QAndA
     TaskAction
     Inventory
-    ticket_id = (params[:ticket_id] or session[:ticket_id])
+    ticket_id = params[:ticket_id]
     @ticket = Ticket.find_by_id ticket_id
     session[:ticket_id] = @ticket.id
 
-    request_spare_part_id = (params[:request_spare_part_id] or session[:request_spare_part_id])
+    request_spare_part_id = params[:request_spare_part_id]
     @spare_part = TicketSparePart.find request_spare_part_id
 
     if @ticket
