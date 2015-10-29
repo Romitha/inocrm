@@ -100,6 +100,7 @@ gem 'httpi'
 
 gem "websocket-rails"
 gem 'redis-rails'
+gem 'redcarpet'
 # gem "em-http-request"
 
 # Use debugger

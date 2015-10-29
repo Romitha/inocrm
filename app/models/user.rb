@@ -35,6 +35,7 @@ class User < ActiveRecord::Base
   validates_uniqueness_of :user_name
 
   # validates_presence_of :password, if: Proc.new {|user| user.is_customer? }
+  # FIXME this is sample text
 
   attr_accessor :coord_x, :coord_y, :coord_w, :coord_h
   after_update :crop_avatar

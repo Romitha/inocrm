@@ -1,11 +1,4 @@
-- manufacture_parts = TicketSparePartManufacture.all
-.row.col-md-12
-  .col-md-3
-    %strong Parts to be Collected
-  .col-md-9
-    %label Manufacture Name :
-    = select("brands", "brand_id", ProductBrand.all.collect {|b| [ b.name, b.id ] }, { include_blank: true })
-.row.col-md-12{style: "margin-top: 15px; margin-left: 2px; "}
+.row
   %table.table.table-bordered
     %thead
       %tr
@@ -19,7 +12,7 @@
         %th Ticket No
         %th Collected
     %tbody
-      - manufacture_parts.each do |bundle_parts|
+      - @manufacture_parts.each do |bundle_parts|
         %tr
           %th #{bundle_parts.id}
           / %td
