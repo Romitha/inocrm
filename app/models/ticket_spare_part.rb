@@ -115,6 +115,7 @@ class TicketOnLoanSparePart < ActiveRecord::Base
   belongs_to :spare_part_status_action, foreign_key: :status_action_id
   belongs_to :user, foreign_key: :requested_by
   belongs_to :organization, foreign_key: :store_id
+  belongs_to :inventory, foreign_key: :inv_product_id
   belongs_to :inventory_product, foreign_key: :inv_product_id
   belongs_to :main_inventory_product, class_name: "InventoryProduct", foreign_key: :main_inv_product_id
 

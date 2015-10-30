@@ -141,6 +141,7 @@ Rails.application.routes.draw do
       get "received_and_issued"
       get "return_manufacture_part"
       get "bundle_return_part"
+      get "issue_store_part"
       get "deliver_bundle"
       get "terminate_invoice"
       get "collect_parts"
