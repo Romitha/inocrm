@@ -1725,6 +1725,38 @@ class TicketsController < ApplicationController
     end
   end
 
+  def issue_store_part
+    Inventory
+    Warranty
+    ContactNumber
+    QAndA
+    TaskAction
+    Inventory
+    ticket_id = (params[:ticket_id] or session[:ticket_id])
+    @ticket = Ticket.find_by_id ticket_id
+    session[:ticket_id] = @ticket.id
+
+    request_spare_part_id = params[:request_spare_part_id]
+    @onloan_request = params[:onloan_request]
+    # @spare_part = TicketSparePart.find request_spare_part_id
+    @spare_part = @ticket.ticket_spare_parts.find request_spare_part_id
+
+    if @onloan_request == 'Y'
+      @onloan_spare_part = @spare_part.ticket_on_loan_spare_parts.find params[:request_onloan_spare_part_id]
+    end
+
+    if @ticket
+      @product = @ticket.products.first
+      session[:product_id] = @product.id
+      Rails.cache.delete([:histories, session[:product_id]])
+      Rails.cache.delete([:join, @ticket.id])
+    end
+
+    respond_to do |format|
+      format.html {render "tickets/tickets_pack/issue_store_part"}
+    end
+  end
+
   def after_printer
 
     case params[:ticket_action]
