@@ -1085,7 +1085,7 @@ class TicketsController < ApplicationController
     end
   end
 
-  def approved_store_parts
+  def approve_store_parts
     Inventory
     Warranty
     ContactNumber
@@ -1112,8 +1112,12 @@ class TicketsController < ApplicationController
     end
 
     respond_to do |format|
-      format.html {render "tickets/tickets_pack/approved_store_parts/approved_store_parts"}
+      format.html {render "tickets/tickets_pack/approve_store_parts/approve_store_parts"}
     end
+  end
+
+  def update_approve_store_parts
+
   end
 
   def collect_parts
@@ -1132,7 +1136,7 @@ class TicketsController < ApplicationController
       # @spare_part = TicketSparePart.find request_spare_part_id
       @spare_part = @ticket.ticket_spare_parts.find request_spare_part_id
 
-      @manufacture_parts = ReturnPartsBundle.all
+      @manufacture_parts = []#ReturnPartsBundle.all
 
       if @ticket
         @product = @ticket.products.first
@@ -1141,20 +1145,21 @@ class TicketsController < ApplicationController
       end
     render "tickets/tickets_pack/collect_parts/collect_parts"
     else
-      if params[:brand_name]
-        @manufacture_parts = ReturnPartsBundle.includes(:product_brand).where(mst_spt_product_brand: {name: params[:brand_name]})
+      if params[:product_brand_id]
+        @manufacture_parts = TicketSparePartManufacture.includes(:return_parts_bundle).where(spt_return_parts_bundle: {product_brand_id: params[:product_brand_id]})
       end
       render "tickets/tickets_pack/collect_parts/collect_parts.js.haml"
 
     end
   end
 
-  def recieve_return_part
+  def return_store_part
     ContactNumber
     QAndA
     TaskAction
     TicketSparePart
     Inventory
+    Warranty
 
     @ticket = Ticket.find_by_id params[:ticket_id]
     # if params[:ticket_id].present?
@@ -1169,13 +1174,11 @@ class TicketsController < ApplicationController
 
     if @ticket
       @product = @ticket.products.first
-      @warranties = @product.warranties
-      session[:product_id] = @product.id
-      Rails.cache.delete([:histories, session[:product_id]])
+      Rails.cache.delete([:histories, @product.id])
       Rails.cache.delete([:join, @ticket.id])
     end
     respond_to do |format|
-      format.html {render "tickets/tickets_pack/recieve_return_part/recieve_return_part"}
+      format.html {render "tickets/tickets_pack/return_store_part/return_store_part"}
     end
   end
 
@@ -1201,7 +1204,7 @@ class TicketsController < ApplicationController
     end
   end
 
-  def estimate_part
+  def estimate_the_part_internal
     Inventory
     Warranty
     ContactNumber
@@ -1221,7 +1224,7 @@ class TicketsController < ApplicationController
     end
 
     respond_to do |format|
-      format.html {render "tickets/tickets_pack/estimate_part/estimate_part"}
+      format.html {render "tickets/tickets_pack/estimate_the_part_internal/estimate_the_part_internal"}
     end
   end
 
@@ -1636,27 +1639,22 @@ class TicketsController < ApplicationController
     end
   end
 
-  def low_margin_estimate
+  def job_below_margin_estimate_approval
     ContactNumber
     QAndA
     TaskAction
     TicketSparePart
     Inventory
+    Warranty
     @ticket = Ticket.find_by_id params[:ticket_id]
     if @ticket
+      @estimation = @ticket.ticket_estimations.find params[:part_estimation_id]
       @product = @ticket.products.first
-      @warranties = @product.warranties
-      session[:product_id] = @product.id
-      Rails.cache.delete([:histories, session[:product_id]])
+      Rails.cache.delete([:histories, @product.id])
       Rails.cache.delete([:join, @ticket.id])
-      # @histories = Rails.cache.fetch([:histories, session[:product_id]]){Kaminari.paginate_array(@product.tickets)}.page(params[:page]).per(2)
-      # @join_tickets = Rails.cache.fetch([:join, @ticket.id]){Kaminari.paginate_array(Ticket.where(id: @ticket.joint_tickets.map(&:joint_ticket_id)))}.page(params[:page]).per(2)
-      # @q_and_answers = @ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})}
-      # @ge_q_and_answers = @ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"General Questions" => v})}
-
     end
     respond_to do |format|
-      format.html {render "tickets/tickets_pack/low_margin_estimate"}
+      format.html {render "tickets/tickets_pack/job_below_margin_estimate_approval"}
     end
   end
 
@@ -2824,9 +2822,6 @@ class TicketsController < ApplicationController
     redirect_to @ticket, notice: @flash_message
   end
 
-  def update_approved_parts
-
-  end
   private
     def set_ticket
       @ticket = Ticket.find(params[:id])

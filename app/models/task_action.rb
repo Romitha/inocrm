@@ -209,6 +209,7 @@ class RequestSparePart < ActiveRecord::Base
   belongs_to :ticket_spare_part
 
   belongs_to :reject_return_part_reason, class_name: "Reason", foreign_key: :reject_return_part_reason_id
+  belongs_to :part_terminate_reason, class_name: "Reason", foreign_key: :part_terminate_reason_id
 
 end
 

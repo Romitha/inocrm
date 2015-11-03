@@ -404,3 +404,12 @@ abbr{
     width: 300px;
   }
 }
+
+.control-group {
+  position: relative;
+  label.boolean {
+    left: 30px;
+    position: absolute;
+    top: 2px;
+  }
+}

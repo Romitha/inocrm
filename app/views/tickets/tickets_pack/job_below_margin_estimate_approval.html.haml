@@ -19,9 +19,9 @@
             = hidden_field_tag :task_id, session[:task_id]
             = hidden_field_tag :owner, session[:owner]
             - session[:bpm_input_variables].each do |bpm_input_variable|
-             = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+              = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
-            = f.simple_fields_for :ticket_estimations do |t|
+            = f.simple_fields_for "ticket_estimations_attributes[]", @estimation do |t|
               - if t.object.status_id == EstimationStatus.find_by_code("RQS").id and t.object.ticket_estimation_externals.present?
                 = hidden_field_tag :ticket_estimation_id, t.object.id
 
@@ -87,7 +87,8 @@
 
                   .row
                     .col-md-12
-                      = t.input :note
+                      = t.input :note, input_html: {value: nil}
+                      = simple_format @estimation.note
                   .row
                     .col-md-6
                       %strong Additional charge:

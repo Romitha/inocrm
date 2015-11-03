@@ -16,6 +16,6 @@
             %strong Parts to be Collected
           .col-md-9
             %label Manufacture Name :
-            = select_tag("brand_name", options_from_collection_for_select(ProductBrand.all, :id, :name), include_blank: true, data: {url: collect_parts_tickets_path})
+            = select_tag("brand_name", options_from_collection_for_select(ProductBrand.all, :id, :name), data: {url: collect_parts_tickets_path}, prompt: "Please select brand")
         #bundle_parts
           = render "tickets/tickets_pack/collect_parts/collect_parts", spare_part: spare_part

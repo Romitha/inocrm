@@ -12,18 +12,18 @@
         %th Ticket No
         %th Collected
     %tbody
-      - @manufacture_parts.each do |bundle_parts|
+      - @manufacture_parts.each do |manufacture_part|
         %tr
-          %th #{bundle_parts.id}
+          %th #{manufacture_part.id}
           / %td
-          %td #{bundle_parts.return_parts_bundle.try(:created_at).try(:strftime, "%m-%d-%Y")}
-          / %td #{bundle_parts.return_parts_bundle.try(:created_at).try(:to_date).try(:strftime("%Y-%m-%d"))}
-          %td #{bundle_parts.ticket_spare_part.spare_part_no}
-          %td #{bundle_parts.ticket_spare_part.spare_part_description}
-          /#{TicketOnLoanSparePart.find_by_id(bundle_parts.ticket_spare_part.ticket_on_loan_spare_parts.ref_spare_part_id).try(:return_part_serial_no)}
+          %td #{manufacture_part.return_parts_bundle.try(:created_at).try(:strftime, "%m-%d-%Y")}
+          / %td #{manufacture_part.return_parts_bundle.try(:created_at).try(:to_date).try(:strftime("%Y-%m-%d"))}
+          %td #{manufacture_part.ticket_spare_part.spare_part_no}
+          %td #{manufacture_part.ticket_spare_part.spare_part_description}
+          /#{TicketOnLoanSparePart.find_by_id(manufacture_part.ticket_spare_part.ticket_on_loan_spare_parts.ref_spare_part_id).try(:return_part_serial_no)}
           %td
-          %td #{SparePartStatusAction.find_by_id(bundle_parts.ticket_spare_part.status_action_id).try(:name)}
-          %td #{bundle_parts.event_no}
-          %td #{bundle_parts.ticket_spare_part.ticket_id}
+          %td #{SparePartStatusAction.find_by_id(manufacture_part.ticket_spare_part.status_action_id).try(:name)}
+          %td #{manufacture_part.event_no}
+          %td #{manufacture_part.ticket_spare_part.ticket_id}
           %td 
-            = check_box_tag(:bundle_parts)
+            = check_box_tag(:manufacture_part)
