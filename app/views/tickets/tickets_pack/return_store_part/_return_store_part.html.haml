@@ -179,24 +179,24 @@
         %strong Use Status of the part:
       .col-md-4
         %strong Un Used Reason:
-
     .row
       .col-md-12
-        = simple_nested_form_for :return_part, url: recieve_return_part_tickets_path, method: :post do |f|
-          .row
+        %hr
+        = simple_nested_form_for spare_part, url: update_return_store_part_tickets_path, method: :post do |f|
+          = f.simple_fields_for (params[:onloan_request] == "Y" ? "ticket_on_loan_spare_parts_attributes[]" : "ticket_spare_part_store_attributes"), (params[:onloan_request] == "Y" ? spare_part.ticket_on_loan_spare_parts.first : spare_part.ticket_spare_part_store) do |sp|
 
-            = f.input :damage , as: :boolean , wrapper_html: {class: "col-md-3"}, wrapper: :append
-            .col-md-4
-              = f.label "Damage Reason : "
-              = f.select :damage_reason , Reason.where(terminate_spare_part: true).map{|r| [r.reason, r.id]}, {include_blank: true},label: "Damage Reason : "
+            .row
+              = sp.input :id, as: :hidden
+              = sp.input :return_part_damage , as: :boolean , wrapper_html: {class: "col-md-3"}, wrapper: :append
+              = f.input :returned_part_accepted, as: :radio_buttons, collection: {"Same Part Returned" => true, "Different Part Returned" => false}, label:false, wrapper: :append, wrapper_html: {class: "col-md-4"}
+            .row
+              .col-md-4
+                = sp.association :return_part_damage_reason, collection: Reason.where(reject_returned_part: true).map{|r| [r.reason, r.id]},include_blank: true, label: "Damage Reason : "
+              .col-md-8
+                = f.input :note, label: "Note", input_html: {value: nil}
+                = simple_format spare_part.note
 
-          .row
-            = f.input :returned_part_accepted, as: :radio_buttons, collection: {"Same Part Returned" => true, "Different Part Returned" => false}, label:false, wrapper: :append, wrapper_html: {class: "col-md-4"}
-            .col-md-4
-              = button_tag "Edit part" , class: "btn btn-success"
-          .row
-            = f.input :note, label: "Note",wrapper_html: {class: "col-md-8"}
 
-          .row.small_scale_margin-bottom1
-            .col-md-4
-              = f.submit "Save", class: "btn btn-success"
+            .row.small_scale_margin-bottom1
+              .col-md-4
+                = f.submit "Save", class: "btn btn-success"

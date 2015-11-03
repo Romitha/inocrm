@@ -38,6 +38,14 @@ window.Tickets =
     $('.wysihtml5').each (i, elem)->
       $(elem).wysihtml5()
 
+    $(".fancy_scroll_bar").mCustomScrollbar
+      theme:"minimal-dark"
+
+  bind_mCustomScrollbar: ->
+    $(".fancy_scroll_bar").mCustomScrollbar
+      theme:"rounded-dark"
+      # themes are inset-2-dark, rounded-dots, rounded-dark
+
   load_customer: ->
     __this = this
     $(".find_customer").click ->

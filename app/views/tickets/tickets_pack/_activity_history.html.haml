@@ -1,5 +1,5 @@
 .row
-  .col-md-12{style: "max-height: 466px;overflow: auto;"}
+  .col-md-12.padding0.fancy_scroll_bar{style: "max-height: 466px; overflow: auto;"}
     - @user_ticket_actions.each do |action|
       - if action.persisted?
         .panel-group
@@ -392,7 +392,7 @@
                   .col-md-4
                     Spare Part Description: #{action.request_spare_part.ticket_spare_part.spare_part_description}
                   .col-md-4
-                    Reason: #{ticket.reason.find_by_id(action.request_spare_part.ticket_spare_part.part_terminated_reason_id).try(:reason)}
+                    Reason: #{action.request_spare_part.part_terminate_reason.try(:reason)}
                 .row
                   .col-md-3
                     -if action.request_spare_part.ticket_spare_part.cus_chargeable_part == true

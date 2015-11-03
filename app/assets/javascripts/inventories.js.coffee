@@ -88,7 +88,7 @@ window.Inventories =
       _this.disable_upon_check()
 
   submit_spare_part: ->
-    submit_form = $("#new_ticket_spare_part, .simple_form edit_ticket_spare_part")
+    submit_form = $("#new_ticket_spare_part")
     _this = this
 
     $("input[type='submit']", submit_form).click (e)->
@@ -270,4 +270,5 @@ window.Inventories =
   bundle_load: ->
     $("#brand_name").change ->
       #jQuery.get( url [, data ] [, success ] [, dataType ] )
-      $.get $(@).data("url"), {brand_name: $(":selected", @).text()}
+      Tickets.ajax_loader()
+      $.get $(@).data("url"), {product_brand_id: $(":selected", @).val()}, (data)-> Tickets.remove_ajax_loader()

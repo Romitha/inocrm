@@ -121,7 +121,7 @@ Rails.application.routes.draw do
       post "update_order_mfp_wrrnty_extnd_rqst"
       post "update_order_mfp_return_manufacture_part"
       post "update_order_mfp_termnt_prt_order"
-      post "update_approved_part"
+      post "update_approve_store_parts"
       post "update_deliver_bundle"
       post "update_bundle_return_part"
       # post "update_order_mfp_edit_serial_no"
@@ -134,6 +134,7 @@ Rails.application.routes.draw do
       post "update_return_manufacture_part"
       post "hold_unhold"
       post "update_estimation_part"
+      post "update_return_store_part"
 
       get "edit-ticket", :action => :edit_ticket
       get "pop-approval"#, :action => :pop_note
@@ -146,14 +147,14 @@ Rails.application.routes.draw do
       get "deliver_bundle"
       get "terminate_invoice"
       get "collect_parts"
-      get "recieve_return_part"
+      get "return_store_part"
       get "deliver_parts_bundle"
-      get "approved_store_parts"
+      get "approve_store_parts"
       get "assign-ticket", action: :assign_ticket
       get "estimate_job"
-      get "estimate_part"
+      get "estimate_the_part_internal"#"estimate_part"
       get "deliver_unit"
-      get "low_margin_estimate"
+      get "job_below_margin_estimate_approval"#low_margin_estimate"
       get "workflow_diagram"
       get "suggesstion_data"
       get "edit_serial"

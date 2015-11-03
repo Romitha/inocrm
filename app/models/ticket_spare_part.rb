@@ -42,7 +42,8 @@ class TicketSparePartStore < ActiveRecord::Base
   belongs_to :inventory_product, foreign_key: :inv_product_id
   belongs_to :ticket_estimation_part, foreign_key: :ticket_estimation_part_id
   belongs_to :store, -> { where(type_id: 4) }, class_name: "Organization", foreign_key: :store_id
-  belongs_to :main_inventory_product, class_name: "InventoryProduct", foreign_key: :main_inv_product_id
+  belongs_to :main_inventory_product, class_name: "InventoryProduct", foreign_key: :mst_inv_product_id
+  belongs_to :return_part_damage_reason, class_name: "Reason"
 end
 
 class TicketFsr < ActiveRecord::Base
@@ -114,10 +115,10 @@ class TicketOnLoanSparePart < ActiveRecord::Base
   accepts_nested_attributes_for :ticket, allow_destroy: true
   belongs_to :spare_part_status_action, foreign_key: :status_action_id
   belongs_to :user, foreign_key: :requested_by
-  belongs_to :organization, foreign_key: :store_id
-  belongs_to :inventory, foreign_key: :inv_product_id
+  belongs_to :store, class: "Organization", foreign_key: :store_id
   belongs_to :inventory_product, foreign_key: :inv_product_id
   belongs_to :main_inventory_product, class_name: "InventoryProduct", foreign_key: :main_inv_product_id
+  belongs_to :return_part_damage_reason, class_name: "Reason"
 
   has_many :ticket_on_loan_spare_part_status_actions, foreign_key: :on_loan_spare_part_id
   accepts_nested_attributes_for :ticket_on_loan_spare_part_status_actions, allow_destroy: true
