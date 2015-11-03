@@ -1,0 +1,48 @@
+- ticket = @ticket
+
+- warranties = @warranties
+- customer = ticket.customer
+- histories = @histories
+- join_tickets = @join_tickets
+- pr_q_and_answers = @q_and_answers
+- ge_q_and_as = @ge_q_and_answers
+
+
+- product = @product
+- spare_part = @spare_part
+- estimation = @estimation
+
+= render "tickets/tickets_pack/ticket_header", ticket: ticket, product: product
+
+= tab_panel do
+  = tab_nav_tab({class: "small_scale_margin-bottom1"}, ticket_info: {content: "Ticket info"}, create_parts_bundle: {content: "Alerts", active_class: "active"} )
+  .tab-content
+    = tab_content tabpointer: :ticket_info do
+      = tab_panel do
+        = render "tickets/tickets_pack/ticket_info", ticket: ticket, product: product, customer: customer, warranties: warranties, histories: histories, join_tickets: join_tickets, ge_q_and_as: ge_q_and_as, pr_q_and_as: pr_q_and_answers
+    = tab_content tabpointer: :create_parts_bundle, active_class: "active" do
+      = tab_panel do
+        .row
+          .col-md-12
+            .form-group
+              %label Alerts
+              %select{:id => "alert_template_caller"}
+                %option{:value => "alert1"} Alert 1
+                %option{:value => "alert2"} Alert 2
+                %option{:value => "alert3"} Alert 3
+                %option{:value => "alert4"} Alert 4
+                %option{:value => "alert5"} Alert 5
+                %option{:value => "alert6"} Alert 6
+
+        .row
+          .col-md-12
+            .form-group
+              #alert_templates
+                = render "tickets/tickets_pack/alert/alert1" , ticket: ticket, product: product , spare_part: spare_part
+
+        / = render "tickets/tickets_pack/alert/alert1" , ticket: ticket, product: product , spare_part: spare_part
+        / = render "tickets/tickets_pack/alert/alert2" , estimation: estimation
+        / = render "tickets/tickets_pack/alert/alert3" , spare_part: spare_part
+        / = render "tickets/tickets_pack/alert/alert4" , spare_part: spare_part, estimation: estimation
+        / = render "tickets/tickets_pack/alert/alert5" , spare_part: spare_part
+        / = render "tickets/tickets_pack/alert/alert6" , spare_part: spare_part

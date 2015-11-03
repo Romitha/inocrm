@@ -1,0 +1,2 @@
+$("#alert_templates").html("#{j render 'tickets/tickets_pack/alert/'+@call_template ,ticket: @ticket, product: @product, spare_part: @spare_part, estimation: @estimation}");
+Tickets.remove_ajax_loader();

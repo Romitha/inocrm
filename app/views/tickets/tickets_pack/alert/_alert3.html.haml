@@ -1,0 +1,64 @@
+.row
+  .col-md-12
+    %strong
+      %u Alert3
+
+.row
+  .col-md-12
+    %strong Chargeable Part:
+    #{spare_part.cus_chargeable_part}
+  .col-md-12
+    %strong Wranaty Periad:
+    xxxx
+  .col-md-12
+    %strong Estimated Price:
+    xxxx
+
+.row
+  .col-md-6
+    .row
+      .col-md-12
+        %strong
+          %u Part Rejected
+    .row
+      .col-md-12
+        %strong ON-LOAN  Part Request
+
+    .row
+      .col-md-12
+        %strong Part No:
+        #{spare_part.spare_part_no}
+    .row
+      .col-md-12
+        %strong Part Description:
+        #{spare_part.spare_part_description}
+
+  .col-md-6
+    .row
+      .col-md-12
+        %strong
+          %u Requested Part
+    .row
+      .col-md-12
+        %strong Store:
+        #{spare_part.try(:ticket_spare_part_store).try(:store).try(:name)}
+
+    .row
+      .col-md-12
+        %strong Item Code:
+        #{spare_part.try(:ticket_spare_part_store).try(:inventory_product).try(:serial_no)}
+
+    .row
+      .col-md-12
+        %strong Item Description:
+        #{spare_part.try(:ticket_spare_part_store).try(:inventory_product).try(:description)}
+
+    .row
+      .col-md-12
+        %strong Unit:
+        #{spare_part.try(:ticket_spare_part_store).try(:inventory_product).try(:inventory_unit).try(:unit)}
+
+.row.small_scale_margin-bottom1
+  .col-md-6
+    %strong Note:
+    #{spare_part.note}

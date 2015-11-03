@@ -9,6 +9,7 @@ window.Tickets =
     @pass_to_re_correction_trigger()
     @filter_sbu_engineer()
     @call_resolution_template()
+    @call_alert_template()
     @call_mf_order_template()
     # @call_omp_template()
     @validate_start_action()
@@ -299,6 +300,12 @@ window.Tickets =
     $("#template_caller").change ->
       _this.ajax_loader()
       $.post "/tickets/call_resolution_template", {call_template: $(@).val()}
+
+  call_alert_template: (call_template)->
+    _this = this
+    $("#alert_template_caller").change ->
+      _this.ajax_loader()
+      $.post "/tickets/call_alert_template", {call_template: $(@).val()}
 
   call_mf_order_template: (call_template)->
     $("#mf_template_caller").change ->

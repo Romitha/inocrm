@@ -113,6 +113,7 @@ Rails.application.routes.draw do
       post "update_pop_approval"
       post "call_resolution_template"
       post "call_mf_order_template"
+      post "call_alert_template"
 
       # post "order_manufacture_parts_edit_serial_no"
       # post "update_order_mfp_hold"
@@ -159,6 +160,8 @@ Rails.application.routes.draw do
       match "extend_warranty", to: "tickets#extend_warranty", via: [:get, :post]
       get "close_event"#, to: "tickets#close_event", via: [:get, :post]
       get "check_fsr"
+
+      get "alert"
 
       get "ajax_show"
     end

@@ -1,0 +1,81 @@
+.row
+  .col-md-12
+    %strong
+      %u Alert 1
+
+.row
+  .col-md-4
+    %strong country/region sold:
+    #{product.product_sold_country.Country}
+
+  .col-md-4
+    %strong proof of purchase:
+    #{product.pop_note}
+
+  .col-md-4
+    %strong pop status:
+    #{product.product_pop_status.name}
+
+.row
+  .col-md-3
+    %strong corparate product:
+    #{product.corporate_product}
+
+.row
+  .col-md-12{style: "margin-top: 15px;"}
+    %table.table.table-bordered
+      %thead
+        %tr
+          %th
+          %th
+          %th
+          %th{colspan: 3, class: "text-center"} Period in month
+        %tr
+          %th No
+          %th Start Date
+          %th Exp. Date
+          %th Part
+          %th Labour
+          %th On-Sight
+          %th Warranty Type
+          %th Product No
+          %th Reg. No
+          %th Note
+
+      %tbody
+        - product.warranties.each do |warranty|
+          %tr
+            %td #{warranty.id}
+            %td #{warranty.start_at}
+            %td #{warranty.end_at}
+            %td #{warranty.period_part}
+            %td #{warranty.period_labour}
+            %td #{warranty.period_onsight}
+            %td #{warranty.try(:warranty_type_id).try(:name)}
+            %td #{warranty.care_pack_product_no}
+            %td #{warranty.care_pack_reg_no}
+            %td #{warranty.note}
+
+.row
+  .col-md-4
+    %strong Contract ID:
+    #{ticket.try(:ticket_contract).try(:id)}
+    (B2B):
+    #{ticket.try(:ticket_contract).try(:contract_b2b)}
+  .col-md-4
+    %strong Contract Available:
+    #{ticket.try(:ticket_contract).try(:active)}
+
+.row
+  .col-md-4
+    %strong Contract Start Date:
+    #{ticket.try(:ticket_contract).try(:contract_start_at)}
+
+  .col-md-4
+    %strong Contract End Date:
+    #{ticket.try(:ticket_contract).try(:contract_end_at)}
+
+.row.small_scale_margin-bottom1
+  .col-md-4
+    %strong Contract Remarks ::
+    #{ticket.try(:ticket_contract).try(:remarks)}

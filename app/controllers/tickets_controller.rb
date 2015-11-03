@@ -1455,6 +1455,29 @@ class TicketsController < ApplicationController
     end
   end
 
+  def alert
+
+    Inventory
+    Warranty
+    ContactNumber
+    QAndA
+    TaskAction
+    Inventory
+
+    ticket_id = (params[:ticket_id] or session[:ticket_id])
+    @ticket = Ticket.find_by_id ticket_id
+
+    if @ticket
+      @product = @ticket.products.first
+      @estimation = @ticket.ticket_estimations.first
+      @spare_part = @ticket.ticket_spare_parts.first
+    end
+
+    respond_to do |format|
+      format.html {render "tickets/alerts"}
+    end
+  end
+
   def close_event
     Inventory
     Warranty
@@ -1873,6 +1896,25 @@ class TicketsController < ApplicationController
       session[:mst_inv_product_id] = nil
 
       @ticket_on_loan_spare_part = @ticket.ticket_on_loan_spare_parts.build
+    end
+  end
+
+  def call_alert_template
+
+    Inventory
+    Warranty
+    ContactNumber
+    QAndA
+    TaskAction
+    Inventory
+
+    ticket_id = (params[:ticket_id] or session[:ticket_id])
+    @ticket = Ticket.find_by_id ticket_id
+    @call_template = params[:call_template]
+    if @ticket
+      @product = @ticket.products.first
+      @estimation = @ticket.ticket_estimations.first
+      @spare_part = @ticket.ticket_spare_parts.first
     end
   end
 
