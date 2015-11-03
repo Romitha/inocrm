@@ -1,0 +1,55 @@
+.row
+  .col-md-12
+    %strong
+      %u Alert5
+
+.row
+  .col-md-12
+    %strong Manufacture Part Recieved:
+    #{spare_part.ticket_spare_part_manufacture.received_manufacture}
+
+.row
+  .col-md-4
+    %strong Spare Part No:
+    #{spare_part.spare_part_no}
+  .col-md-4
+    %strong Product Brand:
+    HP
+  .col-md-4
+    %strong Recieved At:
+
+.row
+  .col-md-4
+    %strong Part Description:
+    #{spare_part.spare_part_description}
+  .col-md-4
+    %strong Faulty Serial No:
+    #{spare_part.faulty_serial_no}
+  .col-md-4
+    %strong Recieved By:
+
+
+.row
+  .col-md-4
+    %strong Order No:
+    #{spare_part.ticket_spare_part_manufacture.order_no}
+  .col-md-4
+    %strong Faulty CT No:
+    #{spare_part.faulty_ct_no}
+  .col-md-4
+    %strong Recieved Part Serial No:
+    #{spare_part.received_part_serial_no}
+
+.row
+  .col-md-4
+    %strong Event No:
+    #{spare_part.ticket_spare_part_manufacture.event_no}
+
+  .col-md-4
+    %strong CT No:
+    #{spare_part.received_part_ct_no}
+
+.row.small_scale_margin-bottom1
+  .col-md-6
+    %strong Note:
+    #{spare_part.note}

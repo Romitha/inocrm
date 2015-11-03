@@ -1,0 +1,43 @@
+.row
+  .col-md-12
+    %strong
+      %u Alert6
+
+.row
+  .col-md-8
+    %strong Part Requested for Order:
+  .col-md-4
+    %strong Part  Terminated
+    #{spare_part.part_terminated}
+
+
+.row
+  .col-md-4
+    %strong FSR No:
+    #{spare_part.fsr_id}
+  .col-md-4
+    %strong Product Brand:
+    HP
+  .col-md-4
+    %strong Terminated Reason:
+    #{spare_part.try(:part_terminated_reason).try(:reason)}
+
+.row
+  .col-md-4
+    %strong Spare Part No:
+    #{spare_part.spare_part_no}
+  .col-md-4
+    %strong Faulty Serial No:
+    #{spare_part.faulty_serial_no}
+  .col-md-4
+    %strong Terminated By:
+
+.row
+  .col-md-4
+    %strong Part Description:
+    #{spare_part.spare_part_description}
+  .col-md-4
+    %strong Faulty CT No:
+    #{spare_part.faulty_ct_no}
+  .col-md-4
+    %strong Terminated At:
