@@ -1,0 +1,77 @@
+- ticket = @ticket
+- product = @product
+- warranties = @warranties
+- customer = ticket.customer
+- histories = @histories
+- join_tickets = @join_tickets
+- pr_q_and_answers = @q_and_answers
+- ge_q_and_as = @ge_q_and_answers
+
+
+%strong All Estimations
+%table.table.table-responsive.table-condensed.table-bordered
+  %thead
+    %tr
+      %th
+      %th
+      %th
+      %th{colspan: 3, class: "text-center"} Estimated amount (#{ticket.ticket_currency.code})
+    %tr
+      %th No
+      %th Requested date
+      %th #{ticket.ticket_repair_type.code == 'EX' ? 'Repaired by' : 'No of parts' }
+      %th #{ticket.ticket_repair_type.code == 'EX' ? 'Repair' : 'Parts' }
+      %th Additional
+      %th Total
+      %th Min. advanced payment
+      %th Estimation status
+
+  %tbody
+    - ticket.ticket_estimations.each_with_index do |estimation, index|
+      %tr
+        %td
+          = link_to load_estimation_ticket_info_inventories_path(estimation_id: estimation.id, estimation_type: "#{ticket.ticket_repair_type.code == 'EX' ? 'external' : 'part' }"), remote: true do
+            = index+1
+        %td= estimation.requested_at
+        %td
+          - if ticket.ticket_repair_type.code == 'EX'
+            = estimation.ticket_estimation_externals.first.try(:organization).try(:name)
+          - else
+            = estimation.ticket_estimation_parts.count
+        %td
+          - if estimation.approval_required
+            - if ticket.ticket_repair_type.code == 'EX'
+              = number_with_precision estimation.ticket_estimation_externals.sum(:approved_estimated_price), precision: 2
+            - else
+              = number_with_precision estimation.ticket_estimation_parts.sum(:approved_estimated_price), precision: 2
+          - else
+            - if ticket.ticket_repair_type.code == 'EX'
+              = number_with_precision estimation.ticket_estimation_externals.sum(:estimated_price), precision: 2
+            - else
+              = number_with_precision estimation.ticket_estimation_parts.sum(:estimated_price), precision: 2
+
+        %td
+          - if estimation.approval_required
+            = number_with_precision estimation.ticket_estimation_additionals.sum(:approved_estimated_price), precision: 2
+          - else
+            = number_with_precision estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2
+
+        %td
+          - if estimation.approval_required
+            - if ticket.ticket_repair_type.code == 'EX'
+              = number_with_precision(estimation.ticket_estimation_externals.sum(:approved_estimated_price) + estimation.ticket_estimation_additionals.sum(:approved_estimated_price), precision: 2)
+            - else
+              = number_with_precision(estimation.ticket_estimation_parts.sum(:approved_estimated_price) + estimation.ticket_estimation_additionals.sum(:approved_estimated_price), precision: 2)
+          - else
+            - if ticket.ticket_repair_type.code == 'EX'
+              = number_with_precision(estimation.ticket_estimation_externals.sum(:estimated_price) + estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2)
+            - else
+              = number_with_precision(estimation.ticket_estimation_parts.sum(:estimated_price) + estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2)
+        %td
+          - if estimation.approval_required
+            = number_with_precision estimation.approved_adv_pmnt_amount, precision: 2
+          - else
+            = number_with_precision estimation.advance_payment_amount, precision: 2
+        %td= estimation.estimation_status.name
+
+#estimation_ajax_frame_ticket_info

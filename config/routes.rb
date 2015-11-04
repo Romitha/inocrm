@@ -226,6 +226,7 @@ Rails.application.routes.draw do
       put "update_part_order"
       put "update_onloan_part_order"
       get "load_estimation"
+      get "load_estimation_ticket_info"
       patch "update_estimation_part_customer_approval"
       patch "update_estimation_external_customer_approval"
       put "update_estimate_job"
