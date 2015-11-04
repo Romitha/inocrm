@@ -874,6 +874,38 @@ class TicketsController < ApplicationController
 
       @render_template = "tickets/tickets_pack/activity_history"
       @variables = {ticket: @ticket}
+
+    when "fsr"
+      # product = @ticket.products.first
+      @user_ticket_actions = @ticket.cached_user_ticket_actions
+
+      @render_template = "tickets/tickets_pack/fsr"
+      @variables = {ticket: @ticket}
+
+    when "payment_recieved"
+
+      # product = @ticket.products.first
+      @user_ticket_actions = @ticket.cached_user_ticket_actions
+
+      @render_template = "tickets/tickets_pack/payment_recieved"
+      @variables = {ticket: @ticket}
+
+    when "estimation"
+
+      # product = @ticket.products.first
+      @user_ticket_actions = @ticket.cached_user_ticket_actions
+
+      @render_template = "tickets/tickets_pack/estimation"
+      @variables = {ticket: @ticket}
+
+    when "parts_odered"
+
+      # product = @ticket.products.first
+      @user_ticket_actions = @ticket.cached_user_ticket_actions
+
+      @render_template = "tickets/tickets_pack/parts_odered"
+      @variables = {ticket: @ticket}
+
     else
       render js: "alert('template is unavailable');"
     end

@@ -315,6 +315,11 @@ class InventoriesController < ApplicationController
     @estimation = TicketEstimation.find params[:estimation_id]
   end
 
+  def load_estimation_ticket_info
+    @estimation_type = params[:estimation_type]
+    @estimation = TicketEstimation.find params[:estimation_id]
+  end
+
   def update_estimation_part_customer_approval
     Ticket
     status_action_id = SparePartStatusAction.find_by_code("CLS").id
