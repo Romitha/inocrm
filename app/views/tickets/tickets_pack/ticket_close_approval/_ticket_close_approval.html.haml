@@ -1,0 +1,142 @@
+= simple_form_for ticket, url: "#", remote: true do |f|
+  .col-md-6
+    = f.label "Ticket Complete (Approved to close)"
+    = f.check_box :ticket_close_approval_requested
+  .col-md-6
+    = f.label "Reject Reason"
+    = f.select :hold_reason_id, Reason.all.map {|r| [r.reason,r.id] }
+  .col-md-12
+    %fieldset
+      %legend
+        Parts Ordered
+      .col-md-3
+        %p Replaced Parts
+      .col-md-3
+        %strong No of return pending events : 
+      .col-md-6
+        %strong No of un-closed events :
+      .col-md-12
+        %table.table
+          %thead
+            %tr
+              %th No
+              %th Part No
+              %th Description
+              %th Request Type
+              %th Status
+              %th Return Accepted
+              %th Event No
+              %th Event Closed
+              %th Return Part
+              %th Note
+              %th Approved
+          %tbody
+            = f.simple_fields_for :ticket_spare_parts do |tsp|
+              %tr
+                %th #{tsp.object.id}
+                %td #{tsp.object.spare_part_no}
+                %td #{tsp.object.spare_part_description}
+                %td #{tsp.object.request_from}
+                %td #{tsp.object.spare_part_status_action.name}
+                - if tsp.object.returned_part_accepted == 1
+                  %td Yes
+                -else
+                  %td No
+                - if tsp.object.request_from == 'M'
+                  %td #{tsp.object.ticket_spare_part_manufacture.event_no}
+                - else
+                  %td -
+                - if tsp.object.request_from == 'M'
+                  - if tsp.object.ticket_spare_part_manufacture.event_closed == 1
+                    %td Yes
+                  - else
+                    %td No
+                - else
+                  %td -
+                %td #{tsp.object.return_part_serial_no}
+                %td
+                  %span.has-tooltip{:title => "#{tsp.object.note}"}
+                    = simple_format(truncate("#{tsp.object.note}", length: 17), {}, sanitize: false)
+                %td 
+                  = tsp.check_box :close_approved
+  .col-md-12
+    %fieldset
+      %legend
+        FSR
+      .col-md-12
+        %p FSR Information
+      .col-md-4
+        %p Work Started : #{f.object.ticket_fsrs.first.work_started_at.try(:strftime, "%Y-%m-%d %H:%M")}
+      .col-md-4
+        %p Work Finished : #{f.object.ticket_fsrs.first.work_finished_at.try(:strftime, "%Y-%m-%d %H:%M")}
+      .col-md-4
+        %p FSR No : #{f.object.ticket_fsrs.first.id.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])}
+      .col-md-4
+        Hours Worked(hours) : #{f.object.ticket_fsrs.first.hours_worked}
+      .col-md-4
+        Down Time(hours) : #{f.object.ticket_fsrs.first.down_time}
+      .col-md-4
+        Travel(hours) : #{f.object.ticket_fsrs.first.travel_hours}
+      .col-md-12{style: "margin-top: 15px;"}
+        %strong For Invocing
+      .col-md-12{style: "margin-top: 15px;"}
+        .col-md-6
+          Engineer Time Travel : #{f.object.ticket_fsrs.first.engineer_time_travel}
+        .col-md-6
+          Engineer Time On-Sight :#{f.object.ticket_fsrs.first.engineer_time_on_site}
+        .col-md-6
+          Other Charges Mileage : #{f.object.ticket_fsrs.first.other_mileage}
+        .col-md-6
+          Other Charges Repaires : #{f.object.ticket_fsrs.first.other_repairs}
+        .col-md-12
+          Resolution : #{f.object.ticket_fsrs.first.resolution}
+        .col-md-12
+          Level of Completion : #{f.object.ticket_fsrs.first.completion_level}
+      .col-md-12{style: "margin-top: 15px;"}
+        %p Replaced Parts
+        .col-md-12
+          %table.table
+            %thead
+              %tr
+                %th No
+                %th Part No
+                %th Description
+                %th Return
+                %th Return Part
+                %th Event No.
+                %th Event Closed
+            %tbody
+              = f.simple_fields_for :ticket_spare_parts do |tsp|
+                %tr
+                  %th #{tsp.object.id}
+                  %td #{tsp.object.spare_part_no}
+                  %td #{tsp.object.spare_part_description}
+                  - if tsp.object.returned_part_accepted == 1
+                    %td Yes
+                  -else
+                    %td No
+                  %td #{tsp.object.return_part_serial_no}
+                  - if tsp.object.request_from == 'M'
+                    %td #{tsp.object.ticket_spare_part_manufacture.event_no}
+                  - else
+                    %td -
+                  - if tsp.object.request_from == 'M'
+                    - if tsp.object.ticket_spare_part_manufacture.event_closed == 1
+                      %td Yes
+                    - else
+                      %td No
+                  - else
+                    %td -
+      .col-md-12{style: "margin-top: 15px;"}
+        = f.simple_fields_for "ticket_fsrs_attributes[]", @ticket.ticket_fsrs.first do |fsr|
+          .col-md-3
+            = fsr.label "Approved"
+            = fsr.check_box :approved
+          .col-md-9
+            = fsr.input :remarks
+
+  .col-md-12{style: "margin-bottom: 15px;"}
+    .col-md-8
+      = f.select :owner_engineer_id, SbuEngineer.all.uniq{|e| e.engineer.id}.map{|e| [(e.engineer.first_name ? "#{e.engineer.mst_title.try(:title)} #{e.engineer.first_name}" : e.engineer.email), e.engineer.id]}
+    .col-md-4
+      = f.submit "Save", class: "btn btn-success"
