@@ -135,6 +135,7 @@ Rails.application.routes.draw do
       post "hold_unhold"
       post "update_estimation_part"
       post "update_return_store_part"
+      post "update_ticket_close_approval"
 
       get "edit-ticket", :action => :edit_ticket
       get "pop-approval"#, :action => :pop_note
@@ -149,7 +150,8 @@ Rails.application.routes.draw do
       get "collect_parts"
       get "return_store_part"
       get "deliver_parts_bundle"
-      get "approve_store_parts"
+      get "approved_store_parts"
+      get "ticket_close_approval"
       get "assign-ticket", action: :assign_ticket
       get "estimate_job"
       get "estimate_the_part_internal"#"estimate_part"

@@ -1149,7 +1149,31 @@ class TicketsController < ApplicationController
   end
 
   def update_approve_store_parts
+  end
+  
+  def ticket_close_approval
+    Inventory
+    Warranty
+    ContactNumber
+    QAndA
+    TaskAction
+    User
+    ticket_id = params[:ticket_id]
+    @ticket = Ticket.find_by_id ticket_id
+    session[:ticket_id] = @ticket.id
 
+    supp_engr_user = params[:supp_engr_user]
+
+    if @ticket
+      @product = @ticket.products.first
+
+      Rails.cache.delete([:histories, @product.id])
+      Rails.cache.delete([:join, @ticket.id])
+    end
+
+    respond_to do |format|
+      format.html {render "tickets/tickets_pack/ticket_close_approval"}
+    end
   end
 
   def collect_parts
