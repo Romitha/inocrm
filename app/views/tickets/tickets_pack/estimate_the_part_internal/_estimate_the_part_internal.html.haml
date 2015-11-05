@@ -10,10 +10,29 @@
       %legend Part No #{t.object.ticket_spare_part.try(:spare_part_no)}
       .row
         .col-md-12.tyyt
-          Part No : #{t.object.ticket_spare_part.try(:spare_part_no)}
+          %strong Part No:
+          #{t.object.ticket_spare_part.try(:spare_part_no)}
       .row
         .col-md-4
-          Part Description : #{t.object.ticket_spare_part.try(:spare_part_description)}
+          %strong Part description:
+          #{t.object.ticket_spare_part.try(:spare_part_description)}
+      .row
+        .col-md-4
+          %strong Part status:
+          #{t.object.ticket_spare_part.spare_part_status_action.try(:name)}
+
+      .row
+        .col-md-12
+          %h4 Requested part
+          %dl.dl-horizontal
+            %dt
+              Store
+            %dd
+              = t.object.ticket_spare_part.ticket_spare_part_store and t.object.ticket_spare_part.ticket_spare_part_store.store.name
+            %dt
+              Item code
+            %dd
+              = t.object.ticket_spare_part.ticket_spare_part_store and t.object.ticket_spare_part.ticket_spare_part_store.store.name
 
       .row
         .col-md-3
@@ -23,7 +42,7 @@
         .col-md-3
           = t.input :estimated_price, input_html: {class: "only_float"}
         .col-md-3
-          = t.input :warranty_period, input_html: {class: "only_float"}
+          = t.input :warranty_period, input_html: {class: "only_float"}, label: "Warranty period (months)"
 
   = f.simple_fields_for :ticket_estimation_additionals do |a|
 

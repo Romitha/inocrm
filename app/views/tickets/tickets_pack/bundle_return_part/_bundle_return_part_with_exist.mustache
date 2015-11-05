@@ -1,0 +1,22 @@
+.col-md-3.col-xs-3
+  No
+.col-md-3.col-xs-3
+  Date bundled
+.col-md-3.col-xs-3
+  Bundled No
+.col-md-3.col-xs-3
+  Bundled by
+
+{{#.}}
+.col-md-2.col-xs-2
+  {{no}}
+.col-md-3.col-xs-3
+  {{date_bundled}}
+.col-md-2.col-xs-2
+  {{bundled_no}}
+.col-md-3.col-xs-3
+  {{bundled_by}}
+.col-md-2.col-xs-2
+  %a{href: "#", onclick: "Inventories.load_mustache_bundle_return_part('load_bundled_manufactures', {{id}}); return false;"}
+    select
+{{/.}}

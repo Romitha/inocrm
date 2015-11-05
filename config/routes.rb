@@ -136,6 +136,7 @@ Rails.application.routes.draw do
       post "update_estimation_part"
       post "update_return_store_part"
       post "update_ticket_close_approval"
+      post "update_collect_parts"
 
       get "edit-ticket", :action => :edit_ticket
       get "pop-approval"#, :action => :pop_note
@@ -143,11 +144,11 @@ Rails.application.routes.draw do
       get "order_parts", :action => :order_mf
       get "received_and_issued"
       get "return_manufacture_part"
-      get "bundle_return_part"
+      get "bundle_return_part" #same interface
       get "issue_store_part"
-      get "deliver_bundle"
+      get "deliver_bundle" #same interface
       get "terminate_invoice"
-      get "collect_parts"
+      get "collect_parts" #same interface
       get "return_store_part"
       get "deliver_parts_bundle"
       get "approved_store_parts"

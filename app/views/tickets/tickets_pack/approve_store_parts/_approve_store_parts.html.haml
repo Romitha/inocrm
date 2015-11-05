@@ -51,13 +51,11 @@
   = simple_nested_form_for spare_part, url: update_approve_store_parts_tickets_path, method: :post, html: {id: "new_ticket_spare_part"} do |f|
 
     = f.simple_fields_for (params[:onloan_request] == "Y" ? "ticket_on_loan_spare_parts_attributes[]" : "ticket_spare_part_store_attributes"), (params[:onloan_request] == "Y" ? @onloan_spare_part : spare_part.ticket_spare_part_store) do |sto|
-      = sto.input :store_id, as: :hidden, input_html: {id: "store_id"}
+
+      = sto.input :approved_store_id, as: :hidden, input_html: {id: "store_id"}
       = hidden_field_tag :mst_store_id, sto.object.store_id, id: "mst_store_id"
-      = sto.input :inv_product_id, as: :hidden, input_html: {id: "inv_product_id"}
-      - if params[:onloan_request] == "Y"
-        = sto.input :main_inv_product_id, as: :hidden, input_html: {id: "mst_inv_product_id"}
-      - else
-        = sto.input :mst_inv_product_id, as: :hidden, input_html: {id: "mst_inv_product_id"}
+      = sto.input :approved_inv_product_id, as: :hidden, input_html: {id: "inv_product_id"}
+      = sto.input :approved_main_inv_product_id, as: :hidden, input_html: {id: "mst_inv_product_id"}
 
       .row
         = f.input :close_approved, as: :radio_buttons, collection: {"Approved" => true, "Reject" => false}, wrapper: :append, label: false, wrapper_html: {class: "col-md-6"}
