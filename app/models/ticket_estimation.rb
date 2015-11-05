@@ -50,7 +50,7 @@ class TicketEstimationPart < ActiveRecord::Base
   belongs_to :ticket_estimation, foreign_key: :ticket_estimation_id
   belongs_to :ticket, foreign_key: :ticket_id
 
-  has_many :ticket_spare_part_stores, foreign_key: :ticket_estimation_part_id
+  # has_many :ticket_spare_part_stores, foreign_key: :ticket_estimation_part_id
 
   belongs_to :supplier, class_name: "Organization", foreign_key: :supplier_id
 

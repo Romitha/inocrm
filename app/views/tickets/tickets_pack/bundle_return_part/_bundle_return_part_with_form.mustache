@@ -1,0 +1,30 @@
+<form method="post" accept-charset="UTF-8" action="/tickets/update_bundle_return_part" id="new_return_parts_bundle" class="simple_form new_return_parts_bundle" novalidate="novalidate">
+
+<input type="hidden" value="✓" name="utf8">
+<input type="hidden" value="{{bundle_id}}" name="return_parts_bundle[id]">
+
+<input type="hidden" value="hmx5lZaj5D+qyrr8kWq7hmFRRJx1fwKuoqHzUeiakywqhQczDCelXdSvrouA9b8wwn6QBHj+UKlzOX3sywx14Q==" name="authenticity_token">
+
+<div class="control-group form-group string optional return_parts_bundle_bundle_no">
+
+<label for="return_parts_bundle_bundle_no" class="string optional control-label">Bundle no</label>
+
+<div class="controls">
+
+<input type="text" id="return_parts_bundle_bundle_no" name="return_parts_bundle[bundle_no]" class="string optional form-control" value="{{bundle_no}}" {{readonly}}="{{readonly}}">
+</div>
+</div>
+
+<div class="control-group form-group text optional return_parts_bundle_note">
+
+<label for="return_parts_bundle_note" class="text optional control-label">Note</label>
+
+<div class="controls">
+
+<textarea id="return_parts_bundle_note" name="return_parts_bundle[note]" class="text optional form-control" {{readonly}}="{{readonly}}">
+{{bundle_note}}
+</textarea>
+</div>
+</div>
+<input type="submit" class="btn btn-sm btn-success" value="Save" name="commit">
+</form>

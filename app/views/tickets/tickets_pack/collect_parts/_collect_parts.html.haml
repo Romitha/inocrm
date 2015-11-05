@@ -1,29 +1,31 @@
 .row
-  %table.table.table-bordered
-    %thead
-      %tr
-        %th No
-        %th Date Returned
-        %th Part No
-        %th Description
-        %th Serial No
-        %th Part Status
-        %th Eventl No
-        %th Ticket No
-        %th Collected
-    %tbody
-      - @manufacture_parts.each do |manufacture_part|
+  = form_tag update_collect_parts_tickets_path, method: :post do
+    %table.table.table-bordered
+      %thead
         %tr
-          %th #{manufacture_part.id}
-          / %td
-          %td #{manufacture_part.return_parts_bundle.try(:created_at).try(:strftime, "%m-%d-%Y")}
-          / %td #{manufacture_part.return_parts_bundle.try(:created_at).try(:to_date).try(:strftime("%Y-%m-%d"))}
-          %td #{manufacture_part.ticket_spare_part.spare_part_no}
-          %td #{manufacture_part.ticket_spare_part.spare_part_description}
-          /#{TicketOnLoanSparePart.find_by_id(manufacture_part.ticket_spare_part.ticket_on_loan_spare_parts.ref_spare_part_id).try(:return_part_serial_no)}
-          %td
-          %td #{SparePartStatusAction.find_by_id(manufacture_part.ticket_spare_part.status_action_id).try(:name)}
-          %td #{manufacture_part.event_no}
-          %td #{manufacture_part.ticket_spare_part.ticket_id}
-          %td 
-            = check_box_tag(:manufacture_part)
+          %th No
+          %th Date Returned
+          %th Part No
+          %th Description
+          %th Serial No
+          %th Part Status
+          %th Eventl No
+          %th Ticket No
+          %th Collected
+      %tbody
+        - @manufacture_parts.each do |manufacture_part|
+          %tr
+            %th #{manufacture_part.id}
+            / %td
+            %td #{manufacture_part.return_parts_bundle.try(:created_at).try(:strftime, "%m-%d-%Y")}
+            / %td #{manufacture_part.return_parts_bundle.try(:created_at).try(:to_date).try(:strftime("%Y-%m-%d"))}
+            %td #{manufacture_part.ticket_spare_part.spare_part_no}
+            %td #{manufacture_part.ticket_spare_part.spare_part_description}
+            /#{TicketOnLoanSparePart.find_by_id(manufacture_part.ticket_spare_part.ticket_on_loan_spare_parts.ref_spare_part_id).try(:return_part_serial_no)}
+            %td
+            %td #{SparePartStatusAction.find_by_id(manufacture_part.ticket_spare_part.status_action_id).try(:name)}
+            %td #{manufacture_part.event_no}
+            %td #{manufacture_part.ticket_spare_part.ticket_id}
+            %td 
+              = check_box_tag("manufacture_part[]", manufacture_part.id, false, id: "manufacture_part_#{manufacture_part.id}")
+    = submit_tag "Save"

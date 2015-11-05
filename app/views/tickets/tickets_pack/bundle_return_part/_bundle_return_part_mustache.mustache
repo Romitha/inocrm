@@ -1,0 +1,13 @@
+{{#.}}
+.row
+  .col-md-4.col-xs-4
+    {{id}}
+  .col-md-4.col-xs-4
+    {{event_no}}
+  .col-md-3.col-xs-3
+    {{ticket_no}}
+  .col-md-1.col-xs-1
+    %a{ href: "#", onclick: "Inventories.load_mustache_bundle_return_part('{{task_action}}', {{id}}); return false;"}
+      {{task_action}}
+
+{{/.}}

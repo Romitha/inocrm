@@ -13,7 +13,7 @@
         - if ticket.ticket_terminated
           .label.label-danger TERMINATED
       .col-md-2.small_scale_padding-top1
-        %strong Sereial No: #{product.serial_no }
+        %strong Serial No: #{product.serial_no }
       .col-md-2.pull-right.text-right.small_scale_padding-top1
         %strong Priority: #{INOCRM_CONFIG["priority"].key ticket.priority} #{"(Terminated)" if ticket.ticket_terminated}
       /   %p Status: #{ticket.ticket_status.name}
