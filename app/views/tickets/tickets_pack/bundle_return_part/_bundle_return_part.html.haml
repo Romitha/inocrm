@@ -1,38 +1,42 @@
 .row
-  .col-md-6.col-xs-6
-
-    .row
-      .col-md-4.col-xs-4 No
-      .col-md-4.col-xs-4 Event No
-      .col-md-4.col-xs-4 Ticket No
-    #bundle_return_part_add_mustache
+  %table.table.table-hover
+    %thead
+      %tr
+        %th No
+        %th Event No
+        %th Ticket No
+        %th
+    %tbody
       - @manufacture_parts.each do |manufacture_part|
-        .row
-          .col-md-4.col-xs-4= manufacture_part.id
-          .col-md-4.col-xs-4= manufacture_part.event_no
-          .col-md-3.col-xs-3= manufacture_part.ticket_spare_part.ticket_id
-          .col-md-1.col-xs-1= link_to "Add", "#", onclick: "Inventories.load_mustache_bundle_return_part('add', #{manufacture_part.id}); return false;"
-      
+        %tr
+          %th
+            = manufacture_part.id
+          %td
+            = manufacture_part.event_no
+          %td
+            = manufacture_part.ticket_spare_part.ticket_id
+          %td
+            = link_to "Add", "#", onclick: "Inventories.load_mustache_bundle_return_part('add', #{manufacture_part.id}); return false;"
+.row{style: "margin-top:30px;"}
+  #bundle_return_part_remove_mustache
 
+.row.row{style: "margin-top:20px;"}
   .col-md-6.col-xs-6
+  .col-md-3.col-xs-3
+    %a.btn.btn-primary{:href => "#", :role => "button", :onclick => "Inventories.load_mustache_bundle_return_part('undelivered_bundle', ''); return false;"} Un delivered bundled
+  .col-md-3.col-xs-3
+    %a.btn.btn-primary{:href => "#", :role => "button", :onclick => "Inventories.load_mustache_bundle_return_part('new_bundle', ''); return false;"} Create New Bundle
 
-    .row
-      .col-md-4.col-xs-4 No
-      .col-md-4.col-xs-4 Event No
-      .col-md-4.col-xs-4 Ticket No
-    #bundle_return_part_with_form
-      = simple_form_for ReturnPartsBundle.new, url: update_bundle_return_part_tickets_path, method: :post do |f|
-        = f.input :id, as: :hidden
-        = f.input :bundle_no
-        = f.input :note
-        = f.submit "Save", class: "btn btn-sm btn-success"
-.row
-  .col-md-6.col-xs-6
-    = link_to "Un delivered bundled", "#", onclick: "Inventories.load_mustache_bundle_return_part('undelivered_bundle', ''); return false;"
-    = link_to "create new bundle", "#", onclick: "Inventories.load_mustache_bundle_return_part('new_bundle', ''); return false;"
-    #bundle_return_part_exist
-  .col-md-6.col-xs-6
-    #bundle_return_part_remove_mustache
+.row.row{style: "margin-top:30px;"}
+  #bundle_return_part_exist
+
+.row.row{style: "margin-top:30px; margin-bottom:30px;"}
+  #bundle_return_part_with_form
+    = simple_form_for ReturnPartsBundle.new, url: update_bundle_return_part_tickets_path, method: :post do |f|
+      = f.input :id, as: :hidden
+      = f.input :bundle_no
+      = f.input :note
+      = f.submit "Save", class: "btn btn-sm btn-success"
 
 %script{type: "text/html", id: "bundle_return_part_mustache"}
   = render "tickets/tickets_pack/bundle_return_part/bundle_return_part_mustache"
