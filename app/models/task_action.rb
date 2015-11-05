@@ -72,6 +72,9 @@ class UserTicketAction < ActiveRecord::Base
   has_one :action_warranty_extend, foreign_key: :ticket_action_id
   accepts_nested_attributes_for :action_warranty_extend, allow_destroy: true
 
+  has_one :custome_feedback, foreign_key: :ticket_action_id
+  accepts_nested_attributes_for :custome_feedback, allow_destroy: true
+
   after_create :flush_cache
 
   def cached_task_action
@@ -219,5 +222,17 @@ class RequestOnLoanSparePart < ActiveRecord::Base
   belongs_to :user_ticket_action, foreign_key: :ticket_action_id
 
   belongs_to :ticket_on_loan_spare_part, foreign_key: :ticket_on_loan_spare_part_id
+
+end
+
+class CustomerFeedback < ActiveRecord::Base
+  self.table_name = "spt_act_customer_feedback"
+
+  belongs_to :feedback
+
+  belongs_to :user_ticket_action, foreign_key: :ticket_action_id
+
+  belongs_to :ticket_payment_received, foreign_key: :payment_received_id
+
 
 end

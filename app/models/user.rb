@@ -258,10 +258,8 @@ class Sbu < ActiveRecord::Base
   has_many :user_assign_ticket_actions, foreign_key: :sbu_id
 end
 
-# class Engineer < ActiveRecord::Base
-#   self.table_name = "mst_spt_sbu"
+class Feedback < ActiveRecord::Base
+  self.table_name = "mst_spt_customer_feedback"
 
-#   has_many :sbu_engineers, foreign_key: :engineer_id
-
-#   has_many :sbus, through: :sbu_engineers
-# end
+  has_many :customer_feedbacks#, foreign_key: :engineer_id
+end

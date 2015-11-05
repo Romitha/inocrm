@@ -1,6 +1,3 @@
-- spare_part_count = TicketSparePartManufacture.count
-- manufacture_parts = TicketSparePartManufacture.all
-
 .row
   .col-md-6.col-xs-6
 
@@ -9,7 +6,7 @@
       .col-md-4.col-xs-4 Event No
       .col-md-4.col-xs-4 Ticket No
     #bundle_return_part_add_mustache
-      - manufacture_parts.each do |manufacture_part|
+      - @manufacture_parts.each do |manufacture_part|
         .row
           .col-md-4.col-xs-4= manufacture_part.id
           .col-md-4.col-xs-4= manufacture_part.event_no

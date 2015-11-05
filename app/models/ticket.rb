@@ -311,7 +311,13 @@ end
 class TicketReAssignRequest < ActiveRecord::Base
   self.table_name = "spt_act_re_assign_request"
 
- belongs_to :reason
- belongs_to :user_ticket_action, foreign_key: :ticket_action_id
+  belongs_to :reason
+  belongs_to :user_ticket_action, foreign_key: :ticket_action_id
 
+end
+
+class TicketPaymentReceived < ActiveRecord::Base
+  self.table_name = "spt_ticket_payment_received"
+
+  has_many :customer_feedbacks, foreign_key: :payment_received_id
 end
