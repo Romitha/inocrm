@@ -1239,7 +1239,7 @@ class TicketsController < ApplicationController
         @template = 'tickets/tickets_pack/collect_parts/collect_parts'
       when "deliver_bundle"
       when "bundle_return_part"
-        @manufacture_parts = TicketSparePartManufacture.joins(ticket_spare_part: {ticket: {products: :product_brand}}).where(mst_spt_product_brand: {id: params[:product_brand_id]}, collected_manufacture: false)
+        @manufacture_parts = TicketSparePartManufacture.joins(ticket_spare_part: {ticket: {products: :product_brand}}).where(mst_spt_product_brand: {id: params[:product_brand_id]}, ready_to_bundle: true, bundled: false)
         @template = 'tickets/tickets_pack/bundle_return_part/bundle_return_part'
       end
       render "tickets/tickets_pack/collect_parts/collect_parts.js.haml"
@@ -1482,14 +1482,14 @@ class TicketsController < ApplicationController
       when "add"
         session[:manufacture_ids] << params[:manufacture_id]
 
-        @remove_manufactures = TicketSparePartManufacture.where.not(id: session[:manufacture_ids].uniq).map { |m| {id: m.id, event_no: m.event_no, ticket_no: m.ticket_spare_part.ticket_id, task_action: "add"} }
-        @add_manufactures = TicketSparePartManufacture.where(id: session[:manufacture_ids].uniq).map { |m| {id: m.id, event_no: m.event_no, ticket_no: m.ticket_spare_part.ticket_id, task_action: "remove"} }
+        @remove_manufactures = TicketSparePartManufacture.where.not(id: session[:manufacture_ids].uniq, ready_to_bundle: false, bundled: true).map { |m| {id: m.id, event_no: m.event_no, ticket_no: m.ticket_spare_part.ticket_id, task_action: "add"} }
+        @add_manufactures = TicketSparePartManufacture.where(id: session[:manufacture_ids].uniq, ready_to_bundle: true, bundled: false).map { |m| {id: m.id, event_no: m.event_no, ticket_no: m.ticket_spare_part.ticket_id, task_action: "remove"} }
 
       when "remove"
         session[:manufacture_ids].delete(params[:manufacture_id])
 
-        @remove_manufactures = TicketSparePartManufacture.where.not(id: session[:manufacture_ids].uniq).map { |m| {id: m.id, event_no: m.event_no, ticket_no: m.ticket_spare_part.ticket_id, task_action: "add"} }
-        @add_manufactures = TicketSparePartManufacture.where(id: session[:manufacture_ids].uniq).map { |m| {id: m.id, event_no: m.event_no, ticket_no: m.ticket_spare_part.ticket_id, task_action: "remove"} }
+        @remove_manufactures = TicketSparePartManufacture.where.not(id: session[:manufacture_ids].uniq, ready_to_bundle: false, bundled: true).map { |m| {id: m.id, event_no: m.event_no, ticket_no: m.ticket_spare_part.ticket_id, task_action: "add"} }
+        @add_manufactures = TicketSparePartManufacture.where(id: session[:manufacture_ids].uniq, ready_to_bundle: true, bundled: false).map { |m| {id: m.id, event_no: m.event_no, ticket_no: m.ticket_spare_part.ticket_id, task_action: "remove"} }
 
       when "undelivered_bundle"
         @bundles = ReturnPartsBundle.all.map { |r| {id: r.id, no: r.bundle_no, date_bundled: r.created_at, bundled_no: "no", bundled_by: "user"} }
@@ -1516,8 +1516,9 @@ class TicketsController < ApplicationController
       session[:ticket_id] = @ticket.id
 
       request_spare_part_id = params[:request_spare_part_id]
-      @spare_part = TicketSparePart.find request_spare_part_id
+      # @spare_part = TicketSparePart.find request_spare_part_id
       session[:request_spare_part_id] = params[:request_spare_part_id]
+      @manufacture_parts = []
 
       if @ticket
         @product = @ticket.products.first

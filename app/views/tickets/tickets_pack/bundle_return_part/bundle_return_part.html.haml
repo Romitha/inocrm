@@ -14,4 +14,4 @@
         = select_tag("brand_name", options_from_collection_for_select(ProductBrand.all, :id, :name), data: {url: collect_parts_tickets_path, template: "bundle_return_part"}, prompt: "Please select brand")
 
         #bundle_parts
-          = render "tickets/tickets_pack/bundle_return_part/bundle_return_part", spare_part: spare_part
+          = render "tickets/tickets_pack/bundle_return_part/bundle_return_part"#, manufacture_parts: @manufacture_parts
