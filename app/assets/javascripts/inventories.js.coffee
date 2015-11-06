@@ -277,8 +277,8 @@ window.Inventories =
     Tickets.ajax_loader()
     $.get "/tickets/bundle_return_part", {task_action: action, manufacture_id: manufacture_id}, (data)->
       if action == "add" or action == "remove"
-        $('#bundle_return_part_add_mustache').html Mustache.to_html($('#bundle_return_part_mustache').html(), data.remove_manufactures)
-        $('#bundle_return_part_remove_mustache').html Mustache.to_html($('#bundle_return_part_mustache').html(), data.add_manufactures)
+        $('#bundle_return_part_add_mustache').html Mustache.to_html($('#bundle_return_part_mustache').html(), data.add_manufactures)
+        $('#bundle_return_part_remove_mustache').html Mustache.to_html($('#bundle_return_part_mustache').html(), data.remove_manufactures)
 
       else if action == "undelivered_bundle"
         $('#bundle_return_part_exist').html Mustache.to_html($('#bundle_return_part_exist_mustache').html(), data.bundles)
