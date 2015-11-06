@@ -1,31 +1,8 @@
 - remarks = capture do
   = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "ticket", name: "remarks", url: "#", "original-title" => "Update remarks", value: ""}, style: "line-height: 6px;" do
     = simple_format ticket.remarks.to_s.split('<br/>')[0]
-
-  -if ticket.remarks.present?
-    %button.btn.btn-link.has-popover{"data-container" => "body", "data-content" => ticket.remarks.to_s, "data-placement" => "bottom", "data-toggle" => "popover", "data-trigger" =>"focus", :type => "button","data-html"=>"true"}
+  %button.btn.btn-link.has-popover{"data-container" => "body", "data-content" => ticket.remarks.to_s, "data-placement" => "bottom", "data-toggle" => "popover", "data-trigger" =>"focus", :type => "button","data-html"=>"true"}
       More
-
-- chenges = { 1 => "icon-folder-open", 2 => "icon-user",12 => "icon-hour-glass", 13 => "icon-cutlery", 14 => "icon-bar-graph-2",15 => "icon-speech-bubble",16 => "icon-open",17 => "icon-download",18 => "icon-warning"}
-
-- inform_method = link_to "#", class: "inline_edit", data: {type: "select", source: InformMethod.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "pop_status_id", url: "#", "original-title" => "Update inform_method"} do
-  = ticket.inform_method.name
-
-- job_type = link_to "#", class: "inline_edit", data: {type: "select", source: JobType.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "job_type_id", url: "#", "original-title" => "Update job_type"} do
-  = ticket.job_type.name
-
-- ticket_type = link_to "#", class: "inline_edit", data: {type: "select", source: TicketType.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "ticket_type_id", url: "#", "original-title" => "Update ticket_type"} do
-  = ticket.ticket_type.name
-
-- warranty_type = link_to "#", class: "inline_edit", data: {type: "select", source: WarrantyType.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "warranty_type_id", url: "#", "original-title" => "Update warranty_type"} do
-  = ticket.warranty_type.name
-
-- cus_chargeable = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "ticket", name: "repair_type_id", url: "#", "original-title" => "Update repair_type"} do
-  = ticket.cus_chargeable ? "Yes" : "No"
-
-- repair_type = link_to "#", class: "inline_edit", data: {type: "select", source: RepairType.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "repair_type_id", url: "#", "original-title" => "Update repair_type"} do
-  = ticket.repair_type.try(:name)
-
 
 .row
   .col-md-2
@@ -57,17 +34,27 @@
   .col-md-5
     %dl.dl-horizontal
       %dt Informed method
-      %dd= inform_method #ticket.inform_method.name
+      %dd
+        = link_to "#", class: "inline_edit", data: {type: "select", source: InformMethod.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "pop_status_id", url: "#", "original-title" => "Update inform_method"} do
+          = ticket.inform_method.name
       %dt Job type
-      %dd= job_type #ticket.job_type.name
+      %dd
+        = link_to "#", class: "inline_edit", data: {type: "select", source: JobType.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "job_type_id", url: "#", "original-title" => "Update job_type"} do
+          = ticket.job_type.name #ticket.job_type.name
       %dt Ticket type
       %dd #{ticket_type} #{"(Regional support job)" if ticket.regional_support_job}
       %dt Type of warranty
-      %dd= warranty_type #ticket.warranty_type.name
+      %dd
+        = link_to "#", class: "inline_edit", data: {type: "select", source: WarrantyType.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "warranty_type_id", url: "#", "original-title" => "Update warranty_type"} do
+          = ticket.warranty_type.name #ticket.warranty_type.name
       %dt Customer chargeable
-      %dd= cus_chargeable #ticket.cus_chargeable ? "Yes" : "No"
+      %dd
+        = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "ticket", name: "repair_type_id", url: "#", "original-title" => "Update repair_type"} do
+          = ticket.cus_chargeable ? "Yes" : "No" #ticket.cus_chargeable ? "Yes" : "No"
       %dt Repair type
-      %dd= repair_type #ticket.repair_type.try(:name)
+      %dd
+        = link_to "#", class: "inline_edit", data: {type: "select", source: RepairType.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "repair_type_id", url: "#", "original-title" => "Update repair_type"} do
+          = ticket.repair_type.try(:name) #ticket.repair_type.try(:name)
   .col-md-5
     %dl.dl-horizontal
       %dt Ticket currency
