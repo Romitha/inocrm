@@ -9,9 +9,25 @@
               - if q_and_a.class==GeQAndAnswer
                 %dl
                   %dt= q_and_a.ge_q_and_a.question
-                  %dd= q_and_a.answer
+                  - if q_and_a.ge_q_and_a.answer_type == "YN"
+                    %dd
+                      = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "q_and_a", name: "answer_y_n", url: "#", "original-title" => "Update answer_y_n"} do
+                        = simple_format q_and_a.answer.to_s.split('<br/>')[0]
+
+                  - elsif q_and_a.ge_q_and_a.answer_type == "TX"
+                    %dd
+                      = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "q_and_a", name: "answer", url: "#", "original-title" => "Update answer", value: ""}, style: "line-height: 6px;" do
+                        = simple_format q_and_a.answer.to_s.split('<br/>')[0]
 
               - elsif q_and_a.class==QAndAnswer
                 %dl
                   %dt= q_and_a.q_and_a.question
-                  %dd= q_and_a.answer
+                  - if q_and_a.q_and_a.answer_type == "YN"
+                    %dd
+                      = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "q_and_a", name: "answer_y_n", url: "#", "original-title" => "Update answer_y_n"} do
+                        = simple_format q_and_a.answer.to_s.split('<br/>')[0]
+
+                  - elsif q_and_a.q_and_a.answer_type == "TX"
+                    %dd
+                      = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "q_and_a", name: "answer", url: "#", "original-title" => "Update answer", value: ""}, style: "line-height: 6px;" do
+                        = simple_format q_and_a.answer.to_s.split('<br/>')[0]
