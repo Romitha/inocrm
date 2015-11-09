@@ -1240,6 +1240,7 @@ class TicketsController < ApplicationController
         @template = 'tickets/tickets_pack/collect_parts/collect_parts'
       when "deliver_bundle"
       when "bundle_return_part"
+        session[:manufacture_ids] = []
         @manufacture_parts = TicketSparePartManufacture.joins(ticket_spare_part: {ticket: {products: :product_brand}}).where(mst_spt_product_brand: {id: params[:product_brand_id]}, ready_to_bundle: true, bundled: false)
         session[:manufacture_ids] = @manufacture_parts.ids
         session[:manufacture_rest_ids] = []
@@ -1495,7 +1496,7 @@ class TicketsController < ApplicationController
         @add_manufactures = TicketSparePartManufacture.where(id: session[:manufacture_ids].uniq, ready_to_bundle: true, bundled: false).map { |m| {id: m.id, event_no: m.event_no, ticket_no: m.ticket_spare_part.ticket_id, task_action: "add"} }
 
       when "undelivered_bundle"
-        @bundles = ReturnPartsBundle.all.map { |r| {id: r.id, no: r.bundle_no, date_bundled: r.created_at, bundled_no: "no", bundled_by: "user"} }
+        @bundles = ReturnPartsBundle.all.map { |r| {id: r.id, bundled_no: r.bundle_no, date_bundled: r.created_at.try(:strftime, "%Y-%m-%d"), bundled_by: User.find_by_id(r.created_by).try(:user_name)} }
 
       when "load_bundled_manufactures"
         @bundle = ReturnPartsBundle.find(params[:manufacture_id])
