@@ -1276,6 +1276,7 @@ class TicketsController < ApplicationController
     request_spare_part_id = params[:request_spare_part_id]
 
     @spare_part = @ticket.ticket_spare_parts.find request_spare_part_id
+    @onloan_request = params[:onloan_request]
 
     if params[:onloan_request] == "Y"
       @onloan_spare_part = @spare_part.ticket_on_loan_spare_parts.find params[:request_onloan_spare_part_id]
