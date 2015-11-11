@@ -1,8 +1,29 @@
 - remarks = capture do
   = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "ticket", name: "remarks", url: "#", "original-title" => "Update remarks", value: ""}, style: "line-height: 6px;" do
     = simple_format ticket.remarks.to_s.split('<br/>')[0]
+
   %button.btn.btn-link.has-popover{"data-container" => "body", "data-content" => ticket.remarks.to_s, "data-placement" => "bottom", "data-toggle" => "popover", "data-trigger" =>"focus", :type => "button","data-html"=>"true"}
     More
+
+
+
+- inform_method = link_to "#", class: "inline_edit", data: {type: "select", source: InformMethod.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "pop_status_id", url: "#", "original-title" => "Update inform_method"} do
+  = ticket.inform_method.name
+
+- job_type = link_to "#", class: "inline_edit", data: {type: "select", source: JobType.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "job_type_id", url: "#", "original-title" => "Update job_type"} do
+  = ticket.job_type.name
+
+- ticket_type = link_to "#", class: "inline_edit", data: {type: "select", source: TicketType.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "ticket_type_id", url: "#", "original-title" => "Update ticket_type"} do
+  = ticket.ticket_type.name
+
+- warranty_type = link_to "#", class: "inline_edit", data: {type: "select", source: WarrantyType.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "warranty_type_id", url: "#", "original-title" => "Update warranty_type"} do
+  = ticket.warranty_type.name
+
+- cus_chargeable = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "ticket", name: "repair_type_id", url: "#", "original-title" => "Update repair_type"} do
+  = ticket.cus_chargeable ? "Yes" : "No"
+
+- repair_type = link_to "#", class: "inline_edit", data: {type: "select", source: RepairType.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "repair_type_id", url: "#", "original-title" => "Update repair_type"} do
+  = ticket.repair_type.try(:name)
 
 .row
   .col-md-2

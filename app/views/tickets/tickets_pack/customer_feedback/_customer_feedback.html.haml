@@ -1,0 +1,52 @@
+- ticket = @ticket
+.row.small_scale_margin-top1
+  .col-md-12
+    = simple_nested_form_for @ticket_payment_received, url: customer_feedback_tickets_path, method: :post do |f|
+
+      = hidden_field_tag :process_id, session[:process_id]
+      = hidden_field_tag :task_id, session[:task_id]
+      = hidden_field_tag :owner, session[:owner]
+      - session[:bpm_input_variables].each do |bpm_input_variable|
+        = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+
+      .row
+        .col-md-4
+
+          = label_tag "re_open"
+          = check_box_tag :re_open, nil, false, disabled: false
+
+        .col-md-8
+
+          - if ticket.ticket_type.name == 'IH'
+            = label_tag "unit_return_to_customer"
+            = check_box_tag :unit_return_to_customer, nil, true, disabled: false
+          - else
+            = label_tag "unit_return_to_customer"
+            = check_box_tag :unit_return_to_customer, nil, false, disabled: true
+
+      = f.simple_fields_for :customer_feedbacks  do |cf|
+
+        = cf.association :feedback, collection: Feedback.all.map{|fd| [fd.feedback, fd.id]},include_blank: true, label: "Feedback : "
+
+        = cf.input :feedback_description, input_html: {value: nil}
+
+      %fieldset
+        %legend Final Payment Required
+
+        .row
+          .col-md-12
+            %strong Payment Type :
+        .row
+          .col-md-12
+            %strong Final Amount to be Paid :
+
+        = f.input :amount, input_html: {value: nil}
+        = f.input :note, input_html: {value: nil}
+
+        = label_tag "payment_completed"
+        = check_box_tag :payment_completed, nil, false, disabled: false
+
+        = label_tag "payment_completed"
+        = check_box_tag :payment_completed, nil, false, disabled: false
+
+      = f.submit "Save", class: "btn btn-success"

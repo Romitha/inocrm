@@ -320,4 +320,6 @@ class TicketPaymentReceived < ActiveRecord::Base
   self.table_name = "spt_ticket_payment_received"
 
   has_many :customer_feedbacks, foreign_key: :payment_received_id
+  accepts_nested_attributes_for :customer_feedbacks, allow_destroy: true
+
 end

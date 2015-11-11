@@ -164,6 +164,7 @@ Rails.application.routes.draw do
       match "extend_warranty", to: "tickets#extend_warranty", via: [:get, :post]
       get "close_event"#, to: "tickets#close_event", via: [:get, :post]
       get "check_fsr"
+      get "customer_feedback"
 
       get "alert"
 
