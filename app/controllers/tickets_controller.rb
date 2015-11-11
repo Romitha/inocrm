@@ -1875,6 +1875,33 @@ class TicketsController < ApplicationController
     end
   end
 
+  def customer_feedback
+    ContactNumber
+    QAndA
+    TaskAction
+    TicketSparePart
+    Inventory
+    Warranty
+    Ticket
+    @ticket = Ticket.find_by_id params[:ticket_id]
+    if @ticket
+
+      @product = @ticket.products.first
+      Rails.cache.delete([:histories, @product.id])
+      Rails.cache.delete([:join, @ticket.id])
+
+      # @customer_feedback = CustomerFeedback.new
+      # @customer_feedback.ticket_payment_received.build
+
+      @ticket_payment_received = TicketPaymentReceived.new
+      @ticket_payment_received.customer_feedbacks.build
+
+    end
+    respond_to do |format|
+      format.html {render "tickets/tickets_pack/customer_feedback/customer_feedback"}
+    end
+  end
+
   def issue_store_part
     Inventory
     Warranty
