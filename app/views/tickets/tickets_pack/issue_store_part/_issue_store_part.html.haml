@@ -1,328 +1,463 @@
 .row.col-md-12
-  %strong ON-LOAN Part Request
-.row.col-md-12{style: "margin-top: 20px;"}
-  .col-md-6
-    %strong Part No: 
-    #{onloan_spare_part.ticket_spare_part.spare_part_no}
-  .col-md-6
-    %strong Part Status:
-    #{onloan_spare_part.spare_part_status_action.try(:name)}
-.row.col-md-12
-  .col-md-6
-    %strong Part Description:
-    #{onloan_spare_part.ticket_spare_part.spare_part_description} 
-  .col-md-6
-    - if onloan_spare_part.part_terminated == true
-      %strong Terminated
-    - else
-      %strong Not Terminated
+  - if onloan_request == 'Y'
+    %strong ON-LOAN Part Request
+    .row.col-md-12{style: "margin-top: 20px;"}
+      .col-md-4
+        %strong Issue Part
+        %br
+        %strong GIN Good Issue Note
+        %br
+        %strong SRN No
+        #{onloan_spare_part.inv_srn_id}
+      .col-md-4
+        %strong Date Requested:
+        #{onloan_spare_part.requested_at.try(:strftime, "%Y-%m-%d")}
+        %br
+        %strong Requested By:
+        #{User.find_by_id(onloan_spare_part.try(:requested_by)).try(:user_name)}
+      .col-md-4
+        %strong Date Approved:
+        #{onloan_spare_part.approved_at.try(:strftime, "%Y-%m-%d")}
+        %br
+        %strong Approved By:
+        #{User.find_by_id(onloan_spare_part.try(:approved_by)).try(:user_name)}
+
+  -else
+    %strong Part Request
+    .row.col-md-12{style: "margin-top: 20px;"}
+      .col-md-4
+        %strong Issue Part
+        %br
+        %strong GIN Good Issue Note
+        %br
+        %strong SRN No #{spare_part.ticket_spare_part_store.try(:inv_srn_id)}
+      .col-md-4
+        %strong Date Requested:
+        #{spare_part.ticket_spare_part_store.try(:store_requested_at).try(:strftime, "%Y-%m-%d")}
+        %br
+        %strong Requested By:
+        #{User.find_by_id(spare_part.ticket_spare_part_store.try(:store_requested_by)).try(:user_name)}
+      .col-md-4
+        %strong Date Approved:
+        #{spare_part.ticket_spare_part_store.try(:store_request_approved_at).try(:strftime, "%Y-%m-%d")}
+        %br
+        %strong Approved By:
+        #{User.find_by_id(spare_part.ticket_spare_part_store.try(:store_request_approved_by)).try(:user_name)}
+
+  .row.col-md-12{style: "margin-top: 20px;"}
+    .col-md-6
+      %strong Part No:
+      #{spare_part.spare_part_no}
       %br
-.row.col-md-12{style: "margin-top: 20px;"}
-  .form-group
-    = simple_nested_form_for onloan_spare_part, url: update_approved_part_tickets_path, method: :post do |f|
-      .col-md-6
-        %strong Approved Part
-        .spare_part_select
-          = link_to "select", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true
+      %strong Part Description:
+      #{spare_part.spare_part_description}
 
-        .request_from
+  .row.col-md-12{style: "margin-top: 20px;"}
+    .col-md-6
+      %strong Approved Part
+      = simple_nested_form_for spare_part, url: update_approve_store_parts_tickets_path, method: :post, html: {id: "new_ticket_spare_part"} do |f|
 
-      .col-md-6
-        %strong Part of Main Product
-        = f.simple_fields_for :ticket_spare_part_store do |tm|
+        = f.simple_fields_for (params[:onloan_request] == "Y" ? "ticket_on_loan_spare_parts_attributes[]" : "ticket_spare_part_store_attributes"), (params[:onloan_request] == "Y" ? @onloan_spare_part : spare_part.ticket_spare_part_store) do |sto|
+
+          = sto.input :approved_store_id, as: :hidden, input_html: {id: "store_id"}
+          / = hidden_field_tag :mst_store_id, sto.object.store_id, id: "mst_store_id"
+          = sto.input :appoved_inv_product_id, as: :hidden, input_html: {id: "inv_product_id"}
+          = sto.input :approved_main_inv_product_id, as: :hidden, input_html: {id: "mst_inv_product_id"}
+          %dl.dl-horizontal
+            %dt Store
+            %dd
+              = Organization.find_by_id(sto.object.try(:store_id)).try(:name)
+            %dt Item Code
+            %dd
+              = InventoryProduct.find_by_id(sto.object.try(:inv_product_id)).try(:serial_no)
+            %dt Item Description
+            %dd
+              = InventoryProduct.find_by_id(sto.object.try(:inv_product_id)).try(:description)
+            %dt Model No
+            %dd
+              = InventoryProduct.find_by_id(sto.object.try(:inv_product_id)).try(:model_no)
+            %dt Product No
+            %dd
+              = InventoryProduct.find_by_id(sto.object.try(:inv_product_id)).try(:product_no)
+            %dt Part No
+            %dd
+              = InventoryProduct.find_by_id(sto.object.try(:inv_product_id)).try(:spare_part_no)
+            %dt Available Qnty
+            %dd
+              / = InventoryProduct.find_by_id(sto.object.try(:inv_product_id)).try(:inventories).try{|o| o.available_quantity.sum}
+              / = sto.object.inventory_product.inventories.sum(:available_quantity)
+    .col-md-6
+      %strong Part of Main Product
+      = simple_nested_form_for spare_part, url: "#", method: :post do |f|
+        = f.simple_fields_for (params[:onloan_request] == "Y" ? "ticket_on_loan_spare_parts_attributes[]" : "ticket_spare_part_store_attributes"), (params[:onloan_request] == "Y" ? @onloan_spare_part : spare_part.ticket_spare_part_store) do |sto|
           = hidden_field_tag :store_id
           = hidden_field_tag :mst_store_id
           = hidden_field_tag :inv_product_id
           = hidden_field_tag :mst_inv_product_id
 
-        .part
-          = link_to "select", inventory_in_modal_inventories_path(select_frame: "main_product"), id: "part_of_main_product_select", remote: true
+      .part
+        = link_to "select", inventory_in_modal_inventories_path(select_frame: "main_product"), id: "part_of_main_product_select", remote: true
 
-        .main_product
+      .main_product
 
 
-      .row.col-md-12{style: "margin-top: 20px;"}
-        %table.table.table-bordered
-          %thead
-            %tr
-              %th
-                No
-              %th
-                GRN Date
-              %th
-                Available Quantity
-              %th
-                Remarks
-              %th
-                Issue
-          %tbody
-            %tr
-              %th
-              %td
-              %td
-              %td
-              %td
-            %tr
-              %th
-              %td
-              %td
-              %td
-              %td
-            %tr
-              %th
-              %td
-              %td
-              %td
-              %td
-      .row.col-md-12{style: "margin-top: 20px;"}
-        %table.table.table-bordered
-          %thead
-            %tr
-              %th
-                No
-              %th
-                GRN Date
-              %th
-                Batch No
-              %th
-                Lot No
-              %th
-                Available Quantity
-              %th
-                Remarks
-              %th
-                Issue
-          %tbody
-            %tr
-              %th
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-            %tr
-              %th
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-            %tr
-              %th
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
 
-      .row.col-md-12{style: "margin-top: 20px;"}
-        %table.table.table-bordered
-          %thead
-            %tr
-              %th
-                No
-              %th
-                Created Date
-              %th
-                Batch No
-              %th
-                Lot No
-              %th
-                Serial No
-              %th
-                Condition
-              %th
-                Part Not Completed
-              %th
-                Scavenge
-              %th
-                Damage
-              %th
-                Used
-              %th
-                Repaire
-              %th
-                Reserve
-              %th
-                CT no
-              %th
-                Date of Manufacture
-              %th
-                Date of Expire
-              %th
-                Remarks
-              %th
-                Issue
-          %tbody
-            %tr
-              %th
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-            %tr
-              %th
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-            %tr
-              %th
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-      .row.col-md-12{style: "margin-top: 20px;"}
-        .col-md-3
-          Parts Included for: 
-        .col-md-3
-          Item Code:
-        .col-md-3
-          Item Description:
-        .col-md-3
-          Unit:
-      .row.col-md-12{style: "margin-top: 20px;"}
-        %table.table.table-bordered
-          %thead
-            %tr
-              %th
-                No
-              %th
-                Created Date
-              %th
-                Batch No
-              %th
-                Lot No
-              %th
-                Serial No
-              %th
-                Condition
-              %th
-                Part Not Completed
-              %th
-                Scavenge
-              %th
-                Damage
-              %th
-                Used
-              %th
-                Repaire
-              %th
-                Reserve
-              %th
-                CT no
-              %th
-                Date of Manufacture
-              %th
-                Date of Expire
-              %th
-                Remarks
-              %th
-                Issue
-          %tbody
-            %tr
-              %th
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-            %tr
-              %th
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-            %tr
-              %th
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
 
-      .row
-        .col-md-6
-          = f.input :note
-        .col-md-3
-          %button.btn.btn-default.btn-sm{:type => "button"} Avaliable Notification Eng.
-        .col-md-3
-          %button.btn.btn-default.btn-sm{:type => "button"} Add Part
-        .col-md-12
-          = f.submit "Save", class: "btn btn-success btn-sm"
+
+
+
+
+
+
+
+
+/ .row.col-md-12{style: "margin-top: 20px;"}
+/   .form-group
+/     = simple_nested_form_for onloan_spare_part, url: "#", method: :post do |f|
+/       .col-md-6
+/         %strong Approved Part
+/         = simple_nested_form_for spare_part, url: update_approve_store_parts_tickets_path, method: :post, html: {id: "new_ticket_spare_part"} do |f|
+
+/           = f.simple_fields_for (params[:onloan_request] == "Y" ? "ticket_on_loan_spare_parts_attributes[]" : "ticket_spare_part_store_attributes"), (params[:onloan_request] == "Y" ? @onloan_spare_part : spare_part.ticket_spare_part_store) do |sto|
+
+/             = sto.input :approved_store_id, as: :hidden, input_html: {id: "store_id"}
+/             = hidden_field_tag :mst_store_id, sto.object.store_id, id: "mst_store_id"
+/             = sto.input :appoved_inv_product_id, as: :hidden, input_html: {id: "inv_product_id"}
+/             = sto.input :approved_main_inv_product_id, as: :hidden, input_html: {id: "mst_inv_product_id"}
+/             %dl.dl-horizontal
+/               %dt Store
+/               %dd
+/                 = sto.object.store.name
+/               %dt Item Code
+/               %dd
+/                 = sto.object.inventory_product.serial_no
+/               %dt Item Description
+/               %dd
+/                 = sto.object.inventory_product.description
+/               %dt Model No
+/               %dd
+/                 = sto.object.inventory_product.model_no
+/               %dt Product No
+/               %dd
+/                 = sto.object.inventory_product.product_no
+/               %dt Part No
+/               %dd
+/                 = sto.object.inventory_product.spare_part_no
+/               %dt Available Qnty
+/               %dd
+/                 = sto.object.inventory_product.inventories.sum(:available_quantity)
+/             / %br
+/             / %br
+/             / %strong Store #{sto.object.store_id}
+/             / %br
+/             / %strong Item Code
+/             / %br
+/             / %strong Item Description
+/             / %br
+/             / %strong Model No xxx Product No xxx Part No xxx
+/             / %br
+/             / %strong Available Qnt xxx Unit xxx
+/         / .spare_part_select
+/         /   = link_to "select", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true
+
+/         / .request_from
+
+/       .col-md-6
+/         %strong Part of Main Product
+/         = f.simple_fields_for :ticket_spare_part_store do |tm|
+/           = hidden_field_tag :store_id
+/           = hidden_field_tag :mst_store_id
+/           = hidden_field_tag :inv_product_id
+/           = hidden_field_tag :mst_inv_product_id
+
+/         .part
+/           = link_to "select", inventory_in_modal_inventories_path(select_frame: "main_product"), id: "part_of_main_product_select", remote: true
+
+/         .main_product
+
+
+/       .row.col-md-12{style: "margin-top: 20px;"}
+/         %table.table.table-bordered
+/           %thead
+/             %tr
+/               %th
+/                 No
+/               %th
+/                 GRN Date
+/               %th
+/                 Available Quantity
+/               %th
+/                 Remarks
+/               %th
+/                 Issue
+/           %tbody
+/             %tr
+/               %th
+/               %td
+/               %td
+/               %td
+/               %td
+/             %tr
+/               %th
+/               %td
+/               %td
+/               %td
+/               %td
+/             %tr
+/               %th
+/               %td
+/               %td
+/               %td
+/               %td
+/       .row.col-md-12{style: "margin-top: 20px;"}
+/         %table.table.table-bordered
+/           %thead
+/             %tr
+/               %th
+/                 No
+/               %th
+/                 GRN Date
+/               %th
+/                 Batch No
+/               %th
+/                 Lot No
+/               %th
+/                 Available Quantity
+/               %th
+/                 Remarks
+/               %th
+/                 Issue
+/           %tbody
+/             %tr
+/               %th
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/             %tr
+/               %th
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/             %tr
+/               %th
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+
+/       .row.col-md-12{style: "margin-top: 20px;"}
+/         %table.table.table-bordered
+/           %thead
+/             %tr
+/               %th
+/                 No
+/               %th
+/                 Created Date
+/               %th
+/                 Batch No
+/               %th
+/                 Lot No
+/               %th
+/                 Serial No
+/               %th
+/                 Condition
+/               %th
+/                 Part Not Completed
+/               %th
+/                 Scavenge
+/               %th
+/                 Damage
+/               %th
+/                 Used
+/               %th
+/                 Repaire
+/               %th
+/                 Reserve
+/               %th
+/                 CT no
+/               %th
+/                 Date of Manufacture
+/               %th
+/                 Date of Expire
+/               %th
+/                 Remarks
+/               %th
+/                 Issue
+/           %tbody
+/             %tr
+/               %th
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/             %tr
+/               %th
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/             %tr
+/               %th
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/       .row.col-md-12{style: "margin-top: 20px;"}
+/         .col-md-3
+/           Parts Included for:
+/         .col-md-3
+/           Item Code:
+/         .col-md-3
+/           Item Description:
+/         .col-md-3
+/           Unit:
+/       .row.col-md-12{style: "margin-top: 20px;"}
+/         %table.table.table-bordered
+/           %thead
+/             %tr
+/               %th
+/                 No
+/               %th
+/                 Created Date
+/               %th
+/                 Batch No
+/               %th
+/                 Lot No
+/               %th
+/                 Serial No
+/               %th
+/                 Condition
+/               %th
+/                 Part Not Completed
+/               %th
+/                 Scavenge
+/               %th
+/                 Damage
+/               %th
+/                 Used
+/               %th
+/                 Repaire
+/               %th
+/                 Reserve
+/               %th
+/                 CT no
+/               %th
+/                 Date of Manufacture
+/               %th
+/                 Date of Expire
+/               %th
+/                 Remarks
+/               %th
+/                 Issue
+/           %tbody
+/             %tr
+/               %th
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/             %tr
+/               %th
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/             %tr
+/               %th
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+/               %td
+
+/       .row
+/         .col-md-6
+/           = f.input :note
+/         .col-md-3
+/           %button.btn.btn-default.btn-sm{:type => "button"} Avaliable Notification Eng.
+/         .col-md-3
+/           %button.btn.btn-default.btn-sm{:type => "button"} Add Part
+/         .col-md-12
+/           = f.submit "Save", class: "btn btn-success btn-sm"
 
 #inventory_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "inventory_modal", "aria-hidden" => true}
   .modal-dialog.modal-lg
