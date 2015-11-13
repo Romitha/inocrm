@@ -59,10 +59,10 @@
     %br
     .row
       .col-md-6{style: "margin-top:9px;"}
-        = f.input :note, label: "Note",wrapper_html: {class: "col-md-12"}
+        = f.input :note, label: "Note (Spare part)",wrapper_html: {class: "col-md-12"}
       .col-md-6
         = f.simple_fields_for :ticket do |ft|
-          = ft.input :remarks, input_html: {value: nil},wrapper_html: {class: "col-md-12 padding0"}
+          = ft.input :remarks, label: "Remarks (Ticket)", input_html: {value: nil},wrapper_html: {class: "col-md-12 padding0"}
           = simple_format ft.object.remarks
     .row.col-md-12
       .col-md-3

@@ -141,7 +141,7 @@ Rails.application.routes.draw do
       get "edit-ticket", :action => :edit_ticket
       get "pop-approval"#, :action => :pop_note
       get "resolution"
-      get "order_parts", :action => :order_mf
+      get "order_manufacture_parts", :action => :order_mf
       get "received_and_issued"
       get "return_manufacture_part"
       get "bundle_return_part" #same interface

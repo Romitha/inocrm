@@ -1,60 +1,56 @@
-%h3 Activity:
 .row
   .col-md-4
     %dl.dl-horizontal
-      %dt
-        Part Status:
-      %dd
-        = ticket_spare_part.spare_part_status_action.name
-      %dt
-        Spare Part No:
-      %dd
-        = ticket_spare_part.spare_part_no
-      %dt
-        Status:
-      %dd
-        = ticket_spare_part.spare_part_status_use.name
-      %dt
-        Product Brand:
-      %dd
-        = product.product_brand.name
+      %dt Part Status:
+      %dd= ticket_spare_part.spare_part_status_action.name
+
+      %dt Product Brand:
+      %dd= product.product_brand.name
+
+      %dt Spare part No:
+      %dd= ticket_spare_part.spare_part_no
+
+      %dt Part Description:
+      %dd= ticket_spare_part.spare_part_description
+
+      %dt Faulty Part Serial No:
+      %dd= ticket_spare_part.faulty_serial_no
+
+      %dt Faulty part CT No:
+      %dd= ticket_spare_part.faulty_ct_no
 
   .col-md-4
     %dl.dl-horizontal
-      %dt
-        Part Description:
-      %dd
-        = ticket_spare_part.spare_part_description
-      %dt
-        Un Used Return Reason :
-      %dd
-        = ticket_spare_part.spare_part_description
-      %dt
-        Received Spare Part  No:
-      %dd
-        = ticket_spare_part.received_spare_part_no
-      %dt
-        Part Event No:
-      %dd
-        = ticket_spare_part.ticket_spare_part_manufacture.try(:event_no)
+
+      %dt Part order No:
+      %dd= ticket_spare_part.ticket_spare_part_manufacture.try(:part_no)
+
+      %dt Part event No:
+      %dd= ticket_spare_part.ticket_spare_part_manufacture.try(:event_no)
+
+      %dt Received Spare Part No:
+      %dd= ticket_spare_part.received_spare_part_no
+
+      %dt Received part serial No:
+      %dd= ticket_spare_part.received_part_serial_no
+
+      %dt Received Part CT No:
+      %dd= ticket_spare_part.received_part_ct_no
+
   .col-md-4
     %dl.dl-horizontal
-      %dt
-        Part Serial No:
-      %dd
-        = ticket_spare_part.spare_part_description
-      %dt
-        Return Part Serial No:
-      %dd
-        = ticket_spare_part.return_part_serial_no
-      %dt
-        Part CT No:
-      %dd
-        
-      %dt
-        Return CT No:
-      %dd
-        = ticket_spare_part.return_part_ct_no
+
+      %dt Used Status:
+      %dd= ticket_spare_part.spare_part_status_use.name
+
+      %dt Un used reason:
+      %dd= ticket_spare_part.unused_reason.try(:reason)
+
+      %dt Return Part Serial No:
+      %dd= ticket_spare_part.return_part_serial_no
+
+      %dt Return part CT No:
+      %dd= ticket_spare_part.return_part_ct_no
 
 .row
   .col-md-12
@@ -70,18 +66,18 @@
 
       #request_spare_parts
         %fieldset
-          %legend Reject Return Part
+          %legend.font1 Reject Return Part
           = f.simple_fields_for :request_spare_parts do |rp|
             - if rp.object.new_record?
               = rp.association :reject_return_part_reason, label_method: :reason, value_method: :id, input_html: {name: "manual_reject_return_part_reason_id"}
 
       #ticket_spare_part_manufacture
         %fieldset
-          %legend Ready to Bundle
+          %legend.font1 Accept and Ready to Bundle
           = f.simple_fields_for :ticket_spare_part_manufacture do |rm|
-            = rm.input :event_closed, wrapper: :append#, input_html: {class: "input_toggler"}
-            = rm.input :ready_to_bundle, wrapper: :append#, input_html: {class: "input_toggler"}
-            = rm.input :payment_expected_manufacture, label: "Payment Expected (#{ticket_spare_part.ticket.ticket_currency.try(:code)}):", input_html: {class: "input_toggler"}
+            = rm.input :event_closed, wrapper: :append, input_html: {checked: true}
+            = rm.input :ready_to_bundle, wrapper: :append, input_html: {checked: true}, label: "Ready to bundle (Needs return to manufacturer)"#, input_html: {class: "input_toggler"}
+            = rm.input :payment_expected_manufacture, label: "Payment Expected from Manufacturer (#{product.product_brand.currency.try(:code)}):", input_html: {class: "input_toggler"}
 
       = f.input :note, input_html: {value: nil}
       = simple_format ticket_spare_part.note

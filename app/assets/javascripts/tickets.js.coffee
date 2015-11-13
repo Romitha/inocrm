@@ -43,7 +43,7 @@ window.Tickets =
 
   bind_mCustomScrollbar: ->
     $(".fancy_scroll_bar").mCustomScrollbar
-      theme:"rounded-dark"
+      theme: "rounded-dark"
       # themes are inset-2-dark, rounded-dots, rounded-dark
 
   load_customer: ->
