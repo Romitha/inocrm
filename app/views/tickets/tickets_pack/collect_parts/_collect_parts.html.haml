@@ -1,5 +1,12 @@
 .row
   = form_tag update_collect_parts_tickets_path, method: :post do
+
+    = hidden_field_tag :process_id, session[:process_id]
+    = hidden_field_tag :task_id, session[:task_id]
+    = hidden_field_tag :owner, session[:owner]
+    - session[:bpm_input_variables].each do |bpm_input_variable|
+      = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+
     %table.table.table-bordered
       %thead
         %tr

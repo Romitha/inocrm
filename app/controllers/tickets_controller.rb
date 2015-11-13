@@ -1253,13 +1253,38 @@ class TicketsController < ApplicationController
 
   def update_collect_parts
     TicketSparePart
+    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+
     if params[:manufacture_part]
+
       TicketSparePartManufacture.where(id: params[:manufacture_part]).each do |ticket_spare_part_manufacture|
         ticket_spare_part_manufacture.update(collected_manufacture: true, collect_pending_manufacture: false)
-        ticket_spare_part_manufacture.ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("CLT"))
+        ticket_spare_part_manufacture.ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("CLT").id)
+
+        user_ticket_action = ticket_spare_part_manufacture.ticket_spare_part.ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(36).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: ticket_spare_part_manufacture.ticket_spare_part.ticket.re_open_count)
+        user_ticket_action.build_request_spare_part(ticket_spare_part_id: ticket_spare_part_manufacture.ticket_spare_part.id)
+        user_ticket_action.save
       end
-    else
+      flash[:notice] = "Successfully updated."
     end
+
+
+    if continue
+      # bpm output variables
+      d31_more_parts_collection_pending = TicketSparePart.any?{|sp| sp.ticket_spare_part_manufacture.try(:collect_pending_manufacture)} ? "Y" : "N"
+      bpm_variables = view_context.initialize_bpm_variables.merge(d31_more_parts_collection_pending: d31_more_parts_collection_pending)      
+
+      bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+      unless bpm_response[:status].upcase == "SUCCESS"
+        flash[:error]= "Bpm error"
+      end
+
+    else
+      flash[:error]= "Please check the Bpm and re-try."
+    end
+
+    redirect_to todos_url
   end
 
   def return_store_part
@@ -1353,7 +1378,7 @@ class TicketsController < ApplicationController
       #Set Action (37) Receive Spare part from Manufacture, DB.spt_act_request_spare_part.
       user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(37).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
       user_ticket_action.build_request_spare_part(ticket_spare_part_id: spt_ticket_spare_part.id)
-      user_ticket_action.save   
+      user_ticket_action.save
       
       flash[:notice]= "Successfully updated"
 
@@ -1537,7 +1562,11 @@ class TicketsController < ApplicationController
   end
 
   def update_bundle_return_part
-    
+    @ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
+    if @ticket_spare_part.update(ticket_spare_part_params)
+      flash[:notice] = "Spare part is successfully saved."
+    end
+    redirect_to todos_url
   end
 
   def deliver_bundle
