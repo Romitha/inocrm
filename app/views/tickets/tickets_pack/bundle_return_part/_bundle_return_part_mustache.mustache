@@ -1,25 +1,20 @@
-.col-md-4.col-xs-4
-  %strong Add To Bundle Parts
-.col-md-8.col-xs-8
-  %p Total No Of Parts:
-.col-md-12.col-xs-12
-  %table.table.table-hover
-    %thead
-      %tr
-        %th No
-        %th Event No
-        %th Ticket No
-        %th
-    %tbody
-      {{#.}}
-      %tr
-        %th
-          {{id}}
-        %td
-          {{event_no}}
-        %td
-          {{ticket_no}}
-        %td
-          %a{ href: "#", onclick: "Inventories.load_mustache_bundle_return_part('{{task_action}}', {{id}}); return false;"}
-            {{task_action}}
-      {{/.}}
+.row
+  .col-md-3.col-xs-3.strong
+    No
+  .col-md-3.col-xs-3.strong
+    Event No
+  .col-md-3.col-xs-3.strong
+    Ticket No
+
+{{#.}}
+.row
+  .col-md-3.col-xs-3
+    {{id}}
+  .col-md-3.col-xs-3
+    {{event_no}}
+  .col-md-3.col-xs-3
+    {{ticket_no}}
+  .col-md-3.col-xs-3
+    %a{ href: "#", onclick: "Inventories.load_mustache_bundle_return_part('{{task_action}}', {{id}}); return false;"}
+      {{task_action}}
+{{/.}}
