@@ -4,18 +4,20 @@
       %thead
         %tr
           %th No
-          %th Date Returned
+          %th Date Ordered
           %th Part No
           %th Description
-          %th Serial No
-          %th Part Status
+          %th Order No
           %th Eventl No
+          %th Note
           %th Ticket No
           %th Collected
       %tbody
+        - cnt = 0
         - @manufacture_parts.each do |manufacture_part|
+          - cnt += 1
           %tr
-            %th #{manufacture_part.id}
+            %th #{cnt}
             / %td
             %td #{manufacture_part.return_parts_bundle.try(:created_at).try(:strftime, "%m-%d-%Y")}
             / %td #{manufacture_part.return_parts_bundle.try(:created_at).try(:to_date).try(:strftime("%Y-%m-%d"))}
