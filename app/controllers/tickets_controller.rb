@@ -1522,7 +1522,7 @@ class TicketsController < ApplicationController
         @add_manufactures = TicketSparePartManufacture.where(id: session[:manufacture_ids].uniq, ready_to_bundle: true, bundled: false).map { |m| {id: m.id, event_no: m.event_no, ticket_no: m.ticket_spare_part.ticket_id, task_action: "add"} }
 
       when "undelivered_bundle"
-        @bundles = ReturnPartsBundle.all.map { |r| {id: r.id, bundled_no: r.bundle_no, date_bundled: r.created_at.try(:strftime, "%Y-%m-%d"), bundled_by: User.find_by_id(r.created_by).try(:user_name)} }
+        @bundles = ReturnPartsBundle.all.map { |r| {id: r.id, bundled_no: r.bundle_no, date_bundled: r.created_at.try(:strftime, "%Y-%m-%d"), bundled_by: User.cached_find_by_id(r.created_by).try(:user_name)} }
 
       when "load_bundled_manufactures"
         @bundle = ReturnPartsBundle.find(params[:manufacture_id])
@@ -1531,7 +1531,7 @@ class TicketsController < ApplicationController
 
         @bundle_manufactures = TicketSparePartManufacture.where(id: manufacture_ids).map { |m| {id: m.id, event_no: m.event_no, ticket_no: m.ticket_spare_part.ticket_id, task_action: "remove"} }
 
-        @bundle = {bundle_id: @bundle.id, bundle_note: @bundle.note, bundle_no: @bundle.bundle_no, manufacture_count: manufactures_count, readonly: "readonly"}
+        @bundle = {bundle_id: @bundle.id, bundle_note: @bundle.note, bundle_no: @bundle.bundle_no, bundled_by: User.cached_find_by_id(@bundle.created_by).try(:email), manufacture_count: manufactures_count, readonly: "readonly"}
 
       when "new_bundle"
         @bundle_manufactures = TicketSparePartManufacture.where(id: session[:manufacture_rest_ids].uniq).map { |m| {id: m.id, event_no: m.event_no, ticket_no: m.ticket_spare_part.ticket_id, task_action: "remove"} }

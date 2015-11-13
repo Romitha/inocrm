@@ -1,38 +1,34 @@
 .row
+  %hr
+.row
   .col-md-6.col-xs-6
-    %table.table.table-hover
-      %thead
-        %tr
-        %th No
-        %th Event No
-        %th Ticket No
-        %th
-      %tbody
-        #bundle_return_part_add_mustache
-          - @manufacture_parts.each do |manufacture_part|
-            %tr
-              %th
-                = manufacture_part.id
-              %td
-                = manufacture_part.event_no
-              %td
-                = manufacture_part.ticket_spare_part.ticket_id
-              %td
-                = link_to "Add", "#", onclick: "Inventories.load_mustache_bundle_return_part('add', #{manufacture_part.id}); return false;"
+    #bundle_return_part_add_mustache
+      .row
+        .col-md-3.col-xs-3.strong
+          No
+        .col-md-3.col-xs-3.strong
+          Event No
+        .col-md-3.col-xs-3.strong
+          Ticket No
+        .col-md-3.col-xs-3.strong
+          Ticket No
+      - @manufacture_parts.each do |manufacture_part|
+        .row
+          .col-md-3.col-xs-3= manufacture_part.id
+          .col-md-3.col-xs-3= manufacture_part.event_no
+          .col-md-3.col-xs-3= manufacture_part.ticket_spare_part.ticket_id
+          .col-md-3.col-xs-3= link_to "Add", "#", onclick: "Inventories.load_mustache_bundle_return_part('add', #{manufacture_part.id}); return false;"
 
   .col-md-6.col-xs-6
     #bundle_return_part_remove_mustache
 
-.row{style: "margin-top:20px;"}
+  %hr
+.row
   .col-md-6.col-xs-6
     %a.btn.btn-primary{:href => "#", :role => "button", :onclick => "Inventories.load_mustache_bundle_return_part('undelivered_bundle', ''); return false;"} Un delivered bundled
-  .col-md-3.col-xs-6
-    %a.btn.btn-primary{:href => "#", :role => "button", :onclick => "Inventories.load_mustache_bundle_return_part('new_bundle', ''); return false;"} Create New Bundle
-
-.row{style: "margin-top:30px; margin-bottom:30px;"}
-  .col-md-6.col-xs-6
     #bundle_return_part_exist
   .col-md-6.col-xs-6
+    %a.btn.btn-primary{:href => "#", :role => "button", :onclick => "Inventories.load_mustache_bundle_return_part('new_bundle', ''); return false;"} Create New Bundle
     #bundle_return_part_with_form
       = simple_form_for ReturnPartsBundle.new, url: update_bundle_return_part_tickets_path, method: :post do |f|
         = f.input :id, as: :hidden
