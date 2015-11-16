@@ -817,6 +817,7 @@ class TicketsController < ApplicationController
     Inventory
     TaskAction
     @ticket = Ticket.find params[:ticket_id]
+    # @edit_ticket = session[:edit_ticket]
 
     @rendering_dom = "#"+params[:partial_template_for_show]
 
@@ -865,7 +866,7 @@ class TicketsController < ApplicationController
       pr_q_and_as = Rails.cache.fetch([:q_and_answers, @ticket.id]){ @ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})} }
 
       @render_template = "q_and_as/q_and_a"
-      @variables = {ge_q_and_as: ge_q_and_as, pr_q_and_as: pr_q_and_as}
+      @variables = {ge_q_and_as: ge_q_and_as, pr_q_and_as: pr_q_and_as, ticket: @ticket}
 
     when "activity_history"
 
@@ -1616,6 +1617,10 @@ class TicketsController < ApplicationController
       session[:product_id] = @product.id
       Rails.cache.delete([:histories, session[:product_id]])
       Rails.cache.delete([:join, @ticket.id])
+
+      @ticke_action = @ticket.user_ticket_actions.find_by_action_id 7
+      @terminate_job_payment = TicketTerminateJobPayment.find_by_ticket_action_id 2
+
     end
     respond_to do |format|
       format.html {render "tickets/tickets_pack/terminate_invoice"}
@@ -1690,6 +1695,7 @@ class TicketsController < ApplicationController
       Rails.cache.delete([:histories, session[:product_id]])
       Rails.cache.delete([:join, @ticket.id])
     end
+    # @edit_ticket = true
     respond_to do |format|
       format.html {render "tickets/tickets_pack/edit_ticket"}
     end

@@ -1,3 +1,7 @@
+/ - session[:edit_ticket] ||= @edit_ticket
+/ - if !@edit_ticket and !request.xhr?
+/   - session[:edit_ticket] = false
+
 - remarks = capture do
   = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "ticket", name: "remarks", url: "#", "original-title" => "Update remarks", value: ""}, style: "line-height: 6px;" do
     = simple_format ticket.remarks.to_s.split('<br/>')[0]
@@ -37,26 +41,31 @@
     %dl.dl-horizontal
       %dt Informed method
       %dd
-        = link_to "#", class: "inline_edit", data: {type: "select", source: InformMethod.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "pop_status_id", url: "#", "original-title" => "Update inform_method"} do
+        = link_to_if current_page?(controller: "tickets", action: "edit_ticket", ticket_id: ticket.id) ,"#{ticket.inform_method.name}", "#" , class: "inline_edit", data: {type: "select", source: InformMethod.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "pop_status_id", url: "#", "original-title" => "Update inform_method"} do
           = ticket.inform_method.name
+
       %dt Job type
       %dd
-        = link_to "#", class: "inline_edit", data: {type: "select", source: JobType.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "job_type_id", url: "#", "original-title" => "Update job_type"} do
+        = link_to_if current_page?(controller: "tickets", action: "edit_ticket", ticket_id: ticket.id) ,"#{ticket.job_type.name}","#", class: "inline_edit", data: {type: "select", source: JobType.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "job_type_id", url: "#", "original-title" => "Update job_type"} do
           = ticket.job_type.name #ticket.job_type.name
+
       %dt Ticket type
       %dd #{ticket.ticket_type.name} #{"(Regional support job)" if ticket.regional_support_job}
       %dt Type of warranty
       %dd
-        = link_to "#", class: "inline_edit", data: {type: "select", source: WarrantyType.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "warranty_type_id", url: "#", "original-title" => "Update warranty_type"} do
+        = link_to_if current_page?(controller: "tickets", action: "edit_ticket", ticket_id: ticket.id) ,"#{ticket.warranty_type.name}","#",class: "inline_edit", data: {type: "select", source: WarrantyType.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "warranty_type_id", url: "#", "original-title" => "Update warranty_type"} do
           = ticket.warranty_type.name #ticket.warranty_type.name
+
       %dt Customer chargeable
       %dd
-        = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "ticket", name: "repair_type_id", url: "#", "original-title" => "Update repair_type"} do
+        = link_to_if current_page?(controller: "tickets", action: "edit_ticket", ticket_id: ticket.id) ,"#{ticket.cus_chargeable ? 'Yes' : 'No'}","#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "ticket", name: "repair_type_id", url: "#", "original-title" => "Update repair_type"} do
           = ticket.cus_chargeable ? "Yes" : "No" #ticket.cus_chargeable ? "Yes" : "No"
+
       %dt Repair type
       %dd
-        = link_to "#", class: "inline_edit", data: {type: "select", source: RepairType.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "repair_type_id", url: "#", "original-title" => "Update repair_type"} do
+        = link_to_if current_page?(controller: "tickets", action: "edit_ticket", ticket_id: ticket.id) ,"#{ticket.repair_type.try(:name)}","#",class: "inline_edit", data: {type: "select", source: RepairType.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "repair_type_id", url: "#", "original-title" => "Update repair_type"} do
           = ticket.repair_type.try(:name) #ticket.repair_type.try(:name)
+
   .col-md-5
     %dl.dl-horizontal
       %dt Ticket currency
@@ -104,10 +113,25 @@
     %h4 Remarks
   .col-md-10
     - if ticket.remarks.present?
-      %dd= remarks #simple_format ticket.remarks
+      %dd
+        = link_to_if current_page?(controller: "tickets", action: "edit_ticket", ticket_id: ticket.id) , remarks do
+          = simple_format ticket.remarks
   %hr
 .row
   .col-md-2
     %h4 Resolution Summary
   .col-md-10
     %dd= ticket.resolution_summary
+
+/ = params[:controller]
+/ %br
+/ = params[:action]
+/ %br
+/ = request.xhr? ? "yes" : "no"
+
+/ %br
+/ edit_ticket
+/ = current_page?(controller: "tickets", action: "edit_ticket", ticket_id: ticket.id)
+/ %br
+/ ajax_show
+/ = current_page?(controller: "tickets", action: "ajax_show", ticket_id: ticket.id)

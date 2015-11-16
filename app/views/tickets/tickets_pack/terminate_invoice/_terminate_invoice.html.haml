@@ -1,8 +1,8 @@
 - ticket = @ticket
-- user_ticket_action = @ticket.user_ticket_actions.find_by_action_id 7
+- user_ticket_action = @ticke_action
 .row
   .col-md-12
-    Terminated Reason :
+    %strong Terminated Reason :
     #{user_ticket_action.try(:ticket_terminate_job).try(:reason).try(:reason)}
 
 .row
@@ -11,54 +11,59 @@
       %fieldset
         %legend
 
-        .row.small_scale_margin-bottom1
+        .row
           .col-md-6
-            Payment Type:
+            %strong Payment Type:
+            xxx
 
           .col-md-6
-            Payment Amount (Rs):
+            %strong Payment Amount (Rs):
             #{user_ticket_action.try(:ticket_terminate_job_payments).try(:amount)}
 
-        = f.simple_fields_for :ajusted do |a|
+        = f.simple_fields_for @terminate_job_payment do |a|
           .row
-            = a.input :ajust_amount , as: :boolean , wrapper_html: {class: "col-md-2"}, wrapper: :append
+            .col-md-12
+              = label_tag "re_open"
+              = check_box_tag :re_open, nil, false, disabled: false
           .row
             .col-md-6
-              = a.input :amount , label: "Ajusted Payment Amount (Rs):"
+              = a.input :amount , label: "Ajusted Payment Amount (Rs):", input_html: {value: nil}
           .row
             .col-md-6
               = a.label "Ajust Reason : "
-              = a.select :part_terminated_reason_id, Reason.where(terminate_spare_part: true).map{|r| [r.reason, r.id]}, {include_blank: true},label: "Ajust Reason : "
+              = a.select :adjust_reason_id, Reason.where(terminate_spare_part: true).map{|r| [r.reason, r.id]}, {include_blank: true},label: "Ajust Reason : "
 
       .row
         .col-md-12.small_scale_margin-bottom1
-          Final Amount To Be Paid (Rs):
+          %strong Final Amount To Be Paid (Rs):
 
-      - if ticket.cus_payment_required
-        %fieldset
-          %legend
-          = f.simple_fields_for :payment do |py|
+      / - if ticket.cus_payment_required
+      .row
+        .col-md-12
+          %fieldset
+            %legend
+            = f.simple_fields_for :payment do |py|
 
-            .row.small_scale_margin-bottom1
-              .col-md-6
-                Payment Type : Final Payment
+              .row.small_scale_margin-bottom1
+                .col-md-6
+                  Payment Type : Final Payment
 
-            .row
-              .col-md-6
-                = py.input :recieved_amount , label: "Recieved Amount (Rs):"
-            .row
-              .col-md-6
-                = py.input :note
-            .row
-              = py.input :payment_completed , as: :boolean ,label: "Payment Completed", wrapper_html: {class: "col-md-2"}, wrapper: :append
-              = py.input :invoicing_completed , as: :boolean, label: "Invoicing Completed", wrapper_html: {class: "col-md-2"}, wrapper: :append
-              .col-md-2
-                = button_tag "View Invoice" , class: "btn btn-success"
-              .col-md-2
-                = button_tag "Print Invoice" , class: "btn btn-success"
+              .row
+                .col-md-6
+                  = py.input :recieved_amount , label: "Recieved Amount (Rs):"
+              .row
+                .col-md-6
+                  = py.input :note
+              .row
+                = py.input :payment_completed , as: :boolean ,label: "Payment Completed", wrapper_html: {class: "col-md-2"}, wrapper: :append
+                = py.input :invoicing_completed , as: :boolean, label: "Invoicing Completed", wrapper_html: {class: "col-md-2"}, wrapper: :append
+                .col-md-2
+                  = button_tag "View Invoice" , class: "btn btn-success"
+                .col-md-2
+                  = button_tag "Print Invoice" , class: "btn btn-success"
 
       .row.small_scale_margin-bottom1
-        .col-md-6.col-md-offset-1
+        .col-md-6
           .row
             .col-md-12
               Informed To Customer:
