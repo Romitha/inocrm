@@ -15,11 +15,12 @@
 .row
   .col-md-4
     %strong Activity: #{spare_part.ticket_spare_part_manufacture.try(:received_manufacture) ? "Issue part" : "Recieve part"}
+
+
 .row{style: "margin-top:5px;"}
-  .col-md-12
+  .col-md-4
     %strong Part Status:
     #{spare_part.spare_part_status_action.name}
-.row
   .col-md-4
     %strong Spare Part No:
     #{spare_part.spare_part_no}
@@ -38,7 +39,7 @@
     %strong Faulty CT No:
     #{spare_part.faulty_ct_no}
 
-.row{style: "margin-top:10px;"}
+.row
   .col-md-4
     %strong Order No:
     #{spare_part.ticket_spare_part_manufacture.try(:order_no)}
@@ -46,7 +47,7 @@
     %strong Event No:
     #{spare_part.ticket_spare_part_manufacture.try(:event_no)}
 
-.row
+.row{style: "margin-top:10px;"}
   = simple_nested_form_for spare_part, url: update_received_and_issued_tickets_path, method: :post do |f|
 
     = hidden_field_tag :process_id, session[:process_id]
@@ -58,8 +59,11 @@
     = f.input :received_part_serial_no, wrapper_html: {class: "col-md-6"}
     = f.input :received_part_ct_no, wrapper_html: {class: "col-md-6"}
     = f.input :note, wrapper_html: {class: "col-md-12"}, input_html: {value: nil}
-    .col-md-12= simple_format f.object.note
-    %div{title: "#{'Part not yet collected' unless spare_part.ticket_spare_part_manufacture.try(:collected_manufacture)}"}= f.submit "Save", class: "btn btn-success", disabled: !spare_part.ticket_spare_part_manufacture.try(:collected_manufacture)
+
+    .col-md-12
+      = simple_format f.object.note
+    .col-md-12
+      %div{title: "#{'Part not yet collected' unless spare_part.ticket_spare_part_manufacture.try(:collected_manufacture)}"}= f.submit "Save", class: "btn btn-success", disabled: !spare_part.ticket_spare_part_manufacture.try(:collected_manufacture)
 
 
 #hold_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "hold_modal", "aria-hidden" => true}

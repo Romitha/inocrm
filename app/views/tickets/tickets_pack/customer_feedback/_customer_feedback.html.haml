@@ -9,22 +9,15 @@
       - session[:bpm_input_variables].each do |bpm_input_variable|
         = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
-      .row
-        .col-md-4
-
-          = label_tag "re_open"
-          = check_box_tag :re_open, nil, false, disabled: false
-
-        .col-md-8
-
-          - if ticket.ticket_type.name == 'IH'
-            = label_tag "unit_return_to_customer"
-            = check_box_tag :unit_return_to_customer, nil, true, disabled: false
-          - else
-            = label_tag "unit_return_to_customer"
-            = check_box_tag :unit_return_to_customer, nil, false, disabled: true
 
       = f.simple_fields_for :customer_feedbacks  do |cf|
+        .row
+          .col-md-4
+            = label_tag "re_open"
+            = check_box_tag :re_open, nil, false, disabled: false
+
+          .col-md-4
+            = cf.input :unit_return_customer, as: :boolean, checked: (ticket.ticket_type.name == 'IH'), disabled: (ticket.ticket_type.name != 'IH')
 
         = cf.association :feedback, collection: Feedback.all.map{|fd| [fd.feedback, fd.id]},include_blank: true, label: "Feedback : "
 
