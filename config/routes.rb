@@ -190,6 +190,7 @@ Rails.application.routes.draw do
       post 'update_deliver_unit'
       post 'update_job_estimation_request'
       post 'update_recieve_unit'
+      post 'update_check_fsr'
     end
   end
 

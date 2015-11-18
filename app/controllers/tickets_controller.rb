@@ -1062,6 +1062,9 @@ class TicketsController < ApplicationController
     end
   end
 
+  def update_check_fsr
+  end
+
   def resolution
     Inventory
     Warranty
