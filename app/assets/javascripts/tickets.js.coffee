@@ -22,6 +22,7 @@ window.Tickets =
     @ticket_info_ajax_loader()
     @remote_true_loader()
     @toggle_hold_unhold()
+    @update_without_return()
     return
 
   initial_loaders: ->
@@ -472,3 +473,11 @@ window.Tickets =
     $("[data-remote]").on "ajax:success", (e, data, status, xhr) ->
       _this.ajax_loader()
     return
+
+
+  update_without_return: ->
+    $("#update_without_return").click ->
+      if $(@).is(":checked")
+        $(@).siblings("[type='submit']").val("Save")
+      else
+        $(@).siblings("[type='submit']").val("Return")

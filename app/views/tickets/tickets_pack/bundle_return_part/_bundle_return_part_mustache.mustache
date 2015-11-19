@@ -9,12 +9,12 @@
 {{#.}}
 .row
   .col-md-3.col-xs-3
-    {{id}}
+    {{indexer}}
   .col-md-3.col-xs-3
     {{event_no}}
   .col-md-3.col-xs-3
     {{ticket_no}}
   .col-md-3.col-xs-3
     %a{ href: "#", onclick: "Inventories.load_mustache_bundle_return_part('{{task_action}}', {{id}}); return false;"}
-      {{task_action}}
+      {{task_action_name}}
 {{/.}}

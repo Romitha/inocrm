@@ -81,82 +81,84 @@ class InventoriesController < ApplicationController
     
     elsif params[:return]
 
-      if continue
-        if manufacture_warranty and (rce or rpr)
+      if not params[:update_without_return]
+        if continue
+          if manufacture_warranty and (rce or rpr)
 
-          save_ticket_spare_part["RTN", 17]
+            save_ticket_spare_part["RTN", 17]
 
-          # bpm output variables
-          bpm_variables = view_context.initialize_bpm_variables.merge(d32_return_manufacture_part: "Y")
+            # bpm output variables
+            bpm_variables = view_context.initialize_bpm_variables.merge(d32_return_manufacture_part: "Y")
 
-          @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
+            @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
 
-          bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+            bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
-          # bpm output variables
-          ticket_id = @ticket.id
-          request_spare_part_id = ticket_spare_part.id
-          supp_engr_user = current_user.id
-          priority = @ticket.priority
+            # bpm output variables
+            ticket_id = @ticket.id
+            request_spare_part_id = ticket_spare_part.id
+            supp_engr_user = current_user.id
+            priority = @ticket.priority
 
-          # Create Process "SPPT_MFR_PART_RETURN", 
-          bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT_MFR_PART_RETURN", query: {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, supp_engr_user: supp_engr_user, priority: priority}
+            # Create Process "SPPT_MFR_PART_RETURN", 
+            bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT_MFR_PART_RETURN", query: {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, supp_engr_user: supp_engr_user, priority: priority}
 
-          if bpm_response1[:status].try(:upcase) == "SUCCESS"
-            @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name])
-            view_context.ticket_bpm_headers bpm_response1[:process_id], @ticket.id, request_spare_part_id
-          else
-            @bpm_process_error = true
+            if bpm_response1[:status].try(:upcase) == "SUCCESS"
+              @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name])
+              view_context.ticket_bpm_headers bpm_response1[:process_id], @ticket.id, request_spare_part_id
+            else
+              @bpm_process_error = true
+            end
+
+            if bpm_response[:status].upcase == "SUCCESS"
+              flash[:notice] = "Successfully updated."
+            else
+              flash[:error] = "ticket is updated. but Bpm error"
+            end
+            
+            flash[:error] = "#{@flash_message} Unable to start new process." if @bpm_process_error
+
+          elsif (store_warranty and (rce or rpr)) or (store_non_warranty and (rce or rpr))
+
+            save_ticket_spare_part["RTN", 17]
+
+            # bpm output variables
+            bpm_variables = view_context.initialize_bpm_variables.merge(d24_return_store_part: "Y")
+
+            @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
+
+            bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+            # bpm output variables
+            ticket_id = @ticket.id
+            request_spare_part_id = ticket_spare_part.id
+            supp_engr_user = current_user.id
+            priority = @ticket.priority
+            request_onloan_spare_part_id = '-'
+            onloan_request = "N"
+
+            # Create Process "SPPT_STORE_PART_RETURN", 
+            bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT_STORE_PART_RETURN", query: {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, supp_engr_user: supp_engr_user, priority: priority}
+
+            if bpm_response1[:status].try(:upcase) == "SUCCESS"
+              @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name])
+              view_context.ticket_bpm_headers bpm_response1[:process_id], @ticket.id, request_spare_part_id
+            else
+              @bpm_process_error = true
+            end
+
+            if bpm_response[:status].upcase == "SUCCESS"
+              flash[:notice] = "Successfully updated."
+            else
+              flash[:error] = "spare part is updated. but Bpm error"
+            end
+            
+            flash[:error] = "#{@flash_message} Unable to start new process." if @bpm_process_error
+
           end
-
-          if bpm_response[:status].upcase == "SUCCESS"
-            flash[:notice] = "Successfully updated."
-          else
-            flash[:error] = "ticket is updated. but Bpm error"
-          end
-          
-          flash[:error] = "#{@flash_message} Unable to start new process." if @bpm_process_error
-
-        elsif (store_warranty and (rce or rpr)) or (store_non_warranty and (rce or rpr))
-
-          save_ticket_spare_part["RTN", 17]
-
-          # bpm output variables
-          bpm_variables = view_context.initialize_bpm_variables.merge(d24_return_store_part: "Y")
-
-          @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
-
-          bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
-
-          # bpm output variables
-          ticket_id = @ticket.id
-          request_spare_part_id = ticket_spare_part.id
-          supp_engr_user = current_user.id
-          priority = @ticket.priority
-          request_onloan_spare_part_id = '-'
-          onloan_request = "N"
-
-          # Create Process "SPPT_STORE_PART_RETURN", 
-          bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT_STORE_PART_RETURN", query: {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, supp_engr_user: supp_engr_user, priority: priority}
-
-          if bpm_response1[:status].try(:upcase) == "SUCCESS"
-            @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name])
-            view_context.ticket_bpm_headers bpm_response1[:process_id], @ticket.id, request_spare_part_id
-          else
-            @bpm_process_error = true
-          end
-
-          if bpm_response[:status].upcase == "SUCCESS"
-            flash[:notice] = "Successfully updated."
-          else
-            flash[:error] = "ticket is updated. but Bpm error"
-          end
-          
-          flash[:error] = "#{@flash_message} Unable to start new process." if @bpm_process_error
-
         end
       else
-        flash[:error] = "Bpm error. ticket is not updated"
+        flash[:error] = "spare part is updated"
       end
 
 

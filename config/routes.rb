@@ -151,7 +151,7 @@ Rails.application.routes.draw do
       get "collect_parts" #same interface
       get "return_store_part"
       get "deliver_parts_bundle"
-      get "approved_store_parts"
+      get "approve_store_parts"
       get "ticket_close_approval"
       get "assign-ticket", action: :assign_ticket
       get "estimate_job"

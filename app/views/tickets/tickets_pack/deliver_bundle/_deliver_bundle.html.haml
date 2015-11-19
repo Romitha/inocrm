@@ -15,6 +15,8 @@
 .row.small_scale_margin-top1
   .col-md-3
     %strong Bundled Parts
+    - if return_bundle.delivered
+      .label.label-danger= "Delivered" 
 .small_scale_margin-top1
   %table.table.table-bordered
     %thead
@@ -28,19 +30,27 @@
         %th Eventl No
         %th Ticket No
     %tbody
-      - return_bundle_manufactures.each do |bundle_part|
+      - return_bundle_manufactures.each_with_index do |bundle_part, index|
         %tr
-          %th=bundle_part.id
+          %th=index+1
           %td=bundle_part.return_parts_bundle.try(:created_at).try(:strftime, "%m-%d-%Y")
           %td=bundle_part.ticket_spare_part.spare_part_no
           %td=bundle_part.ticket_spare_part.spare_part_description
-          %td
+          %td= bundle_part.ticket_spare_part.return_part_serial_no
           %td=SparePartStatusAction.find_by_id(bundle_part.ticket_spare_part.status_action_id).try(:name)
           %td=bundle_part.event_no
-          %td=bundle_part.ticket_spare_part.ticket_id
+          %td=bundle_part.ticket_spare_part.ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
 .row.small_scale_margin-top1
   .col-md-12
     = simple_form_for return_bundle, url: update_deliver_bundle_tickets_path, method: :post do |f|
+
+      = hidden_field_tag :process_id, session[:process_id]
+      = hidden_field_tag :task_id, session[:task_id]
+      = hidden_field_tag :owner, session[:owner]
+      - session[:bpm_input_variables].each do |bpm_input_variable|
+        = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+
+      = f.input :id, as: :hidden
       = f.input :note, input_html: {value: nil}
       %P= return_bundle.note
-      = f.submit "Deliver Bundle", class: "btn btn-success btn-sm"
+      = f.submit "#{return_bundle.delivered ? 'continue' : 'deliver bundle'}", class: "btn btn-success btn-sm"

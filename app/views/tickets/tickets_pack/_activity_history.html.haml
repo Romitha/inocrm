@@ -335,8 +335,8 @@
                     Spare Part No: #{action.request_spare_part.ticket_spare_part.spare_part_no}
                   .col-md-4
                     Spare Part Description: #{action.request_spare_part.ticket_spare_part.spare_part_description}
-                  .col-md-4
-                    Note: #{simple_format action.request_spare_part.ticket_spare_part.note}
+                  / .col-md-4
+                  /   Note: #{simple_format action.request_spare_part.ticket_spare_part.note}
                 .row
                   .col-md-4
                     -if action.request_spare_part.ticket_spare_part.cus_chargeable_part == true
@@ -518,7 +518,7 @@
                       Customer Chargeable: No
                 .row
                   .col-md-4
-                    Reject Reason: #{ticket.reason.find_by_id(action.request_spare_part.reject_return_part_reason_id).try(:reason)}
+                    Reject Reason: #{action.request_spare_part.reject_return_part_reason.try(:reason)}
                 .row
                   .col-md-4
                     -if action.request_spare_part.ticket_spare_part.request_from == 'M'

@@ -15,26 +15,21 @@
           %th Part No
           %th Description
           %th Order No
-          %th Eventl No
+          %th Event No
           %th Note
           %th Ticket No
           %th Collected
       %tbody
-        - cnt = 0
-        - @manufacture_parts.each do |manufacture_part|
-          - cnt += 1
+        - @manufacture_parts.each_with_index do |manufacture_part, i|
           %tr
-            %th #{cnt}
-            / %td
-            %td #{manufacture_part.return_parts_bundle.try(:created_at).try(:strftime, "%m-%d-%Y")}
-            / %td #{manufacture_part.return_parts_bundle.try(:created_at).try(:to_date).try(:strftime("%Y-%m-%d"))}
+            %th= i+1
+            %td #{manufacture_part.created_at.strftime "%m-%d-%Y"}
             %td #{manufacture_part.ticket_spare_part.spare_part_no}
             %td #{manufacture_part.ticket_spare_part.spare_part_description}
-            /#{TicketOnLoanSparePart.find_by_id(manufacture_part.ticket_spare_part.ticket_on_loan_spare_parts.ref_spare_part_id).try(:return_part_serial_no)}
-            %td
-            %td #{SparePartStatusAction.find_by_id(manufacture_part.ticket_spare_part.status_action_id).try(:name)}
+            %td= manufacture_part.order_no
             %td #{manufacture_part.event_no}
-            %td #{manufacture_part.ticket_spare_part.ticket_id}
+            %td= simple_format manufacture_part.ticket_spare_part.note
+            %td #{manufacture_part.ticket_spare_part.ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])}
             %td 
               = check_box_tag("manufacture_part[]", manufacture_part.id, false, id: "manufacture_part_#{manufacture_part.id}")
     = submit_tag "Save"

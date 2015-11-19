@@ -55,8 +55,9 @@
 .row
   .col-md-12
     = simple_nested_form_for ticket_spare_part, url: update_return_manufacture_part_tickets_path, method: :post do |f|
+      = f.input :id, as: :hidden
       .accept_returned_part
-        = f.input :returned_part_accepted, as: :radio_buttons, collection: {"Accept Returned Part" => true, "Reject Return Part" => false}, label:false, wrapper: :append
+        = f.input :returned_part_accepted, as: :radio_buttons, collection: {"Accept Returned Part" => true, "Reject Return Part" => false}, label:false, wrapper: :append, checked: true
 
       = hidden_field_tag :process_id, session[:process_id]
       = hidden_field_tag :task_id, session[:task_id]
@@ -76,7 +77,7 @@
           %legend.font1 Accept and Ready to Bundle
           = f.simple_fields_for :ticket_spare_part_manufacture do |rm|
             = rm.input :event_closed, wrapper: :append, input_html: {checked: true}
-            = rm.input :ready_to_bundle, wrapper: :append, input_html: {checked: true}, label: "Ready to bundle (Needs return to manufacturer)"#, input_html: {class: "input_toggler"}
+            = rm.input :ready_to_bundle, wrapper: :append, input_html: {checked: true}, label: "Ready to bundle (Needs return to manufacturer)"
             = rm.input :payment_expected_manufacture, label: "Payment Expected from Manufacturer (#{product.product_brand.currency.try(:code)}):", input_html: {class: "input_toggler"}
 
       = f.input :note, input_html: {value: nil}
