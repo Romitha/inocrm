@@ -11,58 +11,102 @@
     %strong Part No: 
     #{spare_part.spare_part_no}
   .col-md-3
+    %strong Part Description:
+    #{spare_part.spare_part_description}
+  .col-md-3
     %strong Part Status:
     #{spare_part.spare_part_status_action.try(:name)}
-  .col-md-3
-    %strong Part Description:
-    #{spare_part.spare_part_description} 
+    %br/
+    %strong Requested by:
+    #{User.cached_find_by_id(spare_part.requested_by).try(:email)}
   .col-md-3
     - if spare_part.cus_chargeable_part
       %strong Customer chargeable
     - else
       %strong Not customer chargeable
+    %br/
+    %strong Requested at:
+    #{spare_part.requested_at.try(:strftime, "%Y-%m-%d %H:%M")}
+%hr
+.row
+  .col-md-6
+    %h4 Requested spare part
+    %dl.dl-horizontal
+      %dt Store
+      %dd
+        = request_part.store.name
+      %dt Item Code
+      %dd
+        = request_part.inventory_product.serial_no
+      %dt Item Description
+      %dd
+        = request_part.inventory_product.description
+      %dt Model No
+      %dd
+        = request_part.inventory_product.model_no
+      %dt Product No
+      %dd
+        = request_part.inventory_product.product_no
+      %dt Part No
+      %dd
+        = request_part.inventory_product.spare_part_no
+      %dt Available Qnty
+      %dd
+        = request_part.inventory_product.inventories.sum(:available_quantity)
 
-%h4 Requested spare part
-%dl.dl-horizontal
-  %dt Store
-  %dd
-    = request_part.store.name
-  %dt Item Code
-  %dd
-    = request_part.inventory_product.serial_no
-  %dt Item Description
-  %dd
-    = request_part.inventory_product.description
-  %dt Model No
-  %dd
-    = request_part.inventory_product.model_no
-  %dt Product No
-  %dd
-    = request_part.inventory_product.product_no
-  %dt Part No
-  %dd
-    = request_part.inventory_product.spare_part_no
-  %dt Available Qnty
-  %dd
-    = request_part.inventory_product.inventories.sum(:available_quantity)
+  .col-md-6
+    - if request_part.main_inventory_product
+      %h4 Part of main product
+      %dl.dl-horizontal
+        %dt Store
+        %dd
+          = request_part.store.name
+        %dt Item Code
+        %dd
+          = request_part.main_inventory_product.serial_no
+        %dt Item Description
+        %dd
+          = request_part.main_inventory_product.description
+        %dt Model No
+        %dd
+          = request_part.main_inventory_product.model_no
+        %dt Product No
+        %dd
+          = request_part.main_inventory_product.product_no
+        %dt Available Qnty
+        %dd
+          = request_part.main_inventory_product.inventories.sum(:available_quantity)
 
 %fieldset
   %legend Approve store part
   = simple_nested_form_for spare_part, url: update_approve_store_parts_tickets_path, method: :post, html: {id: "new_ticket_spare_part"} do |f|
 
+    = hidden_field_tag :process_id, session[:process_id]
+    = hidden_field_tag :task_id, session[:task_id]
+    = hidden_field_tag :owner, session[:owner]
+    - session[:bpm_input_variables].each do |bpm_input_variable|
+      = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+
     = f.simple_fields_for (params[:onloan_request] == "Y" ? "ticket_on_loan_spare_parts_attributes[]" : "ticket_spare_part_store_attributes"), (params[:onloan_request] == "Y" ? @onloan_spare_part : spare_part.ticket_spare_part_store) do |sto|
 
-      = sto.input :approved_store_id, as: :hidden, input_html: {id: "store_id"}
+      = sto.input :approved_store_id, as: :hidden, input_html: {id: "store_id", value: sto.object.store_id}
       = hidden_field_tag :mst_store_id, sto.object.store_id, id: "mst_store_id"
-      = sto.input :approved_inv_product_id, as: :hidden, input_html: {id: "inv_product_id"}
-      = sto.input :approved_main_inv_product_id, as: :hidden, input_html: {id: "mst_inv_product_id"}
+      = sto.input :approved_inv_product_id, as: :hidden, input_html: {id: "inv_product_id", value: sto.object.inv_product_id}
+      = sto.input :approved_main_inv_product_id, as: :hidden, input_html: {id: "mst_inv_product_id", value: (params[:onloan_request] == "Y" ? sto.object.main_inv_product_id : sto.object.mst_inv_product_id)}
 
       .row
-        = f.input :close_approved, as: :radio_buttons, collection: {"Approved" => true, "Reject" => false}, wrapper: :append, label: false, wrapper_html: {class: "col-md-6"}
-        = sto.input :part_of_main_product, as: :radio_buttons, collection: {"Part of a Main Product" => true, "Seperate Product" => false}, wrapper: :append, wrapper_html: {class: "col-md-6"}, label: false
+        = f.input :close_approved, as: :radio_buttons, collection: {"Approved" => true, "Reject" => false}, wrapper: :append, label: false, wrapper_html: {class: "col-md-6"}, checked: true
+        .col-md-6.request_from_radio_buttons
+          = label_tag "Part of a Main Product" do
+            = radio_button_tag "approve_part_of_main_product", true, true, class: "approve_part_of_main_product", id: "approve_part_of_main_product_true"
+            Part of a Main Product
+          = label_tag "Seperate Product" do
+            = radio_button_tag "approve_part_of_main_product", false, nil, class: "approve_part_of_main_product", id: "approve_part_of_main_product_false"
+            Seperate Product
+        / = sto.input :part_of_main_product, as: :radio_buttons, collection: {"Part of a Main Product" => true, "Seperate Product" => false}, wrapper: :append, wrapper_html: {class: "col-md-6"}, label: false
       .row
-        .col-md-6
-          = link_to "Select", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true
+        .col-md-6.request_from_with_link
+          = link_to "Change", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true
           .request_from
             %dl.dl-horizontal
               %dt Store
@@ -86,8 +130,8 @@
               %dt Available Qnty
               %dd
                 = sto.object.inventory_product.inventories.sum(:available_quantity)
-        .col-md-6
-          = link_to "Select", inventory_in_modal_inventories_path(select_frame: "main_product"), id: "part_of_main_product_select", remote: true
+        .col-md-6.main_product_with_link
+          = link_to "Change", inventory_in_modal_inventories_path(select_frame: "main_product"), id: "part_of_main_product_select", remote: true
           .main_product
             %dl.dl-horizontal
               %dt Store
@@ -105,16 +149,14 @@
               %dt Product No
               %dd
                 = sto.object.main_inventory_product.try(:product_no)
-              %dt Part No
-              %dd
-                = sto.object.main_inventory_product.try(:spare_part_no)
               %dt Available Qnty
               %dd
                 = sto.object.main_inventory_product.try(:inventories).try :sum, :available_quantity
     .row
       .col-md-12
-        = f.input :note
-        = f.submit "Save", class: "btn btn-success btn-sm"
+        = f.input :note, input_html: { value: nil}
+        = simple_format f.object.note
+        = f.submit "Save", class: "btn btn-success btn-sm", id: "approve_store_part"
 
 #inventory_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "inventory_modal", "aria-hidden" => true}
   .modal-dialog.modal-lg

@@ -1153,6 +1153,7 @@ class TicketsController < ApplicationController
   end
 
   def update_approve_store_parts
+    
   end
   
   def ticket_close_approval
@@ -1264,6 +1265,7 @@ class TicketsController < ApplicationController
       TicketSparePartManufacture.where(id: params[:manufacture_part]).each do |ticket_spare_part_manufacture|
         ticket_spare_part_manufacture.update(collected_manufacture: true, collect_pending_manufacture: false)
         ticket_spare_part_manufacture.ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("CLT").id)
+        ticket_spare_part_manufacture.ticket_spare_part.ticket_spare_part_status_actions.create(status_id: ticket_spare_part_manufacture.ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)           
 
         user_ticket_action = ticket_spare_part_manufacture.ticket_spare_part.ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(36).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: ticket_spare_part_manufacture.ticket_spare_part.ticket.re_open_count)
         user_ticket_action.build_request_spare_part(ticket_spare_part_id: ticket_spare_part_manufacture.ticket_spare_part.id)
@@ -1367,6 +1369,7 @@ class TicketsController < ApplicationController
   end
 
   def update_received_and_issued
+    TaskAction
     spt_ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
     @ticket = spt_ticket_spare_part.ticket
 
@@ -1431,14 +1434,14 @@ class TicketsController < ApplicationController
     TaskAction
     Inventory
     TicketSparePart
-    ticket_id = (params[:ticket_id] or session[:ticket_id])
+    ticket_id = params[:ticket_id]
     @ticket = Ticket.find_by_id ticket_id
     session[:ticket_id] = @ticket.id
     if @ticket
       @product = @ticket.products.first
       @ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
       @ticket_spare_part.request_spare_parts.build
-      Rails.cache.delete([:histories, session[:product_id]])
+      Rails.cache.delete([:histories, @product.id])
       Rails.cache.delete([:join, @ticket.id])
     end
     respond_to do |format|
@@ -1447,60 +1450,80 @@ class TicketsController < ApplicationController
   end
 
   def update_return_manufacture_part
+    TaskAction
     spt_ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
     @ticket = spt_ticket_spare_part.ticket
 
-    spt_ticket_spare_part.update ticket_spare_part_params(spt_ticket_spare_part)
+    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    if continue
 
-    if spt_ticket_spare_part.try(:part_returned) and spt_ticket_spare_part.status_action_id == SparePartStatusAction.find_by_code("RTN").id
-      spt_ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("RCS").id) 
+      spt_ticket_spare_part.update ticket_spare_part_params(spt_ticket_spare_part)
 
-      spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)   
+      d33_return_part_reject = "N" 
+      d34_event_closed = "N"
+      d35_parts_bundle_pending = "N"
 
-      spt_ticket_spare_part.ticket_spare_part_manufacture and spt_ticket_spare_part.ticket_spare_part_manufacture.update(received_manufacture: true)
+      if spt_ticket_spare_part.returned_part_accepted
+        #Returned Part Accepted
+        spt_ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("RPA").id) 
+        spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)   
 
-      #Set Action (37) Receive Spare part from Manufacture, DB.spt_act_request_spare_part.
-      user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(37).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
-      user_ticket_action.build_request_spare_part(ticket_spare_part_id: spt_ticket_spare_part.id, reject_return_part_reason_id: params[:manual_reject_return_part_reason_id])
-      user_ticket_action.save   
-      
-      flash[:notice]= "Successfully updated"
-
-    elsif spt_ticket_spare_part.try(:part_returned) and spt_ticket_spare_part.status_action_id == SparePartStatusAction.find_by_code("RPA").id
-      continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
-
-      if continue
-
-        spt_ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("ISS").id) 
-        spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now) 
-
-        spt_ticket_spare_part.ticket_spare_part_manufacture and spt_ticket_spare_part.ticket_spare_part_manufacture.update(issued: true)
-
-        #Set Action (38) Issue Spare part, DB.spt_act_request_spare_part
-        user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(38).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+        #Set Action (43) Receive Returned part, DB.spt_act_request_spare_part.
+        user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(43).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
         user_ticket_action.build_request_spare_part(ticket_spare_part_id: spt_ticket_spare_part.id, reject_return_part_reason_id: params[:manual_reject_return_part_reason_id])
-        user_ticket_action.save 
+        user_ticket_action.save  
 
-        # bpm output variables
-        bpm_variables = view_context.initialize_bpm_variables
+        if spt_ticket_spare_part.ticket_spare_part_manufacture.try(:ready_to_bundle)
+          #Ready to Bundle
+          spt_ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("RBN").id) 
+          spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)   
 
-        @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
-
-        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
-
-        if bpm_response[:status].upcase == "SUCCESS"
-
-          WebsocketRails[:posts].trigger 'new', {task_name: "Spare part", task_id: spt_ticket_spare_part.id, task_verb: "return manufacture part.", by: current_user.email, at: Time.now.strftime('%d/%m/%Y at %H:%M:%S')}
-
-          flash[:notice]= "Successfully updated"
+          d35_parts_bundle_pending = TicketSparePartManufacture.where.not(id: spt_ticket_spare_part.ticket_spare_part_manufacture.id).any?{ |ticket_spare_part_manufacture| ticket_spare_part_manufacture.ready_to_bundle and not ticket_spare_part_manufacture.bundled } ? "Y" : "N"
         else
-          flash[:error]= "Issue part is updated. but Bpm error"
+          #if no need Ready to Bundle then close
+          spt_ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("CLS").id) 
+          spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)             
         end
+
+        if spt_ticket_spare_part.ticket_spare_part_manufacture.try(:event_closed)
+          #Event Closed
+          #Set Action (44) Close Event, DB.spt_act_request_spare_part
+          user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(44).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+          user_ticket_action.build_request_spare_part(ticket_spare_part_id: spt_ticket_spare_part.id, reject_return_part_reason_id: params[:manual_reject_return_part_reason_id])
+          user_ticket_action.save 
+
+          d34_event_closed = "Y"
+        end
+
       else
-        flash[:error]= "Unable to update."
+        #Returned Part Rejected
+        spt_ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("RPR").id) 
+        spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)   
+
+        #Set Action (42) Reject Returned Part, DB.spt_act_request_spare_part
+        user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(42).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+        user_ticket_action.build_request_spare_part(ticket_spare_part_id: spt_ticket_spare_part.id, reject_return_part_reason_id: params[:manual_reject_return_part_reason_id])
+        user_ticket_action.save     
+
+        d33_return_part_reject = "Y"     
+      end  
+
+      # bpm output variables
+      bpm_variables = view_context.initialize_bpm_variables.merge(d33_return_part_reject: d33_return_part_reject, d34_event_closed: d34_event_closed, d35_parts_bundle_pending: d35_parts_bundle_pending)
+
+      bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+      if bpm_response[:status].upcase == "SUCCESS"
+
+        flash[:notice]= "Successfully updated"
+      else
+        flash[:error]= "Return Manufacture part is updated. but Bpm error"
       end
+    else
+      flash[:error]= "Unable to update."
     end
     redirect_to todos_url
+
   end
 
   def bundle_return_part
@@ -1514,37 +1537,57 @@ class TicketsController < ApplicationController
     if request.xhr?
       case params[:task_action]
       when "add"
+
         session[:manufacture_rest_ids] << session[:manufacture_ids].delete(params[:manufacture_id].to_i)# << params[:manufacture_id]
 
-        @remove_manufactures = TicketSparePartManufacture.where(id: session[:manufacture_rest_ids].uniq, ready_to_bundle: true, bundled: false).map { |m| {id: m.id, event_no: m.event_no, ticket_no: m.ticket_spare_part.ticket_id.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"]) , spare_part_no: m.ticket_spare_part.spare_part_no, spare_part_description: m.ticket_spare_part.spare_part_description , part_status: m.ticket_spare_part.spare_part_status_action.name , task_action: "remove"} }
-
-        @add_manufactures = TicketSparePartManufacture.where(id: session[:manufacture_ids].uniq, ready_to_bundle: true, bundled: false).map { |m| {id: m.id, event_no: m.event_no, ticket_no: m.ticket_spare_part.ticket_id.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"]) , spare_part_no: m.ticket_spare_part.spare_part_no, spare_part_description: m.ticket_spare_part.spare_part_description , part_status: m.ticket_spare_part.spare_part_status_action.name , task_action: "add"} }
+        @remove_manufactures = TicketSparePartManufacture.where(id: session[:manufacture_rest_ids].uniq, ready_to_bundle: true, bundled: false).map.with_index { |m, index| {id: m.id, indexer: (index+1), event_no: m.event_no, ticket_no: m.ticket_spare_part.ticket_id.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"]) , spare_part_no: m.ticket_spare_part.spare_part_no, spare_part_description: m.ticket_spare_part.spare_part_description , part_status: m.ticket_spare_part.spare_part_status_action.name , task_action: "remove", task_action_name: "remove"} }
+        @add_manufactures = TicketSparePartManufacture.where(id: session[:manufacture_ids].uniq, ready_to_bundle: true, bundled: false).map.with_index { |m, index| {id: m.id, indexer: (index+1), event_no: m.event_no, ticket_no: m.ticket_spare_part.ticket_id.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"]), spare_part_no: m.ticket_spare_part.spare_part_no, spare_part_description: m.ticket_spare_part.spare_part_description, part_status: m.ticket_spare_part.spare_part_status_action.name, task_action: "add", task_action_name: "add"} }
 
       when "remove"
         session[:manufacture_ids] << session[:manufacture_rest_ids].delete(params[:manufacture_id].to_i)
 
-        @remove_manufactures = TicketSparePartManufacture.where(id: session[:manufacture_rest_ids].uniq, ready_to_bundle: true, bundled: false).map { |m| {id: m.id, event_no: m.event_no, ticket_no: m.ticket_spare_part.ticket_id.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"]) , spare_part_no: m.ticket_spare_part.spare_part_no, spare_part_description: m.ticket_spare_part.spare_part_description , part_status: m.ticket_spare_part.spare_part_status_action.name , task_action: "remove"} }
-
-        @add_manufactures = TicketSparePartManufacture.where(id: session[:manufacture_ids].uniq, ready_to_bundle: true, bundled: false).map { |m| {id: m.id, event_no: m.event_no, ticket_no: m.ticket_spare_part.ticket_id.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"]) , spare_part_no: m.ticket_spare_part.spare_part_no, spare_part_description: m.ticket_spare_part.spare_part_description , part_status: m.ticket_spare_part.spare_part_status_action.name , task_action: "add"} }
+        @remove_manufactures = TicketSparePartManufacture.where(id: session[:manufacture_rest_ids].uniq, ready_to_bundle: true, bundled: false).map.with_index { |m, index| {id: m.id, indexer: (index+1), event_no: m.event_no, ticket_no: m.ticket_spare_part.ticket_id.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"]), spare_part_no: m.ticket_spare_part.spare_part_no, spare_part_description: m.ticket_spare_part.spare_part_description, part_status: m.ticket_spare_part.spare_part_status_action.name, task_action: "remove", task_action_name: "remove"} }
+        @add_manufactures = TicketSparePartManufacture.where(id: session[:manufacture_ids].uniq, ready_to_bundle: true, bundled: false).map.with_index { |m, index| {id: m.id, indexer: (index+1), event_no: m.event_no, ticket_no: m.ticket_spare_part.ticket_id.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"]) , spare_part_no: m.ticket_spare_part.spare_part_no, spare_part_description: m.ticket_spare_part.spare_part_description , part_status: m.ticket_spare_part.spare_part_status_action.name , task_action: "add", task_action_name: "add"} }
 
       when "undelivered_bundle"
-        @bundles = ReturnPartsBundle.all.map { |r| {id: r.id, bundled_no: r.bundle_no, date_bundled: r.created_at.try(:strftime, "%Y-%m-%d"), bundled_by: User.find_by_id(r.created_by).try(:user_name)} }
+        @bundles = ReturnPartsBundle.where(delivered: false).map.with_index { |r, index| {id: r.id, indexer: (index+1), bundled_no: r.bundle_no, date_bundled: r.created_at.try(:strftime, "%Y-%m-%d"), bundled_by: User.cached_find_by_id(r.created_by).try(:user_name)} }
 
       when "load_bundled_manufactures"
         @bundle = ReturnPartsBundle.find(params[:manufacture_id])
-        manufacture_ids = (@bundle.ticket_spare_part_manufacture_ids+session[:manufacture_rest_ids]).uniq
+        manufacture_ids = @bundle.ticket_spare_part_manufacture_ids.uniq
         manufactures_count = manufacture_ids.count
 
-        @bundle_manufactures = TicketSparePartManufacture.where(id: manufacture_ids).map { |m| {id: m.id, event_no: m.event_no, ticket_no: m.ticket_spare_part.ticket_id.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"]) , spare_part_no: m.ticket_spare_part.spare_part_no, spare_part_description: m.ticket_spare_part.spare_part_description , part_status: m.ticket_spare_part.spare_part_status_action.name , task_action: "remove"} }
+        @bundle_manufactures = TicketSparePartManufacture.where(id: manufacture_ids).map.with_index { |m, index| {id: m.id, indexer: (index+1), event_no: m.event_no, ticket_no:  m.ticket_spare_part.ticket_id.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"]), spare_part_no: m.ticket_spare_part.spare_part_no, spare_part_description: m.ticket_spare_part.spare_part_description, part_status: m.ticket_spare_part.spare_part_status_action.name, task_action: "remove_from_bundle", task_action_name: "remove from bundle"} }
 
-        @bundle = {bundle_id: @bundle.id, bundle_note: @bundle.note, bundle_no: @bundle.bundle_no, manufacture_count: manufactures_count, readonly: "readonly"}
+        @bundle = {bundle_id: @bundle.id, bundle_note: @bundle.note, bundle_no: @bundle.bundle_no, bundled_by: User.cached_find_by_id(@bundle.created_by).try(:email), manufacture_count: manufactures_count, readonly: "readonly", task_id: session[:task_id], process_id: session[:process_id], owner: session[:owner]}
 
       when "new_bundle"
-        @bundle_manufactures = TicketSparePartManufacture.where(id: session[:manufacture_rest_ids].uniq).map { |m| {id: m.id, event_no: m.event_no, ticket_no: m.ticket_spare_part.ticket_id.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"]) , spare_part_no: m.ticket_spare_part.spare_part_no, spare_part_description: m.ticket_spare_part.spare_part_description , part_status: m.ticket_spare_part.spare_part_status_action.name , task_action: "remove"} }
+        # @bundle_manufactures = TicketSparePartManufacture.where(id: session[:manufacture_rest_ids].uniq).map { |m| {id: m.id, event_no: m.event_no, ticket_no: m.ticket_spare_part.ticket_id, task_action: "remove", task_action_name: "remove"} }
+        @bundle_manufactures = []
 
-        @bundle = {readonly: ""}
+        @bundle = {readonly: "", task_id: session[:task_id], process_id: session[:process_id], owner: session[:owner]}
+      when "remove_from_bundle"
+        @ticket_spare_part_manufacture = TicketSparePartManufacture.find_by_id params[:manufacture_id]
+        return_parts_bundle = @ticket_spare_part_manufacture.return_parts_bundle
+        unless return_parts_bundle.delivered
+          return_parts_bundle.ticket_spare_part_manufactures.delete(@ticket_spare_part_manufacture)
+
+          @ticket_spare_part_manufacture.update ready_to_bundle: true, bundled: false, add_bundle_by: nil, add_bundle_at: nil
+          @ticket_spare_part_manufacture.ticket_spare_part.update status_action_id: SparePartStatusAction.find_by_code("RBN").id
+
+          @ticket_spare_part_manufacture.ticket_spare_part.ticket_spare_part_status_actions.create(status_id: @ticket_spare_part_manufacture.ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now) 
+
+
+          @bundle_manufactures = return_parts_bundle.ticket_spare_part_manufactures.map { |m| {id: m.id, event_no: m.event_no, ticket_no: m.ticket_spare_part.ticket_id, task_action: "remove_from_bundle", task_action_name: "remove from bundle"} }
+
+          session[:manufacture_ids] << params[:manufacture_id].to_i
+        else
+          @error_message = "Unable to remove. Because bundle is already delivered."
+        end
+
+        @add_manufactures = TicketSparePartManufacture.where(id: session[:manufacture_ids].uniq, ready_to_bundle: true, bundled: false).map.with_index { |m, index| {id: m.id, indexer: (index+1), event_no: m.event_no, ticket_no: m.ticket_spare_part.ticket_id, task_action: "add", task_action_name: "add"} }
       end
-      render json: {add_manufactures: @add_manufactures, remove_manufactures: @remove_manufactures, bundles: @bundles, bundle_manufactures: @bundle_manufactures, bundle: @bundle}
+      render json: {add_manufactures: @add_manufactures, remove_manufactures: @remove_manufactures, bundles: @bundles, bundle_manufactures: @bundle_manufactures, bundle: @bundle, error_message: @error_message}
     else
       session[:manufacture_ids] = session[:manufacture_rest_ids] = []
       ticket_id = (params[:ticket_id] or session[:ticket_id])
@@ -1568,24 +1611,83 @@ class TicketsController < ApplicationController
   end
 
   def update_bundle_return_part
-    @ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
-    if @ticket_spare_part.update(ticket_spare_part_params)
-      flash[:notice] = "Spare part is successfully saved."
+    # @ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
+    # if @ticket_spare_part.update(ticket_spare_part_params)
+    #   flash[:notice] = "Spare part is successfully saved."
+    # end
+    TicketSparePart
+    if return_bundle_params[:id].present?
+      @return_bundle = ReturnPartsBundle.find return_bundle_params[:id]
+      @return_bundle.attributes = return_bundle_params
+    else
+      @return_bundle = ReturnPartsBundle.new return_bundle_params
+      @new_bundle = true
     end
+    @return_bundle.product_brand_id = session[:product_brand_id]
+    @return_bundle.created_by = current_user.id
+
+    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    if continue   
+
+      if !@new_bundle and @return_bundle.delivered
+        flash[:notice]= "Bundle is already delivered"
+      else
+
+        if @return_bundle.save
+          @return_bundle.ticket_spare_part_manufacture_ids = (session[:manufacture_rest_ids] + @return_bundle.ticket_spare_part_manufacture_ids).uniq
+
+          @return_bundle.ticket_spare_part_manufactures.each do |ticket_spare_part_manufacture|
+
+            ticket_spare_part_manufacture.update(ready_to_bundle: false, bundled: true, add_bundle_by: current_user.id, add_bundle_at: DateTime.now)
+
+            #Part Bundled
+            ticket_spare_part_manufacture.ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("BND").id) 
+            ticket_spare_part_manufacture.ticket_spare_part.ticket_spare_part_status_actions.create(status_id: ticket_spare_part_manufacture.ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)  
+     
+            #Set Action (45) Part Bunndled, DB.spt_act_request_spare_part for all added parts
+            user_ticket_action = ticket_spare_part_manufacture.ticket_spare_part.ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(45).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: ticket_spare_part_manufacture.ticket_spare_part.ticket.re_open_count)
+            user_ticket_action.build_request_spare_part(ticket_spare_part_id: ticket_spare_part_manufacture.ticket_spare_part.id)
+            user_ticket_action.save 
+
+          end
+
+          # bpm output variables
+          d36_more_parts_bundle_pending = TicketSparePartManufacture.any?{ |ticket_spare_part_manufacture| ticket_spare_part_manufacture.ready_to_bundle and not ticket_spare_part_manufacture.bundled } ? "Y" : "N"
+          bpm_variables = view_context.initialize_bpm_variables.merge(d36_more_parts_bundle_pending: d36_more_parts_bundle_pending, bundle_id: @return_bundle.id)
+
+          bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+          if bpm_response[:status].upcase == "SUCCESS"
+
+            flash[:notice]= "Successfully updated"
+          else
+            flash[:error]= "Bundle is updated. but Bpm error"
+          end
+
+        else
+          flash[:error]= "Unable to update. Please check bpm."
+
+        end
+
+      end
+    else
+      flash[:error]= "Unable to update."
+    end      
     redirect_to todos_url
   end
 
   def deliver_bundle
     Inventory
+    Product
     Warranty
     ContactNumber
     QAndA
     TaskAction
     Inventory
     TicketSparePart
-    ticket_id = params[:ticket_id]
-    @ticket = Ticket.find_by_id ticket_id
-    session[:ticket_id] = @ticket.id
+    # ticket_id = params[:ticket_id]
+    # @ticket = Ticket.find_by_id ticket_id
+    # session[:ticket_id] = @ticket.id
 
     bundle_id = params[:bundle_id]
     @return_bundle = ReturnPartsBundle.find bundle_id
@@ -1603,7 +1705,50 @@ class TicketsController < ApplicationController
   end
 
   def update_deliver_bundle
+
+    TicketSparePart
+
+    @return_bundle = ReturnPartsBundle.find return_bundle_params[:id]
+
+    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    if continue 
+
+      if !@return_bundle.delivered 
+
+        @return_bundle.update(return_bundle_params)
+        @return_bundle.update(delivered: true, delivered_at: DateTime.now, delivered_by: current_user.id)
+
+        @return_bundle.ticket_spare_part_manufactures.each do |ticket_spare_part_manufacture|
+
+          #Part Closed
+          ticket_spare_part_manufacture.ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("CLS").id) 
+          ticket_spare_part_manufacture.ticket_spare_part.ticket_spare_part_status_actions.create(status_id: ticket_spare_part_manufacture.ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)  
     
+          #Set Action (46) Part Bunndl Delivered for all added parts
+          user_ticket_action = ticket_spare_part_manufacture.ticket_spare_part.ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(46).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: ticket_spare_part_manufacture.ticket_spare_part.ticket.re_open_count)
+          user_ticket_action.build_request_spare_part(ticket_spare_part_id: ticket_spare_part_manufacture.ticket_spare_part.id)
+          user_ticket_action.save 
+
+        end
+      else
+        flash[:alert]= "Bundle already delivered."
+      end
+
+      # bpm output variables
+      bpm_variables = view_context.initialize_bpm_variables
+      bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+      if bpm_response[:status].upcase == "SUCCESS"
+
+        flash[:notice]= "Successfully updated"
+      else
+        flash[:error]= "Bundle is updated. but Bpm error"
+      end            
+
+    else
+      flash[:error]= "Unable to update."
+    end      
+    redirect_to todos_url
   end
 
   def terminate_invoice
@@ -1682,9 +1827,39 @@ class TicketsController < ApplicationController
   end
 
   def update_close_event
+    TaskAction
     ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
+    @ticket = ticket_spare_part.ticket
     if ticket_spare_part.update ticket_spare_part_params(ticket_spare_part) 
 
+      continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+      if continue
+
+        if ticket_spare_part.ticket_spare_part_manufacture.try(:event_closed)
+          #Event Closed
+          #Set Action (44) Close Event, DB.spt_act_request_spare_part
+          user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(44).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+          user_ticket_action.build_request_spare_part(ticket_spare_part_id: ticket_spare_part.id, reject_return_part_reason_id: params[:manual_reject_return_part_reason_id])
+          user_ticket_action.save 
+
+          # bpm output variables
+          bpm_variables = view_context.initialize_bpm_variables
+          bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+          if bpm_response[:status].upcase == "SUCCESS"
+
+            flash[:notice]= "Successfully updated"
+          else
+            flash[:error]= "Close Event is updated. but Bpm error"
+          end            
+        else
+          flash[:notice] = "Successfully updated"
+        end
+      else
+        flash[:error]= "Unable to update."
+      end
+
+      redirect_to todos_url
     end
   end
 
@@ -2062,6 +2237,7 @@ class TicketsController < ApplicationController
   def call_resolution_template
     TaskAction
     TicketSparePart
+    Warranty
     @call_template = params[:call_template]
     @ticket = Ticket.find session[:ticket_id]
     @user_ticket_action = @ticket.user_ticket_actions.build
@@ -2858,6 +3034,9 @@ class TicketsController < ApplicationController
       f_ticket_spare_part_params = ticket_spare_part_params(@ticket_spare_part)
       f_ticket_spare_part_params[:ticket_attributes][:remarks] = f_ticket_spare_part_params[:ticket_attributes][:remarks].present? ? "#{f_ticket_spare_part_params[:ticket_attributes][:remarks]} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
       @ticket_spare_part = TicketSparePart.new f_ticket_spare_part_params
+      @ticket_spare_part.requested_at = DateTime.now
+      @ticket_spare_part.requested_by = current_user.id
+
       action_id = ""
       if @ticket_spare_part.save
 
@@ -3108,7 +3287,7 @@ class TicketsController < ApplicationController
     end
 
     def ticket_spare_part_params(spt_ticket_spare_part)
-      tspt_params = params.require(:ticket_spare_part).permit(:approved_store_id, :approved_inv_product_id, :approved_main_inv_product_id, :spare_part_no, :spare_part_description, :ticket_id, :ticket_fsr, :cus_chargeable_part, :request_from, :faulty_serial_no, :received_part_serial_no, :received_part_ct_no, :repare_start, :repare_end, :faulty_ct_no, :note, :status_action_id, :status_use_id, :part_terminated_reason_id, :returned_part_accepted, ticket_attributes: [:remarks, :id], ticket_spare_part_manufacture_attributes: [:id, :event_no, :order_no, :id, :event_closed, :ready_to_bundle, :payment_expected_manufacture], ticket_spare_part_store_attributes: [:part_of_main_product, :id], request_spare_parts_attributes: [:reject_return_part_reason_id])
+      tspt_params = params.require(:ticket_spare_part).permit(:approved_store_id, :approved_inv_product_id, :approved_main_inv_product_id, :spare_part_no, :spare_part_description, :ticket_id, :ticket_fsr, :cus_chargeable_part, :request_from, :faulty_serial_no, :received_part_serial_no, :received_part_ct_no, :repare_start, :repare_end, :faulty_ct_no, :note, :status_action_id, :status_use_id, :part_terminated_reason_id, :returned_part_accepted, ticket_attributes: [:remarks, :id], ticket_spare_part_manufacture_attributes: [:id, :event_no, :order_no, :id, :event_closed, :ready_to_bundle, :payment_expected_manufacture], ticket_spare_part_store_attributes: [:part_of_main_product, :id, :approved_store_id, :approved_inv_product_id, :approved_main_inv_product_id], request_spare_parts_attributes: [:reject_return_part_reason_id])
 
       tspt_params[:repare_start] = Time.strptime(tspt_params[:repare_start],'%m/%d/%Y %I:%M %p') if tspt_params[:repare_start].present?
       tspt_params[:repare_end] = Time.strptime(tspt_params[:repare_end],'%m/%d/%Y %I:%M %p') if tspt_params[:repare_end].present?
@@ -3123,6 +3302,10 @@ class TicketsController < ApplicationController
 
     def act_warranty_extend_params
       params.require(:action_warranty_extend).permit(:reject_reason_id, :reject_note, :extended)
+    end
+
+    def return_bundle_params
+      params.require(:return_parts_bundle).permit(:id, :bundle_no, :note)
     end
 
     def append_remark_ticket_params(ticket)

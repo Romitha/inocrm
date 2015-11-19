@@ -11,6 +11,7 @@ window.Inventories =
     @check_return_serial_and_return_ct()
     @keypress_return_serial_and_return_ct()
     @bundle_load()
+    @approve_store_part()
     return
 
   filter_product: -> 
@@ -199,13 +200,15 @@ window.Inventories =
     accept_returned_part_value = $(".accept_returned_part input:checked").val()
     if accept_returned_part_value == "true"
       $("#request_spare_parts").addClass("hide")
-      $("#request_spare_parts select").val("")
+      $("#request_spare_parts select").prop("disabled", true).val("")
       $("#ticket_spare_part_manufacture").removeClass("hide")
+      $("#ticket_spare_part_manufacture input.input_toggler").removeProp("disabled")
     else
       $("#request_spare_parts").removeClass("hide")
       $("#ticket_spare_part_manufacture").addClass("hide")
-      $("#ticket_spare_part_manufacture input.input_toggler").val("")
+      $("#ticket_spare_part_manufacture input.input_toggler").prop("disabled", true).val("")
       $("#ticket_spare_part_manufacture input[type='checkbox']").removeProp("checked")
+      $("#request_spare_parts select").removeProp("disabled")
 
   terminate_func: ->
     $(".part_terminated_reason_check").click ->
@@ -275,16 +278,65 @@ window.Inventories =
 
   load_mustache_bundle_return_part: (action, manufacture_id)->
     Tickets.ajax_loader()
-    $.get "/tickets/bundle_return_part", {task_action: action, manufacture_id: manufacture_id}, (data)->
-      if action == "add" or action == "remove"
-        $('#bundle_return_part_add_mustache').html Mustache.to_html($('#bundle_return_part_mustache').html(), data.add_manufactures)
-        $('#bundle_return_part_remove_mustache').html Mustache.to_html($('#bundle_return_part_mustache').html(), data.remove_manufactures)
+    if action == "remove_from_bundle"
+      c = confirm "Are you sure! do you want to unbundle?"
+      if c == true
+        $.get "/tickets/bundle_return_part", {task_action: action, manufacture_id: manufacture_id}, (data)->
+          if action == "remove_from_bundle"
+            $('#bundle_return_part_from_undeliver_bundle').html Mustache.to_html($('#bundle_return_part_mustache').html(), data.bundle_manufactures)
+            $('#bundle_return_part_add_mustache').html Mustache.to_html($('#bundle_return_part_mustache').html(), data.add_manufactures)
+          
+          Tickets.remove_ajax_loader()
+          alert data.error_message if data.error_message
+      else
+        Tickets.remove_ajax_loader()
+        
 
-      else if action == "undelivered_bundle"
-        $('#bundle_return_part_exist').html Mustache.to_html($('#bundle_return_part_exist_mustache').html(), data.bundles)
+    else
+      $.get "/tickets/bundle_return_part", {task_action: action, manufacture_id: manufacture_id}, (data)->
+        if action == "add" or action == "remove"
+          $('#bundle_return_part_add_mustache').html Mustache.to_html($('#bundle_return_part_mustache').html(), data.add_manufactures)
+          $('#bundle_return_part_remove_mustache').html Mustache.to_html($('#bundle_return_part_mustache').html(), data.remove_manufactures)
 
-      else if action == "load_bundled_manufactures" or action == "new_bundle"
-        $('#bundle_return_part_remove_mustache').html Mustache.to_html($('#bundle_return_part_mustache').html(), data.bundle_manufactures)
-        $('#bundle_return_part_with_form').html Mustache.to_html($('#bundle_return_part_with_form_mustache').html(), data.bundle)
-      
-      Tickets.remove_ajax_loader()
+        else if action == "undelivered_bundle"
+          $('#bundle_return_part_exist').html Mustache.to_html($('#bundle_return_part_exist_mustache').html(), data.bundles)
+
+        else if action == "load_bundled_manufactures"
+          $('#bundle_return_part_from_undeliver_bundle').html Mustache.to_html($('#bundle_return_part_mustache').html(), data.bundle_manufactures)
+          $('#bundle_return_part_with_form').html Mustache.to_html($('#bundle_return_part_with_form_mustache').html(), data.bundle)
+
+        else if action == "new_bundle"
+          $('#bundle_return_part_with_form').html Mustache.to_html($('#bundle_return_part_with_form_mustache').html(), data.bundle)
+          
+        
+        Tickets.remove_ajax_loader()
+
+
+  approve_store_part: ->
+    $(".approve_part_of_main_product").change ->
+      if $(@).val() is "true"
+        $(".main_product_with_link").removeClass("hide")
+      else
+        $(".main_product_with_link").addClass("hide")
+
+    $("input[name='ticket_spare_part[close_approved]']").change ->
+      if $(@).val() is "true"
+        $(".request_from_with_link").removeClass("hide")
+        $(".main_product_with_link").removeClass("hide")
+        $(".request_from_radio_buttons").removeClass("hide")
+
+      else
+        $(".request_from_with_link").addClass("hide")
+        $(".main_product_with_link").addClass("hide")
+        $(".request_from_radio_buttons").addClass("hide")
+        $(".request_from_radio_buttons input[value='true']").prop("checked", true)
+
+    $("#approve_store_part").click (e)->
+      e.preventDefault()
+      if $("input[name='ticket_spare_part[close_approved]']:checked").val() is "true" and $(".approve_part_of_main_product:checked").val() is "true"
+        if $("#store_id").val() == $("#mst_store_id").val()
+          $(@).parents("form").submit()
+        else
+          alert "Please select same stores"
+      else
+        $(@).parents("form").submit()

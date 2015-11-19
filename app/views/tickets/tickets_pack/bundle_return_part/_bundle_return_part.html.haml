@@ -21,18 +21,15 @@
 
         .col-md-2.col-xs-2.strong
           Ticket No
-
-      - @manufacture_parts.each do |manufacture_part|
+      - @manufacture_parts.each_with_index do |manufacture_part, index|
         .row
-          .col-md-1.col-xs-1= manufacture_part.id
-          .col-md-1.col-xs-1= manufacture_part.event_no
-          .col-md-2.col-xs-2= manufacture_part.ticket_spare_part.ticket_id.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
-
-          .col-md-2.col-xs-2= manufacture_part.ticket_spare_part.spare_part_no
-          .col-md-2.col-xs-2= manufacture_part.ticket_spare_part.spare_part_description
+          .col-md-3.col-xs-1= index+1
+          .col-md-3.col-xs-2= manufacture_part.event_no
+          .col-md-3.col-xs-2= manufacture_part.ticket_spare_part.ticket_id.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
+          .col-md-2.col-xs-1= manufacture_part.ticket_spare_part.spare_part_no   
+          .col-md-2.col-xs-2= manufacture_part.ticket_spare_part.spare_part_description   
           .col-md-2.col-xs-2= manufacture_part.ticket_spare_part.spare_part_status_action.name
-
-          .col-md-2.col-xs-2= link_to "Add", "#", onclick: "Inventories.load_mustache_bundle_return_part('add', #{manufacture_part.id}); return false;"
+          .col-md-3.col-xs-2= link_to "Add", "#", onclick: "Inventories.load_mustache_bundle_return_part('add', #{manufacture_part.id}); return false;"
 
   .col-md-6.col-xs-6
     #bundle_return_part_remove_mustache
@@ -41,17 +38,27 @@
     %hr
 
 .row
-  .col-md-6.col-xs-6
-    %a.btn.btn-primary{:href => "#", :role => "button", :onclick => "Inventories.load_mustache_bundle_return_part('undelivered_bundle', ''); return false;"} Un delivered bundled
-    #bundle_return_part_exist
-  .col-md-6.col-xs-6
-    %a.btn.btn-primary{:href => "#", :role => "button", :onclick => "Inventories.load_mustache_bundle_return_part('new_bundle', ''); return false;"} Create New Bundle
-    #bundle_return_part_with_form
-      = simple_form_for ReturnPartsBundle.new, url: update_bundle_return_part_tickets_path, method: :post do |f|
-        = f.input :id, as: :hidden
-        = f.input :bundle_no
-        = f.input :note
-        = f.submit "Save", class: "btn btn-sm btn-success"
+  - unless @manufacture_parts.empty?
+    .col-md-6.col-xs-6
+      %a.btn.btn-primary{:href => "#", :role => "button", :onclick => "Inventories.load_mustache_bundle_return_part('undelivered_bundle', ''); return false;"} Un delivered bundled
+      #bundle_return_part_exist
+      %hr
+      #bundle_return_part_from_undeliver_bundle
+    .col-md-6.col-xs-6
+      %a.btn.btn-primary{:href => "#", :role => "button", :onclick => "Inventories.load_mustache_bundle_return_part('new_bundle', ''); return false;"} Create New Bundle
+      #bundle_return_part_with_form
+        = simple_form_for ReturnPartsBundle.new, url: update_bundle_return_part_tickets_path, method: :post do |f|
+
+          = hidden_field_tag :process_id, session[:process_id]
+          = hidden_field_tag :task_id, session[:task_id]
+          = hidden_field_tag :owner, session[:owner]
+          - session[:bpm_input_variables].each do |bpm_input_variable|
+            = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+
+          = f.input :id, as: :hidden
+          = f.input :bundle_no
+          = f.input :note
+          = f.submit "Save", class: "btn btn-sm btn-success"
 
 %script{type: "text/html", id: "bundle_return_part_mustache"}
   = render "tickets/tickets_pack/bundle_return_part/bundle_return_part_mustache"

@@ -8,22 +8,25 @@
     - store_warranty = (ticket_spare_part.ticket_spare_part_store and not ticket_spare_part.cus_chargeable_part)
     - store_non_warranty = (ticket_spare_part.ticket_spare_part_store and ticket_spare_part.cus_chargeable_part)
 
-    - rce = ticket_spare_part.spare_part_status_action.code == "RCE"
-    - rpr = ticket_spare_part.spare_part_status_action.code == "RPR"
-    - rqt = ticket_spare_part.spare_part_status_action.code == "RQT"
-    - str = ticket_spare_part.spare_part_status_action.code == "STR"
-    - ecm = ticket_spare_part.spare_part_status_action.code == "ECM"
-    - cea = ticket_spare_part.spare_part_status_action.code == "CEA"
-    - iss = ticket_spare_part.spare_part_status_action.code == "ISS"
+    - rce = ticket_spare_part.spare_part_status_action.code == "RCE" #Received by Engineer
+    - rpr = ticket_spare_part.spare_part_status_action.code == "RPR" #Returned Part Reject
+    - rqt = ticket_spare_part.spare_part_status_action.code == "RQT" #Requested
+    - str = ticket_spare_part.spare_part_status_action.code == "STR" #Request from Store
+    - ecm = ticket_spare_part.spare_part_status_action.code == "ECM" #Estimation Completed
+    - cea = ticket_spare_part.spare_part_status_action.code == "CEA" #Cus. Estimation Approved
+    - iss = ticket_spare_part.spare_part_status_action.code == "ISS" #Issued
 
-    - ord = ticket_spare_part.spare_part_status_action.code == "ORD"
-    - clt = ticket_spare_part.spare_part_status_action.code == "CLT"
-    - rcs = ticket_spare_part.spare_part_status_action.code == "RCS"
-    - rtn = ticket_spare_part.spare_part_status_action.code == "RTN"
-    - rpa = ticket_spare_part.spare_part_status_action.code == "RPA"
-    - bnd = ticket_spare_part.spare_part_status_action.code == "BND"
-    - cls = ticket_spare_part.spare_part_status_action.code == "CLS"
-    - aps = ticket_spare_part.spare_part_status_action.code == "APS"
+    - ord = ticket_spare_part.spare_part_status_action.code == "ORD" #Ordered from Manufacturer
+    - clt = ticket_spare_part.spare_part_status_action.code == "CLT" #Collected from Manufacturer
+    - rcs = ticket_spare_part.spare_part_status_action.code == "RCS" #Received from Manufacturer
+    - rtn = ticket_spare_part.spare_part_status_action.code == "RTN" #Part Return by Engineer
+    - rpa = ticket_spare_part.spare_part_status_action.code == "RPA" #Returned Part Accepted
+    - bnd = ticket_spare_part.spare_part_status_action.code == "BND" #Part Bundled
+    - cls = ticket_spare_part.spare_part_status_action.code == "CLS" #Close
+    - aps = ticket_spare_part.spare_part_status_action.code == "APS" #Approved Store Request
+    - rjs = ticket_spare_part.spare_part_status_action.code == "RJS" #Reject Store Request
+    - rbn = ticket_spare_part.spare_part_status_action.code == "RBN" #Ready to Bundle
+       
 
     = collapse collapse_type: "info", header_content: "Ticket spare part: #{ticket_spare_part.spare_part_no} - #{ticket_spare_part.spare_part_description}", collapse_link: "ticket_spare_part_link_#{ticket_spare_part.id}", collapse_id: "ticket_spare_part_id", labelledby: "ticket_spare_part_lby_#{ticket_spare_part.id}" do
 
@@ -71,12 +74,11 @@
             %strong
               Faulty CT No:
             %span.faulty_ct_no= ticket_spare_part.faulty_ct_no
-          - if ticket_spare_part.ticket_spare_part_store
-            .col-md-3
-              %strong
-                Request type:
-              = ticket_spare_part.ticket_spare_part_store ? "Store / " : "Manufacture / "
-              = ticket_spare_part.cus_chargeable_part ? "Chargeable" : "Non-chargeable"
+          .col-md-3
+            %strong
+              Request type:
+            = ticket_spare_part.ticket_spare_part_store ? "Store / " : "Manufacture / "
+            = ticket_spare_part.cus_chargeable_part ? "Chargeable" : "Non-chargeable"
           %hr
 
           - if ticket_spare_part.ticket_spare_part_store
@@ -105,6 +107,7 @@
               .col-md-3
                 %strong
                   Part No:
+                = ticket_spare_part.ticket_spare_part_store.inventory_product.try(:spare_part_no)
               .col-md-3
                 %strong
                   Unit:
@@ -114,16 +117,34 @@
                 Store:
               = ticket_spare_part.ticket_spare_part_store.store.try(:name)
             %hr
+            - if ticket_spare_part.ticket_spare_part_store.main_inventory_product
+              .col-md-3
+                %strong{title: "Main Part"}
+                  M.P.Item serial no:
+                = ticket_spare_part.ticket_spare_part_store.main_inventory_product.try(:seerial_no)
+              .col-md-3{title: "Main Part"}
+                %strong
+                  M.P.Item description:
+                = ticket_spare_part.ticket_spare_part_store.main_inventory_product.try(:description)
+              .col-md-3{title: "Main Part"}
+                %strong
+                  M.P.Item model no:
+                = ticket_spare_part.ticket_spare_part_store.main_inventory_product.try(:model_no)
+              .col-md-3{title: "Main Part"}
+                %strong
+                  M.P.Item product no:
+                = ticket_spare_part.ticket_spare_part_store.main_inventory_product.try(:product_no)
+              %hr
 
             - if ticket_spare_part.cus_chargeable_part
               .col-md-3
                 %strong
-                  Estimate amount:
-                = ticket_spare_part.ticket_spare_part_store.ticket_estimation_part.warranty_period
+                  Estimate amount (#{product.product_brand.currency.code}):
+                = ticket_spare_part.ticket_spare_part_store.ticket_estimation_part.estimated_price
               .col-md-3
                 %strong
                   Estimate warranty:
-                = ticket_spare_part.ticket_spare_part_store.ticket_estimation_part.estimated_price
+                = ticket_spare_part.ticket_spare_part_store.ticket_estimation_part.warranty_period
 
           .col-md-3
             %strong
@@ -131,7 +152,16 @@
             = ticket_spare_part.received_spare_part_no
           .col-md-3
             %strong
-              Repair time:
+              Repair start:
+            = ticket_spare_part.repare_start.try(:localtime).try(:strftime, "%Y-%m-%d %H:%M")
+            %br/
+            %strong
+              Repair end:
+            = ticket_spare_part.repare_end.try(:localtime).try(:strftime, "%Y-%m-%d %H:%M")
+            %br/
+            %strong
+              Duration:
+            = distance_of_time_in_words(ticket_spare_part.repare_start, ticket_spare_part.repare_end) if ticket_spare_part.repare_start and ticket_spare_part.repare_end
           %hr
           .col-md-3
             %strong
@@ -139,19 +169,27 @@
             = ticket_spare_part.spare_part_status_use.name
           .col-md-3
             %strong
-              Return part:
+              Recieve part Serial No:
+            = ticket_spare_part.received_part_serial_no
+
+          .col-md-3
+            %strong
+              Recieve part CT No:
+            = ticket_spare_part.received_part_ct_no
 
           - if ticket_spare_part.ticket_spare_part_manufacture
             .col-md-3
               %strong
-                Requested:
+                Expected amount (Manufacture #{product.product_brand.currency.code}):
               = ticket_spare_part.ticket_spare_part_manufacture.payment_expected_manufacture
+            %hr
+
+          - if ticket_spare_part.ticket_spare_part_manufacture
             .col-md-3
               %strong
                 Part Order No:
               = ticket_spare_part.ticket_spare_part_manufacture.order_no
 
-            %hr
             .col-md-3
               %strong
                 Part Event No:
@@ -174,7 +212,7 @@
 
         - if (rce and (manufacture_warranty or store_warranty or store_non_warranty)) or (manufacture_warranty and rpr) or (store_non_warranty and rpr)
           .row
-            = f.input :received_spare_part_no, wrapper_html: {class: "col-md-12"}, required: true#, input_html: {value: (f.object.received_spare_part_no || )}
+            = f.input :received_spare_part_no, wrapper_html: {class: "col-md-12"}, required: true, input_html: {value: (f.object.received_spare_part_no || f.object.spare_part_no)}
             = f.input :faulty_serial_no, wrapper_html: {class: "col-md-6"}, required: true, input_html: {class: "faulty_serial_no_input", autocomplete: "off"}
             = f.input :faulty_ct_no, wrapper_html: {class: "col-md-6"}, required: true, input_html: {class: "faulty_ct_no_input", autocomplete: "off"}
 
@@ -183,9 +221,9 @@
 
         - if (rce and (manufacture_warranty or store_warranty or store_non_warranty)) or (rpr and store_non_warranty)
           .row
-            = f.input :repare_start, as: :string, input_html: {class: "datetimepicker", value: f.object.repare_start.try(:strftime, "%m/%d/%Y %I:%M %p")}, wrapper_html: {class: "position_relative col-md-6"}, required: true
+            = f.input :repare_start, as: :string, input_html: {class: "datetimepicker", value: f.object.repare_start.try(:localtime).try(:strftime, "%m/%d/%Y %I:%M %p")}, wrapper_html: {class: "position_relative col-md-6"}, required: true
 
-            = f.input :repare_end, as: :string, input_html: {class: "datetimepicker", value: f.object.repare_end.try(:strftime, "%m/%d/%Y %I:%M %p")}, wrapper_html: {class: "position_relative col-md-6"}, required: true
+            = f.input :repare_end, as: :string, input_html: {class: "datetimepicker", value: f.object.repare_end.try(:localtime).try(:strftime, "%m/%d/%Y %I:%M %p")}, wrapper_html: {class: "position_relative col-md-6"}, required: true
           .row
             = f.association :spare_part_status_use, collection: SparePartStatusUse.offset(1).map{|s| [s.name, s.id]}, required: true, selected: 2, wrapper_html: {class: "col-md-6"}, label: "Received part status", input_html: {class: "received_part_status chosen-select_disable_search"}
             = f.association :unused_reason, label_method: :reason, value_method: :id, required: true, wrapper_html: {class: "col-md-6"}, input_html: {class: "unused_reason chosen-select_disable_search"}, disabled: true
@@ -203,7 +241,7 @@
             = f.input :return_part_ct_no, as: :hidden, wrapper_html: {class: "col-md-6"}, required: true, input_html: {class: "return_part_ct_no"}
 
 
-        = f.input :note, input_html: {value: nil} if !(ord or clt or rcs or rtn or rpa or bnd or cls or aps or (str and store_non_warranty) )
+        = f.input :note, input_html: {value: nil} if !(ord or clt or rcs or rtn or rpa or bnd or cls or aps or (str and store_non_warranty) or rjs or rbn )
         = simple_format ticket_spare_part.note
         - if store_non_warranty and cea
           = hidden_field_tag :store_request, "store_request"
@@ -214,8 +252,11 @@
           = f.submit "recieved", name: "recieved", class: "btn btn-sm btn-success"
 
         - if manufacture_warranty and (rce or rpr)
+          %label{:for => "Update without return"} Update without return
+          = check_box_tag "update_without_return", false, false, class: "small_scale_margin-right1"
           = hidden_field_tag :return, "return"
-          = f.submit "return", name: "return", class: "btn btn-sm btn-success", onclick: "Tickets.presence_validater(this, {presence: ['#ticket_spare_part_received_spare_part_no', '#ticket_spare_part_faulty_serial_no', '#ticket_spare_part_faulty_ct_no', '#ticket_spare_part_received_part_serial_no', '#ticket_spare_part_received_part_ct_no', '#ticket_spare_part_repare_start', '#ticket_spare_part_repare_end'], checked: ['b']}); return false;"
+
+          = f.submit "Return", name: "return", class: "btn btn-sm btn-success", onclick: "Tickets.presence_validater(this, {presence: ['#ticket_spare_part_received_spare_part_no', '#ticket_spare_part_faulty_serial_no', '#ticket_spare_part_faulty_ct_no', '#ticket_spare_part_received_part_serial_no', '#ticket_spare_part_received_part_ct_no', '#ticket_spare_part_repare_start', '#ticket_spare_part_repare_end'], checked: ['b']}); return false;"
 
         - if (rqt and manufacture_warranty) or (store_warranty and str) or (store_non_warranty and (rqt or ecm or cea))
           = f.input :part_terminated, wrapper: :append, input_html:{class: "part_terminated_reason_check"}
@@ -238,23 +279,24 @@
 
           - if ticket_spare_part
 
-            - rce = ticket_spare_part.spare_part_status_action.code == "RCE"
-            - rpr = ticket_spare_part.spare_part_status_action.code == "RPR"
-            - rqt = ticket_spare_part.spare_part_status_action.code == "RQT"
-            - str = ticket_spare_part.spare_part_status_action.code == "STR"
-            - ecm = ticket_spare_part.spare_part_status_action.code == "ECM"
-            - cea = ticket_spare_part.spare_part_status_action.code == "CEA"
-            - eca = ticket_spare_part.spare_part_status_action.code == "ECA"
-            - iss = ticket_spare_part.spare_part_status_action.code == "ISS"
+            - rce = ticket_spare_part.spare_part_status_action.code == "RCE" #Received by Engineer
+            - rpr = ticket_spare_part.spare_part_status_action.code == "RPR" #Returned Part Reject
+            - rqt = ticket_spare_part.spare_part_status_action.code == "RQT" #Requested
+            - str = ticket_spare_part.spare_part_status_action.code == "STR" #Request from Store
+            - ecm = ticket_spare_part.spare_part_status_action.code == "ECM" #Estimation Completed
+            - cea = ticket_spare_part.spare_part_status_action.code == "CEA" #Cus. Estimation Approved
+            - iss = ticket_spare_part.spare_part_status_action.code == "ISS" #Issued
 
-            - ord = ticket_spare_part.spare_part_status_action.code == "ORD"
-            - clt = ticket_spare_part.spare_part_status_action.code == "CLT"
-            - rcs = ticket_spare_part.spare_part_status_action.code == "RCS"
-            - rtn = ticket_spare_part.spare_part_status_action.code == "RTN"
-            - rpa = ticket_spare_part.spare_part_status_action.code == "RPA"
-            - bnd = ticket_spare_part.spare_part_status_action.code == "BND"
-            - cls = ticket_spare_part.spare_part_status_action.code == "CLS"
-            - aps = ticket_spare_part.spare_part_status_action.code == "APS"
+            - ord = ticket_spare_part.spare_part_status_action.code == "ORD" #Ordered from Manufacturer
+            - clt = ticket_spare_part.spare_part_status_action.code == "CLT" #Collected from Manufacturer
+            - rcs = ticket_spare_part.spare_part_status_action.code == "RCS" #Received from Manufacturer
+            - rtn = ticket_spare_part.spare_part_status_action.code == "RTN" #Part Return by Engineer
+            - rpa = ticket_spare_part.spare_part_status_action.code == "RPA" #Returned Part Accepted
+            - bnd = ticket_spare_part.spare_part_status_action.code == "BND" #Part Bundled
+            - cls = ticket_spare_part.spare_part_status_action.code == "CLS" #Close
+            - aps = ticket_spare_part.spare_part_status_action.code == "APS" #Approved Store Request
+            - rjs = ticket_spare_part.spare_part_status_action.code == "RJS" #Reject Store Request
+            - rbn = ticket_spare_part.spare_part_status_action.code == "RBN" #Ready to Bundle            
 
             .col-md-3
               %strong

@@ -5,6 +5,13 @@ Bundled by: {{bundled_by}}
 <form method="post" accept-charset="UTF-8" action="/tickets/update_bundle_return_part" id="new_return_parts_bundle" class="simple_form new_return_parts_bundle" novalidate="novalidate">
 
 <input type="hidden" value="✓" name="utf8">
+
+<input type="hidden" name="process_id" id="process_id" value="{{process_id}}">
+<input type="hidden" name="task_id" id="task_id" value="{{task_id}}">
+<input type="hidden" name="owner" id="owner" value="{{owner}}">
+<input type="hidden" name="ticket_id" id="ticket_id" value="{{ticket_id}}">
+<input type="hidden" name="request_spare_part_id" id="request_spare_part_id" value="{{request_spare_part_id}}">
+
 <input type="hidden" value="{{bundle_id}}" name="return_parts_bundle[id]">
 
 <input type="hidden" value="hmx5lZaj5D+qyrr8kWq7hmFRRJx1fwKuoqHzUeiakywqhQczDCelXdSvrouA9b8wwn6QBHj+UKlzOX3sywx14Q==" name="authenticity_token">

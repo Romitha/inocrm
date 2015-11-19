@@ -2,7 +2,9 @@
 - product = @product
 - spare_part = @spare_part
 / = render "tickets/tickets_pack/ticket_header", ticket: ticket, product: product
-= render "tickets/tickets_pack/collect_parts/collect_parts", spare_part: spare_part
+= select_tag("brand_name", options_from_collection_for_select(ProductBrand.all, :id, :name), data: {url: collect_parts_tickets_path, template: "collect_parts"}, prompt: "Please select brand")
+#bundle_parts
+  = render "tickets/tickets_pack/collect_parts/collect_parts", spare_part: spare_part
 
 / = tab_panel do
 /   = tab_nav_tab({class: "small_scale_margin-bottom1"}, ticket_info: {content: "Ticket info"}, collect_parts: {content: "Collect Parts", active_class: "active"} )
