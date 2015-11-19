@@ -1,20 +1,23 @@
 - ticket = @ticket
 - product = @product
 - spare_part = @spare_part
-= render "tickets/tickets_pack/ticket_header", ticket: ticket, product: product
 
-= tab_panel do
-  = tab_nav_tab({class: "small_scale_margin-bottom1"}, ticket_info: {content: "Ticket info"}, bundle_return_part: {content: "Create Parts Bundle", active_class: "active"} )
-  .tab-content
-    = tab_content tabpointer: :ticket_info do
-      = tab_panel do
-        = render "tickets/tickets_pack/ticket_info", ticket: ticket, product: product#, customer: customer, warranties: warranties, histories: histories, join_tickets: join_tickets, ge_q_and_as: ge_q_and_as, pr_q_and_as: pr_q_and_answers
-    = tab_content tabpointer: :bundle_return_part, active_class: "active" do
-      = tab_panel do
-        .col-md-12
-          %strong All Ready-To Bundle Parts
-          = select_tag("brand_name", options_from_collection_for_select(ProductBrand.all, :id, :name), data: {url: collect_parts_tickets_path, template: "bundle_return_part"}, prompt: "Please select brand")
+= render "tickets/tickets_pack/bundle_return_part/bundle_return_part", spare_part: spare_part
 
-        .col-md-12
-          #bundle_parts
-            = render "tickets/tickets_pack/bundle_return_part/bundle_return_part", spare_part: spare_part
+/ = render "tickets/tickets_pack/ticket_header", ticket: ticket, product: product
+
+/ = tab_panel do
+/   = tab_nav_tab({class: "small_scale_margin-bottom1"}, ticket_info: {content: "Ticket info"}, bundle_return_part: {content: "Create Parts Bundle", active_class: "active"} )
+/   .tab-content
+/     = tab_content tabpointer: :ticket_info do
+/       = tab_panel do
+/         = render "tickets/tickets_pack/ticket_info", ticket: ticket, product: product#, customer: customer, warranties: warranties, histories: histories, join_tickets: join_tickets, ge_q_and_as: ge_q_and_as, pr_q_and_as: pr_q_and_answers
+/     = tab_content tabpointer: :bundle_return_part, active_class: "active" do
+/       = tab_panel do
+/         .col-md-12
+/           %strong All Ready-To Bundle Parts
+/           = select_tag("brand_name", options_from_collection_for_select(ProductBrand.all, :id, :name), data: {url: collect_parts_tickets_path, template: "bundle_return_part"}, prompt: "Please select brand")
+
+/         .col-md-12
+/           #bundle_parts
+/             = render "tickets/tickets_pack/bundle_return_part/bundle_return_part", spare_part: spare_part

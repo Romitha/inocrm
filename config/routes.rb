@@ -165,6 +165,7 @@ Rails.application.routes.draw do
       get "close_event"#, to: "tickets#close_event", via: [:get, :post]
       get "check_fsr"
       get "customer_feedback"
+      get "low_margin_estimate_parts_approval"
 
       get "alert"
 
