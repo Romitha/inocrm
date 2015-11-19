@@ -525,23 +525,34 @@
                       Request From Manufacture
                     -if action.request_spare_part.ticket_spare_part.request_from == 'S'
                       Request From Store
-                  
+
                   -if action.request_spare_part.ticket_spare_part.request_from == 'S'
                     .col-md-4
                       Store Id: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.store_id}
                     .col-md-4
                       Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
 
+                .row
+                  .col-md-4
+                    Bundle No:
+                    #{action.request_spare_part.ticket_spare_part.try(:ticket_spare_part_manufacture).try(:return_parts_bundle).try(:bundle_no)}
+
             -if action.action_id == 43
               .panel-body
                 .row
                   .col-md-4
                     Spare Part No: #{action.request_spare_part.ticket_spare_part.spare_part_no}
+
                   .col-md-4
                     Spare Part Description: #{action.request_spare_part.ticket_spare_part.spare_part_description}
                 .row
                   .col-md-4
                     Reject Return Part Reason: #{action.request_spare_part.reject_return_part_reason.reason}
+
+                .row
+                  .col-md-4
+                    Bundle No:
+                    #{action.request_spare_part.ticket_spare_part.try(:ticket_spare_part_manufacture).try(:return_parts_bundle).try(:bundle_no)}
 
             -if action.action_id == 44
               .panel-body
@@ -555,6 +566,11 @@
                   .col-md-4
                     - if action.request_spare_part.part_terminated
                       Part Terminate Reason: #{action.request_spare_part.part_terminate_reason.reason}
+
+                .row
+                  .col-md-4
+                    Bundle No:
+                    #{action.request_spare_part.ticket_spare_part.try(:ticket_spare_part_manufacture).try(:return_parts_bundle).try(:bundle_no)}
 
             -if action.action_id == 45
               .panel-body
