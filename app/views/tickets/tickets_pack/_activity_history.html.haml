@@ -533,14 +533,28 @@
                       Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
 
             -if action.action_id == 43
-              .panel-body 
+              .panel-body
                 .row
                   .col-md-4
+                    Spare Part No: #{action.request_spare_part.ticket_spare_part.spare_part_no}
+                  .col-md-4
+                    Spare Part Description: #{action.request_spare_part.ticket_spare_part.spare_part_description}
+                .row
+                  .col-md-4
+                    Reject Return Part Reason: #{action.request_spare_part.reject_return_part_reason.reason}
 
             -if action.action_id == 44
-              .panel-body 
+              .panel-body
                 .row
                   .col-md-4
+                    Spare Part No: #{action.request_spare_part.ticket_spare_part.spare_part_no}
+                  .col-md-4
+                    Spare Part Description: #{action.request_spare_part.ticket_spare_part.spare_part_description}
+
+                .row
+                  .col-md-4
+                    - if action.request_spare_part.part_terminated
+                      Part Terminate Reason: #{action.request_spare_part.part_terminate_reason.reason}
 
             -if action.action_id == 45
               .panel-body

@@ -1276,7 +1276,7 @@ class TicketsController < ApplicationController
     if continue
       # bpm output variables
       d31_more_parts_collection_pending = TicketSparePart.any?{|sp| sp.ticket_spare_part_manufacture.try(:collect_pending_manufacture)} ? "Y" : "N"
-      bpm_variables = view_context.initialize_bpm_variables.merge(d31_more_parts_collection_pending: d31_more_parts_collection_pending)      
+      bpm_variables = view_context.initialize_bpm_variables.merge(d31_more_parts_collection_pending: d31_more_parts_collection_pending)
 
       bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
@@ -1516,29 +1516,31 @@ class TicketsController < ApplicationController
       when "add"
         session[:manufacture_rest_ids] << session[:manufacture_ids].delete(params[:manufacture_id].to_i)# << params[:manufacture_id]
 
-        @remove_manufactures = TicketSparePartManufacture.where(id: session[:manufacture_rest_ids].uniq, ready_to_bundle: true, bundled: false).map { |m| {id: m.id, event_no: m.event_no, ticket_no: m.ticket_spare_part.ticket_id, task_action: "remove"} }
-        @add_manufactures = TicketSparePartManufacture.where(id: session[:manufacture_ids].uniq, ready_to_bundle: true, bundled: false).map { |m| {id: m.id, event_no: m.event_no, ticket_no: m.ticket_spare_part.ticket_id, task_action: "add"} }
+        @remove_manufactures = TicketSparePartManufacture.where(id: session[:manufacture_rest_ids].uniq, ready_to_bundle: true, bundled: false).map { |m| {id: m.id, event_no: m.event_no, ticket_no: m.ticket_spare_part.ticket_id.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"]) , spare_part_no: m.ticket_spare_part.spare_part_no, spare_part_description: m.ticket_spare_part.spare_part_description , part_status: m.ticket_spare_part.spare_part_status_action.name , task_action: "remove"} }
+
+        @add_manufactures = TicketSparePartManufacture.where(id: session[:manufacture_ids].uniq, ready_to_bundle: true, bundled: false).map { |m| {id: m.id, event_no: m.event_no, ticket_no: m.ticket_spare_part.ticket_id.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"]) , spare_part_no: m.ticket_spare_part.spare_part_no, spare_part_description: m.ticket_spare_part.spare_part_description , part_status: m.ticket_spare_part.spare_part_status_action.name , task_action: "add"} }
 
       when "remove"
         session[:manufacture_ids] << session[:manufacture_rest_ids].delete(params[:manufacture_id].to_i)
 
-        @remove_manufactures = TicketSparePartManufacture.where(id: session[:manufacture_rest_ids].uniq, ready_to_bundle: true, bundled: false).map { |m| {id: m.id, event_no: m.event_no, ticket_no: m.ticket_spare_part.ticket_id, task_action: "remove"} }
-        @add_manufactures = TicketSparePartManufacture.where(id: session[:manufacture_ids].uniq, ready_to_bundle: true, bundled: false).map { |m| {id: m.id, event_no: m.event_no, ticket_no: m.ticket_spare_part.ticket_id, task_action: "add"} }
+        @remove_manufactures = TicketSparePartManufacture.where(id: session[:manufacture_rest_ids].uniq, ready_to_bundle: true, bundled: false).map { |m| {id: m.id, event_no: m.event_no, ticket_no: m.ticket_spare_part.ticket_id.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"]) , spare_part_no: m.ticket_spare_part.spare_part_no, spare_part_description: m.ticket_spare_part.spare_part_description , part_status: m.ticket_spare_part.spare_part_status_action.name , task_action: "remove"} }
+
+        @add_manufactures = TicketSparePartManufacture.where(id: session[:manufacture_ids].uniq, ready_to_bundle: true, bundled: false).map { |m| {id: m.id, event_no: m.event_no, ticket_no: m.ticket_spare_part.ticket_id.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"]) , spare_part_no: m.ticket_spare_part.spare_part_no, spare_part_description: m.ticket_spare_part.spare_part_description , part_status: m.ticket_spare_part.spare_part_status_action.name , task_action: "add"} }
 
       when "undelivered_bundle"
-        @bundles = ReturnPartsBundle.all.map { |r| {id: r.id, bundled_no: r.bundle_no, date_bundled: r.created_at.try(:strftime, "%Y-%m-%d"), bundled_by: User.cached_find_by_id(r.created_by).try(:user_name)} }
+        @bundles = ReturnPartsBundle.all.map { |r| {id: r.id, bundled_no: r.bundle_no, date_bundled: r.created_at.try(:strftime, "%Y-%m-%d"), bundled_by: User.find_by_id(r.created_by).try(:user_name)} }
 
       when "load_bundled_manufactures"
         @bundle = ReturnPartsBundle.find(params[:manufacture_id])
         manufacture_ids = (@bundle.ticket_spare_part_manufacture_ids+session[:manufacture_rest_ids]).uniq
         manufactures_count = manufacture_ids.count
 
-        @bundle_manufactures = TicketSparePartManufacture.where(id: manufacture_ids).map { |m| {id: m.id, event_no: m.event_no, ticket_no: m.ticket_spare_part.ticket_id, task_action: "remove"} }
+        @bundle_manufactures = TicketSparePartManufacture.where(id: manufacture_ids).map { |m| {id: m.id, event_no: m.event_no, ticket_no: m.ticket_spare_part.ticket_id.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"]) , spare_part_no: m.ticket_spare_part.spare_part_no, spare_part_description: m.ticket_spare_part.spare_part_description , part_status: m.ticket_spare_part.spare_part_status_action.name , task_action: "remove"} }
 
-        @bundle = {bundle_id: @bundle.id, bundle_note: @bundle.note, bundle_no: @bundle.bundle_no, bundled_by: User.cached_find_by_id(@bundle.created_by).try(:email), manufacture_count: manufactures_count, readonly: "readonly"}
+        @bundle = {bundle_id: @bundle.id, bundle_note: @bundle.note, bundle_no: @bundle.bundle_no, manufacture_count: manufactures_count, readonly: "readonly"}
 
       when "new_bundle"
-        @bundle_manufactures = TicketSparePartManufacture.where(id: session[:manufacture_rest_ids].uniq).map { |m| {id: m.id, event_no: m.event_no, ticket_no: m.ticket_spare_part.ticket_id, task_action: "remove"} }
+        @bundle_manufactures = TicketSparePartManufacture.where(id: session[:manufacture_rest_ids].uniq).map { |m| {id: m.id, event_no: m.event_no, ticket_no: m.ticket_spare_part.ticket_id.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"]) , spare_part_no: m.ticket_spare_part.spare_part_no, spare_part_description: m.ticket_spare_part.spare_part_description , part_status: m.ticket_spare_part.spare_part_status_action.name , task_action: "remove"} }
 
         @bundle = {readonly: ""}
       end
@@ -1621,8 +1623,9 @@ class TicketsController < ApplicationController
       Rails.cache.delete([:histories, session[:product_id]])
       Rails.cache.delete([:join, @ticket.id])
 
-      @ticke_action = @ticket.user_ticket_actions.find_by_action_id 7
-      @terminate_job_payment = TicketTerminateJobPayment.find_by_ticket_action_id 2
+      @ticke_action = @ticket.user_ticket_actions.find_by_action_id 18
+      @terminate_job_payment = @ticke_action.ticket_terminate_job_payments.first
+      @ticket_payment_received = TicketPaymentReceived.first
 
     end
     respond_to do |format|
@@ -1828,6 +1831,28 @@ class TicketsController < ApplicationController
     end
     respond_to do |format|
       format.html {render "tickets/tickets_pack/job_below_margin_estimate_approval"}
+    end
+  end
+
+  def low_margin_estimate_parts_approval
+    Inventory
+    Warranty
+    ContactNumber
+    QAndA
+    TaskAction
+    Inventory
+    ticket_id = params[:ticket_id]
+    @ticket = Ticket.find_by_id ticket_id
+
+    if @ticket
+      @estimation = TicketEstimation.find params[:part_estimation_id]
+
+      @product = @ticket.products.first
+      Rails.cache.delete([:histories, @product.id])
+      Rails.cache.delete([:join, @ticket.id])
+    end
+    respond_to do |format|
+      format.html {render "tickets/tickets_pack/low_margin_estimate_parts_approval/low_margin_estimate_parts_approval"}
     end
   end
 

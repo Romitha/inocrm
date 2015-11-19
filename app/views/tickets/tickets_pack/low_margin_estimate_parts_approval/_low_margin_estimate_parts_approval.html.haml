@@ -1,0 +1,177 @@
+= simple_nested_form_for estimation, url: update_estimation_part_tickets_path, method: :post do |f|
+
+  = f.simple_fields_for :ticket_estimation_parts do |t|
+    / - if t.object.ticket_spare_part.below_margine
+    %fieldset
+      %legend Part No #{t.object.ticket_spare_part.try(:spare_part_no)}
+      .row
+        .col-md-12.tyyt
+          %strong Part No:
+          #{t.object.ticket_spare_part.try(:spare_part_no)}
+      .row
+        .col-md-12
+          %strong Supplier :
+          #{t.object.try(:supplier).try(:name)}
+      .row
+        .col-md-4
+          %strong Cost Prices (Rs)
+          #{t.object.try(:cost_price)}
+        .col-md-4
+          %strong Requested Estimate Price (Rs) :
+          #{t.object.try(:estimated_price)}
+
+      .row
+        .col-md-4
+          %strong Approved Estimate Price(Rs) :
+          #{t.object.try(:approved_estimated_price)}
+
+      .row
+        .col-md-4
+          %strong Part Description :
+          #{t.object.ticket_spare_part.try(:spare_part_description)}
+        .col-md-4
+          %strong Wranaty Periad :
+          #{t.object.try(:warranty_period)}
+        .col-md-4
+          %strong
+      .row
+        .col-md-4.col-md-offset-4
+          %strong Started :
+          xxx
+        .col-md-4
+          %strong Expired :
+          xxx
+      .row
+        .col-md-12
+          %strong Requested Part
+          xxx
+      .row
+        .col-md-6
+          %h4 Requested part
+          %dl.dl-horizontal
+            %dt
+              Store
+            %dd
+              = t.object.ticket_spare_part.ticket_spare_part_store and t.object.ticket_spare_part.ticket_spare_part_store.store.name
+            %dt
+              Item code
+            %dd
+              = t.object.ticket_spare_part.ticket_spare_part_store and t.object.ticket_spare_part.ticket_spare_part_store.store.name
+            %dt
+              Item Description
+            %dd
+              = t.object.ticket_spare_part.ticket_spare_part_store and t.object.ticket_spare_part.ticket_spare_part_store.try(:main_inventory_product).try(:description)
+
+            %dt
+              Note
+            %dd
+              = t.input :note, input_html: {value: nil}
+              = simple_format @estimation.note
+
+        .col-md-6
+          %strong Last Perchased Prices Table
+          .small_scale_margin-top1
+            %table.table.table-bordered
+              %thead
+                %tr
+                  %th No
+                  %th Date Purchased
+                  %th Supplier
+                  %th Price
+              %tbody
+                %tr
+                  %th
+                  %td
+                  %td
+                  %td
+      / .row
+      /   .col-md-6
+      /     .row
+      /       .col-md-12
+      /         %strong Store :
+      /     .row
+      /       .col-md-12
+      /         %strong Item Code :
+      /     .row
+      /       .col-md-12
+      /         %strong Item Description :
+      /     .row
+      /       .col-md-6
+      /         %strong Available Qnt :
+      /       .col-md-6
+      /         %strong Unitt :
+      /     .row
+      /       .col-md-12
+      /         %strong Note:
+
+  = f.simple_fields_for :ticket_estimation_additionals do |a|
+    .row
+      .col-md-3
+        %strong Additional Charges :
+        #{a.object.try(:additional_charge).try(:additional_charge)}
+      .col-md-3
+        %strong Cost Price (Rs) :
+        #{a.object.try(:cost_price)}
+      .col-md-3
+        %strong Estimated Price (Rs) :
+        #{a.object.try(:estimated_price)}
+      .col-md-3
+        = a.input :approved_estimated_price, input_html: {class: "only_float"}
+
+  .row
+    .col-md-3.col-md-offset-3
+      %strong Total (Rs) :
+      xxx
+    .col-md-3
+      %strong Total (Rs) :
+      xxx
+    .col-md-3
+      %strong Total (Rs) :
+      xxx
+
+  .row
+    .col-md-12
+      %strong Total Estimate :
+      xxx
+  .row
+    .col-md-12
+      %strong Min. Advance Payment (Rs) :
+      #{f.object.try(:approved_adv_pmnt_amount)}
+  .row
+    .col-md-12
+      %strong Note :
+      #{f.object.note}
+
+  .row.small_scale_margin-top1
+    .col-md-12
+      %strong Other Estimations Table
+      .small_scale_margin-top1
+        %table.table.table-bordered
+          %thead
+            %tr
+              %th No
+              %th Date Requested
+              %th No of parts
+              %th Parts Estimationed Price
+              %th Addi. Estimationed Price
+              %th Total Estimationed Price
+              %th Min Advance pay
+              %th Estimation Status
+
+          %tbody
+            %tr
+              %td
+              %td
+              %td
+              %td
+              %td
+              %td
+              %td
+              %td
+
+  .row
+    .col-md-1
+      = f.submit "Save", class: "btn btn-success btn-sm"
+    .col-md-3
+      = label_tag "Approval Complete"
+      = check_box_tag :approval_complete

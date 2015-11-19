@@ -1,28 +1,45 @@
 .row
-  %hr
-.row
   .col-md-6.col-xs-6
+    %hr
+.row
+  .col-md-6.col-xs-6{style: " border-right:solid;border-right-color: #d9d9d9"}
     #bundle_return_part_add_mustache
       .row
-        .col-md-3.col-xs-3.strong
+        .col-md-1.col-xs-1.strong
           No
-        .col-md-3.col-xs-3.strong
+        .col-md-1.col-xs-1.strong
           Event No
-        .col-md-3.col-xs-3.strong
+        .col-md-2.col-xs-2.strong
           Ticket No
-        .col-md-3.col-xs-3.strong
+
+        .col-md-2.col-xs-2.strong
+          Part No
+        .col-md-2.col-xs-2.strong
+          Description
+        .col-md-2.col-xs-2.strong
+          Part Status
+
+        .col-md-2.col-xs-2.strong
           Ticket No
+
       - @manufacture_parts.each do |manufacture_part|
         .row
-          .col-md-3.col-xs-3= manufacture_part.id
-          .col-md-3.col-xs-3= manufacture_part.event_no
-          .col-md-3.col-xs-3= manufacture_part.ticket_spare_part.ticket_id
-          .col-md-3.col-xs-3= link_to "Add", "#", onclick: "Inventories.load_mustache_bundle_return_part('add', #{manufacture_part.id}); return false;"
+          .col-md-1.col-xs-1= manufacture_part.id
+          .col-md-1.col-xs-1= manufacture_part.event_no
+          .col-md-2.col-xs-2= manufacture_part.ticket_spare_part.ticket_id.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
+
+          .col-md-2.col-xs-2= manufacture_part.ticket_spare_part.spare_part_no
+          .col-md-2.col-xs-2= manufacture_part.ticket_spare_part.spare_part_description
+          .col-md-2.col-xs-2= manufacture_part.ticket_spare_part.spare_part_status_action.name
+
+          .col-md-2.col-xs-2= link_to "Add", "#", onclick: "Inventories.load_mustache_bundle_return_part('add', #{manufacture_part.id}); return false;"
 
   .col-md-6.col-xs-6
     #bundle_return_part_remove_mustache
+.row
+  .col-md-6.col-xs-6
+    %hr
 
-  %hr
 .row
   .col-md-6.col-xs-6
     %a.btn.btn-primary{:href => "#", :role => "button", :onclick => "Inventories.load_mustache_bundle_return_part('undelivered_bundle', ''); return false;"} Un delivered bundled
