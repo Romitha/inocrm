@@ -79,5 +79,8 @@ class TicketPaymentReceived < ActiveRecord::Base
   self.table_name = "spt_ticket_payment_received"
 
   has_many :ticket_estimations, foreign_key: :adv_payment_received_id
+  has_many :act_payment_received, foreign_key: :ticket_payment_received_id
+
+  belongs_to :ticket
 
 end

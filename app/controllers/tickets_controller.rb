@@ -1153,7 +1153,16 @@ class TicketsController < ApplicationController
   end
 
   def update_approve_store_parts
-    
+    @ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
+
+    if params[:onloan_request] == "Y"
+      @ticket_onloan_spare_part = TicketOnLoanSparePart.find params[:request_onloan_spare_part_id]
+    end
+
+    @ticket_spare_part.attributes = ticket_spare_part_params(@ticket_spare_part)
+
+
+
   end
   
   def ticket_close_approval
@@ -3158,6 +3167,9 @@ class TicketsController < ApplicationController
       f_ticket_on_loan_spare_part_params = ticket_on_loan_spare_part_params
       f_ticket_on_loan_spare_part_params[:ticket_attributes][:remarks] = f_ticket_on_loan_spare_part_params[:ticket_attributes][:remarks].present? ? "#{f_ticket_on_loan_spare_part_params[:ticket_attributes][:remarks]} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
       @ticket_on_loan_spare_part = TicketOnLoanSparePart.new f_ticket_on_loan_spare_part_params
+
+      @ticket_on_loan_spare_part.requested_at = DateTime.now
+      @ticket_on_loan_spare_part.requested_by = current_user.id
 
       if @ticket_on_loan_spare_part.save
 
