@@ -101,6 +101,7 @@ class SparePartStatusUse < ActiveRecord::Base
   self.table_name = "mst_spt_spare_part_status_use"
 
   has_many :ticket_spare_parts, foreign_key: :status_use_id
+  has_many :ticket_on_loan_spare_parts, foreign_key: :status_use_id
 
   belongs_to :spare_part_status_action, foreign_key: :status_id
 end
@@ -123,6 +124,7 @@ class TicketOnLoanSparePart < ActiveRecord::Base
   belongs_to :store, class_name: "Organization", foreign_key: :store_id
   belongs_to :inventory_product, foreign_key: :inv_product_id
   belongs_to :main_inventory_product, class_name: "InventoryProduct", foreign_key: :main_inv_product_id
+  belongs_to :spare_part_status_use, foreign_key: :status_use_id
 
   belongs_to :approved_store, class_name: "Organization", foreign_key: :approved_store_id
   belongs_to :approved_inventory_product, class_name: "InventoryProduct", foreign_key: :approved_inv_product_id

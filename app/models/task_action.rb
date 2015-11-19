@@ -234,5 +234,11 @@ class CustomerFeedback < ActiveRecord::Base
 
   belongs_to :ticket_payment_received, foreign_key: :payment_received_id
 
+end
+
+class ActPaymentReceived
+
+  self.table_name = "spt_act_payment_received"
+  belongs_to :ticket_payment_received, foreign_key: :ticket_payment_received_id
 
 end
