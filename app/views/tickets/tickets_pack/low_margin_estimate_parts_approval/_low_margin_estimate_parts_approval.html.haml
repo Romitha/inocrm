@@ -138,9 +138,9 @@
       %strong Min. Advance Payment (Rs) :
       #{f.object.try(:approved_adv_pmnt_amount)}
   .row
-    .col-md-12
-      %strong Note :
-      #{f.object.note}
+    .col-md-6
+      = f.input :note, input_html: {value: nil}
+      = simple_format @estimation.note
 
   .row.small_scale_margin-top1
     .col-md-12
