@@ -1787,6 +1787,37 @@ class TicketsController < ApplicationController
     end
   end
 
+  def invoice_for_chargeable
+    Inventory
+    Warranty
+    ContactNumber
+    QAndA
+    TaskAction
+    Inventory
+    ticket_id = (params[:ticket_id] or session[:ticket_id])
+    @ticket = Ticket.find_by_id ticket_id
+    session[:ticket_id] = @ticket.id
+    if @ticket
+      @product = @ticket.products.first
+      @warranties = @product.warranties
+      session[:product_id] = @product.id
+      Rails.cache.delete([:histories, session[:product_id]])
+      Rails.cache.delete([:join, @ticket.id])
+
+      @estimation = @ticket.ticket_estimations.first
+      @spare_part = @ticket.ticket_spare_parts.first
+
+      @ticke_action = @ticket.user_ticket_actions.find_by_action_id 18
+      @terminate_job_payment = @ticke_action.ticket_terminate_job_payments.first
+
+      @ticket_payment_received = TicketPaymentReceived.first
+
+    end
+    respond_to do |format|
+      format.html {render "tickets/tickets_pack/invoice_for_chargeable/invoice_for_chargeable"}
+    end
+  end
+
   def alert
 
     Inventory

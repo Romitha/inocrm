@@ -1,0 +1,80 @@
+.row
+  .col-md-6
+    %strong All Payment Pending Tickets
+  .col-md-6
+    %strong Custormer Name:
+
+.row
+  .col-md-12
+    .small_scale_margin-top1
+      %table.table.table-bordered
+        %thead
+          %tr
+            %th No
+            %th Ticket No
+            %th Job Finished Date
+            %th Customer Name
+            %th Total Amount
+            %th Amount Paid
+            %th Balance Amount
+            %th
+        %tbody
+          %tr
+            %th
+            %td
+            %td
+            %td
+            %th
+            %td
+            %td
+            %td
+
+.row
+  .col-md-12
+    = simple_nested_form_for ticket_payment_received, url: update_estimation_part_tickets_path, method: :post do |f|
+
+      .row
+        .col-md-12
+          %strong Payment Type :
+          xx
+
+      .row
+        .col-md-12
+          %strong Total Estimated Amount (Rs):
+          = #( (f.object.ticket_estimations.inject(0) { |mem, var|  mem+var.ticket_estimation_externals.sum(:estimated_price) }) / (f.object.ticket_estimations.inject(0) { |mem, var|  mem+var.ticket_estimation_externals.sum(:cost_price) }) ) + ( (f.object.ticket_estimations.inject(0) { |mem, var| mem+var.ticket_estimation_additionals.sum(:estimated_price) }) / (f.object.ticket_estimations.inject(0) { |mem, var| mem+var.ticket_estimation_additionals.sum(:cost_price) }) )
+
+      .row
+        .col-md-12
+          %strong All Payments Recieved - Total Amount (Rs):
+          = f.object.try(:amount)
+
+      .row
+        .col-md-12
+          %strong Balance Amount to be Paid (Rs):
+          xx
+
+      .row.small_scale_margin-bottom1
+        .col-md-12
+          %strong Recieved Amount (Rs):
+          xx
+
+      .row
+        .col-md-4
+          = f.input :amount, input_html: {value: nil}
+
+      .row
+        .col-md-6
+          = f.input :note, input_html: {value: nil}
+          = simple_format @estimation.note
+
+      .row.small_scale_margin-bottom1
+        .col-md-3
+          = button_tag "View Invoice" , class: "btn btn-success"
+          = button_tag "Print Invoice" , class: "btn btn-success"
+
+      .row
+        .col-md-1
+          = f.submit "Save", class: "btn btn-success btn-sm"
+        .col-md-3
+          = label_tag "Invoicing Completed Complete"
+          = check_box_tag :invoicing_completed
