@@ -1,20 +1,36 @@
 .row
-  .col-md-3.col-xs-3.strong
+  .col-md-1.col-xs-1.strong
     No
-  .col-md-3.col-xs-3.strong
+  .col-md-2.col-xs-2.strong
     Event No
-  .col-md-3.col-xs-3.strong
+  .col-md-2.col-xs-2.strong
     Ticket No
+
+  .col-md-2.col-xs-2.strong
+    Part No
+  .col-md-2.col-xs-2.strong
+    Description
+  .col-md-2.col-xs-2.strong
+    Part Status
+
+  .col-md-1.col-xs-1.strong
+    Action
 
 {{#.}}
 .row
-  .col-md-3.col-xs-3
+  .col-md-1.col-xs-1
     {{indexer}}
-  .col-md-3.col-xs-3
+  .col-md-2.col-xs-2
     {{event_no}}
-  .col-md-3.col-xs-3
+  .col-md-2.col-xs-2
     {{ticket_no}}
-  .col-md-3.col-xs-3
+  .col-md-2.col-xs-2
+    {{spare_part_no}}
+  .col-md-2.col-xs-2
+    {{spare_part_description}}
+  .col-md-2.col-xs-2
+    {{part_status}}
+  .col-md-1.col-xs-1
     %a{ href: "#", onclick: "Inventories.load_mustache_bundle_return_part('{{task_action}}', {{id}}); return false;"}
       {{task_action_name}}
 {{/.}}

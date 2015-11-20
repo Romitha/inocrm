@@ -1,4 +1,4 @@
-- if params[:onloan_request] == "Y"
+- if @onloan_request
   - request_part = @onloan_spare_part
   .row
     .col-md-12
@@ -6,28 +6,77 @@
 - else
   - request_part = spare_part.ticket_spare_part_store
 
+- if spare_part
+  .row
+    .col-md-3
+      %strong Part No:
+      #{spare_part.spare_part_no}
+    .col-md-3
+      %strong Part Description:
+      #{spare_part.spare_part_description}
+    .col-md-3
+      %strong Part Status:
+      #{spare_part.spare_part_status_action.try(:name)}
+      %br/
+      %strong Requested by:
+      #{User.cached_find_by_id(spare_part.requested_by).try(:email)}
+    .col-md-3
+      - if spare_part.cus_chargeable_part
+        %strong Customer chargeable
+      - else
+        %strong Not customer chargeable
+      %br/
+      %strong Requested at:
+      #{spare_part.requested_at.try(:strftime, "%Y-%m-%d %H:%M")}
+  %hr
 .row
   .col-md-3
-    %strong Part No: 
-    #{spare_part.spare_part_no}
   .col-md-3
-    %strong Part Description:
-    #{spare_part.spare_part_description}
   .col-md-3
-    %strong Part Status:
-    #{spare_part.spare_part_status_action.try(:name)}
-    %br/
     %strong Requested by:
-    #{User.cached_find_by_id(spare_part.requested_by).try(:email)}
+
   .col-md-3
-    - if spare_part.cus_chargeable_part
-      %strong Customer chargeable
-    - else
-      %strong Not customer chargeable
-    %br/
     %strong Requested at:
-    #{spare_part.requested_at.try(:strftime, "%Y-%m-%d %H:%M")}
+
 %hr
+
+- if request_part.is_a? TicketSparePartStore
+  .row
+    .col-md-3
+    .col-md-3
+    .col-md-3
+      %strong Store requested by: #{User.cached_find_by_id(request_part.store_request_approved_by).try(:email)}
+
+    .col-md-3
+      %strong Store requested at: #{request_part.store_request_approved_at.try(:strftime, "%Y-%m-%d %H:%M")}
+  %hr
+
+  - request_part.ticket_spare_part.ticket_estimation_parts.each do |tsp|
+    .row
+      .col-md-3
+      .col-md-3
+        %strong Estimated price: #{tsp.ticket_estimation.advance_payment_amount}
+
+      .col-md-3
+        %strong Estimated by: #{User.cached_find_by_id(tsp.ticket_estimation.estimated_by).try(:email)}
+
+      .col-md-3
+        %strong Estimated at: #{tsp.ticket_estimation.estimated_at.try(:strftime, "%Y-%m-%d %H:%M")}
+
+  %hr
+.row
+  .col-md-3
+  .col-md-3
+    %strong Advance payment amount:
+
+  .col-md-3
+    %strong Customer approved:
+
+  .col-md-3
+    %strong Customer approved at:
+
+%hr
+
 .row
   .col-md-6
     %h4 Requested spare part
@@ -79,7 +128,7 @@
 
 %fieldset
   %legend Approve store part
-  = simple_nested_form_for spare_part, url: update_approve_store_parts_tickets_path, method: :post, html: {id: "new_ticket_spare_part"} do |f|
+  = simple_nested_form_for (@onloan_request ? (spare_part || ticket) : spare_part), url: update_approve_store_parts_tickets_path, method: :post, html: {id: "new_ticket_spare_part"} do |f|
 
     = hidden_field_tag :process_id, session[:process_id]
     = hidden_field_tag :task_id, session[:task_id]
@@ -95,7 +144,10 @@
       = sto.input :approved_main_inv_product_id, as: :hidden, input_html: {id: "mst_inv_product_id", value: (params[:onloan_request] == "Y" ? sto.object.main_inv_product_id : sto.object.mst_inv_product_id)}
 
       .row
-        = f.input :close_approved, as: :radio_buttons, collection: {"Approved" => true, "Reject" => false}, wrapper: :append, label: false, wrapper_html: {class: "col-md-6"}, checked: true
+        - if @onloan_request
+          = sto.input :approved, as: :radio_buttons, collection: {"Approved" => true, "Reject" => false}, wrapper: :append, label: false, wrapper_html: {class: "col-md-6"}, checked: true, input_html: {class: "request_approved"}
+        - else
+          = sto.input :store_request_approved, as: :radio_buttons, collection: {"Approved" => true, "Reject" => false}, wrapper: :append, label: false, wrapper_html: {class: "col-md-6"}, checked: true, input_html: {class: "request_approved"}
         .col-md-6.request_from_radio_buttons
           = label_tag "Part of a Main Product" do
             = radio_button_tag "approve_part_of_main_product", true, true, class: "approve_part_of_main_product", id: "approve_part_of_main_product_true"
@@ -154,8 +206,13 @@
                 = sto.object.main_inventory_product.try(:inventories).try :sum, :available_quantity
     .row
       .col-md-12
-        = f.input :note, input_html: { value: nil}
-        = simple_format f.object.note
+        - if spare_part
+          = f.input :note, input_html: { value: nil}
+          = simple_format f.object.note
+        - else
+          = f.input :remarks, input_html: { value: nil}
+          = simple_format f.object.remarks
+
         = f.submit "Save", class: "btn btn-success btn-sm", id: "approve_store_part"
 
 #inventory_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "inventory_modal", "aria-hidden" => true}

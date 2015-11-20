@@ -45,8 +45,12 @@
             %strong
               Requested:
 
-            - if ticket_spare_part.requested_at
-              #{ticket_spare_part.requested_at.try(:strftime, "%Y-%m-%d %H:%M")} by #{User.cached_find_by_id(ticket_spare_part.requested_by).try(:email)}                
+            - if ticket_spare_part.ticket_spare_part_store
+              - if ticket_spare_part.ticket_spare_part_store.store_requested_at
+                #{ticket_spare_part.ticket_spare_part_store.store_requested_at.try(:strftime, "%Y-%m-%d %H:%M")} by #{User.cached_find_by_id(ticket_spare_part.ticket_spare_part_store.store_requested_by).try(:email)}               
+            - else
+              - if ticket_spare_part.requested_at
+                #{ticket_spare_part.requested_at.try(:strftime, "%Y-%m-%d %H:%M")} by #{User.cached_find_by_id(ticket_spare_part.requested_by).try(:email)}                
 
           .col-md-3
             %strong

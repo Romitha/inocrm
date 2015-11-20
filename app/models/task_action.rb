@@ -236,8 +236,7 @@ class CustomerFeedback < ActiveRecord::Base
 
 end
 
-class ActPaymentReceived
-
+class ActPaymentReceived < ActiveRecord::Base
   self.table_name = "spt_act_payment_received"
   belongs_to :ticket_payment_received, foreign_key: :ticket_payment_received_id
 
