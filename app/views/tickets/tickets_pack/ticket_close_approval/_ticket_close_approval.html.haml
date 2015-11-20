@@ -4,7 +4,7 @@
     = f.check_box :ticket_close_approval_requested
   .col-md-6
     = f.label "Reject Reason"
-    = f.select :hold_reason_id, Reason.all.map {|r| [r.reason,r.id] }
+    = f.select :hold_reason_id, Reason.all.map {|r| [r.reason,r.id] }, include_blank: true
   .col-md-12
     %fieldset
       %legend
@@ -55,7 +55,7 @@
                   %td -
                 %td #{tsp.object.return_part_serial_no}
                 %td
-                  %span.has-tooltip{:title => "#{tsp.object.note}"}
+                  %span.has-tooltip{ :title => strip_tags(tsp.object.note)}
                     = truncate(simple_format("#{tsp.object.note}"), escape: false, length: 10)
                 %td 
                   = tsp.check_box :close_approved
