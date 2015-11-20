@@ -166,6 +166,7 @@ Rails.application.routes.draw do
       get "check_fsr"
       get "customer_feedback"
       get "low_margin_estimate_parts_approval"
+      get "invoice_for_chargeable"
 
       get "alert"
 
