@@ -319,7 +319,7 @@ window.Inventories =
       else
         $(".main_product_with_link").addClass("hide")
 
-    $("input[name='ticket_spare_part[close_approved]']").change ->
+    $(".request_approved").change ->
       if $(@).val() is "true"
         $(".request_from_with_link").removeClass("hide")
         $(".main_product_with_link").removeClass("hide")
@@ -333,7 +333,7 @@ window.Inventories =
 
     $("#approve_store_part").click (e)->
       e.preventDefault()
-      if $("input[name='ticket_spare_part[close_approved]']:checked").val() is "true" and $(".approve_part_of_main_product:checked").val() is "true"
+      if $(".request_approved:checked").val() is "true" and $(".approve_part_of_main_product:checked").val() is "true"
         if $("#store_id").val() == $("#mst_store_id").val()
           $(@).parents("form").submit()
         else

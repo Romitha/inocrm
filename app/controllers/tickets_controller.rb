@@ -1127,17 +1127,19 @@ class TicketsController < ApplicationController
     ContactNumber
     QAndA
     TaskAction
+    TicketSparePart
     ticket_id = params[:ticket_id]
     @ticket = Ticket.find_by_id ticket_id
     session[:ticket_id] = @ticket.id
 
-    request_spare_part_id = params[:request_spare_part_id]
-    @onloan_request = params[:onloan_request]
+    @onloan_request = true if params[:onloan_request] == "Y"
 
-    @spare_part = @ticket.ticket_spare_parts.find request_spare_part_id
 
-    if @onloan_request == 'Y'
-      @onloan_spare_part = @spare_part.ticket_on_loan_spare_parts.find params[:request_onloan_spare_part_id]
+    if @onloan_request
+      @onloan_spare_part = @ticket.ticket_on_loan_spare_parts.find params[:request_onloan_spare_part_id]
+      @spare_part = @onloan_spare_part.ticket_spare_part
+    else
+      @spare_part = @ticket.ticket_spare_parts.find params[:request_spare_part_id]
     end
 
     if @ticket
@@ -1153,16 +1155,23 @@ class TicketsController < ApplicationController
   end
 
   def update_approve_store_parts
-    @ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
+    @onloan_request = true if params[:onloan_request] == "Y"
 
-    if params[:onloan_request] == "Y"
-      @ticket_onloan_spare_part = TicketOnLoanSparePart.find params[:request_onloan_spare_part_id]
+    if @onloan_request
+      @onloan_request_part = TicketOnLoanSparePart.find params[:request_onloan_spare_part_id]
+      if @onloan_request.ticket_spare_part
+
+        @onloan_request.ticket_spare_part.update ticket_spare_part_params(@onloan_request.ticket_spare_part)
+
+      else
+        @onloan_request.ticket.update ticket_params
+      end
+    else
+      @ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
+
+      @ticket_spare_part.update ticket_spare_part_params(@ticket_spare_part)
     end
-
-    @ticket_spare_part.attributes = ticket_spare_part_params(@ticket_spare_part)
-
-
-
+    
   end
   
   def ticket_close_approval
@@ -3242,7 +3251,8 @@ class TicketsController < ApplicationController
 
         if bpm_response1[:status].try(:upcase) == "SUCCESS"
           @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name])
-          view_context.ticket_bpm_headers bpm_response1[:process_id], @ticket.id, ""
+
+          view_context.ticket_bpm_headers bpm_response1[:process_id], @ticket.id, "", request_onloan_spare_part_id
         else
           @bpm_process_error = true
         end
@@ -3274,7 +3284,7 @@ class TicketsController < ApplicationController
     end
 
     def ticket_params
-      params.require(:ticket).permit(:ticket_no, :sla_id, :serial_no, :status_hold, :repair_type_id, :base_currency_id, :ticket_close_approval_required, :ticket_close_approval_requested, :regional_support_job, :job_started_action_id, :job_start_note, :job_started_at, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, :status_resolve_id, ticket_deliver_units_attributes: [:deliver_to_id, :note, :created_at, :created_by, :received, :id, :received_at, :received_by], ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :ticket_action_id, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer], ticket_estimations_attributes: [:note, :currency_id, :status_id, :requested_at, :requested_by], user_ticket_actions_attributes: [:id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, user_assign_ticket_actions_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy], ticket_re_assign_request_attributes: [:reason_id, :_destroy], ticket_action_taken_attributes: [:action, :_destroy], ticket_terminate_job_attributes: [:id, :reason_id, :foc_requested, :_destroy], act_hold_attributes: [:id, :reason_id, :_destroy, :un_hold_action_id], hp_case_attributes: [:id, :case_id, :case_note], ticket_finish_job_attributes: [:resolution, :_destroy], ticket_terminate_job_payments_attributes: [:id, :amount, :payment_item_id, :_destroy, :ticket_id, :currency_id], act_fsr_attributes: [:print_fsr], serial_request_attributes: [:reason], job_estimation_attributes: [:supplier_id]], ticket_extra_remarks_attributes: [:id, :note, :created_by, :extra_remark_id], products_attributes: [:id, :sold_country_id, :pop_note, :pop_doc_url, :pop_status_id], ticket_fsrs_attributes: [:work_started_at, :work_finished_at, :hours_worked, :down_time, :travel_hours, :engineer_time_travel, :engineer_time_on_site, :resolution, :completion_level, :created_by])
+      params.require(:ticket).permit(:ticket_no, :sla_id, :serial_no, :status_hold, :repair_type_id, :base_currency_id, :ticket_close_approval_required, :ticket_close_approval_requested, :regional_support_job, :job_started_action_id, :job_start_note, :job_started_at, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, :status_resolve_id, ticket_deliver_units_attributes: [:deliver_to_id, :note, :created_at, :created_by, :received, :id, :received_at, :received_by], ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :ticket_action_id, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer], ticket_estimations_attributes: [:note, :currency_id, :status_id, :requested_at, :requested_by], user_ticket_actions_attributes: [:id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, user_assign_ticket_actions_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy], ticket_re_assign_request_attributes: [:reason_id, :_destroy], ticket_action_taken_attributes: [:action, :_destroy], ticket_terminate_job_attributes: [:id, :reason_id, :foc_requested, :_destroy], act_hold_attributes: [:id, :reason_id, :_destroy, :un_hold_action_id], hp_case_attributes: [:id, :case_id, :case_note], ticket_finish_job_attributes: [:resolution, :_destroy], ticket_terminate_job_payments_attributes: [:id, :amount, :payment_item_id, :_destroy, :ticket_id, :currency_id], act_fsr_attributes: [:print_fsr], serial_request_attributes: [:reason], job_estimation_attributes: [:supplier_id]], ticket_extra_remarks_attributes: [:id, :note, :created_by, :extra_remark_id], products_attributes: [:id, :sold_country_id, :pop_note, :pop_doc_url, :pop_status_id], ticket_fsrs_attributes: [:work_started_at, :work_finished_at, :hours_worked, :down_time, :travel_hours, :engineer_time_travel, :engineer_time_on_site, :resolution, :completion_level, :created_by], ticket_on_loan_spare_parts_attributes: [:id, :approved_inv_product_id, :approved_store_id, :approved_main_inv_product_id])
     end
 
     def product_brand_params
