@@ -46,26 +46,26 @@
     %table.table.table-striped
       %thead
         %tr
-          %th Product Id
+          %th Product Index
           %th Store
           %th Item Code
           %th Item Description
           %th Model No
           %th Product No
           %th Part No
-          %th Unit Id
+          %th Unit
           %th Available Qnty
       %tbody
-      - inventories.each do |inventory|
+      - inventories.each_with_index do |inventory, index|
         %tr
-          %td= inventory.inventory_product.id
+          %td= index+1 #inventory.inventory_product.id
           %td= inventory.organization.name
-          %td= inventory.inventory_product.serial_no
+          %td= inventory.inventory_product.generated_item_code
           %td= inventory.inventory_product.description
           %td= inventory.inventory_product.model_no
           %td= inventory.inventory_product.product_no
           %td= inventory.inventory_product.spare_part_no
-          %td= inventory.inventory_product.unit_id
+          %td= inventory.inventory_product.inventory_unit.unit
           %td= inventory.available_quantity
           %td= link_to "select", inventory_in_modal_inventories_path(select_inventory: true, inventory_id: inventory.id, select_frame: session[:select_frame]), remote: true
 
