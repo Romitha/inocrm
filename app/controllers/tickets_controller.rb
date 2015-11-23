@@ -1128,6 +1128,7 @@ class TicketsController < ApplicationController
     QAndA
     TaskAction
     TicketSparePart
+    TicketEstimation
     ticket_id = params[:ticket_id]
     @ticket = Ticket.find_by_id ticket_id
     session[:ticket_id] = @ticket.id

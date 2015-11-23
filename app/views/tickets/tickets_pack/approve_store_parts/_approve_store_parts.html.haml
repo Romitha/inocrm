@@ -1,3 +1,5 @@
+- uri = URI(request.url)
+
 - if @onloan_request
   - request_part = @onloan_spare_part
   .row
@@ -28,54 +30,84 @@
       %br/
       %strong Requested at:
       #{spare_part.requested_at.try(:strftime, "%Y-%m-%d %H:%M")}
-  %hr
-.row
-  .col-md-3
-  .col-md-3
-  .col-md-3
-    %strong Requested by:
-
-  .col-md-3
-    %strong Requested at:
-
-%hr
 
 - if request_part.is_a? TicketSparePartStore
-  .row
-    .col-md-3
-    .col-md-3
-    .col-md-3
-      %strong Store requested by: #{User.cached_find_by_id(request_part.store_request_approved_by).try(:email)}
+  - if request_part.ticket_spare_part.ticket_estimation_parts.present?
+    - request_part.ticket_spare_part.ticket_estimation_parts.each do |tsp|
+      .row
+        .col-md-3
+        .col-md-3
+          %strong Estimated price: #{tsp.ticket_estimation.advance_payment_amount}
 
-    .col-md-3
-      %strong Store requested at: #{request_part.store_request_approved_at.try(:strftime, "%Y-%m-%d %H:%M")}
-  %hr
+        .col-md-3
+          %strong Estimated by: #{User.cached_find_by_id(tsp.ticket_estimation.estimated_by).try(:email)}
 
-  - request_part.ticket_spare_part.ticket_estimation_parts.each do |tsp|
+        .col-md-3
+          %strong Estimated at: #{tsp.ticket_estimation.estimated_at.try(:strftime, "%Y-%m-%d %H:%M")}
+
+    %hr
+  - if request_part.ticket_spare_part.ticket_estimation_parts.present?
+    - request_part.ticket_spare_part.ticket_estimation_parts.each do |tsp|
+      .row
+        .col-md-3
+        .col-md-3
+          %strong Advance payment amount:
+          = tsp.ticket_estimation.advance_payment_amount
+        .col-md-3
+          %strong Customer approved by:
+          #{User.cached_find_by_id(tsp.ticket_estimation.cust_approved_by).try(:email)}
+
+        .col-md-3
+          %strong Customer approved at:
+          #{tsp.ticket_estimation.cust_approved_at.try(:strftime, "%Y-%m-%d %H:%M")}
+    %hr
+  - if request_part.store_requested
     .row
       .col-md-3
       .col-md-3
-        %strong Estimated price: #{tsp.ticket_estimation.advance_payment_amount}
+      .col-md-3
+        %strong Store requested by:
+        #{User.cached_find_by_id(request_part.store_requested_by).try(:email)}
 
       .col-md-3
-        %strong Estimated by: #{User.cached_find_by_id(tsp.ticket_estimation.estimated_by).try(:email)}
+        %strong Store requested at:
+        #{request_part.store_requested_at.try(:strftime, "%Y-%m-%d %H:%M")}
+    %hr
+- if request_part.is_a? TicketOnLoanSparePart
+  .row
+    .col-md-3
+    .col-md-3
+      %strong Status:
+      = request_part.spare_part_status_action.name
+    .col-md-3
+      %strong Requested by:
+      #{User.cached_find_by_id(request_part.requested_by).try(:email)}
 
-      .col-md-3
-        %strong Estimated at: #{tsp.ticket_estimation.estimated_at.try(:strftime, "%Y-%m-%d %H:%M")}
+    .col-md-3
+      %strong Requested at:
+      #{request_part.requested_at.try(:strftime, "%Y-%m-%d %H:%M")}
 
   %hr
-.row
-  .col-md-3
-  .col-md-3
-    %strong Advance payment amount:
+  - if request_part.ticket_spare_part
+    .row
+      .col-md-3
+      .col-md-3
+        %strong Ref spare part no:
+        = request_part.ticket_spare_part.spare_part_no
+      .col-md-6
+        %strong Spare part description:
+        = request_part.ticket_spare_part.note
+    %hr
+    .row
+      .col-md-3
+      .col-md-3
+        %strong Part terminated:
+        = request_part.ticket_spare_part.part_terminated ? 'Terminated' : 'Not terminated'
+      .col-md-6
+        %strong Part terminated reason:
+        = request_part.ticket_spare_part.part_terminated_reason.try(:reason)
+    %hr
 
-  .col-md-3
-    %strong Customer approved:
-
-  .col-md-3
-    %strong Customer approved at:
-
-%hr
 
 .row
   .col-md-6
@@ -130,10 +162,11 @@
   %legend Approve store part
   = simple_nested_form_for (@onloan_request ? (spare_part || ticket) : spare_part), url: update_approve_store_parts_tickets_path, method: :post, html: {id: "new_ticket_spare_part"} do |f|
 
-    = hidden_field_tag :process_id, session[:process_id]
-    = hidden_field_tag :task_id, session[:task_id]
-    = hidden_field_tag :owner, session[:owner]
-    - session[:bpm_input_variables].each do |bpm_input_variable|
+    / = hidden_field_tag :process_id, session[:process_id]
+    = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
+    = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
+    = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
+    - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
       = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
     = f.simple_fields_for (params[:onloan_request] == "Y" ? "ticket_on_loan_spare_parts_attributes[]" : "ticket_spare_part_store_attributes"), (params[:onloan_request] == "Y" ? @onloan_spare_part : spare_part.ticket_spare_part_store) do |sto|
