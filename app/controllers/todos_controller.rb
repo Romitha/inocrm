@@ -65,9 +65,11 @@ class TodosController < ApplicationController
       session[:owner] = owner
       session[:bpm_input_variables] = @bpm_input_variables.map{|e| [e[:variable_id], e[:value]]}
 
+      Rails.cache.fetch([url, task_id]){ {process_id: process_instance_id, task_id: task_id, owner: owner, bpm_input_variables: @bpm_input_variables.map{|e| [e[:variable_id], e[:value]]} } }
 
       @redirect_url = "#{url}?process_id=#{process_instance_id}&task_id=#{task_id}&owner=#{owner}&#{@bpm_input_variables.map{|e| e[:variable_id]+'='+e[:value]}.join('&')}"
     else
+      Rails.cache.delete([url, task_id])
       @redirect_url = todos_url
       @flash_message = "Task is not available."
     end
