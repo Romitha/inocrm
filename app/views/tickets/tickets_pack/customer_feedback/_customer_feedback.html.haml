@@ -16,7 +16,7 @@
             = label_tag "re_open"
             = check_box_tag :re_open, nil, false, disabled: false
 
-          .col-md-4
+          .col-md-5
             = cf.input :unit_return_customer, as: :boolean, checked: (ticket.ticket_type.name == 'IH'), disabled: (ticket.ticket_type.name != 'IH')
 
         = cf.association :feedback, collection: Feedback.all.map{|fd| [fd.feedback, fd.id]},include_blank: true, label: "Feedback : "
@@ -32,14 +32,30 @@
         .row
           .col-md-12
             %strong Final Amount to be Paid :
+        .row
+          .col-md-6
+            = f.input :amount, input_html: {value: nil}
+        .row
+          .col-md-8
+            = f.input :note, input_html: {value: nil}
+          .col-md-2
+            %a.btn.btn-default{:href => "#", :role => "button", :id => "view_invoice"} View Invoice
+          .col-md-2
+            %a.btn.btn-default{:href => "#", :role => "button", :id => "print_invoice"} Print Invoice
 
-        = f.input :amount, input_html: {value: nil}
-        = f.input :note, input_html: {value: nil}
+        .row
+          .col-md-4
+            = label_tag "payment_completed"
+            = check_box_tag :payment_completed, nil, false, disabled: false
+          .col-md-4
+            = label_tag "invocing_completed"
+            = check_box_tag :invocing_completed, nil, false, disabled: false
 
-        = label_tag "payment_completed"
-        = check_box_tag :payment_completed, nil, false, disabled: false
-
-        = label_tag "payment_completed"
-        = check_box_tag :payment_completed, nil, false, disabled: false
-
-      = f.submit "Save", class: "btn btn-success"
+        .row{style: "margin-top:20px; margin-bottom:10px;"}
+          .col-md-4
+            %a.btn.btn-default{:href => "#", :role => "button", :id => "inform_customer"} Inform Customer
+          .col-md-4
+            %a.btn.btn-default{:href => "#", :role => "button", :id => "print_delivery_note"} Print Delivery Note
+          .col-md-4
+            = f.submit "Save", class: "btn btn-success"
+            %a.btn.btn-default{:href => "#", :role => "button", :id => "cancel"} Cancel
