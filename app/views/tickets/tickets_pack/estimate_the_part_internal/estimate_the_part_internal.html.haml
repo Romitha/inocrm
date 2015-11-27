@@ -11,4 +11,4 @@
         = render "tickets/tickets_pack/ticket_info", ticket: ticket, product: product
     = tab_content tabpointer: :estimate_the_part_internal, active_class: "active" do
       = tab_panel do
-        = render "tickets/tickets_pack/estimate_the_part_internal/estimate_the_part_internal", estimation: estimation
+        = render "tickets/tickets_pack/estimate_the_part_internal/estimate_the_part_internal", estimation: estimation, ticket: ticket
