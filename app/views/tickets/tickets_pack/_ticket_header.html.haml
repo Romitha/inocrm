@@ -1,5 +1,5 @@
 .view_ticket_header
-  .row.margin-none{style: "background-color: ##{ticket.ticket_status.colour};"}
+  .row.margin-none{style: "background-color: ##{ticket.try(:ticket_status).try(:colour)};"}
     .fixed
       .col-md-2.small_scale_padding-top1
         Ticket No :#{ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])}

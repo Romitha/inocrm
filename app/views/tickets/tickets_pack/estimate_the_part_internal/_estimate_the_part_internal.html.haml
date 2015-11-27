@@ -24,15 +24,58 @@
       .row
         .col-md-12
           %h4 Requested part
-          %dl.dl-horizontal
-            %dt
-              Store
-            %dd
-              = t.object.ticket_spare_part.ticket_spare_part_store and t.object.ticket_spare_part.ticket_spare_part_store.store.name
-            %dt
-              Item code
-            %dd
-              = t.object.ticket_spare_part.ticket_spare_part_store and t.object.ticket_spare_part.ticket_spare_part_store.store.name
+      .row
+        .col-md-5
+          .spare_part_select.pull-right
+            = link_to "select", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true
+          .request_from
+            %dl.dl-horizontal
+              %dt
+                Store
+              %dd
+                = t.object.ticket_spare_part.ticket_spare_part_store and t.object.ticket_spare_part.ticket_spare_part_store.store.name
+              %dt
+                Item code
+              %dd
+                = t.object.ticket_spare_part.ticket_spare_part_store and t.object.ticket_spare_part.ticket_spare_part_store.store.name
+              %dt
+                Item description
+              %dd
+                = t.object.ticket_spare_part.ticket_spare_part_store and t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.try(:description)
+
+              %dt
+                Available Qnt.
+              %dd
+                = t.object.ticket_spare_part.ticket_spare_part_store and t.object.ticket_spare_part.ticket_spare_part_store.main_inventory_product.try(:inventories).try :sum, :available_quantity
+              %dt
+                Unit
+              %dd
+                = t.object.ticket_spare_part.ticket_spare_part_store and t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.try(:inventory_unit).try(:unit)
+        .col-md-1
+        .col-md-6
+          .row.col-md-12
+            %p.pull-right{style: "color: red;"} Estimate below the margin
+          .row.col-md-12
+            %strong Last Perchased Prices
+            .table-responsive
+              %table.table.table-bordered
+                %thead
+                  %tr
+                    %th No
+                    %th Date Purchased
+                    %th Supplier
+                    %th Price
+                %tbody
+                  %tr
+                    %th{:scope => "row"}
+                    %td
+                    %td
+                    %td
+                  %tr
+                    %th{:scope => "row"}
+                    %td
+                    %td
+                    %td
 
       .row
         .col-md-3
@@ -66,13 +109,57 @@
   .row
     .col-md-3
       = f.input :advance_payment_amount, input_html: {class: "only_float"}
-    .col-md-9
+  .row
+    .col-md-6
       = f.input :note, input_html: {value: nil}
       = simple_format estimation.note
-
-  .row
-    .col-md-1
-      = f.submit "Save", class: "btn btn-success btn-sm"
     .col-md-3
+      %strong Total Estimate:
+    .col-md-3
+      %p.pull-right{style: "color: red;"} (Total Estimate below the margin)
+
+  .row{style: "margin-top:10px;"}
+    .col-md-12
+      %strong Other Estimations
+      .table-responsive
+        %table.table.table-bordered
+          %thead
+            %tr
+              %th No.
+              %th Date Requested
+              %th No of parts
+              %th Parts Estimationed Price
+              %th Addi. Estimationed Price
+              %th Total Estimationed Price
+              %th Min Advance pay.
+              %th Estimation Status
+          %tbody
+            %tr
+              %th{:scope => "row"}
+              %td
+              %td
+              %td
+              %td
+              %td
+              %td
+              %td
+            %tr
+              %th{:scope => "row"}
+              %td
+              %td
+              %td
+              %td
+              %td
+              %td
+              %td
+  .row{style: "margin-bottom:10px;"}
+    .col-md-6
       = label_tag "Estimation complete"
       = check_box_tag :estimation_completed
+    .col-md-6
+      = f.submit "Save", class: "btn btn-success btn-sm"
+      %button.btn.btn-default.btn-sm{:type => "button"} Cancel
+
+#inventory_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "inventory_modal", "aria-hidden" => true}
+  .modal-dialog.modal-lg
+    .modal-content
