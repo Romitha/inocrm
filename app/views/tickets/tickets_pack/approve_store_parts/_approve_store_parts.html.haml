@@ -8,7 +8,7 @@
 - else
   - request_part = spare_part.ticket_spare_part_store
 
-- if spare_part
+- if spare_part and request_part.is_a? TicketSparePartStore
   .row
     .col-md-3
       %strong Part No:
@@ -16,6 +16,9 @@
     .col-md-3
       %strong Part Description:
       #{spare_part.spare_part_description}
+      %br
+      %strong FSR No:
+      #{spare_part.ticket_fsr.try(:ticket_fsr_no)}
     .col-md-3
       %strong Part Status:
       #{spare_part.spare_part_status_action.try(:name)}
@@ -72,7 +75,19 @@
       .col-md-3
         %strong Store requested at:
         #{request_part.store_requested_at.try(:strftime, "%Y-%m-%d %H:%M")}
+
+  - if request_part.ticket_spare_part.part_terminated    
     %hr
+    .row
+      .col-md-3
+      .col-md-3
+        %strong Part terminated:
+        Terminated
+      .col-md-6
+        %strong Part terminated reason:
+        = request_part.ticket_spare_part.part_terminated_reason.try(:reason)
+  %hr
+
 - if request_part.is_a? TicketOnLoanSparePart
   .row
     .col-md-3
@@ -92,71 +107,73 @@
     .row
       .col-md-3
       .col-md-3
-        %strong Ref spare part no:
+        %strong Ref. spare part no:
         = request_part.ticket_spare_part.spare_part_no
       .col-md-6
-        %strong Spare part description:
-        = request_part.ticket_spare_part.note
+        %strong Ref. Spare part description:
+        = request_part.ticket_spare_part.spare_part_description
+
+  - if request_part.part_terminated    
     %hr
     .row
       .col-md-3
       .col-md-3
         %strong Part terminated:
-        = request_part.ticket_spare_part.part_terminated ? 'Terminated' : 'Not terminated'
+        Terminated
       .col-md-6
         %strong Part terminated reason:
         = request_part.ticket_spare_part.part_terminated_reason.try(:reason)
-    %hr
+  %hr
 
-
-.row
-  .col-md-6
-    %h4 Requested spare part
-    %dl.dl-horizontal
-      %dt Store
-      %dd
-        = request_part.store.name
-      %dt Item Code
-      %dd
-        = request_part.inventory_product.serial_no
-      %dt Item Description
-      %dd
-        = request_part.inventory_product.description
-      %dt Model No
-      %dd
-        = request_part.inventory_product.model_no
-      %dt Product No
-      %dd
-        = request_part.inventory_product.product_no
-      %dt Part No
-      %dd
-        = request_part.inventory_product.spare_part_no
-      %dt Available Qnty
-      %dd
-        = request_part.inventory_product.inventories.sum(:available_quantity)
-
-  .col-md-6
-    - if request_part.main_inventory_product
-      %h4 Part of main product
+- if request_part
+  .row
+    .col-md-6
+      %h4 Requested spare part
       %dl.dl-horizontal
         %dt Store
         %dd
-          = request_part.store.name
+          = request_part.store.try(:name)
         %dt Item Code
         %dd
-          = request_part.main_inventory_product.serial_no
+          = request_part.inventory_product.try(:serial_no)
         %dt Item Description
         %dd
-          = request_part.main_inventory_product.description
+          = request_part.inventory_product.try(:description)
         %dt Model No
         %dd
-          = request_part.main_inventory_product.model_no
+          = request_part.inventory_product.try(:model_no)
         %dt Product No
         %dd
-          = request_part.main_inventory_product.product_no
+          = request_part.inventory_product.try(:product_no)
+        %dt Part No
+        %dd
+          = request_part.inventory_product.try(:spare_part_no)
         %dt Available Qnty
         %dd
-          = request_part.main_inventory_product.inventories.sum(:available_quantity)
+          = request_part.inventory_product.try(:inventories).try(:sum, :available_quantity)
+
+    .col-md-6
+      - if request_part.main_inventory_product
+        %h4 Part of main product
+        %dl.dl-horizontal
+          %dt Store
+          %dd
+            = request_part.store.name
+          %dt Item Code
+          %dd
+            = request_part.main_inventory_product.serial_no
+          %dt Item Description
+          %dd
+            = request_part.main_inventory_product.description
+          %dt Model No
+          %dd
+            = request_part.main_inventory_product.model_no
+          %dt Product No
+          %dd
+            = request_part.main_inventory_product.product_no
+          %dt Available Qnty
+          %dd
+            = request_part.main_inventory_product.inventories.sum(:available_quantity)
 
 %fieldset
   %legend Approve store part
@@ -170,54 +187,68 @@
       = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
     = f.simple_fields_for (params[:onloan_request] == "Y" ? "ticket_on_loan_spare_parts_attributes[]" : "ticket_spare_part_store_attributes"), (params[:onloan_request] == "Y" ? @onloan_spare_part : spare_part.ticket_spare_part_store) do |sto|
+      = sto.input :id, as: :hidden
 
       = sto.input :approved_store_id, as: :hidden, input_html: {id: "store_id", value: sto.object.store_id}
       = hidden_field_tag :mst_store_id, sto.object.store_id, id: "mst_store_id"
       = sto.input :approved_inv_product_id, as: :hidden, input_html: {id: "inv_product_id", value: sto.object.inv_product_id}
       = sto.input :approved_main_inv_product_id, as: :hidden, input_html: {id: "mst_inv_product_id", value: (params[:onloan_request] == "Y" ? sto.object.main_inv_product_id : sto.object.mst_inv_product_id)}
+      = sto.input :ticket_id, as: :hidden, input_html: {value: ticket.id} if @onloan_request and spare_part.present?
 
       .row
         - if @onloan_request
-          = sto.input :approved, as: :radio_buttons, collection: {"Approved" => true, "Reject" => false}, wrapper: :append, label: false, wrapper_html: {class: "col-md-6"}, checked: true, input_html: {class: "request_approved"}
+          .col-md-6
+            = label_tag "Approve"
+            = sto.radio_button :approved, true, checked: true, class: "request_approved"
+            = label_tag "Reject"
+            = sto.radio_button :approved, false, checked: false, class: "request_approved"
+
+
+
         - else
-          = sto.input :store_request_approved, as: :radio_buttons, collection: {"Approved" => true, "Reject" => false}, wrapper: :append, label: false, wrapper_html: {class: "col-md-6"}, checked: true, input_html: {class: "request_approved"}
-        .col-md-6.request_from_radio_buttons
+          .col-md-6
+            = label_tag "Approve"
+            = sto.radio_button :store_request_approved, true, checked: true, class: "request_approved", disabled: (@onloan_request ? sto.object.part_terminated : sto.object.ticket_spare_part.part_terminated)
+            = label_tag "Reject"
+            = sto.radio_button :store_request_approved, false, checked: (@onloan_request ? sto.object.part_terminated : sto.object.ticket_spare_part.part_terminated), class: "request_approved"
+        .col-md-6.request_from_radio_buttons          
           = label_tag "Part of a Main Product" do
-            = radio_button_tag "approve_part_of_main_product", true, true, class: "approve_part_of_main_product", id: "approve_part_of_main_product_true"
+            = radio_button_tag "approve_part_of_main_product", true, request_part.main_inventory_product.present?, class: "approve_part_of_main_product", id: "approve_part_of_main_product_true"
             Part of a Main Product
           = label_tag "Seperate Product" do
-            = radio_button_tag "approve_part_of_main_product", false, nil, class: "approve_part_of_main_product", id: "approve_part_of_main_product_false"
+            = radio_button_tag "approve_part_of_main_product", false, !request_part.main_inventory_product.present?, class: "approve_part_of_main_product", id: "approve_part_of_main_product_false"
             Seperate Product
-        / = sto.input :part_of_main_product, as: :radio_buttons, collection: {"Part of a Main Product" => true, "Seperate Product" => false}, wrapper: :append, wrapper_html: {class: "col-md-6"}, label: false
       .row
         .col-md-6.request_from_with_link
           = link_to "Change", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true
           .request_from
-            %dl.dl-horizontal
-              %dt Store
-              %dd
-                = sto.object.store.name
-              %dt Item Code
-              %dd
-                = sto.object.inventory_product.serial_no
-              %dt Item Description
-              %dd
-                = sto.object.inventory_product.description
-              %dt Model No
-              %dd
-                = sto.object.inventory_product.model_no
-              %dt Product No
-              %dd
-                = sto.object.inventory_product.product_no
-              %dt Part No
-              %dd
-                = sto.object.inventory_product.spare_part_no
-              %dt Available Qnty
-              %dd
-                = sto.object.inventory_product.inventories.sum(:available_quantity)
+            - if sto.object.inventory_product
+              %dl.dl-horizontal
+                %dt Store
+                %dd
+                  = sto.object.store.name
+                %dt Item Code
+                %dd
+                  = sto.object.inventory_product.serial_no
+                %dt Item Description
+                %dd
+                  = sto.object.inventory_product.description
+                %dt Model No
+                %dd
+                  = sto.object.inventory_product.model_no
+                %dt Product No
+                %dd
+                  = sto.object.inventory_product.product_no
+                %dt Part No
+                %dd
+                  = sto.object.inventory_product.spare_part_no
+                %dt Available Qnty
+                %dd
+                  = sto.object.inventory_product.inventories.sum(:available_quantity)
         .col-md-6.main_product_with_link
           = link_to "Change", inventory_in_modal_inventories_path(select_frame: "main_product"), id: "part_of_main_product_select", remote: true
           .main_product
+          - if sto.object.main_inventory_product
             %dl.dl-horizontal
               %dt Store
               %dd

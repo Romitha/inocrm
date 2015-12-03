@@ -28,7 +28,7 @@
     - rbn = ticket_spare_part.spare_part_status_action.code == "RBN" #Ready to Bundle
        
 
-    = collapse collapse_type: "info", header_content: "Ticket spare part: #{ticket_spare_part.spare_part_no} - #{ticket_spare_part.spare_part_description}", collapse_link: "ticket_spare_part_link_#{ticket_spare_part.id}", collapse_id: "ticket_spare_part_id", labelledby: "ticket_spare_part_lby_#{ticket_spare_part.id}" do
+    = collapse collapse_type: "info", header_content: "Ticket spare part (#{ticket_spare_part.ticket_spare_part_store ? 'Store' : 'Manufacture'}): #{ticket_spare_part.spare_part_no} - #{ticket_spare_part.spare_part_description}", collapse_link: "ticket_spare_part_link_#{ticket_spare_part.id}", collapse_id: "ticket_spare_part_id", labelledby: "ticket_spare_part_lby_#{ticket_spare_part.id}" do
 
       .alert.alert-warning
         .row
@@ -45,12 +45,8 @@
             %strong
               Requested:
 
-            - if ticket_spare_part.ticket_spare_part_store
-              - if ticket_spare_part.ticket_spare_part_store.store_requested_at
-                #{ticket_spare_part.ticket_spare_part_store.store_requested_at.try(:strftime, "%Y-%m-%d %H:%M")} by #{User.cached_find_by_id(ticket_spare_part.ticket_spare_part_store.store_requested_by).try(:email)}               
-            - else
-              - if ticket_spare_part.requested_at
-                #{ticket_spare_part.requested_at.try(:strftime, "%Y-%m-%d %H:%M")} by #{User.cached_find_by_id(ticket_spare_part.requested_by).try(:email)}                
+            - if ticket_spare_part.requested_at
+              #{ticket_spare_part.requested_at.try(:strftime, "%Y-%m-%d %H:%M")} by #{User.cached_find_by_id(ticket_spare_part.requested_by).try(:email)}                
 
           .col-md-3
             %strong
@@ -70,7 +66,7 @@
           .col-md-3
             %strong
               FSR No:
-            = ticket_spare_part.ticket_fsr and ticket_spare_part.ticket_fsr.id.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])
+            = ticket_spare_part.ticket_fsr and ticket_spare_part.ticket_fsr.ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])
           .col-md-3
             %strong
               Faulty Serial No:
@@ -84,9 +80,9 @@
               Request type:
             = ticket_spare_part.ticket_spare_part_store ? "Store / " : "Manufacture / "
             = ticket_spare_part.cus_chargeable_part ? "Chargeable" : "Non-chargeable"
-          %hr
 
           - if ticket_spare_part.ticket_spare_part_store
+            %hr          
             - if ticket_spare_part.ticket_spare_part_store.inventory_product
               .col-md-3
                 %strong
@@ -122,9 +118,9 @@
               %strong
                 Store:
               = ticket_spare_part.ticket_spare_part_store.store.try(:name)
-            %hr
 
             - if ticket_spare_part.ticket_spare_part_store.main_inventory_product
+              %hr            
               .col-md-3
                 %strong{title: "Main Part"}
                   M.P.Item Code:
@@ -141,17 +137,90 @@
                 %strong
                   M.P.Item product no:
                 = ticket_spare_part.ticket_spare_part_store.main_inventory_product.try(:product_no)
-              %hr
 
+
+          - ticket_spare_part.ticket_estimation_parts.each do |tsp|
+            %hr          
             - if ticket_spare_part.cus_chargeable_part
               .col-md-3
+                %strong 
+                  Estimated price (#{tsp.ticket_estimation.currency.code}):
+                #{tsp.estimated_price}
+
+              .col-md-3
                 %strong
-                  Estimate amount (#{product.product_brand.currency.code}):
-                = ticket_spare_part.ticket_spare_part_store.ticket_estimation_part.estimated_price
+                  Estimated by:
+                #{User.cached_find_by_id(tsp.ticket_estimation.estimated_by).try(:email)}
+
+              .col-md-3
+                %strong
+                  Estimated at:
+                #{tsp.ticket_estimation.estimated_at.try(:strftime, "%Y-%m-%d %H:%M")}
+
+              .col-md-3
+                %strong
+                  Advance payment amount (#{tsp.ticket_estimation.currency.code}):
+                = tsp.ticket_estimation.advance_payment_amount
+
+              .col-md-3
+                %strong
+                  Est. additional amount (#{tsp.ticket_estimation.currency.code}):
+                = tsp.ticket_estimation.ticket_estimation_additionals.sum(:estimated_price)
               .col-md-3
                 %strong
                   Estimate warranty:
-                = ticket_spare_part.ticket_spare_part_store.ticket_estimation_part.warranty_period
+                = tsp.warranty_period
+
+
+            - if tsp.ticket_estimation.cust_approval_required
+              .col-md-3
+                %strong Customer approved:
+                #{tsp.ticket_estimation.cust_approved ? "Yes" : "No"}
+
+              .col-md-3
+                %strong Customer approved by:
+                #{User.cached_find_by_id(tsp.ticket_estimation.cust_approved_by).try(:email)}
+
+              .col-md-3
+                %strong Customer approved at:
+                #{tsp.ticket_estimation.cust_approved_at.try(:strftime, "%Y-%m-%d %H:%M")}
+
+          - if ticket_spare_part.ticket_spare_part_store
+            %hr
+            .col-md-3
+              %strong Store requested by:
+              #{User.cached_find_by_id(ticket_spare_part.ticket_spare_part_store.try(:store_requested_by)).try(:email)}
+
+            .col-md-3
+              %strong Store requested at:
+              #{ticket_spare_part.ticket_spare_part_store.try(:store_requested_at).try(:strftime, "%Y-%m-%d %H:%M")}
+
+            .col-md-3
+              %strong Request approved:
+              #{ticket_spare_part.ticket_spare_part_store.store_request_approved ? "Yes" : "No"}
+
+            .col-md-3
+              %strong Request approved by:
+              #{User.cached_find_by_id(ticket_spare_part.ticket_spare_part_store.store_request_approved_by).try(:email)}
+
+            .col-md-3
+              %strong Request approved at:
+              #{ticket_spare_part.ticket_spare_part_store.store_request_approved_at.try(:strftime, "%Y-%m-%d %H:%M")}              
+
+          %hr
+          - if ticket_spare_part.ticket_spare_part_store
+            .col-md-3
+              %strong Issued by:
+              #{User.cached_find_by_id(ticket_spare_part.ticket_spare_part_store.try(:store_issued_by)).try(:email)}
+
+            .col-md-3
+              %strong Issued at:
+              #{ticket_spare_part.ticket_spare_part_store.store_issued_at.try(:strftime, "%Y-%m-%d %H:%M")}  
+
+          - if ticket_spare_part.ticket_spare_part_manufacture
+            .col-md-3
+              %strong Issued:
+              #{ticket_spare_part.ticket_spare_part_manufacture.issued ? "Yes" : "No"}
 
           .col-md-3
             %strong
@@ -206,6 +275,31 @@
               %strong
                 Part Event Closed:
               = ticket_spare_part.ticket_spare_part_manufacture.event_closed ? "Yes" : "No"
+
+          %hr
+          .col-md-3
+            %strong
+              Part Returned:
+            = ticket_spare_part.part_returned ? "Yes" : "No"
+          .col-md-3
+            %strong
+              Return Part Serial No:
+            = ticket_spare_part.return_part_serial_no
+          .col-md-3
+            %strong
+              Return Part CT No:
+            = ticket_spare_part.return_part_ct_no
+
+        - if ticket_spare_part.part_terminated
+          %hr
+          .col-md-3
+            %strong
+              Request Terminated
+          .col-md-3
+            %strong
+              Terminate Reason:
+            = ticket_spare_part.part_terminated_reason.try(:reason)            
+
 
       = simple_form_for ticket_spare_part, url: update_part_order_inventories_path, method: :put do |f| #update_part_order_inventories_path
 
@@ -278,7 +372,7 @@
 
 
   - ticket.ticket_on_loan_spare_parts.each do |ticket_on_loan_spare_part|
-    = collapse collapse_type: "info", header_content: "Ticket on loan spare part: #{ticket_on_loan_spare_part.inventory_product.generated_item_code} - #{ticket_on_loan_spare_part.inventory_product.description}", collapse_link: "ticket_on_loan_spare_part_link_#{ticket_on_loan_spare_part.id}", collapse_id: "ticket_spare_part_id", labelledby: "ticket_spare_on_loan_part_lby_#{ticket_on_loan_spare_part.id}" do
+    = collapse collapse_type: "info", header_content: "Ticket spare part (On-loan): #{ticket_on_loan_spare_part.inventory_product.generated_item_code} - #{ticket_on_loan_spare_part.inventory_product.description}", collapse_link: "ticket_on_loan_spare_part_link_#{ticket_on_loan_spare_part.id}", collapse_id: "ticket_spare_part_id", labelledby: "ticket_spare_on_loan_part_lby_#{ticket_on_loan_spare_part.id}" do
 
       .alert.alert-warning
         .row
@@ -392,6 +486,28 @@
               %strong
                 M.P.Item product no:
               = ticket_on_loan_spare_part.main_inventory_product.try(:product_no)
+
+          %hr       
+            .col-md-3
+              %strong Request approved:
+              #{ticket_on_loan_spare_part.approved ? "Yes" : "No"}
+
+            .col-md-3
+              %strong Request approved by:
+              #{User.cached_find_by_id(ticket_on_loan_spare_part.approved_by).try(:email)}
+
+            .col-md-3
+              %strong Request approved at:
+              #{ticket_on_loan_spare_part.approved_at.try(:strftime, "%Y-%m-%d %H:%M")}              
+
+            .col-md-3
+              %strong Issued by:
+              #{User.cached_find_by_id(ticket_on_loan_spare_part.try(:issued_by)).try(:email)}
+
+            .col-md-3
+              %strong Issued at:
+              #{ticket_on_loan_spare_part.isssued_at.try(:strftime, "%Y-%m-%d %H:%M")}  
+
           %hr
 
           .col-md-3
@@ -435,6 +551,16 @@
               Return Part CT No:
             = ticket_on_loan_spare_part.return_part_ct_no
 
+        - if ticket_on_loan_spare_part.part_terminated
+          %hr
+          .col-md-3
+            %strong
+              Request Terminated
+          .col-md-3
+            %strong
+              Terminate Reason:
+            = ticket_on_loan_spare_part.part_terminated_reason.try(:reason)                  
+
       = simple_form_for ticket_on_loan_spare_part, url: update_onloan_part_order_inventories_path, method: :put do |f|
 
         = hidden_field_tag :process_id, session[:process_id]
@@ -456,12 +582,18 @@
 
         - if str or iss or rce or rpr
           = f.input :note, input_html: {value: nil}
-          = simple_format ticket_spare_part.note
+          = simple_format ticket_on_loan_spare_part.note
 
         - if str
-          = f.input :part_terminated
-          = f.select :part_terminated_reason_id, Reason.where(terminate_spare_part: true).map{|r| [r.reason, r.id]} # showing part_terminated is cheched through javascript
+          = f.input :part_terminated, wrapper: :append, input_html:{class: "part_terminated_reason_check"}
+
+          .part_terminated_reason.hide
+
+            = f.label "Part terminate reason"
+            = f.select :part_terminated_reason_id, Reason.where(terminate_spare_part: true).map{|r| [r.reason, r.id]}, {include_blank: true}, {class: "part_terminated_select"} # showing part_terminated is cheched through javascript
+          = hidden_field_tag :terminate, "terminate"
 
         = f.submit "terminate", name: "terminate" if str
         = f.submit "recieved", name: "recieved" if iss
         = f.submit "return", name: "return" if rce or rpr
+

@@ -21,17 +21,28 @@ class InventoriesController < ApplicationController
   end
 
   def search_inventories
+    Inventory
     respond_to do |format|
 
+      query_hash = {}
       @display_results = true
-      parent_query = params[:search_inventory].except("brand", "product", "mst_inv_product").to_hash
+      store_hash = params[:search_inventory].except("brand", "product", "mst_inv_product").to_hash
+
+      query_hash.merge!(store_hash)
+
       mst_inv_product = params[:search_inventory].except("brand", "product")["mst_inv_product"].to_hash.delete_if { |k, v| v.blank? }
-      @inventories = []
-      if mst_inv_product.present?
-        @inventories = Inventory.includes(:inventory_product).where(parent_query.merge(mst_inv_product: mst_inv_product))
-      else
-        @inventories = Inventory.where(parent_query)
-      end
+      query_hash.merge!(mst_inv_product)
+
+      # @inventories = []
+      many_mst_inv_product = mst_inv_product.inject(""){|i, (k, v)| i+k+" like '%"+v+"%' and "}
+
+      @inventory_products = InventoryProduct.joins(:inventories).where("#{many_mst_inv_product}inv_inventory.store_id = ?", store_hash["store_id"].to_i).references(:inv_inventory)
+      # if mst_inv_product.present?
+
+
+      # else
+      #   @inventories = Inventory.where(store_hash)
+      # end
       format.js {render :inventory_in_modal}
     end
   end
@@ -222,6 +233,8 @@ class InventoriesController < ApplicationController
     
     ticket_on_loan_spare_part = TicketOnLoanSparePart.find params[:ticket_on_loan_spare_part_id]
     @ticket = ticket_on_loan_spare_part.ticket
+
+    ticket_on_loan_spare_part.update ticket_on_loan_spare_part_params(ticket_on_loan_spare_part) 
 
     continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
 
@@ -628,6 +641,13 @@ class InventoriesController < ApplicationController
       t_spare_part[:repare_start] = Time.strptime(t_spare_part[:repare_start],'%m/%d/%Y %I:%M %p') if t_spare_part[:repare_start].present?
       t_spare_part[:repare_end] = Time.strptime(t_spare_part[:repare_end],'%m/%d/%Y %I:%M %p') if t_spare_part[:repare_end].present?
       t_spare_part
+    end
+
+    def ticket_on_loan_spare_part_params ticket_onloan_spare_part
+      t_onloan_spare_part = params.require(:ticket_on_loan_spare_part).permit(:return_part_serial_no, :return_part_ct_no, :unused_reason_id, :note, :part_terminated_reason_id, :approved_store_id, :approved_inv_product_id, :approved_main_inv_product_id, :ref_spare_part_id, :note, :ticket_id, :status_action_id, :status_use_id, :store_id, :inv_product_id, :main_inv_product_id, :part_of_main_product, ticket_attributes: [:remarks, :id])
+
+      t_onloan_spare_part[:note] = t_onloan_spare_part[:note].present? ? "#{t_onloan_spare_part[:note]} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{ticket_onloan_spare_part.note}" : ticket_onloan_spare_part.note
+      t_onloan_spare_part
     end
 
     def estimation_params

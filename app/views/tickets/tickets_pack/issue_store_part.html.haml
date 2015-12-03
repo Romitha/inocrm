@@ -13,4 +13,4 @@
         = render "tickets/tickets_pack/ticket_info", ticket: ticket, product: product
     = tab_content tabpointer: :issue_part, active_class: "active" do
       = tab_panel do
-        = render "tickets/tickets_pack/issue_store_part/issue_store_part", onloan_spare_part: onloan_spare_part, spare_part: spare_part, onloan_request: onloan_request, onloan_spare_part: onloan_spare_part
+        = render "tickets/tickets_pack/issue_store_part/issue_store_part", onloan_spare_part: onloan_spare_part, spare_part: spare_part, onloan_request: onloan_request, onloan_spare_part: onloan_spare_part, ticket: ticket

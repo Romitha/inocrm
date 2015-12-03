@@ -1,11 +1,12 @@
 - if @inventory
   $("#inventory_modal").modal('hide');
 
-  - @content_for = capture do
+  - content_for :content_for do
     %dl.dl-horizontal
       %dt Store
       %dd
-        = @inventory.organization.name
+        /= @inventory.organization.name
+        serias
       %dt Item Code
       %dd
         = @inventory.inventory_product.serial_no
@@ -26,7 +27,7 @@
         = @inventory.available_quantity
 
 
-  $(".#{session[:select_frame]}").html('#{j @content_for}');
+  $(".#{session[:select_frame]}").html('#{j content_for :content_for}');
   - if session[:select_frame] == "request_from"
     $("#store_id, #ticket_on_loan_spare_part_store_id").val("#{session[:store_id]}");
     $("#inv_product_id, #ticket_on_loan_spare_part_inv_product_id").val("#{session[:inv_product_id]}");
@@ -43,3 +44,5 @@ Inventories.filter_category();
 Inventories.filter_store();
 
 Tickets.remove_ajax_loader();
+
+$("a[rel~=popover], .has-popover").popover();

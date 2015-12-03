@@ -165,19 +165,29 @@ module TodosHelper
   end
 
   def bpm_check task_id, process_id, owner
-
     # ticket_id, process_id, task_id should not be null
     # http://0.0.0.0:3000/tickets/assign-ticket?ticket_id=2&process_id=212&owner=supp_mgr&task_id=191
     if task_id and process_id and owner
 
+      availability_of_task = []
+
       bpm_response = send_request_process_data process_history: true, process_instance_id: process_id, variable_id: "ticket_id"
 
-      bpm_response[:status].upcase != "ERROR"
+      if bpm_response[:status].upcase != "ERROR"
+
+        availability_of_task << send_request_process_data(task_list: true, status: "InProgress", process_instance_id: process_id)
+        availability_of_task << send_request_process_data(task_list: true, status: "Reserved", process_instance_id: process_id)
+
+        availability_of_task_content = availability_of_task.any? { |e| e[:content].present? and (e[:content]["task_summary"]["id"] == task_id.to_s) }
+      else
+        false
+      end
 
     else
       false
-    end
+    end    
   end
+
 end
 
 
