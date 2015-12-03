@@ -46,7 +46,7 @@
     %table.table.table-striped
       %thead
         %tr
-          %th Product Index
+          %th Index
           %th Store
           %th Item Code
           %th Item Description
@@ -59,7 +59,6 @@
       - inventory_products.each_with_index do |inventory_product, index|
         %tr
           %td= index+1
-          %td= inventory_product.id
           %td
             = link_to "Click", "#", class: "has-popover", trigger: "hover", title: "Stores",  data: {toggle: "popover", html: true, content: "#{inventory_product.inventories.map { |inventory| inventory.organization.name }.join('<br/>')}"}
           %td= inventory_product.generated_item_code
@@ -68,9 +67,8 @@
           %td= inventory_product.product_no
           %td= inventory_product.spare_part_no
           %td= inventory_product.inventory_unit.unit
-          %td= inventory_product.inventories.first.available_quantity
           %td
-            = link_to "Click", "#", class: "has-popover", trigger: "hover", title: "Stores",  data: {toggle: "popover", html: true, content: "#{inventory_product.inventories.map { |inventory| inventory.available_quantity }.join('<br/>')}"}
+            = link_to "Click", "#", class: "has-popover", trigger: "hover", title: "Stores",  data: {placement: "left",toggle: "popover", html: true, content: "#{inventory_product.inventories.map { |inventory| inventory.available_quantity.to_s+' ('+inventory.organization.name+')' }.join('<br/>')}"}
           %td
             = link_to "Click", "#", class: "has-popover", trigger: "hover", title: "Stores",  data: {placement: "left",toggle: "popover", html: true, content: "<ul>#{inventory_product.inventories.map { |inventory| '<li>'+link_to('select '+inventory.store_id.to_s, inventory_in_modal_inventories_path(select_inventory: true, inventory_id: inventory.id, select_frame: session[:select_frame]), remote: true)+'</li>' }.join('')}</ul>"}
 
