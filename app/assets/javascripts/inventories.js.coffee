@@ -313,6 +313,23 @@ window.Inventories =
 
 
   approve_store_part: ->
+
+    if $(".approve_part_of_main_product:checked").val() is "true"
+      $(".main_product_with_link").removeClass("hide")
+    else
+      $(".main_product_with_link").addClass("hide")
+
+    if $(".request_approved:checked").val() is "true"
+      $(".request_from_with_link").removeClass("hide")
+      $(".main_product_with_link").removeClass("hide")
+      $(".request_from_radio_buttons").removeClass("hide")
+
+    else
+      $(".request_from_with_link").addClass("hide")
+      $(".main_product_with_link").addClass("hide")
+      $(".request_from_radio_buttons").addClass("hide")
+      $(".request_from_radio_buttons input[value='true']").prop("checked", true)
+
     $(".approve_part_of_main_product").change ->
       if $(@).val() is "true"
         $(".main_product_with_link").removeClass("hide")

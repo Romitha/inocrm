@@ -1,463 +1,355 @@
-.row.col-md-12
-  - if onloan_request == 'Y'
-    %strong ON-LOAN Part Request
-    .row.col-md-12{style: "margin-top: 20px;"}
-      .col-md-4
-        %strong Issue Part
-        %br
-        %strong GIN Good Issue Note
-        %br
-        %strong SRN No
-        #{onloan_spare_part.inv_srn_id}
-      .col-md-4
-        %strong Date Requested:
-        #{onloan_spare_part.requested_at.try(:strftime, "%Y-%m-%d")}
-        %br
-        %strong Requested By:
-        #{User.find_by_id(onloan_spare_part.try(:requested_by)).try(:user_name)}
-      .col-md-4
-        %strong Date Approved:
-        #{onloan_spare_part.approved_at.try(:strftime, "%Y-%m-%d")}
-        %br
-        %strong Approved By:
-        #{User.find_by_id(onloan_spare_part.try(:approved_by)).try(:user_name)}
+- uri = URI(request.url)
 
-  -else
-    %strong Part Request
-    .row.col-md-12{style: "margin-top: 20px;"}
-      .col-md-4
-        %strong Issue Part
-        %br
-        %strong GIN Good Issue Note
-        %br
-        %strong SRN No #{spare_part.ticket_spare_part_store.try(:inv_srn_id)}
-      .col-md-4
-        %strong Date Requested:
-        #{spare_part.ticket_spare_part_store.try(:store_requested_at).try(:strftime, "%Y-%m-%d")}
-        %br
-        %strong Requested By:
-        #{User.find_by_id(spare_part.ticket_spare_part_store.try(:store_requested_by)).try(:user_name)}
-      .col-md-4
-        %strong Date Approved:
-        #{spare_part.ticket_spare_part_store.try(:store_request_approved_at).try(:strftime, "%Y-%m-%d")}
-        %br
-        %strong Approved By:
-        #{User.find_by_id(spare_part.ticket_spare_part_store.try(:store_request_approved_by)).try(:user_name)}
+- if @onloan_request
+  - request_part = @onloan_spare_part
+  .row
+    .col-md-12
+      %strong ON-LOAN Part Request
+- else
+  - request_part = spare_part.ticket_spare_part_store
 
-  .row.col-md-12{style: "margin-top: 20px;"}
-    .col-md-6
+- if spare_part and request_part.is_a? TicketSparePartStore
+  .row
+    .col-md-3
       %strong Part No:
       #{spare_part.spare_part_no}
-      %br
+    .col-md-3
       %strong Part Description:
       #{spare_part.spare_part_description}
+      %br
+      %strong FSR No:
+      #{spare_part.ticket_fsr.try(:ticket_fsr_no)}
+    .col-md-3
+      %strong Part Status:
+      #{spare_part.spare_part_status_action.try(:name)}
+      %br/
+      %strong Requested by:
+      #{User.cached_find_by_id(spare_part.requested_by).try(:email)}
+    .col-md-3
+      - if spare_part.cus_chargeable_part
+        %strong Customer chargeable
+      - else
+        %strong Not customer chargeable
+      %br/
+      %strong Requested at:
+      #{spare_part.requested_at.try(:strftime, "%Y-%m-%d %H:%M")}
 
-  .row.col-md-12{style: "margin-top: 20px;"}
+- if request_part.is_a? TicketSparePartStore
+  - if request_part.ticket_spare_part.ticket_estimation_parts.present?
+    - request_part.ticket_spare_part.ticket_estimation_parts.each do |tsp|
+      .row
+        .col-md-3
+        .col-md-3
+          %strong Estimated price: #{tsp.ticket_estimation.advance_payment_amount}
+
+        .col-md-3
+          %strong Estimated by: #{User.cached_find_by_id(tsp.ticket_estimation.estimated_by).try(:email)}
+
+        .col-md-3
+          %strong Estimated at: #{tsp.ticket_estimation.estimated_at.try(:strftime, "%Y-%m-%d %H:%M")}
+
+    %hr
+  - if request_part.ticket_spare_part.ticket_estimation_parts.present?
+    - request_part.ticket_spare_part.ticket_estimation_parts.each do |tsp|
+      .row
+        .col-md-3
+        .col-md-3
+          %strong Advance payment amount:
+          = tsp.ticket_estimation.advance_payment_amount
+        .col-md-3
+          %strong Customer approved by:
+          #{User.cached_find_by_id(tsp.ticket_estimation.cust_approved_by).try(:email)}
+
+        .col-md-3
+          %strong Customer approved at:
+          #{tsp.ticket_estimation.cust_approved_at.try(:strftime, "%Y-%m-%d %H:%M")}
+    %hr
+  - if request_part.store_requested
+    .row
+      .col-md-3
+      .col-md-3
+      .col-md-3
+        %strong Store requested by:
+        #{User.cached_find_by_id(request_part.store_requested_by).try(:email)}
+
+      .col-md-3
+        %strong Store requested at:
+        #{request_part.store_requested_at.try(:strftime, "%Y-%m-%d %H:%M")}
+
+  - if request_part.ticket_spare_part.part_terminated    
+    %hr
+    .row
+      .col-md-3
+      .col-md-3
+        %strong Part terminated:
+        Terminated
+      .col-md-6
+        %strong Part terminated reason:
+        = request_part.ticket_spare_part.part_terminated_reason.try(:reason)
+  %hr
+
+- if request_part.is_a? TicketOnLoanSparePart
+  .row
+    .col-md-3
+    .col-md-3
+      %strong Status:
+      = request_part.spare_part_status_action.name
+    .col-md-3
+      %strong Requested by:
+      #{User.cached_find_by_id(request_part.requested_by).try(:email)}
+
+    .col-md-3
+      %strong Requested at:
+      #{request_part.requested_at.try(:strftime, "%Y-%m-%d %H:%M")}
+
+  %hr
+  - if request_part.ticket_spare_part
+    .row
+      .col-md-3
+      .col-md-3
+        %strong Ref. spare part no:
+        = request_part.ticket_spare_part.spare_part_no
+      .col-md-6
+        %strong Ref. Spare part description:
+        = request_part.ticket_spare_part.spare_part_description
+
+  - if request_part.part_terminated    
+    %hr
+    .row
+      .col-md-3
+      .col-md-3
+        %strong Part terminated:
+        Terminated
+      .col-md-6
+        %strong Part terminated reason:
+        = request_part.ticket_spare_part.part_terminated_reason.try(:reason)
+  %hr
+
+- if request_part
+  .row
     .col-md-6
-      %strong Approved Part
-      = simple_nested_form_for spare_part, url: update_approve_store_parts_tickets_path, method: :post, html: {id: "new_ticket_spare_part"} do |f|
+      %h4 Approved part
+      %dl.dl-horizontal
+        %dt Store
+        %dd
+          = request_part.approved_store.try(:name)
+        %dt Item Code
+        %dd
+          = request_part.approved_inventory_product.try(:serial_no)
+        %dt Item Description
+        %dd
+          = request_part.approved_inventory_product.try(:description)
+        %dt Model No
+        %dd
+          = request_part.approved_inventory_product.try(:model_no)
+        %dt Product No
+        %dd
+          = request_part.approved_inventory_product.try(:product_no)
+        %dt Part No
+        %dd
+          = request_part.approved_inventory_product.try(:spare_part_no)
+        %dt Available Qnty
+        %dd
+          = request_part.approved_inventory_product.try(:inventories).try(:sum, :available_quantity)
 
-        = f.simple_fields_for (params[:onloan_request] == "Y" ? "ticket_on_loan_spare_parts_attributes[]" : "ticket_spare_part_store_attributes"), (params[:onloan_request] == "Y" ? @onloan_spare_part : spare_part.ticket_spare_part_store) do |sto|
-
-          = sto.input :approved_store_id, as: :hidden, input_html: {id: "store_id"}
-          / = hidden_field_tag :mst_store_id, sto.object.store_id, id: "mst_store_id"
-          = sto.input :appoved_inv_product_id, as: :hidden, input_html: {id: "inv_product_id"}
-          = sto.input :approved_main_inv_product_id, as: :hidden, input_html: {id: "mst_inv_product_id"}
-          %dl.dl-horizontal
-            %dt Store
-            %dd
-              = Organization.find_by_id(sto.object.try(:store_id)).try(:name)
-            %dt Item Code
-            %dd
-              = InventoryProduct.find_by_id(sto.object.try(:inv_product_id)).try(:serial_no)
-            %dt Item Description
-            %dd
-              = InventoryProduct.find_by_id(sto.object.try(:inv_product_id)).try(:description)
-            %dt Model No
-            %dd
-              = InventoryProduct.find_by_id(sto.object.try(:inv_product_id)).try(:model_no)
-            %dt Product No
-            %dd
-              = InventoryProduct.find_by_id(sto.object.try(:inv_product_id)).try(:product_no)
-            %dt Part No
-            %dd
-              = InventoryProduct.find_by_id(sto.object.try(:inv_product_id)).try(:spare_part_no)
-            %dt Available Qnty
-            %dd
-              / = InventoryProduct.find_by_id(sto.object.try(:inv_product_id)).try(:inventories).try{|o| o.available_quantity.sum}
-              / = sto.object.inventory_product.inventories.sum(:available_quantity)
     .col-md-6
-      %strong Part of Main Product
-      = simple_nested_form_for spare_part, url: "#", method: :post do |f|
-        = f.simple_fields_for (params[:onloan_request] == "Y" ? "ticket_on_loan_spare_parts_attributes[]" : "ticket_spare_part_store_attributes"), (params[:onloan_request] == "Y" ? @onloan_spare_part : spare_part.ticket_spare_part_store) do |sto|
-          = hidden_field_tag :store_id
-          = hidden_field_tag :mst_store_id
-          = hidden_field_tag :inv_product_id
-          = hidden_field_tag :mst_inv_product_id
+      - if request_part.approved_main_inventory_product
+        %h4 Part of main product
+        %dl.dl-horizontal
+          %dt Store
+          %dd
+            = request_part.approved_store.name
+          %dt Item Code
+          %dd
+            = request_part.approved_main_inventory_product.serial_no
+          %dt Item Description
+          %dd
+            = request_part.approved_main_inventory_product.description
+          %dt Model No
+          %dd
+            = request_part.approved_main_inventory_product.model_no
+          %dt Product No
+          %dd
+            = request_part.approved_main_inventory_product.product_no
+          %dt Available Qnty
+          %dd
+            = request_part.approved_main_inventory_product.inventories.sum(:available_quantity)
 
-      .part
-        = link_to "select", inventory_in_modal_inventories_path(select_frame: "main_product"), id: "part_of_main_product_select", remote: true
+%fieldset
+  %legend Issue store part
+  = simple_nested_form_for (@onloan_request ? (spare_part || ticket) : spare_part), url: update_approve_store_parts_tickets_path, method: :post, html: {id: "new_ticket_spare_part"} do |f|
 
-      .main_product
+    / = hidden_field_tag :process_id, session[:process_id]
+    = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
+    = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
+    = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
+    - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
+      = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
+    = f.simple_fields_for (params[:onloan_request] == "Y" ? "ticket_on_loan_spare_parts_attributes[]" : "ticket_spare_part_store_attributes"), (params[:onloan_request] == "Y" ? @onloan_spare_part : spare_part.ticket_spare_part_store) do |sto|
+      = sto.input :id, as: :hidden
 
+      = sto.input :approved_store_id, as: :hidden, input_html: {id: "store_id"}
+      = hidden_field_tag :mst_store_id, sto.object.store_id, id: "mst_store_id"
+      = sto.input :approved_inv_product_id, as: :hidden, input_html: {id: "inv_product_id"}
+      = sto.input :approved_main_inv_product_id, as: :hidden, input_html: {id: "mst_inv_product_id"}
+      / = sto.input :ticket_id, as: :hidden, input_html: {value: ticket.id} if @onloan_request and spare_part.present?
 
+      .row
+        .col-md-6.request_from_radio_buttonss         
+          = label_tag "Part of a Main Product" do
+            = radio_button_tag "approve_part_of_main_product", true, false, class: "approve_part_of_main_product", id: "approve_part_of_main_product_true"
+            Part of a Main Product
+          = label_tag "Seperate Product" do
+            = radio_button_tag "approve_part_of_main_product", false, true, class: "approve_part_of_main_product", id: "approve_part_of_main_product_false"
+            Seperate Product
+      .row
+        .col-md-6.main_product_with_link
+          = link_to "Change", inventory_in_modal_inventories_path(select_frame: "main_product"), id: "part_of_main_product_select", remote: true
+          .main_product
+            - if sto.object.approved_main_inventory_product
+              %dl.dl-horizontal
+                %dt Store
+                %dd
+                  = sto.object.store.name
+                %dt Item Code
+                %dd
+                  = sto.object.approved_main_inventory_product.try(:serial_no)
+                %dt Item Description
+                %dd
+                  = sto.object.approved_main_inventory_product.try(:description)
+                %dt Model No
+                %dd
+                  = sto.object.approved_main_inventory_product.try(:model_no)
+                %dt Product No
+                %dd
+                  = sto.object.approved_main_inventory_product.try(:product_no)
+                %dt Available Qnty
+                %dd
+                  = sto.object.approved_main_inventory_product.try(:inventories).try :sum, :available_quantity
+      %hr
+      = tab_panel do
+        = tab_nav_tab({id: "issue_part_main_product"}, {home: {active_class: "active", content: "Home"}, about: {content: "about"}})
+        .tab-content
+          = tab_content tabpointer: :home, active_class: "active" do
+            - if sto.object.approved_inventory_product.inventory_product_info.need_serial
+              %table.table.table-strip
+                %thead
+                  %tr
+                    %th No 
+                    %th Grn date 
+                    %th Batch no
+                    %th Lot No
+                    %th Serial No
+                    %th Condition
+                    %th Part not completed
+                    %th Scavenge
+                    %th Damage
+                    %th Used
+                    %th Repaired
+                    %th Reserved
+                    %th CTO No
+                    %th Date of manufacture
+                    %th Date of expire
+                    %th Remarks
+                    %th Issue
+                %tbody
+                  - GrnSerialItem.where(grn_item_id: sto.object.approved_inventory_product.grn_item_ids).each do |grn_serial_item|
+                    %tr
+                      %td= grn_serial_item.grn_item.grn.grn_no
+                      %td
+                        = grn_serial_item.grn_item.grn.created_at.try(:strftime, "%Y-%m-%d %H:%M")
+                      %td
+                        = grn_serial_item.inventory_serial_item.inventory_batch.try(:batch_no)
+                      %td
+                        = grn_serial_item.inventory_serial_item.inventory_batch.try(:lot_no)
+                      %td
+                        = grn_serial_item.inventory_serial_item.serial_no
+                      %td
+                        = grn_serial_item.inventory_serial_item.product_condition.try(:condition)
+                      %td
+                        = grn_serial_item.inventory_serial_item.parts_not_completed ? "Not completed" : ""
+                      %td
+                        = grn_serial_item.inventory_serial_item.scavenge ? "Scavenge" : ""
+                      %td
+                        = grn_serial_item.inventory_serial_item.damage ? "Damaged" : ""
+                      %td
+                        = grn_serial_item.inventory_serial_item.used ? "Used" : ""
+                      %td
+                        = grn_serial_item.inventory_serial_item.repaired ? "Repaired" : ""
+                      %td
+                        = grn_serial_item.inventory_serial_item.reserved ? "Reserved" : ""
+                      %td
+                        = grn_serial_item.inventory_serial_item.ct_no
+                      %td
+                        = grn_serial_item.inventory_serial_item.manufatured_date.try(:strftime, "%Y-%m-%d %H:%M")
+                      %td
+                        = grn_serial_item.inventory_serial_item.expiry_date
+                      %td
+                        = grn_serial_item.inventory_serial_item.remarks
+                      %td
+                        Issue
 
+            - elsif sto.object.approved_inventory_product.need_batch
+              %table.table.table-strip
+                %thead
+                  %tr
+                    %th No 
+                    %th Grn date 
+                    %th Batch no
+                    %th Lot No
+                    %th Available quantity
+                    %th Remarks
+                    %th Issue
+                %tbody
+                  - GrnBatch.where(grn_item_id: sto.object.approved_inventory_product.grn_item_ids).each do |grn_batch|
+                    %tr
+                      %td= grn_batch.grn_item.grn.grn_no
+                      %td
+                        = grn_batch.grn_item.grn.created_at.try(:strftime, "%Y-%m-%d %H:%M")
+                      %td
+                        = grn_batch.inventory_batch.batch_no
+                      %td
+                        = grn_batch.inventory_batch.lot_no
+                      %td
+                        = sto.object.approved_inventory_product.inventory_product_info.issue_fractional_allowed ? (grn_batch.grn_item.remaining_quantity.to_f - grn_batch.grn_item.reserved_quantity.to_f) : (grn_batch.grn_item.remaining_quantity.to_d - grn_batch.grn_item.reserved_quantity.to_d)
+                      %td
+                        issue
+            - else
+              %table.table.table-strip
+                %thead
+                  %tr
+                    %th No 
+                    %th Grn date 
+                    %th Available quantity
+                    %th remarks
+                    %th issue
+                %tbody
+                  - sto.object.approved_inventory_product.grn_items.each do |grn_item|
+                    %tr
+                      %td= grn_item.grn.grn_no
+                      %td
+                        = grn_item.grn.created_at.try(:strftime, "%Y-%m-%d %H:%M")
+                      %td
+                        = sto.object.approved_inventory_product.inventory_product_info.issue_fractional_allowed ? (grn_item.remaining_quantity.to_f - grn_item.reserved_quantity.to_f) : (grn_item.remaining_quantity.to_d - grn_item.reserved_quantity.to_d)
+                      %td
+                        = grn_item.grn.remarks
+                      %td
+                        issue
+          = tab_content tabpointer: :about do
+            sample
 
+      .row
+        .col-md-12
+          - if spare_part
+            = f.input :note, input_html: { value: nil}
+            = simple_format f.object.note
+          - elsif @onloan_request
+            = sto.input :note, input_html: { value: nil}
+            = simple_format sto.object.note
+        .col-md-12
+          = f.submit "Save", class: "btn btn-success btn-sm", id: "approve_store_part"
 
-
-
-
-
-
-
-/ .row.col-md-12{style: "margin-top: 20px;"}
-/   .form-group
-/     = simple_nested_form_for onloan_spare_part, url: "#", method: :post do |f|
-/       .col-md-6
-/         %strong Approved Part
-/         = simple_nested_form_for spare_part, url: update_approve_store_parts_tickets_path, method: :post, html: {id: "new_ticket_spare_part"} do |f|
-
-/           = f.simple_fields_for (params[:onloan_request] == "Y" ? "ticket_on_loan_spare_parts_attributes[]" : "ticket_spare_part_store_attributes"), (params[:onloan_request] == "Y" ? @onloan_spare_part : spare_part.ticket_spare_part_store) do |sto|
-
-/             = sto.input :approved_store_id, as: :hidden, input_html: {id: "store_id"}
-/             = hidden_field_tag :mst_store_id, sto.object.store_id, id: "mst_store_id"
-/             = sto.input :appoved_inv_product_id, as: :hidden, input_html: {id: "inv_product_id"}
-/             = sto.input :approved_main_inv_product_id, as: :hidden, input_html: {id: "mst_inv_product_id"}
-/             %dl.dl-horizontal
-/               %dt Store
-/               %dd
-/                 = sto.object.store.name
-/               %dt Item Code
-/               %dd
-/                 = sto.object.inventory_product.serial_no
-/               %dt Item Description
-/               %dd
-/                 = sto.object.inventory_product.description
-/               %dt Model No
-/               %dd
-/                 = sto.object.inventory_product.model_no
-/               %dt Product No
-/               %dd
-/                 = sto.object.inventory_product.product_no
-/               %dt Part No
-/               %dd
-/                 = sto.object.inventory_product.spare_part_no
-/               %dt Available Qnty
-/               %dd
-/                 = sto.object.inventory_product.inventories.sum(:available_quantity)
-/             / %br
-/             / %br
-/             / %strong Store #{sto.object.store_id}
-/             / %br
-/             / %strong Item Code
-/             / %br
-/             / %strong Item Description
-/             / %br
-/             / %strong Model No xxx Product No xxx Part No xxx
-/             / %br
-/             / %strong Available Qnt xxx Unit xxx
-/         / .spare_part_select
-/         /   = link_to "select", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true
-
-/         / .request_from
-
-/       .col-md-6
-/         %strong Part of Main Product
-/         = f.simple_fields_for :ticket_spare_part_store do |tm|
-/           = hidden_field_tag :store_id
-/           = hidden_field_tag :mst_store_id
-/           = hidden_field_tag :inv_product_id
-/           = hidden_field_tag :mst_inv_product_id
-
-/         .part
-/           = link_to "select", inventory_in_modal_inventories_path(select_frame: "main_product"), id: "part_of_main_product_select", remote: true
-
-/         .main_product
-
-
-/       .row.col-md-12{style: "margin-top: 20px;"}
-/         %table.table.table-bordered
-/           %thead
-/             %tr
-/               %th
-/                 No
-/               %th
-/                 GRN Date
-/               %th
-/                 Available Quantity
-/               %th
-/                 Remarks
-/               %th
-/                 Issue
-/           %tbody
-/             %tr
-/               %th
-/               %td
-/               %td
-/               %td
-/               %td
-/             %tr
-/               %th
-/               %td
-/               %td
-/               %td
-/               %td
-/             %tr
-/               %th
-/               %td
-/               %td
-/               %td
-/               %td
-/       .row.col-md-12{style: "margin-top: 20px;"}
-/         %table.table.table-bordered
-/           %thead
-/             %tr
-/               %th
-/                 No
-/               %th
-/                 GRN Date
-/               %th
-/                 Batch No
-/               %th
-/                 Lot No
-/               %th
-/                 Available Quantity
-/               %th
-/                 Remarks
-/               %th
-/                 Issue
-/           %tbody
-/             %tr
-/               %th
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/             %tr
-/               %th
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/             %tr
-/               %th
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-
-/       .row.col-md-12{style: "margin-top: 20px;"}
-/         %table.table.table-bordered
-/           %thead
-/             %tr
-/               %th
-/                 No
-/               %th
-/                 Created Date
-/               %th
-/                 Batch No
-/               %th
-/                 Lot No
-/               %th
-/                 Serial No
-/               %th
-/                 Condition
-/               %th
-/                 Part Not Completed
-/               %th
-/                 Scavenge
-/               %th
-/                 Damage
-/               %th
-/                 Used
-/               %th
-/                 Repaire
-/               %th
-/                 Reserve
-/               %th
-/                 CT no
-/               %th
-/                 Date of Manufacture
-/               %th
-/                 Date of Expire
-/               %th
-/                 Remarks
-/               %th
-/                 Issue
-/           %tbody
-/             %tr
-/               %th
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/             %tr
-/               %th
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/             %tr
-/               %th
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/       .row.col-md-12{style: "margin-top: 20px;"}
-/         .col-md-3
-/           Parts Included for:
-/         .col-md-3
-/           Item Code:
-/         .col-md-3
-/           Item Description:
-/         .col-md-3
-/           Unit:
-/       .row.col-md-12{style: "margin-top: 20px;"}
-/         %table.table.table-bordered
-/           %thead
-/             %tr
-/               %th
-/                 No
-/               %th
-/                 Created Date
-/               %th
-/                 Batch No
-/               %th
-/                 Lot No
-/               %th
-/                 Serial No
-/               %th
-/                 Condition
-/               %th
-/                 Part Not Completed
-/               %th
-/                 Scavenge
-/               %th
-/                 Damage
-/               %th
-/                 Used
-/               %th
-/                 Repaire
-/               %th
-/                 Reserve
-/               %th
-/                 CT no
-/               %th
-/                 Date of Manufacture
-/               %th
-/                 Date of Expire
-/               %th
-/                 Remarks
-/               %th
-/                 Issue
-/           %tbody
-/             %tr
-/               %th
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/             %tr
-/               %th
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/             %tr
-/               %th
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-/               %td
-
-/       .row
-/         .col-md-6
-/           = f.input :note
-/         .col-md-3
-/           %button.btn.btn-default.btn-sm{:type => "button"} Avaliable Notification Eng.
-/         .col-md-3
-/           %button.btn.btn-default.btn-sm{:type => "button"} Add Part
-/         .col-md-12
-/           = f.submit "Save", class: "btn btn-success btn-sm"
 
 #inventory_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "inventory_modal", "aria-hidden" => true}
   .modal-dialog.modal-lg

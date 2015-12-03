@@ -3,6 +3,8 @@ class Inventory < ActiveRecord::Base
 
   belongs_to :organization, -> { where(type_id: 4) }, foreign_key: :store_id
   belongs_to :inventory_product, foreign_key: :product_id
+
+  has_many :inventory_serial_items
 end
 
 class InventoryProduct < ActiveRecord::Base
@@ -17,6 +19,8 @@ class InventoryProduct < ActiveRecord::Base
   has_one :inventory_product_info, foreign_key: :product_id
 
   has_many :ticket_spare_part_stores, foreign_key: :inv_product_id
+
+  has_many :grn_items, foreign_key: :product_id
 
   def generated_item_code
    "#{id}-#{serial_no}"
@@ -70,5 +74,30 @@ class InventoryUnit < ActiveRecord::Base
   self.table_name = "mst_inv_unit"
 
   has_many :inventory_products, foreign_key: :unit_id
+
+end
+
+class InventoryBatch < ActiveRecord::Base
+  self.table_name = "inv_inventory_batch"
+
+  has_many :grn_batches
+  has_many :grn_items, through: :grn_batches
+  has_many :inventory_serial_items, foreign_key: :batch_id
+
+end
+
+class InventorySerialItem < ActiveRecord::Base
+  self.table_name = "inv_inventory_serial_item"
+
+  belongs_to :inventory_batch, foreign_key: :batch_id
+  belongs_to :inventory
+  belongs_to :product_condition
+
+end
+
+class ProductCondition < ActiveRecord::Base
+  self.table_name = "mst_inv_product_condition"
+
+  has_many :inventory_serial_items
 
 end

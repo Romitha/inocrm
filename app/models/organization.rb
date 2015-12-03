@@ -83,6 +83,11 @@ class Organization < ActiveRecord::Base
 
   has_many :ticket_estimation_parts, foreign_key: :supplier_id
 
+  has_many :srns, foreign_key: :store_id
+  accepts_nested_attributes_for :srns, allow_destroy: true
+
+  has_many :requested_location_srns, class_name: "Srn", foreign_key: :requested_location_id
+
 
   def self.major_organization(category)
     where(category: category, department_org_id: nil)
@@ -99,4 +104,9 @@ class CompanyConfig < ActiveRecord::Base
   self.table_name = "company_config"
 
   # has_many :organizations, foreign_key: "type_id"
+
+  def increase_inv_last_srn_no
+    update inv_last_srn_no: (inv_last_srn_no.to_i+1)
+    inv_last_srn_no
+  end
 end
