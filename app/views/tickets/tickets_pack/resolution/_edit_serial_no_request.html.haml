@@ -2,9 +2,13 @@
   %legend Edit Serial No Request
   #error_msg
   = simple_form_for ticket, url: update_edit_serial_no_request_ticket_path(ticket), method: :post, html: {id: "update_edit_serial_no_request_form"} do |f|
-    = hidden_field_tag :process_id, session[:process_id]
-    = hidden_field_tag :task_id, session[:task_id]
-    = hidden_field_tag :owner, session[:owner]
+    / = hidden_field_tag :process_id, session[:process_id]
+    / = hidden_field_tag :task_id, session[:task_id]
+    / = hidden_field_tag :owner, session[:owner]
+
+    = hidden_field_tag :process_id, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:process_id]
+    = hidden_field_tag :task_id, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:task_id]
+    = hidden_field_tag :owner, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:owner]
 
     = f.simple_fields_for "user_ticket_actions_attributes[]", @user_ticket_action do |uf|
       = uf.input :action_id, as: :hidden, input_html: {value: TaskAction.find_by_action_no(10).id}
