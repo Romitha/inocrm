@@ -12,6 +12,7 @@ window.Inventories =
     @keypress_return_serial_and_return_ct()
     @bundle_load()
     @approve_store_part()
+    @checked_quality_control()
     return
 
   filter_product: -> 
@@ -47,6 +48,18 @@ window.Inventories =
       else
         $(".part").addClass("hide")
         $("#request_from_select").addClass("hide")
+
+  checked_quality_control: ->
+    $("#act_quality_control_reject_reason").click ->
+      if $("#act_quality_control_reject_reason").is(":checked")
+        $("#reject_reason_sec_hide").addClass("hide")
+        $("#change_value_submit").val("Approved")
+        $("#reject_reason").val("")
+
+      else
+        $("#reject_reason_sec_hide").removeClass("hide")
+        $("#change_value_submit").val("Reject")
+        $("#reject_reason").val("")
 
   disable_upon_manufacture: ->
     if $("#ticket_spare_part_request_from_m").is(":checked")

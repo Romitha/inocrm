@@ -75,6 +75,12 @@ class UserTicketAction < ActiveRecord::Base
   has_one :custome_feedback, foreign_key: :ticket_action_id
   accepts_nested_attributes_for :custome_feedback, allow_destroy: true
 
+  has_many :customer_feedbacks, foreign_key: :payment_received_id
+  accepts_nested_attributes_for :customer_feedbacks, allow_destroy: true
+
+  has_one :act_quality_control, foreign_key: :ticket_action_id
+  accepts_nested_attributes_for :act_quality_control, allow_destroy: true
+
   after_create :flush_cache
 
   def cached_task_action
@@ -240,5 +246,12 @@ class ActPaymentReceived < ActiveRecord::Base
 
   self.table_name = "spt_act_payment_received"
   belongs_to :ticket_payment_received, foreign_key: :ticket_payment_received_id
+
+end
+
+class ActQualityControl < ActiveRecord::Base
+
+  self.table_name = "spt_act_qc"
+  belongs_to :user_ticket_action, foreign_key: :ticket_action_id
 
 end
