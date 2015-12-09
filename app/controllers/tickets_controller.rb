@@ -2287,6 +2287,30 @@ class TicketsController < ApplicationController
     end
   end
 
+  def quality_control
+    ContactNumber
+    QAndA
+    TaskAction
+    TicketSparePart
+    Inventory
+    Warranty
+    @ticket = Ticket.find_by_id params[:ticket_id]
+    if @ticket
+      @product = @ticket.products.first
+      Rails.cache.delete([:histories, @product.id])
+      Rails.cache.delete([:join, @ticket.id])
+    end
+    supp_engr_user = params[:supp_engr_user]
+    @ge_questions = GeQAndA.where(action_id: 5)
+    @user_ticket_action = @ticket.user_ticket_actions.build
+    @act_quality_control = @user_ticket_action.build_act_quality_control
+
+    respond_to do |format|
+      format.html {render "tickets/tickets_pack/quality_control/quality_control"}
+    end
+
+  end
+
   def issue_store_part
     Inventory
     Warranty
