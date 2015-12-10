@@ -1,3 +1,4 @@
+- uri = URI(request.url)
 .row
   .col-md-12
     %strong Recieve Returned Part
@@ -185,6 +186,13 @@
       .col-md-12
         %hr
         = simple_nested_form_for spare_part, url: "#", method: :post do |f|
+
+          = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
+          = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
+          = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
+          - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
+            = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+
           = f.simple_fields_for :ticket_spare_part_store do |s|
             .row
               = s.input :return_part_damage , as: :boolean , wrapper_html: {class: "col-md-3"}, wrapper: :append

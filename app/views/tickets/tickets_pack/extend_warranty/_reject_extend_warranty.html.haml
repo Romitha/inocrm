@@ -1,11 +1,12 @@
+- uri = URI(request.url)
 %fieldset
   %legend Reject extend warranty
   = simple_form_for @reject_warranty_extend, url: extend_warranty_update_reject_extend_warranty_tickets_path, method: :post do |f|
-    = hidden_field_tag :process_id, session[:process_id]
-    = hidden_field_tag :task_id, session[:task_id]
-    = hidden_field_tag :owner, session[:owner]
-    - session[:bpm_input_variables].each do |bpm_input_variable|
-      = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+    / = hidden_field_tag :process_id, session[:process_id]
+    / = hidden_field_tag :task_id, session[:task_id]
+    / = hidden_field_tag :owner, session[:owner]
+    / - session[:bpm_input_variables].each do |bpm_input_variable|
+    /   = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
     = f.association :reject_reason, label_method: :reason, value_method: :id, label: "Request reason"
     = f.input :reject_note, label: "Request note"

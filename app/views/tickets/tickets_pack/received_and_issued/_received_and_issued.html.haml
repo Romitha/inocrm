@@ -1,3 +1,4 @@
+- uri = URI(request.url)
 - request_spare_part_id = (params[:request_spare_part_id] or session[:request_spare_part_id])
 - spare_part = TicketSparePart.find request_spare_part_id
 - ticket_for_sp = spare_part.ticket
@@ -50,10 +51,16 @@
 .row{style: "margin-top:10px;"}
   = simple_nested_form_for spare_part, url: update_received_and_issued_tickets_path, method: :post do |f|
 
-    = hidden_field_tag :process_id, session[:process_id]
-    = hidden_field_tag :task_id, session[:task_id]
-    = hidden_field_tag :owner, session[:owner]
-    - session[:bpm_input_variables].each do |bpm_input_variable|
+    / = hidden_field_tag :process_id, session[:process_id]
+    / = hidden_field_tag :task_id, session[:task_id]
+    / = hidden_field_tag :owner, session[:owner]
+    / - session[:bpm_input_variables].each do |bpm_input_variable|
+    /   = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+
+    = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
+    = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
+    = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
+    - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
       = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
     = f.input :received_part_serial_no, wrapper_html: {class: "col-md-6"}
