@@ -6,6 +6,7 @@
 - join_tickets = @join_tickets
 - pr_q_and_answers = @q_and_answers
 - ge_q_and_as = @ge_q_and_answers
+- uri = URI(request.url)
 = render "tickets/tickets_pack/ticket_header", ticket: ticket, product: product
 
 = tab_panel do
@@ -18,9 +19,16 @@
       .row
         = simple_nested_form_for ticket, url: update_assign_ticket_tickets_path, method: :post do |f|
           = hidden_field_tag :ticket_id, params[:ticket_id]
-          = hidden_field_tag :process_id, params[:process_id]
-          = hidden_field_tag :task_id, params[:task_id]
-          = hidden_field_tag :owner, params[:owner]
+          / = hidden_field_tag :process_id, params[:process_id]
+          / = hidden_field_tag :task_id, params[:task_id]
+          / = hidden_field_tag :owner, params[:owner]
+
+          = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
+          = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
+          = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
+          - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
+            = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+
           = f.simple_fields_for "user_ticket_actions_attributes[]", @user_ticket_action do |u|
 
             = u.input :action_at, as: :hidden, input_html: {value: DateTime.now.strftime("%Y-%m-%d %H:%M")}
