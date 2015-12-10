@@ -1,3 +1,4 @@
+- uri = URI(request.url)
 - ticket = @ticket
 - user_ticket_action = @ticke_action
 .row
@@ -21,6 +22,13 @@
             #{user_ticket_action.try(:ticket_terminate_job_payments).try(:amount)}
 
         = f.simple_fields_for @terminate_job_payment do |a|
+
+          = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
+          = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
+          = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
+          - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
+            = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+
           .row
             .col-md-12
               = label_tag "re_open"
