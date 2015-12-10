@@ -1071,9 +1071,6 @@ class TicketsController < ApplicationController
     end
   end
 
-  def update_check_fsr
-  end
-
   def resolution
     Inventory
     Warranty
@@ -2260,6 +2257,9 @@ class TicketsController < ApplicationController
     end
   end
 
+  def update_check_fsr
+  end
+
   def customer_feedback
     ContactNumber
     QAndA
@@ -2320,19 +2320,41 @@ class TicketsController < ApplicationController
     Inventory
     InventoryProduct
     TicketSparePart
+    TicketEstimation
     Grn
     ticket_id = (params[:ticket_id] or session[:ticket_id])
     @ticket = Ticket.find_by_id ticket_id
     session[:ticket_id] = @ticket.id
 
     request_spare_part_id = params[:request_spare_part_id]
-    # @onloan_request = params[:onloan_request]
-    # @spare_part = TicketSparePart.find request_spare_part_id
     @onloan_request = true if params[:onloan_request] == 'Y'
     if @onloan_request
       @onloan_spare_part = @ticket.ticket_on_loan_spare_parts.find params[:request_onloan_spare_part_id]
     else
       @spare_part = @ticket.ticket_spare_parts.find request_spare_part_id
+    end
+
+    @onloan_or_store = @onloan_request ? @onloan_spare_part : @spare_part.ticket_spare_part_store
+
+    if @onloan_or_store.approved_inventory_product.inventory_product_info.need_serial
+      @fifo_grn_serial_items = []
+      if @onloan_or_store.approved_inventory_product.fifo
+        @fifo_grn_serial_items = GrnSerialItem.includes(:inventory_serial_item).where(grn_item_id: @onloan_or_store.approved_inventory_product.grn_items.select{|grn_item| grn_item.grn.store_id == @onloan_or_store.approved_store_id}.map{|grn_item| grn_item.id}, remaining: 1).sort{|p, n| p.grn_item.grn.created_at <=> n.grn_item.grn.created_at}
+        @paginated_fifo_grn_serial_items = Kaminari.paginate_array(@fifo_grn_serial_items).page(params[:page]).per(10)
+      else
+        @fifo_grn_serial_items = GrnSerialItem.includes(:inventory_serial_item).where(grn_item_id: @onloan_or_store.approved_inventory_product.grn_items.select{|grn_item| grn_item.grn.store_id == @onloan_or_store.approved_store_id}.map{|grn_item| grn_item.id}, remaining: 1).sort{|p, n| n.grn_item.grn.created_at <=> p.grn_item.grn.created_at}
+        @paginated_fifo_grn_serial_items = Kaminari.paginate_array(@fifo_grn_serial_items).page(params[:page]).per(10)
+      end
+    elsif @onloan_or_store.approved_inventory_product.need_batch
+      @grn_batches = GrnBatch.where(grn_item_id: @onloan_or_store.approved_inventory_product.grn_item_ids).page(params[:page]).per(10)
+    else
+      @grns = Kaminari.paginate_array(@onloan_or_store.approved_inventory_product.grn_items).page(params[:page]).per(10)
+    end
+
+    if @onloan_or_store.approved_inventory_product.fifo
+      @main_part_serial = @onloan_or_store.approved_main_inventory_product.inventory_serial_items.includes(:inventory).where(inv_inventory: {store_id: @onloan_or_store.approved_store_id}, inv_status_id: InventorySerialItemStatus.find_by_code("AV").id).sort{|p, n| p.grn_items.last.grn.created_at <=> n.grn_items.last.grn.created_at}
+    else
+      @main_part_serial = @onloan_or_store.approved_main_inventory_product.inventory_serial_items.includes(:inventory).where(inv_inventory: {store_id: @onloan_or_store.approved_store_id}, inv_status_id: InventorySerialItemStatus.find_by_code("AV").id).sort{|p, n| p.grn_items.last.grn.created_at <=> n.grn_items.last.grn.created_at}
     end
 
     if @ticket

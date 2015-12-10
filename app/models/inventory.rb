@@ -15,12 +15,15 @@ class InventoryProduct < ActiveRecord::Base
   has_many :inventories, foreign_key: :product_id
 
   belongs_to :inventory_unit, foreign_key: :unit_id
+  has_many :inventory_serial_items, foreign_key: :product_id
 
   has_one :inventory_product_info, foreign_key: :product_id
 
   has_many :ticket_spare_part_stores, foreign_key: :inv_product_id
 
   has_many :grn_items, foreign_key: :product_id
+
+  has_many :inventory_serial_parts, foreign_key: :product_id
 
   def generated_item_code
    "#{id}-#{serial_no}"
@@ -92,6 +95,23 @@ class InventorySerialItem < ActiveRecord::Base
   belongs_to :inventory_batch, foreign_key: :batch_id
   belongs_to :inventory
   belongs_to :product_condition
+  belongs_to :inventory_serial_item_status, foreign_key: :inv_status_id
+  belongs_to :inventory_product, foreign_key: :product_id
+
+  has_many :inventory_serial_parts, foreign_key: :serial_item_id
+
+  has_many :grn_serial_items, foreign_key: :serial_item_id
+  has_many :grn_items, through: :grn_serial_items
+
+
+end
+
+class InventorySerialPart < ActiveRecord::Base
+  self.table_name = "inv_inventory_serial_part"
+
+  belongs_to :inventory_serial_item, foreign_key: :serial_item_id
+  belongs_to :inventory_product, foreign_key: :product_id
+  belongs_to :inventory_serial_item_status, foreign_key: :inv_status_id
 
 end
 
@@ -100,4 +120,11 @@ class ProductCondition < ActiveRecord::Base
 
   has_many :inventory_serial_items
 
+end
+
+class InventorySerialItemStatus < ActiveRecord::Base
+  self.table_name = "mst_inv_serial_item_status"
+
+  has_many :inventory_serial_items, foreign_key: :inv_status_id
+  has_many :inventory_serial_parts, foreign_key: :inv_status_id
 end

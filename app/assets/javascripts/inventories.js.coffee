@@ -370,3 +370,8 @@ window.Inventories =
           alert "Please select same stores"
       else
         $(@).parents("form").submit()
+
+
+  load_serial_and_part: (inventory_type_id, inventory_type)->
+    $.get "/inventories/load_serial_and_part?inventory_type_id="+inventory_type_id+"&inventory_type="+inventory_type
+    return

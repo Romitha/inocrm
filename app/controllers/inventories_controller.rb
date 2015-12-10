@@ -4,18 +4,41 @@ class InventoriesController < ApplicationController
 
   def inventory_in_modal
     Inventory
+    Grn
     session[:select_frame] = params[:select_frame]
-    if params[:select_inventory] and params[:inventory_id] and session[:select_frame]
-      @inventory = Inventory.find params[:inventory_id]
+    if params[:select_inventory] and (params[:inventory_id] or params[:inventory_product_id]) and session[:select_frame]
+      @inventory = Inventory.find params[:inventory_id] if params[:inventory_id]
+      @inventory_product = InventoryProduct.find params[:inventory_product_id] if params[:inventory_product_id]
 
       if session[:select_frame] == "request_from"
-        session[:store_id] = @inventory.store_id
-        session[:inv_product_id] = @inventory.product_id
+        if @inventory
+          session[:store_id] = @inventory.store_id
+          session[:inv_product_id] = @inventory.product_id
+        elsif @inventory_product
+          session[:store_id] = session[:requested_store_id]
+          session[:inv_product_id] = @inventory_product.id
+        end
 
       elsif session[:select_frame] == "main_product"
-        session[:mst_store_id] = @inventory.store_id
-        session[:mst_inv_product_id] = @inventory.product_id
 
+        if @inventory
+          session[:mst_store_id] = @inventory.store_id
+          session[:mst_inv_product_id] = @inventory.product_id
+        elsif @inventory_product
+          session[:mst_store_id] = session[:requested_store_id]
+          session[:mst_inv_product_id] = @inventory_product.id
+        end
+        # session[:mst_store_id] = @inventory.store_id
+        # session[:mst_inv_product_id] = @inventory.product_id
+
+      end
+      if params[:issue_part] == "true"
+        approved_inventory_product = (@inventory_product || @inventory.inventory_product)
+        if approved_inventory_product.fifo
+          @main_part_serial = approved_inventory_product.inventory_serial_items.includes(:inventory).where(inv_inventory: {store_id: session[:requested_store_id].to_i}, inv_status_id: InventorySerialItemStatus.find_by_code("AV").id).sort{|p, n| p.grn_items.last.grn.created_at <=> n.grn_items.last.grn.created_at}
+        else
+          @main_part_serial = approved_inventory_product.inventory_serial_items.includes(:inventory).where(inv_inventory: {store_id: session[:requested_store_id].to_i}, inv_status_id: InventorySerialItemStatus.find_by_code("AV").id).sort{|p, n| p.grn_items.last.grn.created_at <=> n.grn_items.last.grn.created_at}
+        end
       end
     end
   end
@@ -27,22 +50,25 @@ class InventoriesController < ApplicationController
       query_hash = {}
       @display_results = true
       store_hash = params[:search_inventory].except("brand", "product", "mst_inv_product").to_hash
-
-      query_hash.merge!(store_hash)
+      session[:requested_store_id] = store_hash["store_id"].to_i
 
       mst_inv_product = params[:search_inventory].except("brand", "product")["mst_inv_product"].to_hash.delete_if { |k, v| v.blank? }
-      query_hash.merge!(mst_inv_product)
 
-      # @inventories = []
-      many_mst_inv_product = mst_inv_product.inject(""){|i, (k, v)| i+k+" like '%"+v+"%' and "}
+      # many_mst_inv_product = mst_inv_product.inject(""){|i, (k, v)| k != "category3_id" ? i+k+" like '%"+v+"%' and " : i+k+" = "+v+" and "}
+      mst_inv_product_like = mst_inv_product.map { |v| v.first == "category3_id" ? v.first+" = "+v.last : v.first+" like '%"+v.last+"%'" }.join(" and ")
+      mst_inv_product_for_inventory_like = mst_inv_product.map { |v| v.first == "category3_id" ? "mst_inv_product."+v.first+" = "+v.last : "mst_inv_product."+v.first+" like '%"+v.last+"%'" }.join(" and ")
+      # a.map{|v| v.first+" like '%"+v.last+"%'"}.join(" and ")
+      # @inventories = Inventory.where(store_id: store_hash["store_id"].to_i)
+      if params[:select_frame] == "main_product"
+        @inventories = Inventory.includes(inventory_product: :inventory_product_info).where(store_id: store_hash["store_id"].to_i, mst_inv_product_info: {need_serial: true}).where(mst_inv_product_for_inventory_like).references(:mst_inv_product)
+        avoidable_inventory_product_ids = @inventories.map { |inventory| inventory.product_id }.compact
+        @inventory_products = InventoryProduct.where.not(id: avoidable_inventory_product_ids).where(mst_inv_product_like).includes(:inventory_product_info).where(mst_inv_product_info: {need_serial: true})
+      else
+        @inventories = Inventory.includes(:inventory_product).where(store_id: store_hash["store_id"].to_i).where(mst_inv_product_for_inventory_like).references(:mst_inv_product)
+        avoidable_inventory_product_ids = @inventories.map { |inventory| inventory.product_id }.compact
+        @inventory_products = InventoryProduct.where.not(id: avoidable_inventory_product_ids).where(mst_inv_product_like)
+      end
 
-      @inventory_products = InventoryProduct.joins(:inventories).where("#{many_mst_inv_product}inv_inventory.store_id = ?", store_hash["store_id"].to_i).references(:inv_inventory)
-      # if mst_inv_product.present?
-
-
-      # else
-      #   @inventories = Inventory.where(store_hash)
-      # end
       format.js {render :inventory_in_modal}
     end
   end
@@ -626,6 +652,18 @@ class InventoriesController < ApplicationController
 
   def omp_update_hold
     
+  end
+
+  def load_serial_and_part
+    Inventory
+
+    if params[:inventory_type] == "serial_part"
+      @inventory_type = InventorySerialPart.find params[:inventory_type_id]
+    elsif params[:inventory_type] == "serial_item"
+      @inventory_type = InventorySerialItem.find params[:inventory_type_id]
+      @inventory_serial_parts = @inventory_type.inventory_serial_parts
+    end
+
   end
 
   private

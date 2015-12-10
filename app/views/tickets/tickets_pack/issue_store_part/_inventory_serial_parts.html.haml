@@ -1,0 +1,48 @@
+%hr
+%table.table.table-hover.table-condensed
+  %thead
+    %tr
+      %th No 
+      %th Serial No
+      %th Status
+      %th Not completed
+      %th Scavenge
+      %th Damage
+      %th Used
+      %th Repaired
+      %th Reserved
+      %th CTO No
+      %th Date of manufacture
+      %th Date of expire
+      %th Remarks
+      %th Issue
+  %tbody
+    - @inventory_serial_parts.each_with_index do |inventory_serial_part, index|
+      %tr
+        %td= index+1
+        %td
+          = inventory_serial_part.serial_no
+        %td
+          = inventory_serial_part.inventory_serial_item_status.name
+        %td
+          = inventory_serial_part.parts_not_completed ? "Not completed" : ""
+        %td
+          = inventory_serial_part.scavenge ? "Scavenge" : ""
+        %td
+          = inventory_serial_part.damage ? "Damaged" : ""
+        %td
+          = inventory_serial_part.used ? "Used" : ""
+        %td
+          = inventory_serial_part.repaired ? "Repaired" : ""
+        %td
+          = inventory_serial_part.reserved ? "Reserved" : ""
+        %td
+          = inventory_serial_part.ct_no
+        %td
+          = inventory_serial_part.manufatured_date.try(:strftime, "%Y-%m-%d %H:%M")
+        %td
+          = inventory_serial_part.expiry_date
+        %td
+          = inventory_serial_part.remarks
+        %td
+          = radio_button_tag "main_inventory_serial_part", inventory_serial_part.id, false if inventory_serial_part.inv_status_id == InventorySerialItemStatus.find_by_code("AV").id

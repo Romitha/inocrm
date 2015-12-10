@@ -1,0 +1,52 @@
+%table.table.table-hover.table-condensed
+  %thead
+    %tr
+      %th No
+      %th Grn No
+      %th Grn date
+      %th Grn recieved qty
+      %th Grn remaining qty
+      %th Batch no
+      %th Lot No
+      %th Serial No
+      %th Status
+      %th Condition
+      %th Part not completed
+      %th Scavenge
+      %th Damage
+      %th Used
+      %th Repaired
+      %th Reserved
+      %th CT No
+      %th Date of manufacture
+      %th Date of expire
+      %th Remarks
+      %th Issue
+  %tbody
+    - @main_part_serial.each_with_index do |inventory_serial_item, index|
+      %tr
+        %td
+          - if params[:page]
+            = (index+1)+ 10**(params[:page].to_i-1)
+          - else
+            = (index+1)
+        %td= inventory_serial_item.grn_items.last.grn.grn_no
+        %td= inventory_serial_item.grn_items.last.grn.created_at.try(:strftime, "%Y-%m-%d %H:%M")
+        %td= inventory_serial_item.grn_items.last.recieved_quantity
+        %td= inventory_serial_item.grn_items.last.remaining_quantity
+        %td= inventory_serial_item.inventory_batch.try(:batch_no)
+        %td= inventory_serial_item.inventory_batch.try(:lot_no)
+        %td= inventory_serial_item.serial_no
+        %td= inventory_serial_item.inventory_serial_item_status.name
+        %td= inventory_serial_item.product_condition.try(:condition)
+        %td= inventory_serial_item.parts_not_completed ? "Not completed" : ""
+        %td= inventory_serial_item.scavenge ? "Scavenge" : ""
+        %td= inventory_serial_item.damage ? "Damaged" : ""
+        %td= inventory_serial_item.used ? "Used" : ""
+        %td= inventory_serial_item.repaired ? "Repaired" : ""
+        %td= inventory_serial_item.reserved ? "Reserved" : ""
+        %td= inventory_serial_item.ct_no
+        %td= inventory_serial_item.manufatured_date.try(:strftime, "%Y-%m-%d %H:%M")
+        %td= inventory_serial_item.expiry_date
+        %td= inventory_serial_item.remarks
+        %td= link_to "select", "#", onclick: "Inventories.load_serial_and_part(#{inventory_serial_item.id}, 'serial_item'); return false;"
