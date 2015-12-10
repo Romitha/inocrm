@@ -1,30 +1,29 @@
-- if @inventory
+- if @inventory or @inventory_product
   $("#inventory_modal").modal('hide');
 
   - content_for :content_for do
     %dl.dl-horizontal
       %dt Store
       %dd
-        /= @inventory.organization.name
-        serias
+        = @inventory ? @inventory.organization.name : Organization.find(session[:requested_store_id]).name
       %dt Item Code
       %dd
-        = @inventory.inventory_product.serial_no
+        = @inventory ? @inventory.inventory_product.serial_no : @inventory_product.serial_no
       %dt Item Description
       %dd
-        = @inventory.inventory_product.description
+        = @inventory ? @inventory.inventory_product.description : @inventory_product.description
       %dt Model No
       %dd
-        = @inventory.inventory_product.model_no
+        = @inventory ? @inventory.inventory_product.model_no : @inventory_product.model_no
       %dt Product No
       %dd
-        = @inventory.inventory_product.product_no
+        = @inventory ? @inventory.inventory_product.product_no : @inventory_product.product_no
       %dt Part No
       %dd
-        = @inventory.inventory_product.spare_part_no
+        = @inventory ? @inventory.inventory_product.spare_part_no : @inventory_product.spare_part_no
       %dt Available Qnty
       %dd
-        = @inventory.available_quantity
+        = @inventory.available_quantity if @inventory
 
 
   $(".#{session[:select_frame]}").html('#{j content_for :content_for}');
@@ -46,3 +45,6 @@ Inventories.filter_store();
 Tickets.remove_ajax_loader();
 
 $("a[rel~=popover], .has-popover").popover();
+
+- if @main_part_serial
+  $("#main_part_serial").html("#{j render 'tickets/tickets_pack/issue_store_part/inventory_serial_serials'}");

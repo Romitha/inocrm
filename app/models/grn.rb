@@ -20,7 +20,7 @@ class GrnItem < ActiveRecord::Base
   has_many :inventory_batches, through: :grn_batches
 
   has_many :grn_serial_items, foreign_key: :grn_item_id
-
+  has_many :grn_items, through: :grn_serial_items
 end
 
 class GrnBatch < ActiveRecord::Base

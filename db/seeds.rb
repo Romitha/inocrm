@@ -314,3 +314,8 @@ TicketEstimation
 ].each do |t|
   EstimationStatus.create_with(name: t[1]).find_or_create_by(code: t[0])
 end
+
+
+
+
+# ALTER TABLE `inv_grn_serial_item` ADD `remaining` TINYINT NOT NULL DEFAULT '1' AFTER `inv_serial_part_id`;

@@ -241,6 +241,7 @@ Rails.application.routes.draw do
       put "update_low_margin_estimate"
       put "update_delivery_unit"
       put "update_edit_serial"
+      get "load_serial_and_part"
 
     end
   end
