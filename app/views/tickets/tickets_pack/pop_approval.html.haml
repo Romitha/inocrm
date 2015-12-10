@@ -6,6 +6,8 @@
 - join_tickets = @join_tickets
 - pr_q_and_answers = @q_and_answers
 - ge_q_and_as = @ge_q_and_answers
+- uri = URI(request.url)
+
 = render "tickets/tickets_pack/ticket_header", ticket: ticket, product: product
 
 = tab_panel do
@@ -24,10 +26,17 @@
 
       #product_load
         = simple_nested_form_for ticket, url: update_pop_approval_tickets_path, method: :post do |f|
-          = hidden_field_tag :ticket_id, params[:ticket_id]
-          = hidden_field_tag :process_id, params[:process_id]
-          = hidden_field_tag :task_id, params[:task_id]
-          = hidden_field_tag :owner, params[:owner]
+          / = hidden_field_tag :ticket_id, params[:ticket_id]
+          / = hidden_field_tag :process_id, params[:process_id]
+          / = hidden_field_tag :task_id, params[:task_id]
+          / = hidden_field_tag :owner, params[:owner]
+
+          = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
+          = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
+          = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
+          - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
+            = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+
           .row
             .col-md-12
               = f.association :warranty_type, as: :radio_buttons, wrapper_html: {class: "col-md-6"}, wrapper: :append

@@ -6,6 +6,7 @@
 - join_tickets = @join_tickets
 - pr_q_and_answers = @q_and_answers
 - ge_q_and_as = @ge_q_and_answers
+- uri = URI(request.url)
 = render "tickets/tickets_pack/ticket_header", ticket: ticket, product: product
 
 = tab_panel do
@@ -20,9 +21,15 @@
         = simple_nested_form_for ticket, url: update_delivery_unit_inventories_path, method: :put do |f|
           = hidden_field_tag :ticket_id, ticket.id
           = hidden_field_tag :ticket_id, ticket.id
-          = hidden_field_tag :process_id, session[:process_id]
-          = hidden_field_tag :task_id, session[:task_id]
-          = hidden_field_tag :owner, session[:owner]
+          / = hidden_field_tag :process_id, session[:process_id]
+          / = hidden_field_tag :task_id, session[:task_id]
+          / = hidden_field_tag :owner, session[:owner]
+
+          = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
+          = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
+          = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
+          - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
+            = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
           = f.simple_fields_for :ticket_deliver_units do |te|
             - unless te.object.collected
