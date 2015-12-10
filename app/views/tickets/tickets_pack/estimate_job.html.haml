@@ -1,4 +1,5 @@
 / = product
+- uri = URI(request.url)
 - ticket = @ticket
 - product = @product
 - warranties = @warranties
@@ -24,9 +25,15 @@
         .col-md-12{style: "margin-top: 20px;"}
           = simple_nested_form_for ticket, url: update_estimate_job_inventories_path, method: :put do |f|
             = hidden_field_tag :ticket_id, ticket.id
-            = hidden_field_tag :process_id, session[:process_id]
-            = hidden_field_tag :task_id, session[:task_id]
-            = hidden_field_tag :owner, session[:owner]
+            / = hidden_field_tag :process_id, session[:process_id]
+            / = hidden_field_tag :task_id, session[:task_id]
+            / = hidden_field_tag :owner, session[:owner]
+
+            = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
+            = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
+            = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
+            - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
+              = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
             = f.simple_fields_for :ticket_estimations do |t|
               - if t.object.status_id == EstimationStatus.find_by_code("RQS").id and t.object.ticket_estimation_externals.present?
