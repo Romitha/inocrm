@@ -49,6 +49,8 @@ class TicketSparePartStore < ActiveRecord::Base
   belongs_to :approved_inventory_product, class_name: "InventoryProduct", foreign_key: :approved_inv_product_id
   belongs_to :approved_main_inventory_product, class_name: "InventoryProduct", foreign_key: :approved_main_inv_product_id
 
+  belongs_to :gin, foreign_key: :inv_gin_id
+  belongs_to :gin_item, foreign_key: :inv_gin_item_id
 end
 
 class TicketFsr < ActiveRecord::Base
@@ -140,6 +142,9 @@ class TicketOnLoanSparePart < ActiveRecord::Base
   belongs_to :unused_reason, -> { where(spare_part_unused: true) }, class_name: "Reason", foreign_key: :unused_reason_id
 
   belongs_to :part_terminated_reason, -> { where(terminate_spare_part: true) }, class_name: "Reason", foreign_key: :part_terminated_reason_id
+
+  belongs_to :gin, foreign_key: :inv_gin_id
+  belongs_to :gin_item, foreign_key: :inv_gin_item_id
 end
 
 class TicketOnLoanSparePartStatusAction < ActiveRecord::Base
