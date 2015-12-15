@@ -2355,7 +2355,7 @@ class TicketsController < ApplicationController
     if @onloan_or_store.approved_inventory_product.fifo
       @main_part_serial = @onloan_or_store.approved_main_inventory_product ? @onloan_or_store.approved_main_inventory_product.inventory_serial_items.includes(:inventory).where(inv_inventory: {store_id: @onloan_or_store.approved_store_id}, inv_status_id: InventorySerialItemStatus.find_by_code("AV").id).sort{|p, n| p.grn_items.last.grn.created_at <=> n.grn_items.last.grn.created_at} : []
     else
-      @main_part_serial = @onloan_or_store.approved_main_inventory_product ? @onloan_or_store.approved_main_inventory_product.inventory_serial_items.includes(:inventory).where(inv_inventory: {store_id: @onloan_or_store.approved_store_id}, inv_status_id: InventorySerialItemStatus.find_by_code("AV").id).sort{|p, n| n.grn_items.last.grn.created_at <=> p.grn_items.last.grn.created_at} : []
+      @main_part_serial = @onloan_or_store.approved_main_inventory_product ? @onloan_or_store.approved_main_inventory_product.inventory_serial_items.includes(:inventory).where(inv_inventory: {store_id: @onloan_or_store.approved_store_id}, inv_status_id: InventorySerialItemStatus.find_by_code("AV").id).sort{|p, n| p.grn_items.last.grn.created_at <=> n.grn_items.last.grn.created_at} : []
     end
 
     if @ticket
@@ -2641,7 +2641,6 @@ class TicketsController < ApplicationController
             flash[:notice] = "Stock Remaining Quantity is zero."
           end
         end
-          
       end
     else
       flash[:notice] = "ticket is not updated. Bpm error"
