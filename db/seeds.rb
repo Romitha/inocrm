@@ -317,5 +317,6 @@ end
 
 
 
-
-# ALTER TABLE `inv_grn_serial_item` ADD `remaining` TINYINT NOT NULL DEFAULT '1' AFTER `inv_serial_part_id`;
+# ALTER TABLE `spt_ticket_spare_part_store` ADD `cost_price` DECIMAL(10, 2) NULL DEFAULT NULL COMMENT 'grn price' AFTER `inv_gin_item_id`;
+# ALTER TABLE `company_config` ADD `inv_last_gin_no` INT UNSIGNED NULL DEFAULT NULL AFTER `inv_last_grn_no`;
+# ALTER TABLE `spt_ticket_on_loan_spare_part` ADD `cost_price` DECIMAL(10,2) NULL DEFAULT NULL COMMENT 'grn price' AFTER `inv_gin_item_id`;
