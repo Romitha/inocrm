@@ -86,6 +86,12 @@ class Organization < ActiveRecord::Base
   has_many :srns, foreign_key: :store_id
   accepts_nested_attributes_for :srns, allow_destroy: true
 
+  has_many :grns, foreign_key: :store_id
+  accepts_nested_attributes_for :grns, allow_destroy: true
+
+  has_many :gins, foreign_key: :store_id
+  accepts_nested_attributes_for :gins, allow_destroy: true
+
   has_many :requested_location_srns, class_name: "Srn", foreign_key: :requested_location_id
 
 
@@ -109,4 +115,9 @@ class CompanyConfig < ActiveRecord::Base
     update inv_last_srn_no: (inv_last_srn_no.to_i+1)
     inv_last_srn_no
   end
+
+  def increase_inv_last_gin_no
+    update inv_last_gin_no: (inv_last_gin_no.to_i+1)
+    inv_last_gin_no
+  end  
 end

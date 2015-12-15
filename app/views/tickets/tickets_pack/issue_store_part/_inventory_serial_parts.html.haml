@@ -45,4 +45,4 @@
         %td
           = inventory_serial_part.remarks
         %td
-          = radio_button_tag "main_inventory_serial_part", inventory_serial_part.id, false if inventory_serial_part.inv_status_id == InventorySerialItemStatus.find_by_code("AV").id
+          = radio_button_tag "main_inventory_serial_part_id", inventory_serial_part.id, false if inventory_serial_part.inv_status_id == InventorySerialItemStatus.find_by_code("AV").id

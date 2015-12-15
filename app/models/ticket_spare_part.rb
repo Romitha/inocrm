@@ -51,6 +51,10 @@ class TicketSparePartStore < ActiveRecord::Base
 
   belongs_to :gin, foreign_key: :inv_gin_id
   belongs_to :gin_item, foreign_key: :inv_gin_item_id
+
+  belongs_to :srn, foreign_key: :inv_srn_id
+  belongs_to :srn_item, foreign_key: :inv_srn_item_id
+
 end
 
 class TicketFsr < ActiveRecord::Base
@@ -145,6 +149,10 @@ class TicketOnLoanSparePart < ActiveRecord::Base
 
   belongs_to :gin, foreign_key: :inv_gin_id
   belongs_to :gin_item, foreign_key: :inv_gin_item_id
+
+  belongs_to :srn, foreign_key: :inv_srn_id
+  belongs_to :srn_item, foreign_key: :inv_srn_item_id
+
 end
 
 class TicketOnLoanSparePartStatusAction < ActiveRecord::Base
