@@ -70,37 +70,46 @@
                 .row
                   .col-md-12
                     %strong GRN Date:
-                    #{onloan_spare_part.try(:gin_item).try(:gin_sources).try(:grn_item).try(:grn).try(:created_at).try(:strftime, "%Y-%m-%d %H:%M")}
+                    #{onloan_spare_part.try(:approved_inventory_product).try(:grn_items).try(:first).try(:grn).try(:created_at).try(:strftime, "%Y-%m-%d %H:%M")}
+                    / #{onloan_spare_part.try(:gin_item).try(:gin_sources).try(:grn_item).try(:grn).try(:created_at).try(:strftime, "%Y-%m-%d %H:%M")}
                 .row
                   .col-md-12
                     %strong Batch No:
-                    #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:inventory_batch).try(:batch_no)}
+                    #{onloan_spare_part.try(:approved_inventory_product).try(:grn_items).try(:first).try(:grn_serial_items).try(:first).try(:inventory_serial_item).try(:inventory_batch).try(:batch_no)}
+                    / #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:inventory_batch).try(:batch_no)}
                   .col-md-6
                     %strong Lot No:
-                    #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:inventory_batch).try(:lot_no)}
+                    #{onloan_spare_part.try(:approved_inventory_product).try(:grn_items).try(:first).try(:grn_serial_items).try(:first).try(:inventory_serial_item).try(:inventory_batch).try(:lot_no)}
+                    / #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:inventory_batch).try(:lot_no)}
                 .row
                   .col-md-12
                     %strong Status:
-                    #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:inventory_serial_item_status).try(:name)}
+                    #{onloan_spare_part.try(:approved_inventory_product).try(:grn_items).try(:first).try(:grn_serial_items).try(:first).try(:inventory_serial_item).try(:inventory_serial_item_status).try(:name)}
+                    / #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:inventory_serial_item_status).try(:name)}
                 .row
                   .col-md-6
                     %strong Scavenge:
-                    #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:scavenge) ? "Scavenge" : ""}
+                    #{onloan_spare_part.try(:approved_inventory_product).try(:grn_items).try(:first).try(:grn_serial_items).try(:first).try(:inventory_serial_item).try(:scavenge) ? "Scavenge" : ""}
+                    / #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:scavenge) ? "Scavenge" : ""}
                   .col-md-6
                     %strong Parts Completed:
-                    #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:parts_not_completed) ? "Not completed" : ""}
+                    #{onloan_spare_part.try(:approved_inventory_product).try(:grn_items).try(:first).try(:grn_serial_items).try(:first).try(:inventory_serial_item).try(:parts_not_completed) ? "Not completed" : ""}
+                    / #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:parts_not_completed) ? "Not completed" : ""}
                 .row
                   .col-md-12
                     %strong Damage:
-                    #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:damage) ? "Damaged" : ""}
+                    #{onloan_spare_part.try(:approved_inventory_product).try(:grn_items).try(:first).try(:grn_serial_items).try(:first).try(:inventory_serial_item).try(:damage) ? "Damaged" : ""}
+                    / #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:damage) ? "Damaged" : ""}
                 .row
                   .col-md-12
                     %strong Repaired:
-                    #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:repaired) ? "Repaired" : ""}
+                    #{onloan_spare_part.try(:approved_inventory_product).try(:grn_items).try(:first).try(:grn_serial_items).try(:first).try(:inventory_serial_item).try(:repaired) ? "Repaired" : ""}
+                    / #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:repaired) ? "Repaired" : ""}
                 .row
                   .col-md-12
                     %strong Remarks:
-                    #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:remarks)}
+                    #{onloan_spare_part.try(:approved_inventory_product).try(:grn_items).try(:first).try(:grn_serial_items).try(:first).try(:inventory_serial_item).try(:remarks)}
+                    / #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:remarks)}
   .col-md-6
     .row
       .col-md-12
@@ -141,38 +150,47 @@
               .row
                 .col-md-12
                   %strong GRN Date:
-                  #{onloan_spare_part.try(:gin_item).try(:gin_sources).try(:grn_item).try(:grn).try(:created_at).try(:strftime, "%Y-%m-%d %H:%M")}
+                  #{onloan_spare_part.try(:approved_main_inventory_product).try(:grn_items).try(:first).try(:grn).try(:created_at).try(:strftime, "%Y-%m-%d %H:%M")}
+                  / #{onloan_spare_part.try(:gin_item).try(:gin_sources).try(:grn_item).try(:grn).try(:created_at).try(:strftime, "%Y-%m-%d %H:%M")}
               .row
                 .col-md-12
                   %strong Batch No:
-                  #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:inventory_batch).try(:batch_no)}
+                  #{onloan_spare_part.try(:approved_main_inventory_product).try(:grn_items).try(:first).try(:grn_serial_items).try(:first).try(:inventory_serial_item).try(:inventory_batch).try(:batch_no)}
+                  / #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:inventory_batch).try(:batch_no)}
                 .col-md-6
                   %strong Lot No:
-                  #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:inventory_batch).try(:lot_no)}
+                  #{onloan_spare_part.try(:approved_main_inventory_product).try(:grn_items).try(:first).try(:grn_serial_items).try(:first).try(:inventory_serial_item).try(:inventory_batch).try(:lot_no)}
+                  / #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:inventory_batch).try(:lot_no)}
               .row
                 .col-md-12
                   %strong Status:
-                  #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:inventory_serial_item_status).try(:name)}
+                  #{onloan_spare_part.try(:approved_main_inventory_product).try(:grn_items).try(:first).try(:grn_serial_items).try(:first).try(:inventory_serial_item).try(:inventory_serial_item_status).try(:name)}
+                  / #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:inventory_serial_item_status).try(:name)}
               .row
                 .col-md-6
                   %strong Scavenge:
-                  #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:scavenge) ? "Scavenge" : ""}
+                  #{onloan_spare_part.try(:approved_main_inventory_product).try(:grn_items).try(:first).try(:grn_serial_items).try(:first).try(:inventory_serial_item).try(:scavenge) ? "Scavenge" : ""}
+                  / #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:scavenge) ? "Scavenge" : ""}
                 .col-md-6
                   %strong Parts Completed:
-                  #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:parts_not_completed) ? "Not completed" : ""}
+                  #{onloan_spare_part.try(:approved_main_inventory_product).try(:grn_items).try(:first).try(:grn_serial_items).try(:first).try(:inventory_serial_item).try(:parts_not_completed) ? "Not completed" : ""}
+                  / #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:parts_not_completed) ? "Not completed" : ""}
               .row
                 .col-md-12
-                  %strong Damage: 
-                  #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:damage) ? "Damaged" : ""}
+                  %strong Damage:
+                  #{onloan_spare_part.try(:approved_main_inventory_product).try(:grn_items).try(:first).try(:grn_serial_items).try(:first).try(:inventory_serial_item).try(:damage) ? "Damaged" : ""}
+                  / #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:damage) ? "Damaged" : ""}
                   / #{Reason.find_by_id(onloan_spare_part.try(:return_part_damage_reason_id)).try(:reason)}
               .row
                 .col-md-12
                   %strong Repaired:
-                  #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:repaired) ? "Repaired" : ""}
+                  #{onloan_spare_part.try(:approved_main_inventory_product).try(:grn_items).try(:first).try(:grn_serial_items).try(:first).try(:inventory_serial_item).try(:repaired) ? "Repaired" : ""}
+                  / #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:repaired) ? "Repaired" : ""}
               .row
                 .col-md-12
                   %strong Remarks:
-                  #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:remarks)}
+                  #{onloan_spare_part.try(:approved_main_inventory_product).try(:grn_items).try(:first).try(:grn_serial_items).try(:first).try(:inventory_serial_item).try(:remarks)}
+                  / #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:remarks)}
 .row
   .col-md-12
     .row

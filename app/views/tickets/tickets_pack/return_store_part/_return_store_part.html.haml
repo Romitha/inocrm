@@ -67,39 +67,49 @@
             .col-md-12
               %fieldset
                 .row
-                  .col-md-12  
+                  .col-md-12
                     %strong GRN Date: 
-                    #{spare_part.try(:ticket_spare_part_store).try(:gin_item).try(:gin_sources).first.try(:grn_item).try(:grn).try(:created_at).try(:strftime, "%Y-%m-%d %H:%M")}
+                    #{spare_part.try(:ticket_spare_part_store).try(:approved_inventory_product).try(:grn_items).try(:first).try(:grn).try(:created_at).try(:strftime, "%Y-%m-%d %H:%M")}
+                    / %strong GRN Date:
+                    / #{spare_part.try(:ticket_spare_part_store).try(:gin_item).try(:gin_sources).first.try(:grn_item).try(:grn).try(:created_at).try(:strftime, "%Y-%m-%d %H:%M")}
                 .row
                   .col-md-12
                     %strong Batch No:
-                    #{spare_part.try(:ticket_spare_part_store).try(:srr_item).srr_item_sources.first.gin_source.grn_serial_item.try(:inventory_serial_item).try(:inventory_batch).try(:batch_no)}
+                    #{spare_part.try(:ticket_spare_part_store).try(:approved_inventory_product).try(:grn_items).try(:first).try(:grn_serial_items).try(:first).try(:inventory_serial_item).try(:inventory_batch).try(:batch_no)}
+                    / #{spare_part.try(:ticket_spare_part_store).try(:srr_item).srr_item_sources.first.gin_source.grn_serial_item.try(:inventory_serial_item).try(:inventory_batch).try(:batch_no)}
                   .col-md-6
                     %strong Lot No:
-                    #{spare_part.try(:ticket_spare_part_store).try(:srr_item).srr_item_sources.first.gin_source.grn_serial_item.try(:inventory_serial_item).try(:inventory_batch).try(:lot_no)}
+                    #{spare_part.try(:ticket_spare_part_store).try(:approved_inventory_product).try(:grn_items).try(:first).try(:grn_serial_items).try(:first).try(:inventory_serial_item).try(:inventory_batch).try(:lot_no)}
+                    / #{spare_part.try(:ticket_spare_part_store).try(:srr_item).srr_item_sources.first.gin_source.grn_serial_item.try(:inventory_serial_item).try(:inventory_batch).try(:lot_no)}
                 .row
                   .col-md-12
                     %strong Status:
-                    #{spare_part.try(:ticket_spare_part_store).try(:srr_item).srr_item_sources.first.gin_source.grn_serial_item.try(:inventory_serial_item).try(:inventory_serial_item_status).try(:name)}
+                    #{spare_part.try(:ticket_spare_part_store).try(:approved_inventory_product).try(:grn_items).try(:first).try(:grn_serial_items).try(:first).try(:inventory_serial_item).try(:inventory_serial_item_status).try(:name)}
+                    / #{spare_part.try(:ticket_spare_part_store).try(:srr_item).srr_item_sources.first.gin_source.grn_serial_item.try(:inventory_serial_item).try(:inventory_serial_item_status).try(:name)}
                 .row
                   .col-md-6
                     %strong Scavenge:
-                    #{spare_part.try(:ticket_spare_part_store).try(:srr_item).srr_item_sources.first.gin_source.grn_serial_item.try(:inventory_serial_item).try(:scavenge) ? "Scavenge" : ""}
+                    #{spare_part.try(:ticket_spare_part_store).try(:approved_inventory_product).try(:grn_items).try(:first).try(:grn_serial_items).try(:first).try(:inventory_serial_item).try(:scavenge) ? "Scavenge" : ""}
+                    / #{spare_part.try(:ticket_spare_part_store).try(:srr_item).srr_item_sources.first.gin_source.grn_serial_item.try(:inventory_serial_item).try(:scavenge) ? "Scavenge" : ""}
                   .col-md-6
                     %strong Parts Completed:
-                    #{spare_part.try(:ticket_spare_part_store).try(:srr_item).srr_item_sources.first.gin_source.grn_serial_item.try(:inventory_serial_item).try(:parts_not_completed) ? "Not completed" : ""}
+                    #{spare_part.try(:ticket_spare_part_store).try(:approved_inventory_product).try(:grn_items).try(:first).try(:grn_serial_items).try(:first).try(:inventory_serial_item).try(:parts_not_completed) ? "Not completed" : ""}
+                    / #{spare_part.try(:ticket_spare_part_store).try(:srr_item).srr_item_sources.first.gin_source.grn_serial_item.try(:inventory_serial_item).try(:parts_not_completed) ? "Not completed" : ""}
                 .row
                   .col-md-12
                     %strong Damage:
-                    #{spare_part.try(:ticket_spare_part_store).try(:srr_item).srr_item_sources.first.gin_source.grn_serial_item.try(:inventory_serial_item).try(:damage) ? "Damaged" : ""}
+                    #{spare_part.try(:ticket_spare_part_store).try(:approved_inventory_product).try(:grn_items).try(:first).try(:grn_serial_items).try(:first).try(:inventory_serial_item).try(:damage) ? "Damaged" : ""}
+                    / #{spare_part.try(:ticket_spare_part_store).try(:srr_item).srr_item_sources.first.gin_source.grn_serial_item.try(:inventory_serial_item).try(:damage) ? "Damaged" : ""}
                 .row
                   .col-md-12
                     %strong Repaired:
-                    #{spare_part.try(:ticket_spare_part_store).try(:srr_item).srr_item_sources.first.gin_source.grn_serial_item.try(:inventory_serial_item).try(:repaired) ? "Repaired" : ""}
+                    #{spare_part.try(:ticket_spare_part_store).try(:approved_inventory_product).try(:grn_items).try(:first).try(:grn_serial_items).try(:first).try(:inventory_serial_item).try(:repaired) ? "Repaired" : ""}
+                    / #{spare_part.try(:ticket_spare_part_store).try(:srr_item).srr_item_sources.first.gin_source.grn_serial_item.try(:inventory_serial_item).try(:repaired) ? "Repaired" : ""}
                 .row
                   .col-md-12
                     %strong Remarks:
-                    #{spare_part.try(:ticket_spare_part_store).try(:srr_item).srr_item_sources.first.gin_source.grn_serial_item.try(:inventory_serial_item).try(:remarks)}
+                    #{spare_part.try(:ticket_spare_part_store).try(:approved_inventory_product).try(:grn_items).try(:first).try(:grn_serial_items).try(:first).try(:inventory_serial_item).try(:remarks)}
+                    / #{spare_part.try(:ticket_spare_part_store).try(:srr_item).srr_item_sources.first.gin_source.grn_serial_item.try(:inventory_serial_item).try(:remarks)}
   .col-md-6
     .row
       .col-md-12
@@ -140,39 +150,39 @@
                 .row
                   .col-md-12
                     %strong GRN Date: 
-                    #{spare_part.try(:ticket_spare_part_store).try(:gin_item).try(:gin_sources).first.try(:grn_item).try(:grn).try(:created_at).try(:strftime, "%Y-%m-%d %H:%M")}
+                    #{spare_part.try(:ticket_spare_part_store).try(:approved_main_inventory_product).try(:grn_items).try(:first).try(:grn).try(:created_at).try(:strftime, "%Y-%m-%d %H:%M")}
                 .row
                   .col-md-12
                     %strong Batch No:
-                    #{spare_part.try(:ticket_spare_part_store).try(:srr_item).srr_item_sources.first.gin_source.grn_serial_item.try(:inventory_serial_item).try(:inventory_batch).try(:batch_no)}
+                    #{spare_part.try(:ticket_spare_part_store).try(:approved_main_inventory_product).try(:grn_items).try(:first).try(:grn_serial_items).try(:first).try(:inventory_serial_item).try(:inventory_batch).try(:batch_no)}
                   .col-md-6
                     %strong Lot No:
-                    #{spare_part.try(:ticket_spare_part_store).try(:srr_item).srr_item_sources.first.gin_source.grn_serial_item.try(:inventory_serial_item).try(:inventory_batch).try(:lot_no)}
+                    #{spare_part.try(:ticket_spare_part_store).try(:approved_main_inventory_product).try(:grn_items).try(:first).try(:grn_serial_items).try(:first).try(:inventory_serial_item).try(:inventory_batch).try(:lot_no)}
                 .row
                   .col-md-12
                     %strong Status:
                     / #{SparePartStatusAction.find_by_id(onloan_spare_part.try(:status_action_id)).try(:name)}
-                    #{spare_part.try(:ticket_spare_part_store).try(:srr_item).srr_item_sources.first.gin_source.grn_serial_item.try(:inventory_serial_item).try(:inventory_serial_item_status).try(:name)}
+                    #{spare_part.try(:ticket_spare_part_store).try(:approved_main_inventory_product).try(:grn_items).try(:first).try(:grn_serial_items).try(:first).try(:inventory_serial_item).try(:inventory_serial_item_status).try(:name)}
                 .row
                   .col-md-6
                     %strong Scavenge:
-                    #{spare_part.try(:ticket_spare_part_store).try(:srr_item).srr_item_sources.first.gin_source.grn_serial_item.try(:inventory_serial_item).try(:scavenge) ? "Scavenge" : ""}
+                    #{spare_part.try(:ticket_spare_part_store).try(:approved_main_inventory_product).try(:grn_items).try(:first).try(:grn_serial_items).try(:first).try(:inventory_serial_item).try(:scavenge) ? "Scavenge" : ""}
                   .col-md-6
                     %strong Parts Completed:
-                    #{spare_part.try(:ticket_spare_part_store).try(:srr_item).srr_item_sources.first.gin_source.grn_serial_item.try(:inventory_serial_item).try(:parts_not_completed) ? "Not completed" : ""}
+                    #{spare_part.try(:ticket_spare_part_store).try(:approved_main_inventory_product).try(:grn_items).try(:first).try(:grn_serial_items).try(:first).try(:inventory_serial_item).try(:parts_not_completed) ? "Not completed" : ""}
                 .row
                   .col-md-12
                     %strong Damage:
-                    #{spare_part.try(:ticket_spare_part_store).try(:srr_item).srr_item_sources.first.gin_source.grn_serial_item.try(:inventory_serial_item).try(:damage) ? "Damaged" : ""}
+                    #{spare_part.try(:ticket_spare_part_store).try(:approved_main_inventory_product).try(:grn_items).try(:first).try(:grn_serial_items).try(:first).try(:inventory_serial_item).try(:damage) ? "Damaged" : ""}
                     / #{Reason.find_by_id(spare_part.ticket_spare_part_store.try(:return_part_damage_reason_id)).try(:reason)}
                 .row
                   .col-md-12
                     %strong Repaired:
-                    #{spare_part.try(:ticket_spare_part_store).try(:srr_item).srr_item_sources.first.gin_source.grn_serial_item.try(:inventory_serial_item).try(:repaired) ? "Repaired" : ""}
+                    #{spare_part.try(:ticket_spare_part_store).try(:approved_main_inventory_product).try(:grn_items).try(:first).try(:grn_serial_items).try(:first).try(:inventory_serial_item).try(:repaired) ? "Repaired" : ""}
                 .row
                   .col-md-12
                     %strong Remarks:
-                    #{spare_part.try(:ticket_spare_part_store).try(:srr_item).srr_item_sources.first.gin_source.grn_serial_item.try(:inventory_serial_item).try(:remarks)}
+                    #{spare_part.try(:ticket_spare_part_store).try(:approved_main_inventory_product).try(:grn_items).try(:first).try(:grn_serial_items).try(:first).try(:inventory_serial_item).try(:remarks)}
 .row
   .col-md-12
     .row
