@@ -210,10 +210,14 @@
         .col-md-4
           = label_tag "Product condition"
           = f.select :product_condition_id, ProductCondition.all.collect { |p| [ p.condition, p.id ] }, include_blank: true
-        .col-md-4
+        .col-md-2
           = f.input :scavenge, as: :boolean, wrapper: :append
-        .col-md-4
+        .col-md-2
           = f.input :parts_not_completed, as: :boolean, wrapper: :append
+        .col-md-2
+          = f.input :used, as: :boolean, wrapper: :append
+        .col-md-2
+          = f.input :repaired, as: :boolean, wrapper: :append
       .row.col-md-12
         .col-md-4
           = f.input :damage, as: :boolean, wrapper: :append
@@ -222,52 +226,51 @@
             = label_tag "Damage Reason"
             = d.select :damage_reason_id, InventoryReason.all.where(damage: true).map{|r| [r.reason, r.id]}, include_blank: true
       .row.col-md.12
-        .col-md-3
-          = f.input :used, as: :boolean, wrapper: :append
-        .col-md-3
-          = f.input :repaired, as: :boolean, wrapper: :append
         .col-md-6
-          = f.input :remarks
+          = f.input :remarks, label: "Inventory Serial Part Remarks"
+        .col-md-6
 
       / above common for add or update..
 
       .row.col-md-12
-        .col-md-6
+        .col-md-3
           = f.input :serial_no 
-        .col-md-6
+        .col-md-3
           = f.input :ct_no
-      .row.col-md-12
-        .col-md-6
+        .col-md-3
           = f.input :manufatured_date, as: :string, input_html: {class: "datepicker"}
-        .col-md-6
+        .col-md-3
           = f.input :expiry_date, as: :string, input_html: {class: "datepicker"}
       .row.col-md-12
         = f.simple_fields_for :inventory_serial_part_additional_costs do |addi_cost|
-          .col-md-4
+          .col-md-3
             = addi_cost.input :cost
-          .col-md-4
+          .col-md-3
             = label_tag "currency"
             = addi_cost.select :currency_id, Currency.all.collect { |curr| [ curr.currency, curr.id ] }, include_blank: true  
-          .col-md-4
+          .col-md-6
             = addi_cost.input :note
       .row.col-md-12
         = f.simple_fields_for :inventory_serial_part_warrantys do |spw|
           = spw.simple_fields_for :inventory_warranty do |w|
-            .col-md-3
-              = w.input :start_at, as: :string, input_html: {class: "datepicker"}
-            .col-md-3
-              = w.input :end_at, as: :string, input_html: {class: "datepicker"}
-            .col-md-3
-              = w.input :period_part
-            .col-md-3
-              = w.input :period_labour
-            .col-md-4
-              = w.input :period_onsight
-            .col-md-4
-              = label_tag "Warranty Type"
-              = w.select :warranty_type_id, WarrantyType.all.collect { |p| [ p.name, p.id ] }, include_blank: true
-            .col-md-4
-              = w.input :remarks
+            %fieldset
+              %legend
+                Inventory Serial Part Warranty
+              .col-md-3
+                = w.input :start_at, as: :string, input_html: {class: "datepicker"}
+              .col-md-3
+                = w.input :end_at, as: :string, input_html: {class: "datepicker"}
+              .col-md-2
+                = w.input :period_part
+              .col-md-2
+                = w.input :period_labour
+              .col-md-2
+                = w.input :period_onsight
+              .col-md-4
+                = label_tag "Warranty Type"
+                = w.select :warranty_type_id, WarrantyType.all.collect { |p| [ p.name, p.id ] }, include_blank: true
+              .col-md-8
+                = w.input :remarks, label: "Inventory Serial Part Warranty Remarks"
       .row.col-md-12
         = f.submit "Add Serial Part", class: "btn btn-success"
   .update_part_class.hide
@@ -278,10 +281,14 @@
         .col-md-4
           = label_tag "Product condition"
           = f.select :product_condition_id, ProductCondition.all.collect { |p| [ p.condition, p.id ] }, include_blank: true
-        .col-md-4
+        .col-md-2
           = f.input :scavenge, as: :boolean, wrapper: :append
-        .col-md-4
+        .col-md-2
           = f.input :parts_not_completed, as: :boolean, wrapper: :append
+        .col-md-2
+          = f.input :used, as: :boolean, wrapper: :append  
+        .col-md-2
+          = f.input :repaired, as: :boolean, wrapper: :append
       .row.col-md-12
         .col-md-4
           = f.input :damage, as: :boolean, wrapper: :append
@@ -290,12 +297,9 @@
             = label_tag "Damage Reason"
             = d.select :damage_reason_id, InventoryReason.all.where(damage: true).map{|r| [r.reason, r.id]}, include_blank: true
       .row.col-md.12
-        .col-md-3
-          = f.input :used, as: :boolean, wrapper: :append
-        .col-md-3
-          = f.input :repaired, as: :boolean, wrapper: :append
         .col-md-6
-          = f.input :remarks
+          = f.input :remarks, label: "Inventory Serial Part Remarks"
+        .col-md-6
       .row.col-md.12
         = f.submit "Update Serial Part", class: "btn btn-success"
 
@@ -313,10 +317,14 @@
           .col-md-4
             = label_tag "Product condition"
             = f.select :product_condition_id, ProductCondition.all.collect { |p| [ p.condition, p.id ] }, include_blank: true
-          .col-md-4
+          .col-md-2
             = f.input :scavenge, as: :boolean, wrapper: :append
-          .col-md-4
+          .col-md-2
             = f.input :parts_not_completed, as: :boolean, wrapper: :append
+          .col-md-2
+            = f.input :used, as: :boolean, wrapper: :append
+          .col-md-2
+            = f.input :repaired, as: :boolean, wrapper: :append
         .row.col-md-12
           .col-md-4
             = f.input :damage, as: :boolean, wrapper: :append
@@ -326,52 +334,50 @@
                 = label_tag "Damage Reason"
                 = d.select :damage_reason_id, InventoryReason.all.where(damage: true).map{|r| [r.reason, r.id]}, include_blank: true
         .row.col-md.12
-          .col-md-3
-            = f.input :used, as: :boolean, wrapper: :append
-          .col-md-3
-            = f.input :repaired, as: :boolean, wrapper: :append
           .col-md-6
-            = f.input :remarks
+            = f.input :remarks, label: "Inventory Serial Item Remarks"
+          .col-md-6
 
         / above common for add or update..
 
         .row.col-md-12
-          .col-md-6
+          .col-md-3
             = f.input :serial_no 
-          .col-md-6
+          .col-md-3
             = f.input :ct_no
-        .row.col-md-12
-          .col-md-6
+          .col-md-3
             = f.input :manufatured_date, as: :string, input_html: {class: "datepicker"}
-          .col-md-6
+          .col-md-3
             = f.input :expiry_date, as: :string, input_html: {class: "datepicker"}
         .row.col-md-12
           = f.simple_fields_for :grn_items do |grn_item|
-            .col-md-4
+            .col-md-3
               = grn_item.input :unit_cost
-            .col-md-4
+            .col-md-3
               = label_tag "currency"
               = grn_item.select :currency_id, Currency.all.collect { |curr| [ curr.currency, curr.id ] }, include_blank: true  
-            .col-md-4
-              / = grn_item.input :note there is no cost note got grn_item like additional cost for serial item table.
+            .col-md-6
         .row.col-md-12
           = f.simple_fields_for :inventory_serial_warrantys do |sw|
             = sw.simple_fields_for :inventory_warranty do |w|
-              .col-md-3
-                = w.input :start_at, as: :string, input_html: {class: "datepicker"}
-              .col-md-3
-                = w.input :end_at, as: :string, input_html: {class: "datepicker"}
-              .col-md-3
-                = w.input :period_part
-              .col-md-3
-                = w.input :period_labour
-              .col-md-4
-                = w.input :period_onsight
-              .col-md-4
-                = label_tag "Warranty Type"
-                = w.select :warranty_type_id, WarrantyType.all.collect { |p| [ p.name, p.id ] }, include_blank: true
-              .col-md-4
-                = w.input :remarks
+              %fieldset
+                %legend
+                  Inventory Serial Item Warranty
+                .col-md-3
+                  = w.input :start_at, as: :string, input_html: {class: "datepicker"}
+                .col-md-3
+                  = w.input :end_at, as: :string, input_html: {class: "datepicker"}
+                .col-md-2
+                  = w.input :period_part
+                .col-md-2
+                  = w.input :period_labour
+                .col-md-2
+                  = w.input :period_onsight
+                .col-md-4
+                  = label_tag "Warranty Type"
+                  = w.select :warranty_type_id, WarrantyType.all.collect { |p| [ p.name, p.id ] }, include_blank: true
+                .col-md-8
+                  = w.input :remarks, label: "Inventory Serial Warranty Remarks"
         .row.col-md-12
           = f.submit "Add Serial Item", class: "btn btn-success"
     .update_item_class.hide
@@ -382,10 +388,14 @@
           .col-md-4
             = label_tag "Product condition"
             = f.select :product_condition_id, ProductCondition.all.collect { |p| [ p.condition, p.id ] }, include_blank: true
-          .col-md-4
+          .col-md-2
             = f.input :scavenge, as: :boolean, wrapper: :append
-          .col-md-4
+          .col-md-2
             = f.input :parts_not_completed, as: :boolean, wrapper: :append
+          .col-md-2
+            = f.input :used, as: :boolean, wrapper: :append 
+          .col-md-2
+            = f.input :repaired, as: :boolean, wrapper: :append
         .row.col-md-12
           .col-md-4
             = f.input :damage, as: :boolean, wrapper: :append
@@ -395,12 +405,9 @@
                 = label_tag "Damage Reason"
                 = d.select :damage_reason_id, InventoryReason.all.where(damage: true).map{|r| [r.reason, r.id]}, include_blank: true
         .row.col-md.12
-          .col-md-3
-            = f.input :used, as: :boolean, wrapper: :append
-          .col-md-3
-            = f.input :repaired, as: :boolean, wrapper: :append
           .col-md-6
-            = f.input :remarks
+            = f.input :remarks, label: "Inventory Serial Item Remarks"
+          .col-md-6
         .row.col-md.12
           = f.submit "Update Serial Item", class: "btn btn-success"
   - else
@@ -416,12 +423,12 @@
           .row.col-md.12
             = f.simple_fields_for :inventory_serial_items do |isi|
               .col-md-6
-                = isi.input :damage, as: :boolean, wrapper: :append
+                / = isi.input :damage, as: :boolean, wrapper: :append
               .col-md-6
-                = isi.simple_fields_for :grn_serial_items do |grn_serial_item|
-                  = grn_serial_item.simple_fields_for :damages do |d|
-                    = label_tag "Damage Reason"
-                    = d.select :damage_reason_id, InventoryReason.all.where(damage: true).map{|r| [r.reason, r.id]}, include_blank: true
+                / = isi.simple_fields_for :grn_serial_items do |grn_serial_item|
+                /   = grn_serial_item.simple_fields_for :damages do |d|
+                /     = label_tag "Damage Reason"
+                /     = d.select :damage_reason_id, InventoryReason.all.where(damage: true).map{|r| [r.reason, r.id]}, include_blank: true
           / above is common for add and update
           .row.col-md.12
             .col-md-3
@@ -433,7 +440,8 @@
             .col-md-3
               = f.input :expiry_date, as: :string, input_html: {class: "datepicker"}
           .row.col-md-12
-            = f.input :remarks, label: "Remarks", input_html: {value: nil}
+            .col-md-6
+              = f.input :remarks, label: "Inventory Batch Remarks", input_html: {value: nil}
           .row.col-md-12
             = f.simple_fields_for :inventory_serial_items do |isi|
               = isi.simple_fields_for :grn_items do |grn_item|
@@ -452,12 +460,12 @@
           .row.col-md.12
             = f.simple_fields_for :inventory_serial_items do |isi|
               .col-md-6
-                = isi.input :damage, as: :boolean, wrapper: :append
+                / = isi.input :damage, as: :boolean, wrapper: :append
               .col-md-6
-                = isi.simple_fields_for :grn_serial_items do |grn_serial_item|
-                  = grn_serial_item.simple_fields_for :damages do |d|
-                    = label_tag "Damage Reason"
-                    = d.select :damage_reason_id, InventoryReason.all.where(damage: true).map{|r| [r.reason, r.id]}, include_blank: true
+                / = isi.simple_fields_for :grn_serial_items do |grn_serial_item|
+                /   = grn_serial_item.simple_fields_for :damages do |d|
+                /     = label_tag "Damage Reason"
+                /     = d.select :damage_reason_id, InventoryReason.all.where(damage: true).map{|r| [r.reason, r.id]}, include_blank: true
           .row.col-md.12
             = f.submit "Update Batch", class: "btn btn-success"
     - else
@@ -470,8 +478,8 @@
             .col-md.6
               / damage boolean value not in grn item table.
             .col-md.6
-              = f.simple_fields_for :damages do |d|
-                = label_tag "Damage Reason"
-                = d.select :damage_reason_id, InventoryReason.all.where(damage: true).map{|r| [r.reason, r.id]}, include_blank: true
+              / = f.simple_fields_for :damages do |d|
+              /   = label_tag "Damage Reason"
+              /   = d.select :damage_reason_id, InventoryReason.all.where(damage: true).map{|r| [r.reason, r.id]}, include_blank: true
           .row.col-md.12
             = f.submit "Save", class: "btn btn-success"
