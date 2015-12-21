@@ -296,48 +296,49 @@ class InventoriesController < ApplicationController
       end
     
     elsif params[:return]
+      if not params[:update_without_return]
+        if continue
+          if rce or rpr
 
-      if continue
-        if rce or rpr
+            save_ticket_on_loan_spare_part["RTN", 52]
 
-          save_ticket_on_loan_spare_part["RTN", 52]
+            # bpm output variables
+            bpm_variables = view_context.initialize_bpm_variables.merge(d24_return_store_part: "Y", onloan_request: "Y")
 
-          # bpm output variables
-          bpm_variables = view_context.initialize_bpm_variables.merge(d24_return_store_part: "Y", onloan_request: "Y")
+            @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
 
-          @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
+            bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
-          bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+            # bpm output variables
+            ticket_id = @ticket.id
+            request_spare_part_id = '-'
+            supp_engr_user = current_user.id
+            priority = @ticket.priority
+            request_onloan_spare_part_id = ticket_on_loan_spare_part.id
+            onloan_request = "Y"
 
-          # bpm output variables
-          ticket_id = @ticket.id
-          request_spare_part_id = '-'
-          supp_engr_user = current_user.id
-          priority = @ticket.priority
-          request_onloan_spare_part_id = ticket_on_loan_spare_part.id
-          onloan_request = "Y"
+            # Create Process "SPPT_STORE_PART_RETURN",
+            bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT_STORE_PART_RETURN", query: {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, supp_engr_user: supp_engr_user, priority: priority}
 
-          # Create Process "SPPT_STORE_PART_RETURN", 
-          bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT_STORE_PART_RETURN", query: {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, supp_engr_user: supp_engr_user, priority: priority}
+            if bpm_response1[:status].try(:upcase) == "SUCCESS"
+              @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name])
+              view_context.ticket_bpm_headers bpm_response1[:process_id], @ticket.id, "", request_onloan_spare_part_id
+            else
+              @bpm_process_error = true
+            end
 
-          if bpm_response1[:status].try(:upcase) == "SUCCESS"
-            @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name])
-            view_context.ticket_bpm_headers bpm_response1[:process_id], @ticket.id, "", request_onloan_spare_part_id
-          else
-            @bpm_process_error = true
+            if bpm_response[:status].upcase == "SUCCESS"
+              @flash_message = "Successfully updated."
+            else
+              @flash_message = "ticket is updated. but Bpm error"
+            end
+
+            @flash_message = "#{@flash_message} Unable to start new process." if @bpm_process_error
+
           end
-
-          if bpm_response[:status].upcase == "SUCCESS"
-            @flash_message = "Successfully updated."
-          else
-            @flash_message = "ticket is updated. but Bpm error"
-          end
-          
-          @flash_message = "#{@flash_message} Unable to start new process." if @bpm_process_error
-
+        else
+          @flash_message = "Bpm error. ticket is not updated"
         end
-      else
-        @flash_message = "Bpm error. ticket is not updated"
       end
 
 
@@ -684,7 +685,7 @@ class InventoriesController < ApplicationController
     end
 
     def ticket_on_loan_spare_part_params ticket_onloan_spare_part
-      t_onloan_spare_part = params.require(:ticket_on_loan_spare_part).permit(:return_part_serial_no, :return_part_ct_no, :unused_reason_id, :note, :part_terminated_reason_id, :approved_store_id, :approved_inv_product_id, :approved_main_inv_product_id, :ref_spare_part_id, :note, :ticket_id, :status_action_id, :status_use_id, :store_id, :inv_product_id, :main_inv_product_id, :part_of_main_product, ticket_attributes: [:remarks, :id])
+      t_onloan_spare_part = params.require(:ticket_on_loan_spare_part).permit(:return_part_serial_no, :return_part_ct_no, :unused_reason_id, :note, :part_terminated_reason_id, :approved_store_id, :approved_inv_product_id, :approved_main_inv_product_id, :ref_spare_part_id, :note, :ticket_id, :status_action_id, :status_use_id, :store_id, :inv_product_id, :main_inv_product_id, :part_of_main_product, :received_part_serial_no, :received_part_ct_no, ticket_attributes: [:remarks, :id])
 
       t_onloan_spare_part[:note] = t_onloan_spare_part[:note].present? ? "#{t_onloan_spare_part[:note]} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{ticket_onloan_spare_part.note}" : ticket_onloan_spare_part.note
       t_onloan_spare_part
