@@ -1413,6 +1413,10 @@ class TicketsController < ApplicationController
     TicketSparePart
     Inventory
     Warranty
+    Gin
+    Grn
+    Srr
+    Inventory
 
     @ticket = Ticket.find_by_id params[:ticket_id]
     # if params[:ticket_id].present?

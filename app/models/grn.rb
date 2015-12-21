@@ -21,6 +21,8 @@ class GrnItem < ActiveRecord::Base
 
   has_many :grn_serial_items, foreign_key: :grn_item_id
   has_many :grn_items, through: :grn_serial_items
+  has_many :damages
+  has_many :gin_sources
 end
 
 class GrnBatch < ActiveRecord::Base
@@ -29,6 +31,9 @@ class GrnBatch < ActiveRecord::Base
   belongs_to :grn_item
   belongs_to :inventory_batch
 
+  has_many :gin_sources
+  has_many :damages
+
 end
 
 class GrnSerialItem < ActiveRecord::Base
@@ -36,5 +41,8 @@ class GrnSerialItem < ActiveRecord::Base
 
   belongs_to :grn_item, foreign_key: :grn_item_id
   belongs_to :inventory_serial_item, foreign_key: :serial_item_id
+
+  has_many :gin_sources#, foreign_key: :gin_item_id
+  has_many :damages
 
 end
