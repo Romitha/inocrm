@@ -13,6 +13,9 @@ window.Inventories =
     @bundle_load()
     @approve_store_part()
     @checked_quality_control()
+    @checked_add_update_radio_for_bundle()
+    @checked_add_update_radio_for_items()
+    @checked_add_update_radio_for_parts()
     return
 
   filter_product: -> 
@@ -48,6 +51,33 @@ window.Inventories =
       else
         $(".part").addClass("hide")
         $("#request_from_select").addClass("hide")
+
+  checked_add_update_radio_for_bundle: ->
+    $('.add_new_bundle').on 'change', ->
+      $(".update_batch").addClass("hide")
+      $(".add_batch").removeClass("hide")
+
+    $('.update_bundle').on 'change', ->
+      $(".update_batch").removeClass("hide")
+      $(".add_batch").addClass("hide")
+
+  checked_add_update_radio_for_items: ->
+    $('.add_new_item').on 'change', ->
+      $(".update_item_class").addClass("hide")
+      $(".add_item").removeClass("hide")
+
+    $('.update_item').on 'change', ->
+      $(".update_item_class").removeClass("hide")
+      $(".add_item").addClass("hide")
+
+  checked_add_update_radio_for_parts: ->
+    $('.add_new_part').on 'change', ->
+      $(".update_part_class").addClass("hide")
+      $(".add_part").removeClass("hide")
+
+    $('.update_part').on 'change', ->
+      $(".update_part_class").removeClass("hide")
+      $(".add_part").addClass("hide")
 
   checked_quality_control: ->
     $("#act_quality_control_reject_reason").click ->

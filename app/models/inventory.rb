@@ -102,7 +102,8 @@ class InventorySerialItem < ActiveRecord::Base
 
   has_many :grn_serial_items, foreign_key: :serial_item_id
   has_many :grn_items, through: :grn_serial_items
-
+  has_many :inventory_serial_additional_costs, through: :serial_item_id
+  has_many :inventory_serial_warrantys, through: :serial_item_id
 
 end
 
@@ -112,8 +113,11 @@ class InventorySerialPart < ActiveRecord::Base
   belongs_to :inventory_serial_item, foreign_key: :serial_item_id
   belongs_to :inventory_product, foreign_key: :product_id
   belongs_to :inventory_serial_item_status, foreign_key: :inv_status_id
+  has_many :gin_sources, foreign_key: :serial_part_id
 
   has_many :inventory_serial_part_additional_costs, foreign_key: :serial_part_id
+  has_many :inventory_serial_part_warrantys, foreign_key: :serial_part_id
+  has_many :damages
 
 end
 
@@ -136,4 +140,40 @@ class InventorySerialPartAdditionalCost < ActiveRecord::Base
 
   belongs_to :inventory_serial_part, foreign_key: :serial_part_id
   belongs_to :currency
+end
+
+class InventorySerialAdditionalCost < ActiveRecord::Base
+  self.table_name = "inv_serial_additional_cost"
+
+  belongs_to :inventory_serial_item, foreign_key: :serial_item_id
+end
+
+class InventorySerialPartWarranty < ActiveRecord::Base
+  self.table_name = "inv_serial_part_warranty"
+
+  belongs_to :inventory_serial_part, foreign_key: :serial_part_id
+  belongs_to :inventory_warranty
+end
+
+class InventorySerialWarranty < ActiveRecord::Base
+  self.table_name = "inv_serial_warranty"
+
+  belongs_to :inventory_serial_item, foreign_key: :serial_item_id
+  accepts_nested_attributes_for :inventory_serial_item, :allow_destroy => true
+  belongs_to :inventory_warranty
+  accepts_nested_attributes_for :inventory_warranty, :allow_destroy => true
+end
+
+class InventoryWarranty < ActiveRecord::Base
+  self.table_name = "inv_warranty"
+
+  has_many :inventory_serial_part_warrantys, foreign_key: :warranty_id
+  has_many :inventory_serial_warrantys, foreign_key: :warranty_id
+
+end
+
+class InventoryReason < ActiveRecord::Base
+  self.table_name = "mst_inv_reason"
+  
+  has_many :damages
 end

@@ -1,20 +1,20 @@
 - uri = URI(request.url)
 .row
   .col-md-12
-    %strong Recieve Returned Part
+    %strong Recieve Returned Part Onloan
 .row{style: "margin-top:10px;"}
   .col-md-6
     %strong Date Issued:
-    #{spare_part.ticket_spare_part_store.try(:store_issued_at).try(:strftime, "%Y-%m-%d")}
+    #{onloan_spare_part.try(:isssued_at).try(:strftime, "%Y-%m-%d")}
   .col-md-6
     %strong Date Returned:
-    #{spare_part.try(:part_returned_at).try(:strftime, "%Y-%m-%d")}
+    #{onloan_spare_part.try(:part_returned_at).try(:strftime, "%Y-%m-%d")}
   .col-md-6
     %strong Issued By:
-    #{User.find_by_id(spare_part.ticket_spare_part_store.try(:store_issued_by)).try(:user_name)}
+    #{User.find_by_id(onloan_spare_part.try(:issued_by)).try(:user_name)}
   .col-md-6
     %strong Returned By:
-    #{User.find_by_id(spare_part.try(:part_returned_by)).try(:user_name)}
+    #{User.find_by_id(onloan_spare_part.try(:part_returned_by)).try(:user_name)}
 
 .row{style: "margin-top:15px;"}
   .col-md-12
@@ -32,28 +32,29 @@
     .row
       .col-md-12
         %strong Store:
-        #{spare_part.ticket_spare_part_store.try(:store).try(:name)}
+        #{onloan_spare_part.try(:store).try(:name)}
     .row
       .col-md-12
         %strong Item Code :
-        #{spare_part.ticket_spare_part_store.try(:inventory_product).try(:serial_no)}
+        #{onloan_spare_part.try(:inventory_product).try(:serial_no)}
         - # generated_item_code!
     .row
       .col-md-12
         %strong Item Description:
-        #{spare_part.ticket_spare_part_store.try(:inventory_product).try(:description)}
+        #{onloan_spare_part.try(:inventory_product).try(:description)}
     .row
       .col-md-12
         %strong Unit :
-        #{spare_part.ticket_spare_part_store.try(:inventory_product).try(:inventory_unit).try(:unit)}
+        #{onloan_spare_part.try(:inventory_product).try(:inventory_unit).try(:unit)}
 
     .row
       .col-md-4
         %strong Serial No :
-        #{spare_part.ticket_spare_part_store.try(:inventory_product).try(:serial_no)}
-        / #{spare_part.try(:ticket_spare_part_store).try(:main_inventory_product).try(:serial_no)}
+        #{onloan_spare_part.try(:inventory_product).try(:serial_no)}
+        / #{onloan_spare_part.try(:main_inventory_product).try(:serial_no)}
       .col-md-4
         %strong CT No :
+        #{spare_part.try(:return_part_ct_no)}
 
     .row
       .col-md-12
@@ -67,112 +68,111 @@
             .col-md-12
               %fieldset
                 .row
-                  .col-md-12  
-                    %strong GRN Date: 
-                    #{spare_part.try(:ticket_spare_part_store).try(:gin_item).try(:gin_sources).first.try(:grn_item).try(:grn).try(:created_at).try(:strftime, "%Y-%m-%d %H:%M")}
+                  .col-md-12
+                    %strong GRN Date:
+                    #{onloan_spare_part.try(:gin_item).try(:gin_sources).try(:grn_item).try(:grn).try(:created_at).try(:strftime, "%Y-%m-%d %H:%M")}
                 .row
                   .col-md-12
                     %strong Batch No:
-                    #{spare_part.try(:ticket_spare_part_store).try(:srr_item).srr_item_sources.first.gin_source.grn_serial_item.try(:inventory_serial_item).try(:inventory_batch).try(:batch_no)}
+                    #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:inventory_batch).try(:batch_no)}
                   .col-md-6
                     %strong Lot No:
-                    #{spare_part.try(:ticket_spare_part_store).try(:srr_item).srr_item_sources.first.gin_source.grn_serial_item.try(:inventory_serial_item).try(:inventory_batch).try(:lot_no)}
+                    #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:inventory_batch).try(:lot_no)}
                 .row
                   .col-md-12
                     %strong Status:
-                    #{spare_part.try(:ticket_spare_part_store).try(:srr_item).srr_item_sources.first.gin_source.grn_serial_item.try(:inventory_serial_item).try(:inventory_serial_item_status).try(:name)}
+                    #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:inventory_serial_item_status).try(:name)}
                 .row
                   .col-md-6
                     %strong Scavenge:
-                    #{spare_part.try(:ticket_spare_part_store).try(:srr_item).srr_item_sources.first.gin_source.grn_serial_item.try(:inventory_serial_item).try(:scavenge) ? "Scavenge" : ""}
+                    #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:scavenge) ? "Scavenge" : ""}
                   .col-md-6
                     %strong Parts Completed:
-                    #{spare_part.try(:ticket_spare_part_store).try(:srr_item).srr_item_sources.first.gin_source.grn_serial_item.try(:inventory_serial_item).try(:parts_not_completed) ? "Not completed" : ""}
+                    #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:parts_not_completed) ? "Not completed" : ""}
                 .row
                   .col-md-12
                     %strong Damage:
-                    #{spare_part.try(:ticket_spare_part_store).try(:srr_item).srr_item_sources.first.gin_source.grn_serial_item.try(:inventory_serial_item).try(:damage) ? "Damaged" : ""}
+                    #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:damage) ? "Damaged" : ""}
                 .row
                   .col-md-12
                     %strong Repaired:
-                    #{spare_part.try(:ticket_spare_part_store).try(:srr_item).srr_item_sources.first.gin_source.grn_serial_item.try(:inventory_serial_item).try(:repaired) ? "Repaired" : ""}
+                    #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:repaired) ? "Repaired" : ""}
                 .row
                   .col-md-12
                     %strong Remarks:
-                    #{spare_part.try(:ticket_spare_part_store).try(:srr_item).srr_item_sources.first.gin_source.grn_serial_item.try(:inventory_serial_item).try(:remarks)}
+                    #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:remarks)}
   .col-md-6
     .row
       .col-md-12
-        %strong
+        %strong 
           %u Main Product of the Part
 
     .row
       .col-md-12
         %strong Item Code:
-        #{spare_part.ticket_spare_part_store.try(:inventory_product).try(:serial_no)}
+        #{onloan_spare_part.try(:inventory_product).try(:serial_no)}
     .row
       .col-md-12
         %strong Item Description:
-        #{spare_part.ticket_spare_part_store.try(:inventory_product).try(:description)}
+        #{onloan_spare_part.try(:inventory_product).try(:description)}
     .row
       .col-md-12
         %strong Unit :
-        #{spare_part.ticket_spare_part_store.try(:inventory_product).try(:inventory_unit).try(:unit)}
+        #{onloan_spare_part.try(:inventory_product).try(:inventory_unit).try(:unit)}
     .row
       .col-md-4
         %strong Serial No :
-        #{spare_part.ticket_spare_part_store.try(:inventory_product).try(:serial_no)}
+        #{onloan_spare_part.try(:inventory_product).try(:serial_no)}
       .col-md-4
         %strong CT No :
         #{spare_part.try(:return_part_ct_no)}
 
-    .row
-      .col-md-12
-        .row
-          .col-md-6
-            %a{"data-toggle" => "collapse", "href"=>"#main_part"}
-              more info
+  .row
+    .col-md-6
+      .row
+        .col-md-6
+          %a{"data-toggle" => "collapse", "href"=>"#main_part"}
+            more info
 
-        .row.small_scale_margin-bottom1
-          #main_part.collapse
-            .col-md-12
-              %fieldset
-                .row
-                  .col-md-12
-                    %strong GRN Date: 
-                    #{spare_part.try(:ticket_spare_part_store).try(:gin_item).try(:gin_sources).first.try(:grn_item).try(:grn).try(:created_at).try(:strftime, "%Y-%m-%d %H:%M")}
-                .row
-                  .col-md-12
-                    %strong Batch No:
-                    #{spare_part.try(:ticket_spare_part_store).try(:srr_item).srr_item_sources.first.gin_source.grn_serial_item.try(:inventory_serial_item).try(:inventory_batch).try(:batch_no)}
-                  .col-md-6
-                    %strong Lot No:
-                    #{spare_part.try(:ticket_spare_part_store).try(:srr_item).srr_item_sources.first.gin_source.grn_serial_item.try(:inventory_serial_item).try(:inventory_batch).try(:lot_no)}
-                .row
-                  .col-md-12
-                    %strong Status:
-                    / #{SparePartStatusAction.find_by_id(onloan_spare_part.try(:status_action_id)).try(:name)}
-                    #{spare_part.try(:ticket_spare_part_store).try(:srr_item).srr_item_sources.first.gin_source.grn_serial_item.try(:inventory_serial_item).try(:inventory_serial_item_status).try(:name)}
-                .row
-                  .col-md-6
-                    %strong Scavenge:
-                    #{spare_part.try(:ticket_spare_part_store).try(:srr_item).srr_item_sources.first.gin_source.grn_serial_item.try(:inventory_serial_item).try(:scavenge) ? "Scavenge" : ""}
-                  .col-md-6
-                    %strong Parts Completed:
-                    #{spare_part.try(:ticket_spare_part_store).try(:srr_item).srr_item_sources.first.gin_source.grn_serial_item.try(:inventory_serial_item).try(:parts_not_completed) ? "Not completed" : ""}
-                .row
-                  .col-md-12
-                    %strong Damage:
-                    #{spare_part.try(:ticket_spare_part_store).try(:srr_item).srr_item_sources.first.gin_source.grn_serial_item.try(:inventory_serial_item).try(:damage) ? "Damaged" : ""}
-                    / #{Reason.find_by_id(spare_part.ticket_spare_part_store.try(:return_part_damage_reason_id)).try(:reason)}
-                .row
-                  .col-md-12
-                    %strong Repaired:
-                    #{spare_part.try(:ticket_spare_part_store).try(:srr_item).srr_item_sources.first.gin_source.grn_serial_item.try(:inventory_serial_item).try(:repaired) ? "Repaired" : ""}
-                .row
-                  .col-md-12
-                    %strong Remarks:
-                    #{spare_part.try(:ticket_spare_part_store).try(:srr_item).srr_item_sources.first.gin_source.grn_serial_item.try(:inventory_serial_item).try(:remarks)}
+      .row.small_scale_margin-bottom1
+        #main_part.collapse
+          .col-md-12
+            %fieldset
+              .row
+                .col-md-12
+                  %strong GRN Date:
+                  #{onloan_spare_part.try(:gin_item).try(:gin_sources).try(:grn_item).try(:grn).try(:created_at).try(:strftime, "%Y-%m-%d %H:%M")}
+              .row
+                .col-md-12
+                  %strong Batch No:
+                  #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:inventory_batch).try(:batch_no)}
+                .col-md-6
+                  %strong Lot No:
+                  #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:inventory_batch).try(:lot_no)}
+              .row
+                .col-md-12
+                  %strong Status:
+                  #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:inventory_serial_item_status).try(:name)}
+              .row
+                .col-md-6
+                  %strong Scavenge:
+                  #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:scavenge) ? "Scavenge" : ""}
+                .col-md-6
+                  %strong Parts Completed:
+                  #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:parts_not_completed) ? "Not completed" : ""}
+              .row
+                .col-md-12
+                  %strong Damage: 
+                  #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:damage) ? "Damaged" : ""}
+                  / #{Reason.find_by_id(onloan_spare_part.try(:return_part_damage_reason_id)).try(:reason)}
+              .row
+                .col-md-12
+                  %strong Repaired:
+                  #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:repaired) ? "Repaired" : ""}
+              .row
+                .col-md-12
+                  %strong Remarks:
+                  #{onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item).try(:inventory_serial_item).try(:remarks)}
 .row
   .col-md-12
     .row
@@ -182,21 +182,21 @@
     .row
       .col-md-4
         %strong Serial No :
-        #{spare_part.try(:return_part_serial_no)}
+        #{onloan_spare_part.try(:return_part_serial_no)}
       .col-md-4
         %strong CT No :
-        #{spare_part.try(:return_part_ct_no)}
+        #{onloan_spare_part.try(:return_part_ct_no)}
 
     .row.small_scale_margin-bottom1
       .col-md-4
         %strong Use Status of the part: 
-        #{Reason.find_by_id(spare_part.try(:status_use_id)).try(:reason)}
+        #{Reason.find_by_id(onloan_spare_part.try(:status_use_id)).try(:reason)}
 
       .col-md-4
         %strong Un Used Reason:
-        #{Reason.find_by_id(spare_part.try(:unused_reason_id)).try(:reason)}
+        #{Reason.find_by_id(onloan_spare_part.try(:unused_reason_id)).try(:reason)}
 
-- if spare_part.ticket_spare_part_store.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:serial_part_id).present?
+- if onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:serial_part_id).present?
 
   =radio_button("radio_part", "radio_part", "add_part", checked: true, :class => "add_new_part")
   =label_tag :type_order, "Add new Serial Part"
@@ -251,7 +251,7 @@
           .col-md-4
             = addi_cost.input :note
       .row.col-md-12
-        = f.simple_fields_for :inventory_serial_part_warranties do |spw|
+        = f.simple_fields_for :inventory_serial_part_warrantys do |spw|
           = spw.simple_fields_for :inventory_warranty do |w|
             .col-md-3
               = w.input :start_at, as: :string, input_html: {class: "datepicker"}
@@ -271,7 +271,7 @@
       .row.col-md-12
         = f.submit "Add Serial Part", class: "btn btn-success"
   .update_part_class.hide
-    - serial = spare_part.ticket_spare_part_store.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:serial_part_id)
+    - serial = onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:serial_part_id)
     - i = InventorySerialPart.find(serial)
     = simple_form_for i, url: "#" do |f|
       .row.col-md.12
@@ -300,7 +300,7 @@
         = f.submit "Update Serial Part", class: "btn btn-success"
 
 - else
-  - if spare_part.ticket_spare_part_store.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item_id).present?
+  - if onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item_id).present?
     =radio_button("radio_item", "radio_item", "add_item", checked: true, :class => "add_new_item")
     =label_tag :type_order, "Add new Serial Item"
     =radio_button("radio_item", "radio_item", "update_item", :class => "update_item")
@@ -375,7 +375,7 @@
         .row.col-md-12
           = f.submit "Add Serial Item", class: "btn btn-success"
     .update_item_class.hide
-      - grn_serial_item = spare_part.ticket_spare_part_store.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item_id)
+      - grn_serial_item = onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_serial_item_id)
       - i = InventorySerialItem.find(grn_serial_item)
       = simple_form_for i, url: "#" do |f|
         .row.col-md.12
@@ -404,7 +404,7 @@
         .row.col-md.12
           = f.submit "Update Serial Item", class: "btn btn-success"
   - else
-    - if spare_part.ticket_spare_part_store.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_batch_id).present?
+    - if onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_batch_id).present?
       =radio_button("radio_batch", "radio_batch", "add_batch", checked: true, :class => "add_new_bundle")
       =label_tag :type_order, "Add New Batch"
       = radio_button("radio_batch", "radio_batch", "update_batch", :class => "update_bundle")
@@ -446,13 +446,13 @@
           .row.col-md-12
             = f.submit "Add Batch", class: "btn btn-success"
       .update_batch.hide
-        - grn_batch_id = spare_part.ticket_spare_part_store.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_batch_id)
+        - grn_batch_id = onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_batch_id)
         - i = InventoryBatch.find(grn_batch_id)
         = simple_form_for i, url: "#" do |f|
           .row.col-md.12
             = f.simple_fields_for :inventory_serial_items do |isi|
               .col-md-6
-                / = isi.input :damage, as: :boolean, wrapper: :append
+                = isi.input :damage, as: :boolean, wrapper: :append
               .col-md-6
                 = isi.simple_fields_for :grn_serial_items do |grn_serial_item|
                   = grn_serial_item.simple_fields_for :damages do |d|
@@ -461,12 +461,17 @@
           .row.col-md.12
             = f.submit "Update Batch", class: "btn btn-success"
     - else
-      - if spare_part.ticket_spare_part_store.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_item_id).present?
-        - grn_item_id = spare_part.ticket_spare_part_store.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_item_id)
+      - if onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_item_id).present?
+
+        - grn_item_id = onloan_spare_part.try(:srr_item).try(:srr_item_sources).try(:first).try(:gin_source).try(:grn_item_id)
         - i = GrnItem.find(grn_item_id)
         = simple_form_for i, url: "#" do |f|
-          / damage boolean value not in grn item table.
-          = f.simple_fields_for :damages do |d|
-            = label_tag "Damage Reason"
-            = d.select :damage_reason_id, InventoryReason.all.where(damage: true).map{|r| [r.reason, r.id]}, include_blank: true
-          = f.submit "Save", class: "btn btn-success"
+          .row.col-md.12
+            .col-md.6
+              / damage boolean value not in grn item table.
+            .col-md.6
+              = f.simple_fields_for :damages do |d|
+                = label_tag "Damage Reason"
+                = d.select :damage_reason_id, InventoryReason.all.where(damage: true).map{|r| [r.reason, r.id]}, include_blank: true
+          .row.col-md.12
+            = f.submit "Save", class: "btn btn-success"

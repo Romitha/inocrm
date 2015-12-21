@@ -27,4 +27,9 @@ class GinSource < ActiveRecord::Base
 
   belongs_to :grn_item#, foreign_key: :grn_item_id
   belongs_to :gin_item#, foreign_key: :gin_item_id
+  belongs_to :grn_batch#, foreign_key: :gin_item_id
+  belongs_to :grn_serial_item#, foreign_key: :gin_item_id
+  belongs_to :inventory_serial_part, foreign_key: :serial_part_id
+
+  has_many :srr_item_sources#, foreign_key: :gin_item_id
 end
