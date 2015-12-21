@@ -661,7 +661,9 @@ class InventoriesController < ApplicationController
       @inventory_type = InventorySerialPart.find params[:inventory_type_id]
     elsif params[:inventory_type] == "serial_item"
       @inventory_type = InventorySerialItem.find params[:inventory_type_id]
-      @inventory_serial_parts = @inventory_type.inventory_serial_parts
+
+      # @inventory_serial_parts = @inventory_type.inventory_serial_parts
+      @inventory_serial_parts = Kaminari.paginate_array(@inventory_type.inventory_serial_parts).page(params[:page]).per(10)
     end
 
   end
