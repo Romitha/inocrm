@@ -256,7 +256,7 @@
                       %td= grn_serial_item.inventory_serial_item.manufatured_date.try(:strftime, "%Y-%m-%d %H:%M")
                       %td= grn_serial_item.inventory_serial_item.expiry_date
                       %td= grn_serial_item.inventory_serial_item.remarks
-                      %td= radio_button_tag "grn_serial_item", grn_serial_item.id, false
+                      %td= radio_button_tag "grn_serial_item", grn_serial_item.id, false,{class: "seperate_product_ckeckbox"}
 
               = paginate @paginated_fifo_grn_serial_items, remote: false, method: :get
 
