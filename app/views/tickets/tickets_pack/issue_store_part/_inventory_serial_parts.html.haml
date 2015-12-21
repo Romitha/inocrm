@@ -1,3 +1,5 @@
+= paginate @inventory_serial_parts, remote: true, method: :get, params: {controller: "inventories", action: "load_serial_and_part", rendering_id: "#main_part_part", per_page: 10, rendering_file: "tickets_pack/issue_store_part/issue_store_part"}
+
 %hr
 %table.table.table-hover.table-condensed
   %thead
@@ -19,7 +21,12 @@
   %tbody
     - @inventory_serial_parts.each_with_index do |inventory_serial_part, index|
       %tr
-        %td= index+1
+        %td
+          / = index+1
+          - if params[:page]
+            = (index+1)+ 10**(params[:page].to_i-1)
+          - else
+            = (index+1)
         %td
           = inventory_serial_part.serial_no
         %td
