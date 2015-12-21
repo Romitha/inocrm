@@ -212,7 +212,7 @@
           - if ticket_spare_part.ticket_spare_part_store
             .col-md-3
               %strong Issued by:
-              #{User.cached_find_by_id(ticket_spare_part.ticket_spare_part_store.try(:store_issued_by)).try(:email)}
+              #{User.find_by_id(ticket_spare_part.ticket_spare_part_store.try(:store_issued_by)).try(:email)}
 
             .col-md-3
               %strong Issued at:
@@ -302,13 +302,7 @@
             = ticket_spare_part.part_terminated_reason.try(:reason)            
 
 
-      = simple_form_for ticket_spare_part, url: update_part_order_inventories_path, method: :put do |f| #update_part_order_inventories_path
-
-        / = hidden_field_tag :process_id, session[:process_id]
-        / = hidden_field_tag :task_id, session[:task_id]
-        / = hidden_field_tag :owner, session[:owner]
-        / - session[:bpm_input_variables].each do |bpm_input_variable|
-        /   = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+      = simple_form_for ticket_spare_part, url: update_part_order_inventories_path, method: :put do |f|
 
         = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
         = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
@@ -360,7 +354,7 @@
           = hidden_field_tag :recieved, "recieved"
           = f.submit "recieved", name: "recieved", class: "btn btn-sm btn-success"
 
-        - if manufacture_warranty and (rce or rpr)
+        - if (rce or rpr) #manufacture_warranty and (rce or rpr)
           %label{:for => "Update without return"} Update without return
           = check_box_tag "update_without_return", false, false, class: "small_scale_margin-right1"
           = hidden_field_tag :return, "return"
@@ -568,13 +562,7 @@
               Terminate Reason:
             = ticket_on_loan_spare_part.part_terminated_reason.try(:reason)                  
 
-      = simple_form_for ticket_on_loan_spare_part, url: update_onloan_part_order_inventories_path, method: :put do |f|
-
-        / = hidden_field_tag :process_id, session[:process_id]
-        / = hidden_field_tag :task_id, session[:task_id]
-        / = hidden_field_tag :owner, session[:owner]
-        / - session[:bpm_input_variables].each do |bpm_input_variable|
-        /   = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+      = simple_form_for ticket_spare_part, url: update_onloan_part_order_inventories_path, method: :put do |f| #ticket_on_loan_spare_part as object
 
         = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
         = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
@@ -585,13 +573,22 @@
         = hidden_field_tag :ticket_on_loan_spare_part_id, ticket_on_loan_spare_part.id
 
         - if rce or rpr
-          = f.input :return_part_serial_no, input_html: {class: "return_part_serial_no"}
-          = f.input :return_part_ct_no, input_html: {class: "return_part_ct_no"}
-        - if rce or rpr
-          = f.association :unused_reason
+          .row
+            = f.input :received_spare_part_no, wrapper_html: {class: "col-md-12"}, required: true, input_html: {value: (f.object.received_spare_part_no || f.object.spare_part_no)}
+            = f.input :faulty_serial_no, wrapper_html: {class: "col-md-6"}, required: true, input_html: {class: "faulty_serial_no_input", autocomplete: "off"}
+            = f.input :faulty_ct_no, wrapper_html: {class: "col-md-6"}, required: true, input_html: {class: "faulty_ct_no_input", autocomplete: "off"}
 
-          = f.input :return_part_serial_no
-          = f.input :return_part_ct_no
+            = f.input :received_part_serial_no, wrapper_html: {class: "col-md-6"}, required: true, input_html: {class: "received_part_serial_no_input", autocomplete: "off"}
+            = f.input :received_part_ct_no, wrapper_html: {class: "col-md-6"}, required: true, input_html: {class: "received_part_ct_no_input", autocomplete: "off"}
+
+        / - if rce or rpr
+        /   = f.input :return_part_serial_no, input_html: {class: "return_part_serial_no"}
+        /   = f.input :return_part_ct_no, input_html: {class: "return_part_ct_no"}
+        / - if rce or rpr
+        /   = f.association :unused_reason
+
+        /   = f.input :return_part_serial_no
+        /   = f.input :return_part_ct_no
 
         - if str or iss or rce or rpr
           = f.input :note, input_html: {value: nil}

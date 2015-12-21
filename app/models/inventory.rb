@@ -113,6 +113,8 @@ class InventorySerialPart < ActiveRecord::Base
   belongs_to :inventory_product, foreign_key: :product_id
   belongs_to :inventory_serial_item_status, foreign_key: :inv_status_id
 
+  has_many :inventory_serial_part_additional_costs, foreign_key: :serial_part_id
+
 end
 
 class ProductCondition < ActiveRecord::Base
@@ -127,4 +129,11 @@ class InventorySerialItemStatus < ActiveRecord::Base
 
   has_many :inventory_serial_items, foreign_key: :inv_status_id
   has_many :inventory_serial_parts, foreign_key: :inv_status_id
+end
+
+class InventorySerialPartAdditionalCost < ActiveRecord::Base
+  self.table_name = "inv_serial_part_additional_cost"
+
+  belongs_to :inventory_serial_part, foreign_key: :serial_part_id
+  belongs_to :currency
 end

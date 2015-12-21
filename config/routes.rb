@@ -137,6 +137,7 @@ Rails.application.routes.draw do
       post "update_return_store_part"
       post "update_ticket_close_approval"
       post "update_collect_parts"
+      post "update_issue_store_parts"
 
       get "edit-ticket", :action => :edit_ticket
       get "pop-approval"#, :action => :pop_note

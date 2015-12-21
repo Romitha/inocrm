@@ -73,6 +73,7 @@ class AddSupLastFsrNo < ActiveRecord::Migration
     add_index :inv_grn_serial_item, :inv_serial_part_id
     add_foreign_key :inv_grn_serial_item, :inv_inventory_serial_part, name: :fk_grn_serial_inventory_serial_part, column: :inv_serial_part_id
 
+    add_column :inv_grn_serial_item, :remaining, :boolean
   end
 end
 
@@ -106,5 +107,7 @@ end
 
 
 # add_foreign_key :articles, :authors
+
+# ALTER TABLE `inv_grn_serial_item` ADD `remaining` TINYINT NOT NULL DEFAULT '1' AFTER `inv_serial_part_id`;
 
 # This adds a new foreign key to the author_id column of the articles table. The key references the id column of the authors table. If the column names can not be derived from the table names, you can use the :column and :primary_key options.

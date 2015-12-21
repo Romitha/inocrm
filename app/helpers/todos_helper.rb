@@ -178,7 +178,7 @@ module TodosHelper
         availability_of_task << send_request_process_data(task_list: true, status: "InProgress", process_instance_id: process_id)
         availability_of_task << send_request_process_data(task_list: true, status: "Reserved", process_instance_id: process_id)
 
-        availability_of_task_content = availability_of_task.any? { |e| e[:content].present? and (e[:content]["task_summary"]["id"] == task_id.to_s) }
+        availability_of_task_content = availability_of_task.any? { |e| e[:content].present? and (e[:content]["task_summary"].is_a?(Array) ? e[:content]["task_summary"].map{|id| id["id"]}.include?(task_id.to_s) : e[:content]["task_summary"]["id"] == task_id.to_s) }
       else
         false
       end
