@@ -169,6 +169,8 @@ Rails.application.routes.draw do
       get "low_margin_estimate_parts_approval"
       get "invoice_for_chargeable"
       get "quality_control"
+      get "advance_payment_invoice"
+      get "terminate_job_foc_approval"
 
       get "alert"
 

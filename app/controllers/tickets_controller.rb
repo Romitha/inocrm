@@ -1928,6 +1928,37 @@ class TicketsController < ApplicationController
     end
   end
 
+  def advance_payment_invoice
+    Inventory
+    Warranty
+    ContactNumber
+    QAndA
+    TaskAction
+    Inventory
+    ticket_id = (params[:ticket_id] or session[:ticket_id])
+    @ticket = Ticket.find_by_id ticket_id
+    session[:ticket_id] = @ticket.id
+    if @ticket
+      @product = @ticket.products.first
+      @warranties = @product.warranties
+      session[:product_id] = @product.id
+      Rails.cache.delete([:histories, session[:product_id]])
+      Rails.cache.delete([:join, @ticket.id])
+
+      @estimation = @ticket.ticket_estimations.first
+      @spare_part = @ticket.ticket_spare_parts.first
+
+      @ticke_action = @ticket.user_ticket_actions.find_by_action_id 18
+      @terminate_job_payment = @ticke_action.ticket_terminate_job_payments.first
+
+      @ticket_payment_received = TicketPaymentReceived.first
+
+    end
+    respond_to do |format|
+      format.html {render "tickets/tickets_pack/advance_payment_invoice/advance_payment_invoice"}
+    end
+  end
+
   def alert
 
     Inventory
@@ -2170,12 +2201,39 @@ class TicketsController < ApplicationController
     if @ticket
       @estimation = TicketEstimation.find params[:part_estimation_id]
 
+
       @product = @ticket.products.first
       Rails.cache.delete([:histories, @product.id])
       Rails.cache.delete([:join, @ticket.id])
     end
     respond_to do |format|
       format.html {render "tickets/tickets_pack/low_margin_estimate_parts_approval/low_margin_estimate_parts_approval"}
+    end
+  end
+
+  def terminate_job_foc_approval
+    Inventory
+    Warranty
+    ContactNumber
+    QAndA
+    TaskAction
+    Inventory
+    ticket_id = params[:ticket_id]
+    @ticket = Ticket.find_by_id ticket_id
+    if @ticket
+
+      @ticket_action = @ticket.user_ticket_actions.find_by_action_id 18
+
+      puts ":"+@ticket_action.inspect
+      @ticket_terminate_job = @ticket_action.ticket_terminate_job
+      @terminate_job_payment = @ticket_action.ticket_terminate_job_payments.first
+
+      @product = @ticket.products.first
+      Rails.cache.delete([:histories, @product.id])
+      Rails.cache.delete([:join, @ticket.id])
+    end
+    respond_to do |format|
+      format.html {render "tickets/tickets_pack/terminate_job_foc_approval/terminate_job_foc_approval"}
     end
   end
 
