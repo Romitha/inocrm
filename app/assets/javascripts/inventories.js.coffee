@@ -16,6 +16,7 @@ window.Inventories =
     @checked_add_update_radio_for_bundle()
     @checked_add_update_radio_for_items()
     @checked_add_update_radio_for_parts()
+    @disable_final_payment()
     return
 
   filter_product: -> 
@@ -51,6 +52,13 @@ window.Inventories =
       else
         $(".part").addClass("hide")
         $("#request_from_select").addClass("hide")
+
+  disable_final_payment: ->
+    $("#ticket_ticket_terminate_job_foc_requested_true").click ->
+      $(".payment_req").removeClass("hide")
+    $("#ticket_ticket_terminate_job_foc_requested_true").click ->
+      $(".payment_req").addClass("hide")
+
 
   checked_add_update_radio_for_bundle: ->
     $('.add_new_bundle').on 'change', ->
@@ -405,3 +413,24 @@ window.Inventories =
   load_serial_and_part: (inventory_type_id, inventory_type)->
     $.get "/inventories/load_serial_and_part?inventory_type_id="+inventory_type_id+"&inventory_type="+inventory_type
     return
+
+  calculate_low_approved_price: ->
+
+    total_low_approved_amount = 0
+    total_advance_payment = 0
+    total_estimate = parseFloat($(".cal_estimated_price").text())
+
+    approved_estimate_part_price = parseFloat($(".cal_estimated_price").text())
+
+    $(".low_approved_amount").each ->
+      total_low_approved_amount = total_low_approved_amount + parseFloat($(@).val())
+
+      $(".part_approved_estimated_price").each ->
+
+        total_advance_payment = parseFloat($(@).val()) + total_low_approved_amount
+        total_estimate = approved_estimate_part_price + parseFloat($(@).val())
+
+        $("#total_advance_payment").html(total_advance_payment)
+        $("#total_estimated_price").html(total_estimate)
+
+    $("#total_low_approved_amount").html(total_low_approved_amount)

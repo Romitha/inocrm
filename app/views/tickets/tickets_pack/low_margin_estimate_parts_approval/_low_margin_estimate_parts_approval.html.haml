@@ -1,50 +1,54 @@
+- cost_price = 0
+- estimated_price = 0
+- index = 0
+- total_margin = 0
+- profit_margin = 0
+
 = simple_nested_form_for estimation, url: update_estimation_part_tickets_path, method: :post do |f|
 
   = f.simple_fields_for :ticket_estimation_parts do |t|
     / - if t.object.ticket_spare_part.below_margine
     %fieldset
-      %legend Part No #{t.object.ticket_spare_part.try(:spare_part_no)}
-      .row
-        .col-md-12.tyyt
-          %strong Part No:
-          #{t.object.ticket_spare_part.try(:spare_part_no)}
+      %legend Part No #{index+1}
       .row
         .col-md-12
           %strong Supplier :
           #{t.object.try(:supplier).try(:name)}
       .row
         .col-md-4
-          %strong Cost Prices (Rs)
+          %strong Cost Prices :
           #{t.object.try(:cost_price)}
         .col-md-4
-          %strong Requested Estimate Price (Rs) :
+          %strong Requested Estimate Price :
           #{t.object.try(:estimated_price)}
+        .col-md-4
+          = t.input :approved_estimated_price, input_html: {class: "only_float part_approved_estimated_price", oninput: "Inventories.calculate_low_approved_price();"}
+
 
       .row
         .col-md-4
-          %strong Approved Estimate Price(Rs) :
-          #{t.object.try(:approved_estimated_price)}
+          %strong Part No :
+          #{t.object.ticket_spare_part.try(:spare_part_no)}
 
       .row
         .col-md-4
           %strong Part Description :
           #{t.object.ticket_spare_part.try(:spare_part_description)}
+
+      .row
         .col-md-4
-          %strong Wranaty Periad :
+          %strong Wranaty Period :
           #{t.object.try(:warranty_period)}
         .col-md-4
           %strong
       .row
-        .col-md-4.col-md-offset-4
+        .col-md-4
           %strong Started :
           xxx
         .col-md-4
           %strong Expired :
           xxx
-      .row
-        .col-md-12
-          %strong Requested Part
-          xxx
+
       .row
         .col-md-6
           %h4 Requested part
@@ -54,55 +58,31 @@
             %dd
               = t.object.ticket_spare_part.ticket_spare_part_store and t.object.ticket_spare_part.ticket_spare_part_store.store.name
             %dt
-              Item code
+              Item Code
             %dd
               = t.object.ticket_spare_part.ticket_spare_part_store and t.object.ticket_spare_part.ticket_spare_part_store.store.name
             %dt
               Item Description
             %dd
               = t.object.ticket_spare_part.ticket_spare_part_store and t.object.ticket_spare_part.ticket_spare_part_store.try(:main_inventory_product).try(:description)
-
             %dt
               Note
             %dd
-              = t.input :note, input_html: {value: nil}
+              = t.input :note, input_html: {value: nil}, label: false
               = simple_format @estimation.note
-
         .col-md-6
-          %strong Last Perchased Prices Table
-          .small_scale_margin-top1
-            %table.table.table-bordered
-              %thead
-                %tr
-                  %th No
-                  %th Date Purchased
-                  %th Supplier
-                  %th Price
-              %tbody
-                %tr
-                  %th
-                  %td
-                  %td
-                  %td
-      / .row
-      /   .col-md-6
-      /     .row
-      /       .col-md-12
-      /         %strong Store :
-      /     .row
-      /       .col-md-12
-      /         %strong Item Code :
-      /     .row
-      /       .col-md-12
-      /         %strong Item Description :
-      /     .row
-      /       .col-md-6
-      /         %strong Available Qnt :
-      /       .col-md-6
-      /         %strong Unitt :
-      /     .row
-      /       .col-md-12
-      /         %strong Note:
+          Estimate below the margine
+
+          - estimate_margin = ((t.object.try(:estimated_price) - t.object.try(:cost_price)) / t.object.try(:cost_price))*100
+          - total_margin = total_margin + estimate_margin
+          - profit_margin = CompanyConfig.first.try(:sup_internal_part_profit_margin)
+
+          - if estimate_margin < profit_margin
+            %strong{style: "color: red;"}
+              #{estimate_margin}% ( #{profit_margin} )
+
+          -else
+            %strong #{estimate_margin}% ( #{profit_margin} )
 
   = f.simple_fields_for :ticket_estimation_additionals do |a|
     .row
@@ -112,62 +92,45 @@
       .col-md-3
         %strong Cost Price (Rs) :
         #{a.object.try(:cost_price)}
+        - cost_price += a.object.try(:cost_price).to_d
       .col-md-3
         %strong Estimated Price (Rs) :
         #{a.object.try(:estimated_price)}
+        - estimated_price += a.object.try(:estimated_price).to_d
       .col-md-3
-        = a.input :approved_estimated_price, input_html: {class: "only_float"}
+        = a.input :approved_estimated_price, input_html: {class: "low_approved_amount only_float", oninput: "Inventories.calculate_low_approved_price();"}
 
   .row
     .col-md-3.col-md-offset-3
-      %strong Total (Rs) :
-      xxx
+      %strong Total Cost (Rs) : #{cost_price}
+    .col-md-3
+      %strong Total Estimate (Rs) :
+      = label_tag estimated_price, estimated_price , class: "cal_estimated_price"
     .col-md-3
       %strong Total (Rs) :
-      xxx
-    .col-md-3
-      %strong Total (Rs) :
-      xxx
+      %strong
+        %span#total_low_approved_amount
 
   .row
     .col-md-12
       %strong Total Estimate :
-      xxx
+      %span#total_estimated_price
+      - if total_margin < profit_margin
+        %strong{style: "color: red;"}
+          #{total_margin}% ( #{profit_margin} )
+
+      -else
+        %strong #{total_margin}% ( #{profit_margin} )
+
   .row
     .col-md-12
       %strong Min. Advance Payment (Rs) :
-      #{f.object.try(:approved_adv_pmnt_amount)}
+      %span#total_advance_payment
+
   .row
     .col-md-6
       = f.input :note, input_html: {value: nil}
       = simple_format @estimation.note
-
-  .row.small_scale_margin-top1
-    .col-md-12
-      %strong Other Estimations Table
-      .small_scale_margin-top1
-        %table.table.table-bordered
-          %thead
-            %tr
-              %th No
-              %th Date Requested
-              %th No of parts
-              %th Parts Estimationed Price
-              %th Addi. Estimationed Price
-              %th Total Estimationed Price
-              %th Min Advance pay
-              %th Estimation Status
-
-          %tbody
-            %tr
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
-              %td
 
   .row
     .col-md-1
