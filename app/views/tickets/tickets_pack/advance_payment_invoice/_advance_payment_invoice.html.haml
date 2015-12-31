@@ -1,49 +1,65 @@
-.row
-  .col-md-12
-    = simple_nested_form_for ticket_payment_received, url: update_estimation_part_tickets_path, method: :post do |f|
+- total_estimation = 0
+- received_amount = 0
+%fieldset
+  %legend Advance Payment Invoice
 
-      .row
-        .col-md-12
-          %strong Payment Type :
-          xx
+  .row
+    .col-md-12
+      = simple_nested_form_for ticket_payment_received, url: update_estimation_part_tickets_path, method: :post do |f|
 
-      .row
-        .col-md-12
-          %strong Total Estimated Amount (Rs):
-          = #( (f.object.ticket_estimations.inject(0) { |mem, var|  mem+var.ticket_estimation_externals.sum(:estimated_price) }) / (f.object.ticket_estimations.inject(0) { |mem, var|  mem+var.ticket_estimation_externals.sum(:cost_price) }) ) + ( (f.object.ticket_estimations.inject(0) { |mem, var| mem+var.ticket_estimation_additionals.sum(:estimated_price) }) / (f.object.ticket_estimations.inject(0) { |mem, var| mem+var.ticket_estimation_additionals.sum(:cost_price) }) )
+        .row
+          .col-md-12
+            %strong Payment Type :
 
-      .row
-        .col-md-12
-          %strong All Payments Recieved - Total Amount (Rs):
-          = f.object.try(:amount)
+        .row
+          .col-md-4
+            %strong Total Estimated Amount (Rs):
+            - if f.object.cust_approval_required and f.object.cust_approved and !f.object.foc_approved
 
-      .row
-        .col-md-12
-          %strong Balance Amount to be Paid (Rs):
-          xx
+              = total_estimation = f.object.ticket_estimation_externals.inject(0) { |mem, var|  mem + var.approved_estimated_price} + f.object.ticket_estimation_additionals.inject(0) { |mem, var|  mem + var.approved_estimated_price} + f.object.ticket_estimation_parts.inject(0) { |mem, var|  mem + var.approved_estimated_price}
 
-      .row.small_scale_margin-bottom1
-        .col-md-12
-          %strong Recieved Amount (Rs):
-          xx
+            - else
 
-      .row
-        .col-md-4
-          = f.input :amount, input_html: {value: nil, class: "only_float"}
+              = total_estimation = f.object.ticket_estimation_externals.inject(0) { |mem, var|  mem + var.estimated_price} + f.object.ticket_estimation_additionals.inject(0) { |mem, var|  mem + var.estimated_price} + f.object.ticket_estimation_parts.inject(0) { |mem, var|  mem + var.estimated_price}
 
-      .row
-        .col-md-6
-          = f.input :note, input_html: {value: nil}
-          = simple_format @estimation.note
+          .col-md-4
+            %strong to be
+            - if f.object.cust_approval_required and f.object.cust_approved and !f.object.foc_approved and f.object.approval_required
 
-      .row.small_scale_margin-bottom1
-        .col-md-3
-          = button_tag "View Invoice" , class: "btn btn-success"
-          = button_tag "Print Invoice" , class: "btn btn-success"
+              = f.object.approved_adv_pmnt_amount
 
-      .row
-        .col-md-1
-          = f.submit "Save", class: "btn btn-success btn-sm"
-        .col-md-3
-          = label_tag "Invoicing Completed Complete"
-          = check_box_tag :invoicing_completed
+            -else
+
+              = f.object.advance_payment_amount
+
+        .row
+          .col-md-12
+            %strong All Payments Recieved - Total Amount (Rs):
+            = received_amount = f.object.ticket_payment_received.try(:amount)
+
+        .row
+          .col-md-12
+            %strong Balance Amount to be Paid (Rs):
+            / = total_estimation - received_amount
+        %br
+        .row.small_scale_margin-bottom1
+          .col-md-4
+            %strong Recieved Amount (Rs):
+            = f.input :amount, input_html: {value: nil, class: "only_float"},label: false
+
+        .row
+          .col-md-6
+            = f.input :note, input_html: {value: nil}
+            = simple_format @estimation.note
+
+        .row.small_scale_margin-bottom1
+          .col-md-3
+            = button_tag "View Invoice" , class: "btn btn-success"
+            = button_tag "Print Invoice" , class: "btn btn-success"
+
+        .row
+          .col-md-1
+            = f.submit "Save", class: "btn btn-success btn-sm"
+          .col-md-3
+            = label_tag "Invoicing Completed Complete"
+            = check_box_tag :invoicing_completed

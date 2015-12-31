@@ -3,6 +3,7 @@
 - index = 0
 - total_margin = 0
 - profit_margin = 0
+- Grn
 
 = simple_nested_form_for estimation, url: update_estimation_part_tickets_path, method: :post do |f|
 
@@ -23,7 +24,6 @@
           #{t.object.try(:estimated_price)}
         .col-md-4
           = t.input :approved_estimated_price, input_html: {class: "only_float part_approved_estimated_price", oninput: "Inventories.calculate_low_approved_price();"}
-
 
       .row
         .col-md-4
@@ -77,12 +77,40 @@
           - total_margin = total_margin + estimate_margin
           - profit_margin = CompanyConfig.first.try(:sup_internal_part_profit_margin)
 
+          / = t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.grn_items.inspect
+
           - if estimate_margin < profit_margin
             %strong{style: "color: red;"}
               #{estimate_margin}% ( #{profit_margin} )
 
           -else
             %strong #{estimate_margin}% ( #{profit_margin} )
+
+          / = GrnItem.all.inspect
+
+          %table.table.table-hover.table-condensed
+            %thead
+              %tr
+                %th No
+                %th Date Purchase
+                %th Price
+                %th Currency
+
+            %tbody
+              - t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.grn_items.each_with_index do |item, index|
+                %tr
+                  %td
+                    = index+1
+                    / - if params[:page]
+                    /   = (index+1)+ 10**(params[:page].to_i-1)
+                    / - else
+                    /   = (index+1)
+                  %td
+                    / = item.grn.
+                  %td
+                    / = item.current_unit_cost
+                  %td
+                    / = item.currency.code
 
   = f.simple_fields_for :ticket_estimation_additionals do |a|
     .row

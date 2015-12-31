@@ -1,0 +1,60 @@
+%h3 Customer Inquire
+.row
+  .col-md-12
+    = form_tag search_inventories_inventories_path, remote: true, method: :get do
+      .row
+        .col-md-3
+          = label_tag "Ticket No"
+          = text_field_tag "ticket_no"
+        .col-md-3
+          = label_tag "Product Brand"
+          = select_tag "product_brand"
+        .col-md-3
+          = label_tag "Model No"
+          = text_field_tag "model_no"
+
+      .row
+        .col-md-3
+          = label_tag "Serial No"
+          = text_field_tag "serial_no"
+        .col-md-3
+          = label_tag "Product Category"
+          = select_tag "product_category"
+        .col-md-3
+          = label_tag "Product No"
+          = text_field_tag "Product_no"
+
+      .row
+        .col-md-3
+          = label_tag "Customer"
+          = text_field_tag "customer"
+        .col-md-1.small_scale_margin-top1
+          = link_to "Select"
+        .col-md-1
+          = submit_tag "Search", class: "btn btn-sm btn-success"
+
+  .row
+    .col-md-12
+      %table.table.table-striped
+        %thead
+          %tr
+            %th No
+            %th Ticket Date
+            %th Ticket No
+            %th Customer
+            %th Serial No
+            %th Product Brand
+            %th Product Category
+            %th Product No
+            %th
+        %tbody
+          %td xx
+          %td xx
+          %td xx
+          %td xx
+          %td xx
+          %td xx
+          %td xx
+          %td xx
+          %td
+            = link_to "Select"
