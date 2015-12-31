@@ -171,6 +171,7 @@ Rails.application.routes.draw do
       get "quality_control"
       get "advance_payment_invoice"
       get "terminate_job_foc_approval"
+      get "customer_inquire"
 
       get "alert"
 

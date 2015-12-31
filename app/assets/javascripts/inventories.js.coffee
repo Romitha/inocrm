@@ -56,7 +56,7 @@ window.Inventories =
   disable_final_payment: ->
     $("#ticket_ticket_terminate_job_foc_requested_true").click ->
       $(".payment_req").removeClass("hide")
-    $("#ticket_ticket_terminate_job_foc_requested_true").click ->
+    $("#ticket_ticket_terminate_job_foc_requested_false").click ->
       $(".payment_req").addClass("hide")
 
 
