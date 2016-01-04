@@ -97,7 +97,7 @@
                 %th Currency
 
             %tbody
-              - t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.grn_items.each_with_index do |item, index|
+              - t.object.ticket_spare_part.ticket_spare_part_store.try(:inventory_product).try(:grn_items).try(:each_with_index) do |item, index|
                 %tr
                   %td
                     = index+1
