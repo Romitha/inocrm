@@ -23,7 +23,7 @@
         .col-md-3.col-xs-3
           = f.simple_fields_for :ticket_spare_parts do |t_sp_p|
             - if t_sp_p.object.request_from == 'M'
-              - if t_sp_p.object.ticket_spare_part_manufacture.event_closed == 0
+              - if t_sp_p.object.ticket_spare_part_manufacture.try(:event_closed) == 0
                 - un_closed_event_count += 1
           %strong No of un-closed events: #{un_closed_event_count}
       .row.col-md-12.col-xs-12
@@ -54,11 +54,11 @@
                 -else
                   %td No
                 - if tsp.object.request_from == 'M'
-                  %td #{tsp.object.ticket_spare_part_manufacture.event_no}
+                  %td #{tsp.object.ticket_spare_part_manufacture.try(:event_no)}
                 - else
                   %td -
                 - if tsp.object.request_from == 'M'
-                  - if tsp.object.ticket_spare_part_manufacture.event_closed == 1
+                  - if tsp.object.ticket_spare_part_manufacture.try(:event_closed) == 1
                     %td Yes
                   - else
                     %td No
@@ -132,11 +132,11 @@
                               %td No
                             %td #{tsp.object.return_part_serial_no}
                             - if tsp.object.request_from == 'M'
-                              %td #{tsp.object.ticket_spare_part_manufacture.event_no}
+                              %td #{tsp.object.ticket_spare_part_manufacture.try(:event_no)}
                             - else
                               %td -
                             - if tsp.object.request_from == 'M'
-                              - if tsp.object.ticket_spare_part_manufacture.event_closed == 1
+                              - if tsp.object.ticket_spare_part_manufacture.try(:event_closed) == 1
                                 %td Yes
                               - else
                                 %td No

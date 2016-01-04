@@ -4,6 +4,7 @@ window.Inventories =
     @filter_category()
     @filter_store()
     @calculate_cost_price()
+    @calculate_internal_cost_price()
     @terminate_func()
     @accept_returned_part()
     @accept_returned_part_func()
@@ -233,6 +234,42 @@ window.Inventories =
       $("#total_margin_price").html("")
     else
       $("#total_margin_price").html(t_profit_price+"%")
+
+  calculate_internal_cost_price: ->
+
+    total_internal_cost_price = 0
+    total_internal_estimated_price = 0
+    total_internal_margin_price = 0
+
+    $(".est_internal_cost_price, .est_internal_add_cost_price").each ->
+      total_internal_cost_price = total_internal_cost_price + parseInt($(@).val())
+      $(@).parents().eq(2).find(".append_cost_price_internal").html(parseInt($(@).val()))
+
+    $(".est_internal_estimated_price, .est_internal_add_estimated_price").each ->
+      total_internal_estimated_price = total_internal_estimated_price + parseInt($(@).val())
+      $(@).parents().eq(2).find(".append_estimated_price_internal").html(parseInt($(@).val()))
+      cost_price_internal = parseInt($(@).parents().eq(2).siblings().find(".append_cost_price_internal").text())
+      append_total_internal = (parseInt($(@).val()) - cost_price_internal)*100/cost_price_internal
+
+      ap_total_internal = Math.round(append_total_internal * 100)/100
+      if ap_total_internal < parseInt($("#db_margin").html())
+        $(@).parents().eq(3).find(".append_profit_margin_internal").css("color", "red")
+      else
+        $(@).parents().eq(3).find(".append_profit_margin_internal").css("color", "black")
+
+      if isNaN(ap_total_internal)
+        $(@).parents().eq(3).find(".append_profit_margin_internal").html("")
+      else
+        $(@).parents().eq(3).find(".append_profit_margin_internal").html(ap_total_internal+"%")
+
+    total_internal_margin_price = (total_internal_estimated_price - total_internal_cost_price)*100/total_internal_cost_price
+    cal_total = Math.round(total_internal_margin_price * 100)/100
+    $("#total_internal_estimated_price").html(total_internal_estimated_price)
+    $("#total_internal_cost_price").html(total_internal_cost_price)
+    if total_internal_margin_price < parseInt($("#db_margin").html())
+      $("#total_internal_margin_price").html(cal_total).css("color", "red")
+    else
+      $("#total_internal_margin_price").html(cal_total).css("color", "black")
 
   calculate_approved_price: ->
     total_approved_amount = 0

@@ -156,6 +156,7 @@ Rails.application.routes.draw do
       get "ticket_close_approval"
       get "assign-ticket", action: :assign_ticket
       get "estimate_job"
+      get "ticket_spare_part_in_modal"
       get "estimate_the_part_internal"#"estimate_part"
       get "deliver_unit"
       get "job_below_margin_estimate_approval"#low_margin_estimate"
