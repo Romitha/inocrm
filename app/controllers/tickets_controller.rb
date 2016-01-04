@@ -42,6 +42,7 @@ class TicketsController < ApplicationController
   def edit
   end
 
+
   def create
     # Rails.cache.write(:ticket_params, ticket_params)
     session[:time_now] ||= Time.now.strftime("%H%M%S")
@@ -1469,11 +1470,16 @@ class TicketsController < ApplicationController
     QAndA
     TaskAction
     Inventory
+    TicketEstimation
+    Grn
     ticket_id = params[:ticket_id]
     @ticket = Ticket.find_by_id ticket_id
 
     if @ticket
+      # @estimation = TicketEstimationPart.find params[:part_estimation_id]
       @estimation = TicketEstimation.find params[:part_estimation_id]
+      # @estimation_part = @estimation.ticket_estimation_parts.build
+      # @estimation_additional = @estimation.ticket_estimation_additionals.build
 
       @product = @ticket.products.first
       Rails.cache.delete([:histories, @product.id])
