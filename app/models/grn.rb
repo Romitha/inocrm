@@ -30,6 +30,7 @@ class GrnItem < ActiveRecord::Base
   accepts_nested_attributes_for :damages, allow_destroy: true
 
   has_many :gin_sources
+  has_many :gin_serial_parts
 end
 
 class GrnBatch < ActiveRecord::Base
