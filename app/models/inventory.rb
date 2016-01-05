@@ -138,6 +138,7 @@ class InventorySerialPart < ActiveRecord::Base
   has_many :inventory_serial_part_warranties, foreign_key: :serial_part_id
   has_many :inventory_warranties, through: :inventory_serial_part_warranties
   has_many :damages
+  has_many :grn_serial_parts, foreign_key: :inv_serial_part_id
 
   has_many :grn_serial_parts, foreign_key: :inv_serial_part_id
   has_many :grn_items, through: :grn_serial_parts
