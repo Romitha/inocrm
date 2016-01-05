@@ -17,7 +17,9 @@ class SrrItem < ActiveRecord::Base
   belongs_to :inventory_product, foreign_key: :product_id
   belongs_to :product
 
-  has_many :srr_item_sources#, foreign_key: :gin_item_id
+  has_many :srr_item_sources
+  has_many :gin_sources, through: :srr_item_sources
+
   has_many :ticket_spare_part_stores, foreign_key: :inv_srr_item_id
   has_many :ticket_on_loan_spare_parts, foreign_key: :inv_srr_item_id
 end

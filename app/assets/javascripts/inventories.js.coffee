@@ -19,6 +19,7 @@ window.Inventories =
     @checked_add_update_radio_for_parts()
     @disable_final_payment()
     @calculate_low_approved_price()
+    @toggle_add_update_return_part()
     return
 
   filter_product: -> 
@@ -318,7 +319,9 @@ window.Inventories =
     _this = this
     $(".received_part_status").chosen().change ->
       return_part_serial_no_input = $(@).parents("form").find(".return_part_serial_no")
+
       return_part_ct_no_input = $(@).parents("form").find(".return_part_ct_no")
+
       $(@).parents("form").find(".unused_reason").prop("disabled", true).trigger("chosen:updated")
 
 
@@ -326,8 +329,9 @@ window.Inventories =
         faulty_serial_no = $(@).parents(".panel-body").find(".faulty_serial_no").text()
         faulty_ct_no = $(@).parents(".panel-body").find(".faulty_ct_no").text()
 
-        return_part_serial_no_input.prop("readonly", true)
-        return_part_ct_no_input.prop("readonly", true)
+        if not return_part_serial_no_input.is(".onloan")
+          return_part_serial_no_input.prop("readonly", true)
+          return_part_ct_no_input.prop("readonly", true)
 
         return_part_serial_no_input.val(faulty_serial_no)
         return_part_ct_no_input.val(faulty_ct_no)
@@ -509,3 +513,10 @@ window.Inventories =
       $(".total_approved_estimate_profit").html(total_approved_estimate_profit).css("color", "black")
       $(".margine_below_total_approved_estimate_profit").html("")
 
+  toggle_add_update_return_part: ->
+    $(".toggle_add_update").click ->
+      $.get "/inventories/toggle_add_update_return_part?object_class="+$(@).data("object-class")+"&object_id="+$(@).data("object-id")+"&rew_record="+$(@).data("new-record")+"&reject="+$(@).data("reject")+"&uri="+$(@).data("uri-path")+"&task_id="+$(@).data("task-id")+"&owner="+$(@).data("owner")+"&process_id="+$(@).data("process-id")
+      return
+
+  submit_form: (form_attribute)->
+    $(form_attribute).submit()

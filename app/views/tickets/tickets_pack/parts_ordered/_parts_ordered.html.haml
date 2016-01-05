@@ -589,8 +589,8 @@
             .col-md-6.hide
               %strong Return part ct no:
               %span.return_part_ct_no_text= f.object.return_part_ct_no
-            = f.input :return_part_serial_no, wrapper_html: {class: "col-md-6"}, required: true, input_html: {class: "return_part_serial_no"}
-            = f.input :return_part_ct_no, wrapper_html: {class: "col-md-6"}, required: true, input_html: {class: "return_part_ct_no"}
+            = f.input :return_part_serial_no, wrapper_html: {class: "col-md-6"}, required: true, input_html: {class: "return_part_serial_no onloan"}
+            = f.input :return_part_ct_no, wrapper_html: {class: "col-md-6"}, required: true, input_html: {class: "return_part_ct_no onloan"}
 
         - if str or iss or rce or rpr
           = f.input :note, input_html: {value: nil}

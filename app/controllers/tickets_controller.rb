@@ -1420,15 +1420,14 @@ class TicketsController < ApplicationController
     Inventory
 
     @ticket = Ticket.find_by_id params[:ticket_id]
-    # if params[:ticket_id].present?
 
-    request_spare_part_id = params[:request_spare_part_id]
+    @onloan_request = true if params[:onloan_request] == "Y"
 
-    @spare_part = @ticket.ticket_spare_parts.find request_spare_part_id
-    @onloan_request = params[:onloan_request]
-
-    if params[:onloan_request] == "Y"
-      @onloan_spare_part = @spare_part.ticket_on_loan_spare_parts.find params[:request_onloan_spare_part_id]
+    if @onloan_request
+      @onloan_spare_part = @ticket.ticket_on_loan_spare_parts.find params[:request_onloan_spare_part_id]
+      @spare_part = @onloan_spare_part.ticket_spare_part
+    else
+      @spare_part = @ticket.ticket_spare_parts.find params[:request_spare_part_id]
     end
 
     if @ticket
@@ -2452,7 +2451,7 @@ class TicketsController < ApplicationController
     end
 
     if @onloan_or_store.approved_inventory_product.fifo
-      @main_part_serial = @onloan_or_store.approved_main_inventory_product ? @onloan_or_store.approved_main_inventory_product.inventory_serial_items.includes(:inventory).where(inv_inventory: {store_id: @onloan_or_store.approved_store_id}, inv_status_id: InventorySerialItemStatus.find_by_code("AV").id).sort{|p, n| p.grn_items.last.grn.created_at <=> n.grn_items.last.grn.created_at} : []
+      @main_part_serial = @onloan_or_store.approved_main_inventory_product ? @onloan_or_store.approved_main_inventory_product.inventory_serial_items.includes(:inventory).where(inv_inventory: {store_id: @onloan_or_store.approved_store_id}, inv_status_id: InventorySerialItemStatus.find_by_code("AV").id).sort{|p, n| n.grn_items.last.grn.created_at <=> p.grn_items.last.grn.created_at} : []
     else
       @main_part_serial = @onloan_or_store.approved_main_inventory_product ? @onloan_or_store.approved_main_inventory_product.inventory_serial_items.includes(:inventory).where(inv_inventory: {store_id: @onloan_or_store.approved_store_id}, inv_status_id: InventorySerialItemStatus.find_by_code("AV").id).sort{|p, n| p.grn_items.last.grn.created_at <=> n.grn_items.last.grn.created_at} : []
     end

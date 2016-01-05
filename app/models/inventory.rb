@@ -87,6 +87,9 @@ class InventoryBatch < ActiveRecord::Base
   has_many :grn_items, through: :grn_batches
   has_many :inventory_serial_items, foreign_key: :batch_id
 
+  belongs_to :inventory
+  belongs_to :inventory_product, foreign_key: :product_id
+
 end
 
 class InventorySerialItem < ActiveRecord::Base
@@ -102,8 +105,10 @@ class InventorySerialItem < ActiveRecord::Base
 
   has_many :grn_serial_items, foreign_key: :serial_item_id
   has_many :grn_items, through: :grn_serial_items
-  has_many :inventory_serial_additional_costs, through: :serial_item_id
-  has_many :inventory_serial_warrantys, through: :serial_item_id
+
+  has_many :inventory_serial_items_additional_costs, foreign_key: :serial_item_id
+  has_many :inventory_serial_warranties, foreign_key: :serial_item_id
+  has_many :grn_serial_parts, foreign_key: :serial_item_id
 
 end
 
@@ -111,13 +116,20 @@ class InventorySerialPart < ActiveRecord::Base
   self.table_name = "inv_inventory_serial_part"
 
   belongs_to :inventory_serial_item, foreign_key: :serial_item_id
+  accepts_nested_attributes_for :inventory_serial_item, allow_destroy: true
+
   belongs_to :inventory_product, foreign_key: :product_id
   belongs_to :inventory_serial_item_status, foreign_key: :inv_status_id
-  has_many :gin_sources, foreign_key: :serial_part_id
+  belongs_to :product_condition
+
+  has_many :gin_sources, foreign_key: :grn_serial_part_id
 
   has_many :inventory_serial_part_additional_costs, foreign_key: :serial_part_id
-  has_many :inventory_serial_part_warrantys, foreign_key: :serial_part_id
+  accepts_nested_attributes_for :inventory_serial_part_additional_costs, allow_destroy: true
+
+  has_many :inventory_serial_part_warranties, foreign_key: :serial_part_id
   has_many :damages
+  has_many :grn_serial_parts, foreign_key: :inv_serial_part_id
 
 end
 
@@ -125,6 +137,7 @@ class ProductCondition < ActiveRecord::Base
   self.table_name = "mst_inv_product_condition"
 
   has_many :inventory_serial_items
+  has_many :inventory_serial_parts
 
 end
 
@@ -142,7 +155,7 @@ class InventorySerialPartAdditionalCost < ActiveRecord::Base
   belongs_to :currency
 end
 
-class InventorySerialAdditionalCost < ActiveRecord::Base
+class InventorySerialItemsAdditionalCost < ActiveRecord::Base
   self.table_name = "inv_serial_additional_cost"
 
   belongs_to :inventory_serial_item, foreign_key: :serial_item_id
@@ -167,13 +180,13 @@ end
 class InventoryWarranty < ActiveRecord::Base
   self.table_name = "inv_warranty"
 
-  has_many :inventory_serial_part_warrantys, foreign_key: :warranty_id
-  has_many :inventory_serial_warrantys, foreign_key: :warranty_id
+  has_many :inventory_serial_part_warranties, foreign_key: :warranty_id
+  has_many :inventory_serial_warranties, foreign_key: :warranty_id
 
 end
 
 class InventoryReason < ActiveRecord::Base
   self.table_name = "mst_inv_reason"
-  
+
   has_many :damages
 end

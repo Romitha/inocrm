@@ -1,0 +1,55 @@
+= simple_form_for form_inv_batch, url: "#", html: {class: "form_inv_batch"} do |f|
+
+  = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
+  = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
+  = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
+  - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
+    = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+
+  .col-md-4
+    .damage_reason_wrapper
+      = label_tag "Damage"
+      = check_box_tag :damage_season_check, true, false, class: "damage_reason_check"
+      = label_tag "Damage reason"
+      = select_tag :damage_reason, options_from_collection_for_select(InventoryReason.all, "id", "reason")
+
+  .col-md-8
+    = f.input :remarks, label: "Remarks", input_html: {value: nil}
+
+  - if f.object.new_record?
+    .row
+      .col-md-3
+        = f.input :lot_no
+      .col-md-3
+        = f.input :batch_no
+      .col-md-3
+        = f.input :manufatured_date, as: :string, input_html: {class: "datepicker"} 
+      .col-md-3
+        = f.input :expiry_date, as: :string, input_html: {class: "datepicker"}
+
+    = simple_form_for GrnItem.new do |grn_item|
+      .row
+        .col-md-6
+          = grn_item.input :unit_cost
+
+      .row
+        = simple_form_for InventoryWarranty.new do |w|
+          .col-md-3
+            = w.input :start_at, as: :string, input_html: {class: "datepicker"}
+          .col-md-3
+            = w.input :end_at, as: :string, input_html: {class: "datepicker"}
+          .col-md-3
+            = w.input :period_part
+          .col-md-3
+            = w.input :period_labour
+          .col-md-4
+            = w.input :period_onsight
+          .col-md-4
+            = label_tag "Warranty Type"
+            = w.select :warranty_type_id, WarrantyType.all.collect { |p| [ p.name, p.id ] }, include_blank: true
+          .col-md-4
+            = w.input :remarks
+
+  .row
+    .col-md-12
+      = link_to "Save", "#", onclick: "Inventories.submit_form('.form_inv_batch'); return false;", class: "btn btn-success"

@@ -178,7 +178,7 @@
 
 %fieldset
   %legend Issue store part
-  = simple_nested_form_for (@onloan_request ? (spare_part || ticket) : spare_part), url: update_issue_store_parts_tickets_path, method: :post, html: {id: "new_ticket_spare_part"} do |f|
+  = simple_nested_form_for (@onloan_request ? (spare_part || ticket) : spare_part), url: update_issue_store_parts_inventories_path, method: :post, html: {id: "new_ticket_spare_part"} do |f|
 
     / = hidden_field_tag :process_id, session[:process_id]
     = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
@@ -256,7 +256,7 @@
                       %td= grn_serial_item.inventory_serial_item.manufatured_date.try(:strftime, "%Y-%m-%d %H:%M")
                       %td= grn_serial_item.inventory_serial_item.expiry_date
                       %td= grn_serial_item.inventory_serial_item.remarks
-                      %td= radio_button_tag "grn_serial_item_id", grn_serial_item.id, false
+                      %td= radio_button_tag "grn_serial_item_id", grn_serial_item.id, false,{class: "seperate_product_ckeckbox"}
 
               = paginate @paginated_fifo_grn_serial_items, remote: false, method: :get
 
@@ -344,7 +344,7 @@
           = tab_content tabpointer: :about do
             .row
               .col-md-6.main_product_with_linker
-                = link_to "Change", inventory_in_modal_inventories_path(select_frame: "main_product", issue_part: true), id: "part_of_main_product_select", remote: true
+                = link_to "Change main product", inventory_in_modal_inventories_path(select_frame: "main_product", issue_part: true), id: "part_of_main_product_select", remote: true
                 .main_product
                   - if sto.object.approved_main_inventory_product
                     %dl.dl-horizontal

@@ -32,4 +32,21 @@
     %footer.navbar-inverse
       = render "layouts/footer"
 
+    = javascript_tag do
+
+      var CheckSession = function() {
+      $.ajax({
+      url: "/users/check_user_session",
+      success: function(data){
+      if(data) {
+      alert("Your Session has expired");
+      window.location.href = "/users/sign_in";
+      }
+      },
+      dataType: "json",
+      })
+      }
+
+      setInterval(CheckSession,2500);
+
     = javascript_include_tag "application"
