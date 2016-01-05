@@ -69,6 +69,9 @@
         .col-md-6
           .row.col-md-12
             - if t.object.ticket_spare_part.try(:ticket_spare_part_store).present?
+            - @grn_items = t.object.ticket_spare_part.try(:ticket_spare_part_store).try(:inventory_product).try(:grn_items)
+              / - @grn_items = GrnItem.all.paginate(page: params[:page], per_page: 5)
+              / - @grn_items = t.object.ticket_spare_part.try(:ticket_spare_part_store).try(:inventory_product).try(:grn_items)
               %strong Last Perchased Price
               %table.table.table-striped
                 %thead
@@ -78,12 +81,13 @@
                     %th Price
                     %th Currency
                 %tbody
-                  - t.object.ticket_spare_part.try(:ticket_spare_part_store).try(:inventory_product).try(:grn_items).each_with_index do |g, index|
+                  - @grn_items.each_with_index do |g, index|
                     %tr
                       %td= index+1
                       %td= g.created_at
                       %td= g.unit_cost
                       %td= Currency.find_by_id(g.currency_id).try(:currency)
+              / %will_paginate @grn_items
 
       .row
         .col-md-6
@@ -93,16 +97,20 @@
         .col-md-3
           = t.association :supplier, input_html: {class: "est_internal_supplier"}
         .col-md-2
-          = t.input :cost_price, input_html: {class: "est_internal_cost_price only_float", oninput: "Inventories.calculate_internal_cost_price();"}
+          = t.input :cost_price, input_html: {min: "0", class: "est_internal_cost_price only_float", oninput: "Inventories.calculate_internal_cost_price();"}
           .append_cost_price_internal.hide
         .col-md-2
-          = t.input :estimated_price, input_html: {class: "est_internal_estimated_price only_float", oninput: "Inventories.calculate_internal_cost_price();"}
+          = t.input :estimated_price, input_html: {min: "0", class: "est_internal_estimated_price only_float", oninput: "Inventories.calculate_internal_cost_price();"}
           .append_estimated_price_internal.hide
         .col-md-2
-          = t.input :warranty_period, input_html: {class: "est_internal_warranty only_float"}, label: "Warranty period (months)"
+          = t.input :warranty_period, input_html: {min: "0", class: "est_internal_warranty only_float"}, label: "Warranty period (months)"
         .col-md-3
           %strong Profit:
           %span.append_profit_margin_internal{style: "font-weight:bold;"}
+      .row
+        .col-md-8
+        .col-md-4
+          .below_margine_append_profit_margin_internal
 
     - count += 1
   = f.simple_fields_for :ticket_estimation_additionals do |a|
@@ -112,10 +120,10 @@
       .col-md-3
         = a.association :additional_charge, value_method: :id, label_method: :additional_charge
       .col-md-2
-        = a.input :cost_price, input_html: {class: "est_internal_add_cost_price only_float", oninput: "Inventories.calculate_internal_cost_price();"}
+        = a.input :cost_price, input_html: {min: "0", class: "est_internal_add_cost_price only_float", oninput: "Inventories.calculate_internal_cost_price();"}
         .append_cost_price_internal.hide
       .col-md-2
-        = a.input :estimated_price, input_html: {class: "est_internal_add_estimated_price only_float", oninput: "Inventories.calculate_internal_cost_price();"}
+        = a.input :estimated_price, input_html: {min: "0", class: "est_internal_add_estimated_price only_float", oninput: "Inventories.calculate_internal_cost_price();"}
         .append_estimated_price_internal.hide
       .col-md-3
         %strong Profit:
@@ -130,11 +138,9 @@
     Add
   .row
     .col-md-3
-      = f.input :advance_payment_amount, input_html: {class: "only_float"}
+      = f.input :advance_payment_amount, input_html: {min: "0", class: "only_float"}
+
   .row
-    .col-md-5
-      = f.input :note, input_html: {value: nil}
-      = simple_format estimation.note
     .col-md-2
 
       %strong Total Cost:
@@ -152,6 +158,18 @@
       %span#db_margin{style: "font-weight:bold;"}= CompanyConfig.first.try(:sup_internal_part_profit_margin).to_f
       %span )
       %span %
+
+    .col-md-5
+      .below_margine_total_internal_margin_price
+
+  .row
+    .col-md-3
+      = f.input :advance_payment_amount,input_html: {min: "0", class: "only_float", value: nil}
+
+  .row
+    .col-md-5
+      = f.input :note, input_html: {value: nil}
+      = simple_format estimation.note
 
   .row{style: "margin-bottom:10px;"}
     .col-md-6

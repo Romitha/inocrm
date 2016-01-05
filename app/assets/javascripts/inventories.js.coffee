@@ -18,6 +18,7 @@ window.Inventories =
     @checked_add_update_radio_for_items()
     @checked_add_update_radio_for_parts()
     @disable_final_payment()
+    @calculate_low_approved_price()
     return
 
   filter_product: -> 
@@ -254,8 +255,10 @@ window.Inventories =
       ap_total_internal = Math.round(append_total_internal * 100)/100
       if ap_total_internal < parseInt($("#db_margin").html())
         $(@).parents().eq(3).find(".append_profit_margin_internal").css("color", "red")
+        $(@).parents("fieldset").find(".below_margine_append_profit_margin_internal").html("Estimate below the margine").css("color", "red")
       else
         $(@).parents().eq(3).find(".append_profit_margin_internal").css("color", "black")
+        $(@).parents("fieldset").find(".below_margine_append_profit_margin_internal").html("")
 
       if isNaN(ap_total_internal)
         $(@).parents().eq(3).find(".append_profit_margin_internal").html("")
@@ -266,10 +269,13 @@ window.Inventories =
     cal_total = Math.round(total_internal_margin_price * 100)/100
     $("#total_internal_estimated_price").html(total_internal_estimated_price)
     $("#total_internal_cost_price").html(total_internal_cost_price)
+
     if total_internal_margin_price < parseInt($("#db_margin").html())
       $("#total_internal_margin_price").html(cal_total).css("color", "red")
+      $(".below_margine_total_internal_margin_price").html("Total Estimate below the margine").css("color", "red")
     else
       $("#total_internal_margin_price").html(cal_total).css("color", "black")
+      $(".below_margine_total_internal_margin_price").html("")
 
   calculate_approved_price: ->
     total_approved_amount = 0
@@ -453,21 +459,53 @@ window.Inventories =
 
   calculate_low_approved_price: ->
 
-    total_low_approved_amount = 0
-    total_advance_payment = 0
-    total_estimate = parseFloat($(".cal_estimated_price").text())
+    $(".low_margin_cost_price").each ->
 
-    approved_estimate_part_price = parseFloat($(".cal_estimated_price").text())
+      low_margin_estimate_rate = ( parseInt($(@).parents("fieldset").find(".low_margin_estimated_price").text()) - parseInt($(@).parents("fieldset").find(".low_margin_cost_price").text()) )*100/parseInt($(@).parents("fieldset").find(".low_margin_cost_price").text())
+      if low_margin_estimate_rate < parseInt($("#db_margin").html())
+        $(@).parents("fieldset").find(".low_margin_estimate_rate").html(Math.round(low_margin_estimate_rate * 100)/100).css("color", "red")
+        $(@).parents("fieldset").find(".below_margine_low_margin_estimate_rate").html("Estimate below the margine").css("color", "red")
+      else
+        $(@).parents("fieldset").find(".low_margin_estimate_rate").html(Math.round(low_margin_estimate_rate * 100)/100).css("color", "black")
+        $(@).parents("fieldset").find(".below_margine_low_margin_estimate_rate").html("")
 
-    $(".low_approved_amount").each ->
-      total_low_approved_amount = total_low_approved_amount + parseFloat($(@).val())
+      low_margin_approved_estimate_rate = ( parseInt($(@).parents("fieldset").find(".low_margin_approved_estimated_price").val()) - parseInt($(@).parents("fieldset").find(".low_margin_cost_price").text()) )*100/parseInt($(@).parents("fieldset").find(".low_margin_cost_price").text())
+      if low_margin_approved_estimate_rate < parseInt($("#db_margin").html())
+        $(@).parents("fieldset").find(".low_margin_approved_estimate_rate").html(Math.round(low_margin_approved_estimate_rate * 100)/100).css("color", "red")
+        $(@).parents("fieldset").find(".below_margine_low_margin_approved_estimate_rate").html("Approved estimate below the margine").css("color", "red")
+      else
+        $(@).parents("fieldset").find(".low_margin_approved_estimate_rate").html(Math.round(low_margin_approved_estimate_rate * 100)/100).css("color", "black")
+        $(@).parents("fieldset").find(".below_margine_low_margin_approved_estimate_rate").html("")
 
-      $(".part_approved_estimated_price").each ->
+    low_margin_total_cost = 0
+    low_margin_total_estimate = 0
+    low_margin_total_app_estimate = 0
 
-        total_advance_payment = parseFloat($(@).val()) + total_low_approved_amount
-        total_estimate = approved_estimate_part_price + parseFloat($(@).val())
+    $(".low_margin_cost_price, .add_low_margin_cost_price").each ->
+      low_margin_total_cost = low_margin_total_cost + parseInt($(@).text())
+    $(".total_low_margin_cost").html(low_margin_total_cost)
 
-        $("#total_advance_payment").html(total_advance_payment)
-        $("#total_estimated_price").html(total_estimate)
+    $(".low_margin_estimated_price, .add_low_margin_estimated_price").each ->
+      low_margin_total_estimate = low_margin_total_estimate + parseInt($(@).text())
+    $(".total_low_margin_estimate").html(low_margin_total_estimate)
 
-    $("#total_low_approved_amount").html(total_low_approved_amount)
+    $(".low_margin_approved_estimated_price, .add_low_margin_approved_estimated_price").each ->
+      low_margin_total_app_estimate = low_margin_total_app_estimate + parseInt($(@).val())
+    $(".total_low_margin_app_estimate").html(low_margin_total_app_estimate)
+
+    total_estimate_profit = Math.round((low_margin_total_estimate - low_margin_total_cost)*100/low_margin_total_cost * 100)/100
+    if total_estimate_profit < parseInt($("#db_margin").html())
+      $(".total_estimate_profit").html(total_estimate_profit).css("color", "red")
+      $(".margine_below_total_estimate_profit").html("Total estimate below the margine").css("color", "red")
+    else
+      $(".total_estimate_profit").html(total_estimate_profit).css("color", "black")
+      $(".margine_below_total_estimate_profit").html("")
+
+    total_approved_estimate_profit = Math.round((low_margin_total_app_estimate - low_margin_total_cost)*100/low_margin_total_cost * 100)/100
+    if total_approved_estimate_profit < parseInt($("#db_margin").html())
+      $(".total_approved_estimate_profit").html(total_approved_estimate_profit).css("color", "red")
+      $(".margine_below_total_approved_estimate_profit").html("Total approved estimate below the margine").css("color", "red")
+    else
+      $(".total_approved_estimate_profit").html(total_approved_estimate_profit).css("color", "black")
+      $(".margine_below_total_approved_estimate_profit").html("")
+
