@@ -1,29 +1,44 @@
-- cost_price = 0
-- estimated_price = 0
-- index = 0
-- total_margin = 0
-- profit_margin = 0
-- Grn
+- count = 1
 
 = simple_nested_form_for estimation, url: update_estimation_part_tickets_path, method: :post do |f|
 
   = f.simple_fields_for :ticket_estimation_parts do |t|
     / - if t.object.ticket_spare_part.below_margine
     %fieldset
-      %legend Part No #{index+1}
+      %legend Part No #{count}
       .row
-        .col-md-12
-          %strong Supplier :
-          #{t.object.try(:supplier).try(:name)}
+        .col-md-3
+          %span{style: "font-weight:bold;"} Supplier : #{t.object.try(:supplier).try(:name)}
+      .row
+        .col-md-2
+          %span{style: "font-weight:bold;"} Cost Prices :
+          %span.low_margin_cost_price= t.object.try(:cost_price)
+        .col-md-3
+          %span{style: "font-weight:bold;"} Requested Estimate Price :
+          %span.low_margin_estimated_price #{t.object.try(:estimated_price)}
+        .col-md-2
+          %span{style: "font-weight:bold;"} Profit :
+          %span.low_margin_estimate_rate
+          %span (
+          %span#db_margin{style: "font-weight:bold;"}= CompanyConfig.first.try(:sup_internal_part_profit_margin).to_f
+          %span )
+          %span %
+        .col-md-3
+          = t.input :approved_estimated_price, input_html: {min: "0",class: "low_margin_approved_estimated_price only_float", oninput: "Inventories.calculate_low_approved_price();"}
+        .col-md-2
+          %span{style: "font-weight:bold;"} Profit :
+          %span.low_margin_approved_estimate_rate
+          %span (
+          %span#db_margin{style: "font-weight:bold;"}= CompanyConfig.first.try(:sup_internal_part_profit_margin).to_f
+          %span )
+          %span %
+
       .row
         .col-md-4
-          %strong Cost Prices :
-          #{t.object.try(:cost_price)}
         .col-md-4
-          %strong Requested Estimate Price :
-          #{t.object.try(:estimated_price)}
+          .below_margine_low_margin_estimate_rate
         .col-md-4
-          = t.input :approved_estimated_price, input_html: {class: "only_float part_approved_estimated_price", oninput: "Inventories.calculate_low_approved_price();"}
+          .below_margine_low_margin_approved_estimate_rate
 
       .row
         .col-md-4
@@ -41,17 +56,10 @@
           #{t.object.try(:warranty_period)}
         .col-md-4
           %strong
-      .row
-        .col-md-4
-          %strong Started :
-          xxx
-        .col-md-4
-          %strong Expired :
-          xxx
 
       .row
         .col-md-6
-          %h4 Requested part
+          %h5 Requested part
           %dl.dl-horizontal
             %dt
               Store
@@ -65,95 +73,83 @@
               Item Description
             %dd
               = t.object.ticket_spare_part.ticket_spare_part_store and t.object.ticket_spare_part.ticket_spare_part_store.try(:main_inventory_product).try(:description)
-            %dt
-              Note
-            %dd
-              = t.input :note, input_html: {value: nil}, label: false
-              = simple_format @estimation.note
         .col-md-6
-          Estimate below the margine
-
-          - estimate_margin = ((t.object.try(:estimated_price) - t.object.try(:cost_price)) / t.object.try(:cost_price))*100
-          - total_margin = total_margin + estimate_margin
-          - profit_margin = CompanyConfig.first.try(:sup_internal_part_profit_margin)
-
-          / = t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.grn_items.inspect
-
-          - if estimate_margin < profit_margin
-            %strong{style: "color: red;"}
-              #{estimate_margin}% ( #{profit_margin} )
-
-          -else
-            %strong #{estimate_margin}% ( #{profit_margin} )
-
-          / = GrnItem.all.inspect
-
-          %table.table.table-hover.table-condensed
-            %thead
-              %tr
-                %th No
-                %th Date Purchase
-                %th Price
-                %th Currency
-
-            %tbody
-              - t.object.ticket_spare_part.ticket_spare_part_store.try(:inventory_product).try(:grn_items).try(:each_with_index) do |item, index|
+          - if t.object.ticket_spare_part.try(:ticket_spare_part_store).present?
+            - @grn_items = t.object.ticket_spare_part.try(:ticket_spare_part_store).try(:inventory_product).try(:grn_items)
+            %strong Last Perchased Prices
+            %table.table.table-hover.table-condensed
+              %thead
                 %tr
-                  %td
-                    = index+1
-                    / - if params[:page]
-                    /   = (index+1)+ 10**(params[:page].to_i-1)
-                    / - else
-                    /   = (index+1)
-                  %td
-                    / = item.grn.
-                  %td
-                    / = item.current_unit_cost
-                  %td
-                    / = item.currency.code
+                  %th No
+                  %th Date Purchase
+                  %th Price
+                  %th Currency
 
+              %tbody
+                - @grn_items.each_with_index do |g, index|
+                  %tr
+                    %td= index+1
+                    %td= g.created_at
+                    %td= g.unit_cost
+                    %td= Currency.find_by_id(g.currency_id).try(:currency)
+    - count += 1
   = f.simple_fields_for :ticket_estimation_additionals do |a|
     .row
       .col-md-3
-        %strong Additional Charges :
-        #{a.object.try(:additional_charge).try(:additional_charge)}
+        %span{style: "font-weight:bold;"} Additional Charges :
+        %span #{a.object.try(:additional_charge).try(:additional_charge)}
       .col-md-3
-        %strong Cost Price (Rs) :
-        #{a.object.try(:cost_price)}
-        - cost_price += a.object.try(:cost_price).to_d
+        %span{style: "font-weight:bold;"} Cost Price (Rs) :
+        %span.add_low_margin_cost_price #{a.object.try(:cost_price)}
+        / - cost_price += a.object.try(:cost_price).to_d
       .col-md-3
-        %strong Estimated Price (Rs) :
-        #{a.object.try(:estimated_price)}
-        - estimated_price += a.object.try(:estimated_price).to_d
+        %span{style: "font-weight:bold;"} Estimated Price (Rs) :
+        %span.add_low_margin_estimated_price #{a.object.try(:estimated_price)}
+        / - estimated_price += a.object.try(:estimated_price).to_d
       .col-md-3
-        = a.input :approved_estimated_price, input_html: {class: "low_approved_amount only_float", oninput: "Inventories.calculate_low_approved_price();"}
+        = a.input :approved_estimated_price, input_html: {min: "0",class: "add_low_margin_approved_estimated_price only_float", oninput: "Inventories.calculate_low_approved_price();"} 
+        / = a.input :approved_estimated_price, input_html: {class: "low_approved_amount only_float", oninput: "Inventories.calculate_low_approved_price();"}
 
   .row
     .col-md-3.col-md-offset-3
-      %strong Total Cost (Rs) : #{cost_price}
+      %span{style: "font-weight:bold;"} Total Cost (Rs) :
+      %span.total_low_margin_cost
     .col-md-3
-      %strong Total Estimate (Rs) :
-      = label_tag estimated_price, estimated_price , class: "cal_estimated_price"
+      %span{style: "font-weight:bold;"} Total Estimate (Rs) :
+      %span.total_low_margin_estimate
+      / = label_tag estimated_price, estimated_price , class: "cal_estimated_price"
     .col-md-3
-      %strong Total (Rs) :
-      %strong
-        %span#total_low_approved_amount
+      %span{style: "font-weight:bold;"} Total Approved Estimate (Rs) :
+      %span.total_low_margin_app_estimate
 
   .row
-    .col-md-12
-      %strong Total Estimate :
-      %span#total_estimated_price
-      - if total_margin < profit_margin
-        %strong{style: "color: red;"}
-          #{total_margin}% ( #{profit_margin} )
-
-      -else
-        %strong #{total_margin}% ( #{profit_margin} )
+    .col-md-3.col-md-offset-3
+    .col-md-3
+      %span{style: "font-weight:bold;"} Profit :
+      %span.total_estimate_profit
+      %span (
+      %span#db_margin{style: "font-weight:bold;"}= CompanyConfig.first.try(:sup_internal_part_profit_margin).to_f
+      %span )
+      %span %
+    .col-md-3
+      %span{style: "font-weight:bold;"} Profit :
+      %span.total_approved_estimate_profit
+      %span (
+      %span#db_margin{style: "font-weight:bold;"}= CompanyConfig.first.try(:sup_internal_part_profit_margin).to_f
+      %span )
+      %span %
 
   .row
-    .col-md-12
+    .col-md-3.col-md-offset-3
+    .col-md-3
+      .margine_below_total_estimate_profit
+    .col-md-3
+      .margine_below_total_approved_estimate_profit
+
+  .row
+    .col-md-3
       %strong Min. Advance Payment (Rs) :
-      %span#total_advance_payment
+      = f.object.approved_adv_pmnt_amount
 
   .row
     .col-md-6
@@ -166,3 +162,13 @@
     .col-md-3
       = label_tag "Approval Complete"
       = check_box_tag :approval_complete
+
+
+/ $(".cal_cost_price").each ->
+/   final_result = $(@).text() + $(@).parents("fieldset").find(".cal_estimated_price").text()
+
+/   $(@).parents("fieldset").find(".cal_result1").text(final_result)
+
+/   final_result1 = final_result + $(".cal_approved_estimated_price").val()
+
+/   $(@).parents("fieldset").find(".cal_result2").text(final_result1)

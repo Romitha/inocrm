@@ -1480,7 +1480,7 @@ class TicketsController < ApplicationController
       @estimation = TicketEstimation.find params[:part_estimation_id]
       # @estimation_part = @estimation.ticket_estimation_parts.build
       # @estimation_additional = @estimation.ticket_estimation_additionals.build
-
+      @grn_items = GrnItem.all
       @product = @ticket.products.first
       Rails.cache.delete([:histories, @product.id])
       Rails.cache.delete([:join, @ticket.id])
