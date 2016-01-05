@@ -1,0 +1,12 @@
+= simple_nested_form_for form_grn_item, url: "" do |f|
+  = link_to "select product", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true
+  %br/
+  = f.input :product_id, as: :hidden, input_html: {id: "inv_product_id"}
+
+  = f.input :unit_cost, wrapper_html: {class: "col-md-3"}
+  .damage_reason_wrapper
+    = label_tag "Damage"
+    = check_box_tag :damage_season_check, true, false, class: "damage_reason_check"
+    = label_tag "Damage reason"
+    = select_tag :damage_reason, options_from_collection_for_select(InventoryReason.all, "id", "reason")
+  = f.submit

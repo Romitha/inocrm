@@ -22,7 +22,10 @@ class GrnItem < ActiveRecord::Base
   has_many :grn_serial_items, foreign_key: :grn_item_id
   has_many :grn_items, through: :grn_serial_items
   has_many :damages
+  accepts_nested_attributes_for :damages, allow_destroy: true
+
   has_many :gin_sources
+  has_many :gin_serial_parts
 end
 
 class GrnBatch < ActiveRecord::Base
@@ -44,5 +47,16 @@ class GrnSerialItem < ActiveRecord::Base
 
   has_many :gin_sources#, foreign_key: :gin_item_id
   has_many :damages
+
+end
+
+class GrnSerialPart < ActiveRecord::Base
+  self.table_name = "inv_grn_serial_part"
+
+  belongs_to :grn_item
+  belongs_to :inventory_serial_item, foreign_key: :serial_item_id
+  belongs_to :inventory_serial_part, foreign_key: :inv_serial_part_id
+
+  has_many :gin_sources, foreign_key: :grn_serial_part_id
 
 end

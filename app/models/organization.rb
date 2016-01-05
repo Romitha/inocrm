@@ -120,4 +120,14 @@ class CompanyConfig < ActiveRecord::Base
     update inv_last_gin_no: (inv_last_gin_no.to_i+1)
     inv_last_gin_no
   end
+
+  def increase_inv_last_srr_no
+    update inv_last_srr_no: (inv_last_srr_no.to_i+1)
+    inv_last_srr_no
+  end
+
+  def increase_inv_last_grn_no
+    update inv_last_grn_no: (inv_last_grn_no.to_i+1)
+    inv_last_grn_no
+  end  
 end

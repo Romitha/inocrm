@@ -1,6 +1,7 @@
 class UsersController < ApplicationController
-  load_and_authorize_resource except: [:assign_role]
+  load_and_authorize_resource except: [:assign_role, :check_user_session]
   before_action :set_user, only: [:profile, :initiate_user_profile_edit, :update, :upload_avatar]
+  before_filter :user_session_expired, except: [:check_user_session]
 
   def new
     session[:is_customer] = nil
@@ -106,6 +107,13 @@ class UsersController < ApplicationController
 
   def individual_customers
     @users = User.select{|user| user.is_customer?}
+  end
+
+  def check_user_session
+    no_user_session = current_user.nil?
+    respond_to do |format|
+      format.json {render json: no_user_session}
+    end
   end
 
   private

@@ -58,6 +58,7 @@ Rails.application.routes.draw do
   resources :users, only: [:new, :update, :create] do
     collection do
       get "individual_customers"
+      get "check_user_session"
     end
     member do
       get "initiate_user_profile_edit"
@@ -137,7 +138,6 @@ Rails.application.routes.draw do
       post "update_return_store_part"
       post "update_ticket_close_approval"
       post "update_collect_parts"
-      post "update_issue_store_parts"
 
       get "edit-ticket", :action => :edit_ticket
       get "pop-approval"#, :action => :pop_note
@@ -236,18 +236,24 @@ Rails.application.routes.draw do
     collection do
       get "inventory_in_modal"
       get "search_inventories"
-      put "update_part_order"
-      put "update_onloan_part_order"
+      get "load_serial_and_part"
       get "load_estimation"
       get "load_estimation_ticket_info"
+      get "toggle_add_update_return_part"
+
       patch "update_estimation_part_customer_approval"
       patch "update_estimation_external_customer_approval"
+
+      put "update_part_order"
+      put "update_onloan_part_order"
       put "update_estimate_job"
       put "update_low_margin_estimate"
       put "update_delivery_unit"
       put "update_edit_serial"
-      get "load_serial_and_part"
 
+      post "update_issue_store_parts"
+
+      post "update_return_store_part"
     end
   end
      
