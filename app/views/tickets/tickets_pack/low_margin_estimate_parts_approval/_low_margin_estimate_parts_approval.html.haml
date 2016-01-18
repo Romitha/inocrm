@@ -75,23 +75,43 @@
               = t.object.ticket_spare_part.ticket_spare_part_store and t.object.ticket_spare_part.ticket_spare_part_store.try(:main_inventory_product).try(:description)
         .col-md-6
           - if t.object.ticket_spare_part.try(:ticket_spare_part_store).present?
-            - @grn_items = t.object.ticket_spare_part.try(:ticket_spare_part_store).try(:inventory_product).try(:grn_items)
-            %strong Last Perchased Prices
-            %table.table.table-hover.table-condensed
-              %thead
-                %tr
-                  %th No
-                  %th Date Purchase
-                  %th Price
-                  %th Currency
+            #grn_items_pagination
+              = paginate @estimation_grn_items, remote: true, method: :get, params: {controller: "tickets", action: "load_estimation_grn_items", rendering_id: "#grn_items_pagination", per_page: 3, rendering_file: "tickets_pack/low_margin_estimate_parts_approval/load_estimation_grn_items"}
 
-              %tbody
-                - @grn_items.each_with_index do |g, index|
+              %strong Last Perchased Prices
+              %table.table.table-hover.table-condensed
+                %thead
                   %tr
-                    %td= index+1
-                    %td= g.created_at
-                    %td= g.unit_cost
-                    %td= Currency.find_by_id(g.currency_id).try(:currency)
+                    %th No
+                    %th Date Purchase
+                    %th Price
+                    %th Currency
+
+                %tbody
+                  - @estimation_grn_items.each_with_index do |g, index|
+                    %tr
+                      %td= index+1
+                      %td= g.created_at
+                      %td= g.unit_cost
+                      %td= g.unit_cost
+        
+            / - @grn_items = t.object.ticket_spare_part.try(:ticket_spare_part_store).try(:inventory_product).try(:grn_items)
+            / %strong Last Perchased Prices
+            / %table.table.table-hover.table-condensed
+            /   %thead
+            /     %tr
+            /       %th No
+            /       %th Date Purchase
+            /       %th Price
+            /       %th Currency
+
+            /   %tbody
+            /     - @grn_items.each_with_index do |g, index|
+            /       %tr
+            /         %td= index+1
+            /         %td= g.created_at
+            /         %td= g.unit_cost
+            /         %td= Currency.find_by_id(g.currency_id).try(:currency)
     - count += 1
   = f.simple_fields_for :ticket_estimation_additionals do |a|
     .row

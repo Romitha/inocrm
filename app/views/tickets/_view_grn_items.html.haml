@@ -1,0 +1,13 @@
+= paginate grn_items, remote: true, method: :get, params: {controller: "tickets", action: "paginate_ticket_grn_items", rendering_id: "#grn_items_pagination", per_page: 2, rendering_file: "view_grn_items"}
+
+.row
+  %dl.dl-horizontal
+    - grn_items.each do |grn_items|
+      .col-xs-6.col-md-6
+        %dt Date Purchased
+        %dd
+          = grn_item.id
+        %dt Price
+        %dd= grn_item.unit_cost
+        %dt Currency
+        %dd= Currency.find_by_id(grn_item.currency_id).try(:currency)

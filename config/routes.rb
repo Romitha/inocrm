@@ -85,6 +85,7 @@ Rails.application.routes.draw do
       get "contact_persons"
       get "remarks"
       get "paginate_ticket_histories"
+      get "paginate_ticket_grn_items"
 
       post "create_product_brand"
       post "create_new_category"
@@ -168,11 +169,13 @@ Rails.application.routes.draw do
       get "check_fsr"
       get "customer_feedback"
       get "low_margin_estimate_parts_approval"
+      get "load_estimation_grn_items"
       get "invoice_for_chargeable"
       get "quality_control"
       get "advance_payment_invoice"
       get "terminate_job_foc_approval"
       get "customer_inquire"
+      get "inform_customer_in_modal"
 
       get "alert"
 

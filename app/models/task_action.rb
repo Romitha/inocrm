@@ -13,6 +13,8 @@ class UserTicketAction < ActiveRecord::Base
 
   has_many :q_and_answers, foreign_key: :ticket_action_id
 
+  has_many :terminate_invoice, foreign_key: :ticket_action_id
+
   has_many :ge_q_and_answers, foreign_key: :ticket_action_id
 
   belongs_to :ticket
@@ -42,8 +44,8 @@ class UserTicketAction < ActiveRecord::Base
   has_one :ticket_terminate_job, foreign_key: :ticket_action_id
   accepts_nested_attributes_for :ticket_terminate_job, allow_destroy: true
 
-  has_many :ticket_terminate_job_payments, foreign_key: :ticket_action_id
-  accepts_nested_attributes_for :ticket_terminate_job_payments, allow_destroy: true
+  has_one :ticket_terminate_job_payment, foreign_key: :ticket_action_id
+  accepts_nested_attributes_for :ticket_terminate_job_payment, allow_destroy: true
 
   has_one :act_hold, foreign_key: :ticket_action_id
   accepts_nested_attributes_for :act_hold, allow_destroy: true
@@ -78,8 +80,14 @@ class UserTicketAction < ActiveRecord::Base
   has_many :customer_feedbacks, foreign_key: :payment_received_id
   accepts_nested_attributes_for :customer_feedbacks, allow_destroy: true
 
+  has_one :act_payment_received, foreign_key: :ticket_action_id
+  accepts_nested_attributes_for :act_payment_received, allow_destroy: true
+
   has_one :act_quality_control, foreign_key: :ticket_action_id
   accepts_nested_attributes_for :act_quality_control, allow_destroy: true
+
+  has_one :inform_customer, foreign_key: :ticket_action_id
+  accepts_nested_attributes_for :inform_customer, allow_destroy: true
 
   after_create :flush_cache
 
@@ -149,6 +157,7 @@ class TicketTerminateJobPayment < ActiveRecord::Base
   belongs_to :user_ticket_action, foreign_key: :ticket_action_id
   belongs_to :ticket, foreign_key: :ticket_id
   belongs_to :payment_item, foreign_key: :payment_item_id
+  belongs_to :terminate_invoice
 end
 
 class PaymentItem < ActiveRecord::Base
@@ -242,10 +251,20 @@ class CustomerFeedback < ActiveRecord::Base
 
 end
 
+class InformCustomer < ActiveRecord::Base
+  self.table_name = "spt_act_inform_customer"
+
+  belongs_to :user_ticket_action, foreign_key: :ticket_action_id
+
+  belongs_to :ticket_contact_type, foreign_key: :contact_type_id
+
+end
+
 class ActPaymentReceived < ActiveRecord::Base
 
   self.table_name = "spt_act_payment_received"
   belongs_to :ticket_payment_received, foreign_key: :ticket_payment_received_id
+  belongs_to :user_ticket_action, foreign_key: :ticket_action_id
 
 end
 

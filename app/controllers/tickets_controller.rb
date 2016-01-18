@@ -796,6 +796,12 @@ class TicketsController < ApplicationController
     end
   end
 
+  def paginate_ticket_grn_items
+    # @rendering_id = params[:rendering_id]
+    # @rendering_file = params[:rendering_file]
+    @grn_items = Rails.cache.read([:grn_items, session[:part_estimation_id]]).page(params[:page]).per(params[:per_page])
+  end
+
   def show
     Warranty
     ContactNumber
@@ -1462,6 +1468,13 @@ class TicketsController < ApplicationController
     end
   end
 
+  def load_estimation_grn_items
+    Grn
+    @grn_items = GrnItem.all
+    @estimation_grn_items = Kaminari.paginate_array(@grn_items).page(params[:page]).per(2)
+    render "tickets/tickets_pack/low_margin_estimate_parts_approval/load_estimation_grn_items"
+  end
+
   def estimate_the_part_internal
     Inventory
     Warranty
@@ -1479,8 +1492,19 @@ class TicketsController < ApplicationController
       @estimation = TicketEstimation.find params[:part_estimation_id]
       # @estimation_part = @estimation.ticket_estimation_parts.build
       # @estimation_additional = @estimation.ticket_estimation_additionals.build
-      @grn_items = GrnItem.all
+      # @grn_items = GrnItem.all
+      @grn_items = GrnItem.all.page(params[:page]).per(4)
       @product = @ticket.products.first
+
+      # product = @ticket.products.first
+      # histories = Rails.cache.fetch([:histories, session[:product_id]]){Kaminari.paginate_array(product.tickets.reject{|t| t == @ticket})}.page(params[:page]).per(2)
+
+      # @render_template = "tickets/view_histories"
+      # @variables = {histories: histories}
+
+      # @rendering_dom = "#history #histories_pagination"
+
+
       Rails.cache.delete([:histories, @product.id])
       Rails.cache.delete([:join, @ticket.id])
     end
@@ -1882,6 +1906,7 @@ class TicketsController < ApplicationController
     QAndA
     TaskAction
     Inventory
+    Invoice
     ticket_id = (params[:ticket_id] or session[:ticket_id])
     @ticket = Ticket.find_by_id ticket_id
     session[:ticket_id] = @ticket.id
@@ -1893,13 +1918,63 @@ class TicketsController < ApplicationController
       Rails.cache.delete([:join, @ticket.id])
 
       @ticke_action = @ticket.user_ticket_actions.find_by_action_id 18
-      @terminate_job_payment = @ticke_action.ticket_terminate_job_payments.first
-      @ticket_payment_received = TicketPaymentReceived.first
+      @terminate_invoice = TerminateInvoice.new
+
+      # session[:terminate_task_action] = @ticket.user_ticket_actions.where(action_id: TaskAction.find_by_action_no(7).id).last
+      # @terminate_job_payment = @ticke_action.ticket_terminate_job_payments.first
+      # @ticket_payment_received = TicketPaymentReceived.first
 
     end
     respond_to do |format|
       format.html {render "tickets/tickets_pack/terminate_invoice"}
     end
+  end
+
+  def inform_customer_in_modal
+
+    TaskAction
+
+    @inform_customer = InformCustomer.new
+
+    # terminate_task_action = (params[:terminate_task_action] or session[:terminate_task_action])
+    # Inventory
+    # Grn
+    # session[:terminate_task_action] = params[:terminate_task_action]
+    # if params[:select_inventory] and (params[:inventory_id] or params[:inventory_product_id]) and session[:select_frame]
+    #   @inventory = Inventory.find params[:inventory_id] if params[:inventory_id]
+    #   @inventory_product = InventoryProduct.find params[:inventory_product_id] if params[:inventory_product_id]
+
+    #   if session[:select_frame] == "request_from"
+    #     if @inventory
+    #       session[:store_id] = @inventory.store_id
+    #       session[:inv_product_id] = @inventory.product_id
+    #     elsif @inventory_product
+    #       session[:store_id] = session[:requested_store_id]
+    #       session[:inv_product_id] = @inventory_product.id
+    #     end
+
+    #   elsif session[:select_frame] == "main_product"
+
+    #     if @inventory
+    #       session[:mst_store_id] = @inventory.store_id
+    #       session[:mst_inv_product_id] = @inventory.product_id
+    #     elsif @inventory_product
+    #       session[:mst_store_id] = session[:requested_store_id]
+    #       session[:mst_inv_product_id] = @inventory_product.id
+    #     end
+    #     # session[:mst_store_id] = @inventory.store_id
+    #     # session[:mst_inv_product_id] = @inventory.product_id
+
+    #   end
+    #   if params[:issue_part] == "true"
+    #     approved_inventory_product = (@inventory_product || @inventory.inventory_product)
+    #     if approved_inventory_product.fifo
+    #       @main_part_serial = approved_inventory_product.inventory_serial_items.includes(:inventory).where(inv_inventory: {store_id: session[:requested_store_id].to_i}, inv_status_id: InventorySerialItemStatus.find_by_code("AV").id).sort{|p, n| p.grn_items.last.grn.created_at <=> n.grn_items.last.grn.created_at}
+    #     else
+    #       @main_part_serial = approved_inventory_product.inventory_serial_items.includes(:inventory).where(inv_inventory: {store_id: session[:requested_store_id].to_i}, inv_status_id: InventorySerialItemStatus.find_by_code("AV").id).sort{|p, n| p.grn_items.last.grn.created_at <=> n.grn_items.last.grn.created_at}
+    #     end
+    #   end
+    # end
   end
 
   def invoice_for_chargeable
@@ -2226,6 +2301,8 @@ class TicketsController < ApplicationController
 
   def low_margin_estimate_parts_approval
     Inventory
+    Grn
+    Organization
     Warranty
     ContactNumber
     QAndA
@@ -2237,7 +2314,8 @@ class TicketsController < ApplicationController
     if @ticket
       @estimation = TicketEstimation.find params[:part_estimation_id]
 
-
+      @grn_items = GrnItem.all
+      @estimation_grn_items = Kaminari.paginate_array(@grn_items).page(params[:page]).per(2)
       @product = @ticket.products.first
       Rails.cache.delete([:histories, @product.id])
       Rails.cache.delete([:join, @ticket.id])
@@ -2262,7 +2340,7 @@ class TicketsController < ApplicationController
 
       puts ":"+@ticket_action.inspect
       @ticket_terminate_job = @ticket_action.ticket_terminate_job
-      @terminate_job_payment = @ticket_action.ticket_terminate_job_payments.first
+      # @terminate_job_payment = @ticket_action.ticket_terminate_job_payments.first
 
       @product = @ticket.products.first
       Rails.cache.delete([:histories, @product.id])
