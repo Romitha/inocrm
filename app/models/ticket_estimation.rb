@@ -80,6 +80,7 @@ class TicketPaymentReceived < ActiveRecord::Base
 
   has_many :ticket_estimations, foreign_key: :adv_payment_received_id
   has_many :act_payment_received, foreign_key: :ticket_payment_received_id
+  has_many :terminate_invoice, foreign_key: :payment_received_id
 
   belongs_to :ticket
 

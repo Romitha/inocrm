@@ -166,6 +166,9 @@ class TicketContactType < ActiveRecord::Base
 
   has_many :tickets, foreign_key: :contact_type_id
 
+  has_many :inform_customers, foreign_key: :contact_type_id
+  accepts_nested_attributes_for :inform_customers, allow_destroy: true
+
   validates_presence_of [:code, :name]
 end
 
@@ -323,5 +326,10 @@ class TicketPaymentReceived < ActiveRecord::Base
 
   has_many :customer_feedbacks, foreign_key: :payment_received_id
   accepts_nested_attributes_for :customer_feedbacks, allow_destroy: true
+
+  has_many :act_payment_receiveds, foreign_key: :ticket_payment_received_id
+  accepts_nested_attributes_for :act_payment_receiveds, allow_destroy: true
+
+  belongs_to :ticket
 
 end

@@ -26,6 +26,8 @@ window.Tickets =
     @issue_store_parts_ckeckbox()
     @seperate_product_row_colour()
     @part_of_main_product_row_colour()
+    @pop_customer_info()
+    @adjust_amount_check()
     return
 
   initial_loaders: ->
@@ -160,6 +162,46 @@ window.Tickets =
   radio_for_sla: ->
     $(".radio_for_sla").click ->
       $.post "/tickets/"+$(@).data('param')
+
+  pop_customer_info: ->
+    $("#pop_customer_info").click ->
+      $.post "/tickets/tickets_pack/informed_to_customer", {data_param: $(@).data("param")}
+
+  adjust_amount_check: ->
+
+    payment_received_sum = parseInt($("#payment_received_sum").text())
+    payment_amount = parseInt($("#payment_amount").text())
+
+    adjust_payment_amount_value = $(".adjust_payment_amount").val()
+
+    final_amount_to_be_paid = payment_amount - payment_received_sum
+    $("#final_amount_to_be_paid").text(final_amount_to_be_paid)
+
+    $("#adjust_amount_check").click ->
+      if $(@).is(":checked")
+
+        $(".adjust").removeClass("hide")
+
+        adjust_payment_amount_value = 0 if $(".adjust_payment_amount").val() == ""
+
+        final_amount_to_be_paid1 = parseInt(adjust_payment_amount_value) - payment_received_sum
+        $("#final_amount_to_be_paid").html(final_amount_to_be_paid1)
+
+        $(".adjust_payment_amount").keyup ->
+          adjust_payment_amount_value = parseInt($(@).val())
+          adjust_payment_amount_value = 0 if isNaN(adjust_payment_amount_value)
+
+          final_amount_to_be_paid1 = adjust_payment_amount_value - payment_received_sum
+          $("#final_amount_to_be_paid").text(final_amount_to_be_paid1)
+
+          $(".amount_before_adjust").val(payment_amount)
+          $(".payment_amount").val(adjust_payment_amount_value)
+
+      else
+        $(".adjust").addClass("hide")
+        $("#ticket_ticket_terminate_job_payment_amount, #ticket_ticket_terminate_job_payment_adjust_reason_id").val("")
+
+        $("#final_amount_to_be_paid").html(final_amount_to_be_paid)
 
   select_sla: (id, content)->
     $("#product_brand_sla_id, #product_category_sla_id").val(id)

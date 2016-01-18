@@ -9,7 +9,7 @@
 
         .row
           .col-md-12
-            %strong Payment Type :
+            %strong Payment Type : Advance Payment
 
         .row
           .col-md-4
@@ -40,7 +40,7 @@
         .row
           .col-md-12
             %strong Balance Amount to be Paid (Rs):
-            / = total_estimation - received_amount
+            = total_estimation.to_f - received_amount.to_f
         %br
         .row.small_scale_margin-bottom1
           .col-md-4
