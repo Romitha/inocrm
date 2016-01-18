@@ -1,12 +1,52 @@
-= simple_nested_form_for form_grn_item, url: "" do |f|
-  = link_to "select product", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true
-  %br/
-  = f.input :product_id, as: :hidden, input_html: {id: "inv_product_id"}
+= simple_nested_form_for form_grn_item, url: update_return_store_part_inventories_path do |f|
 
-  = f.input :unit_cost, wrapper_html: {class: "col-md-3"}
+  = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
+  = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
+  = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
+  - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
+    = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+
+  - if f.object.new_record?
+    = link_to "change product", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true
+    %br/
+    = f.input :product_id, as: :hidden, input_html: {id: "inv_product_id"}
+
+  = f.input :grn_item_id, as: :hidden, input_html: {value: f.object.id}
+
+  .row
+    .col-md-2
+      %strong Serial No:
+      = ticket_spare_part.return_part_serial_no
+    .col-md-2
+      %strong Ct No:
+      = ticket_spare_part.return_part_ct_no
+    .col-md-2
+      %strong Part status:
+      = ticket_spare_part.spare_part_status_use.name
+
+    - if ticket_spare_part.unused_reason.present?
+      .col-md-2
+        %strong Unused reason:
+        = ticket_spare_part.unused_reason.reason
+    - if ticket_spare_part.is_a?(TicketOnLoanSparePart)
+      -if ticket_spare_part.return_part_damage
+        .col-md-3
+          %strong Return part damage:
+          %br/
+          = ticket_spare_part.return_part_damage_reason.try(:reason)
+    - else
+      -if ticket_spare_part.ticket_spare_part_store.return_part_damage
+        .col-md-3
+          %strong Return part damage:
+          %br/
+          = ticket_spare_part.ticket_spare_part_store.return_part_damage_reason.try(:reason)
+
   .damage_reason_wrapper
     = label_tag "Damage"
-    = check_box_tag :damage_season_check, true, false, class: "damage_reason_check"
-    = label_tag "Damage reason"
-    = select_tag :damage_reason, options_from_collection_for_select(InventoryReason.all, "id", "reason")
-  = f.submit
+    = check_box_tag :damage_reason_check, true, false, class: "damage_reason_check"
+    = label_tag "Damage reason", "Damage reason", class: "damage_reason_label"
+    = select_tag :damage_reason, options_from_collection_for_select(InventoryReason.where(damage: true), "id", "reason"), class: "damage_reason"
+  .row
+    = f.input :unit_cost, wrapper_html: {class: "col-md-3"}, input_html: {value: grn_cost}
+  .row
+    .col-md-1= f.submit "Save", class: "btn btn-success btn-sm"

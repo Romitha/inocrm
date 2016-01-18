@@ -20,6 +20,8 @@ window.Inventories =
     @disable_final_payment()
     @calculate_low_approved_price()
     @toggle_add_update_return_part()
+    @damage_reason()
+    @warranty_batch_check()
     return
 
   filter_product: -> 
@@ -372,7 +374,7 @@ window.Inventories =
     $("#brand_name").change ->
       #jQuery.get( url [, data ] [, success ] [, dataType ] )
       Tickets.ajax_loader()
-      $.get $(@).data("url"), {product_brand_id: $(":selected", @).val(), template: $(@).data("template")}, (data)-> Tickets.remove_ajax_loader()
+      $.get $(@).data("url"), {product_brand_id: $(":selected", @).val(), template: $(@).data("template"), task_id: $(@).data("task-id")}, (data)-> Tickets.remove_ajax_loader()
 
   load_mustache_bundle_return_part: (action, manufacture_id)->
     Tickets.ajax_loader()
@@ -515,8 +517,54 @@ window.Inventories =
 
   toggle_add_update_return_part: ->
     $(".toggle_add_update").click ->
-      $.get "/inventories/toggle_add_update_return_part?object_class="+$(@).data("object-class")+"&object_id="+$(@).data("object-id")+"&rew_record="+$(@).data("new-record")+"&reject="+$(@).data("reject")+"&uri="+$(@).data("uri-path")+"&task_id="+$(@).data("task-id")+"&owner="+$(@).data("owner")+"&process_id="+$(@).data("process-id")
+      $.get "/inventories/toggle_add_update_return_part?object_class="+$(@).data("object-class")+"&object_id="+$(@).data("object-id")+"&rew_record="+$(@).data("new-record")+"&reject="+$(@).data("reject")+"&uri="+$(@).data("uri-path")+"&task_id="+$(@).data("task-id")+"&owner="+$(@).data("owner")+"&process_id="+$(@).data("process-id")+"&currency_code="+$(@).data("currency-code")+"&active_spare_part="+$(@).data("active-spare-part")+"&currency_id="+$(@).data("currency-id")+"&grn_cost="+$(@).data("grn-cost")
       return
 
   submit_form: (form_attribute)->
     $(form_attribute).submit()
+
+  damage_reason: ->
+    damage_check = $(".damage_reason_check")
+    damage_check_label = damage_check.siblings(".damage_reason_label")
+    damage_select = damage_check.siblings(".damage_reason")
+
+    damage_check.each ->
+      if $(@).is(":checked")
+        $(@).siblings(".damage_reason_label").removeClass("hide")
+        $(@).siblings(".damage_reason").removeClass("hide")
+        $(@).siblings(".damage_reason_label").removeClass("hide")
+      else
+        $(@).siblings(".damage_reason").addClass("hide")
+        $(@).siblings(".damage_reason_label").addClass("hide")
+
+      damage_check.click ->
+        if $(@).is(":checked")
+          $(@).siblings(".damage_reason_label").removeClass("hide")
+          $(@).siblings(".damage_reason").removeClass("hide")
+          $(@).siblings(".damage_reason_label").removeClass("hide")
+        else
+          $(@).siblings(".damage_reason").addClass("hide")
+          $(@).siblings(".damage_reason_label").addClass("hide")
+
+  warranty_batch_check: ->
+    warranty_check = $(".warranty_check")
+    grn_batch_check = $(".grn_batch_check")
+
+    new_warranty = $(".new_warranty")
+    new_grn_batch = $(".new_batch")
+
+    warranty_check.click ->
+      if warranty_check.is(":checked")
+        new_warranty.removeClass("hide")
+      else
+        new_warranty.addClass("hide")
+        new_warranty.find("input, select").each ->
+          $(@).val("")
+
+    grn_batch_check.click ->
+      if grn_batch_check.is(":checked")
+        new_grn_batch.removeClass("hide")
+      else
+        new_grn_batch.addClass("hide")
+        new_grn_batch.find("input, select").each ->
+          $(@).val("")

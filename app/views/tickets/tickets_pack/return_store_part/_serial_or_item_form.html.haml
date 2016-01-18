@@ -1,28 +1,59 @@
-= simple_nested_form_for form_serial_part_or_item, url: update_return_store_part_inventories_path, html: {class: "form_serial_part_or_item"} do |f|
+= simple_nested_form_for form_serial_part_or_item, url: "#", html: {class: "form_serial_part_or_item"} do |f| #update_return_store_part_inventories_path
 
-  = link_to "select product", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true
-  %br/
+  - if f.object.new_record?
+    = link_to "change product", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true
+    .request_from
+    = f.input :product_id, as: :hidden, input_html: {id: "inv_product_id"}
+
   = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
   = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
   = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
   - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
     = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
-  = f.input :product_id, as: :hidden, input_html: {id: "inv_product_id"}
 
-  = f.input :inv_status_id, as: :hidden, input_html: {value: 1}
+  = f.input :inv_status_id, as: :hidden, input_html: {value: InventorySerialItemStatus.find_by_code("AV").id}
 
+  = f.input :inventory_serial_part_or_item_id, as: :hidden, input_html: {value: f.object.id}
   .row
     .col-md-6
       .row
         .col-md-3
-          = f.input :serial_no 
+          = f.input :serial_no, input_html: {value: ticket_spare_part.return_part_serial_no, readonly: true}
         .col-md-3
-          = f.input :ct_no
+          = f.input :ct_no, input_html: {value: ticket_spare_part.return_part_ct_no, readonly: true}
+        .col-md-3
+          %strong Part status
+          %br/
+          = ticket_spare_part.spare_part_status_use.name
+
+        - if ticket_spare_part.unused_reason.present?
+          .col-md-3
+            %strong Unused reason
+            %br/
+            = ticket_spare_part.unused_reason.reason
+
+        - if ticket_spare_part.is_a?(TicketOnLoanSparePart)
+          - if ticket_spare_part.return_part_damage
+            .col-md-3
+              %strong Return part damage:
+              %br/
+              = ticket_spare_part.return_part_damage_reason.try(:reason)
+        - else
+          - if ticket_spare_part.ticket_spare_part_store.return_part_damage
+            .col-md-3
+              %strong Return part damage:
+              %br/
+              = ticket_spare_part.ticket_spare_part_store.return_part_damage_reason.try(:reason)
+
+      .row
         .col-md-3
           = f.input :manufatured_date, as: :string, input_html: {class: "datepicker"}
         .col-md-3
           = f.input :expiry_date, as: :string, input_html: {class: "datepicker"}
+        .col-md-3
+          = f.association :product_condition, label_method: :condition, value_method: :id, include_blank: false
+      .row
         .col-md-3
           = f.input :scavenge, as: :boolean, wrapper: :append
         .col-md-2
@@ -31,24 +62,111 @@
           = f.input :repaired, as: :boolean, wrapper: :append
         .col-md-4
           = f.input :parts_not_completed, as: :boolean, wrapper: :append
-        .col-md-3
-          = f.association :product_condition, label_method: :condition, value_method: :id, include_blank: false, label: false, prompt: "condition"
 
         .col-md-6
           .damage_reason_wrapper
             = label_tag "Damage"
-            = check_box_tag :damage_season_check, true, false, class: "damage_reason_check"
-            = label_tag "Damage reason"
-            = select_tag :damage_reason, options_from_collection_for_select(InventoryReason.all, "id", "reason")
+            = check_box_tag :damage_reason_check, true, false, class: "damage_reason_check"
+            = label_tag "Damage reason", "Damage reason", class: "damage_reason_label"
+            = select_tag :damage_reason, options_from_collection_for_select(InventoryReason.where(damage: true), "id", "reason"), class: "damage_reason", include_blank: false
 
-    - if f.object.is_a?(InventorySerialPart) and f.object.inventory_serial_item
+
+    .col-md-6
+      .row
+        - if f.object.new_record?
+          .col-md-3
+            %label{for: "inventory_serial_part_unit_cody", class: "text optional control-label"}
+              Unit cost (#{currency_code})
+            %input{type: "number", id: "grn_item_unit_cost", name: "grn_item[unit_cost]", class: "numeric decimal optional form-control", value: grn_cost}
+            %input{type: "hidden", id: "grn_item_currency_code", name: "grn_item[currency_id]", value: currency_id}
+
+        .col-md-9
+          = f.input :remarks
+  .row
+    .col-md-6
+      - if f.object.new_record?
+        .row
+          - if f.object.is_a?(InventorySerialItem)
+            .col-md-6
+              = check_box_tag :grn_batch_check, true, false, class: "grn_batch_check"
+              = label_tag "Grn check", "New batch required", class: "grn_batch_check_label"
+          .col-md-6
+            = check_box_tag :warranty_check, true, false, class: "warranty_check"
+            = label_tag "Warranty check", "New warranty required", class: "warranty_check_label"
+        = simple_form_for InventoryWarranty.new, url: "#" do |w|
+          %fieldset.new_warranty.hide
+            %legend New Warranty
+            .row
+              .col-md-3
+                = w.input :start_at, as: :string, input_html: {class: "datepicker"}
+              .col-md-3
+                = w.input :end_at, as: :string, input_html: {class: "datepicker"}
+              .col-md-2
+                = w.input :period_part, label: "part"
+              .col-md-2
+                = w.input :period_labour, label: "labour"
+              .col-md-2
+                = w.input :period_onsight, label: "onsight"
+              .col-md-4
+                = label_tag "Warranty Type"
+                = w.select :warranty_type_id, WarrantyType.all.collect { |p| [ p.name, p.id ] }, include_blank: true
+              .col-md-8
+                = w.input :remarks
+          - if f.object.is_a?(InventorySerialItem)
+            = simple_form_for InventoryBatch.new, url: "#" do |b|
+              %fieldset.new_batch.hide
+                %legend New Batch
+                .col-md-3
+                  = b.input :lot_no
+                .col-md-3
+                  = b.input :batch_no
+                .col-md-3
+                  = b.input :manufatured_date, label: "manuf.date", as: :string, input_html: {class: "datepicker"} 
+                .col-md-3
+                  = b.input :expiry_date, as: :string, input_html: {class: "datepicker"}
+
+        - if f.object.is_a?(InventorySerialPart) and main_part_of_serial_part
+
+          = link_to "Other parts", "#", data: {target: "#inventory_serial_parts", toggle: "modal"}, class: "btn btn-link"
+
+          .modal.fade#inventory_serial_parts
+            .modal-dialog.modal-lg
+              .modal-content
+                .modal-header
+                  = link_to "#", data: {target: "#inventory_serial_parts", dismiss: "modal"}, class: "close" do
+                    %span &times;
+
+                  %h4.modal-title Other parts of the main product
+                .modal-body
+                  %table.table.table_striped
+                    %thead
+                      %tr
+                        %th Item code
+                        %th Item description
+                        %th Part no
+                        %th Pr.condition
+                        %th Serial no
+                        %th Ct No
+                        %th Status
+                    %tbody
+                      - main_part_of_serial_part.inventory_serial_parts.select{|inv_serial_part| inv_serial_part.persisted? }.each do |inv_serial_part|
+                        %tr
+                          %td= inv_serial_part.inventory_product.generated_item_code
+                          %td= inv_serial_part.inventory_product.description
+                          %td= inv_serial_part.inventory_product.spare_part_no
+                          %td= inv_serial_part.product_condition.condition
+                          %td= inv_serial_part.serial_no
+                          %td= inv_serial_part.ct_no
+                          %td= inv_serial_part.inventory_serial_item_status.name
+
+    - if f.object.is_a?(InventorySerialPart) and main_part_of_serial_part
       .col-md-6
         %fieldset
-          %legend Part of main product
-          = f.simple_fields_for :inventory_serial_item do |i|
+          %legend Main Product of the Part
+          = f.simple_fields_for "inventory_serial_item_attributes", main_part_of_serial_part do |i|
             = i.input :inv_status_id, as: :hidden, input_html: {value: 1}
             .row
-              .col-md-2
+              .col-md-4
                 = i.association :product_condition, label_method: :condition, value_method: :id, include_blank: false
               .col-md-2
                 = i.input :scavenge, as: :boolean, wrapper: :append
@@ -56,62 +174,12 @@
                 = i.input :used, as: :boolean, wrapper: :append
               .col-md-2
                 = i.input :repaired, as: :boolean, wrapper: :append
-              .col-md-4
+              .col-md-12
                 .damage_reason_wrapper
                   = label_tag "Damage"
-                  = check_box_tag :damage_season_check, true, false, class: "damage_reason_check"
-                  = label_tag "Damage reason"
-                  = select_tag :damage_reason, options_from_collection_for_select(InventoryReason.all, "id", "reason")
-
-    .col-md-6
-      = f.input :remarks
-
-    - if f.object.new_record?
-      .col-md-6
-        = simple_form_for GrnItem.new, url: "#" do |grn_item|
-          %fieldset
-            %legend Cost price
-            .row
-              .col-md-6
-                = grn_item.input :unit_cost
-
-          = simple_form_for InventoryWarranty.new, url: "#" do |w|
-            %fieldset
-              %legend New Warranty
-              .row
-                .col-md-3
-                  = w.input :start_at, as: :string, input_html: {class: "datepicker"}
-                .col-md-3
-                  = w.input :end_at, as: :string, input_html: {class: "datepicker"}
-                .col-md-2
-                  = w.input :period_part, label: "part"
-                .col-md-2
-                  = w.input :period_labour, label: "labour"
-                .col-md-2
-                  = w.input :period_onsight, label: "onsight"
-                .col-md-4
-                  = label_tag "Warranty Type"
-                  = w.select :warranty_type_id, WarrantyType.all.collect { |p| [ p.name, p.id ] }, include_blank: true
-                .col-md-8
-                  = w.input :remarks
-
-      - if f.object.is_a?(InventorySerialPart) and f.object.inventory_serial_item
-        .col-md-6
-          %table.table.table_striped
-            %thead
-              %tr
-                %th Ct No
-                %th Serial no
-                %th Pr.condition
-                %th Status
-            %tbody
-              - f.object.inventory_serial_item.inventory_serial_parts.select{|in_serial_part| inv_serial_part.persisted? }.each do |inv_serial_part|
-                %tr
-                  %td= inv_serial_part.ct_no
-                  %td= inv_serial_part.serial_no
-                  %td= inv_serial_part.product_condition.condition
-                  %td= inv_serial_part.inventory_serial_item_status.name
-
+                  = check_box_tag :main_part_damage_reason_check, true, false, class: "damage_reason_check"
+                  = label_tag "Damage reason", "Damage reason", class: "damage_reason_label"
+                  = select_tag :main_part_damage_reason, options_from_collection_for_select(InventoryReason.where(damage: true), "id", "reason"), class: "damage_reason", include_blank: false
   .row
     .col-md-12
       = link_to "Save", "#", onclick: "Inventories.submit_form('.form_serial_part_or_item'); return false;", class: "btn btn-success"
