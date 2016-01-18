@@ -122,6 +122,12 @@ class InventoriesController < ApplicationController
         if continue
           if manufacture_warranty and (rce or rpr)
 
+            ticket_spare_part.update_attributes(
+              part_returned: true,
+              part_returned_at: DateTime.now,
+              part_returned_by: current_user.id,
+            )
+
             save_ticket_spare_part["RTN", 17] #Return Part (Spare/Faulty)
 
             # bpm output variables
@@ -183,7 +189,9 @@ class InventoriesController < ApplicationController
             )
 
             ticket_spare_part.update_attributes(
-              part_returned: true
+              part_returned: true,
+              part_returned_at: DateTime.now,
+              part_returned_by: current_user.id,
             )
             
             ticket_spare_part.ticket_spare_part_store.update_attributes(
@@ -940,7 +948,7 @@ class InventoriesController < ApplicationController
               @onloan_request_part.ticket.update ticket_params
             end
 
-            @onloan_request_part.update inv_gin_id: gin.id, inv_gin_item_id: gin_item.id, cost_price: @part_cost_price, issued: true , isssued_at: DateTime.now, issued_by: current_user.id
+            @onloan_request_part.update inv_gin_id: gin.id, inv_gin_item_id: gin_item.id, cost_price: @part_cost_price, issued: true , issued_at: DateTime.now, issued_by: current_user.id
 
             #Issue store On-Loan Part
             action_id = TaskAction.find_by_action_no(50).id
@@ -967,7 +975,7 @@ class InventoriesController < ApplicationController
             @ticket_spare_part.update ticket_spare_part_params(@ticket_spare_part)
 
 
-            @ticket_spare_part.ticket_spare_part_store.update inv_gin_id: gin.id, inv_gin_item_id: gin_item.id, cost_price: @part_cost_price, store_issued: true, store_issued_at: DateTime.now, store_issued_by: current_user.id
+            @ticket_spare_part.ticket_spare_part_store.update inv_gin_id: gin.id, inv_gin_item_id: gin_item.id, cost_price: @part_cost_price, issued: true, issued_at: DateTime.now, issued_by: current_user.id
 
 
             #Issue store Spare Part
@@ -1007,12 +1015,656 @@ class InventoriesController < ApplicationController
 
   def update_return_store_part
 
+    continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
+
+    params[:inventory_serial_part]
+    params[:inventory_serial_item]
+    params[:inventory_batch]
+    params[:grn_item]
+    params[:inventory_warranty]
+    params[:damage_reason_check]
+    params[:damage_reason]
+
+    params[:main_part_damage_reason_check]
+    params[:main_part_damage_reason]
+
+    params[:warranty_check]
+    params[:reject_reason]
+
+    @onloan_request = params[:onloan_request] == "Y" ? true : false
+    params[:damage_reason_check]
+    params[:damage_reason]
+
+    params[:grn_item_id]
+    params[:inventory_batch_id]
+    params[:request_onloan_spare_part_id]
+    params[:request_spare_part_id]
+
+    @add_rec = false
+
+    if params[:inventory_serial_part].present? # Inventory Serial Part Returned
+      @main_inventory_serial_part = InventorySerialItem.find session[:serial_part_item_id]
+      if params[:inventory_serial_part_or_item_id].present?
+        @inventory_serial_part = InventorySerialPart.find params[:inventory_serial_part_or_item_id]
+        # @inventory_serial_part.update inventory_serial_part_params
+      else
+        @inventory_serial_part = InventorySerialPart.new inventory_serial_part_params
+        @prev_inventory_serial_part = InventorySerialPart.find session[:serial_part_id]
+        @add_rec = true
+      end
+
+
+    elsif params[:inventory_serial_item].present? # Inventory Serial Item Returned
+      if params[:inventory_serial_part_or_item_id].present?
+        @inventory_serial_item = InventorySerialItem.find params[:inventory_serial_part_or_item_id]
+        # @inventory_serial_item.update inventory_serial_item_params
+      else
+        @inventory_serial_item = InventorySerialItem.new inventory_serial_item_params
+        @prev_inventory_serial_item = InventorySerialItem.find session[:serial_item_id]
+        @add_rec = true
+      end
+
+    elsif params[:inventory_batch].present? # Inventory Batch Item Returned
+      if params[:inventory_batch_id].present?
+        @inventory_batch = InventoryBatch.find params[:inventory_batch_id]
+        # @inventory_batch.update inventory_batch_params
+      else
+        @inventory_batch = InventoryBatch.new inventory_batch_params
+        @prev_grn_batch = InventoryBatch.find session[:grn_batch_id]
+        @add_rec = true
+      end
+
+    elsif params[:grn_item].present? # Inventory Item Returned (Not Serial Part, Serial Item or Inventory Batch Item)
+      if params[:grn_item_id].present?
+        @grn_item = GrnItem.find params[:grn_item_id]
+        @grn_item.update grn_item_params
+      else
+        @grn_item = GrnItem.new grn_item_params
+        @prev_grn_item = GrnItem.find session[:grn_item_id]
+        @add_rec = true
+      end
+    end
+
+    if @onloan_request
+      @onloan_request_part = TicketOnLoanSparePart.find params[:request_onloan_spare_part_id]
+
+      @allready_received = @onloan_request_part.ret_part_received
+    else
+      @ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
+
+      @allready_received = @ticket_spare_part.returned_part_accepted
+    end
+
+    if continue
+      if @allready_received
+      flash[:error] = "Part allready returned."
+      else
+
+        if params[:reject_reason] # Reject the request
+          # 42 Reject Returned Part
+          action_id = TaskAction.find_by_action_no(42).id
+
+          @updating_part_params = {part_returned: false, part_returned_at: nil, part_returned_by: nil, return_part_serial_no: nil, return_part_ct_no: nil, status_action_id: SparePartStatusAction.find_by_code("RPR").id}
+
+          @inv_srr_params = {inv_srr_id: nil, inv_srr_item_id: nil}
+
+          if @onloan_request
+            @updating_part = @onloan_request_part
+
+            @updating_part.update @updating_part_params.merge(@inv_srr_params)
+
+            @updating_part.ticket_on_loan_spare_part_status_actions.create(status_id: @updating_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
+
+            user_ticket_action = @updating_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: @updating_part.ticket.re_open_count, action_id: action_id)
+            user_ticket_action.build_request_on_loan_spare_part(ticket_on_loan_spare_part_id: @updating_part.id)
+
+          else #Store Request (not On-Loan)
+            @updating_part = @ticket_spare_part.ticket_spare_part_store
+
+            @updating_part.ticket_spare_part.update @updating_part_params
+
+            @updating_part.update @inv_srr_params
+
+            @updating_part = @ticket_spare_part
+
+            @updating_part.ticket_spare_part_status_actions.create(status_id: @updating_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
+
+            user_ticket_action = @updating_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: @updating_part.ticket.re_open_count, action_id: action_id)
+            user_ticket_action.build_request_spare_part(ticket_spare_part_id: @updating_part.id)
+
+          end
+
+          # inv_srr - edit
+          @inv_srr = @updating_part.srr
+          @inv_srr.update close: true
+
+          # inv_srr_item - edit
+          @inv_srr_item = @updating_part.srr_item
+          @inv_srr_item.update close: true
+
+          user_ticket_action.save
+
+          bpm_variables = view_context.initialize_bpm_variables
+
+          bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+          if bpm_response[:status].upcase == "SUCCESS"
+            flash[:notice] = "Successfully updated."
+          else
+            flash[:error] = "ticket is updated. but Bpm error"
+          end
+
+        else
+
+          @returned = false
+          if @onloan_request
+            @updating_part = @onloan_request_part
+          else
+            @updating_part = @ticket_spare_part.ticket_spare_part_store
+          end 
+          @inv_srn_item = @updating_part.srn_item
+          @inv_srr = @updating_part.srr  
+          @inv_srr_item = @updating_part.srr_item
+
+          @inv_gin_source =  @inv_srr_item.gin_sources.first 
+
+          if @inventory_serial_part.present? # Inventory Serial Part Returned
+
+            @inventory_serial_part_attributes = inventory_serial_part_params
+            @inv_grn_item_attributes = grn_item_params
+
+            if @add_rec # Add new record (Part)
+
+              if params[:warranty_check]
+                @inv_warranty = InventoryWarranty.new inventory_warranty_params
+
+                @inventory_serial_part.inventory_warranties << @inv_warranty
+              end
+
+              @inventory_serial_part_attributes.merge!(serial_item_id: @main_inventory_serial_part.id)
+
+              @inventory_serial_part_attributes.merge!(product_id: @inv_gin_source.grn_serial_part.inventory_serial_part.product_id) if !@inventory_serial_part_attributes[:product_id].present?
+
+              @main_inventory_serial_part.update damage: params[:main_part_damage_reason_check].present?
+
+            else # update record (Part)
+
+              @inv_grn_item_attributes.merge!(unit_cost: @inv_gin_source.grn_serial_part.grn_item.unit_cost, currency_id: @inv_gin_source.grn_serial_part.grn_item.currency.id)
+
+            end
+
+            if @onloan_request
+              @inventory_serial_part_attributes.merge!(serial_no: @onloan_request_part.return_part_serial_no, ct_no: @onloan_request_part.return_part_ct_no)
+
+            else
+              @inventory_serial_part_attributes.merge!(serial_no: @ticket_spare_part.return_part_serial_no, ct_no: @ticket_spare_part.return_part_ct_no)
+            end
+
+            @inventory_serial_part_attributes.merge!(created_by: current_user.id, updated_by: current_user.id, damage: params[:damage_check].present?)
+
+            @inventory_serial_part.attributes = @inventory_serial_part_attributes
+
+            @inventory_serial_part.save
+
+            # inv_gin_item - edit
+            @inv_gin_source.gin_item.update returned_quantity: (@inv_gin_source.gin_item.returned_quantity.to_i + 1), return_completed: (@inv_gin_source.gin_item.returnable && (@inv_gin_source.gin_item.issued_quantity.to_i == (@inv_gin_source.gin_item.returned_quantity.to_i + 1)))
+
+            # inv_gin_source - edit
+            @inv_gin_source.update returned_quantity: (@inv_gin_source.returned_quantity.to_i + 1)
+
+            # inv_srn_item - edit
+            @inv_srn_item.update closed: true, return_completed: (@inv_srn_item.returnable)
+
+            # inv_srr - edit
+            @inv_srr.update closed: true
+
+            # inv_srr_item - edit
+            @inv_srr_item.update closed: true
+
+            # inv_grn - add
+            @inv_grn = Grn.new store_id: @inv_srr.store.id, grn_no: CompanyConfig.first.increase_inv_last_grn_no, srr_id: @inv_srr.id, created_by: current_user.id
+
+            # inv_grn_item - add
+            @inv_grn_item = @inv_grn.grn_items.build(@inv_grn_item_attributes)
+
+            @inv_grn_item_attributes.merge!({
+              product_id:  @inventory_serial_part.product_id,
+              recieved_quantity: 1,
+              remaining_quantity: 1,
+              reserved_quantity: 0,
+              damage_quantity: (params[:damage_check].present? ? 1 : 0),
+              current_unit_cost: @inv_grn_item.unit_cost,
+              srr_item_id: @inv_srr_item.id,
+              inventory_not_updated: true,
+              main_product_id: @main_inventory_serial_part.product_id
+            })
+
+            @inv_grn_item.attributes = @inv_grn_item_attributes
+
+            # inv_grn_serial_part - Add
+            @inv_grn_part = @inv_grn_item.grn_serial_parts.build
+            @inv_grn_part.serial_item_id = @main_inventory_serial_part.id
+            @inv_grn_part.inv_serial_part_id = @inventory_serial_part.id
+            @inv_grn_part.remaining = 1
+
+            @inv_grn.save
+            # inv_damage - Add For Part
+            if params[:damage_check].present?
+              @inv_damage1 = Grn.new({
+                store_id: @inv_srr.store.id,
+                product_id: @inventory_serial_part.product_id,
+                grn_item_id: @inv_grn_item.id,
+                grn_batch_id: nil,
+                grn_serial_item_id: nil,
+                grn_serial_part_id: @inv_grn_part.id,
+                spare_part: true,
+                quantity: 1,
+                unit_cost: @inv_grn_item.unit_cost,
+                currency_id: @inv_grn_item.currency.id,
+                srr_item_id: @inv_srr_item.id,
+                product_condition_id: @inventory_serial_part.product_condition.id,
+                damage_reason_id: params[:damage_reason]
+              })
+              @inv_damage1.save
+            end
+
+            # inv_damage - Add for Main Item
+            if params[:main_part_damage_reason_check].present?
+              @inv_damage2 = Grn.new({
+                store_id: @inv_srr.store.id,
+                product_id: @main_inventory_serial_part.product_id,
+                grn_item_id: @inv_gin_source.main_part_grn_serial_item.grn_item.id,
+                grn_batch_id: nil,
+                grn_serial_item_id: @inv_gin_source.main_part_grn_serial_item.id,
+                grn_serial_part_id: nil,
+                spare_part: true,
+                quantity: 1,
+                unit_cost: @inv_gin_source.main_part_grn_serial_item.grn_item..unit_cost,
+                currency_id: @inv_gin_source.main_part_grn_serial_item.grn_item.currency_id,
+                srr_item_id: @inv_srr_item.id,
+                product_condition_id: @main_inventory_serial_part.product_condition.id,
+                damage_reason_id: params[:main_part_damage_reason]
+              })
+
+              @inv_damage2.save
+            end
+
+            @returned = true
+
+          elsif @inventory_serial_item.present? # Inventory Serial Item Returned
+
+            @inventory_serial_item_attributes = inventory_serial_item_params
+            @inv_grn_item_attributes = grn_item_params
+
+            if @add_rec # Add new record (Item)
+
+              if params[:warranty_check]
+                @inv_warranty = InventoryWarranty.new inventory_warranty_params
+                @inventory_serial_item.inventory_warranties << @inv_warranty
+              end
+
+              # inv_inventory_serial_item - Add
+              @inventory_serial_item_attributes.merge!(product_id: @inv_gin_source.grn_serial_part.inventory_serial_part.product_id) if !@inventory_serial_item_attributes[:product_id].present?
+
+              @inventory_serial_item_attributes.merge! inventory_id: Inventory.where(product_id: @inventory_serial_item_attributes[:product_id], store_id: @inv_srr.store.id).first.id
+
+              if @onloan_request
+                @inventory_serial_item_attributes.merge! serial_no: @onloan_request_part.return_part_serial_no, ct_no: @onloan_request_part.return_part_ct_no
+              else
+                @inventory_serial_item_attributes.merge! serial_no: @ticket_spare_part.return_part_serial_no, ct_no: @ticket_spare_part.return_part_ct_no             
+              end
+
+              @inventory_serial_item_attributes.merge! created_by: current_user.id
+
+              # inv_inventory_batch - Add
+              if params[:grn_batch_check]
+                @inv_batch = InventoryBatch.new inventory_batch_params
+                @inventory_batch.inventory_id = @inventory_serial_item.inventory_id
+                @inventory_batch.product_id = @inventory_serial_item.product_id
+                @inv_batch.save
+
+                @inventory_serial_item.update batch_id: @inv_batch.id
+              end
+            else # update record (Item)
+
+              @inv_grn_item_attributes.merge!(unit_cost: @inv_gin_source.grn_serial_item.grn_item.unit_cost, currency_id: @inv_gin_source.grn_serial_item.grn_item.currency_id)
+
+            end
+
+            @inventory_serial_item_attributes.merge! damage: params[:damage_check].present?, updated_by: current_user.id
+
+            @inventory_serial_item.attributes = @inventory_serial_item_attributes
+            @inventory_serial_item.save
+
+            # inv_grn - add
+            @inv_grn = Grn.new store_id: @inv_srr.store.id, grn_no: CompanyConfig.first.increase_inv_last_grn_no, srr_id: @inv_srr.id, created_by: current_user.id
+
+            # inv_grn_item - add
+            @inv_grn_item = @inv_grn.grn_items.build(@inv_grn_item_attributes)
+
+            @inv_grn_item_attributes.merge!({
+              product_id:  @inventory_serial_item.product_id,
+              recieved_quantity: 1,
+              remaining_quantity: 1,
+              reserved_quantity: 0,
+              damage_quantity: (params[:damage_check].present? ? 1 : 0),
+              current_unit_cost: @inv_grn_item.unit_cost,
+              srr_item_id: @inv_srr_item.id,
+              inventory_not_updated: false,
+              main_product_id: nil
+            })
+
+            @inv_grn_item.attributes = @inv_grn_item_attributes
+
+            # inv_grn_serial_item - Add
+            @inv_grn_serial_item = @inv_grn_item.grn_serial_items.build
+            @inv_grn_serial_item.serial_item_id = @inventory_serial_item.id
+            @inv_grn_serial_item.remaining = 1
+            @inv_grn.save
+
+            #inv_inventory Edit
+            if params[:damage_check].present?
+              @inventory_serial_item.inventory.update({
+                stock_quantity: (@inventory_serial_item.inventory.stock_quantity.to_f + 1),
+                damage_quantity: (@inventory_serial_item.inventory.damage_quantity.to_f + 1)
+              })
+            else
+              @inventory_serial_item.inventory.update({ 
+                stock_quantity: (@inventory_serial_item.inventory.stock_quantity.to_f + 1), 
+                available_quantity: (@inventory_serial_item.inventory.available_quantity.to_f + 1)
+              })
+            end
+
+            # inv_damage - Add
+            if params[:damage_check].present?
+              @inv_damage = Grn.new({
+                store_id: @inv_srr.store.id,
+                product_id: @inventory_serial_item.product_id,
+                grn_item_id: @inv_grn_item.id,
+                grn_batch_id: nil,
+                grn_serial_item_id: @inv_grn_serial_item.id,
+                grn_serial_part_id: nil,
+                spare_part: @inventory_serial_item.inventory_product.spare_part,
+                quantity: 1,
+                unit_cost: @inv_grn_item.unit_cost,
+                currency_id: @inv_grn_item.currency_id,
+                srr_item_id: @inv_srr_item.id,
+                product_condition_id: @inventory_serial_item.product_condition.id,
+                damage_reason_id: params[:damage_reason]
+              })
+
+              @inv_damage.save
+            end
+            # inv_gin_item - edit
+            @inv_gin_source.gin_item.update returned_quantity: (@inv_gin_source.gin_item.returned_quantity.to_i + 1), return_completed: (@inv_gin_source.gin_item.returnable && (@inv_gin_source.gin_item.issued_quantity.to_i == (@inv_gin_source.gin_item.returned_quantity.to_i + 1)))
+
+            # inv_gin_source - edit
+            @inv_gin_source.update returned_quantity: (@inv_gin_source.returned_quantity.to_i + 1)
+
+            # inv_srn_item - edit
+            @inv_srn_item.update closed: true, return_completed: (@inv_srn_item.returnable)
+
+            # inv_srr - edit
+            @inv_srr.update closed: true
+
+            # inv_srr_item - edit
+            @inv_srr_item.update closed: true
+
+            @returned = true
+
+          elsif @inventory_batch.present?  # Inventory Batch Item Returned
+
+            @inventory_batch_attributes = @inventory_batch_params
+            @grn_item_attributes = @grn_item_params
+
+            if @add_rec # Add new record (Batch)
+
+              @inventory_batch_attributes.merge! product_id: @inv_gin_source.grn_batch.inventory_batch.inventory_product.id if !@inventory_batch_attributes[:product_id].present?
+
+              @inventory_batch_attributes.merge! inventory_id: Inventory.where(product_id: @inventory_batch_attributes[:product_id], store_id: @inv_srr.store.id).first.id
+
+              if params[:warranty_check]
+                @inv_warranty = InventoryWarranty.new inventory_warranty_params
+
+                @inventory_batch.inventory_warranties << @inv_warranty
+
+              end
+
+            else # update record (Batch)
+              @grn_item_attributes.merge!(unit_cost: @inv_gin_source.grn_batch.grn_item.unit_cost, currency_id: @inv_gin_source.grn_batch.grn_item.currency_id)
+            end
+
+            @inventory_batch.attributes = @inventory_batch_attributes
+            @inventory_batch.save
+            # inv_grn - add
+            @inv_grn = Grn.new store_id: @inv_srr.store.id, grn_no: CompanyConfig.first.increase_inv_last_grn_no, srr_id: @inv_srr.id, created_by: current_user.id
+
+              # inv_grn_item - add
+            @inv_grn_item = @inv_grn.grn_items.build(grn_item_params)
+            @grn_item_attributes.merge!({
+
+              product_id:  @inventory_batch.product_id,
+              recieved_quantity: 1,
+              remaining_quantity: 1,
+              reserved_quantity: 0,
+              damage_quantity: (params[:damage_check].present? ? 1 : 0),
+              current_unit_cost: grn_item_params[:unit_cost],
+              srr_item_id: @inv_srr_item.id,
+              inventory_not_updated: false,
+              main_product_id: nil
+            })
+            @inv_grn_item.attributes = @grn_item_attributes
+
+            # inv_grn_batch
+            @inv_grn_batch = @inv_grn_item.grn_batches.build
+            @inv_grn_batch.inventory_batch_id = @inventory_batch.id
+            @inv_grn_batch.recieved_quantity = 1
+            @inv_grn_batch.remaining_quantity = 1
+            @inv_grn_batch.damage_quantity = params[:damage_check].present? ? 1 : 0 
+            @inv_grn.save
+
+            #inv_inventory Edit
+            if params[:damage_check].present?
+              @inventory_batch.inventory.update({
+                stock_quantity: (@inventory_batch.inventory.stock_quantity.to_f + 1), 
+                damage_quantity: (@inventory_batch.inventory.damage_quantity.to_f + 1)
+              })
+            else
+              @inventory_batch.inventory.update({
+                stock_quantity: (@inventory_batch.inventory.stock_quantity.to_f + 1), 
+                available_quantity: (@inventory_batch.inventory.available_quantity.to_f + 1)
+              })
+            end
+
+            # inv_damage - Add
+            if params[:damage_check].present?
+              @inv_damage = Grn.new({
+                store_id: @inv_srr.store.id,
+                product_id: @inventory_batch.product_id,
+                grn_item_id: @inv_grn_item.id,
+                grn_batch_id: @inv_grn_batch.id,
+                grn_serial_item_id: nil,
+                grn_serial_part_id: nil,
+                spare_part: @inventory_batch.inventory_product.spare_part,
+                quantity: 1,
+                unit_cost: @inv_grn_item.unit_cost,
+                currency_id: @inv_grn_item.currency_id,
+                srr_item_id: @inv_srr_item.id,
+                product_condition_id: nil,
+                damage_reason_id: params[:damage_reason]
+              })
+
+              @inv_damage.save
+            end
+
+            # inv_gin_item - edit
+            @inv_gin_source.gin_item.update returned_quantity: (@inv_gin_source.gin_item.returned_quantity.to_i + 1), return_completed: (@inv_gin_source.gin_item.returnable && (@inv_gin_source.gin_item.issued_quantity.to_i == (@inv_gin_source.gin_item.returned_quantity.to_i + 1)))
+
+            # inv_gin_source - edit
+            @inv_gin_source.update returned_quantity: (@inv_gin_source.returned_quantity.to_i + 1)
+
+            # inv_srn_item - edit
+            @inv_srn_item.update closed: true, return_completed: (@inv_srn_item.returnable)
+
+            # inv_srr - edit
+            @inv_srr.update closed: true
+
+            # inv_srr_item - edit
+            @inv_srr_item.update closed: true
+
+            @returned = true
+
+          elsif @grn_item.present? # Inventory Item Returned (Not Serial Part, Serial Item or Inventory Batch Item)
+
+            if @add_rec # Add new record
+
+              # inv_grn - add
+              @inv_grn = Grn.new store_id: @inv_srr.store.id, grn_no: CompanyConfig.first.increase_inv_last_grn_no, srr_id: @inv_srr.id, created_by: current_user.id
+              @inv_grn.grn_items << @grn_item
+
+              # inv_grn_item - add
+              if !@grn_item.product_id
+                @grn_item.product_id = @inv_gin_source.grn_item.product_id  
+              end
+              @grn_item.recieved_quantity = 1
+              @grn_item.remaining_quantity = 1
+              @grn_item.reserved_quantity = 0
+              @grn_item.damage_quantity = params[:damage_check].present? ? 1 : 0  
+              #@grn_item.unit_cost - binded
+              #@grn_item.currency_id - binded
+              @grn_item.current_unit_cost = @grn_item.unit_cost 
+              @grn_item.srr_item_id = @inv_srr_item.id
+              @grn_item.inventory_not_updated = false
+              @grn_item.main_product_id = nil
+              @inv_grn.save
+
+              #inv_inventory Edit
+              @inv_inventory = Inventory.where(product_id: @grn_item.product_id, store_id: @inv_srr.store.id).first.id
+              if params[:damage_check].present?
+                @inv_inventory.update({ 
+                  stock_quantity: (@inv_inventory.stock_quantity.to_f + 1), 
+                  damage_quantity: (@inv_inventory.damage_quantity.to_f + 1)
+                })
+              else
+                @inv_inventory.update({ 
+                  stock_quantity: (@inv_inventory.stock_quantity.to_f + 1), 
+                  available_quantity: (@inv_inventory.available_quantity.to_f + 1)
+                })
+              end
+
+              # inv_damage - Add
+              if params[:damage_check].present?
+                @inv_damage = Grn.new({
+                  store_id: @inv_srr.store.id,
+                  product_id: @grn_item.product_id,
+                  grn_item_id: @grn_item.id,
+                  grn_batch_id: nil,
+                  grn_serial_item_id: nil,
+                  grn_serial_part_id: nil,
+                  spare_part: @grn_item.inventory_product.spare_part,
+                  quantity: 1,
+                  unit_cost: @grn_item.unit_cost,
+                  currency_id: @grn_item.currency_id,
+                  srr_item_id: @inv_srr_item.id,
+                  product_condition_id: nil,
+                  damage_reason_id: params[:damage_reason]
+                })
+
+                @inv_damage.save
+              end
+
+              # inv_gin_item - edit
+              @inv_gin_source.gin_item.update returned_quantity: (@inv_gin_source.gin_item.returned_quantity.to_i + 1), return_completed: (@inv_gin_source.gin_item.returnable && (@inv_gin_source.gin_item.issued_quantity.to_i == (@inv_gin_source.gin_item.returned_quantity.to_i + 1)))
+
+              # inv_gin_source - edit
+              @inv_gin_source.update returned_quantity: (@inv_gin_source.returned_quantity.to_i + 1)
+
+              # inv_srn_item - edit
+              @inv_srn_item.update closed: true, return_completed: (@inv_srn_item.returnable)
+
+              # inv_srr - edit
+              @inv_srr.update closed: true
+
+              # inv_srr_item - edit
+              @inv_srr_item.update closed: true
+            end
+            @returned = true
+
+          end
+
+
+          if @returned
+
+            if @onloan_request
+
+              @onloan_request_part.update ret_part_received: true, ret_part_received_at: DateTime.now, ret_part_received_by: current_user.id
+
+              # 54 Receive Returned On-Loan part
+              action_id = TaskAction.find_by_action_no(54).id
+
+              @onloan_request_part.update status_action_id: SparePartStatusAction.find_by_code("RPA").id # Returned Part Accepted
+              @onloan_request_part.ticket_on_loan_spare_part_status_actions.create(status_id: @onloan_request_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
+
+              @onloan_request_part.update status_action_id: SparePartStatusAction.find_by_code("CLS").id # Close
+              @onloan_request_part.ticket_on_loan_spare_part_status_actions.create(status_id: @onloan_request_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
+
+              user_ticket_action = @onloan_request_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: @onloan_request_part.ticket.re_open_count, action_id: action_id)
+              user_ticket_action.build_request_on_loan_spare_part(ticket_on_loan_spare_part_id: @onloan_request_part.id)
+              user_ticket_action.save
+
+            else #Store Request (not On-Loan)
+
+              @ticket_spare_part.update  returned_part_accepted: true
+
+              # 43 Receive Returned part
+              action_id = TaskAction.find_by_action_no(43).id
+
+              @ticket_spare_part.update status_action_id: SparePartStatusAction.find_by_code("RPA").id # Returned Part Accepted
+              @ticket_spare_part.ticket_spare_part_status_actions.create(status_id: @ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
+
+              @ticket_spare_part.update status_action_id: SparePartStatusAction.find_by_code("CLS").id # Close
+              @ticket_spare_part.ticket_spare_part_status_actions.create(status_id: @ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
+
+              user_ticket_action = @ticket_spare_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket_spare_part.ticket.re_open_count, action_id: action_id)
+              user_ticket_action.build_request_spare_part(ticket_spare_part_id: @ticket_spare_part.id)
+              user_ticket_action.save
+
+            end
+
+            bpm_variables = view_context.initialize_bpm_variables
+
+            bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+            if bpm_response[:status].upcase == "SUCCESS"
+              flash[:notice] = "Successfully updated."
+            else
+              flash[:error] = "ticket is updated. but Bpm error"
+            end
+
+          end
+        end
+      end
+    else
+      flash[:notice] = "ticket is not updated. Bpm error"
+    end
+    redirect_to todos_url
+
+  end
+
+  def test_post
   end
 
   def toggle_add_update_return_part
 
-    object_id = params[:object_id] if params[:object_id] != "null"
+    Inventory
+
+    object_id = params[:object_id] if params[:object_id] != "undefined"
     @uri = URI params[:uri]
+
+    if params[:active_spare_part].present? and params[:active_spare_part] != "undefined"
+      active_spare_part_class, active_spare_part_id = params[:active_spare_part].split("-")
+      @ticket_spare_part = active_spare_part_class.classify.constantize.find(active_spare_part_id)
+    end
 
     case params[:object_class]
 
@@ -1022,8 +1674,12 @@ class InventoriesController < ApplicationController
       else
         @form_serial_part_or_item = params[:object_class].classify.constantize.new
       end
+
+      @main_part_of_serial_part = InventorySerialItem.find(session[:serial_part_item_id]) if session[:serial_part_item_id].present?
+
+
       @template = "serial_or_item_form"
-      @variables = {form_serial_part_or_item: @form_serial_part_or_item, uri: @uri}
+      @variables = {form_serial_part_or_item: @form_serial_part_or_item, uri: @uri, main_part_of_serial_part: @main_part_of_serial_part, ticket_spare_part: @ticket_spare_part, currency_code: params[:currency_code], currency_id: params[:currency_id], grn_cost: params[:grn_cost]}
     when "InventoryBatch"
       if object_id.present?
         @form_inv_batch = params[:object_class].classify.constantize.find(object_id)
@@ -1031,15 +1687,15 @@ class InventoriesController < ApplicationController
         @form_inv_batch = params[:object_class].classify.constantize.new
       end
       @template = "grn_batch_form"
-      @variables = {form_inv_batch: @form_inv_batch, uri: @uri}
+      @variables = {form_inv_batch: @form_inv_batch, uri: @uri, ticket_spare_part: @ticket_spare_part, currency_code: params[:currency_code], currency_id: params[:currency_id], grn_cost: params[:grn_cost]}
     when "GrnItem"
       if object_id.present?
         @form_grn_item = params[:object_class].classify.constantize.find(object_id)
       else
         @form_grn_item = params[:object_class].classify.constantize.new
       end
-      @template = "return_store_part"
-      @variables = {form_grn_item: @form_grn_item, uri: @uri}
+      @template = "grn_item_form"
+      @variables = {form_grn_item: @form_grn_item, uri: @uri, ticket_spare_part: @ticket_spare_part, grn_cost: params[:grn_cost]}
     else
       # params[:reject]
       @template = "reject"
@@ -1096,9 +1752,31 @@ class InventoriesController < ApplicationController
       params.require(:ticket_estimation).permit(:note, :id, :cust_approved, :cust_approved_by)
     end
 
-    def ticket_params
-      # params.require(:ticket).permit(ticket_estimations_attributes: [:id, :advance_payment_amount, :note, :approved_adv_pmnt_amount, ticket_estimation_externals_attributes: [:id, :repair_by_id, :cost_price, :estimated_price, :warranty_period, :approved_estimated_price], ticket_estimation_additionals_attributes: [:ticket_id, :additional_charge_id, :cost_price, :estimated_price, :_destroy, :id, :approved_estimated_price]], ticket_deliver_units_attributes: [:id, :note, :collected, :delivered_to_sup])
+    def inventory_serial_part_params
+      params.require(:inventory_serial_part).permit(:id, :serial_item_id, :product_id, :serial_no, :remarks, :product_condition_id, :scavenge, :parts_not_completed, :damage, :used, :repaired, :reserved, :disposed, :inv_status_id, :ct_no, :manufatured_date, :expiry_date)
+    end
 
+    def inventory_serial_item_params
+      params.require(:inventory_serial_item).permit(:id, :inventory_id, :product_id, :batch_id, :serial_no, :remarks, :product_condition_id, :scavenge, :parts_not_completed, :damage, :used, :repaired, :reserved, :disposed, :inv_status_id, :ct_no, :manufatured_date, :expiry_date)
+    end
+
+    def grn_batch_params
+      params.require(:grn_batch).permit(:id, :grn_item_id, :inventory_batch_id, :recieved_quantity, :remaining_quantity, :reserved_quantity, :damage_quantity)
+    end
+
+    def grn_item_params
+      params.require(:grn_item).permit(:id, :grn_id, :srn_item_id, :product_id, :recieved_quantity, :remaining_quantity, :reserved_quantity, :damage_quantity, :remarks, :unit_cost, :current_unit_cost, :currency_id, :average_cost, :standard_cost, :po_item_id, :po_unit_quantity, :po_unit_cost)
+    end
+
+    def inventory_batch_params
+      params.require(:grn_item).permit(:id, :inventory_id, :product_id, :lot_no, :batch_no, :remarks, :manufatured_date, :expiry_date, :created_at, :created_by)
+    end
+
+    def inventory_warranty_params
+      params.require(:inventory_warranty).permit(:id, :start_at, :end_at, :period_part, :period_labour, :period_onsight, :warranty_type_id, :remarks)
+    end
+
+    def ticket_params
       params.require(:ticket).permit(:ticket_no, :sla_id, :serial_no, :status_hold, :repair_type_id, :base_currency_id, :ticket_close_approval_required, :ticket_close_approval_requested, :regional_support_job, :job_started_action_id, :job_start_note, :job_started_at, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, :status_resolve_id, ticket_deliver_units_attributes: [:id, :deliver_to_id, :note, :collected, :delivered_to_sup, :created_at, :created_by, :received, :received_at, :received_by], ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :ticket_action_id, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer], ticket_estimations_attributes: [:id, :advance_payment_amount, :note, :currency_id, :status_id, :requested_at, :requested_by, :approved_adv_pmnt_amount, ticket_estimation_externals_attributes: [:id, :repair_by_id, :cost_price, :estimated_price, :warranty_period, :approved_estimated_price], ticket_estimation_additionals_attributes: [:ticket_id, :additional_charge_id, :cost_price, :estimated_price, :_destroy, :id, :approved_estimated_price]], user_ticket_actions_attributes: [:id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, user_assign_ticket_actions_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy], ticket_re_assign_request_attributes: [:reason_id, :_destroy], ticket_action_taken_attributes: [:action, :_destroy], ticket_terminate_job_attributes: [:id, :reason_id, :foc_requested, :_destroy], act_hold_attributes: [:id, :reason_id, :_destroy, :un_hold_action_id], hp_case_attributes: [:id, :case_id, :case_note], ticket_finish_job_attributes: [:resolution, :_destroy], ticket_terminate_job_payments_attributes: [:id, :amount, :payment_item_id, :_destroy, :ticket_id, :currency_id], act_fsr_attributes: [:print_fsr], serial_request_attributes: [:reason], job_estimation_attributes: [:supplier_id]], ticket_extra_remarks_attributes: [:id, :note, :created_by, :extra_remark_id], products_attributes: [:id, :sold_country_id, :pop_note, :pop_doc_url, :pop_status_id], ticket_fsrs_attributes: [:work_started_at, :work_finished_at, :hours_worked, :down_time, :travel_hours, :engineer_time_travel, :engineer_time_on_site, :resolution, :completion_level, :created_by], ticket_on_loan_spare_parts_attributes: [:id, :approved_inv_product_id, :approved_store_id, :approved_main_inv_product_id, :approved])
     end
 end
