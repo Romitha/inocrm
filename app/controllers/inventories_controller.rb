@@ -1125,12 +1125,12 @@ class InventoriesController < ApplicationController
 
             @updating_part.update @inv_srr_params
 
-            @updating_part = @ticket_spare_part
+            # @updating_part = @ticket_spare_part
 
-            @updating_part.ticket_spare_part_status_actions.create(status_id: @updating_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
+            @updating_part.ticket_spare_part.ticket_spare_part_status_actions.create(status_id: @updating_part.ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
 
-            user_ticket_action = @updating_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: @updating_part.ticket.re_open_count, action_id: action_id)
-            user_ticket_action.build_request_spare_part(ticket_spare_part_id: @updating_part.id)
+            user_ticket_action = @updating_part.ticket_spare_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: @updating_part.ticket_spare_part.ticket.re_open_count, action_id: action_id)
+            user_ticket_action.build_request_spare_part(ticket_spare_part_id: @updating_part.ticket_spare_part.id)
 
           end
 
@@ -1174,7 +1174,10 @@ class InventoriesController < ApplicationController
             @inv_grn_item_attributes = grn_item_params
 
             if @add_rec # Add new record (Part)
+              # inv_inventory_serial_part - Add
 
+              # inv_warranty - Add
+              # inv_serial_part_warranty - Add    
               if params[:warranty_check]
                 @inv_warranty = InventoryWarranty.new inventory_warranty_params
 
@@ -1185,41 +1188,26 @@ class InventoriesController < ApplicationController
 
               @inventory_serial_part_attributes.merge!(product_id: @inv_gin_source.grn_serial_part.inventory_serial_part.product_id) if !@inventory_serial_part_attributes[:product_id].present?
 
-              @main_inventory_serial_part.update damage: params[:main_part_damage_reason_check].present?
-
             else # update record (Part)
+              # inv_inventory_serial_part - Edit
 
+              #new grn cost similar to last grn cost 
               @inv_grn_item_attributes.merge!(unit_cost: @inv_gin_source.grn_serial_part.grn_item.unit_cost, currency_id: @inv_gin_source.grn_serial_part.grn_item.currency.id)
 
             end
 
+            # inv_inventory_serial_part - save
             if @onloan_request
               @inventory_serial_part_attributes.merge!(serial_no: @onloan_request_part.return_part_serial_no, ct_no: @onloan_request_part.return_part_ct_no)
-
             else
               @inventory_serial_part_attributes.merge!(serial_no: @ticket_spare_part.return_part_serial_no, ct_no: @ticket_spare_part.return_part_ct_no)
             end
-
             @inventory_serial_part_attributes.merge!(created_by: current_user.id, updated_by: current_user.id, damage: params[:damage_check].present?)
-
             @inventory_serial_part.attributes = @inventory_serial_part_attributes
-
             @inventory_serial_part.save
 
-            # inv_gin_item - edit
-            @inv_gin_source.gin_item.update returned_quantity: (@inv_gin_source.gin_item.returned_quantity.to_i + 1), return_completed: (@inv_gin_source.gin_item.returnable && (@inv_gin_source.gin_item.issued_quantity.to_i == (@inv_gin_source.gin_item.returned_quantity.to_i + 1)))
-
-            # inv_gin_source - edit
-            @inv_gin_source.update returned_quantity: (@inv_gin_source.returned_quantity.to_i + 1)
-
-            # inv_srn_item - edit
-            @inv_srn_item.update closed: true, return_completed: (@inv_srn_item.returnable)
-
-            # inv_srr - edit
-            @inv_srr.update closed: true
-
-            # inv_srr_item - edit
-            @inv_srr_item.update closed: true
+            # inv_inventory_serial_item - edit
+            @main_inventory_serial_part.update damage: params[:main_part_damage_reason_check].present?
 
             # inv_grn - add
             @inv_grn = Grn.new store_id: @inv_srr.store.id, grn_no: CompanyConfig.first.increase_inv_last_grn_no, srr_id: @inv_srr.id, created_by: current_user.id
@@ -1248,6 +1236,10 @@ class InventoriesController < ApplicationController
             @inv_grn_part.remaining = 1
 
             @inv_grn.save
+
+            #inv_inventory Edit
+            #Inventory not updated
+
             # inv_damage - Add For Part
             if params[:damage_check].present?
               @inv_damage1 = Grn.new({
@@ -1289,6 +1281,21 @@ class InventoriesController < ApplicationController
               @inv_damage2.save
             end
 
+            # inv_gin_item - edit
+            @inv_gin_source.gin_item.update returned_quantity: (@inv_gin_source.gin_item.returned_quantity.to_i + 1), return_completed: (@inv_gin_source.gin_item.returnable && (@inv_gin_source.gin_item.issued_quantity.to_i == (@inv_gin_source.gin_item.returned_quantity.to_i + 1)))
+
+            # inv_gin_source - edit
+            @inv_gin_source.update returned_quantity: (@inv_gin_source.returned_quantity.to_i + 1)
+
+            # inv_srn_item - edit
+            @inv_srn_item.update closed: true, return_completed: (@inv_srn_item.returnable)
+
+            # inv_srr - edit
+            @inv_srr.update closed: true
+
+            # inv_srr_item - edit
+            @inv_srr_item.update closed: true
+
             @returned = true
 
           elsif @inventory_serial_item.present? # Inventory Serial Item Returned
@@ -1297,7 +1304,9 @@ class InventoriesController < ApplicationController
             @inv_grn_item_attributes = grn_item_params
 
             if @add_rec # Add new record (Item)
-
+ 
+              # inv_warranty - Add
+              # inv_serial_warranty - Add  
               if params[:warranty_check]
                 @inv_warranty = InventoryWarranty.new inventory_warranty_params
                 @inventory_serial_item.inventory_warranties << @inv_warranty
@@ -1326,13 +1335,14 @@ class InventoriesController < ApplicationController
                 @inventory_serial_item.update batch_id: @inv_batch.id
               end
             else # update record (Item)
+              # inv_inventory_serial_item - Edit
 
+              #new grn cost similar to last grn cost 
               @inv_grn_item_attributes.merge!(unit_cost: @inv_gin_source.grn_serial_item.grn_item.unit_cost, currency_id: @inv_gin_source.grn_serial_item.grn_item.currency_id)
 
             end
 
             @inventory_serial_item_attributes.merge! damage: params[:damage_check].present?, updated_by: current_user.id
-
             @inventory_serial_item.attributes = @inventory_serial_item_attributes
             @inventory_serial_item.save
 
@@ -1395,6 +1405,7 @@ class InventoriesController < ApplicationController
 
               @inv_damage.save
             end
+
             # inv_gin_item - edit
             @inv_gin_source.gin_item.update returned_quantity: (@inv_gin_source.gin_item.returned_quantity.to_i + 1), return_completed: (@inv_gin_source.gin_item.returnable && (@inv_gin_source.gin_item.issued_quantity.to_i == (@inv_gin_source.gin_item.returned_quantity.to_i + 1)))
 
@@ -1418,31 +1429,36 @@ class InventoriesController < ApplicationController
             @grn_item_attributes = @grn_item_params
 
             if @add_rec # Add new record (Batch)
+              # inv_inventory_batch - Add
 
               @inventory_batch_attributes.merge! product_id: @inv_gin_source.grn_batch.inventory_batch.inventory_product.id if !@inventory_batch_attributes[:product_id].present?
 
               @inventory_batch_attributes.merge! inventory_id: Inventory.where(product_id: @inventory_batch_attributes[:product_id], store_id: @inv_srr.store.id).first.id
 
+              # inv_warranty - Add
+              # inv_batch_warranty - Add   
               if params[:warranty_check]
                 @inv_warranty = InventoryWarranty.new inventory_warranty_params
 
                 @inventory_batch.inventory_warranties << @inv_warranty
-
               end
 
             else # update record (Batch)
+              # inv_inventory_batch - Edit
+
+              #new grn cost similar to last grn cost 
               @grn_item_attributes.merge!(unit_cost: @inv_gin_source.grn_batch.grn_item.unit_cost, currency_id: @inv_gin_source.grn_batch.grn_item.currency_id)
             end
 
             @inventory_batch.attributes = @inventory_batch_attributes
             @inventory_batch.save
+
             # inv_grn - add
             @inv_grn = Grn.new store_id: @inv_srr.store.id, grn_no: CompanyConfig.first.increase_inv_last_grn_no, srr_id: @inv_srr.id, created_by: current_user.id
 
               # inv_grn_item - add
             @inv_grn_item = @inv_grn.grn_items.build(grn_item_params)
             @grn_item_attributes.merge!({
-
               product_id:  @inventory_batch.product_id,
               recieved_quantity: 1,
               remaining_quantity: 1,
@@ -1587,6 +1603,8 @@ class InventoriesController < ApplicationController
 
               # inv_srr_item - edit
               @inv_srr_item.update closed: true
+            #else # update record
+              # Not Applicable
             end
             @returned = true
 

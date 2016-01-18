@@ -43,7 +43,14 @@ module TodosHelper
       # "lk.inova:INOCRM:0.0.8"
       # "lk.inova:INOCRM:0.0.9"
       # "lk.inova:INOCRM:0.0.0.1"
-      "lk.inova:INOCRM:0.0.0.3"
+      # "lk.inova:INOCRM:0.0.0.3"
+      case Rails.env
+      when "development"
+        "lk.inova:INOCRM:0.0.0.4"
+      when "production"
+        "lk.inova:INOCRM:1.0.0.4"
+      end
+        
     end
 
     def base_url

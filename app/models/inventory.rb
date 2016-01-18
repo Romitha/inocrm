@@ -85,7 +85,11 @@ class InventoryBatch < ActiveRecord::Base
 
   has_many :grn_batches
   has_many :grn_items, through: :grn_batches
+
   has_many :inventory_serial_items, foreign_key: :batch_id
+
+  has_many :inventory_batch_warranties, foreign_key: :batch_id
+  has_many :inventory_warranties, through: :inventory_batch_warranties
 
   belongs_to :inventory
   belongs_to :inventory_product, foreign_key: :product_id
@@ -107,8 +111,12 @@ class InventorySerialItem < ActiveRecord::Base
   has_many :grn_items, through: :grn_serial_items
 
   has_many :inventory_serial_items_additional_costs, foreign_key: :serial_item_id
+
   has_many :inventory_serial_warranties, foreign_key: :serial_item_id
+  has_many :inventory_warranties, through: :inventory_serial_warranties
+
   has_many :grn_serial_parts, foreign_key: :serial_item_id
+  has_many :grn_items, through: :grn_serial_parts
 
 end
 
@@ -128,8 +136,11 @@ class InventorySerialPart < ActiveRecord::Base
   accepts_nested_attributes_for :inventory_serial_part_additional_costs, allow_destroy: true
 
   has_many :inventory_serial_part_warranties, foreign_key: :serial_part_id
+  has_many :inventory_warranties, through: :inventory_serial_part_warranties
   has_many :damages
+
   has_many :grn_serial_parts, foreign_key: :inv_serial_part_id
+  has_many :grn_items, through: :grn_serial_parts
 
 end
 
@@ -173,15 +184,39 @@ class InventorySerialWarranty < ActiveRecord::Base
 
   belongs_to :inventory_serial_item, foreign_key: :serial_item_id
   accepts_nested_attributes_for :inventory_serial_item, :allow_destroy => true
-  belongs_to :inventory_warranty
+
+  belongs_to :inventory_warranty, foreign_key: :warranty_id
   accepts_nested_attributes_for :inventory_warranty, :allow_destroy => true
+end
+
+class InventoryBatchWarranty < ActiveRecord::Base
+  self.table_name = "inv_batch_warranty"
+
+  belongs_to :inventory_batch, foreign_key: :batch_id
+  belongs_to :inventory_warranty, foreign_key: :warranty_id
 end
 
 class InventoryWarranty < ActiveRecord::Base
   self.table_name = "inv_warranty"
 
   has_many :inventory_serial_part_warranties, foreign_key: :warranty_id
+  has_many :inventory_serial_parts, through: :inventory_serial_part_warranties
+
+
   has_many :inventory_serial_warranties, foreign_key: :warranty_id
+  has_many :inventory_warranties_for_serials, through: :inventory_batch_warranties, source: :inventory_warranty
+
+  has_many :inventory_batch_warranties, foreign_key: :warranty_id
+  has_many :inventory_warranties_for_batches, through: :inventory_batch_warranties, source: :inventory_warranty
+
+  belongs_to :inventory_warranty_type, foreign_key: :warranty_type_id
+
+end
+
+class InventoryWarrantyType < ActiveRecord::Base
+  self.table_name = "mst_inv_warranty_type"
+
+  has_many :inventory_warranties, foreign_key: :warranty_type_id
 
 end
 

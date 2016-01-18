@@ -2,7 +2,7 @@
 - product = @product
 - spare_part = @spare_part
 / = render "tickets/tickets_pack/ticket_header", ticket: ticket, product: product
-= select_tag("brand_name", options_from_collection_for_select(ProductBrand.all, :id, :name), data: {url: collect_parts_tickets_path, template: "collect_parts"}, prompt: "Please select brand")
+= select_tag("brand_name", options_from_collection_for_select(ProductBrand.all, :id, :name), data: {url: collect_parts_tickets_path, template: "collect_parts", task_id: params[:task_id]}, prompt: "Please select brand")
 #bundle_parts
   = render "tickets/tickets_pack/collect_parts/collect_parts", spare_part: spare_part
 

@@ -5,13 +5,31 @@
   = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
   - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
     = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+  - if f.object.new_record?
+    = link_to "change product", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true
+    .request_from
+    = f.input :product_id, as: :hidden, input_html: {id: "inv_product_id"}
+  = f.input :inventory_batch_id, as: :hidden, input_html: {value: f.object.id}
 
+
+  - if ticket_spare_part.is_a?(TicketOnLoanSparePart)
+    - if ticket_spare_part.return_part_damage
+      .col-md-3
+        %strong Return part damage:
+        %br/
+        = ticket_spare_part.return_part_damage_reason.try(:reason)
+  - else
+    - if ticket_spare_part.ticket_spare_part_store.return_part_damage
+      .col-md-3
+        %strong Return part damage:
+        %br/
+        = ticket_spare_part.ticket_spare_part_store.return_part_damage_reason.try(:reason)
   .col-md-4
     .damage_reason_wrapper
       = label_tag "Damage"
-      = check_box_tag :damage_season_check, true, false, class: "damage_reason_check"
-      = label_tag "Damage reason"
-      = select_tag :damage_reason, options_from_collection_for_select(InventoryReason.all, "id", "reason")
+      = check_box_tag :damage_reason_check, true, false, class: "damage_reason_check"
+      = label_tag "Damage reason", "Damage reason", class: "damage_reason_label"
+      = select_tag :damage_reason, options_from_collection_for_select(InventoryReason.where(damage: true), "id", "reason"), class: "damage_reason"
 
   .col-md-8
     = f.input :remarks, label: "Remarks", input_html: {value: nil}
@@ -27,13 +45,19 @@
       .col-md-3
         = f.input :expiry_date, as: :string, input_html: {class: "datepicker"}
 
-    = simple_form_for GrnItem.new do |grn_item|
-      .row
-        .col-md-6
-          = grn_item.input :unit_cost
-
-      .row
-        = simple_form_for InventoryWarranty.new do |w|
+      .col-md-3
+        %label{for: "inventory_serial_part_unit_cody", class: "text optional control-label"}
+          Unit cost (#{currency_code})
+        %input{type: "number", id: "grn_item_unit_cost", name: "grn_item[unit_cost]", class: "numeric decimal optional form-control"}
+    .row
+      .col-md-12
+        %hr
+        = check_box_tag :warranty_check, true, false, class: "warranty_check"
+        = label_tag "New warranty required", "New warranty required", class: "warranty_check_label"
+        %hr
+      = simple_form_for InventoryWarranty.new, url: "#" do |w|
+        %fieldset.new_warranty.hide
+          %legend New Warranty
           .col-md-3
             = w.input :start_at, as: :string, input_html: {class: "datepicker"}
           .col-md-3

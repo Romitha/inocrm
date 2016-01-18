@@ -1544,7 +1544,7 @@ class TicketsController < ApplicationController
         spt_ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("ISS").id) 
         spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now) 
 
-        spt_ticket_spare_part.ticket_spare_part_manufacture and spt_ticket_spare_part.ticket_spare_part_manufacture.update(issued: true)
+        spt_ticket_spare_part.ticket_spare_part_manufacture and spt_ticket_spare_part.ticket_spare_part_manufacture.update(issued: true, issued_at: DateTime.now, issued_by: current_user.id)
 
         #Set Action (38) Issue Spare part, DB.spt_act_request_spare_part
         user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(38).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
@@ -3669,7 +3669,7 @@ class TicketsController < ApplicationController
     end
 
     def ticket_spare_part_params(spt_ticket_spare_part)
-      tspt_params = params.require(:ticket_spare_part).permit(:approved_store_id, :approved_inv_product_id, :approved_main_inv_product_id, :spare_part_no, :spare_part_description, :ticket_id, :ticket_fsr, :cus_chargeable_part, :request_from, :faulty_serial_no, :received_part_serial_no, :received_part_ct_no, :repare_start, :repare_end, :faulty_ct_no, :note, :status_action_id, :status_use_id, :part_terminated_reason_id, :returned_part_accepted, ticket_attributes: [:remarks, :id], ticket_spare_part_manufacture_attributes: [:id, :event_no, :order_no, :id, :event_closed, :ready_to_bundle, :payment_expected_manufacture], ticket_spare_part_store_attributes: [:part_of_main_product, :id, :approved_store_id, :approved_inv_product_id, :approved_main_inv_product_id, :store_request_approved], request_spare_parts_attributes: [:reject_return_part_reason_id], ticket_on_loan_spare_parts_attributes: [:id, :approved_store_id, :approved_inv_product_id, :approved_main_inv_product_id, :approved, :ticket_id] )
+      tspt_params = params.require(:ticket_spare_part).permit(:approved_store_id, :approved_inv_product_id, :approved_main_inv_product_id, :spare_part_no, :spare_part_description, :ticket_id, :ticket_fsr, :cus_chargeable_part, :request_from, :faulty_serial_no, :received_part_serial_no, :received_part_ct_no, :repare_start, :repare_end, :faulty_ct_no, :note, :status_action_id, :status_use_id, :part_terminated_reason_id, :returned_part_accepted, ticket_attributes: [:remarks, :id], ticket_spare_part_manufacture_attributes: [:id, :event_no, :order_no, :id, :event_closed, :ready_to_bundle, :payment_expected_manufacture], ticket_spare_part_store_attributes: [:part_of_main_product, :id, :approved_store_id, :approved_inv_product_id, :approved_main_inv_product_id, :store_request_approved, :return_part_damage, :return_part_damage_reason_id], request_spare_parts_attributes: [:reject_return_part_reason_id], ticket_on_loan_spare_parts_attributes: [:id, :approved_store_id, :approved_inv_product_id, :approved_main_inv_product_id, :approved, :ticket_id] )
 
       tspt_params[:repare_start] = Time.strptime(tspt_params[:repare_start],'%m/%d/%Y %I:%M %p') if tspt_params[:repare_start].present?
       tspt_params[:repare_end] = Time.strptime(tspt_params[:repare_end],'%m/%d/%Y %I:%M %p') if tspt_params[:repare_end].present?
@@ -3679,7 +3679,7 @@ class TicketsController < ApplicationController
     end
 
     def ticket_on_loan_spare_part_params
-      params.require(:ticket_on_loan_spare_part).permit(:approved, :approved_store_id, :approved_inv_product_id, :approved_main_inv_product_id, :ref_spare_part_id, :note, :ticket_id, :status_action_id, :status_use_id, :store_id, :inv_product_id, :main_inv_product_id, :part_of_main_product, ticket_attributes: [:remarks, :id])
+      params.require(:ticket_on_loan_spare_part).permit(:approved, :approved_store_id, :approved_inv_product_id, :approved_main_inv_product_id, :ref_spare_part_id, :note, :ticket_id, :status_action_id, :status_use_id, :store_id, :inv_product_id, :main_inv_product_id, :part_of_main_product, :return_part_damage, :return_part_damage_reason_id, ticket_attributes: [:remarks, :id])
     end
 
     def act_warranty_extend_params
