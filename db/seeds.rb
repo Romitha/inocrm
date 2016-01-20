@@ -316,4 +316,6 @@ TicketEstimation
   EstimationStatus.create_with(name: t[1]).find_or_create_by(code: t[0])
 end
 
+WorkflowMapping.find(11).update(process_name: "SPPT_MFR_PART_REQUEST")
+
 # ALTER TABLE `inv_inventory` ADD `damage_quantity` DECIMAL(13,3) NOT NULL DEFAULT '0' AFTER `reserved_quantity`;
