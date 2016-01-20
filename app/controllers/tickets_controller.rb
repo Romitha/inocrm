@@ -2339,7 +2339,7 @@ class TicketsController < ApplicationController
       @ticket_action = @ticket.user_ticket_actions.find_by_action_id 18
 
       puts ":"+@ticket_action.inspect
-      @ticket_terminate_job = @ticket_action.ticket_terminate_job
+      # @ticket_terminate_job = @ticket_action.ticket_terminate_job
       # @terminate_job_payment = @ticket_action.ticket_terminate_job_payments.first
 
       @product = @ticket.products.first
