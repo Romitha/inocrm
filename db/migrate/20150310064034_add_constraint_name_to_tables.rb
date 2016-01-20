@@ -112,7 +112,7 @@ class AddConstraintNameToTables < ActiveRecord::Migration
       {constraint_name: "fk_spt_ticket_on_loan_spare_part_inv_srr1", foreign_key: "inv_srr_id", reference_table: "inv_srr"},
       {constraint_name: "fk_spt_ticket_on_loan_spare_part_inv_srr_item1", foreign_key: "inv_srr_item_id", reference_table: "inv_srr_item"},
       {constraint_name: "fk_spt_ticket_on_loan_spare_part_mst_inv_product1", foreign_key: "main_inv_product_id", reference_table: "mst_inv_product"},
-      {constraint_name: "fk_spt_ticket_on_loan_spare_part_mst_inv_product2", foreign_key: "appoved_inv_product_id", reference_table: "mst_inv_product"},
+      {constraint_name: "fk_spt_ticket_on_loan_spare_part_mst_inv_product2", foreign_key: "approved_inv_product_id", reference_table: "mst_inv_product"},
       {constraint_name: "fk_spt_ticket_on_loan_spare_part_mst_inv_product3", foreign_key: "approved_main_inv_product_id", reference_table: "mst_inv_product"},
       {constraint_name: "fk_spt_ticket_on_loan_spare_part_mst_inv_reason1", foreign_key: "return_part_damage_reason_id", reference_table: "mst_inv_reason"},
       {constraint_name: "fk_spt_ticket_on_loan_spare_part_mst_spt_reason1", foreign_key: "terminated_reason_id", reference_table: "mst_spt_reason"},
