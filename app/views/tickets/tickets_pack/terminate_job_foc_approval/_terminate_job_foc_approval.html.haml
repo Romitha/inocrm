@@ -16,15 +16,19 @@
       .col-md-6
         %strong Terminate Reason :
         #{ticket_action.ticket_terminate_job.try(:reason).try(:reason)}
+      .col-md-6
+        - if ticket_action.ticket_terminate_job.try(:foc_requested) == true
+          %strong FOC Requested
 
-    / = f.simple_fields_for ticket_terminate_job do |rf|
-    /   .row
-    /     .col-md-6
-    /       %strong Approval
 
-    /   .row
-    /     .col-md-6
-    /       = rf.input :foc_requested, as: :radio_buttons, collection: {"FOC" => false, "Payment required" => true}, wrapper: :append,label: false, onClick: "alert('hi!');"
+    = f.simple_fields_for :ticket_terminate_job do |rf|
+      .row
+        .col-md-6
+          %strong Approval
+
+      .row
+        .col-md-6
+          = rf.input :foc_requested, as: :radio_buttons, collection: {"FOC" => false, "Payment required" => true}, wrapper: :append,label: false, onClick: "alert('hi!');"
 
     .row.col-md-12
       = f.simple_fields_for :ticket_terminate_job_payments do |tf|
