@@ -270,11 +270,11 @@
   %hr
 
   =radio_button_tag "radio_part", "add_batch", ((onloan_request and active_spare_part.spare_part_status_use.code == "USD") or ( !onloan_request and active_spare_part.ticket_spare_part.spare_part_status_use.code == "USD")), data: {uri_path: uri.path, object_class: form_grn_item.class.to_s, task_id: params[:task_id], owner: params[:owner], process_id: params[:process_id], currency_code: gin_source.grn_item.currency.code, currency_id: gin_source.grn_item.currency_id, grn_cost: gin_source.grn_item.unit_cost, active_spare_part: (onloan_request ? "#{onloan_spare_part.class.to_s}-#{onloan_spare_part.id}" : "#{spare_part.class.to_s}-#{spare_part.id}")}, class: "toggle_add_update"
-  =label_tag :type_order, "Add new Serial Part"
+  =label_tag :type_order, "Add new Serial Item"
   .hide
     =radio_button_tag "radio_part", "update_part", !((onloan_request and active_spare_part.spare_part_status_use.code == "USD") or ( !onloan_request and active_spare_part.ticket_spare_part.spare_part_status_use.code == "USD")), data: {uri_path: uri.path, object_class: form_grn_item.class.to_s, object_id: grn_item.id, task_id: params[:task_id], owner: params[:owner], process_id: params[:process_id], currency_code: gin_source.grn_item.currency.code, currency_id: gin_source.grn_item.currency_id, grn_cost: gin_source.grn_item.unit_cost, active_spare_part: (onloan_request ? "#{onloan_spare_part.class.to_s}-#{onloan_spare_part.id}" : "#{spare_part.class.to_s}-#{spare_part.id}")}, class: "toggle_add_update"
-    =label_tag :type_order, "Update Existing Serial Part"
-  =radio_button_tag "radio_part", "reject", false, data: {reject: true, uri_path: uri.path, task_id: params[:task_id], owner: params[:owner], process_id: params[:process_id], currency_code: gin_source.grn_item.currency.code, grn_cost: gin_source.grn_item.unit_cost}, class: "toggle_add_update"
+    =label_tag :type_order, "Update Existing Serial Item"
+  =radio_button_tag "radio_part", "reject", false, data: {reject: true, uri_path: uri.path, task_id: params[:task_id], owner: params[:owner], process_id: params[:process_id], active_spare_part: (onloan_request ? "#{onloan_spare_part.class.to_s}-#{onloan_spare_part.id}" : "#{spare_part.class.to_s}-#{spare_part.id}")}, class: "toggle_add_update"
   =label_tag :type_order, "Reject"
 
   .add_form

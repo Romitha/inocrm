@@ -76,4 +76,8 @@
 
   .row
     .col-md-12
+      = label_tag "Remarks"
+      %textarea{class: "text optional form-control", name: "note"}
+      = simple_format ticket_spare_part.note
+    .col-md-12
       = link_to "Save", "#", onclick: "Inventories.submit_form('.form_inv_batch'); return false;", class: "btn btn-success"

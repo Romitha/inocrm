@@ -27,7 +27,6 @@
     - aps = ticket_spare_part.spare_part_status_action.code == "APS" #Approved Store Request
     - rjs = ticket_spare_part.spare_part_status_action.code == "RJS" #Reject Store Request
     - rbn = ticket_spare_part.spare_part_status_action.code == "RBN" #Ready to Bundle
-       
 
     = collapse collapse_type: "info", header_content: "Ticket spare part (#{ticket_spare_part.ticket_spare_part_store ? 'Store' : 'Manufacture'}): #{ticket_spare_part.spare_part_no} - #{ticket_spare_part.spare_part_description}", collapse_link: "ticket_spare_part_link_#{ticket_spare_part.id}", collapse_id: "ticket_spare_part_id", labelledby: "ticket_spare_part_lby_#{ticket_spare_part.id}" do
 
@@ -57,11 +56,22 @@
             %br/
             %strong Pending:
             - if manufacture_warranty
-              = SparePartStatusAction.find_by_manufacture_type_index(ticket_spare_part.spare_part_status_action.manufacture_type_index+1).name_next unless (ticket_spare_part.spare_part_status_action.manufacture_type_index+1 > 11) or (ticket_spare_part.spare_part_status_action.manufacture_type_index == 0)
+              - if ticket_spare_part.spare_part_status_action.code == "RPR"
+                - next_index = ticket_spare_part.spare_part_status_action.manufacture_type_index - 1
+              - else
+                - next_index = ticket_spare_part.spare_part_status_action.manufacture_type_index + 1
+
+              = SparePartStatusAction.find_by_manufacture_type_index(next_index).try(:name_next) unless (next_index > 11) or (ticket_spare_part.spare_part_status_action.manufacture_type_index == 0)
+
             - elsif store_warranty
-              = SparePartStatusAction.find_by_store_nc_type_index(ticket_spare_part.spare_part_status_action.store_nc_type_index+1).name_next unless (ticket_spare_part.spare_part_status_action.store_nc_type_index+1 > 7) or (ticket_spare_part.spare_part_status_action.store_nc_type_index == 0)
+              - if ticket_spare_part.spare_part_status_action.code == "RPR"
+                - next_index = ticket_spare_part.spare_part_status_action.store_nc_type_index - 1
+              - else
+                - next_index = ticket_spare_part.spare_part_status_action.store_nc_type_index + 1
+
+              = SparePartStatusAction.find_by_store_nc_type_index(next_index).try(:name_next) unless (next_index > 7) or (ticket_spare_part.spare_part_status_action.store_nc_type_index == 0) or (ticket_spare_part.spare_part_status_action.code == "RJS")
             - else store_non_warranty
-              = SparePartStatusAction.find_by_store_ch_type_index(ticket_spare_part.spare_part_status_action.store_ch_type_index+1).name_next unless (ticket_spare_part.spare_part_status_action.store_ch_type_index+1 > 8) or (ticket_spare_part.spare_part_status_action.store_ch_type_index == 0)
+              = SparePartStatusAction.find_by_store_ch_type_index(ticket_spare_part.spare_part_status_action.store_ch_type_index+1).try(:name_next) unless (ticket_spare_part.spare_part_status_action.store_ch_type_index+1 > 8) or (ticket_spare_part.spare_part_status_action.store_ch_type_index == 0) or (ticket_spare_part.spare_part_status_action.code == "RJS")
           %hr
 
           .col-md-3
@@ -299,10 +309,10 @@
           .col-md-3
             %strong
               Terminate Reason:
-            = ticket_spare_part.part_terminated_reason.try(:reason)            
+            = ticket_spare_part.part_terminated_reason.try(:reason)
 
 
-      = simple_form_for ticket_spare_part, url: update_part_order_inventories_path, method: :put do |f|
+      = simple_form_for ticket_spare_part, url: update_part_order_inventories_path, method: :put do |f| # update_part_order_inventories_path
 
         = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
         = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
@@ -356,8 +366,9 @@
         = f.input :note, input_html: {value: nil} if !(ord or clt or rcs or rtn or rpa or bnd or cls or aps or (str and store_non_warranty) or rjs or rbn )
         = simple_format ticket_spare_part.note
         - if store_non_warranty and cea
-          = hidden_field_tag :store_request, "store_request"
-          = f.submit "store request", name: "store_request", class: "btn btn-sm btn-success"
+          .store_request_wrapper
+            / = hidden_field_tag :store_request, "store_request"
+            = f.submit "store request", name: "store_request", class: "btn btn-sm btn-success"
 
         - if iss and (manufacture_warranty or store_warranty or store_non_warranty)
           = hidden_field_tag :recieved, "recieved"
@@ -368,7 +379,7 @@
           = check_box_tag "update_without_return", false, false, class: "small_scale_margin-right1"
           = hidden_field_tag :return, "return"
 
-          = f.submit "Return", name: "return", class: "btn btn-sm btn-success", onclick: "Tickets.presence_validater(this, {presence: ['#ticket_spare_part_received_spare_part_no', '#ticket_spare_part_faulty_serial_no', '#ticket_spare_part_faulty_ct_no', '#ticket_spare_part_received_part_serial_no', '#ticket_spare_part_received_part_ct_no', '#ticket_spare_part_repare_start', '#ticket_spare_part_repare_end'], checked: ['b']}); return false;"
+          = f.submit "Return", name: "return", class: "btn btn-sm btn-success"#, onclick: "Tickets.presence_validater(this, {presence: ['#ticket_spare_part_received_spare_part_no', '#ticket_spare_part_faulty_serial_no', '#ticket_spare_part_faulty_ct_no', '#ticket_spare_part_received_part_serial_no', '#ticket_spare_part_received_part_ct_no', '#ticket_spare_part_repare_start', '#ticket_spare_part_repare_end'], checked: ['b']}); return false;"
 
         - if (rqt and manufacture_warranty) or (store_warranty and str) or (store_non_warranty and (rqt or ecm or cea))
           = f.input :part_terminated, wrapper: :append, input_html:{class: "part_terminated_reason_check"}
@@ -376,9 +387,9 @@
           .part_terminated_reason.hide
 
             = f.label "Part terminate reason"
-            = f.select :part_terminated_reason_id, Reason.where(terminate_spare_part: true).map{|r| [r.reason, r.id]}, {include_blank: true}, {class: "part_terminated_select"} # showing part_terminated is cheched through javascript
-          = hidden_field_tag :terminate, "terminate"
-          = f.submit "terminate", name: "terminate", class: "btn btn-sm btn-success"
+            = f.select :part_terminated_reason_id, Reason.where(terminate_spare_part: true).map{|r| [r.reason, r.id]}, {include_blank: false}, {class: "part_terminated_select"} # showing part_terminated is cheched through javascript
+            / = hidden_field_tag :terminate, "terminate"
+            = f.submit "terminate", name: "terminate", class: "btn btn-sm btn-success"
 
 
   - ticket.ticket_on_loan_spare_parts.each do |ticket_on_loan_spare_part|
@@ -427,6 +438,17 @@
               Action Status:
             = ticket_on_loan_spare_part.spare_part_status_action.name
             = link_to "history", "#", tabindex: "0", rel: "popover", title: "Action History", data: {toggle: "popover", trigger: "click", content: ticket_on_loan_spare_part.ticket_on_loan_spare_part_status_actions.map { |tsp| "#{tsp.spare_part_status_action.name} <span class='text-muted text3'>#{User.cached_find_by_id(tsp.done_by).email}-#{tsp.done_at.strftime('%Y-%m-%d %H:%M %P')}</span>" }.join("<br/>"), placement: "bottom", html: true}
+
+            %br/
+            %strong Pending:
+
+            - if ticket_on_loan_spare_part.spare_part_status_action.code == "RPR"
+              - next_index = ticket_on_loan_spare_part.spare_part_status_action.on_loan_type_index - 1
+            - else
+              - next_index = ticket_on_loan_spare_part.spare_part_status_action.on_loan_type_index + 1
+
+            = SparePartStatusAction.find_by_on_loan_type_index(next_index).try(:name_next) unless (next_index > 7) or (ticket_on_loan_spare_part.spare_part_status_action.on_loan_type_index == 0) or (ticket_on_loan_spare_part.spare_part_status_action.code == "RJS")
+
           %hr
 
           .col-md-3

@@ -34,10 +34,15 @@ class InventoriesController < ApplicationController
       end
       if params[:issue_part] == "true"
         approved_inventory_product = (@inventory_product || @inventory.inventory_product)
-        if approved_inventory_product.fifo
-          @main_part_serial = approved_inventory_product.inventory_serial_items.includes(:inventory).where(inv_inventory: {store_id: session[:requested_store_id].to_i}, inv_status_id: InventorySerialItemStatus.find_by_code("AV").id).sort{|p, n| p.grn_items.last.grn.created_at <=> n.grn_items.last.grn.created_at}
+        isi = approved_inventory_product.inventory_serial_items.includes(:inventory).where(inv_inventory: {store_id: session[:requested_store_id].to_i}, inv_status_id: InventorySerialItemStatus.find_by_code("AV").id)
+        if isi.any? { |i| i.grn_items.blank? }
+          []
         else
-          @main_part_serial = approved_inventory_product.inventory_serial_items.includes(:inventory).where(inv_inventory: {store_id: session[:requested_store_id].to_i}, inv_status_id: InventorySerialItemStatus.find_by_code("AV").id).sort{|p, n| p.grn_items.last.grn.created_at <=> n.grn_items.last.grn.created_at}
+          if approved_inventory_product.fifo
+            @main_part_serial = isi.sort{|p, n| p.grn_items.last.grn.created_at <=> n.grn_items.last.grn.created_at}
+          else
+            @main_part_serial = isi.sort{|p, n| p.grn_items.last.grn.created_at <=> n.grn_items.last.grn.created_at}
+          end
         end
       end
     end
@@ -1014,6 +1019,7 @@ class InventoriesController < ApplicationController
   end
 
   def update_return_store_part
+    Srn
 
     continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
 
@@ -1039,6 +1045,7 @@ class InventoriesController < ApplicationController
     params[:inventory_batch_id]
     params[:request_onloan_spare_part_id]
     params[:request_spare_part_id]
+    params[:note]
 
     @add_rec = false
 
@@ -1088,9 +1095,13 @@ class InventoriesController < ApplicationController
     if @onloan_request
       @onloan_request_part = TicketOnLoanSparePart.find params[:request_onloan_spare_part_id]
 
+      @onloan_request_part.update(note: "#{params[:note]} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@onloan_request_part.note}") if params[:note].present?
+
       @allready_received = @onloan_request_part.ret_part_received
     else
       @ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
+
+      @ticket_spare_part.update(note: "#{params[:note]} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket_spare_part.note}") if params[:note].present?
 
       @allready_received = @ticket_spare_part.returned_part_accepted
     end
@@ -1111,6 +1122,11 @@ class InventoriesController < ApplicationController
           if @onloan_request
             @updating_part = @onloan_request_part
 
+            # inv_srr - edit
+            @inv_srr = @updating_part.srr
+            # inv_srr_item - edit
+            @inv_srr_item = @updating_part.srr_item
+
             @updating_part.update @updating_part_params.merge(@inv_srr_params)
 
             @updating_part.ticket_on_loan_spare_part_status_actions.create(status_id: @updating_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
@@ -1120,6 +1136,11 @@ class InventoriesController < ApplicationController
 
           else #Store Request (not On-Loan)
             @updating_part = @ticket_spare_part.ticket_spare_part_store
+
+            # inv_srr - edit
+            @inv_srr = @updating_part.srr
+            # inv_srr_item - edit
+            @inv_srr_item = @updating_part.srr_item
 
             @updating_part.ticket_spare_part.update @updating_part_params
 
@@ -1134,13 +1155,8 @@ class InventoriesController < ApplicationController
 
           end
 
-          # inv_srr - edit
-          @inv_srr = @updating_part.srr
-          @inv_srr.update close: true
-
-          # inv_srr_item - edit
-          @inv_srr_item = @updating_part.srr_item
-          @inv_srr_item.update close: true
+          @inv_srr.update closed: true
+          @inv_srr_item.update closed: true
 
           user_ticket_action.save
 
@@ -1555,7 +1571,7 @@ class InventoriesController < ApplicationController
               @inv_grn.save
 
               #inv_inventory Edit
-              @inv_inventory = Inventory.where(product_id: @grn_item.product_id, store_id: @inv_srr.store.id).first.id
+              @inv_inventory = Inventory.where(product_id: @grn_item.product_id, store_id: @inv_srr.store.id).first
               if params[:damage_check].present?
                 @inv_inventory.update({ 
                   stock_quantity: (@inv_inventory.stock_quantity.to_f + 1), 
@@ -1713,20 +1729,15 @@ class InventoriesController < ApplicationController
         @form_grn_item = params[:object_class].classify.constantize.new
       end
       @template = "grn_item_form"
-      @variables = {form_grn_item: @form_grn_item, uri: @uri, ticket_spare_part: @ticket_spare_part, grn_cost: params[:grn_cost]}
+      @variables = {form_grn_item: @form_grn_item, uri: @uri, ticket_spare_part: @ticket_spare_part, currency_id: params[:currency_id], grn_cost: params[:grn_cost]}
     else
-      # params[:reject]
       @template = "reject"
-      @variables = {form_grn_item: @form_grn_item, uri: @uri}
+      @variables = {form_grn_item: @form_grn_item, uri: @uri, ticket_spare_part: @ticket_spare_part}
     end
 
     respond_to do |format|
     format.js {render "tickets/tickets_pack/return_store_part/toggle_add_update_return_part"}
     end
-  end
-
-  def omp_update_hold
-    
   end
 
   def load_serial_and_part
