@@ -81,6 +81,9 @@ class AddModification1ToTable < ActiveRecord::Migration
 
     remove_foreign_key :inv_damage, name: "fk_inv_damage_inv_inventory_serial_part1"
     remove_column :inv_damage, :serial_part_id
+
+    add_column :inv_inventory, :damage_quantity, :decimal, null: false, default: 0, scale: 3, precision: 13
+    change_column :inv_inventory_serial_part, :serial_no, :string, null: true
   end
 end
 
@@ -154,3 +157,9 @@ end
 
 # ALTER TABLE inv_damage DROP FOREIGN KEY fk_inv_damage_inv_inventory_serial_part1;
 # ALTER TABLE `inv_damage` DROP `serial_part_id`;
+
+
+# ALTER TABLE `inv_inventory` ADD `damage_quantity` DECIMAL(13,3) NOT NULL DEFAULT '0' AFTER `reserved_quantity`;
+
+# ALTER TABLE `inocrm_dev`.`inv_inventory_serial_part` 
+# CHANGE COLUMN `serial_no` `serial_no` VARCHAR(255) CHARACTER SET 'utf8' NULL ;

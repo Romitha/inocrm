@@ -317,8 +317,3 @@ TicketEstimation
 end
 
 WorkflowMapping.find(11).update(process_name: "SPPT_MFR_PART_REQUEST")
-
-# ALTER TABLE `inv_inventory` ADD `damage_quantity` DECIMAL(13,3) NOT NULL DEFAULT '0' AFTER `reserved_quantity`;
-
-# ALTER TABLE `inocrm_dev`.`inv_inventory_serial_part` 
-# CHANGE COLUMN `serial_no` `serial_no` VARCHAR(255) CHARACTER SET 'utf8' NULL ;
