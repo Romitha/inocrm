@@ -312,10 +312,12 @@ window.Inventories =
 
       if $(@).is(":checked")
         $(@).parents(".control-group").siblings(".part_terminated_reason").removeClass("hide")
+        $(@).parents(".control-group").siblings(".store_request_wrapper").addClass("hide")
 
       else
         $(@).parents(".control-group").siblings(".part_terminated_reason").find(".part_terminated_select").val("")
         $(@).parents(".control-group").siblings(".part_terminated_reason").addClass("hide")
+        $(@).parents(".control-group").siblings(".store_request_wrapper").removeClass("hide")
 
   received_part_status: ->
     _this = this

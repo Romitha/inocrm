@@ -180,6 +180,11 @@
                   = check_box_tag :main_part_damage_reason_check, true, false, class: "damage_reason_check"
                   = label_tag "Damage reason", "Damage reason", class: "damage_reason_label"
                   = select_tag :main_part_damage_reason, options_from_collection_for_select(InventoryReason.where(damage: true), "id", "reason"), class: "damage_reason", include_blank: false
+
+    .col-md-12
+      = label_tag "Remarks"
+      %textarea{class: "text optional form-control", name: "note"}
+      = simple_format ticket_spare_part.note
   .row
     .col-md-12
       = link_to "Save", "#", onclick: "Inventories.submit_form('.form_serial_part_or_item'); return false;", class: "btn btn-success"

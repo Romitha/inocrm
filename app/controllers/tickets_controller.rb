@@ -2525,13 +2525,15 @@ class TicketsController < ApplicationController
     elsif @onloan_or_store.approved_inventory_product.inventory_product_info.need_batch
       @grn_batches = GrnBatch.where(grn_item_id: @onloan_or_store.approved_inventory_product.grn_item_ids).page(params[:page]).per(10)
     else
-      @grns = Kaminari.paginate_array(@onloan_or_store.approved_inventory_product.grn_items).page(params[:page]).per(10)
+      grn_items = @onloan_or_store.approved_inventory_product.grn_items.where(inventory_not_updated: false)
+
+      @grns = Kaminari.paginate_array(grn_items).page(params[:page]).per(10)
     end
 
     if @onloan_or_store.approved_inventory_product.fifo
-      @main_part_serial = @onloan_or_store.approved_main_inventory_product ? @onloan_or_store.approved_main_inventory_product.inventory_serial_items.includes(:inventory).where(inv_inventory: {store_id: @onloan_or_store.approved_store_id}, inv_status_id: InventorySerialItemStatus.find_by_code("AV").id).sort{|p, n| n.grn_items.last.grn.created_at <=> p.grn_items.last.grn.created_at} : []
+      @main_part_serial = @onloan_or_store.approved_main_inventory_product ? (isi = @onloan_or_store.approved_main_inventory_product.inventory_serial_items.includes(:inventory).where(inv_inventory: {store_id: @onloan_or_store.approved_store_id}, inv_status_id: InventorySerialItemStatus.find_by_code("AV").id); isi.select{|i| i.grn_items.present?}.sort{|p, n| n.grn_items.last.grn.created_at <=> p.grn_items.last.grn.created_at} ) : []
     else
-      @main_part_serial = @onloan_or_store.approved_main_inventory_product ? @onloan_or_store.approved_main_inventory_product.inventory_serial_items.includes(:inventory).where(inv_inventory: {store_id: @onloan_or_store.approved_store_id}, inv_status_id: InventorySerialItemStatus.find_by_code("AV").id).sort{|p, n| p.grn_items.last.grn.created_at <=> n.grn_items.last.grn.created_at} : []
+      @main_part_serial = @onloan_or_store.approved_main_inventory_product ? (isi = @onloan_or_store.approved_main_inventory_product.inventory_serial_items.includes(:inventory).where(inv_inventory: {store_id: @onloan_or_store.approved_store_id}, inv_status_id: InventorySerialItemStatus.find_by_code("AV").id); isi.select{|i| i.grn_items.present?}.sort{|p, n| p.grn_items.last.grn.created_at <=> n.grn_items.last.grn.created_at} ) : []
     end
 
     if @ticket

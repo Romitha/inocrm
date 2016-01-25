@@ -7,4 +7,9 @@
 
   = select_tag "reject_reason", options_from_collection_for_select(Reason.where(reject_returned_part: true), "id", "reason")
 
-  = submit_tag "Reject"
+  .col-md-12
+    = label_tag "Remarks"
+    %textarea{class: "text optional form-control", name: "note"}
+    = simple_format ticket_spare_part.note
+
+  = submit_tag "Reject", class: "btn btn-danger bt-sm"
