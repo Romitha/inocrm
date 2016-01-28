@@ -1,0 +1,7 @@
+= simple_form_for @customer_feedback, url: update_customer_feedback_admins_path do |f|
+  .row
+    .col-md-6
+      = f.input :feedback, input_html: {rows: 1}
+  .row{style: "margin-top:20px;"}
+    .col-md-6
+      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_customer_feedback"

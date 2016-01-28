@@ -123,6 +123,7 @@ class RegionalSupportCenter < ActiveRecord::Base
   belongs_to :organization
 
   has_many :sbu_regional_engineers#, foreign_key: :regional_support_center_id
+  accepts_nested_attributes_for :sbu_regional_engineers, allow_destroy: true
   has_many :engineers, through: :sbu_regional_engineers
 end
 

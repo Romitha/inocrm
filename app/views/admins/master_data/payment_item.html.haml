@@ -1,0 +1,10 @@
+= simple_form_for @payment_item, url: update_payment_item_admins_path do |f|
+  .row
+    .col-md-6
+      = f.input :name
+  .row
+    .col-md-6
+      = f.input :default_amount
+  .row{style: "margin-top:20px;"}
+    .col-md-6
+      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_payment_item"

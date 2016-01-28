@@ -1,0 +1,15 @@
+= simple_form_for @general_question, url: update_general_question_admins_path do |f|
+  .row
+    .col-md-6
+      = f.input :question, input_html: {rows: 1}
+  .row
+    .col-md-6
+      = f.input :answer_type
+  .row
+    .col-md-6
+      = f.input :active, wrapper: :append
+  .row
+    .col-md-6
+      = f.input :action_id
+    .col-md-6
+      = f.input :compulsory, wrapper: :append

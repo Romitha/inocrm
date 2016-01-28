@@ -1,26 +1,30 @@
-= simple_form_for @reason, url: "#" do |f|
-	.row
-		.col-md-6
-			= f.input :reason, input_html: {rows: 1}
-		.col-md-1
-			= f.input :hold
-		.col-md-1
-			= f.input :sla_pause
-		.col-md-2
-			= f.input :re_assign_request
-	.row
-		.col-md-2
-			= f.input :terminate_job
-		.col-md-2
-			= f.input :terminate_spare_part
-		.col-md-2
-			= f.input :warranty_extend
-		.col-md-2
-			= f.input :spare_part_unused
-		.col-md-2
-			= f.input :reject_returned_part
-	.row
-		.col-md-2
-			= f.input :reject_close
-		.col-md-3
-			= f.input :adjust_terminate_job_payment
+= simple_form_for @reason, url: update_reason_admins_path do |f|
+  .row
+    .col-md-6
+      = f.input :reason, input_html: {rows: 1}
+      
+  .row
+    .col-md-2
+      = f.input :hold, wrapper: :append
+    .col-md-2
+      = f.input :sla_pause, wrapper: :append
+    .col-md-3
+      = f.input :re_assign_request, wrapper: :append
+    .col-md-2
+      = f.input :terminate_job, wrapper: :append
+    .col-md-3
+      = f.input :terminate_spare_part, wrapper: :append
+  .row
+    .col-md-2
+      = f.input :warranty_extend, wrapper: :append
+    .col-md-2
+      = f.input :spare_part_unused, wrapper: :append
+    .col-md-3
+      = f.input :reject_returned_part, wrapper: :append
+    .col-md-2
+      = f.input :reject_close, wrapper: :append
+    .col-md-3
+      = f.input :adjust_terminate_job_payment, wrapper: :append
+  .row{style: "margin-top:20px;"}
+    .col-md-10
+      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_reason"

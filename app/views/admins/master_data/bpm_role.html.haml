@@ -1,0 +1,9 @@
+= simple_form_for @bpm_role, url: update_bpm_role_admins_path do |f|
+  .row
+    .col-md-3
+      = f.input :code
+    .col-md-6
+      = f.input :name
+  .row
+    .col-md-9
+      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_bpm_role"

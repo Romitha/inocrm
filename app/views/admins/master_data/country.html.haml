@@ -1,0 +1,12 @@
+= simple_form_for @country, url: update_country_admins_path do |f|
+  .row
+    .col-md-6
+      = f.input :Country
+      
+  .row
+    .col-md-6
+      = f.input :code
+
+  .row{style: "margin-top:20px;"}
+    .col-md-6
+      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_country"

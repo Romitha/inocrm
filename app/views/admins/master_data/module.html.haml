@@ -1,0 +1,9 @@
+= simple_form_for @module, url: update_module_admins_path do |f|
+  .row
+    .col-md-3
+      = f.input :code
+    .col-md-6
+      = f.input :name
+  .row
+    .col-md-9
+      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_module"

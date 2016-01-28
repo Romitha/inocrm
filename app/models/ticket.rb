@@ -199,6 +199,12 @@ class TicketCurrency < ActiveRecord::Base
   validates_inclusion_of :base_currency, in: [true, false]
 end
 
+class TicketPaymentReceivedType < ActiveRecord::Base
+  self.table_name = "mst_spt_payment_received_type"
+
+  has_many :ticket_payment_receiveds, foreign_key: :type_id
+end
+
 class TicketProductSerial < ActiveRecord::Base
   self.table_name = "spt_ticket_product_serial"
 
@@ -331,5 +337,7 @@ class TicketPaymentReceived < ActiveRecord::Base
   accepts_nested_attributes_for :act_payment_receiveds, allow_destroy: true
 
   belongs_to :ticket
+
+  belongs_to :ticket_payment_received_type
 
 end
