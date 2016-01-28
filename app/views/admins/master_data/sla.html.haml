@@ -1,0 +1,13 @@
+= simple_form_for @sla, url: update_sla_admins_path do |f|
+  .row
+    .col-md-6
+      = f.input :description
+    .col-md-6
+      = f.input :sla_time
+  .row
+    .col-md-6
+      = f.select :created_by, User.all.uniq{|e| e.id}.map{|e| [(e.first_name ? "#{e.name_title} #{e.first_name}" : e.email), e.id]}
+
+  .row{style: "margin-top:20px;"}
+    .col-md-10
+      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_sla"

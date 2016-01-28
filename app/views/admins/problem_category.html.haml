@@ -48,16 +48,17 @@
           %h4 Generate questions
           = f.simple_fields_for :q_and_as do |q_and_a|
             .row.col-md-12
-              .col-md-2
-                = q_and_a.input :answer_type, as: :radio_buttons, collection: INOCRM_CONFIG["answer_type_for_q_and_a"], wrapper: :append, checked: "YN"
-              .col-md-1
+              = q_and_a.input :answer_type, as: :radio_buttons, collection: INOCRM_CONFIG["answer_type_for_q_and_a"], wrapper: :append, checked: "YN"
+            .row.col-md-12
+              .col-md-6
                 = q_and_a.input :active, wrapper: :append, input_html: {checked: true}
-              .col-md-2
+              .col-md-6
                 = q_and_a.input :compulsory, wrapper: :append, input_html: {checked: true}
-              .col-md-3
+            .row.col-md-12
+              .col-md-4
                 = q_and_a.association :task_action, collection: TaskAction.all, label_method: :action_description, value_method: :id, include_blank: false
               .col-md-4
-                = q_and_a.input :question, wrapper_html: {class: "col-md-11"}, input_html: {rows: 1}
+                = q_and_a.input :question, wrapper_html: {class: "col-md-8"}, input_html: {rows: 1}
                 .add_sign
                   = q_and_a.link_to_remove do
                     %span.glyphicon.glyphicon-remove-sign

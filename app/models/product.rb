@@ -80,8 +80,8 @@ class Accessory < ActiveRecord::Base
   has_many :tickets, through: :ticket_accessories
 end
 
-class RepairType < ActiveRecord::Base
-  self.table_name = "mst_spt_ticket_repair_type"
+# class RepairType < ActiveRecord::Base
+#   self.table_name = "mst_spt_ticket_repair_type"
 
-  has_many :tickets, foreign_key: :repair_type_id
-end
+#   has_many :tickets, foreign_key: :repair_type_id
+# end

@@ -229,6 +229,7 @@ class Sbu < ActiveRecord::Base
   self.table_name = "mst_spt_sbu"
 
   has_many :sbu_engineers, foreign_key: :sbu_id
+  accepts_nested_attributes_for :sbu_engineers, allow_destroy: true
   has_many :engineers, through: :sbu_engineers, source: :engineer
 
 # class Pet < ActiveRecord::Base

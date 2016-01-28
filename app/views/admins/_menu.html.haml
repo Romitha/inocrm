@@ -32,7 +32,7 @@
                 %span.icon-group
                 Brands & Categories
             %li
-              = link_to accessories_admins_path, class: "text5" do
+              = link_to accessories_admins_path, class: "text5 #{current_page?(action: 'accessories') ? 'active' : ''}" do
                 %span.icon-group
                 Accessories
             %li
@@ -48,7 +48,7 @@
                 %span.icon-group
                 Q & A's
             %li
-              = link_to "#", class: "text5" do
+              = link_to reason_admins_path, class: "text5 #{current_page?(action: 'reason') ? 'active' : ''}" do
                 %span.icon-group
                 Reasons
 
@@ -71,3 +71,8 @@
         = link_to "#", class: "text6" do
           %span.icon-list-alt
           Inventory
+
+      %li
+        = link_to country_admins_path, class: "text6 #{current_page?(action: 'country') ? 'active' : ''}" do
+          %span.icon-fa.fa-flag
+          Country

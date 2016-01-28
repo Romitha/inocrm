@@ -1,0 +1,24 @@
+= simple_form_for @templates, url: update_templates_admins_path do |f|
+  .row
+    .col-md-6
+      = f.input :invoice
+    .col-md-6
+      = f.input :invoice_request_type
+  .row
+    .col-md-6
+      = f.input :ticket
+    .col-md-6
+      = f.input :ticket_request_type
+  .row
+    .col-md-6
+      = f.input :ticket_complete
+    .col-md-6
+      = f.input :ticket_complete_request_type
+  .row
+    .col-md-6
+      = f.input :fsr
+    .col-md-6
+      = f.input :fsr_request_type
+  .row
+    .col-md-10
+      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_templates"
