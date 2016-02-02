@@ -42,7 +42,6 @@ class TicketsController < ApplicationController
   def edit
   end
 
-
   def create
     # Rails.cache.write(:ticket_params, ticket_params)
     session[:time_now] ||= Time.now.strftime("%H%M%S")
@@ -656,7 +655,7 @@ class TicketsController < ApplicationController
       @status_resolve_id = TicketStatusResolve.find_by_code("NAP").try(:id)
     end
 
-    @repair_type_id = RepairType.find_by_code("IN").try :id
+    @repair_type_id = TicketRepairType.find_by_code("IN").try :id
     @manufacture_currency_id = @product.product_brand.currency.id
     @ticket.attributes = ticket_params.merge({created_by: current_user.id, slatime: @ticket.sla_time.try(:sla_time), status_resolve_id: @status_resolve_id, repair_type_id: @repair_type_id, manufacture_currency_id: @manufacture_currency_id, ticket_print_count: 0, ticket_complete_print_count: 0})
     q_and_answers = @ticket.q_and_answers.to_a
@@ -2618,6 +2617,7 @@ class TicketsController < ApplicationController
       session[:product_id] = @product.id
       Rails.cache.delete([:histories, session[:product_id]])
       Rails.cache.delete([:join, @ticket.id])
+    end
 
     respond_to do |format|
       format.html {render "tickets/tickets_pack/issue_store_part"}

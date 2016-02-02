@@ -63,8 +63,8 @@
 
       %dt Repair type
       %dd
-        = link_to_if current_page?(controller: "tickets", action: "edit_ticket", ticket_id: ticket.id) ,"#{ticket.repair_type.try(:name)}","#",class: "inline_edit", data: {type: "select", source: RepairType.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "repair_type_id", url: "#", "original-title" => "Update repair_type"} do
-          = ticket.repair_type.try(:name) #ticket.repair_type.try(:name)
+        = link_to_if current_page?(controller: "tickets", action: "edit_ticket", ticket_id: ticket.id) ,"#{ticket.ticket_repair_type.try(:name)}","#",class: "inline_edit", data: {type: "select", source: TicketRepairType.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "repair_type_id", url: "#", "original-title" => "Update repair_type"} do
+          = ticket.ticket_repair_type.try(:name) #ticket.repair_type.try(:name)
 
   .col-md-5
     %dl.dl-horizontal
