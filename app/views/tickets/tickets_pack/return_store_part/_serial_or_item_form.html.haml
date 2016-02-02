@@ -1,4 +1,4 @@
-= simple_nested_form_for form_serial_part_or_item, url: "#", html: {class: "form_serial_part_or_item"} do |f| #update_return_store_part_inventories_path
+= simple_nested_form_for form_serial_part_or_item, url: update_return_store_part_inventories_path, method: :post, html: {class: "form_serial_part_or_item"} do |f| # update_return_store_part_inventories_path
 
   - if f.object.new_record?
     = link_to "change product", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true
@@ -14,7 +14,7 @@
 
   = f.input :inv_status_id, as: :hidden, input_html: {value: InventorySerialItemStatus.find_by_code("AV").id}
 
-  = f.input :inventory_serial_part_or_item_id, as: :hidden, input_html: {value: f.object.id}
+  = hidden_field_tag :inventory_serial_part_or_item_id, f.object.id
   .row
     .col-md-6
       .row
@@ -81,7 +81,7 @@
             %input{type: "hidden", id: "grn_item_currency_code", name: "grn_item[currency_id]", value: currency_id}
 
         .col-md-9
-          = f.input :remarks
+          = f.input :remarks, label: "inventory part remarks"
   .row
     .col-md-6
       - if f.object.new_record?
@@ -163,23 +163,26 @@
       .col-md-6
         %fieldset
           %legend Main Product of the Part
-          = f.simple_fields_for "inventory_serial_item_attributes", main_part_of_serial_part do |i|
-            = i.input :inv_status_id, as: :hidden, input_html: {value: 1}
-            .row
-              .col-md-4
-                = i.association :product_condition, label_method: :condition, value_method: :id, include_blank: false
-              .col-md-2
-                = i.input :scavenge, as: :boolean, wrapper: :append
-              .col-md-2
-                = i.input :used, as: :boolean, wrapper: :append
-              .col-md-2
-                = i.input :repaired, as: :boolean, wrapper: :append
-              .col-md-12
-                .damage_reason_wrapper
-                  = label_tag "Damage"
-                  = check_box_tag :main_part_damage_reason_check, true, false, class: "damage_reason_check"
-                  = label_tag "Damage reason", "Damage reason", class: "damage_reason_label"
-                  = select_tag :main_part_damage_reason, options_from_collection_for_select(InventoryReason.where(damage: true), "id", "reason"), class: "damage_reason", include_blank: false
+          / = simple_form_for main_part_of_serial_part, url: "#" do |i|
+          <input class="hidden form-control" type="hidden" value="#{main_part_of_serial_part.id}" name="inventory_serial_item[id]" id="inventory_serial_item_id">
+          <input value="1" class="hidden form-control" type="hidden" name="inventory_serial_item[inv_status_id]" id="inventory_serial_item_inv_status_id">
+          .row
+            .col-md-4
+              = select_tag "inventory_serial_item[product_condition_id]", options_from_collection_for_select(ProductCondition.all, "id", "condition")
+            .col-md-2
+              <div class="control-group boolean optional inventory_serial_item_scavenge"><label class="boolean optional control-label" for="inventory_serial_item_scavenge">Scavenge</label><div class="controls"><div class="input-append"><input value="0" type="hidden" name="inventory_serial_item[scavenge]"><label class="checkbox"><input class="boolean optional" type="checkbox" value="1" name="inventory_serial_item[scavenge]" id="inventory_serial_item_scavenge"></label></div></div></div>
+            .col-md-2
+              <div class="control-group boolean optional inventory_serial_item_used"><label class="boolean optional control-label" for="inventory_serial_item_used">Used</label><div class="controls"><div class="input-append"><input value="0" type="hidden" name="inventory_serial_item[used]"><label class="checkbox"><input class="boolean optional" type="checkbox" value="1" name="inventory_serial_item[used]" id="inventory_serial_item_used"></label></div></div></div>
+              / = i.input :used, as: :boolean, wrapper: :append
+            .col-md-2
+              <div class="control-group boolean optional inventory_serial_item_repaired"><label class="boolean optional control-label" for="inventory_serial_item_repaired">Repaired</label><div class="controls"><div class="input-append"><input value="0" type="hidden" name="inventory_serial_item[repaired]"><label class="checkbox"><input class="boolean optional" type="checkbox" value="1" name="inventory_serial_item[repaired]" id="inventory_serial_item_repaired"></label></div></div></div>
+              / = i.input :repaired, as: :boolean, wrapper: :append
+            .col-md-12
+              .damage_reason_wrapper
+                = label_tag "Damage"
+                = check_box_tag :main_part_damage_reason_check, true, false, class: "damage_reason_check"
+                = label_tag "Damage reason", "Damage reason", class: "damage_reason_label"
+                = select_tag :main_part_damage_reason, options_from_collection_for_select(InventoryReason.where(damage: true), "id", "reason"), class: "damage_reason", include_blank: false
 
     .col-md-12
       = label_tag "Remarks"

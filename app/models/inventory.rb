@@ -176,7 +176,7 @@ class InventorySerialPartWarranty < ActiveRecord::Base
   self.table_name = "inv_serial_part_warranty"
 
   belongs_to :inventory_serial_part, foreign_key: :serial_part_id
-  belongs_to :inventory_warranty
+  belongs_to :inventory_warranty, foreign_key: :warranty_id
 end
 
 class InventorySerialWarranty < ActiveRecord::Base

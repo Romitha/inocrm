@@ -2517,9 +2517,11 @@ class TicketsController < ApplicationController
       @fifo_grn_serial_items = []
       if @onloan_or_store.approved_inventory_product.fifo
         @fifo_grn_serial_items = GrnSerialItem.includes(:inventory_serial_item).where(grn_item_id: @onloan_or_store.approved_inventory_product.grn_items.select{|grn_item| grn_item.grn.store_id == @onloan_or_store.approved_store_id}.map{|grn_item| grn_item.id}, remaining: 1).sort{|p, n| p.grn_item.grn.created_at <=> n.grn_item.grn.created_at}
+
         @paginated_fifo_grn_serial_items = Kaminari.paginate_array(@fifo_grn_serial_items).page(params[:page]).per(10)
       else
         @fifo_grn_serial_items = GrnSerialItem.includes(:inventory_serial_item).where(grn_item_id: @onloan_or_store.approved_inventory_product.grn_items.select{|grn_item| grn_item.grn.store_id == @onloan_or_store.approved_store_id}.map{|grn_item| grn_item.id}, remaining: 1).sort{|p, n| n.grn_item.grn.created_at <=> p.grn_item.grn.created_at}
+
         @paginated_fifo_grn_serial_items = Kaminari.paginate_array(@fifo_grn_serial_items).page(params[:page]).per(10)
       end
     elsif @onloan_or_store.approved_inventory_product.inventory_product_info.need_batch
@@ -2531,9 +2533,13 @@ class TicketsController < ApplicationController
     end
 
     if @onloan_or_store.approved_inventory_product.fifo
-      @main_part_serial = @onloan_or_store.approved_main_inventory_product ? (isi = @onloan_or_store.approved_main_inventory_product.inventory_serial_items.includes(:inventory).where(inv_inventory: {store_id: @onloan_or_store.approved_store_id}, inv_status_id: InventorySerialItemStatus.find_by_code("AV").id); isi.select{|i| i.grn_items.present?}.sort{|p, n| n.grn_items.last.grn.created_at <=> p.grn_items.last.grn.created_at} ) : []
+        # gsi = GrnSerialItem.includes(:inventory_serial_item).where(grn_item_id: @onloan_or_store.approved_inventory_product.grn_items.select{|grn_item| grn_item.grn.store_id == @onloan_or_store.approved_store_id}.map{|grn_item| grn_item.id}, remaining: 1)
+        # .sort{|p, n| p.grn_item.grn.created_at <=> n.grn_item.grn.created_at }
+
+      @main_part_serial = @onloan_or_store.approved_main_inventory_product ? (isi = GrnSerialItem.includes(:inventory_serial_item).where(grn_item_id: @onloan_or_store.approved_main_inventory_product.grn_items.select{|grn_item| grn_item.grn.store_id == @onloan_or_store.approved_store_id}.map{|grn_item| grn_item.id}, remaining: 1); isi.sort{|p, n| p.grn_item.grn.created_at <=> n.grn_item.grn.created_at } ) : []
+      # @onloan_or_store.approved_main_inventory_product.inventory_serial_items.includes(:inventory).where(inv_inventory: {store_id: @onloan_or_store.approved_store_id}, inv_status_id: InventorySerialItemStatus.find_by_code("AV").id)
     else
-      @main_part_serial = @onloan_or_store.approved_main_inventory_product ? (isi = @onloan_or_store.approved_main_inventory_product.inventory_serial_items.includes(:inventory).where(inv_inventory: {store_id: @onloan_or_store.approved_store_id}, inv_status_id: InventorySerialItemStatus.find_by_code("AV").id); isi.select{|i| i.grn_items.present?}.sort{|p, n| p.grn_items.last.grn.created_at <=> n.grn_items.last.grn.created_at} ) : []
+      @main_part_serial = @onloan_or_store.approved_main_inventory_product ? (isi = GrnSerialItem.includes(:inventory_serial_item).where(grn_item_id: @onloan_or_store.approved_main_inventory_product.grn_items.select{|grn_item| grn_item.grn.store_id == @onloan_or_store.approved_store_id}.map{|grn_item| grn_item.id}, remaining: 1); isi.sort{|p, n| p.grn_item.grn.created_at <=> n.grn_item.grn.created_at } ) : []
     end
 
     if @ticket
@@ -3263,12 +3269,12 @@ class TicketsController < ApplicationController
 
         @ticket.save
 
-        redirect_to resolution_tickets_url, notice: "Ticket Warranty Type and Customer Chargeable Updated."
+        redirect_to todos_url, notice: "Ticket Warranty Type and Customer Chargeable Updated."
       else
-        redirect_to resolution_tickets_url(process_id: params[:process_id], task_id: params[:task_id], owner: params[:owner], ticket_id: @ticket.id, supp_engr_user: params[:supp_engr_user]), notice: "Ticket Warranty Type and Customer Chargeable faild to Updated."
+        redirect_to todos_url(process_id: params[:process_id], task_id: params[:task_id], owner: params[:owner], ticket_id: @ticket.id, supp_engr_user: params[:supp_engr_user]), notice: "Ticket Warranty Type and Customer Chargeable faild to Updated."
       end
     else
-      redirect_to resolution_tickets_url, alert: "Selected warranty is not presently applicable to ticket."
+      redirect_to todos_url, alert: "Selected warranty is not presently applicable to ticket."
     end
 
   end
@@ -3895,7 +3901,7 @@ class TicketsController < ApplicationController
     end
 
     def ticket_params
-      params.require(:ticket).permit(:ticket_no, :sla_id, :serial_no, :status_hold, :repair_type_id, :base_currency_id, :ticket_close_approval_required, :ticket_close_approval_requested, :regional_support_job, :job_started_action_id, :job_start_note, :job_started_at, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, :status_resolve_id, ticket_deliver_units_attributes: [:deliver_to_id, :note, :created_at, :created_by, :received, :id, :received_at, :received_by], ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :ticket_action_id, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer], ticket_estimations_attributes: [:note, :currency_id, :status_id, :requested_at, :requested_by], user_ticket_actions_attributes: [:id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, user_assign_ticket_actions_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy], ticket_re_assign_request_attributes: [:reason_id, :_destroy], ticket_action_taken_attributes: [:action, :_destroy], ticket_terminate_job_attributes: [:id, :reason_id, :foc_requested, :_destroy], act_hold_attributes: [:id, :reason_id, :_destroy, :un_hold_action_id], hp_case_attributes: [:id, :case_id, :case_note], ticket_finish_job_attributes: [:resolution, :_destroy], ticket_terminate_job_payments_attributes: [:id, :amount, :payment_item_id, :_destroy, :ticket_id, :currency_id], act_fsr_attributes: [:print_fsr], serial_request_attributes: [:reason], job_estimation_attributes: [:supplier_id]], ticket_extra_remarks_attributes: [:id, :note, :created_by, :extra_remark_id], products_attributes: [:id, :sold_country_id, :pop_note, :pop_doc_url, :pop_status_id], ticket_fsrs_attributes: [:work_started_at, :work_finished_at, :hours_worked, :down_time, :travel_hours, :engineer_time_travel, :engineer_time_on_site, :resolution, :completion_level, :created_by], ticket_on_loan_spare_parts_attributes: [:id, :approved_inv_product_id, :approved_store_id, :approved_main_inv_product_id, :approved])
+      params.require(:ticket).permit(:ticket_no, :sla_id, :serial_no, :status_hold, :repair_type_id, :base_currency_id, :ticket_close_approval_required, :ticket_close_approval_requested, :regional_support_job, :job_started_action_id, :job_start_note, :job_started_at, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, :status_resolve_id, ticket_deliver_units_attributes: [:deliver_to_id, :note, :created_at, :created_by, :received, :id, :received_at, :received_by], ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :ticket_action_id, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer], ticket_estimations_attributes: [:note, :currency_id, :status_id, :requested_at, :requested_by], user_ticket_actions_attributes: [:id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, user_assign_ticket_actions_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy], ticket_re_assign_request_attributes: [:reason_id, :_destroy], ticket_action_taken_attributes: [:action, :_destroy], ticket_terminate_job_attributes: [:id, :reason_id, :foc_requested, :_destroy], act_hold_attributes: [:id, :reason_id, :_destroy, :un_hold_action_id], hp_case_attributes: [:id, :case_id, :case_note], ticket_finish_job_attributes: [:resolution, :_destroy], ticket_terminate_job_payments_attributes: [:id, :amount, :payment_item_id, :_destroy, :ticket_id, :currency_id], act_fsr_attributes: [:print_fsr], serial_request_attributes: [:reason], job_estimation_attributes: [:supplier_id]], ticket_extra_remarks_attributes: [:id, :note, :created_by, :extra_remark_id], products_attributes: [:id, :sold_country_id, :pop_note, :pop_doc_url, :pop_status_id], ticket_fsrs_attributes: [:work_started_at, :work_finished_at, :hours_worked, :down_time, :travel_hours, :engineer_time_travel, :engineer_time_on_site, :resolution, :completion_level, :created_by], ticket_on_loan_spare_parts_attributes: [:id, :approved_inv_product_id, :approved_store_id, :approved_main_inv_product_id, :approved, :return_part_damage, :return_part_damage_reason_id])
     end
 
     def product_brand_params
@@ -3951,7 +3957,7 @@ class TicketsController < ApplicationController
     end
 
     def ticket_spare_part_params(spt_ticket_spare_part)
-      tspt_params = params.require(:ticket_spare_part).permit(:approved_store_id, :approved_inv_product_id, :approved_main_inv_product_id, :spare_part_no, :spare_part_description, :ticket_id, :ticket_fsr, :cus_chargeable_part, :request_from, :faulty_serial_no, :received_part_serial_no, :received_part_ct_no, :repare_start, :repare_end, :faulty_ct_no, :note, :status_action_id, :status_use_id, :part_terminated_reason_id, :returned_part_accepted, ticket_attributes: [:remarks, :id], ticket_spare_part_manufacture_attributes: [:id, :event_no, :order_no, :id, :event_closed, :ready_to_bundle, :payment_expected_manufacture], ticket_spare_part_store_attributes: [:part_of_main_product, :id, :approved_store_id, :approved_inv_product_id, :approved_main_inv_product_id, :store_request_approved, :return_part_damage, :return_part_damage_reason_id], request_spare_parts_attributes: [:reject_return_part_reason_id], ticket_on_loan_spare_parts_attributes: [:id, :approved_store_id, :approved_inv_product_id, :approved_main_inv_product_id, :approved, :ticket_id] )
+      tspt_params = params.require(:ticket_spare_part).permit(:approved_store_id, :approved_inv_product_id, :approved_main_inv_product_id, :spare_part_no, :spare_part_description, :ticket_id, :ticket_fsr, :cus_chargeable_part, :request_from, :faulty_serial_no, :received_part_serial_no, :received_part_ct_no, :repare_start, :repare_end, :faulty_ct_no, :note, :status_action_id, :status_use_id, :part_terminated_reason_id, :returned_part_accepted, ticket_attributes: [:remarks, :id], ticket_spare_part_manufacture_attributes: [:id, :event_no, :order_no, :id, :event_closed, :ready_to_bundle, :payment_expected_manufacture], ticket_spare_part_store_attributes: [:part_of_main_product, :id, :approved_store_id, :approved_inv_product_id, :approved_main_inv_product_id, :store_request_approved, :return_part_damage, :return_part_damage_reason_id], request_spare_parts_attributes: [:reject_return_part_reason_id], ticket_on_loan_spare_parts_attributes: [:id, :approved_store_id, :approved_inv_product_id, :approved_main_inv_product_id, :approved, :ticket_id, :return_part_damage, :return_part_damage_reason_id] )
 
       tspt_params[:repare_start] = Time.strptime(tspt_params[:repare_start],'%m/%d/%Y %I:%M %p') if tspt_params[:repare_start].present?
       tspt_params[:repare_end] = Time.strptime(tspt_params[:repare_end],'%m/%d/%Y %I:%M %p') if tspt_params[:repare_end].present?

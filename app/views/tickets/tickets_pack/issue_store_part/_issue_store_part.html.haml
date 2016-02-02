@@ -127,6 +127,7 @@
   %hr
 
 - if request_part
+  - session[:approved_inventory_product_id] = request_part.approved_inventory_product.id
   .row
     .col-md-6
       %h4 Approved part
@@ -178,7 +179,7 @@
 
 %fieldset
   %legend Issue store part
-  = simple_nested_form_for (@onloan_request ? (spare_part || ticket) : spare_part), url: update_issue_store_parts_inventories_path, method: :post, html: {id: "new_ticket_spare_part"} do |f|
+  = simple_nested_form_for (@onloan_request ? (spare_part || ticket) : spare_part), url: update_issue_store_parts_inventories_path, method: :post, html: {id: "new_ticket_spare_part"} do |f| # update_issue_store_parts_inventories_path
 
     / = hidden_field_tag :process_id, session[:process_id]
     = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
@@ -196,10 +197,10 @@
       = sto.input :approved_main_inv_product_id, as: :hidden, input_html: {id: "mst_inv_product_id"}
 
       = tab_panel do
-        = tab_nav_tab({id: "issue_part_main_product"}, {home: {active_class: "active", content: "Seperate product"}, about: {content: "Part of main product"}})
+        = tab_nav_tab({id: "issue_part_main_product"}, {seperate_product_tab: {active_class: "active", content: "Seperate product"}, main_product_part_tab: {content: "Part of main product"}})
         .tab-content
           / For Seperate grn Serial Product / Grn Batch / Grn Item
-          = tab_content tabpointer: :home, active_class: "active" do
+          = tab_content tabpointer: :seperate_product_tab, active_class: "active" do
             - if sto.object.approved_inventory_product.inventory_product_info.need_serial
               = paginate @paginated_fifo_grn_serial_items, remote: false, method: :get
               / For Seperate Grn Serial Product
@@ -229,7 +230,6 @@
                     %th Remarks
                     %th Issue
                 %tbody
-                  / - GrnItem.includes(:inventory_product).where("product_id = ? and remaining_quantity > ? and ", sto.object.approved_inventory_product.id).order("").each_with_index do |grn_serial_item, index|
                   - @paginated_fifo_grn_serial_items.each_with_index do |grn_serial_item, index|
                     %tr
                       %td
@@ -306,8 +306,6 @@
               = paginate @grns, remote: false, method: :get
               / For Seperate Grn item Product
               %h4 Non Batch and Non Serial Product
-              = label_tag "Product condition"
-              = select_tag "product_condition_id", options_from_collection_for_select(ProductCondition.all, "id", "condition")
               %table.table.table-hover.table-condensed
                 %thead
                   %tr
@@ -340,8 +338,10 @@
 
               = paginate @grns, remote: false, method: :get
 
+              = label_tag "Product condition"
+              = select_tag "product_condition_id", options_from_collection_for_select(ProductCondition.all, "id", "condition")
           / For Part Of Main Serial Product
-          = tab_content tabpointer: :about do
+          = tab_content tabpointer: :main_product_part_tab do
             .row
               .col-md-6.main_product_with_linker
                 = link_to "Change main product", inventory_in_modal_inventories_path(select_frame: "main_product", issue_part: true), id: "part_of_main_product_select", remote: true
@@ -393,33 +393,33 @@
                     %th Remarks
                     %th Issue
                 %tbody
-                  - @main_part_serial.each_with_index do |inventory_serial_item, index|
+                  - @main_part_serial.each_with_index do |grn_serial_item, index|
                     %tr
                       %td
                         - if params[:page]
                           = (index+1)+ 10**(params[:page].to_i-1)
                         - else
                           = (index+1)
-                      %td= inventory_serial_item.grn_items.last.grn.grn_no
-                      %td= inventory_serial_item.grn_items.last.grn.created_at.try(:strftime, "%Y-%m-%d %H:%M")
-                      %td= inventory_serial_item.grn_items.last.recieved_quantity
-                      %td= inventory_serial_item.grn_items.last.remaining_quantity
-                      %td= inventory_serial_item.inventory_batch.try(:batch_no)
-                      %td= inventory_serial_item.inventory_batch.try(:lot_no)
-                      %td= inventory_serial_item.serial_no
-                      %td= inventory_serial_item.inventory_serial_item_status.name
-                      %td= inventory_serial_item.product_condition.try(:condition)
-                      %td= inventory_serial_item.parts_not_completed ? "Not completed" : ""
-                      %td= inventory_serial_item.scavenge ? "Scavenge" : ""
-                      %td= inventory_serial_item.damage ? "Damaged" : ""
-                      %td= inventory_serial_item.used ? "Used" : ""
-                      %td= inventory_serial_item.repaired ? "Repaired" : ""
-                      %td= inventory_serial_item.reserved ? "Reserved" : ""
-                      %td= inventory_serial_item.ct_no
-                      %td= inventory_serial_item.manufatured_date.try(:strftime, "%Y-%m-%d %H:%M")
-                      %td= inventory_serial_item.expiry_date
-                      %td= inventory_serial_item.remarks
-                      %td= link_to "select", "#", onclick: "Inventories.load_serial_and_part(#{inventory_serial_item.id}, 'serial_item'); return false;"
+                      %td= grn_serial_item.grn_item.grn.grn_no
+                      %td= grn_serial_item.grn_item.grn.created_at.try(:strftime, "%Y-%m-%d %H:%M")
+                      %td= grn_serial_item.grn_item.recieved_quantity
+                      %td= grn_serial_item.grn_item.remaining_quantity
+                      %td= grn_serial_item.inventory_serial_item.inventory_batch.try(:batch_no)
+                      %td= grn_serial_item.inventory_serial_item.inventory_batch.try(:lot_no)
+                      %td= grn_serial_item.inventory_serial_item.serial_no
+                      %td= grn_serial_item.inventory_serial_item.inventory_serial_item_status.name
+                      %td= grn_serial_item.inventory_serial_item.product_condition.try(:condition)
+                      %td= grn_serial_item.inventory_serial_item.parts_not_completed ? "Not completed" : ""
+                      %td= grn_serial_item.inventory_serial_item.scavenge ? "Scavenge" : ""
+                      %td= grn_serial_item.inventory_serial_item.damage ? "Damaged" : ""
+                      %td= grn_serial_item.inventory_serial_item.used ? "Used" : ""
+                      %td= grn_serial_item.inventory_serial_item.repaired ? "Repaired" : ""
+                      %td= grn_serial_item.inventory_serial_item.reserved ? "Reserved" : ""
+                      %td= grn_serial_item.inventory_serial_item.ct_no
+                      %td= grn_serial_item.inventory_serial_item.manufatured_date.try(:strftime, "%Y-%m-%d %H:%M")
+                      %td= grn_serial_item.inventory_serial_item.expiry_date
+                      %td= grn_serial_item.inventory_serial_item.remarks
+                      %td= link_to "select", "#", onclick: "Inventories.load_serial_and_part(this, #{grn_serial_item.inventory_serial_item.id}, 'serial_item', '#{request_part.approved_inv_product_id}'); return false;"
 
             #main_part_part
 

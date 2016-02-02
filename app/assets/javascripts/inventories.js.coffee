@@ -461,8 +461,10 @@ window.Inventories =
         $(@).parents("form").submit()
 
 
-  load_serial_and_part: (inventory_type_id, inventory_type)->
-    $.get "/inventories/load_serial_and_part?inventory_type_id="+inventory_type_id+"&inventory_type="+inventory_type
+  load_serial_and_part: (elem, inventory_type_id, inventory_type, approved_part_product_id)->
+    $.get "/inventories/load_serial_and_part?inventory_type_id="+inventory_type_id+"&inventory_type="+inventory_type+"&approved_part_product_id="+approved_part_product_id
+    $(elem).parents("tr").siblings().css("background-color", "transparent")
+    $(elem).parents("tr").eq(0).css({"background-color": "rgba(0,0,0,0.1)"})
     return
 
   calculate_low_approved_price: ->

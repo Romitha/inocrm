@@ -9,14 +9,41 @@
         = content_tag(:div, "#{organization.name}", class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "More about #{organization.name}")
     Vat Number: #{organization.vat_number}
     %div= link_to organization.web_site, organization.web_site, target: "_blank"
-= simple_form_for role, url: role_url do |f|
-  = f.input :name, placeholder: "Provide role with any namespace. Ex: org_admin", input_html: {class: "input-sm"}
-  = label_tag "Inherit roles from"
-  = select_tag "inherit_role", options_from_collection_for_select(Role.where(parent_role: true), "id", "name"), include_blank: false, class: "chosen-select", id: "load_permissions", data: {organization_id: organization.id}
 
-  #load_permissions_json_render
-    = render "load_permissions", mustache: {rpermissions: rpermissions.as_json}
-  = f.submit "create role", class: "btn btn-primary btn-sm small_scale_margin-bottom1"
+  = tab_panel do
+    = tab_nav_tab({id: "roles_and_permission_tab"}, {toles_and_permission_form: {active_class: "active", content: "Roles and Permissions"}, bpm_mapping_form: {content: "Bpm mappings"}})
+    .tab-content
+      = tab_content tabpointer: :toles_and_permission_form, active_class: "active" do
+        = simple_form_for role, url: role_url do |f|
+          .row
+            .col-md-6
+              = f.input :name, placeholder: "Provide role with any namespace. Ex: org_admin", input_html: {class: "input-sm"}
+            .col-md-6
+              = label_tag "Inherit roles from"
+              = select_tag "inherit_role", options_from_collection_for_select(Role.where(parent_role: true), "id", "name"), include_blank: true, class: "chosen-select", id: "load_permissions", data: {organization_id: organization.id}
+          .row
+            .col-md-12
+              #load_permissions_json_render
+                = render "load_permissions", mustache: {rpermissions: rpermissions.as_json}
+            .col-md-12
+              = f.submit "create role", class: "btn btn-primary btn-sm small_scale_margin-bottom1"
+
+      = tab_content tabpointer: :bpm_mapping_form do
+        %fieldset
+          %legend New BPM role association
+          = form_tag assign_bpm_role_organization_roles_and_permissions_path(organization.id), method: :post do
+            .col-md-5= select_tag "system_role", options_from_collection_for_select(Role.select{|r| !r.parent_role and r.bpm_module_roles.blank? }, "id", "name"), include_blank: true, class: "chosen-select"
+            .col-md-5= select_tag "bpm_role", options_from_collection_for_select(BpmModuleRole.all, "id", "name"), include_blank: true, class: "chosen-select"
+            .col-md-2
+              = submit_tag "Update", class: "btn btn-sm btn-success"
+
+        - Role.where(parent_role: nil).each do |role|
+          %dl.dl-horizontal
+            %dt= role.name
+            - role.bpm_module_roles.each do |bpm_module_role|
+              %dd= bpm_module_role.name
+
+
 
 %script{type: "text/html", id: "load_permissions_output"}
   = render 'load_permissions'

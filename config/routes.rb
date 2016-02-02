@@ -43,6 +43,9 @@ Rails.application.routes.draw do
     resources :departments
     resources :roles_and_permissions do
       post "load_permissions"
+      collection do
+        post "assign_bpm_role"
+      end
     end
     member do
       get "dashboard"

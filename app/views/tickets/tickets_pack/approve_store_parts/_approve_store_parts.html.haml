@@ -150,7 +150,7 @@
           = request_part.inventory_product.try(:spare_part_no)
         %dt Available Qnty
         %dd
-          = request_part.inventory_product.try(:inventories).try(:sum, :available_quantity)
+          = request_part.inventory_product.inventories.where(store_id: request_part.store_id).try(:sum, :available_quantity)
 
     .col-md-6
       - if request_part.main_inventory_product
@@ -173,7 +173,7 @@
             = request_part.main_inventory_product.product_no
           %dt Available Qnty
           %dd
-            = request_part.main_inventory_product.inventories.sum(:available_quantity)
+            = request_part.main_inventory_product.inventories.where(store_id: request_part.store_id).try(:sum, :available_quantity)
 
 %fieldset
   %legend Approve store part
@@ -244,7 +244,7 @@
                   = sto.object.inventory_product.spare_part_no
                 %dt Available Qnty
                 %dd
-                  = sto.object.inventory_product.inventories.sum(:available_quantity)
+                  = sto.object.inventory_product.inventories.where(store_id: sto.object.store_id).try(:sum, :available_quantity)
         .col-md-6.main_product_with_link
           = link_to "Change", inventory_in_modal_inventories_path(select_frame: "main_product"), id: "part_of_main_product_select", remote: true
           .main_product
