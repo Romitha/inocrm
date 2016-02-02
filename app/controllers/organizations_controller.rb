@@ -39,6 +39,10 @@ class OrganizationsController < ApplicationController
 
     respond_to do |format|
       if @organization.save
+        @organization.update created_at: DateTime.now, created_by: current_user.id
+        @organization.accounts.each do |a|
+          a.update created_by: current_user.id, active: true
+        end
         format.html {redirect_to @organization, notice: "#{@organization.category} is successfully created."}
       else
         format.html {render :new}
@@ -150,6 +154,6 @@ class OrganizationsController < ApplicationController
     end
 
     def organization_params
-      params.require(:organization).permit(:name, :department_org_id, :category, :description, :logo, :vat_number, :type_id, :web_site, :code, :short_name, addresses_attributes: [:id, :category, :address, :primary, :_destroy],  contact_numbers_attributes: [:id, :category, :value, :_destroy])
+      params.require(:organization).permit(:name, :department_org_id, :category, :description, :logo, :vat_number, :type_id, :web_site, :code, :short_name, addresses_attributes: [:id, :category, :address, :primary, :_destroy],  contact_numbers_attributes: [:id, :category, :value, :_destroy], accounts_attributes: [:id, :_destroy, :industry_types_id])
     end
 end

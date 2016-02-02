@@ -12,6 +12,10 @@ class Organization < ActiveRecord::Base
   has_many :ticket_deliver_units, foreign_key: :deliver_to_id
   accepts_nested_attributes_for :ticket_deliver_units, allow_destroy: true
 
+  has_many :accounts
+  accepts_nested_attributes_for :accounts, allow_destroy: true
+  has_many :industry_types, through: :accounts
+
 
   # has_many :departments
 
@@ -129,5 +133,36 @@ class CompanyConfig < ActiveRecord::Base
   def increase_inv_last_grn_no
     update inv_last_grn_no: (inv_last_grn_no.to_i+1)
     inv_last_grn_no
-  end  
+  end
+end
+
+class Account < ActiveRecord::Base
+  self.table_name = "accounts"
+
+  belongs_to :organization
+  belongs_to :industry_type, foreign_key: :industry_types_id
+
+  has_many :account_dealer_types
+  has_many :dealer_types, through: :account_dealer_types
+end
+
+class IndustryType < ActiveRecord::Base
+  self.table_name = "mst_industry_types"
+
+  has_many :accounts, foreign_key: :industry_types_id
+  has_many :organizations, through: :accounts
+end
+
+class AccountDealerType < ActiveRecord::Base
+  self.table_name = "account_dealer_type"
+
+  belongs_to :dealer_type, foreign_key: :dealer_types_id
+  belongs_to :account
+end
+
+class DealerType < ActiveRecord::Base
+  self.table_name = "mst_dealer_types"
+
+  has_many :account_dealer_types, foreign_key: :dealer_types_id
+  has_many :accounts, through: :account_dealer_types
 end

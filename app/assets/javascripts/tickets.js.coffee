@@ -23,7 +23,7 @@ window.Tickets =
     @remote_true_loader()
     @toggle_hold_unhold()
     @update_without_return()
-    @issue_store_parts_ckeckbox()
+    @issue_store_parts_form_input_vanish()
     @seperate_product_row_colour()
     @part_of_main_product_row_colour()
     @pop_customer_info()
@@ -527,16 +527,12 @@ window.Tickets =
       else
         $(@).siblings("[type='submit']").val("Return")
 
-  issue_store_parts_ckeckbox: ->
-    $("#issue_part_main_product").click ->
-      val = $("#issue_part_main_product .active").text()
-
-      if val == "Seperate product"
-        $(".part_of_main_product_checkbox").prop('checked', false)
-        $(".part_of_main_product_checkbox").parent().parent().removeClass("success")
-      else
-        $(".seperate_product_ckeckbox").prop('checked', false)
-        $(".seperate_product_ckeckbox").parent().parent().removeClass("success")
+  issue_store_parts_form_input_vanish: ->
+    $("#issue_part_main_product [aria-controls]").on 'shown.bs.tab', (e) ->
+      $(".tab-content #"+$(e.target).attr("aria-controls")).find("input, select").each ->
+        $(@).prop("disabled", false)
+      $(".tab-content #"+$(e.relatedTarget).attr("aria-controls")).find("input, select").each ->
+        $(@).prop("disabled", true)
 
 
 

@@ -20,10 +20,10 @@ class GrnItem < ActiveRecord::Base
   has_many :inventory_batches, through: :grn_batches
 
   has_many :grn_serial_items, foreign_key: :grn_item_id
-  has_many :inventory_serial_item_for_grn_serial_items, through: :grn_serial_items, through: :inventory_serial_item
+  has_many :inventory_serial_item_for_grn_serial_items, through: :grn_serial_items
 
   has_many :grn_serial_parts, foreign_key: :grn_item_id
-  has_many :inventory_serial_item_for_grn_serial_parts, through: :grn_serial_parts, through: :inventory_serial_item
+  has_many :inventory_serial_item_for_grn_serial_parts, through: :grn_serial_parts
   has_many :inventory_serial_parts, through: :grn_serial_parts
 
   has_many :damages

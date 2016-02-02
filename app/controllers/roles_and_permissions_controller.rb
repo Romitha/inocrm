@@ -4,7 +4,8 @@ class RolesAndPermissionsController < ApplicationController
   before_action :set_organization, only: [:new, :create, :edit, :load_permissions, :update]
 
   def new
-    @rpermissions = Rpermission.all.map { |rpermission| {resource: rpermission.controller_resource, name: rpermission.name, id: rpermission.id, checked: false} }
+    # @rpermissions = Rpermission.all.map { |rpermission| {resource: rpermission.controller_resource, name: rpermission.name, id: rpermission.id, checked: false} }
+    @rpermissions = Rpermission.all.group_by{|g| g.controller_resource}.map{|k, v| {resource: k, value: v.map{|rpermission| {resource: rpermission.controller_resource, name: rpermission.name, id: rpermission.id, checked: false}}}}
     respond_to do |format|
       format.html
     end
@@ -12,7 +13,8 @@ class RolesAndPermissionsController < ApplicationController
 
   def load_permissions
     @role = Role.find params[:role_id]
-    @rpermissions = Rpermission.all.map { |rpermission| {resource: rpermission.controller_resource, name: rpermission.name, id: rpermission.id, checked: "#{'checked' if @role.rpermissions.include?(rpermission)}"} }
+    # @rpermissions = Rpermission.all.map { |rpermission| {resource: rpermission.controller_resource, name: rpermission.name, id: rpermission.id, checked: "#{'checked' if @role.rpermissions.include?(rpermission)}"} }
+    @rpermissions = Rpermission.all.group_by{|g| g.controller_resource}.map{|k, v| {resource: k, value: v.map{|rpermission| {resource: rpermission.controller_resource, name: rpermission.name, id: rpermission.id, checked: "#{'checked' if @role.rpermissions.include?(rpermission)}"}}}}
     respond_to do |format|
       format.json
       format.html
@@ -46,6 +48,22 @@ class RolesAndPermissionsController < ApplicationController
       redirect_to edit_organization_roles_and_permission_url(@organization, @role), notice: "Roles and Permissions are successfully updated."
     else
       redirect_to edit_organization_roles_and_permission_url(@organization, @role), error: "Roles and Permissions are unsuccessfully updated. Please try again."
+    end
+  end
+
+  def assign_bpm_role
+    organization = Organization.find params[:organization_id]
+    @system_role = Role.find params[:system_role] if params[:system_role].present?
+    @bpm_role = BpmModuleRole.find params[:bpm_role] if params[:bpm_role].present?
+
+    respond_to do |format|
+      if @system_role and @bpm_role and @system_role.bpm_module_roles.blank?
+        system_role.bpm_module_roles << bpm_role
+        flash[:notice] = "Bpm role is successfully assigned."
+      else
+        flash[:error] = "Bpm role is already assigned. or Please select both system role and bpm role and try again."
+      end
+      format.html { redirect_to new_organization_roles_and_permission_url(organization)}
     end
   end
 
