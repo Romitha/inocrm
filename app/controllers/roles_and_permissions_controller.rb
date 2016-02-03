@@ -58,7 +58,7 @@ class RolesAndPermissionsController < ApplicationController
 
     respond_to do |format|
       if @system_role and @bpm_role and @system_role.bpm_module_roles.blank?
-        @system_role.bpm_module_roles << bpm_role
+        @system_role.bpm_module_roles << @bpm_role
         flash[:notice] = "Bpm role is successfully assigned."
       else
         flash[:error] = "Bpm role is already assigned. or Please select both system role and bpm role and try again."
