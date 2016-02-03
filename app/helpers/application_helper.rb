@@ -100,7 +100,7 @@ module ApplicationHelper
 
       regional = @ticket.regional_support_job ? "[Regional]" : ""
 
-      repair_type = @ticket.repair_type.code == "EX" ? "[#{@ticket.repair_type.name}]" : ""
+      repair_type = @ticket.ticket_repair_type.code == "EX" ? "[#{@ticket.ticket_repair_type.name}]" : ""
 
       delivery_stage = @ticket.ticket_deliver_units.any?{|d| !d.received} ? "[to-be collected]" : (@ticket.ticket_deliver_units.any?{|d| !d.delivered} ? "[to-be delivered]" : "")
 
