@@ -255,7 +255,7 @@ workflow_mappings = [
   ["SPPT", "extend_warranty", "/tickets/extend_warranty", "SPT_SC_12", "Support - Extend Warranty", "h1", "ticket_id", nil],
   ["SPPT", "approve_close_ticket", "/tickets/check_fsr", "SPT_SC_13", "Support - Ticket Close Approval", "h1", "ticket_id,supp_engr_user", nil],
   ["SPPT", "customer_feedback", "", "SPT_SC_14", "Support - Customer Feedback", "h1", "ticket_id,supp_engr_user", nil],
-  ["SPPT_PART_ESTIMATE", "part_estimate", "", "SPT_SC_15", "Support - Part Estimation (Store)", "h2", "ticket_id,part_estimation_id,supp_engr_user", nil],
+  ["SPPT_PART_ESTIMATE", "part_estimate", "/tickets/estimate_the_part_internal", "SPT_SC_15", "Support - Part Estimation (Store)", "h2", "ticket_id,part_estimation_id,supp_engr_user", nil],
   ["SPPT_STORE_PART_REQUEST", "approve_store_part", "/tickets/approve_store_parts", "SPT_SC_16", "Support - Part Approval (Store)", "h2", "ticket_id,request_spare_part_id,request_onloan_spare_part_id,onloan_request,supp_engr_user", nil],
   ["SPPT_STORE_PART_REQUEST", "issue_store_part", "/tickets/issue_store_part", "SPT_SC_17", "Support - Issue Part (Store)", "h2", "ticket_id,request_spare_part_id,request_onloan_spare_part_id,onloan_request,supp_engr_user", nil],
   ["SPPT_STORE_PART_RETURN", "return_store_part", "/tickets/return_store_part", "SPT_SC_18", "Support - Return Part (Store)", "h2", "ticket_id,request_spare_part_id,request_onloan_spare_part_id,onloan_request", nil],
@@ -272,6 +272,9 @@ workflow_mappings = [
   ["SPPT", "approve_foc", "", "SPT_SC_31", "Support - FOC Approval", "h1", "ticket_id", nil],
   ["SPPT", "final_job_estimate", "", "SPT_SC_33", "Support - Final Job Estimation", "h1", "ticket_id", nil]
 ].each{ |t| WorkflowMapping.create_with(process_name: t[0], url: t[2], screen: t[3], first_header_title: t[4],second_header_title_name: t[5], input_variables: t[6], output_variables: t[7]).find_or_create_by(task_name: t[1])}
+
+# 75  Low Margin Part Estimation Approval Suport Manager / Asst. mng  20  spt_act_job_estimate
+# 76  Part Estimation Customer Aproved  Support Engineer  3 spt_act_job_estimate
 
 WorkflowMapping.find(7).update(second_header_title_name: "h1")
 

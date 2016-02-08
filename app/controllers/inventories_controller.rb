@@ -1029,29 +1029,9 @@ class InventoriesController < ApplicationController
 
     continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
 
-    params[:inventory_serial_part]
-    params[:inventory_serial_item]
-    params[:inventory_batch]
-    params[:grn_item]
-    params[:inventory_warranty]
-    params[:damage_reason_check]
-    params[:damage_reason]
-
-    params[:main_part_damage_reason_check]
-    params[:main_part_damage_reason]
-
-    params[:warranty_check]
-    params[:reject_reason]
-
     @onloan_request = params[:onloan_request] == "Y" ? true : false
     params[:damage_reason_check]
     params[:damage_reason]
-
-    params[:grn_item_id]
-    params[:inventory_batch_id]
-    params[:request_onloan_spare_part_id]
-    params[:request_spare_part_id]
-    params[:note]
 
     @add_rec = false
 
@@ -1725,7 +1705,82 @@ class InventoriesController < ApplicationController
 
   end
 
-  def test_post
+  def update_estimate_the_part_internal
+    TaskAction
+    estimation = TicketEstimation.find params[:part_estimation_id]
+    @ticket = Ticket.find params[:ticket_id]
+
+    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+
+    if continue
+
+      if estimation.estimation_status.code == 'RQS'
+
+        if estimation.ticket_estimation_parts.any? { |p| p.ticket_spare_part.spare_part_status_action.code == "CLS" }
+          @jump_next = true
+          d19_estimate_internal_below_margin = "N"
+          flash[:notice]= "Requested Part is terminated."
+        else
+          estimation.update estimation_params
+
+          t_est_price = estimation.ticket_estimation_parts.sum(:estimated_price).to_f + estimation.ticket_estimation_additionals.sum(:estimated_price).to_f
+
+          if t_est_price > 0
+            estimation.update_attribute(:cust_approval_required, true)
+          else
+            estimation.update_attribute(:cust_approval_required, false)
+          end
+
+          @jump_next = params[:estimation_complete_check].to_bool if params[:estimation_complete_check].present?
+          if @jump_next
+            d19_estimate_internal_below_margin = params[:estimate_low_margin].present? ? "Y" : "N"
+            if d19_estimate_internal_below_margin == "N"
+
+              estimation.ticket_estimation_parts.each do |p|
+                p.ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("ECM").id) #Estimation Completed
+                p.ticket_spare_part.ticket_spare_part_status_actions.create(status_id: p.ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
+              end
+
+              estimation.update status_id: EstimationStatus.find_by_code('EST').id
+            end
+
+            #Set Action (74) part estimation completed, DB.spt_act_request_spare_part
+            user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(74).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+            user_ticket_action.build_act_job_estimation(ticket_estimation_id: estimation.id)
+            user_ticket_action.save
+
+          end
+        end
+
+        if @jump_next
+          # bpm output variables
+          bpm_variables = view_context.initialize_bpm_variables.merge(d19_estimate_internal_below_margin: d19_estimate_internal_below_margin)
+
+          @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
+
+          bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+          if bpm_response[:status].upcase == "SUCCESS"
+
+            # WebsocketRails[:posts].trigger 'new', {task_name: "Spare part", task_id: spt_ticket_spare_part.id, task_verb: "received and issued.", by: current_user.email, at: Time.now.strftime('%d/%m/%Y at %H:%M:%S')}
+
+            flash[:notice]= "Successfully updated"
+          else
+            flash[:error]= "Estimate part is updated. but Bpm error"
+          end
+        else
+          flash[:error] = "Estimate updated. But not completed."
+        end
+
+      else
+        flash[:error] = "Already estimated."
+        bpm_variables = view_context.initialize_bpm_variables
+        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+      end
+    else
+      flash[:error]= "Unable to update. Bpm error"
+    end
+    redirect_to todos_url
   end
 
   def toggle_add_update_return_part
@@ -1820,7 +1875,7 @@ class InventoriesController < ApplicationController
     end
 
     def estimation_params
-      params.require(:ticket_estimation).permit(:note, :id, :cust_approved, :cust_approved_by)
+      params.require(:ticket_estimation).permit(:note, :id, :cust_approved, :cust_approved_by, :advance_payment_amount, ticket_estimation_parts_attributes: [:id, :supplier_id, :cost_price, :estimated_price, :warranty_period, ticket_spare_part_attributes: [:note, :id, :current_user_id]], ticket_estimation_additionals_attributes: [:id, :_destroy, :ticket_id, :additional_charge_id, :cost_price, :estimated_price])
     end
 
     def inventory_serial_part_params

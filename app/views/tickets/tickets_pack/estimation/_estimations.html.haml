@@ -22,7 +22,7 @@
         %td
           = link_to load_estimation_inventories_path(estimation_id: estimation.id, estimation_type: "#{ticket.ticket_repair_type.code == 'EX' ? 'external' : 'part' }"), remote: true do
             = index+1
-        %td= estimation.requested_at
+        %td= estimation.requested_at.getlocal.try(:strftime, "%b %d, %Y %H:%M")
         %td
           - if ticket.ticket_repair_type.code == 'EX'
             = estimation.ticket_estimation_externals.first.try(:organization).try(:name)

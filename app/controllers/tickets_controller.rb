@@ -796,9 +796,11 @@ class TicketsController < ApplicationController
   end
 
   def paginate_ticket_grn_items
+    Grn
     # @rendering_id = params[:rendering_id]
     # @rendering_file = params[:rendering_file]
-    @grn_items = Rails.cache.read([:grn_items, session[:part_estimation_id]]).page(params[:page]).per(params[:per_page])
+    @grn_items = GrnItem.where(inventory_not_updated: false).page(params[:page]).per(params[:per_page])
+    render "tickets/tickets_pack/estimate_the_part_internal/paginate_grns"
   end
 
   def show
@@ -1556,28 +1558,15 @@ class TicketsController < ApplicationController
     Grn
     ticket_id = params[:ticket_id]
     @ticket = Ticket.find_by_id ticket_id
+    @product = @ticket.products.first
 
     if @ticket
-      # @estimation = TicketEstimationPart.find params[:part_estimation_id]
       @estimation = TicketEstimation.find params[:part_estimation_id]
-      # @estimation_part = @estimation.ticket_estimation_parts.build
-      # @estimation_additional = @estimation.ticket_estimation_additionals.build
-      # @grn_items = GrnItem.all
-      @grn_items = GrnItem.all.page(params[:page]).per(4)
-      @product = @ticket.products.first
-
-      # product = @ticket.products.first
-      # histories = Rails.cache.fetch([:histories, session[:product_id]]){Kaminari.paginate_array(product.tickets.reject{|t| t == @ticket})}.page(params[:page]).per(2)
-
-      # @render_template = "tickets/view_histories"
-      # @variables = {histories: histories}
-
-      # @rendering_dom = "#history #histories_pagination"
-
-
-      Rails.cache.delete([:histories, @product.id])
-      Rails.cache.delete([:join, @ticket.id])
     end
+
+    @grn_items = GrnItem.all.page(params[:page]).per(3)
+    Rails.cache.delete([:histories, @product.id])
+    Rails.cache.delete([:join, @ticket.id])
 
     respond_to do |format|
       format.html {render "tickets/tickets_pack/estimate_the_part_internal/estimate_the_part_internal"}
@@ -2559,173 +2548,6 @@ class TicketsController < ApplicationController
     end
   end
 
-  def approve_store_parts
-    Inventory
-    Warranty
-    ContactNumber
-    QAndA
-    TaskAction
-    TicketSparePart
-    TicketEstimation
-    ticket_id = params[:ticket_id]
-    @ticket = Ticket.find_by_id ticket_id
-    session[:ticket_id] = @ticket.id
-
-    @onloan_request = true if params[:onloan_request] == "Y"
-
-
-    if @onloan_request
-      @onloan_spare_part = @ticket.ticket_on_loan_spare_parts.find params[:request_onloan_spare_part_id]
-      @spare_part = @onloan_spare_part.ticket_spare_part
-    else
-      @spare_part = @ticket.ticket_spare_parts.find params[:request_spare_part_id]
-    end
-
-    if @ticket
-      @product = @ticket.products.first
-
-      Rails.cache.delete([:histories, @product.id])
-      Rails.cache.delete([:join, @ticket.id])
-    end
-
-    respond_to do |format|
-      format.html {render "tickets/tickets_pack/approve_store_parts/approve_store_parts"}
-    end
-  end
-
-  def update_approve_store_parts
-
-    continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
-
-    if continue
-
-      @onloan_request = true if params[:onloan_request] == "Y"
-      if @onloan_request
-        @onloan_request_part = TicketOnLoanSparePart.find params[:request_onloan_spare_part_id]
-        @terminated = (@onloan_request_part.status_action_id == SparePartStatusAction.find_by_code("CLS").id)
-      else
-        @ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
-        @terminated = (@ticket_spare_part.status_action_id == SparePartStatusAction.find_by_code("CLS").id)
-      end
-
-      if @terminated
-        bpm_variables = view_context.initialize_bpm_variables.merge(d18_approve_request_store_part: "N")
-
-        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
-
-        if bpm_response[:status].upcase == "SUCCESS"
-          flash[:error] = "Request allready terminated."
-        else
-          flash[:error] = "Request allready terminated. but Bpm error"
-        end
-
-      else
-
-        if @onloan_request
-
-          if @onloan_request_part.ticket_spare_part
-            @onloan_request_part.ticket_spare_part.update ticket_spare_part_params(@onloan_request_part.ticket_spare_part)
-          else
-            @onloan_request_part.ticket.update ticket_params
-          end
-
-          @onloan_request_part.update approved_at: DateTime.now, approved_by: current_user.id
-
-          d18_approve_request_store_part = "N"
-
-          @onloan_request_part.reload
-
-          if @onloan_request_part.approved
-            #Approve On-Loan Part for Store
-            action_id = TaskAction.find_by_action_no(49).id
-            d18_approve_request_store_part = "Y"
-
-            @onloan_request_part.update status_action_id: SparePartStatusAction.find_by_code("APS").id
-            @onloan_request_part.ticket_on_loan_spare_part_status_actions.create(status_id: @onloan_request_part.status_action_id, done_by: current_user.id, done_at: DateTime.now) 
-
-            srn = @onloan_request_part.approved_store.srns.create(created_by: current_user.id, created_at: DateTime.now, requested_module_id: BpmModule.find_by_code("SPT").id, srn_no: CompanyConfig.first.increase_inv_last_srn_no)#inv_srn
-
-            srn_item = srn.srn_items.create(product_id: @onloan_request_part.approved_inventory_product.try(:id), quantity: 1, returnable: true, spare_part: true)#inv_srn_item
-
-            @onloan_request_part.update inv_srn_id: srn.id, inv_srn_item_id: srn_item.id
-
-          else
-            #Reject On-Loan Part for Store
-            action_id = TaskAction.find_by_action_no(65).id
-
-            @onloan_request_part.update approved_inv_product_id: nil, approved_main_inv_product_id: nil, approved_store_id: nil,status_action_id: SparePartStatusAction.find_by_code("CLS").id
-
-            # @onloan_request_part.update status_action_id: SparePartStatusAction.find_by_code("CLS").id
-
-            @onloan_request_part.ticket_on_loan_spare_part_status_actions.create([{status_id: SparePartStatusAction.find_by_code("RJS").id, done_by: current_user.id, done_at: DateTime.now}, {status_id: SparePartStatusAction.find_by_code("CLS").id , done_by: current_user.id, done_at: DateTime.now}])  
-          end
-
-          user_ticket_action = @onloan_request_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: @onloan_request_part.ticket.re_open_count, action_id: action_id)
-          user_ticket_action.build_request_on_loan_spare_part(ticket_on_loan_spare_part_id: @onloan_request_part.id)
-          user_ticket_action.save
-
-          bpm_variables = view_context.initialize_bpm_variables.merge(d18_approve_request_store_part: d18_approve_request_store_part)
-
-          bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
-
-          if bpm_response[:status].upcase == "SUCCESS"
-            flash[:notice] = "Successfully updated."
-          else
-            flash[:error] = "ticket is updated. but Bpm error"
-          end
-
-        else #Store Request (not On-Loan)
-
-          @ticket_spare_part.update ticket_spare_part_params(@ticket_spare_part)
-
-          @ticket_spare_part.ticket_spare_part_store.update store_request_approved_at: DateTime.now, store_request_approved_by: current_user.id
-
-          d18_approve_request_store_part = "N"
-          if @ticket_spare_part.ticket_spare_part_store.store_request_approved
-            #Approve Spare Part for Store
-            action_id = TaskAction.find_by_action_no(47).id
-            d18_approve_request_store_part = "Y"
-
-            @ticket_spare_part.update status_action_id: SparePartStatusAction.find_by_code("APS").id
-            @ticket_spare_part.ticket_spare_part_status_actions.create(status_id: @ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now) 
-
-            srn = @ticket_spare_part.ticket_spare_part_store.approved_store.srns.create(created_by: current_user.id, created_at: DateTime.now, requested_module_id: BpmModule.find_by_code("SPT").id, srn_no: CompanyConfig.first.increase_inv_last_srn_no)#inv_srn
-
-            srn_item = srn.srn_items.create(product_id: @ticket_spare_part.ticket_spare_part_store.approved_inventory_product.try(:id), quantity: 1, returnable: false, spare_part: true)#inv_srn_item
-
-            @ticket_spare_part.ticket_spare_part_store.update inv_srn_id: srn.id, inv_srn_item_id: srn_item.id
-
-          else
-            #Reject Spare Part for Store
-            action_id = TaskAction.find_by_action_no(64).id
-
-            @ticket_spare_part.ticket_spare_part_store.update approved_inv_product_id: nil, approved_main_inv_product_id: nil, approved_store_id: nil
-            @ticket_spare_part.update status_action_id: SparePartStatusAction.find_by_code("CLS").id
-
-            @ticket_spare_part.ticket_spare_part_status_actions.create([{status_id: SparePartStatusAction.find_by_code("RJS").id, done_by: current_user.id, done_at: DateTime.now}, {status_id: SparePartStatusAction.find_by_code("CLS").id , done_by: current_user.id, done_at: DateTime.now}])  
-          end
-
-          user_ticket_action = @ticket_spare_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket_spare_part.ticket.re_open_count, action_id: action_id)
-          user_ticket_action.build_request_spare_part(ticket_spare_part_id: @ticket_spare_part.id)
-          user_ticket_action.save
-
-          bpm_variables = view_context.initialize_bpm_variables.merge(d18_approve_request_store_part: d18_approve_request_store_part)
-
-          bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
-
-          if bpm_response[:status].upcase == "SUCCESS"
-            flash[:notice] = "Successfully updated."
-          else
-            flash[:error] = "ticket is updated. but Bpm error"
-          end
-        end
-      end
-    else
-      flash[:notice] = "ticket is not updated. Bpm error"
-    end
-    redirect_to todos_url
-  end
-
   def ticket_close_approval
     Inventory
     Warranty
@@ -2838,39 +2660,6 @@ class TicketsController < ApplicationController
     redirect_to todos_url
   end
 
-  def return_store_part
-    ContactNumber
-    QAndA
-    TaskAction
-    TicketSparePart
-    Inventory
-    Warranty
-    Gin
-    Grn
-    Srr
-    Inventory
-
-    @ticket = Ticket.find_by_id params[:ticket_id]
-
-    @onloan_request = true if params[:onloan_request] == "Y"
-
-    if @onloan_request
-      @onloan_spare_part = @ticket.ticket_on_loan_spare_parts.find params[:request_onloan_spare_part_id]
-      @spare_part = @onloan_spare_part.ticket_spare_part
-    else
-      @spare_part = @ticket.ticket_spare_parts.find params[:request_spare_part_id]
-    end
-
-    if @ticket
-      @product = @ticket.products.first
-      Rails.cache.delete([:histories, @product.id])
-      Rails.cache.delete([:join, @ticket.id])
-    end
-    respond_to do |format|
-      format.html {render "tickets/tickets_pack/return_store_part/return_store_part"}
-    end
-  end
-
   def received_and_issued
     Inventory
     Warranty
@@ -2890,52 +2679,6 @@ class TicketsController < ApplicationController
     end
     respond_to do |format|
       format.html {render "tickets/tickets_pack/received_and_issued/received_and_issued"}
-    end
-  end
-
-  def load_estimation_grn_items
-    Grn
-    @grn_items = GrnItem.all
-    @estimation_grn_items = Kaminari.paginate_array(@grn_items).page(params[:page]).per(2)
-    render "tickets/tickets_pack/low_margin_estimate_parts_approval/load_estimation_grn_items"
-  end
-
-  def estimate_the_part_internal
-    Inventory
-    Warranty
-    ContactNumber
-    QAndA
-    TaskAction
-    Inventory
-    TicketEstimation
-    Grn
-    ticket_id = params[:ticket_id]
-    @ticket = Ticket.find_by_id ticket_id
-
-    if @ticket
-      # @estimation = TicketEstimationPart.find params[:part_estimation_id]
-      @estimation = TicketEstimation.find params[:part_estimation_id]
-      # @estimation_part = @estimation.ticket_estimation_parts.build
-      # @estimation_additional = @estimation.ticket_estimation_additionals.build
-      # @grn_items = GrnItem.all
-      @grn_items = GrnItem.all.page(params[:page]).per(4)
-      @product = @ticket.products.first
-
-      # product = @ticket.products.first
-      # histories = Rails.cache.fetch([:histories, session[:product_id]]){Kaminari.paginate_array(product.tickets.reject{|t| t == @ticket})}.page(params[:page]).per(2)
-
-      # @render_template = "tickets/view_histories"
-      # @variables = {histories: histories}
-
-      # @rendering_dom = "#history #histories_pagination"
-
-
-      Rails.cache.delete([:histories, @product.id])
-      Rails.cache.delete([:join, @ticket.id])
-    end
-
-    respond_to do |format|
-      format.html {render "tickets/tickets_pack/estimate_the_part_internal/estimate_the_part_internal"}
     end
   end
 
@@ -3598,89 +3341,6 @@ class TicketsController < ApplicationController
     end
   end
 
-  def edit_serial
-    ContactNumber
-    QAndA
-    TaskAction
-    Inventory
-    TicketSparePart
-    @ticket = Ticket.find_by_id params[:ticket_id]
-    if @ticket
-      @product = @ticket.products.first
-      @warranties = @product.warranties
-      session[:product_id] = @product.id
-      Rails.cache.delete([:histories, session[:product_id]])
-      Rails.cache.delete([:join, @ticket.id])
-
-    end
-    respond_to do |format|
-      format.html {render "tickets/tickets_pack/edit_serial"}
-    end
-  end
-
-  def update_edit_serial
-    Ticket
-    @product = Product.find params[:product_id]
-    @ticket = @product.tickets.first
-
-    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
-    if continue
-      if @product.update product_params
-
-        # Set Action (35) "Edit Serial No".
-        user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(35).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
-        user_ticket_action.save
-
-        if params[:complete_task]
-
-          # bpm output variables
-          bpm_variables = view_context.initialize_bpm_variables
-
-          @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
-
-          bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
-
-          if bpm_response[:status].upcase == "SUCCESS"
-            @flash_message = {notice: "Successfully updated"}
-          end
-        end
-        WebsocketRails[:posts].trigger 'new', {task_name: "Serial no for", task_id: @ticket.id, task_verb: "updated.", by: current_user.email, at: Time.now.strftime('%d/%m/%Y at %H:%M:%S')}
-
-        @flash_message = {notice: "Successfully updated"}
-      else
-        @flash_message = {error: "Unable to updated."}
-      end
-    else
-      @flash_message = {error: "product is not updated. Bpm error"}
-    end
-    redirect_to todos_url, @flash_message
-  end
-
-  def estimate_job
-    ContactNumber
-    QAndA
-    TaskAction
-    TicketEstimation
-    Inventory
-    @ticket = Ticket.find_by_id params[:ticket_id]
-    if @ticket
-      @product = @ticket.products.first
-      @warranties = @product.warranties
-      session[:product_id] = @product.id
-      Rails.cache.delete([:histories, session[:product_id]])
-      Rails.cache.delete([:join, @ticket.id])
-      # @histories = Rails.cache.fetch([:histories, session[:product_id]]){Kaminari.paginate_array(@product.tickets)}.page(params[:page]).per(2)
-      # @join_tickets = Rails.cache.fetch([:join, @ticket.id]){Kaminari.paginate_array(Ticket.where(id: @ticket.joint_tickets.map(&:joint_ticket_id)))}.page(params[:page]).per(2)
-      # @q_and_answers = @ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})}
-      # @ge_q_and_answers = @ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"General Questions" => v})}
-      # # @ticket_estimation_externals = @ticket.ticket_estimation_externals.includes(:ticket_estimation).where(spt_ticket_estimation: {status_id: EstimationStatus.find_by_code("RQS").id})
-
-    end
-    respond_to do |format|
-      format.html {render "tickets/tickets_pack/estimate_job"}
-    end
-  end
-
   def deliver_unit
     ContactNumber
     QAndA
@@ -3702,51 +3362,6 @@ class TicketsController < ApplicationController
     end
     respond_to do |format|
       format.html {render "tickets/tickets_pack/deliver_unit"}
-    end
-  end
-
-  def job_below_margin_estimate_approval
-    ContactNumber
-    QAndA
-    TaskAction
-    TicketSparePart
-    Inventory
-    Warranty
-    @ticket = Ticket.find_by_id params[:ticket_id]
-    if @ticket
-      @estimation = @ticket.ticket_estimations.find params[:part_estimation_id]
-      @product = @ticket.products.first
-      Rails.cache.delete([:histories, @product.id])
-      Rails.cache.delete([:join, @ticket.id])
-    end
-    respond_to do |format|
-      format.html {render "tickets/tickets_pack/job_below_margin_estimate_approval"}
-    end
-  end
-
-  def low_margin_estimate_parts_approval
-    Inventory
-    Grn
-    Organization
-    Warranty
-    ContactNumber
-    QAndA
-    TaskAction
-    Inventory
-    ticket_id = params[:ticket_id]
-    @ticket = Ticket.find_by_id ticket_id
-
-    if @ticket
-      @estimation = TicketEstimation.find params[:part_estimation_id]
-
-      @grn_items = GrnItem.all
-      @estimation_grn_items = Kaminari.paginate_array(@grn_items).page(params[:page]).per(2)
-      @product = @ticket.products.first
-      Rails.cache.delete([:histories, @product.id])
-      Rails.cache.delete([:join, @ticket.id])
-    end
-    respond_to do |format|
-      format.html {render "tickets/tickets_pack/low_margin_estimate_parts_approval/low_margin_estimate_parts_approval"}
     end
   end
 

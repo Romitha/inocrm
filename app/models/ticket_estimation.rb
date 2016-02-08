@@ -55,6 +55,7 @@ class TicketEstimationPart < ActiveRecord::Base
   belongs_to :supplier, class_name: "Organization", foreign_key: :supplier_id
 
   belongs_to :ticket_spare_part, foreign_key: :ticket_spare_part_id
+  accepts_nested_attributes_for :ticket_spare_part, allow_destroy: true
 
 end
 

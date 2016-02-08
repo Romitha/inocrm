@@ -324,6 +324,7 @@ Rails.application.routes.draw do
       post "update_issue_store_parts"
 
       post "update_return_store_part"
+      post "update_estimate_the_part_internal"
     end
   end
      

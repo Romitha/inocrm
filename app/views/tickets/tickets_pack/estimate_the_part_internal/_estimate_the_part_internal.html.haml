@@ -1,144 +1,107 @@
 - uri = URI(request.url)
-- count = 1
-= simple_nested_form_for estimation, url: "#", method: :post do |f|
-  / est_internal_cost_price url
-  / = hidden_field_tag :process_id, session[:process_id]
-  / = hidden_field_tag :task_id, session[:task_id]
-  / = hidden_field_tag :owner, session[:owner]
-  / - session[:bpm_input_variables].each do |bpm_input_variable|
-  /   = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+= simple_nested_form_for estimation, url: update_estimate_the_part_internal_inventories_path, method: :post do |f|
 
-  / = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
-  / = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
-  / = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
-  / - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
-  /   = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+  = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
+  = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
+  = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
+  - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
+    = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
   = f.simple_fields_for :ticket_estimation_parts do |t|
 
     %fieldset
-      %legend Part No #{count}
+      %legend Part No: #{t.object.ticket_spare_part.try(:spare_part_no)}
       .row
-        .col-md-12.tyyt
+        .col-md-3
           %strong Part No:
           #{t.object.ticket_spare_part.try(:spare_part_no)}
-      .row
-        .col-md-4
+        .col-md-3
           %strong Part description:
           #{t.object.ticket_spare_part.try(:spare_part_description)}
-      .row
-        .col-md-4
+        .col-md-3
           %strong Part status:
           #{t.object.ticket_spare_part.try(:spare_part_status_action).try(:name)}
+      %hr
+      - if t.object.ticket_spare_part.ticket_spare_part_store.present?
+        .row
+          .col-md-5
+            %h4 Requested part
+            .request_from
+              %dl.dl-horizontal
+                %dt Store
+                %dd
+                  = t.object.ticket_spare_part.ticket_spare_part_store.store.try(:name)
+                %dt Item Code
+                %dd
+                  = t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.try(:serial_no)
+                %dt Item Description
+                %dd
+                  = t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.try(:description)
+                %dt Model No
+                %dd
+                  = t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.try(:model_no)
+                %dt Product No
+                %dd
+                  = t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.try(:product_no)
+                %dt Part No
+                %dd
+                  = t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.try(:spare_part_no)
+                %dt Available Qnty
+                %dd
+                  = t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.inventories.where(store_id: t.object.ticket_spare_part.ticket_spare_part_store.store_id).try(:sum, :available_quantity)
+            .spare_part_select.pull-left
+              = link_to "change", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true
 
-      .row
-        .col-md-2
-          %h4 Requested part
-        .col-md-2
-          .spare_part_select.pull-right
-            = link_to "select", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true
-      .row
-        .col-md-5
-          .request_from
-            %dl.dl-horizontal
-              %dt
-                Store
-              %dd
-                = t.object.ticket_spare_part.try(:ticket_spare_part_store) ? t.object.ticket_spare_part.try(:ticket_spare_part_store).try(:store).try(:name) : t.object.ticket_spare_part.try(:ticket_spare_part_manufacture).try(:store).try(:name)
-              %dt
-                Item code
-              %dd
-                = t.object.ticket_spare_part.try(:ticket_spare_part_store) ? t.object.ticket_spare_part.try(:ticket_spare_part_store).try(:store).try(:code) : t.object.ticket_spare_part.try(:ticket_spare_part_manufacture).try(:store).try(:code)
-              %dt
-                Item description
-              %dd
-                = t.object.ticket_spare_part.try(:ticket_spare_part_store) ? t.object.ticket_spare_part.try(:ticket_spare_part_store).try(:inventory_product).try(:description) : t.object.ticket_spare_part.try(:ticket_spare_part_manufacture).try(:inventory_product).try(:description)
-
-              %dt
-                Available Qnt.
-              %dd
-                - if t.object.ticket_spare_part.try(:ticket_spare_part_store).present?
-                  = t.object.ticket_spare_part.try(:ticket_spare_part_store) and t.object.ticket_spare_part.try(:ticket_spare_part_store).try(:main_inventory_product).try(:inventories).try :sum, :available_quantity
-                - else
-                  = t.object.ticket_spare_part.try(:ticket_spare_part_store) and t.object.ticket_spare_part.try(:ticket_spare_part_manufacture).try(:main_inventory_product).try(:inventories).try :sum, :available_quantity
-
-              %dt
-                Unit
-              %dd
-                = t.object.ticket_spare_part.try(:ticket_spare_part_store) ? t.object.ticket_spare_part.try(:ticket_spare_part_store).try(:inventory_product).try(:inventory_unit).try(:unit) : t.object.ticket_spare_part.try(:ticket_spare_part_manufacture).try(:inventory_product).try(:inventory_unit).try(:unit)
-        .col-md-6
-          .row.col-md-12
-            - if t.object.ticket_spare_part.try(:ticket_spare_part_store).present?
+          .col-md-7
+            #paginate_grns
               = paginate grn_items, remote: true, method: :get, params: {controller: "tickets", action: "paginate_ticket_grn_items", per_page: 3}
               %table.table
                 %thead
                   %tr
-                    %th
-                      Date Purchased
-                    %th
-                      Price
-                    %th
-                      Currency
+                    %th No
+                    %th Grn no
+                    %th Date Purchased
+                    %th Price
                 %tbody
-                  - grn_items.each do |grn_item|
+                  - grn_items.each_with_index do |grn_item, index|
                     %tr
-                      %td
-                        = grn_item.id
+                      %td= index+1
+                      %td= grn_item.grn.grn_no
+                      %td= grn_item.grn.created_at.try(:strftime, "%d-%m-%Y")
                       %td
                         = grn_item.unit_cost
-                      %td
-                        = Currency.find_by_id(grn_item.currency_id).try(:currency)
-
-        / .col-md-6
-        /   .row.col-md-12
-        /     - if t.object.ticket_spare_part.try(:ticket_spare_part_store).present?
-        /     - @grn_items = t.object.ticket_spare_part.try(:ticket_spare_part_store).try(:inventory_product).try(:grn_items)
-        /       / - @grn_items = GrnItem.all.paginate(page: params[:page], per_page: 5)
-        /       / - @grn_items = t.object.ticket_spare_part.try(:ticket_spare_part_store).try(:inventory_product).try(:grn_items)
-        /       %strong Last Perchased Price
-        /       %table.table.table-striped
-        /         %thead
-        /           %tr
-        /             %th No
-        /             %th Date Purchased
-        /             %th Price
-        /             %th Currency
-        /         %tbody
-        /           - @grn_items.each_with_index do |g, index|
-        /             %tr
-        /               %td= index+1
-        /               %td= g.created_at
-        /               %td= g.unit_cost
-        /               %td= Currency.find_by_id(g.currency_id).try(:currency)
-        /       / %will_paginate @grn_items
+                        (#{grn_item.currency.code})
 
       .row
-        .col-md-6
-          = t.simple_fields_for :ticket_spare_part do |p|
-            = p.input :note
-      .row
-        .col-md-3
-          = t.association :supplier, input_html: {class: "est_internal_supplier"}
-        .col-md-2
-          = t.input :cost_price, input_html: {min: "0", class: "est_internal_cost_price only_float", oninput: "Inventories.calculate_internal_cost_price();"}
-          .append_cost_price_internal.hide
-        .col-md-2
-          = t.input :estimated_price, input_html: {min: "0", class: "est_internal_estimated_price only_float", oninput: "Inventories.calculate_internal_cost_price();"}
-          .append_estimated_price_internal.hide
-        .col-md-2
-          = t.input :warranty_period, input_html: {min: "0", class: "est_internal_warranty only_float"}, label: "Warranty period (months)"
-        .col-md-3
-          %strong Profit:
-          %span.append_profit_margin_internal{style: "font-weight:bold;"}
-      .row
-        .col-md-8
         .col-md-4
-          .below_margine_append_profit_margin_internal
+          = t.simple_fields_for :ticket_spare_part do |p|
+            = p.input :current_user_id, as: :hidden, input_html: {value: current_user.id}
+            = p.input :note, input_html: {value: nil}
+            = simple_format p.object.note
+        .col-md-8
+          .row
+            .col-md-10
+              = t.association :supplier, input_html: {class: "est_internal_supplier"}
+            .col-md-3
+              = t.input :cost_price, input_html: {min: "0", class: "est_internal_cost_price only_float", oninput: "Inventories.calculate_internal_cost_price();"}, label: false, placeholder: "Cost price"
+              .append_cost_price_internal.hide
+            .col-md-3
+              = t.input :estimated_price, input_html: {min: "0", class: "est_internal_estimated_price only_float", oninput: "Inventories.calculate_internal_cost_price();"}, label: false, placeholder: "entimated price"
+              .append_estimated_price_internal.hide
+            .col-md-4
+              = t.input :warranty_period, input_html: {min: "0", class: "est_internal_warranty only_float"}, label: false, placeholder: "Warranty period in months"
+            .col-md-2
+              %strong Profit:
+              %span.append_profit_margin_internal{style: "font-weight:bold;"}
+            .col-md-4
+              .below_margine_append_profit_margin_internal
 
-    - count += 1
   = f.simple_fields_for :ticket_estimation_additionals do |a|
 
     .row
+      .add_sign.col-md-3{style: "padding-top:2.5%;"}
+        = a.link_to_remove class: "remove_c_t_v_link" do
+          %span.glyphicon.glyphicon-remove-sign
       = a.input :ticket_id, as: :hidden, input_html: {value: estimation.ticket.id}
       .col-md-3
         = a.association :additional_charge, value_method: :id, label_method: :additional_charge
@@ -151,17 +114,11 @@
       .col-md-3
         %strong Profit:
         %span.append_profit_margin_internal{style: "font-weight:bold;"}
-      .add_sign.col-md-3{style: "padding-top:2.5%;"}
-        = a.link_to_remove class: "remove_c_t_v_link" do
-          %span.glyphicon.glyphicon-remove-sign
-          %br
+    %hr
 
   = f.link_to_add :ticket_estimation_additionals, class: "small_scale_padding-right2" do
     %span.glyphicon.glyphicon-plus-sign
     Add
-  .row
-    .col-md-3
-      = f.input :advance_payment_amount, input_html: {min: "0", class: "only_float"}
 
   .row
     .col-md-2
@@ -181,13 +138,15 @@
       %span#db_margin{style: "font-weight:bold;"}= CompanyConfig.first.try(:sup_internal_part_profit_margin).to_f
       %span )
       %span %
-
     .col-md-5
       .below_margine_total_internal_margin_price
+      = hidden_field_tag :estimate_low_margin
+  %hr
+
 
   .row
     .col-md-3
-      = f.input :advance_payment_amount,input_html: {min: "0", class: "only_float", value: nil}
+      = f.input :advance_payment_amount, input_html: {min: "0", class: "only_float"}
 
   .row
     .col-md-5
@@ -195,12 +154,10 @@
       = simple_format estimation.note
 
   .row{style: "margin-bottom:10px;"}
-    .col-md-6
+    .col-md-12
       = label_tag "Estimation complete"
-      = check_box_tag :estimation_completed
-    .col-md-6
+      = check_box_tag :estimation_complete_check
       = f.submit "Save", class: "btn btn-success btn-sm", onclick: "Tickets.presence_validater(this, {presence: ['.est_internal_supplier', '.est_internal_cost_price', '.est_internal_estimated_price', '.est_internal_warranty']}); return false;"
-      %button.btn.btn-default.btn-sm{:type => "button"} Cancel
 
 #inventory_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "inventory_modal", "aria-hidden" => true}
   .modal-dialog.modal-lg

@@ -1,0 +1,20 @@
+- content_for :content_for do
+  = paginate @grn_items, remote: true, method: :get, params: {controller: "tickets", action: "paginate_ticket_grn_items", per_page: 3}
+  %table.table
+    %thead
+      %tr
+        %th No
+        %th Grn no
+        %th Date Purchased
+        %th Price
+    %tbody
+      - @grn_items.each_with_index do |grn_item, index|
+        %tr
+          %td= params[:page] ? (params[:per_page].to_i*(params[:page].to_i - 1) + index+1) : index+1
+          %td= grn_item.grn.grn_no
+          %td= grn_item.grn.created_at.try(:strftime, "%d-%m-%Y")
+          %td
+            = grn_item.unit_cost
+            (#{grn_item.currency.code})
+
+$("#paginate_grns").html("#{j content_for :content_for}");

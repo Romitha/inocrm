@@ -277,9 +277,11 @@ window.Inventories =
     if total_internal_margin_price < parseInt($("#db_margin").html())
       $("#total_internal_margin_price").html(cal_total).css("color", "red")
       $(".below_margine_total_internal_margin_price").html("Total Estimate below the margine").css("color", "red")
+      $("[name='estimate_low_margin']").val("true")
     else
       $("#total_internal_margin_price").html(cal_total).css("color", "black")
       $(".below_margine_total_internal_margin_price").html("")
+      $("[name='estimate_low_margin']").val("")
 
   calculate_approved_price: ->
     total_approved_amount = 0

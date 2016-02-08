@@ -30,8 +30,28 @@ class TicketSparePart < ActiveRecord::Base
 
   after_save :flush_cache
 
+  before_save do |ticket_spare_part|
+    ticket_spare_part.note = "#{ticket_spare_part[:note]} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(ticket_spare_part.current_user_id)}</span><br/>#{ticket_spare_part.note_was}" if ticket_spare_part.note.present?
+  end
+
   def flush_cache
     Rails.cache.delete([self.ticket.id, :ticket_spare_parts])
+  end
+
+  has_many :dyna_columns, as: :resourceable, autosave: true
+
+  # has_many :invoices, foreign_key: "customer_id"
+
+  [:current_user_id].each do |dyna_method|
+    define_method(dyna_method) do
+      dyna_columns.find_by_data_key(dyna_method).try(:data_value)
+    end
+
+    define_method("#{dyna_method}=") do |value|
+      data = dyna_columns.find_or_initialize_by(data_key: dyna_method)
+      data.data_value = (value.class==Fixnum ? value : value.strip)
+      data.save
+    end
   end
 end
 
