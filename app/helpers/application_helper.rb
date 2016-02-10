@@ -76,6 +76,25 @@ module ApplicationHelper
     ]    
   end
 
+  def print_receipt_tag_value receipt
+    [
+      "DUPLICATE=#{receipt.receipt_print_count > 0 ? 'D' : ''}",
+      "RECEIPT_NO=#{receipt.id.to_s.rjust(6, INOCRM_CONFIG['receipt_no_format'])}",
+      "COMPANY_NAME=#{receipt.ticket.customer.mst_title.title} #{receipt.ticket.customer.name}",
+      "TICKET_REF=#{receipt.ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG['ticket_no_format'])}",
+      "AMOUNT=#{receipt.amount}",
+      "INVOICE_NO=#{receipt.invoice.try.invoice_no.to_s.rjust(6, INOCRM_CONFIG['invoice_no_format']) if receipt.invoice}",
+      "DESCRIPTION=#{receipt.receipt_description.truncate(18)}",
+      "PAYMENT_TYPE=#{TicketPaymentReceivedType::TYPES.key(receipt.payment_type)}",
+      "PAYMENT_NOTE=#{receipt.payment_note.try(:truncate, 18)}",
+      "TYPE=#{receipt.ticket_payment_received_type.name}",
+      "NOTE=#{receipt.note.try(:truncate, 18)}",
+      "CREATED_DATE=#{receipt.created_at.strftime(INOCRM_CONFIG['long_date_format'])}",
+      "CREATED_TIME=#{receipt.created_at.strftime(INOCRM_CONFIG['time_format'])}",
+      "CREATED_BY=#{User.cached_find_by_id(receipt.received_by).email}"
+    ]
+  end
+
   def ticket_bpm_headers(process_id, ticket_id, spare_part_id = nil, onloan_spare_part_id = nil)
     TicketSparePart
     WorkflowMapping

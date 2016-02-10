@@ -1,7 +1,7 @@
 %fieldset
   %legend Change Ticket Repair Type
   = simple_nested_form_for ticket, url: update_change_ticket_repair_type_ticket_path(ticket), method: :post do |f|
-    = f.association :repair_type, as: :radio_buttons, label: "Repaire Type", wrapper_html: {class: "col-md-12"}, wrapper: :append
+    = f.association :ticket_repair_type, as: :radio_buttons, label: "Repaire Type", wrapper: :append
     = f.input :remarks, input_html: {value: nil} 
     = simple_format ticket.remarks
-    = f.submit "Save", class: "btn btn-success btn-sm" 
+    = f.submit "Save", class: "btn btn-success btn-sm"

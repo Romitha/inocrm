@@ -1,20 +1,22 @@
-- uri = URI(request.url)
 / = request.query_parameters
-.row
-  .col-md-3
-    %strong Total Estimated Amount (#{estimation.currency.code}):
-    = @total_estimation_amount
-  .col-md-4
-    %strong All Payments Recieved - Total Amount (#{estimation.currency.code}):
-    = @all_payment_received
-  .col-md-4
-    %strong Balance Amount to be Paid (#{estimation.currency.code}):
-    = @total_estimation_amount - @all_payment_received
-%hr
+- uri = URI(request.url)
 - if @continue
+  .row
+    .col-md-3
+      %strong Total Estimated Amount (#{estimation.currency.code}):
+      = @total_estimation_amount
+    .col-md-3
+      %strong All Payments Recieved - Total Amount (#{estimation.currency.code}):
+      = @all_payment_received
+    .col-md-3
+      %strong Balance Amount to be Paid (#{estimation.currency.code}):
+      = @total_estimation_amount - @all_payment_received
+    .col-md-3
+      %strong Total minimum Amount (#{estimation.currency.code}):
+      = @total_minimum_amount 
+  %hr
   %fieldset
     %legend Advance Payment Invoice
-
     = simple_nested_form_for ticket_payment_received, url: update_invoice_advance_payment_invoices_path, method: :post, remote: true do |f|
 
       = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
@@ -24,28 +26,56 @@
         = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
       .row
+        .col-md-2
+          = f.input :amount, input_html: {class: "only_float"} ,label: "Received amount (#{estimation.currency.code})"               
         .col-md-4
-          = f.input :amount, input_html: {value: nil, class: "only_float"} ,label: "Received amount (#{estimation.currency.code})"
-
+          = f.input :receipt_description, input_html: {value: estimation.ticket_estimation_parts.first.try(:ticket_spare_part).try(:spare_part_description)}
+        .col-md-2
+          = label_tag "Payment type"
+          = f.select :payment_type, TicketPaymentReceivedType::TYPES
+        .col-md-4
+          = f.input :payment_note, label: "Payment note (Ex: credit card no, cheque no, bank, etc...)"
         .col-md-8
           = f.input :note, input_html: {value: nil}
-        .col-md-12.small_scale_margin-bottom1
-          = label_tag "Invoice item description"
-          = text_field_tag :invoice_item_description, estimation.ticket_estimation_parts.first.try(:ticket_spare_part).try(:spare_part_description), class: "form-control"
 
       .row
         .col-md-12
           = label_tag "Invoicing Completed Complete"
           = check_box_tag :invoicing_completed
-          = f.submit "Save", class: "btn btn-success btn-sm"
+          = f.submit "Save", class: "btn btn-success btn-sm", data: {disable_with: "Processing..."}
 - else
   .row
     .col-md-3
-      %strong Received amount (#{estimation.currency.code}):
+      %strong Customer name:
+      = @ticket.customer.mst_title.title
+      = @ticket.customer.name
+    .col-md-2
+      %strong Ticket no:
+      = @ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
+    .col-md-4
+      %strong Description
+      = ticket_payment_received.receipt_description
+  %hr
+  .row
+    .col-md-2
+      %strong Amount (#{estimation.currency.code}):
       = ticket_payment_received.amount
-    .col-md-6
+    .col-md-3
       %strong Note:
       = simple_format ticket_payment_received.note
     .col-md-3
-      = button_tag "View Invoice" , class: "btn btn-success"
-      = button_tag "Print Invoice", class: "btn btn-success"
+      %strong Received Date:
+      = ticket_payment_received.received_at.strftime("%d-%m-%Y %H:%M")
+    .col-md-4
+      %strong Received by:
+      = User.cached_find_by_id(ticket_payment_received.received_by).email
+  %hr
+  .row
+    .col-md-2
+      %strong Payment type:
+      = TicketPaymentReceivedType::TYPES.key(ticket_payment_received.payment_type)
+    .col-md-6
+      %strong Payment note:
+      = ticket_payment_received.payment_note
+    .col-md-12
+      = link_to "Print Receipt", "#", class: "btn btn-sm btn-success", onclick: "Users.request_printer_application('receipt', '#{ticket_payment_received.id}', 'receipt_request_type', 'print_receipt_tag_value', 'print_receipt'); false;"

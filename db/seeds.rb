@@ -181,6 +181,7 @@ mst_spt_action = [
   ["74", "Part Estimation Done", "15", false]
   ["75", "Low Margin Part Estimation Approval", "20", false]
   ["76", "Part Estimation Customer Aproved", "3", false]
+  ["77", "Print Receipt for Payment", "14, 27, 29", false]
 ].each{ |t| TaskAction.create_with(action_description: t[1], task_id: t[2], hide: t[3]).find_or_create_by(action_no: t[0]) }
 
 mst_organizations_types = [
@@ -323,3 +324,9 @@ TicketEstimation
 end
 
 WorkflowMapping.find(11).update(process_name: "SPPT_MFR_PART_REQUEST")
+
+# ALTER TABLE `company_config` CHANGE `sup_last_invoice_no` `sup_last_invoice_no` INT(11) UNSIGNED NULL DEFAULT '0';
+# ALTER TABLE `company_config` ADD `sup_last_receipt_no` INT UNSIGNED NOT NULL DEFAULT '0' AFTER `sup_last_invoice_no`;
+# ALTER TABLE `spt_ticket_payment_received` ADD `receipt_no` INT UNSIGNED NOT NULL AFTER `updated_at`, ADD `payment_type` INT NOT NULL COMMENT '1 - Cash, 2 - Credit Card, 3 - Cheque, 4 - Other' AFTER `receipt_no`, ADD `payment_note` TEXT NOT NULL COMMENT 'credit card no, cheque no, bank' AFTER `payment_type`, ADD `receipt_description` TEXT NOT NULL AFTER `payment_note`;
+# ALTER TABLE `spt_ticket_payment_received` ADD `receipt_print_count` INT NOT NULL DEFAULT '0' AFTER `receipt_description`;
+# ALTER TABLE `mst_spt_templates` ADD `receipt` TEXT NOT NULL AFTER `fsr_request_type`, ADD `receipt_request_type` VARCHAR(250) NOT NULL AFTER `receipt`;

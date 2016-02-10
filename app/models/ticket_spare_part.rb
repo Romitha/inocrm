@@ -31,7 +31,7 @@ class TicketSparePart < ActiveRecord::Base
   after_save :flush_cache
 
   before_save do |ticket_spare_part|
-    ticket_spare_part.note = "#{ticket_spare_part.note} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(ticket_spare_part.current_user_id).email}</span><br/>#{ticket_spare_part.note_was}" if ticket_spare_part.note_changed?
+    ticket_spare_part.note = "#{ticket_spare_part.note} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(ticket_spare_part.current_user_id).email}</span><br/>#{ticket_spare_part.note_was}" if ticket_spare_part.persisted? and ticket_spare_part.note_changed?
   end
 
   def flush_cache

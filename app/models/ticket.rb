@@ -204,6 +204,8 @@ class TicketPaymentReceivedType < ActiveRecord::Base
   self.table_name = "mst_spt_payment_received_type"
 
   has_many :ticket_payment_receiveds, foreign_key: :type_id
+
+  TYPES = {"cash" => 1, "cheque" => 2, "credit card" => 3, "other" => 4}
 end
 
 class TicketProductSerial < ActiveRecord::Base
@@ -339,8 +341,10 @@ class TicketPaymentReceived < ActiveRecord::Base
 
   belongs_to :ticket
 
-  belongs_to :ticket_payment_received_type
+  belongs_to :ticket_payment_received_type, foreign_key: :type_id
 
   belongs_to :invoice
+
+  validates_presence_of [:ticket_id, :received_at, :received_by, :amount, :type_id, :currency_id]
 
 end

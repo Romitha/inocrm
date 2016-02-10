@@ -331,6 +331,7 @@ Rails.application.routes.draw do
   resources :invoices do
     collection do
       post "update_invoice_advance_payment"
+      get "click_for_receipt"
     end
   end
      

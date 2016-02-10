@@ -139,6 +139,11 @@ class CompanyConfig < ActiveRecord::Base
     update sup_last_invoice_no: (sup_last_invoice_no.to_i+1)
     sup_last_invoice_no
   end
+
+  def increase_sup_last_receipt_no
+    update sup_last_receipt_no: (sup_last_receipt_no.to_i+1)
+    sup_last_receipt_no
+  end
 end
 
 class Account < ActiveRecord::Base

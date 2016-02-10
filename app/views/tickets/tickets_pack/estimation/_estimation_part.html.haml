@@ -72,14 +72,14 @@
   .col-md-4
     / Total (#{estimation.ticket.ticket_currency.code}) : xxxx
   .col-md-4
-    Total (#{estimation.ticket.ticket_currency.code}) : #{number_with_precision estimation.ticket_estimation_additionals.sum(:cost_price), precision: 2}
+    Total additional cost (#{estimation.ticket.ticket_currency.code}) : #{number_with_precision estimation.ticket_estimation_additionals.sum(:cost_price), precision: 2}
   .col-md-4
     - if estimation.approval_required
       - total_estimation = total_estimation + estimation.ticket_estimation_additionals.sum(:approved_estimated_price).to_i
-      Total (#{estimation.ticket.ticket_currency.code}) : #{number_with_precision estimation.ticket_estimation_additionals.sum(:approved_estimated_price), precision: 2}
+      Total additional estimated (#{estimation.ticket.ticket_currency.code}) : #{number_with_precision estimation.ticket_estimation_additionals.sum(:approved_estimated_price), precision: 2}
     - else
       - total_estimation = total_estimation + estimation.ticket_estimation_additionals.sum(:estimated_price).to_i
-      Total (#{estimation.ticket.ticket_currency.code}) : #{number_with_precision estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2}
+      Total additional estimated (#{estimation.ticket.ticket_currency.code}) : #{number_with_precision estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2}
 
 .row
   .col-md-12
