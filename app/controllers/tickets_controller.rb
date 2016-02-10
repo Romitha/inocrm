@@ -1540,13 +1540,6 @@ class TicketsController < ApplicationController
     end
   end
 
-  def load_estimation_grn_items
-    Grn
-    @grn_items = GrnItem.all
-    @estimation_grn_items = Kaminari.paginate_array(@grn_items).page(params[:page]).per(2)
-    render "tickets/tickets_pack/low_margin_estimate_parts_approval/load_estimation_grn_items"
-  end
-
   def estimate_the_part_internal
     Inventory
     Warranty
@@ -2067,34 +2060,37 @@ class TicketsController < ApplicationController
     end
   end
 
-  def advance_payment_invoice
+  def invoice_advance_payment
     Inventory
     Warranty
     ContactNumber
     QAndA
     TaskAction
     Inventory
-    ticket_id = (params[:ticket_id] or session[:ticket_id])
+    ticket_id = params[:ticket_id]
     @ticket = Ticket.find_by_id ticket_id
     session[:ticket_id] = @ticket.id
     if @ticket
       @product = @ticket.products.first
-      @warranties = @product.warranties
-      session[:product_id] = @product.id
       Rails.cache.delete([:histories, session[:product_id]])
       Rails.cache.delete([:join, @ticket.id])
 
-      @estimation = @ticket.ticket_estimations.first
-      @spare_part = @ticket.ticket_spare_parts.first
+      @estimation = @ticket.ticket_estimations.find params[:advance_payment_estimation_id]
 
-      @ticke_action = @ticket.user_ticket_actions.find_by_action_id 18
-      @terminate_job_payment = @ticke_action.ticket_terminate_job_payments.first
+      @continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+      if @continue
+        @ticket_payment_received = (@estimation.ticket_payment_received || @estimation.build_ticket_payment_received)
 
-      @ticket_payment_received = @ticket.ticket_estimations.first
+        @total_estimation_amount = @ticket.ticket_estimations.where(foc_approved: false, cust_approved: true).map { |estimation| estimation.approval_required ? (estimation.ticket_estimation_externals.sum(:approved_estimated_price)+estimation.ticket_estimation_parts.sum(:approved_estimated_price)+estimation.ticket_estimation_additionals.sum(:approved_estimated_price)) : (estimation.ticket_estimation_externals.sum(:estimated_price)+estimation.ticket_estimation_parts.sum(:estimated_price)+estimation.ticket_estimation_additionals.sum(:estimated_price)) }.compact.sum
+
+        @all_payment_received = @ticket.ticket_estimations.where(foc_approved: false, cust_approved: true).inject(0){|i, k| k.approval_required ? i+k.approved_adv_pmnt_amount : i+k.advance_payment_amount }
+      else
+        @ticket_payment_received = @estimation.ticket_payment_received
+      end
 
     end
     respond_to do |format|
-      format.html {render "tickets/tickets_pack/advance_payment_invoice/advance_payment_invoice"}
+      format.html {render "tickets/tickets_pack/invoice_advance_payment/invoice_advance_payment"}
     end
   end
 
@@ -2373,8 +2369,7 @@ class TicketsController < ApplicationController
     if @ticket
       @estimation = TicketEstimation.find params[:part_estimation_id]
 
-      @grn_items = GrnItem.all
-      @estimation_grn_items = Kaminari.paginate_array(@grn_items).page(params[:page]).per(2)
+      @grn_items = GrnItem.all.page(params[:page]).per(3)
       @product = @ticket.products.first
       Rails.cache.delete([:histories, @product.id])
       Rails.cache.delete([:join, @ticket.id])
@@ -2660,88 +2655,6 @@ class TicketsController < ApplicationController
     redirect_to todos_url
   end
 
-  def received_and_issued
-    Inventory
-    Warranty
-    ContactNumber
-    QAndA
-    TaskAction
-    Inventory
-    ticket_id = (params[:ticket_id] or session[:ticket_id])
-    @ticket = Ticket.find_by_id ticket_id
-    session[:ticket_id] = @ticket.id
-    if @ticket
-      @product = @ticket.products.first
-      @warranties = @product.warranties
-      session[:product_id] = @product.id
-      Rails.cache.delete([:histories, session[:product_id]])
-      Rails.cache.delete([:join, @ticket.id])
-    end
-    respond_to do |format|
-      format.html {render "tickets/tickets_pack/received_and_issued/received_and_issued"}
-    end
-  end
-
-  def update_received_and_issued
-    TaskAction
-    spt_ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
-    @ticket = spt_ticket_spare_part.ticket
-
-    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
-
-    if continue
-
-      spt_ticket_spare_part.update ticket_spare_part_params(spt_ticket_spare_part)
-
-      if spt_ticket_spare_part.ticket_spare_part_manufacture.try(:collected_manufacture) and !spt_ticket_spare_part.ticket_spare_part_manufacture.try(:received_manufacture) #DB.spt_ticket_spare_part.status_action_id = CLT (Collected)
-        spt_ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("RCS").id) 
-
-        spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)   
-
-        spt_ticket_spare_part.ticket_spare_part_manufacture and spt_ticket_spare_part.ticket_spare_part_manufacture.update(received_manufacture: true)
-
-        #Set Action (37) Receive Spare part from Manufacture, DB.spt_act_request_spare_part.
-        user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(37).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
-        user_ticket_action.build_request_spare_part(ticket_spare_part_id: spt_ticket_spare_part.id)
-        user_ticket_action.save
-
-        flash[:notice]= "Successfully updated"
-
-      elsif spt_ticket_spare_part.ticket_spare_part_manufacture.try(:received_manufacture) and !spt_ticket_spare_part.ticket_spare_part_manufacture.try(:issued)
-
-        spt_ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("ISS").id) 
-        spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now) 
-
-        spt_ticket_spare_part.ticket_spare_part_manufacture and spt_ticket_spare_part.ticket_spare_part_manufacture.update(issued: true, issued_at: DateTime.now, issued_by: current_user.id)
-
-        #Set Action (38) Issue Spare part, DB.spt_act_request_spare_part
-        user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(38).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
-        user_ticket_action.build_request_spare_part(ticket_spare_part_id: spt_ticket_spare_part.id)
-        user_ticket_action.save 
-
-        # bpm output variables
-        bpm_variables = view_context.initialize_bpm_variables
-
-        @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
-
-        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
-
-        if bpm_response[:status].upcase == "SUCCESS"
-
-          WebsocketRails[:posts].trigger 'new', {task_name: "Spare part", task_id: spt_ticket_spare_part.id, task_verb: "received and issued.", by: current_user.email, at: Time.now.strftime('%d/%m/%Y at %H:%M:%S')}
-
-          flash[:notice]= "Successfully updated"
-        else
-          flash[:error]= "Issue part is updated. but Bpm error"
-        end
-
-      end
-    else
-      flash[:error]= "Unable to update. Bpm error"
-    end
-    redirect_to todos_url
-  end
-
   def return_manufacture_part
     Inventory
     Warranty
@@ -2926,72 +2839,6 @@ class TicketsController < ApplicationController
     end
   end
 
-  def update_bundle_return_part
-    # @ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
-    # if @ticket_spare_part.update(ticket_spare_part_params)
-    #   flash[:notice] = "Spare part is successfully saved."
-    # end
-    TicketSparePart
-    if return_bundle_params[:id].present?
-      @return_bundle = ReturnPartsBundle.find return_bundle_params[:id]
-      @return_bundle.attributes = return_bundle_params
-    else
-      @return_bundle = ReturnPartsBundle.new return_bundle_params
-      @new_bundle = true
-    end
-    @return_bundle.product_brand_id = session[:product_brand_id]
-    @return_bundle.created_by = current_user.id
-
-    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
-    if continue   
-
-      if !@new_bundle and @return_bundle.delivered
-        flash[:notice]= "Bundle is already delivered"
-      else
-
-        if @return_bundle.save
-          @return_bundle.ticket_spare_part_manufacture_ids = (session[:manufacture_rest_ids] + @return_bundle.ticket_spare_part_manufacture_ids).uniq
-
-          @return_bundle.ticket_spare_part_manufactures.each do |ticket_spare_part_manufacture|
-
-            ticket_spare_part_manufacture.update(ready_to_bundle: false, bundled: true, add_bundle_by: current_user.id, add_bundle_at: DateTime.now)
-
-            #Part Bundled
-            ticket_spare_part_manufacture.ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("BND").id) 
-            ticket_spare_part_manufacture.ticket_spare_part.ticket_spare_part_status_actions.create(status_id: ticket_spare_part_manufacture.ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)  
-     
-            #Set Action (45) Part Bunndled, DB.spt_act_request_spare_part for all added parts
-            user_ticket_action = ticket_spare_part_manufacture.ticket_spare_part.ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(45).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: ticket_spare_part_manufacture.ticket_spare_part.ticket.re_open_count)
-            user_ticket_action.build_request_spare_part(ticket_spare_part_id: ticket_spare_part_manufacture.ticket_spare_part.id)
-            user_ticket_action.save 
-
-          end
-
-          # bpm output variables
-          d36_more_parts_bundle_pending = TicketSparePartManufacture.any?{ |ticket_spare_part_manufacture| ticket_spare_part_manufacture.ready_to_bundle and not ticket_spare_part_manufacture.bundled } ? "Y" : "N"
-          bpm_variables = view_context.initialize_bpm_variables.merge(d36_more_parts_bundle_pending: d36_more_parts_bundle_pending, bundle_id: @return_bundle.id)
-
-          bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
-
-          if bpm_response[:status].upcase == "SUCCESS"
-
-            flash[:notice]= "Successfully updated"
-          else
-            flash[:error]= "Bundle is updated. but Bpm error"
-          end
-
-        else
-          flash[:error]= "Unable to update. Please check bpm."
-
-        end
-
-      end
-    else
-      flash[:error]= "Unable to update. Bpm error"
-    end      
-    redirect_to todos_url
-  end
-
   def deliver_bundle
     Inventory
     Product
@@ -3017,193 +2864,6 @@ class TicketsController < ApplicationController
     end
     respond_to do |format|
       format.html {render "tickets/tickets_pack/deliver_bundle/deliver_bundle"}
-    end
-  end
-
-  def update_deliver_bundle
-
-    TicketSparePart
-
-    @return_bundle = ReturnPartsBundle.find return_bundle_params[:id]
-
-    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
-    if continue 
-
-      if !@return_bundle.delivered 
-
-        @return_bundle.update(return_bundle_params)
-        @return_bundle.update(delivered: true, delivered_at: DateTime.now, delivered_by: current_user.id)
-
-        @return_bundle.ticket_spare_part_manufactures.each do |ticket_spare_part_manufacture|
-
-          #Part Closed
-          ticket_spare_part_manufacture.ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("CLS").id) 
-          ticket_spare_part_manufacture.ticket_spare_part.ticket_spare_part_status_actions.create(status_id: ticket_spare_part_manufacture.ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)  
-    
-          #Set Action (46) Part Bunndl Delivered for all added parts
-          user_ticket_action = ticket_spare_part_manufacture.ticket_spare_part.ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(46).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: ticket_spare_part_manufacture.ticket_spare_part.ticket.re_open_count)
-          user_ticket_action.build_request_spare_part(ticket_spare_part_id: ticket_spare_part_manufacture.ticket_spare_part.id)
-          user_ticket_action.save 
-
-        end
-      else
-        flash[:alert]= "Bundle already delivered."
-      end
-
-      # bpm output variables
-      bpm_variables = view_context.initialize_bpm_variables
-      bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
-
-      if bpm_response[:status].upcase == "SUCCESS"
-
-        flash[:notice]= "Successfully updated"
-      else
-        flash[:error]= "Bundle is updated. but Bpm error"
-      end            
-
-    else
-      flash[:error]= "Unable to update. Bpm error"
-    end      
-    redirect_to todos_url
-  end
-
-  def terminate_invoice
-    Inventory
-    Warranty
-    ContactNumber
-    QAndA
-    TaskAction
-    Inventory
-    Invoice
-    ticket_id = (params[:ticket_id] or session[:ticket_id])
-    @ticket = Ticket.find_by_id ticket_id
-    session[:ticket_id] = @ticket.id
-    if @ticket
-      @product = @ticket.products.first
-      @warranties = @product.warranties
-      session[:product_id] = @product.id
-      Rails.cache.delete([:histories, session[:product_id]])
-      Rails.cache.delete([:join, @ticket.id])
-
-      @ticke_action = @ticket.user_ticket_actions.find_by_action_id 18
-      @terminate_invoice = TerminateInvoice.new
-
-      # session[:terminate_task_action] = @ticket.user_ticket_actions.where(action_id: TaskAction.find_by_action_no(7).id).last
-      # @terminate_job_payment = @ticke_action.ticket_terminate_job_payments.first
-      # @ticket_payment_received = TicketPaymentReceived.first
-
-    end
-    respond_to do |format|
-      format.html {render "tickets/tickets_pack/terminate_invoice"}
-    end
-  end
-
-  def inform_customer_in_modal
-
-    TaskAction
-
-    @inform_customer = InformCustomer.new
-
-    # terminate_task_action = (params[:terminate_task_action] or session[:terminate_task_action])
-    # Inventory
-    # Grn
-    # session[:terminate_task_action] = params[:terminate_task_action]
-    # if params[:select_inventory] and (params[:inventory_id] or params[:inventory_product_id]) and session[:select_frame]
-    #   @inventory = Inventory.find params[:inventory_id] if params[:inventory_id]
-    #   @inventory_product = InventoryProduct.find params[:inventory_product_id] if params[:inventory_product_id]
-
-    #   if session[:select_frame] == "request_from"
-    #     if @inventory
-    #       session[:store_id] = @inventory.store_id
-    #       session[:inv_product_id] = @inventory.product_id
-    #     elsif @inventory_product
-    #       session[:store_id] = session[:requested_store_id]
-    #       session[:inv_product_id] = @inventory_product.id
-    #     end
-
-    #   elsif session[:select_frame] == "main_product"
-
-    #     if @inventory
-    #       session[:mst_store_id] = @inventory.store_id
-    #       session[:mst_inv_product_id] = @inventory.product_id
-    #     elsif @inventory_product
-    #       session[:mst_store_id] = session[:requested_store_id]
-    #       session[:mst_inv_product_id] = @inventory_product.id
-    #     end
-    #     # session[:mst_store_id] = @inventory.store_id
-    #     # session[:mst_inv_product_id] = @inventory.product_id
-
-    #   end
-    #   if params[:issue_part] == "true"
-    #     approved_inventory_product = (@inventory_product || @inventory.inventory_product)
-    #     if approved_inventory_product.fifo
-    #       @main_part_serial = approved_inventory_product.inventory_serial_items.includes(:inventory).where(inv_inventory: {store_id: session[:requested_store_id].to_i}, inv_status_id: InventorySerialItemStatus.find_by_code("AV").id).sort{|p, n| p.grn_items.last.grn.created_at <=> n.grn_items.last.grn.created_at}
-    #     else
-    #       @main_part_serial = approved_inventory_product.inventory_serial_items.includes(:inventory).where(inv_inventory: {store_id: session[:requested_store_id].to_i}, inv_status_id: InventorySerialItemStatus.find_by_code("AV").id).sort{|p, n| p.grn_items.last.grn.created_at <=> n.grn_items.last.grn.created_at}
-    #     end
-    #   end
-    # end
-  end
-
-  def invoice_for_chargeable
-    Inventory
-    Warranty
-    ContactNumber
-    QAndA
-    TaskAction
-    Inventory
-    ticket_id = (params[:ticket_id] or session[:ticket_id])
-    @ticket = Ticket.find_by_id ticket_id
-    session[:ticket_id] = @ticket.id
-    if @ticket
-      @product = @ticket.products.first
-      @warranties = @product.warranties
-      session[:product_id] = @product.id
-      Rails.cache.delete([:histories, session[:product_id]])
-      Rails.cache.delete([:join, @ticket.id])
-
-      @estimation = @ticket.ticket_estimations.first
-      @spare_part = @ticket.ticket_spare_parts.first
-
-      @ticke_action = @ticket.user_ticket_actions.find_by_action_id 18
-      @terminate_job_payment = @ticke_action.ticket_terminate_job_payments.first
-
-      @ticket_payment_received = TicketPaymentReceived.first
-
-    end
-    respond_to do |format|
-      format.html {render "tickets/tickets_pack/invoice_for_chargeable/invoice_for_chargeable"}
-    end
-  end
-
-  def advance_payment_invoice
-    Inventory
-    Warranty
-    ContactNumber
-    QAndA
-    TaskAction
-    Inventory
-    ticket_id = (params[:ticket_id] or session[:ticket_id])
-    @ticket = Ticket.find_by_id ticket_id
-    session[:ticket_id] = @ticket.id
-    if @ticket
-      @product = @ticket.products.first
-      @warranties = @product.warranties
-      session[:product_id] = @product.id
-      Rails.cache.delete([:histories, session[:product_id]])
-      Rails.cache.delete([:join, @ticket.id])
-
-      @estimation = @ticket.ticket_estimations.first
-      @spare_part = @ticket.ticket_spare_parts.first
-
-      @ticke_action = @ticket.user_ticket_actions.find_by_action_id 18
-      @terminate_job_payment = @ticke_action.ticket_terminate_job_payments.first
-
-      @ticket_payment_received = @ticket.ticket_estimations.first
-
-    end
-    respond_to do |format|
-      format.html {render "tickets/tickets_pack/advance_payment_invoice/advance_payment_invoice"}
     end
   end
 
@@ -3362,32 +3022,6 @@ class TicketsController < ApplicationController
     end
     respond_to do |format|
       format.html {render "tickets/tickets_pack/deliver_unit"}
-    end
-  end
-
-  def terminate_job_foc_approval
-    Inventory
-    Warranty
-    ContactNumber
-    QAndA
-    TaskAction
-    Inventory
-    ticket_id = params[:ticket_id]
-    @ticket = Ticket.find_by_id ticket_id
-    if @ticket
-
-      @ticket_action = @ticket.user_ticket_actions.find_by_action_id 18
-
-      puts ":"+@ticket_action.inspect
-      # @ticket_terminate_job = @ticket_action.ticket_terminate_job
-      # @terminate_job_payment = @ticket_action.ticket_terminate_job_payments.first
-
-      @product = @ticket.products.first
-      Rails.cache.delete([:histories, @product.id])
-      Rails.cache.delete([:join, @ticket.id])
-    end
-    respond_to do |format|
-      format.html {render "tickets/tickets_pack/terminate_job_foc_approval/terminate_job_foc_approval"}
     end
   end
 
@@ -5002,7 +4636,8 @@ class TicketsController < ApplicationController
       tspt_params[:repare_start] = Time.strptime(tspt_params[:repare_start],'%m/%d/%Y %I:%M %p') if tspt_params[:repare_start].present?
       tspt_params[:repare_end] = Time.strptime(tspt_params[:repare_end],'%m/%d/%Y %I:%M %p') if tspt_params[:repare_end].present?
 
-      tspt_params[:note] = tspt_params[:note].present? ? "#{tspt_params[:note]} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{spt_ticket_spare_part.note}" : spt_ticket_spare_part.note
+      # tspt_params[:note] = tspt_params[:note].present? ? "#{tspt_params[:note]} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{spt_ticket_spare_part.note}" : spt_ticket_spare_part.note
+      spt_ticket_spare_part.current_user_id = current_user.id
       tspt_params
     end
 

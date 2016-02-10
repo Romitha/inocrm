@@ -85,6 +85,7 @@ class Ticket < ActiveRecord::Base
   accepts_nested_attributes_for :ticket_estimation_additionals, allow_destroy: true
 
   has_many :ticket_payment_receiveds
+  has_many :invoices, through: :ticket_payment_receiveds
 
   validates_presence_of [:ticket_no, :priority, :status_id, :problem_description, :informed_method_id, :job_type_id, :ticket_type_id, :warranty_type_id, :base_currency_id, :problem_category_id]
 
@@ -339,5 +340,7 @@ class TicketPaymentReceived < ActiveRecord::Base
   belongs_to :ticket
 
   belongs_to :ticket_payment_received_type
+
+  belongs_to :invoice
 
 end

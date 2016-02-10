@@ -1,30 +1,47 @@
-- count = 1
+- uri = URI(request.url)
+= simple_nested_form_for estimation, url: update_low_margin_estimate_parts_approval_inventories_path, method: :post do |f|
 
-= simple_nested_form_for estimation, url: update_estimation_part_tickets_path, method: :post do |f|
 
+  = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
+  = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
+  = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
+  - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
+    = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+
+  = f.input :current_user_id, as: :hidden, input_html: {value: current_user.id}
   = f.simple_fields_for :ticket_estimation_parts do |t|
-    / - if t.object.ticket_spare_part.below_margine
     %fieldset
-      %legend Part No #{count}
+      %legend Part No #{t.object.ticket_spare_part.try(:spare_part_no)}
       .row
         .col-md-3
-          %span{style: "font-weight:bold;"} Supplier : #{t.object.try(:supplier).try(:name)}
+          %strong Supplier:
+          = t.object.try(:supplier).try(:name)
+        .col-md-3
+          %strong Part No :
+          #{t.object.ticket_spare_part.try(:spare_part_no)}
+        .col-md-3
+          %strong Part Description :
+          #{t.object.ticket_spare_part.try(:spare_part_description)}
+        .col-md-3
+          %strong Wranaty Period :
+          #{t.object.try(:warranty_period)}
+      %hr
       .row
         .col-md-2
-          %span{style: "font-weight:bold;"} Cost Prices :
+          %strong Cost Prices :
           %span.low_margin_cost_price= t.object.try(:cost_price)
         .col-md-3
-          %span{style: "font-weight:bold;"} Requested Estimate Price :
+          %strong Requested Estimate Price :
           %span.low_margin_estimated_price #{t.object.try(:estimated_price)}
         .col-md-2
-          %span{style: "font-weight:bold;"} Profit :
+          %strong Profit :
           %span.low_margin_estimate_rate
           %span (
           %span#db_margin{style: "font-weight:bold;"}= CompanyConfig.first.try(:sup_internal_part_profit_margin).to_f
           %span )
           %span %
         .col-md-3
-          = t.input :approved_estimated_price, input_html: {min: "0",class: "low_margin_approved_estimated_price only_float", oninput: "Inventories.calculate_low_approved_price();"}
+          = t.input :approved_estimated_price, label: "Approved estimated price", input_html: {min: "0",class: "low_margin_approved_estimated_price only_float", oninput: "Inventories.calculate_low_approved_price();"}, wrapper_html: {class: "inline-input"}
         .col-md-2
           %span{style: "font-weight:bold;"} Profit :
           %span.low_margin_approved_estimate_rate
@@ -34,112 +51,81 @@
           %span %
 
       .row
-        .col-md-4
-        .col-md-4
+        .col-md-4.col-md-offset-4
           .below_margine_low_margin_estimate_rate
         .col-md-4
           .below_margine_low_margin_approved_estimate_rate
 
-      .row
-        .col-md-4
-          %strong Part No :
-          #{t.object.ticket_spare_part.try(:spare_part_no)}
+      %hr
 
       .row
-        .col-md-4
-          %strong Part Description :
-          #{t.object.ticket_spare_part.try(:spare_part_description)}
-
-      .row
-        .col-md-4
-          %strong Wranaty Period :
-          #{t.object.try(:warranty_period)}
-        .col-md-4
-          %strong
-
-      .row
-        .col-md-6
-          %h5 Requested part
-          %dl.dl-horizontal
-            %dt
-              Store
-            %dd
-              = t.object.ticket_spare_part.ticket_spare_part_store and t.object.ticket_spare_part.ticket_spare_part_store.store.name
-            %dt
-              Item Code
-            %dd
-              = t.object.ticket_spare_part.ticket_spare_part_store and t.object.ticket_spare_part.ticket_spare_part_store.store.name
-            %dt
-              Item Description
-            %dd
-              = t.object.ticket_spare_part.ticket_spare_part_store and t.object.ticket_spare_part.ticket_spare_part_store.try(:main_inventory_product).try(:description)
+        .col-md-5
+          %h4 Requested part
+          .request_from
+            %dl.dl-horizontal
+              %dt Store
+              %dd
+                = t.object.ticket_spare_part.ticket_spare_part_store.store.try(:name)
+              %dt Item Code
+              %dd
+                = t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.try(:serial_no)
+              %dt Item Description
+              %dd
+                = t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.try(:description)
+              %dt Model No
+              %dd
+                = t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.try(:model_no)
+              %dt Product No
+              %dd
+                = t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.try(:product_no)
+              %dt Part No
+              %dd
+                = t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.try(:spare_part_no)
+              %dt Available Qnty
+              %dd
+                = t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.inventories.where(store_id: t.object.ticket_spare_part.ticket_spare_part_store.store_id).try(:sum, :available_quantity)
         .col-md-6
           - if t.object.ticket_spare_part.try(:ticket_spare_part_store).present?
-            #grn_items_pagination
-              = paginate @estimation_grn_items, remote: true, method: :get, params: {controller: "tickets", action: "load_estimation_grn_items", rendering_id: "#grn_items_pagination", per_page: 3, rendering_file: "tickets_pack/low_margin_estimate_parts_approval/load_estimation_grn_items"}
-
-              %strong Last Perchased Prices
-              %table.table.table-hover.table-condensed
+            #paginate_grns
+              = paginate grn_items, remote: true, method: :get, params: {controller: "tickets", action: "paginate_ticket_grn_items", per_page: 3}
+              %table.table
                 %thead
                   %tr
                     %th No
-                    %th Date Purchase
+                    %th Grn no
+                    %th Date Purchased
                     %th Price
-                    %th Currency
-
                 %tbody
-                  - @estimation_grn_items.each_with_index do |g, index|
+                  - grn_items.each_with_index do |grn_item, index|
                     %tr
                       %td= index+1
-                      %td= g.created_at
-                      %td= g.unit_cost
-                      %td= g.unit_cost
-        
-            / - @grn_items = t.object.ticket_spare_part.try(:ticket_spare_part_store).try(:inventory_product).try(:grn_items)
-            / %strong Last Perchased Prices
-            / %table.table.table-hover.table-condensed
-            /   %thead
-            /     %tr
-            /       %th No
-            /       %th Date Purchase
-            /       %th Price
-            /       %th Currency
-
-            /   %tbody
-            /     - @grn_items.each_with_index do |g, index|
-            /       %tr
-            /         %td= index+1
-            /         %td= g.created_at
-            /         %td= g.unit_cost
-            /         %td= Currency.find_by_id(g.currency_id).try(:currency)
-    - count += 1
+                      %td= grn_item.grn.grn_no
+                      %td= grn_item.grn.created_at.try(:strftime, "%d-%m-%Y")
+                      %td
+                        = grn_item.unit_cost
   = f.simple_fields_for :ticket_estimation_additionals do |a|
     .row
       .col-md-3
         %span{style: "font-weight:bold;"} Additional Charges :
         %span #{a.object.try(:additional_charge).try(:additional_charge)}
       .col-md-3
-        %span{style: "font-weight:bold;"} Cost Price (Rs) :
+        %span{style: "font-weight:bold;"} Cost Price (#{estimation.currency.code}) :
         %span.add_low_margin_cost_price #{a.object.try(:cost_price)}
-        / - cost_price += a.object.try(:cost_price).to_d
       .col-md-3
-        %span{style: "font-weight:bold;"} Estimated Price (Rs) :
+        %span{style: "font-weight:bold;"} Estimated Price (#{estimation.currency.code}) :
         %span.add_low_margin_estimated_price #{a.object.try(:estimated_price)}
-        / - estimated_price += a.object.try(:estimated_price).to_d
       .col-md-3
-        = a.input :approved_estimated_price, input_html: {min: "0",class: "add_low_margin_approved_estimated_price only_float", oninput: "Inventories.calculate_low_approved_price();"} 
-        / = a.input :approved_estimated_price, input_html: {class: "low_approved_amount only_float", oninput: "Inventories.calculate_low_approved_price();"}
+        = a.input :approved_estimated_price, input_html: {min: "0",class: "add_low_margin_approved_estimated_price only_float", oninput: "Inventories.calculate_low_approved_price();"}
 
   .row
     .col-md-3.col-md-offset-3
-      %span{style: "font-weight:bold;"} Total Cost (Rs) :
+      %span{style: "font-weight:bold;"} Total Cost (#{estimation.currency.code}) :
       %span.total_low_margin_cost
     .col-md-3
-      %span{style: "font-weight:bold;"} Total Estimate (Rs) :
+      %span{style: "font-weight:bold;"} Total Estimate (#{estimation.currency.code}) :
       %span.total_low_margin_estimate
-      / = label_tag estimated_price, estimated_price , class: "cal_estimated_price"
     .col-md-3
-      %span{style: "font-weight:bold;"} Total Approved Estimate (Rs) :
+      %span{style: "font-weight:bold;"} Total Approved Estimate (#{estimation.currency.code}) :
       %span.total_low_margin_app_estimate
 
   .row
@@ -168,8 +154,7 @@
 
   .row
     .col-md-3
-      %strong Min. Advance Payment (Rs) :
-      = f.object.approved_adv_pmnt_amount
+      = f.input :approved_adv_pmnt_amount, label: "Approved advanced payment (#{estimation.currency.code}): #{f.object.advance_payment_amount}"
 
   .row
     .col-md-6
@@ -177,18 +162,7 @@
       = simple_format @estimation.note
 
   .row
-    .col-md-1
-      = f.submit "Save", class: "btn btn-success btn-sm"
-    .col-md-3
+    .col-md-12
       = label_tag "Approval Complete"
-      = check_box_tag :approval_complete
-
-
-/ $(".cal_cost_price").each ->
-/   final_result = $(@).text() + $(@).parents("fieldset").find(".cal_estimated_price").text()
-
-/   $(@).parents("fieldset").find(".cal_result1").text(final_result)
-
-/   final_result1 = final_result + $(".cal_approved_estimated_price").val()
-
-/   $(@).parents("fieldset").find(".cal_result2").text(final_result1)
+      = check_box_tag :approval_complete_check
+      = f.submit "Save", class: "btn btn-success btn-sm"

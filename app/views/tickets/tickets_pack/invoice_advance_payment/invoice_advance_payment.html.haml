@@ -1,0 +1,16 @@
+- ticket = @ticket
+- product = @product
+- estimation = @estimation
+- ticket_payment_received = @ticket_payment_received
+= render "tickets/tickets_pack/ticket_header", ticket: ticket, product: product
+
+= tab_panel do
+  = tab_nav_tab({class: "small_scale_margin-bottom1"}, ticket_info: {content: "Ticket info"}, invoice_advance_payment: {content: "Advance Payment Invoice", active_class: "active"} )
+  .tab-content
+    = tab_content tabpointer: :ticket_info do
+      = tab_panel do
+        = render "tickets/tickets_pack/ticket_info", ticket: ticket, product: product
+    = tab_content tabpointer: :invoice_advance_payment, active_class: "active" do
+      = tab_panel do
+      	#invoice_advance_payment
+	        = render "tickets/tickets_pack/invoice_advance_payment/invoice_advance_payment", estimation: estimation, ticket_payment_received: ticket_payment_received

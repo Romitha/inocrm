@@ -1,18 +1,10 @@
-- uri = URI(request.url)
+/ - uri = URI(request.url)
 
 - total_estimation = 0
 
 %strong Selected Estimation
 %center.strong.br Status : #{estimation.estimation_status.name}
 %center.strong Customer Approval :- #{estimation.cust_approved ? 'Approved' : (estimation.cust_approved.nil? ? '' : 'Rejected') }
-
-- if estimation.cust_approval_required
-  approved:
-  = estimation.approved
-  approved at:
-  = estimation.approved_at
-  approved by:
-  = estimation.approved_by
 
 - estimation.ticket_estimation_parts.each do |estimation_part|
   %fieldset
@@ -102,21 +94,20 @@
     Advanced Payment Recieved (#{estimation.ticket.ticket_currency.code}) : #{number_with_precision estimation.ticket_payment_received.try(:amount).to_i, precision: 2}
 .row
   .col-md-12
-    Note : #{estimation.note}
+    - unless (estimation.estimation_status.code == "EST") and estimation.cust_approval_required and estimation.cust_approved.nil?
+      %hr
+      Estimation note:
+      = simple_format estimation.note
 
 - if (estimation.estimation_status.code == "EST") and estimation.cust_approval_required and estimation.cust_approved.nil?
   %fieldset
     %legend Estimation customer approval
     = simple_form_for estimation, url: update_estimation_part_customer_approval_inventories_path do |f|
 
-      / = hidden_field_tag :process_id, session[:process_id]
-      / = hidden_field_tag :task_id, session[:task_id]
-      / = hidden_field_tag :owner, session[:owner]
-
-      = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
-      = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
-      = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
-      - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
+      = hidden_field_tag :process_id, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:process_id]
+      = hidden_field_tag :task_id, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:task_id]
+      = hidden_field_tag :owner, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:owner]
+      - Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
         = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
       = f.input :id, as: :hidden
@@ -124,5 +115,7 @@
       = f.input :cust_approved_by, as: :hidden, input_html: {value: current_user.id}
 
       = f.input :cust_approved, as: :radio_buttons, collection: {approved: true, rejected: false}, wrapper: :append, label: false
-      = f.input :note
+      = f.input :note, input_html: {value: nil}
+      = simple_format estimation.note
+
       = f.submit "Save", class: "btn btn-success btn-sm"

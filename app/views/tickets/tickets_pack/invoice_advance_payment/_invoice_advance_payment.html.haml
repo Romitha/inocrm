@@ -1,0 +1,51 @@
+- uri = URI(request.url)
+/ = request.query_parameters
+.row
+  .col-md-3
+    %strong Total Estimated Amount (#{estimation.currency.code}):
+    = @total_estimation_amount
+  .col-md-4
+    %strong All Payments Recieved - Total Amount (#{estimation.currency.code}):
+    = @all_payment_received
+  .col-md-4
+    %strong Balance Amount to be Paid (#{estimation.currency.code}):
+    = @total_estimation_amount - @all_payment_received
+%hr
+- if @continue
+  %fieldset
+    %legend Advance Payment Invoice
+
+    = simple_nested_form_for ticket_payment_received, url: update_invoice_advance_payment_invoices_path, method: :post, remote: true do |f|
+
+      = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
+      = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
+      = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
+      - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
+        = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+
+      .row
+        .col-md-4
+          = f.input :amount, input_html: {value: nil, class: "only_float"} ,label: "Received amount (#{estimation.currency.code})"
+
+        .col-md-8
+          = f.input :note, input_html: {value: nil}
+        .col-md-12.small_scale_margin-bottom1
+          = label_tag "Invoice item description"
+          = text_field_tag :invoice_item_description, estimation.ticket_estimation_parts.first.try(:ticket_spare_part).try(:spare_part_description), class: "form-control"
+
+      .row
+        .col-md-12
+          = label_tag "Invoicing Completed Complete"
+          = check_box_tag :invoicing_completed
+          = f.submit "Save", class: "btn btn-success btn-sm"
+- else
+  .row
+    .col-md-3
+      %strong Received amount (#{estimation.currency.code}):
+      = ticket_payment_received.amount
+    .col-md-6
+      %strong Note:
+      = simple_format ticket_payment_received.note
+    .col-md-3
+      = button_tag "View Invoice" , class: "btn btn-success"
+      = button_tag "Print Invoice", class: "btn btn-success"

@@ -178,6 +178,9 @@ mst_spt_action = [
   ["71", "Print Invoice", "27,29", false],
   ["72", "Change Ticket Warranty Type or Customer Chargeable", "3", false],
   ["73", "Change Ticket Repair Type", "3", false]
+  ["74", "Part Estimation Done", "15", false]
+  ["75", "Low Margin Part Estimation Approval", "20", false]
+  ["76", "Part Estimation Customer Aproved", "3", false]
 ].each{ |t| TaskAction.create_with(action_description: t[1], task_id: t[2], hide: t[3]).find_or_create_by(action_no: t[0]) }
 
 mst_organizations_types = [
@@ -267,7 +270,7 @@ workflow_mappings = [
   ["SPPT", "issue_customer_terminate", "", "SPT_SC_24", "Support - Terminated Job Return To Custormer", "h1", "ticket_id", nil],
   ["SPPT", "customer_advance_payment", "", "SPT_SC_27", "", nil, nil, nil],
   ["SPPT", "quality_control", "", "SPT_SC_28", "Support - Quality Control", "h1", "ticket_id,supp_engr_user", nil],
-  ["SPPT", "invoice_advance_payment", "", "SPT_SC_29", "Support - Advance Payment Invoice", "h1", "ticket_id,advance_payment_estimation_id", nil],
+  ["SPPT", "invoice_advance_payment", "/tickets/invoice_advance_payment", "SPT_SC_29", "Support - Advance Payment Invoice", "h1", "ticket_id,advance_payment_estimation_id", nil],
   ["SPPT_MFR_PART_RETURN", "close_event", "/tickets/close_event", "SPT_SC_30", "Support - Close Event", "h1", "ticket_id,request_spare_part_id", nil],
   ["SPPT", "approve_foc", "", "SPT_SC_31", "Support - FOC Approval", "h1", "ticket_id", nil],
   ["SPPT", "final_job_estimate", "", "SPT_SC_33", "Support - Final Job Estimation", "h1", "ticket_id", nil]

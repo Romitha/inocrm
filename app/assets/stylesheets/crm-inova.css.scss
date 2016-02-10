@@ -413,3 +413,18 @@ abbr{
     top: 2px;
   }
 }
+
+.inline-input {
+  label{
+    width: 49%;
+    float: left;
+    display: inline;
+    text-align: right;
+    // font-size: 75%;
+  }
+  input {
+    width: 49%;
+    float: right;
+    display: inline;
+  }
+}

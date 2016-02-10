@@ -50,7 +50,7 @@
                 %dd
                   = t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.inventories.where(store_id: t.object.ticket_spare_part.ticket_spare_part_store.store_id).try(:sum, :available_quantity)
             .spare_part_select.pull-left
-              = link_to "change", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true
+              = link_to "Change part", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true
 
           .col-md-7
             #paginate_grns

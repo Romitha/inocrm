@@ -20,7 +20,7 @@
     - ticket.ticket_estimations.each_with_index do |estimation, index|
       %tr
         %td
-          = link_to load_estimation_inventories_path(estimation_id: estimation.id, estimation_type: "#{ticket.ticket_repair_type.code == 'EX' ? 'external' : 'part' }"), remote: true do
+          = link_to load_estimation_inventories_path(estimation_id: estimation.id, estimation_type: "#{ticket.ticket_repair_type.code == 'EX' ? 'external' : 'part' }", task_id: params[:task_id]), remote: true do
             = index+1
         %td= estimation.requested_at.getlocal.try(:strftime, "%b %d, %Y %H:%M")
         %td

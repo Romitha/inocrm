@@ -172,10 +172,9 @@ Rails.application.routes.draw do
       get "check_fsr"
       get "customer_feedback"
       get "low_margin_estimate_parts_approval"
-      get "load_estimation_grn_items"
       get "invoice_for_chargeable"
       get "quality_control"
-      get "advance_payment_invoice"
+      get "invoice_advance_payment"
       get "terminate_job_foc_approval"
       get "customer_inquire"
       get "inform_customer_in_modal"
@@ -325,6 +324,13 @@ Rails.application.routes.draw do
 
       post "update_return_store_part"
       post "update_estimate_the_part_internal"
+      post "update_low_margin_estimate_parts_approval"
+    end
+  end
+
+  resources :invoices do
+    collection do
+      post "update_invoice_advance_payment"
     end
   end
      

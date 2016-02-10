@@ -477,7 +477,7 @@ window.Inventories =
       low_margin_estimate_rate = ( parseInt($(@).parents("fieldset").find(".low_margin_estimated_price").text()) - parseInt($(@).parents("fieldset").find(".low_margin_cost_price").text()) )*100/parseInt($(@).parents("fieldset").find(".low_margin_cost_price").text())
       if low_margin_estimate_rate < parseInt($("#db_margin").html())
         $(@).parents("fieldset").find(".low_margin_estimate_rate").html(Math.round(low_margin_estimate_rate * 100)/100).css("color", "red")
-        $(@).parents("fieldset").find(".below_margine_low_margin_estimate_rate").html("Estimate below the margine").css("color", "red")
+        $(@).parents("fieldset").find(".below_margine_low_margin_estimate_rate").html("Requested estimate below the margin").css("color", "red")
       else
         $(@).parents("fieldset").find(".low_margin_estimate_rate").html(Math.round(low_margin_estimate_rate * 100)/100).css("color", "black")
         $(@).parents("fieldset").find(".below_margine_low_margin_estimate_rate").html("")
@@ -485,7 +485,7 @@ window.Inventories =
       low_margin_approved_estimate_rate = ( parseInt($(@).parents("fieldset").find(".low_margin_approved_estimated_price").val()) - parseInt($(@).parents("fieldset").find(".low_margin_cost_price").text()) )*100/parseInt($(@).parents("fieldset").find(".low_margin_cost_price").text())
       if low_margin_approved_estimate_rate < parseInt($("#db_margin").html())
         $(@).parents("fieldset").find(".low_margin_approved_estimate_rate").html(Math.round(low_margin_approved_estimate_rate * 100)/100).css("color", "red")
-        $(@).parents("fieldset").find(".below_margine_low_margin_approved_estimate_rate").html("Approved estimate below the margine").css("color", "red")
+        $(@).parents("fieldset").find(".below_margine_low_margin_approved_estimate_rate").html("Approved estimate below the margin").css("color", "red")
       else
         $(@).parents("fieldset").find(".low_margin_approved_estimate_rate").html(Math.round(low_margin_approved_estimate_rate * 100)/100).css("color", "black")
         $(@).parents("fieldset").find(".below_margine_low_margin_approved_estimate_rate").html("")
@@ -509,7 +509,7 @@ window.Inventories =
     total_estimate_profit = Math.round((low_margin_total_estimate - low_margin_total_cost)*100/low_margin_total_cost * 100)/100
     if total_estimate_profit < parseInt($("#db_margin").html())
       $(".total_estimate_profit").html(total_estimate_profit).css("color", "red")
-      $(".margine_below_total_estimate_profit").html("Total estimate below the margine").css("color", "red")
+      $(".margine_below_total_estimate_profit").html("Total requested estimate below the margin").css("color", "red")
     else
       $(".total_estimate_profit").html(total_estimate_profit).css("color", "black")
       $(".margine_below_total_estimate_profit").html("")
@@ -517,7 +517,7 @@ window.Inventories =
     total_approved_estimate_profit = Math.round((low_margin_total_app_estimate - low_margin_total_cost)*100/low_margin_total_cost * 100)/100
     if total_approved_estimate_profit < parseInt($("#db_margin").html())
       $(".total_approved_estimate_profit").html(total_approved_estimate_profit).css("color", "red")
-      $(".margine_below_total_approved_estimate_profit").html("Total approved estimate below the margine").css("color", "red")
+      $(".margine_below_total_approved_estimate_profit").html("Total approved estimate below the margin").css("color", "red")
     else
       $(".total_approved_estimate_profit").html(total_approved_estimate_profit).css("color", "black")
       $(".margine_below_total_approved_estimate_profit").html("")
