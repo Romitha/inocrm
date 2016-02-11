@@ -1,0 +1,20 @@
+= simple_nested_form_for @inventory_reason, url: update_inventory_reason_admins_path do |i|
+  .row
+    .col-md-2
+      = i.input :srn_issue_terminate, wrapper: :append
+    .col-md-2
+      = i.input :damage, wrapper: :append
+    .col-md-2
+      = i.input :srr, wrapper: :append
+    .col-md-2
+      = i.input :disposal, wrapper: :append
+    .col-md-4
+      = i.input :created_by,  as: :hidden, input_html: {value: current_user.id}
+      = i.input :updated_by,  as: :hidden, input_html: {value: current_user.id}
+      
+  .row
+    .col-md-6
+      = i.input :reason
+  .row{style: "margin-top:20px;"}
+    .col-md-7
+      = i.submit "Save", class: "btn btn-success pull-right", id: "submit_new_inventory_reason"

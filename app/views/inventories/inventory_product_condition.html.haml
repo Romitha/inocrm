@@ -1,0 +1,10 @@
+= simple_nested_form_for @inventory_product_condition, url: update_inventory_product_condition_admins_path do |c|
+  .row
+    .col-md-6
+      = c.input :condition
+    .col-md-4
+      = c.input :created_by,  as: :hidden, input_html: {value: current_user.id}
+      = c.input :updated_by,  as: :hidden, input_html: {value: current_user.id}
+  .row{style: "margin-top:20px;"}
+    .col-md-6
+      = c.submit "Save", class: "btn btn-success pull-right", id: "submit_new_inventory_product_condition"

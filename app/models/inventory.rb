@@ -5,6 +5,8 @@ class Inventory < ActiveRecord::Base
   belongs_to :inventory_product, foreign_key: :product_id
 
   has_many :inventory_serial_items
+
+  belongs_to :inventory_bin, foreign_key: :bin_id
 end
 
 class InventoryProduct < ActiveRecord::Base
@@ -18,12 +20,15 @@ class InventoryProduct < ActiveRecord::Base
   has_many :inventory_serial_items, foreign_key: :product_id
 
   has_one :inventory_product_info, foreign_key: :product_id
+  accepts_nested_attributes_for :inventory_product_info, allow_destroy: true
 
   has_many :ticket_spare_part_stores, foreign_key: :inv_product_id
 
   has_many :grn_items, foreign_key: :product_id
 
   has_many :inventory_serial_parts, foreign_key: :product_id
+
+  has_many :inventory_serial_items
 
   def generated_item_code
    "#{id}-#{serial_no}"
@@ -37,6 +42,10 @@ class InventoryProductInfo < ActiveRecord::Base
   belongs_to :inventory_product, foreign_key: :product_id
 
   belongs_to :manufacture, foreign_key: :manufacture_id
+
+  belongs_to :product_sold_country, foreign_key: :country_id
+
+  belongs_to :currency, foreign_key: :currency_id
 
 end
 
@@ -53,12 +62,14 @@ class InventoryCategory2 < ActiveRecord::Base
   belongs_to :inventory_category1, foreign_key: :category1_id
 
   has_many :inventory_category3s, foreign_key: :category2_id
+  accepts_nested_attributes_for :inventory_category3s, allow_destroy: true
 end
 
 class InventoryCategory1 < ActiveRecord::Base
   self.table_name = "mst_inv_category1"
 
   has_many :inventory_category2s, foreign_key: :category1_id
+  accepts_nested_attributes_for :inventory_category2s, allow_destroy: true
 
 end
 
@@ -225,4 +236,43 @@ class InventoryReason < ActiveRecord::Base
   self.table_name = "mst_inv_reason"
 
   has_many :damages
+end
+
+class InventoryRack < ActiveRecord::Base
+  self.table_name = "mst_inv_rack"
+
+  has_many :inventory_shelfs, foreign_key: :rack_id
+  accepts_nested_attributes_for :inventory_shelfs, allow_destroy: true
+  belongs_to :organization, foreign_key: :location_id
+  belongs_to :user, foreign_key: :created_by
+  belongs_to :user, foreign_key: :updated_by
+
+  # mount_uploader :aisle_image, AttachmentUploader
+end
+
+class InventoryShelf < ActiveRecord::Base
+  self.table_name = "mst_inv_shelf"
+
+  has_many :inventory_bins, foreign_key: :shelf_id
+  accepts_nested_attributes_for :inventory_bins, allow_destroy: true
+  belongs_to :inventory_rack, foreign_key: :rack_id
+  belongs_to :user, foreign_key: :created_by
+  belongs_to :user, foreign_key: :updated_by
+end
+
+class InventoryBin < ActiveRecord::Base
+  self.table_name = "mst_inv_bin"
+
+  belongs_to :inventory_shelf, foreign_key: :shelf_id
+  belongs_to :user, foreign_key: :created_by
+  belongs_to :user, foreign_key: :updated_by
+  has_many :inventories, foreign_key: :bin_id
+end
+
+class InventoryDisposalMethod < ActiveRecord::Base
+  self.table_name = "mst_inv_disposal_method"
+end
+
+class InventoryDamage < ActiveRecord::Base
+  self.table_name = "inv_damage"
 end

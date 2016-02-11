@@ -1870,6 +1870,75 @@ class InventoriesController < ApplicationController
 
   end
 
+  # def inventory_product
+  #   Inventory
+  #   Product
+  #   InventorySerialItem
+  #   @inventory_product = InventoryProduct.new
+  #   render "inventories/inventory_product"
+  # end
+
+  # def update_inventory_product
+  # end
+
+  # def inventory_category
+  #   Inventory
+  #   @inventory_category1 = InventoryCategory1.new
+  #   render "inventories/inventory_category"
+  # end
+
+  # def update_inventory_category
+  # end
+
+  # def inventory_product_condition
+  #   Inventory
+  #   @inventory_product_condition = ProductCondition.new
+  #   render "inventories/inventory_product_condition"
+  # end
+
+  # def update_inventory_product_condition
+  # end
+
+  # def inventory_disposal_method
+  #   Inventory
+  #   @inventory_disposal_method = InventoryDisposalMethod.new
+  #   render "inventories/inventory_disposal_method"
+  # end
+
+  # def update_inventory_disposal_method
+  # end
+
+  # def inventory_reason
+  #   Inventory
+  #   @inventory_reason = InventoryReason.new
+  #   render "inventories/inventory_reason"
+  # end
+
+  # def update_inventory_reason
+  # end
+
+  # def inventory_manufacture
+  #   Inventory
+  #   @inventory_manufacture = Manufacture.new
+  #   render "inventories/inventory_manufacture"
+  # end
+
+  # def update_inventory_manufacture
+
+  # end
+
+  # def inventory_unit
+  #   Inventory
+  #   @inventory_unit = InventoryUnit.new
+  #   render "inventories/inventory_unit"
+  # end
+
+  # def update_inventory_unit
+  # end
+
+  def inventory_master_data
+  end
+
   def toggle_add_update_return_part
     Ticket
     Warranty
@@ -1937,6 +2006,15 @@ class InventoriesController < ApplicationController
     end
 
   end
+
+  # def inventory_location
+  #   Inventory
+  #   @inventory_rack = InventoryRack.new
+  #   render "inventories/inventory_location"
+  # end
+
+  # def update_inventory_location
+  # end
 
   private
 

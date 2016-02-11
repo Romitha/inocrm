@@ -22,7 +22,23 @@ window.Inventories =
     @toggle_add_update_return_part()
     @damage_reason()
     @warranty_batch_check()
+    @inventory_product_category()
+    @customer_inquire_search()
     return
+
+  customer_inquire_search: ->
+
+
+  inventory_product_category: ->
+    $("#inventory_product_category3_id").change ->
+      selected = $(@).val()
+      $("#ct").val(selected)
+    $("#category2").change ->
+      c2selected = $(@).val()
+      $("#category1").val(c2selected)
+
+      # $("#category2").val(InventoryCategory3.find_by(selected).category2_id)
+
 
   filter_product: -> 
     category_list = $("#search_inventory_product")
@@ -40,7 +56,7 @@ window.Inventories =
       $("#search_inventory_mst_inv_product_category3_id").val("")
 
   filter_category: -> 
-    category_list = $("#search_inventory_mst_inv_product_category3_id")
+    category_list = $("#search_inventory_mst_inv_product_category3_id, #inventory_product_category3_id")
     category_list_html = category_list.html()
     category_list.empty()
     $("#search_inventory_product").change ->

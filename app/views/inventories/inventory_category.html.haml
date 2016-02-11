@@ -1,0 +1,67 @@
+%h3 Inventory
+= simple_nested_form_for @inventory_category1, url: update_inventory_location_admins_path do |c1|
+  .panel.panel-info
+    .panel-heading
+      %h3.panel-title create a brand
+    .panel-body
+      .row
+        .col-md-4
+          = c1.label "brand code"
+          = c1.input :code, label: false
+        .col-md-4
+          = c1.label "brand name"
+          = c1.input :name, label: false
+        .col-md-4
+          = c1.input :created_by,  as: :hidden, input_html: {value: current_user.id}
+          = c1.input :updated_by,  as: :hidden, input_html: {value: current_user.id}
+        .col-md-12
+          .row
+            = c1.simple_fields_for :inventory_category2s do |c2|
+              .panel.panel-danger
+                .panel-heading
+                  %h3.panel-title create a product
+                .panel-body
+                  .row.col-md-12
+                    .col-md-4
+                      = c2.label "product code"
+                      = c2.input :code, label: false
+                    .col-md-4
+                      = c2.label "product name"
+                      = c2.input :name, label: false
+                    .col-md-4
+                      = c2.input :created_by,  as: :hidden, input_html: {value: current_user.id}
+                      = c2.input :updated_by,  as: :hidden, input_html: {value: current_user.id}
+                      .add_sign
+                        = c2.link_to_remove do
+                          %span.glyphicon.glyphicon-remove-sign
+                  .row.col-md-12
+                    = c2.simple_fields_for :inventory_category3s do |c3|
+                      .panel.panel-success
+                        .panel-heading
+                          %h3.panel-title create a category
+                        .panel-body
+                          .row.col-md-12
+                            .col-md-4
+                              = c3.label "category code"
+                              = c3.input :code, label: false
+                            .col-md-4
+                              = c3.label "category name"
+                              = c3.input :name, label: false
+                            .col-md-4
+                              = c3.input :created_by,  as: :hidden, input_html: {value: current_user.id}
+                              = c3.input :updated_by,  as: :hidden, input_html: {value: current_user.id}
+                              .add_sign
+                                = c3.link_to_remove do
+                                  %span.glyphicon.glyphicon-remove-sign
+                    .row.col-md-12
+                      .col-md-12
+                        = c2.link_to_add :inventory_category3s do
+                          %span.glyphicon.glyphicon-plus-sign Add a category
+            .row.col-md-12
+              .col-md-12
+                = c1.link_to_add :inventory_category2s do
+                  %span.glyphicon.glyphicon-plus-sign Add a product
+        .row{style: "margin-top:20px;"}
+          .col-md-11
+            = c1.submit "Save", class: "btn btn-success pull-right", id: "submit_new_inventory_category1"
+  

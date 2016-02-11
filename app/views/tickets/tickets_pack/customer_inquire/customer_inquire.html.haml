@@ -1,13 +1,196 @@
-- ticket = @ticket
-- product = @product
-= render "tickets/tickets_pack/ticket_header", ticket: ticket, product: product
 
-= tab_panel do
-  = tab_nav_tab({class: "small_scale_margin-bottom1"}, ticket_info: {content: "Ticket info"}, customer_feedback: {content: "Customer Inquire", active_class: "active"} )
-  .tab-content
-    = tab_content tabpointer: :ticket_info do
-      = tab_panel do
-        = render "tickets/tickets_pack/ticket_info", ticket: ticket, product: product#, customer: customer, warranties: warranties, histories: histories, join_tickets: join_tickets, ge_q_and_as: ge_q_and_as, pr_q_and_as: pr_q_and_answers
-    = tab_content tabpointer: :customer_feedback, active_class: "active" do
-      = tab_panel do
-        = render "tickets/tickets_pack/customer_inquire/customer_inquire", ticket: ticket
+- tickets = @ticket
+- products = @product
+
+- index = 0
+%h3 Customer Inquire
+.row
+  .col-md-12
+    %form{:action => customer_inquire_tickets_path, :method => "get"}
+      .row
+        .col-md-3
+          = label_tag "Ticket No"
+          = text_field_tag "ticket_no", params[:ticket_no]
+        .col-md-3
+          = label_tag "Serial No"
+          = text_field_tag "serial_no", params[:serial_no]
+        .col-md-3
+          = submit_tag "Search", :name => nil
+
+  .row
+    .col-md-12
+      %table.table.table-striped
+        %thead
+          %tr
+            %th No
+            %th Ticket Date
+            %th Ticket No
+            %th Customer
+            %th Serial No
+            %th Product Brand
+            %th Product Category
+            %th Product No
+            %th
+        %tbody
+          - if tickets.present?
+            - tickets.each do |ticket|
+              - index += 1
+              %tr
+                %td #{index}
+                %td #{ticket.created_at.to_date }
+                %td #{ticket.id}
+                %td #{ticket.try(:customer).try(:name)}
+                %td
+                  - ticket.try(:products).each do |product|
+                    #{product.serial_no}
+                    %br
+                %td
+                  - ticket.try(:products).each do |product|
+                    #{product.product_brand.name}
+                    %br
+                  
+                %td
+                  - ticket.try(:products).each do |product|
+                    #{product.product_category.name}
+                    %br
+                %td
+                  - ticket.try(:products).each do |product|
+                    #{product.product_no}
+                    %br
+                %td
+                  = link_to "Select", ticket_path(ticket.id)
+          - else
+            - products.each do |product|
+              - index += 1
+              %tr
+                %td #{index}
+                %td
+                  - product.try(:tickets).each do |ticket| 
+                    #{ticket.created_at.to_date}
+                    %br
+                %td 
+                  - product.try(:tickets).each do |ticket|
+                    #{ticket.id}
+                    %br
+                %td
+                  - product.try(:tickets).each do |ticket|
+                    #{ticket.try(:customer).try(:name)}
+                    %br
+                %td #{product.serial_no}
+                %td #{product.product_brand.name}
+                %td #{product.product_category.name}
+                %td #{product.product_no}
+                %td
+                  = link_to "Select", ticket_path(product.tickets.first.id)
+
+
+
+/+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+/ - serial_nos = @serial_no
+
+/ = form_tag customer_inquire_tickets_path, :method => 'get' do
+/   = text_field_tag :ticket_no, params[:ticket_no]
+/   = submit_tag "Search", :name => nil
+
+/ - tickets.each do |ticket|
+/   #{ticket.ticket_no}
+/  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+/ - tickets.each do |ticket|
+/   #{ticket.ticket_no}
+/ - serial_nos.each do |serial_no|
+/+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+/ %h3 Customer Inquire
+/ .row
+/   .col-md-12
+/     = form_tag search_inventories_inventories_path, remote: true, method: :get do
+/       .row
+/         .col-md-3
+/           = label_tag "Ticket No"
+/           = text_field_tag "ticket_no"
+/         .col-md-3
+/           = label_tag InventoryCategoryCaption.first.caption
+/           = select_tag "search_inventory[brand]", options_from_collection_for_select(InventoryCategory1.all, :id, :name, (params[:search_inventory] and params[:search_inventory][:brand])), include_blank: true
+/         .col-md-3
+/           = label_tag "Model No"
+/           = text_field_tag "model_no"
+
+/       .row
+/         .col-md-3
+/           = label_tag "Serial No"
+/           = text_field_tag "serial_no"
+/         .col-md-3
+/           = label_tag "Product Category"
+/           = select_tag "product_category"
+/         .col-md-3
+/           = label_tag "Product No"
+/           = text_field_tag "Product_no"
+
+/       .row
+/         .col-md-3
+/           = label_tag "Customer"
+/           = text_field_tag "customer"
+/         .col-md-1.small_scale_margin-top1
+/           = link_to "Select"
+/         .col-md-1
+/           = submit_tag "Search", class: "btn btn-sm btn-success"
+
+/   .row
+/     .col-md-12
+/       %table.table.table-striped
+/         %thead
+/           %tr
+/             %th No
+/             %th Ticket Date
+/             %th Ticket No
+/             %th Customer
+/             %th Serial No
+/             %th Product Brand
+/             %th Product Category
+/             %th Product No
+/             %th
+/         %tbody
+/           %td xx
+/           %td xx
+/           %td xx
+/           %td xx
+/           %td xx
+/           %td xx
+/           %td xx
+/           %td xx
+/           %td
+/             = link_to "Select"
+
+/ #search_frame
+/   = form_tag search_inventories_inventories_path, remote: true, method: :get do
+/     = hidden_field_tag :issue_part, params[:issue_part] 
+/     = hidden_field_tag :select_frame, params[:select_frame] 
+/     .row
+/       .col-md-3.store
+/         = label_tag "Store"
+/         = select_tag "search_inventory[store_id]", options_from_collection_for_select(Organization.stores, :id, :name, (params[:search_inventory] and params[:search_inventory][:store_id]))
+/       .col-md-3.brand
+/         = label_tag InventoryCategoryCaption.first.caption
+/         = select_tag "search_inventory[brand]", options_from_collection_for_select(InventoryCategory1.all, :id, :name, (params[:search_inventory] and params[:search_inventory][:brand])), include_blank: true
+/       .col-md-3.product
+/         = label_tag InventoryCategoryCaption.second.caption
+/         = select_tag "search_inventory[product]", option_groups_from_collection_for_select(InventoryCategory1.all, :inventory_category2s, :name, :id, :name, (params[:search_inventory] and params[:search_inventory][:product])), include_blank: true
+/       .col-md-3.category
+/         = label_tag InventoryCategoryCaption.third.caption
+/         = select_tag "search_inventory[mst_inv_product][category3_id]", option_groups_from_collection_for_select(InventoryCategory2.all, :inventory_category3s, :name, :id, :name, (params[:search_inventory] and params[:search_inventory][:mst_inv_product][:category3_id])), include_blank: true
+/     .row.small_scale_margin-top1
+/       .col-md-2.serial_code
+/         = text_field_tag "search_inventory[mst_inv_product][serial_no]", (params[:search_inventory] and params[:search_inventory][:mst_inv_product][:serial_no]), :placeholder => "Serial Code", style: "width: 100%;"
+/       .col-md-2.part_no
+/         = text_field_tag "search_inventory[mst_inv_product][spare_part_no]", (params[:search_inventory] and params[:search_inventory][:mst_inv_product][:spare_part_no]), :placeholder => "Part No", style: "width: 100%;"
+/       .col-md-2.model_no
+/         = text_field_tag "search_inventory[mst_inv_product][model_no]", (params[:search_inventory] and params[:search_inventory][:mst_inv_product][:model_no]), :placeholder => "Model No", style: "width: 100%;"
+/       .col-md-3.product_no
+/         = text_field_tag "search_inventory[mst_inv_product][product_no]", (params[:search_inventory] and params[:search_inventory][:mst_inv_product][:product_no]), :placeholder => "Product No", style: "width: 100%;"
+/       .col-md-3.description
+/         = text_field_tag "search_inventory[mst_inv_product][description]", (params[:search_inventory] and params[:search_inventory][:mst_inv_product][:description]), placeholder: "Description", style: "width: 100%;"
+
+/     .row.small_scale_margin-top1
+/       .col-md-1
+/         .search
+/           = submit_tag "Search", class: "btn btn-sm btn-success"

@@ -1,0 +1,11 @@
+= simple_nested_form_for @inventory_manufacture, url: update_inventory_manufacture_admins_path do |m|
+  .row
+    .col-md-6
+      = m.input :manufacture
+    .col-md-6
+      = m.input :created_by,  as: :hidden, input_html: {value: current_user.id}
+      = m.input :updated_by,  as: :hidden, input_html: {value: current_user.id}
+  .row{style: "margin-top:20px;"}
+    .col-md-6
+      = m.submit "Save", class: "btn btn-success pull-right", id: "submit_new_inventory_manufacture"
+

@@ -795,6 +795,10 @@ class TicketsController < ApplicationController
     end
   end
 
+  def paginate_payment_pending_tickets
+    @search_customers = Rails.cache.read([:search_customers]).page(params[:page]).per(params[:per_page])
+  end
+
   def paginate_ticket_grn_items
     Grn
     # @rendering_id = params[:rendering_id]
@@ -802,6 +806,7 @@ class TicketsController < ApplicationController
     @grn_items = GrnItem.where(inventory_not_updated: false).page(params[:page]).per(params[:per_page])
     render "tickets/tickets_pack/estimate_the_part_internal/paginate_grns"
   end
+
 
   def show
     Warranty
@@ -1958,35 +1963,24 @@ class TicketsController < ApplicationController
     # end
   end
 
-  def invoice_for_chargeable
-    Inventory
-    Warranty
-    ContactNumber
-    QAndA
-    TaskAction
-    Inventory
-    ticket_id = (params[:ticket_id] or session[:ticket_id])
-    @ticket = Ticket.find_by_id ticket_id
-    session[:ticket_id] = @ticket.id
-    if @ticket
-      @product = @ticket.products.first
-      @warranties = @product.warranties
-      session[:product_id] = @product.id
-      Rails.cache.delete([:histories, session[:product_id]])
-      Rails.cache.delete([:join, @ticket.id])
+  def customer_advance_payment
+    User
 
-      @estimation = @ticket.ticket_estimations.first
-      @spare_part = @ticket.ticket_spare_parts.first
-
-      @ticke_action = @ticket.user_ticket_actions.find_by_action_id 18
-      @terminate_job_payment = @ticke_action.ticket_terminate_job_payments.first
-
-      @ticket_payment_received = TicketPaymentReceived.first
-
+    if params[:customer_name].present?
+      search_customer_name = params[:customer_name]
+      @search_customers = Customer.where("name like ?", "%#{search_customer_name}%")
+      @search_customers = Kaminari.paginate_array(@search_customers).page(params[:page]).per(10)
+    else
+      @search_customers = Customer.all
+      @search_customers = Kaminari.paginate_array(@search_customers).page(params[:page]).per(10)
     end
-    respond_to do |format|
-      format.html {render "tickets/tickets_pack/invoice_for_chargeable/invoice_for_chargeable"}
-    end
+
+    @customers = Customer.all
+    render "tickets/tickets_pack/customer_advance_paymente"
+  end
+
+  def create_invoice_for_hp
+    render "tickets/tickets_pack/create_invoice_for_hp"
   end
 
   def invoice_advance_payment
@@ -2021,35 +2015,62 @@ class TicketsController < ApplicationController
   end
 
   def customer_inquire
-    Inventory
-    Warranty
-    ContactNumber
-    QAndA
-    TaskAction
-    Inventory
-    ticket_id = (params[:ticket_id] or session[:ticket_id])
-    @ticket = Ticket.find_by_id ticket_id
-    session[:ticket_id] = @ticket.id
-    if @ticket
-      @product = @ticket.products.first
-      @warranties = @product.warranties
-      session[:product_id] = @product.id
-      Rails.cache.delete([:histories, session[:product_id]])
-      Rails.cache.delete([:join, @ticket.id])
+    Ticket
+    User
+    Product
+    # @ticket = Ticket.search(params[:search])
 
-      @estimation = @ticket.ticket_estimations.first
-      @spare_part = @ticket.ticket_spare_parts.first
-
-      @ticke_action = @ticket.user_ticket_actions.find_by_action_id 18
-      @terminate_job_payment = @ticke_action.ticket_terminate_job_payments.first
-
-      @ticket_payment_received = @ticket.ticket_estimations.first
-
+    if params[:ticket_no].present?
+      ticket_id = params[:ticket_no]
+      @ticket = Ticket.where("id like ?", "%#{ticket_id}%")
+    else
+      if params[:serial_no].present?
+       serial_no = params[:serial_no]
+       @product = Product.where("serial_no like ?", "%#{serial_no}%")
+      else
+        @ticket = Ticket.all
+      end
     end
-    respond_to do |format|
-      format.html {render "tickets/tickets_pack/customer_inquire/customer_inquire"}
-    end
+
+
+    # if params[:ticket_no].present?
+    #   ticket_id = params[:ticket_no]
+    #   @ticket = Ticket.where("id like ?", "%#{ticket_id}%")
+    # else
+
+    #   @ticket = Ticket.all
+    # end
+
+    # if params[:serial_no].present?
+    #   serial_no = params[:serial_no]
+    #   @serial_no = Product.where("serial_no like ?", "%#{serial_no}%")
+    # else
+    #   @serial_no = Product.all
+    # end
+
+
+    render "tickets/tickets_pack/customer_inquire/customer_inquire"
   end
+
+  def hp_po_or_sales_order
+    render "tickets/tickets_pack/hp_po_or_sales_order"
+  end
+
+  def add_edit_contact
+    render "tickets/tickets_pack/add_edit_contact"
+  end
+
+
+
+  # def self.search(search)
+  #   if search
+  #     Ticket.find(:all, :conditions => ['id LIKE ?', "%#{search}%"])
+  #   else
+  #     Ticket.find(:all)
+  #   end
+  # end
+
+
 
   def alert
 
@@ -4135,6 +4156,9 @@ class TicketsController < ApplicationController
     respond_to do |format|
       format.json {render json: SparePartDescription.all.map { |s| s.description }}
     end
+  end
+
+  def master_data
   end
 
   def update_request_on_loan_spare_part

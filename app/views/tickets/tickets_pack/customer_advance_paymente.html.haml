@@ -1,0 +1,17 @@
+- index = 0
+.row
+  %form{:action => customer_advance_payment_tickets_path, :method => "get"}
+    .row
+      .col-md-3
+        %strong All Payment Pending Tickets
+      .col-md-4
+        = label_tag "Customer Name:"
+        = text_field_tag "customer_name", params[:customer_name]
+        / = select_tag "customer_name[id]", options_from_collection_for_select(@customers, :id, :name, (params[:customer_name] and params[:customer_name][:name]))
+      .col-md-3
+        = submit_tag "Search", :name => nil
+    .row
+      .col-md-12
+        #payment_pending_tickets_pagination
+          = render "tickets/payment_pending_tickets", search_customers: @search_customers
+                  

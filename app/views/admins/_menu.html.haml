@@ -22,35 +22,35 @@
           %span.icon-tty
           Tickets
 
-        = link_to "#submenu", "role" => "button", "data-toggle" => "collapse", "aria-expanded" => "false", "aria-controls" => "collapseExample", class: "text6 pull-right" do
-          %span.icon-chevron-left
+        / = link_to "#submenu", "role" => "button", "data-toggle" => "collapse", "aria-expanded" => "false", "aria-controls" => "collapseExample", class: "text6 pull-right" do
+        /   %span.icon-chevron-left
 
-        .collapse#submenu
-          %ul.nav.child-level
-            %li
-              = link_to tickets_brands_and_categories_admins_path, class: "text5 #{current_page?(action: 'brands_and_categories') ? 'active' : ''}" do
-                %span.icon-group
-                Brands & Categories
-            %li
-              = link_to accessories_admins_path, class: "text5 #{current_page?(action: 'accessories') ? 'active' : ''}" do
-                %span.icon-group
-                Accessories
-            %li
-              = link_to "#", class: "text5" do
-                %span.icon-group
-                Extra-remarks
-            %li
-              = link_to tickets_problem_category_admins_path, class: "text5 #{current_page?(action: 'problem_category') ? 'active' : ''}" do
-                %span.icon-group
-                Problem categories
-            %li
-              = link_to "#", class: "text5" do
-                %span.icon-group
-                Q & A's
-            %li
-              = link_to reason_admins_path, class: "text5 #{current_page?(action: 'reason') ? 'active' : ''}" do
-                %span.icon-group
-                Reasons
+        / .collapse#submenu
+        /   %ul.nav.child-level
+        /     %li
+        /       = link_to tickets_brands_and_categories_admins_path, class: "text5 #{current_page?(action: 'brands_and_categories') ? 'active' : ''}" do
+        /         %span.icon-group
+        /         Brands & Categories
+        /     %li
+        /       = link_to accessories_admins_path, class: "text5 #{current_page?(action: 'accessories') ? 'active' : ''}" do
+        /         %span.icon-group
+        /         Accessories
+        /     %li
+        /       = link_to "#", class: "text5" do
+        /         %span.icon-group
+        /         Extra-remarks
+        /     %li
+        /       = link_to tickets_problem_category_admins_path, class: "text5 #{current_page?(action: 'problem_category') ? 'active' : ''}" do
+        /         %span.icon-group
+        /         Problem categories
+        /     %li
+        /       = link_to "#", class: "text5" do
+        /         %span.icon-group
+        /         Q & A's
+        /     %li
+        /       = link_to reason_admins_path, class: "text5 #{current_page?(action: 'reason') ? 'active' : ''}" do
+        /         %span.icon-group
+        /         Reasons
 
       %li
         = link_to "#", class: "text6" do

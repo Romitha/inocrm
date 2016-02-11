@@ -64,6 +64,10 @@ class ProductSoldCountry < ActiveRecord::Base
   self.table_name = "mst_country"
 
   has_many :products, foreign_key: :sold_country_id
+
+  has_many :inventory_product_info, foreign_key: :country_id
+
+
 end
 
 class InvSerialItem < ActiveRecord::Base

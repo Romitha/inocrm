@@ -32,6 +32,81 @@ class AdminsController < ApplicationController
     @products = Product.all
   end
 
+  def inventory_location
+    Inventory
+    @inventory_rack = InventoryRack.new
+    render "inventories/inventory_location"
+  end
+
+  def update_inventory_location
+  end
+
+  def inventory_product
+    Inventory
+    Product
+    InventorySerialItem
+    @inventory_product = InventoryProduct.new
+    render "inventories/inventory_product"
+  end
+
+  def update_inventory_product
+  end
+
+  def inventory_category
+    Inventory
+    @inventory_category1 = InventoryCategory1.new
+    render "inventories/inventory_category"
+  end
+
+  def update_inventory_category
+  end
+
+  def inventory_product_condition
+    Inventory
+    @inventory_product_condition = ProductCondition.new
+    render "inventories/inventory_product_condition"
+  end
+
+  def update_inventory_product_condition
+  end
+
+  def inventory_disposal_method
+    Inventory
+    @inventory_disposal_method = InventoryDisposalMethod.new
+    render "inventories/inventory_disposal_method"
+  end
+
+  def update_inventory_disposal_method
+  end
+
+  def inventory_reason
+    Inventory
+    @inventory_reason = InventoryReason.new
+    render "inventories/inventory_reason"
+  end
+
+  def update_inventory_reason
+  end
+
+  def inventory_manufacture
+    Inventory
+    @inventory_manufacture = Manufacture.new
+    render "inventories/inventory_manufacture"
+  end
+
+  def update_inventory_manufacture
+
+  end
+
+  def inventory_unit
+    Inventory
+    @inventory_unit = InventoryUnit.new
+    render "inventories/inventory_unit"
+  end
+
+  def update_inventory_unit
+  end
+
   def reason
     Ticket
     @reason = Reason.new
@@ -215,69 +290,13 @@ class AdminsController < ApplicationController
   def update_sla
   end
 
-  def currency
-    Currency
-    @currency = Currency.new
-    render "admins/master_data/currency"
+  def title
+    User
+    @title = MstTitle.new
+    render "admins/master_data/title"
   end
 
-  def update_currency
-
-  end
-
-  def action
-    @action = TaskAction.new
-    render "admins/master_data/action"
-  end
-
-  def update_action
-
-  end
-
-  def contact_type
-    Ticket
-    @contact_type = TicketContactType.new
-    render "admins/master_data/contact_type"
-  end
-
-  def update_contact_type
-
-  end
-
-  def customer_contact_type
-    ContactNumber
-    @customer_contact_type = ContactType.new
-    render "admins/master_data/customer_contact_type"
-  end
-
-  def update_customer_contact_type
-  end
-
-  def estimation_status
-    TicketEstimation
-    @estimation_status = EstimationStatus.new
-    render "admins/master_data/estimation_status"
-  end
-
-  def update_estimation_status
-  end
-
-  def job_type
-    Ticket
-    @job_type = JobType.new
-    render "admins/master_data/job_type"
-  end
-
-  def update_job_type
-  end
-
-  def payment_received_type
-    Ticket
-    @payment_received_type = TicketPaymentReceivedType.new
-    render "admins/master_data/payment_received_type"
-  end
-
-  def update_payment_received_type
+  def update_title
   end
 
   def pop_status
@@ -287,113 +306,6 @@ class AdminsController < ApplicationController
   end
 
   def update_pop_status
-  end
-
-  def spare_part_status_action
-    TicketSparePart
-    @spare_part_status_action = SparePartStatusAction.new
-    render "admins/master_data/spare_part_status_action"
-  end
-
-  def update_spare_part_status_action
-  end
-
-  def spare_part_status_use
-    TicketSparePart
-    @spare_part_status_use = SparePartStatusUse.new
-    render "admins/master_data/spare_part_status_use"
-  end
-
-  def update_spare_part_status_use
-  end
-
-  def templates
-    Ticket
-    @templates = PrintTemplate.new
-    render "admins/master_data/templates"
-  end
-
-  def update_templates
-  end
-
-  def ticket_informed_method
-    Ticket
-    @ticket_informed_method = InformMethod.new
-    render "admins/master_data/ticket_informed_method"
-  end
-
-  def update_ticket_informed_method
-  end
-
-  def ticket_repair_type
-    Ticket
-    @ticket_repair_type = TicketRepairType.new
-    render "admins/master_data/ticket_repair_type"
-  end
-
-  def update_ticket_repair_type
-  end
-
-  def ticket_status
-    Ticket
-    @ticket_status = TicketStatus.new
-    render "admins/master_data/ticket_status"
-  end
-
-  def update_ticket_status
-  end
-
-  def ticket_status_resolve
-    Ticket
-    @ticket_status_resolve = TicketStatusResolve.new
-    render "admins/master_data/ticket_status_resolve"
-  end
-
-  def update_ticket_status_resolve
-  end
-
-  def ticket_type
-    Ticket
-    @ticket_type = TicketType.new
-    render "admins/master_data/ticket_type"
-  end
-
-  def update_ticket_type
-  end
-
-  def warranty_type
-    Warranty
-    @warranty_type = WarrantyType.new
-    render "admins/master_data/warranty_type"
-  end
-
-  def update_warranty_type
-  end
-
-  def bpm_role
-    Role
-    @bpm_role = BpmModuleRole.new
-    render "admins/master_data/bpm_role"
-  end
-
-  def update_bpm_role
-  end
-
-  def module
-    Role
-    @module = BpmModule.new
-    render "admins/master_data/module"
-  end
-
-  def update_module
-  end
-
-  def workflow_mappings
-    @workflow_mappings = WorkflowMapping.new
-    render "admins/master_data/workflow_mappings"
-  end
-
-  def update_workflow_mappings
   end
 
   def brands_and_categories_params

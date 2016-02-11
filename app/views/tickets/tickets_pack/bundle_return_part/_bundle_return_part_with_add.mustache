@@ -1,0 +1,21 @@
+.col-md-12.col-xs-12
+  %table.table.table-hover
+    %thead
+      %tr
+      %th No
+      %th Event No
+      %th Ticket No
+      %th
+    %tbody
+      {{#.}}
+        - @manufacture_parts.each do |manufacture_part|
+          %tr
+            %th
+              = manufacture_part.id
+            %td
+              = manufacture_part.event_no
+            %td
+              = manufacture_part.ticket_spare_part.ticket_id
+            %td
+              = link_to "Add", "#", onclick: "Inventories.load_mustache_bundle_return_part('add', #{manufacture_part.id}); return false;"
+      {{/.}}
