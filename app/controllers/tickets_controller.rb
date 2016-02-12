@@ -824,6 +824,7 @@ class TicketsController < ApplicationController
   end
 
   def ajax_show
+    TicketSparePart
     Warranty
     ContactNumber
     QAndA
@@ -870,7 +871,7 @@ class TicketsController < ApplicationController
 
       @render_template = "tickets/join"
       @variables = {join_tickets: @join_tickets, ticket: @ticket}
-      @rendering_dom = "#history #join_pagination"
+      @rendering_dom = "#join_pagination"
 
     when "q_and_a"
       product = @ticket.products.first
