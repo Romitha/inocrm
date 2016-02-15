@@ -14,11 +14,11 @@
               = submit_tag "Search", class: "btn btn-default", name: "select_customer"
   %br/
   %ul#myTab.nav.nav-tabs{:role => "tablist"}
-    %li.active{:role => "presentation"}= link_to "Customer", "#customer", role: "tab", data: {toggle: "tab"}
+    %li.active{:role => "presentation"}= link_to "Customer", "#customer_second_id", role: "tab", data: {toggle: "tab"}
     %li{:role => "presentation"}= link_to "Organization", "#organization", role: "tab", data: {toggle: "tab"}
 
   .tab-content
-    #customer.tab-pane.active{:role => "tabpanel"}
+    #customer_second_id.tab-pane.active{:role => "tabpanel"}
       #contact_persons
         .row
           = paginate customers, remote: true, method: :get if customers.present?
