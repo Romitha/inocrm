@@ -59,8 +59,6 @@
                     %td
                       - customer.tickets.each do |ticket|
                         #{ticket.ticket_no.to_s.rjust(5, INOCRM_CONFIG["ticket_no_format"])} #{ticket.ticket_status.name}
-                      %br/
-                      = link_to "More>>", "#"
                     %td
                       = link_to customer.organization.name, organization_path(customer.organization), target: "_blank" if customer.organization
                     %td
@@ -93,8 +91,6 @@
                     %br/
                     %strong Contact Number:
                     #{organization.contact_numbers.primary_contactnumber.first}
-                    %br/
-                    =link_to "More>>", "#"
 
                   %td
                     - organization.customers.each do |customer|

@@ -3260,6 +3260,7 @@ class TicketsController < ApplicationController
       @ticket_finish_job = @user_ticket_action.build_ticket_finish_job
     when "terminate_job"
       @ticket_terminate_job = @user_ticket_action.build_ticket_terminate_job
+      @ticket_terminate_job_payment = @user_ticket_action.build_ticket_terminate_job_payment
     when "hold"
       @act_hold = @user_ticket_action.build_act_hold
     when "create_fsr"
