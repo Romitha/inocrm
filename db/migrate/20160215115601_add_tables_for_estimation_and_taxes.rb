@@ -34,10 +34,10 @@ class AddTablesForEstimationAndTaxes < ActiveRecord::Migration
 
     create_table :spt_ticket_customer_quotation_estimation, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL, PRIMARY KEY (id)"
-      t.column :cutomer_quotation_id, "INT UNSIGNED NOT NULL"
+      t.column :customer_quotation_id, "INT UNSIGNED NOT NULL"
       t.column :estimation_id, "INT UNSIGNED NOT NULL"
       t.index :estimation_id, name: "fk_spt_ticket_customer_qutation_estimation_spt_ticket_estim_idx"
-      t.index :cutomer_quotation_id, name: "fk_spt_ticket_customer_quotation_estimation_spt_ticket_cuto_idx"
+      t.index :customer_quotation_id, name: "fk_spt_ticket_customer_quotation_estimation_spt_ticket_cuto_idx"
     end
 
     create_table :spt_ticket_invoice, id: false do |t|
@@ -193,7 +193,7 @@ class AddTablesForEstimationAndTaxes < ActiveRecord::Migration
     remove_foreign_key :spt_ticket_payment_received, name: "fk_spt_ticket_payment_received_spt_invoice1"
     add_index :spt_ticket_payment_received, :invoice_id, name: "fk_spt_ticket_payment_received_spt_ticket_invoice1_idx"
 
-    add_column :spt_ticket_payment_received, :cutomer_quotation_id, "INT UNSIGNED NULL DEFAULT NULL"
+    add_column :spt_ticket_payment_received, :cusstomer_quotation_id, "INT UNSIGNED NULL DEFAULT NULL"
     # add_foreign_key :articles, :users, column: :author_id, primary_key: :lng_id
     [
       {name: "fk_spt_ticket_cutomer_qutation_users1", column: "created_by", reference_table: :users, table: :spt_ticket_customer_quotation},
@@ -201,7 +201,7 @@ class AddTablesForEstimationAndTaxes < ActiveRecord::Migration
       {name: "fk_spt_ticket_cutomer_qutation_mst_currency1", column: "currency_id", reference_table: :mst_currency, table: :spt_ticket_customer_quotation},
       {name: "fk_spt_ticket_customer_quotation_mst_spt_payment_term1", column: :payment_term_id, reference_table: :mst_spt_payment_term, table: :spt_ticket_customer_quotation},
       {name: "fk_spt_ticket_customer_qutation_estimation_spt_ticket_estimat1", column: :estimation_id, reference_table: :spt_ticket_estimation, table: :spt_ticket_customer_quotation_estimation },
-      {name: "fk_spt_ticket_customer_quotation_estimation_spt_ticket_cutome1", column: :cutomer_quotation_id, reference_table: :spt_ticket_customer_quotation, table: :spt_ticket_customer_quotation_estimation },
+      {name: "fk_spt_ticket_customer_quotation_estimation_spt_ticket_cutome1", column: :customer_quotation_id, reference_table: :spt_ticket_customer_quotation, table: :spt_ticket_customer_quotation_estimation },
       {name: "fk_spt_ticket_cutomer_qutation_users10", column: :created_by, reference_table: :users, table: :spt_ticket_invoice },
       {name: "fk_spt_ticket_cutomer_qutation_spt_ticket10", column: :ticket_id, reference_table: :spt_ticket, table: :spt_ticket_invoice },
       {name: "fk_spt_ticket_cutomer_qutation_mst_currency10", column: :currency_id, reference_table: :mst_currency, table: :spt_ticket_invoice },
@@ -220,7 +220,7 @@ class AddTablesForEstimationAndTaxes < ActiveRecord::Migration
       {name: "fk_mst_tax_rate_mst_tax1", column: :tax_id, reference_table: :mst_tax, table: :mst_tax_rate},
       {name: "fk_spt_act_print_invoice_spt_ticket_invoice1", column: :invoice_id, reference_table: :spt_ticket_invoice, table: :spt_act_print_invoice},
       {name: "fk_spt_ticket_payment_received_spt_ticket_invoice1", column: :invoice_id, reference_table: :spt_ticket_invoice, table: :spt_ticket_payment_received},
-      {name: "fk_spt_ticket_payment_received_spt_ticket_cutomer_quotation1", column: :cutomer_quotation_id, reference_table: :spt_ticket_customer_quotation, table: :spt_ticket_payment_received},
+      {name: "fk_spt_ticket_payment_received_spt_ticket_cutomer_quotation1", column: :customer_quotation_id, reference_table: :spt_ticket_customer_quotation, table: :spt_ticket_payment_received},
       {name: "fk_spt_ticket_spare_part_mst_inv_product120", column: :inv_product_id, table: :spt_ticket_spare_part_non_stock, reference_table: :mst_inv_product},
       {name: "fk_spt_ticket_spare_part_users1210", column: :approved_by, table: :spt_ticket_spare_part_non_stock, reference_table: :users},
       {name: "fk_spt_ticket_spare_part_mst_inv_product210", column: :approved_inv_product_id, table: :spt_ticket_spare_part_non_stock, reference_table: :mst_inv_product},
