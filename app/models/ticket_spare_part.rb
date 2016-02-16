@@ -195,4 +195,8 @@ class ReturnPartsBundle < ActiveRecord::Base
 
   has_many :ticket_spare_part_manufactures
 
+  before_create do |return_part_bundle|
+    return_part_bundle.bundle_no = CompanyConfig.first.increase_sup_last_bundle_no
+  end
+
 end

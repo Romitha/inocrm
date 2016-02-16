@@ -109,16 +109,21 @@ window.Inventories =
       $(".add_part").addClass("hide")
 
   checked_quality_control: ->
+
     $("#act_quality_control_reject_reason").click ->
-      if $("#act_quality_control_reject_reason").is(":checked")
+      if $(@).is(":checked")
+        $("#dynamic_action_id").val($(@).data("approve-action-no"))
         $("#reject_reason_sec_hide").addClass("hide")
-        $("#change_value_submit").val("Approved")
-        $("#reject_reason").val("")
+        $("#change_value_submit").val("Approve")
+        $("#change_value_submit").attr("name", "approve")
+        $("#reject_reason").prop("disabled", true)
 
       else
+        $("#dynamic_action_id").val($(@).data("reject-action-no"))
         $("#reject_reason_sec_hide").removeClass("hide")
         $("#change_value_submit").val("Reject")
-        $("#reject_reason").val("")
+        $("#reject_reason").prop("disabled", false)
+        $("#change_value_submit").attr("name", "reject")
 
   disable_upon_manufacture: ->
     if $("#ticket_spare_part_request_from_m").is(":checked")

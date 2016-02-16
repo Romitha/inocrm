@@ -270,11 +270,11 @@ workflow_mappings = [
   ["SPPT_MFR_PART_REQUEST", "collect_part", "/tickets/collect_parts", "SPT_SC_23", "Support - Manufacture parts to be collected", nil, "ticket_id,request_spare_part_id", nil],
   ["SPPT", "issue_customer_terminate", "", "SPT_SC_24", "Support - Terminated Job Return To Custormer", "h1", "ticket_id", nil],
   ["SPPT", "customer_advance_payment", "", "SPT_SC_27", "", nil, nil, nil],
-  ["SPPT", "quality_control", "", "SPT_SC_28", "Support - Quality Control", "h1", "ticket_id,supp_engr_user", nil],
+  ["SPPT", "quality_control", "/tickets/quality_control", "SPT_SC_28", "Support - Quality Control", "h1", "ticket_id,supp_engr_user", nil],
   ["SPPT", "invoice_advance_payment", "/tickets/invoice_advance_payment", "SPT_SC_29", "Support - Advance Payment Invoice", "h1", "ticket_id,advance_payment_estimation_id", nil],
   ["SPPT_MFR_PART_RETURN", "close_event", "/tickets/close_event", "SPT_SC_30", "Support - Close Event", "h1", "ticket_id,request_spare_part_id", nil],
   ["SPPT", "approve_foc", "", "SPT_SC_31", "Support - FOC Approval", "h1", "ticket_id", nil],
-  ["SPPT", "final_job_estimate", "", "SPT_SC_33", "Support - Final Job Estimation", "h1", "ticket_id", nil]
+  ["SPPT", "final_job_estimate", "/tickets/estimate_job_final", "SPT_SC_33", "Support - Final Job Estimation", "h1", "ticket_id", nil]
 ].each{ |t| WorkflowMapping.create_with(process_name: t[0], url: t[2], screen: t[3], first_header_title: t[4],second_header_title_name: t[5], input_variables: t[6], output_variables: t[7]).find_or_create_by(task_name: t[1])}
 
 # 75  Low Margin Part Estimation Approval Suport Manager / Asst. mng  20  spt_act_job_estimate
@@ -324,9 +324,3 @@ TicketEstimation
 end
 
 WorkflowMapping.find(11).update(process_name: "SPPT_MFR_PART_REQUEST")
-
-# ALTER TABLE `company_config` CHANGE `sup_last_invoice_no` `sup_last_invoice_no` INT(11) UNSIGNED NULL DEFAULT '0';
-# ALTER TABLE `company_config` ADD `sup_last_receipt_no` INT UNSIGNED NOT NULL DEFAULT '0' AFTER `sup_last_invoice_no`;
-# ALTER TABLE `spt_ticket_payment_received` ADD `receipt_no` INT UNSIGNED NOT NULL AFTER `updated_at`, ADD `payment_type` INT NOT NULL COMMENT '1 - Cash, 2 - Credit Card, 3 - Cheque, 4 - Other' AFTER `receipt_no`, ADD `payment_note` TEXT NOT NULL COMMENT 'credit card no, cheque no, bank' AFTER `payment_type`, ADD `receipt_description` TEXT NOT NULL AFTER `payment_note`;
-# ALTER TABLE `spt_ticket_payment_received` ADD `receipt_print_count` INT NOT NULL DEFAULT '0' AFTER `receipt_description`;
-# ALTER TABLE `mst_spt_templates` ADD `receipt` TEXT NOT NULL AFTER `fsr_request_type`, ADD `receipt_request_type` VARCHAR(250) NOT NULL AFTER `receipt`;

@@ -1,0 +1,15 @@
+- ticket = @ticket
+- product = @product
+
+= render "tickets/tickets_pack/ticket_header", ticket: ticket, product: product
+
+= tab_panel do
+  = tab_nav_tab({class: "small_scale_margin-bottom2"}, ticket_info: {content: "Ticket info"}, estimate_job: {content: "Estimate external job", active_class: "active"})
+  .tab-content
+    = tab_content tabpointer: :ticket_info do
+      = tab_panel do
+        = render "tickets/tickets_pack/ticket_info", ticket: ticket, product: product
+
+    = tab_content tabpointer: :estimate_job, active_class: "active" do
+      = tab_panel do
+        = render "tickets/tickets_pack/estimate_job_final/estimate_job_final", ticket: ticket

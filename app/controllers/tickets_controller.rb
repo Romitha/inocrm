@@ -39,9 +39,6 @@ class TicketsController < ApplicationController
     respond_with(@ticket)
   end
 
-  def edit
-  end
-
   def create
     # Rails.cache.write(:ticket_params, ticket_params)
     session[:time_now] ||= Time.now.strftime("%H%M%S")
@@ -86,9 +83,6 @@ class TicketsController < ApplicationController
 
   def update
     t_params = ticket_params
-    t_params["remarks"] = "#{ticket_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" if ticket_params["remarks"].present?
-    # @ticket.update(t_params)
-    # respond_with(@ticket)
     t_params[:user_ticket_actions_attributes].first[:action_at] = Time.now if t_params[:user_ticket_actions_attributes].present?
     respond_to do |format|
       if @ticket.update(t_params)
@@ -957,8 +951,6 @@ class TicketsController < ApplicationController
     if continue
 
       t_params = ticket_params
-      t_params["remarks"] = t_params["remarks"].present? ? "#{t_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
-
       t_params["user_ticket_actions_attributes"].first.merge!("action_at" => DateTime.now.strftime("%Y-%m-%d %H:%M:%S"))
       puts t_params
       @ticket.attributes = t_params
@@ -2234,7 +2226,7 @@ class TicketsController < ApplicationController
     redirect_to todos_url, @flash_message
   end
 
-  def estimate_job
+  def estimate_job_final
     ContactNumber
     QAndA
     TaskAction
@@ -2247,15 +2239,15 @@ class TicketsController < ApplicationController
       session[:product_id] = @product.id
       Rails.cache.delete([:histories, session[:product_id]])
       Rails.cache.delete([:join, @ticket.id])
-      # @histories = Rails.cache.fetch([:histories, session[:product_id]]){Kaminari.paginate_array(@product.tickets)}.page(params[:page]).per(2)
-      # @join_tickets = Rails.cache.fetch([:join, @ticket.id]){Kaminari.paginate_array(Ticket.where(id: @ticket.joint_tickets.map(&:joint_ticket_id)))}.page(params[:page]).per(2)
-      # @q_and_answers = @ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})}
-      # @ge_q_and_answers = @ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"General Questions" => v})}
-      # # @ticket_estimation_externals = @ticket.ticket_estimation_externals.includes(:ticket_estimation).where(spt_ticket_estimation: {status_id: EstimationStatus.find_by_code("RQS").id})
+      @ticket.act_terminate_job_payments.build
+
+      @ticket_payment_received = @ticket.ticket_estimations.inject(0){|i, k| i+k.ticket_payment_received.try(:amount).to_f}
+
+      @total_estimation_amount = @ticket.ticket_estimations.where(foc_approved: false, cust_approved: true).map { |estimation| estimation.approval_required ? (estimation.ticket_estimation_externals.sum(:approved_estimated_price)+estimation.ticket_estimation_parts.sum(:approved_estimated_price)+estimation.ticket_estimation_additionals.sum(:approved_estimated_price)) : (estimation.ticket_estimation_externals.sum(:estimated_price)+estimation.ticket_estimation_parts.sum(:estimated_price)+estimation.ticket_estimation_additionals.sum(:estimated_price)) }.compact.sum
 
     end
     respond_to do |format|
-      format.html {render "tickets/tickets_pack/estimate_job"}
+      format.html {render "tickets/tickets_pack/estimate_job_final/estimate_job_final"}
     end
   end
 
@@ -2272,11 +2264,6 @@ class TicketsController < ApplicationController
       session[:product_id] = @product.id
       Rails.cache.delete([:histories, session[:product_id]])
       Rails.cache.delete([:join, @ticket.id])
-      # @histories = Rails.cache.fetch([:histories, session[:product_id]]){Kaminari.paginate_array(@product.tickets)}.page(params[:page]).per(2)
-      # @join_tickets = Rails.cache.fetch([:join, @ticket.id]){Kaminari.paginate_array(Ticket.where(id: @ticket.joint_tickets.map(&:joint_ticket_id)))}.page(params[:page]).per(2)
-      # @q_and_answers = @ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})}
-      # @ge_q_and_answers = @ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"General Questions" => v})}
-
     end
     respond_to do |format|
       format.html {render "tickets/tickets_pack/deliver_unit"}
@@ -2438,32 +2425,6 @@ class TicketsController < ApplicationController
   def update_check_fsr
   end
 
-  def customer_feedback
-    ContactNumber
-    QAndA
-    TaskAction
-    TicketSparePart
-    Inventory
-    Warranty
-    Ticket
-    @ticket = Ticket.find_by_id params[:ticket_id]
-    if @ticket
-
-      @product = @ticket.products.first
-      Rails.cache.delete([:histories, @product.id])
-      Rails.cache.delete([:join, @ticket.id])
-
-      @user_ticket_action = @ticket.user_ticket_actions.build(action_id: 2)
-      @user_assign_ticket_action = @user_ticket_action.user_assign_ticket_actions.build
-      @assign_regional_support_center = @user_ticket_action.assign_regional_support_centers.build
-
-      @ge_questions = GeQAndA.where(action_id: 5)
-    end
-    respond_to do |format|
-      format.html {render "tickets/tickets_pack/resolution"}
-    end
-  end
-
   def order_mf
     Inventory
     Warranty
@@ -2488,31 +2449,6 @@ class TicketsController < ApplicationController
     end
     respond_to do |format|
       format.html {render "tickets/tickets_pack/order_mf"}
-    end
-  end
-
-  def ticket_close_approval
-    Inventory
-    Warranty
-    ContactNumber
-    QAndA
-    TaskAction
-    User
-    ticket_id = params[:ticket_id]
-    @ticket = Ticket.find_by_id ticket_id
-    session[:ticket_id] = @ticket.id
-
-    supp_engr_user = params[:supp_engr_user]
-
-    if @ticket
-      @product = @ticket.products.first
-
-      Rails.cache.delete([:histories, @product.id])
-      Rails.cache.delete([:join, @ticket.id])
-    end
-
-    respond_to do |format|
-      format.html {render "tickets/tickets_pack/ticket_close_approval"}
     end
   end
 
@@ -2594,109 +2530,6 @@ class TicketsController < ApplicationController
     end
   end
 
-  def alert
-
-    Inventory
-    Warranty
-    ContactNumber
-    QAndA
-    TaskAction
-    Inventory
-
-    ticket_id = (params[:ticket_id] or session[:ticket_id])
-    @ticket = Ticket.find_by_id ticket_id
-
-    if @ticket
-      @product = @ticket.products.first
-      @estimation = @ticket.ticket_estimations.first
-      @spare_part = @ticket.ticket_spare_parts.first
-    end
-
-    respond_to do |format|
-      format.html {render "tickets/alerts"}
-    end
-  end
-
-  def close_event
-    Inventory
-    Warranty
-    ContactNumber
-    QAndA
-    TaskAction
-    Inventory
-    ticket_id = params[:ticket_id]
-    @ticket = Ticket.find_by_id ticket_id
-    session[:ticket_id] = @ticket.id
-
-    request_spare_part_id = params[:request_spare_part_id]
-    @spare_part = TicketSparePart.find request_spare_part_id
-
-    if @ticket
-      @product = @ticket.products.first
-      session[:product_id] = @product.id
-      Rails.cache.delete([:histories, session[:product_id]])
-      Rails.cache.delete([:join, @ticket.id])
-    end
-    respond_to do |format|
-      format.html {render "tickets/tickets_pack/close_event"}
-    end
-  end
-
-  def update_close_event
-    TaskAction
-    ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
-    @ticket = ticket_spare_part.ticket
-    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
-    if continue
-      if ticket_spare_part.update ticket_spare_part_params(ticket_spare_part)
-
-        if ticket_spare_part.ticket_spare_part_manufacture.try(:event_closed)
-          #Event Closed
-          #Set Action (44) Close Event, DB.spt_act_request_spare_part
-          user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(44).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
-          user_ticket_action.build_request_spare_part(ticket_spare_part_id: ticket_spare_part.id, reject_return_part_reason_id: params[:manual_reject_return_part_reason_id])
-          user_ticket_action.save 
-
-          # bpm output variables
-          bpm_variables = view_context.initialize_bpm_variables
-          bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
-
-          if bpm_response[:status].upcase == "SUCCESS"
-
-            flash[:notice]= "Successfully updated"
-          else
-            flash[:error]= "Close Event is updated. but Bpm error"
-          end            
-        else
-          flash[:notice] = "Successfully updated"
-        end
-
-      end
-    else
-      flash[:error]= "Unable to update. Bpm error"
-    end
-    redirect_to todos_url
-  end
-
-  def edit_ticket
-    ContactNumber
-    QAndA
-    TaskAction
-    Inventory
-    @ticket = Ticket.find_by_id params[:ticket_id]
-    if @ticket
-      @product = @ticket.products.first
-      @warranties = @product.warranties
-      session[:product_id] = @product.id
-      Rails.cache.delete([:histories, session[:product_id]])
-      Rails.cache.delete([:join, @ticket.id])
-    end
-    # @edit_ticket = true
-    respond_to do |format|
-      format.html {render "tickets/tickets_pack/edit_ticket"}
-    end
-  end
-
   def deliver_unit
     ContactNumber
     QAndA
@@ -2718,41 +2551,6 @@ class TicketsController < ApplicationController
     end
     respond_to do |format|
       format.html {render "tickets/tickets_pack/deliver_unit"}
-    end
-  end
-
-  def extend_warranty
-    ContactNumber
-    QAndA
-    TaskAction
-    TicketSparePart
-    Inventory
-    session[:ticket_id] ||= params[:ticket_id]
-    @ticket = Ticket.find(params[:ticket_id] || session[:ticket_id])# if params[:ticket_id].present?
-    if @ticket
-      @product = @ticket.products.first
-      @warranties = @product.warranties
-      session[:product_id] = @product.id
-      Rails.cache.delete([:histories, session[:product_id]])
-      Rails.cache.delete([:join, @ticket.id])
-
-    end
-
-    case params[:switch_to]
-    when "warranty_extended"
-      @warranty = Warranty.new
-      @render_template = "tickets/tickets_pack/extend_warranty/warranty_form"
-    when "r_warranty_extended"
-      @reject_warranty_extend = ActionWarrantyExtend.new
-      @render_template = "tickets/tickets_pack/extend_warranty/reject_extend_warranty"
-
-    when "edit_serial_no"
-      @render_template = "tickets/tickets_pack/order_manufacture_parts/edit_serial_no_request"
-      @complete_task = true
-    end
-    respond_to do |format|
-      format.js {render "tickets/tickets_pack/extend_warranty/extend_warranty"}
-      format.html {render "tickets/tickets_pack/extend_warranty/extend_warranty"}
     end
   end
 
@@ -2816,6 +2614,7 @@ class TicketsController < ApplicationController
     end
     supp_engr_user = params[:supp_engr_user]
     @ge_questions = GeQAndA.where(action_id: 5)
+    @action_no = 57
     @user_ticket_action = @ticket.user_ticket_actions.build
     @act_quality_control = @user_ticket_action.build_act_quality_control
 
@@ -3736,8 +3535,6 @@ class TicketsController < ApplicationController
     @ticket_fsr = @ticket.ticket_fsrs.find_by_id params[:ticket_fsr_id]
     t_params["resolution"] = t_params["resolution"].present? ? "#{t_params['resolution']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket_fsr.resolution}" : @ticket_fsr.resolution
 
-    t_params["ticket_attributes"]["remarks"] = t_params["ticket_attributes"]["remarks"].present? ? "#{t_params['ticket_attributes']['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
-
     if @ticket_fsr.update t_params
       user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(12).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
       user_ticket_action.build_act_fsr(print_fsr: false, fsr_id: @ticket_fsr.id)
@@ -3934,8 +3731,6 @@ class TicketsController < ApplicationController
     if continue
 
       t_params = ticket_params
-      t_params["remarks"] = t_params["remarks"].present? ? "#{t_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
-
       @ticket.attributes = t_params
       ticket_deliver_unit = @ticket.ticket_deliver_units.last
 
@@ -3976,8 +3771,6 @@ class TicketsController < ApplicationController
     ticket_delivery_unit_id = ticket_params["ticket_deliver_units_attributes"]["0"]["id"]
 
     t_params = ticket_params
-    t_params["remarks"] = t_params["remarks"].present? ? "#{t_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
-
     @ticket.attributes = t_params
     ticket_deliver_unit = @ticket.ticket_deliver_units.find_by_id ticket_delivery_unit_id
 
@@ -4251,7 +4044,9 @@ class TicketsController < ApplicationController
     end
 
     def ticket_params
-      params.require(:ticket).permit(:ticket_no, :sla_id, :serial_no, :status_hold, :repair_type_id, :base_currency_id, :ticket_close_approval_required, :ticket_close_approval_requested, :regional_support_job, :job_started_action_id, :job_start_note, :job_started_at, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, :status_resolve_id, ticket_deliver_units_attributes: [:deliver_to_id, :note, :created_at, :created_by, :received, :id, :received_at, :received_by], ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :ticket_action_id, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer], ticket_estimations_attributes: [:note, :currency_id, :status_id, :requested_at, :requested_by], user_ticket_actions_attributes: [:id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, user_assign_ticket_actions_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy], ticket_re_assign_request_attributes: [:reason_id, :_destroy], ticket_action_taken_attributes: [:action, :_destroy], ticket_terminate_job_attributes: [:id, :reason_id, :foc_requested, :_destroy], act_hold_attributes: [:id, :reason_id, :_destroy, :un_hold_action_id], hp_case_attributes: [:id, :case_id, :case_note], ticket_finish_job_attributes: [:resolution, :_destroy], ticket_terminate_job_payments_attributes: [:id, :amount, :payment_item_id, :_destroy, :ticket_id, :currency_id], act_fsr_attributes: [:print_fsr], serial_request_attributes: [:reason], job_estimation_attributes: [:supplier_id]], ticket_extra_remarks_attributes: [:id, :note, :created_by, :extra_remark_id], products_attributes: [:id, :sold_country_id, :pop_note, :pop_doc_url, :pop_status_id], ticket_fsrs_attributes: [:work_started_at, :work_finished_at, :hours_worked, :down_time, :travel_hours, :engineer_time_travel, :engineer_time_on_site, :resolution, :completion_level, :created_by], ticket_on_loan_spare_parts_attributes: [:id, :approved_inv_product_id, :approved_store_id, :approved_main_inv_product_id, :approved, :return_part_damage, :return_part_damage_reason_id])
+      ticket_params = params.require(:ticket).permit(:ticket_no, :sla_id, :serial_no, :status_hold, :repair_type_id, :base_currency_id, :ticket_close_approval_required, :ticket_close_approval_requested, :regional_support_job, :job_started_action_id, :job_start_note, :job_started_at, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, :status_resolve_id, ticket_deliver_units_attributes: [:deliver_to_id, :note, :created_at, :created_by, :received, :id, :received_at, :received_by], ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :ticket_action_id, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer], ticket_estimations_attributes: [:note, :currency_id, :status_id, :requested_at, :requested_by], user_ticket_actions_attributes: [:id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, user_assign_ticket_actions_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy], ticket_re_assign_request_attributes: [:reason_id, :_destroy], ticket_action_taken_attributes: [:action, :_destroy], ticket_terminate_job_attributes: [:id, :reason_id, :foc_requested, :_destroy], act_hold_attributes: [:id, :reason_id, :_destroy, :un_hold_action_id], hp_case_attributes: [:id, :case_id, :case_note], ticket_finish_job_attributes: [:resolution, :_destroy], ticket_terminate_job_payments_attributes: [:id, :amount, :payment_item_id, :_destroy, :ticket_id, :currency_id], act_fsr_attributes: [:print_fsr], serial_request_attributes: [:reason], job_estimation_attributes: [:supplier_id]], ticket_extra_remarks_attributes: [:id, :note, :created_by, :extra_remark_id], products_attributes: [:id, :sold_country_id, :pop_note, :pop_doc_url, :pop_status_id], ticket_fsrs_attributes: [:work_started_at, :work_finished_at, :hours_worked, :down_time, :travel_hours, :engineer_time_travel, :engineer_time_on_site, :resolution, :completion_level, :created_by], ticket_on_loan_spare_parts_attributes: [:id, :approved_inv_product_id, :approved_store_id, :approved_main_inv_product_id, :approved, :return_part_damage, :return_part_damage_reason_id])
+      ticket_params[:current_user_id] = current_user.id
+      ticket_params
     end
 
     def product_brand_params

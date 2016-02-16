@@ -160,7 +160,7 @@ Rails.application.routes.draw do
       get "approve_store_parts"
       get "ticket_close_approval"
       get "assign-ticket", action: :assign_ticket
-      get "estimate_job"
+      get "estimate_job_final"
       get "ticket_spare_part_in_modal"
       get "estimate_the_part_internal"#"estimate_part"
       get "deliver_unit"
@@ -340,6 +340,8 @@ Rails.application.routes.draw do
   resources :invoices do
     collection do
       post "update_invoice_advance_payment"
+      post "update_quality_control"
+      post "update_estimate_job_final"
     end
   end
      

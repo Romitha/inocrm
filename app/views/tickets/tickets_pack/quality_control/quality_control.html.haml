@@ -12,4 +12,4 @@
         = render "tickets/tickets_pack/ticket_info", ticket: ticket, product: product#, customer: customer, warranties: warranties, histories: histories, join_tickets: join_tickets, ge_q_and_as: ge_q_and_as, pr_q_and_as: pr_q_and_answers
     = tab_content tabpointer: :quality_control, active_class: "active" do
       = tab_panel do
-        = render "tickets/tickets_pack/quality_control/quality_control", ticket: ticket, supp_engr_user: supp_engr_user, action_no: 5, user_ticket_action: user_ticket_action
+        = render "tickets/tickets_pack/quality_control/quality_control", ticket: ticket, supp_engr_user: supp_engr_user, action_no: @action_no, user_ticket_action: user_ticket_action

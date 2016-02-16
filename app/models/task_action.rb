@@ -44,8 +44,8 @@ class UserTicketAction < ActiveRecord::Base
   has_one :ticket_terminate_job, foreign_key: :ticket_action_id
   accepts_nested_attributes_for :ticket_terminate_job, allow_destroy: true
 
-  has_one :ticket_terminate_job_payment, foreign_key: :ticket_action_id
-  accepts_nested_attributes_for :ticket_terminate_job_payment, allow_destroy: true
+  has_one :act_terminate_job_payment, foreign_key: :ticket_action_id
+  accepts_nested_attributes_for :act_terminate_job_payment, allow_destroy: true
 
   has_one :act_hold, foreign_key: :ticket_action_id
   accepts_nested_attributes_for :act_hold, allow_destroy: true
@@ -152,20 +152,22 @@ class TicketTerminateJob < ActiveRecord::Base
   belongs_to :reason, foreign_key: :reason_id
 end
 
-class TicketTerminateJobPayment < ActiveRecord::Base
+class ActTerminateJobPayment < ActiveRecord::Base
   self.table_name = "spt_act_terminate_job_payment"
 
   belongs_to :user_ticket_action, foreign_key: :ticket_action_id
   belongs_to :ticket, foreign_key: :ticket_id
   belongs_to :payment_item, foreign_key: :payment_item_id
-  belongs_to :terminate_invoice
+
+  belongs_to :currency
+  belongs_to :reason, foreign_key: :adjust_reason_id
 end
 
 class PaymentItem < ActiveRecord::Base
   self.table_name = "mst_spt_payment_item"
 
-  has_many :ticket_terminate_job_payments, foreign_key: :payment_item_id
-  accepts_nested_attributes_for :ticket_terminate_job_payments, allow_destroy: true
+  has_many :act_terminate_job_payments, foreign_key: :payment_item_id
+  accepts_nested_attributes_for :act_terminate_job_payments, allow_destroy: true
 end
 
 class ActHold < ActiveRecord::Base
@@ -238,17 +240,6 @@ class RequestOnLoanSparePart < ActiveRecord::Base
   belongs_to :user_ticket_action, foreign_key: :ticket_action_id
 
   belongs_to :ticket_on_loan_spare_part, foreign_key: :ticket_on_loan_spare_part_id
-
-end
-
-class CustomerFeedback < ActiveRecord::Base
-  self.table_name = "spt_act_customer_feedback"
-
-  belongs_to :feedback
-
-  belongs_to :user_ticket_action, foreign_key: :ticket_action_id
-
-  belongs_to :ticket_payment_received, foreign_key: :payment_received_id
 
 end
 

@@ -69,8 +69,8 @@ class Ticket < ActiveRecord::Base
   has_many :ticket_deliver_units
   accepts_nested_attributes_for :ticket_deliver_units, allow_destroy: true
 
-  has_many :ticket_terminate_job_payments
-  accepts_nested_attributes_for :ticket_terminate_job_payments, allow_destroy: true
+  has_many :act_terminate_job_payments
+  accepts_nested_attributes_for :act_terminate_job_payments, allow_destroy: true
 
   has_many :ticket_estimations, foreign_key: :ticket_id
   accepts_nested_attributes_for :ticket_estimations, allow_destroy: true
@@ -92,7 +92,7 @@ class Ticket < ActiveRecord::Base
   validates_numericality_of [:ticket_no, :priority]
   validates_inclusion_of :cus_chargeable, in: [true, false]
 
-  [:initiated_by, :initiated_by_id].each do |dyna_method|
+  [:initiated_by, :initiated_by_id, :current_user_id].each do |dyna_method|
     define_method(dyna_method) do
       dyna_columns.find_by_data_key(dyna_method).try(:data_value)
     end
@@ -106,6 +106,10 @@ class Ticket < ActiveRecord::Base
 
   before_create :update_ticket_no
   after_update :flash_cache
+
+  before_save do |ticket|
+    ticket.remarks = "#{ticket.remarks} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(ticket.current_user_id).email}</span><br/>#{ticket.remarks_was}" if ticket.persisted? and ticket.remarks_changed?
+  end
 
   def update_ticket_no
     self.ticket_no = (self.class.any? ? (self.class.order("created_at ASC").map{|t| t.ticket_no.to_i}.max + 1) : 1)
@@ -320,6 +324,8 @@ class Reason < ActiveRecord::Base
 
   has_many :action_warranty_extends, foreign_key: :reject_reason_id
   accepts_nested_attributes_for :action_warranty_extends, allow_destroy: true
+
+  has_many :act_terminate_job_payments, foreign_key: :adjust_reason_id
 end
 
 class TicketReAssignRequest < ActiveRecord::Base
@@ -344,6 +350,7 @@ class TicketPaymentReceived < ActiveRecord::Base
   belongs_to :ticket_payment_received_type, foreign_key: :type_id
 
   belongs_to :invoice
+  belongs_to :customer_quotation
 
   validates_presence_of [:ticket_id, :received_at, :received_by, :amount, :type_id, :currency_id]
 

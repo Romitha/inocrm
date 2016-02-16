@@ -144,6 +144,16 @@ class CompanyConfig < ActiveRecord::Base
     update sup_last_receipt_no: (sup_last_receipt_no.to_i+1)
     sup_last_receipt_no
   end
+
+  def increase_sup_last_bundle_no
+    update sup_last_bundle_no: (sup_last_bundle_no.to_i+1)
+    sup_last_bundle_no
+  end
+
+  def increase_sup_last_quotation_no
+    update sup_last_quotation_no: (sup_last_quotation_no.to_i+1)
+    sup_last_quotation_no
+  end
 end
 
 class Account < ActiveRecord::Base

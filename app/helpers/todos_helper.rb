@@ -133,6 +133,9 @@ module TodosHelper
 
   def initialize_bpm_variables
     {
+      d1_pop_approval_pending: "N",
+      d2_recorrection: "N",
+      d3_regional_support_job: "N",
       d4_job_complete: "N",
       d5_re_assigned: "N",
       d6_close_approval_required: "N",
@@ -162,6 +165,15 @@ module TodosHelper
       d30_parts_collection_pending: "N",
       d31_more_parts_collection_pending: "N",
       d32_return_manufacture_part: "N",
+      d33_return_part_reject: "N",
+      d34_event_closed: "N",
+      d35_parts_bundle_pending: "N",
+      d36_more_parts_bundle_pending: "N",
+      d37_qc_passed: "N",
+      d38_ticket_close_approved: "N",
+      d39_re_open: "N",
+      d40_ticket_approved_to_close: "N",
+      d41_re_open: "N",
       part_estimation_id: "-",
       request_spare_part_id: "-",
       request_onloan_spare_part_id: "-",
@@ -169,7 +181,6 @@ module TodosHelper
       advance_payment_estimation_id: "-",
       deliver_unit_id: "-",
       supp_engr_user: "-"
-
     }
   end
 

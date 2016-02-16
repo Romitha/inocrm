@@ -53,7 +53,9 @@
             = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
           = f.input :id, as: :hidden
-          = f.input :bundle_no
+          %strong Bundle no:
+          = ComapnyConfig.first.sup_last_bundle_no.to_i
+          %br
           = f.input :note
           = f.submit "Save", class: "btn btn-sm btn-success"
 

@@ -107,6 +107,93 @@ class InvoicesController < ApplicationController
     render @render_to_page #js: "window.location.href = '#{todos_url}'"
   end
 
+  def update_estimate_job_final
+    @ticket = Ticket.find params[:ticket_id]
+    @ticket.attributes = ticket_params
+    payment_completed = params[:payment_completed].present?
+
+    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    bpm_variables = view_context.initialize_bpm_variables
+
+    if continue
+
+      if ticket.final_amount_to_be_paid.to_f > 0
+        @ticket.cus_payment_required = true
+        @ticket.save
+        d12_need_to_invoice = "Y"
+      else
+        @ticket.cus_payment_required = false
+        @ticket.save
+        d12_need_to_invoice = "N"
+        payment_completed = true
+      end
+
+      if payment_completed
+        @ticket.update customer_payment_completed: true
+      end
+
+      # 63 - Estimate Job Final
+      user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(63).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+      user_ticket_action.save
+
+        # bpm output variables
+      bpm_variables.merge! d12_need_to_invoice: d12_need_to_invoice
+      bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+      if bpm_response[:status].upcase == "SUCCESS"
+        flash[:notice] = "Successfully updated"
+      else
+        flash[:error] = "invoice is updated. but Bpm error"
+      end
+
+    else
+      flash[:error] = "Bpm error."
+    end
+  end
+
+  def update_quality_control
+    TaskAction
+    update_ticket_params = ticket_params
+    @ticket = Ticket.find params[:ticket_id]
+    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+
+    if continue
+      # bpm output variables
+      bpm_variables = view_context.initialize_bpm_variables
+
+      if params[:approve] #Approve QC
+
+        bpm_variables.merge! d37_qc_passed: "Y"
+
+        update_ticket_params.merge! status_id: TicketStatus.find_by_code("PMT").id, qc_passed: true
+        unless @ticket.cus_chargeable or @ticket.cus_payment_required or @ticket.ticket_terminated
+          update_ticket_params.merge! status_id: TicketStatus.find_by_code("CFB").id
+        end
+
+        @ticket.update update_ticket_params
+
+      elsif params[:reject] #Reject QC
+
+        bpm_variables.merge! d38_ticket_close_approved: "Y" if @ticket.ticket_close_approved and @ticket.ticket_close_approval_required
+
+        @ticket.update qc_passed: false, status_id: TicketStatus.find_by_code("ROP").id, re_open_count: (@ticket.re_open_count.to_i+1), job_finished: false, ticket_close_approval_required: true, ticket_close_approval_requested: false, ticket_close_approved: false
+
+      end
+
+      bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+      if bpm_response[:status].upcase == "SUCCESS"
+        flash[:notice] = "Successfully updated"
+      else
+        flash[:error] = "invoice is updated. but Bpm error"
+      end
+    else
+      flash[:error] = "Bpm error."
+    end
+
+    redirect_to todos_url
+  end
+
   private
     def set_invoice
       @invoice = Invoice.find(params[:id])
@@ -121,5 +208,9 @@ class InvoicesController < ApplicationController
 
     def ticket_payment_received_params
       params.require(:ticket_payment_received).permit(:amount, :note, :receipt_no, :payment_type, :payment_note, :receipt_description)
+    end
+
+    def ticket_params
+      params.require(:ticket).permit(:id, :remarks, :final_amount_to_be_paid, user_ticket_actions_attributes: [:id, :_destroy, :action_at, :action_id, :action_by, :re_open_index, act_quality_control_attributes: [:approved, :reject_reason]], ge_q_and_answers_attributes: [:id, :general_question_id, :ticket_action_id, :answer], q_and_answers_attributes: [:id, :problematic_question_id, :ticket_action_id, :answer])
     end
 end

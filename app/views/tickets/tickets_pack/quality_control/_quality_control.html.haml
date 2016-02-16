@@ -1,75 +1,4 @@
-/ - ge_questions = @ge_questions
-
-/ - pr_q_and_answers = []
-/ - ge_q_and_answers = []
-
-/ - if !ticket.q_and_answers.any?{|q_and_answer| q_and_answer.q_and_a.task_action.action_no == action_no}
-/   - ticket.problem_category.q_and_as.includes(:task_action).where(mst_spt_action: {action_no: action_no}).each do |q_and_a|
-/     - pr_q_and_answers << ticket.q_and_answers.build(problematic_question_id: q_and_a.id)
-
-/ - elsif ticket.persisted?
-/   - pr_q_and_answers = ticket.q_and_answers.includes(:q_and_a).where(mst_spt_problematic_question: {action_id: action_no})
-
-/ - elsif !ticket.persisted? and ticket.q_and_answers.present?
-/   - pr_q_and_answers = ticket.q_and_answers
-
-/ - if !ticket.ge_q_and_answers.any?{|ge_q_and_answer| ge_q_and_answer.ge_q_and_a.task_action.action_no == action_no}
-/   - ge_questions.each do |ge_q_and_a|
-/     - ge_q_and_answers << ticket.ge_q_and_answers.build(general_question_id: ge_q_and_a.id)
-
-/ - elsif ticket.persisted?
-/   - ge_q_and_answers = ticket.ge_q_and_answers.includes(:ge_q_and_a).where(mst_spt_general_question: {action_id: action_no})
-
-/ - elsif !ticket.persisted? and ticket.ge_q_and_answers.present?
-/   - ge_q_and_answers = ticket.ge_q_and_answers
-
-/ = simple_form_for ticket, url: "#", remote: true do |f|
-/   .row
-/     .col-md-6.col-xs-6
-/       %strong Resolution Summary
-/       = f.object.resolution_summary
-/     .col-md-6.col-xs-6
-/       = f.simple_fields_for "user_ticket_actions_attributes[]", user_ticket_action do |uf|
-/         = uf.simple_fields_for :act_quality_control  do |aqc|
-/           = aqc.label "Quality Control Approved"
-/           = aqc.check_box :approved
-/   .row
-/     .col-md-6.col-xs-6
-/       = f.input :remarks, input_html: {value: nil}, label:"Note"
-/     .col-md-6.col-xs-6
-/       = f.label "Reject Reason"
-/       = f.select :hold_reason_id, Reason.all.map {|r| [r.reason,r.id] }, include_blank: true
-/   .row
-/     %h4 General questions
-/     - ge_q_and_answers.each_with_index do |ge_q_and_answer, index|
-/       = f.simple_fields_for "ge_q_and_answers_attributes[#{index}]", ge_q_and_answer do |qa|
-/         = qa.input :id, as: :hidden
-/         = qa.input :general_question_id, as: :hidden
-/         = qa.input :ticket_action_id, as: :hidden, input_html: {value: action_no}
-/         .col-md-6
-/           .strong= qa.object.ge_q_and_a.question
-
-/           - if qa.object.ge_q_and_a.answer_type == "YN"
-/             = qa.input :answer, as: :radio_buttons, collection: ["Yes", "No"], include_blank: false, wrapper: :for_radio_button, required: qa.object.ge_q_and_a.compulsory, input_html: {name: "ticket[ge_q_and_answers_attributes][#{index}][answer]"}
-/           - elsif qa.object.ge_q_and_a.answer_type == "TX"
-/             = qa.input :answer, required: qa.object.ge_q_and_a.compulsory
-/     %hr
-/     %h4 Problematic questions
-/     - pr_q_and_answers.each_with_index do |pr_q_and_answer, index|
-/       = f.simple_fields_for "q_and_answers_attributes[#{index}]", pr_q_and_answer do |qa|
-/         = qa.input :id, as: :hidden
-/         = qa.input :problematic_question_id, as: :hidden
-/         = qa.input :ticket_action_id, as: :hidden, input_html: {value: action_no}
-/         .col-md-6
-/           .strong= qa.object.q_and_a.question
-/           - if qa.object.q_and_a.answer_type == "YN"
-/             = qa.input :answer, as: :radio_buttons, collection: ["Yes", "No"], include_blank: false, wrapper: :for_radio_button, required: qa.object.q_and_a.compulsory, input_html: {rows: 1}, input_html: {name: "ticket[q_and_answers_attributes][#{index}][answer]"}
-/           - elsif qa.object.q_and_a.answer_type == "TX"
-/             = qa.input :answer, required: qa.object.q_and_a.compulsory, input_html: {rows: 1}
-/   .row
-/     .col-md-4.pull-right{style: "margin-bottom: 10px;"}
-/       = f.submit "Save", class: "btn btn-success"
-/       = f.submit "Cancle", class: "btn btn-default"
+- uri = URI(request.url)
 
 - ticket = @ticket
 - ge_questions = @ge_questions
@@ -82,66 +11,85 @@
     - pr_q_and_answers << ticket.q_and_answers.build(problematic_question_id: q_and_a.id)
 
 - elsif ticket.persisted?
+
   - pr_q_and_answers = ticket.q_and_answers.includes(:q_and_a).where(mst_spt_problematic_question: {action_id: action_no})
 
 - elsif !ticket.persisted? and ticket.q_and_answers.present?
+
   - pr_q_and_answers = ticket.q_and_answers
 
 - if !ticket.ge_q_and_answers.any?{|ge_q_and_answer| ge_q_and_answer.ge_q_and_a.task_action.action_no == action_no}
+
   - ge_questions.each do |ge_q_and_a|
     - ge_q_and_answers << ticket.ge_q_and_answers.build(general_question_id: ge_q_and_a.id)
 
 - elsif ticket.persisted?
+
   - ge_q_and_answers = ticket.ge_q_and_answers.includes(:ge_q_and_a).where(mst_spt_general_question: {action_id: action_no})
 
 - elsif !ticket.persisted? and ticket.ge_q_and_answers.present?
+
   - ge_q_and_answers = ticket.ge_q_and_answers
 
-= simple_nested_form_for ticket, url: update_ticket_q_and_a_q_and_as_path do |f|
+= simple_nested_form_for ticket, url: update_quality_control_invoices_path, method: :post do |f|
+  = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
+  = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
+  = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
+  - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
+    = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
   .row  
     = f.simple_fields_for "user_ticket_actions_attributes[]", user_ticket_action do |uf|
+      = uf.input :action_at, as: :hidden, input_html: {value: DateTime.now.strftime("%Y-%m-%d %H:%M")}
+      = uf.input :action_id, as: :hidden, input_html: {value: TaskAction.find_by_action_no(67).id, id: "dynamic_action_id"}
+      = uf.input :action_by, as: :hidden, input_html: {value: current_user.id}
+      = uf.input :re_open_index, as: :hidden, input_html: {value: ticket.re_open_count.to_i}
+
       = uf.simple_fields_for :act_quality_control  do |aqc|
         .col-md-6.col-xs-6
           = aqc.label "Quality Control Passed"
-          = aqc.check_box :approved, id: "act_quality_control_reject_reason"
+          = aqc.check_box :approved, id: "act_quality_control_reject_reason", data: {approve_action_no: 57, reject_action_no: 67}
+          %h4 Histories
+          %ul
+            - ticket.user_ticket_actions.where(action_id: 21).each do |action|
+              %li= action.ticket_finish_job.resolution
+          %strong Resolution Summary
+          = f.object.resolution_summary
         #reject_reason_sec_hide.col-md-6.col-xs-6
           = aqc.input :reject_reason, input_html: {id: "reject_reason"}
   .row
     .col-md-6.col-xs-6
-      %strong Resolution Summary
-      = f.object.resolution_summary
     .col-md-6.col-xs-6
-      = f.input :remarks, input_html: {value: nil}, label:"Note"
-    
-  = hidden_field_tag :ticket_id, ticket.id
+      = f.input :remarks, input_html: {value: nil}, label: "Note"
 
-  %h4 General questions
-  - ge_q_and_answers.each_with_index do |ge_q_and_answer, index|
-    = f.simple_fields_for "ge_q_and_answers_attributes[#{index}]", ge_q_and_answer do |qa|
-      = qa.input :id, as: :hidden
-      = qa.input :general_question_id, as: :hidden
-      = qa.input :ticket_action_id, as: :hidden, input_html: {value: action_no}
-      .col-md-6
-        .strong= qa.object.ge_q_and_a.question
+  #approve
+    %h4 General questions
+    - ge_q_and_answers.each_with_index do |ge_q_and_answer, index|
+      = f.simple_fields_for "ge_q_and_answers_attributes[#{index}]", ge_q_and_answer do |qa|
+        = qa.input :id, as: :hidden
+        = qa.input :general_question_id, as: :hidden
+        = qa.input :ticket_action_id, as: :hidden, input_html: {value: action_no}
+        .col-md-6
+          .strong= qa.object.ge_q_and_a.question
 
-        - if qa.object.ge_q_and_a.answer_type == "YN"
-          = qa.input :answer, as: :radio_buttons, collection: ["Yes", "No"], include_blank: false, wrapper: :for_radio_button, required: qa.object.ge_q_and_a.compulsory, input_html: {name: "ticket[ge_q_and_answers_attributes][#{index}][answer]"}
-        - elsif qa.object.ge_q_and_a.answer_type == "TX"
-          = qa.input :answer, required: qa.object.ge_q_and_a.compulsory
-  %hr
-  %h4 Problematic questions
-  - pr_q_and_answers.each_with_index do |pr_q_and_answer, index|
-    = f.simple_fields_for "q_and_answers_attributes[#{index}]", pr_q_and_answer do |qa|
-      = qa.input :id, as: :hidden
-      = qa.input :problematic_question_id, as: :hidden
-      = qa.input :ticket_action_id, as: :hidden, input_html: {value: action_no}
-      .col-md-6
-        .strong= qa.object.q_and_a.question
-        - if qa.object.q_and_a.answer_type == "YN"
-          = qa.input :answer, as: :radio_buttons, collection: ["Yes", "No"], include_blank: false, wrapper: :for_radio_button, required: qa.object.q_and_a.compulsory, input_html: {rows: 1}, input_html: {name: "ticket[q_and_answers_attributes][#{index}][answer]"}
-        - elsif qa.object.q_and_a.answer_type == "TX"
-          = qa.input :answer, required: qa.object.q_and_a.compulsory, input_html: {rows: 1}
+          - if qa.object.ge_q_and_a.answer_type == "YN"
+            = qa.input :answer, as: :radio_buttons, collection: ["Yes", "No"], include_blank: false, wrapper: :for_radio_button, required: qa.object.ge_q_and_a.compulsory, input_html: {name: "ticket[ge_q_and_answers_attributes][#{index}][answer]"}
+          - elsif qa.object.ge_q_and_a.answer_type == "TX"
+            = qa.input :answer, required: qa.object.ge_q_and_a.compulsory
+    %hr
+    %h4 Problematic questions
+    - pr_q_and_answers.each_with_index do |pr_q_and_answer, index|
+      = f.simple_fields_for "q_and_answers_attributes[#{index}]", pr_q_and_answer do |qa|
+        = qa.input :id, as: :hidden
+        = qa.input :problematic_question_id, as: :hidden
+        = qa.input :ticket_action_id, as: :hidden, input_html: {value: action_no}
+        .col-md-6
+          .strong= qa.object.q_and_a.question
+          - if qa.object.q_and_a.answer_type == "YN"
+            = qa.input :answer, as: :radio_buttons, collection: ["Yes", "No"], include_blank: false, wrapper: :for_radio_button, required: qa.object.q_and_a.compulsory, input_html: {rows: 1}, input_html: {name: "ticket[q_and_answers_attributes][#{index}][answer]"}
+          - elsif qa.object.q_and_a.answer_type == "TX"
+            = qa.input :answer, required: qa.object.q_and_a.compulsory, input_html: {rows: 1}
+
   .row
     .col-md-12{style: "margin-bottom: 10px;"}
-      = f.submit "#{user_ticket_action.act_quality_control.approved == true ? 'Approved' : 'Reject'}", class: "btn btn-success", id: "change_value_submit"
+      = f.submit "Reject", class: "btn btn-success", id: "change_value_submit", name: "reject"

@@ -15,7 +15,7 @@
                 .col-md-3
                   %p By: #{Rails.cache.fetch([:action_by, action.action_by]){User.find(action.action_by)}.user_name}
                 .col-md-2
-                  %p Re-Open: #{action.re_open_index > 0 ? 'Yes ('+action.re_open_index+')' : 'No'}
+                  %p Re-Open: #{action.re_open_index > 0 ? 'Yes (#{action.re_open_index})' : 'No'}
 
           
             -if action.action_id == 2
@@ -505,37 +505,38 @@
                       Not Approved
 
             -if action.action_id == 42
-              .panel-body 
-                .row
-                  .col-md-4
-                    Spare Part No: #{action.request_spare_part.ticket_spare_part.spare_part_no}
-                  .col-md-4
-                    Spare Part Description: #{action.request_spare_part.ticket_spare_part.spare_part_description}
-                  .col-md-4 
-                    -if action.request_spare_part.ticket_spare_part.cus_chargeable_part == true
-                      Customer Chargeable: Yes
-                    -else
-                      Customer Chargeable: No
-                .row
-                  .col-md-4
-                    Reject Reason: #{action.request_spare_part.reject_return_part_reason.try(:reason)}
-                .row
-                  .col-md-4
-                    -if action.request_spare_part.ticket_spare_part.request_from == 'M'
-                      Request From Manufacture
+              .panel-body
+                - if action.request_spare_part
+                  .row
+                    .col-md-4
+                      Spare Part No: #{action.request_spare_part.ticket_spare_part.spare_part_no}
+                    .col-md-4
+                      Spare Part Description: #{action.request_spare_part.ticket_spare_part.spare_part_description}
+                    .col-md-4 
+                      -if action.request_spare_part.ticket_spare_part.cus_chargeable_part == true
+                        Customer Chargeable: Yes
+                      -else
+                        Customer Chargeable: No
+                  .row
+                    .col-md-4
+                      Reject Reason: #{action.request_spare_part.reject_return_part_reason.try(:reason)}
+                  .row
+                    .col-md-4
+                      -if action.request_spare_part.ticket_spare_part.request_from == 'M'
+                        Request From Manufacture
+                      -if action.request_spare_part.ticket_spare_part.request_from == 'S'
+                        Request From Store
+
                     -if action.request_spare_part.ticket_spare_part.request_from == 'S'
-                      Request From Store
+                      .col-md-4
+                        Store Id: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.store_id}
+                      .col-md-4
+                        Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
 
-                  -if action.request_spare_part.ticket_spare_part.request_from == 'S'
+                  .row
                     .col-md-4
-                      Store Id: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.store_id}
-                    .col-md-4
-                      Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
-
-                .row
-                  .col-md-4
-                    Bundle No:
-                    #{action.request_spare_part.ticket_spare_part.try(:ticket_spare_part_manufacture).try(:return_parts_bundle).try(:bundle_no)}
+                      Bundle No:
+                      #{action.request_spare_part.ticket_spare_part.try(:ticket_spare_part_manufacture).try(:return_parts_bundle).try(:bundle_no)}
 
             -if action.action_id == 43
               .panel-body
@@ -669,6 +670,56 @@
                   .col-md-4
 
             -if action.action_id == 67
+              .panel-body
+                .row
+                  .col-md-4
+
+            -if action.action_id == 68
+              .panel-body
+                .row
+                  .col-md-4
+
+            -if action.action_id == 69
+              .panel-body
+                .row
+                  .col-md-4
+
+            -if action.action_id == 70
+              .panel-body
+                .row
+                  .col-md-4
+
+            -if action.action_id == 71
+              .panel-body
+                .row
+                  .col-md-4
+
+            -if action.action_id == 72
+              .panel-body
+                .row
+                  .col-md-4
+
+            -if action.action_id == 73
+              .panel-body
+                .row
+                  .col-md-4
+
+            -if action.action_id == 74
+              .panel-body
+                .row
+                  .col-md-4
+
+            -if action.action_id == 75
+              .panel-body
+                .row
+                  .col-md-4
+
+            -if action.action_id == 76
+              .panel-body
+                .row
+                  .col-md-4
+
+            -if action.action_id == 77
               .panel-body
                 .row
                   .col-md-4

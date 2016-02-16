@@ -8,4 +8,5 @@ class Currency < ActiveRecord::Base
   has_many :grn_items
 
   has_many :inventory_product_info, foreign_key: :currency_id
+  has_many :act_terminate_job_payments
 end
