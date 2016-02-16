@@ -4,7 +4,10 @@ class ContactNumber < ActiveRecord::Base
 
   TYPES = %w(Land Mobile Mail Fax Skype)
   validates :value, presence: true
-  validates :category, presence: true
+  # validates :value,:presence => true,
+  #                :numericality => true,
+  #                :length => { :minimum => 10, :maximum => 15 }
+  # validates :category, presence: true
 
   scope :primary_contactnumber, -> {where(primary: true)}
   scope :nonprimary_contactnumber, -> {where(primary: false)}
@@ -30,7 +33,10 @@ class ContactTypeValue < ActiveRecord::Base
   belongs_to :customer
   belongs_to :contact_type
 
-  validates_presence_of [:contact_type_id, :value]
+  # validates_presence_of [:contact_type_id, :value]
+  validates :value,:presence => true,
+                 :numericality => true,
+                 :length => { :minimum => 10, :maximum => 15 }
 end
 
 class ContactPersonContactType < ActiveRecord::Base
