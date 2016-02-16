@@ -28,9 +28,9 @@
         %dd #{history.report_person and history.report_person.mst_title.title} #{history.report_person and history.report_person.name.capitalize}
         %br
         %dt Engineer
-        %dd
+        %dd= User.find_by_id(history.owner_engineer_id).try(:first_name)
         %dt Reported by
         %dd
         %dt Resolution summary
-        %dd
+        %dd= history.resolution_summary
         %br
