@@ -26,10 +26,10 @@
         = f.association :ticket_fsr, collection: ticket.ticket_fsrs.map{|tf| [tf.id, tf.id]}, wrapper_html: {class: "col-md-12"}
     .row
       .col-md-3
-        = f.input :spare_part_no, wrapper_html: {class: "col-md-12"}, required: true
+        = f.input :spare_part_no, wrapper_html: {class: "col-md-12"}, required: true, placeholder: "Part Number"
 
       .col-md-3
-        = f.input :spare_part_description, wrapper_html: {class: "col-md-12"}, label: "Part Description", input_html: {class: "typeahead", autocomplete: "off", spellcheck: "false"}, placeholder: "Part number", required: true
+        = f.input :spare_part_description, wrapper_html: {class: "col-md-12"}, label: "Part Description", input_html: {class: "typeahead", autocomplete: "off", spellcheck: "false"}, placeholder: "Part Description", required: true
         %div.col-md-3{class: "#{('hide' if @ticket_spare_part.ticket.cus_chargeable or @ticket_spare_part.ticket.warranty_type.code == 'NW' or @ticket_spare_part.ticket.warranty_type.code == 'UW')}"}
       .col-md-3
         = f.input :faulty_serial_no, wrapper_html: {class: "col-md-12"}, label: "Faulty Serial No"
