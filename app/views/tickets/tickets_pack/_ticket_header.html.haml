@@ -53,8 +53,14 @@
             #{ticket.sla_finished_at.try :strftime, "%Y-%m-%d %H:%M"}
             %br
             %strong Remaining:
-          .panel-heading{style: "text-align: center"}
-            SLA
+          - if ticket.reason.sla_pause == true
+            .panel.panel-danger
+              .panel-heading{style: "text-align: center"}
+                SLA Pause
+          - else
+            .panel-heading{style: "text-align: center"}
+              SLA
+
     .col-md-3.small_scale_padding-top1
       .panel-group
         .panel{style: "border: 1px solid #dddddd;"}

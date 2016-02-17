@@ -19,7 +19,8 @@
       = uf.input :re_open_index, as: :hidden, input_html: {value: ticket.re_open_count}
 
       = uf.simple_fields_for :act_hold do |rf|
-        = rf.association :reason, collection: Reason.where(hold: true), label_method: :reason, value_method: :id
+        / = rf.association :reason, collection: Reason.where(hold: true), label_method: :reason, value_method: :id
+        = rf.association :reason, collection: Reason.where(hold: true).uniq{|e| e.id}.map{|e| [(e.sla_pause == true ? "#{e.reason} ( SLA pause )" : e.reason), e.id]}
         / = rf.input :un_hold_action_id, as: :hidden, input_html: {value: 100}
     = f.input :status_hold, as: :hidden, input_html: {value: true}
     = f.input :remarks, input_html: {value: nil}
