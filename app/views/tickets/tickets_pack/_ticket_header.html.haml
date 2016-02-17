@@ -53,7 +53,7 @@
             #{ticket.sla_finished_at.try :strftime, "%Y-%m-%d %H:%M"}
             %br
             %strong Remaining:
-          - if ticket.reason.sla_pause == true
+          - if ticket.try(:reason).try(:sla_pause) == true
             .panel.panel-danger
               .panel-heading{style: "text-align: center"}
                 SLA Pause

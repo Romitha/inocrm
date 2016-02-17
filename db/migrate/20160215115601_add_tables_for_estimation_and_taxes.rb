@@ -193,8 +193,7 @@ class AddTablesForEstimationAndTaxes < ActiveRecord::Migration
     remove_foreign_key :spt_ticket_payment_received, name: "fk_spt_ticket_payment_received_spt_invoice1"
     add_index :spt_ticket_payment_received, :invoice_id, name: "fk_spt_ticket_payment_received_spt_ticket_invoice1_idx"
 
-    add_column :spt_ticket_payment_received, :cusstomer_quotation_id, "INT UNSIGNED NULL DEFAULT NULL"
-    # add_foreign_key :articles, :users, column: :author_id, primary_key: :lng_id
+    add_column :spt_ticket_payment_received, :customer_quotation_id, "INT UNSIGNED NULL DEFAULT NULL"
     [
       {name: "fk_spt_ticket_cutomer_qutation_users1", column: "created_by", reference_table: :users, table: :spt_ticket_customer_quotation},
       {name: "fk_spt_ticket_cutomer_qutation_spt_ticket1", column: "ticket_id", reference_table: :spt_ticket, table: :spt_ticket_customer_quotation},
