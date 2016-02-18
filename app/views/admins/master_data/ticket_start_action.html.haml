@@ -1,9 +1,9 @@
 = simple_form_for @ticket_start_action, url: update_ticket_start_action_admins_path do |f|
   .row
     .col-md-6
-      = f.input :action
+      = f.input :action, label: "Ticket Start Action"
     .col-md-6
       = f.input :active, wrapper: :append
   .row{style: "margin-top:20px;"}
-    .col-md-10
+    .col-md-7
       = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_spare_part_description"

@@ -1,8 +1,8 @@
-%h3 Inventory
+%h3 Inventory Category
 = simple_nested_form_for @inventory_category1, url: update_inventory_location_admins_path do |c1|
   .panel.panel-info
     .panel-heading
-      %h3.panel-title create a brand
+      %h3.panel-title Brand
     .panel-body
       .row
         .col-md-4
@@ -19,7 +19,7 @@
             = c1.simple_fields_for :inventory_category2s do |c2|
               .panel.panel-danger
                 .panel-heading
-                  %h3.panel-title create a product
+                  %h3.panel-title Product
                 .panel-body
                   .row.col-md-12
                     .col-md-4
@@ -38,7 +38,7 @@
                     = c2.simple_fields_for :inventory_category3s do |c3|
                       .panel.panel-success
                         .panel-heading
-                          %h3.panel-title create a category
+                          %h3.panel-title Category
                         .panel-body
                           .row.col-md-12
                             .col-md-4

@@ -1,3 +1,4 @@
+%h3 Inventory Product
 = simple_nested_form_for @inventory_product, url: update_inventory_product_admins_path do |f|
   .row
     .col-md-3.brand
@@ -15,26 +16,24 @@
       / = f.input :country_id, collection: @continents, as: :grouped_select, group_method: :countries, , label_method: :company_name, value_method: :id
       / f.association :product_category, collection: ProductBrand.all, as: :grouped_select, group_method: :product_categories
   .row
-    .col-md-4
+    .col-md-3
       = f.input :serial_no, input_html: {value: InventorySerialItem.last.serial_no}
-    .col-md-4
+    .col-md-3
       = f.input :serial_no_order, input_html: {value: InventoryProduct.all.count + 1}
-    .col-md-4
-  .row
-    .col-md-4
+    .col-md-3
       = f.input :sku
-    .col-md-4
+    .col-md-3
       = f.input :legacy_code
-    .col-md-4
+  .row
+    .col-md-6
       = f.input :description
   .row
-    .col-md-4
+    .col-md-3
       = f.input :model_no
-    .col-md-4
+    .col-md-3
       = f.input :product_no
-    .col-md-4
-      = f.label "Unit : "
-      = f.select :unit_id, InventoryUnit.all.uniq{|i| i.id}.map{|o| [o.unit, o.id]}
+    .col-md-3
+      = f.input :spare_part_no
   .row
     .col-md-3
       = f.input :fifo, wrapper: :append
@@ -43,39 +42,42 @@
     .col-md-3
       = f.input :spare_part, wrapper: :append
     .col-md-3
-      = f.input :spare_part_no
+      = f.label "Unit : "
+      = f.select :unit_id, InventoryUnit.all.uniq{|i| i.id}.map{|o| [o.unit, o.id]}
+
   .row
     = f.input :created_by, as: :hidden, input_html: {value: current_user.id}
     = f.input :updated_by, as: :hidden, input_html: {value: current_user.id}
+  %hr
   .row
     = f.simple_fields_for :inventory_product_info_attributes do |d|
       .row
-        .col-md-2
+        .col-md-3
           = d.label "Picture:"
           = d.file_field :picture, accept: 'image/png,image/gif,image/jpeg,application/pdf'
+        .col-md-3
+          = d.input :secondary_unit_id
         .col-md-3
           = check_box_tag(:issue_fractional_allowed)
           = label_tag(:issue_fractional_allowed, "Issue Fractional Allowed")
           / = d.input :issue_fractional_allowed, wrapper: :append
-        .col-md-2
-          = d.input :secondary_unit_id
         .col-md-3
           = check_box_tag(:per_secondery_unit_conversion)
           = label_tag(:per_secondery_unit_conversion, "Per Secondery Unit Conversion")
           / = d.input :per_secondery_unit_conversion
       .row
         .col-md-3
-          = d.label "Country:"
-          = d.select :country_id, ProductSoldCountry.all.map {|c| [c.Country, c.id]}, label: "Country"
-        .col-md-3
-          = d.label "Manufacture:"
-          = d.select :manufacture_id, Manufacture.all.map {|c| [c.manufacture, c.id]}, label: "Manufacture"
-        .col-md-3
           = check_box_tag(:need_serial)
           = label_tag(:need_serial, "Need Serial")
         .col-md-3
           = check_box_tag(:need_batch)
           = label_tag(:need_batch, "Need Batch")
+        .col-md-3
+          = d.label "Country:"
+          = d.select :country_id, ProductSoldCountry.all.map {|c| [c.Country, c.id]}, label: "Country"
+        .col-md-3
+          = d.label "Manufacture:"
+          = d.select :manufacture_id, Manufacture.all.map {|c| [c.manufacture, c.id]}, label: "Manufacture"
       .row
         .col-md-3
           = d.input :average_cost
@@ -85,9 +87,9 @@
           = d.label "Currency:"
           = d.select :currency_id, Currency.all.map {|c| [c.currency, c.id]}, label: "Currency"
       .row
-        .col-md-4
+        .col-md-6
           = d.input :remarks
 
-  .row{style: "margin-top:20px;"}
-    .col-md-12
+  .row{style: "margin-bottom:20px;"}
+    .col-md-8
       = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_inventory_product"

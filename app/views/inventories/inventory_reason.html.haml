@@ -1,19 +1,21 @@
+%h3 Reason
 = simple_nested_form_for @inventory_reason, url: update_inventory_reason_admins_path do |i|
-  .row
-    .col-md-2
+  .row{style: "margin-top: 15px; "}
+    .col-md-3
       = i.input :srn_issue_terminate, wrapper: :append
-    .col-md-2
+    .col-md-3
       = i.input :damage, wrapper: :append
-    .col-md-2
+    .col-md-3
       = i.input :srr, wrapper: :append
-    .col-md-2
+    .col-md-3
       = i.input :disposal, wrapper: :append
+  .row
     .col-md-4
       = i.input :created_by,  as: :hidden, input_html: {value: current_user.id}
       = i.input :updated_by,  as: :hidden, input_html: {value: current_user.id}
       
   .row
-    .col-md-6
+    .col-md-7
       = i.input :reason
   .row{style: "margin-top:20px;"}
     .col-md-7

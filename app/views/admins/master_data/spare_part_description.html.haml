@@ -1,7 +1,7 @@
 = simple_form_for @spare_part_description, url: update_spare_part_description_admins_path do |f|
   .row
     .col-md-6
-      = f.input :description, input_html: {rows: 1}
+      = f.input :description, input_html: {rows: 1}, label: "Spare Part Description"
   .row{style: "margin-top:20px;"}
-    .col-md-10
+    .col-md-6
       = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_spare_part_description"

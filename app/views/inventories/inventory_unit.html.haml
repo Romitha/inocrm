@@ -1,15 +1,17 @@
+%h3 Inventory Unit
 = simple_nested_form_for @inventory_unit, url: update_inventory_unit_admins_path do |u|
   .row
-    .col-md-6
-      = u.input :description
     .col-md-3
       = u.input :unit
     .col-md-3
       = u.input :base_unit_id
-  .row
     .col-md-3
       = u.input :base_unit_conversion
     .col-md-3
       = u.input :per_base_unit, wrapper: :append
-    .col-md-3{style: "margin-top:20px;"}
+  .row
+    .col-md-6
+      = u.input :description
+  .row
+    .col-md-6{style: "margin-top:20px;"}
       = u.submit "Save", class: "btn btn-success pull-right", id: "submit_new_inventory_unit"

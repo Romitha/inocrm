@@ -1,9 +1,6 @@
+%h3 Reason
 = simple_form_for @reason, url: update_reason_admins_path do |f|
-  .row
-    .col-md-6
-      = f.input :reason, input_html: {rows: 1}
-      
-  .row
+  .row{style: "margin-top:15px;"}
     .col-md-2
       = f.input :hold, wrapper: :append
     .col-md-2
@@ -25,6 +22,9 @@
       = f.input :reject_close, wrapper: :append
     .col-md-3
       = f.input :adjust_terminate_job_payment, wrapper: :append
+  .row
+    .col-md-6
+      = f.input :reason, input_html: {rows: 1}
   .row{style: "margin-top:20px;"}
-    .col-md-10
+    .col-md-6
       = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_reason"

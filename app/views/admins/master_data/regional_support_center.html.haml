@@ -1,22 +1,24 @@
+%h3 Regional Support Center
 = simple_nested_form_for @regional_support_center, url: update_regional_support_center_admins_path do |f|
   .row
+    .col-md-3
+      = f.input :active, wrapper: :append
     .col-md-6
       = f.label "Organization:"
       = f.select :organization_id, Organization.all.uniq{|o| o.id}.map{|o| [(o.name ? "#{o.name}" : o.short_name), o.id]}
-    .col-md-6
-      = f.input :active, wrapper: :append
   .row
-    %h4 Add Engineer
+    .col-md-3
+      %h4 Add Engineer
   .row
     = f.simple_fields_for :sbu_regional_engineers do |engineer|
-      .row.col-md-12
-        .col-md-6
-          = engineer.association :engineer, collection: User.all.uniq{|e| e.id}.map{|e| [(e.first_name ? "#{e.name_title} #{e.first_name}" : e.email), e.id]}
-          .add_sign
-            = engineer.link_to_remove do
-              %span.glyphicon.glyphicon-remove-sign
-    .row.col-md-12
       .col-md-6
-        = f.link_to_add :sbu_regional_engineers do
-          %span.glyphicon.glyphicon-plus-sign
-    = f.submit "Save", class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2", data: {disable_with: "Please wait..."}
+        = engineer.association :engineer, collection: User.all.uniq{|e| e.id}.map{|e| [(e.first_name ? "#{e.name_title} #{e.first_name}" : e.email), e.id]}
+        .add_sign
+          = engineer.link_to_remove do
+            %span.glyphicon.glyphicon-remove-sign
+    .col-md-6
+      = f.link_to_add :sbu_regional_engineers do
+        %span.glyphicon.glyphicon-plus-sign
+  .row
+    .col-md-6
+      = f.submit "Save", class: "btn btn-success pull-right", data: {disable_with: "Please wait..."}

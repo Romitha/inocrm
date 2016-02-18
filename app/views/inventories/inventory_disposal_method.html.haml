@@ -1,10 +1,11 @@
+%h3 Inventory Disposal Method
 = simple_nested_form_for @inventory_disposal_method, url: update_inventory_disposal_method_admins_path do |d|
-  .row
-    .col-md-6
+  .row{style: "margin-top: 15px; "}
+    .col-md-8
       = d.input :disposal_method
     .col-md-4
       = d.input :created_by, as: :hidden
       = d.input :updated_by, as: :hidden
   .row{style: "margin-top:20px;"}
-    .col-md-6
+    .col-md-8
       = d.submit "Save", class: "btn btn-success pull-right", id: "submit_new_inventory_disposal_method"

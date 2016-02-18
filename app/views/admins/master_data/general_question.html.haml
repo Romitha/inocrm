@@ -6,10 +6,10 @@
     .col-md-6
       = f.input :answer_type
   .row
-    .col-md-6
+    .col-md-3
       = f.input :active, wrapper: :append
+    .col-md-3
+      = f.input :compulsory, wrapper: :append
   .row
     .col-md-6
       = f.input :action_id
-    .col-md-6
-      = f.input :compulsory, wrapper: :append
