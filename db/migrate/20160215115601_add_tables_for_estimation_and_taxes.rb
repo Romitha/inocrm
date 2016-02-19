@@ -56,7 +56,7 @@ class AddTablesForEstimationAndTaxes < ActiveRecord::Migration
       t.text :note
       t.text :remark
 
-      t.decimal :deductec_amount, scale: 2, precision: 10, null: false, default: 0
+      t.decimal :deducted_amount, scale: 2, precision: 10, null: false, default: 0
 
       t.timestamps
 
@@ -181,8 +181,8 @@ class AddTablesForEstimationAndTaxes < ActiveRecord::Migration
 
     end
 
-    add_column :spt_ticket_estimation, :invoiced, :boolean
-    add_column :spt_ticket_estimation, :quoted, :boolean
+    add_column :spt_ticket_estimation, :invoiced, :integer, null: false
+    add_column :spt_ticket_estimation, :quoted, :integer, null: false
 
     remove_foreign_key :spt_ticket_estimation, name: "fk_spt_ticket_estimation_spt_ticket_payment_received1"
     remove_column :spt_ticket_estimation, :adv_payment_received_id

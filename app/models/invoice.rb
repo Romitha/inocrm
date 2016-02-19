@@ -40,11 +40,28 @@ class CustomerFeedback < ActiveRecord::Base
 end
 
 class CustomerQuotation < ActiveRecord::Base
-  self.table_name = "spt_ticket_customet_quotation"
+  self.table_name = "spt_ticket_customer_quotation"
 
   belongs_to :ticket
   belongs_to :payment_term
   belongs_to :currency
+
+  has_many :ticket_payment_receiveds
+  accepts_nested_attributes_for :ticket_payment_receiveds, allow_destroy: true
+
+  has_many :customer_quotation_estimations
+  has_many :ticket_estimations, through: :customer_quotation_estimations
+
+end
+
+class CustomerQuotationEstimation < ActiveRecord::Base
+  self.table_name = "spt_ticket_customer_quotation_estimation"
+
+  belongs_to :customer_quotation
+  belongs_to :ticket_estimation, foreign_key: :estimation_id
+
+  has_many :ticket_payment_receiveds
+  accepts_nested_attributes_for :ticket_payment_receiveds, allow_destroy: true
 
 end
 

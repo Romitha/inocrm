@@ -84,13 +84,22 @@ class Ticket < ActiveRecord::Base
   has_many :ticket_estimation_additionals, foreign_key: :ticket_id
   accepts_nested_attributes_for :ticket_estimation_additionals, allow_destroy: true
 
+  has_many :customer_quotations, foreign_key: :ticket_id
+  accepts_nested_attributes_for :customer_quotations, allow_destroy: true
+
   has_many :ticket_payment_receiveds
+  accepts_nested_attributes_for :ticket_payment_receiveds, allow_destroy: true
   has_many :invoices, through: :ticket_payment_receiveds
 
   validates_presence_of [:ticket_no, :priority, :status_id, :problem_description, :informed_method_id, :job_type_id, :ticket_type_id, :warranty_type_id, :base_currency_id, :problem_category_id]
 
   validates_numericality_of [:ticket_no, :priority]
   validates_inclusion_of :cus_chargeable, in: [true, false]
+
+  before_save do |ticket|
+    ticket.remarks = "#{ticket.remarks} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(ticket.current_user_id).email}</span><br/>#{ticket.remarks_was}" if ticket.persisted? and ticket.remarks_changed?
+    puts ticket.current_user_id
+  end
 
   [:initiated_by, :initiated_by_id, :current_user_id].each do |dyna_method|
     define_method(dyna_method) do
@@ -100,16 +109,13 @@ class Ticket < ActiveRecord::Base
     define_method("#{dyna_method}=") do |value|
       data = dyna_columns.find_or_initialize_by(data_key: dyna_method)
       data.data_value = (value.class==Fixnum ? value : value.strip)
-      data.save if data.persisted?
+      data.save# if data.persisted?
     end
   end
 
   before_create :update_ticket_no
   after_update :flash_cache
 
-  before_save do |ticket|
-    ticket.remarks = "#{ticket.remarks} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(ticket.current_user_id).email}</span><br/>#{ticket.remarks_was}" if ticket.persisted? and ticket.remarks_changed?
-  end
 
   def update_ticket_no
     self.ticket_no = (self.class.any? ? (self.class.order("created_at ASC").map{|t| t.ticket_no.to_i}.max + 1) : 1)
@@ -118,7 +124,6 @@ class Ticket < ActiveRecord::Base
 
   def cached_user_ticket_actions
     Rails.cache.fetch([self.id, :user_ticket_actions]){ self.user_ticket_actions.to_a }
-    # .includes(:hp_case, :action_warranty_repair_type, :ticket_re_assign_request, :ticket_action_taken, :ticket_finish_job, :ticket_terminate_job, :act_hold, :act_fsr, :serial_request, :deliver_unit, :job_estimation, :act_job_estimation, :request_spare_part, :request_on_loan_spare_part, :action_warranty_extend)
   end
 
   def cached_ticket_spare_parts

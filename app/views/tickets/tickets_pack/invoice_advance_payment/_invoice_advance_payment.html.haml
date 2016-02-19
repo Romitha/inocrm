@@ -1,18 +1,17 @@
-/ = request.query_parameters
 - uri = URI(request.url)
 - if @continue
   .row
     .col-md-3
-      %strong Total Estimated Amount (#{estimation.currency.code}):
+      %strong Total Estimated Amount (#{ticket.ticket_currency.code}):
       = @total_estimation_amount
     .col-md-3
-      %strong All Payments Recieved - Total Amount (#{estimation.currency.code}):
+      %strong All Payments Recieved  (#{ticket.ticket_currency.code}):
       = @all_payment_received
     .col-md-3
-      %strong Balance Amount to be Paid (#{estimation.currency.code}):
+      %strong Balance Amount to be Paid (#{ticket.ticket_currency.code}):
       = @total_estimation_amount - @all_payment_received
     .col-md-3
-      %strong Total minimum Amount (#{estimation.currency.code}):
+      %strong Total Minimum Amount (#{ticket.ticket_currency.code}):
       = @total_minimum_amount 
   %hr
   %fieldset
@@ -27,9 +26,9 @@
 
       .row
         .col-md-2
-          = f.input :amount, input_html: {class: "only_float"} ,label: "Received amount (#{estimation.currency.code})"               
+          = f.input :amount, input_html: {class: "only_float"} ,label: "Received amount (#{ticket.ticket_currency.code})"
         .col-md-4
-          = f.input :receipt_description, input_html: {value: estimation.ticket_estimation_parts.first.try(:ticket_spare_part).try(:spare_part_description)}
+          = f.input :receipt_description
         .col-md-2
           = label_tag "Payment type"
           = f.select :payment_type, TicketPaymentReceivedType::TYPES
@@ -40,7 +39,7 @@
 
       .row
         .col-md-12
-          = label_tag "Invoicing Completed Complete"
+          = label_tag "Invoicing Completed"
           = check_box_tag :invoicing_completed
           = f.submit "Save", class: "btn btn-success btn-sm", data: {disable_with: "Processing..."}
 - else
@@ -58,7 +57,7 @@
   %hr
   .row
     .col-md-2
-      %strong Amount (#{estimation.currency.code}):
+      %strong Amount (#{ticket.ticket_currency.code}):
       = ticket_payment_received.amount
     .col-md-3
       %strong Note:

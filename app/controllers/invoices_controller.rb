@@ -47,13 +47,18 @@ class InvoicesController < ApplicationController
   def update_invoice_advance_payment
     Ticket
     Organization
+    Invoice
+    TaskAction
 
-    @estimation = TicketEstimation.find params[:advance_payment_estimation_id]
+    # @estimation = TicketEstimation.find params[:advance_payment_estimation_id]
     @ticket = Ticket.find params[:ticket_id]
+    @customer_quotation = @ticket.customer_quotations.find params[:advance_payment_estimation_id] if params[:advance_payment_estimation_id].to_i > 0
 
-    @ticket_payment_received = @estimation.build_ticket_payment_received ticket_payment_received_params
+    @ticket_payment_received = @ticket.ticket_payment_receiveds.build ticket_payment_received_params
 
-    @ticket_payment_received.attributes = @ticket_payment_received.attributes.merge ticket_id: @ticket.id, received_at: DateTime.now, received_by: current_user.id, type_id: TicketPaymentReceivedType.find_by_code("AD").id, currency_id: @ticket.ticket_currency.id, receipt_no: CompanyConfig.first.increase_sup_last_receipt_no, receipt_print_count: 0
+    # @ticket_payment_received = @estimation.build_ticket_payment_received ticket_payment_received_params
+
+    @ticket_payment_received.attributes = @ticket_payment_received.attributes.merge received_at: DateTime.now, received_by: current_user.id, type_id: TicketPaymentReceivedType.find_by_code("AD").id, currency_id: @ticket.ticket_currency.id, receipt_no: CompanyConfig.first.increase_sup_last_receipt_no, receipt_print_count: 0, customer_quotation_id: @customer_quotation.try(:id)
 
 
     complete_payment_received = params[:invoicing_completed].present?
@@ -64,14 +69,20 @@ class InvoicesController < ApplicationController
 
       if @ticket_payment_received.amount > 0
 
-        if @estimation.save
+        if @ticket_payment_received.save
 
           # 28 - Invoice Advance Payment
-          user_ticket_action = @estimation.ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(28).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @estimation.ticket.re_open_count)
+          user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(28).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
           user_ticket_action.build_act_payment_received(ticket_payment_received_id: @ticket_payment_received.id, invoice_completed: complete_payment_received)
           user_ticket_action.save
 
-          @estimation.update status_id: EstimationStatus.find_by_code("CLS").id if complete_payment_received
+          if complete_payment_received
+            responsible_resource = @ticket
+            if @customer_quotation
+              responsible_resource = @customer_quotation
+            end
+            responsible_resource.ticket_estimations.where(foc_approved: false, cust_approved: true).update_all status_id: EstimationStatus.find_by_code("CLS").id
+          end
 
         else
           complete_payment_received = false
@@ -108,6 +119,8 @@ class InvoicesController < ApplicationController
   end
 
   def update_estimate_job_final
+    TaskAction
+
     @ticket = Ticket.find params[:ticket_id]
     @ticket.attributes = ticket_params
     payment_completed = params[:payment_completed].present?
@@ -154,12 +167,13 @@ class InvoicesController < ApplicationController
   def update_quality_control
     TaskAction
     update_ticket_params = ticket_params
+    puts update_ticket_params
     @ticket = Ticket.find params[:ticket_id]
     continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
 
     if continue
       # bpm output variables
-      bpm_variables = view_context.initialize_bpm_variables
+      bpm_variables = view_context.initialize_bpm_variables.merge supp_engr_user: params[:supp_engr_user]
 
       if params[:approve] #Approve QC
 
@@ -170,15 +184,16 @@ class InvoicesController < ApplicationController
           update_ticket_params.merge! status_id: TicketStatus.find_by_code("CFB").id
         end
 
-        @ticket.update update_ticket_params
 
       elsif params[:reject] #Reject QC
 
-        bpm_variables.merge! d38_ticket_close_approved: "Y" if @ticket.ticket_close_approved and @ticket.ticket_close_approval_required
+        bpm_variables.merge! d38_ticket_close_approved: "Y" unless @ticket.ticket_close_approved or !@ticket.ticket_close_approval_required
+        # bpm_variables.merge! d38_ticket_close_approved: (@ticket.ticket_close_approved and @ticket.ticket_close_approval_required) or !(@ticket.ticket_close_approval_required) ? "N" : "Y"
 
         @ticket.update qc_passed: false, status_id: TicketStatus.find_by_code("ROP").id, re_open_count: (@ticket.re_open_count.to_i+1), job_finished: false, ticket_close_approval_required: true, ticket_close_approval_requested: false, ticket_close_approved: false
 
       end
+      @ticket.update update_ticket_params
 
       bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
@@ -211,6 +226,8 @@ class InvoicesController < ApplicationController
     end
 
     def ticket_params
-      params.require(:ticket).permit(:id, :remarks, :final_amount_to_be_paid, user_ticket_actions_attributes: [:id, :_destroy, :action_at, :action_id, :action_by, :re_open_index, act_quality_control_attributes: [:approved, :reject_reason]], ge_q_and_answers_attributes: [:id, :general_question_id, :ticket_action_id, :answer], q_and_answers_attributes: [:id, :problematic_question_id, :ticket_action_id, :answer])
+      ticket_params = params.require(:ticket).permit(:id, :remarks, :final_amount_to_be_paid, user_ticket_actions_attributes: [:id, :_destroy, :action_at, :action_id, :action_by, :re_open_index, act_quality_control_attributes: [:approved, :reject_reason]], ge_q_and_answers_attributes: [:id, :general_question_id, :ticket_action_id, :answer], q_and_answers_attributes: [:id, :problematic_question_id, :ticket_action_id, :answer])
+      ticket_params[:current_user_id] = current_user.id
+      ticket_params
     end
 end

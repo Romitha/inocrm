@@ -21,12 +21,15 @@ class TicketEstimation < ActiveRecord::Base
   belongs_to :estimation_status, foreign_key: :status_id
   belongs_to :currency, foreign_key: :currency_id
 
-  belongs_to :ticket_payment_received, foreign_key: :adv_payment_received_id
-  accepts_nested_attributes_for :ticket_payment_received, allow_destroy: true
+
+  has_many :customer_quotation_estimations, foreign_key: :estimation_id
+  has_many :customer_quotations, through: :customer_quotation_estimations
+
+  # belongs_to :ticket_payment_received, foreign_key: :adv_payment_received_id
+  # accepts_nested_attributes_for :ticket_payment_received, allow_destroy: true
 
   before_save do |ticket_estimation|
     ticket_estimation.note = "#{ticket_estimation.note} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(ticket_estimation.current_user_id).email}</span><br/>#{ticket_estimation.note_was}" if ticket_estimation.persisted? and ticket_estimation.note_changed?
-    # puts "this is #{ticket_estimation.note_was} and #{ticket_estimation.note} and #{ticket_estimation.note_changed?}"
   end
 
   # has_many :invoices, foreign_key: "customer_id"

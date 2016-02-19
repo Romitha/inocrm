@@ -91,7 +91,7 @@
     - else
       Min.Advanced Payment (#{estimation.ticket.ticket_currency.code}) : #{number_with_precision estimation.advance_payment_amount, precision: 2}
   .col-md-4
-    Advanced Payment Recieved (#{estimation.ticket.ticket_currency.code}) : #{number_with_precision estimation.ticket_payment_received.try(:amount).to_i, precision: 2}
+    Advanced Payment Recieved (#{estimation.ticket.ticket_currency.code}) : #{number_with_precision estimation.ticket.ticket_payment_receiveds.where(type_id: TicketPaymentReceivedType.find_by_code("AD").id).sum(:amount).to_i, precision: 2}
 .row
   .col-md-12
     - unless (estimation.estimation_status.code == "EST") and estimation.cust_approval_required and estimation.cust_approved.nil?
