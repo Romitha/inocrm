@@ -1,5 +1,3 @@
-/ - uri = URI(request.url)
-
 - total_estimation = 0
 
 %strong Selected Estimation
@@ -33,7 +31,7 @@
           Warranty Period Months : #{estimation_part.warranty_period}
 
 
-    - if estimation_part.ticket_spare_part.try(:ticket_spare_part_store).present?
+    - if estimation_part.ticket_spare_part.ticket_spare_part_store.present?
       .row
         .col-md-12
           %strong Requested Part
@@ -48,7 +46,6 @@
           Item Description : #{estimation_part.ticket_spare_part.ticket_spare_part_store.try(:inventory_product).try(:description)}
       .row
         .col-md-12
-          / Available Qnt : #{estimation_part.ticket_spare_part.ticket_spare_part_store.try(:inventory_product).try(:inventory).try(:available_quantity)}
           Available Qnt: #{estimation_part.ticket_spare_part.ticket_spare_part_store.try(:inventory_product) and estimation_part.ticket_spare_part.ticket_spare_part_store.inventory_product.inventories.where(store_id: estimation_part.ticket_spare_part.ticket_spare_part_store.store_id).first.try(:available_quantity)}
         .col-md-12
           Unit : #{estimation_part.ticket_spare_part.ticket_spare_part_store.try(:inventory_product).try(:inventory_unit).try(:unit)}
@@ -99,7 +96,7 @@
       Estimation note:
       = simple_format estimation.note
 
-- if (estimation.estimation_status.code == "EST") and estimation.cust_approval_required and estimation.cust_approved.nil?
+- if (estimation.estimation_status.code == "EST") and estimation.cust_approval_required and !estimation.cust_approved and !estimation.ticket.job_finished
   %fieldset
     %legend Estimation customer approval
     = simple_form_for estimation, url: update_estimation_part_customer_approval_inventories_path do |f|

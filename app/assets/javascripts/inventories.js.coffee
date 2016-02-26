@@ -37,10 +37,8 @@ window.Inventories =
       c2selected = $(@).val()
       $("#category1").val(c2selected)
 
-      # $("#category2").val(InventoryCategory3.find_by(selected).category2_id)
 
-
-  filter_product: -> 
+  filter_product: ->
     category_list = $("#search_inventory_product")
     category_list_html = category_list.html()
     category_list.empty()
@@ -65,7 +63,16 @@ window.Inventories =
       category_list.html("<option></option>"+filtered_option).trigger('chosen:updated')
 
   disable_store: ->
+    $("#ticket_spare_part_request_from_ns").click ->
+      $(".request_from").empty()
+      $("#store_id", "#mst_store_id", "#inv_product_id", "#mst_inv_product_id").val("")
+      $(".not_non_stock").addClass("hide")
+
     $("#ticket_spare_part_request_from_s").click ->
+      $(".request_from").empty()
+      $("#store_id", "#mst_store_id", "#inv_product_id", "#mst_inv_product_id").val("")
+      $(".not_non_stock").removeClass("hide")
+
       if $("#ticket_spare_part_request_from_s").is(":checked")
         $(".part").removeClass("hide")
         $("#request_from_select").removeClass("hide")

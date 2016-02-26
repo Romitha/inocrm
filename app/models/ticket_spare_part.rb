@@ -19,6 +19,9 @@ class TicketSparePart < ActiveRecord::Base
   has_one :ticket_spare_part_store, foreign_key: :spare_part_id
   accepts_nested_attributes_for :ticket_spare_part_store, allow_destroy: true
 
+  has_one :ticket_spare_part_non_stock, foreign_key: :spare_part_id
+  accepts_nested_attributes_for :ticket_spare_part_non_stock, allow_destroy: true
+
   has_many :ticket_on_loan_spare_parts, foreign_key: :ref_spare_part_id
   accepts_nested_attributes_for :ticket_on_loan_spare_parts, allow_destroy: true
 
@@ -29,6 +32,8 @@ class TicketSparePart < ActiveRecord::Base
   has_many :ticket_estimation_parts, foreign_key: :ticket_spare_part_id
 
   after_save :flush_cache
+
+  validates_presence_of :spare_part_description
 
   before_save do |ticket_spare_part|
     ticket_spare_part.note = "#{ticket_spare_part.note} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(ticket_spare_part.current_user_id).email}</span><br/>#{ticket_spare_part.note_was}" if ticket_spare_part.persisted? and ticket_spare_part.note_changed?
@@ -198,5 +203,14 @@ class ReturnPartsBundle < ActiveRecord::Base
   before_create do |return_part_bundle|
     return_part_bundle.bundle_no = CompanyConfig.first.increase_sup_last_bundle_no
   end
+
+end
+
+class TicketSparePartNonStock < ActiveRecord::Base
+  self.table_name = "spt_ticket_spare_part_non_stock"
+
+  belongs_to :ticket_spare_part, foreign_key: :spare_part_id
+  belongs_to :inventory_product, foreign_key: :inv_product_id
+  belongs_to :approved_inventory_product, class_name: "mst_inv_product", foreign_key: :approved_inv_product_id
 
 end

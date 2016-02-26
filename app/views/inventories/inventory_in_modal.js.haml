@@ -1,15 +1,17 @@
-- if @inventory or @inventory_product
+- if @inventory or @inventory_product or @non_stock
   $("#inventory_modal").modal('hide');
-
+  - @inventory_product = @non_stock
   - content_for :content_for do
     %dl.dl-horizontal
-      %dt Store
-      %dd
-        = @inventory ? @inventory.organization.name : Organization.find(session[:requested_store_id]).name
+      - unless @non_stock
+        %dt Store
+        %dd
+          = @inventory ? @inventory.organization.name : Organization.find(session[:requested_store_id]).name
       %dt Item Code
       %dd
         = @inventory ? @inventory.inventory_product.serial_no : @inventory_product.serial_no
       %dt Item Description
+
       %dd
         = @inventory ? @inventory.inventory_product.description : @inventory_product.description
       %dt Model No
@@ -21,10 +23,10 @@
       %dt Part No
       %dd
         = @inventory ? @inventory.inventory_product.spare_part_no : @inventory_product.spare_part_no
-      %dt Available Qnty
-      %dd
-        = @inventory.available_quantity if @inventory
-
+      - unless @non_stock
+        %dt Available Qnty
+        %dd
+          = @inventory.available_quantity if @inventory
 
   $(".#{session[:select_frame]}").html('#{j content_for :content_for}');
   - if session[:select_frame] == "request_from"
@@ -38,6 +40,16 @@
   $("#inventory_modal").modal();
   $("#inventory_modal .modal-content").html("#{j render 'inventory_in_modal'}");
 
+- if @main_part_serial
+  $("#main_part_serial").html("#{j render 'tickets/tickets_pack/issue_store_part/inventory_serial_serials'}");
+
+- if params[:checked_value] == "NS"
+  $(".store").addClass("hide");
+  $("a[href='#non_stock_tab']").trigger('click');
+  $("a[href='#non_inventory_tab'], a[href='#inventory_tab']").addClass('hide');
+- else
+  $("a[href='#non_stock_tab']").addClass('hide');
+
 Inventories.filter_product();
 Inventories.filter_category();
 Inventories.filter_store();
@@ -45,6 +57,3 @@ Inventories.filter_store();
 Tickets.remove_ajax_loader();
 
 $("a[rel~=popover], .has-popover").popover();
-
-- if @main_part_serial
-  $("#main_part_serial").html("#{j render 'tickets/tickets_pack/issue_store_part/inventory_serial_serials'}");

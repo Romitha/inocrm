@@ -33,6 +33,7 @@ class AddMstTablesFromDevage < ActiveRecord::Migration
       t.column :updated_by, "INT UNSIGNED"
       t.datetime :created_at, null: false
       t.datetime :updated_at
+      t.boolean :non_stock_item
     end
 
     create_table :mst_inv_reason, id: false do |t|

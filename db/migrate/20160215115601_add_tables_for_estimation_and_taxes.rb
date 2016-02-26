@@ -9,7 +9,7 @@ class AddTablesForEstimationAndTaxes < ActiveRecord::Migration
     add_column :company_config, :sup_last_bundle_no, "INT UNSIGNED NULL DEFAULT NULL"
 
     create_table :spt_ticket_customer_quotation, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :ticket_id, "INT UNSIGNED NOT NULL"
       t.column :customer_quotation_no, "INT UNSIGNED NOT NULL"
       t.column :currency_id, "INT UNSIGNED DEFAULT NULL"
@@ -33,7 +33,7 @@ class AddTablesForEstimationAndTaxes < ActiveRecord::Migration
     end
 
     create_table :spt_ticket_customer_quotation_estimation, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :customer_quotation_id, "INT UNSIGNED NOT NULL"
       t.column :estimation_id, "INT UNSIGNED NOT NULL"
       t.index :estimation_id, name: "fk_spt_ticket_customer_qutation_estimation_spt_ticket_estim_idx"
@@ -41,7 +41,7 @@ class AddTablesForEstimationAndTaxes < ActiveRecord::Migration
     end
 
     create_table :spt_ticket_invoice, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :ticket_id, "INT UNSIGNED NOT NULL"
       t.column :invoice_no, "INT UNSIGNED NOT NULL"
       t.column :created_by, "INT UNSIGNED NOT NULL"
@@ -68,7 +68,7 @@ class AddTablesForEstimationAndTaxes < ActiveRecord::Migration
     end
 
     create_table :spt_ticket_invoice_estimation, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :invoice_id, "INT UNSIGNED NOT NULL"
       t.column :estimation_id, "INT UNSIGNED NOT NULL"
 
@@ -78,7 +78,7 @@ class AddTablesForEstimationAndTaxes < ActiveRecord::Migration
     end
 
     create_table :spt_ticket_invoice_advance_payment, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :invoice_id, "INT UNSIGNED NOT NULL"
       t.column :payment_received_id, "INT UNSIGNED NOT NULL"
 
@@ -88,7 +88,7 @@ class AddTablesForEstimationAndTaxes < ActiveRecord::Migration
     end
 
     create_table :spt_ticket_estimation_additional_tax, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :estimation_additional_id, "INT UNSIGNED NOT NULL"
       t.column :tax_id, "INT UNSIGNED NOT NULL"
 
@@ -103,7 +103,7 @@ class AddTablesForEstimationAndTaxes < ActiveRecord::Migration
     end
 
     create_table :spt_ticket_estimation_part_tax, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :estimation_part_id, "INT UNSIGNED NOT NULL"
       t.column :tax_id, "INT UNSIGNED NOT NULL"
 
@@ -119,7 +119,7 @@ class AddTablesForEstimationAndTaxes < ActiveRecord::Migration
     end
 
     create_table :spt_ticket_estimation_external_tax, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :estimation_external_id, "INT UNSIGNED NOT NULL"
       t.column :tax_id, "INT UNSIGNED NOT NULL"
 
@@ -135,19 +135,19 @@ class AddTablesForEstimationAndTaxes < ActiveRecord::Migration
     end
 
     create_table :mst_spt_payment_term, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.string :name
       t.string :description
     end
 
     create_table :mst_tax, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.string :tax
       t.text :description
     end
 
     create_table :mst_tax_rate, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :tax_id, "INT UNSIGNED NOT NULL"
 
       t.decimal :rate, scale: 2, precision: 5, null: false
@@ -164,7 +164,7 @@ class AddTablesForEstimationAndTaxes < ActiveRecord::Migration
     end
 
     create_table :spt_ticket_spare_part_non_stock, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :spare_part_id, "INT UNSIGNED NOT NULL"
       t.column :inv_product_id, "INT UNSIGNED NOT NULL"
       t.column :approved_by, "INT UNSIGNED NULL"

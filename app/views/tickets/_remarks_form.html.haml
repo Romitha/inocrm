@@ -14,7 +14,8 @@
         = f.select :inform_cp, [["Contact Person1", 1], ["Contact Person2", 2]], {}, class: "col-md-12 small_scale_margin-top5"
 
       .col-md-8
-        = f.input :remarks
+        = f.input :note
+        = f.input :remarks, label: "Remarks (Internal)"
         = f.simple_fields_for :ticket_extra_remarks do |er|
           = er.input :created_by, as: :hidden, input_html: {value: current_user.id}
           = er.association :extra_remark, label_method: :extra_remark, value_method: :id, include_blank: false, wrapper_html: {class: "col-md-6"}

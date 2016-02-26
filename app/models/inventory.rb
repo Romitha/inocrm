@@ -29,6 +29,10 @@ class InventoryProduct < ActiveRecord::Base
   has_many :inventory_serial_parts, foreign_key: :product_id
 
   has_many :inventory_serial_items
+  has_many :ticket_spare_part_non_stocks, foreign_key: :inv_product_id
+  has_many :approved_ticket_spare_part_non_stocks, class_name: "TicketSparePartNonStock", foreign_key: :approved_inv_product_id
+
+  validates_presence_of :description
 
   def generated_item_code
    "#{id}-#{serial_no}"

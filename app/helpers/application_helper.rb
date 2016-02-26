@@ -128,18 +128,29 @@ module ApplicationHelper
       if spare_part_id.present?
         spare_part = @ticket.ticket_spare_parts.find_by_id(spare_part_id)
         store_part = spare_part.ticket_spare_part_store
+        manufacture_part = spare_part.ticket_spare_part_manufacture
+        non_stock_part = spare_part.ticket_spare_part_non_stock
+
         # store_part_name = (store_part && store_part.inventory_product) ? store_part.inventory_product.try(:description))
 
         if store_part and store_part.inventory_product
-          store_part_name = "[#{store_part.inventory_product.description}]".truncate(18)
+          spare_part_name = "[#{store_part.inventory_product.description.truncate(18)}]"
 
-          @h2 = "#{ticket_no}#{customer_name}#{store_part_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}"
+        elsif manufacture_part
+          spare_part_name = "[#{spare_part.spare_part_description.truncate(18)}]"
+
+        elsif non_stock_part
+          spare_part_name = "[#{non_stock_part.inventory_product.description.truncate(18)}]"
+        end
+
+        if spare_part_name
+          @h2 = "#{ticket_no}#{customer_name}#{spare_part_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}"
         else
           @h2 = ""
         end
 
         if spare_part
-          spare_part_name = "[#{spare_part.spare_part_no}-#{spare_part.spare_part_description}]".truncate(18)
+          spare_part_name = "[#{spare_part.spare_part_no}-#{spare_part.spare_part_description.truncate(18)}]"
           @h3 = "#{ticket_no}#{customer_name}#{spare_part_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}"
         else
           @h3 = ""

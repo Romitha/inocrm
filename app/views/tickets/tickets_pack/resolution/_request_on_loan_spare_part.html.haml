@@ -2,10 +2,6 @@
   %legend Request On Loan Spare Part
   = simple_nested_form_for @ticket_on_loan_spare_part, url: update_request_on_loan_spare_part_ticket_path(ticket), method: :post do |f|
 
-    / = hidden_field_tag :process_id, session[:process_id]
-    / = hidden_field_tag :task_id, session[:task_id]
-    / = hidden_field_tag :owner, session[:owner]
-
     = hidden_field_tag :process_id, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:process_id]
     = hidden_field_tag :task_id, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:task_id]
     = hidden_field_tag :owner, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:owner]

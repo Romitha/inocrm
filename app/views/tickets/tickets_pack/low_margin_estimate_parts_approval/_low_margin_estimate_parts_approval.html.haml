@@ -11,11 +11,13 @@
   = f.input :current_user_id, as: :hidden, input_html: {value: current_user.id}
   = f.simple_fields_for :ticket_estimation_parts do |t|
     %fieldset
-      %legend Part No #{t.object.ticket_spare_part.try(:spare_part_no)}
+      %legend Part No #{t.object.ticket_spare_part.try(:spare_part_no)} (#{t.object.ticket_spare_part.ticket_spare_part_store ? 'Store' : t.object.ticket_spare_part.ticket_spare_part_manufacture.present? ? 'Manufacture' : t.object.ticket_spare_part.ticket_spare_part_non_stock.present? ? 'Non Stock' : ''})
+
       .row
-        .col-md-3
-          %strong Supplier:
-          = t.object.try(:supplier).try(:name)
+        - unless t.object.ticket_spare_part.ticket_spare_part_manufacture.present?
+          .col-md-3
+            %strong Supplier:
+            = t.object.try(:supplier).try(:name)
         .col-md-3
           %strong Part No :
           #{t.object.ticket_spare_part.try(:spare_part_no)}
@@ -23,67 +25,69 @@
           %strong Part Description :
           #{t.object.ticket_spare_part.try(:spare_part_description)}
         .col-md-3
-          %strong Wranaty Period :
+          %strong Warranty Period :
           #{t.object.try(:warranty_period)}
-      %hr
-      .row
-        .col-md-2
-          %strong Cost Prices :
-          %span.low_margin_cost_price= t.object.try(:cost_price)
-        .col-md-3
-          %strong Requested Estimate Price :
-          %span.low_margin_estimated_price #{t.object.try(:estimated_price)}
-        .col-md-2
-          %strong Profit :
-          %span.low_margin_estimate_rate
-          %span (
-          %span#db_margin{style: "font-weight:bold;"}= CompanyConfig.first.try(:sup_internal_part_profit_margin).to_f
-          %span )
-          %span %
-        .col-md-3
-          = t.input :approved_estimated_price, label: "Approved estimated price", input_html: {min: "0",class: "low_margin_approved_estimated_price only_float", oninput: "Inventories.calculate_low_approved_price();"}, wrapper_html: {class: "inline-input"}
-        .col-md-2
-          %span{style: "font-weight:bold;"} Profit :
-          %span.low_margin_approved_estimate_rate
-          %span (
-          %span#db_margin{style: "font-weight:bold;"}= CompanyConfig.first.try(:sup_internal_part_profit_margin).to_f
-          %span )
-          %span %
+      - unless t.object.ticket_spare_part.ticket_spare_part_manufacture.present?
+        %hr
+        .row
+          .col-md-2
+            %strong Cost Prices :
+            %span.low_margin_cost_price= t.object.try(:cost_price)
+          .col-md-3
+            %strong Requested Estimate Price :
+            %span.low_margin_estimated_price #{t.object.try(:estimated_price)}
+          .col-md-2
+            %strong Profit :
+            %span.low_margin_estimate_rate
+            %span (
+            %span#db_margin{style: "font-weight:bold;"}= CompanyConfig.first.try(:sup_internal_part_profit_margin).to_f
+            %span )
+            %span %
+          .col-md-3
+            = t.input :approved_estimated_price, label: "Approved estimated price", input_html: {min: "0",class: "low_margin_approved_estimated_price only_float", oninput: "Inventories.calculate_low_approved_price();"}, wrapper_html: {class: "inline-input"}
+          .col-md-2
+            %span{style: "font-weight:bold;"} Profit :
+            %span.low_margin_approved_estimate_rate
+            %span (
+            %span#db_margin{style: "font-weight:bold;"}= CompanyConfig.first.try(:sup_internal_part_profit_margin).to_f
+            %span )
+            %span %
+
+        .row
+          .col-md-4.col-md-offset-4
+            .below_margine_low_margin_estimate_rate
+          .col-md-4
+            .below_margine_low_margin_approved_estimate_rate
+
+        %hr
 
       .row
-        .col-md-4.col-md-offset-4
-          .below_margine_low_margin_estimate_rate
-        .col-md-4
-          .below_margine_low_margin_approved_estimate_rate
-
-      %hr
-
-      .row
-        .col-md-5
-          %h4 Requested part
-          .request_from
-            %dl.dl-horizontal
-              %dt Store
-              %dd
-                = t.object.ticket_spare_part.ticket_spare_part_store.store.try(:name)
-              %dt Item Code
-              %dd
-                = t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.try(:serial_no)
-              %dt Item Description
-              %dd
-                = t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.try(:description)
-              %dt Model No
-              %dd
-                = t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.try(:model_no)
-              %dt Product No
-              %dd
-                = t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.try(:product_no)
-              %dt Part No
-              %dd
-                = t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.try(:spare_part_no)
-              %dt Available Qnty
-              %dd
-                = t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.inventories.where(store_id: t.object.ticket_spare_part.ticket_spare_part_store.store_id).try(:sum, :available_quantity)
+        - if t.object.ticket_spare_part.ticket_spare_part_store.present?
+          .col-md-5
+            %h4 Requested part
+            .request_from
+              %dl.dl-horizontal
+                %dt Store
+                %dd
+                  = t.object.ticket_spare_part.ticket_spare_part_store.store.try(:name)
+                %dt Item Code
+                %dd
+                  = t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.try(:serial_no)
+                %dt Item Description
+                %dd
+                  = t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.try(:description)
+                %dt Model No
+                %dd
+                  = t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.try(:model_no)
+                %dt Product No
+                %dd
+                  = t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.try(:product_no)
+                %dt Part No
+                %dd
+                  = t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.try(:spare_part_no)
+                %dt Available Qnty
+                %dd
+                  = t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.inventories.where(store_id: t.object.ticket_spare_part.ticket_spare_part_store.store_id).try(:sum, :available_quantity)
         .col-md-6
           - if t.object.ticket_spare_part.try(:ticket_spare_part_store).present?
             #paginate_grns
@@ -164,5 +168,5 @@
   .row
     .col-md-12
       = label_tag "Approval Complete"
-      = check_box_tag :approval_complete_check
+      = check_box_tag :approval_complete_check, true, true
       = f.submit "Save", class: "btn btn-success btn-sm"

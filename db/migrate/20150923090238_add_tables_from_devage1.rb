@@ -2,13 +2,13 @@ class AddTablesFromDevage1 < ActiveRecord::Migration
   def change
 
 		create_table :mst_dealer_types, id: false do |t|
-			t.column :id, "INT UNSIGNED NOT NULL, PRIMARY KEY (id)"
+			t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
 			t.string :name, null: false
 			t.string :code, null: false
 		end
 
 		create_table :accounts, id: false do |t|
-			t.column :id, "INT UNSIGNED NOT NULL, PRIMARY KEY (id)"
+			t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
 			t.datetime :created_at
 			t.column :created_by, "int(10) UNSIGNED"
 			t.column :industry_types_id, "int(10) UNSIGNED"
@@ -23,7 +23,7 @@ class AddTablesFromDevage1 < ActiveRecord::Migration
 		end
 
 		create_table :mst_industry_types, id: false do |t|
-			t.column :id, "INT UNSIGNED NOT NULL, PRIMARY KEY (id)"
+			t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
 			t.string :name, null: false
 			t.string :code
 		end

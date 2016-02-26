@@ -10,7 +10,7 @@
   = f.simple_fields_for :ticket_estimation_parts do |t|
 
     %fieldset
-      %legend Part No: #{t.object.ticket_spare_part.try(:spare_part_no)}
+      %legend Part No: #{t.object.ticket_spare_part.try(:spare_part_no)} (#{t.object.ticket_spare_part.ticket_spare_part_store ? 'Store' : t.object.ticket_spare_part.ticket_spare_part_manufacture.present? ? 'Manufacture' : t.object.ticket_spare_part.ticket_spare_part_non_stock.present? ? 'Non Stock' : ''})
       .row
         .col-md-3
           %strong Part No:
@@ -78,23 +78,25 @@
             = p.input :current_user_id, as: :hidden, input_html: {value: current_user.id}
             = p.input :note, input_html: {value: nil}
             = simple_format p.object.note
-        .col-md-8
-          .row
-            .col-md-10
-              = t.association :supplier, input_html: {class: "est_internal_supplier"}
-            .col-md-3
-              = t.input :cost_price, input_html: {min: "0", class: "est_internal_cost_price only_float", oninput: "Inventories.calculate_internal_cost_price();"}, label: false, placeholder: "Cost price"
-              .append_cost_price_internal.hide
-            .col-md-3
-              = t.input :estimated_price, input_html: {min: "0", class: "est_internal_estimated_price only_float", oninput: "Inventories.calculate_internal_cost_price();"}, label: false, placeholder: "entimated price"
-              .append_estimated_price_internal.hide
-            .col-md-4
-              = t.input :warranty_period, input_html: {min: "0", class: "est_internal_warranty only_float"}, label: false, placeholder: "Warranty period in months"
-            .col-md-2
-              %strong Profit:
-              %span.append_profit_margin_internal{style: "font-weight:bold;"}
-            .col-md-4
-              .below_margine_append_profit_margin_internal
+
+        - unless t.object.ticket_spare_part.ticket_spare_part_manufacture.present?
+          .col-md-8
+            .row
+              .col-md-10
+                = t.association :supplier, input_html: {class: "est_internal_supplier"}
+              .col-md-3
+                = t.input :cost_price, input_html: {min: "0", class: "est_internal_cost_price only_float", oninput: "Inventories.calculate_internal_cost_price();"}, label: false, placeholder: "Cost price"
+                .append_cost_price_internal.hide
+              .col-md-3
+                = t.input :estimated_price, input_html: {min: "0", class: "est_internal_estimated_price only_float", oninput: "Inventories.calculate_internal_cost_price();"}, label: false, placeholder: "entimated price"
+                .append_estimated_price_internal.hide
+              .col-md-4
+                = t.input :warranty_period, input_html: {min: "0", class: "est_internal_warranty only_float"}, label: false, placeholder: "Warranty period in months"
+              .col-md-2
+                %strong Profit:
+                %span.append_profit_margin_internal{style: "font-weight:bold;"}
+              .col-md-4
+                .below_margine_append_profit_margin_internal
 
   = f.simple_fields_for :ticket_estimation_additionals do |a|
 
@@ -146,7 +148,7 @@
 
   .row
     .col-md-3
-      = f.input :advance_payment_amount, input_html: {min: "0", class: "only_float"}
+      = f.input :advance_payment_amount, input_html: {min: "0", class: "only_float", value: 0}
 
   .row
     .col-md-5
@@ -156,7 +158,7 @@
   .row{style: "margin-bottom:10px;"}
     .col-md-12
       = label_tag "Estimation complete"
-      = check_box_tag :estimation_complete_check
+      = check_box_tag :estimation_complete_check, true, true
       = f.submit "Save", class: "btn btn-success btn-sm", onclick: "Tickets.presence_validater(this, {presence: ['.est_internal_supplier', '.est_internal_cost_price', '.est_internal_estimated_price', '.est_internal_warranty']}); return false;"
 
 #inventory_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "inventory_modal", "aria-hidden" => true}

@@ -9,6 +9,7 @@
     %tr
       %th No
       %th Requested date
+      %th Description
       %th #{ticket.ticket_repair_type.code == 'EX' ? 'Repaired by' : 'No of parts' }
       %th #{ticket.ticket_repair_type.code == 'EX' ? 'Repair' : 'Parts' }
       %th Additional
@@ -18,24 +19,27 @@
 
   %tbody
     - ticket.ticket_estimations.each_with_index do |estimation, index|
+      - estimation_external_present = estimation.ticket_estimation_externals.present?
       %tr
         %td
-          = link_to load_estimation_inventories_path(estimation_id: estimation.id, estimation_type: "#{ticket.ticket_repair_type.code == 'EX' ? 'external' : 'part' }", task_id: params[:task_id]), remote: true do
+          = link_to load_estimation_inventories_path(estimation_id: estimation.id, estimation_type: "#{estimation_external_present ? 'external' : 'part' }", task_id: params[:task_id]), remote: true do
             = index+1
         %td= estimation.requested_at.getlocal.try(:strftime, "%b %d, %Y %H:%M")
         %td
-          - if ticket.ticket_repair_type.code == 'EX'
+          .has-popover{title: "Description", data: {"toggle" => "popover", "title" => "Popover title", "trigger" => "hover", "content" => (estimation_external_present ? estimation.ticket_estimation_externals.first.description : estimation.ticket_estimation_parts.first.ticket_spare_part.spare_part_description)}}= truncate (estimation_external_present ? estimation.ticket_estimation_externals.first.description : estimation.ticket_estimation_parts.first.ticket_spare_part.spare_part_description), length: 20
+        %td
+          - if estimation_external_present
             = estimation.ticket_estimation_externals.first.try(:organization).try(:name)
           - else
             = estimation.ticket_estimation_parts.count
         %td
           - if estimation.approval_required
-            - if ticket.ticket_repair_type.code == 'EX'
+            - if estimation_external_present
               = number_with_precision estimation.ticket_estimation_externals.sum(:approved_estimated_price), precision: 2
             - else
               = number_with_precision estimation.ticket_estimation_parts.sum(:approved_estimated_price), precision: 2
           - else
-            - if ticket.ticket_repair_type.code == 'EX'
+            - if estimation_external_present
               = number_with_precision estimation.ticket_estimation_externals.sum(:estimated_price), precision: 2
             - else
               = number_with_precision estimation.ticket_estimation_parts.sum(:estimated_price), precision: 2
@@ -48,12 +52,12 @@
 
         %td
           - if estimation.approval_required
-            - if ticket.ticket_repair_type.code == 'EX'
+            - if estimation_external_present
               = number_with_precision(estimation.ticket_estimation_externals.sum(:approved_estimated_price) + estimation.ticket_estimation_additionals.sum(:approved_estimated_price), precision: 2)
             - else
               = number_with_precision(estimation.ticket_estimation_parts.sum(:approved_estimated_price) + estimation.ticket_estimation_additionals.sum(:approved_estimated_price), precision: 2)
           - else
-            - if ticket.ticket_repair_type.code == 'EX'
+            - if estimation_external_present
               = number_with_precision(estimation.ticket_estimation_externals.sum(:estimated_price) + estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2)
             - else
               = number_with_precision(estimation.ticket_estimation_parts.sum(:estimated_price) + estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2)

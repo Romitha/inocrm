@@ -7,6 +7,9 @@ window.Lives =
 
     dispatcher = new WebSocketRails('localhost:3000/websocket')
 
+    dispatcher.on_open = (data) ->
+      console.log('Connection has been established: ', data)
+
     dispatcher.bind 'tasks.create_success', (task)->
       $("#append_chat").append(task.content)
       console.log('successfully created ' + task.content)

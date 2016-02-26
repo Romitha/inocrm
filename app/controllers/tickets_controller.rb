@@ -1,6 +1,6 @@
 class TicketsController < ApplicationController
   before_action :set_ticket, only: [:show, :edit, :update, :destroy, :update_change_ticket_cus_warranty, :update_change_ticket_repair_type, 
-    :update_start_action, :update_re_assign, :update_hold, :update_create_fsr, :update_edit_serial_no_request, :update_edit_fsr, 
+    :update_start_action, :update_re_assign, :update_request_close_approval, :update_hold, :update_create_fsr, :update_edit_serial_no_request, :update_edit_fsr, 
     :update_terminate_job, :update_action_taken, :update_request_spare_part, :update_request_on_loan_spare_part, :update_hp_case_id, :update_resolved_job, :update_deliver_unit, :update_job_estimation_request, :update_recieve_unit, :update_un_hold]
   before_action :set_organization_for_ticket, only: [:new, :edit, :create_customer]
   # layout :workflow_diagram, only: [:workflow_diagram]
@@ -1378,6 +1378,43 @@ class TicketsController < ApplicationController
     end
   end
 
+  def update_request_close_approval
+
+    TaskAction
+    TicketSparePart
+    continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
+
+    if continue
+      if @ticket.job_finished and @ticket.ticket_close_approval_required
+
+        @ticket.attributes = ticket_params
+        @ticket.ticket_close_approval_requested = true
+
+        bpm_variables = view_context.initialize_bpm_variables.merge(supp_engr_user: current_user.id, d7_close_approval_requested: "Y", d4_job_complete: "Y", d9_qc_required: (@ticket.ticket_type.code == "IH" ? "Y" : "N"), d10_job_estimate_required_final: ((@ticket.cus_chargeable or @ticket.cus_payment_required) ? "Y" : "N"), d12_need_to_invoice: ((@ticket.cus_chargeable or @ticket.cus_payment_required) ? "Y" : "N"), d6_close_approval_required: "Y")
+
+        @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(55).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count) 
+
+        if @ticket.save
+
+          bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+          if bpm_response[:status].upcase == "SUCCESS"
+            @flash_message = "Successfully updated."
+          else
+            @flash_message = "ticket is updated. but Bpm error"
+          end
+        else
+          flash[:error] = "Unable to update. Please re-try with validation."
+        end
+      else
+        @flash_message = "ticket is failed to updated."
+      end
+    else
+      @flash_message = @flash_message
+    end
+    redirect_to @ticket, notice: @flash_message
+  end
+
   def update_collect_parts
     TicketSparePart
     continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
@@ -2529,48 +2566,6 @@ class TicketsController < ApplicationController
     end
     respond_to do |format|
       format.html {render "tickets/tickets_pack/deliver_bundle/deliver_bundle"}
-    end
-  end
-
-  def deliver_unit
-    ContactNumber
-    QAndA
-    TaskAction
-    TicketSparePart
-    Inventory
-    @ticket = Ticket.find_by_id params[:ticket_id]
-    if @ticket
-      @product = @ticket.products.first
-      @warranties = @product.warranties
-      session[:product_id] = @product.id
-      Rails.cache.delete([:histories, session[:product_id]])
-      Rails.cache.delete([:join, @ticket.id])
-      # @histories = Rails.cache.fetch([:histories, session[:product_id]]){Kaminari.paginate_array(@product.tickets)}.page(params[:page]).per(2)
-      # @join_tickets = Rails.cache.fetch([:join, @ticket.id]){Kaminari.paginate_array(Ticket.where(id: @ticket.joint_tickets.map(&:joint_ticket_id)))}.page(params[:page]).per(2)
-      # @q_and_answers = @ticket.q_and_answers.group_by{|a| a.q_and_a && a.q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"Problematic Questions" => v})}
-      # @ge_q_and_answers = @ticket.ge_q_and_answers.group_by{|ge_a| ge_a.ge_q_and_a && ge_a.ge_q_and_a.task_action.action_description}.inject({}){|hash, (k,v)| hash.merge(k => {"General Questions" => v})}
-
-    end
-    respond_to do |format|
-      format.html {render "tickets/tickets_pack/deliver_unit"}
-    end
-  end
-
-  def check_fsr
-    ContactNumber
-    QAndA
-    TaskAction
-    TicketSparePart
-    Inventory
-    Warranty
-    @ticket = Ticket.find_by_id params[:ticket_id]
-    if @ticket
-      @product = @ticket.products.first
-      Rails.cache.delete([:histories, @product.id])
-      Rails.cache.delete([:join, @ticket.id])
-    end
-    respond_to do |format|
-      format.html {render "tickets/tickets_pack/check_fsr/check_fsr"}
     end
   end
 
@@ -3806,7 +3801,7 @@ class TicketsController < ApplicationController
         job_estimate.note = ticket_estimation.note
         job_estimate.save
 
-        ticket_estimation.ticket_estimation_externals.build(ticket_id: @ticket.id, repair_by_id: job_estimate.supplier_id)
+        ticket_estimation.ticket_estimation_externals.build(ticket_id: @ticket.id, repair_by_id: job_estimate.supplier_id, description: params[:description])
         ticket_estimation.save
 
         # bpm output variables
@@ -3838,6 +3833,15 @@ class TicketsController < ApplicationController
     TaskAction
     WorkflowMapping
     continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
+    query = {}
+
+    # bpm output variables
+    ticket_id = @ticket.id
+    supp_engr_user = current_user.id
+    priority = @ticket.priority
+    request_onloan_spare_part_id = "-"
+    onloan_request = "N"
+    process_name = ""
 
     if continue
       @ticket_spare_part = TicketSparePart.new
@@ -3850,30 +3854,44 @@ class TicketsController < ApplicationController
       if @ticket_spare_part.save
 
         SparePartDescription.find_or_create_by(description: @ticket_spare_part.spare_part_description)
+        request_spare_part_id = @ticket_spare_part.id
 
         if @ticket_spare_part.request_from == "M"
 
           # @ticket_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code("RQT").id        
-
+          @ticket_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code("MPR").id unless @ticket_spare_part.cus_chargeable_part
           action_id = TaskAction.find_by_action_no(14).id
           @ticket_spare_part.create_ticket_spare_part_manufacture(payment_expected_manufacture: 0, manufacture_currency_id: @ticket_spare_part.ticket.manufacture_currency_id)
+
+          process_name = "SPPT_MFR_PART_REQUEST"
+          query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, supp_engr_user: supp_engr_user, priority: priority}
+
         elsif @ticket_spare_part.request_from == "S"
 
           @ticket_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code("STR").id unless @ticket_spare_part.cus_chargeable_part
           action_id = TaskAction.find_by_action_no(15).id
 
-          @ticket_spare_part_store = @ticket_spare_part.create_ticket_spare_part_store(store_id: params[:store_id], inv_product_id: params[:inv_product_id], mst_inv_product_id: params[:mst_inv_product_id], estimation_required: @ticket_spare_part.cus_chargeable_part, part_of_main_product: (params[:part_of_main_product] || 0), store_requested: !@ticket_spare_part.cus_chargeable_part, store_requested_at: ( !@ticket_spare_part.cus_chargeable_part ? DateTime.now : nil), store_requested_by: ( !@ticket_spare_part.cus_chargeable_part ? current_user.id : nil))
+          @ticket_spare_part_store = @ticket_spare_part.create_ticket_spare_part_store(store_id: params[:store_id], inv_product_id: params[:inv_product_id], mst_inv_product_id: params[:mst_inv_product_id], part_of_main_product: (params[:part_of_main_product] || 0), store_requested: !@ticket_spare_part.cus_chargeable_part, store_requested_at: ( !@ticket_spare_part.cus_chargeable_part ? DateTime.now : nil), store_requested_by: ( !@ticket_spare_part.cus_chargeable_part ? current_user.id : nil))
+
+          process_name = "SPPT_STORE_PART_REQUEST"
+          query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, request_onloan_spare_part_id: request_onloan_spare_part_id, onloan_request: onloan_request, supp_engr_user: supp_engr_user, priority: priority}
+
+        elsif @ticket_spare_part.request_from == "NS"
+          #@ticket_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code("RQT").id
+          action_id = TaskAction.find_by_action_no(78).id
+
+          @ticket_spare_part_non_stock = @ticket_spare_part.create_ticket_spare_part_non_stock(inv_product_id: params[:inv_product_id])
         end
+
         @ticket_spare_part.ticket_spare_part_status_actions.create(status_id: @ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
 
         @ticket_spare_part.ticket.update_attribute :status_resolve_id, TicketStatusResolve.find_by_code("POD").id
-          
+
         user_ticket_action = @ticket_spare_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket_spare_part.ticket.re_open_count, action_id: action_id)
         user_ticket_action.build_request_spare_part(ticket_spare_part_id: @ticket_spare_part.id)
         user_ticket_action.save
 
-
-        if @ticket_spare_part.request_from == "S" and @ticket_spare_part.cus_chargeable_part
+        if @ticket_spare_part.cus_chargeable_part # and (@ticket_spare_part.request_from == "M" or @ticket_spare_part.request_from == "S" or @ticket_spare_part.request_from == "NS")
 
           action_id = TaskAction.find_by_action_no(33).id
           user_ticket_action = @ticket_spare_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket_spare_part.ticket.re_open_count, action_id: action_id)
@@ -3885,8 +3903,12 @@ class TicketsController < ApplicationController
           user_ticket_action.save
           @ticket_estimation.save
 
-          @ticket_spare_part_store.update_attribute :ticket_estimation_part_id, ticket_estimation_part.id
+          part_estimation_id = @ticket_estimation.id
 
+          process_name = "SPPT_PART_ESTIMATE"
+          query = {ticket_id: ticket_id, part_estimation_id: part_estimation_id, supp_engr_user: supp_engr_user, priority: priority}
+
+          @ticket_spare_part.update_attribute :estimation_required, true
         end
 
         # bpm output variables
@@ -3897,40 +3919,15 @@ class TicketsController < ApplicationController
 
         bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
-        # bpm output variables
-        ticket_id = @ticket.id
-        request_spare_part_id = @ticket_spare_part.id
-        supp_engr_user = current_user.id
-        priority = @ticket.priority
+        if process_name.present?
+          @bpm_response1 = view_context.send_request_process_data start_process: true, process_name: process_name, query: query
 
-        part_estimation_id = @ticket_estimation.try(:id)
-
-        request_onloan_spare_part_id = "-"
-        onloan_request = "N"
-
-        if @ticket_spare_part.request_from == "M"
-          # Create Process "SPPT_MFR_PART_REQUEST",
-
-          bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT_MFR_PART_REQUEST", query: {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, supp_engr_user: supp_engr_user, priority: priority}
-
-        elsif @ticket_spare_part.request_from == "S"
-          if @ticket_spare_part.cus_chargeable_part
-            # part_estimation_id = DB.spt_ticket_estimation.id,
-            # Create Process "SPPT_PART_ESTIMATE"
-
-            bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT_PART_ESTIMATE", query: {ticket_id: ticket_id, part_estimation_id: part_estimation_id, supp_engr_user: supp_engr_user, priority: priority}
+          if @bpm_response1[:status].try(:upcase) == "SUCCESS"
+            @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name])
+            view_context.ticket_bpm_headers @bpm_response1[:process_id], @ticket.id, request_spare_part_id
           else
-            # Create Process "SPPT_STORE_PART_REQUEST"
-
-            bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT_STORE_PART_REQUEST", query: {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, request_onloan_spare_part_id: request_onloan_spare_part_id, onloan_request: onloan_request, supp_engr_user: supp_engr_user, priority: priority}
+              @bpm_process_error = true
           end
-        end
-
-        if bpm_response1[:status].try(:upcase) == "SUCCESS"
-          @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name])
-          view_context.ticket_bpm_headers bpm_response1[:process_id], @ticket.id, request_spare_part_id
-        else
-          @bpm_process_error = true
         end
 
         if bpm_response[:status].upcase == "SUCCESS"
@@ -3938,7 +3935,7 @@ class TicketsController < ApplicationController
         else
           @flash_message = {alert: "ticket is updated. but Bpm error"}
         end
-        
+
         @flash_message = {alert: "#{@flash_message} Unable to start new process."} if @bpm_process_error
 
       else
@@ -3947,7 +3944,7 @@ class TicketsController < ApplicationController
     else
       @flash_message = {alert: "Unable to continue with BPM. Please rectify BPM"}
     end
-    redirect_to @ticket, @flash_message
+    redirect_to todos_url, @flash_message
   end
 
   def suggesstion_data
@@ -3955,9 +3952,6 @@ class TicketsController < ApplicationController
     respond_to do |format|
       format.json {render json: SparePartDescription.all.map { |s| s.description }}
     end
-  end
-
-  def master_data
   end
 
   def update_request_on_loan_spare_part
@@ -4048,7 +4042,7 @@ class TicketsController < ApplicationController
     end
 
     def ticket_params
-      ticket_params = params.require(:ticket).permit(:ticket_no, :current_user_id, :sla_id, :serial_no, :status_hold, :repair_type_id, :base_currency_id, :ticket_close_approval_required, :ticket_close_approval_requested, :regional_support_job, :job_started_action_id, :job_start_note, :job_started_at, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, :status_resolve_id, ticket_deliver_units_attributes: [:deliver_to_id, :note, :created_at, :created_by, :received, :id, :received_at, :received_by], ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :ticket_action_id, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer], ticket_estimations_attributes: [:note, :currency_id, :status_id, :requested_at, :requested_by], user_ticket_actions_attributes: [:id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, user_assign_ticket_actions_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy], ticket_re_assign_request_attributes: [:reason_id, :_destroy], ticket_action_taken_attributes: [:action, :_destroy], ticket_terminate_job_attributes: [:id, :reason_id, :foc_requested, :_destroy], act_hold_attributes: [:id, :reason_id, :_destroy, :un_hold_action_id], hp_case_attributes: [:id, :case_id, :case_note], ticket_finish_job_attributes: [:resolution, :_destroy], ticket_terminate_job_payments_attributes: [:id, :amount, :payment_item_id, :_destroy, :ticket_id, :currency_id], act_fsr_attributes: [:print_fsr], serial_request_attributes: [:reason], job_estimation_attributes: [:supplier_id]], ticket_extra_remarks_attributes: [:id, :note, :created_by, :extra_remark_id], products_attributes: [:id, :sold_country_id, :pop_note, :pop_doc_url, :pop_status_id], ticket_fsrs_attributes: [:work_started_at, :work_finished_at, :hours_worked, :down_time, :travel_hours, :engineer_time_travel, :engineer_time_on_site, :resolution, :completion_level, :created_by], ticket_on_loan_spare_parts_attributes: [:id, :approved_inv_product_id, :approved_store_id, :approved_main_inv_product_id, :approved, :return_part_damage, :return_part_damage_reason_id])
+      ticket_params = params.require(:ticket).permit(:ticket_no, :note, :current_user_id, :sla_id, :serial_no, :status_hold, :repair_type_id, :base_currency_id, :ticket_close_approval_required, :ticket_close_approval_requested, :regional_support_job, :job_started_action_id, :job_start_note, :job_started_at, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, :status_resolve_id, ticket_deliver_units_attributes: [:deliver_to_id, :note, :created_at, :created_by, :received, :id, :received_at, :received_by], ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :ticket_action_id, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer], ticket_estimations_attributes: [:note, :currency_id, :status_id, :requested_at, :requested_by], user_ticket_actions_attributes: [:id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, user_assign_ticket_actions_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy], ticket_re_assign_request_attributes: [:reason_id, :_destroy], ticket_action_taken_attributes: [:action, :_destroy], ticket_terminate_job_attributes: [:id, :reason_id, :foc_requested, :_destroy], act_hold_attributes: [:id, :reason_id, :_destroy, :un_hold_action_id], hp_case_attributes: [:id, :case_id, :case_note], ticket_finish_job_attributes: [:resolution, :_destroy], ticket_terminate_job_payments_attributes: [:id, :amount, :payment_item_id, :_destroy, :ticket_id, :currency_id], act_fsr_attributes: [:print_fsr], serial_request_attributes: [:reason], job_estimation_attributes: [:supplier_id]], ticket_extra_remarks_attributes: [:id, :note, :created_by, :extra_remark_id], products_attributes: [:id, :sold_country_id, :pop_note, :pop_doc_url, :pop_status_id], ticket_fsrs_attributes: [:work_started_at, :work_finished_at, :hours_worked, :down_time, :travel_hours, :engineer_time_travel, :engineer_time_on_site, :resolution, :completion_level, :created_by], ticket_on_loan_spare_parts_attributes: [:id, :approved_inv_product_id, :approved_store_id, :approved_main_inv_product_id, :approved, :return_part_damage, :return_part_damage_reason_id])
       ticket_params[:current_user_id] = current_user.id
       ticket_params
     end

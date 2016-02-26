@@ -6,9 +6,10 @@ class InventoriesController < ApplicationController
     Inventory
     Grn
     session[:select_frame] = params[:select_frame]
-    if params[:select_inventory] and (params[:inventory_id] or params[:inventory_product_id]) and session[:select_frame]
+    if params[:select_inventory] and (params[:inventory_id] or params[:inventory_product_id] or params[:non_inventory_product_id]) and session[:select_frame]
       @inventory = Inventory.find params[:inventory_id] if params[:inventory_id]
       @inventory_product = InventoryProduct.find params[:inventory_product_id] if params[:inventory_product_id]
+      @non_stock = InventoryProduct.find params[:non_inventory_product_id] if params[:non_inventory_product_id]
 
       if session[:select_frame] == "request_from"
         if @inventory
@@ -17,6 +18,9 @@ class InventoriesController < ApplicationController
         elsif @inventory_product
           session[:store_id] = session[:requested_store_id]
           session[:inv_product_id] = @inventory_product.id
+        elsif @non_stock
+          session[:store_id] = session[:requested_store_id]
+          session[:inv_product_id] = @non_stock.id
         end
 
       elsif session[:select_frame] == "main_product"
@@ -58,19 +62,25 @@ class InventoriesController < ApplicationController
 
       mst_inv_product = params[:search_inventory].except("brand", "product")["mst_inv_product"].to_hash.delete_if { |k, v| v.blank? }
 
-      # many_mst_inv_product = mst_inv_product.inject(""){|i, (k, v)| k != "category3_id" ? i+k+" like '%"+v+"%' and " : i+k+" = "+v+" and "}
       mst_inv_product_like = mst_inv_product.map { |v| v.first == "category3_id" ? v.first+" = "+v.last : v.first+" like '%"+v.last+"%'" }.join(" and ")
       mst_inv_product_for_inventory_like = mst_inv_product.map { |v| v.first == "category3_id" ? "mst_inv_product."+v.first+" = "+v.last : "mst_inv_product."+v.first+" like '%"+v.last+"%'" }.join(" and ")
-      # a.map{|v| v.first+" like '%"+v.last+"%'"}.join(" and ")
-      # @inventories = Inventory.where(store_id: store_hash["store_id"].to_i)
+
       if params[:select_frame] == "main_product"
         @inventories = Inventory.joins(inventory_product: :inventory_product_info).where(store_id: store_hash["store_id"].to_i, mst_inv_product_info: {need_serial: true}).where(mst_inv_product_for_inventory_like).references(:mst_inv_product)
         avoidable_inventory_product_ids = @inventories.map { |inventory| inventory.product_id }.compact
+
+        mst_non_inv_product_like = mst_inv_product_like.present? ? mst_inv_product_like+" and non_stock_item = 1 " : "non_stock_item = 1"
+        mst_inv_product_like = mst_inv_product_like.present? ? mst_inv_product_like+" and non_stock_item != 1 " : "non_stock_item != 1"
         @inventory_products = InventoryProduct.where.not(id: avoidable_inventory_product_ids).where(mst_inv_product_like).joins(:inventory_product_info).where(mst_inv_product_info: {need_serial: true})
+        @non_stock_products = InventoryProduct.where.not(id: avoidable_inventory_product_ids).where(mst_non_inv_product_like).joins(:inventory_product_info).where(mst_inv_product_info: {need_serial: true})
       else
-        @inventories = Inventory.includes(:inventory_product).where(store_id: store_hash["store_id"].to_i).where(mst_inv_product_for_inventory_like).references(:mst_inv_product)
+        @inventories = Inventory.joins(:inventory_product).where(store_id: store_hash["store_id"].to_i).where(mst_inv_product_for_inventory_like).references(:mst_inv_product)
         avoidable_inventory_product_ids = @inventories.map { |inventory| inventory.product_id }.compact
+        mst_non_inv_product_like = mst_inv_product_like.present? ? mst_inv_product_like+" and non_stock_item = 1 " : "non_stock_item = 1"
+        mst_inv_product_like = mst_inv_product_like.present? ? mst_inv_product_like+" and non_stock_item != 1 " : "non_stock_item != 1"
         @inventory_products = InventoryProduct.where.not(id: avoidable_inventory_product_ids).where(mst_inv_product_like)
+
+        @non_stock_products = InventoryProduct.where(mst_non_inv_product_like)
       end
 
       format.js {render :inventory_in_modal}
@@ -87,7 +97,6 @@ class InventoriesController < ApplicationController
     continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
 
     save_ticket_spare_part = Proc.new do |spare_part_status, action_id_no|
-
       ticket_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code(spare_part_status).id
 
       ticket_spare_part.ticket_spare_part_status_actions.create(status_id: ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
@@ -98,11 +107,15 @@ class InventoriesController < ApplicationController
       user_ticket_action.build_request_spare_part(ticket_spare_part_id: ticket_spare_part.id, inv_srr_id: ticket_spare_part.try(:ticket_spare_part_store).try(:inv_srr_id), inv_srr_item_id: ticket_spare_part.try(:ticket_spare_part_store).try(:inv_srr_item_id))
 
       user_ticket_action.save
+      ticket_spare_part.ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if ticket_spare_part.ticket.ticket_status.code == "ASN"
     end
 
-    manufacture_warranty = ticket_spare_part.ticket_spare_part_manufacture.present?
+    manufacture_warranty = (ticket_spare_part.ticket_spare_part_manufacture and not ticket_spare_part.cus_chargeable_part)
+    manufacture_chargeable = (ticket_spare_part.ticket_spare_part_manufacture and ticket_spare_part.cus_chargeable_part)
     store_warranty = (ticket_spare_part.ticket_spare_part_store and not ticket_spare_part.cus_chargeable_part)
-    store_non_warranty = (ticket_spare_part.ticket_spare_part_store and ticket_spare_part.cus_chargeable_part)
+    store_chargeable = (ticket_spare_part.ticket_spare_part_store and ticket_spare_part.cus_chargeable_part)
+    non_stock_warranty = (ticket_spare_part.ticket_spare_part_non_stock and not ticket_spare_part.cus_chargeable_part)
+    non_stock_chargeable = (ticket_spare_part.ticket_spare_part_non_stock and ticket_spare_part.cus_chargeable_part)    
 
     rce = ticket_spare_part.spare_part_status_action.code == "RCE" # Received by Engineer
     rpr = ticket_spare_part.spare_part_status_action.code == "RPR" # Returned Part Reject
@@ -111,9 +124,21 @@ class InventoriesController < ApplicationController
     ecm = ticket_spare_part.spare_part_status_action.code == "ECM" # Estimation Completed
     cea = ticket_spare_part.spare_part_status_action.code == "CEA" # Cus. Estimation Approved
     iss = ticket_spare_part.spare_part_status_action.code == "ISS" # Issued
+    mpr = ticket_spare_part.spare_part_status_action.code == "MPR" #Manufacture Part Requested
+
+    # bpm output variables
+    ticket_id = @ticket.id
+    request_spare_part_id = ticket_spare_part.id
+    supp_engr_user = current_user.id
+    priority = @ticket.priority
+    request_onloan_spare_part_id = '-'
+    onloan_request = "N"
+
+    # bpm output variables
+    bpm_variables = view_context.initialize_bpm_variables
     
     if params[:terminate]
-      if (manufacture_warranty and rqt) or (store_warranty and str) or (store_non_warranty and (rqt or ecm or cea))
+      if (manufacture_warranty and mpr) or (manufacture_chargeable and (rqt or ecm or cea)) or (store_warranty and str) or (store_chargeable and (rqt or ecm or cea)) or (non_stock_warranty and rqt) or (non_stock_chargeable and (rqt or ecm or cea)) 
 
         save_ticket_spare_part["CLS", 19] #Terminate Spare Part
 
@@ -124,7 +149,7 @@ class InventoriesController < ApplicationController
 
       if not params[:update_without_return]
         if continue
-          if manufacture_warranty and (rce or rpr)
+          if (manufacture_warranty or manufacture_chargeable) and (rce or rpr)
 
             ticket_spare_part.update_attributes(
               part_returned: true,
@@ -135,37 +160,13 @@ class InventoriesController < ApplicationController
             save_ticket_spare_part["RTN", 17] #Return Part (Spare/Faulty)
 
             # bpm output variables
-            bpm_variables = view_context.initialize_bpm_variables.merge(d32_return_manufacture_part: "Y")
+            bpm_variables.merge!(d32_return_manufacture_part: "Y")
 
-            @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
+            # Create Process "SPPT_MFR_PART_RETURN",
+            process_name = "SPPT_MFR_PART_RETURN"
+            query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, supp_engr_user: supp_engr_user, priority: priority}
 
-            bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
-
-            # bpm output variables
-            ticket_id = @ticket.id
-            request_spare_part_id = ticket_spare_part.id
-            supp_engr_user = current_user.id
-            priority = @ticket.priority
-
-            # Create Process "SPPT_MFR_PART_RETURN", 
-            bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT_MFR_PART_RETURN", query: {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, supp_engr_user: supp_engr_user, priority: priority}
-
-            if bpm_response1[:status].try(:upcase) == "SUCCESS"
-              @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name])
-              view_context.ticket_bpm_headers bpm_response1[:process_id], @ticket.id, request_spare_part_id
-            else
-              @bpm_process_error = true
-            end
-
-            if bpm_response[:status].upcase == "SUCCESS"
-              flash[:notice] = "Successfully updated."
-            else
-              flash[:error] = "ticket is updated. but Bpm error"
-            end
-            
-            flash[:error] = "#{@flash_message} Unable to start new process." if @bpm_process_error
-
-          elsif (store_warranty and (rce or rpr)) or (store_non_warranty and (rce or rpr))
+          elsif (store_warranty and (rce or rpr)) or (store_chargeable and (rce or rpr))
 
             srr = Srr.create(
               store_id: ticket_spare_part.ticket_spare_part_store.srn.store_id,
@@ -206,84 +207,33 @@ class InventoriesController < ApplicationController
             save_ticket_spare_part["RTN", 17] #Return Part (Spare/Faulty)
 
             # bpm output variables
-            bpm_variables = view_context.initialize_bpm_variables.merge(d24_return_store_part: "Y")
+            bpm_variables.merge!(d24_return_store_part: "Y")
 
-            @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
-
-            bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
-
-            # bpm output variables
-            ticket_id = @ticket.id
-            request_spare_part_id = ticket_spare_part.id
-            supp_engr_user = current_user.id
-            priority = @ticket.priority
-            request_onloan_spare_part_id = '-'
-            onloan_request = "N"
-
-            # Create Process "SPPT_STORE_PART_RETURN", 
-            bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT_STORE_PART_RETURN", query: {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, request_onloan_spare_part_id: request_onloan_spare_part_id, onloan_request: onloan_request, supp_engr_user: supp_engr_user, priority: priority}
-
-            if bpm_response1[:status].try(:upcase) == "SUCCESS"
-              @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name])
-              view_context.ticket_bpm_headers bpm_response1[:process_id], @ticket.id, request_spare_part_id
-            else
-              @bpm_process_error = true
-            end
-
-            if bpm_response[:status].upcase == "SUCCESS"
-              flash[:notice] = "Successfully updated."
-            else
-              flash[:error] = "spare part is updated. but Bpm error"
-            end
-            
-            flash[:error] = "#{@flash_message} Unable to start new process." if @bpm_process_error
+            # Create Process "SPPT_STORE_PART_RETURN",
+            process_name = "SPPT_STORE_PART_RETURN"
+            query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, request_onloan_spare_part_id: request_onloan_spare_part_id, onloan_request: onloan_request, supp_engr_user: supp_engr_user, priority: priority}
 
           end
+
         end
       else
-        flash[:error] = "spare part is updated"
+        flash[:error] = "spare part is not updated"
       end
-
 
     elsif params[:store_request]
 
       if continue
-        if store_non_warranty and cea
+        if store_chargeable and cea
 
           save_ticket_spare_part["STR", 15] #Request Spare Part from Store 
 
           # bpm output variables
-          bpm_variables = view_context.initialize_bpm_variables.merge(d17_request_store_part: "Y")
+          bpm_variables.merge!(d17_request_store_part: "Y")
 
-          @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
+          # Create Process "SPPT_STORE_PART_REQUEST",
+          process_name = "SPPT_STORE_PART_REQUEST"
+          query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, request_onloan_spare_part_id: request_onloan_spare_part_id, onloan_request: onloan_request, supp_engr_user: supp_engr_user, priority: priority}
 
-          bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
-
-          # bpm output variables
-          ticket_id = @ticket.id
-          request_spare_part_id = ticket_spare_part.id
-          supp_engr_user = current_user.id
-          priority = @ticket.priority
-          request_onloan_spare_part_id = '-'
-          onloan_request = "N"
-
-          # Create Process "SPPT_STORE_PART_REQUEST", 
-          bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT_STORE_PART_REQUEST", query: {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, request_onloan_spare_part_id: request_onloan_spare_part_id, onloan_request: onloan_request, supp_engr_user: supp_engr_user, priority: priority}
-
-          if bpm_response1[:status].try(:upcase) == "SUCCESS"
-            @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name])
-            view_context.ticket_bpm_headers bpm_response1[:process_id], @ticket.id, request_spare_part_id
-          else
-            @bpm_process_error = true
-          end
-
-          if bpm_response[:status].upcase == "SUCCESS"
-            flash[:notice] = "Successfully updated."
-          else
-            flash[:error] = "ticket is updated. but Bpm error"
-          end
-          
-          flash[:error] = "#{@flash_message} Unable to start new process." if @bpm_process_error
         end
 
       else
@@ -291,17 +241,62 @@ class InventoriesController < ApplicationController
       end    
 
     elsif params[:recieved]
-
-      if iss and (manufacture_warranty or store_warranty or store_non_warranty)
+      if iss and (manufacture_warranty or manufacture_chargeable or store_warranty or store_chargeable)
         save_ticket_spare_part["RCE", 16] #Receive Spare Part by eng
       end
 
+    elsif params[:manufacture_request]
+      if continue
+        if manufacture_chargeable and cea
+
+          save_ticket_spare_part["MPR", 14] #Request Spare Part from Manufacture
+
+          # bpm output variables
+          bpm_variables.merge!(d16_request_manufacture_part: "Y")
+
+          process_name = "SPPT_MFR_PART_REQUEST"
+          query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, supp_engr_user: supp_engr_user, priority: priority}
+        end
+
+      else
+        flash[:error] = "Bpm error. ticket is not updated"
+      end    
+
+    elsif params[:non_stock_complete]
+      if (non_stock_warranty and rqt) or (non_stock_chargeable and cea) 
+
+        save_ticket_spare_part["CLS", 79] 
+
+        flash[:notice] = "successfully completed."
+      end
+
     end
+
+    if continue
+      bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+      bpm_response1 = view_context.send_request_process_data start_process: true, process_name: process_name, query: query
+
+      if bpm_response1[:status].try(:upcase) == "SUCCESS"
+        @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name])
+        view_context.ticket_bpm_headers bpm_response1[:process_id], @ticket.id, request_spare_part_id
+      else
+        @bpm_process_error = true
+      end
+
+      if bpm_response[:status].upcase == "SUCCESS"
+        flash[:notice] = "Successfully updated."
+      else
+        flash[:error] = "spare part is updated. but Bpm error"
+      end
+      
+      flash[:error] = "#{@flash_message} Unable to start new process." if @bpm_process_error
+    end
+
     redirect_to todos_url
   end
 
   def update_onloan_part_order
-    
     ticket_on_loan_spare_part = TicketOnLoanSparePart.find params[:ticket_on_loan_spare_part_id]
     @ticket = ticket_on_loan_spare_part.ticket
 
@@ -444,6 +439,7 @@ class InventoriesController < ApplicationController
 
   def update_estimation_part_customer_approval
     Ticket
+    Invoice
     status_action_id = SparePartStatusAction.find_by_code("CLS").id
 
     @estimation = TicketEstimation.find estimation_params[:id]
@@ -452,7 +448,6 @@ class InventoriesController < ApplicationController
     @estimation.status_id = EstimationStatus.find_by_code("CLS").id
     @estimation.cust_approved_at = DateTime.now
     @estimation.cust_approved_by = current_user.id
-
 
     continue = true
 
@@ -465,8 +460,16 @@ class InventoriesController < ApplicationController
           @estimation.status_id = EstimationStatus.find_by_code("APP").id
           @estimation.ticket.update cus_payment_required: true
 
+          quotation = @estimation.customer_quotations.where(canceled: false).first.try(:id)
+
+          d20_advance_payment_required = 'Y'
+          if quotation
+            d20_advance_payment_required =  quotation.advance_payment_requested ? 'N' : 'Y'
+            quotation.updated advance_payment_requested: true
+          end
+
           # bpm output variables
-          bpm_variables = view_context.initialize_bpm_variables.merge(d20_advance_payment_required: "Y", advance_payment_estimation_id: @estimation.id)
+          bpm_variables = view_context.initialize_bpm_variables.merge(d20_advance_payment_required: d20_advance_payment_required, advance_payment_estimation_id: (quotation.try(:id) or '-'))
 
           @estimation.ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @estimation.ticket.ticket_status.code == "ASN"
 
@@ -488,7 +491,7 @@ class InventoriesController < ApplicationController
     if continue
 
       @estimation.ticket_estimation_parts.each do |ticket_estimation_part|
-        ticket_estimation_part.ticket_spare_part.update(status_action_id: status_action_id)
+        ticket_estimation_part.ticket_spare_part.update_attributes(status_action_id: status_action_id, approved_estimation_part_id: ticket_estimation_part.id)
 
         ticket_estimation_part.ticket_spare_part.ticket_spare_part_status_actions.create(status_id: status_action_id, done_by: current_user.id, done_at: DateTime.now)
       end
@@ -531,8 +534,16 @@ class InventoriesController < ApplicationController
           @estimation.status_id = EstimationStatus.find_by_code("APP").id
           @estimation.ticket.update cus_payment_required: true
 
+          quotation = @estimation.customer_quotations.where(canceled: false).first.try(:id)
+
+          d20_advance_payment_required = 'Y'
+          if quotation
+            d20_advance_payment_required =  quotation.advance_payment_requested ? 'N' : 'Y'
+            quotation.updated advance_payment_requested: true
+          end
+
           # bpm output variables
-          bpm_variables = view_context.initialize_bpm_variables.merge(d20_advance_payment_required: "Y", advance_payment_estimation_id: @estimation.id)
+          bpm_variables = view_context.initialize_bpm_variables.merge(d20_advance_payment_required: d20_advance_payment_required, advance_payment_estimation_id: (quotation.try(:id) or '-'))
 
           @estimation.ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @estimation.ticket.ticket_status.code == "ASN"
 
@@ -2069,7 +2080,7 @@ class InventoriesController < ApplicationController
     end
 
     def ticket_params
-      ticket_params = params.require(:ticket).permit(:ticket_no, :sla_id, :serial_no, :status_hold, :repair_type_id, :base_currency_id, :ticket_close_approval_required, :ticket_close_approval_requested, :regional_support_job, :job_started_action_id, :job_start_note, :job_started_at, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, :status_resolve_id, ticket_deliver_units_attributes: [:id, :deliver_to_id, :note, :collected, :delivered_to_sup, :created_at, :created_by, :received, :received_at, :received_by], ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :ticket_action_id, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer], ticket_estimations_attributes: [:id, :advance_payment_amount, :note, :currency_id, :status_id, :requested_at, :requested_by, :approved_adv_pmnt_amount, ticket_estimation_externals_attributes: [:id, :repair_by_id, :cost_price, :estimated_price, :warranty_period, :approved_estimated_price], ticket_estimation_additionals_attributes: [:ticket_id, :additional_charge_id, :cost_price, :estimated_price, :_destroy, :id, :approved_estimated_price]], user_ticket_actions_attributes: [:id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, user_assign_ticket_actions_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy], ticket_re_assign_request_attributes: [:reason_id, :_destroy], ticket_action_taken_attributes: [:action, :_destroy], ticket_terminate_job_attributes: [:id, :reason_id, :foc_requested, :_destroy], act_hold_attributes: [:id, :reason_id, :_destroy, :un_hold_action_id], hp_case_attributes: [:id, :case_id, :case_note], ticket_finish_job_attributes: [:resolution, :_destroy], ticket_terminate_job_payments_attributes: [:id, :amount, :payment_item_id, :_destroy, :ticket_id, :currency_id], act_fsr_attributes: [:print_fsr], serial_request_attributes: [:reason], job_estimation_attributes: [:supplier_id]], ticket_extra_remarks_attributes: [:id, :note, :created_by, :extra_remark_id], products_attributes: [:id, :sold_country_id, :pop_note, :pop_doc_url, :pop_status_id], ticket_fsrs_attributes: [:work_started_at, :work_finished_at, :hours_worked, :down_time, :travel_hours, :engineer_time_travel, :engineer_time_on_site, :resolution, :completion_level, :created_by], ticket_on_loan_spare_parts_attributes: [:id, :approved_inv_product_id, :approved_store_id, :approved_main_inv_product_id, :approved, :return_part_damage, :return_part_damage_reason_id])
+      ticket_params = params.require(:ticket).permit(:ticket_no, :note, :sla_id, :serial_no, :status_hold, :repair_type_id, :base_currency_id, :ticket_close_approval_required, :ticket_close_approval_requested, :regional_support_job, :job_started_action_id, :job_start_note, :job_started_at, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, :status_resolve_id, ticket_deliver_units_attributes: [:id, :deliver_to_id, :note, :collected, :delivered_to_sup, :created_at, :created_by, :received, :received_at, :received_by], ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :ticket_action_id, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer], ticket_estimations_attributes: [:id, :advance_payment_amount, :note, :currency_id, :status_id, :requested_at, :requested_by, :approved_adv_pmnt_amount, ticket_estimation_externals_attributes: [:id, :repair_by_id, :cost_price, :estimated_price, :warranty_period, :approved_estimated_price], ticket_estimation_additionals_attributes: [:ticket_id, :additional_charge_id, :cost_price, :estimated_price, :_destroy, :id, :approved_estimated_price]], user_ticket_actions_attributes: [:id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, user_assign_ticket_actions_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy], ticket_re_assign_request_attributes: [:reason_id, :_destroy], ticket_action_taken_attributes: [:action, :_destroy], ticket_terminate_job_attributes: [:id, :reason_id, :foc_requested, :_destroy], act_hold_attributes: [:id, :reason_id, :_destroy, :un_hold_action_id], hp_case_attributes: [:id, :case_id, :case_note], ticket_finish_job_attributes: [:resolution, :_destroy], ticket_terminate_job_payments_attributes: [:id, :amount, :payment_item_id, :_destroy, :ticket_id, :currency_id], act_fsr_attributes: [:print_fsr], serial_request_attributes: [:reason], job_estimation_attributes: [:supplier_id]], ticket_extra_remarks_attributes: [:id, :note, :created_by, :extra_remark_id], products_attributes: [:id, :sold_country_id, :pop_note, :pop_doc_url, :pop_status_id], ticket_fsrs_attributes: [:work_started_at, :work_finished_at, :hours_worked, :down_time, :travel_hours, :engineer_time_travel, :engineer_time_on_site, :resolution, :completion_level, :created_by], ticket_on_loan_spare_parts_attributes: [:id, :approved_inv_product_id, :approved_store_id, :approved_main_inv_product_id, :approved, :return_part_damage, :return_part_damage_reason_id])
       ticket_params[:current_user_id] = current_user.id
       ticket_params
     end

@@ -261,7 +261,7 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :inv_inventory_serial_item, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :inventory_id, "int(10) UNSIGNED NOT NULL"
       t.column :product_id, "int(10) UNSIGNED NOT NULL"
       t.column :batch_id, "int(10) UNSIGNED NOT NULL"

@@ -2,10 +2,6 @@
   %legend Request Spare Part
   = simple_nested_form_for @ticket_spare_part, url: update_request_spare_part_ticket_path(ticket), method: :post do |f|
 
-    / = hidden_field_tag :process_id, session[:process_id]
-    / = hidden_field_tag :task_id, session[:task_id]
-    / = hidden_field_tag :owner, session[:owner]
-
     = hidden_field_tag :process_id, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:process_id]
     = hidden_field_tag :task_id, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:task_id]
     = hidden_field_tag :owner, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:owner]
@@ -31,12 +27,11 @@
       .col-md-3
         = f.input :spare_part_description, wrapper_html: {class: "col-md-12"}, label: "Part Description", input_html: {class: "typeahead", autocomplete: "off", spellcheck: "false"}, placeholder: "Part Description", required: true
         %div.col-md-3{class: "#{('hide' if @ticket_spare_part.ticket.cus_chargeable or @ticket_spare_part.ticket.warranty_type.code == 'NW' or @ticket_spare_part.ticket.warranty_type.code == 'UW')}"}
-      .col-md-3
-        = f.input :faulty_serial_no, wrapper_html: {class: "col-md-12"}, label: "Faulty Serial No"
-      .col-md-3
-        = f.input :faulty_ct_no, wrapper_html: {class: "col-md-12 "}, label: "Fault CT No"
-
-
+      .not_non_stock
+        .col-md-3
+          = f.input :faulty_serial_no, wrapper_html: {class: "col-md-12"}, label: "Faulty Serial No"
+        .col-md-3
+          = f.input :faulty_ct_no, wrapper_html: {class: "col-md-12 "}, label: "Fault CT No"
 
     .row
       .col-md-2
@@ -46,15 +41,15 @@
             = label_tag "Customer chargeable"
             = check_box_tag :cus_chargeable_part, nil, true, disabled: true
 
-      .col-md-5
-        = f.input :request_from, as: :radio_buttons, collection: {"Manufacture" => "M", "Store" => "S"}, wrapper: :append, disabled: ("M" if @ticket_spare_part.ticket.cus_chargeable or @ticket_spare_part.ticket.warranty_type.code == "NW" or @ticket_spare_part.ticket.warranty_type.code == "UW"), checked: ("S" if @ticket_spare_part.ticket.cus_chargeable or @ticket_spare_part.ticket.warranty_type.code == "NW" or @ticket_spare_part.ticket.warranty_type.code == "UW"), wrapper_html: {class: "col-md-5 padding-left0"}
+      .col-md-6
+        .request_part_request_from
+          = f.input :request_from, as: :radio_buttons, collection: {"Manufacture" => "M", "Store" => "S", "Non Stock" => "NS"}, wrapper: :append, disabled: ("M" if @ticket_spare_part.ticket.cus_chargeable or @ticket_spare_part.ticket.warranty_type.code == "NW" or @ticket_spare_part.ticket.warranty_type.code == "UW"), checked: ("S" if @ticket_spare_part.ticket.cus_chargeable or @ticket_spare_part.ticket.warranty_type.code == "NW" or @ticket_spare_part.ticket.warranty_type.code == "UW")
         .spare_part_select
           = link_to "select", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true, class: "hide"
 
         .request_from
 
-      .col-md-5
-
+      .col-md-4.not_non_stock
         .part.hide
           = label_tag "Part of main product"
           %br

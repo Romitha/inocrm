@@ -512,13 +512,11 @@ window.Tickets =
       #   return
       # ), 500
 
-  
   remote_true_loader: ->
     _this = this
     $("[data-remote]").on "ajax:success", (e, data, status, xhr) ->
       _this.ajax_loader()
     return
-
 
   update_without_return: ->
     $("#update_without_return").click ->
@@ -534,8 +532,6 @@ window.Tickets =
       $(".tab-content #"+$(e.relatedTarget).attr("aria-controls")).find("input, select").each ->
         $(@).prop("disabled", true)
 
-
-
   seperate_product_row_colour: ->
     $('.seperate_product_ckeckbox').click ->
       $(".seperate_product_ckeckbox").parent().parent().removeClass("success")
@@ -545,3 +541,10 @@ window.Tickets =
     $('.part_of_main_product_checkbox').click ->
       $(".part_of_main_product_checkbox").parent().parent().removeClass("success")
       $(@).parent().parent().addClass("success")
+
+  assign_value_to_select: ->
+    $(".request_part_request_from .radio-inline input").click ->
+      $("#request_from_select").attr("href", "/inventories/inventory_in_modal?select_frame=request_from&checked_value="+$(@).val())
+
+
+

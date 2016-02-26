@@ -18,7 +18,9 @@
       = uf.input :action_at, as: :hidden, input_html: {value: DateTime.now.strftime("%d-%m-%Y %H:%M")}
       = uf.input :action_by, as: :hidden, input_html: {value: current_user.id}
       = uf.input :re_open_index, as: :hidden, input_html: {value: ticket.re_open_count}
-
+      .form-group
+        = label_tag "Description"
+        = text_area_tag :description, nil, class: "form-control"
       = uf.simple_fields_for :job_estimation do |rf|
         = rf.association :organization, include_blank: false, label: "Repair by"
 

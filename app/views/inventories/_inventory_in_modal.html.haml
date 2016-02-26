@@ -1,6 +1,8 @@
 - display_results = @display_results
 - inventory_products = @inventory_products
 - inventories = @inventories
+- non_inventory_products = @non_inventory_products
+- non_stock_products = @non_stock_products
 .modal-header
   %h3 Select inventory products
 .modal-body
@@ -8,6 +10,7 @@
     = form_tag search_inventories_inventories_path, remote: true, method: :get do
       = hidden_field_tag :issue_part, params[:issue_part] 
       = hidden_field_tag :select_frame, params[:select_frame] 
+      = hidden_field_tag :checked_value, params[:checked_value] 
       .row
         .col-md-3.store
           = label_tag "Store"
@@ -42,13 +45,13 @@
 
   - if display_results
     = tab_panel do
-      = tab_nav_tab({id: "inventory_in_modal"}, {inventory_tab: {active_class: "active", content: "Inventory"}, non_inventory_tab: {content: "Non inventory"}})
+      = tab_nav_tab({id: "inventory_in_modal"}, {inventory_tab: {active_class: "active", content: "Inventory"}, non_inventory_tab: {content: "Non inventory"}, non_stock_tab: {content: "Non stock"}})
       .tab-content
         = tab_content tabpointer: :inventory_tab, active_class: "active" do
           %table.table.table-striped
             %thead
               %tr
-                %th Index
+                %th No
                 %th Item Code
                 %th Item Description
                 %th Model No
@@ -77,7 +80,7 @@
           %table.table.table-striped
             %thead
               %tr
-                %th Index
+                %th No
                 %th Item Code
                 %th Item Description
                 %th Model No
@@ -98,5 +101,24 @@
                 %td= inventory_product.inventory_unit.unit
                 %td= inventory_product.inventory_product_info.need_serial ? "Serial" : (inventory_product.inventory_product_info.need_batch ? "Batch" : "")
                 %td= link_to("Select", inventory_in_modal_inventories_path(select_inventory: true, inventory_product_id: inventory_product.id, select_frame: session[:select_frame], issue_part: params[:issue_part]), remote: true)
+
+        = tab_content tabpointer: :non_stock_tab do
+          %table.table.table-striped
+            %thead
+              %tr
+                %th No
+                %th Item Code
+                %th Item Description
+                %th Unit
+                %th Select
+            %tbody
+            - non_stock_products.each_with_index do |non_stock, index|
+              %tr
+                %td= index+1
+                %td= non_stock.generated_item_code
+                %td= non_stock.description
+                %td= non_stock.inventory_unit.unit
+                %td= link_to("Select", inventory_in_modal_inventories_path(select_inventory: true, non_inventory_product_id: non_stock.id, select_frame: session[:select_frame], issue_part: params[:issue_part]), remote: true)
+
 .modal-footer
   = link_to "Close", "#", class: "btn btn-default", "data-dismiss" => "modal"

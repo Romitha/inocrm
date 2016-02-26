@@ -182,6 +182,8 @@ mst_spt_action = [
   ["75", "Low Margin Part Estimation Approval", "20", false]
   ["76", "Part Estimation Customer Aproved", "3", false]
   ["77", "Print Receipt for Payment", "14, 27, 29", false]
+  ["78", "Request Non Stock Service Support Engineer", "3", false]
+  ["79", "Complete Non Stock Service Support Engineer", "3", false]
 ].each{ |t| TaskAction.create_with(action_description: t[1], task_id: t[2], hide: t[3]).find_or_create_by(action_no: t[0]) }
 
 mst_organizations_types = [
@@ -211,39 +213,25 @@ mst_spt_general_question = [
 
 TicketSparePart
 spare_part_status_action = [
-  ["RQT", "Requested", "1", "1", "1", "1"],
-  ["ORD", "Ordered from Manufacturer", "2", "0", "0", "0"],
-  ["CLT", "Collected from Manufacturer", "3", "0", "0", "0"],
-  ["RCS", "Received from Manufacturer", "4", "0", "0", "0"],
-  ["ISS", "Issued", "5", "4", "6", "4"],
-  ["RCE", "Received by Engineer", "6", "5", "7", "5"],
-  ["RTN", "Part Return by Engineer", "7", "6", "0", "6"],
-  ["RPR", "Returned Part Reject", "8", "7", "0", "7"],
-  ["RPA", "Returned Part Accepted", "8", "7", "0", "7"],
-  ["BND", "Part Bundled", "10", "0", "0", "0"],
-  ["CLS", "Close", "11", "8", "8", "8"],
-  ["ECM", "Estimation Completed", "0", "0", "2", "0"],
-  ["CEA", "Cus. Estimation Approved", "0", "0", "3", "0"],
-  ["STR", "Request from Store", "0", "2", "4", "2"],
-  ["APS", "Approved Store Request", "0", "3", "5", "3"],
-  ["RJS", "Reject Store Request", "0", "3", "5", "3"],
-  ["RBN", "Ready to Bundle", "9", "0", "0", "0"]
-].each{ |t| SparePartStatusAction.create_with(name: t[1], manufacture_type_index: t[2], store_nc_type_index: t[3], store_ch_type_index: t[4], on_loan_type_index: t[5]).find_or_create_by(code: t[0])}
-
-{
-  1 => {store_nc_type_index: 0, on_loan_type_index: 0},
-  5 => {store_nc_type_index: 3, on_loan_type_index: 3},
-  6 => {store_nc_type_index: 4, on_loan_type_index: 4},
-  7 => {store_nc_type_index: 5, on_loan_type_index: 5},
-  8 => {store_nc_type_index: 6, on_loan_type_index: 6},
-  9 => {store_nc_type_index: 6, on_loan_type_index: 6},
-  11 => {store_nc_type_index: 8, on_loan_type_index: 8},
-  14 => {store_nc_type_index: 1, on_loan_type_index: 1},
-  15 => {store_nc_type_index: 2, on_loan_type_index: 2},
-  16 => {store_nc_type_index: 2, on_loan_type_index: 2}
-}.each do |k, v|
-  SparePartStatusAction.find(k).update(v)
-end
+  ["RQT", "Requested", "0", "0", "1", "0", "1", "1", "1"],
+  ["ORD", "Ordered from Manufacturer", "2", "0", "0", "0", "0", "0", "5"],
+  ["CLT", "Collected from Manufacturer", "3", "0", "0", "0", "0", "0", "6"],
+  ["RCS", "Received from Manufacturer", "4", "0", "0", "0", "0", "0", "7"],
+  ["ISS", "Issued", "5", "4", "6", "3", "0", "0", "8"],
+  ["RCE", "Received by Engineer", "6", "4", "7", "4", "0", "0", "9"],
+  ["RTN", "Part Return by Engineer", "7", "5", "0", "5", "0", "0", "10"],
+  ["RPR", "Returned Part Reject", "8", "6", "0", "6", "0", "0", "11"],
+  ["RPA", "Returned Part Accepted", "8", "7", "0", "7", "0", "0", "11"],
+  ["BND", "Part Bundled", "10", "0", "0", "0", "0", "0", "13"],
+  ["CLS", "Close", "11", "8", "8", "8", "0", "0", "14"],
+  ["ECM", "Estimation Completed", "0", "0", "2", "0", "0", "0", "2"],
+  ["CEA", "Cus. Estimation Approved", "0", "0", "3", "0", "0", "0", "3"],
+  ["STR", "Request from Store", "0", "1", "4", "1", "0", "0", "0"],
+  ["APS", "Approved Store Request", "0", "2", "5", "2", "0", "0", "0"],
+  ["RJS", "Reject Store Request", "0", "2", "5", "2", "0", "0", "12"],
+  ["RBN", "Ready to Bundle", "9", "0", "0", "0", "0", "0", "0"],
+  ["MPR", "Manufacture Part Requested", "1", "0", "0", "0", "0", "0", "4"],
+].each{ |t| SparePartStatusAction.create_with(name: t[1], manufacture_type_index: t[2], store_nc_type_index: t[3], store_ch_type_index: t[4], on_loan_type_index: t[5], non_stock_nc_type_index: t[6], non_stock_ch_type_index: t[7], manufacture_ch_type_index: t[8]).find_or_create_by(code: t[0])}
 
 workflow_mappings = [
   ["SPPT", "add_ticket", "/tickets/edit-ticket", "SPT_SC_1", "Support - Edit Ticket", "h1", "ticket_id,supp_hd_user",nil],
