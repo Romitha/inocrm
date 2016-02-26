@@ -36,6 +36,16 @@ class InvoicesController < ApplicationController
     respond_with(@invoice)
   end
 
+  def edit_estimation_ajax
+    quotation_id = params[:quotation_id]
+    if quotation_id.present?
+      @quotation = CustomerQuotation.find quotation_id
+    else
+      @quotation = CustomerQuotation.new
+    end
+    @ticket = Ticket.find params[:ticket_id]
+  end
+
   def click_for_receipt
     @ticket = Ticket.find params[:ticket_id]
     @ticket_payment_received = TicketPaymentReceived.find params[:re_id]

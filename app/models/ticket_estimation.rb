@@ -59,6 +59,14 @@ class TicketEstimationExternal < ActiveRecord::Base
   belongs_to :organization, foreign_key: :repair_by_id
   accepts_nested_attributes_for :organization, allow_destroy: true
 
+  has_many :ticket_estimation_external_taxes, foreign_key: :estimation_external_id
+
+end
+
+class TicketEstimationExternalTax <ActiveRecord::Base
+  self.table_name = "spt_ticket_estimation_external_tax"
+
+  belongs_to :ticket_estimation_external
 end
 
 class EstimationStatus < ActiveRecord::Base
@@ -81,6 +89,14 @@ class TicketEstimationPart < ActiveRecord::Base
   belongs_to :ticket_spare_part, foreign_key: :ticket_spare_part_id
   accepts_nested_attributes_for :ticket_spare_part, allow_destroy: true
 
+  has_many :ticket_estimation_part_taxes, foreign_key: :ticket_estimation_part
+
+end
+
+class TicketEstimationPartTax <ActiveRecord::Base
+  self.table_name = "spt_ticket_estimation_part_tax"
+
+  belongs_to :ticket_estimation_part
 end
 
 class TicketEstimationAdditional < ActiveRecord::Base
@@ -91,6 +107,14 @@ class TicketEstimationAdditional < ActiveRecord::Base
 
   belongs_to :additional_charge, foreign_key: :additional_charge_id
 
+  has_many :ticket_estimation_additional_taxes, foreign_key: :estimation_additional_id
+
+end
+
+class TicketEstimationAdditionalTax < ActiveRecord::Base
+  self.table_name = "spt_ticket_estimation_additional_tax"
+
+  belongs_to :ticket_estimation_additional
 end
 
 class AdditionalCharge < ActiveRecord::Base

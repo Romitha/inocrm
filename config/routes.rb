@@ -309,6 +309,7 @@ Rails.application.routes.draw do
       # get "inventory_manufacture"
       # get "inventory_unit"
       get "inventory_master_data"
+
       
 
       patch "update_estimation_part_customer_approval"
@@ -342,6 +343,8 @@ Rails.application.routes.draw do
       post "update_invoice_advance_payment"
       post "update_quality_control"
       post "update_estimate_job_final"
+      get "edit_estimation_ajax"
+      get "new_estimation_ajax"
     end
   end
      

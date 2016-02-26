@@ -1085,9 +1085,12 @@ class TicketsController < ApplicationController
     TaskAction
     Inventory
     TicketSparePart
+    Invoice
     ticket_id = (params[:ticket_id] or session[:ticket_id])
     @ticket = Ticket.find_by_id ticket_id
     session[:ticket_id] = @ticket.id
+
+    @quotation = CustomerQuotation.new
     if @ticket
       @product = @ticket.products.first
       @warranties = @product.warranties

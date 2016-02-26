@@ -20,6 +20,8 @@ class Ticket < ActiveRecord::Base
   has_many :ticket_product_serials, foreign_key: :ticket_id
   has_many :products, through: :ticket_product_serials
   accepts_nested_attributes_for :products, allow_destroy: true
+  has_many :customer_quotations, foreign_key: :ticket_id
+  accepts_nested_attributes_for :customer_quotations, allow_destroy: true
 
   has_many :q_and_answers, foreign_key: :ticket_id
   has_many :q_and_as, through: :q_and_answers
