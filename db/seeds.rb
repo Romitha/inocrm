@@ -177,13 +177,13 @@ mst_spt_action = [
   ["70", "Print FSR", "3,13", false],
   ["71", "Print Invoice", "27,29", false],
   ["72", "Change Ticket Warranty Type or Customer Chargeable", "3", false],
-  ["73", "Change Ticket Repair Type", "3", false]
-  ["74", "Part Estimation Done", "15", false]
-  ["75", "Low Margin Part Estimation Approval", "20", false]
-  ["76", "Part Estimation Customer Aproved", "3", false]
-  ["77", "Print Receipt for Payment", "14, 27, 29", false]
-  ["78", "Request Non Stock Service Support Engineer", "3", false]
-  ["79", "Complete Non Stock Service Support Engineer", "3", false]
+  ["73", "Change Ticket Repair Type", "3", false],
+  ["74", "Part Estimation Done", "15", false],
+  ["75", "Low Margin Part Estimation Approval", "20", false],
+  ["76", "Part Estimation Customer Aproved", "3", false],
+  ["77", "Print Receipt for Payment", "14, 27, 29", false],
+  ["78", "Request Non Stock Service Support Engineer", "3", false],
+  ["79", "Complete Non Stock Service Support Engineer", "3", false],
 ].each{ |t| TaskAction.create_with(action_description: t[1], task_id: t[2], hide: t[3]).find_or_create_by(action_no: t[0]) }
 
 mst_organizations_types = [

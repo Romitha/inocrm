@@ -8,7 +8,7 @@ class AddSupLastInvoiceNoToCompanyConfig < ActiveRecord::Migration
     add_column :spt_ticket_payment_received, :receipt_description, :text
     add_column :spt_ticket_payment_received, :receipt_print_count, "INT UNSIGNED NULL DEFAULT 0"
     add_column :mst_spt_templates, :receipt, :text
-    add_column :mst_spt_templates, :receipt_request_type, :string
+    add_column :mst_spt_templates, :receipt_request_type, :string # value is PRINT_SPPT_INVOICE
 
   end
 end
