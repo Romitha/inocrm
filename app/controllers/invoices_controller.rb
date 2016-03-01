@@ -219,6 +219,10 @@ class InvoicesController < ApplicationController
     redirect_to todos_url
   end
 
+  def update_customer_feedback
+    
+  end
+
   private
     def set_invoice
       @invoice = Invoice.find(params[:id])

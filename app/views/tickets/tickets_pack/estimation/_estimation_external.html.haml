@@ -1,10 +1,12 @@
 - total_estimated = total_additional_cost = total_additional_estimated = 0
 .row
   .col-md-12
-    %h4 Selected Estimation
+    %h4 Selected external estimation
 
 - estimation.ticket_estimation_externals.each do |estimation_external|
-
+  %strong Description:
+  = estimation_external.description
+  %br/
   .row
     .col-md-4
       Status : #{estimation.estimation_status.name}
@@ -60,7 +62,7 @@
   .col-md-4
     Min. Advance Payment (#{estimation.ticket.ticket_currency.code}): #{number_with_precision (estimation.approval_required ? estimation.approved_adv_pmnt_amount : estimation.advance_payment_amount), precision: 2}
   .col-md-6
-    Advance Payment Recieved (#{estimation.ticket.ticket_currency.code}): #{number_with_precision estimation.ticket_payment_received.try(:amount).to_i, precision: 2}
+    Advance Payment Recieved (#{estimation.ticket.ticket_currency.code}): #{number_with_precision estimation.ticket.ticket_payment_receiveds.where(type_id: TicketPaymentReceivedType.find_by_code("AD").id).sum(:amount).to_i, precision: 2}
 
 .row
   .col-md-6
@@ -70,7 +72,6 @@
       = simple_format estimation.note
 
 %hr
-
 - if (estimation.estimation_status.code == "EST") and estimation.cust_approval_required and estimation.cust_approved.nil?
   %fieldset
     %legend Estimation customer approval

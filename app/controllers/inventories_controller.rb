@@ -442,30 +442,31 @@ class InventoriesController < ApplicationController
     Invoice
     status_action_id = SparePartStatusAction.find_by_code("CLS").id
 
+    request_spare_part = params[:request_spare_part].present?
+
     @estimation = TicketEstimation.find estimation_params[:id]
     @estimation.attributes = estimation_params
 
     @estimation.status_id = EstimationStatus.find_by_code("CLS").id
     @estimation.cust_approved_at = DateTime.now
     @estimation.cust_approved_by = current_user.id
+    @ticket = @estimation.ticket
+    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
 
-    continue = true
 
     if @estimation.cust_approved
-      if ( !@estimation.approval_required and @estimation.advance_payment_amount > 0) or ( @estimation.approval_required and @estimation.approved_adv_pmnt_amount > 0)
-
-        continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+      if ( !@estimation.approval_required and @estimation.advance_payment_amount.to_f > 0) or ( @estimation.approval_required and @estimation.approved_adv_pmnt_amount.to_f > 0)
 
         if continue
           @estimation.status_id = EstimationStatus.find_by_code("APP").id
           @estimation.ticket.update cus_payment_required: true
 
-          quotation = @estimation.customer_quotations.where(canceled: false).first.try(:id)
+          quotation = @estimation.customer_quotations.find_by_canceled(false)
 
           d20_advance_payment_required = 'Y'
           if quotation
             d20_advance_payment_required =  quotation.advance_payment_requested ? 'N' : 'Y'
-            quotation.updated advance_payment_requested: true
+            quotation.update advance_payment_requested: true
           end
 
           # bpm output variables
@@ -476,12 +477,13 @@ class InventoriesController < ApplicationController
           bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
           if bpm_response[:status].upcase == "SUCCESS"
-            @flash_message = {notice: "Successfully updated"}
+            flash[:notice] = "Successfully updated"
           else
-            @flash_message = {error: "ticket is updated. but Bpm error"}
+            flash[:error] = "ticket is updated. but Bpm error"
           end
+
         else
-          @flash_message = "Bpm error. ticket is not updated"
+          flash[:error] = "Bpm error. ticket is not updated"
         end
       end
 
@@ -504,11 +506,84 @@ class InventoriesController < ApplicationController
 
         user_ticket_action.save
 
-        @flash_message = {notice: "Successfully updated"}
+        flash[:notice] = "Successfully updated"
+
       else
 
-        @flash_message = {error: "Sorry! unable to update"}
+        flash[:error] = "Sorry! unable to update"
       end
+
+      if request_spare_part
+        @estimation.ticket_estimation_parts.each do |ticket_estimation_part|  
+          if ticket_estimation_part.ticket_spare_part.ticket_spare_part_manufacture.present?
+
+            #save_ticket_spare_part["MPR", 14] #Request Spare Part from Manufacture
+            status_action_id = SparePartStatusAction.find_by_code("MPR").id
+            ticket_estimation_part.ticket_spare_part.update_attributes(status_action_id: status_action_id, approved_estimation_part_id: ticket_estimation_part.id)
+
+            ticket_estimation_part.ticket_spare_part.ticket_spare_part_status_actions.create(status_id: status_action_id, done_by: current_user.id, done_at: DateTime.now)
+
+            #Request Spare Part from Manufacture
+            user_ticket_action = @estimation.ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(14).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @estimation.ticket.re_open_count)
+            user_ticket_action.build_act_job_estimation(ticket_estimation_id: @estimation.id)
+
+            user_ticket_action.save
+
+            # bpm output variables
+            bpm_variables = view_context.initialize_bpm_variables
+            bpm_variables.merge!(d16_request_manufacture_part: "Y")
+            request_spare_part_id = ticket_estimation_part.ticket_spare_part.id
+            supp_engr_user = current_user.id
+            priority = @estimation.ticket.priority
+
+            process_name = "SPPT_MFR_PART_REQUEST"
+            query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, supp_engr_user: supp_engr_user, priority: priority}
+          end
+
+          if ticket_estimation_part.ticket_spare_part.ticket_spare_part_store.present?
+
+            #save_ticket_spare_part["STR", 15] #Request Spare Part from Store 
+            status_action_id = SparePartStatusAction.find_by_code("STR").id
+            ticket_estimation_part.ticket_spare_part.update_attributes(status_action_id: status_action_id, approved_estimation_part_id: ticket_estimation_part.id)
+
+            ticket_estimation_part.ticket_spare_part.ticket_spare_part_status_actions.create(status_id: status_action_id, done_by: current_user.id, done_at: DateTime.now)
+
+            #Request Spare Part from Store 
+            user_ticket_action = @estimation.ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(15).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @estimation.ticket.re_open_count)
+            user_ticket_action.build_act_job_estimation(ticket_estimation_id: @estimation.id)
+
+            user_ticket_action.save            
+
+            # bpm output variables
+            bpm_variables = view_context.initialize_bpm_variables
+            bpm_variables.merge!(d17_request_store_part: "Y")
+            request_spare_part_id = ticket_estimation_part.ticket_spare_part.id
+            supp_engr_user = current_user.id
+            priority = @estimation.ticket.priority
+            request_onloan_spare_part_id = '-'
+            onloan_request = 'N'
+
+            # Create Process "SPPT_STORE_PART_REQUEST",
+            process_name = "SPPT_STORE_PART_REQUEST"
+            query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, request_onloan_spare_part_id: request_onloan_spare_part_id, onloan_request: onloan_request, supp_engr_user: supp_engr_user, priority: priority}
+                
+          end
+
+          if process_name
+            bpm_response1 = view_context.send_request_process_data start_process: true, process_name: process_name, query: query
+
+            if bpm_response1[:status].try(:upcase) == "SUCCESS"
+              @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name])
+              view_context.ticket_bpm_headers bpm_response1[:process_id], @ticket.id, request_spare_part_id
+              flash[:notice] = "Successfully part requested"
+            else
+              flash[:error] = "Sorry! unable to requeted the part"
+            end
+          end
+
+        end
+      end
+
     end
     redirect_to todos_url, @flash_message
   end
@@ -1733,6 +1808,7 @@ class InventoriesController < ApplicationController
       if estimation.estimation_status.code == 'RQS'
 
         if estimation.ticket_estimation_parts.any? { |p| p.ticket_spare_part.spare_part_status_action.code == "CLS" }
+          estimation.update status_id: EstimationStatus.find_by_code("CLS").id
           @jump_next = true
           d19_estimate_internal_below_margin = "N"
           flash[:notice]= "Requested Part is terminated."
@@ -1816,6 +1892,7 @@ class InventoriesController < ApplicationController
       if estimation.estimation_status.code == 'RQS'
 
         if estimation.ticket_estimation_parts.any? { |p| p.ticket_spare_part.spare_part_status_action.code == "CLS" }
+          estimation.update status_id: EstimationStatus.find_by_code("CLS").id
           @jump_next = true
           flash[:notice]= "Requested Part is terminated."
         else

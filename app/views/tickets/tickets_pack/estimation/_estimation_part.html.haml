@@ -1,6 +1,6 @@
 - total_estimation = 0
 
-%strong Selected Estimation
+%strong Selected part estimation
 %center.strong.br Status : #{estimation.estimation_status.name}
 %center.strong Customer Approval :- #{estimation.cust_approved ? 'Approved' : (estimation.cust_approved.nil? ? '' : 'Rejected') }
 
@@ -114,5 +114,7 @@
       = f.input :cust_approved, as: :radio_buttons, collection: {approved: true, rejected: false}, wrapper: :append, label: false
       = f.input :note, input_html: {value: nil}
       = simple_format estimation.note
-
+      - if estimation.ticket_estimation_parts.present? and not estimation.ticket_estimation_parts.first.ticket_spare_part.ticket_spare_part_non_stock.present?
+        = label_tag "Request part"
+        = check_box_tag :request_spare_part, true, (estimation.advance_payment_amount.to_f == 0)
       = f.submit "Save", class: "btn btn-success btn-sm"

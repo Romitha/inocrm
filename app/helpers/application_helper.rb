@@ -121,7 +121,7 @@ module ApplicationHelper
 
       repair_type = @ticket.ticket_repair_type.code == "EX" ? "[#{@ticket.ticket_repair_type.name}]" : ""
 
-      delivery_stage = @ticket.ticket_deliver_units.any?{|d| !d.received} ? "[to-be collected]" : (@ticket.ticket_deliver_units.any?{|d| !d.delivered} ? "[to-be delivered]" : "")
+      delivery_stage = @ticket.ticket_deliver_units.any?{|d| !d.received} ? "[to-be collected]" : (@ticket.ticket_deliver_units.any?{|d| !d.delivered_to_sup} ? "[to-be delivered]" : "")
 
       @h1 = "#{ticket_no}#{customer_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}#{delivery_stage}"
 

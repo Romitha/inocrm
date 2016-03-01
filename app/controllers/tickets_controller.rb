@@ -2265,6 +2265,25 @@ class TicketsController < ApplicationController
     redirect_to todos_url, @flash_message
   end
 
+  def estimate_job
+    ContactNumber
+    QAndA
+    TaskAction
+    TicketEstimation
+    Inventory
+    @ticket = Ticket.find_by_id params[:ticket_id]
+    if @ticket
+      @product = @ticket.products.first
+      @warranties = @product.warranties
+      session[:product_id] = @product.id
+      Rails.cache.delete([:histories, session[:product_id]])
+      Rails.cache.delete([:join, @ticket.id])
+    end
+    respond_to do |format|
+      format.html {render "tickets/tickets_pack/estimate_job"}
+    end
+  end
+
   def estimate_job_final
     ContactNumber
     QAndA
@@ -2318,7 +2337,7 @@ class TicketsController < ApplicationController
     Warranty
     @ticket = Ticket.find_by_id params[:ticket_id]
     if @ticket
-      @estimation = @ticket.ticket_estimations.find params[:part_estimation_id]
+      # @estimation = @ticket.ticket_estimations.find params[:part_estimation_id]
       @product = @ticket.products.first
       Rails.cache.delete([:histories, @product.id])
       Rails.cache.delete([:join, @ticket.id])
@@ -3073,6 +3092,7 @@ class TicketsController < ApplicationController
     when "deliver_unit"
       TicketEstimation
       @ticket_deliver_unit = @ticket.ticket_deliver_units.build
+
       @report_bys = @ticket.ticket_estimation_externals.select{|ts| ((ts.ticket_estimation.status_id == EstimationStatus.find_by_code("EST").id) or (ts.ticket_estimation.status_id == EstimationStatus.find_by_code("CLS").id) or (ts.ticket_estimation.status_id == EstimationStatus.find_by_code("APP").id)) and ((ts.ticket_estimation.cust_approved) or ( !ts.ticket_estimation.cust_approval_required)) }.map { |ts| [ts.organization.name, ts.organization.id] }
 
     when "edit_serial_no_request"
@@ -3725,6 +3745,7 @@ class TicketsController < ApplicationController
 
   def update_deliver_unit
     TaskAction
+    TicketSparePart
     continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
 
     if continue

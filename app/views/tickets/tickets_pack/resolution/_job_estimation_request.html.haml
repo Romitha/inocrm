@@ -25,7 +25,7 @@
         = rf.association :organization, include_blank: false, label: "Repair by"
 
     = f.simple_fields_for "ticket_estimations_attributes[]", @ticket_estimation do |du|
-      = du.input :note
+      = du.input :note, wrapper_html: {style: "clear: both;"}
       = du.input :currency_id, as: :hidden, input_html: {value: ticket.base_currency_id}
       = du.input :status_id, as: :hidden, input_html: {value: EstimationStatus.find_by_code("RQS").id}
       = du.input :requested_at, as: :hidden, input_html: {value: DateTime.now.strftime("%d-%m-%Y %H:%M")}
