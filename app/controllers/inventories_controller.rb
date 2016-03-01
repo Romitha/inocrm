@@ -534,7 +534,8 @@ class InventoriesController < ApplicationController
             bpm_variables.merge!(d16_request_manufacture_part: "Y")
             request_spare_part_id = ticket_estimation_part.ticket_spare_part.id
             supp_engr_user = current_user.id
-            priority = @estimation.ticket.priority
+            priority = @ticket.priority
+            ticket_id = @ticket.id
 
             process_name = "SPPT_MFR_PART_REQUEST"
             query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, supp_engr_user: supp_engr_user, priority: priority}
@@ -559,9 +560,10 @@ class InventoriesController < ApplicationController
             bpm_variables.merge!(d17_request_store_part: "Y")
             request_spare_part_id = ticket_estimation_part.ticket_spare_part.id
             supp_engr_user = current_user.id
-            priority = @estimation.ticket.priority
+            priority = @ticket.priority
             request_onloan_spare_part_id = '-'
             onloan_request = 'N'
+            ticket_id = @ticket.id
 
             # Create Process "SPPT_STORE_PART_REQUEST",
             process_name = "SPPT_STORE_PART_REQUEST"
@@ -585,7 +587,7 @@ class InventoriesController < ApplicationController
       end
 
     end
-    redirect_to todos_url, @flash_message
+    redirect_to todos_url
   end
 
   def update_estimation_external_customer_approval
