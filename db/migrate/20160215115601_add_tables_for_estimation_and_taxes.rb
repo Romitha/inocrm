@@ -181,8 +181,8 @@ class AddTablesForEstimationAndTaxes < ActiveRecord::Migration
 
     end
 
-    add_column :spt_ticket_estimation, :invoiced, :integer, null: false
-    add_column :spt_ticket_estimation, :quoted, :integer, null: false
+    add_column :spt_ticket_estimation, :invoiced, :integer#, null: false
+    add_column :spt_ticket_estimation, :quoted, :integer#, null: false
 
     remove_foreign_key :spt_ticket_estimation, name: "fk_spt_ticket_estimation_spt_ticket_payment_received1"
     remove_column :spt_ticket_estimation, :adv_payment_received_id
