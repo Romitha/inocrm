@@ -575,6 +575,7 @@ class InventoriesController < ApplicationController
 
     @estimation = TicketEstimation.find estimation_params[:id]
     @estimation.attributes = estimation_params
+    request_deliver_unit = params[:request_deliver_unit].present?
 
     @estimation.status_id = EstimationStatus.find_by_code("CLS").id
     @estimation.cust_approved_at = DateTime.now
@@ -583,24 +584,41 @@ class InventoriesController < ApplicationController
     continue = true
 
     if @estimation.cust_approved
-      if ( !@estimation.approval_required and @estimation.advance_payment_amount > 0) or ( @estimation.approval_required and @estimation.approved_adv_pmnt_amount > 0)
+      # bpm output variables
+      bpm_variables = view_context.initialize_bpm_variables
+      bpm_do = false
+      if ( !@estimation.approval_required and @estimation.advance_payment_amount.to_f > 0) or ( @estimation.approval_required and @estimation.approved_adv_pmnt_amount.to_f > 0)
 
+        @estimation.status_id = EstimationStatus.find_by_code("APP").id
+        @estimation.ticket.update cus_payment_required: true
+
+        quotation = @estimation.customer_quotations.where(canceled: false).first.try(:id)
+
+        d20_advance_payment_required = 'Y'
+        if quotation
+          d20_advance_payment_required =  quotation.advance_payment_requested ? 'N' : 'Y'
+          quotation.updated advance_payment_requested: true
+        end
+
+        # bpm output variables
+        bpm_variables.merge!(d20_advance_payment_required: d20_advance_payment_required, advance_payment_estimation_id: (quotation.try(:id) or '-'))
+        bpm_do = true
+      end
+
+      if request_deliver_unit
+
+        @ticket_deliver_unit = @estimation.ticket.ticket_deliver_units.build deliver_to_id: @estimation.ticket_estimation_externals.first.try(:repair_by_id), created_at: DateTime.now, created_by: current_user.id
+        @ticket_deliver_unit.save
+
+        # bpm output variables
+        bpm_variables.merge!(supp_engr_user: current_user.id, d22_deliver_unit: "Y", deliver_unit_id: @ticket_deliver_unit.id, d23_delivery_items_pending: "N")
+        bpm_do = true
+      end
+
+      if bpm_do
         continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
 
         if continue
-          @estimation.status_id = EstimationStatus.find_by_code("APP").id
-          @estimation.ticket.update cus_payment_required: true
-
-          quotation = @estimation.customer_quotations.where(canceled: false).first.try(:id)
-
-          d20_advance_payment_required = 'Y'
-          if quotation
-            d20_advance_payment_required =  quotation.advance_payment_requested ? 'N' : 'Y'
-            quotation.updated advance_payment_requested: true
-          end
-
-          # bpm output variables
-          bpm_variables = view_context.initialize_bpm_variables.merge(d20_advance_payment_required: d20_advance_payment_required, advance_payment_estimation_id: (quotation.try(:id) or '-'))
 
           @estimation.ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @estimation.ticket.ticket_status.code == "ASN"
 
@@ -623,8 +641,14 @@ class InventoriesController < ApplicationController
 
         user_ticket_action = @estimation.ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(24).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @estimation.ticket.re_open_count)
         user_ticket_action.build_act_job_estimation(supplier_id: @estimation.ticket_estimation_externals.first.try(:organization).try(:id), ticket_estimation_id: @estimation.id)
-
         user_ticket_action.save
+
+        if request_deliver_unit    
+          #Deliver Unit
+          user_ticket_action = @estimation.ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(22).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @estimation.ticket.re_open_count)
+          user_ticket_action.build_deliver_unit(ticket_deliver_unit_id: @ticket_deliver_unit.id)
+          user_ticket_action.save
+        end
 
         @flash_message = {notice: "Successfully updated"}
       else
@@ -639,14 +663,17 @@ class InventoriesController < ApplicationController
 
     Ticket
     Organization
+    TaskAction
     @ticket_estimation = TicketEstimation.find params[:ticket_estimation_id]
     @ticket_estimation_external = TicketEstimationExternal.find params[:ticket_estimation_external_id]
 
     @ticket.update(ticket_params)
 
     @ticket_estimation.update_attributes(estimated_at: DateTime.now, estimated_by: current_user.id)
+    @ticket_estimation_external.reload
+    @ticket_estimation.reload
 
-    if params[:estimation_completed]
+    if params[:estimation_completed].present?
 
       continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
       d14_val = false
@@ -659,9 +686,11 @@ class InventoriesController < ApplicationController
         if t_est_price > 0
           @ticket_estimation.update_attribute(:cust_approval_required, true)
           d14_val = (((t_est_price - t_cost_price)*100/t_cost_price) < CompanyConfig.first.try(:sup_external_job_profit_margin).to_f)
+
         else
           @ticket_estimation.update_attribute(:cust_approval_required, false)
           d14_val = false
+
         end
              
         # Set Action (27) Job Estimation Done, DB.spt_act_job_estimate. Set supp_engr_user = supp_engr_user (Input variable)
@@ -706,6 +735,8 @@ class InventoriesController < ApplicationController
 
     @ticket.update(ticket_params)
     @ticket_estimation.update_attributes(approved_at: DateTime.now, approved_by: current_user.id)
+    @ticket_estimation_external.reload
+    @ticket_estimation.reload
 
     if params[:estimation_completed]
 

@@ -23,7 +23,7 @@
         .col-md-12
           %strong Type of warranty: #{ticket.warranty_type.name}
         .col-md-12{style: "margin-top: 20px;"}
-          = simple_nested_form_for ticket, url: update_estimate_job_inventories_path, method: :put do |f|
+          = simple_nested_form_for ticket, url: update_estimate_job_inventories_path, method: :put do |f| # update_estimate_job_inventories_path
             = hidden_field_tag :ticket_id, ticket.id
             = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
             = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
