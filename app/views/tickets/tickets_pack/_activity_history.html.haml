@@ -20,22 +20,21 @@
           
             -if action.action_id == 2
               .panel-body 
-                - action.user_assign_ticket_actions.each do |a|
-                  .row
-                    .col-md-3
-                      Sbu: #{a.try(:sbu).try(:sbu)}
-                    .col-md-3
-                      Assign to: #{User.find_by_id(a.assign_to).try(:user_name)}
-                    .col-md-3
-                      -if a.recorrection == true
-                        Recorrection: Yes
-                      -else
-                        Recorrection: No
-                    .col-md-3
-                      -if a.recorrection == true
-                        Regional Support Center Job: Yes
-                      -else
-                        Regional Support Center Job: No
+                .row
+                  .col-md-3
+                    Sbu: #{action.user_assign_ticket_action.try(:sbu).try(:sbu)}
+                  .col-md-3
+                    Assign to: #{User.find_by_id(action.user_assign_ticket_action.assign_to).try(:user_name)}
+                  .col-md-3
+                    -if action.user_assign_ticket_action.recorrection == true
+                      Recorrection: Yes
+                    -else
+                      Recorrection: No
+                  .col-md-3
+                    -if action.user_assign_ticket_action.recorrection == true
+                      Regional Support Center Job: Yes
+                    -else
+                      Regional Support Center Job: No
 
             -if action.action_id == 4
               .panel-body

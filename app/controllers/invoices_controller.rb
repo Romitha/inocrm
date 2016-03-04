@@ -195,7 +195,6 @@ class InvoicesController < ApplicationController
   def update_quality_control
     TaskAction
     update_ticket_params = ticket_params
-    puts update_ticket_params
     @ticket = Ticket.find params[:ticket_id]
     continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
 

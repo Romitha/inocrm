@@ -11,7 +11,6 @@ window.Tickets =
     @call_resolution_template()
     @call_alert_template()
     @call_mf_order_template()
-    # @call_omp_template()
     @validate_start_action()
     @action_taken_text()
     @hp_case_validation()
@@ -28,6 +27,7 @@ window.Tickets =
     @part_of_main_product_row_colour()
     @pop_customer_info()
     @adjust_amount_check()
+    @first_resolution_visible()
     return
 
   initial_loaders: ->
@@ -224,7 +224,6 @@ window.Tickets =
     # if y
     $.post "/tickets/create_customer", {customer_id: customer_id, organization_id: organization_id, function_param: function_param}
 
-
   load_datapicker: ->
     $('.datepicker').datepicker
       format: "dd M, yyyy"
@@ -232,12 +231,16 @@ window.Tickets =
       todayHighlight: true
 
   first_resolution_visible: ->
-    $(".ticket_resolution_summary").addClass("hide")
-    $("#first_resolution").click ->
+    if $(".first_resolution").is(':checked')
+      $(".ticket_resolution_summary").removeClass("hide").prop("disabled", false)
+    else
+      $(".ticket_resolution_summary").addClass("hide").prop("disabled", true)
+
+    $(".first_resolution").click ->
       if $(@).is(':checked')
-        $(".ticket_resolution_summary").removeClass("hide")
+        $(".ticket_resolution_summary").removeClass("hide").prop("disabled", false)
       else
-        $(".ticket_resolution_summary").addClass("hide")
+        $(".ticket_resolution_summary").addClass("hide").prop("disabled", true)
 
   filter_select: ->
     category_list = $("#product_product_category_id")

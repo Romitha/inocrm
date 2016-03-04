@@ -1,14 +1,14 @@
 %fieldset
   %legend Edit FSR
   / = select_tag "select_fsr", options_from_collection_for_select(@select_fsrs, "id", "id")
-  = select_tag "select_fsr", options_for_select(TicketFsr.all.map { |fsr| [ fsr.id.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"]) , fsr.id] }), {:prompt => "- Select FSR No -"}
+  = select_tag "select_fsr", options_for_select(ticket.ticket_fsrs.where(approved: false).map { |fsr| [ fsr.ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"]) , fsr.id] }), {:prompt => "- Select FSR No -"}
   - if @display_form
     = simple_nested_form_for @ticket_fsr, url: update_edit_fsr_ticket_path(ticket), method: :post do |fsr|
       / = fsr.input :ticket_id, as: :hidden
       = hidden_field_tag :ticket_fsr_id, @ticket_fsr.id
       .row
         .col-md-2.small_scale_margin-top2
-          %p FSR No: #{fsr.object.id.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])}
+          %p FSR No: #{fsr.object.ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])}
         = fsr.input :completion_level, as: :radio_buttons, label: false, wrapper_html: {class: "col-md-2 small_scale_margin-top2 small_scale_margin-left3"}, collection: {"Full" => "F","Patial" => "P"}, wrapper: :append
         .col-md-4
           = fsr.input :work_started_at, as: :string, input_html: {class: "datepicker", value: (@ticket_fsr.work_started_at and @ticket_fsr.work_started_at.strftime("%d %b, %Y"))}
@@ -22,15 +22,17 @@
         = fsr.input :engineer_time_on_site, input_html: {min: "0", class: "only_float"}, wrapper_html: {class: "col-md-3"}
       .row
         = fsr.input :resolution, input_html: {value: nil}, wrapper_html: {class: "col-md-6"}
-        = fsr.input :remarks, input_html: {value: nil}, wrapper_html: {class: "col-md-6"}, label: "Remarks (Fsr)"
+        .col-md-6
+          = fsr.input :remarks, input_html: {value: nil}, label: "Remarks (Fsr)"
+          = simple_format fsr.object.remarks
+
         
       .row
         = fsr.simple_fields_for :ticket do |t|
           = t.input :remarks, as: :text, label: "Remarks (Ticket)", input_html: {value: nil}, wrapper_html: {class: "col-md-12"}
-      .row
-        .col-md-6
-          = fsr.simple_fields_for :ticket do |s|
-            = simple_format s.object.remarks
+          .col-md-12
+            = simple_format t.object.remarks
+
       .row
         .col-md-3
           = simple_format @ticket_fsr.resolution

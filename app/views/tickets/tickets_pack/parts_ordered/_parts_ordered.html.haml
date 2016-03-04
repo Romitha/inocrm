@@ -362,6 +362,11 @@
             %strong
               Return Part CT No:
             = ticket_spare_part.return_part_ct_no
+          - unless ticket_spare_part.request_from == "NS"
+            .col-md-3
+              %strong
+                Close approved:
+              = ticket_spare_part.close_approved ? "Approved" : "Not approved"
 
         - if ticket_spare_part.part_terminated
           %hr

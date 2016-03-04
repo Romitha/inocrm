@@ -20,8 +20,8 @@ class UserTicketAction < ActiveRecord::Base
   belongs_to :ticket
   belongs_to :task_action, foreign_key: :action_id
 
-  has_many :user_assign_ticket_actions, foreign_key: :ticket_action_id
-  accepts_nested_attributes_for :user_assign_ticket_actions, allow_destroy: true
+  has_one :user_assign_ticket_action, foreign_key: :ticket_action_id
+  accepts_nested_attributes_for :user_assign_ticket_action, allow_destroy: true
 
   has_many :assign_regional_support_centers, foreign_key: :ticket_action_id
   accepts_nested_attributes_for :assign_regional_support_centers, allow_destroy: true
@@ -89,6 +89,9 @@ class UserTicketAction < ActiveRecord::Base
   has_one :inform_customer, foreign_key: :ticket_action_id
   accepts_nested_attributes_for :inform_customer, allow_destroy: true
 
+  has_one :act_ticket_close_approve, foreign_key: :ticket_action_id
+  accepts_nested_attributes_for :act_ticket_close_approve, allow_destroy: true
+
   after_create :flush_cache
 
   def cached_task_action
@@ -100,11 +103,18 @@ class UserTicketAction < ActiveRecord::Base
   end
 end
 
+class ActTicketCloseApprove < ActiveRecord::Base
+  self.table_name = "spt_act_ticket_close_approve"
+
+  belongs_to :user_ticket_action, foreign_key: :ticket_action_id
+end
+
 class UserAssignTicketAction < ActiveRecord::Base
   self.table_name = "spt_act_assign_ticket"
 
   belongs_to :user_ticket_action, foreign_key: :ticket_action_id
   belongs_to :sbu, foreign_key: :sbu_id
+  belongs_to :assign_to, class_name: "User", foreign_key: :assign_to
 end
 
 class AssignRegionalSupportCenter < ActiveRecord::Base

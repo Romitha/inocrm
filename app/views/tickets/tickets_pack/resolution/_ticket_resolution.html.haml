@@ -37,7 +37,7 @@
           %option{:value => "edit_serial_no_request", data: {task_id: params[:task_id]}} Edit Serial No Request
         - if present_of_start_ticket_action and ticket.ticket_type.code == 'OS'  and not ticket.job_finished
           %option{:value => "create_fsr", data: {task_id: params[:task_id]}} Create FSR
-        - if present_of_start_ticket_action and ticket.ticket_fsrs.find_by_approved(:false).present? and not ticket.job_finished
+        - if present_of_start_ticket_action and ticket.ticket_fsrs.find_by_approved(:false).present?
           %option{:value => "edit_fsr"} Edit FSR
         - if present_of_start_ticket_action and not ticket.job_finished
           %option{:value => "terminate_job", data: {task_id: params[:task_id]}} Terminate Job

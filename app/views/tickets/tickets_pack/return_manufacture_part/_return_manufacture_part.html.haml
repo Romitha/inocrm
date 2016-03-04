@@ -62,7 +62,7 @@
 
 .row
   .col-md-6
-    = simple_form_for spare_part, url: return_to_stores_tickets_path, method: :post, remote: true do |f|
+    = simple_form_for spare_part, url: update_return_manufacture_part_tickets_path, method: :post do |f|
       = f.input :returned_part_accepted, as: :radio_buttons, collection: {"Accept Returned Part" => true, "Reject Return Part" => false}, label:false, input_html: {class: "sample accept_returned_parts"}
 #reject
   = simple_nested_form_for spare_part, url: "#", method: :post, remote: true do |f|

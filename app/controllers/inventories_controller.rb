@@ -136,6 +136,7 @@ class InventoriesController < ApplicationController
 
     # bpm output variables
     bpm_variables = view_context.initialize_bpm_variables
+    process_name = ""
     
     if params[:terminate]
       if (manufacture_warranty and mpr) or (manufacture_chargeable and (rqt or ecm or cea)) or (store_warranty and str) or (store_chargeable and (rqt or ecm or cea)) or (non_stock_warranty and rqt) or (non_stock_chargeable and (rqt or ecm or cea)) 
@@ -275,13 +276,15 @@ class InventoriesController < ApplicationController
     if continue
       bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
-      bpm_response1 = view_context.send_request_process_data start_process: true, process_name: process_name, query: query
+      if process_name.present?
+        bpm_response1 = view_context.send_request_process_data start_process: true, process_name: process_name, query: query
 
-      if bpm_response1[:status].try(:upcase) == "SUCCESS"
-        @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name])
-        view_context.ticket_bpm_headers bpm_response1[:process_id], @ticket.id, request_spare_part_id
-      else
-        @bpm_process_error = true
+        if bpm_response1[:status].try(:upcase) == "SUCCESS"
+          @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name])
+          view_context.ticket_bpm_headers bpm_response1[:process_id], @ticket.id, request_spare_part_id
+        else
+          @bpm_process_error = true
+        end
       end
 
       if bpm_response[:status].upcase == "SUCCESS"

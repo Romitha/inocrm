@@ -1,10 +1,8 @@
 %fieldset
   %legend Create FSR
   = simple_nested_form_for ticket, url: update_create_fsr_ticket_path(ticket), method: :post, html: {id: "create_fsr_form"} do |f|
-    - @ticket_fsr_no = (TicketFsr.any? ? (TicketFsr.order("created_at ASC").map{|f| f.id.to_i}.max + 1) : 1)
-    / = hidden_field_tag :process_id, session[:process_id]
-    / = hidden_field_tag :task_id, session[:task_id]
-    / = hidden_field_tag :owner, session[:owner]
+    - @ticket_fsr_no = CompanyConfig.first.next_sup_last_fsr_no #(TicketFsr.any? ? (TicketFsr.order("created_at ASC").map{|f| f.id.to_i}.max + 1) : 1)
+
     = hidden_field_tag :process_id, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:process_id]
     = hidden_field_tag :task_id, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:task_id]
     = hidden_field_tag :owner, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:owner]

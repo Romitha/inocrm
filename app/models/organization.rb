@@ -154,6 +154,24 @@ class CompanyConfig < ActiveRecord::Base
     update sup_last_quotation_no: (sup_last_quotation_no.to_i+1)
     sup_last_quotation_no
   end
+
+  def increase_sup_last_fsr_no
+    update sup_last_fsr_no: (sup_last_fsr_no.to_i+1)
+    sup_last_fsr_no
+  end
+
+  def next_sup_last_invoice_no
+    sup_last_invoice_no.to_i+1
+  end
+
+  def next_sup_last_quotation_no
+    sup_last_quotation_no.to_i+1
+  end
+
+  def next_sup_last_fsr_no
+    sup_last_fsr_no.to_i+1
+  end
+
 end
 
 class Account < ActiveRecord::Base

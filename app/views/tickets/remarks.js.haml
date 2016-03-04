@@ -3,6 +3,4 @@ $("body").removeClass("modal-open");
 $(".modal-backdrop").remove();
 $("#tab_panel").html("#{j render 'tickets/remarks_form', ticket: @ticket}");
 
-Tickets.chosen_select();
-
 Tickets.first_resolution_visible();
