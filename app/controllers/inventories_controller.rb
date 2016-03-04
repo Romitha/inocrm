@@ -577,69 +577,57 @@ class InventoriesController < ApplicationController
     Ticket
 
     @estimation = TicketEstimation.find estimation_params[:id]
-    @estimation.attributes = estimation_params
+    updatable_estimation_params = estimation_params
     request_deliver_unit = params[:request_deliver_unit].present?
+    updatable_estimation_params.merge!( status_id: EstimationStatus.find_by_code("CLS").id, cust_approved_at: DateTime.now, cust_approved_by: current_user.id )
 
-    @estimation.status_id = EstimationStatus.find_by_code("CLS").id
-    @estimation.cust_approved_at = DateTime.now
-    @estimation.cust_approved_by = current_user.id
-
-    continue = true
-
-    if @estimation.cust_approved
-      # bpm output variables
-      bpm_variables = view_context.initialize_bpm_variables
-      bpm_do = false
-      if ( !@estimation.approval_required and @estimation.advance_payment_amount.to_f > 0) or ( @estimation.approval_required and @estimation.approved_adv_pmnt_amount.to_f > 0)
-
-        @estimation.status_id = EstimationStatus.find_by_code("APP").id
-        @estimation.ticket.update cus_payment_required: true
-
-        quotation = @estimation.customer_quotations.where(canceled: false).first.try(:id)
-
-        d20_advance_payment_required = 'Y'
-        if quotation
-          d20_advance_payment_required =  quotation.advance_payment_requested ? 'N' : 'Y'
-          quotation.updated advance_payment_requested: true
-        end
-
-        # bpm output variables
-        bpm_variables.merge!(d20_advance_payment_required: d20_advance_payment_required, advance_payment_estimation_id: (quotation.try(:id) or '-'))
-        bpm_do = true
-      end
-
-      if request_deliver_unit
-
-        @ticket_deliver_unit = @estimation.ticket.ticket_deliver_units.build deliver_to_id: @estimation.ticket_estimation_externals.first.try(:repair_by_id), created_at: DateTime.now, created_by: current_user.id
-        @ticket_deliver_unit.save
-
-        # bpm output variables
-        bpm_variables.merge!(supp_engr_user: current_user.id, d22_deliver_unit: "Y", deliver_unit_id: @ticket_deliver_unit.id, d23_delivery_items_pending: "N")
-        bpm_do = true
-      end
-
-      if bpm_do
-        continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
-
-        if continue
-
-          @estimation.ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @estimation.ticket.ticket_status.code == "ASN"
-
-          bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
-
-          if bpm_response[:status].upcase == "SUCCESS"
-            @flash_message = {notice: "Successfully updated"}
-          else
-            @flash_message = {error: "ticket is updated. but Bpm error"}
-          end
-        else
-          @flash_message = "Bpm error. ticket is not updated"
-        end
-      end
-    end
+    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    # bpm output variables
+    bpm_variables = view_context.initialize_bpm_variables
 
     if continue
+      if @estimation.cust_approved
+        if ( !@estimation.approval_required and @estimation.advance_payment_amount.to_f > 0) or ( @estimation.approval_required and @estimation.approved_adv_pmnt_amount.to_f > 0)
 
+          @estimation.status_id = EstimationStatus.find_by_code("APP").id
+          @estimation.ticket.update cus_payment_required: true
+
+          quotation = @estimation.customer_quotations.where(canceled: false).first.try(:id)
+
+          d20_advance_payment_required = 'Y'
+          if quotation
+            d20_advance_payment_required =  quotation.advance_payment_requested ? 'N' : 'Y'
+            quotation.updated advance_payment_requested: true
+          end
+
+          # bpm output variables
+          bpm_variables.merge!(d20_advance_payment_required: d20_advance_payment_required, advance_payment_estimation_id: (quotation.try(:id) or '-'))
+          bpm_do = true
+
+        end
+
+        if request_deliver_unit
+
+          @ticket_deliver_unit = @estimation.ticket.ticket_deliver_units.build deliver_to_id: @estimation.ticket_estimation_externals.first.try(:repair_by_id), created_at: DateTime.now, created_by: current_user.id
+          @ticket_deliver_unit.save
+
+          # bpm output variables
+          bpm_variables.merge!(supp_engr_user: current_user.id, d22_deliver_unit: "Y", deliver_unit_id: @ticket_deliver_unit.id, d23_delivery_items_pending: "N")
+          # bpm_do = true
+        end
+
+        @estimation.ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @estimation.ticket.ticket_status.code == "ASN"
+
+        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+        if bpm_response[:status].upcase == "SUCCESS"
+          @flash[:notice] = "Successfully updated with bpm."
+        else
+          @flash[:error] = "estimation is updated. but Bpm error"
+        end
+      end
+
+      @estimation.attributes = updatable_estimation_params
       if @estimation.save
 
         user_ticket_action = @estimation.ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(24).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @estimation.ticket.re_open_count)
@@ -658,6 +646,8 @@ class InventoriesController < ApplicationController
 
         @flash_message = {error: "Sorry! unable to update"}
       end
+    else
+      @flash[:error] = "Bpm error. ticket is not updated"
     end
     redirect_to todos_url, @flash_message
   end
