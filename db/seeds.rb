@@ -246,7 +246,7 @@ workflow_mappings = [
   ["SPPT_MFR_PART_RETURN", "return_manufacture_part", "/tickets/return_manufacture_part", "SPT_SC_11", "Support - Return Part (Manufacture)", "h3", "ticket_id,request_spare_part_id,supp_engr_user", nil],
   ["SPPT", "extend_warranty", "/tickets/extend_warranty", "SPT_SC_12", "Support - Extend Warranty", "h1", "ticket_id", nil],
   ["SPPT", "approve_close_ticket", "/tickets/check_fsr", "SPT_SC_13", "Support - Ticket Close Approval", "h1", "ticket_id,supp_engr_user", nil],
-  ["SPPT", "customer_feedback", "", "SPT_SC_14", "Support - Customer Feedback", "h1", "ticket_id,supp_engr_user", nil],
+  ["SPPT", "customer_feedback", "/tickets/customer_feedback", "SPT_SC_14", "Support - Customer Feedback", "h1", "ticket_id,supp_engr_user", nil],
   ["SPPT_PART_ESTIMATE", "part_estimate", "/tickets/estimate_the_part_internal", "SPT_SC_15", "Support - Part Estimation (Store)", "h2", "ticket_id,part_estimation_id,supp_engr_user", nil],
   ["SPPT_STORE_PART_REQUEST", "approve_store_part", "/tickets/approve_store_parts", "SPT_SC_16", "Support - Part Approval (Store)", "h2", "ticket_id,request_spare_part_id,request_onloan_spare_part_id,onloan_request,supp_engr_user", nil],
   ["SPPT_STORE_PART_REQUEST", "issue_store_part", "/tickets/issue_store_part", "SPT_SC_17", "Support - Issue Part (Store)", "h2", "ticket_id,request_spare_part_id,request_onloan_spare_part_id,onloan_request,supp_engr_user", nil],

@@ -2659,8 +2659,7 @@ class TicketsController < ApplicationController
     QAndA
     TaskAction
     TicketSparePart
-    Inventory
-    Warranty
+    Invoice
     Ticket
     @ticket = Ticket.find_by_id params[:ticket_id]
     if @ticket
