@@ -1091,6 +1091,7 @@ class TicketsController < ApplicationController
     session[:ticket_id] = @ticket.id
 
     @quotation = CustomerQuotation.new
+    @invoice = TicketInvoice.new
     if @ticket
       @product = @ticket.products.first
       @warranties = @product.warranties

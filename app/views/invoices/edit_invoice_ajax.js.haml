@@ -1,0 +1,5 @@
+$("#estimation_wrapper").html("#{j render 'estimation_form', invoice: @invoice, ticket: @ticket}");
+
+
+Tickets.remove_ajax_loader();
+Invoices.quotation_change();

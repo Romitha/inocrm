@@ -108,6 +108,14 @@ class TicketEstimationAdditional < ActiveRecord::Base
   belongs_to :additional_charge, foreign_key: :additional_charge_id
 
   has_many :ticket_estimation_additional_taxes, foreign_key: :estimation_additional_id
+  accepts_nested_attributes_for :ticket_estimation_additional_taxes, allow_destroy: true
+
+end
+
+class Tax < ActiveRecord::Base
+  self.table_name = "mst_tax"
+
+  belongs_to :ticket_estimation_additional_tax
 
 end
 
@@ -115,6 +123,7 @@ class TicketEstimationAdditionalTax < ActiveRecord::Base
   self.table_name = "spt_ticket_estimation_additional_tax"
 
   belongs_to :ticket_estimation_additional
+  has_many :taxes, foreign_key: :tax_id
 end
 
 class AdditionalCharge < ActiveRecord::Base

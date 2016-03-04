@@ -1,0 +1,42 @@
+#estimation_wrapper
+%hr
+.col-md-9
+  %h3 Available Invoices
+.col-md-3
+  = link_to "new", edit_invoice_ajax_invoices_path(ticket_id: ticket.id), remote: true
+  / = link_to "new", new_estimation_ajax_invoices_path(ticket_id: ticket.id), remote: true, onclick: "$('#quotation_wrapper').empty(); return false;"
+  / %button.btn.btn-primary.pull-right.new_btn{:type => "button", onclick: "$('#quotation_wrapper'); return true;"} New
+.col-md-12
+  %table.table.table-responsive.table-condensed.table-bordered
+    %thead
+      %tr
+        %th No
+        %th Invoice No
+        %th Currency
+        %th Deducted amount
+        %th Note
+        %th Customer sent
+        %th Canceled
+        %th Action
+
+    %tbody
+      - ticket.ticket_invoices.each_with_index do |invoice, index|
+        %tr
+          %td
+            = index+1
+          %td=invoice.try(:invoice_no)
+          %td= invoice.currency.try(:currency)
+          %td= invoice.try(:deductec_amount)
+          %td= invoice.try(:note)
+          %td
+            - if invoice.customer_sent == true
+              Yes
+            - else
+              No
+          %td
+            - if invoice.canceled == true
+              Yes
+            - else
+              No
+          %td
+            = link_to "edit", edit_invoice_ajax_invoices_path(invoice_id: invoice.id, ticket_id: ticket.id), remote: true

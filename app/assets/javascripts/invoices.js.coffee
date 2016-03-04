@@ -34,6 +34,7 @@ window.Invoices =
     $("#total_tax").html(total_tax)
     $("#total_amount").html(total_amount)
     final_total_amount = total_amount + total_tax
+    # final_total_amount = parseFloat($("#total_amount").text) + parseFloat($("#total_tax").text)
     $("#final_total_amount").html(final_total_amount)
 
     $(".action").click ->
@@ -50,6 +51,9 @@ window.Invoices =
         now_total_amount_val1 =  parseFloat($(@).parents("tr").find(".total_amount").text())
         total_amount = parseFloat($("#total_amount").text()) + now_total_amount_val1
         $("#total_amount").html(total_amount)
+
+        final_total_amount = total_amount + total_tax
+        $("#final_total_amount").html(final_total_amount)
 
       else
 

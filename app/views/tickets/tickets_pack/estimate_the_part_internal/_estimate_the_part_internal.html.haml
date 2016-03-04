@@ -1,11 +1,11 @@
 - uri = URI(request.url)
 = simple_nested_form_for estimation, url: update_estimate_the_part_internal_inventories_path, method: :post do |f|
 
-  = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
-  = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
-  = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
-  - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
-    = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+  / = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
+  / = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
+  / = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
+  / - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
+  /   = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
   = f.simple_fields_for :ticket_estimation_parts do |t|
 
@@ -113,14 +113,36 @@
       .col-md-2
         = a.input :estimated_price, input_html: {min: "0", class: "est_internal_add_estimated_price only_float", oninput: "Inventories.calculate_internal_cost_price();"}
         .append_estimated_price_internal.hide
-      .col-md-3
+      .col-md-2
         %strong Profit:
         %span.append_profit_margin_internal{style: "font-weight:bold;"}
+      / .col-md-12
+      /   = a.simple_fields_for :ticket_estimation_additional_taxes do |t|
+
+      /     .row
+      /       .add_sign.col-md-3{style: "padding-top:2.5%;"}
+      /         = t.link_to_remove class: "remove_c_t_v_link" do
+      /           %span.glyphicon.glyphicon-remove-sign
+            
+      /       .col-md-3
+      /         / = t.label :tax_id, "Tax"
+      /         = label_tag 'tax', 'Tax'
+      /         %br
+      /         = t.select :tax_id, options_from_collection_for_select(Tax.all, :id, :tax), include_blank: true
+      /       .col-md-3
+      /         = t.input :estimated_tax_amount
+      /       .col-md-3
+      /         = t.input :approved_tax_amount
+
+      /   = a.link_to_add :ticket_estimation_additional_taxes, class: "small_scale_padding-right2" do
+      /     %span.glyphicon.glyphicon-plus-sign
+      /     Add tax
+      
     %hr
 
   = f.link_to_add :ticket_estimation_additionals, class: "small_scale_padding-right2" do
     %span.glyphicon.glyphicon-plus-sign
-    Add
+    Add additional charge
 
   .row
     .col-md-2

@@ -346,7 +346,8 @@ Rails.application.routes.draw do
       post "update_quality_control"
       post "update_estimate_job_final"
       get "edit_estimation_ajax"
-      get "new_estimation_ajax"
+      get "edit_invoice_ajax"
+      get "paginate_estimations"
     end
   end
      

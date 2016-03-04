@@ -89,6 +89,9 @@ class Ticket < ActiveRecord::Base
   has_many :customer_quotations, foreign_key: :ticket_id
   accepts_nested_attributes_for :customer_quotations, allow_destroy: true
 
+  has_many :ticket_invoices, foreign_key: :ticket_id
+  accepts_nested_attributes_for :ticket_invoices, allow_destroy: true
+
   has_many :ticket_payment_receiveds
   accepts_nested_attributes_for :ticket_payment_receiveds, allow_destroy: true
   has_many :invoices, through: :ticket_payment_receiveds

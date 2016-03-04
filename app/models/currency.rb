@@ -9,4 +9,6 @@ class Currency < ActiveRecord::Base
 
   has_many :inventory_product_info, foreign_key: :currency_id
   has_many :act_terminate_job_payments
+
+  has_many :ticket_invoices, foreign_key: :currency_id
 end

@@ -37,6 +37,8 @@ class InvoicesController < ApplicationController
   end
 
   def edit_estimation_ajax
+    TicketEstimation
+
     quotation_id = params[:quotation_id]
     if quotation_id.present?
       @quotation = CustomerQuotation.find quotation_id
@@ -44,6 +46,22 @@ class InvoicesController < ApplicationController
       @quotation = CustomerQuotation.new
     end
     @ticket = Ticket.find params[:ticket_id]
+    @estimations = @ticket.ticket_estimations.page(params[:page]).per(params[:per_page])
+  end
+
+  def edit_invoice_ajax
+    invoice_id = params[:invoice_id]
+    if invoice_id.present?
+      @invoice = TicketInvoice.find invoice_id
+    else
+      @invoice = TicketInvoice.new
+    end
+    @ticket = Ticket.find params[:ticket_id]
+  end
+
+  def paginate_estimations
+    @estimations = @estimations.page(params[:page]).per(params[:per_page])
+    render "invoices/paginate_estimations"
   end
 
   def click_for_receipt
