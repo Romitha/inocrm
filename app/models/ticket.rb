@@ -249,6 +249,10 @@ class ExtraRemark < ActiveRecord::Base
 
   has_many :ticket_extra_remarks, foreign_key: :extra_remark_id
   has_many :tickets, through: :ticket_extra_remarks
+  # extra_remark.is_used_anywhere?
+  # def is_used_anywhere?
+  #   ticket_extra_remarks.present? or tickets.present?
+  # end
 end
 
 class TicketExtraRemark < ActiveRecord::Base

@@ -2,11 +2,11 @@
   %legend Request From Store
   = simple_nested_form_for spare_part, url: update_order_mfp_return_manufacture_part_tickets_path, method: :post do |f| #update_order_mfp_return_manufacture_part_tickets_path
 
-    / = hidden_field_tag :process_id, session[:process_id]
-    / = hidden_field_tag :task_id, session[:task_id]
-    / = hidden_field_tag :owner, session[:owner]
-    / - session[:bpm_input_variables].each do |bpm_input_variable|
-    /   = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+    = hidden_field_tag :process_id, session[:process_id]
+    = hidden_field_tag :task_id, session[:task_id]
+    = hidden_field_tag :owner, session[:owner]
+    - session[:bpm_input_variables].each do |bpm_input_variable|
+      = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
     = hidden_field_tag :process_id, Rails.cache.fetch(["/tickets/order_manufacture_parts", params[:task_id]])[:process_id]
     = hidden_field_tag :task_id, Rails.cache.fetch(["/tickets/order_manufacture_parts", params[:task_id]])[:task_id]

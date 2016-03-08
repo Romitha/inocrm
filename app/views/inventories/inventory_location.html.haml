@@ -1,4 +1,5 @@
 %h3 Inventory Location
+
 = simple_nested_form_for @inventory_rack, url: update_inventory_location_admins_path do |f|
   .panel.panel-primary
     .panel-heading
@@ -8,7 +9,7 @@
         .col-md-6
           = f.input :description, input_html: {rows: 1}
         .col-md-6
-          = f.label "Organization:"
+          = f.label "Location:"
           = f.select :location_id, Organization.all.uniq{|o| o.id}.map{|o| [(o.name ? "#{o.name}" : o.short_name), o.id]}
         .col-md-6
           = f.label "aisle_image"
@@ -59,6 +60,49 @@
         .col-md-11
           = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_inventory_location"
 
+= initiate_table table_type: "table-hover table-bordered"  do
+  = table_header ["Rack Description", "Location", "Aisle image", " "]
+  %tbody
+    - @inventory_all_rack.each do |rack|
+      %tr
+        %td
+          = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "rack", name: "rack_description", url: "#", "original-title" => "Update rack description", value: ""}, style: "line-height: 6px;" do
+            = rack.description
+        %td
+          = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "rack", name: "rack_description", url: "#", "original-title" => "Update rack description", value: ""}, style: "line-height: 6px;" do
+            = rack.organization.name
+        %td
+        %td
+          %table.table
+            %thead
+              %th Shelf Description
+            %tbody
+              - rack.inventory_shelfs.each do |shelf|
+                %tr
+                  %td
+                    = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "shelf", name: "shelf_description", url: "#", "original-title" => "Update shelf description", value: ""}, style: "line-height: 6px;" do
+                      = shelf.description
+                  %td
+                    %table.table
+                      %thead
+                        %th Bin Description
+                      %tbody
+                        - shelf.inventory_bins.each do |bin|
+                          %tr
+                            %td
+                              = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "bin", name: "bin_description", url: "#", "original-title" => "Update bin description", value: ""}, style: "line-height: 6px;" do
+                                = bin.description
+/ .row
+/   = link_to "#", class: "inline_edit", data: {type: "select", source: ProductPopStatus.first(3).collect{|category| {value: category.id, text: category.name}}} do
+/     dd
+/211 no
+
+/ = initiate_table table_type: "table-hover table-bordered"  do
+/   = table_header ["Serial_No", "Brand", "Category", "Model", "Product_No", "Country", "POP_Status", "POP_Note"]
+/   = table_body [product.serial_no, product.product_brand.name, product.product_category.name, product.model_no, product.product_no, product.product_sold_country.try(:Country), popstatus, popnote]
+
+/ - @inventory_all_rack.each do |r|
+/   = r.id
 
 
 

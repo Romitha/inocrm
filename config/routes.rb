@@ -281,6 +281,8 @@ Rails.application.routes.draw do
       post "update_inventory_reason"
       post "update_inventory_manufacture"
       post "update_inventory_unit"
+      put "inventory_location_update"
+      put "inventory_category_update"
 
       get "pop_status"
       post "update_pop_status"

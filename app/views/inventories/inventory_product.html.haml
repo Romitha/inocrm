@@ -93,3 +93,90 @@
   .row{style: "margin-bottom:20px;"}
     .col-md-8
       = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_inventory_product"
+
+= initiate_table table_type: "table-hover table-bordered"  do
+  = table_header ["No","Brand", "Product", "Category"]
+  %tbody
+    - @inventory_product_all.each_with_index do |inv_product, index|
+      %tr
+        %td= index+1
+        %td
+          = inv_product.inventory_category3.inventory_category2.inventory_category1.name
+        %td
+          = inv_product.inventory_category3.inventory_category2.name
+        %td
+          = inv_product.inventory_category3.name
+
+= initiate_table table_type: "table-hover table-bordered"  do
+  = table_header ["No","Serial no", "Serial no order", "Sku", "Legacy code", "Description", "Model no", "Product no", "Spare part no", "Fifo", "Active", "Spare Part", "Unit"]
+  %tbody
+    - @inventory_product_all.each_with_index do |inv_product, index|
+      %tr
+        %td= index+1
+        %td
+          = inv_product.serial_no
+        %td
+          = inv_product.serial_no_order
+        %td
+          = inv_product.sku
+        %td
+          = inv_product.legacy_code
+        %td
+          = inv_product.description
+        %td
+          = inv_product.model_no
+        %td
+          = inv_product.product_no
+        %td
+          = inv_product.spare_part_no
+        %td
+          = inv_product.fifo
+        %td
+          = inv_product.active
+        %td
+          = inv_product.spare_part
+        %td
+          = inv_product.unit_id
+
+= initiate_table table_type: "table-hover table-bordered"  do
+  = table_header ["No","Picture", "Secondary unit", "Issue Fractional Allowed", "Per Secondery Unit Conversion", "Need Serial", "Need Batch", "Country", "Manufacture", "Average cost", "Standard cost", "Currency", "Remarks"]
+  %tbody
+    - @inventory_product_all.each_with_index do |inv_product, index|
+      %tr
+        %td= index+1
+        %td
+          = inv_product.inventory_product_info.picture
+        %td
+          = inv_product.inventory_product_info.try(:inventory_unit).try(:unit)
+        %td
+          - if inv_product.inventory_product_info.issue_fractional_allowed == true
+            YES
+          - else
+            NO
+        %td
+          - if inv_product.inventory_product_info.per_secondery_unit_conversion == true
+            YES
+          - else
+            NO
+        %td
+          - if inv_product.inventory_product_info.need_serial == true
+            YES
+          - else
+            NO
+        %td
+          - if inv_product.inventory_product_info.need_batch == true
+            YES
+          - else
+            NO
+        %td
+          = inv_product.inventory_product_info.product_sold_country.try(:Country)
+        %td
+          = inv_product.inventory_product_info.manufacture.try(:manufacture)
+        %td
+          = inv_product.inventory_product_info.average_cost
+        %td
+          = inv_product.inventory_product_info.standard_cost
+        %td
+          = inv_product.inventory_product_info.currency.try(:currency)
+        %td
+          = inv_product.inventory_product_info.remarks

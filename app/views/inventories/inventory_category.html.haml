@@ -1,4 +1,5 @@
 %h3 Inventory Category
+
 = simple_nested_form_for @inventory_category1, url: update_inventory_location_admins_path do |c1|
   .panel.panel-info
     .panel-heading
@@ -64,4 +65,69 @@
         .row{style: "margin-top:20px;"}
           .col-md-11
             = c1.submit "Save", class: "btn btn-success pull-right", id: "submit_new_inventory_category1"
-  
+
+= initiate_table table_type: "table-hover table-bordered"  do
+  = table_header ["Inventory brand code", "Inventory brand name"]
+  %tbody
+    - @inventory_category1_all.each do |brand|
+      %tr
+        %td
+          = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "brand", name: "brand_code", url: "#", "original-title" => "Update Inventory category", value: ""}, style: "line-height: 6px;" do
+            = brand.code
+        %td
+          = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "brand", name: "brand_name", url: "#", "original-title" => "Update Inventory category", value: ""}, style: "line-height: 6px;" do
+            = brand.name
+        %td
+          %table.table
+            %thead
+              %th Product code
+              %th Product name
+            %tbody
+              - brand.inventory_category2s.each do |product|
+                %tr
+                  %td
+                    = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "product", name: "product_code", url: "#", "original-title" => "Update Inventory category", value: ""}, style: "line-height: 6px;" do
+                      = product.code
+                  %td
+                    = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "product", name: "product_name", url: "#", "original-title" => "Update Inventory category", value: ""}, style: "line-height: 6px;" do
+                      = product.name
+                  %td
+                    %table.table
+                      %thead
+                        %th Category code
+                        %th Category name
+                      %tbody
+                        - product.inventory_category3s.each do |category|
+                          %tr
+                            %td
+                              = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "category", name: "category_code", url: "#", "original-title" => "Update Inventory category", value: ""}, style: "line-height: 6px;" do
+                                = category.code
+                            %td
+                              = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "category", name: "category_name", url: "#", "original-title" => "Update Inventory category", value: ""}, style: "line-height: 6px;" do
+                                = category.name
+
+
+        / %td
+        /   = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "rack", name: "rack_description", url: "#", "original-title" => "Update rack description", value: ""}, style: "line-height: 6px;" do
+        /     = rack.organization.name
+        / %td
+        / %td
+        /   %table.table
+        /     %thead
+        /       %th Shelf Description
+        /     %tbody
+        /       - rack.inventory_shelfs.each do |shelf|
+        /         %tr
+        /           %td
+        /             = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "shelf", name: "shelf_description", url: "#", "original-title" => "Update shelf description", value: ""}, style: "line-height: 6px;" do
+        /               = shelf.description
+        /           %td
+        /             %table.table
+        /               %thead
+        /                 %th Bin Description
+        /               %tbody
+        /                 - shelf.inventory_bins.each do |bin|
+        /                   %tr
+        /                     %td
+        /                       = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "bin", name: "bin_description", url: "#", "original-title" => "Update bin description", value: ""}, style: "line-height: 6px;" do
+        /                         = bin.description

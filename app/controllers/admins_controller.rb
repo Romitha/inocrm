@@ -34,7 +34,9 @@ class AdminsController < ApplicationController
 
   def inventory_location
     Inventory
+    Product
     @inventory_rack = InventoryRack.new
+    @inventory_all_rack = InventoryRack.all
     render "inventories/inventory_location"
   end
 
@@ -46,14 +48,27 @@ class AdminsController < ApplicationController
     Product
     InventorySerialItem
     @inventory_product = InventoryProduct.new
+    @inventory_product_all = InventoryProduct.all
     render "inventories/inventory_product"
   end
 
   def update_inventory_product
   end
 
+  def inventory_location_update
+    # @product = Product.find(params[:product_id])
+    # formatted_product_params = product_params
+    # formatted_product_params["pop_note"] = "#{formatted_product_params['pop_note']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@product.pop_note}" if formatted_product_params["pop_note"].present?
+    # @product.update(formatted_product_params)
+    # respond_with(@product)
+  end
+
+  def inventory_category_update
+  end
+
   def inventory_category
     Inventory
+    @inventory_category1_all = InventoryCategory1.all
     @inventory_category1 = InventoryCategory1.new
     render "inventories/inventory_category"
   end

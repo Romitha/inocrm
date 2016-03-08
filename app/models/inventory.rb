@@ -51,6 +51,10 @@ class InventoryProductInfo < ActiveRecord::Base
 
   belongs_to :currency, foreign_key: :currency_id
 
+  belongs_to :inventory_unit, foreign_key: :secondary_unit_id
+
+  belongs_to :product_sold_country, foreign_key: :country_id
+
 end
 
 class InventoryCategory3 < ActiveRecord::Base
@@ -92,6 +96,7 @@ class InventoryUnit < ActiveRecord::Base
   self.table_name = "mst_inv_unit"
 
   has_many :inventory_products, foreign_key: :unit_id
+  has_many :inventory_product_infos
 
 end
 
