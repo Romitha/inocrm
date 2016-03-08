@@ -9,10 +9,10 @@
   .row
     .col-md-6.col-xs-6
       Ticket Completed (Approve To Close):
-      = f.check_box :ticket_close_approved, class: "ticket_close_approved_check"
-    .col-md-6.col-xs-6.ticket_resolution_summary
+      = f.check_box :ticket_close_approved, id: "ticket_close_approved_check"
+    .col-md-6.col-xs-6#close_approve_reject_reason
       = f.label "Reject Reason"
-      = select_tag :reject_reason_id,  options_from_collection_for_select(Reason.where(reject_close: true).map {|r| [r.reason,r.id] }, "id", "name"), include_blank: true, id: "close_approve_reject_reason"
+      = select_tag :reject_reason_id,  options_for_select(Reason.where(reject_close: true).map {|r| [r.reason, r.id] }), include_blank: false
   .row.col-md-12.col-xs-12
     %fieldset
       %legend
@@ -157,17 +157,17 @@
 
                   .col-md-3
                     = ff.label "Approve fsr"
-                    = ff.check_box :approved, input_html: {class: "dynamic_check"}
+                    = ff.check_box :approved, class: "dynamic_check"
                   .col-md-9
                     = ff.input :remarks, input_html: {value: nil}
                     = simple_format ff.object.remarks
       .row.col-md-12.col-xs-12{style: "margin-top:20px; margin-bottom:20px;"}
-        .col-md-6.col-xs-6
+        .col-md-6
           = f.label "Job Belongs to:"
           = f.select :owner_engineer_id, ticket.user_ticket_actions.map{ |u| [u.user_assign_ticket_action.assign_to.email, u.user_assign_ticket_action.assign_to.id] if u.user_assign_ticket_action.present? }.compact
-        = f.input :remarks, input_html: {value: nil}
-        = simple_format f.object.remarks
+        .col-md-12
+          = f.input :remarks, input_html: {value: nil}
+          = simple_format f.object.remarks
 
         .col-md-6.col-xs-6
           = f.submit "Save", class: "btn btn-success"
-          %button.btn.btn-default{:type => "button"} Cancel

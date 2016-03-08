@@ -75,7 +75,7 @@ class UserTicketAction < ActiveRecord::Base
   accepts_nested_attributes_for :action_warranty_extend, allow_destroy: true
 
   has_one :customer_feedback, foreign_key: :ticket_action_id
-  accepts_nested_attributes_for :custome_feedback, allow_destroy: true
+  accepts_nested_attributes_for :customer_feedback, allow_destroy: true
 
   has_one :act_payment_received, foreign_key: :ticket_action_id
   accepts_nested_attributes_for :act_payment_received, allow_destroy: true

@@ -2492,7 +2492,7 @@ class TicketsController < ApplicationController
       # bpm output variables
       bpm_variables = view_context.initialize_bpm_variables.merge supp_engr_user: params[:supp_engr_user]
       @ticket.save
-      if @ticket.ticket_close_approved #Approved
+      if @ticket.ticket_close_approved #Approved (Checked)
 
         bpm_variables.merge! d40_ticket_approved_to_close: "Y"
 
@@ -2505,7 +2505,7 @@ class TicketsController < ApplicationController
 
         @ticket.update owner_engineer_id: params[:owner_engineer_id], ticket_close_approved: true
 
-      else # Rejected
+      else # Rejected (Not Checked)
 
         bpm_variables.merge! d41_re_open: "Y" if @ticket.status_id == TicketStatus.find_by_code("ROP").id or !@ticket.job_finished
 
@@ -2661,6 +2661,7 @@ class TicketsController < ApplicationController
     TicketSparePart
     Invoice
     Ticket
+    Warranty
     @ticket = Ticket.find_by_id params[:ticket_id]
     if @ticket
 

@@ -2,7 +2,7 @@
 - ticket = @ticket
 .row.small_scale_margin-top1
   .col-md-12
-    = simple_nested_form_for @ticket_payment_received, url: customer_feedback_tickets_path, method: :post do |f|
+    = simple_nested_form_for @ticket_payment_received, url: update_customer_feedback_invoices_path, method: :post do |f|
 
       = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
       = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
@@ -10,12 +10,10 @@
       - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
         = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
-
-      = f.simple_fields_for :customer_feedback do |cf|
+      = f.simple_fields_for :customer_feedbacks do |cf|
         .row
           .col-md-4
-            = label_tag "re_open"
-            = check_box_tag :re_open, nil, false, disabled: false
+            = cf.input :re_opened
 
           .col-md-5
             = cf.input :unit_return_customer, as: :boolean, checked: (ticket.ticket_type.name == 'IH'), disabled: (ticket.ticket_type.name != 'IH')
@@ -24,33 +22,29 @@
 
         = cf.input :feedback_description, input_html: {value: nil}
 
-      %fieldset
-        %legend Final Payment Required
+        %fieldset
+          %legend Final Payment Required
 
-        .row
-          .col-md-12
-            %strong Payment Type :
-        .row
-          .col-md-12
-            %strong Final Amount to be Paid :
-        .row
-          .col-md-6
-            = f.input :amount, input_html: {value: nil}
-        .row
-          .col-md-8
-            = f.input :note, input_html: {value: nil}
-          .col-md-2
-            %a.btn.btn-default{:href => "#", :role => "button", :id => "view_invoice"} View Invoice
-          .col-md-2
-            %a.btn.btn-default{:href => "#", :role => "button", :id => "print_invoice"} Print Invoice
+          .row
+            .col-md-12
+              %strong Payment Type :
+          .row
+            .col-md-12
+              %strong Final Amount to be Paid :
+          .row
+            .col-md-6
+              = f.input :amount, input_html: {value: nil}
+          .row
+            .col-md-8
+              = f.input :note, input_html: {value: nil}
+            .col-md-2
+              %a.btn.btn-default{:href => "#", :role => "button", :id => "view_invoice"} View Invoice
+            .col-md-2
+              %a.btn.btn-default{:href => "#", :role => "button", :id => "print_invoice"} Print Invoice
 
-        .row
-          .col-md-4
-            = label_tag "payment_completed"
-            = check_box_tag :payment_completed, nil, false, disabled: false
-          .col-md-4
-            = label_tag "invocing_completed"
-            = check_box_tag :invocing_completed, nil, false, disabled: false
+          .row
+            .col-md-4
+              = cf.input :payment_completed
 
         .row{style: "margin-top:20px; margin-bottom:10px;"}
           .col-md-4

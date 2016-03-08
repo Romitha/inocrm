@@ -10,4 +10,5 @@ $ ->
   Admins.setup()
   Warranties.setup()
   Lives.setup()
+  Invoices.setup()
   return

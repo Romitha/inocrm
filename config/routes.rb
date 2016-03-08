@@ -344,12 +344,15 @@ Rails.application.routes.draw do
 
   resources :invoices do
     collection do
-      post "update_invoice_advance_payment"
-      post "update_quality_control"
-      post "update_estimate_job_final"
       get "edit_estimation_ajax"
       get "edit_invoice_ajax"
       get "paginate_estimations"
+
+
+      post "update_invoice_advance_payment"
+      post "update_quality_control"
+      post "update_estimate_job_final"
+      post "update_customer_feedback"
     end
   end
      
