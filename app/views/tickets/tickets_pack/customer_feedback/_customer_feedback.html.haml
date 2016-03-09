@@ -27,13 +27,11 @@
 
           .row
             .col-md-12
-              %strong Payment Type :
-          .row
-            .col-md-12
-              %strong Final Amount to be Paid :
+              %strong Final Amount to be Paid (#{ticket.ticket_currency.code}):
+              = number_with_precision ticket.final_amount_to_be_paid.to_f, precision: 2
           .row
             .col-md-6
-              = f.input :amount, input_html: {value: nil}
+              = f.input :amount, input_html: {value: 0}
           .row
             .col-md-8
               = f.input :note, input_html: {value: nil}
@@ -44,7 +42,8 @@
 
           .row
             .col-md-4
-              = cf.input :payment_completed
+              = label_tag "Payment completed"
+              = check_box_tag :payment_completed
 
         .row{style: "margin-top:20px; margin-bottom:10px;"}
           .col-md-4
@@ -54,3 +53,18 @@
           .col-md-4
             = f.submit "Save", class: "btn btn-success"
             %a.btn.btn-default{:href => "#", :role => "button", :id => "cancel"} Cancel
+
+form screen visible only:
+  inform_customer
+  if ticket.cus_payment_required 
+    print_invoice, view_invoice
+
+after form screen
+  if ticket_payment_received.id
+    print_receipt
+
+  if !re_opened
+    print_delivery
+
+final payment required is visible, if ticket.cus_payment_required 
+inform_customer screen must be implemented.

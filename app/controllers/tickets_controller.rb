@@ -3061,9 +3061,6 @@ class TicketsController < ApplicationController
       @ticket = Ticket.find(params[:print_object_id])
       @ticket.update_attribute(:ticket_print_count, (@ticket.ticket_print_count+1))
       @ticket.user_ticket_actions.create(action_id: TaskAction.find_by_action_no(68).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
-    when "ticket_complete"
-      @ticket = Ticket.find(params[:print_object_id])
-      # @ticket.user_ticket_actions.create(action_id: TAskAction.find_by_action_no(68).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
     when "print_fsr"
       @ticket_fsr = TicketFsr.find(params[:print_object_id])
       @ticket_fsr.update_attribute(:print_count, (@ticket_fsr.print_count+1))
@@ -3080,7 +3077,35 @@ class TicketsController < ApplicationController
       @receipt.update_attribute(:receipt_print_count, (@receipt.receipt_print_count+1))
       user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(77).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
       user_ticket_action.build_act_payment_received(ticket_payment_received_id: @receipt.id, invoice_completed: false)
-      user_ticket_action.save   
+      user_ticket_action.save
+ 
+    when "print_invoice"
+      Invoice
+      @invoice = TicketInvoice.find(params[:print_object_id])
+      @ticket = @invoice.ticket
+      @invoice.update_attribute(:print_count, (@invoice.print_count+1))
+      user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(71).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+      user_ticket_action.build_act_print_invoice(invoice_id: @invoice.id)
+      user_ticket_action.save
+
+    when "print_ticket_delivery_note" #print_ticket_complete
+      @ticket = Ticket.find(params[:print_object_id])
+      @ticket.update_attribute(:ticket_complete_print_count, (@ticket.ticket_complete_print_count+1))
+      @ticket.user_ticket_actions.create(action_id: TaskAction.find_by_action_no(69).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+
+    when "print_customer_quotation"
+      Invoice
+      @quotation = CustomerQuotation.find(params[:print_object_id])
+      @ticket = @quotation.ticket
+      @quotation.update_attribute(:print_count, (@quotation.print_count+1))
+      user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(00).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+      #user_ticket_action.build_act_payment_received(ticket_payment_received_id: @receipt.id, invoice_completed: false)
+      user_ticket_action.save
+
+    when "print_bundle"
+      TicketSparePart
+      @bundle = ReturnPartsBundle.find(params[:print_object_id])
+      @bundle.update_attribute(:print_count, (@bundle.print_count+1))
     end
     render nothing: true
   end

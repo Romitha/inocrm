@@ -283,7 +283,11 @@ class InvoicesController < ApplicationController
 
     @ticket = Ticket.find_by_id params[:ticket_id]
     re_open = params[:re_open].present?
-    payment_completed = params[:payment_completed].present?
+    customer_feedback_payment_completed = params[:payment_completed].present?
+    customer_feedback_unit_return_customer = params[:unit_return_customer]
+    customer_feedback_feedback_id = params[:feedback_id]
+    customer_feedback_re_opened = params[:re_opened]
+    customer_feedback_feedback_description = params[:feedback_description]
 
     @ticket_payment_received = TicketPaymentReceived.new ticket_payment_received_params
     @final_invoice = @ticket.ticket_invoices.order(created_at: :desc).find_by_canceled false
@@ -313,9 +317,9 @@ class InvoicesController < ApplicationController
           end  
           if @ticket.cus_payment_required
             if @ticket.final_amount_to_be_paid.to_f > 0
-                if @ticket_payment_received > 0
+                if @ticket_payment_received.amount.to_f > 0
 
-                  if payment_completed
+                  if customer_feedback_payment_completed
                     @ticket.update customer_payment_completed = true
                     @ticket_payment_received.attributes = @ticket_payment_received.attributes.merge type_id: TicketPaymentReceivedType.find_by_code("FN").id
                   else
@@ -327,9 +331,9 @@ class InvoicesController < ApplicationController
 
                   @ticket_payment_received.save
 
-                  # 28 - Invoice Advance Payment
+                  # 28 - Receive Payment
                   user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(28).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
-                  user_ticket_action.build_act_payment_received(ticket_payment_received_id: @ticket_payment_received.id, invoice_completed: payment_completed)
+                  user_ticket_action.build_act_payment_received(ticket_payment_received_id: @ticket_payment_received.id, invoice_completed: customer_feedback_payment_completed)
                   user_ticket_action.save
                 end 
             else
@@ -337,12 +341,13 @@ class InvoicesController < ApplicationController
             end  
             
             @continue = false
-            @render_to_page = "tickets/tickets_pack/invoice_advance_payment/update_invoice_advance_payment"    
+            @render_to_page = "tickets/tickets_pack/customer_feedback/update_invoice_advance_payment"    
           end      
-        end        
+        end
+
         # Action (58) Customer Feedback, DB.spt_act_customer_feedback.
         user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(58).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
-        user_ticket_action.build_act_customer_feedback(ticket_payment_received_id: @ticket_payment_received.id, invoice_completed: payment_completed)
+        user_ticket_action.build_act_customer_feedback(re_opened: customer_feedback_re_opened, unit_return_customer: customer_feedback_unit_return_customer, ticket_payment_received_id: @ticket_payment_received.id, payment_completed: customer_feedback_payment_completed, feedback_id: customer_feedback_feedback_id, feedback_description: customer_feedback_feedback_description, created_at: DateTime.now, updated_at: current_user.id)
         user_ticket_action.save
 
         # bpm output variables
