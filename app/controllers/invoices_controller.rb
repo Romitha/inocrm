@@ -237,51 +237,8 @@ class InvoicesController < ApplicationController
   end
 
   def update_customer_feedback
-    
-    # Set 
-    # move_to_next_task = true  
-    # If "Re-Open" is checked then 
-    #   (D39) d39_re_open = true
-    #   DB.spt_ticket.status_id=  ROP (Re-Open)
-    #   DB.spt_ticket.re-open_count = DB.spt_ticket.re-open_count + 1
-    #   DB.spt_ticket.job_finished=false 
-    #   if (DB.spt_ticket.ticket_close_approval_required = true and DB.spt_ticket.ticket_close_approved = true ) then 
-    #     (D38) d38_ticket_close_approved = true 
-    #     alert_re-open_info (SPT_ALT_7) 
-    #     DB.spt_ticket.ticket_close_approval_required = 1  
-    #     DB.spt_ticket.ticket_close_approval_requested = 0 
-    #     DB.spt_ticket.ticket_close_approved = 0 
-    #   end
-    # else # If "Re-Open" is not checked then 
-    #   #DB.spt_ticket.customer_payment_completed=true  and 
-    #   if DB.spt_ticket.ticket_close_approval_required =  true Then 
-    #     DB.spt_ticket.status_id = TBC (To Be Closed) 
-    #   else 
-    #     DB.spt_ticket.status_id= CLS (Closed)
-    #   end  
-    #   if DB.spt_ticket.cus_payment_required = true then
-    #     if final_amount_to_be_paid > 0 then
-    #         if ("Recieved Amount" > 0) then  
-    #           Create DB.spt_ticket_payment_received
-    #           Set Action (28) Invoice Advance Payment, DB.spt_act_payment_received.
-    #           If ("Payment Completed" is checked) then 
-    #             DB.spt_ticket.customer_payment_completed=true.
-    #             DB.spt_ticket_payment_received.type_id = mst_spt_payment_received_type(code: "FN").id
-    #           else
-    #             DB.spt_ticket_payment_received.type_id = mst_spt_payment_received_type(code: "AD").id
-    #             move_to_next_task = false
-    #           end 
-    #         end    
-    #     else
-    #       DB.spt_ticket.customer_payment_completed=true. 
-    #     end      
-    #   end      
-    # end        
-    # Set Action (58) Customer Feedback, DB.spt_act_customer_feedback. 
-
-
-
-    @ticket = Ticket.find_by_id params[:ticket_id]
+    @ticket = Ticket.find params[:ticket_id]
+    editable_ticket_params = {}
     re_open = params[:re_open].present?
     customer_feedback_payment_completed = params[:payment_completed].present?
     customer_feedback_unit_return_customer = params[:unit_return_customer]
@@ -295,77 +252,79 @@ class InvoicesController < ApplicationController
     continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
 
     if continue
-        d39_re_open = "N"
-        d38_ticket_close_approved = "N"
-        move_to_next_task = true  
-        @render_to_page = {js: "window.location.href = '#{todos_url}'"}
-        if re_open then # If "Re-Open" is checked
-          d39_re_open = "Y"
+      d39_re_open = "N"
+      d38_ticket_close_approved = "N"
+      move_to_next_task = true
+      # @render_to_page = {js: "window.location.href = '#{todos_url}'"}
+      if re_open
+        d39_re_open = "Y"
 
-          if (@ticket.ticket_close_approval_required and @ticket.ticket_close_approved ) 
-            d38_ticket_close_approved = "Y"
-            @ticket.update ticket_close_approval_requested: false, ticket_close_approved: false
-          end  
-
-          @ticket.update status_id: TicketStatus.find_by_code("ROP").id, re_open_count: (@ticket.re_open_count.to_i+1), job_finished: false
-
-        else # If "Re-Open" is not checked
-          if @ticket.ticket_close_approval_required 
-            @ticket.update status_id: TicketStatus.find_by_code("TBC").id #(To Be Closed) 
-          else 
-            @ticket.update status_id: TicketStatus.find_by_code("CLS").id #(Closed)
-          end  
-          if @ticket.cus_payment_required
-            if @ticket.final_amount_to_be_paid.to_f > 0
-                if @ticket_payment_received.amount.to_f > 0
-
-                  if customer_feedback_payment_completed
-                    @ticket.update customer_payment_completed = true
-                    @ticket_payment_received.attributes = @ticket_payment_received.attributes.merge type_id: TicketPaymentReceivedType.find_by_code("FN").id
-                  else
-                    move_to_next_task = false
-                    @ticket_payment_received.attributes = @ticket_payment_received.attributes.merge type_id: TicketPaymentReceivedType.find_by_code("AD").id
-                  end                   
-
-                  @ticket_payment_received.attributes = @ticket_payment_received.attributes.merge received_at: DateTime.now, received_by: current_user.id, currency_id: @ticket.ticket_currency.id, receipt_no: CompanyConfig.first.increase_sup_last_receipt_no, receipt_print_count: 0, invoice_id: @final_invoice.try(:id)
-
-                  @ticket_payment_received.save
-
-                  # 28 - Receive Payment
-                  user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(28).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
-                  user_ticket_action.build_act_payment_received(ticket_payment_received_id: @ticket_payment_received.id, invoice_completed: customer_feedback_payment_completed)
-                  user_ticket_action.save
-                end 
-            else
-              @ticket.update customer_payment_completed = true 
-            end  
-            
-            @continue = false
-            @render_to_page = "tickets/tickets_pack/customer_feedback/update_invoice_advance_payment"    
-          end      
+        if (@ticket.ticket_close_approval_required and @ticket.ticket_close_approved )
+          d38_ticket_close_approved = "Y"
+          editable_ticket_params.merge! ticket_close_approval_requested: false, ticket_close_approved: false
         end
+        editable_ticket_params.merge! re_open_count: (@ticket.re_open_count.to_i+1), job_finished: false, status_id: TicketStatus.find_by_code("ROP").id
 
-        # Action (58) Customer Feedback, DB.spt_act_customer_feedback.
-        user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(58).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
-        user_ticket_action.build_act_customer_feedback(re_opened: customer_feedback_re_opened, unit_return_customer: customer_feedback_unit_return_customer, ticket_payment_received_id: @ticket_payment_received.id, payment_completed: customer_feedback_payment_completed, feedback_id: customer_feedback_feedback_id, feedback_description: customer_feedback_feedback_description, created_at: DateTime.now, updated_at: current_user.id)
-        user_ticket_action.save
-
-        # bpm output variables
-        bpm_variables = view_context.initialize_bpm_variables.merge d39_re_open: d39_re_open, d38_ticket_close_approved: d38_ticket_close_approved, supp_engr_user: params[:supp_engr_user]
-
-        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
-
-        if bpm_response[:status].upcase == "SUCCESS"
-          flash[:notice] = "Successfully updated"
+      else
+        if @ticket.ticket_close_approval_required
+          editable_ticket_params.merge! status_id: TicketStatus.find_by_code("TBC").id #(To Be Closed)
         else
-          flash[:error] = "invoice is updated. but Bpm error"
+          editable_ticket_params.merge! status_id: TicketStatus.find_by_code("CLS").id #(Closed)
+          # status_id = TicketStatus.find_by_code("CLS").id #(Closed)
         end
+        if @ticket.cus_payment_required
+          if @ticket.final_amount_to_be_paid.to_f > 0
+            if @ticket_payment_received.amount.to_f > 0
+
+              if customer_feedback_payment_completed
+                editable_ticket_params.merge! customer_payment_completed: true
+
+                # @ticket.update customer_payment_completed: true
+                @ticket_payment_received.type_id = TicketPaymentReceivedType.find_by_code("FN").id
+              else
+                move_to_next_task = false
+                @ticket_payment_received.type_id = TicketPaymentReceivedType.find_by_code("AD").id
+              end
+
+              @ticket_payment_received.attributes = @ticket_payment_received.attributes.merge received_at: DateTime.now, received_by: current_user.id, currency_id: @ticket.ticket_currency.id, receipt_no: CompanyConfig.first.increase_sup_last_receipt_no, receipt_print_count: 0, invoice_id: @final_invoice.try(:id)
+
+              @ticket_payment_received.save
+
+              # 28 - Receive Payment
+              user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(28).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+              user_ticket_action.build_act_payment_received(ticket_payment_received_id: @ticket_payment_received.id, invoice_completed: customer_feedback_payment_completed)
+              user_ticket_action.save
+            end
+          else
+            editable_ticket_params.merge! customer_payment_completed: true
+          end
+
+        end
+      end
+      @ticket.update editable_ticket_params if editable_ticket_params.present?
+      # Action (58) Customer Feedback, DB.spt_act_customer_feedback.
+      user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(58).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+      user_ticket_action.build_customer_feedback(re_opened: customer_feedback_re_opened, unit_return_customer: customer_feedback_unit_return_customer, ticket_payment_received_id: @ticket_payment_received.id, payment_completed: customer_feedback_payment_completed, feedback_id: customer_feedback_feedback_id, feedback_description: customer_feedback_feedback_description, created_at: DateTime.now, updated_at: current_user.id)
+      user_ticket_action.save
+
+      # bpm output variables
+      bpm_variables = view_context.initialize_bpm_variables.merge d39_re_open: d39_re_open, d38_ticket_close_approved: d38_ticket_close_approved, supp_engr_user: params[:supp_engr_user]
+
+      bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+      if bpm_response[:status].upcase == "SUCCESS"
+        flash[:notice] = "Successfully updated"
+      else
+        flash[:error] = "invoice is updated. but Bpm error"
+      end
 
     else
       flash[:error] = "Bpm error."
     end
+    @continue = true
+    # @render_to_page = "tickets/tickets_pack/customer_feedback/update_customer_feedback"
 
-    render @render_to_page #js: "window.location.href = '#{todos_url}'"
+    render "tickets/tickets_pack/customer_feedback/update_customer_feedback"
   end
 
   private

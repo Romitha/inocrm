@@ -107,47 +107,6 @@ class TicketsController < ApplicationController
     render json: {id: @customer.id, email: @customer.email, full_name: @customer.full_name, phone_number: @customer.primary_phone_number.try(:value), address: @customer.primary_address.try(:address), nic: @customer.NIC, avatar: view_context.image_tag((@customer.avatar.thumb.url || "no_image.jpg"), alt: @customer.email)}
   end
 
-  def comment_methods
-    @ticket_id = params[:ticket_id]
-    @customer = params[:customer]
-    @to_email = params[:to_email]
-    case params[:comment_method]
-    when "reply"
-      @subject = "reply to: #{params[:to_email]}"
-      @from = current_user.email
-      @hide_content = "hide"
-      @content = "#{@from} replied to #{@to_email}"
-      @comment_method = reply_ticket_tickets_path
-      @history = @content
-    when "forward"
-      @subject = "Forward"
-      @from = current_user.email
-
-    end
-    @csrf_token = view_context.form_authenticity_token
-    respond_to do |format|
-      format.json
-    end
-  end
-
-  def reply_ticket
-    @ticket_id = params[:comment][:ticket_id]
-    ticket_params = params.require(:comment).permit(:subject, :content, :ticket_id, :history)
-    ticket_params[:history] = ticket_params[:history]+" on #{DateTime.now.strftime("%d %b, %Y at %H:%M:%S")}"
-    @comment = Comment.new ticket_params
-    @comment.agent = current_user
-    @comment.ticket = Ticket.find(@ticket_id)
-    if @comment.save
-      @result = @comment
-    else
-      @error = @comment.errors.full_messages.join(", ")
-    end
-    respond_to do |format|
-      format.json
-      format.js
-    end
-  end
-
   def find_by_serial
     serial_no = params[:serial_search]
     if serial_no.blank?
@@ -2300,7 +2259,8 @@ class TicketsController < ApplicationController
       Rails.cache.delete([:join, @ticket.id])
       @ticket.act_terminate_job_payments.build
 
-      @ticket_payment_received = @ticket.ticket_estimations.inject(0){|i, k| i+k.ticket_payment_received.try(:amount).to_f}
+      # @ticket_payment_received = @ticket.ticket_estimations.inject(0){|i, k| i+k.ticket_payment_received.try(:amount).to_f}
+      @ticket_payment_received = @ticket.ticket_payment_receiveds.sum(:amount).to_f
 
       @total_estimation_amount = @ticket.ticket_estimations.where(foc_approved: false, cust_approved: true).map { |estimation| estimation.approval_required ? (estimation.ticket_estimation_externals.sum(:approved_estimated_price)+estimation.ticket_estimation_parts.sum(:approved_estimated_price)+estimation.ticket_estimation_additionals.sum(:approved_estimated_price)) : (estimation.ticket_estimation_externals.sum(:estimated_price)+estimation.ticket_estimation_parts.sum(:estimated_price)+estimation.ticket_estimation_additionals.sum(:estimated_price)) }.compact.sum
 
@@ -2668,9 +2628,6 @@ class TicketsController < ApplicationController
       @product = @ticket.products.first
       Rails.cache.delete([:histories, @product.id])
       Rails.cache.delete([:join, @ticket.id])
-
-      # @customer_feedback = CustomerFeedback.new
-      # @customer_feedback.ticket_payment_received.build
 
       @ticket_payment_received = TicketPaymentReceived.new
       @ticket_payment_received.customer_feedbacks.build
@@ -3120,6 +3077,8 @@ class TicketsController < ApplicationController
     when "receipt"
       Ticket
       TicketPaymentReceived.find_by_id params[:print_object_id]
+    when "delivery"
+      @ticket = Ticket.find(params[:print_object_id])
     end
     print_template_object = PrintTemplate.first
     print_template = print_template_object.try(params[:print_object].to_sym) # example :ticket, :fsr

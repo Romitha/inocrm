@@ -132,7 +132,7 @@ mst_spt_action = [
   ["25", "Recieve Unit", "3", false],
   ["26", "Customer Inqure", nil, false],
   ["27", "Job Estimation Done", "7", false],
-  ["28", "Invoice Advance Payment", "27,29", false],
+  ["28", "Received Advance Payment", "27,29", false],
   ["29", "Delivere Unit To Supplier", "8", false],
   ["30", "Collect Unit From Supplier", "8", false],
   ["31", "Order Spare Part from Supplier", "9", false],
@@ -182,8 +182,11 @@ mst_spt_action = [
   ["75", "Low Margin Part Estimation Approval", "20", false],
   ["76", "Part Estimation Customer Aproved", "3", false],
   ["77", "Print Receipt for Payment", "14, 27, 29", false],
-  ["78", "Request Non Stock Service Support Engineer", "3", false],
-  ["79", "Complete Non Stock Service Support Engineer", "3", false],
+  ["78", "Request Non Stock Service", "3", false],
+  ["79", "Complete Non Stock Service", "3", false],
+  ["80", "Create Invoice", "33", false],
+  ["81", "Create Quotation", "3", false],
+  ["82", "Print Quotation", "3", false],
 ].each{ |t| TaskAction.create_with(action_description: t[1], task_id: t[2], hide: t[3]).find_or_create_by(action_no: t[0]) }
 
 mst_organizations_types = [

@@ -59,7 +59,7 @@
                 %td= tsp.request_from == 'M' ? tsp.ticket_spare_part_manufacture.try(:event_no) : "-"
                 %td= tsp.ticket_spare_part_manufacture.try(:event_closed) ? "Yes" : "No"
                 %td= tsp.return_part_serial_no
-                %td= truncate(tsp.note, length: 10)
+                %td= simple_format tsp.note#truncate(tsp.note, length: 10)
                 %td= check_box_tag :ticket_spare_part_ids, tsp.id, tsp.close_approved, name: "ticket_spare_part_ids[]", class: "dynamic_check"
 
       - if f.object.ticket_on_loan_spare_parts.present?
@@ -77,7 +77,7 @@
             - f.object.ticket_on_loan_spare_parts.each_with_index do |tsp, i|
               %tr
                 %th= i+1
-                %td= simple_format tsp.approved_inventory_product.description
+                %td= simple_format tsp.approved_inventory_product.try(:description)
                 %td #{tsp.spare_part_status_action.name}
                 %td= tsp.part_returned ? 'Yes' : 'No'
                 %td= tsp.return_part_serial_no

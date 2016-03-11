@@ -1,70 +1,62 @@
 - uri = URI(request.url)
 - ticket = @ticket
-.row.small_scale_margin-top1
-  .col-md-12
-    = simple_nested_form_for @ticket_payment_received, url: update_customer_feedback_invoices_path, method: :post do |f|
 
-      = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
-      = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
-      = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
-      - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
-        = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+- if @ticket_payment_received.new_record? and not @continue
+  = simple_nested_form_for @ticket_payment_received, url: update_customer_feedback_invoices_path, method: :post, remote: true do |f|
 
-      = f.simple_fields_for :customer_feedbacks do |cf|
+    = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
+    = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
+    = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
+    - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
+      = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+
+    .row
+      .col-md-2
+        = label_tag "Re-open"
+        = check_box_tag :re_opened
+
+      .col-md-3
+        = label_tag "Unit return customer"
+        = check_box_tag :unit_return_customer, true, (ticket.ticket_type.name == 'IH'), disabled: (ticket.ticket_type.name != 'IH')
+      .col-md-3
+        = label_tag "Feedback"
+        %br
+        = select_tag :feedback_id, options_from_collection_for_select(Feedback.all, :feedback, :id), include_blank: true
+      .col-md-4
+        = label_tag "Feedback description"
+        %br
+        = text_area_tag :feedback_description, nil, class: "form-control"
+    - if ticket.cus_payment_required
+      %fieldset
+        %legend Final Payment Required
+
+        .row
+          .col-md-3
+            %strong Final Amount to be Paid (#{ticket.ticket_currency.code}):
+            = number_with_precision ticket.final_amount_to_be_paid.to_f, precision: 2
+          .col-md-4
+            = f.input :amount, input_html: {value: 0}
+          .col-md-5
+            = f.input :note, input_html: {value: nil}
+        - if @ticket.ticket_invoices.order(created_at: :desc).find_by_canceled(false)
+          .row
+            .col-md-2
+              = link_to "View invoice", "#"
+            .col-md-2
+              = link_to "Print invoice", "#", class: "btn btn-sm btn-success", onclick: "Users.request_printer_application('invoice', '#{ticket.ticket_invoices.order(created_at: :desc).find_by_canceled false}', 'receipt_request_type', 'print_invoice_tag_value', 'print_invoice'); false;"
+            .col-md-2
+              = link_to "Invoice customer", "#"
+
         .row
           .col-md-4
-            = cf.input :re_opened
+            = label_tag "Payment completed"
+            = check_box_tag :payment_completed
+    = f.submit "Save", class: "btn btn-success"
 
-          .col-md-5
-            = cf.input :unit_return_customer, as: :boolean, checked: (ticket.ticket_type.name == 'IH'), disabled: (ticket.ticket_type.name != 'IH')
+- else
+  .col-md-4
+    - if @ticket_payment_received.persisted?
+      = link_to "Print reciept", "#", class: "btn btn-sm btn-success", onclick: "Users.request_printer_application('receipt', '#{@ticket_payment_received.id}', 'receipt_request_type', 'print_receipt_tag_value', 'print_receipt'); false;"
 
-        = cf.association :feedback, collection: Feedback.all.map{|fd| [fd.feedback, fd.id]},include_blank: true, label: "Feedback : "
 
-        = cf.input :feedback_description, input_html: {value: nil}
-
-        %fieldset
-          %legend Final Payment Required
-
-          .row
-            .col-md-12
-              %strong Final Amount to be Paid (#{ticket.ticket_currency.code}):
-              = number_with_precision ticket.final_amount_to_be_paid.to_f, precision: 2
-          .row
-            .col-md-6
-              = f.input :amount, input_html: {value: 0}
-          .row
-            .col-md-8
-              = f.input :note, input_html: {value: nil}
-            .col-md-2
-              %a.btn.btn-default{:href => "#", :role => "button", :id => "view_invoice"} View Invoice
-            .col-md-2
-              %a.btn.btn-default{:href => "#", :role => "button", :id => "print_invoice"} Print Invoice
-
-          .row
-            .col-md-4
-              = label_tag "Payment completed"
-              = check_box_tag :payment_completed
-
-        .row{style: "margin-top:20px; margin-bottom:10px;"}
-          .col-md-4
-            %a.btn.btn-default{:href => "#", :role => "button", :id => "inform_customer"} Inform Customer
-          .col-md-4
-            %a.btn.btn-default{:href => "#", :role => "button", :id => "print_delivery_note"} Print Delivery Note
-          .col-md-4
-            = f.submit "Save", class: "btn btn-success"
-            %a.btn.btn-default{:href => "#", :role => "button", :id => "cancel"} Cancel
-
-form screen visible only:
-  inform_customer
-  if ticket.cus_payment_required 
-    print_invoice, view_invoice
-
-after form screen
-  if ticket_payment_received.id
-    print_receipt
-
-  if !re_opened
-    print_delivery
-
-final payment required is visible, if ticket.cus_payment_required 
-inform_customer screen must be implemented.
+    = link_to "Print delivery", "#", class: "btn btn-sm btn-success", onclick: "Users.request_printer_application('deliver', '#{ticket_payment_received.ticket.id}', 'deliver_type', 'print_ticket_delivery_note_tag_value', 'print_ticket_delivery_note'); false;" if not params[:re_opened].present?
