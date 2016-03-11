@@ -27,7 +27,7 @@
         %br
         = text_area_tag :feedback_description, nil, class: "form-control"
     - if ticket.cus_payment_required
-      %fieldset
+      %fieldset#ticket_payment_reciever_wrapper
         %legend Final Payment Required
 
         .row

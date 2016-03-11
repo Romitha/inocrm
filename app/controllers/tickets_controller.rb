@@ -2456,14 +2456,14 @@ class TicketsController < ApplicationController
 
         bpm_variables.merge! d40_ticket_approved_to_close: "Y"
 
-        @ticket.update status_id: TicketStatus.find_by_code("CLS").id if @ticket.status_id == TicketStatus.find_by_code("TBC").id
-
 #        Set Action:(56)Approve Close Ticket, and  DB.spt_act_ticket_close_approve 
         user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(56).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
         user_ticket_action.build_act_ticket_close_approve(approved: true, job_belongs_to: params[:owner_engineer_id])
         user_ticket_action.save
 
         @ticket.update owner_engineer_id: params[:owner_engineer_id], ticket_close_approved: true
+
+        @ticket.set_ticket_close
 
       else # Rejected (Not Checked)
 
@@ -3055,8 +3055,8 @@ class TicketsController < ApplicationController
       @quotation = CustomerQuotation.find(params[:print_object_id])
       @ticket = @quotation.ticket
       @quotation.update_attribute(:print_count, (@quotation.print_count+1))
-      user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(00).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
-      #user_ticket_action.build_act_payment_received(ticket_payment_received_id: @receipt.id, invoice_completed: false)
+      user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(82).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+      user_ticket_action.build_act_quotation(customer_quotation_id: @quotation.id)
       user_ticket_action.save
 
     when "print_bundle"
@@ -3413,6 +3413,10 @@ class TicketsController < ApplicationController
         user_ticket_action.save
 
         @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
+
+        if (spt_ticket_spare_part.ticket_spare_part_manufacture)
+          spt_ticket_spare_part.ticket_spare_part_manufacture.update po_required: false
+        end
       end
 
       # bpm output variables
@@ -4172,7 +4176,7 @@ class TicketsController < ApplicationController
     end
 
     def ticket_spare_part_params(spt_ticket_spare_part)
-      tspt_params = params.require(:ticket_spare_part).permit(:approved_store_id, :approved_inv_product_id, :approved_main_inv_product_id, :spare_part_no, :spare_part_description, :ticket_id, :fsr_id, :cus_chargeable_part, :request_from, :faulty_serial_no, :received_part_serial_no, :received_part_ct_no, :repare_start, :repare_end, :faulty_ct_no, :note, :status_action_id, :status_use_id, :part_terminated_reason_id, :returned_part_accepted, ticket_attributes: [:remarks, :id], ticket_spare_part_manufacture_attributes: [:id, :event_no, :order_no, :id, :event_closed, :ready_to_bundle, :payment_expected_manufacture], ticket_spare_part_store_attributes: [:part_of_main_product, :id, :approved_store_id, :approved_inv_product_id, :approved_main_inv_product_id, :store_request_approved, :return_part_damage, :return_part_damage_reason_id], request_spare_parts_attributes: [:reject_return_part_reason_id], ticket_on_loan_spare_parts_attributes: [:id, :approved_store_id, :approved_inv_product_id, :approved_main_inv_product_id, :approved, :ticket_id, :return_part_damage, :return_part_damage_reason_id] )
+      tspt_params = params.require(:ticket_spare_part).permit(:approved_store_id, :approved_inv_product_id, :approved_main_inv_product_id, :spare_part_no, :spare_part_description, :ticket_id, :fsr_id, :cus_chargeable_part, :request_from, :faulty_serial_no, :received_part_serial_no, :received_part_ct_no, :repare_start, :repare_end, :faulty_ct_no, :note, :status_action_id, :status_use_id, :part_terminated_reason_id, :returned_part_accepted, ticket_attributes: [:remarks, :id], ticket_spare_part_manufacture_attributes: [:id, :event_no, :order_no, :id, :event_closed, :ready_to_bundle, :payment_expected_manufacture, :po_required], ticket_spare_part_store_attributes: [:part_of_main_product, :id, :approved_store_id, :approved_inv_product_id, :approved_main_inv_product_id, :store_request_approved, :return_part_damage, :return_part_damage_reason_id], request_spare_parts_attributes: [:reject_return_part_reason_id], ticket_on_loan_spare_parts_attributes: [:id, :approved_store_id, :approved_inv_product_id, :approved_main_inv_product_id, :approved, :ticket_id, :return_part_damage, :return_part_damage_reason_id] )
 
       tspt_params[:repare_start] = Time.strptime(tspt_params[:repare_start],'%m/%d/%Y %I:%M %p') if tspt_params[:repare_start].present?
       tspt_params[:repare_end] = Time.strptime(tspt_params[:repare_end],'%m/%d/%Y %I:%M %p') if tspt_params[:repare_end].present?

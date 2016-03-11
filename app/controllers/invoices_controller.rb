@@ -78,13 +78,10 @@ class InvoicesController < ApplicationController
     Invoice
     TaskAction
 
-    # @estimation = TicketEstimation.find params[:advance_payment_estimation_id]
     @ticket = Ticket.find params[:ticket_id]
     @customer_quotation = @ticket.customer_quotations.find params[:advance_payment_estimation_id] if params[:advance_payment_estimation_id].to_i > 0
 
     @ticket_payment_received = @ticket.ticket_payment_receiveds.build ticket_payment_received_params
-
-    # @ticket_payment_received = @estimation.build_ticket_payment_received ticket_payment_received_params
 
     @ticket_payment_received.attributes = @ticket_payment_received.attributes.merge received_at: DateTime.now, received_by: current_user.id, type_id: TicketPaymentReceivedType.find_by_code("AD").id, currency_id: @ticket.ticket_currency.id, receipt_no: CompanyConfig.first.increase_sup_last_receipt_no, receipt_print_count: 0, customer_quotation_id: @customer_quotation.try(:id)
 
@@ -254,8 +251,6 @@ class InvoicesController < ApplicationController
     if continue
       d39_re_open = "N"
       d38_ticket_close_approved = "N"
-      move_to_next_task = true
-      # @render_to_page = {js: "window.location.href = '#{todos_url}'"}
       if re_open
         d39_re_open = "Y"
 
@@ -266,12 +261,7 @@ class InvoicesController < ApplicationController
         editable_ticket_params.merge! re_open_count: (@ticket.re_open_count.to_i+1), job_finished: false, status_id: TicketStatus.find_by_code("ROP").id
 
       else
-        if @ticket.ticket_close_approval_required
-          editable_ticket_params.merge! status_id: TicketStatus.find_by_code("TBC").id #(To Be Closed)
-        else
-          editable_ticket_params.merge! status_id: TicketStatus.find_by_code("CLS").id #(Closed)
-          # status_id = TicketStatus.find_by_code("CLS").id #(Closed)
-        end
+
         if @ticket.cus_payment_required
           if @ticket.final_amount_to_be_paid.to_f > 0
             if @ticket_payment_received.amount.to_f > 0
@@ -279,10 +269,9 @@ class InvoicesController < ApplicationController
               if customer_feedback_payment_completed
                 editable_ticket_params.merge! customer_payment_completed: true
 
-                # @ticket.update customer_payment_completed: true
                 @ticket_payment_received.type_id = TicketPaymentReceivedType.find_by_code("FN").id
               else
-                move_to_next_task = false
+
                 @ticket_payment_received.type_id = TicketPaymentReceivedType.find_by_code("AD").id
               end
 
@@ -300,8 +289,16 @@ class InvoicesController < ApplicationController
           end
 
         end
+
+        editable_ticket_params.merge! job_closed: true, job_closed_at: DateTime.now
+
+        editable_ticket_params.merge! status_id: TicketStatus.find_by_code("TBC").id #(To Be Closed)
+        @continue = true
+
       end
       @ticket.update editable_ticket_params if editable_ticket_params.present?
+      @ticket.set_ticket_close unless re_open
+
       # Action (58) Customer Feedback, DB.spt_act_customer_feedback.
       user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(58).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
       user_ticket_action.build_customer_feedback(re_opened: customer_feedback_re_opened, unit_return_customer: customer_feedback_unit_return_customer, ticket_payment_received_id: @ticket_payment_received.id, payment_completed: customer_feedback_payment_completed, feedback_id: customer_feedback_feedback_id, feedback_description: customer_feedback_feedback_description, created_at: DateTime.now, updated_at: current_user.id)
@@ -315,16 +312,76 @@ class InvoicesController < ApplicationController
       if bpm_response[:status].upcase == "SUCCESS"
         flash[:notice] = "Successfully updated"
       else
-        flash[:error] = "invoice is updated. but Bpm error"
+        flash[:error] = "Ticket is updated. but Bpm error"
+        @continue = false
       end
 
     else
       flash[:error] = "Bpm error."
-    end
-    @continue = true
-    # @render_to_page = "tickets/tickets_pack/customer_feedback/update_customer_feedback"
+      @continue = false
 
-    render "tickets/tickets_pack/customer_feedback/update_customer_feedback"
+    end
+    if @continue
+      @render_to_page = "tickets/tickets_pack/customer_feedback/update_customer_feedback"
+
+    else
+      @render_to_page = {js: "window.location.href = '#{todos_url}'"}
+
+    end
+    render @render_to_page
+  end
+
+  def new_quotation
+    @ticket = Ticket.find_by_id params[:ticket_id]
+    estimation_ids = params[:estimation_ids]
+    action_no = 0
+    if params[:action_type] == "create"
+      @customer_quotation = CustomerQuotation.new customer_quotation_params
+
+      TicketEstimation.where(id: estimation_ids).each do |estimation|
+        estimation.update quoted: estimation.quoted+1
+      end
+      # Action (81) Create Quotation, DB.spt_act_quotation.
+      action_no = 81
+    elsif params[:action_type] == "update"
+      @customer_quotation = CustomerQuotation.find params[:quotation_id]
+      @customer_quotation.estimations.each do |pr_estimation|
+        pr_estimation.update quoted: pr_estimation.quoted-1
+      end
+      TicketEstimation.where(id: estimation_ids).each do |estimation|
+        estimation.update quoted: estimation.quoted+1
+      end
+      @customer_quotation.attributes = customer_quotation_params
+
+      if !@customer_quotation.was_canceled and @customer_quotation.canceled
+        TicketEstimation.where(id: estimation_ids).each do |estimation|
+          estimation.update quoted: estimation.quoted-1
+        end
+      end
+      # Action (84) Edit Quotation, DB.spt_act_quotation.
+      action_no = 84
+    end
+
+    @customer_quotation.save
+    @customer_quotation.estimation_ids = estimation_ids
+
+    #Action 81/84
+    user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(action_no).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+    user_ticket_action.build_act_quotation(customer_quotation_id: @customer_quotation.id)
+    user_ticket_action.save
+
+  end
+
+  def new_invoice
+    estimation_ids = params[:estimation_ids]
+    if params[:action_type] == "create"
+      @invoice = Invoice.new invoice_params
+    elsif params[:action_type] == "update"
+      @invoice.attributes = invoice_params
+    end
+    @invoice.save
+    @invoice.estimation_ids = estimation_ids
+
   end
 
   private

@@ -88,6 +88,7 @@
             = rm.input :event_closed, wrapper: :append, input_html: {checked: true}
             = rm.input :ready_to_bundle, wrapper: :append, input_html: {checked: true}, label: "Ready to bundle (Needs return to manufacturer)"
             = rm.input :payment_expected_manufacture, label: "Payment Expected from Manufacturer (#{product.product_brand.currency.try(:code)}):", input_html: {class: "input_toggler"}
+            = rm.input :po_required, wrapper: :append, label: "PO Required:"
 
       = f.input :note, input_html: {value: nil}
       = simple_format ticket_spare_part.note

@@ -353,6 +353,8 @@ Rails.application.routes.draw do
       post "update_quality_control"
       post "update_estimate_job_final"
       post "update_customer_feedback"
+      post "new_quotation"
+      post "new_invoice"
     end
   end
      

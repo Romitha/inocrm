@@ -143,6 +143,10 @@ class InventoriesController < ApplicationController
 
         save_ticket_spare_part["CLS", 19] #Terminate Spare Part
 
+        if (ticket_spare_part.ticket_spare_part_manufacture)
+          ticket_spare_part.ticket_spare_part_manufacture.update po_required: false
+        end
+
         flash[:notice] = "Termination is successfully done."
       end
     
