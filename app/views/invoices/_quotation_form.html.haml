@@ -1,6 +1,6 @@
 #new_cus_quo
   %h3 Customer Quotation
-  = simple_nested_form_for quotation, url: "#", method: :post do |f|
+  = simple_nested_form_for quotation, url: new_quotation_invoices_path(action_type: @action_type), method: :post do |f|
     .col-md-3
       %strong Customer qoutation no   #{ CompanyConfig.first.sup_last_quotation_no.to_s.rjust(6, INOCRM_CONFIG["qoutation_no_format"])}
       = f.input :validity_period, input_html: {id: "validity_period_id"}
@@ -49,10 +49,10 @@
                   - else
                     = estimation.ticket_estimation_parts.count
                 %td
-                  - if ticket.ticket_repair_type.code == 'EX'
-                    = estimation.ticket_estimation_externals.first.description
-                  - else
-                    = estimation.ticket_estimation_parts.first.ticket_spare_part.spare_part_description
+                  / - if ticket.ticket_repair_type.code == 'EX'
+                  /   = estimation.ticket_estimation_externals.first.description
+                  / - else
+                  /   = estimation.ticket_estimation_parts.first.ticket_spare_part.spare_part_description
                 %td
                   - if estimation.approval_required
                     - if ticket.ticket_repair_type.code == 'EX'
@@ -87,19 +87,19 @@
                       #{estimation_tax}
 
                   - else
-                    - estimation_part_tax_total = 0
-                    - estimation.ticket_estimation_parts.each do |ticket_estimation_part|
+                    / - estimation_part_tax_total = 0
+                    / - estimation.ticket_estimation_parts.each do |ticket_estimation_part|
 
-                      - estimation_part_tax_total = estimation_part_tax_total + ticket_estimation_part.ticket_estimation_part_taxes.sum(:approved_tax_amount)
-                    - if estimation.ticket_estimation_additionals.first.present?
-                      - estimation_additional_tax_total = 0
-                      - estimation.ticket_estimation_additionals.each do |ticket_estimation_additional|
-                        - estimation_additional_tax_total = estimation_additional_tax_total + ticket_estimation_additional.ticket_estimation_additional_taxes.sum(:approved_tax_amount)
-                      - estimation_tax = estimation_part_tax_total + estimation_additional_tax_total
-                      #{estimation_tax}
-                    - else
-                      - estimation_tax = estimation_part_tax_total
-                      #{estimation_tax}
+                    /   - estimation_part_tax_total = estimation_part_tax_total + ticket_estimation_part.ticket_estimation_part_taxes.sum(:approved_tax_amount)
+                    / - if estimation.ticket_estimation_additionals.first.present?
+                    /   - estimation_additional_tax_total = 0
+                    /   - estimation.ticket_estimation_additionals.each do |ticket_estimation_additional|
+                    /     - estimation_additional_tax_total = estimation_additional_tax_total + ticket_estimation_additional.ticket_estimation_additional_taxes.sum(:approved_tax_amount)
+                    /   - estimation_tax = estimation_part_tax_total + estimation_additional_tax_total
+                    /   #{estimation_tax}
+                    / - else
+                    /   - estimation_tax = estimation_part_tax_total
+                    /   #{estimation_tax}
                 %td.total_amount
                   - if estimation.approval_required
                     - if ticket.ticket_repair_type.code == 'EX'

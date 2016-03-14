@@ -124,7 +124,9 @@ module ApplicationHelper
       "DUPLICATE=#{ticket.ticket_complete_print_count > 0 ? 'D' : ''}",
       "TICKET_DATETIME=#{ticket.created_at.strftime(INOCRM_CONFIG['long_date_format']+' '+INOCRM_CONFIG['time_format'])}",
       "TICKET_REF=#{ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG['ticket_no_format'])}",
+
       "COMPANY_NAME=#{ticket.customer.mst_title.title} #{ticket.customer.name}",
+
       "CONTACT_PERSON=#{ticket.contact_person1.mst_title.title} #{ticket.contact_person1.name}",
 
       "ADDRESS=#{ticket.customer.address1} #{ticket.customer.address2} #{ticket.customer.address3} #{ticket.customer.address4}",

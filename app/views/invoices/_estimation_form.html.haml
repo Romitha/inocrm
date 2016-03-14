@@ -1,6 +1,6 @@
 #new_cus_quo
   %h3 Invoice
-  = simple_nested_form_for invoice, url: "#", method: :post do |f|
+  = simple_nested_form_for invoice, url: new_invoice_invoices_path, method: :post do |f|
     .col-md-3
       %strong Invoice no   #{ CompanyConfig.first.sup_last_invoice_no.to_s.rjust(6, INOCRM_CONFIG["invoice_no_format"])}
       %br
@@ -47,10 +47,10 @@
                 - else
                   = estimation.ticket_estimation_parts.count
               %td
-                - if ticket.ticket_repair_type.code == 'EX'
-                  = estimation.ticket_estimation_externals.first.description
-                - else
-                  = estimation.ticket_estimation_parts.first.ticket_spare_part.spare_part_description
+                / - if ticket.ticket_repair_type.code == 'EX'
+                /   = estimation.ticket_estimation_externals.first.description
+                / - else
+                /   = estimation.ticket_estimation_parts.first.ticket_spare_part.spare_part_description
               %td
                 - if estimation.approval_required
                   - if ticket.ticket_repair_type.code == 'EX'
