@@ -344,7 +344,7 @@ Rails.application.routes.draw do
 
   resources :invoices do
     collection do
-      get "edit_estimation_ajax"
+      get "edit_quotation_ajax"
       get "edit_invoice_ajax"
       get "paginate_estimations"
 
@@ -353,8 +353,8 @@ Rails.application.routes.draw do
       post "update_quality_control"
       post "update_estimate_job_final"
       post "update_customer_feedback"
-      post "new_quotation"
-      post "new_invoice"
+      post "update_quotation"
+      post "update_invoice"
     end
   end
      

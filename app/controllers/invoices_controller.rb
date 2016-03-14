@@ -36,9 +36,9 @@ class InvoicesController < ApplicationController
     respond_with(@invoice)
   end
 
-  def edit_estimation_ajax
+  def edit_quotation_ajax
     TicketEstimation
-
+    @action_type = params[:action_type]
     quotation_id = params[:quotation_id]
     if quotation_id.present?
       @quotation = CustomerQuotation.find quotation_id
@@ -50,6 +50,7 @@ class InvoicesController < ApplicationController
   end
 
   def edit_invoice_ajax
+    @action_type = params[:action_type]
     invoice_id = params[:invoice_id]
     if invoice_id.present?
       @invoice = TicketInvoice.find invoice_id
@@ -433,5 +434,9 @@ class InvoicesController < ApplicationController
       ticket_params = params.require(:ticket).permit(:id, :remarks, :final_amount_to_be_paid, user_ticket_actions_attributes: [:id, :_destroy, :action_at, :action_id, :action_by, :re_open_index, act_quality_control_attributes: [:approved, :reject_reason]], ge_q_and_answers_attributes: [:id, :general_question_id, :ticket_action_id, :answer], q_and_answers_attributes: [:id, :problematic_question_id, :ticket_action_id, :answer])
       ticket_params[:current_user_id] = current_user.id
       ticket_params
+    end
+
+    def customer_quotation_params
+      params.require(:customer_quotation).permit(:id, :validity_period, :delivery_period, :warranty, :payment_term_id, :customer_contacted, :canceled, :note)
     end
 end

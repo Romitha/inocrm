@@ -4,11 +4,12 @@
     %h4 Type of warranty: #{ticket.warranty_type.name}
     = simple_nested_form_for ticket, url: update_estimate_job_final_invoices_path, method: :put do |f|
 
-      / = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
-      / = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
-      / = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
-      / - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
-      /   = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+      = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
+      = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
+      = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
+      - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
+        = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+
       = label_tag "Foc"
       = radio_button_tag :foc_payment_required, "foc"
       = label_tag "Payment required"

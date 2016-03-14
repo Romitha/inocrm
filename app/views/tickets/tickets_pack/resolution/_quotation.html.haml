@@ -1,0 +1,31 @@
+.row
+  #quotation_wrapper
+%hr
+.row
+  .col-md-11
+    %h3 Available customer qoutation
+  .col-md-1
+    = link_to "new", edit_quotation_ajax_invoices_path(ticket_id: ticket.id, action_type: "create"), remote: true, class: "btn btn-sm btn-success pull-right"
+.row
+  .col-md-12
+    %table.table.table-responsive.table-condensed.table-bordered
+      %thead
+        %tr
+          %th No
+          %th Validity period
+          %th Warranty
+          %th Customer contacted
+          %th Canceled
+          %th Action
+
+      %tbody
+        - ticket.customer_quotations.each_with_index do |quotation, index|
+          %tr
+            %td
+              = index+1
+            %td.validity_period= quotation.try(:validity_period)
+            %td= quotation.try(:warranty)
+            %td= quotation.customer_contacted ? "Yes" : "No"
+            %td= quotation.canceled ? "Yes" : "No"
+            %td
+              = link_to "Edit", edit_quotation_ajax_invoices_path(quotation_id: quotation.id, ticket_id: ticket.id, action_type: "update"), remote: true

@@ -1,6 +1,14 @@
 #new_cus_quo
   %h3 Customer Quotation
-  = simple_nested_form_for quotation, url: new_quotation_invoices_path(action_type: @action_type), method: :post do |f|
+  = simple_nested_form_for quotation, url: update_quotation_invoices_path(action_type: @action_type), method: :post do |f|
+    = f.input :quotation_id, as: :hidden, input_html: {value: f.object.id}
+
+    = hidden_field_tag :process_id, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:process_id]
+    = hidden_field_tag :task_id, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:task_id]
+    = hidden_field_tag :owner, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:owner]
+    - Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
+      = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+
     .col-md-3
       %strong Customer qoutation no   #{ CompanyConfig.first.sup_last_quotation_no.to_s.rjust(6, INOCRM_CONFIG["qoutation_no_format"])}
       = f.input :validity_period, input_html: {id: "validity_period_id"}
@@ -13,8 +21,6 @@
       = f.input :note
     .col-md-9
       #paginate_estimation
-        = paginate @estimations, remote: true, method: :get, params: {controller: "invoices", action: "paginate_estimations", per_page: 3}
-        / = paginate @estimations
         %table.table.table-responsive.table-condensed.table-bordered
           %thead
             %tr
@@ -25,8 +31,8 @@
             %tr
               %th No
               %th Requested at
-              %th #{ticket.ticket_repair_type.code == 'EX' ? 'Repaired by' : 'No of parts' }
               %th Description
+              %th #{ticket.ticket_repair_type.code == 'EX' ? 'Repaired by' : 'No of parts' }
               %th #{ticket.ticket_repair_type.code == 'EX' ? 'Repair' : 'Parts' }
               %th Additional
               %th Tax
@@ -35,32 +41,31 @@
               %th Status
               %th quoted
               %th amount
-              %th Action
+              %th Attach
 
           %tbody
             - @estimations.each_with_index do |estimation, index|
+              - estimation_external_present = estimation.ticket_estimation_externals.present?
+
               %tr.row_class{:style => "background-color:#{estimation.quoted.to_i > 0 ? '#99ff66' : ''};"}
-                %td
-                  = index+1
+                %td= index+1
                 %td= estimation.requested_at.getlocal.try(:strftime, "%b %d, %Y %H:%M")
                 %td
-                  - if ticket.ticket_repair_type.code == 'EX'
+                  .has-popover{title: "Description", data: {"toggle" => "popover", "title" => "Popover title", "trigger" => "hover", "content" => (estimation_external_present ? estimation.ticket_estimation_externals.first.description : estimation.ticket_estimation_parts.first.ticket_spare_part.spare_part_description)}}= truncate (estimation_external_present ? estimation.ticket_estimation_externals.first.description : estimation.ticket_estimation_parts.first.ticket_spare_part.spare_part_description), length: 20
+
+                %td
+                  - if estimation_external_present
                     = estimation.ticket_estimation_externals.first.try(:organization).try(:name)
                   - else
                     = estimation.ticket_estimation_parts.count
                 %td
-                  / - if ticket.ticket_repair_type.code == 'EX'
-                  /   = estimation.ticket_estimation_externals.first.description
-                  / - else
-                  /   = estimation.ticket_estimation_parts.first.ticket_spare_part.spare_part_description
-                %td
                   - if estimation.approval_required
-                    - if ticket.ticket_repair_type.code == 'EX'
+                    - if estimation_external_present
                       = number_with_precision estimation.ticket_estimation_externals.sum(:approved_estimated_price), precision: 2
                     - else
                       = number_with_precision estimation.ticket_estimation_parts.sum(:approved_estimated_price), precision: 2
                   - else
-                    - if ticket.ticket_repair_type.code == 'EX'
+                    - if estimation_external_present
                       = number_with_precision estimation.ticket_estimation_externals.sum(:estimated_price), precision: 2
                     - else
                       = number_with_precision estimation.ticket_estimation_parts.sum(:estimated_price), precision: 2
@@ -71,43 +76,20 @@
                   - else
                     = number_with_precision estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2
                 %td.tax
-                  - if ticket.ticket_repair_type.code == 'EX'
-                    - estimation_external_tax_total = 0
-                    - estimation.ticket_estimation_externals.each do |ticket_estimation_external|
-
-                      - estimation_external_tax_total = estimation_external_tax_total + ticket_estimation_external.ticket_estimation_external_taxes.sum(:approved_tax_amount)
-                    - if estimation.ticket_estimation_additionals.first.present?
-                      - estimation_additional_tax_total = 0
-                      - estimation.ticket_estimation_additionals.each do |ticket_estimation_additional|
-                        - estimation_additional_tax_total = estimation_additional_tax_total + ticket_estimation_additional.ticket_estimation_additional_taxes.sum(:approved_tax_amount)
-                      - estimation_tax = estimation_external_tax_total + estimation_additional_tax_total
-                      #{estimation_tax}
-                    - else
-                      - estimation_tax = estimation_external_tax_total
-                      #{estimation_tax}
+                  - if estimation_external_present
+                    = estimation.ticket_estimation_externals.inject(0){ |i, k| k.ticket_estimation_external_taxes.sum(:approved_tax_amount).to_f } + estimation.ticket_estimation_additionals.inject(0){ |i, k| k.ticket_estimation_external_taxes.sum(:approved_tax_amount).to_f }
 
                   - else
-                    / - estimation_part_tax_total = 0
-                    / - estimation.ticket_estimation_parts.each do |ticket_estimation_part|
+                    = estimation.ticket_estimation_parts.inject(0){ |i, k| k.ticket_estimation_external_taxes.sum(:approved_tax_amount).to_f } + estimation.ticket_estimation_additionals.inject(0){ |i, k| k.ticket_estimation_external_taxes.sum(:approved_tax_amount).to_f }
 
-                    /   - estimation_part_tax_total = estimation_part_tax_total + ticket_estimation_part.ticket_estimation_part_taxes.sum(:approved_tax_amount)
-                    / - if estimation.ticket_estimation_additionals.first.present?
-                    /   - estimation_additional_tax_total = 0
-                    /   - estimation.ticket_estimation_additionals.each do |ticket_estimation_additional|
-                    /     - estimation_additional_tax_total = estimation_additional_tax_total + ticket_estimation_additional.ticket_estimation_additional_taxes.sum(:approved_tax_amount)
-                    /   - estimation_tax = estimation_part_tax_total + estimation_additional_tax_total
-                    /   #{estimation_tax}
-                    / - else
-                    /   - estimation_tax = estimation_part_tax_total
-                    /   #{estimation_tax}
                 %td.total_amount
                   - if estimation.approval_required
-                    - if ticket.ticket_repair_type.code == 'EX'
+                    - if estimation_external_present
                       = number_with_precision(estimation.ticket_estimation_externals.sum(:approved_estimated_price) + estimation.ticket_estimation_additionals.sum(:approved_estimated_price), precision: 2)
                     - else
                       = number_with_precision(estimation.ticket_estimation_parts.sum(:approved_estimated_price) + estimation.ticket_estimation_additionals.sum(:approved_estimated_price), precision: 2)
                   - else
-                    - if ticket.ticket_repair_type.code == 'EX'
+                    - if estimation_external_present
                       = number_with_precision(estimation.ticket_estimation_externals.sum(:estimated_price) + estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2)
                     - else
                       = number_with_precision(estimation.ticket_estimation_parts.sum(:estimated_price) + estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2)
@@ -127,10 +109,7 @@
                 %td.quoted_value
                   =estimation.quoted
                 %td.amount
-                - if quotation.id.present?
-                  %td= check_box_tag 'estimation_ids[]', estimation.id, quotation.ticket_estimation_ids.include?(estimation.id), class: "action"
-                - else
-                  %td= check_box_tag 'estimation_ids[]', estimation.id, {:checked => "checked"},  class: "action"
+                %td= check_box_tag 'estimation_ids[]', estimation.id, (quotation.persisted? ? quotation.ticket_estimation_ids.include?(estimation.id) : true), class: "action"
 
     .col-md-12
       .col-md-2
@@ -152,7 +131,9 @@
     .col-md-4.pull-left{style: "margin-bottom: 20px;"}
       .col-md-2
         = link_to "Cancel","#", onclick: "$('#quotation_wrapper').empty(); return false;"
-      .col-md-2
-        %button.btn.btn-info{:type => "button"} Print
+      - if quation.persisted?
+        .col-md-2
+          = link_to "Print", "#", class: "btn btn-sm btn-success", onclick: "Users.request_printer_application('quotation', '#{@quotation.id}', 'quotation_request_type', 'quotation_tag_value', 'quotation'); false;"
+        
       .col-md-2
         = f.submit "Save", class: "btn btn-success"
