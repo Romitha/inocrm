@@ -331,7 +331,7 @@ class InvoicesController < ApplicationController
     render @render_to_page
   end
 
-  def new_quotation
+  def update_quotation
     @ticket = Ticket.find_by_id params[:ticket_id]
     estimation_ids = params[:estimation_ids]
     action_no = 0
@@ -372,16 +372,45 @@ class InvoicesController < ApplicationController
 
   end
 
-  def new_invoice
+  def update_invoice
+    
+    @ticket = Ticket.find_by_id params[:ticket_id]
     estimation_ids = params[:estimation_ids]
+    action_no = 0
     if params[:action_type] == "create"
       @invoice = Invoice.new invoice_params
-    elsif params[:action_type] == "update"
-      @invoice.attributes = invoice_params
-    end
-    @invoice.save
-    @invoice.estimation_ids = estimation_ids
 
+      TicketEstimation.where(id: estimation_ids).each do |estimation|
+        estimation.update invoiced: estimation.invoiced+1
+      end
+      # Action (80) Create Invoice, DB.spt_act_print_invoice.
+      action_no = 80
+    elsif params[:action_type] == "update"
+      @invoice = Invoice.find params[:invoice_id]
+      @invoice.estimations.each do |pr_estimation|
+        pr_estimation.update invoiced: pr_estimation.invoiced-1
+      end
+      TicketEstimation.where(id: estimation_ids).each do |estimation|
+        estimation.update invoiced: estimation.invoiced+1
+      end
+      @invoice.attributes = invoice_params
+
+      if !@invoice.was_canceled and @invoice.canceled
+        TicketEstimation.where(id: estimation_ids).each do |estimation|
+          estimation.update invoiced: estimation.invoiced-1
+        end
+      end
+      # Action (83) Edit Invoice, DB.spt_act_print_invoice.
+      action_no = 83
+    end
+
+    @invoice.save
+    @invoice.estimation_ids = estimation_ids    
+
+    #Action 80/83
+    user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(action_no).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+    user_ticket_action.build_act_print_invoice(invoice_id: @invoice.id)
+    user_ticket_action.save
   end
 
   private
