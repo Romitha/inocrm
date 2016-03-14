@@ -894,7 +894,7 @@ class TicketsController < ApplicationController
       Rails.cache.delete([:join, @ticket.id])
 
       @user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(2).id)
-      @user_assign_ticket_action = @user_ticket_action.user_assign_ticket_action.build
+      @user_assign_ticket_action = @user_ticket_action.build_user_assign_ticket_action
       @assign_regional_support_center = @user_ticket_action.assign_regional_support_centers.build
     end
     respond_to do |format|
@@ -915,8 +915,8 @@ class TicketsController < ApplicationController
       @ticket.attributes = t_params
 
       user_ticket_action = @ticket.user_ticket_actions.last
-      user_ticket_action.user_assign_ticket_action.first.regional_support_center_job = @ticket.regional_support_job
-      user_assign_ticket_action = user_ticket_action.user_assign_ticket_action.first
+      user_ticket_action.user_assign_ticket_action.regional_support_center_job = @ticket.regional_support_job
+      user_assign_ticket_action = user_ticket_action.user_assign_ticket_action
       h_assign_regional_support_center = user_ticket_action.assign_regional_support_centers.first
 
       user_ticket_action.assign_regional_support_centers.reload unless !user_assign_ticket_action.recorrection and user_assign_ticket_action.regional_support_center_job
@@ -976,7 +976,7 @@ class TicketsController < ApplicationController
       Rails.cache.delete([:histories, session[:product_id]])
       Rails.cache.delete([:join, @ticket.id])
       @user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(2).id)
-      @user_assign_ticket_action = @user_ticket_action.user_assign_ticket_action.build
+      @user_assign_ticket_action = @user_ticket_action.build_user_assign_ticket_action
       @assign_regional_support_center = @user_ticket_action.assign_regional_support_centers.build
     end
     respond_to do |format|
