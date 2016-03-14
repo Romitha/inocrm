@@ -19,9 +19,6 @@
       .row
         = simple_nested_form_for ticket, url: update_assign_ticket_tickets_path, method: :post do |f|
           = hidden_field_tag :ticket_id, params[:ticket_id]
-          / = hidden_field_tag :process_id, params[:process_id]
-          / = hidden_field_tag :task_id, params[:task_id]
-          / = hidden_field_tag :owner, params[:owner]
 
           = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
           = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
@@ -35,12 +32,7 @@
             = u.input :action_id, as: :hidden
             = u.input :action_by, as: :hidden, input_html: {value: current_user.id}
             = u.input :re_open_index, as: :hidden, input_html: {value: ticket.re_open_count}
-            .row
-              .col-md-12.padding0
-                .checkbox
-                  %label
-                    = check_box_tag "ticket[user_ticket_actions_attributes[]][user_assign_ticket_action_attributes][][recorrection]", nil, false, id: "pass_to_re_correction"
-                    %strong Pass to Re-correction
+
             .row
               .col-md-5.padding0
                 = f.association :ticket_type, as: :radio_buttons, wrapper_html: {class: "col-md-6"}, wrapper: :append, input_html: {class: "ticket_type"}
@@ -55,7 +47,8 @@
                     .row
                       .col-md-12
                         = ar.association :regional_support_center, collection: RegionalSupportCenter.all.collect{|r| [r.organization.name, r.id]}, input_html: {id: "regional_support_center"}
-                = u.simple_fields_for "user_assign_ticket_action_attributes[]", @user_assign_ticket_action do |ua|
+                = u.simple_fields_for :user_assign_ticket_action do |ua|
+                  = ua.input :recorrection, wrapper: :append
                   = label_tag "Engineer", nil, class: "assign_to_for_regional_label"
                   = ua.select :assign_to, option_groups_from_collection_for_select(RegionalSupportCenter.all, :engineers, :id, :id, :user_name), {include_blank: false}, id: "assign_to_for_regional"
                   .pass_to_recorrection_hiddable

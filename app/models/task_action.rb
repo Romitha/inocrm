@@ -111,7 +111,7 @@ class UserAssignTicketAction < ActiveRecord::Base
 
   belongs_to :user_ticket_action, foreign_key: :ticket_action_id
   belongs_to :sbu, foreign_key: :sbu_id
-  belongs_to :assign_to, class_name: "User", foreign_key: :assign_to
+  belongs_to :assign_to_user, class_name: "User", foreign_key: :assign_to
 end
 
 class AssignRegionalSupportCenter < ActiveRecord::Base
