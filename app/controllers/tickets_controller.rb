@@ -925,8 +925,6 @@ class TicketsController < ApplicationController
 
         @ticket.update status_id: TicketStatus.find_by_code("ASN").id
 
-
-
         if !user_assign_ticket_action.recorrection and user_assign_ticket_action.regional_support_center_job
 
           regional_ticket_user_action = @ticket.user_ticket_actions.create(action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_id: TaskAction.find_by_action_no(4).id) #assign regional support center action.          

@@ -247,13 +247,6 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.timestamps
     end
 
-    # create_table :spt_fsr_print_history, id: false do |t|
-    #   t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
-    #   t.column :print_history_id, "int(10) UNSIGNED NOT NULL"
-    #   t.column :fsr_id, "int(10) UNSIGNED NOT NULL"
-    #   t.timestamps
-    # end
-
     create_table :spt_invoice, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.datetime :created_at, null: false
@@ -275,13 +268,6 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.decimal :amount, null: false, precision: 10, scale: 2
       t.timestamps
     end
-
-    # create_table :spt_invoice_print_history, id: false do |t|
-    #   t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
-    #   t.column :print_history_id, "int(10) UNSIGNED NOT NULL"
-    #   t.column :invoice_id, "int(10) UNSIGNED NOT NULL"
-    #   t.timestamps
-    # end
 
     create_table :spt_joint_ticket, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"

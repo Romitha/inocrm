@@ -334,71 +334,69 @@ class InvoicesController < ApplicationController
 
   def update_quotation
     @ticket = Ticket.find_by_id params[:ticket_id]
-    estimation_ids = params[:estimation_ids]
+    checked_estimation_ids = params[:estimation_ids]
+    checked_estimations = TicketEstimation.where id: checked_estimation_ids
     action_no = 0
     if params[:action_type] == "create"
       @customer_quotation = CustomerQuotation.new customer_quotation_params
 
-      TicketEstimation.where(id: estimation_ids).each do |estimation|
-        estimation.update quoted: estimation.quoted+1
-      end
+      checked_estimations.each { |estimation| estimation.update quoted: (estimation.quoted.to_i+1) }
       # Action (81) Create Quotation, DB.spt_act_quotation.
       action_no = 81
     elsif params[:action_type] == "update"
       @customer_quotation = CustomerQuotation.find params[:quotation_id]
-      @customer_quotation.estimations.each do |pr_estimation|
-        pr_estimation.update quoted: pr_estimation.quoted-1
-      end
-      TicketEstimation.where(id: estimation_ids).each do |estimation|
-        estimation.update quoted: estimation.quoted+1
-      end
       @customer_quotation.attributes = customer_quotation_params
 
       if !@customer_quotation.was_canceled and @customer_quotation.canceled
-        TicketEstimation.where(id: estimation_ids).each do |estimation|
+        @customer_quotation.estimations.each do |estimation|
           estimation.update quoted: estimation.quoted-1
         end
+
+      else
+        TicketEstimation.where(id: (@customer_quotation.estimation_ids - checked_estimation_ids)).each { |estimation| estimation.update quoted: (estimation.quoted.to_i-1) }
+
       end
       # Action (84) Edit Quotation, DB.spt_act_quotation.
       action_no = 84
     end
 
     @customer_quotation.save
-    @customer_quotation.estimation_ids = estimation_ids
+    @customer_quotation.estimation_ids = checked_estimation_ids
 
     #Action 81/84
     user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(action_no).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
     user_ticket_action.build_act_quotation(customer_quotation_id: @customer_quotation.id)
     user_ticket_action.save
 
+    redirect_to todos_url, notice: "Successfully updated."
+
   end
 
   def update_invoice
     
     @ticket = Ticket.find_by_id params[:ticket_id]
-    estimation_ids = params[:estimation_ids]
+    checked_estimation_ids = params[:estimation_ids]
     action_no = 0
     if params[:action_type] == "create"
       @invoice = Invoice.new invoice_params
 
-      TicketEstimation.where(id: estimation_ids).each do |estimation|
+      TicketEstimation.where(id: checked_estimation_ids).each do |estimation|
         estimation.update invoiced: estimation.invoiced+1
       end
       # Action (80) Create Invoice, DB.spt_act_print_invoice.
       action_no = 80
     elsif params[:action_type] == "update"
       @invoice = Invoice.find params[:invoice_id]
-      @invoice.estimations.each do |pr_estimation|
-        pr_estimation.update invoiced: pr_estimation.invoiced-1
-      end
-      TicketEstimation.where(id: estimation_ids).each do |estimation|
-        estimation.update invoiced: estimation.invoiced+1
-      end
       @invoice.attributes = invoice_params
 
+
       if !@invoice.was_canceled and @invoice.canceled
-        TicketEstimation.where(id: estimation_ids).each do |estimation|
+        @invoice.estimations.each do |estimation|
           estimation.update invoiced: estimation.invoiced-1
+        end
+      else
+        TicketEstimation.where(id: (@invoice.estimation_ids - checked_estimation_ids)).each do |pr_estimation|
+          pr_estimation.update invoiced: pr_estimation.invoiced-1
         end
       end
       # Action (83) Edit Invoice, DB.spt_act_print_invoice.
@@ -406,12 +404,15 @@ class InvoicesController < ApplicationController
     end
 
     @invoice.save
-    @invoice.estimation_ids = estimation_ids    
+    @invoice.estimation_ids = checked_estimation_ids    
 
     #Action 80/83
     user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(action_no).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
     user_ticket_action.build_act_print_invoice(invoice_id: @invoice.id)
     user_ticket_action.save
+
+    redirect_to todos_url, notice: "Successfully updated."
+
   end
 
   private
