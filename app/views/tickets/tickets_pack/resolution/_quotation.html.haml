@@ -5,7 +5,7 @@
   .col-md-11
     %h3 Available customer qoutation
   .col-md-1
-    = link_to "new", edit_quotation_ajax_invoices_path(ticket_id: ticket.id, action_type: "create"), remote: true, class: "btn btn-sm btn-success pull-right"
+    = link_to "new", edit_quotation_ajax_invoices_path(ticket_id: ticket.id, action_type: "create", task_id: params[:task_id]), remote: true, class: "btn btn-sm btn-success pull-right"
 .row
   .col-md-12
     %table.table.table-responsive.table-condensed.table-bordered
@@ -28,4 +28,4 @@
             %td= quotation.customer_contacted ? "Yes" : "No"
             %td= quotation.canceled ? "Yes" : "No"
             %td
-              = link_to "Edit", edit_quotation_ajax_invoices_path(quotation_id: quotation.id, ticket_id: ticket.id, action_type: "update"), remote: true
+              = link_to "Edit", edit_quotation_ajax_invoices_path(quotation_id: quotation.id, ticket_id: ticket.id, action_type: "update", task_id: params[:task_id]), remote: true

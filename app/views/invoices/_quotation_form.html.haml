@@ -77,10 +77,10 @@
                     = number_with_precision estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2
                 %td.tax
                   - if estimation_external_present
-                    = estimation.ticket_estimation_externals.inject(0){ |i, k| k.ticket_estimation_external_taxes.sum(:approved_tax_amount).to_f } + estimation.ticket_estimation_additionals.inject(0){ |i, k| k.ticket_estimation_external_taxes.sum(:approved_tax_amount).to_f }
+                    = estimation.ticket_estimation_externals.inject(0){ |i, k| i+k.ticket_estimation_external_taxes.sum(:approved_tax_amount).to_f } + estimation.ticket_estimation_additionals.inject(0){ |i, k| i+k.ticket_estimation_additional_taxes.sum(:approved_tax_amount).to_f }
 
                   - else
-                    = estimation.ticket_estimation_parts.inject(0){ |i, k| k.ticket_estimation_external_taxes.sum(:approved_tax_amount).to_f } + estimation.ticket_estimation_additionals.inject(0){ |i, k| k.ticket_estimation_external_taxes.sum(:approved_tax_amount).to_f }
+                    = estimation.ticket_estimation_parts.inject(0){ |i, k| i+k.ticket_estimation_part_taxes.sum(:approved_tax_amount).to_f } + estimation.ticket_estimation_additionals.inject(0){ |i, k| i+k.ticket_estimation_additional_taxes.sum(:approved_tax_amount).to_f }
 
                 %td.total_amount
                   - if estimation.approval_required
@@ -131,7 +131,7 @@
     .col-md-4.pull-left{style: "margin-bottom: 20px;"}
       .col-md-2
         = link_to "Cancel","#", onclick: "$('#quotation_wrapper').empty(); return false;"
-      - if quation.persisted?
+      - if quotation.persisted?
         .col-md-2
           = link_to "Print", "#", class: "btn btn-sm btn-success", onclick: "Users.request_printer_application('quotation', '#{@quotation.id}', 'quotation_request_type', 'quotation_tag_value', 'quotation'); false;"
         

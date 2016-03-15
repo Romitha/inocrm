@@ -89,7 +89,7 @@ class TicketEstimationPart < ActiveRecord::Base
   belongs_to :ticket_spare_part, foreign_key: :ticket_spare_part_id
   accepts_nested_attributes_for :ticket_spare_part, allow_destroy: true
 
-  has_many :ticket_estimation_part_taxes, foreign_key: :ticket_estimation_part
+  has_many :ticket_estimation_part_taxes, foreign_key: :estimation_part_id
 
 end
 

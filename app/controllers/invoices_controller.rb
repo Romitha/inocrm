@@ -359,7 +359,7 @@ class InvoicesController < ApplicationController
       # Action (84) Edit Quotation, DB.spt_act_quotation.
       action_no = 84
     end
-
+    @customer_quotation.ticket_id = @ticket.id
     @customer_quotation.save
     @customer_quotation.estimation_ids = checked_estimation_ids
 
