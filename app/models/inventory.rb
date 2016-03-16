@@ -34,6 +34,10 @@ class InventoryProduct < ActiveRecord::Base
 
   validates_presence_of :description
 
+  def is_used_anywhere?
+    inventories or inventory_serial_items or inventory_product_info or ticket_spare_part_stores or grn_items or inventory_serial_parts or ticket_spare_part_non_stocks or approved_ticket_spare_part_non_stocks.any?
+  end
+
   def generated_item_code
    "#{id}-#{serial_no}"
   end
@@ -62,6 +66,10 @@ class InventoryCategory3 < ActiveRecord::Base
 
   belongs_to :inventory_category2, foreign_key: :category2_id
   has_many :inventory_products, foreign_key: :category3_id
+
+  def is_used_anywhere?
+    inventory_products.any?
+  end
 end
 
 class InventoryCategory2 < ActiveRecord::Base
@@ -71,6 +79,11 @@ class InventoryCategory2 < ActiveRecord::Base
 
   has_many :inventory_category3s, foreign_key: :category2_id
   accepts_nested_attributes_for :inventory_category3s, allow_destroy: true
+
+  def is_used_anywhere?
+    inventory_category3s.any?
+  end
+
 end
 
 class InventoryCategory1 < ActiveRecord::Base
@@ -78,6 +91,10 @@ class InventoryCategory1 < ActiveRecord::Base
 
   has_many :inventory_category2s, foreign_key: :category1_id
   accepts_nested_attributes_for :inventory_category2s, allow_destroy: true
+
+  def is_used_anywhere?
+    inventory_category2s.any?
+  end
 
 end
 
@@ -256,7 +273,10 @@ class InventoryRack < ActiveRecord::Base
   belongs_to :user, foreign_key: :created_by
   belongs_to :user, foreign_key: :updated_by
 
-  # mount_uploader :aisle_image, AttachmentUploader
+  def is_used_anywhere?
+    inventory_shelfs.any?
+  end
+
 end
 
 class InventoryShelf < ActiveRecord::Base
@@ -267,6 +287,10 @@ class InventoryShelf < ActiveRecord::Base
   belongs_to :inventory_rack, foreign_key: :rack_id
   belongs_to :user, foreign_key: :created_by
   belongs_to :user, foreign_key: :updated_by
+
+  def is_used_anywhere?
+    inventory_bins.any?
+  end
 end
 
 class InventoryBin < ActiveRecord::Base
@@ -276,6 +300,11 @@ class InventoryBin < ActiveRecord::Base
   belongs_to :user, foreign_key: :created_by
   belongs_to :user, foreign_key: :updated_by
   has_many :inventories, foreign_key: :bin_id
+
+  def is_used_anywhere?
+    inventories.any?
+  end
+
 end
 
 class InventoryDisposalMethod < ActiveRecord::Base

@@ -46,6 +46,7 @@ class AdminsController < ApplicationController
   def inventory_product
     Inventory
     Product
+    Currency
     InventorySerialItem
     @inventory_product = InventoryProduct.new
     @inventory_product_all = InventoryProduct.all
@@ -78,6 +79,7 @@ class AdminsController < ApplicationController
 
   def inventory_product_condition
     Inventory
+    @inventory_product_condition_all = ProductCondition.all
     @inventory_product_condition = ProductCondition.new
     render "inventories/inventory_product_condition"
   end
@@ -88,6 +90,7 @@ class AdminsController < ApplicationController
   def inventory_disposal_method
     Inventory
     @inventory_disposal_method = InventoryDisposalMethod.new
+    @inventory_disposal_method_all = InventoryDisposalMethod.all
     render "inventories/inventory_disposal_method"
   end
 
@@ -97,6 +100,7 @@ class AdminsController < ApplicationController
   def inventory_reason
     Inventory
     @inventory_reason = InventoryReason.new
+    @inventory_reason_all = InventoryReason.all
     render "inventories/inventory_reason"
   end
 

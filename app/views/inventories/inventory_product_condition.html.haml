@@ -9,3 +9,17 @@
   .row{style: "margin-top:20px;"}
     .col-md-8
       = c.submit "Save", class: "btn btn-success pull-right", id: "submit_new_inventory_product_condition"
+
+#accordion.panel-group
+  - @inventory_product_condition_all.each_with_index do |inv_product_condition, index|
+    .panel.panel-info
+      .panel-heading
+        %h3.panel-title
+          %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
+            / #{inv_product_condition.condition}
+            inventory product #{index+1} : #{inv_product_condition.condition}
+      .panel-collapse.collapse.in{:id => "#{index}"}
+        .panel-body
+          .row.col-md-12
+            = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "product_condition", name: "condition", url:inline_update_product_condition_inventories_path(product_condition_id: inv_product_condition.id), "original-title" => "Update product condition", value: ""}, style: "line-height: 6px;" do
+              = inv_product_condition.condition

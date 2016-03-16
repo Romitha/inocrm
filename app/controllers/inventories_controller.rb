@@ -2,6 +2,83 @@ class InventoriesController < ApplicationController
 
   before_action :find_ticket, only: [:update_low_margin_estimate, :update_estimate_job, :update_delivery_unit]
 
+  def delete_location_rack
+    Inventory
+    @delete_rack = InventoryRack.find params[:rack_id]
+    if @delete_rack.present?
+      @delete_rack.delete
+    end
+    respond_to do |format|
+      format.html { redirect_to inventory_location_admins_path }
+    end
+  end
+
+  def delete_location_shelf
+    Inventory
+    @delete_shelf = InventoryShelf.find params[:shelf_id]
+    if @delete_shelf.present?
+      @delete_shelf.delete
+    end
+    respond_to do |format|
+      format.html { redirect_to inventory_location_admins_path }
+    end
+  end
+
+  def delete_location_bin
+    Inventory
+    @delete_bin = InventoryBin.find params[:bin_id]
+    if @delete_bin.present?
+      @delete_bin.delete
+    end
+    respond_to do |format|
+      format.html { redirect_to inventory_location_admins_path }
+    end
+  end
+
+  def delete_inventory_brand
+    Inventory
+    @delete_brand = InventoryCategory1.find params[:brand_id]
+    if @delete_brand.present?
+      @delete_brand.delete
+    end
+    respond_to do |format|
+      format.html { redirect_to inventory_category_admins_path }
+    end
+  end
+
+  def delete_inventory_product
+    Inventory
+    @delete_product = InventoryCategory2.find params[:product_id]
+    if @delete_product.present?
+      @delete_product.delete
+    end
+    respond_to do |format|
+      format.html { redirect_to inventory_category_admins_path }
+    end
+  end
+
+  def delete_inventory_category
+    Inventory
+    @delete_category = InventoryCategory3.find params[:category_id]
+    if @delete_category.present?
+      @delete_category.delete
+    end
+    respond_to do |format|
+      format.html { redirect_to inventory_category_admins_path }
+    end
+  end
+
+  def delete_inventory_product_form
+    Inventory
+    @delete_product_form = InventoryProduct.find params[:product_id]
+    if @delete_product_form.present?
+      @delete_product_form.delete
+    end
+    respond_to do |format|
+      format.html { redirect_to inventory_product_admins_path }
+    end
+  end
+
   def inventory_in_modal
     Inventory
     Grn
@@ -1967,6 +2044,96 @@ class InventoriesController < ApplicationController
 
   end
 
+  def inline_update_inventory_location_rack
+    Inventory
+    @inventory_rack = InventoryRack.find params[:rack_id]
+    if @inventory_rack.update inventory_rack_params
+      render json: @inventory_rack
+    end
+  end
+
+  def inline_update
+    Inventory
+    @inventory_product_form = InventoryProduct.find params[:product_id]
+    if @inventory_product_form.update inventory_product_form_params
+      render json: @inventory_product_form
+    end
+  end
+
+  def inline_update_product_info
+    Inventory
+    Product
+    Currency
+    @inventory_product = InventoryProductInfo.find params[:product_id]
+    if @inventory_product.update inventory_product_info_params
+      render json: @inventory_product
+    end
+  end
+
+  def inline_update_product_condition
+    Inventory
+    @inventory_product_condition = ProductCondition.find params[:product_condition_id]
+    if @inventory_product_condition.update inventory_product_condition_params
+      render json: @inventory_product_condition
+    end
+  end
+
+  def inline_update_disposal_method
+    Inventory
+    @inventory_disposal_method = InventoryDisposalMethod.find params[:disposal_method]
+    if @inventory_disposal_method.update inventory_disposal_method_params
+      render json: @inventory_disposal_method
+    end
+  end
+
+  def inline_update_inventory_reason
+    Inventory
+    @inventory_reason = InventoryReason.find params[:inventory_reason]
+    if @inventory_reason.update inventory_reason_params
+      render json: @inventory_reason
+    end
+  end
+
+  def inline_update_inventory_location_shelf
+    Inventory
+    @inventory_shelf = InventoryShelf.find params[:shelf_id]
+    if @inventory_shelf.update inventory_shelf_params
+      render json: @inventory_shelf
+    end
+  end
+
+  def inline_update_inventory_location_bin
+    Inventory
+    @inventory_bin = InventoryBin.find params[:bin_id]
+    if @inventory_bin.update inventory_bin_params
+      render json: @inventory_bin
+    end
+  end
+
+  def inline_update_inventory_brand
+    Inventory
+    @inventory_brand = InventoryCategory1.find params[:brand_id]
+    if @inventory_brand.update inventory_brand_params
+      render json: @inventory_brand
+    end
+  end
+
+  def inline_update_inventory_product
+    Inventory
+    @inventory_product = InventoryCategory2.find params[:product_id]
+    if @inventory_product.update inventory_product_params
+      render json: @inventory_product
+    end
+  end
+
+  def inline_update_inventory_category
+    Inventory
+    @inventory_category = InventoryCategory3.find params[:category_id]
+    if @inventory_category.update inventory_category_params
+      render json: @inventory_category
+    end
+  end
+
   # def inventory_product
   #   Inventory
   #   Product
@@ -2170,5 +2337,53 @@ class InventoriesController < ApplicationController
       ticket_params = params.require(:ticket).permit(:ticket_no, :note, :sla_id, :serial_no, :status_hold, :repair_type_id, :base_currency_id, :ticket_close_approval_required, :ticket_close_approval_requested, :regional_support_job, :job_started_action_id, :job_start_note, :job_started_at, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, :status_resolve_id, ticket_deliver_units_attributes: [:id, :deliver_to_id, :note, :collected, :delivered_to_sup, :created_at, :created_by, :received, :received_at, :received_by], ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :ticket_action_id, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer], ticket_estimations_attributes: [:id, :advance_payment_amount, :note, :currency_id, :status_id, :requested_at, :requested_by, :approved_adv_pmnt_amount, ticket_estimation_externals_attributes: [:id, :repair_by_id, :cost_price, :estimated_price, :warranty_period, :approved_estimated_price], ticket_estimation_additionals_attributes: [:ticket_id, :additional_charge_id, :cost_price, :estimated_price, :_destroy, :id, :approved_estimated_price]], user_ticket_actions_attributes: [:id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, user_assign_ticket_action_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy], ticket_re_assign_request_attributes: [:reason_id, :_destroy], ticket_action_taken_attributes: [:action, :_destroy], ticket_terminate_job_attributes: [:id, :reason_id, :foc_requested, :_destroy], act_hold_attributes: [:id, :reason_id, :_destroy, :un_hold_action_id], hp_case_attributes: [:id, :case_id, :case_note], ticket_finish_job_attributes: [:resolution, :_destroy], ticket_terminate_job_payments_attributes: [:id, :amount, :payment_item_id, :_destroy, :ticket_id, :currency_id], act_fsr_attributes: [:print_fsr], serial_request_attributes: [:reason], job_estimation_attributes: [:supplier_id]], ticket_extra_remarks_attributes: [:id, :note, :created_by, :extra_remark_id], products_attributes: [:id, :sold_country_id, :pop_note, :pop_doc_url, :pop_status_id], ticket_fsrs_attributes: [:work_started_at, :work_finished_at, :hours_worked, :down_time, :travel_hours, :engineer_time_travel, :engineer_time_on_site, :resolution, :completion_level, :created_by], ticket_on_loan_spare_parts_attributes: [:id, :approved_inv_product_id, :approved_store_id, :approved_main_inv_product_id, :approved, :return_part_damage, :return_part_damage_reason_id])
       ticket_params[:current_user_id] = current_user.id
       ticket_params
+    end
+
+    def inveestimated_tax_amountntory_product_params
+      params.require(:inventory_product).permit(:serial_no, :serial_no_order, :legacy_code, :sku, :model_no, :product_no, :spare_part_no, :description, :fifo)
+    end
+
+    def inventory_product_form_params
+      params.require(:inventory_product).permit(:serial_no, :serial_no_order, :legacy_code, :sku, :model_no, :product_no, :spare_part_no, :description, :fifo, :active, :spare_part, :unit_id)
+    end
+
+    def inventory_product_info_params
+      params.require(:inventory_product_info).permit(:secondary_unit_id, :average_cost, :need_serial, :need_batch, :per_secondery_unit_conversion, :country_id, :manufacture_id, :currency_id, :standard_cost)
+    end
+
+    def inventory_product_condition_params
+      params.require(:product_condition).permit(:condition)
+    end
+
+    def inventory_disposal_method_params 
+      params.require(:inventory_disposal_method).permit(:disposal_method)
+    end
+
+    def inventory_reason_params
+      params.require(:inventory_disposal_method).permit(:disposal_method)
+    end
+
+    def inventory_rack_params
+      params.require(:inventory_rack).permit(:description, :location_id)
+    end
+
+    def inventory_shelf_params
+      params.require(:inventory_shelf).permit(:description)
+    end
+
+    def inventory_bin_params
+      params.require(:inventory_bin).permit(:description)
+    end
+
+    def inventory_brand_params
+      params.require(:inventory_category1).permit(:code, :name)
+    end
+
+    def inventory_product_params
+      params.require(:inventory_category2).permit(:code, :name)
+    end
+
+    def inventory_category_params
+      params.require(:inventory_category3).permit(:code, :name)
     end
 end
