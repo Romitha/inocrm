@@ -184,7 +184,6 @@ Rails.application.routes.draw do
       get "create_invoice_for_hp"
       get "terminate_job_foc_approval"
       get "customer_inquire"
-      get "hp_po_or_sales_order"
       get "add_edit_contact"
       get "inform_customer_in_modal"
       get "master_data"
@@ -314,6 +313,7 @@ Rails.application.routes.draw do
       # get "inventory_manufacture"
       # get "inventory_unit"
       get "inventory_master_data"
+      get "hp_po_or_sales_order"
 
       
 

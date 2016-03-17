@@ -128,6 +128,13 @@ class InventoriesController < ApplicationController
     end
   end
 
+  def hp_po_or_sales_order
+    TicketSparePart
+
+    @ticket_spare_part = TicketSparePart.all
+    render "inventories/hp_po_or_sales_order"
+  end
+
   def search_inventories
     Inventory
     respond_to do |format|

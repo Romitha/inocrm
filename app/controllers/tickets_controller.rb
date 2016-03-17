@@ -2045,10 +2045,6 @@ class TicketsController < ApplicationController
     render "tickets/tickets_pack/customer_inquire/customer_inquire"
   end
 
-  def hp_po_or_sales_order
-    render "tickets/tickets_pack/hp_po_or_sales_order"
-  end
-
   def add_edit_contact
     render "tickets/tickets_pack/add_edit_contact"
   end
