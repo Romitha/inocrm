@@ -13,7 +13,7 @@
       %strong Invoice no   #{ (CompanyConfig.first.sup_last_invoice_no.to_i+1).to_s.rjust(6, INOCRM_CONFIG["invoice_no_format"])}
       %br
       = f.label :currency_id, "Currency"
-      = f.select :currency_id, options_from_collection_for_select(Currency.all, :id, :currency)
+      / = f.select :currency_id, options_from_collection_for_select(Currency.all, :id, :currency)
       = f.input :deductec_amount
       = f.input :note
       = f.input :customer_sent, wrapper: :append
@@ -156,7 +156,7 @@
       .col-md-2
         %strong Total amount:
       .col-md-5#final_total_amount
-    .col-md-12{style: "margin-bottom: 20px;"}
+    .col-md-12.hide{style: "margin-bottom: 20px;"}
       .col-md-2
         %strong Min. adv. payment:
       .col-md-4#total_min_adv_payment

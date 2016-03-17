@@ -10,7 +10,7 @@
       = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
     .col-md-3
-      %strong Customer qoutation no   #{ (CompanyConfig.first.sup_last_quotation_no.to_i+1).to_s.rjust(6, INOCRM_CONFIG["qoutation_no_format"])}
+      %strong Customer quotation no   #{ (@action_type=="create" ? CompanyConfig.first.next_sup_last_quotation_no : f.object.customer_quotation_no ).to_s.rjust(6, INOCRM_CONFIG["quotation_no_format"])}
       = f.input :validity_period, input_html: {id: "validity_period_id"}
       = f.input :delivery_period
       = f.input :warranty
@@ -123,10 +123,10 @@
       .col-md-2
         %strong Total amount:
       .col-md-5#final_total_amount
-    .col-md-12{style: "margin-bottom: 20px;"}
+    .col-md-12.hide{style: "margin-bottom: 20px;"}
       .col-md-2
-        %strong Min. adv. payment:
-      .col-md-4#total_min_adv_payment
+        %strong Amount to be paid:
+      .col-md-4#amount_to_be_paid
 
     .col-md-4.pull-left{style: "margin-bottom: 20px;"}
       .col-md-2

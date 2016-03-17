@@ -10,7 +10,7 @@ window.Invoices =
 
   quotation_change: ->
     total_tax = 0
-    total_min_adv_payment = 0
+    amount_to_be_paid = 0
     total_amount = 0
     final_total_amount = 0
 
@@ -23,8 +23,10 @@ window.Invoices =
 
     $(".action").each ->
       if $(@).is(":checked")
-        now_min_adv_payment_val = $(@).parents("tr").find(".min_adv_payment").text()
-        total_min_adv_payment += parseFloat(now_min_adv_payment_val)
+        now_total_amount = parseFloat($(@).parents("tr").find(".total_amount").text())
+        now_tax = parseFloat($(@).parents("tr").find(".tax").text())
+        now_amount_to_be_paid = now_total_amount - now_tax
+        amount_to_be_paid += parseFloat(now_amount_to_be_paid)
 
         now_val = $(@).parents("tr").find(".tax").text()
         total_tax += parseFloat(now_val)
@@ -32,7 +34,7 @@ window.Invoices =
         now_total_amount_val = $(@).parents("tr").find(".total_amount").text()
         total_amount += parseFloat(now_total_amount_val)
 
-    $("#total_min_adv_payment").html(total_min_adv_payment)
+    $("#amount_to_be_paid").html(amount_to_be_paid)
     $("#total_tax").html(total_tax)
     $("#total_amount").html(total_amount)
     final_total_amount = total_amount + total_tax
@@ -42,9 +44,11 @@ window.Invoices =
     $(".action").click ->
       if $(@).is(":checked")
 
-        now_min_adv_payment_val1 =  parseFloat($(@).parents("tr").find(".min_adv_payment").text())
-        total_min_adv_payment = parseFloat($("#total_min_adv_payment").text()) + now_min_adv_payment_val1
-        $("#total_min_adv_payment").html(total_min_adv_payment)
+        now_total_amount =  parseFloat($(@).parents("tr").find(".total_amount").text())
+        now_tax =  parseFloat($(@).parents("tr").find(".tax").text())
+        now_amount_to_be_paid = now_total_amount - now_tax
+        amount_to_be_paid = parseFloat($("#amount_to_be_paid").text()) + now_amount_to_be_paid
+        $("#amount_to_be_paid").html(amount_to_be_paid)
 
         now_val1 =  parseFloat($(@).parents("tr").find(".tax").text())
         total_tax = parseFloat($("#total_tax").text()) + now_val1
@@ -61,10 +65,10 @@ window.Invoices =
 
         now_min_adv_payment_val1 =  parseFloat($(@).parents("tr").find(".min_adv_payment").text())
         if now_min_adv_payment_val1 >= 0
-          total_min_adv_payment = parseFloat($("#total_min_adv_payment").text()) - now_min_adv_payment_val1
-          $("#total_min_adv_payment").html(total_min_adv_payment)
+          amount_to_be_paid = parseFloat($("#amount_to_be_paid").text()) - now_min_adv_payment_val1
+          $("#amount_to_be_paid").html(amount_to_be_paid)
         else
-          $("#total_min_adv_payment").html(total_min_adv_payment)
+          $("#amount_to_be_paid").html(amount_to_be_paid)
 
 
         now_val1 = parseFloat($(@).parents("tr").find(".tax").text())
