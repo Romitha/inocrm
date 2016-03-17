@@ -933,7 +933,8 @@ class TicketsController < ApplicationController
         end
 
         if !user_assign_ticket_action.recorrection
-          @ticket.update owner_engineer_id: user_assign_ticket_action.assign_to
+          ticket_engineer = @ticket.ticket_engineers.create user_id: user_assign_ticket_action.assign_to, created_action_id: user_ticket_action.id, created_at: DateTime.now
+          @ticket.update owner_engineer_id: ticket_engineer.id
         end
 
 
@@ -941,9 +942,10 @@ class TicketsController < ApplicationController
         d2_recorrection = user_assign_ticket_action.recorrection ? "Y" : "N"
         d3_regional_support_job = user_assign_ticket_action.regional_support_center_job ? "Y" : "N"
         supp_engr_user = user_assign_ticket_action.assign_to
+        engineer_id = ticket_engineer ? ticket_engineer.id : "-"
         supp_hd_user = @ticket.created_by
 
-        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: {d2_re_correction: d2_recorrection, d3_regional_support_job: d3_regional_support_job, supp_engr_user: supp_engr_user, supp_hd_user: supp_hd_user}
+        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: {d2_re_correction: d2_recorrection, d3_regional_support_job: d3_regional_support_job, supp_engr_user: supp_engr_user, supp_hd_user: supp_hd_user, engineer_id: engineer_id}
 
         if bpm_response[:status].upcase == "SUCCESS"
           flash[:notice] = "Successfully updated."
@@ -1341,6 +1343,7 @@ class TicketsController < ApplicationController
     TaskAction
     TicketSparePart
     continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
+    engineer_id = params[:engineer_id]
 
     if continue
       if @ticket.job_finished and @ticket.ticket_close_approval_required
@@ -1350,7 +1353,7 @@ class TicketsController < ApplicationController
 
         bpm_variables = view_context.initialize_bpm_variables.merge(supp_engr_user: current_user.id, d7_close_approval_requested: "Y", d4_job_complete: "Y", d9_qc_required: (@ticket.ticket_type.code == "IH" ? "Y" : "N"), d10_job_estimate_required_final: ((@ticket.cus_chargeable or @ticket.cus_payment_required) ? "Y" : "N"), d12_need_to_invoice: ((@ticket.cus_chargeable or @ticket.cus_payment_required) ? "Y" : "N"), d6_close_approval_required: "Y")
 
-        @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(55).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count) 
+        @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(55).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id) 
 
         if @ticket.save
 
@@ -3437,10 +3440,11 @@ class TicketsController < ApplicationController
 
     TaskAction
     continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
+    engineer_id = params[:engineer_id]
 
     if continue
       if @ticket.update(append_remark_ticket_params(@ticket))
-        @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(5).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+        @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(5).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id)
 
         @ticket.ticket_status_resolve = TicketStatusResolve.find_by_code("NAP")
         @ticket.ticket_status = TicketStatus.find_by_code("RSL")
@@ -3473,6 +3477,7 @@ class TicketsController < ApplicationController
 
     warranty_constraint = true
     warranty_id = ticket_params[:warranty_type_id].to_i
+    engineer_id = params[:engineer_id]
 
     if [1, 2].include?(warranty_id)
       warranty_constraint = @ticket.products.first.warranties.select{|w| w.warranty_type_id == warranty_id and (w.start_at.to_date..w.end_at.to_date).include?(Date.today)}.present?
@@ -3480,14 +3485,14 @@ class TicketsController < ApplicationController
 
     if warranty_constraint
       if @ticket.update append_remark_ticket_params(@ticket)
-        user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(72).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+        user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(72).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id)
         user_ticket_action.build_action_warranty_repair_type(ticket_warranty_type_id: @ticket.warranty_type_id, cus_chargeable: @ticket.cus_chargeable)
 
         @ticket.save
 
         redirect_to todos_url, notice: "Ticket Warranty Type and Customer Chargeable Updated."
       else
-        redirect_to todos_url(process_id: params[:process_id], task_id: params[:task_id], owner: params[:owner], ticket_id: @ticket.id, supp_engr_user: params[:supp_engr_user]), notice: "Ticket Warranty Type and Customer Chargeable faild to Updated."
+        redirect_to todos_url, notice: "Ticket Warranty Type and Customer Chargeable faild to Updated."
       end
     else
       redirect_to todos_url, alert: "Selected warranty is not presently applicable to ticket."
@@ -3496,8 +3501,9 @@ class TicketsController < ApplicationController
   end
 
   def update_change_ticket_repair_type
+    engineer_id = params[:engineer_id]
     if @ticket.update append_remark_ticket_params(@ticket)
-      user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(73).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+      user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(73).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id)
       user_ticket_action.build_action_warranty_repair_type(ticket_repair_type_id: @ticket.repair_type_id)
 
       redirect_to ticket_url(@ticket), notice: "ticket repair type is updated." if @ticket.save
@@ -3572,6 +3578,7 @@ class TicketsController < ApplicationController
 
   def update_create_fsr
     TicketSparePart
+    engineer_id = params[:engineer_id]
 
     @ticket.attributes = ticket_params
     user_ticket_action = @ticket.user_ticket_actions.last
@@ -3587,7 +3594,7 @@ class TicketsController < ApplicationController
     print_fsr = false
 
     if act_fsr and act_fsr.print_fsr
-      user_ticket_action1 = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(70).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+      user_ticket_action1 = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(70).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id)
       user_ticket_action1.build_act_fsr(fsr_id: act_fsr.ticket_fsr.id)
       user_ticket_action1.save
       print_fsr = true
@@ -3601,12 +3608,13 @@ class TicketsController < ApplicationController
 
   def update_edit_fsr
     TicketSparePart
+    engineer_id = params[:engineer_id]
     t_params = ticket_fsr_params
     @ticket_fsr = @ticket.ticket_fsrs.find_by_id params[:ticket_fsr_id]
     t_params["resolution"] = t_params["resolution"].present? ? "#{t_params['resolution']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket_fsr.resolution}" : @ticket_fsr.resolution
 
     if @ticket_fsr.update t_params
-      user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(12).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+      user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(12).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id)
       user_ticket_action.build_act_fsr(print_fsr: false, fsr_id: @ticket_fsr.id)
 
       user_ticket_action.save
@@ -3664,6 +3672,7 @@ class TicketsController < ApplicationController
 
     TaskAction
     continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
+    engineer_id = params[:engineer_id]
 
     if continue
       if @ticket.update append_remark_ticket_params(@ticket)
@@ -3674,7 +3683,7 @@ class TicketsController < ApplicationController
 
         @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
 
-        @ticket.user_ticket_actions.create(action_id: TaskAction.find_by_action_no(55).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count) if @ticket.ticket_close_approval_requested
+        @ticket.user_ticket_actions.create(action_id: TaskAction.find_by_action_no(55).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id) if @ticket.ticket_close_approval_requested
 
         bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
@@ -3696,6 +3705,7 @@ class TicketsController < ApplicationController
     TaskAction
     TicketSparePart
     continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
+    engineer_id = params[:engineer_id]
 
     if continue
       if @ticket.update append_remark_ticket_params(@ticket)
@@ -3716,7 +3726,7 @@ class TicketsController < ApplicationController
           @ticket.ticket_status = TicketStatus.find_by_code("CFB") 
         end  
 
-        @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(55).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count) if @ticket.ticket_close_approval_requested
+        @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(55).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id) if @ticket.ticket_close_approval_requested
 
         @ticket.save
 
@@ -3863,6 +3873,7 @@ class TicketsController < ApplicationController
   def update_job_estimation_request
     TaskAction
     continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
+    engineer_id = params[:engineer_id]
 
     if continue
 
@@ -3875,7 +3886,7 @@ class TicketsController < ApplicationController
         job_estimate.note = ticket_estimation.note
         job_estimate.save
 
-        ticket_estimation.ticket_estimation_externals.build(ticket_id: @ticket.id, repair_by_id: job_estimate.supplier_id, description: params[:description])
+        ticket_estimation.ticket_estimation_externals.build(ticket_id: @ticket.id, repair_by_id: job_estimate.supplier_id, description: params[:description], engineer_id: engineer_id)
         ticket_estimation.save
 
         # bpm output variables
@@ -3907,6 +3918,7 @@ class TicketsController < ApplicationController
     TaskAction
     WorkflowMapping
     continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
+    engineer_id = params[:engineer_id]
     query = {}
 
     # bpm output variables
@@ -3924,6 +3936,7 @@ class TicketsController < ApplicationController
       @ticket_spare_part = TicketSparePart.new f_ticket_spare_part_params
       @ticket_spare_part.requested_at = DateTime.now
       @ticket_spare_part.requested_by = current_user.id
+      @ticket_spare_part.engineer_id = engineer_id
 
       if @ticket_spare_part.save
 
@@ -3961,14 +3974,14 @@ class TicketsController < ApplicationController
 
         @ticket_spare_part.ticket.update_attribute :status_resolve_id, TicketStatusResolve.find_by_code("POD").id
 
-        user_ticket_action = @ticket_spare_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket_spare_part.ticket.re_open_count, action_id: action_id)
+        user_ticket_action = @ticket_spare_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket_spare_part.ticket.re_open_count, action_id: action_id, action_engineer_id: engineer_id)
         user_ticket_action.build_request_spare_part(ticket_spare_part_id: @ticket_spare_part.id)
         user_ticket_action.save
 
         if @ticket_spare_part.cus_chargeable_part # and (@ticket_spare_part.request_from == "M" or @ticket_spare_part.request_from == "S" or @ticket_spare_part.request_from == "NS")
 
           action_id = TaskAction.find_by_action_no(33).id
-          user_ticket_action = @ticket_spare_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket_spare_part.ticket.re_open_count, action_id: action_id)
+          user_ticket_action = @ticket_spare_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket_spare_part.ticket.re_open_count, action_id: action_id, action_engineer_id: engineer_id)
           user_ticket_action.build_request_spare_part(ticket_spare_part_id: @ticket_spare_part.id)
 
           @ticket_estimation = @ticket_spare_part.ticket.ticket_estimations.build requested_at: DateTime.now, requested_by: current_user.id, approval_required: true, status_id: EstimationStatus.find_by_code("RQS").id, currency_id: @ticket_spare_part.ticket.base_currency_id
@@ -4033,6 +4046,7 @@ class TicketsController < ApplicationController
     TaskAction
     WorkflowMapping
     continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
+    engineer_id = params[:engineer_id]
 
     if continue
       f_ticket_on_loan_spare_part_params = ticket_on_loan_spare_part_params
@@ -4052,7 +4066,7 @@ class TicketsController < ApplicationController
 
         @ticket_on_loan_spare_part.ticket.update_attribute :status_resolve_id, TicketStatusResolve.find_by_code("POD").id
 
-        user_ticket_action = @ticket_on_loan_spare_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket_on_loan_spare_part.ticket.re_open_count, action_id: action_id)
+        user_ticket_action = @ticket_on_loan_spare_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket_on_loan_spare_part.ticket.re_open_count, action_id: action_id, action_engineer_id: engineer_id)
         user_ticket_action.build_request_on_loan_spare_part(ticket_on_loan_spare_part_id: @ticket_on_loan_spare_part.id)
         user_ticket_action.save
 
@@ -4116,7 +4130,7 @@ class TicketsController < ApplicationController
     end
 
     def ticket_params
-      ticket_params = params.require(:ticket).permit(:ticket_no, :note, :current_user_id, :sla_id, :serial_no, :status_hold, :repair_type_id, :base_currency_id, :ticket_close_approval_required, :ticket_close_approval_requested, :regional_support_job, :job_started_action_id, :job_start_note, :job_started_at, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, :status_resolve_id, ticket_deliver_units_attributes: [:deliver_to_id, :note, :created_at, :created_by, :received, :id, :received_at, :received_by], ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :ticket_action_id, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer], ticket_estimations_attributes: [:note, :currency_id, :status_id, :requested_at, :requested_by], user_ticket_actions_attributes: [:id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, user_assign_ticket_action_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy], ticket_re_assign_request_attributes: [:reason_id, :_destroy], ticket_action_taken_attributes: [:action, :_destroy], ticket_terminate_job_attributes: [:id, :reason_id, :foc_requested, :_destroy], act_hold_attributes: [:id, :reason_id, :_destroy, :un_hold_action_id], hp_case_attributes: [:id, :case_id, :case_note], ticket_finish_job_attributes: [:resolution, :_destroy], ticket_terminate_job_payments_attributes: [:id, :amount, :payment_item_id, :_destroy, :ticket_id, :currency_id], act_fsr_attributes: [:print_fsr], serial_request_attributes: [:reason], job_estimation_attributes: [:supplier_id]], ticket_extra_remarks_attributes: [:id, :note, :created_by, :extra_remark_id], products_attributes: [:id, :sold_country_id, :pop_note, :pop_doc_url, :pop_status_id], ticket_fsrs_attributes: [:id, :work_started_at, :work_finished_at, :hours_worked, :down_time, :travel_hours, :engineer_time_travel, :engineer_time_on_site, :resolution, :completion_level, :created_by, :remarks, :approved], ticket_on_loan_spare_parts_attributes: [:id, :approved_inv_product_id, :approved_store_id, :approved_main_inv_product_id, :approved, :return_part_damage, :return_part_damage_reason_id])
+      ticket_params = params.require(:ticket).permit(:ticket_no, :note, :current_user_id, :sla_id, :serial_no, :status_hold, :repair_type_id, :base_currency_id, :ticket_close_approval_required, :ticket_close_approval_requested, :regional_support_job, :job_started_action_id, :job_start_note, :job_started_at, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, :status_resolve_id, ticket_deliver_units_attributes: [:deliver_to_id, :note, :created_at, :created_by, :received, :id, :received_at, :received_by], ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :ticket_action_id, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer], ticket_estimations_attributes: [:note, :currency_id, :status_id, :requested_at, :requested_by], user_ticket_actions_attributes: [:id, :action_engineer_id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, user_assign_ticket_action_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy], ticket_re_assign_request_attributes: [:reason_id, :_destroy], ticket_action_taken_attributes: [:action, :_destroy], ticket_terminate_job_attributes: [:id, :reason_id, :foc_requested, :_destroy], act_hold_attributes: [:id, :reason_id, :_destroy, :un_hold_action_id], hp_case_attributes: [:id, :case_id, :case_note], ticket_finish_job_attributes: [:resolution, :_destroy], ticket_terminate_job_payments_attributes: [:id, :amount, :payment_item_id, :_destroy, :ticket_id, :currency_id], act_fsr_attributes: [:print_fsr], serial_request_attributes: [:reason], job_estimation_attributes: [:supplier_id]], ticket_extra_remarks_attributes: [:id, :note, :created_by, :extra_remark_id], products_attributes: [:id, :sold_country_id, :pop_note, :pop_doc_url, :pop_status_id], ticket_fsrs_attributes: [:id, :engineer_id, :work_started_at, :work_finished_at, :hours_worked, :down_time, :travel_hours, :engineer_time_travel, :engineer_time_on_site, :resolution, :completion_level, :created_by, :remarks, :approved], ticket_on_loan_spare_parts_attributes: [:id, :approved_inv_product_id, :approved_store_id, :approved_main_inv_product_id, :approved, :return_part_damage, :return_part_damage_reason_id])
       ticket_params[:current_user_id] = current_user.id
       ticket_params
     end

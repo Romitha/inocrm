@@ -181,7 +181,8 @@ module TodosHelper
       onloan_request: "N",
       advance_payment_estimation_id: "-",
       deliver_unit_id: "-",
-      supp_engr_user: "-"
+      supp_engr_user: "-",
+      engineer_id: "-",
     }
   end
 

@@ -32,6 +32,9 @@ class User < ActiveRecord::Base
   has_many :sbu_regional_engineers, foreign_key: :engineer_id
   has_many :regional_support_centers, through: :sbu_regional_engineers
 
+  has_many :ticket_engineers, class_name: "TicketEngineer", foreign_key: :ticket_id
+  has_many :users, through: :ticket_engineers
+
   validates_uniqueness_of :user_name
 
   # validates_presence_of :password, if: Proc.new {|user| user.is_customer? }
@@ -263,4 +266,11 @@ class Feedback < ActiveRecord::Base
   self.table_name = "mst_spt_customer_feedback"
 
   has_many :customer_feedbacks#, foreign_key: :engineer_id
+end
+
+class TicketEngineer < ActiveRecord::Base
+  self.table_name = "spt_ticket_engineer"
+
+  belongs_to :ticket
+  belongs_to :user
 end

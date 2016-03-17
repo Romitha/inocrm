@@ -96,6 +96,9 @@ class Ticket < ActiveRecord::Base
   accepts_nested_attributes_for :ticket_payment_receiveds, allow_destroy: true
   has_many :invoices, through: :ticket_payment_receiveds
 
+  has_many :ticket_engineers, class_name: "TicketEngineer", foreign_key: :user_id
+  has_many :users, through: :ticket_engineers
+
   validates_presence_of [:ticket_no, :priority, :status_id, :problem_description, :informed_method_id, :job_type_id, :ticket_type_id, :warranty_type_id, :base_currency_id, :problem_category_id]
 
   validates_numericality_of [:ticket_no, :priority]

@@ -18,6 +18,7 @@
       = uf.input :action_at, as: :hidden, input_html: {value: DateTime.now.strftime("%d-%m-%Y %H:%M")}
       = uf.input :action_by, as: :hidden, input_html: {value: current_user.id}
       = uf.input :re_open_index, as: :hidden, input_html: {value: ticket.re_open_count}
+      = uf.input :action_engineer_id, as: :hidden, input_html: {value: Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:bpm_input_variables].detect{ |e| e.first == "engineer_id" }.second }
 
     = f.input :status_hold, as: :hidden, input_html: {value: false}
     .row.col.md-12

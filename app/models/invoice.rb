@@ -5,6 +5,7 @@ class Invoice < ActiveRecord::Base
   has_many :tickets, through: :ticket_payment_receiveds
 
   has_many :invoice_items
+  has_many :act_print_invoices
 end
 
 class TicketInvoice < ActiveRecord::Base
@@ -54,6 +55,7 @@ class CustomerQuotation < ActiveRecord::Base
 
   has_many :customer_quotation_estimations
   has_many :ticket_estimations, through: :customer_quotation_estimations
+  has_many :act_quotations
 
 end
 

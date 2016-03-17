@@ -1,7 +1,7 @@
 #new_cus_quo
   %h3 Customer Quotation
   = simple_nested_form_for quotation, url: update_quotation_invoices_path(action_type: @action_type), method: :post do |f|
-    = f.input :quotation_id, as: :hidden, input_html: {value: f.object.id}
+    = hidden_field_tag :quotation_id, f.object.id
 
     = hidden_field_tag :process_id, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:process_id]
     = hidden_field_tag :task_id, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:task_id]
@@ -10,7 +10,7 @@
       = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
     .col-md-3
-      %strong Customer qoutation no   #{ CompanyConfig.first.sup_last_quotation_no.to_s.rjust(6, INOCRM_CONFIG["qoutation_no_format"])}
+      %strong Customer qoutation no   #{ (CompanyConfig.first.sup_last_quotation_no.to_i+1).to_s.rjust(6, INOCRM_CONFIG["qoutation_no_format"])}
       = f.input :validity_period, input_html: {id: "validity_period_id"}
       = f.input :delivery_period
       = f.input :warranty
@@ -40,7 +40,7 @@
               %th Min. adv. payment
               %th Status
               %th quoted
-              %th amount
+              / %th amount
               %th Attach
 
           %tbody
@@ -108,7 +108,7 @@
 
                 %td.quoted_value
                   =estimation.quoted
-                %td.amount
+                / %td.amount
                 %td= check_box_tag 'estimation_ids[]', estimation.id, (quotation.persisted? ? quotation.ticket_estimation_ids.include?(estimation.id) : true), class: "action"
 
     .col-md-12

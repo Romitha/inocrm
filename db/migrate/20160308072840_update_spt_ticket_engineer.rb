@@ -40,7 +40,7 @@ class UpdateSptTicketEngineer < ActiveRecord::Migration
     add_column :spt_ticket_estimation, :engineer_id, "INT UNSIGNED"
     add_column :spt_ticket_spare_part, :engineer_id, "INT UNSIGNED"
     add_column :spt_ticket_on_loan_spare_part, :engineer_id, "INT UNSIGNED"
-    add_column :spt_ticket_customer_quotation, :engineer_id, "INT UNSIGNED NOT NULL"
+    add_column :spt_ticket_customer_quotation, :engineer_id, "INT UNSIGNED NULL"
     add_column :spt_act_ticket_close_approve, :owner_engineer_id, "INT UNSIGNED"
     add_column :spt_act_customer_feedback, :dispatch_method_id, "INT UNSIGNED"
     add_column :spt_ticket_spare_part_manufacture, :po_required, :boolean, null: false, default: true

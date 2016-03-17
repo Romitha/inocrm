@@ -168,6 +168,7 @@ class InventoriesController < ApplicationController
 
     ticket_spare_part = TicketSparePart.find params[:ticket_spare_part_id]
     @ticket = ticket_spare_part.ticket
+    engineer_id = params[:engineer_id]
 
     ticket_spare_part.update(ticket_spare_part_params(ticket_spare_part))
 
@@ -179,7 +180,7 @@ class InventoriesController < ApplicationController
       ticket_spare_part.ticket_spare_part_status_actions.create(status_id: ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
 
       action_id = TaskAction.find_by_action_no(action_id_no).id
-      user_ticket_action = ticket_spare_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: ticket_spare_part.ticket.re_open_count, action_id: action_id)
+      user_ticket_action = ticket_spare_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: ticket_spare_part.ticket.re_open_count, action_id: action_id, action_engineer_id: engineer_id)
 
       user_ticket_action.build_request_spare_part(ticket_spare_part_id: ticket_spare_part.id, inv_srr_id: ticket_spare_part.try(:ticket_spare_part_store).try(:inv_srr_id), inv_srr_item_id: ticket_spare_part.try(:ticket_spare_part_store).try(:inv_srr_item_id))
 
@@ -387,6 +388,7 @@ class InventoriesController < ApplicationController
     ticket_on_loan_spare_part.update ticket_on_loan_spare_part_params(ticket_on_loan_spare_part) 
 
     continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    engineer_id = params[:engineer_id]
 
     save_ticket_on_loan_spare_part = Proc.new do |onloan_spare_part_status, action_id_no|
 
@@ -395,7 +397,7 @@ class InventoriesController < ApplicationController
       ticket_on_loan_spare_part.ticket_on_loan_spare_part_status_actions.create(status_id: ticket_on_loan_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
 
       action_id = TaskAction.find_by_action_no(action_id_no).id
-      user_ticket_action = @ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_id: action_id)
+      user_ticket_action = @ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_id: action_id, action_engineer_id: engineer_id)
 
       user_ticket_action.build_request_on_loan_spare_part(ticket_on_loan_spare_part_id: ticket_on_loan_spare_part.id, inv_srr_id: ticket_on_loan_spare_part.inv_srr_id, inv_srr_item_id: ticket_on_loan_spare_part.inv_srr_item_id)
 
@@ -533,6 +535,7 @@ class InventoriesController < ApplicationController
     updatable_estimation_params.merge!(status_id: EstimationStatus.find_by_code("CLS").id, approved_at: DateTime.now, approved_by: current_user.id)
     @ticket = @estimation.ticket
     continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    engineer_id = params[:engineer_id]
 
     if continue
       if @estimation.cust_approved
@@ -574,7 +577,7 @@ class InventoriesController < ApplicationController
 
       if @estimation.save
         # 76 - Part Estimation Customer Aproved
-        user_ticket_action = @estimation.ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(76).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @estimation.ticket.re_open_count)
+        user_ticket_action = @estimation.ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(76).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @estimation.ticket.re_open_count, action_engineer_id: engineer_id)
         user_ticket_action.build_act_job_estimation(ticket_estimation_id: @estimation.id)
 
         user_ticket_action.save
@@ -628,7 +631,7 @@ class InventoriesController < ApplicationController
             ticket_estimation_part.ticket_spare_part.ticket_spare_part_status_actions.create(status_id: status_action_id, done_by: current_user.id, done_at: DateTime.now)
 
             #Request Spare Part from Store
-            user_ticket_action = @estimation.ticket.user_ticket_actions.build(action_id: action_id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @estimation.ticket.re_open_count)
+            user_ticket_action = @estimation.ticket.user_ticket_actions.build(action_id: action_id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @estimation.ticket.re_open_count, action_engineer_id: engineer_id)
             user_ticket_action.build_act_job_estimation(ticket_estimation_id: @estimation.id)
 
             user_ticket_action.save
@@ -663,6 +666,7 @@ class InventoriesController < ApplicationController
     updatable_estimation_params.merge!( status_id: EstimationStatus.find_by_code("CLS").id, cust_approved_at: DateTime.now, cust_approved_by: current_user.id )
 
     continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    engineer_id = params[:engineer_id]
     # bpm output variables
     bpm_variables = view_context.initialize_bpm_variables
 
@@ -711,13 +715,13 @@ class InventoriesController < ApplicationController
       @estimation.attributes = updatable_estimation_params
       if @estimation.save
 
-        user_ticket_action = @estimation.ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(24).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @estimation.ticket.re_open_count)
+        user_ticket_action = @estimation.ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(24).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @estimation.ticket.re_open_count, action_engineer_id: engineer_id)
         user_ticket_action.build_act_job_estimation(supplier_id: @estimation.ticket_estimation_externals.first.try(:organization).try(:id), ticket_estimation_id: @estimation.id)
         user_ticket_action.save
 
         if request_deliver_unit    
           #Deliver Unit
-          user_ticket_action = @estimation.ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(22).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @estimation.ticket.re_open_count)
+          user_ticket_action = @estimation.ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(22).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @estimation.ticket.re_open_count, action_engineer_id: engineer_id)
           user_ticket_action.build_deliver_unit(ticket_deliver_unit_id: @ticket_deliver_unit.id)
           user_ticket_action.save
         end

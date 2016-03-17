@@ -336,9 +336,12 @@ class InvoicesController < ApplicationController
     @ticket = Ticket.find_by_id params[:ticket_id]
     checked_estimation_ids = params[:estimation_ids]
     checked_estimations = TicketEstimation.where id: checked_estimation_ids
+    engineer_id = params[:engineer_id]
     action_no = 0
     if params[:action_type] == "create"
       @customer_quotation = CustomerQuotation.new customer_quotation_params
+      @customer_quotation.customer_quotation_no = CompanyConfig.first.increase_sup_last_quotation_no
+      @customer_quotation.engineer_id = engineer_id
 
       checked_estimations.each { |estimation| estimation.update quoted: (estimation.quoted.to_i+1) }
       # Action (81) Create Quotation, DB.spt_act_quotation.
@@ -347,24 +350,28 @@ class InvoicesController < ApplicationController
       @customer_quotation = CustomerQuotation.find params[:quotation_id]
       @customer_quotation.attributes = customer_quotation_params
 
-      if !@customer_quotation.was_canceled and @customer_quotation.canceled
-        @customer_quotation.estimations.each do |estimation|
-          estimation.update quoted: estimation.quoted-1
+      if @customer_quotation.canceled
+        if !@customer_quotation.canceled_was
+          @customer_quotation.ticket_estimations.each do |estimation|
+            estimation.update quoted: estimation.quoted-1
+          end
+        end
+      else
+        if !@customer_quotation.canceled_was
+          @customer_quotation.ticket_estimations.each { |estimation| estimation.update quoted: (estimation.quoted.to_i-1) }
         end
 
-      else
-        TicketEstimation.where(id: (@customer_quotation.estimation_ids - checked_estimation_ids)).each { |estimation| estimation.update quoted: (estimation.quoted.to_i-1) }
-
+        TicketEstimation.where(id: checked_estimation_ids).each { |estimation| estimation.update quoted: (estimation.quoted.to_i+1) }
       end
       # Action (84) Edit Quotation, DB.spt_act_quotation.
       action_no = 84
     end
     @customer_quotation.ticket_id = @ticket.id
     @customer_quotation.save
-    @customer_quotation.estimation_ids = checked_estimation_ids
+    @customer_quotation.ticket_estimation_ids = checked_estimation_ids
 
     #Action 81/84
-    user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(action_no).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+    user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(action_no).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id)
     user_ticket_action.build_act_quotation(customer_quotation_id: @customer_quotation.id)
     user_ticket_action.save
 
@@ -379,6 +386,7 @@ class InvoicesController < ApplicationController
     action_no = 0
     if params[:action_type] == "create"
       @invoice = Invoice.new invoice_params
+      @invoice.invoice_no = CompanyConfig.first.increase_sup_last_invoice_no
 
       TicketEstimation.where(id: checked_estimation_ids).each do |estimation|
         estimation.update invoiced: estimation.invoiced+1
@@ -389,22 +397,25 @@ class InvoicesController < ApplicationController
       @invoice = Invoice.find params[:invoice_id]
       @invoice.attributes = invoice_params
 
-
-      if !@invoice.was_canceled and @invoice.canceled
-        @invoice.estimations.each do |estimation|
-          estimation.update invoiced: estimation.invoiced-1
+      if @invoice.canceled
+        if !@invoice.canceled_was
+          @invoice.ticket_estimations.each do |estimation|
+            estimation.update invoiced: estimation.invoiced-1
+          end
         end
       else
-        TicketEstimation.where(id: (@invoice.estimation_ids - checked_estimation_ids)).each do |pr_estimation|
-          pr_estimation.update invoiced: pr_estimation.invoiced-1
+        if !@invoice.canceled_was
+          @invoice.ticket_estimations.each { |estimation| estimation.update invoiced: (estimation.invoiced.to_i-1) }
         end
-      end
+
+        TicketEstimation.where(id: checked_estimation_ids).each { |estimation| estimation.update invoiced: (estimation.invoiced.to_i+1) }
+      end      
       # Action (83) Edit Invoice, DB.spt_act_print_invoice.
       action_no = 83
     end
 
     @invoice.save
-    @invoice.estimation_ids = checked_estimation_ids    
+    @invoice.ticket_estimation_ids = checked_estimation_ids    
 
     #Action 80/83
     user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(action_no).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)

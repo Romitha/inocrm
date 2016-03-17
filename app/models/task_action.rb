@@ -89,6 +89,12 @@ class UserTicketAction < ActiveRecord::Base
   has_one :act_ticket_close_approve, foreign_key: :ticket_action_id
   accepts_nested_attributes_for :act_ticket_close_approve, allow_destroy: true
 
+  has_one :act_quotation, foreign_key: :ticket_action_id
+  accepts_nested_attributes_for :act_quotation, allow_destroy: true
+
+  has_one :act_print_invoice, foreign_key: :ticket_action_id
+  accepts_nested_attributes_for :act_print_invoice, allow_destroy: true
+
   after_create :flush_cache
 
   def cached_task_action
@@ -271,5 +277,21 @@ class ActQualityControl < ActiveRecord::Base
 
   self.table_name = "spt_act_qc"
   belongs_to :user_ticket_action, foreign_key: :ticket_action_id
+
+end
+
+class ActQuotation < ActiveRecord::Base
+
+  self.table_name = "spt_act_quotation"
+  belongs_to :user_ticket_action, foreign_key: :ticket_action_id
+  belongs_to :customer_quotation
+
+end
+
+class ActPrintInvoice < ActiveRecord::Base
+
+  self.table_name = "spt_act_print_invoice"
+  belongs_to :user_ticket_action, foreign_key: :ticket_action_id
+  belongs_to :invoice
 
 end

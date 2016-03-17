@@ -166,7 +166,7 @@
       .row.col-md-12.col-xs-12{style: "margin-top:20px; margin-bottom:20px;"}
         .col-md-6
           = f.label "Job Belongs to:"
-          = f.select :owner_engineer_id, ticket.user_ticket_actions.map{ |u| [u.user_assign_ticket_action.assign_to_user.email, u.user_assign_ticket_action.assign_to_user.id] if u.user_assign_ticket_action.present? }.compact
+          = f.select :owner_engineer_id, ticket.ticket_engineers.map{ |e| [e.user.email, e.user_id] }
         .col-md-12
           = f.input :remarks, input_html: {value: nil}
           = simple_format f.object.remarks
