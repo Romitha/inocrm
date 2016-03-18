@@ -32,7 +32,7 @@ class User < ActiveRecord::Base
   has_many :sbu_regional_engineers, foreign_key: :engineer_id
   has_many :regional_support_centers, through: :sbu_regional_engineers
 
-  has_many :ticket_engineers, class_name: "TicketEngineer", foreign_key: :ticket_id
+  has_many :ticket_engineers, class_name: "TicketEngineer", foreign_key: :user_id
   has_many :users, through: :ticket_engineers
 
   validates_uniqueness_of :user_name
