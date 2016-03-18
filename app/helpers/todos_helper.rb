@@ -49,6 +49,7 @@ module TodosHelper
         "lk.inova:INOCRM:0.0.0.5"
       when "production"
         # "lk.inova:INOCRM:1.0.0.4"
+        # cloned from github
         "lk.inova:INOCRM:1.0.0.5"
       end
         
