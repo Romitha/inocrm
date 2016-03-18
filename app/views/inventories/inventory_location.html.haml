@@ -72,13 +72,13 @@
             .col-md-2
               %strong Rack Description:
             .col-md-10
-              = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "inventory_rack", name: "description", url: inline_update_inventory_location_rack_inventories_path(rack_id: rack.id), "original-title" => "Update rack description", value: ""}, style: "line-height: 6px;" do
+              = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "inventory_rack", name: "description", url: inline_update_inventory_location_rack_admins_path(rack_id: rack.id), "original-title" => "Update rack description", value: ""}, style: "line-height: 6px;" do
                 = rack.description
           .row.col-md-12
             .col-md-2
               %strong Rack Name:
             .col-md-10
-              = link_to "#", class: "inline_edit", data: {type: "select", source: Organization.all.collect{|organization| {value: organization.id, text: organization.name}}, resource: "inventory_rack", name: "location_id", url: inline_update_inventory_location_rack_inventories_path(rack_id: rack.id), "original-title" => "Update rack name"} do
+              = link_to "#", class: "inline_edit", data: {type: "select", source: Organization.all.collect{|organization| {value: organization.id, text: organization.name}}, resource: "inventory_rack", name: "location_id", url: inline_update_inventory_location_rack_admins_path(rack_id: rack.id), "original-title" => "Update rack name"} do
                 = rack.organization.name
           .row.col-md-12
             - rack.inventory_shelfs.each do |shelf|
@@ -90,11 +90,11 @@
                     .col-md-2
                       %strong Shelf Description:
                     .col-md-10
-                      = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "inventory_shelf", name: "description", url: inline_update_inventory_location_shelf_inventories_path(shelf_id: shelf.id), "original-title" => "Update shelf description", value: ""}, style: "line-height: 6px;" do
+                      = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "inventory_shelf", name: "description", url: inline_update_inventory_location_shelf_admins_path(shelf_id: shelf.id), "original-title" => "Update shelf description", value: ""}, style: "line-height: 6px;" do
                         = shelf.description
                   .row.col-md-12
                     - unless shelf.is_used_anywhere?
-                      = link_to 'Delete', delete_location_shelf_inventories_path(shelf_id: shelf.id),  :data => { :confirm => 'Are you sure?' }
+                      = link_to 'Delete', delete_location_shelf_admins_path(shelf_id: shelf.id),  :data => { :confirm => 'Are you sure?' }
                   .row.col-md-12
                     - shelf.inventory_bins.each do |bin|
                       .panel.panel-info
@@ -105,15 +105,15 @@
                             .col-md-2
                               %strong Bin Description:
                             .col-md-10
-                              = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "inventory_bin", name: "description", url: inline_update_inventory_location_bin_inventories_path(bin_id: bin.id), "original-title" => "Update bin description", value: ""}, style: "line-height: 6px;" do
+                              = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "inventory_bin", name: "description", url: inline_update_inventory_location_bin_admins_path(bin_id: bin.id), "original-title" => "Update bin description", value: ""}, style: "line-height: 6px;" do
                                 = bin.description
                           .row.col-md-12
                             - unless bin.is_used_anywhere?
-                              = link_to 'Delete', delete_location_bin_inventories_path(bin_id: bin.id),  :data => { :confirm => 'Are you sure?' }
+                              = link_to 'Delete', delete_location_bin_admins_path(bin_id: bin.id),  :data => { :confirm => 'Are you sure?' }
           .row.col-md-12
             - unless rack.is_used_anywhere?
-              = link_to 'Delete', delete_location_rack_inventories_path(rack_id: rack.id),  :data => { :confirm => 'Are you sure?' }
-            / = link_to "#", data: {resource: "inventory_rack", name: "description", url: inline_update_inventory_location_bin_inventories_path(bin_id: bin.id), "original-title" => "Update bin description", value: ""}, style: "line-height: 6px;" do
+              = link_to 'Delete', delete_location_rack_admins_path(rack_id: rack.id),  :data => { :confirm => 'Are you sure?' }
+            / = link_to "#", data: {resource: "inventory_rack", name: "description", url: inline_update_inventory_location_bin_admins_path(bin_id: bin.id), "original-title" => "Update bin description", value: ""}, style: "line-height: 6px;" do
             /   Delete
 
 / - @inventory_all_rack.each_with_index do |rack, index|

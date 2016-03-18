@@ -48,7 +48,7 @@ class AdminsController < ApplicationController
     Product
     Currency
     InventorySerialItem
-    @inventory_product = InventoryProduct.new
+    @inventory_product1 = InventoryProduct.new
     @inventory_product_all = InventoryProduct.all
     render "inventories/inventory_product"
   end
@@ -324,6 +324,173 @@ class AdminsController < ApplicationController
     render "admins/master_data/pop_status"
   end
 
+  def inline_update_inventory_location_rack
+    Inventory
+    @inventory_rack = InventoryRack.find params[:rack_id]
+    if @inventory_rack.update inventory_rack_params
+      render json: @inventory_rack
+    end
+  end
+
+  def inline_update
+    Inventory
+    @inventory_product_form = InventoryProduct.find params[:product_id]
+    if @inventory_product_form.update inventory_product_form_params
+      render json: @inventory_product_form
+    end
+  end
+
+  def inline_update_product_info
+    Inventory
+    Product
+    Currency
+    @inventory_product1 = InventoryProductInfo.find params[:product_id]
+    if @inventory_product1.update inventory_product_info_params
+      render json: @inventory_product
+    end
+  end
+
+  def inline_update_product_condition
+    Inventory
+    @inventory_product_condition = ProductCondition.find params[:product_condition_id]
+    if @inventory_product_condition.update inventory_product_condition_params
+      render json: @inventory_product_condition
+    end
+  end
+
+  def inline_update_disposal_method
+    Inventory
+    @inventory_disposal_method = InventoryDisposalMethod.find params[:disposal_method]
+    if @inventory_disposal_method.update inventory_disposal_method_params
+      render json: @inventory_disposal_method
+    end
+  end
+
+  def inline_update_inventory_reason
+    Inventory
+    @inventory_reason = InventoryReason.find params[:inventory_reason]
+    if @inventory_reason.update inventory_reason_params
+      render json: @inventory_reason
+    end
+  end
+
+  def inline_update_inventory_location_shelf
+    Inventory
+    @inventory_shelf = InventoryShelf.find params[:shelf_id]
+    if @inventory_shelf.update inventory_shelf_params
+      render json: @inventory_shelf
+    end
+  end
+
+  def inline_update_inventory_location_bin
+    Inventory
+    @inventory_bin = InventoryBin.find params[:bin_id]
+    if @inventory_bin.update inventory_bin_params
+      render json: @inventory_bin
+    end
+  end
+
+  def inline_update_inventory_brand
+    Inventory
+    @inventory_brand = InventoryCategory1.find params[:brand_id]
+    if @inventory_brand.update inventory_brand_params
+      render json: @inventory_brand
+    end
+  end
+
+  def inline_update_inventory_product
+    Inventory
+    @inventory_product = InventoryCategory2.find params[:product_id]
+    if @inventory_product.update inventory_product_params
+      render json: @inventory_product
+    end
+  end
+
+  def inline_update_inventory_category
+    Inventory
+    @inventory_category = InventoryCategory3.find params[:category_id]
+    if @inventory_category.update inventory_category_params
+      render json: @inventory_category
+    end
+  end
+
+  def delete_location_rack
+    Inventory
+    @delete_rack = InventoryRack.find params[:rack_id]
+    if @delete_rack.present?
+      @delete_rack.delete
+    end
+    respond_to do |format|
+      format.html { redirect_to inventory_location_admins_path }
+    end
+  end
+
+  def delete_location_shelf
+    Inventory
+    @delete_shelf = InventoryShelf.find params[:shelf_id]
+    if @delete_shelf.present?
+      @delete_shelf.delete
+    end
+    respond_to do |format|
+      format.html { redirect_to inventory_location_admins_path }
+    end
+  end
+
+  def delete_location_bin
+    Inventory
+    @delete_bin = InventoryBin.find params[:bin_id]
+    if @delete_bin.present?
+      @delete_bin.delete
+    end
+    respond_to do |format|
+      format.html { redirect_to inventory_location_admins_path }
+    end
+  end
+
+  def delete_inventory_brand
+    Inventory
+    @delete_brand = InventoryCategory1.find params[:brand_id]
+    if @delete_brand.present?
+      @delete_brand.delete
+    end
+    respond_to do |format|
+      format.html { redirect_to inventory_category_admins_path }
+    end
+  end
+
+  def delete_inventory_product
+    Inventory
+    @delete_product = InventoryCategory2.find params[:product_id]
+    if @delete_product.present?
+      @delete_product.delete
+    end
+    respond_to do |format|
+      format.html { redirect_to inventory_category_admins_path }
+    end
+  end
+
+  def delete_inventory_category
+    Inventory
+    @delete_category = InventoryCategory3.find params[:category_id]
+    if @delete_category.present?
+      @delete_category.delete
+    end
+    respond_to do |format|
+      format.html { redirect_to inventory_category_admins_path }
+    end
+  end
+
+  def delete_inventory_product_form
+    Inventory
+    @delete_product_form = InventoryProduct.find params[:product_id]
+    if @delete_product_form.present?
+      @delete_product_form.delete
+    end
+    respond_to do |format|
+      format.html { redirect_to inventory_product_admins_path }
+    end
+  end
+
   def update_pop_status
   end
 
@@ -341,6 +508,50 @@ class AdminsController < ApplicationController
 
   def sbu_params
     params.require(:sbu).permit(:sbu, sbu_engineers_attributes: [:_destroy, :id, :sbu_id, :engineer_id])
+  end
+
+  def inventory_product_form_params
+    params.require(:inventory_product).permit(:serial_no, :serial_no_order, :legacy_code, :sku, :model_no, :product_no, :spare_part_no, :description, :fifo, :active, :spare_part, :unit_id)
+  end
+
+  def inventory_product_info_params
+    params.require(:inventory_product_info).permit(:secondary_unit_id, :average_cost, :need_serial, :need_batch, :per_secondery_unit_conversion, :country_id, :manufacture_id, :currency_id, :standard_cost,:average_cost)
+  end
+
+  def inventory_product_condition_params
+    params.require(:product_condition).permit(:condition)
+  end
+
+  def inventory_disposal_method_params 
+    params.require(:inventory_disposal_method).permit(:disposal_method)
+  end
+
+  def inventory_reason_params
+    params.require(:inventory_disposal_method).permit(:disposal_method)
+  end
+
+  def inventory_rack_params
+    params.require(:inventory_rack).permit(:description, :location_id)
+  end
+
+  def inventory_shelf_params
+    params.require(:inventory_shelf).permit(:description)
+  end
+
+  def inventory_bin_params
+    params.require(:inventory_bin).permit(:description)
+  end
+
+  def inventory_brand_params
+    params.require(:inventory_category1).permit(:code, :name)
+  end
+
+  def inventory_product_params
+    params.require(:inventory_category2).permit(:code, :name)
+  end
+
+  def inventory_category_params
+    params.require(:inventory_category3).permit(:code, :name)
   end
 
 end
