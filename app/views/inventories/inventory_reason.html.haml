@@ -31,5 +31,5 @@
       .panel-collapse.collapse.in{:id => "#{index}"}
         .panel-body
           .row.col-md-12
-            = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "inventory_reason", name: "reason", url:inline_update_inventory_reason_inventories_path(inventory_reason: inv_reason.id), "original-title" => "Update reason", value: ""}, style: "line-height: 6px;" do
+            = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "inventory_reason", name: "reason", url:inline_update_inventory_reason_admins_path(inventory_reason: inv_reason.id), "original-title" => "Update reason", value: ""}, style: "line-height: 6px;" do
               = inv_reason.reason

@@ -2045,8 +2045,8 @@ class TicketsController < ApplicationController
     render "tickets/tickets_pack/customer_inquire/customer_inquire"
   end
 
-  def add_edit_contact
-    render "tickets/tickets_pack/add_edit_contact"
+  def add_edit_contract
+    render "tickets/tickets_pack/add_edit_contract"
   end
 
 

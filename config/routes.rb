@@ -184,7 +184,7 @@ Rails.application.routes.draw do
       get "create_invoice_for_hp"
       get "terminate_job_foc_approval"
       get "customer_inquire"
-      get "add_edit_contact"
+      get "add_edit_contract"
       get "inform_customer_in_modal"
       get "master_data"
 
@@ -293,6 +293,26 @@ Rails.application.routes.draw do
       # namespace "/tickets" do
       #   get 'q_and_a', :action => :ticket_q_and_a
       # end
+
+      put "inline_update"
+      put "inline_update_product_info"
+      put "inline_update_product_condition"
+      put "inline_update_disposal_method"
+      put "inline_update_inventory_reason"
+      put "inline_update_inventory_location_rack"
+      put "inline_update_inventory_location_shelf"
+      put "inline_update_inventory_location_bin"
+      put "inline_update_inventory_brand"
+      put "inline_update_inventory_product"
+      put "inline_update_inventory_category"
+      get "delete_location_rack"
+      get "delete_location_shelf"
+      get "delete_location_bin"
+      get "delete_inventory_brand"
+      get "delete_inventory_product"
+      get "delete_inventory_category"
+      get "delete_inventory_product_form"
+      
     end
   end
 
@@ -326,24 +346,7 @@ Rails.application.routes.draw do
       put "update_low_margin_estimate"
       put "update_delivery_unit"
       put "update_edit_serial"
-      put "inline_update"
-      put "inline_update_product_info"
-      put "inline_update_product_condition"
-      put "inline_update_disposal_method"
-      put "inline_update_inventory_reason"
-      put "inline_update_inventory_location_rack"
-      put "inline_update_inventory_location_shelf"
-      put "inline_update_inventory_location_bin"
-      put "inline_update_inventory_brand"
-      put "inline_update_inventory_product"
-      put "inline_update_inventory_category"
-      get "delete_location_rack"
-      get "delete_location_shelf"
-      get "delete_location_bin"
-      get "delete_inventory_brand"
-      get "delete_inventory_product"
-      get "delete_inventory_category"
-      get "delete_inventory_product_form"
+      
       # post "update_inventory_product"
       # post "update_inventory_category"
       # post "update_inventory_product_condition"

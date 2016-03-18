@@ -21,5 +21,5 @@
       .panel-collapse.collapse.in{:id => "#{index}"}
         .panel-body
           .row.col-md-12
-            = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "product_condition", name: "condition", url:inline_update_product_condition_inventories_path(product_condition_id: inv_product_condition.id), "original-title" => "Update product condition", value: ""}, style: "line-height: 6px;" do
+            = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "product_condition", name: "condition", url:inline_update_product_condition_admins_path(product_condition_id: inv_product_condition.id), "original-title" => "Update product condition", value: ""}, style: "line-height: 6px;" do
               = inv_product_condition.condition
