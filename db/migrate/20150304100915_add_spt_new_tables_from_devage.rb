@@ -119,7 +119,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     create_table :spt_act_request_spare_part, id: false do |t|
       t.column :ticket_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (ticket_action_id)"    #check
       t.column :ticket_spare_part_id, "int(10) UNSIGNED NOT NULL"
-      t.column :terminate_reason_id, "int(10) UNSIGNED"
+      t.column :part_terminate_reason_id, "int(10) UNSIGNED"
       t.column :reject_return_part_reason_id, "int(10) UNSIGNED"
       t.timestamps
     end
@@ -435,7 +435,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.boolean :ticket_close_approved, null: false, default: false
       t.boolean :qc_passed, null: false, default: false
       t.boolean :re_assigned, null: false, default: false
-      t.boolean :terminated, null: false, default: false
+      t.boolean :ticket_terminated, null: false, default: false
       t.boolean :cus_payment_required, null: false, default: false
       t.boolean :cus_payment_completed, null: false, default: false
       t.decimal :final_amount_to_be_paid, precision: 10, scale: 2
@@ -600,8 +600,8 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.column :inv_product_id, "int(10) UNSIGNED"
       t.boolean :part_of_main_product, null: false, default: false
       t.column :main_inv_product_id, "int(10) UNSIGNED"
-      t.boolean :terminated, null: false, default: false
-      t.column :terminated_reason_id, "int(10) UNSIGNED"
+      t.boolean :part_terminated, null: false, default: false
+      t.column :part_terminated_reason_id, "int(10) UNSIGNED"
       t.column :status_action_id, "int(10) UNSIGNED NOT NULL"
       t.column :status_use_id, "int(10) UNSIGNED NOT NULL"
       t.boolean :approved, null: false, default: false
@@ -688,8 +688,8 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.boolean :cus_chargeable_part, null: false, default: false
       t.boolean :request_from_manufacture, null: false, default: true
       t.boolean :request_from_store, null: false, default: false
-      t.boolean :terminated, null: false, default: false
-      t.column :terminated_reason_id, "int(10) UNSIGNED"
+      t.boolean :part_terminated, null: false, default: false
+      t.column :part_terminated_reason_id, "int(10) UNSIGNED"
       t.string :received_spare_part_no
       t.string :received_part_serial_no
       t.string :received_part_ct_no
