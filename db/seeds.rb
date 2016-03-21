@@ -261,7 +261,7 @@ spare_part_status_action = [
 workflow_mappings = [
   ["SPPT", "add_ticket", "/tickets/edit-ticket", "SPT_SC_1", "Support - Edit Ticket", "h1", "ticket_id,supp_hd_user",nil],
   ["SPPT", "assign_ticket", "/tickets/assign-ticket", "SPT_SC_2", "Support - Assign Ticket", "h1", "ticket_id", nil],
-  ["SPPT", "resolution", "/tickets/resolution", "SPT_SC_3", "Support - Resolution", "h1", "ticket_id,supp_engr_user", nil],
+  ["SPPT", "resolution", "/tickets/resolution", "SPT_SC_3", "Support - Resolution", "h1", "ticket_id,supp_engr_user,engineer_id", nil],
   ["SPPT", "pop_approval", "/tickets/pop-approval", "SPT_SC_5", "Support - POP Approval", "h1", "ticket_id", nil],
   ["SPPT", "edit_serial_no", "/tickets/edit_serial", "SPT_SC_6", "Support - Edit Serial No", "h1", "ticket_id", nil],
   ["SPPT", "job_estimate", "/tickets/estimate_job", "SPT_SC_7", "Support - Job Estimation", "h1", "ticket_id", nil],
