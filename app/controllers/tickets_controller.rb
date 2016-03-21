@@ -933,8 +933,8 @@ class TicketsController < ApplicationController
         end
 
         if !user_assign_ticket_action.recorrection
-          ticket_engineer = @ticket.ticket_engineers.create user_id: user_assign_ticket_action.assign_to, created_action_id: user_ticket_action.id, created_at: DateTime.now
-          @ticket.update owner_engineer_id: ticket_engineer.id
+          @ticket_engineer = @ticket.ticket_engineers.create user_id: user_assign_ticket_action.assign_to, created_action_id: user_ticket_action.id, created_at: DateTime.now
+          @ticket.update owner_engineer_id: @ticket_engineer.id
         end
 
 
@@ -942,7 +942,7 @@ class TicketsController < ApplicationController
         d2_recorrection = user_assign_ticket_action.recorrection ? "Y" : "N"
         d3_regional_support_job = user_assign_ticket_action.regional_support_center_job ? "Y" : "N"
         supp_engr_user = user_assign_ticket_action.assign_to
-        engineer_id = ticket_engineer ? ticket_engineer.id : "-"
+        engineer_id = @ticket_engineer ? @ticket_engineer.id : "-"
         supp_hd_user = @ticket.created_by
 
         bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: {d2_re_correction: d2_recorrection, d3_regional_support_job: d3_regional_support_job, supp_engr_user: supp_engr_user, supp_hd_user: supp_hd_user, engineer_id: engineer_id}
