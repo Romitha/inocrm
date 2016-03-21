@@ -34,9 +34,9 @@ class ContactTypeValue < ActiveRecord::Base
   belongs_to :contact_type
 
   # validates_presence_of [:contact_type_id, :value]
-  validates :value,:presence => true,
-                 :numericality => true,
-                 :length => { :minimum => 10, :maximum => 15 }
+  # validates :value,:presence => true,
+  #                :numericality => true,
+  #                :length => { :minimum => 10, :maximum => 15 }
 end
 
 class ContactPersonContactType < ActiveRecord::Base
