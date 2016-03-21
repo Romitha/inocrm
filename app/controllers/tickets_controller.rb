@@ -1,5 +1,6 @@
 class TicketsController < ApplicationController
 
+
   before_action :set_ticket, only: [:show, :edit, :update, :destroy, :update_change_ticket_cus_warranty, :update_change_ticket_repair_type, 
     :update_start_action, :update_re_assign, :update_request_close_approval, :update_hold, :update_create_fsr, :update_edit_serial_no_request, :update_edit_fsr, 
     :update_terminate_job, :update_action_taken, :update_request_spare_part, :update_request_on_loan_spare_part, :update_hp_case_id, :update_resolved_job, :update_deliver_unit, :update_job_estimation_request, :update_recieve_unit, :update_un_hold, :update_check_fsr]
