@@ -937,7 +937,6 @@ class TicketsController < ApplicationController
           @ticket.update owner_engineer_id: @ticket_engineer.id
         end
 
-
         # bpm output variables
         d2_recorrection = user_assign_ticket_action.recorrection ? "Y" : "N"
         d3_regional_support_job = user_assign_ticket_action.regional_support_center_job ? "Y" : "N"
