@@ -626,7 +626,7 @@ class TicketsController < ApplicationController
 
     if @ticket.status_id != @status_close_id
       bpm_response = view_context.send_request_process_data process_history: true, process_instance_id: 1, variable_id: "ticket_id"
-      if bpm_response[:status].try(:upcase) == "ERROR"
+      if !bpm_response[:status].present? or bpm_response[:status].upcase == "ERROR"
         continue = false
         render js: "alert('BPM error. Please continue after rectify BPM.');"
       elsif not warranty_constraint
