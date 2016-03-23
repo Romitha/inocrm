@@ -46,11 +46,13 @@ module TodosHelper
       case Rails.env
       when "development"
         # "lk.inova:INOCRM:0.0.0.4"
-        "lk.inova:INOCRM:0.0.0.5"
+        # "lk.inova:INOCRM:1.0.0.5"
+        "lk.inova:INOCRM:1.0.0.6"
       when "production"
         # "lk.inova:INOCRM:1.0.0.4"
         # cloned from github
-        "lk.inova:INOCRM:1.0.0.5"
+        # "lk.inova:INOCRM:1.0.0.5"
+        "lk.inova:INOCRM:1.0.0.6"
       end
         
     end
