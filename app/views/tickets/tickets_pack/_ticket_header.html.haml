@@ -27,8 +27,8 @@
         .panel{style: "border: 1px solid #dddddd;"}
           .panel-body{style: "background-color: ##{ticket.ticket_status.colour};"}
             %strong Engineer:
-            %span.has-tooltip{:title => "#{ticket.owner_engineer_id and User.cached_find_by_id(ticket.owner_engineer_id).email}", "data-placement" => "bottom"}
-              =truncate("#{ticket.owner_engineer_id and User.cached_find_by_id(ticket.owner_engineer_id).email}", length: 17, title: 'View Agent Data', 'data-toggle' => 'tooltip')
+            %span.has-tooltip{:title => "#{ticket.owner_engineer_id and ticket.owner_engineer.user.email}", "data-placement" => "bottom"}
+              =truncate("#{ticket.owner_engineer_id and ticket.owner_engineer.user.email}", length: 17, title: 'View Agent Data', 'data-toggle' => 'tooltip')
             %br
             %strong Job started at:
             #{ticket.job_started_at.try :strftime, "%Y-%m-%d %H:%M"}

@@ -273,4 +273,6 @@ class TicketEngineer < ActiveRecord::Base
 
   belongs_to :ticket
   belongs_to :user
+
+  has_many :ticket_owners, class_name: "Ticket", foreign_key: :owner_engineer_id
 end

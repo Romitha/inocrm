@@ -8,7 +8,7 @@
 .row
   .col-md-3
     %strong Spare Part No:
-    #{spare_part.ticket_spare_part_manufacture.try(:spare_part_id)}
+    #{spare_part.spare_part_no}
   .col-md-3
     %strong Status:
     #{spare_part.spare_part_status_action.try(:name)}
