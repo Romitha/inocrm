@@ -11,11 +11,11 @@
     = f.simple_fields_for :ticket_spare_part_manufacture do |tm|
       .row
         .col-md-12
-          = tm.input :event_no
+          = tm.input :event_no, input_html: {id: "event_no"}
         .col-md-12
-          = tm.input :order_no
+          = tm.input :order_no, input_html: {id: "order_no"}
         .col-md-12
           = f.input :note, input_html: {value: nil}
           = simple_format spare_part.note
         .col-md-12
-          = f.submit "Save", class: "btn btn-success"
+          = f.submit "Save", class: "btn btn-success", onclick: "Tickets.presence_validater(this, {presence: ['#event_no', '#order_no']}); return false;"
