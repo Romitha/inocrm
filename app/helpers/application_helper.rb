@@ -115,85 +115,94 @@ module ApplicationHelper
   end
 
   def print_ticket_delivery_note_tag_value ticket  #REQUEST_TYPE=PRINT_SPPT_TICKET_COMPLETE
+    TaskAction
+    Invoice
+    ContactNumber
     customer_feedback = ticket.user_ticket_actions.select{ |u| u.customer_feedback.present? and not u.customer_feedback.re_opened }.last # may or may not
+
     if customer_feedback
       deliver_datetime = customer_feedback.user_ticket_action.action_at.try(:strftime, INOCRM_CONFIG['long_date_format']+' '+INOCRM_CONFIG['time_format'])
+      deliver_method = customer_feedback.dispatch_method.name
+      deliver_note = customer_feedback.feedback_description
     end
-    final_invoice = ticket.ticket_invoices.order(created_at: :desc).find_by_canceled false    
+
+    final_invoice = ticket.ticket_invoices.order(created_at: :desc).find_by_canceled false
+    ticket_datetime = ticket.created_at.strftime(INOCRM_CONFIG['long_date_format']+' '+INOCRM_CONFIG['time_format'])
+    ticket_ref = ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG['ticket_no_format'])
+    company_name = ticket.customer.mst_title.title+" "+ticket.customer.name
+    contact_person = ticket.contact_person1.mst_title.title+" "+ticket.contact_person1.name
+    address1 = ticket.customer.address1
+    address2 = ticket.customer.address2
+    address3 = ticket.customer.address3
+    address4 = ticket.customer.address4
+    telephone = ticket.customer.contact_type_values.select{|c| c.contact_type.name == "Telephone"}.first.try(:value)
+    mobile = ticket.customer.contact_type_values.select{|c| c.contact_type.mobile}.first.try(:value)
+    fax = ticket.customer.contact_type_values.select{|c| c.contact_type.name == "Fax"}.first.try(:value)
+    email = ticket.customer.contact_type_values.select{|c| c.contact_type.email}.first.try(:value)
+    product_brand = ticket.products.first.product_brand.name
+    product_category = ticket.products.first.product_category.name
+    model_no = ticket.products.first.model_no
+    serial_no = ticket.products.first.serial_no
+    product_no = ticket.products.first.product_no
+    problem_des1 = ticket.problem_description.to_s[0..100]
+    problem_des2 = ticket.problem_description.to_s[101..200]
+    warranty = "Yes" if ticket.products.first.warranties.any?{|w| (w.start_at.to_date..w.end_at.to_date).include?(ticket.created_at.to_date)}
+    chargeable = "Yes" if ticket.cus_chargeable
+    extra_remark1 = ticket.ticket_extra_remarks.first.try(:extra_remark).try(:extra_remark)
+    extra_remark2 = ticket.ticket_extra_remarks.second.try(:extra_remark).try(:extra_remark)
+    extra_remark3 = ticket.ticket_extra_remarks.third.try(:extra_remark).try(:extra_remark)
+    extra_remark4 = ticket.ticket_extra_remarks.fourth.try(:extra_remark).try(:extra_remark)
+    extra_remark5 = ticket.ticket_extra_remarks.fifth.try(:extra_remark).try(:extra_remark)
+    extra_remark6 = ticket.ticket_extra_remarks[5].try(:extra_remark).try(:extra_remark)
+    remark = ticket.remarks.split('<span class=\'pop_note_e_time\'>') if ticket.remarks.present?
+    accessory1 = ticket.accessories.first.try(:accessory)
+    accessory2 = ticket.accessories.second.try(:accessory)
+    accessory3 = ticket.accessories.third.try(:accessory)
+    accessory4 = ticket.accessories.fourth.try(:accessory)
+    accessory5 = ticket.accessories.fifth.try(:accessory)
+    accessory_other = ticket.other_accessories
+    resolution_summary1 = ticket.resolution_summary.to_s[0..100]
+    resolution_summary2 = ticket.resolution_summary.to_s[101..200]
+    invoice_no = (final_invoice and final_invoice.invoice_no.to_s.rjust(6, INOCRM_CONFIG['invoice_no_format']))
+    special_note = ticket.note
+
+    repeat_data = ""
+    repeat_data += "LEFT_LINE_TITLE=Ticket #:"    +"$|#"+"LEFT_LINE_DATA="+ticket_ref+"  -  "+ticket_datetime+"$|#"
+    repeat_data += "LEFT_LINE_TITLE=Delivered To :" +"$|#"+"LEFT_LINE_DATA="+company_name+"$|#"
+    repeat_data += "LEFT_LINE_TITLE="     +"$|#"+"LEFT_LINE_DATA="+address1+"$|#" if address1
+    repeat_data += "LEFT_LINE_TITLE="     +"$|#"+"LEFT_LINE_DATA="+address2+"$|#" if address2
+    repeat_data += "LEFT_LINE_TITLE="     +"$|#"+"LEFT_LINE_DATA="+address3+"$|#" if address3
+    repeat_data += "LEFT_LINE_TITLE="     +"$|#"+"LEFT_LINE_DATA="+address4+"$|#" if address4
+    repeat_data += "LEFT_LINE_TITLE=Mobile No :"    +"$|#"+"LEFT_LINE_DATA="+mobile+"$|#" if mobile
+    repeat_data += "LEFT_LINE_TITLE=Serial No :"    +"$|#"+"LEFT_LINE_DATA="+serial_no+"$|#"
+    repeat_data += "LEFT_LINE_TITLE=Product Brand :"  +"$|#"+"LEFT_LINE_DATA="+product_brand+"$|#"
+    repeat_data += "LEFT_LINE_TITLE=Model No :"   +"$|#"+"LEFT_LINE_DATA="+model_no+"$|#"
+    repeat_data += "LEFT_LINE_TITLE=Product Category :" +"$|#"+"LEFT_LINE_DATA="+product_category+"$|#"
+    repeat_data += "LEFT_LINE_TITLE=Special Notes :"  +"$|#"+"LEFT_LINE_DATA="+special_note.to_s[0..100]+"$|#" if special_note.to_s[0..100]
+    repeat_data += "LEFT_LINE_TITLE="     +"$|#"+"LEFT_LINE_DATA="+special_note.to_s[101..200]+"$|#" if special_note.to_s[101..200]
+    repeat_data += "LEFT_LINE_TITLE=Accessories :"    +"$|#"+"LEFT_LINE_DATA="+accessory1+"$|#" if accessory1
+    repeat_data += "LEFT_LINE_TITLE="     +"$|#"+"LEFT_LINE_DATA="+accessory2+"$|#" if accessory2
+    repeat_data += "LEFT_LINE_TITLE="     +"$|#"+"LEFT_LINE_DATA="+accessory3+"$|#" if accessory3
+    repeat_data += "LEFT_LINE_TITLE="     +"$|#"+"LEFT_LINE_DATA="+accessory4+"$|#" if accessory4
+    repeat_data += "LEFT_LINE_TITLE="     +"$|#"+"LEFT_LINE_DATA="+accessory5+"$|#" if accessory5
+    repeat_data += "LEFT_LINE_TITLE=Other Accessories :"  +"$|#"+"LEFT_LINE_DATA="+accessory_other+"$|#" if accessory_other
+    repeat_data += "RIGHT_LINE_TITLE=Problem Desc. :" +"$|#"+"RIGHT_LINE_DATA="+problem_des1+"$|#" if problem_des1
+    repeat_data += "RIGHT_LINE_TITLE="      +"$|#"+"RIGHT_LINE_DATA="+problem_des2+"$|#" if problem_des2
+    repeat_data += "RIGHT_LINE_TITLE=Resolution :"    +"$|#"+"RIGHT_LINE_DATA="+resolution_summary1+"$|#" if resolution_summary1
+    repeat_data += "RIGHT_LINE_TITLE="      +"$|#"+"RIGHT_LINE_DATA="+resolution_summary2+"$|#" if resolution_summary2
+    repeat_data += "RIGHT_LINE_TITLE=Invoice #:"    +"$|#"+"RIGHT_LINE_DATA="+invoice_no+"$|#" if invoice_no
+    repeat_data += "RIGHT_LINE_TITLE=Delevry Date:" +"$|#"+"RIGHT_LINE_DATA="+deliver_datetime.to_s+"$|#"
+    repeat_data += "RIGHT_LINE_TITLE=Delevry Method:" +"$|#"+"RIGHT_LINE_DATA="+deliver_method.to_s+"$|#"
+    repeat_data += "RIGHT_LINE_TITLE=Delevry Note:" +"$|#"+"RIGHT_LINE_DATA="+deliver_note.to_s+"$|#"
+    repeat_data += "RIGHT_LINE_TITLE=Signature:"    +"$|#"
+
     [
-      "DUPLICATE=#{ticket.ticket_complete_print_count > 0 ? 'D' : ''}",
-      "TICKET_DATETIME=#{ticket.created_at.strftime(INOCRM_CONFIG['long_date_format']+' '+INOCRM_CONFIG['time_format'])}",
-      "TICKET_REF=#{ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG['ticket_no_format'])}",
-
-      "COMPANY_NAME=#{ticket.customer.mst_title.title} #{ticket.customer.name}",
-
-      "CONTACT_PERSON=#{ticket.contact_person1.mst_title.title} #{ticket.contact_person1.name}",
-
-      "ADDRESS=#{ticket.customer.address1} #{ticket.customer.address2} #{ticket.customer.address3} #{ticket.customer.address4}",
-
-      "TELPHONE=#{ticket.customer.contact_type_values.select{|c| c.contact_type.name == "Telephone"}.first.try(:value)}",
-
-      "MOBILE=#{ticket.customer.contact_type_values.select{|c| c.contact_type.mobile}.first.try(:value)}",
-
-      "FAX=#{ticket.customer.contact_type_values.select{|c| c.contact_type.name == "Fax"}.first.try(:value)}",
-
-      "EMAIL=#{ticket.customer.contact_type_values.select{|c| c.contact_type.email}.first.try(:value)}",
-
-      "PRODUCT_BRAND=#{ticket.products.first.product_brand.name}",
-
-      "PRODUCT_CATEGORY=#{ticket.products.first.product_category.name}",
-
-      "MODEL_NO=#{ticket.products.first.model_no}",
-
-      "SERIAL_NO=#{ticket.products.first.serial_no}",
-
-      "PRODUCT_NO=#{ticket.products.first.product_no}",
-
-      "PROBLEM_DESC1=#{ticket.problem_description.to_s[0..100]}",
-
-      "PROBLEM_DESC2=#{ticket.problem_description.to_s[101..200]}",
-
-      # "WARRANTY=#{'X' if ticket.warranty_type.code == 'CW' or ticket.warranty_type.code == 'MW'}",
-      "WARRANTY=#{'X' if ticket.products.first.warranties.any?{|w| (w.start_at.to_date..w.end_at.to_date).include?(ticket.created_at.to_date)}}",
-
-      "CHARGEABLE=#{'X' if ticket.cus_chargeable}",
-
-      "NEED_POP=#{'X' if ticket.products.first.product_pop_status.code != 'NAP'}",
-
-      "EXTRA_REMARK1=#{ticket.ticket_extra_remarks.first.try(:extra_remark).try(:extra_remark)}",
-
-      "EXTRA_REMARK2=#{ticket.ticket_extra_remarks.second.try(:extra_remark).try(:extra_remark)}",
-
-      "EXTRA_REMARK3=#{ticket.ticket_extra_remarks.third.try(:extra_remark).try(:extra_remark)}",
-
-      "EXTRA_REMARK4=#{ticket.ticket_extra_remarks.fourth.try(:extra_remark).try(:extra_remark)}",
-
-      "EXTRA_REMARK5=#{ticket.ticket_extra_remarks.fifth.try(:extra_remark).try(:extra_remark)}",
-
-      "EXTRA_REMARK6=",
-
-      "REMARK=#{ticket.remarks.split('<span class=\'pop_note_e_time\'>') if ticket.remarks.present?}",
-
-      "ACCESSORY1=#{ticket.accessories.first.try(:accessory)}",
-
-      "ACCESSORY2=#{ticket.accessories.second.try(:accessory)}",
-
-      "ACCESSORY3=#{ticket.accessories.third.try(:accessory)}",
-
-      "ACCESSORY4=#{ticket.accessories.fourth.try(:accessory)}",
-
-      "ACCESSORY5=#{ticket.accessories.fifth.try(:accessory)}",
-
-      "ACCESSORY6=",
-      "ACCESSORY_OTHER=#{ticket.other_accessories}",
-
+      "DUPLICATE_D=#{ticket.ticket_complete_print_count > 0 ? 'D' : ''}",
+      repeat_data,
       "DELIVERY_DATETIME=#{deliver_datetime}",
-      "RESOLUTION_SUMMARY=#{ticket.resolution_summary}",
-      "INVOICE_NO=#{final_invoice.invoice_no.to_s.rjust(6, INOCRM_CONFIG['invoice_no_format'])}",
-      "NOTE=#{ticket.note}",
     ]
-  end
 
+  end
 
   def print_customer_quotation_tag_value qutation
     [

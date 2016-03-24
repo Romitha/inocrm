@@ -564,6 +564,8 @@ class InventoriesController < ApplicationController
             user_ticket_action = @estimation.ticket.user_ticket_actions.build(action_id: action_id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @estimation.ticket.re_open_count, action_engineer_id: engineer_id)
             user_ticket_action.build_act_job_estimation(ticket_estimation_id: @estimation.id)
 
+            user_ticket_action.build_request_spare_part(ticket_spare_part_id: ticket_estimation_part.ticket_spare_part.id)
+
             user_ticket_action.save
 
           end

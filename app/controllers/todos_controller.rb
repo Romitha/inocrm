@@ -63,7 +63,8 @@ class TodosController < ApplicationController
       session[:process_id] = process_instance_id
       session[:task_id] = task_id
       session[:owner] = owner
-      session[:bpm_input_variables] = @bpm_input_variables.map{|e| [e[:variable_id], e[:value]]}
+      # session[:bpm_input_variables] = @bpm_input_variables.map{|e| [e[:variable_id], e[:value]]}
+      session[:engineer_id] = @bpm_input_variables.map{|e| [e[:variable_id], e[:value]]}.detect{ |v| v.first == "engineer_id"}.try(:last)
 
       Rails.cache.fetch([url, task_id]){ {process_id: process_instance_id, task_id: task_id, owner: owner, bpm_input_variables: @bpm_input_variables.map{|e| [e[:variable_id], e[:value]]} } }
 
@@ -74,6 +75,5 @@ class TodosController < ApplicationController
       @flash_message = "Task is not available."
     end
     redirect_to @redirect_url, notice: @flash_message
-    puts session[:bpm_input_variables].inspect
   end
 end

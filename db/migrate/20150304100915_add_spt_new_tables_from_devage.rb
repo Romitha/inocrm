@@ -211,20 +211,6 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.timestamps
     end
 
-    #create_table :spt_cus_recieved_note_print_history, id: false do |t|     #received not recieved
-      #t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
-      #t.column :print_history_id, "int(10) UNSIGNED NOT NULL"
-      #t.column :ticket_id, "int(10) UNSIGNED NOT NULL"
-      #t.timestamps
-    #end
-
-    # create_table :spt_cus_returned_note_print_history, id: false do |t|
-    #   t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
-    #   t.column :print_history_id, "int(10) UNSIGNED NOT NULL"
-    #   t.column :ticket_id, "int(10) UNSIGNED NOT NULL"
-    #   t.timestamps
-    # end
-
     create_table :spt_customer, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :title_id, "int(10) UNSIGNED NOT NULL"

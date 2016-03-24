@@ -2,11 +2,6 @@
   %legend Start Action
   #error_msg
   = simple_nested_form_for ticket, url: update_start_action_ticket_path(ticket), method: :post, html: {id: "start_action_form"} do |f|
-    / = hidden_field_tag :process_id, session[:process_id]
-    / = hidden_field_tag :task_id, session[:task_id]
-    / = hidden_field_tag :owner, session[:owner]
-    / - session[:bpm_input_variables].each do |bpm_input_variable|
-    /   = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
     = hidden_field_tag :process_id, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:process_id]
     = hidden_field_tag :task_id, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:task_id]
