@@ -54,7 +54,7 @@
 
           = f.input :id, as: :hidden
           %strong Bundle no:
-          = ComapnyConfig.first.sup_last_bundle_no.to_i
+          = CompanyConfig.first.sup_last_bundle_no.to_i
           %br
           = f.input :note
           = f.submit "Save", class: "btn btn-sm btn-success"
