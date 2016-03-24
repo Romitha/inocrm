@@ -17,7 +17,7 @@
 
       .col-md-3
         = label_tag "Unit return customer"
-        = check_box_tag :unit_return_customer, true, (ticket.ticket_type.name == 'IH'), disabled: (ticket.ticket_type.name != 'IH')
+        = check_box_tag :unit_return_customer, true, (ticket.ticket_type.name == 'IH'), disabled: (ticket.ticket_type.name == 'IH')
       .col-md-3
         = label_tag "Feedback"
         %br

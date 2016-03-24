@@ -28,7 +28,7 @@
         - if present_of_start_ticket_action and not ticket.job_finished
           %option{:value => "change_ticket_cus_warranty", data: {task_id: params[:task_id]}} Change Ticket Warranty Type or Customer Chargeable
         - if present_of_start_ticket_action and not ticket.job_finished
-          %option{:value => "change_ticket_repair_type"} Change Ticket Repair Type
+          %option{:value => "change_ticket_repair_type", data: {task_id: params[:task_id]}} Change Ticket Repair Type
         - if present_of_start_ticket_action and not ticket.status_hold
           %option{:value => "hold", data: {task_id: params[:task_id]}} Hold
         - if present_of_start_ticket_action and ticket.status_hold
@@ -38,7 +38,7 @@
         - if present_of_start_ticket_action and ticket.ticket_type.code == 'OS'  and not ticket.job_finished
           %option{:value => "create_fsr", data: {task_id: params[:task_id]}} Create FSR
         - if present_of_start_ticket_action and ticket.ticket_fsrs.find_by_approved(:false).present?
-          %option{:value => "edit_fsr"} Edit FSR
+          %option{:value => "edit_fsr", data: {task_id: params[:task_id]}} Edit FSR
         - if present_of_start_ticket_action and not ticket.job_finished
           %option{:value => "terminate_job", data: {task_id: params[:task_id]}} Terminate Job
         - if present_of_start_ticket_action

@@ -47,12 +47,14 @@ module TodosHelper
       when "development"
         # "lk.inova:INOCRM:0.0.0.4"
         # "lk.inova:INOCRM:1.0.0.5"
-        "lk.inova:INOCRM:1.0.0.6"
+        # "lk.inova:INOCRM:1.0.0.6"
+        "lk.inova:INOCRM:1.0.0.9"
       when "production"
         # "lk.inova:INOCRM:1.0.0.4"
         # cloned from github
         # "lk.inova:INOCRM:1.0.0.5"
-        "lk.inova:INOCRM:1.0.0.6"
+        # "lk.inova:INOCRM:1.0.0.6"
+        "lk.inova:INOCRM:1.0.0.9"
       end
         
     end

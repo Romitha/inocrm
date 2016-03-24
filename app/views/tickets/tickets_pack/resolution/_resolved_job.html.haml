@@ -2,9 +2,6 @@
   %legend Resolve the Job (Finish)
   #error_msg
   = simple_form_for ticket, url: update_resolved_job_ticket_path(ticket), method: :post, html: {id: "job_finish_form"} do |f|
-    / = hidden_field_tag :process_id, session[:process_id]
-    / = hidden_field_tag :task_id, session[:task_id]
-    / = hidden_field_tag :owner, session[:owner]
 
     = hidden_field_tag :process_id, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:process_id]
     = hidden_field_tag :task_id, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:task_id]

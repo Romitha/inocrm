@@ -1,6 +1,13 @@
 %fieldset
   %legend Change Ticket Repair Type
   = simple_nested_form_for ticket, url: update_change_ticket_repair_type_ticket_path(ticket), method: :post do |f|
+
+    = hidden_field_tag :process_id, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:process_id]
+    = hidden_field_tag :task_id, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:task_id]
+    = hidden_field_tag :owner, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:owner]
+    - Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
+      = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+
     = f.association :ticket_repair_type, as: :radio_buttons, label: "Repaire Type", wrapper: :append
     = f.input :remarks, input_html: {value: nil} 
     = simple_format ticket.remarks
