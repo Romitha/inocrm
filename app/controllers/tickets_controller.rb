@@ -1661,6 +1661,7 @@ class TicketsController < ApplicationController
     TaskAction
     TicketSparePart
     Inventory
+    Organization
     if request.xhr?
       case params[:task_action]
       when "add"
