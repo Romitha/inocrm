@@ -99,6 +99,8 @@ class Ticket < ActiveRecord::Base
   has_many :ticket_engineers, class_name: "TicketEngineer", foreign_key: :ticket_id
   has_many :users, through: :ticket_engineers
 
+  belongs_to :owner_engineer, class_name: "TicketEngineer"
+
   validates_presence_of [:ticket_no, :priority, :status_id, :problem_description, :informed_method_id, :job_type_id, :ticket_type_id, :warranty_type_id, :base_currency_id, :problem_category_id]
 
   validates_numericality_of [:ticket_no, :priority]
