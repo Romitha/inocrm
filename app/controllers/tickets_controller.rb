@@ -3471,7 +3471,7 @@ class TicketsController < ApplicationController
 
   def update_change_ticket_cus_warranty
     Warranty
-
+    TaskAction
     warranty_constraint = true
     warranty_id = ticket_params[:warranty_type_id].to_i
     engineer_id = params[:engineer_id]
