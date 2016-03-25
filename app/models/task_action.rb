@@ -174,6 +174,8 @@ class ActTerminateJobPayment < ActiveRecord::Base
 
   belongs_to :currency
   belongs_to :reason, foreign_key: :adjust_reason_id
+
+  has_many :ticket_invoice_terminate, foreign_key: :terminate_job_payment_id
 end
 
 class PaymentItem < ActiveRecord::Base
