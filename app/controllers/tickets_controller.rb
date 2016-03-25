@@ -3604,7 +3604,7 @@ class TicketsController < ApplicationController
 
   def update_edit_fsr
     TicketSparePart
-    engineer_id = params[:engineer_id]
+    engineer_id = session[:engineer_id]
     t_params = ticket_fsr_params
     @ticket_fsr = @ticket.ticket_fsrs.find_by_id params[:ticket_fsr_id]
     t_params["resolution"] = t_params["resolution"].present? ? "#{t_params['resolution']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket_fsr.resolution}" : @ticket_fsr.resolution
