@@ -16,6 +16,7 @@ class TicketInvoice < ActiveRecord::Base
   belongs_to :currency
 
   has_many :ticket_invoice_estimations
+  has_many :ticket_invoice_terminates, foreign_key: :invoice_id
 end
 
 class TerminateInvoice < ActiveRecord::Base
@@ -84,4 +85,11 @@ class TicketInvoiceEstimation < ActiveRecord::Base
   belongs_to :ticket_invoice, foreign_key: :invoice_id
 
   belongs_to :ticket_estimation, foreign_key: :estimation_id
+end
+
+class TicketInvoiceTerminate < ActiveRecord::Base
+  self.table_name = "spt_ticket_invoice_terminate"
+
+  belongs_to :act_terminate_job_payment, foreign_key: :terminate_job_payment_id
+  belongs_to :ticket_invoice, foreign_key: :invoice_id
 end
