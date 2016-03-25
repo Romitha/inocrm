@@ -6,6 +6,7 @@ window.Invoices =
     @quotation_change()
     @check_fsr_dynamic_check_behavour()
     @enable_ticket_payment_received_in_customer_feedback()
+    @customer_feedback_re_opened()
     return
 
   quotation_change: ->
@@ -145,3 +146,14 @@ window.Invoices =
         $("#ticket_payment_reciever_wrapper").addClass("hide")
       else
         $("#ticket_payment_reciever_wrapper").removeClass("hide")
+
+  customer_feedback_re_opened: ->
+    $("#re_opened").change ->
+      if $(@).is(":checked")
+        $("#unit_return_customer").prop("disabled", true)
+        $("#dispatch_method_id").prop("disabled", true)
+        $("#unit_dispatch_wrapper").addClass("hide")
+      else
+        $("#unit_dispatch_wrapper").removeClass("hide")
+        $("#dispatch_method_id").prop("disabled", false)
+        $("#unit_return_customer").prop("disabled", false)

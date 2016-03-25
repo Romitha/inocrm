@@ -15,8 +15,16 @@ class TicketInvoice < ActiveRecord::Base
   belongs_to :ticket
   belongs_to :currency
 
-  has_many :ticket_invoice_estimations
-  has_many :ticket_invoice_terminates, foreign_key: :invoice_id
+  has_many :ticket_invoice_estimations, foreign_key: :invoice_id
+  has_many :ticket_estimations, through: :ticket_invoice_estimations
+end
+
+class TicketInvoiceEstimation < ActiveRecord::Base
+  self.table_name = "spt_ticket_invoice_estimation"
+
+  belongs_to :ticket_invoice, foreign_key: :invoice_id
+
+  belongs_to :ticket_estimation, foreign_key: :estimation_id
 end
 
 class TerminateInvoice < ActiveRecord::Base
@@ -42,6 +50,14 @@ class CustomerFeedback < ActiveRecord::Base
 
   belongs_to :ticket_payment_received, foreign_key: :payment_received_id
 
+  belongs_to :dispatch_method
+
+end
+
+class DispatchMethod < ActiveRecord::Base
+  self.table_name = "mst_spt_dispatch_method"
+
+  has_many :customer_feedbacks
 end
 
 class CustomerQuotation < ActiveRecord::Base

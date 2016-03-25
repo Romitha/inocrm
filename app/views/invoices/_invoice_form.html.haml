@@ -14,11 +14,12 @@
       %br
       = f.label :currency_id, "Currency"
       / = f.select :currency_id, options_from_collection_for_select(Currency.all, :id, :currency)
-      = f.input :deductec_amount
+      = f.input :deducted_amount
+      = label_tag "Payment term"
+      = f.association :payment_term, label: false
       = f.input :note
       = f.input :customer_sent, wrapper: :append
       = f.input :canceled, wrapper: :append
-      = f.input :note
 
     .col-md-9
       %table.table.table-responsive.table-condensed.table-bordered
@@ -39,13 +40,13 @@
             %th Total
             %th Min. adv. payment
             %th Status
-            %th quoted
+            %th invoiced
             %th amount
             %th Attach
 
         %tbody
           - ticket.ticket_estimations.each_with_index do |estimation, index|
-            %tr.row_class{:style => "background-color:#{estimation.quoted.to_i > 0 ? '#99ff66' : ''};"}
+            %tr.row_class{:style => "background-color:#{estimation.invoiced.to_i > 0 ? '#99ff66' : ''};"}
               %td
                 = index+1
               %td= estimation.requested_at.getlocal.try(:strftime, "%b %d, %Y %H:%M")
@@ -131,7 +132,7 @@
               %td= estimation.estimation_status.name
 
               %td.quoted_value
-                =estimation.quoted
+                =estimation.invoiced
               %td.amount
               / - if quotation.id.present?
               /   %td= check_box_tag 'estimation_ids[]', estimation.id, quotation.ticket_estimation_ids.include?(estimation.id), class: "action"

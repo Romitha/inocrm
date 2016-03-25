@@ -45,7 +45,6 @@ class AddTablesForEstimationAndTaxes < ActiveRecord::Migration
       t.column :ticket_id, "INT UNSIGNED NOT NULL"
       t.column :invoice_no, "INT UNSIGNED NOT NULL"
       t.column :created_by, "INT UNSIGNED NOT NULL"
-      t.column :estimation_id, "INT UNSIGNED NOT NULL"
       t.column :print_count, "INT UNSIGNED NOT NULL DEFAULT 0"
       t.column :payment_term_id, "INT UNSIGNED NOT NULL"
       t.column :currency_id, "INT UNSIGNED NOT NULL"

@@ -154,40 +154,54 @@ class InvoicesController < ApplicationController
     continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
     bpm_variables = view_context.initialize_bpm_variables
 
-    if continue
+    create_invoice = !@ticket.ticket_invoices.any? { |i| !i.canceled }
+    uninvoiced_items =  @ticket.ticket_estimations.any? { |i| i.invoiced.to_i<= 0 and i.approved} or @ticket.ticket_payment_receiveds.any? { |i| !i.invoiced.to_i <= 0 }
 
-      if ticket.final_amount_to_be_paid.to_f > 0
-        @ticket.cus_payment_required = true
-        @ticket.save
-        d12_need_to_invoice = "Y"
-      else
-        @ticket.cus_payment_required = false
-        @ticket.save
-        d12_need_to_invoice = "N"
-        payment_completed = true
+
+    #uninvoiced_items =  spt_ticket_estimation, spt_ticket_payment_received, spt_act_terminate_job_payment
+    if create_invoice or uninvoiced_items
+      if create_invoice
+         flash[:error] = "Please continue after creating invoice."
       end
-
-      if payment_completed
-        @ticket.update customer_payment_completed: true
+      if uninvoiced_items
+         flash[:error] = "There are un-invoiced items, Please continue after creating invoice with all items."
       end
-
-      # 63 - Estimate Job Final
-      user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(63).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
-      user_ticket_action.save
-
-        # bpm output variables
-      bpm_variables.merge! d12_need_to_invoice: d12_need_to_invoice
-      bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
-
-      if bpm_response[:status].upcase == "SUCCESS"
-        flash[:notice] = "Successfully updated"
-      else
-        flash[:error] = "invoice is updated. but Bpm error"
-      end
-
     else
-      flash[:error] = "Bpm error."
+      if continue
+
+        if @ticket.final_amount_to_be_paid.to_f > 0
+          @ticket.cus_payment_required = true
+          @ticket.save
+          d12_need_to_invoice = "Y"
+        else
+          @ticket.save
+          d12_need_to_invoice = "N"
+          payment_completed = true
+        end
+
+        if payment_completed
+          @ticket.update cus_payment_completed: true
+        end
+
+        # 63 - Estimate Job Final
+        user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(63).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+        user_ticket_action.save
+
+          # bpm output variables
+        bpm_variables.merge! d12_need_to_invoice: d12_need_to_invoice
+        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+        if bpm_response[:status].upcase == "SUCCESS"
+          flash[:notice] = "Successfully updated"
+        else
+          flash[:error] = "invoice is updated. but Bpm error"
+        end
+
+      else
+        flash[:error] = "Bpm error."
+      end
     end
+    redirect_to todos_url
   end
 
   def update_quality_control
@@ -212,10 +226,9 @@ class InvoicesController < ApplicationController
 
       elsif params[:reject] #Reject QC
 
-        bpm_variables.merge! d38_ticket_close_approved: "Y" unless @ticket.ticket_close_approved or !@ticket.ticket_close_approval_required
-        # bpm_variables.merge! d38_ticket_close_approved: (@ticket.ticket_close_approved and @ticket.ticket_close_approval_required) or !(@ticket.ticket_close_approval_required) ? "N" : "Y"
+        bpm_variables.merge! d38_ticket_close_approved: (@ticket.ticket_close_approved or !@ticket.ticket_close_approval_required) ? "N" : "Y"
 
-        @ticket.update qc_passed: false, status_id: TicketStatus.find_by_code("ROP").id, re_open_count: (@ticket.re_open_count.to_i+1), job_finished: false, ticket_close_approval_required: true, ticket_close_approval_requested: false, ticket_close_approved: false
+        @ticket.update qc_passed: false, status_id: TicketStatus.find_by_code("ROP").id, re_open_count: (@ticket.re_open_count.to_i+1), job_finished: false, job_finished_at: nil, ticket_close_approval_required: true, ticket_close_approval_requested: false, ticket_close_approved: false
 
       end
       @ticket.update update_ticket_params
@@ -237,29 +250,30 @@ class InvoicesController < ApplicationController
   def update_customer_feedback
     @ticket = Ticket.find params[:ticket_id]
     editable_ticket_params = {}
-    re_open = params[:re_open].present?
+    re_open = params[:re_opened].present?
     customer_feedback_payment_completed = params[:payment_completed].present?
-    customer_feedback_unit_return_customer = params[:unit_return_customer]
+    customer_feedback_unit_return_customer = params[:unit_return_customer].present?
     customer_feedback_feedback_id = params[:feedback_id]
+    customer_feedback_dispatch_method_id = params[:dispatch_method_id]
     customer_feedback_re_opened = params[:re_opened]
     customer_feedback_feedback_description = params[:feedback_description]
 
-    @ticket_payment_received = TicketPaymentReceived.new ticket_payment_received_params
+    @ticket_payment_received = TicketPaymentReceived.new ticket_payment_received_params if @ticket.cus_payment_required
     @final_invoice = @ticket.ticket_invoices.order(created_at: :desc).find_by_canceled false
 
     continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
 
     if continue
       d39_re_open = "N"
-      d38_ticket_close_approved = "N"
+      d38_ticket_close_approved = "Y" #Not create Engineer task
       if re_open
         d39_re_open = "Y"
 
-        if (@ticket.ticket_close_approval_required and @ticket.ticket_close_approved )
-          d38_ticket_close_approved = "Y"
+        if (@ticket.ticket_close_approved or !@ticket.ticket_close_approval_required)
+          d38_ticket_close_approved = "N" #Create Engineer task
           editable_ticket_params.merge! ticket_close_approval_requested: false, ticket_close_approved: false
         end
-        editable_ticket_params.merge! re_open_count: (@ticket.re_open_count.to_i+1), job_finished: false, status_id: TicketStatus.find_by_code("ROP").id
+        editable_ticket_params.merge! re_open_count: (@ticket.re_open_count.to_i+1), job_finished: false, job_finished_at: nil, status_id: TicketStatus.find_by_code("ROP").id, cus_payment_completed: false
 
       else
 
@@ -268,7 +282,7 @@ class InvoicesController < ApplicationController
             if @ticket_payment_received.amount.to_f > 0
 
               if customer_feedback_payment_completed
-                editable_ticket_params.merge! customer_payment_completed: true
+                editable_ticket_params.merge! cus_payment_completed: true
 
                 @ticket_payment_received.type_id = TicketPaymentReceivedType.find_by_code("FN").id
               else
@@ -286,7 +300,7 @@ class InvoicesController < ApplicationController
               user_ticket_action.save
             end
           else
-            editable_ticket_params.merge! customer_payment_completed: true
+            editable_ticket_params.merge! cus_payment_completed: true
           end
 
         end
@@ -302,7 +316,7 @@ class InvoicesController < ApplicationController
 
       # Action (58) Customer Feedback, DB.spt_act_customer_feedback.
       user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(58).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
-      user_ticket_action.build_customer_feedback(re_opened: customer_feedback_re_opened, unit_return_customer: customer_feedback_unit_return_customer, ticket_payment_received_id: @ticket_payment_received.id, payment_completed: customer_feedback_payment_completed, feedback_id: customer_feedback_feedback_id, feedback_description: customer_feedback_feedback_description, created_at: DateTime.now, updated_at: current_user.id)
+      user_ticket_action.build_customer_feedback(re_opened: customer_feedback_re_opened, unit_return_customer: customer_feedback_unit_return_customer, payment_received_id: @ticket_payment_received.try(:id), payment_completed: customer_feedback_payment_completed, feedback_id: customer_feedback_feedback_id, feedback_description: customer_feedback_feedback_description, created_at: DateTime.now, updated_at: current_user.id, dispatch_method_id: customer_feedback_dispatch_method_id)
       user_ticket_action.save
 
       # bpm output variables
@@ -353,7 +367,7 @@ class InvoicesController < ApplicationController
       if @customer_quotation.canceled
         if !@customer_quotation.canceled_was
           @customer_quotation.ticket_estimations.each do |estimation|
-            estimation.update quoted: estimation.quoted-1
+            estimation.update quoted: estimation.quoted.to_i-1
           end
         end
       else
@@ -385,22 +399,22 @@ class InvoicesController < ApplicationController
     checked_estimation_ids = params[:estimation_ids]
     action_no = 0
     if params[:action_type] == "create"
-      @invoice = Invoice.new invoice_params
+      @invoice = TicketInvoice.new invoice_params
       @invoice.invoice_no = CompanyConfig.first.increase_sup_last_invoice_no
 
       TicketEstimation.where(id: checked_estimation_ids).each do |estimation|
-        estimation.update invoiced: estimation.invoiced+1
+        estimation.update invoiced: estimation.invoiced.to_i+1
       end
-      # Action (80) Create Invoice, DB.spt_act_print_invoice.
+      # Action (80) Create TicketInvoice, DB.spt_act_print_invoice.
       action_no = 80
     elsif params[:action_type] == "update"
-      @invoice = Invoice.find params[:invoice_id]
+      @invoice = TicketInvoice.find params[:invoice_id]
       @invoice.attributes = invoice_params
 
       if @invoice.canceled
         if !@invoice.canceled_was
           @invoice.ticket_estimations.each do |estimation|
-            estimation.update invoiced: estimation.invoiced-1
+            estimation.update invoiced: estimation.invoiced.to_i-1
           end
         end
       else
@@ -410,9 +424,13 @@ class InvoicesController < ApplicationController
 
         TicketEstimation.where(id: checked_estimation_ids).each { |estimation| estimation.update invoiced: (estimation.invoiced.to_i+1) }
       end      
-      # Action (83) Edit Invoice, DB.spt_act_print_invoice.
+      # Action (83) Edit TicketInvoice, DB.spt_act_print_invoice.
       action_no = 83
     end
+    @invoice.ticket = @ticket
+    @invoice.created_by = current_user.id
+    @invoice.print_count += @invoice.print_count.to_i
+    @invoice.currency_id = @ticket.ticket_currency.id
 
     @invoice.save
     @invoice.ticket_estimation_ids = checked_estimation_ids    
@@ -428,7 +446,7 @@ class InvoicesController < ApplicationController
 
   private
     def set_invoice
-      @invoice = Invoice.find(params[:id])
+      @invoice = TicketInvoice.find(params[:id])
     end
 
     def estimation_params
@@ -450,5 +468,9 @@ class InvoicesController < ApplicationController
 
     def customer_quotation_params
       params.require(:customer_quotation).permit(:id, :validity_period, :delivery_period, :warranty, :payment_term_id, :customer_contacted, :canceled, :note)
+    end
+
+    def invoice_params
+      params.require(:ticket_invoice).permit(:id, :deducted_amount, :customer_sent, :canceled, :note, :payment_term_id)
     end
 end

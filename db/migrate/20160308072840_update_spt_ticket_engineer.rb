@@ -21,7 +21,7 @@ class UpdateSptTicketEngineer < ActiveRecord::Migration
     end
 
     create_table :spt_act_quotation, id: false do |t|
-      t.column :ticket_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (ticket_action_id)"
+      t.column :ticket_action_id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (ticket_action_id)"
       t.column :customer_quotation_id, "INT UNSIGNED NOT NULL"
 
       t.timestamps
