@@ -124,6 +124,8 @@ class InventoriesController < ApplicationController
     ticket_spare_part.update(ticket_spare_part_params(ticket_spare_part))
 
     continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    same_page = todos_url
+    goto_url = todos_url
 
     save_ticket_spare_part = Proc.new do |spare_part_status, action_id_no|
       ticket_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code(spare_part_status).id
@@ -177,6 +179,7 @@ class InventoriesController < ApplicationController
         end
 
         flash[:notice] = "Termination is successfully done."
+        goto_url = same_page
       end
     
     elsif params[:return]
@@ -277,6 +280,7 @@ class InventoriesController < ApplicationController
     elsif params[:recieved]
       if iss and (manufacture_warranty or manufacture_chargeable or store_warranty or store_chargeable)
         save_ticket_spare_part["RCE", 16] #Receive Spare Part by eng
+        goto_url = same_page
       end
 
     elsif params[:manufacture_request]
@@ -302,6 +306,7 @@ class InventoriesController < ApplicationController
         save_ticket_spare_part["CLS", 79] 
 
         flash[:notice] = "successfully completed."
+        goto_url = same_page
       end
 
     end
@@ -329,7 +334,7 @@ class InventoriesController < ApplicationController
       flash[:error] = "#{@flash_message} Unable to start new process." if @bpm_process_error
     end
 
-    redirect_to todos_url
+    redirect_to goto_url
   end
 
   def update_onloan_part_order
@@ -483,16 +488,23 @@ class InventoriesController < ApplicationController
 
     @estimation = TicketEstimation.find estimation_params[:id]
     updatable_estimation_params = estimation_params
-    updatable_estimation_params.merge!(status_id: EstimationStatus.find_by_code("CLS").id, approved_at: DateTime.now, approved_by: current_user.id)
+    @estimation.attributes = updatable_estimation_params
+
+    updatable_estimation_params.merge!(status_id: EstimationStatus.find_by_code("CLS").id, cust_approved_at: DateTime.now, cust_approved_by: current_user.id)
     @ticket = @estimation.ticket
     continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
     engineer_id = params[:engineer_id]
 
     if continue
       if @estimation.cust_approved
+
+        if (@estimation.cust_approval_required)
+          @estimation.ticket.update cus_payment_required: true
+        end
+
+
         if ( !@estimation.approval_required and @estimation.advance_payment_amount.to_f > 0) or ( @estimation.approval_required and @estimation.approved_adv_pmnt_amount.to_f > 0)
           updatable_estimation_params.merge!(status_id: EstimationStatus.find_by_code("APP").id )
-          @estimation.ticket.update cus_payment_required: true
 
           quotation = @estimation.customer_quotations.find_by_canceled(false)
           d20_advance_payment_required = 'Y'
@@ -625,10 +637,14 @@ class InventoriesController < ApplicationController
 
     if continue
       if @estimation.cust_approved
+
+        if (@estimation.cust_approval_required)
+          @estimation.ticket.update cus_payment_required: true
+        end
+
         if ( !@estimation.approval_required and @estimation.advance_payment_amount.to_f > 0) or ( @estimation.approval_required and @estimation.approved_adv_pmnt_amount.to_f > 0)
 
           @estimation.status_id = EstimationStatus.find_by_code("APP").id
-          @estimation.ticket.update cus_payment_required: true
 
           quotation = @estimation.customer_quotations.where(canceled: false).first.try(:id)
 

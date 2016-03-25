@@ -4,7 +4,7 @@
 = render "tickets/tickets_pack/ticket_header", ticket: ticket, product: product
 
 = tab_panel do
-  = tab_nav_tab({class: "small_scale_margin-bottom2"}, ticket_info: {content: "Ticket info"}, estimate_job: {content: "Estimate external job", active_class: "active"}, invoice: {content: "Invoice"})
+  = tab_nav_tab({class: "small_scale_margin-bottom2"}, ticket_info: {content: "Ticket info"}, estimate_job: {content: "Final job estimation", active_class: "active"}, invoice: {content: "Invoice"})
   .tab-content
     = tab_content tabpointer: :ticket_info do
       = tab_panel do
@@ -16,4 +16,4 @@
 
     = tab_content tabpointer: :invoice do
       = tab_panel do
-        = render "tickets/tickets_pack/estimate_job_final/invoice", invoice: invoice, ticket: ticket
+        = render "tickets/tickets_pack/estimate_job_final/invoice", ticket: ticket
