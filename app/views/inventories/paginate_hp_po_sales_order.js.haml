@@ -1,0 +1,5 @@
+Tickets.ajax_loader();
+
+$("#{@rendering_id}").html("#{j render 'inventories/'+@rendering_file, ticket_spare_parts: @ticket_spare_part}");
+
+Tickets.remove_ajax_loader();

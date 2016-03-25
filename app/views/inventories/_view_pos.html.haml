@@ -1,0 +1,28 @@
+.row
+  / = paginate @ticket_spare_part, remote: true, method: :get, params: {controller: "inventories", action: "paginate_hp_po_sales_order", rendering_id: "#paginate_hp_po_sales", per_page: 3, rendering_file: "view_hp_po_sales"}
+
+  / #paginate_hp_po_sales
+  %table.table.table-hover
+    %thead
+      %tr
+        %th No
+        %th PO No
+        %th PO Date
+        %th No of Events
+        %th Amount ($)
+        %th Note
+        %th
+    %tbody
+      - @view_so_pos.each_with_index do |po, index|
+        %tr
+          %th{:scope => "row"} #{index+1}
+          %td= po.try(:po_no)
+          %td= po.try(:po_date).try(:strftime, "%Y-%m-%d")
+          %td 
+          %td= po.try(:amount)
+          %td= po.try(:note)
+          %td
+            / = link_to "view"
+            = link_to "view", view_hp_po_sales_spare_parts_ajax_inventories_path(po_id: po.id), remote: true
+.row
+  #view_selected_po
