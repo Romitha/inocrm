@@ -38,7 +38,7 @@ class TicketSparePart < ActiveRecord::Base
   validates_presence_of :spare_part_description
 
   before_save do |ticket_spare_part|
-    ticket_spare_part.note = "#{ticket_spare_part.note} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(ticket_spare_part.current_user_id).email}</span><br/>#{ticket_spare_part.note_was}" if ticket_spare_part.persisted? and ticket_spare_part.note_changed? and ticket_spare_part.note.present?
+    ticket_spare_part.note = "#{self.note} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(ticket_spare_part.current_user_id).email}</span><br/>#{ticket_spare_part.note_was}" if ticket_spare_part.persisted? and self.note_changed? and self.note.present?
   end
 
   def flush_cache
@@ -115,7 +115,7 @@ class TicketFsr < ActiveRecord::Base
 
 
   before_save do |ticket_fsr|
-    ticket_fsr.note = "#{ticket_fsr.note} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(ticket_fsr.current_user_id).email}</span><br/>#{ticket_fsr.note_was}" if ticket_fsr.persisted? and ticket_fsr.note_changed? and ticket_fsr.note.present?
+    ticket_fsr.remarks = "#{self.remarks} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(ticket_fsr.current_user_id).email}</span><br/>#{ticket_fsr.remarks_was}" if ticket_fsr.persisted? and self.remarks_changed? and self.remarks.present?
   end
 end
 
