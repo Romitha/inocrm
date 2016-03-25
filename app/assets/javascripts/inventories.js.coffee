@@ -24,11 +24,31 @@ window.Inventories =
     @warranty_batch_check()
     @inventory_product_category()
     @customer_inquire_search()
+    @hp_po_function()
+    @add_append()
+    # @remove_append()
     return
 
   customer_inquire_search: ->
+  add_append: ->
+    $(".add_id2").click (e)->
+      e.preventDefault()
+      value= $(@).val()
+      $("#remove_me_"+value).parents("tr").eq(0).removeClass("hide")
+      $("#ticket_spare_part_"+value).prop("disabled", false)
+      $(@).parents("tr").eq(0).addClass("hide")
 
+    $(".remove_id2").click (e)->
+      e.preventDefault()
+      value= $(@).val()
+      $("#add_me_"+value).parents("tr").eq(0).removeClass("hide")
+      $("#ticket_spare_part_"+value).prop("disabled", true)
+      $(@).parents("tr").eq(0).addClass("hide")
 
+  hp_po_function: ->
+    $("#search_inventory_brand").change ->
+      selected = $(@).val()
+      $("#idq2").html(selected)
   inventory_product_category: ->
     $("#inventory_product_category3_id").change ->
       selected = $(@).val()

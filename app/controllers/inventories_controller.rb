@@ -51,11 +51,32 @@ class InventoriesController < ApplicationController
     end
   end
 
-  def hp_po_or_sales_order
+  def hp_po
+    Inventory
+    # Product
+    # @product_brand = ProductBrand.all
     TicketSparePart
+    @create_so_po = SoPo.new
+    @view_so_pos = SoPo.all
+    @ticket_spare_part = TicketSparePart.all.page(params[:page]).per(3)
 
-    @ticket_spare_part = TicketSparePart.all
     render "inventories/hp_po_or_sales_order"
+  end
+
+  def view_hp_po_sales_spare_parts_ajax
+    po_id = params[:po_id]
+    if po_id.present?
+      @sopo = SoPo.find po_id
+    else
+
+    end
+  end
+
+  def paginate_hp_po_sales_order
+    TicketSparePart
+    @rendering_id = params[:rendering_id]
+    @rendering_file = params[:rendering_file]
+    @ticket_spare_part = TicketSparePart.all.page(params[:page]).per(params[:per_page])
   end
 
   def search_inventories

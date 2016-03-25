@@ -1,32 +1,64 @@
-%strong.h4 Parts to be PO
+- create_so_po = @create_so_po
+- view_so_pos = @view_so_pos
+- ticket_spare_part  = @ticket_spare_part
+.row
+  .col-md-6
+    %strong.h4 Parts to be PO
+  .col-md-6
+    = label_tag InventoryCategoryCaption.first.caption
+    = select_tag "search_inventory[brand]", options_from_collection_for_select(InventoryCategory1.all, :id, :name, (params[:search_inventory] and params[:search_inventory][:brand])), include_blank: true
 
-%table.table.table-hover
-  %thead
-    %tr
-      %th No
-      %th Event No
-      %th Event Closed Date
-      %th Order No
-      %th Date Ordered
-      %th Part No
-      %th Description
-      %th Note
-      %th Ticket No
-      %th Serial No
-  %tbody
-    - @ticket_spare_part.each_with_index do |part, index|
+.row
+  = paginate @ticket_spare_part, remote: true, method: :get, params: {controller: "inventories", action: "paginate_hp_po_sales_order", rendering_id: "#paginate_hp_po_sales", per_page: 3, rendering_file: "view_hp_po_sales"}
+
+  #paginate_hp_po_sales
+  %table.table.table-hover
+    %thead
       %tr
-        %th{:scope => "row"} #{index+1}
-        %td= part.ticket_spare_part_manufacture.try(:event_no)
-        %td= part.ticket_spare_part_manufacture.try(:issued_at)
-        %td= part.ticket_spare_part_manufacture.try(:order_no)
-        %td= part.ticket_spare_part_manufacture.try(:issued_at)
-        %td= part.ticket_spare_part_manufacture.try(:spare_part_id)
-        %td= part.try(:spare_part_description)
-        %td= simple_format part.try(:note)
-        / %td 
-        /   = link_to "#", class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: " #{part.try(:note)}" do
-        /     = simple_format part.try(:note)
-        %td
-          #{part.ticket_id.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])}
-        %td= part.try(:spare_part_no)
+        %th No
+        %th Event No
+        %th Event Closed Date
+        %th Order No
+        %th Date Ordered
+        %th Part No
+        %th Description
+        %th Note
+        %th Ticket No
+        %th Serial No
+        %th
+    %tbody
+      - @ticket_spare_part.each_with_index do |part, index|
+        %tr
+          %th{:scope => "row"} #{index+1}
+          %td= part.ticket_spare_part_manufacture.try(:event_no)
+          %td= part.ticket_spare_part_manufacture.try(:issued_at)
+          %td= part.ticket_spare_part_manufacture.try(:order_no)
+          %td= part.ticket_spare_part_manufacture.try(:issued_at)
+          %td= part.ticket_spare_part_manufacture.try(:spare_part_id)
+          %td= part.try(:spare_part_description)
+          %td= simple_format part.try(:note)
+          / %td
+          /   = link_to "#", class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: " #{part.try(:note)}" do
+          /     = simple_format part.try(:note)
+          %td
+            #{part.ticket_id.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])}
+          %td= part.try(:spare_part_no)
+          %td.td_class
+            %button.add_id2{:value => "#{part.id}", id: "add_me_#{part.id}"} Add
+            / = link_to "add"
+            / %button#add_id2 Append text
+            / = link_to "add", add_spare_parts_so_po_ajax_inventories_path(spare_part_id: part.id), remote: true
+
+.row
+  = tab_panel do
+    = tab_nav_tab({class: "small_scale_margin-bottom1"}, create_po_and_salesorder: {content: "Create PO", active_class: "active"}, view_pos_and_salesorders: {content: "View PO's"})
+    .tab-content
+      = tab_content tabpointer: :create_po_and_salesorder, active_class: "active" do
+        = tab_panel do
+          / = render "inventories/create_so_po", create_so_po: create_so_po, ticket_spare_part: ticket_spare_part
+          = render "inventories/create_so_po", create_so_po: create_so_po, ticket_spare_part: ticket_spare_part
+          / #spare_part_table
+      = tab_content tabpointer: :view_pos_and_salesorders do
+        = tab_panel do
+          = render "inventories/view_pos", view_so_pos: view_so_pos
+          / assign ticket info

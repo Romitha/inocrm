@@ -333,7 +333,10 @@ Rails.application.routes.draw do
       # get "inventory_manufacture"
       # get "inventory_unit"
       get "inventory_master_data"
-      get "hp_po_or_sales_order"
+      get "hp_po"
+      get "paginate_hp_po_sales_order"
+      get "add_spare_parts_so_po_ajax"
+      get "view_hp_po_sales_spare_parts_ajax"
 
       
 

@@ -31,6 +31,8 @@ class TicketSparePart < ActiveRecord::Base
 
   has_many :ticket_estimation_parts, foreign_key: :ticket_spare_part_id
 
+  has_many :so_po_items, foreign_key: :ticket_spare_part_id
+
   after_save :flush_cache
 
   validates_presence_of :spare_part_description
@@ -58,6 +60,21 @@ class TicketSparePart < ActiveRecord::Base
       data.save
     end
   end
+end
+
+class SoPoItem < ActiveRecord::Base
+  self.table_name = "spt_so_po_item"
+
+  belongs_to :ticket_spare_part
+  belongs_to :so_po
+  belongs_to :ticket_spare_part_manufacture
+end
+
+class SoPo < ActiveRecord::Base
+  self.table_name = "spt_so_po"
+
+  has_many :so_po_items, foreign_key: :spt_so_po_id
+  validates :po_no, :po_date, :so_no, :amount, presence: true
 end
 
 class TicketSparePartStore < ActiveRecord::Base
@@ -123,6 +140,8 @@ class TicketSparePartManufacture < ActiveRecord::Base
   belongs_to :ticket_spare_part, foreign_key: :spare_part_id
   belongs_to :manufacture_currency, class_name: "Currency", foreign_key: :manufacture_currency_id
   belongs_to :return_parts_bundle
+
+  has_many :so_po_items, foreign_key: :ticket_spare_part_item_id
 
 end
 

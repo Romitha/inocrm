@@ -1,0 +1,47 @@
+.row
+  .col-md-3
+    %strong PO No: #{sopo.po_no}
+  .col-md-3
+    %strong PO Date: #{sopo.po_date.try(:strftime, "%Y-%m-%d")}
+  .col-md-3
+    %strong Sales Order No: #{sopo.so_no}
+  .col-md-3
+    %strong Amount: #{sopo.amount}
+.row
+  %table.table.table-hover
+    %thead
+      %tr
+        %th No
+        %th Event No
+        %th Event Closed Date
+        %th Order No
+        %th Date Ordered
+        %th Part No
+        %th Description
+        %th Note
+        %th Ticket No
+        %th Serial No
+        %th Expected Amount
+        %th Amount ($)
+    %tbody
+      - sopo.so_po_items.each_with_index do |so_po_item, index|
+        %tr
+          %th{:scope => "row"} #{index+1}
+          %td= so_po_item.ticket_spare_part_manufacture.try(:event_no)
+          %td= so_po_item.ticket_spare_part_manufacture.try(:issued_at)
+          %td= so_po_item.ticket_spare_part_manufacture.try(:order_no)
+          %td= so_po_item.ticket_spare_part_manufacture.try(:issued_at)
+          %td= so_po_item.ticket_spare_part_manufacture.try(:spare_part_id)
+          %td= so_po_item.ticket_spare_part.try(:spare_part_description)
+          %td= simple_format so_po_item.ticket_spare_part.try(:note)
+          / %td 
+          /   = link_to "#", class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: " #{part.try(:note)}" do
+          /     = simple_format part.try(:note)
+          %td
+            #{so_po_item.ticket_spare_part.ticket_id.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])}
+          %td= so_po_item.ticket_spare_part.try(:spare_part_no)
+          %td= so_po_item.ticket_spare_part_manufacture.try(:payment_expected_manufacture)
+          %td= so_po_item.try(:amount)
+.row
+  .col-md-6
+    %strong Note: #{sopo.note}
