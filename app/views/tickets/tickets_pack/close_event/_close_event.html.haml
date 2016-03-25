@@ -52,9 +52,15 @@
         = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
         - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
           = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
-
-        = tm.input :event_closed, label: "Event Closed (Claim Completed)", wrapper: :append, input_html: {checked: true}
-        = tm.input :payment_expected_manufacture, label: "Payment Expected (#{product.product_brand.currency.try(:code)})", input_html: {class: "only_float"}
-      = f.input :note, input_html: {value: nil}
-      = simple_format f.object.note
-      = f.submit "Save", class: "btn btn-success"
+        .row
+          .col-md-6
+            = tm.input :event_closed, label: "Event Closed (Claim Completed)",wrapper: :append, input_html: {checked: true, class: "hide"}
+          .col-md-6
+            = tm.input :po_required, label: "PO Required", wrapper: :append
+          .col-md-12
+            = tm.input :payment_expected_manufacture, label: "Payment Expected (#{product.product_brand.currency.try(:code)})", input_html: {class: "only_float"}
+          .col-md-12
+            = f.input :note, input_html: {value: nil}
+            = simple_format f.object.note
+          .col-md-12
+            = f.submit "Save", class: "btn btn-success"
