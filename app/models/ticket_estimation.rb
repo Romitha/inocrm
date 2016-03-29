@@ -67,6 +67,7 @@ class TicketEstimationExternalTax <ActiveRecord::Base
   self.table_name = "spt_ticket_estimation_external_tax"
 
   belongs_to :ticket_estimation_external
+  belongs_to :tax
 end
 
 class EstimationStatus < ActiveRecord::Base
@@ -97,6 +98,8 @@ class TicketEstimationPartTax <ActiveRecord::Base
   self.table_name = "spt_ticket_estimation_part_tax"
 
   belongs_to :ticket_estimation_part
+  belongs_to :tax
+
 end
 
 class TicketEstimationAdditional < ActiveRecord::Base
@@ -115,7 +118,9 @@ end
 class Tax < ActiveRecord::Base
   self.table_name = "mst_tax"
 
-  belongs_to :ticket_estimation_additional_tax
+  has_many :ticket_estimation_additional_taxes
+  has_many :ticket_estimation_external_taxes
+  has_many :ticket_estimation_part_taxes
 
 end
 
@@ -123,7 +128,7 @@ class TicketEstimationAdditionalTax < ActiveRecord::Base
   self.table_name = "spt_ticket_estimation_additional_tax"
 
   belongs_to :ticket_estimation_additional
-  has_many :taxes, foreign_key: :tax_id
+  belongs_to :tax
 end
 
 class AdditionalCharge < ActiveRecord::Base
