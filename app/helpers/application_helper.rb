@@ -214,6 +214,492 @@ module ApplicationHelper
     ]
   end
 
+
+  def print_ticket_invoice_tag_value invoice  #REQUEST_TYPE=PRINT_SPPT_INVOICE
+
+    ticket = invoice.ticket    
+    ticket_date = ticket.created_at.strftime(INOCRM_CONFIG['long_date_format'])
+    ticket_time = ticket.created_at.strftime(INOCRM_CONFIG['time_format'])
+    ticket_ref = ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG['ticket_no_format'])
+    company_name = ticket.customer.mst_title.title+" "+ticket.customer.name
+    contact_person = ticket.contact_person1.mst_title.title +" "+ticket.contact_person1.name
+    address1 = ticket.customer.address1
+    address2 = ticket.customer.address2
+    address3 = ticket.customer.address3
+    address4 = ticket.customer.address4
+    telephone = ticket.customer.contact_type_values.select{|c| c.contact_type.name == "Telephone"}.first.try(:value)
+    mobile = ticket.customer.contact_type_values.select{|c| c.contact_type.mobile}.first.try(:value)
+    fax = ticket.customer.contact_type_values.select{|c| c.contact_type.name == "Fax"}.first.try(:value)
+    email = ticket.customer.contact_type_values.select{|c| c.contact_type.email}.first.try(:value)
+    product_brand = ticket.products.first.product_brand.name
+    product_category = ticket.products.first.product_category.name
+    model_no = ticket.products.first.model_no
+    serial_no = ticket.products.first.serial_no
+    product_no = ticket.products.first.product_no
+    problem_des1 = ticket.problem_description.to_s[0..100]
+    problem_des2 = ticket.problem_description.to_s[101..200]
+    extra_remark1 = ticket.ticket_extra_remarks.first.try(:extra_remark).try(:extra_remark)
+    extra_remark2 = ticket.ticket_extra_remarks.second.try(:extra_remark).try(:extra_remark)
+    extra_remark3 = ticket.ticket_extra_remarks.third.try(:extra_remark).try(:extra_remark)
+    extra_remark4 = ticket.ticket_extra_remarks.fourth.try(:extra_remark).try(:extra_remark)
+    extra_remark5 = ticket.ticket_extra_remarks.fifth.try(:extra_remark).try(:extra_remark)
+    extra_remark6 = ticket.ticket_extra_remarks.sixth.try(:extra_remark).try(:extra_remark)
+    remark = ticket.remarks.split('<span class=\'pop_note_e_time\'>').first if ticket.remarks.present?
+    accessory1 = ticket.accessories.first.try(:accessory)
+    accessory2 = ticket.accessories.second.try(:accessory)
+    accessory3 = ticket.accessories.third.try(:accessory)
+    accessory4 = ticket.accessories.fourth.try(:accessory)
+    accessory5 = ticket.accessories.fifth.try(:accessory)
+    accessory_other = ticket.other_accessories
+    resolution_summary1 = ticket.resolution_summary.to_s[0..100]
+    resolution_summary2 = ticket.resolution_summary.to_s[101..200]
+    invoice_no = invoice.invoice_no.to_s.rjust(6, INOCRM_CONFIG['invoice_no_format'])
+    payment_term = invoice.try.payment_term.name
+    special_note = ticket.note
+    invoice_note = invoice.note
+    created_by = ticket.created_by.user.name
+
+    total_amount = 0
+    net_total_amount = 0
+    currency = invoice.currency.code
+    total_advance_recieved = 0
+    total_deduction = 0
+    balance_tobe_paid = 0
+
+    item_index = 0
+    repeat_data = ""
+    invoice.ticket_invoice_estimations.each do |ticket_invoice_estimation|
+      quantity = 1
+      currency_1 = ticket_invoice_estimation.ticket_estimation.currency.code
+
+      if ticket_invoice_estimation.ticket_estimation.estimation_externals.present?
+        estimation_external = ticket_invoice_estimation.ticket_estimation.estimation_externals.first
+        item_index += 1
+        description = estimation_external.description
+
+        unit_price = ticket_invoice_estimation.ticket_estimation.approval_required ? estimation_external.approved_estimated_price : estimation_external.estimated_price
+
+        totalprice = unit_price
+        total_amount += totalprice
+        net_total_amount += totalprice
+
+        repeat_data += "INDEX_NO="   +item_index+"$|#"
+        repeat_data += "ITEM_CODE=$|#"
+        repeat_data += "DESCRIPTION="+description+"$|#"
+        repeat_data += "QUANTITY="   +quantity+"$|#"
+        repeat_data += "UNIT_PRICE=" +unit_price+"$|#"
+        repeat_data += "CURRENCY1="  +currency_1+"$|#"
+        repeat_data += "TOTAL_PRICE="+totalprice+"$|#"
+        repeat_data += "CURRENCY2="  +currency_1+"$|#"
+
+        estimation_external.ticket_estimation_external_taxes.each do |ticket_estimation_external_tax|
+          item_index += 1
+          description = ticket_estimation_external_tax.tax.tax + "  (" + ticket_estimation_external_tax.tax_rate + ")"
+          quantity = 1
+          unit_price = ticket_invoice_estimation.ticket_estimation.approval_required ? ticket_estimation_external_tax.approved_tax_amount : ticket_estimation_external_tax.estimated_tax_amount
+
+          totalprice = unit_price
+          total_amount += totalprice
+          net_total_amount += totalprice
+
+          repeat_data += "INDEX_NO="   +item_index+"$|#"
+          repeat_data += "ITEM_CODE=$|#"
+          repeat_data += "DESCRIPTION="+description+"$|#"
+          repeat_data += "QUANTITY="   +"$|#"
+          repeat_data += "UNIT_PRICE=" +unit_price+"$|#"
+          repeat_data += "CURRENCY1="  +currency_1+"$|#"
+          repeat_data += "TOTAL_PRICE="+totalprice+"$|#"
+          repeat_data += "CURRENCY2="  +currency_1+"$|#"
+        end
+      end
+
+      if ticket_invoice_estimation.ticket_estimation.ticket_estimation_parts.present?
+        estimation_part = ticket_invoice_estimation.ticket_estimation.ticket_estimation_parts.first
+        item_index += 1
+        description = "Part No: "+estimation_part.ticket_spare_part.spare_part_no+" "+ estimation_part.ticket_spare_part.spare_part_description
+        item_code = estimation_part.ticket_spare_part.spare_part_store.present? ? estimation_part.ticket_spare_part.spare_part_store.approved_inventory_product.item_code : ""
+
+        unit_price = invoice_estimation.ticket_estimation.approval_required ? estimation_part.approved_estimated_price : estimation_part.estimated_price
+
+        totalprice = unit_price
+        total_amount += totalprice
+        net_total_amount += totalprice
+
+        repeat_data += "INDEX_NO="   +item_index+"$|#"
+        repeat_data += "ITEM_CODE="  +item_code+"$|#"
+        repeat_data += "DESCRIPTION="+description+"$|#"
+        repeat_data += "QUANTITY="   +quantity+"$|#"
+        repeat_data += "UNIT_PRICE=" +unit_price+"$|#"
+        repeat_data += "CURRENCY1="  +currency_1+"$|#"
+        repeat_data += "TOTAL_PRICE="+totalprice+"$|#"
+        repeat_data += "CURRENCY2="  +currency_1+"$|#"
+
+        estimation_part.ticket_estimation_part_taxes.each do |ticket_estimation_part_tax|
+          item_index += 1
+          description = ticket_estimation_part_tax.tax.tax + "  (" + ticket_estimation_part_tax.tax_rate + ")"
+
+          unit_price = invoice_estimation.ticket_estimation.approval_required ? ticket_estimation_part_tax.approved_tax_amount : ticket_estimation_part_tax.estimated_tax_amount
+      
+          totalprice = unit_price
+          total_amount += totalprice
+          net_total_amount += totalprice
+
+          repeat_data += "INDEX_NO="   +item_index+"$|#"
+          repeat_data += "ITEM_CODE=$|#"
+          repeat_data += "DESCRIPTION="+description+"$|#"
+          repeat_data += "QUANTITY="   +"$|#"
+          repeat_data += "UNIT_PRICE=" +unit_price+"$|#"
+          repeat_data += "CURRENCY1="  +currency_1+"$|#"
+          repeat_data += "TOTAL_PRICE="+totalprice+"$|#"
+          repeat_data += "CURRENCY2="  +currency_1+"$|#"
+        end
+      end
+
+      ticket_invoice_estimation.ticket_estimation.ticket_estimation_additionals.each do |ticket_estimation_additional|
+        item_index += 1
+        description = ticket_estimation_additional.additional_charge.additional_charge
+        unit_price = invoice_estimation.ticket_estimation.approval_required ? ticket_estimation_additional.approved_estimated_price : ticket_estimation_additional.estimated_price
+
+        totalprice = unit_price
+        total_amount += totalprice
+        net_total_amount += totalprice
+
+        repeat_data += "INDEX_NO="   +item_index+"$|#"
+        repeat_data += "ITEM_CODE=$|#"
+        repeat_data += "DESCRIPTION="+description+"$|#"
+        repeat_data += "QUANTITY="   +quantity+"$|#"
+        repeat_data += "UNIT_PRICE=" +unit_price+"$|#"
+        repeat_data += "CURRENCY1="  +currency_1+"$|#"
+        repeat_data += "TOTAL_PRICE="+totalprice+"$|#"
+        repeat_data += "CURRENCY2="  +currency_1+"$|#"
+
+        ticket_estimation_additional.ticket_estimation_additional_taxes.each do |ticket_estimation_additional_tax|
+          item_index += 1
+          description = ticket_estimation_additional_tax.tax.tax + "  (" + ticket_estimation_additional_tax.tax_rate + ")"
+          unit_price = invoice_estimation.ticket_estimation.approval_required ? ticket_estimation_additional_tax.approved_tax_amount : ticket_estimation_additional_tax.estimated_tax_amount
+        
+          totalprice = unit_price
+          total_amount += totalprice
+          net_total_amount += totalprice
+
+          repeat_data += "INDEX_NO="   +item_index+"$|#"
+          repeat_data += "ITEM_CODE=$|#"
+          repeat_data += "DESCRIPTION="+description+"$|#"
+          repeat_data += "QUANTITY="   +"$|#"
+          repeat_data += "UNIT_PRICE=" +unit_price+"$|#"
+          repeat_data += "CURRENCY1="  +currency_1+"$|#"
+          repeat_data += "TOTAL_PRICE="+totalprice+"$|#"
+          repeat_data += "CURRENCY2="  +currency_1+"$|#"
+        end
+      end
+    end
+
+    invoice.ticket_invoice_terminates.each do |ticket_invoice_terminate|
+      currency_1 = ticket_invoice_terminate.act_terminate_job_payment.currency.code
+      item_index += 1
+      description = ticket_invoice_terminate.act_terminate_job_payment.payment_item.name
+      unit_price -= ticket_invoice_terminate.act_terminate_job_payment.amount
+
+      totalprice = unit_price
+      total_amount += totalprice
+      net_total_amount += totalprice
+
+      repeat_data += "INDEX_NO="   +item_index+"$|#"
+      repeat_data += "ITEM_CODE=$|#"
+      repeat_data += "DESCRIPTION="+description+"$|#"
+      repeat_data += "QUANTITY="   +quantity+"$|#"
+      repeat_data += "UNIT_PRICE=" +unit_price+"$|#"
+      repeat_data += "CURRENCY1="  +currency_1+"$|#"
+      repeat_data += "TOTAL_PRICE="+totalprice+"$|#"
+      repeat_data += "CURRENCY2="  +currency_1+"$|#"
+    end
+
+
+    do while invoice.invoice_estimation
+        item_code = ""
+        description = ""
+        unit_price = 0
+        totalprice = 0
+        quantity = 1
+        currency_1 = invoice_estimation.estimation.currency.code
+  if invoice_estimation.estimation.estimation_external.present?
+           item_index += 1
+     description = invoice_estimation.estimation.estimation_external.description
+           if invoice_estimation.estimation.approval_required
+              unit_price = invoice_estimation.estimation.estimation_external.approved_estimated_price
+           else
+              unit_price = invoice_estimation.estimation.estimation_external.estimated_price
+           end
+           totalprice = unit_price
+           total_amount += totalprice
+           net_total_amount += totalprice
+
+           repeat_data += "INDEX_NO="   +item_index+"$|#"
+           repeat_data += "ITEM_CODE="  +item_code+"$|#"
+           repeat_data += "DESCRIPTION="+description+"$|#"
+           repeat_data += "QUANTITY="   +quantity+"$|#"
+           repeat_data += "UNIT_PRICE=" +unit_price+"$|#"
+           repeat_data += "CURRENCY1="  +currency_1+"$|#"
+           repeat_data += "TOTAL_PRICE="+totalprice+"$|#"
+           repeat_data += "CURRENCY2="  +currency_1+"$|#"
+
+     do while invoice_estimation.estimation.estimation_external.external_tax
+          item_index += 1
+          item_code = ""
+          description = external_tax.tax.tax + "  (" + external_tax.tax_rate + ")"
+          unit_price = 0
+          totalprice = 0
+          quantity = 1
+            if invoice_estimation.estimation.approval_required
+                  unit_price = external_tax.approved_tax_amount
+            else
+                  unit_price = external_tax.estimated_tax_amount
+            end
+            totalprice = unit_price
+                total_amount += totalprice
+                net_total_amount += totalprice
+
+            repeat_data += "INDEX_NO="   +item_index+"$|#"
+            repeat_data += "ITEM_CODE="  +item_code+"$|#"
+            repeat_data += "DESCRIPTION="+description+"$|#"
+            repeat_data += "QUANTITY="   +"$|#"
+            repeat_data += "UNIT_PRICE=" +unit_price+"$|#"
+            repeat_data += "CURRENCY1="  +currency_1+"$|#"
+            repeat_data += "TOTAL_PRICE="+totalprice+"$|#"
+            repeat_data += "CURRENCY2="  +currency_1+"$|#"
+     end
+        end
+
+        item_code = ""
+        description = ""
+        unit_price = 0
+        totalprice = 0
+        quantity = 1
+  if invoice_estimation.estimation.estimation_part.present?
+           item_index += 1
+     description = "Part No: "+invoice_estimation.estimation.estimation_part.spare_part.pare_part_no+"  "+ invoice_estimation.estimation.estimation_part.spare_part.pare_part_description
+           if invoice_estimation.estimation.estimation_part.spare_part_store.present?
+              item_code = invoice_estimation.estimation.estimation_part.spare_part_store.product.item_code
+           end
+           if invoice_estimation.estimation.approval_required
+              unit_price = invoice_estimation.estimation.estimation_part.approved_estimated_price
+           else
+              unit_price = invoice_estimation.estimation.estimation_part.estimated_price
+           end
+           totalprice = unit_price
+           total_amount += totalprice
+           net_total_amount += totalprice
+
+           repeat_data += "INDEX_NO="   +item_index+"$|#"
+           repeat_data += "ITEM_CODE="  +item_code+"$|#"
+           repeat_data += "DESCRIPTION="+description+"$|#"
+           repeat_data += "QUANTITY="   +quantity+"$|#"
+           repeat_data += "UNIT_PRICE=" +unit_price+"$|#"
+           repeat_data += "CURRENCY1="  +currency_1+"$|#"
+           repeat_data += "TOTAL_PRICE="+totalprice+"$|#"
+           repeat_data += "CURRENCY2="  +currency_1+"$|#"
+
+     do while invoice_estimation.estimation.estimation_part.part_tax
+          item_index += 1
+          item_code = ""
+          description = part_tax.tax.tax + "  (" + part_tax.tax_rate + ")"
+          unit_price = 0
+          totalprice = 0
+          quantity = 1
+            if invoice_estimation.estimation.approval_required
+                  unit_price = part_tax.approved_tax_amount
+            else
+                  unit_price = part_tax.estimated_tax_amount
+            end
+            totalprice = unit_price
+                total_amount += totalprice
+                net_total_amount += totalprice
+
+            repeat_data += "INDEX_NO="   +item_index+"$|#"
+            repeat_data += "ITEM_CODE="  +item_code+"$|#"
+            repeat_data += "DESCRIPTION="+description+"$|#"
+            repeat_data += "QUANTITY="   +"$|#"
+            repeat_data += "UNIT_PRICE=" +unit_price+"$|#"
+            repeat_data += "CURRENCY1="  +currency_1+"$|#"
+            repeat_data += "TOTAL_PRICE="+totalprice+"$|#"
+            repeat_data += "CURRENCY2="  +currency_1+"$|#"
+     end
+        end
+
+        do while invoice_estimation.estimation_additional
+          item_code = ""
+          unit_price = 0
+          totalprice = 0
+          quantity = 1
+
+             item_index += 1
+       description = invoice_estimation.estimation.estimation_additional.additiona_charge.additiona_charge
+             if invoice_estimation.estimation.approval_required
+                unit_price = invoice_estimation.estimation.estimation_additional.approved_estimated_price
+             else
+                unit_price = invoice_estimation.estimation.estimation_additional.estimated_price
+             end
+             totalprice = unit_price
+             total_amount += totalprice
+                   net_total_amount += totalprice
+
+             repeat_data += "INDEX_NO="   +item_index+"$|#"
+             repeat_data += "ITEM_CODE="  +item_code+"$|#"
+             repeat_data += "DESCRIPTION="+description+"$|#"
+             repeat_data += "QUANTITY="   +quantity+"$|#"
+             repeat_data += "UNIT_PRICE=" +unit_price+"$|#"
+             repeat_data += "CURRENCY1="  +currency_1+"$|#"
+             repeat_data += "TOTAL_PRICE="+totalprice+"$|#"
+             repeat_data += "CURRENCY2="  +currency_1+"$|#"
+
+       do while invoice_estimation.estimation.estimation_additional.additional_tax
+            item_index += 1
+            item_code = ""
+            description = additional_tax.tax.tax + "  (" + additional_tax.tax_rate + ")"
+            unit_price = 0
+            totalprice = 0
+            quantity = 1
+              if invoice_estimation.estimation.approval_required
+                    unit_price = additional_tax.approved_tax_amount
+              else
+                    unit_price = v.estimated_tax_amount
+              end
+              totalprice = unit_price
+                  total_amount += totalprice
+                        net_total_amount += totalprice
+
+              repeat_data += "INDEX_NO="   +item_index+"$|#"
+              repeat_data += "ITEM_CODE="  +item_code+"$|#"
+              repeat_data += "DESCRIPTION="+description+"$|#"
+              repeat_data += "QUANTITY="   +"$|#"
+              repeat_data += "UNIT_PRICE=" +unit_price+"$|#"
+              repeat_data += "CURRENCY1="  +currency_1+"$|#"
+              repeat_data += "TOTAL_PRICE="+totalprice+"$|#"
+              repeat_data += "CURRENCY2="  +currency_1+"$|#"
+       end
+        end
+
+    end
+
+    do while invoice.invoice_terminate
+        item_code = ""
+        description = ""
+        unit_price = 0
+        totalprice = 0
+        quantity = 1
+        currency_1 = invoice_terminate.terminate_job_payment.currency.code
+
+  item_index += 1
+  description = invoice_terminate.terminate_job_payment.payment_item.name
+        unit_price = -invoice_terminate.terminate_job_payment.amount
+  totalprice = unit_price
+  total_amount += totalprice
+        net_total_amount += totalprice
+
+  repeat_data += "INDEX_NO="   +item_index+"$|#"
+  repeat_data += "ITEM_CODE="  +item_code+"$|#"
+  repeat_data += "DESCRIPTION="+description+"$|#"
+  repeat_data += "QUANTITY="   +quantity+"$|#"
+  repeat_data += "UNIT_PRICE=" +unit_price+"$|#"
+  repeat_data += "CURRENCY1="  +currency_1+"$|#"
+  repeat_data += "TOTAL_PRICE="+totalprice+"$|#"
+  repeat_data += "CURRENCY2="  +currency_1+"$|#"
+    end
+
+    do while invoice.invoice_advance_payment
+        item_code = ""
+        description = ""
+        unit_price = 0
+        totalprice = 0
+        quantity = 1
+        currency_1 = invoice_advance_payment.payment_received.currency.code
+
+  item_index += 1
+  description = "Advanced Payment Recieved on :"+ invoice_advance_payment.recieved_at.strftime(INOCRM_CONFIG['long_date_format']+' '+INOCRM_CONFIG['time_format'])
+        unit_price = -invoice_advance_payment.amount
+  totalprice = unit_price
+        total_advance_recieved += totalprice
+        net_total_amount += totalprice
+
+  repeat_data += "INDEX_NO="   +item_index+"$|#"
+  repeat_data += "ITEM_CODE="  +item_code+"$|#"
+  repeat_data += "DESCRIPTION="+description+"$|#"
+  repeat_data += "QUANTITY="   +"$|#"
+  repeat_data += "UNIT_PRICE=" +unit_price+"$|#"
+  repeat_data += "CURRENCY1="  +currency_1+"$|#"
+  repeat_data += "TOTAL_PRICE="+totalprice+"$|#"
+  repeat_data += "CURRENCY2="  +currency_1+"$|#"
+    end
+
+    if invoice.deducted_amount>0
+        item_code = ""
+        description = ""
+        unit_price = 0
+        totalprice = 0
+        quantity = 1
+        currency_1 = invoice.currency.code
+
+  item_index += 1
+  description = "Deduction"
+        unit_price = -invoice.deducted_amount
+  totalprice = unit_price
+        total_deduction += totalprice
+        net_total_amount += totalprice
+
+  repeat_data += "INDEX_NO="   +item_index+"$|#"
+  repeat_data += "ITEM_CODE="  +item_code+"$|#"
+  repeat_data += "DESCRIPTION="+description+"$|#"
+  repeat_data += "QUANTITY="   +"$|#"
+  repeat_data += "UNIT_PRICE=" +unit_price+"$|#"
+  repeat_data += "CURRENCY1="  +currency_1+"$|#"
+  repeat_data += "TOTAL_PRICE="+totalprice+"$|#"
+  repeat_data += "CURRENCY2="  +currency_1+"$|#"
+    end
+
+    db_total_amount = invoice.total_amount
+    db_net_total_amount = invoice.net_total_amount
+    db_total_advance_recieved = -invoice.total_advance_recieved
+    db_total_deduction = -invoice.total_deduction
+    if (db_total_amount != total_amount) or (db_net_total_amount <> net_total_amount) or (db_total_advance_recieved <> total_advance_recieved) or (db_total_deduction <> total_deduction)
+      total_error="Calculation Error In Totals"
+    end
+    balance_tobe_paid = db_total_amount + db_total_advance_recieved + db_total_deduction
+
+    [
+      "DUPLICATE_D=#{ticket.ticket_complete_print_count > 0 ? 'D' : ''}",
+      "INVOICE_NO=#{invoice_no}",
+      "PRODUCT_BRAND=#{product_brand}",
+      "MODEL_NO=#{model_no}",
+      "SERIAL_NO=#{serial_no}",
+      "PRODUCT_NO=#{product_no}",
+      "COMPANY_NAME=#{company_name}",
+      "ADDRESS1=#{address1}",
+      "ADDRESS2=#{address2}",
+      "ADDRESS3=#{address3}",
+      "ADDRESS4=#{address4}",
+      "TICKET_REF=#{ticket_ref}",
+      "CREATED_DATE=#{ticket_date}",
+      "CREATED_TIME=#{ticket_time}",
+      "PAYMENT_TERM=#{payment_term}",
+      #{repeat_data},
+      "TOTAL_AMOUNT=#{db_total_amount}",
+      "CURRENCY3=#{currency}",
+      "TOTAL_ADVANCE_RECEIVED=#{db_total_advance_recieved}",
+      "CURRENCY4=#{currency}",
+      "TOTAL_DEDUCTION=#{db_total_deduction}",
+      "CURRENCY5=#{currency}",
+      "BALANCE_TO_BE_PAID=#{balance_tobe_paid}",
+      "CURRENCY6=#{currency}",
+      "NOTE=#{invoice_note}",
+      "CREATED_BY=#{created_by}",
+      "RESOLUTION_SUMMARY1=#{resolution_summary1}",
+      "RESOLUTION_SUMMARY2=#{resolution_summary2}",
+      "TOTAL_ERROR=#{total_error}",
+    ]
+  end
+
+  
+
   def ticket_bpm_headers(process_id, ticket_id, spare_part_id = nil, onloan_spare_part_id = nil)
     TicketSparePart
     WorkflowMapping

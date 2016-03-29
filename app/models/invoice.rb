@@ -17,6 +17,7 @@ class TicketInvoice < ActiveRecord::Base
 
   has_many :ticket_invoice_estimations, foreign_key: :invoice_id
   has_many :ticket_estimations, through: :ticket_invoice_estimations
+  has_many :ticket_invoice_terminates, foreign_key: :invoice_id
 end
 
 class TicketInvoiceEstimation < ActiveRecord::Base
