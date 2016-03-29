@@ -530,6 +530,7 @@ module ApplicationHelper
 
       @h1 = "#{ticket_no}#{customer_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}#{delivery_stage}"
 
+
       if spare_part_id.present?
         spare_part = @ticket.ticket_spare_parts.find_by_id(spare_part_id)
         store_part = spare_part.ticket_spare_part_store
