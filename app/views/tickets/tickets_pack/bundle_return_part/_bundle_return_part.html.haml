@@ -1,56 +1,62 @@
 - uri = URI(request.url)
-
 .row
   .col-md-12.col-xs-12
-    #bundle_return_part_add_mustache
-      .row
-        .col-md-1.col-xs-1.strong
-          No
-        .col-md-2.col-xs-2.strong
-          Event No
-        .col-md-2.col-xs-2.strong
-          Ticket No
-
-        .col-md-2.col-xs-2.strong
-          Part No
-        .col-md-2.col-xs-2.strong
-          Description
-        .col-md-2.col-xs-2.strong
-          Part Status
-
-        .col-md-1.col-xs-1.strong
-          Action
-      - @manufacture_parts.each_with_index do |manufacture_part, index|
-        .row
-          .col-md-1.col-xs-1= index+1
-          .col-md-2.col-xs-2= manufacture_part.event_no
-          .col-md-2.col-xs-2= manufacture_part.ticket_spare_part.ticket_id.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
-          .col-md-2.col-xs-2= manufacture_part.ticket_spare_part.spare_part_no   
-          .col-md-2.col-xs-2= manufacture_part.ticket_spare_part.spare_part_description   
-          .col-md-2.col-xs-2= manufacture_part.ticket_spare_part.spare_part_status_action.name
-          .col-md-1.col-xs-1= link_to "Add", "#", onclick: "Inventories.load_mustache_bundle_return_part('add', #{manufacture_part.id}); return false;"
-    %hr
-.row
-  .col-md-12.col-xs-12
-    #bundle_return_part_remove_mustache
-    %hr
-.row
+    %p Total no of parts: #{@manufacture_parts.count}
+.row.to_bundle_parts{style: "margin-bottom: 30px"}
+  .table-responsive{style: "height: 110px;overflow-y: auto;"}
+    %table.table.table-bordered
+      %thead
+        %tr
+          %th
+            %strong No
+          %th
+            %strong Event No
+          %th
+            %strong Ticket No
+          %th
+            %strong Part No
+          %th
+            %strong Description
+          %th
+            %strong Part Status
+          %th
+            %strong Action
+      %tbody
+        - @manufacture_parts.each_with_index do |manufacture_part, index|
+          %tr
+            %th= index+1
+            %td= manufacture_part.event_no
+            %td= manufacture_part.ticket_spare_part.ticket_id.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
+            %td= manufacture_part.ticket_spare_part.spare_part_no
+            %td= manufacture_part.ticket_spare_part.spare_part_description
+            %td= manufacture_part.ticket_spare_part.spare_part_status_action.name
+            %td= link_to "Add", "#", onclick: "Inventories.load_mustache_bundle_return_part('add', #{manufacture_part.id}); return false;"
+.row.added_to_bundle_parts
+  .title.hide{style: "margin-bottom: 15px;"}
+    %strong Addded To Bundle Parts
+  #bundle_return_part_remove_mustache
+.row{style: "margin-top: 30px;"}
   - unless @manufacture_parts.empty?
-    .col-md-8.col-xs-8
-      %a.btn.btn-primary{:href => "#", :role => "button", :onclick => "Inventories.load_mustache_bundle_return_part('undelivered_bundle', ''); return false;"} Un delivered bundled
+    %hr
+    .col-md-6.col-xs-6
+      %strong Manufacture name:
+    .col-md-1.col-xs-1
+      %strong Bundle to:
+    .col-md-5.col-xs-5
+      %select
+        %option{:value => "volvo", :href => "#", :onclick => "Inventories.load_mustache_bundle_return_part('undelivered_bundle', ''); return false;"} Un delivered bundled
+        %option{:value => "saab", :href => "#", :onclick => "Inventories.load_mustache_bundle_return_part('new_bundle', ''); return false;"} Create New Bundle
+    .col-md-12.col-xs-12{style: "margin-top: 30px;"}
       #bundle_return_part_exist
-      %hr
-      #bundle_return_part_from_undeliver_bundle
-    .col-md-4.col-xs-4
-      %a.btn.btn-primary{:href => "#", :role => "button", :onclick => "Inventories.load_mustache_bundle_return_part('new_bundle', ''); return false;"} Create New Bundle
+    .col-md-12.col-xs-12{style: "margin-top: 15px;"}
       #bundle_return_part_with_form
         = simple_form_for ReturnPartsBundle.new, url: update_bundle_return_part_tickets_path, method: :post do |f|
 
-          = hidden_field_tag :process_id, Rails.cache.fetch(["/tickets/bundle_return_part", params[:task_id]])[:process_id]
-          = hidden_field_tag :task_id, Rails.cache.fetch(["/tickets/bundle_return_part", params[:task_id]])[:task_id]
-          = hidden_field_tag :owner, Rails.cache.fetch(["/tickets/bundle_return_part", params[:task_id]])[:owner]
-          - Rails.cache.fetch(["/tickets/bundle_return_part", params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
-            = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+          / = hidden_field_tag :process_id, Rails.cache.fetch(["/tickets/bundle_return_part", params[:task_id]])[:process_id]
+          / = hidden_field_tag :task_id, Rails.cache.fetch(["/tickets/bundle_return_part", params[:task_id]])[:task_id]
+          / = hidden_field_tag :owner, Rails.cache.fetch(["/tickets/bundle_return_part", params[:task_id]])[:owner]
+          / - Rails.cache.fetch(["/tickets/bundle_return_part", params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
+          /   = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
           = f.input :id, as: :hidden
           %strong Bundle no:
@@ -58,6 +64,14 @@
           %br
           = f.input :note
           = f.submit "Save", class: "btn btn-sm btn-success"
+    .col-md-12.col-xs-12
+      / %a.btn.btn-primary{:href => "#", :role => "button", :onclick => "Inventories.load_mustache_bundle_return_part('undelivered_bundle', ''); return false;"} Un delivered bundled
+      / %a.btn.btn-primary{:href => "#", :role => "button", :onclick => "Inventories.load_mustache_bundle_return_part('new_bundle', ''); return false;"} Create New Bundle
+      / .col-md-12.col-xs-12{style: "margin-top: 20px;"}
+      /   #bundle_return_part_exist
+    .col-md-12.col-xs-12{style: "margin-top: 20px;"}
+      #bundle_return_part_from_undeliver_bundle
+
 
 %script{type: "text/html", id: "bundle_return_part_mustache"}
   = render "tickets/tickets_pack/bundle_return_part/bundle_return_part_mustache"

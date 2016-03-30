@@ -425,8 +425,10 @@ window.Inventories =
 
   bundle_load: ->
     $("#brand_name").change ->
+
       #jQuery.get( url [, data ] [, success ] [, dataType ] )
       Tickets.ajax_loader()
+
       $.get $(@).data("url"), {product_brand_id: $(":selected", @).val(), template: $(@).data("template"), task_id: $(@).data("task-id")}, (data)-> Tickets.remove_ajax_loader()
 
   load_mustache_bundle_return_part: (action, manufacture_id)->
@@ -448,20 +450,21 @@ window.Inventories =
     else
       $.get "/tickets/bundle_return_part", {task_action: action, manufacture_id: manufacture_id}, (data)->
         if action == "add" or action == "remove"
+          $(".title").removeClass("hide")
           $('#bundle_return_part_add_mustache').html Mustache.to_html($('#bundle_return_part_mustache').html(), data.add_manufactures)
           $('#bundle_return_part_remove_mustache').html Mustache.to_html($('#bundle_return_part_mustache').html(), data.remove_manufactures)
 
         else if action == "undelivered_bundle"
           $('#bundle_return_part_exist').html Mustache.to_html($('#bundle_return_part_exist_mustache').html(), data.bundles)
-
+          $('#bundle_return_part_exist, #bundle_return_part_from_undeliver_bundle').removeClass("hide")
         else if action == "load_bundled_manufactures"
           $('#bundle_return_part_from_undeliver_bundle').html Mustache.to_html($('#bundle_return_part_mustache').html(), data.bundle_manufactures)
           $('#bundle_return_part_with_form').html Mustache.to_html($('#bundle_return_part_with_form_mustache').html(), data.bundle)
 
         else if action == "new_bundle"
-          $('#bundle_return_part_with_form').html Mustache.to_html($('#bundle_return_part_with_form_mustache').html(), data.bundle)
+          $('#bundle_return_part_with_form').html Mustache.to_html($('#bundle_return_part_with_form_mustache').html(), data.bundle, data.remove_manufactures)
+          $('#bundle_return_part_exist, #bundle_return_part_from_undeliver_bundle').addClass("hide")
           
-        
         Tickets.remove_ajax_loader()
 
 
