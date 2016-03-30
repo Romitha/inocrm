@@ -357,23 +357,3 @@ class TicketReAssignRequest < ActiveRecord::Base
   belongs_to :user_ticket_action, foreign_key: :ticket_action_id
 
 end
-
-class TicketPaymentReceived < ActiveRecord::Base
-  self.table_name = "spt_ticket_payment_received"
-
-  has_many :customer_feedbacks, foreign_key: :payment_received_id
-  accepts_nested_attributes_for :customer_feedbacks, allow_destroy: true
-
-  has_many :act_payment_receiveds, foreign_key: :ticket_payment_received_id
-  accepts_nested_attributes_for :act_payment_receiveds, allow_destroy: true
-
-  belongs_to :ticket
-
-  belongs_to :ticket_payment_received_type, foreign_key: :type_id
-
-  belongs_to :invoice
-  belongs_to :customer_quotation
-
-  validates_presence_of [:ticket_id, :received_at, :received_by, :amount, :type_id, :currency_id]
-
-end
