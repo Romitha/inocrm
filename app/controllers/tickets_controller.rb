@@ -1694,6 +1694,7 @@ class TicketsController < ApplicationController
       when "new_bundle"
         # @bundle_manufactures = TicketSparePartManufacture.where(id: session[:manufacture_rest_ids].uniq).map { |m| {id: m.id, event_no: m.event_no, ticket_no: m.ticket_spare_part.ticket_id, task_action: "remove", task_action_name: "remove"} }
         @bundle_manufactures = []
+        manufactures_count = session[:manufacture_rest_ids].count
         # @bundle = {bundled_by: current_user.try(:email), date_bundled: Date.today.try(:strftime, "%Y-%m-%d"), manufacture_count: 0, readonly: "readonly", task_id: session[:task_id], process_id: session[:process_id], owner: session[:owner]}
         @bundle = {bundled_by: current_user.try(:email), date_bundled: Date.today.try(:strftime, "%Y-%m-%d"), manufacture_count: manufactures_count, readonly: "", task_id: session[:task_id], process_id: session[:process_id], owner: session[:owner]}
       when "remove_from_bundle"
