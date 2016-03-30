@@ -18,6 +18,15 @@ class TicketInvoice < ActiveRecord::Base
   has_many :ticket_invoice_estimations, foreign_key: :invoice_id
   has_many :ticket_estimations, through: :ticket_invoice_estimations
   has_many :ticket_invoice_terminates, foreign_key: :invoice_id
+  has_many :ticket_invoice_advance_payments, foreign_key: :invoice_id
+  has_many :ticket_payment_receiveds, through: :ticket_invoice_advance_payments
+end
+
+class TicketInvoiceAdvancePayment < ActiveRecord::Base
+  self.table_name = "spt_ticket_invoice_advance_payment"
+
+  belongs_to :ticket_invoice, foreign_key: :invoice_id
+  belongs_to :ticket_payment_received, foreign_key: :payment_received_id
 end
 
 class TicketInvoiceEstimation < ActiveRecord::Base

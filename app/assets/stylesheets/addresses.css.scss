@@ -1,11 +1,10 @@
 .limit-height {
-//	max-height: 20%;
-	.fixed-height {
-		height: 150px;
-		overflow: auto;
-	}
+  // max-height: 20%;
+  .fixed-height {
+    height: 150px;
+    overflow: auto;
+  }
 }
-
 .page.current{
   float: left;
   padding: 6px 12px;

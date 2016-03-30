@@ -215,7 +215,8 @@ module ApplicationHelper
   end
 
 
-  def print_ticket_invoice_tag_value invoice  #REQUEST_TYPE=PRINT_SPPT_INVOICE
+  def print_ticket_invoice_tag_value ticket_invoice  #REQUEST_TYPE=PRINT_SPPT_INVOICE
+    invoice = ticket_invoice
 
     ticket = invoice.ticket    
     ticket_date = ticket.created_at.strftime(INOCRM_CONFIG['long_date_format'])
@@ -398,7 +399,7 @@ module ApplicationHelper
       currency_1 = ticket_invoice_terminate.act_terminate_job_payment.currency.code
       item_index += 1
       description = ticket_invoice_terminate.act_terminate_job_payment.payment_item.name
-      unit_price -= ticket_invoice_terminate.act_terminate_job_payment.amount
+      unit_price = -ticket_invoice_terminate.act_terminate_job_payment.amount
 
       totalprice = unit_price
       total_amount += totalprice
@@ -414,256 +415,54 @@ module ApplicationHelper
       repeat_data += "CURRENCY2="  +currency_1+"$|#"
     end
 
+    invoice.ticket_invoice_advance_payments.each do |ticket_invoice_advance_payment|
+      currency_1 = ticket_invoice_advance_payment.ticket_payment_received.currency.code
+      
+      item_index += 1
+      description = "Advanced Payment Recieved on :"+ ticket_invoice_advance_payment.ticket_payment_received.recieved_at.strftime(INOCRM_CONFIG['long_date_format']+' '+INOCRM_CONFIG['time_format'])
+      unit_price = -ticket_invoice_advance_payment.ticket_payment_received.amount
+      totalprice = unit_price
+      total_advance_recieved += totalprice
+      net_total_amount += totalprice
 
-    do while invoice.invoice_estimation
-        item_code = ""
-        description = ""
-        unit_price = 0
-        totalprice = 0
-        quantity = 1
-        currency_1 = invoice_estimation.estimation.currency.code
-  if invoice_estimation.estimation.estimation_external.present?
-           item_index += 1
-     description = invoice_estimation.estimation.estimation_external.description
-           if invoice_estimation.estimation.approval_required
-              unit_price = invoice_estimation.estimation.estimation_external.approved_estimated_price
-           else
-              unit_price = invoice_estimation.estimation.estimation_external.estimated_price
-           end
-           totalprice = unit_price
-           total_amount += totalprice
-           net_total_amount += totalprice
+      repeat_data += "INDEX_NO="   +item_index+"$|#"
+      repeat_data += "ITEM_CODE=$|#"
+      repeat_data += "DESCRIPTION="+description+"$|#"
+      repeat_data += "QUANTITY="   +"$|#"
+      repeat_data += "UNIT_PRICE=" +unit_price+"$|#"
+      repeat_data += "CURRENCY1="  +currency_1+"$|#"
+      repeat_data += "TOTAL_PRICE="+totalprice+"$|#"
+      repeat_data += "CURRENCY2="  +currency_1+"$|#"
 
-           repeat_data += "INDEX_NO="   +item_index+"$|#"
-           repeat_data += "ITEM_CODE="  +item_code+"$|#"
-           repeat_data += "DESCRIPTION="+description+"$|#"
-           repeat_data += "QUANTITY="   +quantity+"$|#"
-           repeat_data += "UNIT_PRICE=" +unit_price+"$|#"
-           repeat_data += "CURRENCY1="  +currency_1+"$|#"
-           repeat_data += "TOTAL_PRICE="+totalprice+"$|#"
-           repeat_data += "CURRENCY2="  +currency_1+"$|#"
-
-     do while invoice_estimation.estimation.estimation_external.external_tax
-          item_index += 1
-          item_code = ""
-          description = external_tax.tax.tax + "  (" + external_tax.tax_rate + ")"
-          unit_price = 0
-          totalprice = 0
-          quantity = 1
-            if invoice_estimation.estimation.approval_required
-                  unit_price = external_tax.approved_tax_amount
-            else
-                  unit_price = external_tax.estimated_tax_amount
-            end
-            totalprice = unit_price
-                total_amount += totalprice
-                net_total_amount += totalprice
-
-            repeat_data += "INDEX_NO="   +item_index+"$|#"
-            repeat_data += "ITEM_CODE="  +item_code+"$|#"
-            repeat_data += "DESCRIPTION="+description+"$|#"
-            repeat_data += "QUANTITY="   +"$|#"
-            repeat_data += "UNIT_PRICE=" +unit_price+"$|#"
-            repeat_data += "CURRENCY1="  +currency_1+"$|#"
-            repeat_data += "TOTAL_PRICE="+totalprice+"$|#"
-            repeat_data += "CURRENCY2="  +currency_1+"$|#"
-     end
-        end
-
-        item_code = ""
-        description = ""
-        unit_price = 0
-        totalprice = 0
-        quantity = 1
-  if invoice_estimation.estimation.estimation_part.present?
-           item_index += 1
-     description = "Part No: "+invoice_estimation.estimation.estimation_part.spare_part.pare_part_no+"  "+ invoice_estimation.estimation.estimation_part.spare_part.pare_part_description
-           if invoice_estimation.estimation.estimation_part.spare_part_store.present?
-              item_code = invoice_estimation.estimation.estimation_part.spare_part_store.product.item_code
-           end
-           if invoice_estimation.estimation.approval_required
-              unit_price = invoice_estimation.estimation.estimation_part.approved_estimated_price
-           else
-              unit_price = invoice_estimation.estimation.estimation_part.estimated_price
-           end
-           totalprice = unit_price
-           total_amount += totalprice
-           net_total_amount += totalprice
-
-           repeat_data += "INDEX_NO="   +item_index+"$|#"
-           repeat_data += "ITEM_CODE="  +item_code+"$|#"
-           repeat_data += "DESCRIPTION="+description+"$|#"
-           repeat_data += "QUANTITY="   +quantity+"$|#"
-           repeat_data += "UNIT_PRICE=" +unit_price+"$|#"
-           repeat_data += "CURRENCY1="  +currency_1+"$|#"
-           repeat_data += "TOTAL_PRICE="+totalprice+"$|#"
-           repeat_data += "CURRENCY2="  +currency_1+"$|#"
-
-     do while invoice_estimation.estimation.estimation_part.part_tax
-          item_index += 1
-          item_code = ""
-          description = part_tax.tax.tax + "  (" + part_tax.tax_rate + ")"
-          unit_price = 0
-          totalprice = 0
-          quantity = 1
-            if invoice_estimation.estimation.approval_required
-                  unit_price = part_tax.approved_tax_amount
-            else
-                  unit_price = part_tax.estimated_tax_amount
-            end
-            totalprice = unit_price
-                total_amount += totalprice
-                net_total_amount += totalprice
-
-            repeat_data += "INDEX_NO="   +item_index+"$|#"
-            repeat_data += "ITEM_CODE="  +item_code+"$|#"
-            repeat_data += "DESCRIPTION="+description+"$|#"
-            repeat_data += "QUANTITY="   +"$|#"
-            repeat_data += "UNIT_PRICE=" +unit_price+"$|#"
-            repeat_data += "CURRENCY1="  +currency_1+"$|#"
-            repeat_data += "TOTAL_PRICE="+totalprice+"$|#"
-            repeat_data += "CURRENCY2="  +currency_1+"$|#"
-     end
-        end
-
-        do while invoice_estimation.estimation_additional
-          item_code = ""
-          unit_price = 0
-          totalprice = 0
-          quantity = 1
-
-             item_index += 1
-       description = invoice_estimation.estimation.estimation_additional.additiona_charge.additiona_charge
-             if invoice_estimation.estimation.approval_required
-                unit_price = invoice_estimation.estimation.estimation_additional.approved_estimated_price
-             else
-                unit_price = invoice_estimation.estimation.estimation_additional.estimated_price
-             end
-             totalprice = unit_price
-             total_amount += totalprice
-                   net_total_amount += totalprice
-
-             repeat_data += "INDEX_NO="   +item_index+"$|#"
-             repeat_data += "ITEM_CODE="  +item_code+"$|#"
-             repeat_data += "DESCRIPTION="+description+"$|#"
-             repeat_data += "QUANTITY="   +quantity+"$|#"
-             repeat_data += "UNIT_PRICE=" +unit_price+"$|#"
-             repeat_data += "CURRENCY1="  +currency_1+"$|#"
-             repeat_data += "TOTAL_PRICE="+totalprice+"$|#"
-             repeat_data += "CURRENCY2="  +currency_1+"$|#"
-
-       do while invoice_estimation.estimation.estimation_additional.additional_tax
-            item_index += 1
-            item_code = ""
-            description = additional_tax.tax.tax + "  (" + additional_tax.tax_rate + ")"
-            unit_price = 0
-            totalprice = 0
-            quantity = 1
-              if invoice_estimation.estimation.approval_required
-                    unit_price = additional_tax.approved_tax_amount
-              else
-                    unit_price = v.estimated_tax_amount
-              end
-              totalprice = unit_price
-                  total_amount += totalprice
-                        net_total_amount += totalprice
-
-              repeat_data += "INDEX_NO="   +item_index+"$|#"
-              repeat_data += "ITEM_CODE="  +item_code+"$|#"
-              repeat_data += "DESCRIPTION="+description+"$|#"
-              repeat_data += "QUANTITY="   +"$|#"
-              repeat_data += "UNIT_PRICE=" +unit_price+"$|#"
-              repeat_data += "CURRENCY1="  +currency_1+"$|#"
-              repeat_data += "TOTAL_PRICE="+totalprice+"$|#"
-              repeat_data += "CURRENCY2="  +currency_1+"$|#"
-       end
-        end
-
-    end
-
-    do while invoice.invoice_terminate
-        item_code = ""
-        description = ""
-        unit_price = 0
-        totalprice = 0
-        quantity = 1
-        currency_1 = invoice_terminate.terminate_job_payment.currency.code
-
-  item_index += 1
-  description = invoice_terminate.terminate_job_payment.payment_item.name
-        unit_price = -invoice_terminate.terminate_job_payment.amount
-  totalprice = unit_price
-  total_amount += totalprice
-        net_total_amount += totalprice
-
-  repeat_data += "INDEX_NO="   +item_index+"$|#"
-  repeat_data += "ITEM_CODE="  +item_code+"$|#"
-  repeat_data += "DESCRIPTION="+description+"$|#"
-  repeat_data += "QUANTITY="   +quantity+"$|#"
-  repeat_data += "UNIT_PRICE=" +unit_price+"$|#"
-  repeat_data += "CURRENCY1="  +currency_1+"$|#"
-  repeat_data += "TOTAL_PRICE="+totalprice+"$|#"
-  repeat_data += "CURRENCY2="  +currency_1+"$|#"
-    end
-
-    do while invoice.invoice_advance_payment
-        item_code = ""
-        description = ""
-        unit_price = 0
-        totalprice = 0
-        quantity = 1
-        currency_1 = invoice_advance_payment.payment_received.currency.code
-
-  item_index += 1
-  description = "Advanced Payment Recieved on :"+ invoice_advance_payment.recieved_at.strftime(INOCRM_CONFIG['long_date_format']+' '+INOCRM_CONFIG['time_format'])
-        unit_price = -invoice_advance_payment.amount
-  totalprice = unit_price
-        total_advance_recieved += totalprice
-        net_total_amount += totalprice
-
-  repeat_data += "INDEX_NO="   +item_index+"$|#"
-  repeat_data += "ITEM_CODE="  +item_code+"$|#"
-  repeat_data += "DESCRIPTION="+description+"$|#"
-  repeat_data += "QUANTITY="   +"$|#"
-  repeat_data += "UNIT_PRICE=" +unit_price+"$|#"
-  repeat_data += "CURRENCY1="  +currency_1+"$|#"
-  repeat_data += "TOTAL_PRICE="+totalprice+"$|#"
-  repeat_data += "CURRENCY2="  +currency_1+"$|#"
-    end
-
-    if invoice.deducted_amount>0
-        item_code = ""
-        description = ""
-        unit_price = 0
-        totalprice = 0
-        quantity = 1
+      if invoice.deducted_amount.to_d > 0
         currency_1 = invoice.currency.code
-
-  item_index += 1
-  description = "Deduction"
+        item_index += 1
+        description = "Deduction"
         unit_price = -invoice.deducted_amount
-  totalprice = unit_price
+        totalprice = unit_price
         total_deduction += totalprice
         net_total_amount += totalprice
 
-  repeat_data += "INDEX_NO="   +item_index+"$|#"
-  repeat_data += "ITEM_CODE="  +item_code+"$|#"
-  repeat_data += "DESCRIPTION="+description+"$|#"
-  repeat_data += "QUANTITY="   +"$|#"
-  repeat_data += "UNIT_PRICE=" +unit_price+"$|#"
-  repeat_data += "CURRENCY1="  +currency_1+"$|#"
-  repeat_data += "TOTAL_PRICE="+totalprice+"$|#"
-  repeat_data += "CURRENCY2="  +currency_1+"$|#"
-    end
+        repeat_data += "INDEX_NO="   +item_index+"$|#"
+        repeat_data += "ITEM_CODE=$|#"
+        repeat_data += "DESCRIPTION="+description+"$|#"
+        repeat_data += "QUANTITY="   +"$|#"
+        repeat_data += "UNIT_PRICE=" +unit_price+"$|#"
+        repeat_data += "CURRENCY1="  +currency_1+"$|#"
+        repeat_data += "TOTAL_PRICE="+totalprice+"$|#"
+        repeat_data += "CURRENCY2="  +currency_1+"$|#"
+      end
 
-    db_total_amount = invoice.total_amount
-    db_net_total_amount = invoice.net_total_amount
-    db_total_advance_recieved = -invoice.total_advance_recieved
-    db_total_deduction = -invoice.total_deduction
-    if (db_total_amount != total_amount) or (db_net_total_amount <> net_total_amount) or (db_total_advance_recieved <> total_advance_recieved) or (db_total_deduction <> total_deduction)
-      total_error="Calculation Error In Totals"
+      db_total_amount = invoice.total_amount
+      db_net_total_amount = invoice.net_total_amount
+      db_total_advance_recieved = -invoice.total_advance_recieved
+      db_total_deduction = -invoice.total_deduction
+      if (db_total_amount != total_amount) or (db_net_total_amount != net_total_amount) or (db_total_advance_recieved != total_advance_recieved) or (db_total_deduction != total_deduction)
+        total_error="Calculation Error In Totals"
+      end
+      balance_tobe_paid = db_total_amount + db_total_advance_recieved + db_total_deduction
+
     end
-    balance_tobe_paid = db_total_amount + db_total_advance_recieved + db_total_deduction
 
     [
       "DUPLICATE_D=#{ticket.ticket_complete_print_count > 0 ? 'D' : ''}",
@@ -681,7 +480,7 @@ module ApplicationHelper
       "CREATED_DATE=#{ticket_date}",
       "CREATED_TIME=#{ticket_time}",
       "PAYMENT_TERM=#{payment_term}",
-      #{repeat_data},
+      repeat_data,
       "TOTAL_AMOUNT=#{db_total_amount}",
       "CURRENCY3=#{currency}",
       "TOTAL_ADVANCE_RECEIVED=#{db_total_advance_recieved}",
@@ -696,6 +495,7 @@ module ApplicationHelper
       "RESOLUTION_SUMMARY2=#{resolution_summary2}",
       "TOTAL_ERROR=#{total_error}",
     ]
+
   end
 
   
