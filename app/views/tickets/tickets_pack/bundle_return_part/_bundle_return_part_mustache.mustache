@@ -1,36 +1,35 @@
-.row
-  .col-md-1.col-xs-1.strong
-    No
-  .col-md-2.col-xs-2.strong
-    Event No
-  .col-md-2.col-xs-2.strong
-    Ticket No
-
-  .col-md-2.col-xs-2.strong
-    Part No
-  .col-md-2.col-xs-2.strong
-    Description
-  .col-md-2.col-xs-2.strong
-    Part Status
-
-  .col-md-1.col-xs-1.strong
-    Action
-
+<div class="table-responsive" style="height: 110px; overflow-y: auto;">
+<table class="table table-bordered">
+<thead>
+<tr>
+<th>No</th>
+<th>Event No</th>
+<th>Ticket No</th>
+<th>Part No</th>
+<th>Description</th>
+<th>Part Status</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
 {{#.}}
-.row
-  .col-md-1.col-xs-1
+%tr
+  %td
     {{indexer}}
-  .col-md-2.col-xs-2
+  %td
     {{event_no}}
-  .col-md-2.col-xs-2
+  %td
     {{ticket_no}}
-  .col-md-2.col-xs-2
+  %td
     {{spare_part_no}}
-  .col-md-2.col-xs-2
+  %td
     {{spare_part_description}}
-  .col-md-2.col-xs-2
+  %td
     {{part_status}}
-  .col-md-1.col-xs-1
+  %td
     %a{ href: "#", onclick: "Inventories.load_mustache_bundle_return_part('{{task_action}}', {{id}}); return false;"}
       {{task_action_name}}
 {{/.}}
+</tbody>
+</table>
+</div>

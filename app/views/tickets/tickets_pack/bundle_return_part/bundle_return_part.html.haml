@@ -2,10 +2,11 @@
 - product = @product
 - spare_part = @spare_part
 
-
-.col-md-12
-  %strong All Ready-To Bundle Parts
-  = select_tag("brand_name", options_from_collection_for_select(ProductBrand.all, :id, :name), data: {url: collect_parts_tickets_path, template: "bundle_return_part", task_id: params[:task_id]}, prompt: "Please select brand")
+.row{style: "margin-bottom:15px;"}
+  .col-md-8
+    %strong All Ready-To Bundle Parts
+  .col-md-4
+    = select_tag("brand_name", options_from_collection_for_select(ProductBrand.all, :id, :name), data: {url: collect_parts_tickets_path, template: "bundle_return_part", task_id: params[:task_id]}, prompt: "Please select brand")
 
 #bundle_parts
   = render "tickets/tickets_pack/bundle_return_part/bundle_return_part", spare_part: spare_part

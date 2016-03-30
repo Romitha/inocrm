@@ -1685,6 +1685,7 @@ class TicketsController < ApplicationController
         @bundle = ReturnPartsBundle.find(params[:manufacture_id])
         manufacture_ids = @bundle.ticket_spare_part_manufacture_ids.uniq
         manufactures_count = manufacture_ids.count
+        manufactures_count += session[:manufacture_rest_ids].count
 
         @bundle_manufactures = TicketSparePartManufacture.where(id: manufacture_ids).map.with_index { |m, index| {id: m.id, indexer: (index+1), event_no: m.event_no, ticket_no:  m.ticket_spare_part.ticket_id.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"]), spare_part_no: m.ticket_spare_part.spare_part_no, spare_part_description: m.ticket_spare_part.spare_part_description, part_status: m.ticket_spare_part.spare_part_status_action.name, task_action: "remove_from_bundle", task_action_name: "remove from bundle"} }
 
@@ -1693,8 +1694,8 @@ class TicketsController < ApplicationController
       when "new_bundle"
         # @bundle_manufactures = TicketSparePartManufacture.where(id: session[:manufacture_rest_ids].uniq).map { |m| {id: m.id, event_no: m.event_no, ticket_no: m.ticket_spare_part.ticket_id, task_action: "remove", task_action_name: "remove"} }
         @bundle_manufactures = []
-
-        @bundle = {readonly: "", task_id: session[:task_id], process_id: session[:process_id], owner: session[:owner]}
+        # @bundle = {bundled_by: current_user.try(:email), date_bundled: Date.today.try(:strftime, "%Y-%m-%d"), manufacture_count: 0, readonly: "readonly", task_id: session[:task_id], process_id: session[:process_id], owner: session[:owner]}
+        @bundle = {bundled_by: current_user.try(:email), date_bundled: Date.today.try(:strftime, "%Y-%m-%d"), manufacture_count: manufactures_count, readonly: "", task_id: session[:task_id], process_id: session[:process_id], owner: session[:owner]}
       when "remove_from_bundle"
         @ticket_spare_part_manufacture = TicketSparePartManufacture.find_by_id params[:manufacture_id]
         return_parts_bundle = @ticket_spare_part_manufacture.return_parts_bundle
@@ -2531,56 +2532,6 @@ class TicketsController < ApplicationController
     end
     respond_to do |format|
       format.html {render "tickets/tickets_pack/order_mf"}
-    end
-  end
-
-  def collect_parts
-
-    Warranty
-    TaskAction
-    Inventory
-    TicketSparePart
-    Product
-
-    unless request.xhr?
-
-      session[:manufacture_ids] = []
-      session[:product_brand_id] = nil
-      ticket_id = params[:ticket_id]
-      @ticket = Ticket.find_by_id ticket_id
-      session[:ticket_id] = @ticket.id
-      request_spare_part_id = params[:request_spare_part_id]
-      # @spare_part = TicketSparePart.find request_spare_part_id
-      @spare_part = @ticket.ticket_spare_parts.find request_spare_part_id
-
-      @manufacture_parts = []#ReturnPartsBundle.all
-
-      if @ticket
-        @product = @ticket.products.first
-        Rails.cache.delete([:histories, @product.id])
-        Rails.cache.delete([:join, @ticket.id])
-      end
-      render "tickets/tickets_pack/collect_parts/collect_parts"
-    else
-      @ticket = Ticket.find session[:ticket_id]
-
-      session[:product_brand_id] = params[:product_brand_id]
-
-      case params[:template]
-      when "collect_parts"
-        # @manufacture_parts = TicketSparePartManufacture.includes(:return_parts_bundle).where(spt_return_parts_bundle: {product_brand_id: params[:product_brand_id]})
-        @manufacture_parts = TicketSparePartManufacture.joins(ticket_spare_part: {ticket: {products: :product_brand}}).where(mst_spt_product_brand: {id: params[:product_brand_id]}, collect_pending_manufacture: true, collected_manufacture: false)
-        @template = 'tickets/tickets_pack/collect_parts/collect_parts'
-      when "deliver_bundle"
-      when "bundle_return_part"
-        session[:manufacture_ids] = []
-        @manufacture_parts = TicketSparePartManufacture.joins(ticket_spare_part: {ticket: {products: :product_brand}}).where(mst_spt_product_brand: {id: params[:product_brand_id]}, ready_to_bundle: true, bundled: false)
-        session[:manufacture_ids] = @manufacture_parts.ids
-        session[:manufacture_rest_ids] = []
-        @template = 'tickets/tickets_pack/bundle_return_part/bundle_return_part'
-      end
-      render "tickets/tickets_pack/collect_parts/collect_parts.js.haml"
-
     end
   end
 

@@ -1,21 +1,33 @@
+.row{style: "margin-bottom: 15px;"}
+  %strong Bundle
 .row
-  .col-md-1.col-xs-1.strong No
-  .col-md-3.col-xs-3.strong Date bundled
-  .col-md-3.col-xs-3.strong Bundled No
-  .col-md-3.col-xs-3.strong Bundled by
-  .col-md-2.col-xs-2.strong actions
 
-{{#.}}
-.row
-  .col-md-1.col-xs-1
-    {{indexer}}
-  .col-md-3.col-xs-3
-    {{date_bundled}}
-  .col-md-3.col-xs-3
-    {{bundled_no}}
-  .col-md-3.col-xs-3
-    {{bundled_by}}
-  .col-md-2.col-xs-2
-    %a{href: "#", onclick: "Inventories.load_mustache_bundle_return_part('load_bundled_manufactures', {{id}}); return false;"}
-      select
-{{/.}}
+  <div class="table-responsive" style="height: 110px; overflow-y: auto;">
+  <table class="table table-bordered">
+  <thead>
+  <tr>
+  <th>No</th>
+  <th>Date bundled</th>
+  <th>Bundled No</th>
+  <th>Bundled by</th>
+  <th>actions</th>
+  </tr>
+  </thead>
+  <tbody>
+  {{#.}}
+  %tr
+    %td
+      {{indexer}}
+    %td
+      {{date_bundled}}
+    %td
+      {{bundled_no}}
+    %td
+      {{bundled_by}}
+    %td
+      %a{href: "#", onclick: "Inventories.load_mustache_bundle_return_part('load_bundled_manufactures', {{id}}); return false;"}
+        select
+  {{/.}}
+  </tbody>
+  </table>
+  </div>
