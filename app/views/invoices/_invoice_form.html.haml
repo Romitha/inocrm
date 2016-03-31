@@ -12,8 +12,9 @@
     .col-md-3
       %strong Invoice no   #{ (CompanyConfig.first.sup_last_invoice_no.to_i+1).to_s.rjust(6, INOCRM_CONFIG["invoice_no_format"])}
       %br
-      = f.label :currency_id, "Currency"
-      / = f.select :currency_id, options_from_collection_for_select(Currency.all, :id, :currency)
+      %strong Currency
+      = ticket.ticket_currency.code
+      %br/
       = f.input :deducted_amount
       = label_tag "Payment term"
       = f.association :payment_term, label: false
@@ -32,8 +33,8 @@
           %tr
             %th No
             %th Requested at
-            %th #{ticket.ticket_repair_type.code == 'EX' ? 'Repaired by' : 'No of parts' }
             %th Description
+            %th #{ticket.ticket_repair_type.code == 'EX' ? 'Repaired by' : 'No of parts' }
             %th #{ticket.ticket_repair_type.code == 'EX' ? 'Repair' : 'Parts' }
             %th Additional
             %th Tax
@@ -41,33 +42,30 @@
             %th Min. adv. payment
             %th Status
             %th invoiced
-            %th amount
             %th Attach
 
         %tbody
-          - ticket.ticket_estimations.each_with_index do |estimation, index|
+          - @estimations.each_with_index do |estimation, index|
+            - estimation_external_present = estimation.ticket_estimation_externals.present?
+
             %tr.row_class{:style => "background-color:#{estimation.invoiced.to_i > 0 ? '#99ff66' : ''};"}
               %td
                 = index+1
               %td= estimation.requested_at.getlocal.try(:strftime, "%b %d, %Y %H:%M")
+              %td.has-popover{title: "Description", data: {"toggle" => "popover", "title" => "Popover title", "trigger" => "hover", "content" => (estimation_external_present ? estimation.ticket_estimation_externals.first.description : estimation.ticket_estimation_parts.first.ticket_spare_part.spare_part_description)}}= truncate (estimation_external_present ? estimation.ticket_estimation_externals.first.description : estimation.ticket_estimation_parts.first.ticket_spare_part.spare_part_description), length: 20
               %td
-                - if ticket.ticket_repair_type.code == 'EX'
+                - if estimation_external_present
                   = estimation.ticket_estimation_externals.first.try(:organization).try(:name)
                 - else
                   = estimation.ticket_estimation_parts.count
               %td
-                - if ticket.ticket_repair_type.code == 'EX'
-                  = estimation.ticket_estimation_externals.first.description
-                - else
-                  = estimation.ticket_estimation_parts.first.ticket_spare_part.spare_part_description
-              %td
                 - if estimation.approval_required
-                  - if ticket.ticket_repair_type.code == 'EX'
+                  - if estimation_external_present
                     = number_with_precision estimation.ticket_estimation_externals.sum(:approved_estimated_price), precision: 2
                   - else
                     = number_with_precision estimation.ticket_estimation_parts.sum(:approved_estimated_price), precision: 2
                 - else
-                  - if ticket.ticket_repair_type.code == 'EX'
+                  - if estimation_external_present
                     = number_with_precision estimation.ticket_estimation_externals.sum(:estimated_price), precision: 2
                   - else
                     = number_with_precision estimation.ticket_estimation_parts.sum(:estimated_price), precision: 2
@@ -78,89 +76,103 @@
                 - else
                   = number_with_precision estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2
               %td.tax
-                - if ticket.ticket_repair_type.code == 'EX'
-                  - estimation_external_tax_total = 0
-                  - estimation.ticket_estimation_externals.each do |ticket_estimation_external|
-
-                    - estimation_external_tax_total = estimation_external_tax_total + ticket_estimation_external.ticket_estimation_external_taxes.sum(:approved_tax_amount)
-                  - if estimation.ticket_estimation_additionals.first.present?
-                    - estimation_additional_tax_total = 0
-                    - estimation.ticket_estimation_additionals.each do |ticket_estimation_additional|
-                      - estimation_additional_tax_total = estimation_additional_tax_total + ticket_estimation_additional.ticket_estimation_additional_taxes.sum(:approved_tax_amount)
-                    - estimation_tax = estimation_external_tax_total + estimation_additional_tax_total
-                    #{estimation_tax}
-                  - else
-                    - estimation_tax = estimation_external_tax_total
-                    #{estimation_tax}
+                - if estimation_external_present
+                  = estimation.ticket_estimation_externals.inject(0){ |i, k| i+k.ticket_estimation_external_taxes.sum(:approved_tax_amount).to_f } + estimation.ticket_estimation_additionals.inject(0){ |i, k| i+k.ticket_estimation_additional_taxes.sum(:approved_tax_amount).to_f }
 
                 - else
-                  - estimation_part_tax_total = 0
-                  - estimation.ticket_estimation_parts.each do |ticket_estimation_part|
-
-                    - estimation_part_tax_total = estimation_part_tax_total + ticket_estimation_part.ticket_estimation_part_taxes.sum(:approved_tax_amount)
-                  - if estimation.ticket_estimation_additionals.first.present?
-                    - estimation_additional_tax_total = 0
-                    - estimation.ticket_estimation_additionals.each do |ticket_estimation_additional|
-                      - estimation_additional_tax_total = estimation_additional_tax_total + ticket_estimation_additional.ticket_estimation_additional_taxes.sum(:approved_tax_amount)
-                    - estimation_tax = estimation_part_tax_total + estimation_additional_tax_total
-                    #{estimation_tax}
-                  - else
-                    - estimation_tax = estimation_part_tax_total
-                    #{estimation_tax}
-              %td.total_amount
+                  = estimation.ticket_estimation_parts.inject(0){ |i, k| i+k.ticket_estimation_part_taxes.sum(:approved_tax_amount).to_f } + estimation.ticket_estimation_additionals.inject(0){ |i, k| i+k.ticket_estimation_additional_taxes.sum(:approved_tax_amount).to_f }
+              %td.sub_amount
                 - if estimation.approval_required
-                  - if ticket.ticket_repair_type.code == 'EX'
+                  - if estimation_external_present
                     = number_with_precision(estimation.ticket_estimation_externals.sum(:approved_estimated_price) + estimation.ticket_estimation_additionals.sum(:approved_estimated_price), precision: 2)
                   - else
                     = number_with_precision(estimation.ticket_estimation_parts.sum(:approved_estimated_price) + estimation.ticket_estimation_additionals.sum(:approved_estimated_price), precision: 2)
                 - else
-                  - if ticket.ticket_repair_type.code == 'EX'
+                  - if estimation_external_present
                     = number_with_precision(estimation.ticket_estimation_externals.sum(:estimated_price) + estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2)
                   - else
                     = number_with_precision(estimation.ticket_estimation_parts.sum(:estimated_price) + estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2)
               %td.min_adv_payment
                 - if estimation.approval_required
-                  - if estimation.approved_adv_pmnt_amount == nil
-                    = 0.00
-                  - else
-                    = number_with_precision estimation.approved_adv_pmnt_amount, precision: 2
+                  = number_with_precision estimation.approved_adv_pmnt_amount.to_f, precision: 2
                 - else
-                  - if estimation.advance_payment_amount == nil
-                    = 0.00
-                  - else
-                    = number_with_precision estimation.advance_payment_amount, precision: 2
+                  = number_with_precision estimation.advance_payment_amount.to_f, precision: 2
               %td= estimation.estimation_status.name
 
               %td.quoted_value
-                =estimation.invoiced
-              %td.amount
-              / - if quotation.id.present?
-              /   %td= check_box_tag 'estimation_ids[]', estimation.id, quotation.ticket_estimation_ids.include?(estimation.id), class: "action"
-              / - else
-              /   %td= check_box_tag 'estimation_ids[]', estimation.id, {:checked => "checked"},  class: "action"
+                = estimation.invoiced
 
-              - if invoice.id.present?
-                %td= check_box_tag 'estimation_ids[]', estimation.id, invoice.ticket_invoice_estimations.include?(estimation.id), class: "action"
-                / %td= check_box_tag 'estimation_ids[]', estimation.id, invoice.ticket_invoice_estimations_estimation_ids.include?(estimation.id), class: "action"
-              - else
-                %td= check_box_tag 'estimation_ids[]', estimation.id, {:checked => "checked"},  class: "action"
+              %td= check_box_tag 'estimation_ids[]', estimation.id, (invoice.persisted? ? invoice.ticket_estimation_ids.include?(estimation.id) : true), class: "action"
+
+      %h4 Termination charge
+      %table.table.table-responsive.table-condensed.table-bordered
+        %thead
+          %tr
+            %td No
+            %td Payment term
+            %td Payment term default amount
+            %td Amount before adjust
+            %td Amount
+            %td type
+            %td Attach
+
+        %tbody
+          - @act_terminate_job_payments.each_with_index do |act_terminate_job_payment, index|
+            %tr
+              %td= index+1
+              %td= act_terminate_job_payment.payment_item.try :name
+              %td= act_terminate_job_payment.payment_item.try :default_amount
+              %td #{act_terminate_job_payment.amount_before_adjust} (#{act_terminate_job_payment.currency.code})
+              %td.job_payment_amount= act_terminate_job_payment.amount
+              %td= check_box_tag 'act_terminate_job_payment_ids[]', act_terminate_job_payment.id, (invoice.persisted? ? invoice.act_terminate_job_payment_ids.include?(act_terminate_job_payment.id) : true), class: "action"
+
+      %h4 Payment received
+      %table.table.table-responsive.table-condensed.table-bordered
+        %thead
+          %tr
+            %td No
+            %td Received at
+            %td Received by
+            %td note
+            %td type
+            %td Amount
+
+        %tbody
+          - @ticket_payment_receiveds.each_with_index do |ticket_payment_received, index|
+            %tr
+              %td= index+1
+              %td= ticket_payment_received.received_at.try :strftime, "%b %d, %Y %H:%M"
+              %td= ticket_payment_received.received_by_user.email
+              %td= ticket_payment_received.note
+              %td= ticket_payment_received.ticket_payment_received_type.try(:name)
+              %td #{ticket_payment_received.amount} (#{ticket_payment_received.currency.code})
 
     .col-md-12
-      .col-md-2
-        %strong Sub. total:
-      .col-md-6#total_amount
-    .col-md-12
-      .col-md-2
-        %strong Total tax:
-      .col-md-7#total_tax
-    .col-md-12
-      .col-md-2
-        %strong Total amount:
-      .col-md-5#final_total_amount
-    .col-md-12.hide{style: "margin-bottom: 20px;"}
-      .col-md-2
-        %strong Min. adv. payment:
-      .col-md-4#total_min_adv_payment
+      .row
+        .col-md-2
+          %strong Sub. total:
+        .col-md-1
+          #sub_amount
+      .row
+        .col-md-2
+          %strong Total tax:
+        .col-md-1
+          #total_tax
+      .row
+        .col-md-2
+          %strong Total amount:
+        .col-md-1
+          #final_total_amount
+      .row
+        .col-md-2
+          %strong Minimum payment:
+        .col-md-1
+          #min_adv_payment
+      .row
+        .col-md-2
+          %strong Amount to be paid:
+        .col-md-1
+          #amount_to_be_paid
 
     .col-md-4.pull-left{style: "margin-bottom: 20px;"}
       .col-md-2

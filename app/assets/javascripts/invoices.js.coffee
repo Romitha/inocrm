@@ -11,83 +11,51 @@ window.Invoices =
 
   quotation_change: ->
     total_tax = 0
-    amount_to_be_paid = 0
-    total_amount = 0
+    sub_amount = 0
     final_total_amount = 0
-
-    $(".action").each ->
-      additional_charge = parseFloat($(@).parents("tr").find(".additional").text())
-      total_amount = parseFloat($(@).parents("tr").find(".total_amount").text())
-      tax = parseFloat($(@).parents("tr").find(".tax").text())
-      amount = additional_charge + total_amount + tax
-      $(@).parents("tr").find(".amount").html(amount)
+    min_adv_payment = 0
+    job_payment_amount = 0
 
     $(".action").each ->
       if $(@).is(":checked")
-        now_total_amount = parseFloat($(@).parents("tr").find(".total_amount").text())
-        now_tax = parseFloat($(@).parents("tr").find(".tax").text())
-        now_amount_to_be_paid = now_total_amount - now_tax
-        amount_to_be_paid += parseFloat(now_amount_to_be_paid)
+        sub_amount += parseFloat($(@).parent().siblings(".sub_amount").text())
+        total_tax += parseFloat($(@).parent().siblings(".tax").text())
+        min_adv_payment += parseFloat($(@).parent().siblings(".min_adv_payment").text())
+        job_payment_amount += parseFloat($(@).parent().siblings(".job_payment_amount").text())
 
-        now_val = $(@).parents("tr").find(".tax").text()
-        total_tax += parseFloat(now_val)
-
-        now_total_amount_val = $(@).parents("tr").find(".total_amount").text()
-        total_amount += parseFloat(now_total_amount_val)
+    amount_to_be_paid = sub_amount + total_tax + job_payment_amount - min_adv_payment
 
     $("#amount_to_be_paid").html(amount_to_be_paid)
     $("#total_tax").html(total_tax)
-    $("#total_amount").html(total_amount)
-    final_total_amount = total_amount + total_tax
-    # final_total_amount = parseFloat($("#total_amount").text) + parseFloat($("#total_tax").text)
+    $("#sub_amount").html(sub_amount)
+    final_total_amount = sub_amount + total_tax
     $("#final_total_amount").html(final_total_amount)
+    $("#amount_to_be_paid").html(amount_to_be_paid)
+    $("#min_adv_payment").html(min_adv_payment)
 
     $(".action").click ->
-      if $(@).is(":checked")
+      total_tax = 0
+      sub_amount = 0
+      final_total_amount = 0
+      min_adv_payment = 0
+      job_payment_amount = 0
 
-        now_total_amount =  parseFloat($(@).parents("tr").find(".total_amount").text())
-        now_tax =  parseFloat($(@).parents("tr").find(".tax").text())
-        now_amount_to_be_paid = now_total_amount - now_tax
-        amount_to_be_paid = parseFloat($("#amount_to_be_paid").text()) + now_amount_to_be_paid
-        $("#amount_to_be_paid").html(amount_to_be_paid)
+      $(".action").each ->
+        if $(@).is(":checked")
+          sub_amount += parseFloat($(@).parent().siblings(".sub_amount").text())
+          total_tax += parseFloat($(@).parent().siblings(".tax").text())
+          min_adv_payment += parseFloat($(@).parent().siblings(".min_adv_payment").text())
 
-        now_val1 =  parseFloat($(@).parents("tr").find(".tax").text())
-        total_tax = parseFloat($("#total_tax").text()) + now_val1
-        $("#total_tax").html(total_tax)
+      amount_to_be_paid = sub_amount + total_tax + job_payment_amount - min_adv_payment
 
-        now_total_amount_val1 =  parseFloat($(@).parents("tr").find(".total_amount").text())
-        total_amount = parseFloat($("#total_amount").text()) + now_total_amount_val1
-        $("#total_amount").html(total_amount)
+      $("#amount_to_be_paid").html(amount_to_be_paid)
+      $("#total_tax").html(total_tax)
+      $("#sub_amount").html(sub_amount)
+      final_total_amount = sub_amount + total_tax
+      $("#final_total_amount").html(final_total_amount)
+      $("#amount_to_be_paid").html(amount_to_be_paid)
+      $("#min_adv_payment").html(min_adv_payment)
 
-        final_total_amount = total_amount + total_tax
-        $("#final_total_amount").html(final_total_amount)
-
-      else
-
-        now_min_adv_payment_val1 =  parseFloat($(@).parents("tr").find(".min_adv_payment").text())
-        if now_min_adv_payment_val1 >= 0
-          amount_to_be_paid = parseFloat($("#amount_to_be_paid").text()) - now_min_adv_payment_val1
-          $("#amount_to_be_paid").html(amount_to_be_paid)
-        else
-          $("#amount_to_be_paid").html(amount_to_be_paid)
-
-
-        now_val1 = parseFloat($(@).parents("tr").find(".tax").text())
-        if now_val1 >= 0
-          total_tax = parseFloat($("#total_tax").text()) - now_val1
-          $("#total_tax").html(total_tax)
-        else
-          $("#total_tax").html(total_tax)
-
-        now_total_amount_val1 = parseFloat($(@).parents("tr").find(".total_amount").text())
-        if now_total_amount_val1 >= 0
-          total_amount = parseFloat($("#total_amount").text()) - now_total_amount_val1
-          $("#total_amount").html(total_amount)
-        else
-          $("#total_amount").html(total_amount)
-
-        final_total_amount = total_amount + total_tax
-        $("#final_total_amount").html(final_total_amount)
 
   check_fsr_dynamic_check_behavour: ->
 

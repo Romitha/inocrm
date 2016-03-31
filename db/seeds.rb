@@ -337,3 +337,5 @@ TicketEstimation
 end
 
 WorkflowMapping.find(11).update(process_name: "SPPT_MFR_PART_REQUEST")
+
+CompanyConfig.create sup_last_fsr_no: 0, inv_last_srn_no: 0, inv_last_srr_no: 0, inv_last_sbn_no: 0, inv_last_prn_no: 0, inv_last_grn_no: 0, inv_last_gin_no: 0, sup_last_quotation_no: 0, sup_last_bundle_no: 0 unless CompanyConfig.any?
