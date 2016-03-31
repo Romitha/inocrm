@@ -17,6 +17,7 @@ class AddTablesForEstimationAndTaxes < ActiveRecord::Migration
       t.column :created_by, "INT UNSIGNED DEFAULT NULL"
       t.boolean :customer_contacted, null: false, default: false
       t.boolean :canceled, null: false, default: false
+      t.boolean :advance_payment_requested, null: false, default: false
       t.text :note
       t.text :remark
       t.string :validity_period

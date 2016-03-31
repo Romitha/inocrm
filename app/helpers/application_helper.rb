@@ -539,13 +539,13 @@ module ApplicationHelper
         # store_part_name = (store_part && store_part.inventory_product) ? store_part.inventory_product.try(:description))
 
         if store_part and store_part.inventory_product
-          spare_part_name = "[#{store_part.inventory_product.description.truncate(18)}]"
+          spare_part_name = "[#{store_part.inventory_product.description.try :truncate, 18}]"
 
         elsif manufacture_part
           spare_part_name = "[#{spare_part.spare_part_description.truncate(18)}]"
 
         elsif non_stock_part
-          spare_part_name = "[#{non_stock_part.inventory_product.description.truncate(18)}]"
+          spare_part_name = "[#{non_stock_part.inventory_product.description.try :truncate, 18}]"
         end
 
         if spare_part_name
@@ -567,7 +567,7 @@ module ApplicationHelper
         onloan_spare_part = @ticket.ticket_on_loan_spare_parts.find_by_id(onloan_spare_part_id)
 
         if onloan_spare_part and onloan_spare_part.inventory_product
-          store_part_name = "[#{onloan_spare_part.inventory_product.description}]".truncate(18)
+          store_part_name = "[#{onloan_spare_part.inventory_product.description.try :truncate, 18}]"
 
           @h2 = "#{ticket_no}#{customer_name}#{store_part_name} (On-Loan) #{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}"
         else

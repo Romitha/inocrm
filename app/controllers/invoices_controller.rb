@@ -37,27 +37,32 @@ class InvoicesController < ApplicationController
   end
 
   def edit_quotation_ajax
+    @ticket = Ticket.find params[:ticket_id]
     TicketEstimation
     @action_type = params[:action_type]
     quotation_id = params[:quotation_id]
     if quotation_id.present?
       @quotation = CustomerQuotation.find quotation_id
+      @estimations = (@ticket.ticket_estimations.where(status_id: EstimationStatus.find_by_code("EST").id) + @quotation.ticket_estimations).uniq{ |q| q.id }
     else
       @quotation = CustomerQuotation.new
+      @estimations = @ticket.ticket_estimations.where(status_id: EstimationStatus.find_by_code("EST").id)
     end
-    @ticket = Ticket.find params[:ticket_id]
-    @estimations = @ticket.ticket_estimations.page(params[:page]).per(params[:per_page])
   end
 
   def edit_invoice_ajax
+    @ticket = Ticket.find params[:ticket_id]
     @action_type = params[:action_type]
     invoice_id = params[:invoice_id]
     if invoice_id.present?
       @invoice = TicketInvoice.find invoice_id
+      @estimations = @ticket.ticket_estimations.where(cust_approved: true)
     else
       @invoice = TicketInvoice.new
+      @estimations = (@ticket.ticket_estimations.where(cust_approved: true) + @invoice.ticket_estimations).uniq{ |q| q.id }
     end
-    @ticket = Ticket.find params[:ticket_id]
+    @ticket_payment_receiveds = @ticket.ticket_payment_receiveds
+    @act_terminate_job_payments = @ticket.act_terminate_job_payments
   end
 
   def paginate_estimations
@@ -397,6 +402,7 @@ class InvoicesController < ApplicationController
     
     @ticket = Ticket.find_by_id params[:ticket_id]
     checked_estimation_ids = params[:estimation_ids]
+    checked_act_terminate_job_payment_ids = params[:act_terminate_job_payment_ids]
     action_no = 0
     if params[:action_type] == "create"
       @invoice = TicketInvoice.new invoice_params

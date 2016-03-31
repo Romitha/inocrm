@@ -1,139 +1,146 @@
-#new_cus_quo
-  %h3 Customer Quotation
-  = simple_nested_form_for quotation, url: update_quotation_invoices_path(action_type: @action_type), method: :post do |f|
-    = hidden_field_tag :quotation_id, f.object.id
+- if @estimations.present?
+  #new_cus_quo
+    %h3 Customer Quotation
+    = simple_nested_form_for quotation, url: update_quotation_invoices_path(action_type: @action_type), method: :post do |f|
+      = hidden_field_tag :quotation_id, f.object.id
 
-    = hidden_field_tag :process_id, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:process_id]
-    = hidden_field_tag :task_id, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:task_id]
-    = hidden_field_tag :owner, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:owner]
-    - Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
-      = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+      = hidden_field_tag :process_id, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:process_id]
+      = hidden_field_tag :task_id, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:task_id]
+      = hidden_field_tag :owner, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:owner]
+      - Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
+        = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
-    .col-md-3
-      %strong Customer quotation no   #{ (@action_type=="create" ? CompanyConfig.first.next_sup_last_quotation_no : f.object.customer_quotation_no ).to_s.rjust(6, INOCRM_CONFIG["quotation_no_format"])}
-      = f.input :validity_period, input_html: {id: "validity_period_id"}
-      = f.input :delivery_period
-      = f.input :warranty
-      = label_tag "Payment term"
-      = f.association :payment_term, label: false
-      = f.input :customer_contacted, wrapper: :append
-      = f.input :canceled, wrapper: :append
-      = f.input :note
-    .col-md-9
-      #paginate_estimation
-        %table.table.table-responsive.table-condensed.table-bordered
-          %thead
-            %tr
-              %th
-              %th
-              %th
-              %th{colspan: 3, class: "text-center"} Estimated amount (#{ticket.ticket_currency.code})
-            %tr
-              %th No
-              %th Requested at
-              %th Description
-              %th #{ticket.ticket_repair_type.code == 'EX' ? 'Repaired by' : 'No of parts' }
-              %th #{ticket.ticket_repair_type.code == 'EX' ? 'Repair' : 'Parts' }
-              %th Additional
-              %th Tax
-              %th Total
-              %th Min. adv. payment
-              %th Status
-              %th quoted
-              / %th amount
-              %th Attach
+      .col-md-3
+        %strong Customer quotation no   #{ (@action_type=="create" ? CompanyConfig.first.next_sup_last_quotation_no : f.object.customer_quotation_no ).to_s.rjust(6, INOCRM_CONFIG["quotation_no_format"])}
+        = f.input :validity_period, input_html: {id: "validity_period_id"}
+        = f.input :delivery_period
+        = f.input :warranty
+        = label_tag "Payment term"
+        = f.association :payment_term, label: false
+        = f.input :customer_contacted, wrapper: :append
+        = f.input :canceled, wrapper: :append
+        = f.input :note
+      .col-md-9
+        #paginate_estimation
+          %table.table.table-responsive.table-condensed.table-bordered
+            %thead
+              %tr
+                %th
+                %th
+                %th
+                %th{colspan: 3, class: "text-center"} Estimated amount (#{ticket.ticket_currency.code})
+              %tr
+                %th No
+                %th Requested at
+                %th Description
+                %th #{ticket.ticket_repair_type.code == 'EX' ? 'Repaired by' : 'No of parts' }
+                %th #{ticket.ticket_repair_type.code == 'EX' ? 'Repair' : 'Parts' }
+                %th Additional
+                %th Tax
+                %th Total
+                %th Min. adv. payment
+                %th Status
+                %th quoted
+                / %th amount
+                %th Attach
 
-          %tbody
-            - @estimations.each_with_index do |estimation, index|
-              - estimation_external_present = estimation.ticket_estimation_externals.present?
+            %tbody
+              - @estimations.each_with_index do |estimation, index|
+                - estimation_external_present = estimation.ticket_estimation_externals.present?
 
-              %tr.row_class{:style => "background-color:#{estimation.quoted.to_i > 0 ? '#99ff66' : ''};"}
-                %td= index+1
-                %td= estimation.requested_at.getlocal.try(:strftime, "%b %d, %Y %H:%M")
-                %td
-                  .has-popover{title: "Description", data: {"toggle" => "popover", "title" => "Popover title", "trigger" => "hover", "content" => (estimation_external_present ? estimation.ticket_estimation_externals.first.description : estimation.ticket_estimation_parts.first.ticket_spare_part.spare_part_description)}}= truncate (estimation_external_present ? estimation.ticket_estimation_externals.first.description : estimation.ticket_estimation_parts.first.ticket_spare_part.spare_part_description), length: 20
+                %tr.row_class{:style => "background-color:#{estimation.quoted.to_i > 0 ? '#99ff66' : ''};"}
+                  %td= index+1
+                  %td= estimation.requested_at.getlocal.try(:strftime, "%b %d, %Y %H:%M")
+                  %td
+                    .has-popover{title: "Description", data: {"toggle" => "popover", "title" => "Popover title", "trigger" => "hover", "content" => (estimation_external_present ? estimation.ticket_estimation_externals.first.description : estimation.ticket_estimation_parts.first.ticket_spare_part.spare_part_description)}}= truncate (estimation_external_present ? estimation.ticket_estimation_externals.first.description : estimation.ticket_estimation_parts.first.ticket_spare_part.spare_part_description), length: 20
 
-                %td
-                  - if estimation_external_present
-                    = estimation.ticket_estimation_externals.first.try(:organization).try(:name)
-                  - else
-                    = estimation.ticket_estimation_parts.count
-                %td
-                  - if estimation.approval_required
+                  %td
                     - if estimation_external_present
-                      = number_with_precision estimation.ticket_estimation_externals.sum(:approved_estimated_price), precision: 2
+                      = estimation.ticket_estimation_externals.first.try(:organization).try(:name)
                     - else
-                      = number_with_precision estimation.ticket_estimation_parts.sum(:approved_estimated_price), precision: 2
-                  - else
+                      = estimation.ticket_estimation_parts.count
+                  %td
+                    - if estimation.approval_required
+                      - if estimation_external_present
+                        = number_with_precision estimation.ticket_estimation_externals.sum(:approved_estimated_price), precision: 2
+                      - else
+                        = number_with_precision estimation.ticket_estimation_parts.sum(:approved_estimated_price), precision: 2
+                    - else
+                      - if estimation_external_present
+                        = number_with_precision estimation.ticket_estimation_externals.sum(:estimated_price), precision: 2
+                      - else
+                        = number_with_precision estimation.ticket_estimation_parts.sum(:estimated_price), precision: 2
+
+                  %td.additional
+                    - if estimation.approval_required
+                      = number_with_precision estimation.ticket_estimation_additionals.sum(:approved_estimated_price), precision: 2
+                    - else
+                      = number_with_precision estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2
+                  %td.tax
                     - if estimation_external_present
-                      = number_with_precision estimation.ticket_estimation_externals.sum(:estimated_price), precision: 2
+                      = estimation.ticket_estimation_externals.inject(0){ |i, k| i+k.ticket_estimation_external_taxes.sum(:approved_tax_amount).to_f } + estimation.ticket_estimation_additionals.inject(0){ |i, k| i+k.ticket_estimation_additional_taxes.sum(:approved_tax_amount).to_f }
+
                     - else
-                      = number_with_precision estimation.ticket_estimation_parts.sum(:estimated_price), precision: 2
+                      = estimation.ticket_estimation_parts.inject(0){ |i, k| i+k.ticket_estimation_part_taxes.sum(:approved_tax_amount).to_f } + estimation.ticket_estimation_additionals.inject(0){ |i, k| i+k.ticket_estimation_additional_taxes.sum(:approved_tax_amount).to_f }
 
-                %td.additional
-                  - if estimation.approval_required
-                    = number_with_precision estimation.ticket_estimation_additionals.sum(:approved_estimated_price), precision: 2
-                  - else
-                    = number_with_precision estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2
-                %td.tax
-                  - if estimation_external_present
-                    = estimation.ticket_estimation_externals.inject(0){ |i, k| i+k.ticket_estimation_external_taxes.sum(:approved_tax_amount).to_f } + estimation.ticket_estimation_additionals.inject(0){ |i, k| i+k.ticket_estimation_additional_taxes.sum(:approved_tax_amount).to_f }
-
-                  - else
-                    = estimation.ticket_estimation_parts.inject(0){ |i, k| i+k.ticket_estimation_part_taxes.sum(:approved_tax_amount).to_f } + estimation.ticket_estimation_additionals.inject(0){ |i, k| i+k.ticket_estimation_additional_taxes.sum(:approved_tax_amount).to_f }
-
-                %td.total_amount
-                  - if estimation.approval_required
-                    - if estimation_external_present
-                      = number_with_precision(estimation.ticket_estimation_externals.sum(:approved_estimated_price) + estimation.ticket_estimation_additionals.sum(:approved_estimated_price), precision: 2)
+                  %td.sub_amount
+                    - if estimation.approval_required
+                      - if estimation_external_present
+                        = number_with_precision(estimation.ticket_estimation_externals.sum(:approved_estimated_price) + estimation.ticket_estimation_additionals.sum(:approved_estimated_price), precision: 2)
+                      - else
+                        = number_with_precision(estimation.ticket_estimation_parts.sum(:approved_estimated_price) + estimation.ticket_estimation_additionals.sum(:approved_estimated_price), precision: 2)
                     - else
-                      = number_with_precision(estimation.ticket_estimation_parts.sum(:approved_estimated_price) + estimation.ticket_estimation_additionals.sum(:approved_estimated_price), precision: 2)
-                  - else
-                    - if estimation_external_present
-                      = number_with_precision(estimation.ticket_estimation_externals.sum(:estimated_price) + estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2)
+                      - if estimation_external_present
+                        = number_with_precision(estimation.ticket_estimation_externals.sum(:estimated_price) + estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2)
+                      - else
+                        = number_with_precision(estimation.ticket_estimation_parts.sum(:estimated_price) + estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2)
+                  %td.min_adv_payment
+                    - if estimation.approval_required
+                      = number_with_precision estimation.approved_adv_pmnt_amount.to_f, precision: 2
                     - else
-                      = number_with_precision(estimation.ticket_estimation_parts.sum(:estimated_price) + estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2)
-                %td.min_adv_payment
-                  - if estimation.approval_required
-                    - if estimation.approved_adv_pmnt_amount == nil
-                      = 0.00
-                    - else
-                      = number_with_precision estimation.approved_adv_pmnt_amount, precision: 2
-                  - else
-                    - if estimation.advance_payment_amount == nil
-                      = 0.00
-                    - else
-                      = number_with_precision estimation.advance_payment_amount, precision: 2
-                %td= estimation.estimation_status.name
+                      = number_with_precision estimation.advance_payment_amount.to_f, precision: 2
+                  %td= estimation.estimation_status.name
 
-                %td.quoted_value
-                  =estimation.quoted
-                / %td.amount
-                %td= check_box_tag 'estimation_ids[]', estimation.id, (quotation.persisted? ? quotation.ticket_estimation_ids.include?(estimation.id) : true), class: "action"
+                  %td.quoted_value
+                    = estimation.quoted
 
-    .col-md-12
-      .col-md-2
-        %strong Sub. total:
-      .col-md-6#total_amount
-    .col-md-12
-      .col-md-2
-        %strong Total tax:
-      .col-md-7#total_tax
-    .col-md-12
-      .col-md-2
-        %strong Total amount:
-      .col-md-5#final_total_amount
-    .col-md-12.hide{style: "margin-bottom: 20px;"}
-      .col-md-2
-        %strong Amount to be paid:
-      .col-md-4#amount_to_be_paid
+                  %td= check_box_tag 'estimation_ids[]', estimation.id, (quotation.persisted? ? quotation.ticket_estimation_ids.include?(estimation.id) : true), class: "action"
+      .col-md-12
+        .row
+          .col-md-2
+            %strong Sub. total:
+          .col-md-1
+            #sub_amount
+        .row
+          .col-md-2
+            %strong Total tax:
+          .col-md-1
+            #total_tax
+        .row
+          .col-md-2
+            %strong Total amount:
+          .col-md-1
+            #final_total_amount
+        .row.hide
+          .col-md-2
+            %strong Minimum payment:
+          .col-md-1
+            #min_adv_payment
+        .row.hide
+          .col-md-2
+            %strong Amount to be paid:
+          .col-md-1
+            #amount_to_be_paid
 
-    .col-md-4.pull-left{style: "margin-bottom: 20px;"}
-      .col-md-2
-        = link_to "Cancel","#", onclick: "$('#quotation_wrapper').empty(); return false;"
-      - if quotation.persisted?
+      .col-md-4.pull-left{style: "margin-bottom: 20px;"}
         .col-md-2
-          = link_to "Print", "#", class: "btn btn-sm btn-success", onclick: "Users.request_printer_application('quotation', '#{@quotation.id}', 'quotation_request_type', 'quotation_tag_value', 'quotation'); false;"
-        
-      .col-md-2
-        = f.submit "Save", class: "btn btn-success"
+          = link_to "Cancel","#", onclick: "$('#quotation_wrapper').empty(); return false;"
+        - if quotation.persisted?
+          .col-md-2
+            = link_to "Print", "#", class: "btn btn-sm btn-success", onclick: "Users.request_printer_application('quotation', '#{@quotation.id}', 'quotation_request_type', 'quotation_tag_value', 'quotation'); false;"
+
+        .col-md-2
+          = f.submit "Save", class: "btn btn-success"
+- else
+  .col-md-12
+    %h4 There must be atleast one estimation to continue...
