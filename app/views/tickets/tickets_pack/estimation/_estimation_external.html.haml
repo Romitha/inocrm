@@ -88,7 +88,8 @@
       = f.input :cust_approved_by, as: :hidden, input_html: {value: current_user.id}
 
       = f.input :cust_approved, as: :radio_buttons, collection: {approved: true, rejected: false}, wrapper: :append, label: false
-      = f.input :note
+      = f.input :note, input_html: {value: nil}
+      = simple_format f.object.note
       - if estimation.ticket_estimation_externals.present?
         = label_tag "Request to deliver unit"
         = check_box_tag :request_deliver_unit, true, (estimation.advance_payment_amount.to_f == 0)
