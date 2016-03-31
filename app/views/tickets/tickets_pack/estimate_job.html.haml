@@ -32,6 +32,7 @@
               = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
             = f.simple_fields_for :ticket_estimations do |t|
+              = t.input :current_user_id, as: :hidden, input_html: {value: current_user.id}
               - if t.object.status_id == EstimationStatus.find_by_code("RQS").id and t.object.ticket_estimation_externals.present?
                 = hidden_field_tag :ticket_estimation_id, t.object.id
 
@@ -133,7 +134,7 @@
                 .row
                   .col-md-3
                     = t.input :id, as: :hidden
-                    = t.input :advance_payment_amount , input_html: {class: "only_float"}
+                    = t.input :advance_payment_amount , input_html: {class: "only_float"}, label: "Required advance payment amount"
 
                   .col-md-3.col-md-offset-6
                     %strong Total cost price:
