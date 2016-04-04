@@ -48,7 +48,7 @@
                   = t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.try(:spare_part_no)
                 %dt Available Qnty
                 %dd
-                  = t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.inventories.where(store_id: t.object.ticket_spare_part.ticket_spare_part_store.store_id).try(:sum, :available_quantity)
+                  / = t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.inventories.where(store_id: t.object.ticket_spare_part.ticket_spare_part_store.store_id).try(:sum, :available_quantity)
             .spare_part_select.pull-left
               = link_to "Change part", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true
 
@@ -116,27 +116,47 @@
       .col-md-2
         %strong Profit:
         %span.append_profit_margin_internal{style: "font-weight:bold;"}
-      / .col-md-12
-      /   = a.simple_fields_for :ticket_estimation_additional_taxes do |t|
+      .col-md-12
+        = a.simple_fields_for :ticket_estimation_additional_taxes, {:index => 0} do |t|
 
-      /     .row
-      /       .add_sign.col-md-3{style: "padding-top:2.5%;"}
-      /         = t.link_to_remove class: "remove_c_t_v_link" do
-      /           %span.glyphicon.glyphicon-remove-sign
+          .row
+            .add_sign.col-md-3{style: "padding-top:2.5%;"}
+              = t.link_to_remove class: "remove_c_t_v_link" do
+                %span.glyphicon.glyphicon-remove-sign
+
+            .col-md-2
+              / = t.association :tax, label_method: :tax, value_method: :id, input_html: {class: "tax_field_class"}
+              = t.association :tax, label_method: :tax, value_method: :id, input_html: {class: "tax_field_class",id: "tax_field_idwww"}
+              / = t.label :tax_id, "Tax"
+              / = label_tag 'tax', 'Tax'
+              / %br
+            .col-md-2
+              = t.simple_fields_for :tax do |r|
+                / = r.association :tax_rates, label_method: :rate, value_method: :id, input_html: {id: "taxrate_field_id"}
+                = r.input :rate, :collection => TaxRate.all, :label_method => :rate, :value_method => :id, :include_blank => true, input_html: {id: "tax_rate_field_id"}
+
+              / = t.select :tax_id, options_from_collection_for_select(Tax.all, :id, :tax), include_blank: true
+              / = t.select :tax_id, Tax.all.uniq{|t| t.id}.map{|t| ["#{t.tax} #{t.tax_rates.first.try(:rate)}%", t.id]}, include_blank: true
+
+              /= t.select :tax_id, Tax.all.uniq{|t| t.id}.map{|t| ["#{t.tax}", t.id]}, include_blank: true
+              / = t.select :tax_id, options_from_collection_for_select(Tax.all, :id, :tax, :class => 'tax_select'), include_blank: true
+              / = t.select :tax_id, Tax.all.map {|c| [c.tax, c.id]}, label: "Tax"
+              / .col-md-2
+              /   = label_tag 'tax_rate', 'Rate'
+              /   %br
+              / = t.simple_fields_for :tax do |r|
+              / = t.select :id, TaxRate.all.uniq{|x| x.tax_id}.map{|x| ["#{x.rate} %", x.id]}, include_blank: true, id: "chosen-select"
+            - if f.object.approval_required == true
+              .col-md-2
+                = t.input :approved_tax_amount, input_html: {id: "approved_tax_amount_id"}
+            - else
+              .col-md-2
+                = t.input :estimated_tax_amount, input_html: {id: "estimated_tax_amount_id"}
             
-      /       .col-md-3
-      /         / = t.label :tax_id, "Tax"
-      /         = label_tag 'tax', 'Tax'
-      /         %br
-      /         = t.select :tax_id, options_from_collection_for_select(Tax.all, :id, :tax), include_blank: true
-      /       .col-md-3
-      /         = t.input :estimated_tax_amount
-      /       .col-md-3
-      /         = t.input :approved_tax_amount
 
-      /   = a.link_to_add :ticket_estimation_additional_taxes, class: "small_scale_padding-right2" do
-      /     %span.glyphicon.glyphicon-plus-sign
-      /     Add tax
+        = a.link_to_add :ticket_estimation_additional_taxes, class: "small_scale_padding-right2" do
+          %span.glyphicon.glyphicon-plus-sign
+          Add tax
       
     %hr
 

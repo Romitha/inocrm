@@ -26,8 +26,13 @@ window.Inventories =
     @customer_inquire_search()
     @hp_po_function()
     @add_append()
+    @tax_calculation()
     # @remove_append()
     return
+
+  tax_calculation: ->
+    $("#estimated_tax_amount_id").click ->
+      alert "gg"
 
   customer_inquire_search: ->
   add_append: ->
