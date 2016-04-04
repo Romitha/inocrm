@@ -87,7 +87,7 @@
                   = t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.try(:spare_part_no)
                 %dt Available Qnty
                 %dd
-                  = t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.inventories.where(store_id: t.object.ticket_spare_part.ticket_spare_part_store.store_id).try(:sum, :available_quantity)
+                  / = t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.inventories.where(store_id: t.object.ticket_spare_part.ticket_spare_part_store.store_id).try(:sum, :available_quantity)
         .col-md-6
           - if t.object.ticket_spare_part.try(:ticket_spare_part_store).present?
             #paginate_grns
@@ -120,6 +120,27 @@
         %span.add_low_margin_estimated_price #{a.object.try(:estimated_price)}
       .col-md-3
         = a.input :approved_estimated_price, input_html: {min: "0",class: "add_low_margin_approved_estimated_price only_float", oninput: "Inventories.calculate_low_approved_price();"}
+    .row
+      = a.simple_fields_for :ticket_estimation_additional_taxes do |t|
+        .row
+          .add_sign.col-md-3{style: "padding-top:2.5%;"}
+            = t.link_to_remove class: "remove_c_t_v_link" do
+              %span.glyphicon.glyphicon-remove-sign
+
+          .col-md-2
+            = t.association :tax, label_method: :tax, value_method: :id, input_html: {class: "tax_field_class"}, onchange: "Tickets.tax_calculation(); return true;"
+          .col-md-2
+            = t.simple_fields_for :tax do |r|
+              = r.input :rate, :collection => TaxRate.all, :label_method => :rate, :value_method => :id, :include_blank => true, input_html: {id: "tax_rate_field_id"}
+          - if f.object.approval_required == true
+            .col-md-2
+              = t.input :approved_tax_amount, input_html: {id: "approved_tax_amount_id"}
+          - else
+            .col-md-2
+              = t.input :estimated_tax_amount, input_html: {id: "estimated_tax_amount_id"}
+      = a.link_to_add :ticket_estimation_additional_taxes, class: "small_scale_padding-right2" do
+        %span.glyphicon.glyphicon-plus-sign
+        Add tax
 
   .row
     .col-md-3.col-md-offset-3

@@ -28,13 +28,12 @@ window.Tickets =
     @pop_customer_info()
     @adjust_amount_check()
     @first_resolution_visible()
-    # @bundle_select()
+    @tax_calculation()
     return
-  # bundle_select: ->
-  #   $("#brand_name").click ->
-  #     if $(@).text() == "Please select brand"
-  #       alert "ffff"
 
+  tax_calculation: ->
+    $("#estimated_tax_amount_id").click ->
+      alert "gg"
 
   initial_loaders: ->
     $('.inline_edit').editable()

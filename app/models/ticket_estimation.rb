@@ -121,6 +121,17 @@ class Tax < ActiveRecord::Base
   has_many :ticket_estimation_additional_taxes
   has_many :ticket_estimation_external_taxes
   has_many :ticket_estimation_part_taxes
+  has_many :tax_rates
+
+end
+
+class TaxRate < ActiveRecord::Base
+  self.table_name = "mst_tax_rate"
+  belongs_to :tax, foreign_key: :tax_id
+
+  # has_many :ticket_estimation_additional_taxes
+  # has_many :ticket_estimation_external_taxes
+  # has_many :ticket_estimation_part_taxes
 
 end
 
