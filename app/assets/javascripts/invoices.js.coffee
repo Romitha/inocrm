@@ -1,6 +1,3 @@
-# Place all the behaviors and hooks related to the matching controller here.
-# All this logic will automatically be available in application.js.
-# You can use CoffeeScript in this file: http://coffeescript.org/
 window.Invoices =
   setup: ->
     @quotation_change()
@@ -12,33 +9,39 @@ window.Invoices =
   quotation_change: ->
     total_tax = 0
     sub_amount = 0
-    final_total_amount = 0
     min_adv_payment = 0
-    job_payment_amount = 0
+    total_payment = 0
+
+    total_deduction = parseFloat($("#deducted_amount").val())
+    $("#deducted_amount").keyup ->
+      $("#total_deduction").html(total_deduction)
+
+    $(".total_payment").each ->
+      total_payment += parseFloat($(@).text())
 
     $(".action").each ->
       if $(@).is(":checked")
         sub_amount += parseFloat($(@).parent().siblings(".sub_amount").text())
         total_tax += parseFloat($(@).parent().siblings(".tax").text())
         min_adv_payment += parseFloat($(@).parent().siblings(".min_adv_payment").text())
-        job_payment_amount += parseFloat($(@).parent().siblings(".job_payment_amount").text())
 
-    amount_to_be_paid = sub_amount + total_tax + job_payment_amount - min_adv_payment
+    final_total_amount = sub_amount + total_tax
+    amount_to_be_paid = final_total_amount - total_payment - total_deduction
 
     $("#amount_to_be_paid").html(amount_to_be_paid)
     $("#total_tax").html(total_tax)
     $("#sub_amount").html(sub_amount)
-    final_total_amount = sub_amount + total_tax
     $("#final_total_amount").html(final_total_amount)
-    $("#amount_to_be_paid").html(amount_to_be_paid)
     $("#min_adv_payment").html(min_adv_payment)
+    $("#total_payment").html(total_payment)
+
+
 
     $(".action").click ->
       total_tax = 0
       sub_amount = 0
-      final_total_amount = 0
-      min_adv_payment = 0
-      job_payment_amount = 0
+      sub_amount = 0
+      total_deduction = parseFloat($("#total_deduction").text())
 
       $(".action").each ->
         if $(@).is(":checked")
@@ -46,16 +49,15 @@ window.Invoices =
           total_tax += parseFloat($(@).parent().siblings(".tax").text())
           min_adv_payment += parseFloat($(@).parent().siblings(".min_adv_payment").text())
 
-      amount_to_be_paid = sub_amount + total_tax + job_payment_amount - min_adv_payment
+      final_total_amount = sub_amount + total_tax
+      amount_to_be_paid = final_total_amount - total_payment - total_deduction
 
       $("#amount_to_be_paid").html(amount_to_be_paid)
       $("#total_tax").html(total_tax)
       $("#sub_amount").html(sub_amount)
-      final_total_amount = sub_amount + total_tax
       $("#final_total_amount").html(final_total_amount)
-      $("#amount_to_be_paid").html(amount_to_be_paid)
       $("#min_adv_payment").html(min_adv_payment)
-
+      $("#total_payment").html(total_payment)
 
   check_fsr_dynamic_check_behavour: ->
 

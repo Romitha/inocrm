@@ -15,12 +15,12 @@
       %strong Currency
       = ticket.ticket_currency.code
       %br/
-      = f.input :deducted_amount
+      = f.input :deducted_amount, input_html: {id: "deducted_amount" }
       = label_tag "Payment term"
       = f.association :payment_term, label: false
       = f.input :note
       = f.input :customer_sent, wrapper: :append
-      = f.input :canceled, wrapper: :append
+      = f.input :canceled, wrapper: :append if f.object.persisted? and ticket.ticket_invoices.any? { |i| !i.canceled }
 
     .col-md-9
       %table.table.table-responsive.table-condensed.table-bordered
@@ -39,7 +39,6 @@
             %th Additional
             %th Tax
             %th Total
-            %th Min. adv. payment
             %th Status
             %th invoiced
             %th Attach
@@ -92,11 +91,7 @@
                     = number_with_precision(estimation.ticket_estimation_externals.sum(:estimated_price) + estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2)
                   - else
                     = number_with_precision(estimation.ticket_estimation_parts.sum(:estimated_price) + estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2)
-              %td.min_adv_payment
-                - if estimation.approval_required
-                  = number_with_precision estimation.approved_adv_pmnt_amount.to_f, precision: 2
-                - else
-                  = number_with_precision estimation.advance_payment_amount.to_f, precision: 2
+
               %td= estimation.estimation_status.name
 
               %td.quoted_value
@@ -123,7 +118,7 @@
               %td= act_terminate_job_payment.payment_item.try :name
               %td= act_terminate_job_payment.payment_item.try :default_amount
               %td #{act_terminate_job_payment.amount_before_adjust} (#{act_terminate_job_payment.currency.code})
-              %td.job_payment_amount= act_terminate_job_payment.amount
+              %td.sub_amount= act_terminate_job_payment.amount
               %td= check_box_tag 'act_terminate_job_payment_ids[]', act_terminate_job_payment.id, (invoice.persisted? ? invoice.act_terminate_job_payment_ids.include?(act_terminate_job_payment.id) : true), class: "action"
 
       %h4 Payment received
@@ -135,7 +130,7 @@
             %td Received by
             %td note
             %td type
-            %td Amount
+            %td Amount (#{ticket.ticket_currency.code})
 
         %tbody
           - @ticket_payment_receiveds.each_with_index do |ticket_payment_received, index|
@@ -145,12 +140,12 @@
               %td= ticket_payment_received.received_by_user.email
               %td= ticket_payment_received.note
               %td= ticket_payment_received.ticket_payment_received_type.try(:name)
-              %td #{ticket_payment_received.amount} (#{ticket_payment_received.currency.code})
+              %td.total_payment= ticket_payment_received.amount
 
     .col-md-12
       .row
         .col-md-2
-          %strong Sub. total:
+          %strong Sub.Total:
         .col-md-1
           #sub_amount
       .row
@@ -160,19 +155,19 @@
           #total_tax
       .row
         .col-md-2
-          %strong Total amount:
+          %strong Total payment:
+        .col-md-1
+          #total_payment.strong.red
+      .row
+        .col-md-2
+          %strong Total deduction:
+        .col-md-1
+          #total_deduction.strong.red
+      .row
+        .col-md-2
+          %strong Total amount to be paid:
         .col-md-1
           #final_total_amount
-      .row
-        .col-md-2
-          %strong Minimum payment:
-        .col-md-1
-          #min_adv_payment
-      .row
-        .col-md-2
-          %strong Amount to be paid:
-        .col-md-1
-          #amount_to_be_paid
 
     .col-md-4.pull-left{style: "margin-bottom: 20px;"}
       .col-md-2

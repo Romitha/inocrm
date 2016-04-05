@@ -1,9 +1,10 @@
 #estimation_wrapper
 %hr
-.col-md-9
+.col-md-11
   %h3 Available Invoices
-.col-md-3
-  = link_to "new", edit_invoice_ajax_invoices_path(ticket_id: ticket.id, task_id: params[:task_id], action_type: "create"), remote: true
+- if ticket.ticket_invoices.any?{ |i| !i.canceled}
+  .col-md-1
+    = link_to "new", edit_invoice_ajax_invoices_path(ticket_id: ticket.id, task_id: params[:task_id], action_type: "create"), remote: true, class: "btn btn-sm btn-success"
 .col-md-12
   %table.table.table-responsive.table-condensed.table-bordered
     %thead
