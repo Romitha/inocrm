@@ -2,7 +2,7 @@
 %hr
 .col-md-11
   %h3 Available Invoices
-- if ticket.ticket_invoices.any?{ |i| !i.canceled}
+- if ticket.ticket_invoices.empty? or !ticket.ticket_invoices.any?{ |i| !i.canceled}
   .col-md-1
     = link_to "new", edit_invoice_ajax_invoices_path(ticket_id: ticket.id, task_id: params[:task_id], action_type: "create"), remote: true, class: "btn btn-sm btn-success"
 .col-md-12
@@ -38,4 +38,4 @@
             - else
               No
           %td
-            = link_to "edit", edit_invoice_ajax_invoices_path(invoice_id: invoice.id, task_id: params[:task_id], ticket_id: ticket.id, action_type: "update"), remote: true
+            = link_to "edit/print", edit_invoice_ajax_invoices_path(invoice_id: invoice.id, task_id: params[:task_id], ticket_id: ticket.id, action_type: "update"), remote: true

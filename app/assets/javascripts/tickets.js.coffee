@@ -28,7 +28,7 @@ window.Tickets =
     @pop_customer_info()
     @adjust_amount_check()
     @first_resolution_visible()
-    # @call_es_tax()
+    @enable_request_part_check()
     return
 
   call_es_tax: (e)->
@@ -565,5 +565,10 @@ window.Tickets =
     $(".request_part_request_from .radio-inline input").click ->
       $("#request_from_select").attr("href", "/inventories/inventory_in_modal?select_frame=request_from&checked_value="+$(@).val())
 
-
+  enable_request_part_check: ->
+    $(".approve_radio_button").change ->
+      if $(@).val() == "true"
+        $(".request_part_check").removeClass("hide").find("input").prop("disabled", false)
+      else
+        $(".request_part_check").addClass("hide").find("input").prop("disabled", true)
 
