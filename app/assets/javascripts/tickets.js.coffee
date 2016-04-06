@@ -28,12 +28,23 @@ window.Tickets =
     @pop_customer_info()
     @adjust_amount_check()
     @first_resolution_visible()
-    @tax_calculation()
+    # @call_es_tax()
     return
 
-  tax_calculation: ->
-    $("#estimated_tax_amount_id").click ->
-      alert "gg"
+  call_es_tax: (e)->
+    now_value = $(e).val()
+
+    $(e).parents(".parent_class_set").eq(0).find(".rates").addClass("hide")
+    $(e).parents(".parent_class_set").eq(0).find("#rate_"+now_value).removeClass("hide")
+
+    est_internal_add_estimated_price = $(e).parents(".head_estimated_price_class").eq(0).find(".est_estimated_amount").val()
+    now_rate = $(e).parents(".parent_class_set").eq(0).find("#rate_"+now_value).attr("data")
+    $(e).parents(".parent_class_set").eq(0).find("#tax_rate_hidden_field_id").val(now_rate)
+
+    estimated_tax_amount = (est_internal_add_estimated_price * now_rate)
+    $(e).parents(".parent_class_set").eq(0).find(".estimated_tax_amount_class").val(estimated_tax_amount)
+    approved_tax_amount = (est_internal_add_estimated_price * now_rate)
+    $(e).parents(".parent_class_set").eq(0).find(".approved_tax_amount_class").val(approved_tax_amount)
 
   initial_loaders: ->
     $('.inline_edit').editable()

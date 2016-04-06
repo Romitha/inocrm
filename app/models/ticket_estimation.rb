@@ -60,6 +60,7 @@ class TicketEstimationExternal < ActiveRecord::Base
   accepts_nested_attributes_for :organization, allow_destroy: true
 
   has_many :ticket_estimation_external_taxes, foreign_key: :estimation_external_id
+  accepts_nested_attributes_for :ticket_estimation_external_taxes, allow_destroy: true
 
 end
 
@@ -91,7 +92,7 @@ class TicketEstimationPart < ActiveRecord::Base
   accepts_nested_attributes_for :ticket_spare_part, allow_destroy: true
 
   has_many :ticket_estimation_part_taxes, foreign_key: :estimation_part_id
-
+  accepts_nested_attributes_for :ticket_estimation_part_taxes, allow_destroy: true
 end
 
 class TicketEstimationPartTax <ActiveRecord::Base
