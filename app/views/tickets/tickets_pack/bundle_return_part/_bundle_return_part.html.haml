@@ -52,11 +52,11 @@
       #bundle_return_part_with_form
         = simple_form_for ReturnPartsBundle.new, url: update_bundle_return_part_tickets_path, method: :post do |f|
 
-          / = hidden_field_tag :process_id, Rails.cache.fetch(["/tickets/bundle_return_part", params[:task_id]])[:process_id]
-          / = hidden_field_tag :task_id, Rails.cache.fetch(["/tickets/bundle_return_part", params[:task_id]])[:task_id]
-          / = hidden_field_tag :owner, Rails.cache.fetch(["/tickets/bundle_return_part", params[:task_id]])[:owner]
-          / - Rails.cache.fetch(["/tickets/bundle_return_part", params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
-          /   = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+          = hidden_field_tag :process_id, Rails.cache.fetch(["/tickets/bundle_return_part", params[:task_id]])[:process_id]
+          = hidden_field_tag :task_id, Rails.cache.fetch(["/tickets/bundle_return_part", params[:task_id]])[:task_id]
+          = hidden_field_tag :owner, Rails.cache.fetch(["/tickets/bundle_return_part", params[:task_id]])[:owner]
+          - Rails.cache.fetch(["/tickets/bundle_return_part", params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
+            = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
           = f.input :id, as: :hidden
           %strong Bundle no:
@@ -64,11 +64,6 @@
           %br
           = f.input :note
           = f.submit "Save", class: "btn btn-sm btn-success"
-    .col-md-12.col-xs-12
-      / %a.btn.btn-primary{:href => "#", :role => "button", :onclick => "Inventories.load_mustache_bundle_return_part('undelivered_bundle', ''); return false;"} Un delivered bundled
-      / %a.btn.btn-primary{:href => "#", :role => "button", :onclick => "Inventories.load_mustache_bundle_return_part('new_bundle', ''); return false;"} Create New Bundle
-      / .col-md-12.col-xs-12{style: "margin-top: 20px;"}
-      /   #bundle_return_part_exist
     .col-md-12.col-xs-12{style: "margin-top: 20px;"}
       #bundle_return_part_from_undeliver_bundle
 

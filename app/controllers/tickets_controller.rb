@@ -1888,11 +1888,9 @@ class TicketsController < ApplicationController
     ContactNumber
     QAndA
     TaskAction
-    Inventory
     Invoice
     ticket_id = (params[:ticket_id] or session[:ticket_id])
     @ticket = Ticket.find_by_id ticket_id
-    session[:ticket_id] = @ticket.id
     if @ticket
       @product = @ticket.products.first
       @warranties = @product.warranties
@@ -1902,10 +1900,6 @@ class TicketsController < ApplicationController
 
       @ticke_action = @ticket.user_ticket_actions.find_by_action_id 18
       @terminate_invoice = TerminateInvoice.new
-
-      # session[:terminate_task_action] = @ticket.user_ticket_actions.where(action_id: TaskAction.find_by_action_no(7).id).last
-      # @terminate_job_payment = @ticke_action.ticket_terminate_job_payments.first
-      # @ticket_payment_received = TicketPaymentReceived.first
 
     end
     respond_to do |format|

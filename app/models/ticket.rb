@@ -96,8 +96,6 @@ class Ticket < ActiveRecord::Base
   accepts_nested_attributes_for :ticket_payment_receiveds, allow_destroy: true
   has_many :invoices, through: :ticket_payment_receiveds
 
-  has_many :act_terminate_job_payments
-
   has_many :ticket_engineers, class_name: "TicketEngineer", foreign_key: :ticket_id
   has_many :users, through: :ticket_engineers
 

@@ -470,6 +470,10 @@ class InvoicesController < ApplicationController
 
   end
 
+  def update_terminate_invoice
+    # Set If "Payment Completed" is checked then DB.spt_ticket.customer_payment_completed=true and update DB.spt_ticket_payment_received and Action:(60)Terminate Job Issue and Invoice, and  DB.spt_act_terminate_issue_invoice, and if DB.spt_ticket.ticket_close_approval_required =  true Then DB.spt_ticket.status_id = TBC (To Be Closed) else DB.spt_ticket.status_id= CLS (Closed), and if "Recieved Amount" > 0 then create/update  DB.spt_invoice, and dont move to next task until 'Payemnt Completed' is checked and "Invoicing Completed" is checked. Set Action (60) Terminate Job Issue and Invoice, DB.spt_act_terminate_issue_invoice.
+  end
+
   private
     def set_invoice
       @invoice = TicketInvoice.find(params[:id])

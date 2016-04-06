@@ -380,6 +380,7 @@ Rails.application.routes.draw do
       post "update_customer_feedback"
       post "update_quotation"
       post "update_invoice"
+      post "update_terminate_invoice"
     end
   end
      

@@ -1,135 +1,20 @@
 - uri = URI(request.url)
 
-= simple_nested_form_for ticket, url: "terminate_invoice_tickets_path", method: :post do |t|
-  %span#payment_received_sum.hide= t.object.ticket_payment_receiveds.sum(:amount)
-  - terminate_task_action = t.object.user_ticket_actions.where(action_id: TaskAction.find_by_action_no(7).id).last
-  - if terminate_task_action.present?
-    .row
-      .col-md-6
-        - reason = terminate_task_action.try(:ticket_terminate_job).try(:reason).try(:reason)
-        %strong Reason
-        = reason
-    .row
-      .col-md-12
-        - job_payment = terminate_task_action.ticket_terminate_job_payment
-        = t.simple_fields_for job_payment  do |f|
-          %fieldset
-            %legend
-            .row
-              .col-md-6
-                %strong Payment Type:
-                = f.object.payment_item.name
-              .col-md-6
-                %strong Payment Amount (Rs):
-                %span#payment_amount= f.object.amount
-                = f.input :amount, as: :hidden, input_html: { class: "payment_amount"}
-                = f.input :amount_before_adjust, as: :hidden, input_html: { class: "amount_before_adjust"} 
-            .row
-              .col-md-12
-                %strong Adjust Amount:
-                = check_box_tag :adjust_amount, true , false, id: "adjust_amount_check"
+= simple_nested_form_for ticket, url: update_terminate_invoice_invoices_path, method: :post do |f|
 
-            .row.adjust.hide
-              .col-md-4
-                = f.input :amount, as: :string, label: "Adjust payment Amount (Rs):", input_html: {value: nil,class: "adjust_payment_amount"}
-            .row.adjust.hide
-              .col-md-12
-                %strong Adjust Reason:
-                = f.select :adjust_reason_id, Reason.all.map {|r| [r.reason,r.id] }, include_blank: true
-          .row
-            .col-md-12
-              / - sum = terminate_task_action.act_payment_received.amount
-              %strong Final Amount To Be Paid (Rs):
-              %span#final_amount_to_be_paid
-          - payment_received = terminate_task_action.act_payment_received
-          = t.simple_fields_for payment_received  do |p|
-            %fieldset
-              %legend
-              .row
-                .col-md-6
-                  %strong Payment Type: Final Payment
-              = p.simple_fields_for :ticket_payment_received  do |r|
-                .row
-                  .col-md-6
-                    / %strong Recieved Amount (Rs):
-                    = r.input :amount, label: "Recieved Amount (Rs):"
-                  .col-md-6
-                    / %strong Payment Note:
-                    = r.input :note, label: "Payment Note:"
-                .row
-                  .col-md-4
-                    %strong Payment Completed:
-                    = check_box_tag :payment_completed
-              .row
-                .col-md-4
-                  = p.input :invoice_completed
-                .col-md-2
-                  = link_to "View Invoice", "#", id: "view_invoice_id", class: "btn btn-default"
-                .col-md-2
-                  = link_to "Print Invoice", "#", id: "print_invoice_id", class: "btn btn-default"
-                  / = f.input :cus_chargeable, label: "Customer chargeable", as: :radio_buttons, wrapper_html: {class: "col-md-2"}, wrapper: :append, required: true
+  = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
+  = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
+  = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
+  - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
+    = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
-    .row{style: "margin-bottom: 20px;"}
-      .col-md-2
-      .col-md-2
-        / = button_tag "Inform Customer" , class: "btn btn-default", id: "pop_customer_info"
-        / #informed_to_customer_form
-        /terminate_task_action have to pass
-        / = link_to "select", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true
-        = link_to "Inform Customer", inform_customer_in_modal_tickets_path(terminate_task_action: terminate_task_action), id: "inform_customer_id", class: "btn btn-default", remote: true
-      .col-md-2
-        = link_to "Print Delivery Note", "#", id: "print_delivery_note_id", class: "btn btn-default"
-    .row{style: "margin-bottom: 20px;"}
-      .col-md-7
-      .col-md-5
-        = t.submit "Save", class: "btn btn-success"
-        = t.submit "Cancel", class: "btn btn-default"
+  = f.simple_fields_for :act_terminate_job_payments do |t|
+    = t.object.payment_item.name
+    = t.object.payment_item.default_amount
+    = label_tag "Adjust"
+    = check_box_tag :adjust_checked
+    = t.input :amount, label: "Adjust amount"
+    = t.association :reason, label: "Adjust reason"
 
-/ #customer_informed_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "customer_informed_modal", "aria-hidden" => true}
-/   .modal-dialog
-/     .modal-content
-
-#inform_customer_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "inform_customer_modal", "aria-hidden" => true}
-  .modal-dialog.modal-lg
-    .modal-content
-
-
-/ - terminate_task_action = ticket.ticket_actions.where(action_id: TaskAction.find(action_no: 7).last
-/ - reason = terminate_task_action.ticket_terminate_job.reason
-/ .row
-/   .col-md-12
-/     %strong Terminated Reason : #{reason}
-/ .row
-/   .col-md-12
-/     = simple_nested_form_for ticket, url: terminate_invoice_tickets_path, method: :post do |t|
-
-
-
-/   = t.simple_fields_for "user_ticket_actions_attributes[]", ticket.user_ticket_actions.first do |uta|
-/     = uta.simple_fields_for ticket_terminate_job_payments do |ttjp|
-/       = ttjp.simple_fields_for payment_item do |pi|
-/         = pi.input :name
-
-/ .row
-/   .col-md-12
-/     = simple_nested_form_for terminate_invoice, url: terminate_invoice_tickets_path, method: :post do |ti|
-/       = ti.object.ticket_payment_received.ticket_terminate_job.reason.try(:reason)
-/       / = ti.simple_fields_for user_ticket_action do |uta|
-/       / = ti.simple_fields_for ticket_payment_received do |tpr|
-/       /   = tpr.simple_fields_for ticket_terminate_job do |ttj|
-/       /     = ttj.simple_fields_for reason do |r|
-
-
-/ - payment_item = PaymentItem.find :id
-
-/ = simple_form_for payment_item, url: "#" do |f|
-/   = f.simple_fields_for :ticket_terminate_job_payment do |tp|
-/     = tp
-
-
-/ terminate_task_action = ticket.ticket_actions.where(action_id: TaskAction.find(action_no: 7).last
-
-
-/ job_payment = terminate_task_action.spt_act_terminate_job_payment
-
-/ reason = tterminate_task_action.spt_act_terminate_job.reason
+  Final amount to be paid:
+  = f.object.final_amount_to_be_paid
