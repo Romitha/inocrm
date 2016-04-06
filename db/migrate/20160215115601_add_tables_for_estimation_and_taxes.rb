@@ -91,6 +91,7 @@ class AddTablesForEstimationAndTaxes < ActiveRecord::Migration
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :estimation_additional_id, "INT UNSIGNED NOT NULL"
       t.column :tax_id, "INT UNSIGNED NOT NULL"
+      t.decimal :tax_rate, scale: 2, precision: 5, null: false, default: 0
 
       t.decimal :estimated_tax_amount, scale: 2, precision: 10, null: false, default: 0
       t.decimal :approved_tax_amount, scale: 2, precision: 10, null: false, default: 0

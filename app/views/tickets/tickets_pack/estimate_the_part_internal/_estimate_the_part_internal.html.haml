@@ -80,7 +80,7 @@
             = simple_format p.object.note
 
         - unless t.object.ticket_spare_part.ticket_spare_part_manufacture.present?
-          .col-md-8
+          .col-md-8.head_estimated_price_class
             .row
               .col-md-10
                 = t.association :supplier, input_html: {class: "est_internal_supplier"}
@@ -88,7 +88,7 @@
                 = t.input :cost_price, input_html: {min: "0", class: "est_internal_cost_price only_float", oninput: "Inventories.calculate_internal_cost_price();"}, label: false, placeholder: "Cost price"
                 .append_cost_price_internal.hide
               .col-md-3
-                = t.input :estimated_price, input_html: {min: "0", class: "est_internal_estimated_price only_float", oninput: "Inventories.calculate_internal_cost_price();"}, label: false, placeholder: "entimated price"
+                = t.input :estimated_price, input_html: {min: "0", class: "est_internal_estimated_price est_estimated_amount only_float", oninput: "Inventories.calculate_internal_cost_price();"}, label: false, placeholder: "entimated price"
                 .append_estimated_price_internal.hide
               .col-md-4
                 = t.input :warranty_period, input_html: {min: "0", class: "est_internal_warranty only_float"}, label: false, placeholder: "Warranty period in months"
@@ -98,9 +98,40 @@
               .col-md-4
                 .below_margine_append_profit_margin_internal
 
+            .col-md-12
+              .col-md-1
+              .col-md-11
+                = t.simple_fields_for :ticket_estimation_part_taxes do |e|
+
+                  .row.parent_class_set
+                    .add_sign.col-md-3{style: "padding-top:2.5%;"}
+                      = e.link_to_remove class: "remove_c_t_v_link" do
+                        %span.glyphicon.glyphicon-remove-sign
+
+                    .col-md-3
+                      = e.association :tax, label_method: :tax, value_method: :id, input_html: {class: "tax_field_class",id: "tax_field_idwww", onchange: "Tickets.call_es_tax(this); return false;"}
+                    .col-md-4
+                      = e.input :tax_rate,  as: :hidden, input_html: {id: "tax_rate_hidden_field_id"}
+                      - Tax.all.each do |tax|
+                        - rate = tax.tax_rates.find_by_active(true)
+                        - if rate.present?
+                          .hide.rates{id: "rate_#{rate.id}", data: "#{rate.rate}", value: rate.rate}= "Rate #{rate.rate}% (#{rate.tax.tax})"
+
+                    - if f.object.approval_required == true
+                      .col-md-4
+                        = e.input :approved_tax_amount, input_html: {class: "approved_tax_amount_class"}
+                    - else
+                      .col-md-4
+                        = e.input :estimated_tax_amount, input_html: {class: "estimated_tax_amount_class"}
+
+                = t.link_to_add :ticket_estimation_part_taxes, class: "small_scale_padding-right2" do
+                  %span.glyphicon.glyphicon-plus-sign
+                  Add tax
+
+
   = f.simple_fields_for :ticket_estimation_additionals do |a|
 
-    .row
+    .row.head_estimated_price_class
       .add_sign.col-md-3{style: "padding-top:2.5%;"}
         = a.link_to_remove class: "remove_c_t_v_link" do
           %span.glyphicon.glyphicon-remove-sign
@@ -111,52 +142,40 @@
         = a.input :cost_price, input_html: {min: "0", class: "est_internal_add_cost_price only_float", oninput: "Inventories.calculate_internal_cost_price();"}
         .append_cost_price_internal.hide
       .col-md-2
-        = a.input :estimated_price, input_html: {min: "0", class: "est_internal_add_estimated_price only_float", oninput: "Inventories.calculate_internal_cost_price();"}
+        = a.input :estimated_price, input_html: {min: "0", class: "est_internal_add_estimated_price est_estimated_amount only_float", oninput: "Inventories.calculate_internal_cost_price();"}
         .append_estimated_price_internal.hide
       .col-md-2
         %strong Profit:
         %span.append_profit_margin_internal{style: "font-weight:bold;"}
       .col-md-12
-        = a.simple_fields_for :ticket_estimation_additional_taxes, {:index => 0} do |t|
+        .col-md-1
+        .col-md-11
+          = a.simple_fields_for :ticket_estimation_additional_taxes do |t|
 
-          .row
-            .add_sign.col-md-3{style: "padding-top:2.5%;"}
-              = t.link_to_remove class: "remove_c_t_v_link" do
-                %span.glyphicon.glyphicon-remove-sign
+            .row.parent_class_set
+              .add_sign.col-md-3{style: "padding-top:2.5%;"}
+                = t.link_to_remove class: "remove_c_t_v_link" do
+                  %span.glyphicon.glyphicon-remove-sign
 
-            .col-md-2
-              / = t.association :tax, label_method: :tax, value_method: :id, input_html: {class: "tax_field_class"}
-              = t.association :tax, label_method: :tax, value_method: :id, input_html: {class: "tax_field_class",id: "tax_field_idwww"}
-              / = t.label :tax_id, "Tax"
-              / = label_tag 'tax', 'Tax'
-              / %br
-            .col-md-2
-              = t.simple_fields_for :tax do |r|
-                / = r.association :tax_rates, label_method: :rate, value_method: :id, input_html: {id: "taxrate_field_id"}
-                = r.input :rate, :collection => TaxRate.all, :label_method => :rate, :value_method => :id, :include_blank => true, input_html: {id: "tax_rate_field_id"}
-
-              / = t.select :tax_id, options_from_collection_for_select(Tax.all, :id, :tax), include_blank: true
-              / = t.select :tax_id, Tax.all.uniq{|t| t.id}.map{|t| ["#{t.tax} #{t.tax_rates.first.try(:rate)}%", t.id]}, include_blank: true
-
-              /= t.select :tax_id, Tax.all.uniq{|t| t.id}.map{|t| ["#{t.tax}", t.id]}, include_blank: true
-              / = t.select :tax_id, options_from_collection_for_select(Tax.all, :id, :tax, :class => 'tax_select'), include_blank: true
-              / = t.select :tax_id, Tax.all.map {|c| [c.tax, c.id]}, label: "Tax"
-              / .col-md-2
-              /   = label_tag 'tax_rate', 'Rate'
-              /   %br
-              / = t.simple_fields_for :tax do |r|
-              / = t.select :id, TaxRate.all.uniq{|x| x.tax_id}.map{|x| ["#{x.rate} %", x.id]}, include_blank: true, id: "chosen-select"
-            - if f.object.approval_required == true
               .col-md-2
-                = t.input :approved_tax_amount, input_html: {id: "approved_tax_amount_id"}
-            - else
+                = t.association :tax, label_method: :tax, value_method: :id, input_html: {class: "tax_field_class",id: "tax_field_idwww", onchange: "Tickets.call_es_tax(this); return false;"}
               .col-md-2
-                = t.input :estimated_tax_amount, input_html: {id: "estimated_tax_amount_id"}
-            
+                = t.input :tax_rate,  as: :hidden, input_html: {id: "tax_rate_hidden_field_id"}
+                - Tax.all.each do |t|
+                  - rate = t.tax_rates.find_by_active(true)
+                  - if rate.present?
+                    .hide.rates{id: "rate_#{rate.id}", data: "#{rate.rate}", value: rate.rate}= "Rate #{rate.rate}% (#{rate.tax.tax})"
 
-        = a.link_to_add :ticket_estimation_additional_taxes, class: "small_scale_padding-right2" do
-          %span.glyphicon.glyphicon-plus-sign
-          Add tax
+              - if f.object.approval_required == true
+                .col-md-2
+                  = t.input :approved_tax_amount, input_html: {class: "approved_tax_amount_class"}
+              - else
+                .col-md-2
+                  = t.input :estimated_tax_amount, input_html: {class: "estimated_tax_amount_class"}
+
+          = a.link_to_add :ticket_estimation_additional_taxes, class: "small_scale_padding-right2" do
+            %span.glyphicon.glyphicon-plus-sign
+            Add tax
       
     %hr
 
@@ -186,7 +205,6 @@
       .below_margine_total_internal_margin_price
       = hidden_field_tag :estimate_low_margin
   %hr
-
 
   .row
     .col-md-3
