@@ -20,7 +20,7 @@
       = f.association :payment_term, label: false
       = f.input :note
       = f.input :customer_sent, wrapper: :append
-      = f.input :canceled, wrapper: :append if f.object.persisted? and ticket.ticket_invoices.any? { |i| !i.canceled }
+      = f.input :canceled, wrapper: :append if f.object.persisted? and !ticket.ticket_invoices.any? { |i| !i.canceled }
 
     .col-md-9
       %table.table.table-responsive.table-condensed.table-bordered

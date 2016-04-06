@@ -84,13 +84,12 @@
         = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
       = f.input :id, as: :hidden
-      / = f.input :cust_approved_at, as: :hidden, input_html: {value: DateTime.now}
-      = f.input :cust_approved_by, as: :hidden, input_html: {value: current_user.id}
 
-      = f.input :cust_approved, as: :radio_buttons, collection: {approved: true, rejected: false}, wrapper: :append, label: false
+      = f.input :cust_approved, as: :radio_buttons, collection: {approved: true, rejected: false}, wrapper: :append, label: false, input_html: {class: "approve_radio_button"}
       = f.input :note, input_html: {value: nil}
       = simple_format f.object.note
       - if estimation.ticket_estimation_externals.present?
-        = label_tag "Request to deliver unit"
-        = check_box_tag :request_deliver_unit, true, (estimation.advance_payment_amount.to_f == 0)
+        .request_part_check
+          = label_tag "Request to deliver unit"
+          = check_box_tag :request_deliver_unit, true, (estimation.advance_payment_amount.to_f == 0)
       = f.submit "Save", class: "btn btn-success btn-sm"

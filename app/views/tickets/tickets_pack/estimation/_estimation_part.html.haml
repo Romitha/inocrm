@@ -2,93 +2,112 @@
 
 %strong Selected part estimation
 %center.strong.br Status : #{estimation.estimation_status.name}
-%center.strong Customer Approval :- #{estimation.cust_approved ? 'Approved' : (estimation.cust_approved.nil? ? '' : 'Rejected') }
+%center.strong Customer Approval : #{estimation.cust_approved ? 'Approved' : (estimation.cust_approved.nil? ? '' : 'Rejected') }
 
 - estimation.ticket_estimation_parts.each do |estimation_part|
   %fieldset
-    %legend Part No #{estimation_part.ticket_spare_part.try(:spare_part_no)}
-    .row
-      .col-md-12
-        Supplier : #{estimation_part.supplier.try :name}
+    %legend Part No: #{estimation_part.ticket_spare_part.try(:spare_part_no)}
     .row
       .col-md-6
-        Cost Price (#{estimation.ticket.ticket_currency.code}) : #{number_with_precision estimation_part.cost_price, precision: 2}
+        %strong Supplier :
+        #{estimation_part.supplier.try :name}
+        %br/
+        %strong Part No :
+        #{estimation_part.ticket_spare_part.try(:spare_part_no)}
+        %br/
+        %strong Part Description :
+        #{estimation_part.ticket_spare_part.try(:spare_part_description)}
       .col-md-6
+        %strong Cost Price (#{estimation.ticket.ticket_currency.code}) :
+        #{number_with_precision estimation_part.cost_price, precision: 2}
+        %br/
         - if estimation.approval_required
           - total_estimation = total_estimation + estimation_part.approved_estimated_price.to_i
-          Estimate Price (#{estimation.ticket.ticket_currency.code}) : #{number_with_precision estimation_part.approved_estimated_price, precision: 2}
+          %strong Estimate Price (#{estimation.ticket.ticket_currency.code}) :
+          #{number_with_precision estimation_part.approved_estimated_price, precision: 2}
         - else
           - total_estimation = total_estimation + estimation_part.estimated_price.to_i
-          Estimate Price (#{estimation.ticket.ticket_currency.code}) : #{number_with_precision estimation_part.estimated_price, precision: 2}
-    .row
-      .col-md-12
-        Part No : #{estimation_part.ticket_spare_part.try(:spare_part_no)}
-    .row
-      .col-md-4
-        Part Description : #{estimation_part.ticket_spare_part.try(:spare_part_description)}
-      .col-md-8
+          %strong Estimate Price (#{estimation.ticket.ticket_currency.code}) :
+          #{number_with_precision estimation_part.estimated_price, precision: 2}
+        %br/
         - if estimation_part.warranty_period
-          Warranty Period Months : #{estimation_part.warranty_period}
+          %strong Warranty Period Months :
+          #{estimation_part.warranty_period}
 
 
     - if estimation_part.ticket_spare_part.ticket_spare_part_store.present?
+      %hr
+      %h4 Requested Part
       .row
         .col-md-12
-          %strong Requested Part
-      .row
-        .col-md-12
-          Store : #{estimation_part.ticket_spare_part.ticket_spare_part_store.try(:store).try(:name)}
-      .row
-        .col-md-12
-          Item Code : #{estimation_part.ticket_spare_part.ticket_spare_part_store.try(:inventory_product).try(:generated_item_code)}
-      .row
-        .col-md-12
-          Item Description : #{estimation_part.ticket_spare_part.ticket_spare_part_store.try(:inventory_product).try(:description)}
-      .row
-        .col-md-12
-          Available Qnt: #{estimation_part.ticket_spare_part.ticket_spare_part_store.try(:inventory_product) and estimation_part.ticket_spare_part.ticket_spare_part_store.inventory_product.inventories.where(store_id: estimation_part.ticket_spare_part.ticket_spare_part_store.store_id).first.try(:available_quantity)}
-        .col-md-12
-          Unit : #{estimation_part.ticket_spare_part.ticket_spare_part_store.try(:inventory_product).try(:inventory_unit).try(:unit)}
+          %strong Store :
+          #{estimation_part.ticket_spare_part.ticket_spare_part_store.try(:store).try(:name)}
+          %br/
+          %strong Item Code :
+          #{estimation_part.ticket_spare_part.ticket_spare_part_store.try(:inventory_product).try(:generated_item_code)}
+          %br/
+          %strong Item Description :
+          #{estimation_part.ticket_spare_part.ticket_spare_part_store.try(:inventory_product).try(:description)}
+          %br/
+          %strong Available Qnt:
+          #{estimation_part.ticket_spare_part.ticket_spare_part_store.try(:inventory_product) and estimation_part.ticket_spare_part.ticket_spare_part_store.inventory_product.inventories.where(store_id: estimation_part.ticket_spare_part.ticket_spare_part_store.store_id).first.try(:available_quantity)}
+          %br/
+          %strong Unit :
+          #{estimation_part.ticket_spare_part.ticket_spare_part_store.try(:inventory_product).try(:inventory_unit).try(:unit)}
+          %br/
+
     .row
       .col-md-12
-        Note : #{simple_format estimation_part.ticket_spare_part.try(:note)}
+        %strong Note :
+        #{simple_format estimation_part.ticket_spare_part.try(:note)}
 
 - estimation.ticket_estimation_additionals.each do |ticket_estimation_additional|
   .row
     .col-md-4
-      Additional Charges : #{ticket_estimation_additional.additional_charge.try(:additional_charge)}
+      %strong Additional Charges :
+      #{ticket_estimation_additional.additional_charge.try(:additional_charge)}
     .col-md-4
-      Cost Price(#{estimation.ticket.ticket_currency.code}) : #{ticket_estimation_additional.cost_price}
+      %strong Cost Price(#{estimation.ticket.ticket_currency.code}) :
+      #{ticket_estimation_additional.cost_price}
     .col-md-4
       - if estimation.approval_required
-        Estimate Price (#{estimation.ticket.ticket_currency.code}) : #{ticket_estimation_additional.approved_estimated_price}
+        %strong Estimate Price (#{estimation.ticket.ticket_currency.code}) :
+        #{ticket_estimation_additional.approved_estimated_price}
       - else
-        Estimate Price (#{estimation.ticket.ticket_currency.code}) : #{ticket_estimation_additional.estimated_price}
+        %strong Estimate Price (#{estimation.ticket.ticket_currency.code}) :
+        #{ticket_estimation_additional.estimated_price}
 
 .row
   .col-md-4
     / Total (#{estimation.ticket.ticket_currency.code}) : xxxx
   .col-md-4
-    Total additional cost (#{estimation.ticket.ticket_currency.code}) : #{number_with_precision estimation.ticket_estimation_additionals.sum(:cost_price), precision: 2}
+    %strong Total additional cost (#{estimation.ticket.ticket_currency.code}) :
+    #{number_with_precision estimation.ticket_estimation_additionals.sum(:cost_price), precision: 2}
   .col-md-4
     - if estimation.approval_required
       - total_estimation = total_estimation + estimation.ticket_estimation_additionals.sum(:approved_estimated_price).to_i
-      Total additional estimated (#{estimation.ticket.ticket_currency.code}) : #{number_with_precision estimation.ticket_estimation_additionals.sum(:approved_estimated_price), precision: 2}
+      %strong Total additional estimated (#{estimation.ticket.ticket_currency.code}) :
+      #{number_with_precision estimation.ticket_estimation_additionals.sum(:approved_estimated_price), precision: 2}
     - else
       - total_estimation = total_estimation + estimation.ticket_estimation_additionals.sum(:estimated_price).to_i
-      Total additional estimated (#{estimation.ticket.ticket_currency.code}) : #{number_with_precision estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2}
+      %strong Total additional estimated (#{estimation.ticket.ticket_currency.code}) :
+      #{number_with_precision estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2}
 
 .row
   .col-md-12
-    %strong Total Estimated Price (#{estimation.ticket.ticket_currency.code}) : #{number_with_precision total_estimation, precision: 2}
+    %strong Total Estimated Price (#{estimation.ticket.ticket_currency.code}) :
+    #{number_with_precision total_estimation, precision: 2}
 .row
   .col-md-4
     - if estimation.approval_required
-      Min.Advanced Payment (#{estimation.ticket.ticket_currency.code}) : #{number_with_precision estimation.approved_adv_pmnt_amount, precision: 2}
+      %strong Min.Advanced Payment (#{estimation.ticket.ticket_currency.code}) :
+      #{number_with_precision estimation.approved_adv_pmnt_amount, precision: 2}
     - else
-      Min.Advanced Payment (#{estimation.ticket.ticket_currency.code}) : #{number_with_precision estimation.advance_payment_amount, precision: 2}
+      %strong Min.Advanced Payment (#{estimation.ticket.ticket_currency.code}) :
+      #{number_with_precision estimation.advance_payment_amount, precision: 2}
   .col-md-4
-    Advanced Payment Recieved (#{estimation.ticket.ticket_currency.code}) : #{number_with_precision estimation.ticket.ticket_payment_receiveds.where(type_id: TicketPaymentReceivedType.find_by_code("AD").id).sum(:amount).to_i, precision: 2}
+    %strong Advanced Payment Recieved (#{estimation.ticket.ticket_currency.code}) :
+    #{number_with_precision estimation.ticket.ticket_payment_receiveds.where(type_id: TicketPaymentReceivedType.find_by_code("AD").id).sum(:amount).to_i, precision: 2}
 .row
   .col-md-12
     - unless (estimation.estimation_status.code == "EST") and estimation.cust_approval_required and estimation.cust_approved.nil?
@@ -111,10 +130,11 @@
 
       = f.input :cust_approved_by, as: :hidden, input_html: {value: current_user.id}
 
-      = f.input :cust_approved, as: :radio_buttons, collection: {approved: true, rejected: false}, wrapper: :append, label: false
+      = f.input :cust_approved, as: :radio_buttons, collection: {approved: true, rejected: false}, wrapper: :append, label: false, input_html: {class: "approve_radio_button"}
       = f.input :note, input_html: {value: nil}
       = simple_format estimation.note
       - if estimation.ticket_estimation_parts.present? and not estimation.ticket_estimation_parts.first.ticket_spare_part.ticket_spare_part_non_stock.present?
-        = label_tag "Request part"
-        = check_box_tag :request_spare_part, true, (estimation.advance_payment_amount.to_f == 0)
+        .request_part_check
+          = label_tag "Request part"
+          = check_box_tag :request_spare_part, true, (estimation.advance_payment_amount.to_f == 0)
       = f.submit "Save", class: "btn btn-success btn-sm"
