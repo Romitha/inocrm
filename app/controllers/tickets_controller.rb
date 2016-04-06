@@ -1986,7 +1986,7 @@ class TicketsController < ApplicationController
     ContactNumber
     QAndA
     TaskAction
-    Inventory
+    TicketEstimation
     ticket_id = params[:ticket_id]
     @ticket = Ticket.find_by_id ticket_id
     session[:ticket_id] = @ticket.id

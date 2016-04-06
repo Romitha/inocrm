@@ -160,16 +160,17 @@ class InvoicesController < ApplicationController
     bpm_variables = view_context.initialize_bpm_variables
 
     create_invoice = !@ticket.ticket_invoices.any? { |i| !i.canceled }
-    uninvoiced_items =  @ticket.ticket_estimations.any? { |i| i.invoiced.to_i<= 0 and i.approved} or @ticket.ticket_payment_receiveds.any? { |i| !i.invoiced.to_i <= 0 }
-
+    invoice = @ticket.ticket_invoices.find_by_canceled(false)
+    invoiced_payment_recives = invoice and invoice.ticket_payment_receiveds
+    uninvoiced_items =  @ticket.ticket_estimations.any? { |i| i.invoiced.to_i<= 0 and i.approved} or (@ticket.ticket_payment_received.ids != invoiced_payment_recives.to_a) #@ticket.ticket_payment_receiveds.any? { |i| !i.invoiced.to_i <= 0 }
 
     #uninvoiced_items =  spt_ticket_estimation, spt_ticket_payment_received, spt_act_terminate_job_payment
     if create_invoice or uninvoiced_items
       if create_invoice
-         flash[:error] = "Please continue after creating invoice."
+        flash[:error] = "Please continue after creating invoice."
       end
       if uninvoiced_items
-         flash[:error] = "There are un-invoiced items, Please continue after creating invoice with all items."
+        flash[:error] = "There are un-invoiced items, Please continue after creating invoice with all items."
       end
     else
       if continue
@@ -403,7 +404,9 @@ class InvoicesController < ApplicationController
     @ticket = Ticket.find_by_id params[:ticket_id]
     checked_estimation_ids = params[:estimation_ids]
     checked_act_terminate_job_payment_ids = params[:act_terminate_job_payment_ids]
+
     action_no = 0
+    canceled = false
     if params[:action_type] == "create"
       @invoice = TicketInvoice.new invoice_params
       @invoice.invoice_no = CompanyConfig.first.increase_sup_last_invoice_no
@@ -411,6 +414,11 @@ class InvoicesController < ApplicationController
       TicketEstimation.where(id: checked_estimation_ids).each do |estimation|
         estimation.update invoiced: estimation.invoiced.to_i+1
       end
+
+      ActTerminateJobPayment.where(id: checked_act_terminate_job_payment_ids).each do |terminate_charge|
+        terminate_charge.update invoiced: terminate_charge.invoiced.to_i+1
+      end
+
       # Action (80) Create TicketInvoice, DB.spt_act_print_invoice.
       action_no = 80
     elsif params[:action_type] == "update"
@@ -422,6 +430,12 @@ class InvoicesController < ApplicationController
           @invoice.ticket_estimations.each do |estimation|
             estimation.update invoiced: estimation.invoiced.to_i-1
           end
+
+          @invoice.act_terminate_job_payments.each do |terminate_charge|
+            terminate_charge.update invoiced: terminate_charge.invoiced.to_i-1
+          end
+
+          canceled = true
         end
       else
         if !@invoice.canceled_was
@@ -429,6 +443,9 @@ class InvoicesController < ApplicationController
         end
 
         TicketEstimation.where(id: checked_estimation_ids).each { |estimation| estimation.update invoiced: (estimation.invoiced.to_i+1) }
+
+        ActTerminateJobPayment.where(id: checked_act_terminate_job_payment_ids).each { |terminate_charge| terminate_charge.update invoiced: (terminate_charge.invoiced.to_i+1) }
+
       end      
       # Action (83) Edit TicketInvoice, DB.spt_act_print_invoice.
       action_no = 83
@@ -439,7 +456,10 @@ class InvoicesController < ApplicationController
     @invoice.currency_id = @ticket.ticket_currency.id
 
     @invoice.save
-    @invoice.ticket_estimation_ids = checked_estimation_ids    
+    @invoice.ticket_estimation_ids = checked_estimation_ids
+    @invoice.act_terminate_job_payments = checked_act_terminate_job_payment_ids
+
+    @ticket.update final_amount_to_be_paid: (canceled ? 0 : ([@invoice.net_total_amount.to_f] << 0)).max
 
     #Action 80/83
     user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(action_no).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
