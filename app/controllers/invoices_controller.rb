@@ -156,6 +156,11 @@ class InvoicesController < ApplicationController
     @ticket.attributes = ticket_params
     payment_completed = params[:payment_completed].present?
 
+    foc_payment_required = params[:foc_payment_required].present? and params[:foc_payment_required].to_bool
+    act_terminate_job = ticket.user_ticket_actions.select{|u| u.ticket_terminate_job.present? }.first
+
+    act_terminate_job and act_terminate_job.update(foc_requested: foc_payment_required)
+
     continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
     bpm_variables = view_context.initialize_bpm_variables
 
@@ -163,9 +168,9 @@ class InvoicesController < ApplicationController
     invoice = @ticket.ticket_invoices.find_by_canceled(false)
     invoiced_payment_recives = invoice and invoice.ticket_payment_receiveds
     uninvoiced_items =  @ticket.ticket_estimations.any? { |i| i.invoiced.to_i<= 0 and i.approved} or (@ticket.ticket_payment_received.ids != invoiced_payment_recives.to_a) #@ticket.ticket_payment_receiveds.any? { |i| !i.invoiced.to_i <= 0 }
+    @ticket.final_invoice_id = invoice.try(:id)
 
-    #uninvoiced_items =  spt_ticket_estimation, spt_ticket_payment_received, spt_act_terminate_job_payment
-    if create_invoice or uninvoiced_items
+    if create_invoice # or uninvoiced_items
       if create_invoice
         flash[:error] = "Please continue after creating invoice."
       end
@@ -265,7 +270,8 @@ class InvoicesController < ApplicationController
     customer_feedback_feedback_description = params[:feedback_description]
 
     @ticket_payment_received = TicketPaymentReceived.new ticket_payment_received_params if @ticket.cus_payment_required
-    @final_invoice = @ticket.ticket_invoices.order(created_at: :desc).find_by_canceled false
+    #@final_invoice = @ticket.ticket_invoices.order(created_at: :desc).find_by_canceled false
+    @final_invoice = @ticket.final_invoice
 
     continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
 
@@ -350,6 +356,18 @@ class InvoicesController < ApplicationController
 
     end
     render @render_to_page
+  end
+
+  def update_terminate_invoice
+    @ticket = Ticket.find params[:ticket_id]
+    adjust_checked = params[:adjust_checked].present?
+    payment_completed = params[:payment_completed].present?
+    invoice_completed = params[:invoice_completed].present?
+    unit_return_customer = params[:unit_return_customer].present?
+
+    @ticket.attributes = ticket_params
+
+    # Set If "Payment Completed" is checked then DB.spt_ticket.customer_payment_completed=true and update DB.spt_ticket_payment_received and Action:(60)Terminate Job Issue and Invoice, and  DB.spt_act_terminate_issue_invoice, and if DB.spt_ticket.ticket_close_approval_required =  true Then DB.spt_ticket.status_id = TBC (To Be Closed) else DB.spt_ticket.status_id= CLS (Closed), and if "Recieved Amount" > 0 then create/update  DB.spt_invoice, and dont move to next task until 'Payemnt Completed' is checked and "Invoicing Completed" is checked. Set Action (60) Terminate Job Issue and Invoice, DB.spt_act_terminate_issue_invoice.
   end
 
   def update_quotation
@@ -437,6 +455,11 @@ class InvoicesController < ApplicationController
 
           canceled = true
         end
+
+        if @ticket.final_invoice_id == @invoice.id
+          @ticket.update final_invoice_id: nil
+        end
+
       else
         if !@invoice.canceled_was
           @invoice.ticket_estimations.each { |estimation| estimation.update invoiced: (estimation.invoiced.to_i-1) }
@@ -455,6 +478,44 @@ class InvoicesController < ApplicationController
     @invoice.print_count += @invoice.print_count.to_i
     @invoice.currency_id = @ticket.ticket_currency.id
 
+    #Calculate Total Cost and Total Taxes
+    total_cost = 0
+    hash_array = {}
+
+    @invoice.ticket_estimations.each do |estimation|
+        # total_cost = estimation.ticket_estimation_externals.sum(:cost_price)
+        # total_tax = estimation.ticket_estimation_externals.inject(0){|i, k| i += k.ticket_estimation_external_taxes.sum(:approved_tax_amount)}
+
+        estimation.ticket_estimation_externals.each do |external|
+          total_cost += external.cost_price
+
+          external.external_taxes.each do |tax|
+            hash_array[tax.tax_id] += (estimation.approval_required) ? tax.approved_tax_amount : tax.estimated_tax_amount
+          end
+        end
+
+        estimation.ticket_estimation_parts.each do |part|
+          total_cost += part.cost_price
+
+          external.part_taxes.each do |tax|
+            hash_array[tax.tax_id] += (estimation.approval_required) ? tax.approved_tax_amount : tax.estimated_tax_amount
+          end
+        end
+
+        estimation.ticket_estimation_additionals.each do |additional|
+          total_cost += additional.cost_price
+
+          external.additional_taxes.each do |tax|
+            hash_array[tax.tax_id] += (estimation.approval_required) ? tax.approved_tax_amount : tax.estimated_tax_amount
+          end
+        end
+    end
+    @invoice.total_cost = total_cost
+
+    hash_array.each do |tax|
+       @invoice.total_tax create (tax_id:tax.i, amount: tax.v)
+    end
+
     @invoice.save
     @invoice.ticket_estimation_ids = checked_estimation_ids
     @invoice.act_terminate_job_payments = checked_act_terminate_job_payment_ids
@@ -468,10 +529,6 @@ class InvoicesController < ApplicationController
 
     redirect_to todos_url, notice: "Successfully updated."
 
-  end
-
-  def update_terminate_invoice
-    # Set If "Payment Completed" is checked then DB.spt_ticket.customer_payment_completed=true and update DB.spt_ticket_payment_received and Action:(60)Terminate Job Issue and Invoice, and  DB.spt_act_terminate_issue_invoice, and if DB.spt_ticket.ticket_close_approval_required =  true Then DB.spt_ticket.status_id = TBC (To Be Closed) else DB.spt_ticket.status_id= CLS (Closed), and if "Recieved Amount" > 0 then create/update  DB.spt_invoice, and dont move to next task until 'Payemnt Completed' is checked and "Invoicing Completed" is checked. Set Action (60) Terminate Job Issue and Invoice, DB.spt_act_terminate_issue_invoice.
   end
 
   private
