@@ -11,11 +11,12 @@
       - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
         = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
-      - if f.object.ticket_terminated?
+      - if f.object.ticket_terminated
+        - act_terminate_job = ticket.user_ticket_actions.select{|u| u.ticket_terminate_job.present? }.first
         = label_tag "Foc"
-        = radio_button_tag :foc_payment_required, "foc"
+        = radio_button_tag :foc_payment_required, "true", act_terminate_job.try(:foc_requested)
         = label_tag "Payment required"
-        = radio_button_tag :foc_payment_required, "payment_required"
+        = radio_button_tag :foc_payment_required, "false", act_terminate_job.try(:foc_requested)
         = f.simple_fields_for :act_terminate_job_payments do |t|
           .add_sign.col-md-3
             = t.link_to_remove class: "remove_c_t_v_link" do
@@ -27,7 +28,7 @@
         = f.link_to_add :act_terminate_job_payments, class: "col-md-12" do
           %span.glyphicon.glyphicon-plus-sign
           Add
-        = f.input :final_amount_to_be_paid, wrapper_html: {class: "col-md-3"}
+        / = f.input :final_amount_to_be_paid, wrapper_html: {class: "col-md-3"}
         %hr
       %strong Total estimated amount(#{ticket.ticket_currency.code}):
       = @total_estimation_amount
