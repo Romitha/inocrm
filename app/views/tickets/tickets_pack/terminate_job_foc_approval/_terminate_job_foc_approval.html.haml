@@ -28,7 +28,7 @@
           = rf.input :foc_requested, as: :radio_buttons, collection: {"FOC" => false, "Payment required" => true}, wrapper: :append,label: false
 
     .row.col-md-12
-      = f.simple_fields_for :ticket_terminate_job_payments do |tf|
+      = f.simple_fields_for :act_terminate_job_payments do |tf|
         .row
           = tf.input :ticket_id, as: :hidden, input_html: {value: ticket.id}
           = tf.input :amount, wrapper_html: {class: "col-md-4"}
@@ -41,7 +41,7 @@
               %br
 
     .row.col-md-12
-      = f.link_to_add :ticket_terminate_job_payments, class: "small_scale_padding-right2" do
+      = f.link_to_add :act_terminate_job_payments, class: "small_scale_padding-right2" do
         %span.glyphicon.glyphicon-plus-sign
         Add payment
 
