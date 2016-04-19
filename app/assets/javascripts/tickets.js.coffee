@@ -42,9 +42,9 @@ window.Tickets =
     now_rate = $(e).parents(".parent_class_set").eq(0).find("#rate_"+now_value).attr("data")
     $(e).parents(".parent_class_set").eq(0).find("#tax_rate_hidden_field_id").val(now_rate)
 
-    estimated_tax_amount = (est_internal_add_estimated_price * now_rate)
+    estimated_tax_amount = (est_internal_add_estimated_price * (now_rate/100))
     $(e).parents(".parent_class_set").eq(0).find(".estimated_tax_amount_class").val(estimated_tax_amount)
-    approved_tax_amount = (est_internal_add_estimated_price * now_rate)
+    approved_tax_amount = (est_internal_add_estimated_price * (now_rate/100))
     $(e).parents(".parent_class_set").eq(0).find(".approved_tax_amount_class").val(approved_tax_amount)
 
   initial_loaders: ->
