@@ -38,6 +38,7 @@ window.Tickets =
     $(e).parents(".parent_class_set").eq(0).find("#rate_"+now_value).removeClass("hide")
 
     est_internal_add_estimated_price = $(e).parents(".head_estimated_price_class").eq(0).find(".est_estimated_amount").val()
+    # est_internal_add_estimated_price = $(e).parents(".head_estimated_price_class").eq(0).childrens("#est_estimated_amount").eq(0).val()
     now_rate = $(e).parents(".parent_class_set").eq(0).find("#rate_"+now_value).attr("data")
     $(e).parents(".parent_class_set").eq(0).find("#tax_rate_hidden_field_id").val(now_rate)
 
