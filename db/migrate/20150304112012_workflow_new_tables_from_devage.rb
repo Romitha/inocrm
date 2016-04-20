@@ -60,7 +60,7 @@ class WorkflowNewTablesFromDevage < ActiveRecord::Migration
       # t.integer :suport_sla_time
       # t.decimal :external_job_profit_margin
       # t.decimal :internal_part_profit_margin
-      t.column :sup_sla_id, "int(10) UNSIGNED NOT NULL"
+      t.column :sup_sla_id, "int(10) UNSIGNED NULL"
       t.integer :inv_category_level, default: 3, null: false
       #t.integer :sup_sla_time, null: false
       t.decimal :sup_external_job_profit_margin, null: false, precision: 5, scale: 2, default: 0.000

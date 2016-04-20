@@ -189,6 +189,7 @@ mst_spt_action = [
   ["82", "Print Quotation", "3", false],
   ["83", "Edit Invoice", "33", false],
   ["84", "Edit Quotation", "3", false],
+  ["85", "Estimate Job Final Update", "3", false],
 ].each{ |t| TaskAction.create_with(action_description: t[1], task_id: t[2], hide: t[3]).find_or_create_by(action_no: t[0]) }
 
 mst_organizations_types = [
@@ -338,4 +339,4 @@ end
 
 WorkflowMapping.find(11).update(process_name: "SPPT_MFR_PART_REQUEST")
 
-CompanyConfig.create sup_last_fsr_no: 0, inv_last_srn_no: 0, inv_last_srr_no: 0, inv_last_sbn_no: 0, inv_last_prn_no: 0, inv_last_grn_no: 0, inv_last_gin_no: 0, sup_last_quotation_no: 0, sup_last_bundle_no: 0 unless CompanyConfig.any?
+CompanyConfig.create sup_last_fsr_no: 0, inv_last_srn_no: 0, inv_last_srr_no: 0, inv_last_sbn_no: 0, inv_last_prn_no: 0, inv_last_grn_no: 0, inv_last_gin_no: 0, sup_last_quotation_no: 0, sup_last_bundle_no: 0 unless CompanyConfig.any? #, sup_sla_id: 0 is foreign key constraint
