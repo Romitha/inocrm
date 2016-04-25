@@ -1,15 +1,4 @@
 class AddConstraintNameToTables < ActiveRecord::Migration
-  # add_foreign_key(from_table, to_table, options)
-  # remove_foreign_key(from_table, to_table, options)
-  # class Comment < ActiveRecord::Base
-  #   belongs_to :post
-  # end
-
-  # class Post < ActiveRecord::Base
-  #   has_many :comments, dependent: :delete_all
-  # end
-  # add_foreign_key(:comments, :posts)
-
   def change
     [
       {constraint_name: "fk_workflow_alert_users_users1", foreign_key: "user_id", reference_table: "users"},
@@ -430,12 +419,12 @@ class AddConstraintNameToTables < ActiveRecord::Migration
       execute "ALTER TABLE `spt_act_terminate_job` ADD CONSTRAINT `#{attr[:constraint_name]}` FOREIGN KEY (`#{attr[:foreign_key]}`) REFERENCES `#{attr[:reference_table]}` (`id`)"
     end
 
-    [
-      {constraint_name: "fk_spt_act_customer_feedback_spt_ticket_payment_received10", foreign_key: "payment_received_id", reference_table: "spt_ticket_payment_received"},
-      {constraint_name: "fk_spt_act_ticket_close_approval_spt_ticket_action1000", foreign_key: "ticket_action_id", reference_table: "spt_ticket_action"}
-    ].each do |attr|
-      execute "ALTER TABLE `spt_act_terminate_issue_invoice` ADD CONSTRAINT `#{attr[:constraint_name]}` FOREIGN KEY (`#{attr[:foreign_key]}`) REFERENCES `#{attr[:reference_table]}` (`id`)"
-    end
+    # [
+    #   {constraint_name: "fk_spt_act_customer_feedback_spt_ticket_payment_received10", foreign_key: "payment_received_id", reference_table: "spt_ticket_payment_received"},
+    #   {constraint_name: "fk_spt_act_ticket_close_approval_spt_ticket_action1000", foreign_key: "ticket_action_id", reference_table: "spt_ticket_action"}
+    # ].each do |attr|
+    #   execute "ALTER TABLE `spt_act_terminate_issue_invoice` ADD CONSTRAINT `#{attr[:constraint_name]}` FOREIGN KEY (`#{attr[:foreign_key]}`) REFERENCES `#{attr[:reference_table]}` (`id`)"
+    # end
 
     [
       {constraint_name: "fk_spt_act_re_assign_request_mst_spt_reason1", foreign_key: "reason_id", reference_table: "mst_spt_reason"},
