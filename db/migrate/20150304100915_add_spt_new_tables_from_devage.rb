@@ -125,14 +125,14 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.timestamps
     end
 
-    create_table :spt_act_terminate_issue_invoice, id: false do |t|
-      t.column :ticket_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (ticket_action_id)" 
-      t.boolean :invoice_completed, null: false, default: false
-      t.boolean :unit_returned, null: false, default: false
-      t.boolean :payment_completed, null: false, default: false
-      t.column :payment_received_id, "int(10) UNSIGNED"
-      t.timestamps
-    end
+    # create_table :spt_act_terminate_issue_invoice, id: false do |t|
+    #   t.column :ticket_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (ticket_action_id)" 
+    #   t.boolean :invoice_completed, null: false, default: false
+    #   t.boolean :unit_returned, null: false, default: false
+    #   t.boolean :payment_completed, null: false, default: false
+    #   t.column :payment_received_id, "int(10) UNSIGNED"
+    #   t.timestamps
+    # end
 
     create_table :spt_act_terminate_job, id: false do |t|
       t.column :ticket_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (ticket_action_id)" 
