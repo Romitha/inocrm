@@ -81,6 +81,7 @@ Rails.application.routes.draw do
 
       post "find_by_serial"
 
+      get "ticket_in_modal"
       get "new_product_brand"
       get "new_product_category"
       get "new_product"

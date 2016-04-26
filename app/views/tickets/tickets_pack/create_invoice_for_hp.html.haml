@@ -1,1 +1,36 @@
-create_invoice_for_hp
+-ticket = @ticket
+/ %strong All Payment pending Tickets
+.row
+  .col-md-4
+    %strong Sales Orders to be Invoice
+  .col-md-4
+    = label_tag "Brand Name"
+    = select_tag "search_inventory[brand]", options_from_collection_for_select(InventoryCategory1.all, :id, :name, (params[:search_inventory] and params[:search_inventory][:brand])), include_blank: true
+.row
+  %table.table.table-hover.table-stripped
+    %thead
+      %tr
+        %th No
+        %th PO No
+        %th PO Date
+        %th No of Events
+        %th Amount
+        %th Note
+    / %tbody
+    /   - SoPo.all.each_with_index do |so_po, index|
+    /     %tr
+    /       %td
+    /         / - if params[:page]
+    /         /   = (index+1)+ 10**(params[:page].to_i-1)
+    /         / - else
+    /         = (index+1)
+    /       %td
+    /         = so_po.serial_no
+    /       %td
+    /         = so_po.inventory_serial_item_status.name
+    /       %td
+    /         = so_po.parts_not_completed ? "Not completed" : ""
+    /       %td
+    /         = so_po.scavenge ? "Scavenge" : ""
+    /       %td
+    /         = so_po.damage ? "Damaged" : ""

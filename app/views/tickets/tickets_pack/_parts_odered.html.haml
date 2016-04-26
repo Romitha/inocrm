@@ -82,18 +82,20 @@
               = SparePartStatusAction.find_by_store_ch_type_index(ticket_spare_part.spare_part_status_action.store_ch_type_index+1).try(:name_next) unless (ticket_spare_part.spare_part_status_action.store_ch_type_index+1 > 8) or (ticket_spare_part.spare_part_status_action.store_ch_type_index == 0) or (ticket_spare_part.spare_part_status_action.code == "RJS")
           %hr
 
-          .col-md-3
+          .col-md-2
             %strong
               FSR No:
             = ticket_spare_part.ticket_fsr and ticket_spare_part.ticket_fsr.ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])
-          .col-md-3
+          .col-md-2
             %strong
               Faulty Serial No:
-            %span.faulty_serial_no= ticket_spare_part.faulty_serial_no
-          .col-md-3
+            %span#ticket_spare_part_faulty_serial_no.faulty_serial_no= ticket_spare_part.faulty_serial_no
+          .col-md-2
             %strong
               Faulty CT No:
-            %span.faulty_ct_no= ticket_spare_part.faulty_ct_no
+            %span#ticket_spare_part_faulty_ct_no.faulty_ct_no= ticket_spare_part.faulty_ct_no
+          .col-md-3
+            %button.btn.btn-primary.btn-xs{onclick: "Tickets.check_previous(this); return false;", type: "button", data: {"ticket-id" => ticket_spare_part.ticket.id}} Check Previous Detail
           .col-md-3
             %strong
               Request type:
@@ -275,9 +277,9 @@
 
           - if ticket_spare_part.ticket_spare_part_manufacture
             .col-md-3
-              %strong
-                Expected amount (Manufacture #{product.product_brand.currency.code}):
-              = ticket_spare_part.ticket_spare_part_manufacture.payment_expected_manufacture
+              / %strong
+              /   Expected amount (Manufacture #{product.product_brand.currency.code}):
+              / = ticket_spare_part.ticket_spare_part_manufacture.payment_expected_manufacture
             %hr
 
           - if ticket_spare_part.ticket_spare_part_manufacture
@@ -519,3 +521,7 @@
             %strong
               Terminate Reason:
             = ticket_on_loan_spare_part.part_terminated_reason.try(:reason)
+
+#ticket1_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "ticket1_modal", "aria-hidden" => true}
+  .modal-dialog.modal-lg
+    .modal-content

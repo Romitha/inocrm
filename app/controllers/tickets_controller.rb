@@ -7,6 +7,22 @@ class TicketsController < ApplicationController
 
   respond_to :html, :json
 
+  def ticket_in_modal
+    ct = params[:ct]
+    fa = params[:fa]
+    ticket_id = params[:ticket_id]
+    @ticket = Ticket.find params[:ticket_id]
+
+    ticket_spare_part = TicketSparePart.where("faulty_ct_no like ? and faulty_serial_no like ?", "%#{ct}%", "%#{fa}%")
+
+    # # ticket_spare_part_all = TicketSparePart.all
+    # @filtered_ticket_spare_part = TicketSparePart.where("ticket_id != ?", @ticket.id)
+    # # @filtered_ticket_spare_part = ticket_spare_part_all.select{|s| s.ticket_id != @ticket.id }
+
+    @filtered_ticket_spare_part = ticket_spare_part.select{|s| s.ticket_id != @ticket.id }
+    render "tickets/tickets_pack/resolution/ticket_in_modal"
+  end
+
   def index
     @tickets = Ticket.order("created_at DESC")
     respond_with(@tickets)
@@ -1971,6 +1987,10 @@ class TicketsController < ApplicationController
   end
 
   def create_invoice_for_hp
+    if params[:ticket_no].present?
+      ticket_id = params[:ticket_no]
+      @ticket = Ticket.where("id like ?", "%#{ticket_id}%")
+    end
     render "tickets/tickets_pack/create_invoice_for_hp"
   end
 
@@ -3083,7 +3103,7 @@ class TicketsController < ApplicationController
       end
     when "recieve_unit"
       @recieve_unit = @ticket.ticket_deliver_units.where(received: false, collected: true).first
-    when "deliver_unit"
+    when "delivcall_resolutier_unit"
       TicketEstimation
       @ticket_deliver_unit = @ticket.ticket_deliver_units.build
 
@@ -3102,6 +3122,8 @@ class TicketsController < ApplicationController
       session[:mst_inv_product_id] = nil
 
       @ticket_spare_part = @ticket.ticket_spare_parts.build
+      # @ticket_all =  = Ticket.all.where.not(session[:ticket_id])
+      # @ticket_all = Ticket.where("id != ?", session[:ticket_id])
     when "request_on_loan_spare_part"
       session[:store_id] = nil
       session[:inv_product_id] = nil
