@@ -573,3 +573,8 @@ window.Tickets =
       else
         $(".request_part_check").addClass("hide").find("input").prop("disabled", true)
 
+  check_previous: (e)->
+    fa = $("#ticket_spare_part_faulty_serial_no").val()
+    ct = $("#ticket_spare_part_faulty_ct_no").val()
+    ticket_id = $(e).data("ticket-id")
+    $.get "/tickets/ticket_in_modal?ct="+ct+"&fa="+fa+"&ticket_id="+ticket_id

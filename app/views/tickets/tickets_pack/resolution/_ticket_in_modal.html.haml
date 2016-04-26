@@ -1,0 +1,25 @@
+.modal-header
+  %button.close{"data-dismiss" => "modal", :type => "button"} &times;
+  %h4.modal-title Previous Details
+.modal-body
+  %table.table.table-striped
+    %thead
+      %tr
+        %th No
+        %th Requested at
+        %th Requested by
+        %th Ticket No
+        %th Customer
+        %th Ticket Date
+        %th View Ticket
+    %tbody
+      - @filtered_ticket_spare_part.each_with_index do |spare_part, index|
+        %tr
+          %th{:scope => "row"} #{index+1}
+          %td #{spare_part.try(:requested_at).try(:to_date)}
+          %td= User.cached_find_by_id(spare_part.requested_by).try(:first_name)
+          %td #{spare_part.ticket.ticket_no.to_s.rjust(5, INOCRM_CONFIG["ticket_no_format"])}
+          %td #{spare_part.ticket.customer.try(:name)}
+          %td #{spare_part.ticket.created_at.to_date}
+          %td 
+            = link_to "View", ticket_path(spare_part.ticket.id)
