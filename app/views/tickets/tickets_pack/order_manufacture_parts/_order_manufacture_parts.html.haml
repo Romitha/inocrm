@@ -17,18 +17,20 @@
     %strong Spare Part No:
     #{spare_part.spare_part_no}
   .col-md-4
-    %strong Faulty Serial No:
-    #{spare_part.faulty_serial_no}
+    %strong Part Description:
+    #{spare_part.spare_part_description}
   .col-md-4
     %strong Terminated Reason:
     #{spare_part.part_terminated_reason.try(:reason)}
 .row
   .col-md-4
-    %strong Part Description:
-    #{spare_part.spare_part_description}
+    %strong Faulty Serial No:
+    #{spare_part.faulty_serial_no}
   .col-md-4
     %strong Faulty CT No:
     #{spare_part.faulty_ct_no}
+  .col-md-4
+    %button.btn.btn-primary.btn-xs{onclick: "Tickets.check_previous(this); return false;", type: "button", data: {"ticket-id" => spare_part.ticket.id}} Check Previous Detail
 
 .row
   .col-md-12.small_scale_margin-top2
@@ -56,3 +58,7 @@
       #mf_order_templates
 
 / = Rails.cache.fetch(["/tickets/order_manufacture_parts", params[:task_id]]).inspect
+
+#ticket1_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "ticket1_modal", "aria-hidden" => true}
+  .modal-dialog.modal-lg
+    .modal-content
