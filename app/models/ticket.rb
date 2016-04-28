@@ -348,6 +348,8 @@ class Reason < ActiveRecord::Base
   accepts_nested_attributes_for :action_warranty_extends, allow_destroy: true
 
   has_many :act_terminate_job_payments, foreign_key: :adjust_reason_id
+
+  has_many :act_ticket_close_approves
 end
 
 class TicketReAssignRequest < ActiveRecord::Base

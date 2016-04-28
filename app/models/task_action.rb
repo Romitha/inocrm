@@ -110,6 +110,9 @@ class ActTicketCloseApprove < ActiveRecord::Base
   self.table_name = "spt_act_ticket_close_approve"
 
   belongs_to :user_ticket_action, foreign_key: :ticket_action_id
+  belongs_to :reason, foreign_key: :reject_reason_id
+  belongs_to :user, foreign_key: :owner_engineer_id
+
 end
 
 class UserAssignTicketAction < ActiveRecord::Base
@@ -244,7 +247,7 @@ class RequestSparePart < ActiveRecord::Base
 
   belongs_to :user_ticket_action, foreign_key: :ticket_action_id
 
-  belongs_to :ticket_spare_part
+  belongs_to :ticket_spare_part, foreign_key: :ticket_spare_part_id
 
   belongs_to :reject_return_part_reason, -> { where(reject_returned_part: true) }, class_name: "Reason", foreign_key: :reject_return_part_reason_id
   belongs_to :part_terminate_reason, class_name: "Reason", foreign_key: :part_terminate_reason_id
