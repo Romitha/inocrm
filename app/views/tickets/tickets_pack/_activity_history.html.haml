@@ -96,7 +96,7 @@
                   .col-md-4
                     Action: #{action.ticket_action_taken.action}
 
-            -if action.action_id == 14
+            -if action.action_id == 14 and action.request_spare_part
               .panel-body
                 .row
                   .col-md-4
@@ -117,7 +117,7 @@
                   .col-md-4
                     Payment Expected Manufacture : #{action.request_spare_part.ticket_spare_part.ticket_spare_part_manufacture.try(:payment_expected_manufacture)}
 
-            -if action.action_id == 15
+            -if action.action_id == 15 and action.request_spare_part
               .panel-body
                 .row
                   .col-md-4
@@ -148,7 +148,7 @@
                     .col-md-4
                       Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
 
-            -if action.action_id == 16
+            -if action.action_id == 16 and action.request_spare_part
               .panel-body
                 .row
                   .col-md-4
@@ -173,7 +173,7 @@
                     .col-md-4
                       Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
 
-            -if action.action_id == 17
+            -if action.action_id == 17 and action.request_spare_part
               .panel-body
                 .row
                   .col-md-4
@@ -221,7 +221,7 @@
                       .col-md-4
                         Product Item Code: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:inventory_product).try(:generated_item_code)}
 
-            -if action.action_id == 19
+            -if action.action_id == 19 and action.request_spare_part
               .panel-body
                 .row
                   .col-md-4
@@ -327,7 +327,7 @@
                   .col-md-4
                     Deliver To Supplier By: #{action.deliver_unit.ticket_deliver_unit.collected_by}
 
-            -if action.action_id == 31
+            -if action.action_id == 31 and action.request_spare_part
               .panel-body 
                 .row
                   .col-md-4
@@ -354,12 +354,7 @@
                     .col-md-4
                       Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
 
-            / -if action.action_id == 32
-            /   .panel-body
-            /     .row
-            /       .col-md-4
-
-            -if action.action_id == 33
+            -if action.action_id == 33 and action.request_spare_part
               .panel-body 
                 .row
                   .col-md-4
@@ -383,7 +378,7 @@
                       .col-md-4
                         Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
 
-            -if action.action_id == 34
+            -if action.action_id == 34 and action.request_spare_part
               .panel-body 
                 .row
                   .col-md-4
@@ -409,7 +404,7 @@
                     .col-md-4
                       Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
 
-            -if action.action_id == 36
+            -if action.action_id == 36 and action.request_spare_part
               .panel-body 
                 .row
                   .col-md-4
@@ -434,7 +429,7 @@
                     .col-md-4
                       Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
 
-            -if action.action_id == 37
+            -if action.action_id == 37 and action.request_spare_part
               .panel-body 
                 .row
                   .col-md-4
@@ -458,7 +453,7 @@
                     .col-md-4
                       Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
 
-            -if action.action_id == 38
+            -if action.action_id == 38 and action.request_spare_part
               .panel-body 
                 .row
                   .col-md-4
@@ -483,11 +478,6 @@
                     .col-md-4
                       Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
 
-            / -if action.action_id == 39
-            /   .panel-body 
-            /     .row
-            /       .col-md-4
-
             -if action.action_id == 40
               .panel-body 
                 .row
@@ -503,7 +493,7 @@
                     -else
                       Not Approved
 
-            -if action.action_id == 42
+            -if action.action_id == 42 and action.request_spare_part
               .panel-body
                 - if action.request_spare_part
                   .row
@@ -537,7 +527,7 @@
                       Bundle No:
                       #{action.request_spare_part.ticket_spare_part.try(:ticket_spare_part_manufacture).try(:return_parts_bundle).try(:bundle_no)}
 
-            -if action.action_id == 43
+            -if action.action_id == 43 and action.request_spare_part
               .panel-body
                 .row
                   .col-md-4
@@ -554,7 +544,7 @@
                     Bundle No:
                     #{action.request_spare_part.ticket_spare_part.try(:ticket_spare_part_manufacture).try(:return_parts_bundle).try(:bundle_no)}
 
-            -if action.action_id == 44
+            -if action.action_id == 44 and action.request_spare_part
               .panel-body
                 .row
                   .col-md-4
@@ -572,7 +562,7 @@
                     Bundle No:
                     #{action.request_spare_part.ticket_spare_part.try(:ticket_spare_part_manufacture).try(:return_parts_bundle).try(:bundle_no)}
 
-            -if action.action_id == 45
+            -if action.action_id == 45 and action.request_spare_part
               .panel-body
                 .row
                   .col-md-4
@@ -580,7 +570,7 @@
                   .col-md-4
                     Spare Part Description: #{action.request_spare_part.ticket_spare_part.spare_part_description}
 
-            -if action.action_id == 46
+            -if action.action_id == 46 and action.request_spare_part
               .panel-body
                 .row
                   .col-md-4
@@ -588,137 +578,677 @@
                   .col-md-4
                     Bundled by: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_manufacture.add_bundle_by).try(:user_name)}
 
-            -if action.action_id == 47
+            -if action.action_id == 47 and action.request_spare_part
               .panel-body
                 .row
                   .col-md-4
+                    Spare Part No: #{action.request_spare_part.ticket_spare_part.try(:spare_part_no)}
+                  .col-md-4
+                    Spare Part Description: #{action.request_spare_part.ticket_spare_part.spare_part_description}
+                  .col-md-4 
+                    -if action.request_spare_part.ticket_spare_part.cus_chargeable_part == true
+                      Customer Chargeable: Yes
+                    -else
+                      Customer Chargeable: No
+                .row
+                  .col-md-4
+                    -if action.request_spare_part.ticket_spare_part.request_from == 'M'
+                      Request From Manufacture
+                    -if action.request_spare_part.ticket_spare_part.request_from == 'S'
+                      Request From Store
+                  -if action.request_spare_part.ticket_spare_part.request_from == 'S'
+                    .col-md-4
+                      Store Id: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.store_id}
+                    .col-md-4
+                      Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
 
-            -if action.action_id == 48
-              .panel-body
-                .row
-                  .col-md-4
+                -if action.request_spare_part.ticket_spare_part.request_from == 'S'
+                  .row
+                    .col-md-4
+                      Store Requested By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_requested_by)).try(:user_name)}
+                    .col-md-4
+                      Store Request Approved By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_request_approved_by)).try(:user_name)}
+                    .col-md-4
+                      Store Issued By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:issued_by)).try(:user_name)}
 
-            -if action.action_id == 49
+            -if action.action_id == 48 and action.request_spare_part
               .panel-body
                 .row
                   .col-md-4
+                    Spare Part No: #{action.request_spare_part.ticket_spare_part.try(:spare_part_no)}
+                  .col-md-4
+                    Spare Part Description: #{action.request_spare_part.ticket_spare_part.spare_part_description}
+                  .col-md-4 
+                    -if action.request_spare_part.ticket_spare_part.cus_chargeable_part == true
+                      Customer Chargeable: Yes
+                    -else
+                      Customer Chargeable: No
+                .row
+                  .col-md-4
+                    -if action.request_spare_part.ticket_spare_part.request_from == 'M'
+                      Request From Manufacture
+                    -if action.request_spare_part.ticket_spare_part.request_from == 'S'
+                      Request From Store
+                  -if action.request_spare_part.ticket_spare_part.request_from == 'S'
+                    .col-md-4
+                      Store Id: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.store_id}
+                    .col-md-4
+                      Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
+
+                -if action.request_spare_part.ticket_spare_part.request_from == 'S'
+                  .row
+                    .col-md-4
+                      Store Requested By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_requested_by)).try(:user_name)}
+                    .col-md-4
+                      Store Request Approved By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_request_approved_by)).try(:user_name)}
+                    .col-md-4
+                      Store Issued By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:issued_by)).try(:user_name)}
+
+            -if action.action_id == 49 and action.request_spare_part
+              .panel-body
+                .row
+                  .col-md-4
+                    Spare Part No: #{action.request_spare_part.ticket_spare_part.try(:spare_part_no)}
+                  .col-md-4
+                    Spare Part Description: #{action.request_spare_part.ticket_spare_part.spare_part_description}
+                  .col-md-4 
+                    -if action.request_spare_part.ticket_spare_part.cus_chargeable_part == true
+                      Customer Chargeable: Yes
+                    -else
+                      Customer Chargeable: No
+                .row
+                  .col-md-4
+                    -if action.request_spare_part.ticket_spare_part.request_from == 'M'
+                      Request From Manufacture
+                    -if action.request_spare_part.ticket_spare_part.request_from == 'S'
+                      Request From Store
+                  -if action.request_spare_part.ticket_spare_part.request_from == 'S'
+                    .col-md-4
+                      Store Id: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.store_id}
+                    .col-md-4
+                      Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
+
+                -if action.request_spare_part.ticket_spare_part.request_from == 'S'
+                  .row
+                    .col-md-4
+                      Store Requested By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_requested_by)).try(:user_name)}
+                    .col-md-4
+                      Store Request Approved By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_request_approved_by)).try(:user_name)}
+                    .col-md-4
+                      Store Issued By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:issued_by)).try(:user_name)}
 
             -if action.action_id == 50
               .panel-body
                 .row
                   .col-md-4
+                    Spare Part No: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.try(:spare_part_no)}
+                  .col-md-4
+                    Spare Part Description: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.spare_part_description}
+                  .col-md-4 
+                    -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.cus_chargeable_part == true
+                      Customer Chargeable: Yes
+                    -else
+                      Customer Chargeable: No
+                .row
+                  .col-md-4
+                    -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'M'
+                      Request From Manufacture
+                    -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'S'
+                      Request From Store
+                  -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'S'
+                    .col-md-4
+                      Store Id: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.store_id}
+                    .col-md-4
+                      Product Item Code: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
+
+                -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'S'
+                  .row
+                    .col-md-4
+                      Store Requested By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_requested_by)).try(:user_name)}
+                    .col-md-4
+                      Store Request Approved By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_request_approved_by)).try(:user_name)}
+                    .col-md-4
+                      Store Issued By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:issued_by)).try(:user_name)}
 
             -if action.action_id == 51
               .panel-body
                 .row
                   .col-md-4
+                    Spare Part No: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.try(:spare_part_no)}
+                  .col-md-4
+                    Spare Part Description: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.spare_part_description}
+                  .col-md-4 
+                    -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.cus_chargeable_part == true
+                      Customer Chargeable: Yes
+                    -else
+                      Customer Chargeable: No
+                .row
+                  .col-md-4
+                    -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'M'
+                      Request From Manufacture
+                    -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'S'
+                      Request From Store
+                  -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'S'
+                    .col-md-4
+                      Store Id: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.store_id}
+                    .col-md-4
+                      Product Item Code: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
+
+                -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'S'
+                  .row
+                    .col-md-4
+                      Store Requested By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_requested_by)).try(:user_name)}
+                    .col-md-4
+                      Store Request Approved By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_request_approved_by)).try(:user_name)}
+                    .col-md-4
+                      Store Issued By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:issued_by)).try(:user_name)}
 
             -if action.action_id == 52
               .panel-body
                 .row
                   .col-md-4
+                    Spare Part No: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.try(:spare_part_no)}
+                  .col-md-4
+                    Spare Part Description: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.spare_part_description}
+                  .col-md-4 
+                    -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.cus_chargeable_part == true
+                      Customer Chargeable: Yes
+                    -else
+                      Customer Chargeable: No
+                .row
+                  .col-md-4
+                    -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'M'
+                      Request From Manufacture
+                    -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'S'
+                      Request From Store
+                  -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'S'
+                    .col-md-4
+                      Store Id: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.store_id}
+                    .col-md-4
+                      Product Item Code: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
+
+                -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'S'
+                  .row
+                    .col-md-4
+                      Store Requested By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_requested_by)).try(:user_name)}
+                    .col-md-4
+                      Store Request Approved By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_request_approved_by)).try(:user_name)}
+                    .col-md-4
+                      Store Issued By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:issued_by)).try(:user_name)}
 
             -if action.action_id == 53
               .panel-body
                 .row
                   .col-md-4
+                    Spare Part No: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.try(:spare_part_no)}
+                  .col-md-4
+                    Spare Part Description: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.spare_part_description}
+                  .col-md-4 
+                    -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.cus_chargeable_part == true
+                      Customer Chargeable: Yes
+                    -else
+                      Customer Chargeable: No
+                .row
+                  .col-md-4
+                    -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'M'
+                      Request From Manufacture
+                    -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'S'
+                      Request From Store
+                  -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'S'
+                    .col-md-4
+                      Store Id: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.store_id}
+                    .col-md-4
+                      Product Item Code: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
+
+                -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'S'
+                  .row
+                    .col-md-4
+                      Store Requested By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_requested_by)).try(:user_name)}
+                    .col-md-4
+                      Store Request Approved By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_request_approved_by)).try(:user_name)}
+                    .col-md-4
+                      Store Issued By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:issued_by)).try(:user_name)}
 
             -if action.action_id == 54
               .panel-body
                 .row
                   .col-md-4
+                    Spare Part No: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.try(:spare_part_no)}
+                  .col-md-4
+                    Spare Part Description: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.spare_part_description}
+                  .col-md-4 
+                    -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.cus_chargeable_part == true
+                      Customer Chargeable: Yes
+                    -else
+                      Customer Chargeable: No
+                .row
+                  .col-md-4
+                    -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'M'
+                      Request From Manufacture
+                    -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'S'
+                      Request From Store
+                  -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'S'
+                    .col-md-4
+                      Store Id: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.store_id}
+                    .col-md-4
+                      Product Item Code: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
+
+                -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'S'
+                  .row
+                    .col-md-4
+                      Store Requested By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_requested_by)).try(:user_name)}
+                    .col-md-4
+                      Store Request Approved By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_request_approved_by)).try(:user_name)}
+                    .col-md-4
+                      Store Issued By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:issued_by)).try(:user_name)}
 
             -if action.action_id == 56
               .panel-body
                 .row
                   .col-md-4
+                    - if action.act_ticket_close_approve.approved == true
+                      Approved: Yes
+                    - else
+                      Approved: No
+                  .col-md-4
+                    Reject Reason: #{action.act_ticket_close_approve.reason.try(:reason)}
+                  / .col-md-4
+                  /   Owner: #{action.user.try(:first_name)}
 
             -if action.action_id == 57
               .panel-body
                 .row
                   .col-md-4
+                    - if action.act_quality_control.approved == true
+                      Approved: yes
+                    - else
+                      Approved: no
+                  .col-md-4
+                    Reject Reason: #{action.act_quality_control.reason.try(:reason)}
                     
             -if action.action_id == 58
               .panel-body
                 .row
                   .col-md-4
+                    - if action.customer_feedback.re_opened == true
+                      Re-open: yes
+                    - else
+                      Re-open: no
+                  .col-md-4
+                    - if action.customer_feedback.payment_completed == true
+                      Payment completed: yes
+                    - else
+                      Payment completed: no
+                  .col-md-4
+                    Feedback: #{action.customer_feedback.try(:feedback_description)}
 
             -if action.action_id == 60
               .panel-body
                 .row
                   .col-md-4
+                    - if action.customer_feedback.re_opened == true
+                      Re-open: yes
+                    - else
+                      Re-open: no
+                  .col-md-4
+                    - if action.customer_feedback.payment_completed == true
+                      Payment completed: yes
+                    - else
+                      Payment completed: no
+                  .col-md-4
+                    Feedback: #{action.customer_feedback.try(:feedback_description)}
 
             -if action.action_id == 61
               .panel-body
                 .row
                   .col-md-4
+                    - if action.customer_feedback.re_opened == true
+                      Re-open: yes
+                    - else
+                      Re-open: no
+                  .col-md-4
+                    - if action.customer_feedback.payment_completed == true
+                      Payment completed: yes
+                    - else
+                      Payment completed: no
+                  .col-md-4
+                    Feedback: #{action.customer_feedback.try(:feedback_description)}
 
-            -if action.action_id == 64
+            -if action.action_id == 62
               .panel-body
                 .row
                   .col-md-4
+                    Contact type: #{action.inform_customer.ticket_contact_type.try(:name)}
+                  .col-md-4
+                    Note: #{action.inform_customer.try(:note)}
 
-            -if action.action_id == 65
+            -if action.action_id == 65 and action.request_spare_part
               .panel-body
                 .row
                   .col-md-4
+                    Spare Part No: #{action.request_spare_part.ticket_spare_part.spare_part_no}
+                  .col-md-4
+                    Spare Part Description: #{action.request_spare_part.ticket_spare_part.spare_part_description}
+                  .col-md-4
+                    -if action.request_spare_part.ticket_spare_part.cus_chargeable_part == true
+                      Customer Chargeable: Yes
+                    -else
+                      Customer Chargeable: No
+                .row
+                  .col-md-4
+                    -if action.request_spare_part.ticket_spare_part.request_from == 'M'
+                      Request From Manufacture
+                    -if action.request_spare_part.ticket_spare_part.request_from == 'S'
+                      Request From Store
+                  .col-md-4
+                    Payment Expected Manufacture : #{action.request_spare_part.ticket_spare_part.ticket_spare_part_manufacture.try(:payment_expected_manufacture)}
 
-            -if action.action_id == 66
+            -if action.action_id == 66 and action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part
               .panel-body
                 .row
                   .col-md-4
+                    Spare Part No: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.spare_part_no}
+                  .col-md-4
+                    Spare Part Description: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.spare_part_description}
+                  .col-md-4 
+                    -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.cus_chargeable_part
+                      Customer Chargeable: Yes
+                    -else
+                      Customer Chargeable: No
+                .row
+                  .col-md-4
+                    -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'M'
+                      Request From Manufacture
+                    -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'S'
+                      Request From Store
+                      .col-md-4
+                        Store Id: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_id)}
+                      .col-md-4
+                        Product Item Code: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:inventory_product).try(:generated_item_code)}
 
             -if action.action_id == 67
               .panel-body
                 .row
                   .col-md-4
+                    - if action.act_ticket_close_approve.approved == true
+                      Approved: Yes
+                    - else
+                      Approved: No
+                  .col-md-4
+                    Reject Reason: #{action.act_ticket_close_approve.reason.try(:reason)}
 
             -if action.action_id == 68
               .panel-body
                 .row
                   .col-md-4
-
-            -if action.action_id == 69
-              .panel-body
-                .row
+                    - if action.act_quality_control.approved == true
+                      Approved: yes
+                    - else
+                      Approved: no
                   .col-md-4
-
-            -if action.action_id == 70
-              .panel-body
-                .row
-                  .col-md-4
+                    Reject Reason: #{action.act_quality_control.reason.try(:reason)}
 
             -if action.action_id == 71
-              .panel-body
+              .panel-body 
                 .row
                   .col-md-4
+                    FSR No : #{action.act_fsr.fsr_id.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])}
+                  .col-md-4
+                    -if action.act_fsr.print_fsr == true
+                      Print FSR : Yes
+                    - else
+                      Print FSR : No
+
 
             -if action.action_id == 72
               .panel-body
                 .row
                   .col-md-4
+                    Invoice no: #{action.act_print_invoice.invoice.try.invoice_no.to_s.rjust(6, INOCRM_CONFIG['invoice_no_format']) }
+                  .col-md-4
+                    Note: #{action.act_print_invoice.invoice.try.note }
+                  .col-md-4
+                    Print Count: #{action.act_print_invoice.invoice.try.print_count}
 
             -if action.action_id == 73
               .panel-body
                 .row
                   .col-md-4
+                    Warranty type: #{action.action_warranty_repair_type.warranty_type.try(:name)}
+                  .col-md-4
+                    Repaired type: #{action.action_warranty_repair_type.ticket_repair_type.try(:name)}
+                  .col-md-4
+                    -if action.action_warranty_repair_type.cus_chargeable == true
+                      customer chargeable: yes
+                    - else
+                      customer chargeable: no
+
 
             -if action.action_id == 74
               .panel-body
                 .row
                   .col-md-4
+                    Warranty type: #{action.action_warranty_repair_type.warranty_type.try(:name)}
+                  .col-md-4
+                    Repaired type: #{action.action_warranty_repair_type.ticket_repair_type.try(:name)}
+                  .col-md-4
+                    -if action.action_warranty_repair_type.cus_chargeable == true
+                      customer chargeable: yes
+                    - else
+                      customer chargeable: no
 
             -if action.action_id == 75
               .panel-body
                 .row
                   .col-md-4
+                    Note: #{action.act_job_estimation.try(:note)}
+                  .col-md-4
+                    Requested by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.requested_by).try(:email)}
+                  .col-md-4
+                    Estimated by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.estimated_by).try(:email)}
+                .row
+                  .col-md-4
+                    - if action.act_job_estimation.ticket_estimation.approved == true
+                      Ticket estimation approved: yes
+                    - else
+                      Ticket estimation approved: no
+                  .col-md-4
+                    Approved by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.approved_by).try(:email)}
+                    
+                  .col-md-4
+                    - if action.act_job_estimation.ticket_estimation.cust_approved == true
+                      Customer approved: yes
+                    - else
+                      Customer approved: no   
 
             -if action.action_id == 76
               .panel-body
                 .row
                   .col-md-4
+                    Note: #{action.act_job_estimation.try(:note)}
+                  .col-md-4
+                    Requested by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.requested_by).try(:email)}
+                  .col-md-4
+                    Estimated by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.estimated_by).try(:email)}
+                .row
+                  .col-md-4
+                    - if action.act_job_estimation.ticket_estimation.approved == true
+                      Ticket estimation approved: yes
+                    - else
+                      Ticket estimation approved: no
+                  .col-md-4
+                    Approved by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.approved_by).try(:email)}
+                    
+                  .col-md-4
+                    - if action.act_job_estimation.ticket_estimation.cust_approved == true
+                      Customer approved: yes
+                    - else
+                      Customer approved: no
 
             -if action.action_id == 77
               .panel-body
                 .row
                   .col-md-4
+                    Note: #{action.act_job_estimation.try(:note)}
+                  .col-md-4
+                    Requested by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.requested_by).try(:email)}
+                  .col-md-4
+                    Estimated by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.estimated_by).try(:email)}
+                .row
+                  .col-md-4
+                    - if action.act_job_estimation.ticket_estimation.approved == true
+                      Ticket estimation approved: yes
+                    - else
+                      Ticket estimation approved: no
+                  .col-md-4
+                    Approved by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.approved_by).try(:email)}
+                    
+                  .col-md-4
+                    - if action.act_job_estimation.ticket_estimation.cust_approved == true
+                      Customer approved: yes
+                    - else
+                      Customer approved: no
+
+            -if action.action_id == 78
+              .panel-body
+                .row
+                  .col-md-4
+                    Payment received amount: #{action.act_payment_received.ticket_payment_received.try(:amount)}
+                  .col-md-4
+                    Invoice No: #{action.act_payment_received.ticket_payment_received.ticket_invoice.try.invoice_no.to_s.rjust(6, INOCRM_CONFIG['invoice_no_format'])}
+                  .col-md-4
+                    Receipt Description: #{action.act_payment_received.ticket_payment_received.try(:receipt_description)}
+
+
+            -if action.action_id == 79 and action.request_spare_part
+              .panel-body
+                .row
+                  .col-md-4
+                    Spare Part No: #{action.request_spare_part.ticket_spare_part.spare_part_no}
+                  .col-md-4
+                    Spare Part Description: #{action.request_spare_part.ticket_spare_part.spare_part_description}
+                  .col-md-4
+                    -if action.request_spare_part.ticket_spare_part.cus_chargeable_part == true
+                      Customer Chargeable: Yes
+                    -else
+                      Customer Chargeable: No
+                .row
+                  .col-md-4
+                    Store Requested By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_requested_by)).try(:user_name)}
+                  .col-md-4
+                    Store Request Approved By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_request_approved_by)).try(:user_name)}
+                  .col-md-4
+                    Store Issued By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:issued_by)).try(:user_name)}
+                .row
+                  .col-md-4
+                    -if action.request_spare_part.ticket_spare_part.request_from == 'M'
+                      Request From Manufacture
+                    -if action.request_spare_part.ticket_spare_part.request_from == 'S'
+                      Request From Store
+                  -if action.request_spare_part.ticket_spare_part.request_from == 'S'
+                    .col-md-4
+                      Store Id: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.store_id}
+                    .col-md-4
+                      Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
+
+            -if action.action_id == 80 and action.request_spare_part
+              .panel-body
+                .row
+                  .col-md-4
+                    Spare Part No: #{action.request_spare_part.ticket_spare_part.spare_part_no}
+                  .col-md-4
+                    Spare Part Description: #{action.request_spare_part.ticket_spare_part.spare_part_description}
+                  .col-md-4
+                    -if action.request_spare_part.ticket_spare_part.cus_chargeable_part == true
+                      Customer Chargeable: Yes
+                    -else
+                      Customer Chargeable: No
+                .row
+                  .col-md-4
+                    Store Requested By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_requested_by)).try(:user_name)}
+                  .col-md-4
+                    Store Request Approved By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_request_approved_by)).try(:user_name)}
+                  .col-md-4
+                    Store Issued By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:issued_by)).try(:user_name)}
+                .row
+                  .col-md-4
+                    -if action.request_spare_part.ticket_spare_part.request_from == 'M'
+                      Request From Manufacture
+                    -if action.request_spare_part.ticket_spare_part.request_from == 'S'
+                      Request From Store
+                  -if action.request_spare_part.ticket_spare_part.request_from == 'S'
+                    .col-md-4
+                      Store Id: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.store_id}
+                    .col-md-4
+                      Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
+
+            -if action.action_id == 81
+              .panel-body
+                .row
+                  .col-md-4
+                    Invoice no: #{action.act_print_invoice.invoice.try.invoice_no.to_s.rjust(6, INOCRM_CONFIG['invoice_no_format']) }
+                  .col-md-4
+                    Note: #{action.act_print_invoice.invoice.try.note }
+                  .col-md-4
+                    Print Count: #{action.act_print_invoice.invoice.try.print_count}
+
+            -if action.action_id == 82
+              .panel-body
+                .row
+                  .col-md-4
+                    Customer quotation no: #{action.act_quotation.customer_quotation.try(:customer_quotation_no)}
+                  .col-md-4
+                    Currency: #{action.act_quotation.customer_quotation.currency.try(:currency)}
+                  .col-md-4
+                    Validity period: #{action.act_quotation.customer_quotation.try(:validity_period)}
+                .row
+                  .col-md-4
+                    Delivery period: #{action.act_quotation.customer_quotation.try(:delivery_period)}
+                  .col-md-4
+                    Warranty: #{action.act_quotation.customer_quotation.try(:warranty)}
+                  .col-md-4
+                    Note: #{action.act_quotation.customer_quotation.try(:note)}
+
+            -if action.action_id == 83
+              .panel-body
+                .row
+                  .col-md-4
+                    Customer quotation no: #{action.act_quotation.customer_quotation.try(:customer_quotation_no)}
+                  .col-md-4
+                    Currency: #{action.act_quotation.customer_quotation.currency.try(:currency)}
+                  .col-md-4
+                    Validity period: #{action.act_quotation.customer_quotation.try(:validity_period)}
+                .row
+                  .col-md-4
+                    Delivery period: #{action.act_quotation.customer_quotation.try(:delivery_period)}
+                  .col-md-4
+                    Warranty: #{action.act_quotation.customer_quotation.try(:warranty)}
+                  .col-md-4
+                    Note: #{action.act_quotation.customer_quotation.try(:note)}
+
+            -if action.action_id == 84
+              .panel-body
+                .row
+                  .col-md-4
+                    Invoice no: #{action.act_print_invoice.invoice.try.invoice_no.to_s.rjust(6, INOCRM_CONFIG['invoice_no_format']) }
+                  .col-md-4
+                    Note: #{action.act_print_invoice.invoice.try.note }
+                  .col-md-4
+                    Print Count: #{action.act_print_invoice.invoice.try.print_count}
+
+            -if action.action_id == 85
+              .panel-body
+                .row
+                  .col-md-4
+                    Customer quotation no: #{action.act_quotation.customer_quotation.try(:customer_quotation_no)}
+                  .col-md-4
+                    Currency: #{action.act_quotation.customer_quotation.currency.try(:currency)}
+                  .col-md-4
+                    Validity period: #{action.act_quotation.customer_quotation.try(:validity_period)}
+                .row
+                  .col-md-4
+                    Delivery period: #{action.act_quotation.customer_quotation.try(:delivery_period)}
+                  .col-md-4
+                    Warranty: #{action.act_quotation.customer_quotation.try(:warranty)}
+                  .col-md-4
+                    Note: #{action.act_quotation.customer_quotation.try(:note)}
