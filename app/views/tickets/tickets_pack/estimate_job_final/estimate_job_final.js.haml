@@ -1,0 +1,5 @@
+$("#ajax_loadable_estimate_job").html("#{j render 'tickets/tickets_pack/estimate_job_final/estimate_job_final', ticket: @ticket}");
+
+$("#ajax_loadable_invoice").html("#{j render 'tickets/tickets_pack/estimate_job_final/invoice', ticket: @ticket}");
+
+Tickets.enable_update_only();

@@ -632,7 +632,7 @@ class TicketsController < ApplicationController
     @ticket.q_and_answers.clear
     @ticket.ge_q_and_answers.clear
 
-    continue = true
+    continue = false
     warranty_constraint = true
 
     if ["CW", "MW"].include?(@ticket.warranty_type.code)
@@ -642,11 +642,11 @@ class TicketsController < ApplicationController
     if @ticket.status_id != @status_close_id
       bpm_response = view_context.send_request_process_data process_history: true, process_instance_id: 1, variable_id: "ticket_id"
       if !bpm_response[:status].present? or bpm_response[:status].upcase == "ERROR"
-        continue = false
         render js: "alert('BPM error. Please continue after rectify BPM.');"
       elsif not warranty_constraint
-        continue = false
         render js: "alert('There are no present #{@ticket.warranty_type.name} for the product to initiate particular warranty related ticket.')"
+      else
+        continue = true
       end
     end
 
@@ -1491,6 +1491,7 @@ class TicketsController < ApplicationController
     TaskAction
     Inventory
     TicketEstimation
+    Tax
     Grn
     ticket_id = params[:ticket_id]
     @ticket = Ticket.find_by_id ticket_id
@@ -2245,6 +2246,7 @@ class TicketsController < ApplicationController
     TaskAction
     TicketEstimation
     Inventory
+    Tax
     @ticket = Ticket.find_by_id params[:ticket_id]
     if @ticket
       @product = @ticket.products.first
@@ -2265,6 +2267,7 @@ class TicketsController < ApplicationController
     TicketEstimation
     Inventory
     Invoice
+    Tax
     @ticket = Ticket.find_by_id params[:ticket_id]
     if @ticket
       @product = @ticket.products.first
@@ -2272,7 +2275,7 @@ class TicketsController < ApplicationController
       session[:product_id] = @product.id
       Rails.cache.delete([:histories, session[:product_id]])
       Rails.cache.delete([:join, @ticket.id])
-      @ticket.act_terminate_job_payments.build
+      # @ticket.act_terminate_job_payments.build
 
       # @ticket_payment_received = @ticket.ticket_estimations.inject(0){|i, k| i+k.ticket_payment_received.try(:amount).to_f}
       @ticket_payment_received = @ticket.ticket_payment_receiveds.sum(:amount).to_f
@@ -2311,6 +2314,7 @@ class TicketsController < ApplicationController
     TicketSparePart
     Inventory
     Warranty
+    Tax
     @ticket = Ticket.find_by_id params[:ticket_id]
     if @ticket
       # @estimation = @ticket.ticket_estimations.find params[:part_estimation_id]
@@ -2332,6 +2336,7 @@ class TicketsController < ApplicationController
     QAndA
     TaskAction
     Inventory
+    Tax
     ticket_id = params[:ticket_id]
     @ticket = Ticket.find_by_id ticket_id
 
@@ -2585,6 +2590,7 @@ class TicketsController < ApplicationController
     TicketSparePart
     Invoice
     Ticket
+    TicketEstimation
     Warranty
     @ticket = Ticket.find_by_id params[:ticket_id]
     if @ticket
@@ -3043,6 +3049,10 @@ class TicketsController < ApplicationController
       TicketPaymentReceived.find_by_id params[:print_object_id]
     when "delivery"
       @ticket = Ticket.find(params[:print_object_id])
+    when "ticket_invoice"
+      Invoice
+      @ticket_invoice = TicketInvoice.find(params[:print_object_id])
+
     end
     print_template_object = PrintTemplate.first
     print_template = print_template_object.try(params[:print_object].to_sym) # example :ticket, :fsr
@@ -3089,7 +3099,7 @@ class TicketsController < ApplicationController
       @ticket_finish_job = @user_ticket_action.build_ticket_finish_job
     when "terminate_job"
       @ticket_terminate_job = @user_ticket_action.build_ticket_terminate_job
-      @ticket_terminate_job_payment = @user_ticket_action.build_act_terminate_job_payment
+      # @ticket_terminate_job_payment = @user_ticket_action.act_terminate_job_payments.build
     when "hold"
       @act_hold = @user_ticket_action.build_act_hold
     when "create_fsr"
@@ -3596,7 +3606,7 @@ class TicketsController < ApplicationController
     request_to_close = params[:request_to_close].present?
 
     if continue
-      if @ticket.update append_remark_ticket_params(@ticket)
+      if @ticket.update ticket_params
 
         @ticket.job_finished = true
         @ticket.job_finished_at = DateTime.now
@@ -4108,7 +4118,7 @@ class TicketsController < ApplicationController
     end
 
     def ticket_params
-      ticket_params = params.require(:ticket).permit(:ticket_no, :ticket_close_approved, :note, :current_user_id, :sla_id, :serial_no, :status_hold, :repair_type_id, :base_currency_id, :ticket_close_approval_required, :ticket_close_approval_requested, :regional_support_job, :job_started_action_id, :job_start_note, :job_started_at, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, :status_resolve_id, ticket_deliver_units_attributes: [:deliver_to_id, :note, :created_at, :created_by, :received, :id, :received_at, :received_by], ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :ticket_action_id, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer], ticket_estimations_attributes: [:note, :currency_id, :status_id, :requested_at, :requested_by], user_ticket_actions_attributes: [:id, :action_engineer_id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, user_assign_ticket_action_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy], ticket_re_assign_request_attributes: [:reason_id, :_destroy], ticket_action_taken_attributes: [:action, :_destroy], ticket_terminate_job_attributes: [:id, :reason_id, :foc_requested, :_destroy], act_hold_attributes: [:id, :reason_id, :_destroy, :un_hold_action_id], hp_case_attributes: [:id, :case_id, :case_note], ticket_finish_job_attributes: [:resolution, :_destroy], act_terminate_job_payments_attributes: [:id, :amount, :payment_item_id, :_destroy, :ticket_id, :currency_id], act_fsr_attributes: [:print_fsr], serial_request_attributes: [:reason], job_estimation_attributes: [:supplier_id]], ticket_extra_remarks_attributes: [:id, :note, :created_by, :extra_remark_id], products_attributes: [:id, :sold_country_id, :pop_note, :pop_doc_url, :pop_status_id], ticket_fsrs_attributes: [:id, :engineer_id, :work_started_at, :work_finished_at, :hours_worked, :down_time, :travel_hours, :engineer_time_travel, :engineer_time_on_site, :resolution, :completion_level, :created_by, :remarks, :approved], ticket_on_loan_spare_parts_attributes: [:id, :approved_inv_product_id, :approved_store_id, :approved_main_inv_product_id, :approved, :return_part_damage, :return_part_damage_reason_id])
+      ticket_params = params.require(:ticket).permit(:ticket_no, :ticket_close_approved, :note, :current_user_id, :sla_id, :serial_no, :status_hold, :repair_type_id, :base_currency_id, :ticket_close_approval_required, :ticket_close_approval_requested, :regional_support_job, :job_started_action_id, :job_start_note, :job_started_at, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, :status_resolve_id, ticket_deliver_units_attributes: [:deliver_to_id, :note, :created_at, :created_by, :received, :id, :received_at, :received_by], ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :ticket_action_id, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer], ticket_estimations_attributes: [:note, :currency_id, :status_id, :requested_at, :requested_by], user_ticket_actions_attributes: [:id, :action_engineer_id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, act_terminate_job_payments_attributes: [:id, :_destroy, :amount, :payment_item_id], user_assign_ticket_action_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy], ticket_re_assign_request_attributes: [:reason_id, :_destroy], ticket_action_taken_attributes: [:action, :_destroy], ticket_terminate_job_attributes: [:id, :reason_id, :foc_requested, :_destroy], act_hold_attributes: [:id, :reason_id, :_destroy, :un_hold_action_id], hp_case_attributes: [:id, :case_id, :case_note], ticket_finish_job_attributes: [:resolution, :_destroy], act_terminate_job_payments_attributes: [:id, :amount, :payment_item_id, :_destroy, :ticket_id, :currency_id], act_fsr_attributes: [:print_fsr], serial_request_attributes: [:reason], job_estimation_attributes: [:supplier_id]], ticket_extra_remarks_attributes: [:id, :note, :created_by, :extra_remark_id], products_attributes: [:id, :sold_country_id, :pop_note, :pop_doc_url, :pop_status_id], ticket_fsrs_attributes: [:id, :engineer_id, :work_started_at, :work_finished_at, :hours_worked, :down_time, :travel_hours, :engineer_time_travel, :engineer_time_on_site, :resolution, :completion_level, :created_by, :remarks, :approved], ticket_on_loan_spare_parts_attributes: [:id, :approved_inv_product_id, :approved_store_id, :approved_main_inv_product_id, :approved, :return_part_damage, :return_part_damage_reason_id], act_terminate_job_payments_attributes: [:id, :_destroy, :payment_item_id, :amount, :currency_id])
       ticket_params[:current_user_id] = current_user.id
       ticket_params
     end

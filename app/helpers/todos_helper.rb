@@ -12,7 +12,7 @@ module TodosHelper
       when args[:process_history]
 
         if response_hash["log_instance_list"].blank?
-          response = {}
+          response = {status: true}
         elsif response_hash["log_instance_list"]["variable_instance_log"].is_a?(Hash)
           response = {status: "success", value: response_hash["log_instance_list"]["variable_instance_log"]["value"], variable_id: response_hash["log_instance_list"]["variable_instance_log"]["variable_id"]}
         elsif response_hash["log_instance_list"]["variable_instance_log"].is_a?(Array)

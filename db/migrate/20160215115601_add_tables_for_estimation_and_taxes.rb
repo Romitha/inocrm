@@ -1,10 +1,10 @@
 class AddTablesForEstimationAndTaxes < ActiveRecord::Migration
   def change
 
-    add_column :mst_spt_templates, :quotation_request_type, :string
+    add_column :mst_spt_templates, :quotation_request_type, :string, default: "PRINT_SPPT_QUOTATION"
     add_column :mst_spt_templates, :quotation, :text
-    add_column :mst_spt_templates, :bundle_hp_request_type, :string
-    add_column :mst_spt_templates, :bundle_hp, :string
+    add_column :mst_spt_templates, :bundle_hp_request_type, :string, default: "PRINT_SPPT_BUNDLE_HP"
+    add_column :mst_spt_templates, :bundle_hp, :text
     add_column :company_config, :sup_last_quotation_no, "INT UNSIGNED NULL DEFAULT NULL"
     add_column :company_config, :sup_last_bundle_no, "INT UNSIGNED NULL DEFAULT NULL"
 

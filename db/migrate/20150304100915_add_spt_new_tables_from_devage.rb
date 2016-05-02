@@ -144,7 +144,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_act_terminate_job_payment, id: false do |t|
-      t.column :id, "INT(10) UNSIGNED NOT NULL, PRIMARY KEY (id)" 
+      t.column :id, "INT(10) UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)" 
       t.column :ticket_action_id, "INT(10) UNSIGNED NOT NULL" 
       t.column :ticket_id, "int(10) UNSIGNED NOT NULL"
       t.column :payment_item_id, "int(10) UNSIGNED NOT NULL"
@@ -174,14 +174,14 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_contact_report_person, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :title_id, "int(10) UNSIGNED NOT NULL"
       t.string :name, null: false                                      #250
       t.timestamps
     end
 
     create_table :spt_contact_report_person_contact_type, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :contact_report_person_id, "int(10) UNSIGNED NOT NULL"
       t.column :contact_type_id, "int(10) UNSIGNED NOT NULL"
       t.string :value, null: false                                       #250
@@ -189,7 +189,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_contract, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :customer_id, "int(10) UNSIGNED NOT NULL"
       t.string :contract_no
       t.boolean :contract_b2b
@@ -205,7 +205,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_contract_product, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :contract_id, "int(10) UNSIGNED NOT NULL"
       t.column :product_serial_id, "int(10) UNSIGNED NOT NULL"
       t.column :installed_location_id, "int(10) UNSIGNED"
@@ -215,7 +215,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_customer, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :title_id, "int(10) UNSIGNED NOT NULL"
       t.string :name, null: false
       t.string :address1, null: false                                    #250
@@ -229,7 +229,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_customer_contact_type, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :customer_id, "int(10) UNSIGNED NOT NULL"
       t.column :contact_type_id, "int(10) UNSIGNED NOT NULL"
       t.string :value, null: false                           #250
@@ -237,7 +237,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_invoice, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT AUTO_INCREMENT, PRIMARY KEY (id)"
       t.datetime :created_at, null: false
       t.column :created_by, "int(10) UNSIGNED NOT NULL"
       t.integer :invoice_no, null: false
@@ -250,7 +250,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_invoice_item, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :invoice_id, "int(10) UNSIGNED NOT NULL"
       t.integer :item_no, null: false
       t.string :description
@@ -259,14 +259,14 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_joint_ticket, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :ticket_id, "int(10) UNSIGNED NOT NULL"
       t.column :joint_ticket_id, "int(10) UNSIGNED NOT NULL"
       t.timestamps
     end
 
     create_table :spt_print_history, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT AUTO_INCREMENT, PRIMARY KEY (id)"
       t.integer :print_index, null: false
       t.datetime :print_at, null: false
       t.column :printed_by, "int(10) UNSIGNED"
@@ -274,13 +274,13 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_problem_category, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT AUTO_INCREMENT, PRIMARY KEY (id)"
       t.text :name, null: false
       t.timestamps
     end
 
     create_table :spt_product_serial, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT AUTO_INCREMENT, PRIMARY KEY (id)"
       t.string :serial_no, limit: 25, null: false
       t.column :product_brand_id, "int(10) UNSIGNED NOT NULL"
       t.column :product_category_id, "int(10) UNSIGNED NOT NULL"
@@ -299,7 +299,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_product_serial_warranty, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :product_serial_id, "int(10) UNSIGNED NOT NULL"
       t.datetime :start_at
       t.datetime :end_at
@@ -314,21 +314,21 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_regional_support_center, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :organization_id, "int(10) UNSIGNED NOT NULL"
       t.boolean :active, null: false, default: true
       t.timestamps
     end
 
     create_table :spt_regional_support_center_engineer, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :regional_support_center_id, "int(10) UNSIGNED NOT NULL"
       t.column :engineer_id, "int(10) UNSIGNED NOT NULL"
       t.timestamps
     end
 
     create_table :spt_regular_customer, id: false do |t|               
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :customer_id, "int(10) UNSIGNED NOT NULL"
       t.column :contact_person1_id, "int(10) UNSIGNED"
       t.column :contact_person2_id, "int(10) UNSIGNED"
@@ -337,7 +337,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_return_parts_bundle, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :product_brand_id, "int(10) UNSIGNED NOT NULL"
       t.string :bundle_no
       t.datetime :created_at, null: false
@@ -351,7 +351,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_so_po, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT AUTO_INCREMENT, PRIMARY KEY (id)"
       t.datetime :created_at, null: false
       t.column :created_by, "int(10) UNSIGNED NOT NULL"
       t.integer :so_no, null: false
@@ -367,7 +367,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_so_po_item, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :spt_so_po_id, "int(10) UNSIGNED NOT NULL"
       t.column :ticket_spare_part_id, "int(10) UNSIGNED"
       t.column :ticket_spare_part_item_id, "int(10) UNSIGNED"
@@ -378,7 +378,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_ticket, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT AUTO_INCREMENT, PRIMARY KEY (id)"
       t.integer :ticket_no, null: false
       t.boolean :pop_updated_ticket, null: false, default: false
       t.boolean :contract_available, null: false, default: false
@@ -443,7 +443,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_ticket_accessory, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :ticket_id, "int(10) UNSIGNED NOT NULL"
       t.column :accessory_id, "int(10) UNSIGNED NOT NULL"
       t.text :note                                         
@@ -451,7 +451,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_ticket_action, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :ticket_id, "int(10) UNSIGNED NOT NULL"
       t.column :action_id, "int(10) UNSIGNED NOT NULL"
       t.datetime :action_at, null: false
@@ -461,7 +461,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_ticket_deliver_unit, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :ticket_id, "int(10) UNSIGNED NOT NULL"
       t.column :created_by, "int(10) UNSIGNED NOT NULL"
       t.datetime :created_at, null: false
@@ -481,7 +481,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_ticket_estimation, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :ticket_id, "int(10) UNSIGNED NOT NULL"
       t.datetime :requested_at
       t.column :requested_by, "int(10) UNSIGNED"
@@ -507,7 +507,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_ticket_estimation_additional, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :ticket_id, "int(10) UNSIGNED NOT NULL"
       t.column :ticket_estimation_id, "int(10) UNSIGNED NOT NULL"
       t.decimal :cost_price, precision: 10, scale: 2
@@ -519,7 +519,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_ticket_estimation_external, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :ticket_id, "int(10) UNSIGNED NOT NULL"
       t.column :ticket_estimation_id, "int(10) UNSIGNED NOT NULL"
       t.column :repair_by_id, "int(10) UNSIGNED"
@@ -532,7 +532,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_ticket_estimation_part, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :ticket_id, "int(10) UNSIGNED NOT NULL"
       t.column :ticket_estimation_id, "int(10) UNSIGNED NOT NULL"
       t.decimal :cost_price, precision: 10, scale: 2
@@ -546,7 +546,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_ticket_fsr, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :ticket_id, "int(10) UNSIGNED NOT NULL"
       t.datetime :created_at, null: false
       t.column :created_by, "int(10) UNSIGNED NOT NULL"
@@ -570,7 +570,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_ticket_general_question_answer, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :ticket_id, "int(10) UNSIGNED NOT NULL"
       t.column :ticket_action_id, "int(10) UNSIGNED NOT NULL"
       t.column :general_question_id, "int(10) UNSIGNED NOT NULL"
@@ -579,7 +579,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_ticket_on_loan_spare_part, id: false do |t|       
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :ticket_id, "int(10) UNSIGNED NOT NULL"
       t.column :ref_spare_part_id, "int(10) UNSIGNED NOT NULL"
       t.datetime :requested_at
@@ -625,7 +625,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_ticket_on_loan_spare_part_status_action, id: false do |t|      
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :on_loan_spare_part_id, "int(10) UNSIGNED NOT NULL"
       t.column :status_id, "int(10) UNSIGNED NOT NULL"
       t.column :done_by, "int(10) UNSIGNED"
@@ -634,7 +634,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_ticket_payment_received, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :ticket_id, "int(10) UNSIGNED NOT NULL"
       t.decimal :amount, null: false, precision: 10, scale: 2
       t.datetime :received_at, null: false
@@ -648,7 +648,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_ticket_problematic_question_answer, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :ticket_id, "int(10) UNSIGNED NOT NULL"
       t.column :ticket_action_id, "int(10) UNSIGNED NOT NULL"
       t.column :problematic_question_id, "int(10) UNSIGNED NOT NULL"
@@ -657,7 +657,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_ticket_product_serial, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :ticket_id, "int(10) UNSIGNED NOT NULL"
       t.column :product_serial_id, "int(10) UNSIGNED NOT NULL"
       t.column :ref_product_serial_id, "int(10) UNSIGNED"
@@ -665,7 +665,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_ticket_spare_part, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :ticket_id,"int(10) UNSIGNED NOT NULL"
       t.column :status_action_id, "int(10) UNSIGNED NOT NULL"
       t.column :fsr_id, "int(10) UNSIGNED"
@@ -697,7 +697,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_ticket_spare_part_manufacture, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :spare_part_id, "int(10) UNSIGNED NOT NULL"
       t.string :event_no
       t.string :order_no
@@ -718,7 +718,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_ticket_spare_part_status_action, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :spare_part_id, "int(10) UNSIGNED NOT NULL"
       t.column :status_id, "int(10) UNSIGNED NOT NULL"
       t.column :done_by, "int(10) UNSIGNED"
@@ -727,7 +727,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_ticket_spare_part_store, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :spare_part_id, "int(10) UNSIGNED NOT NULL"
       t.column :store_id, "int(10) UNSIGNED"
       t.column :inv_product_id, "int(10) UNSIGNED"
@@ -755,7 +755,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_ticket_extra_remark, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :ticket_id, "int(10) UNSIGNED NOT NULL"
       t.column :extra_remark_id, "int(10) UNSIGNED NOT NULL"
       t.text :note
@@ -765,7 +765,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_ticket_workflow_process, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :ticket_id, "int(10) UNSIGNED NOT NULL"
       t.string :process_id, null: false
       t.string :process_name
@@ -773,7 +773,7 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
     end
 
     create_table :spt_act_print_invoice, id: false do |t|
-      t.column :ticket_action_id, "INT UNSIGNED NOT NULL , PRIMARY KEY (ticket_action_id)"
+      t.column :ticket_action_id, "INT UNSIGNED NOT NULL, PRIMARY KEY (ticket_action_id)"
       t.column :invoice_id, "int(10) UNSIGNED NOT NULL"
       t.timestamps
     end

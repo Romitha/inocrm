@@ -44,8 +44,8 @@ class UserTicketAction < ActiveRecord::Base
   has_one :ticket_terminate_job, foreign_key: :ticket_action_id
   accepts_nested_attributes_for :ticket_terminate_job, allow_destroy: true
 
-  has_one :act_terminate_job_payment, foreign_key: :ticket_action_id
-  accepts_nested_attributes_for :act_terminate_job_payment, allow_destroy: true
+  has_many :act_terminate_job_payments, foreign_key: :ticket_action_id
+  accepts_nested_attributes_for :act_terminate_job_payments, allow_destroy: true
 
   has_one :act_hold, foreign_key: :ticket_action_id
   accepts_nested_attributes_for :act_hold, allow_destroy: true

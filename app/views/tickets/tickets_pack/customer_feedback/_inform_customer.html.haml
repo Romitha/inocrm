@@ -1,0 +1,13 @@
+- TaskAction
+= simple_form_for InformCustomer.new, url: update_inform_customer_invoices_path, method: :post, remote: true do |f|
+  = hidden_field_tag :ticket_id, @ticket.id
+  .col-md-4
+    %strong Informed by:
+    #{current_user.email}
+  .col-md-4
+    %strong Informed at:
+    #{DateTime.now.strftime("%Y-%m-%d %H:%M")}
+  %hr
+  = f.association :ticket_contact_type, label: "Inform to customer"
+  = f.input :note, label: "Inform note"
+  = f.submit "Save", class: "btn btn-xs btn-success"

@@ -4,6 +4,7 @@ window.Invoices =
     @check_fsr_dynamic_check_behavour()
     @enable_ticket_payment_received_in_customer_feedback()
     @customer_feedback_re_opened()
+    @readonly_checkbox_in_customer_feedback()
     return
 
   quotation_change: ->
@@ -11,53 +12,77 @@ window.Invoices =
     sub_amount = 0
     min_adv_payment = 0
     total_payment = 0
+    prev_deduction = 0
+    prev_amount_to_be_paid = 0
 
-    total_deduction = parseFloat($("#deducted_amount").val())
-    $("#deducted_amount").keyup ->
-      $("#total_deduction").html(total_deduction)
+    total_deduction = if !$("#deducted_amount").val() or isNaN(parseFloat($("#deducted_amount").val())) then 0 else parseFloat($("#deducted_amount").val())
+
+    $("#total_deduction").text(total_deduction)
+    $("#total_deduction_value").val(total_deduction)
 
     $(".total_payment").each ->
-      total_payment += parseFloat($(@).text())
+      total_payment += if isNaN(parseFloat($(@).text())) then 0 else parseFloat($(@).text())
 
     $(".action").each ->
       if $(@).is(":checked")
-        sub_amount += parseFloat($(@).parent().siblings(".sub_amount").text())
-        total_tax += parseFloat($(@).parent().siblings(".tax").text())
-        min_adv_payment += parseFloat($(@).parent().siblings(".min_adv_payment").text())
+        sub_amount += if isNaN(parseFloat($(@).parent().siblings(".sub_amount").text())) then 0.0 else parseFloat($(@).parent().siblings(".sub_amount").text())
+        total_tax += if isNaN(parseFloat($(@).parent().siblings(".tax").text())) then 0 else parseFloat($(@).parent().siblings(".tax").text())
+        min_adv_payment += if isNaN(parseFloat($(@).parent().siblings(".min_adv_payment").text())) then 0 else parseFloat($(@).parent().siblings(".min_adv_payment").text())
 
     final_total_amount = sub_amount + total_tax
     amount_to_be_paid = final_total_amount - total_payment - total_deduction
 
-    $("#amount_to_be_paid").html(amount_to_be_paid)
-    $("#total_tax").html(total_tax)
-    $("#sub_amount").html(sub_amount)
-    $("#final_total_amount").html(final_total_amount)
-    $("#min_adv_payment").html(min_adv_payment)
-    $("#total_payment").html(total_payment)
+    $("#deducted_amount").keyup ->
+      _this = this
+      setTimeout ( ->
+        total_deduction = if !$(_this).val() or isNaN(parseFloat($(_this).val())) then 0 else parseFloat($(_this).val())
+        $("#total_deduction").text(total_deduction)
+        $("#total_deduction_value").val(total_deduction)
 
+        amount_to_be_paid = final_total_amount - total_payment - parseFloat(total_deduction)
+        $("#amount_to_be_paid").text(amount_to_be_paid)
+        $("#amount_to_be_paid_value").val(amount_to_be_paid)
+        $("#total_amount_value").val(total_deduction)
+      ), 200
 
+    $("#amount_to_be_paid").text(amount_to_be_paid)
+    $("#amount_to_be_paid_value").val(amount_to_be_paid)
+    $("#total_amount_value").val(total_deduction)
+
+    $("#total_tax").text(total_tax)
+    $("#total_tax_value").val(total_tax)
+
+    $("#sub_amount").text(sub_amount)
+    $("#sub_amount_value").val(sub_amount)
+    $("#final_total_amount").text(final_total_amount)
+    $("#min_adv_payment").text(min_adv_payment)
+    $("#total_payment").text(total_payment)
+    $("#total_payment_value").val(total_payment)
 
     $(".action").click ->
-      total_tax = 0
-      sub_amount = 0
-      sub_amount = 0
-      total_deduction = parseFloat($("#total_deduction").text())
-
-      $(".action").each ->
-        if $(@).is(":checked")
-          sub_amount += parseFloat($(@).parent().siblings(".sub_amount").text())
-          total_tax += parseFloat($(@).parent().siblings(".tax").text())
-          min_adv_payment += parseFloat($(@).parent().siblings(".min_adv_payment").text())
+      # total_tax = 0
+      # sub_amount = 0
+      if $(@).is(":checked")
+        sub_amount += if isNaN(parseFloat($(@).parent().siblings(".sub_amount").text())) then 0 else parseFloat($(@).parent().siblings(".sub_amount").text())
+        total_tax += if isNaN(parseFloat($(@).parent().siblings(".tax").text())) then 0 else parseFloat($(@).parent().siblings(".tax").text())
+        min_adv_payment += if isNaN(parseFloat($(@).parent().siblings(".min_adv_payment").text())) then 0 else parseFloat($(@).parent().siblings(".min_adv_payment").text())
+      else
+        sub_amount -= if isNaN(parseFloat($(@).parent().siblings(".sub_amount").text())) then 0 else parseFloat($(@).parent().siblings(".sub_amount").text())
+        total_tax -= if isNaN(parseFloat($(@).parent().siblings(".tax").text())) then 0 else parseFloat($(@).parent().siblings(".tax").text())
+        min_adv_payment -= if isNaN(parseFloat($(@).parent().siblings(".min_adv_payment").text())) then 0 else parseFloat($(@).parent().siblings(".min_adv_payment").text())
 
       final_total_amount = sub_amount + total_tax
       amount_to_be_paid = final_total_amount - total_payment - total_deduction
 
-      $("#amount_to_be_paid").html(amount_to_be_paid)
-      $("#total_tax").html(total_tax)
-      $("#sub_amount").html(sub_amount)
-      $("#final_total_amount").html(final_total_amount)
-      $("#min_adv_payment").html(min_adv_payment)
-      $("#total_payment").html(total_payment)
+      $("#amount_to_be_paid").text(amount_to_be_paid)
+      $("#amount_to_be_paid_value").val(amount_to_be_paid)
+      $("#total_tax").text(total_tax)
+      $("#sub_amount").text(sub_amount)
+      $("#sub_amount_value").val(sub_amount)
+      $("#final_total_amount").text(final_total_amount)
+      $("#min_adv_payment").text(min_adv_payment)
+      $("#total_payment").text(total_payment)
+      $("#total_payment_value").val(total_payment)
 
   check_fsr_dynamic_check_behavour: ->
 
@@ -127,3 +152,15 @@ window.Invoices =
         $("#unit_dispatch_wrapper").removeClass("hide")
         $("#dispatch_method_id").prop("disabled", false)
         $("#unit_return_customer").prop("disabled", false)
+
+  readonly_checkbox_in_customer_feedback: ->
+    final_amount_to_be_paids = parseFloat($("#final_amount_to_be_paids").text())
+    $("#ticket_payment_received_amount").keyup ->
+      this_value = parseFloat($(@).val())
+      if this_value == final_amount_to_be_paids
+        $("#payment_completed").prop("checked", true).attr("onclick", "return false;")
+
+      else if this_value > final_amount_to_be_paids
+        $(@).val(final_amount_to_be_paids)
+      else
+        $("#payment_completed").removeAttr("onclick")

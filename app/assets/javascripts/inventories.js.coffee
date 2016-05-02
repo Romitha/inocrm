@@ -23,18 +23,10 @@ window.Inventories =
     @damage_reason()
     @warranty_batch_check()
     @inventory_product_category()
-    @customer_inquire_search()
     @hp_po_function()
     @add_append()
-    @tax_calculation()
-    # @remove_append()
     return
 
-  tax_calculation: ->
-    $("#estimated_tax_amount_id").click ->
-      alert "gg"
-
-  customer_inquire_search: ->
   add_append: ->
     $(".add_id2").click (e)->
       e.preventDefault()
@@ -253,45 +245,88 @@ window.Inventories =
       else
         submit_form.submit()
 
-  calculate_cost_price: ->
-    total_cost_price = 0
-    total_estimated_price = 0
-    total_margin_price = 0
-    $(".est_external_cost_price, .est_add_cost_price").each ->
-      total_cost_price = total_cost_price + parseInt($(@).val())
-      $(@).parents().eq(2).find(".append_cost_price").html(parseInt($(@).val()))
+  calculate_cost_price: (e)->
+    this_margin = 0
+    profit = parseFloat($("#db_margin").text())
+    updated_total_estimation = parseFloat($("#total_estimated_price").text())
+    updated_total_cost = parseFloat($("#total_cost_price").text())
+    relatives = $(e).parents().eq(3)#.siblings()
+    prev_estimated_price = parseFloat(relatives.find(".append_estimated_price").text())
+    prev_cost_price = parseFloat(relatives.find(".append_cost_price").text())
+    next_val = parseFloat($(e).val())
 
-    $(".est_external_estimated_price, .est_add_estimated_price").each ->
-      total_estimated_price = total_estimated_price + parseInt($(@).val())
-      $(@).parents().eq(2).find(".append_estimated_price").html(parseInt($(@).val()))
-      cost_price = parseInt($(@).parents().eq(2).siblings().find(".append_cost_price").text())
-      append_total = (parseInt($(@).val()) - cost_price)*100/cost_price
 
-      ap_total = Math.round(append_total * 100)/100
-      if ap_total < parseInt($("#db_margin").html())
-        $(@).parents().eq(3).find(".append_profit_margin").css("color", "red")
+    total_estimation = parseFloat($("#total_estimated_price").text())
+    total_cost = parseFloat($("#total_cost_price").text())
+
+    if !isNaN(next_val)
+      if $(e).is(".estimation_value")
+        this_margin = (next_val - prev_cost_price)*100/next_val
+        relatives.find(".append_estimated_price").text(next_val) #updating prev with current
+
+        updated_total_estimation = total_estimation + next_val - prev_estimated_price
+
+        $("#total_estimated_price").text(updated_total_estimation)
+
       else
-        $(@).parents().eq(3).find(".append_profit_margin").css("color", "black")
+        this_margin = (prev_estimated_price - next_val)*100/prev_estimated_price
+        relatives.find(".append_cost_price").text(next_val) #updating prev with current
 
-      if isNaN(ap_total)
-        $(@).parents().eq(3).find(".append_profit_margin").html("")
+        updated_total_cost = total_cost + next_val - prev_cost_price
+
+        $("#total_cost_price").text(updated_total_cost)
+
+      relatives.find(".append_profit_margin").text(Math.round(this_margin * 100)/100)
+
+      if profit >= this_margin
+        relatives.find(".append_profit_margin").addClass("red")
       else
-        $(@).parents().eq(3).find(".append_profit_margin").html(ap_total+"%")
+        relatives.find(".append_profit_margin").removeClass("red")
 
-    total_margin_price = (total_estimated_price - total_cost_price)*100/total_cost_price
+      console.log updated_total_cost
+      updated_margin = (updated_total_estimation - updated_total_cost)*100/updated_total_estimation
+      $("#total_margin_price").text(Math.round(updated_margin * 100)/100)
 
-    $("#total_estimated_price").html(total_estimated_price)
-    $("#total_cost_price").html(total_cost_price)
-    t_profit_price = Math.round(total_margin_price * 100)/100
-    if t_profit_price < parseInt($("#db_margin").html())
-      $("#total_margin_price").css("color", "red")
-    else
-      $("#total_margin_price").css("color", "black")
+      if profit >= updated_margin
+        $("#total_margin_price").addClass("red")
+      else
+        $("#total_margin_price").removeClass("red")
 
-    if isNaN(t_profit_price)
-      $("#total_margin_price").html("")
-    else
-      $("#total_margin_price").html(t_profit_price+"%")
+  payment_amount_select: (e)->
+    default_amount = parseFloat($(":checked", e).data("default-amount"))
+    estimated_amount = parseFloat($(":checked", e).data("estimation-amount"))
+
+    $(e).parent().siblings().find(".payment_item_value").val(default_amount)
+
+    if $(e).is(".tax_rate_calculation")
+
+      estimated_value = $(e).parents(".estimate_extend_with_tax").eq(0).find(".append_estimated_price").text()
+      if !isNaN(parseFloat(estimated_value)) and !isNaN(default_amount)
+        calculated_tax = default_amount * estimated_value/100
+        console.log calculated_tax
+        $(e).parents(".parent_class_set").eq(0).find(".estimated_tax_amount_class").val(calculated_tax)
+
+    if $(e).parent().siblings().find(".estimated_value").length > 0
+      $(e).parent().siblings().find(".estimated_value").val(estimated_amount)
+      prev_estimation = parseFloat($(e).parent().siblings().find(".append_estimated_price").text())
+      prev_cost = parseFloat($(e).parent().siblings().find(".append_cost_price").text())
+      updated_total_estimation = parseFloat($("#total_estimated_price").text()) + estimated_amount - prev_estimation
+      updated_total_cost = parseFloat($("#total_cost_price").text()) + default_amount - prev_cost
+      $("#total_estimated_price").text(updated_total_estimation)
+      $("#total_cost_price").text(updated_total_cost)
+
+      updated_margin = (updated_total_estimation - updated_total_cost)*100/updated_total_estimation
+      $("#total_margin_price").text(Math.round(updated_margin * 100)/100)
+
+      $(e).parent().siblings().find(".append_estimated_price").text(estimated_amount)
+      $(e).parent().siblings().find(".append_cost_price").text(default_amount)
+
+      profit = (estimated_amount - default_amount)*100/estimated_amount
+      $(e).parent().siblings().find(".append_profit_margin").text(Math.round(profit * 100)/100)
+      if profit <= parseFloat($("#db_margin").text())
+        $(e).parent().siblings().find(".append_profit_margin").addClass("red")
+      else
+        $(e).parent().siblings().find(".append_profit_margin").removeClass("red")
 
   calculate_internal_cost_price: ->
     total_internal_cost_price = 0
@@ -328,14 +363,6 @@ window.Inventories =
     cal_total = Math.round(total_internal_margin_price * 100)/100
     $("#total_internal_estimated_price").html(total_internal_estimated_price)
     $("#total_internal_cost_price").html(total_internal_cost_price)
-
-  calculate_approved_price: ->
-    total_approved_amount = 0
-
-    $(".approved_amount,.approved_estimate").each ->
-      total_approved_amount = total_approved_amount + parseInt($(@).val())
-
-    $("#total_approved_amount").html(total_approved_amount)
 
   accept_returned_part_func: ->
     _this = this
@@ -423,8 +450,6 @@ window.Inventories =
 
   bundle_load: ->
     $("#brand_name").change ->
-
-      #jQuery.get( url [, data ] [, success ] [, dataType ] )
       Tickets.ajax_loader()
 
       $.get $(@).data("url"), {product_brand_id: $(":selected", @).val(), template: $(@).data("template"), task_id: $(@).data("task-id")}, (data)-> Tickets.remove_ajax_loader()
@@ -467,7 +492,6 @@ window.Inventories =
 
 
   approve_store_part: ->
-
     if $(".approve_part_of_main_product:checked").val() is "true"
       $(".main_product_with_link").removeClass("hide")
     else

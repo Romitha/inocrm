@@ -18,12 +18,11 @@
         = render "tickets/tickets_pack/ticket_info", ticket: ticket, product: product, customer: customer, warranties: warranties, histories: histories, join_tickets: join_tickets, ge_q_and_as: ge_q_and_as, pr_q_and_as: pr_q_and_answers
 
     = tab_content tabpointer: :estimate_job, active_class: "active" do
-
       .row
         .col-md-12
           %strong Type of warranty: #{ticket.warranty_type.name}
         .col-md-12.head_estimated_price_class{style: "margin-top: 20px;"}
-          = simple_nested_form_for ticket, url: update_estimate_job_inventories_path, method: :put do |f| # update_estimate_job_inventories_path
+          = simple_nested_form_for ticket, url: update_estimate_job_inventories_path, method: :put do |f|
             = hidden_field_tag :ticket_id, ticket.id
             = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
             = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
@@ -36,111 +35,116 @@
               - if t.object.status_id == EstimationStatus.find_by_code("RQS").id and t.object.ticket_estimation_externals.present?
                 = hidden_field_tag :ticket_estimation_id, t.object.id
 
-                = t.simple_fields_for :ticket_estimation_externals do |te|
-                  %strong Description:
-                  = te.object.description
-                  %br/
-                  .row.head_estimated_price_class
-                    = hidden_field_tag :ticket_estimation_external_id, te.object.id
-                    .col-md-3
-                      = te.association :organization, label: "Repaired by (Organization)"
-                    .col-md-2
-                      = te.input :cost_price, input_html: {class: "est_external_cost_price only_float", oninput: "Inventories.calculate_cost_price();"}
-                      .append_cost_price.hide
-                    .col-md-2
-                      = te.input :estimated_price, input_html: {class: "est_external_estimated_price est_estimated_amount only_float", oninput: "Inventories.calculate_cost_price();"}
-                      .append_estimated_price.hide
-                    .col-md-2
-                      = te.input :warranty_period, input_html: {class: "only_float"}, label: "Warranty period (in months)"
-                    .col-md-3
-                      %strong Profit:
-                      .append_profit_margin{style: "font-weight:bold;font-size:125%;"}
-                    .col-md-1
-                    .col-md-11
-                      = te.simple_fields_for :ticket_estimation_external_taxes do |ee|
+                .estimate_extend_with_tax
+                  = t.simple_fields_for :ticket_estimation_externals do |te|
+                    %strong Description:
+                    = te.object.description
+                    %hr/
+                    .row.head_estimated_price_class
+                      = hidden_field_tag :ticket_estimation_external_id, te.object.id
+                      .col-md-3
+                        = te.association :organization, label: "Repaired by (Organization)"
+                      .col-md-2
+                        = te.input :cost_price, as: :string, input_html: {class: "value_class only_float", oninput: "Inventories.calculate_cost_price(this);"}
+                        .append_cost_price.hide
+                          = te.object.cost_price.to_f
+                      .col-md-2
+                        = te.input :estimated_price, as: :string, input_html: {class: "estimation_value only_float", oninput: "Inventories.calculate_cost_price(this);"}
+                        .append_estimated_price.hide
+                          = te.object.estimated_price.to_f
+                      .col-md-3
+                        = te.input :warranty_period, input_html: {class: "only_float"}, label: "Warranty period (in months)"
+                      .col-md-2
+                        %strong Profit (%):
+                        .append_profit_margin{style: "font-weight:bold;font-size:125%;"}
 
-                        .row.parent_class_set
-                          .add_sign.col-md-3{style: "padding-top:2.5%;"}
-                            = ee.link_to_remove class: "remove_c_t_v_link" do
-                              %span.glyphicon.glyphicon-remove-sign
+                    .panel-group
+                      .panel.panel-success
+                        .panel-heading Taxes
+                        .panel-body.tax_wrapper
+                          = te.simple_fields_for :ticket_estimation_external_taxes do |ee|
 
-                          .col-md-3
-                            = ee.association :tax, label_method: :tax, value_method: :id, input_html: {class: "tax_field_class",id: "tax_field_idwww", onchange: "Tickets.call_es_tax(this); return false;"}
-                          .col-md-4
-                            = ee.input :tax_rate,  as: :hidden, input_html: {id: "tax_rate_hidden_field_id"}
-                            - Tax.all.each do |tax|
-                              - rate = tax.tax_rates.find_by_active(true)
-                              - if rate.present?
-                                .hide.rates{id: "rate_#{rate.id}", data: "#{rate.rate}", value: rate.rate}= "Rate #{rate.rate}% (#{rate.tax.tax})"
-                          - if t.object.approval_required == true
-                            .col-md-4
-                              = ee.input :approved_tax_amount, input_html: {class: "approved_tax_amount_class"}
-                          - else
-                            .col-md-4
-                              = ee.input :estimated_tax_amount, input_html: {class: "estimated_tax_amount_class"}
+                            .row.parent_class_set
+                              .add_sign.col-md-3{style: "padding-top:2.5%;"}
+                                = ee.link_to_remove class: "remove_c_t_v_link" do
+                                  %span.glyphicon.glyphicon-remove-sign
 
-                      = te.link_to_add :ticket_estimation_external_taxes, class: "small_scale_padding-right2" do
-                        %span.glyphicon.glyphicon-plus-sign
-                        Add tax
+                              .col-md-3
+                                = label_tag "Tax"
+                                %br/
+                                = ee.select :tax_id, Tax.all.map{|p| [p.tax, p.id, {"data-default-amount" => p.tax_rates.find_by_active(true).try(:rate).to_f}]}, {include_blank: true}, {class: "payment_item_select tax_rate_calculation", onchange: "Inventories.payment_amount_select(this); return false;"}
+
+                              .col-md-4
+                                - if t.object.approval_required == true
+                                  = ee.input :approved_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class"}
+                                - else
+                                  = ee.input :estimated_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class"}
+                              .col-md-4
+                                = ee.input :tax_rate,  as: :hidden, input_html: {id: "tax_rate_hidden_field_id", class: "payment_item_value"}
+
+                          = te.link_to_add :ticket_estimation_external_taxes, class: "small_scale_padding-right2" do
+                            %span.glyphicon.glyphicon-plus-sign
+                            Tax
 
                 .row
                   .col-md-12
-                    %fieldset
-                      %legend Estimation additionals
+                    .panel-group
+                      .panel.panel-info
+                        .panel-heading Estimation additionals
+                        .panel-body
+                          = t.simple_fields_for :ticket_estimation_additionals do |ta|
+                            = ta.input :ticket_id, as: :hidden, input_html: {value: ticket.id}
+                            .row.estimate_extend_with_tax
+                              .col-md-1.small_scale_padding-top2
+                                = ta.link_to_remove class: "remove_c_t_v_link" do
+                                  %span.glyphicon.glyphicon-remove-sign
+                              .col-md-3
+                                = label_tag "Additional charge"
+                                %br/
+                                = ta.select :additional_charge_id, AdditionalCharge.all.map{|p| [p.additional_charge, p.id, {"data-default-amount" => p.default_cost_price.to_f, "data-estimation-amount" => p.default_estimated_price.to_f}]}, {include_blank: true}, {class: "payment_item_select", onchange: "Inventories.payment_amount_select(this); return false;"}
+                              .col-md-3
+                                = ta.input :cost_price, as: :string, input_html: {class: "value_class payment_item_value", oninput: "Inventories.calculate_cost_price(this);"}
+                                .append_cost_price.hide
+                                  = ta.object.cost_price.to_f
 
-                      = t.simple_fields_for :ticket_estimation_additionals do |ta|
-                        = ta.input :ticket_id, as: :hidden, input_html: {value: ticket.id}
-                        .col-md-6.head_estimated_price_class
-                          .row
-                            .col-md-1.padding-top1{style: "margin-right:-4%;"}
-                              = ta.link_to_remove class: "remove_c_t_v_link" do
-                                %span.glyphicon.glyphicon-remove-sign
-                            .col-md-3
-                              = ta.association :additional_charge, :label =>"Repair by", label_method: :additional_charge, value_method: :id
-                            .col-md-3
-                              = ta.input :cost_price, input_html: {class: "est_add_cost_price only_float", oninput: "Inventories.calculate_cost_price();"}
-                              .append_cost_price.hide
+                              .col-md-3
+                                = ta.input :estimated_price, as: :string, input_html: {class: "estimation_value estimated_value est_add_estimated_price", oninput: "Inventories.calculate_cost_price(this);"}
+                                .append_estimated_price.hide
+                                  = ta.object.estimated_price.to_f
+                              .col-md-2
+                                %strong Profit(%):
+                                .append_profit_margin{style: "font-weight:bold;font-size:125%;"}
+                              .col-md-12
+                                .panel-group
+                                  .panel.panel-success
+                                    .panel-heading Additional taxes
+                                    .panel-body
+                                      = ta.simple_fields_for :ticket_estimation_additional_taxes do |e|
 
-                            .col-md-3
-                              = ta.input :estimated_price, input_html: {class: "est_add_estimated_price est_estimated_amount only_float", oninput: "Inventories.calculate_cost_price();"}
-                              .append_estimated_price.hide
-                            .col-md-2
-                              %strong Profit:
-                              .append_profit_margin{style: "font-weight:bold;font-size:125%;"}
-                          .row
-                            .col-md-1
-                            .col-md-11
-                              = ta.simple_fields_for :ticket_estimation_additional_taxes do |e|
+                                        .row.parent_class_set
+                                          .add_sign.col-md-3{style: "padding-top:2.5%;"}
+                                            = e.link_to_remove class: "remove_c_t_v_link" do
+                                              %span.glyphicon.glyphicon-remove-sign
 
-                                .row.parent_class_set
-                                  .add_sign.col-md-3{style: "padding-top:2.5%;"}
-                                    = e.link_to_remove class: "remove_c_t_v_link" do
-                                      %span.glyphicon.glyphicon-remove-sign
+                                          .col-md-3
+                                            = label_tag "Tax"
+                                            %br/
+                                            = e.select :tax_id, Tax.all.map{|p| [p.tax, p.id, {"data-default-amount" => p.tax_rates.find_by_active(true).try(:rate).to_f}]}, {include_blank: true}, {class: "payment_item_select tax_rate_calculation", onchange: "Inventories.payment_amount_select(this); return false;"}
+                                          .col-md-3
+                                            - if t.object.approval_required == true
+                                              = e.input :approved_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class"}
+                                            - else
+                                              = e.input :estimated_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class"}
+                                          .col-md-3
+                                            = e.input :tax_rate,  as: :hidden, input_html: { class: "payment_item_value"}
 
-                                  .col-md-2
-                                    = e.association :tax, label_method: :tax, value_method: :id, input_html: {class: "tax_field_class",id: "tax_field_idwww", onchange: "Tickets.call_es_tax(this); return false;"}
-                                  .col-md-2
-                                    = e.input :tax_rate,  as: :hidden, input_html: {id: "tax_rate_hidden_field_id"}
-                                    - Tax.all.each do |tax|
-                                      - rate = tax.tax_rates.find_by_active(true)
-                                      - if rate.present?
-                                        .hide.rates{id: "rate_#{rate.id}", data: "#{rate.rate}", value: rate.rate}= "Rate #{rate.rate}% (#{rate.tax.tax})"
-                                  - if t.object.approval_required == true
-                                    .col-md-2
-                                      = e.input :approved_tax_amount, input_html: {class: "approved_tax_amount_class"}
-                                  - else
-                                    .col-md-2
-                                      = e.input :estimated_tax_amount, input_html: {class: "estimated_tax_amount_class"}
+                                      = ta.link_to_add :ticket_estimation_additional_taxes, class: "small_scale_padding-right2" do
+                                        %span.glyphicon.glyphicon-plus-sign
+                                        Tax
 
-                              = ta.link_to_add :ticket_estimation_additional_taxes, class: "small_scale_padding-right2" do
-                                %span.glyphicon.glyphicon-plus-sign
-                                Add tax
-
-                      .row
-                        .col-md-12
-                          = t.link_to_add :ticket_estimation_additionals, class: "col-md-12" do
+                          = t.link_to_add :ticket_estimation_additionals do
                             %span.glyphicon.glyphicon-plus-sign
-                            Add estimation additionals
+                            Estimation additionals
                 .row
                   .col-md-3
                     = t.input :id, as: :hidden
@@ -148,17 +152,16 @@
 
                   .col-md-3.col-md-offset-6
                     %strong Total cost price:
-                    %span#total_cost_price
+                    %span#total_cost_price 0
                     %br
                     %strong Total estimated price:
-                    %span#total_estimated_price
+                    %span#total_estimated_price 0
                     %br
-                    %strong Total profit:
+                    %strong Total profit (%):
                     %span#total_margin_price{style: "font-weight:bold;"}
                     %span (
                     %span#db_margin{style: "font-weight:bold;"}= CompanyConfig.first.try(:sup_external_job_profit_margin).to_f
                     %span )
-                    %span %
 
                   .col-md-12
                     = t.input :note

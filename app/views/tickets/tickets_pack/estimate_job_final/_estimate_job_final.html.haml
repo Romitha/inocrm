@@ -1,34 +1,40 @@
-- uri = URI(request.url)
+- active_invoice = ticket.ticket_invoices.find_by_canceled(false)
+- invoiced_payment_recives = (active_invoice and active_invoice.ticket_payment_received_ids)
+- uninvoiced_any =  ticket.ticket_estimations.any? { |i| i.invoiced.to_i<= 0 and i.approved } or ticket.act_terminate_job_payments.any? { |i| i.invoiced.to_i<= 0 } or (ticket.ticket_payment_receiveds.ids != invoiced_payment_recives.to_a)
+
 .row
   .col-md-12
     %h4 Type of warranty: #{ticket.warranty_type.name}
     = simple_nested_form_for ticket, url: update_estimate_job_final_invoices_path, method: :post do |f|
       = f.input :id, as: :hidden
 
-      = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
-      = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
-      = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
-      - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
+      = hidden_field_tag :process_id, Rails.cache.fetch(["/tickets/estimate_job_final", params[:task_id]])[:process_id]
+      = hidden_field_tag :task_id, Rails.cache.fetch(["/tickets/estimate_job_final", params[:task_id]])[:task_id]
+      = hidden_field_tag :owner, Rails.cache.fetch(["/tickets/estimate_job_final", params[:task_id]])[:owner]
+      - Rails.cache.fetch(["/tickets/estimate_job_final", params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
         = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
       - if f.object.ticket_terminated
-        - act_terminate_job = ticket.user_ticket_actions.select{|u| u.ticket_terminate_job.present? }.first
+        - act_terminate_job = ticket.user_ticket_actions.map{|u| u.ticket_terminate_job if u.ticket_terminate_job.present? }.compact.first
         = label_tag "Foc"
         = radio_button_tag :foc_payment_required, "true", act_terminate_job.try(:foc_requested)
         = label_tag "Payment required"
-        = radio_button_tag :foc_payment_required, "false", act_terminate_job.try(:foc_requested)
+        = radio_button_tag :foc_payment_required, "false", !act_terminate_job.try(:foc_requested)
         = f.simple_fields_for :act_terminate_job_payments do |t|
-          .add_sign.col-md-3
-            = t.link_to_remove class: "remove_c_t_v_link" do
-              %span.glyphicon.glyphicon-remove-sign
-          .col-md-4
-            = t.association :payment_item
+          = t.input :currency_id, as: :hidden, input_html: {value: Currency.find_by_base_currency(true).id}
+          - if t.object.new_record?
+            .add_sign.col-md-3
+              = t.link_to_remove class: "remove_c_t_v_link" do
+                %span.glyphicon.glyphicon-remove-sign
+          .col-md-2
+            = label_tag "Payment item"
+            %br/
+            = t.select :payment_item_id, PaymentItem.all.map{|p| [p.name, p.id, {"data-default-amount" => p.default_amount.to_f}]}, {selected: (t.object.payment_item_id || 1 )}, {class: "payment_item_select", onchange: "Tickets.payment_amount_select(this); return false;"}
           .col-md-3
-            = t.input :amount, label: "Cost (#{ticket.ticket_currency.code})"
+            = t.input :amount, label: "Cost (#{ticket.ticket_currency.code})", input_html: {value: (t.object.amount || PaymentItem.first.try(:default_amount)), class: "payment_item_value"}
         = f.link_to_add :act_terminate_job_payments, class: "col-md-12" do
           %span.glyphicon.glyphicon-plus-sign
           Add
-        / = f.input :final_amount_to_be_paid, wrapper_html: {class: "col-md-3"}
         %hr
       %strong Total estimated amount(#{ticket.ticket_currency.code}):
       = @total_estimation_amount
@@ -38,4 +44,45 @@
       %br/
       = label_tag "Payment completed"
       = check_box_tag :payment_completed, "payment completed"
-      = f.submit "Save", class: "btn btn-sm btn-success"
+      %br/
+      = label_tag "Update only"
+      = check_box_tag :update_only, 1, false
+      = f.submit "Update", class: "btn btn-sm btn-success", id: "update_only_submit", data: {disabled_with: "Please wait..."}
+      - if uninvoiced_any
+        = f.submit "Save", class: "btn btn-sm btn-success", id: "save_only_submit", disabled: (ticket.ticket_invoices.any? ? false : true), data: {confirm: "Uninvoiced estimation is there. Are you sure?", disabled_with: "Please wait..."}
+      - else
+        = f.submit "Save", class: "btn btn-sm btn-success", id: "save_only_submit", disabled: (ticket.ticket_invoices.any?{|i| !i.canceled } ? false : true), data: {disabled_with: "Please wait...", deduction: (ticket.final_invoice.try(:net_total_amount))}
+
+- if ticket.final_invoice.present?
+  %table.table.table-responsive.table-condensed.table-bordered.small_scale_margin-top1
+    %thead
+      %tr
+        %th{colspan: 7} Final invoice
+        %th{colspan: 5} Total
+      %tr
+        %th No
+        %th Created by
+        %th Created at
+        %th Customer sent
+        %th Canceled
+        %th Currency
+        %th Deducted amount
+        %th Amount
+        %th Advance recieved
+        %th Deduction
+        %th Cost
+        %th Net payment
+    %tbody
+      %tr
+        %td= ticket.final_invoice.invoice_no.to_s.rjust(6, INOCRM_CONFIG["invoice_no_format"])
+        %td= ticket.final_invoice.created_by_ch_eng.try(:email)
+        %td= ticket.final_invoice.created_at.try(:strftime, "%Y-%m-%d %H:%M")
+        %td= boolean_in_word ticket.final_invoice.customer_sent, "Yes", "No"
+        %td= boolean_in_word ticket.final_invoice.canceled, "Yes", "No"
+        %td= ticket.final_invoice.currency.code
+        %td= ticket.final_invoice.deducted_amount
+        %td= ticket.final_invoice.total_amount
+        %td= ticket.final_invoice.total_advance_recieved
+        %td= ticket.final_invoice.total_deduction
+        %td= ticket.final_invoice.total_cost
+        %td= ticket.final_invoice.net_total_amount

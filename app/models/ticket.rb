@@ -91,6 +91,7 @@ class Ticket < ActiveRecord::Base
 
   has_many :ticket_invoices, foreign_key: :ticket_id
   accepts_nested_attributes_for :ticket_invoices, allow_destroy: true
+  belongs_to :final_invoice, class_name: "TicketInvoice", foreign_key: :final_invoice_id
 
   has_many :ticket_payment_receiveds
   accepts_nested_attributes_for :ticket_payment_receiveds, allow_destroy: true
@@ -107,7 +108,7 @@ class Ticket < ActiveRecord::Base
   validates_inclusion_of :cus_chargeable, in: [true, false]
 
   before_save do |ticket|
-    ticket.remarks = "#{self.remarks} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(ticket.current_user_id).email}</span><br/>#{ticket.remarks_was}" if ticket.persisted? and self.remarks_changed? and self.remarks.present?
+    ticket.remarks = "#{ticket.remarks} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(ticket.current_user_id).email}</span><br/>#{ticket.remarks_was}" if ticket.persisted? and self.remarks_changed? and self.remarks.present?
   end
 
   [:initiated_by, :initiated_by_id, :current_user_id].each do |dyna_method|

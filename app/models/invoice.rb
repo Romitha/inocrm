@@ -14,6 +14,7 @@ class TicketInvoice < ActiveRecord::Base
   belongs_to :payment_term
   belongs_to :ticket
   belongs_to :currency
+  belongs_to :created_by_ch_eng, class_name: "User", foreign_key: :created_by
 
   has_many :ticket_invoice_estimations, foreign_key: :invoice_id
   has_many :ticket_estimations, through: :ticket_invoice_estimations
@@ -23,6 +24,10 @@ class TicketInvoice < ActiveRecord::Base
 
   has_many :ticket_invoice_advance_payments, foreign_key: :invoice_id
   has_many :ticket_payment_receiveds, through: :ticket_invoice_advance_payments
+
+  has_many :ticket_invoice_total_taxes, foreign_key: :invoice_id
+  accepts_nested_attributes_for :ticket_invoice_total_taxes, allow_destroy: true
+  has_many :taxes, through: :ticket_invoice_total_taxes
 end
 
 class TicketInvoiceAdvancePayment < ActiveRecord::Base
