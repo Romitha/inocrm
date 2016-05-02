@@ -1,16 +1,17 @@
 #new_cus_quo
   %h3 Invoice
-  = simple_nested_form_for invoice, url: update_invoice_invoices_path(action_type: @action_type), method: :post do |f|
-    = hidden_field_tag :invoice_id, f.object.id
+  = simple_nested_form_for invoice, url: update_invoice_invoices_path(action_type: @action_type), method: :post, remote: true do |f|
+    = hidden_field_tag :invoice_id, f.object.try(:id)
+    = hidden_field_tag :ticket_id, params[:ticket_id] 
+    = hidden_field_tag :task_id, params[:task_id] 
 
-    = hidden_field_tag :process_id, Rails.cache.fetch(["/tickets/estimate_job_final", params[:task_id]])[:process_id]
-    = hidden_field_tag :task_id, Rails.cache.fetch(["/tickets/estimate_job_final", params[:task_id]])[:task_id]
-    = hidden_field_tag :owner, Rails.cache.fetch(["/tickets/estimate_job_final", params[:task_id]])[:owner]
-    - Rails.cache.fetch(["/tickets/estimate_job_final", params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
-      = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+    = f.input :total_amount, as: :hidden, input_html: {id: "sub_amount_value"}
+    = f.input :total_advance_recieved, as: :hidden, input_html: {id: "total_payment_value"}
+    = f.input :total_deduction, as: :hidden, input_html: {id: "total_deduction_value"}
+    = f.input :net_total_amount, as: :hidden, input_html: {id: "amount_to_be_paid_value"}
 
     .col-md-3
-      %strong Invoice no   #{ (CompanyConfig.first.sup_last_invoice_no.to_i+1).to_s.rjust(6, INOCRM_CONFIG["invoice_no_format"])}
+      %strong Invoice no   #{ (invoice.invoice_no || CompanyConfig.first.sup_last_invoice_no.to_i+1).to_s.rjust(6, INOCRM_CONFIG["invoice_no_format"])}
       %br
       %strong Currency
       = ticket.ticket_currency.code
@@ -20,7 +21,7 @@
       = f.association :payment_term, label: false
       = f.input :note
       = f.input :customer_sent, wrapper: :append
-      = f.input :canceled, wrapper: :append if f.object.persisted? and !ticket.ticket_invoices.any? { |i| !i.canceled }
+      = f.input :canceled, wrapper: :append if f.object.persisted? and !ticket.ticket_invoices.where.not(id: f.object.id).any? { |i| !i.canceled }
 
     .col-md-9
       %table.table.table-responsive.table-condensed.table-bordered
@@ -37,8 +38,8 @@
             %th #{ticket.ticket_repair_type.code == 'EX' ? 'Repaired by' : 'No of parts' }
             %th #{ticket.ticket_repair_type.code == 'EX' ? 'Repair' : 'Parts' }
             %th Additional
-            %th Tax
             %th Total
+            %th Tax
             %th Status
             %th invoiced
             %th Attach
@@ -74,12 +75,6 @@
                   = number_with_precision estimation.ticket_estimation_additionals.sum(:approved_estimated_price), precision: 2
                 - else
                   = number_with_precision estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2
-              %td.tax
-                - if estimation_external_present
-                  = estimation.ticket_estimation_externals.inject(0){ |i, k| i+k.ticket_estimation_external_taxes.sum(:approved_tax_amount).to_f } + estimation.ticket_estimation_additionals.inject(0){ |i, k| i+k.ticket_estimation_additional_taxes.sum(:approved_tax_amount).to_f }
-
-                - else
-                  = estimation.ticket_estimation_parts.inject(0){ |i, k| i+k.ticket_estimation_part_taxes.sum(:approved_tax_amount).to_f } + estimation.ticket_estimation_additionals.inject(0){ |i, k| i+k.ticket_estimation_additional_taxes.sum(:approved_tax_amount).to_f }
               %td.sub_amount
                 - if estimation.approval_required
                   - if estimation_external_present
@@ -91,6 +86,12 @@
                     = number_with_precision(estimation.ticket_estimation_externals.sum(:estimated_price) + estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2)
                   - else
                     = number_with_precision(estimation.ticket_estimation_parts.sum(:estimated_price) + estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2)
+              %td.tax
+                - if estimation_external_present
+                  = estimation.ticket_estimation_externals.inject(0){ |i, k| i+k.ticket_estimation_external_taxes.sum(:approved_tax_amount).to_f } + estimation.ticket_estimation_additionals.inject(0){ |i, k| i+k.ticket_estimation_additional_taxes.sum(:approved_tax_amount).to_f }
+
+                - else
+                  = estimation.ticket_estimation_parts.inject(0){ |i, k| i+k.ticket_estimation_part_taxes.sum(:approved_tax_amount).to_f } + estimation.ticket_estimation_additionals.inject(0){ |i, k| i+k.ticket_estimation_additional_taxes.sum(:approved_tax_amount).to_f }
 
               %td= estimation.estimation_status.name
 
@@ -104,11 +105,10 @@
         %thead
           %tr
             %td No
-            %td Payment term
-            %td Payment term default amount
-            %td Amount before adjust
-            %td Amount
-            %td type
+            %td Payment item
+            %td Default amount (#{@act_terminate_job_payments.first.try(:currency).try(:code)})
+            %td Amount before adjust (#{@act_terminate_job_payments.first.try(:currency).try(:code)})
+            %td Amount (#{@act_terminate_job_payments.first.try(:currency).try(:code)})
             %td Attach
 
         %tbody
@@ -117,9 +117,10 @@
               %td= index+1
               %td= act_terminate_job_payment.payment_item.try :name
               %td= act_terminate_job_payment.payment_item.try :default_amount
-              %td #{act_terminate_job_payment.amount_before_adjust} (#{act_terminate_job_payment.currency.code})
+              %td= act_terminate_job_payment.amount_before_adjust
               %td.sub_amount= act_terminate_job_payment.amount
-              %td= check_box_tag 'act_terminate_job_payment_ids[]', act_terminate_job_payment.id, (invoice.persisted? ? invoice.act_terminate_job_payment_ids.include?(act_terminate_job_payment.id) : true), class: "action"
+              %td
+                = check_box_tag 'act_terminate_job_payment_ids[]', act_terminate_job_payment.id, (invoice.persisted? ? invoice.act_terminate_job_payment_ids.include?(act_terminate_job_payment.id) : true), class: "action", id: "act_terminate_job_payment_id_#{act_terminate_job_payment.id}"
 
       %h4 Payment received
       %table.table.table-responsive.table-condensed.table-bordered
@@ -167,7 +168,7 @@
         .col-md-2
           %strong Total amount to be paid:
         .col-md-1
-          #final_total_amount
+          #amount_to_be_paid
 
     .col-md-4.pull-left{style: "margin-bottom: 20px;"}
       .col-md-2

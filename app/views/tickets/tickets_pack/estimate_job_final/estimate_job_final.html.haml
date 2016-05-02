@@ -12,8 +12,10 @@
 
     = tab_content tabpointer: :estimate_job, active_class: "active" do
       = tab_panel do
-        = render "tickets/tickets_pack/estimate_job_final/estimate_job_final", ticket: ticket
+        #ajax_loadable_estimate_job
+          = render "tickets/tickets_pack/estimate_job_final/estimate_job_final", ticket: ticket
 
     = tab_content tabpointer: :invoice do
       = tab_panel do
-        = render "tickets/tickets_pack/estimate_job_final/invoice", ticket: ticket
+        #ajax_loadable_invoice
+          = render "tickets/tickets_pack/estimate_job_final/invoice", ticket: ticket

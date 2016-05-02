@@ -29,23 +29,8 @@ window.Tickets =
     @adjust_amount_check()
     @first_resolution_visible()
     @enable_request_part_check()
+    @enable_update_only()
     return
-
-  call_es_tax: (e)->
-    now_value = $(e).val()
-
-    $(e).parents(".parent_class_set").eq(0).find(".rates").addClass("hide")
-    $(e).parents(".parent_class_set").eq(0).find("#rate_"+now_value).removeClass("hide")
-
-    est_internal_add_estimated_price = $(e).parents(".head_estimated_price_class").eq(0).find(".est_estimated_amount").val()
-    # est_internal_add_estimated_price = $(e).parents(".head_estimated_price_class").eq(0).childrens("#est_estimated_amount").eq(0).val()
-    now_rate = $(e).parents(".parent_class_set").eq(0).find("#rate_"+now_value).attr("data")
-    $(e).parents(".parent_class_set").eq(0).find("#tax_rate_hidden_field_id").val(now_rate)
-
-    estimated_tax_amount = (est_internal_add_estimated_price * (now_rate/100))
-    $(e).parents(".parent_class_set").eq(0).find(".estimated_tax_amount_class").val(estimated_tax_amount)
-    approved_tax_amount = (est_internal_add_estimated_price * (now_rate/100))
-    $(e).parents(".parent_class_set").eq(0).find(".approved_tax_amount_class").val(approved_tax_amount)
 
   initial_loaders: ->
     $('.inline_edit').editable()
@@ -338,7 +323,6 @@ window.Tickets =
     else
       $(".pass_to_recorrection_hiddable").each ->
         $(@).removeClass("hide")
-      # $("#assign_to_for_regional").removeClass("hide")
 
   pass_to_re_correction_trigger: ->
     $("#pass_to_re_correction").click =>
@@ -394,8 +378,6 @@ window.Tickets =
       $.post "/tickets/extend_warranty", {switch_to: $(":selected", @).val()}
 
   validate_start_action: ->
-    # job_start_note = $("#ticket_job_start_note").val()
-    # job_started_action = $("#ticket_job_started_action_id option:selected").val()
     $("#update_start_action").click (e)->
       e.preventDefault()
       if !($("#ticket_job_started_action_id").val() and $("#ticket_job_start_note").val())
@@ -437,8 +419,6 @@ window.Tickets =
         $("#hp_case_form").submit()
 
   job_finished_validation: ->
-    # job_start_note = $("#ticket_job_start_note").val()
-    # job_started_action = $("#ticket_job_started_action_id option:selected").val()
     $("#job_finish_submit").click (e)->
       e.preventDefault()
       if !($("#resolution_text").val() and $("#resolution_summary_text").val())
@@ -578,3 +558,24 @@ window.Tickets =
     ct = $("#ticket_spare_part_faulty_ct_no").val()
     ticket_id = $(e).data("ticket-id")
     $.get "/tickets/ticket_in_modal?ct="+ct+"&fa="+fa+"&ticket_id="+ticket_id
+
+
+  enable_update_only: ->
+    $("#update_only_submit").prop("disabled", true).css("display", "none")
+    $("#save_only_submit").css("display", "inline-block")
+
+    $("#update_only").click ->
+      if $(@).is(":checked")
+        $("#update_only_submit").prop("disabled", false).css("display", "inline-block")
+        $("#save_only_submit").css("display", "none")
+      else
+        $("#update_only_submit").prop("disabled", true).css("display", "none")
+        $("#save_only_submit").css("display", "inline-block")
+
+    $("#save_only_submit").click (e) ->
+      net_amount = parseFloat($(@).data("deduction"))
+      if $("#foc_payment_required").val() == "true" and net_amount > 0
+        e.preventDefault()
+        e.stopPropagation()
+        alert "Net amount for final invoice #{net_amount} must be 0 for FOC. Please try again after reconciliation."
+      

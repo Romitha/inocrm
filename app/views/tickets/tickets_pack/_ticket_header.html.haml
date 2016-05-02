@@ -15,8 +15,7 @@
       .col-md-2.small_scale_padding-top1
         %strong Serial No: #{product.serial_no }
       .col-md-2.pull-right.text-right.small_scale_padding-top1
-        %strong Priority: #{INOCRM_CONFIG["priority"].key ticket.priority} #{"(Terminated)" if ticket.ticket_terminated}
-      /   %p Status: #{ticket.ticket_status.name}
+        %strong Priority: #{INOCRM_CONFIG["priority"].key ticket.priority}
       .col-md-3.pull-right.text-right.small_scale_padding-top1
         %strong Resolve status: #{ticket.ticket_status_resolve.try(:name)}
 

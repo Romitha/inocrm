@@ -232,13 +232,13 @@ class AddMstTablesFromDevage < ActiveRecord::Migration
     create_table :mst_spt_templates, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.text :invoice
-      t.string :invoice_request_type
+      t.string :invoice_request_type, default: "PRINT_SPPT_INVOICE"
       t.text :ticket
-      t.string :ticket_request_type
+      t.string :ticket_request_type, default: "PRINT_SPPT_TICKET"
       t.text :ticket_complete
-      t.string :ticket_complete_request_type
+      t.string :ticket_complete_request_type, default: "PRINT_SPPT_TICKET_COMPLETE"
       t.text :fsr
-      t.string :fsr_request_type
+      t.string :fsr_request_type, default: "PRINT_SPPT_FSR"
       t.timestamps
     end
 

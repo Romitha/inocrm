@@ -23,64 +23,67 @@
             - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
               = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
-            = f.simple_fields_for :ticket_estimations do |t| # "ticket_estimations_attributes[]", @estimation
+            = f.simple_fields_for :ticket_estimations do |t|
+
               - if t.object.status_id == EstimationStatus.find_by_code("RQS").id and t.object.ticket_estimation_externals.present?
                 - estimate_currency = t.object.currency.code
                 = hidden_field_tag :ticket_estimation_id, t.object.id
 
-                = t.simple_fields_for :ticket_estimation_externals do |te|
-                  %strong Description:
-                  = te.object.description
-                  %br/
-                  .row.head_estimated_price_class
+                .estimate_extend_with_tax
+                  = t.simple_fields_for :ticket_estimation_externals do |te|
+                    = t.input :id, as: :hidden
                     = hidden_field_tag :ticket_estimation_external_id, te.object.id
-                    .col-md-3
+                    .row.head_estimated_price_class
+                      .col-md-3
+                        %strong Repaired by:
+                        = te.object.organization.name
+                      .col-md-2
+                        %strong Cost price (#{estimate_currency}):
+                        = te.object.cost_price
+                      .col-md-3
+                        %strong Estimated price (#{estimate_currency}):
+                        %span.est_estimated_amount= te.object.estimated_price
+                      .col-md-2
+                        %strong Description:
+                        = te.object.description
+                      .col-md-2
+                        %strong Warranty period:
+                        = te.object.warranty_period
+                    %hr
+                    .row
+                      .col-md-2
+                        %strong Approved amount (#{estimate_currency}):
+                        = te.input :approved_estimated_price, as: :string, label: false, input_html: {class: "estimation_value only_float", oninput: "Inventories.calculate_cost_price(this);"}
+                        .append_estimated_price.hide
+                          = te.object.estimated_price.to_f
+                      .col-md-12
+                        .panel-group
+                          .panel.panel-success
+                            .panel-heading Taxes
+                            .panel-body.tax_wrapper
+                              = te.simple_fields_for :ticket_estimation_external_taxes do |ee|
 
-                      %strong Repaired by:
-                      = te.object.organization.name
-                    .col-md-2
+                                .row.parent_class_set
+                                  .add_sign.col-md-3{style: "padding-top:2.5%;"}
+                                    = ee.link_to_remove class: "remove_c_t_v_link" do
+                                      %span.glyphicon.glyphicon-remove-sign
 
-                      %strong Cost price (#{estimate_currency}):
-                      = te.object.cost_price
-                    .col-md-2
+                                  .col-md-3
+                                    = label_tag "Tax"
+                                    %br/
+                                    = ee.select :tax_id, Tax.all.map{|p| [p.tax, p.id, {"data-default-amount" => p.tax_rates.find_by_active(true).try(:rate).to_f}]}, {include_blank: true}, {class: "payment_item_select tax_rate_calculation", onchange: "Inventories.payment_amount_select(this); return false;"}
 
-                      %strong Estimated price (#{estimate_currency}):
-                      .est_estimated_amount= te.object.estimated_price
-                    .col-md-2
+                                  .col-md-4
+                                    - if t.object.approval_required == true
+                                      = ee.input :approved_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class"}
+                                    - else
+                                      = ee.input :estimated_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class"}
+                                  .col-md-4
+                                    = ee.input :tax_rate,  as: :hidden, input_html: {id: "tax_rate_hidden_field_id", class: "payment_item_value"}
 
-                      %strong Warranty period:
-                      = te.object.warranty_period
-                    .col-md-3
-                      = t.input :id, as: :hidden
-                      %strong Approved amount (#{estimate_currency}):
-                      = te.input :approved_estimated_price, label: false, input_html: {class: "approved_amount", oninput: "Inventories.calculate_approved_price();"}
-                    .col-md-1
-                    .col-md-11
-                      = te.simple_fields_for :ticket_estimation_external_taxes do |e|
-
-                        .row.parent_class_set
-                          .add_sign.col-md-3{style: "padding-top:2.5%;"}
-                            = e.link_to_remove class: "remove_c_t_v_link" do
-                              %span.glyphicon.glyphicon-remove-sign
-
-                          .col-md-2
-                            = e.association :tax, label_method: :tax, value_method: :id, input_html: {class: "tax_field_class",id: "tax_field_idwww", onchange: "Tickets.call_es_tax(this); return false;"}
-                          .col-md-2
-                            = e.input :tax_rate,  as: :hidden, input_html: {id: "tax_rate_hidden_field_id"}
-                            - Tax.all.each do |tax|
-                              - rate = tax.tax_rates.find_by_active(true)
-                              - if rate.present?
-                                .hide.rates{id: "rate_#{rate.id}", data: "#{rate.rate}", value: rate.rate}= "Rate #{rate.rate}% (#{rate.tax.tax})"
-                          - if t.object.approval_required == true
-                            .col-md-2
-                              = e.input :approved_tax_amount, input_html: {class: "approved_tax_amount_class"}
-                          - else
-                            .col-md-2
-                              = e.input :estimated_tax_amount, input_html: {class: "estimated_tax_amount_class"}
- 
-                      = te.link_to_add :ticket_estimation_external_taxes, class: "small_scale_padding-right2" do
-                        %span.glyphicon.glyphicon-plus-sign
-                        Add tax
+                              = te.link_to_add :ticket_estimation_external_taxes, class: "small_scale_padding-right2" do
+                                %span.glyphicon.glyphicon-plus-sign
+                                Tax
 
                   .row
                     .col-md-12
@@ -89,8 +92,8 @@
 
                         = t.simple_fields_for :ticket_estimation_additionals do |ta|
                           = ta.input :ticket_id, as: :hidden, input_html: {value: ticket.id}
-                          .col-md-12.head_estimated_price_class
-                            .row
+                          .col-md-12.head_estimated_price_class.estimate_extend_with_tax
+                            .row.estimate_extend_with_tax
                               .col-md-3.col-xs-3.col-sm-3
                                 %strong Additional charge:
                                 = ta.object.additional_charge.try(:additional_charge)
@@ -103,48 +106,48 @@
                                 %strong Estimated price (#{estimate_currency}):
                                 .est_estimated_amount= ta.object.estimated_price
                               .col-md-3.col-xs-3.col-sm-3
-                                = ta.input :approved_estimated_price, input_html: {class: "approved_estimate", oninput: "Inventories.calculate_approved_price();"}
-                            .row
-                              .col-md-1
-                              .col-md-11
-                                = ta.simple_fields_for :ticket_estimation_additional_taxes do |e|
+                                = ta.input :approved_estimated_price, input_html: {class: "estimation_value only_float", oninput: "Inventories.calculate_cost_price(this);"}
+                                .append_estimated_price.hide
+                                  = ta.object.approved_estimated_price.to_f
 
-                                  .row.parent_class_set
-                                    .add_sign.col-md-3{style: "padding-top:2.5%;"}
-                                      = e.link_to_remove class: "remove_c_t_v_link" do
-                                        %span.glyphicon.glyphicon-remove-sign
+                              .col-md-12
+                                .panel-group
+                                  .panel.panel-success
+                                    .panel-heading Taxes
+                                    .panel-body.tax_wrapper
+                                      = ta.simple_fields_for :ticket_estimation_additional_taxes do |e|
 
-                                    .col-md-2
-                                      = e.association :tax, label_method: :tax, value_method: :id, input_html: {class: "tax_field_class",id: "tax_field_idwww", onchange: "Tickets.call_es_tax(this); return false;"}
-                                    .col-md-2
-                                      = e.input :tax_rate,  as: :hidden, input_html: {id: "tax_rate_hidden_field_id"}
-                                      - Tax.all.each do |tax|
-                                        - rate = tax.tax_rates.find_by_active(true)
-                                        - if rate.present?
-                                          .hide.rates{id: "rate_#{rate.id}", data: "#{rate.rate}", value: rate.rate}= "Rate #{rate.rate}% (#{rate.tax.tax})"
-                                    - if t.object.approval_required == true
-                                      .col-md-2
-                                        = e.input :approved_tax_amount, input_html: {class: "approved_tax_amount_class"}
-                                    - else
-                                      .col-md-2
-                                        = e.input :estimated_tax_amount, input_html: {class: "estimated_tax_amount_class"}
+                                        .row.parent_class_set
+                                          .add_sign.col-md-3{style: "padding-top:2.5%;"}
+                                            = e.link_to_remove class: "remove_c_t_v_link" do
+                                              %span.glyphicon.glyphicon-remove-sign
 
-                                = ta.link_to_add :ticket_estimation_additional_taxes, class: "small_scale_padding-right2" do
-                                  %span.glyphicon.glyphicon-plus-sign
-                                  Add tax
-                        .col-md-12
-                          .row
-                            .col-md-3.col-xs-3.col-sm-3
-                            .col-md-3.col-xs-3.col-sm-3
-                              %strong Cost price total (#{estimate_currency}):
-                              = t.object.ticket_estimation_additionals.sum(:cost_price)
-                            .col-md-3.col-xs-3.col-sm-3
-                              %strong Estimated price total (#{estimate_currency}):
-                              = t.object.ticket_estimation_additionals.sum(:estimated_price)
-                            .col-md-3.col-xs-3.col-sm-3
-                              %strong Approved price total (#{estimate_currency}):
-                              %span#total_approved_amount
-                              / = t.object.ticket_estimation_additionals.sum(:approved_estimated_price)
+                                          .col-md-3
+                                            = label_tag "Tax"
+                                            %br/
+                                            = e.select :tax_id, Tax.all.map{|p| [p.tax, p.id, {"data-default-amount" => p.tax_rates.find_by_active(true).try(:rate).to_f}]}, {include_blank: true}, {class: "payment_item_select tax_rate_calculation", onchange: "Inventories.payment_amount_select(this); return false;"}
+                                          .col-md-3
+                                            - if t.object.approval_required == true
+                                              = e.input :approved_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class"}
+                                            - else
+                                              = e.input :estimated_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class"}
+                                          .col-md-3
+                                            = e.input :tax_rate,  as: :hidden, input_html: { class: "payment_item_value"}
+
+                                      = ta.link_to_add :ticket_estimation_additional_taxes, class: "small_scale_padding-right2" do
+                                        %span.glyphicon.glyphicon-plus-sign
+                                        Add tax
+                        .row
+                          .col-md-3.col-xs-3.col-sm-3
+                          .col-md-3.col-xs-3.col-sm-3
+                            %strong Cost price total (#{estimate_currency}):
+                            = t.object.ticket_estimation_additionals.sum(:cost_price)
+                          .col-md-3.col-xs-3.col-sm-3
+                            %strong Estimated price total (#{estimate_currency}):
+                            = t.object.ticket_estimation_additionals.sum(:estimated_price)
+                          .col-md-3.col-xs-3.col-sm-3
+                            %strong Approved price total (#{estimate_currency}):
+                            %span#total_approved_amount
                   .row
                     .col-md-12
                       = t.input :note, input_html: {value: nil}

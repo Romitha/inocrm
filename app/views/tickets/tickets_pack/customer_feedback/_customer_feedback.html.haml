@@ -11,9 +11,10 @@
       = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
     .row
-      .col-md-2
-        = label_tag "Re-open"
-        = check_box_tag :re_opened
+      - unless ticket.ticket_terminated
+        .col-md-2
+          = label_tag "Re-open"
+          = check_box_tag :re_opened
 
       .col-md-3#unit_dispatch_wrapper
         = label_tag "Unit return customer"
@@ -37,19 +38,18 @@
           .col-md-3
             %strong Final Amount to be Paid (#{ticket.ticket_currency.code}):
             = number_with_precision ticket.final_amount_to_be_paid.to_f, precision: 2
+            #final_amount_to_be_paids.hide= ticket.final_amount_to_be_paid.to_f
           .col-md-4
-            = f.input :amount, input_html: {value: 0}
+            = f.input :amount, input_html: {value: 0}, label: "Recieved amount"
+          .col-md-4
+            = f.input :receipt_description
+          .col-md-2
+            = label_tag "Payment type"
+            = f.select :payment_type, TicketPaymentReceivedType::TYPES
+          .col-md-4
+            = f.input :payment_note, label: "Payment note (Ex: credit card no, cheque no, bank, etc...)"
           .col-md-5
             = f.input :note, input_html: {value: nil}
-        - if @ticket.ticket_invoices.order(created_at: :desc).find_by_canceled(false)
-          .row
-            .col-md-2
-              = link_to "View invoice", "#"
-            .col-md-2
-              = link_to "Print invoice", "#", class: "btn btn-sm btn-success", onclick: "Users.request_printer_application('invoice', '#{ticket.ticket_invoices.order(created_at: :desc).find_by_canceled false}', 'receipt_request_type', 'print_invoice_tag_value', 'print_invoice'); false;"
-            .col-md-2
-              = link_to "Invoice customer", "#"
-
         .row
           .col-md-4
             = label_tag "Payment completed"

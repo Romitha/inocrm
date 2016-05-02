@@ -36,8 +36,8 @@
                 %th #{ticket.ticket_repair_type.code == 'EX' ? 'Repaired by' : 'No of parts' }
                 %th #{ticket.ticket_repair_type.code == 'EX' ? 'Repair' : 'Parts' }
                 %th Additional
-                %th Tax
                 %th Total
+                %th Tax
                 %th Min. adv. payment
                 %th Status
                 %th quoted
@@ -76,12 +76,6 @@
                       = number_with_precision estimation.ticket_estimation_additionals.sum(:approved_estimated_price), precision: 2
                     - else
                       = number_with_precision estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2
-                  %td.tax
-                    - if estimation_external_present
-                      = estimation.ticket_estimation_externals.inject(0){ |i, k| i+k.ticket_estimation_external_taxes.sum(:approved_tax_amount).to_f } + estimation.ticket_estimation_additionals.inject(0){ |i, k| i+k.ticket_estimation_additional_taxes.sum(:approved_tax_amount).to_f }
-
-                    - else
-                      = estimation.ticket_estimation_parts.inject(0){ |i, k| i+k.ticket_estimation_part_taxes.sum(:approved_tax_amount).to_f } + estimation.ticket_estimation_additionals.inject(0){ |i, k| i+k.ticket_estimation_additional_taxes.sum(:approved_tax_amount).to_f }
 
                   %td.sub_amount
                     - if estimation.approval_required
@@ -94,6 +88,12 @@
                         = number_with_precision(estimation.ticket_estimation_externals.sum(:estimated_price) + estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2)
                       - else
                         = number_with_precision(estimation.ticket_estimation_parts.sum(:estimated_price) + estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2)
+                  %td.tax
+                    - if estimation_external_present
+                      = estimation.ticket_estimation_externals.inject(0){ |i, k| i+k.ticket_estimation_external_taxes.sum(:approved_tax_amount).to_f } + estimation.ticket_estimation_additionals.inject(0){ |i, k| i+k.ticket_estimation_additional_taxes.sum(:approved_tax_amount).to_f }
+
+                    - else
+                      = estimation.ticket_estimation_parts.inject(0){ |i, k| i+k.ticket_estimation_part_taxes.sum(:approved_tax_amount).to_f } + estimation.ticket_estimation_additionals.inject(0){ |i, k| i+k.ticket_estimation_additional_taxes.sum(:approved_tax_amount).to_f }
                   %td.min_adv_payment
                     - if estimation.approval_required
                       = number_with_precision estimation.approved_adv_pmnt_amount.to_f, precision: 2
