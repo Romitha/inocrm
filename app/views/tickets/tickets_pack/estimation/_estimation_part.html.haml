@@ -34,28 +34,46 @@
           %strong Warranty Period Months :
           #{estimation_part.warranty_period}
 
-
     - if estimation_part.ticket_spare_part.ticket_spare_part_store.present?
       %hr
       %h4 Requested Part
       .row
         .col-md-12
-          %strong Store :
+          %strong Store:
           #{estimation_part.ticket_spare_part.ticket_spare_part_store.try(:store).try(:name)}
           %br/
-          %strong Item Code :
+          %strong Item Code:
           #{estimation_part.ticket_spare_part.ticket_spare_part_store.try(:inventory_product).try(:generated_item_code)}
           %br/
-          %strong Item Description :
+          %strong Item Description:
           #{estimation_part.ticket_spare_part.ticket_spare_part_store.try(:inventory_product).try(:description)}
           %br/
           %strong Available Qnt:
           #{estimation_part.ticket_spare_part.ticket_spare_part_store.try(:inventory_product) and estimation_part.ticket_spare_part.ticket_spare_part_store.inventory_product.inventories.where(store_id: estimation_part.ticket_spare_part.ticket_spare_part_store.store_id).first.try(:available_quantity)}
           %br/
-          %strong Unit :
+          %strong Unit:
           #{estimation_part.ticket_spare_part.ticket_spare_part_store.try(:inventory_product).try(:inventory_unit).try(:unit)}
           %br/
 
+    - if ticket_estimation_additional.ticket_estimation_part_taxes.present?
+      .panel-group
+        .panel.panel-success
+          .panel-heading Taxes
+          .panel-body.tax_wrapper
+            .row
+              - ticket_estimation_additional.ticket_estimation_part_taxes.each do |part_tax|
+                .col-md-4
+                  %strong Tax:
+                  = part_tax.tax.tax
+                .col-md-4
+                  %strong Tax rate (#{estimation.ticket.ticket_currency.code}):
+                  = part_tax.tax_rate
+                .col-md-4
+                  %strong Tax amount (#{estimation.ticket.ticket_currency.code}):
+                  - if estimation.cust_approved
+                    = part_tax.approved_tax_amount
+                  - else
+                    = part_tax.estimated_tax_amount
     .row
       .col-md-12
         %strong Note :
@@ -77,9 +95,28 @@
         %strong Estimate Price (#{estimation.ticket.ticket_currency.code}) :
         #{ticket_estimation_additional.estimated_price}
 
+  - if ticket_estimation_additional.ticket_estimation_additional_taxes.present?
+    .panel-group
+      .panel.panel-success
+        .panel-heading Taxes
+        .panel-body.tax_wrapper
+          .row
+            - ticket_estimation_additional.ticket_estimation_additional_taxes.each do |additional_tax|
+              .col-md-4
+                %strong Tax:
+                = additional_tax.tax.tax
+              .col-md-4
+                %strong Tax rate (#{estimation.ticket.ticket_currency.code}):
+                = additional_tax.tax_rate
+              .col-md-4
+                %strong Tax amount (#{estimation.ticket.ticket_currency.code}):
+                - if estimation.cust_approved
+                  = additional_tax.approved_tax_amount
+                - else
+                  = additional_tax.estimated_tax_amount
+
 .row
   .col-md-4
-    / Total (#{estimation.ticket.ticket_currency.code}) : xxxx
   .col-md-4
     %strong Total additional cost (#{estimation.ticket.ticket_currency.code}) :
     #{number_with_precision estimation.ticket_estimation_additionals.sum(:cost_price), precision: 2}
@@ -112,7 +149,7 @@
   .col-md-12
     - unless (estimation.estimation_status.code == "EST") and estimation.cust_approval_required and estimation.cust_approved.nil?
       %hr
-      Estimation note:
+      %strong Estimation note:
       = simple_format estimation.note
 
 - if (estimation.estimation_status.code == "EST") and estimation.cust_approval_required and !estimation.cust_approved and !estimation.ticket.job_finished
@@ -133,6 +170,7 @@
       = f.input :cust_approved, as: :radio_buttons, collection: {approved: true, rejected: false}, wrapper: :append, label: false, input_html: {class: "approve_radio_button"}
       = f.input :note, input_html: {value: nil}
       = simple_format estimation.note
+
       - if estimation.ticket_estimation_parts.present? and not estimation.ticket_estimation_parts.first.ticket_spare_part.ticket_spare_part_non_stock.present?
         .request_part_check
           = label_tag "Request part"

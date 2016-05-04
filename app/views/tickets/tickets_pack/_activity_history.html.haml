@@ -966,18 +966,18 @@
                       .col-md-4
                         Product Item Code: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:inventory_product).try(:generated_item_code)}
 
-            -if action.action_id == 67
+            -if action.action_id == 67 and action.act_ticket_close_approve
               .panel-body
                 .row
                   .col-md-4
-                    - if action.act_ticket_close_approve.approved == true
+                    - if action.act_ticket_close_approve.approved
                       Approved: Yes
                     - else
                       Approved: No
                   .col-md-4
                     Reject Reason: #{action.act_ticket_close_approve.reason.try(:reason)}
 
-            -if action.action_id == 68
+            -if action.action_id == 68 and action.act_quality_control
               .panel-body
                 .row
                   .col-md-4
@@ -1182,7 +1182,7 @@
                     .col-md-4
                       Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
 
-            -if action.action_id == 81
+            -if action.action_id == 81 and action.act_print_invoice.present?
               .panel-body
                 .row
                   .col-md-4

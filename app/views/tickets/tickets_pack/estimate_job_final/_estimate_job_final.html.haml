@@ -44,21 +44,22 @@
       %br/
       = label_tag "Payment completed"
       = check_box_tag :payment_completed, "payment completed"
-      %br/
-      = label_tag "Update only"
-      = check_box_tag :update_only, 1, false
-      = f.submit "Update", class: "btn btn-sm btn-success", id: "update_only_submit", data: {disabled_with: "Please wait..."}
+      - if f.object.ticket_terminated
+        %br/
+        = label_tag "Update only"
+        = check_box_tag :update_only, 1, false
+        = f.submit "Update", class: "btn btn-sm btn-success", id: "update_only_submit", data: {disabled_with: "Please wait..."}
       - if uninvoiced_any
-        = f.submit "Save", class: "btn btn-sm btn-success", id: "save_only_submit", disabled: (ticket.ticket_invoices.any? ? false : true), data: {confirm: "Uninvoiced estimation is there. Are you sure?", disabled_with: "Please wait..."}
+        = f.submit "Save", class: "btn btn-sm btn-success", id: "save_only_submit", disabled: (ticket.final_invoice.present? ? false : true), data: {confirm: "Uninvoiced estimation is there. Are you sure?", disabled_with: "Please wait..."}
       - else
-        = f.submit "Save", class: "btn btn-sm btn-success", id: "save_only_submit", disabled: (ticket.ticket_invoices.any?{|i| !i.canceled } ? false : true), data: {disabled_with: "Please wait...", deduction: (ticket.final_invoice.try(:net_total_amount))}
+        = f.submit "Save", class: "btn btn-sm btn-success", id: "save_only_submit", disabled: (ticket.final_invoice.present? ? false : true), data: {disabled_with: "Please wait...", deduction: (ticket.final_invoice.try(:net_total_amount))}
 
 - if ticket.final_invoice.present?
   %table.table.table-responsive.table-condensed.table-bordered.small_scale_margin-top1
     %thead
       %tr
-        %th{colspan: 7} Final invoice
-        %th{colspan: 5} Total
+        %th{colspan: 6} Invoice
+        %th{colspan: 6} Total
       %tr
         %th No
         %th Created by
@@ -66,11 +67,11 @@
         %th Customer sent
         %th Canceled
         %th Currency
-        %th Deducted amount
-        %th Amount
-        %th Advance recieved
-        %th Deduction
         %th Cost
+        %th Esti. Amount
+        %th Tax
+        %th Deduction
+        %th Advance recieved
         %th Net payment
     %tbody
       %tr
@@ -80,9 +81,9 @@
         %td= boolean_in_word ticket.final_invoice.customer_sent, "Yes", "No"
         %td= boolean_in_word ticket.final_invoice.canceled, "Yes", "No"
         %td= ticket.final_invoice.currency.code
-        %td= ticket.final_invoice.deducted_amount
-        %td= ticket.final_invoice.total_amount
-        %td= ticket.final_invoice.total_advance_recieved
-        %td= ticket.final_invoice.total_deduction
         %td= ticket.final_invoice.total_cost
+        %td= ticket.final_invoice.total_amount
+        %td= ticket.final_invoice.ticket_invoice_total_taxes.sum(:amount)
+        %td= ticket.final_invoice.total_deduction
+        %td= ticket.final_invoice.total_advance_recieved
         %td= ticket.final_invoice.net_total_amount

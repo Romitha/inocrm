@@ -261,7 +261,7 @@ window.Inventories =
 
     if !isNaN(next_val)
       if $(e).is(".estimation_value")
-        this_margin = (next_val - prev_cost_price)*100/next_val
+        this_margin = (next_val - prev_cost_price)*100/prev_cost_price
         relatives.find(".append_estimated_price").text(next_val) #updating prev with current
 
         updated_total_estimation = total_estimation + next_val - prev_estimated_price
@@ -269,7 +269,7 @@ window.Inventories =
         $("#total_estimated_price").text(updated_total_estimation)
 
       else
-        this_margin = (prev_estimated_price - next_val)*100/prev_estimated_price
+        this_margin = (prev_estimated_price - next_val)*100/next_val
         relatives.find(".append_cost_price").text(next_val) #updating prev with current
 
         updated_total_cost = total_cost + next_val - prev_cost_price
@@ -277,14 +277,12 @@ window.Inventories =
         $("#total_cost_price").text(updated_total_cost)
 
       relatives.find(".append_profit_margin").text(Math.round(this_margin * 100)/100)
-
       if profit >= this_margin
         relatives.find(".append_profit_margin").addClass("red")
       else
         relatives.find(".append_profit_margin").removeClass("red")
 
-      console.log updated_total_cost
-      updated_margin = (updated_total_estimation - updated_total_cost)*100/updated_total_estimation
+      updated_margin = (updated_total_estimation - updated_total_cost)*100/updated_total_cost
       $("#total_margin_price").text(Math.round(updated_margin * 100)/100)
 
       if profit >= updated_margin
@@ -295,6 +293,7 @@ window.Inventories =
   payment_amount_select: (e)->
     default_amount = parseFloat($(":checked", e).data("default-amount"))
     estimated_amount = parseFloat($(":checked", e).data("estimation-amount"))
+    profit = parseFloat($("#db_margin").text())
 
     $(e).parent().siblings().find(".payment_item_value").val(default_amount)
 
@@ -315,18 +314,41 @@ window.Inventories =
       $("#total_estimated_price").text(updated_total_estimation)
       $("#total_cost_price").text(updated_total_cost)
 
-      updated_margin = (updated_total_estimation - updated_total_cost)*100/updated_total_estimation
+      updated_margin = (updated_total_estimation - updated_total_cost)*100/updated_total_cost
       $("#total_margin_price").text(Math.round(updated_margin * 100)/100)
 
       $(e).parent().siblings().find(".append_estimated_price").text(estimated_amount)
       $(e).parent().siblings().find(".append_cost_price").text(default_amount)
 
-      profit = (estimated_amount - default_amount)*100/estimated_amount
-      $(e).parent().siblings().find(".append_profit_margin").text(Math.round(profit * 100)/100)
-      if profit <= parseFloat($("#db_margin").text())
-        $(e).parent().siblings().find(".append_profit_margin").addClass("red")
+      this_margin = (estimated_amount - default_amount)*100/default_amount
+      $(e).parent().siblings().find(".append_profit_margin").text(Math.round(this_margin * 100)/100)
+      if parseFloat($("#db_margin").text()) >= this_margin
+        $(e).parents().eq(3).find(".append_profit_margin").addClass("red")
       else
-        $(e).parent().siblings().find(".append_profit_margin").removeClass("red")
+        $(e).parents().eq(3).find(".append_profit_margin").removeClass("red")
+
+      if profit >= updated_margin
+        $("#total_margin_price").addClass("red")
+      else
+        $("#total_margin_price").removeClass("red")
+
+  approved_amount_calculation: (e)->
+    total = parseFloat($("#total_approved_amount").text())
+    next_val = parseFloat($(e).val())
+    prev_val = parseFloat($(e).data("prev"))
+
+    if !isNaN(total) and !isNaN(next_val) and !isNaN(prev_val)
+      total = total + next_val - prev_val
+      $("#total_approved_amount").text(total)
+      $(e).data("prev", prev_val)
+
+  limit_payment_required: (e)->
+    value = parseFloat($(e).val())
+    payment_limiter = parseFloat($(".for_payment_limit").text())
+    if !isNaN(value) and !isNaN(payment_limiter)
+      if value > payment_limiter
+        $(e).val(payment_limiter)
+
 
   calculate_internal_cost_price: ->
     total_internal_cost_price = 0

@@ -4,49 +4,91 @@
     %h4 Selected external estimation
 
 - estimation.ticket_estimation_externals.each do |estimation_external|
-  %strong Description:
-  = estimation_external.description
-  %br/
+  - if estimation_external.description.present?
+    - total_estimated += (estimation.approval_required ? estimation_external.approved_estimated_price : estimation_external.estimated_price).to_i
+    %strong Description:
+    = estimation_external.description
+    %br/
   .row
     .col-md-4
-      Status : #{estimation.estimation_status.name}
-    - if estimation.cust_approved
-      .col-md-4
-        Customer Approval : Approved
-    - elsif estimation.cust_approved.nil?
-      .col-md-4
-        Customer Approval :
-    - else
-      .col-md-4
-        Customer Approval : Rejected
+      %strong Status:
+      #{estimation.estimation_status.name}
     .col-md-4
-      Warranty period (In Months): #{estimation_external.warranty_period}
+      %strong Customer Approval:
+      - if estimation.cust_approved
+        Approved
+      - elsif estimation.cust_approved.is_a? FalseClass
+        Rejected
+
+    .col-md-4
+      %strong Warranty period (In Months):
+      #{estimation_external.warranty_period}
+  %hr/
   .row
     .col-md-4
-      Repaired By (Organization): #{estimation_external.organization.name}
+      %strong Repaired By (Organization):
+      #{estimation_external.organization.name}
     .col-md-4
-      Cost Price (#{estimation.ticket.ticket_currency.code}): #{number_with_precision estimation_external.cost_price, precision: 2}
+      %strong Cost Price (#{estimation.ticket.ticket_currency.code}):
+      #{number_with_precision estimation_external.cost_price, precision: 2}
     .col-md-4
-      Estimated Price (#{estimation.ticket.ticket_currency.code}): #{number_with_precision (estimation.approval_required ? estimation_external.approved_estimated_price : estimation_external.estimated_price), precision: 2}
-
-      - total_estimated += (estimation.approval_required ? estimation_external.approved_estimated_price : estimation_external.estimated_price).to_i
-
-  %hr
-
+      %strong Estimated Price (#{estimation.ticket.ticket_currency.code}):
+      #{number_with_precision (estimation.approval_required ? estimation_external.approved_estimated_price : estimation_external.estimated_price), precision: 2}
+  - if estimation_external.ticket_estimation_external_taxes.present?
+    .panel-group
+      .panel.panel-success
+        .panel-heading Taxes
+        .panel-body.tax_wrapper
+          .row
+            - estimation_external.ticket_estimation_external_taxes.each do |external_tax|
+              .col-md-4
+                %strong Tax:
+                = external_tax.tax.tax
+              .col-md-4
+                %strong Tax rate (#{estimation.ticket.ticket_currency.code}):
+                = external_tax.tax_rate
+              .col-md-4
+                %strong Tax amount (#{estimation.ticket.ticket_currency.code}):
+                - if estimation.cust_approved
+                  = external_tax.approved_tax_amount
+                - else
+                  = external_tax.estimated_tax_amount
 
 - estimation.ticket_estimation_additionals.each do |ticket_estimation_additional|
   .row
     .col-md-4
-      Additional Charges: #{ticket_estimation_additional.additional_charge.try(:additional_charge)}
+      %strong Additional Charges:
+      #{ticket_estimation_additional.additional_charge.try(:additional_charge)}
 
     .col-md-4
-      Cost Price (#{estimation.ticket.ticket_currency.code}): #{number_with_precision ticket_estimation_additional.cost_price, precision: 2}
+      %strong Cost Price (#{estimation.ticket.ticket_currency.code}):
+      #{number_with_precision ticket_estimation_additional.cost_price, precision: 2}
       - total_additional_cost += (ticket_estimation_additional.cost_price)
 
     .col-md-4
-      Estimated Price (#{estimation.ticket.ticket_currency.code}): #{number_with_precision (estimation.approval_required ? ticket_estimation_additional.approved_estimated_price : ticket_estimation_additional.estimated_price), precision: 2}
+      %strong Estimated Price (#{estimation.ticket.ticket_currency.code}):
+      #{number_with_precision (estimation.approval_required ? ticket_estimation_additional.approved_estimated_price : ticket_estimation_additional.estimated_price), precision: 2}
       - total_additional_estimated += (estimation.approval_required ? ticket_estimation_additional.approved_estimated_price : ticket_estimation_additional.estimated_price).to_i
 
+  - if ticket_estimation_additional.ticket_estimation_additional_taxes.present?
+    .panel-group
+      .panel.panel-success
+        .panel-heading Taxes
+        .panel-body.tax_wrapper
+          .row
+            - ticket_estimation_additional.ticket_estimation_additional_taxes.each do |additional_tax|
+              .col-md-4
+                %strong Tax:
+                = additional_tax.tax.tax
+              .col-md-4
+                %strong Tax rate (#{estimation.ticket.ticket_currency.code}):
+                = additional_tax.tax_rate
+              .col-md-4
+                %strong Tax amount (#{estimation.ticket.ticket_currency.code}):
+                - if estimation.cust_approved
+                  = additional_tax.approved_tax_amount
+                - else
+                  = additional_tax.estimated_tax_amount
 .row{style: "margin-top:10px;"}
   .col-md-4.col-md-offset-4
     %strong Total Additional Cost  (#{estimation.ticket.ticket_currency.code}): #{number_with_precision total_additional_cost, precision: 2}
@@ -60,15 +102,17 @@
     %strong Total Estimated Price (#{estimation.ticket.ticket_currency.code}) : #{number_with_precision (total_estimated + total_additional_estimated), precision: 2}
 .row
   .col-md-4
-    Min. Advance Payment (#{estimation.ticket.ticket_currency.code}): #{number_with_precision (estimation.approval_required ? estimation.approved_adv_pmnt_amount : estimation.advance_payment_amount), precision: 2}
+    %strong Min. Advance Payment (#{estimation.ticket.ticket_currency.code}):
+    = number_with_precision (estimation.approval_required ? estimation.approved_adv_pmnt_amount : estimation.advance_payment_amount), precision: 2
   .col-md-6
-    Advance Payment Recieved (#{estimation.ticket.ticket_currency.code}): #{number_with_precision estimation.ticket.ticket_payment_receiveds.where(type_id: TicketPaymentReceivedType.find_by_code("AD").id).sum(:amount).to_i, precision: 2}
+    %strong Advance Payment Recieved (#{estimation.ticket.ticket_currency.code}):
+    = number_with_precision estimation.ticket.ticket_payment_receiveds.where(type_id: TicketPaymentReceivedType.find_by_code("AD").id).sum(:amount).to_i, precision: 2
 
 .row
   .col-md-6
     - unless (estimation.estimation_status.code == "EST") and estimation.cust_approval_required and estimation.cust_approved.nil?
       %hr
-      Estimation note:
+      %strong Estimation note:
       = simple_format estimation.note
 
 %hr

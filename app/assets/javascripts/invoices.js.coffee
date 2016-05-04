@@ -2,7 +2,6 @@ window.Invoices =
   setup: ->
     @quotation_change()
     @check_fsr_dynamic_check_behavour()
-    @enable_ticket_payment_received_in_customer_feedback()
     @customer_feedback_re_opened()
     @readonly_checkbox_in_customer_feedback()
     return
@@ -40,13 +39,13 @@ window.Invoices =
         $("#total_deduction_value").val(total_deduction)
 
         amount_to_be_paid = final_total_amount - total_payment - parseFloat(total_deduction)
-        $("#amount_to_be_paid").text(amount_to_be_paid)
-        $("#amount_to_be_paid_value").val(amount_to_be_paid)
+        $("#amount_to_be_paid").text(Math.round(amount_to_be_paid * 100)/100)
+        $("#amount_to_be_paid_value").val(Math.round(amount_to_be_paid * 100)/100)
         $("#total_amount_value").val(total_deduction)
       ), 200
 
-    $("#amount_to_be_paid").text(amount_to_be_paid)
-    $("#amount_to_be_paid_value").val(amount_to_be_paid)
+    $("#amount_to_be_paid").text(Math.round(amount_to_be_paid * 100)/100)
+    $("#amount_to_be_paid_value").val(Math.round(amount_to_be_paid * 100)/100)
     $("#total_amount_value").val(total_deduction)
 
     $("#total_tax").text(total_tax)
@@ -74,8 +73,8 @@ window.Invoices =
       final_total_amount = sub_amount + total_tax
       amount_to_be_paid = final_total_amount - total_payment - total_deduction
 
-      $("#amount_to_be_paid").text(amount_to_be_paid)
-      $("#amount_to_be_paid_value").val(amount_to_be_paid)
+      $("#amount_to_be_paid").text(Math.round(amount_to_be_paid * 100)/100)
+      $("#amount_to_be_paid_value").val(Math.round(amount_to_be_paid * 100)/100)
       $("#total_tax").text(total_tax)
       $("#sub_amount").text(sub_amount)
       $("#sub_amount_value").val(sub_amount)
@@ -135,20 +134,15 @@ window.Invoices =
     else
       $("#close_approve_reject_reason").removeClass("hide").prop("disabled", false)
 
-  enable_ticket_payment_received_in_customer_feedback: ->
-    $("#re_open").click ->
-      if $(@).is(":checked")
-        $("#ticket_payment_reciever_wrapper").addClass("hide")
-      else
-        $("#ticket_payment_reciever_wrapper").removeClass("hide")
-
   customer_feedback_re_opened: ->
     $("#re_opened").change ->
       if $(@).is(":checked")
+        $("#ticket_payment_reciever_wrapper").addClass("hide")
         $("#unit_return_customer").prop("disabled", true)
         $("#dispatch_method_id").prop("disabled", true)
         $("#unit_dispatch_wrapper").addClass("hide")
       else
+        $("#ticket_payment_reciever_wrapper").removeClass("hide")
         $("#unit_dispatch_wrapper").removeClass("hide")
         $("#dispatch_method_id").prop("disabled", false)
         $("#unit_return_customer").prop("disabled", false)
