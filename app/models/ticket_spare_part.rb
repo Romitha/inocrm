@@ -144,6 +144,24 @@ class TicketDeliverUnit < ActiveRecord::Base
 
   has_many :deliver_units, foreign_key: :ticket_deliver_unit_id
   accepts_nested_attributes_for :deliver_units, allow_destroy: true
+
+  has_many :dyna_columns, as: :resourceable, autosave: true
+
+  before_save do |ticket_deliver_unit|
+    ticket_deliver_unit.note = "#{self.note} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(self.current_user_id).email}</span><br/>#{self.note_was}" if ticket_deliver_unit.persisted? and self.note_changed? and self.note.present?
+  end
+
+  [:current_user_id].each do |dyna_method|
+    define_method(dyna_method) do
+      dyna_columns.find_by_data_key(dyna_method).try(:data_value)
+    end
+
+    define_method("#{dyna_method}=") do |value|
+      data = dyna_columns.find_or_initialize_by(data_key: dyna_method)
+      data.data_value = (value.class==Fixnum ? value : value.strip)
+      data.save# if data.persisted?
+    end
+  end
 end
 
 class SparePartDescription < ActiveRecord::Base

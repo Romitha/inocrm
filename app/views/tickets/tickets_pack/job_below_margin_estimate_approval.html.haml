@@ -38,20 +38,24 @@
                         %strong Repaired by:
                         = te.object.organization.name
                       .col-md-2
-                        %strong Cost price (#{estimate_currency}):
-                        = te.object.cost_price
-                      .col-md-3
-                        %strong Estimated price (#{estimate_currency}):
-                        %span.est_estimated_amount= te.object.estimated_price
-                      .col-md-2
                         %strong Description:
                         = te.object.description
-                      .col-md-2
-                        %strong Warranty period:
-                        = te.object.warranty_period
                     %hr
                     .row
-                      .col-md-2
+                      .col-md-3
+                        %strong Warranty period:
+                        = te.object.warranty_period
+                      .col-md-3
+                        %strong Cost price (#{estimate_currency}):
+                        .panel.panel-default
+                          .panel-body.small_scale_padding2
+                            = te.object.cost_price
+                      .col-md-3
+                        %strong Estimated price (#{estimate_currency}):
+                        .panel.panel-default
+                          .panel-body.small_scale_padding2
+                            .est_estimated_amount= te.object.estimated_price
+                      .col-md-3
                         %strong Approved amount (#{estimate_currency}):
                         = te.input :approved_estimated_price, as: :string, label: false, input_html: {class: "estimation_value only_float", oninput: "Inventories.calculate_cost_price(this);"}
                         .append_estimated_price.hide
@@ -71,13 +75,19 @@
                                   .col-md-3
                                     = label_tag "Tax"
                                     %br/
-                                    = ee.select :tax_id, Tax.all.map{|p| [p.tax, p.id, {"data-default-amount" => p.tax_rates.find_by_active(true).try(:rate).to_f}]}, {include_blank: true}, {class: "payment_item_select tax_rate_calculation", onchange: "Inventories.payment_amount_select(this); return false;"}
+                                    = ee.select :tax_id, Tax.all.map{|p| ["#{p.tax} (#{p.tax_rates.find_by_active(true).try(:rate).to_f}%)", p.id, {"data-default-amount" => p.tax_rates.find_by_active(true).try(:rate).to_f}]}, {include_blank: true}, {class: "payment_item_select tax_rate_calculation", onchange: "Inventories.payment_amount_select(this); return false;"}
+
+                                  .col-md-3
+                                    %strong{style: "margin-bottom: 5px; display: inline-block;"} Estimated tax amount (#{estimate_currency}):
+                                    .panel.panel-default
+                                      .panel-body.small_scale_padding2
+                                        = ee.object.estimated_tax_amount
 
                                   .col-md-4
                                     - if t.object.approval_required == true
-                                      = ee.input :approved_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class"}
+                                      = ee.input :approved_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class"}, label: "Approved tax amount (#{estimate_currency})"
                                     - else
-                                      = ee.input :estimated_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class"}
+                                      = ee.input :estimated_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class"}, label: "Estimated tax amount (#{estimate_currency})"
                                   .col-md-4
                                     = ee.input :tax_rate,  as: :hidden, input_html: {id: "tax_rate_hidden_field_id", class: "payment_item_value"}
 
@@ -95,18 +105,23 @@
                           .col-md-12.head_estimated_price_class.estimate_extend_with_tax
                             .row.estimate_extend_with_tax
                               .col-md-3.col-xs-3.col-sm-3
-                                %strong Additional charge:
-                                = ta.object.additional_charge.try(:additional_charge)
+                                %strong{style: "margin-bottom: 5px; display: inline-block;"} Additional charge:
+                                .panel.panel-default
+                                  .panel-body.small_scale_padding2
+                                    = ta.object.additional_charge.try(:additional_charge)
                               .col-md-3.col-xs-3.col-sm-3
 
-                                %strong Cost price (#{estimate_currency}):
-                                = ta.object.cost_price
+                                %strong{style: "margin-bottom: 5px; display: inline-block;"} Cost price (#{estimate_currency}):
+                                .panel.panel-default
+                                  .panel-body.small_scale_padding2
+                                    = ta.object.cost_price
                               .col-md-3.col-xs-3.col-sm-3
-
-                                %strong Estimated price (#{estimate_currency}):
-                                .est_estimated_amount= ta.object.estimated_price
+                                %strong{style: "margin-bottom: 5px; display: inline-block;"} Estimated price (#{estimate_currency}):
+                                .panel.panel-default
+                                  .panel-body.small_scale_padding2
+                                    .est_estimated_amount= ta.object.estimated_price
                               .col-md-3.col-xs-3.col-sm-3
-                                = ta.input :approved_estimated_price, input_html: {class: "estimation_value only_float", oninput: "Inventories.calculate_cost_price(this);"}
+                                = ta.input :approved_estimated_price, as: :string, input_html: {class: "estimation_value only_float", oninput: "Inventories.calculate_cost_price(this);"}, label: "Approved estimated price (#{estimate_currency})"
                                 .append_estimated_price.hide
                                   = ta.object.approved_estimated_price.to_f
 
@@ -125,12 +140,16 @@
                                           .col-md-3
                                             = label_tag "Tax"
                                             %br/
-                                            = e.select :tax_id, Tax.all.map{|p| [p.tax, p.id, {"data-default-amount" => p.tax_rates.find_by_active(true).try(:rate).to_f}]}, {include_blank: true}, {class: "payment_item_select tax_rate_calculation", onchange: "Inventories.payment_amount_select(this); return false;"}
+                                            = e.select :tax_id, Tax.all.map{|p| ["#{p.tax} (#{p.tax_rates.find_by_active(true).try(:rate).to_f}%)", p.id, {"data-default-amount" => p.tax_rates.find_by_active(true).try(:rate).to_f}]}, {include_blank: true}, {class: "payment_item_select tax_rate_calculation", onchange: "Inventories.payment_amount_select(this); return false;"}
+                                          .col-md-3
+                                            %strong Estimated tax amount:
+                                            %br
+                                            = e.object.estimated_tax_amount
                                           .col-md-3
                                             - if t.object.approval_required == true
-                                              = e.input :approved_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class"}
+                                              = e.input :approved_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class"}, label: "Approved tax amount (#{estimate_currency})"
                                             - else
-                                              = e.input :estimated_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class"}
+                                              = e.input :estimated_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class"}, label: "Estimated tax amount (#{estimate_currency})"
                                           .col-md-3
                                             = e.input :tax_rate,  as: :hidden, input_html: { class: "payment_item_value"}
 
@@ -148,6 +167,7 @@
                           .col-md-3.col-xs-3.col-sm-3
                             %strong Approved price total (#{estimate_currency}):
                             %span#total_approved_amount
+                              0
                   .row
                     .col-md-12
                       = t.input :note, input_html: {value: nil}
@@ -157,7 +177,7 @@
                       %strong Adv. payment amount (#{estimate_currency}):
                       = t.object.advance_payment_amount
                     .col-md-6
-                      = t.input :approved_adv_pmnt_amount, label: "Approved adv. payment amount (#{estimate_currency})"
+                      = t.input :approved_adv_pmnt_amount, as: :string, label: "Approved adv. payment amount (#{estimate_currency})", oninput: "Inventories.approved_amount_calculation(this) return false;", input_html: {data: {prev: t.object.approved_adv_pmnt_amount.to_f}}
 
                 = label_tag "Estimation complete"
                 = check_box_tag :estimation_completed

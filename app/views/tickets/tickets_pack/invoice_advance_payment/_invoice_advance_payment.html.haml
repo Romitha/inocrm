@@ -12,7 +12,7 @@
       = @total_estimation_amount - @all_payment_received
     .col-md-3
       %strong Total Minimum Amount (#{ticket.ticket_currency.code}):
-      = @total_minimum_amount 
+      .for_payment_limit= @total_minimum_amount 
   %hr
   %fieldset
     %legend Advance Payment Invoice
@@ -26,7 +26,7 @@
 
       .row
         .col-md-2
-          = f.input :amount, input_html: {class: "only_float"} ,label: "Received amount (#{ticket.ticket_currency.code})"
+          = f.input :amount, as: :string, input_html: {class: "only_float", oninput: "Inventories.limit_payment_required(this); return false;"} ,label: "Received amount (#{ticket.ticket_currency.code})"
         .col-md-4
           = f.input :receipt_description
         .col-md-2
@@ -40,7 +40,7 @@
       .row
         .col-md-12
           = label_tag "Invoicing Completed"
-          = check_box_tag :invoicing_completed
+          = check_box_tag :invoicing_completed, true, true
           = f.submit "Save", class: "btn btn-success btn-sm", data: {disable_with: "Processing..."}
 - else
   .row

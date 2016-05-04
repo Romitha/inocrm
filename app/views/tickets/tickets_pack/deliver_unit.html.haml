@@ -19,11 +19,6 @@
     = tab_content tabpointer: :deliver_unit, active_class: "active" do
       - if ticket.ticket_deliver_units.present?
         = simple_nested_form_for ticket, url: update_delivery_unit_inventories_path, method: :put do |f|
-          = hidden_field_tag :ticket_id, ticket.id
-          = hidden_field_tag :ticket_id, ticket.id
-          / = hidden_field_tag :process_id, session[:process_id]
-          / = hidden_field_tag :task_id, session[:task_id]
-          / = hidden_field_tag :owner, session[:owner]
 
           = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
           = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
@@ -32,6 +27,7 @@
             = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
           = f.simple_fields_for :ticket_deliver_units do |te|
+            = te.input :current_user_id, as: :hidden, input_html: {value: current_user.id }
             - unless te.object.collected
               = hidden_field_tag :ticket_deliver_id, te.object.id
 

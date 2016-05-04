@@ -154,8 +154,9 @@ class InvoicesController < ApplicationController
   end
 
   def update_estimate_job_final
-
     TaskAction
+    Invoice
+
     updated_only = params[:update_only].present?
 
     @ticket = Ticket.find params[:ticket_id]
@@ -439,8 +440,8 @@ class InvoicesController < ApplicationController
     Tax
     Warranty
     @ticket = Ticket.find_by_id params[:ticket_id]
-    checked_estimation_ids = params[:estimation_ids]
-    checked_act_terminate_job_payment_ids = params[:act_terminate_job_payment_ids]
+    checked_estimation_ids = params[:estimation_ids].to_a
+    checked_act_terminate_job_payment_ids = params[:act_terminate_job_payment_ids].to_a
 
     action_no = 0
     canceled = false
@@ -478,6 +479,7 @@ class InvoicesController < ApplicationController
       else
         if !@invoice.canceled_was
           @invoice.ticket_estimations.update_all "invoiced = invoiced-1"
+          @invoice.act_terminate_job_payments.update_all "invoiced = invoiced-1"
         end
 
         TicketEstimation.where(id: checked_estimation_ids).update_all "invoiced = invoiced+1"
@@ -493,6 +495,10 @@ class InvoicesController < ApplicationController
     @invoice.print_count += @invoice.print_count.to_i
     @invoice.currency_id = @ticket.ticket_currency.id
 
+    @invoice.ticket_estimation_ids = checked_estimation_ids
+    @invoice.act_terminate_job_payment_ids = checked_act_terminate_job_payment_ids.map { |t| t.to_i }
+    @invoice.ticket_payment_received_ids = @ticket.ticket_payment_received_ids if @invoice.new_record?
+
     #Calculate Total Cost and Total Taxes
     hash_array = {}
 
@@ -501,31 +507,29 @@ class InvoicesController < ApplicationController
     @invoice.ticket_estimations.each do |estimation|
       estimation.ticket_estimation_externals.each do |k|
         k.ticket_estimation_external_taxes.group_by{|t| t.tax_id}.each do |i, l|
-          hash_array[i] += l.sum{|tax| estimation.approval_required ? tax.approved_tax_amount : tax.estimated_tax_amount }
+          hash_array[i] = hash_array[i].to_f + l.sum{|tax| estimation.approval_required ? tax.approved_tax_amount : tax.estimated_tax_amount }.to_f
         end
       end
 
       estimation.ticket_estimation_parts.each do |k|
         k.ticket_estimation_part_taxes.group_by{|t| t.tax_id}.each do |i, l|
-          hash_array[i] += l.sum{|tax| estimation.approval_required ? tax.approved_tax_amount : tax.estimated_tax_amount }
+          hash_array[i] = hash_array[i].to_f + l.sum{|tax| estimation.approval_required ? tax.approved_tax_amount : tax.estimated_tax_amount }.to_f
         end
       end
 
       estimation.ticket_estimation_additionals.each do |k|
         k.ticket_estimation_additional_taxes.group_by{|t| t.tax_id}.each do |i, l|
-          hash_array[i] += l.sum{|tax| estimation.approval_required ? tax.approved_tax_amount : tax.estimated_tax_amount }
+          hash_array[i] = hash_array[i].to_f + l.sum{|tax| estimation.approval_required ? tax.approved_tax_amount : tax.estimated_tax_amount }.to_f
         end
       end
     end
 
     template_total_tax = hash_array.inject([]){|i, (k, v)| i << {tax_id: k, amount: v}}
 
+    @invoice.ticket_invoice_total_taxes.destroy_all unless @invoice.new_record?
     @invoice.ticket_invoice_total_taxes.build template_total_tax
 
     @invoice.save
-    @invoice.ticket_estimation_ids = checked_estimation_ids
-    @invoice.act_terminate_job_payment_ids = checked_act_terminate_job_payment_ids.map { |t| t.to_i }
-
     @ticket.update final_amount_to_be_paid: (canceled ? 0 : ([@invoice.net_total_amount.to_f] << 0).max)
 
     @ticket.update final_invoice_id: @invoice.id if !@invoice.canceled
