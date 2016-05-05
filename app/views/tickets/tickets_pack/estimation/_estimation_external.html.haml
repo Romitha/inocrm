@@ -49,7 +49,7 @@
                 = external_tax.tax_rate
               .col-md-4
                 %strong Tax amount (#{estimation.ticket.ticket_currency.code}):
-                - if estimation.cust_approved
+                - if estimation.approval_required
                   = external_tax.approved_tax_amount
                 - else
                   = external_tax.estimated_tax_amount
@@ -85,7 +85,7 @@
                 = additional_tax.tax_rate
               .col-md-4
                 %strong Tax amount (#{estimation.ticket.ticket_currency.code}):
-                - if estimation.cust_approved
+                - if estimation.approval_required
                   = additional_tax.approved_tax_amount
                 - else
                   = additional_tax.estimated_tax_amount

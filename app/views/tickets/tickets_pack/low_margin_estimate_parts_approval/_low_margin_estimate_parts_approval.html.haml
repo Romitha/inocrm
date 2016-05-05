@@ -1,6 +1,6 @@
 - uri = URI(request.url)
 = simple_nested_form_for estimation, url: update_low_margin_estimate_parts_approval_inventories_path, method: :post do |f|
-
+  - estimate_currency = f.object.currency.code
   = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
   = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
   = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
@@ -28,20 +28,19 @@
           #{t.object.try(:warranty_period)}
       - unless t.object.ticket_spare_part.ticket_spare_part_manufacture.present?
         %hr
-        .row.head_estimated_price_class
+        .row.estimate_extend_with_tax
           .col-md-2
             %strong Cost Prices :
-            %span.low_margin_cost_price= t.object.try(:cost_price)
+            %span.append_cost_price.hide
+              = t.object.cost_price.to_f
           .col-md-3
             %strong Requested Estimate Price :
-            %span.low_margin_estimated_price #{t.object.try(:estimated_price)}
+            %span
+              .append_estimated_price.hide
+                = t.object.estimated_price.to_f
           .col-md-2
             %strong Profit :
-            %span.low_margin_estimate_rate
-            %span (
-            %span#db_margin{style: "font-weight:bold;"}= CompanyConfig.first.try(:sup_internal_part_profit_margin).to_f
-            %span )
-            %span %
+            .append_profit_margin{style: "font-weight:bold;font-size:125%;"}
           .col-md-3
             = t.input :approved_estimated_price, label: "Approved estimated price", input_html: {min: "0",class: "low_margin_approved_estimated_price est_estimated_amount only_float", oninput: "Inventories.calculate_low_approved_price();"}, wrapper_html: {class: "inline-input"}
           .col-md-2
@@ -58,34 +57,24 @@
                 .panel-body
                   = t.simple_fields_for :ticket_estimation_part_taxes do |ee|
 
-                  .row.parent_class_set
-                    .add_sign.col-md-3{style: "padding-top:2.5%;"}
-                      = ee.link_to_remove class: "remove_c_t_v_link" do
-                        %span.glyphicon.glyphicon-remove-sign
+                    .row.parent_class_set
+                      .add_sign.col-md-3{style: "padding-top:2.5%;"}
+                        = ee.link_to_remove class: "remove_c_t_v_link" do
+                          %span.glyphicon.glyphicon-remove-sign
 
-                    .col-md-3
-                      = label_tag "Tax"
-                      %br/
-                      = ee.select :tax_id, Tax.all.map{|p| ["#{p.tax} (#{p.tax_rates.find_by_active(true).try(:rate).to_f}%)", p.id, {"data-default-amount" => p.tax_rates.find_by_active(true).try(:rate).to_f}]}, {include_blank: true}, {class: "payment_item_select tax_rate_calculation", onchange: "Inventories.payment_amount_select(this); return false;"}
+                      .col-md-3
+                        = label_tag "Tax"
+                        %br/
+                        = ee.select :tax_id, Tax.all.map{|p| ["#{p.tax} (#{p.tax_rates.find_by_active(true).try(:rate).to_f}%)", p.id, {"data-default-amount" => p.tax_rates.find_by_active(true).try(:rate).to_f}]}, {include_blank: true}, {class: "payment_item_select tax_rate_calculation", onchange: "Inventories.payment_amount_select(this); return false;"}
 
-                    .col-md-4
-                      - if t.object.approval_required == true
+                      .col-md-4
                         = ee.input :approved_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class"}
-                      - else
-                        = ee.input :estimated_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class"}
-                    .col-md-4
-                      = ee.input :tax_rate,  as: :hidden, input_html: {id: "tax_rate_hidden_field_id", class: "payment_item_value"}
+                      .col-md-4
+                        = ee.input :tax_rate,  as: :hidden, input_html: {id: "tax_rate_hidden_field_id", class: "payment_item_value"}
 
                 = t.link_to_add :ticket_estimation_part_taxes, class: "small_scale_padding-right2" do
                   %span.glyphicon.glyphicon-plus-sign
                   Add tax
-
-        .row
-          .col-md-4.col-md-offset-4
-            .below_margine_low_margin_estimate_rate
-          .col-md-4
-            .below_margine_low_margin_approved_estimate_rate
-
         %hr
 
       .row
@@ -132,81 +121,83 @@
                       %td= grn_item.grn.created_at.try(:strftime, "%d-%m-%Y")
                       %td
                         = grn_item.unit_cost
-  = f.simple_fields_for :ticket_estimation_additionals do |a|
-    .row.head_estimated_price_class
-      .col-md-3
-        %span{style: "font-weight:bold;"} Additional Charges :
-        %span #{a.object.try(:additional_charge).try(:additional_charge)}
-      .col-md-3
-        %span{style: "font-weight:bold;"} Cost Price (#{estimation.currency.code}) :
-        %span.add_low_margin_cost_price #{a.object.try(:cost_price)}
-      .col-md-3
-        %span{style: "font-weight:bold;"} Estimated Price (#{estimation.currency.code}) :
-        %span.add_low_margin_estimated_price.est_estimated_amount #{a.object.try(:estimated_price)}
-      .col-md-3
-        = a.input :approved_estimated_price, input_html: {min: "0",class: "add_low_margin_approved_estimated_price only_float", oninput: "Inventories.calculate_low_approved_price();"}
-      .col-md-1
-      .col-md-11
-        = a.simple_fields_for :ticket_estimation_additional_taxes do do |e|
-
-          .row.parent_class_set
-            .add_sign.col-md-3{style: "padding-top:2.5%;"}
-              = e.link_to_remove class: "remove_c_t_v_link" do
-                %span.glyphicon.glyphicon-remove-sign
-
-            .col-md-3
-              = label_tag "Tax"
-              %br/
-              = e.select :tax_id, Tax.all.map{|p| ["#{p.tax} (#{p.tax_rates.find_by_active(true).try(:rate).to_f}%)", p.id, {"data-default-amount" => p.tax_rates.find_by_active(true).try(:rate).to_f}]}, {include_blank: true}, {class: "payment_item_select tax_rate_calculation", onchange: "Inventories.payment_amount_select(this); return false;"}
-            .col-md-3
-              - if t.object.approval_required == true
-                = e.input :approved_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class"}
-              - else
-                = e.input :estimated_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class"}
-            .col-md-3
-              = e.input :tax_rate,  as: :hidden, input_html: { class: "payment_item_value"}
-
-        = a.link_to_add :ticket_estimation_additional_taxes, class: "small_scale_padding-right2" do
-          %span.glyphicon.glyphicon-plus-sign
-          Tax
-
   .row
-    .col-md-3.col-md-offset-3
-      %span{style: "font-weight:bold;"} Total Cost (#{estimation.currency.code}) :
-      %span.total_low_margin_cost
-    .col-md-3
-      %span{style: "font-weight:bold;"} Total Estimate (#{estimation.currency.code}) :
-      %span.total_low_margin_estimate
-    .col-md-3
-      %span{style: "font-weight:bold;"} Total Approved Estimate (#{estimation.currency.code}) :
-      %span.total_low_margin_app_estimate
+    .col-md-12
+      %fieldset
+        %legend Estimation additionals
 
+        = f.simple_fields_for :ticket_estimation_additionals do |ta|
+          = ta.input :ticket_id, as: :hidden, input_html: {value: estimation.ticket.id}
+          .col-md-12.head_estimated_price_class.estimate_extend_with_tax
+            .row.estimate_extend_with_tax
+              .col-md-3.col-xs-3.col-sm-3
+                %strong{style: "margin-bottom: 5px; display: inline-block;"} Additional charge:
+                .panel.panel-success
+                  .panel-body.small_scale_padding2
+                    = ta.object.additional_charge.try(:additional_charge)
+              .col-md-3.col-xs-3.col-sm-3
+
+                %strong{style: "margin-bottom: 5px; display: inline-block;"} Cost price (#{estimate_currency}):
+                .panel.panel-success
+                  .panel-body.small_scale_padding2
+                    = ta.object.cost_price
+              .col-md-3.col-xs-3.col-sm-3
+                %strong{style: "margin-bottom: 5px; display: inline-block;"} Estimated price (#{estimate_currency}):
+                .panel.panel-success
+                  .panel-body.small_scale_padding2
+                    .est_estimated_amount= ta.object.estimated_price
+              .col-md-3.col-xs-3.col-sm-3
+                = ta.input :approved_estimated_price, as: :string, input_html: {class: "estimation_value only_float", oninput: "Inventories.calculate_cost_price(this);", value: ta.object.estimated_price }, label: "Approved estimated price (#{estimate_currency})"
+                .append_estimated_price.hide
+                  = ta.object.estimated_price
+
+              .col-md-12
+                .panel-group
+                  .panel.panel-success
+                    .panel-heading Taxes
+                    .panel-body.tax_wrapper
+                      = ta.simple_fields_for :ticket_estimation_additional_taxes do |e|
+
+                        .row.parent_class_set
+                          .add_sign.col-md-3{style: "padding-top:2.5%;"}
+                            = e.link_to_remove class: "remove_c_t_v_link" do
+                              %span.glyphicon.glyphicon-remove-sign
+
+                          .col-md-3
+                            = label_tag "Tax"
+                            %br/
+                            = e.select :tax_id, Tax.all.map{|p| ["#{p.tax} (#{p.tax_rates.find_by_active(true).try(:rate).to_f}%)", p.id, {"data-default-amount" => p.tax_rates.find_by_active(true).try(:rate).to_f}]}, {include_blank: true}, {class: "payment_item_select tax_rate_calculation", onchange: "Inventories.payment_amount_select(this); return false;"}
+                          .col-md-3
+                            %strong{style: "margin-bottom: 5px; display: inline-block;"} Estimated tax amount:
+                            .panel.panel-success
+                              .panel-body.small_scale_padding2
+                                = e.object.estimated_tax_amount
+                          .col-md-3
+                            = e.input :approved_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class", value: e.object.estimated_tax_amount}, label: "Approved tax amount (#{estimate_currency})"
+                          .col-md-3
+                            = e.input :tax_rate,  as: :hidden, input_html: { class: "payment_item_value"}
+
+                      = ta.link_to_add :ticket_estimation_additional_taxes, class: "small_scale_padding-right2" do
+                        %span.glyphicon.glyphicon-plus-sign
+                        Add tax
   .row
-    .col-md-2
-
-      %strong Total Cost:
-      %span#total_internal_cost_price
-
-    .col-md-2
-
-      %strong Total Estimate:
-      %span#total_internal_estimated_price
-
     .col-md-3
-      %strong Total profit:
-      %span#total_internal_margin_price{style: "font-weight:bold;"}
+      = f.input :approved_adv_pmnt_amount, as: :string, input_html: {class: "only_float", oninput: "Inventories.limit_payment_required(this); return false;", value: f.object.advance_payment_amount}, label: "Approved advance payment amount (Estimated: #{estimate_currency} #{f.object.advance_payment_amount})"
+
+    .col-md-3.col-md-offset-6
+      %strong Total cost price (#{estimate_currency}):
+      %span#total_cost_price
+        = f.object.ticket_estimation_additionals.sum(:cost_price)
+      %br
+      %strong Total appr. estimated price (#{estimate_currency}):
+      %span#total_estimated_price.for_payment_limit
+        = estimation.ticket_estimation_additionals.sum(:estimated_price)
+      %br
+      %strong Total profit (%):
+      %span#total_margin_price{style: "font-weight:bold;"}
       %span (
-      %span#db_margin{style: "font-weight:bold;"}= CompanyConfig.first.try(:sup_internal_part_profit_margin).to_f
+      %span#db_margin{style: "font-weight:bold;"}= CompanyConfig.first.try(:sup_external_job_profit_margin).to_f
       %span )
-      %span %
-    .col-md-5
-      .below_margine_total_internal_margin_price
-      = hidden_field_tag :estimate_low_margin
-  %hr
-
-  .row
-    .col-md-3
-      = f.input :advance_payment_amount, input_html: {min: "0", class: "only_float", value: 0}
 
   .row
     .col-md-6
