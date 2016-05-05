@@ -4,7 +4,6 @@ window.Inventories =
     @filter_category()
     @filter_store()
     @calculate_cost_price()
-    @calculate_internal_cost_price()
     @terminate_func()
     @accept_returned_part()
     @accept_returned_part_func()
@@ -348,43 +347,6 @@ window.Inventories =
     if !isNaN(value) and !isNaN(payment_limiter)
       if value > payment_limiter
         $(e).val(payment_limiter)
-
-
-  calculate_internal_cost_price: ->
-    total_internal_cost_price = 0
-    total_internal_estimated_price = 0
-    total_internal_margin_price = 0
-
-    $(".est_internal_cost_price, .est_internal_add_cost_price").each ->
-      if !isNaN(parseInt($(@).val()))
-        total_internal_cost_price = total_internal_cost_price + parseInt($(@).val())
-        $(@).parents().eq(2).find(".append_cost_price_internal").html(parseInt($(@).val()))
-
-
-    $(".est_internal_estimated_price, .est_internal_add_estimated_price").each ->
-      if !isNaN(parseInt($(@).val()))
-        total_internal_estimated_price = total_internal_estimated_price + parseInt($(@).val())
-        $(@).parents().eq(2).find(".append_estimated_price_internal").html(parseInt($(@).val()))
-        cost_price_internal = parseInt($(@).parents().eq(2).siblings().find(".append_cost_price_internal").text())
-        append_total_internal = (parseInt($(@).val()) - cost_price_internal)*100/cost_price_internal
-
-      ap_total_internal = Math.round(append_total_internal * 100)/100
-      if ap_total_internal < parseInt($("#db_margin").html())
-        $(@).parents().eq(3).find(".append_profit_margin_internal").css("color", "red")
-        $(@).parents("fieldset").find(".below_margine_append_profit_margin_internal").html("Estimate below the margine").css("color", "red")
-      else
-        $(@).parents().eq(3).find(".append_profit_margin_internal").css("color", "black")
-        $(@).parents("fieldset").find(".below_margine_append_profit_margin_internal").html("")
-
-      if isNaN(ap_total_internal)
-        $(@).parents().eq(3).find(".append_profit_margin_internal").html("")
-      else
-        $(@).parents().eq(3).find(".append_profit_margin_internal").html(ap_total_internal+"%")
-
-    total_internal_margin_price = (total_internal_estimated_price - total_internal_cost_price)*100/total_internal_cost_price
-    cal_total = Math.round(total_internal_margin_price * 100)/100
-    $("#total_internal_estimated_price").html(total_internal_estimated_price)
-    $("#total_internal_cost_price").html(total_internal_cost_price)
 
   accept_returned_part_func: ->
     _this = this

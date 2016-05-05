@@ -47,8 +47,7 @@
                 %dd
                   = t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.try(:spare_part_no)
                 %dt Available Qnty
-                %dd
-                  / = t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.inventories.where(store_id: t.object.ticket_spare_part.ticket_spare_part_store.store_id).try(:sum, :available_quantity)
+
             .spare_part_select.pull-left
               = link_to "Change part", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true
 
@@ -101,87 +100,90 @@
             .col-md-12
               .col-md-1
               .col-md-11
-                = t.simple_fields_for :ticket_estimation_part_taxes do |e|
+                = t.simple_fields_for :ticket_estimation_part_taxes do |ee|
 
                   .row.parent_class_set
                     .add_sign.col-md-3{style: "padding-top:2.5%;"}
-                      = e.link_to_remove class: "remove_c_t_v_link" do
+                      = ee.link_to_remove class: "remove_c_t_v_link" do
                         %span.glyphicon.glyphicon-remove-sign
 
                     .col-md-3
-                      = e.association :tax, label_method: :tax, value_method: :id, input_html: {class: "tax_field_class",id: "tax_field_idwww", onchange: "Tickets.call_es_tax(this); return false;"}
-                    .col-md-4
-                      = e.input :tax_rate,  as: :hidden, input_html: {id: "tax_rate_hidden_field_id"}
-                      - Tax.all.each do |tax|
-                        - rate = tax.tax_rates.find_by_active(true)
-                        - if rate.present?
-                          .hide.rates{id: "rate_#{rate.id}", data: "#{rate.rate}", value: rate.rate}= "Rate #{rate.rate}% (#{rate.tax.tax})"
+                      = label_tag "Tax"
+                      %br/
+                      = ee.select :tax_id, Tax.all.map{|p| ["#{p.tax} (#{p.tax_rates.find_by_active(true).try(:rate).to_f}%)", p.id, {"data-default-amount" => p.tax_rates.find_by_active(true).try(:rate).to_f}]}, {include_blank: true}, {class: "payment_item_select tax_rate_calculation", onchange: "Inventories.payment_amount_select(this); return false;"}
 
-                    - if f.object.approval_required == true
-                      .col-md-4
-                        = e.input :approved_tax_amount, input_html: {class: "approved_tax_amount_class"}
-                    - else
-                      .col-md-4
-                        = e.input :estimated_tax_amount, input_html: {class: "estimated_tax_amount_class"}
+                    .col-md-4
+                      - if t.object.approval_required == true
+                        = ee.input :approved_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class"}
+                      - else
+                        = ee.input :estimated_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class"}
+                    .col-md-4
+                      = ee.input :tax_rate,  as: :hidden, input_html: {id: "tax_rate_hidden_field_id", class: "payment_item_value"}
 
                 = t.link_to_add :ticket_estimation_part_taxes, class: "small_scale_padding-right2" do
                   %span.glyphicon.glyphicon-plus-sign
                   Add tax
 
 
-  = f.simple_fields_for :ticket_estimation_additionals do |a|
+  .row
+    .col-md-12
+      .panel-group
+        .panel.panel-info
+          .panel-heading Estimation additionals
+          .panel-body
+            = f.simple_fields_for :ticket_estimation_additionals do |ta|
+              = ta.input :ticket_id, as: :hidden, input_html: {value: ticket.id}
+              .row.estimate_extend_with_tax
+                .col-md-1.small_scale_padding-top2
+                  = ta.link_to_remove class: "remove_c_t_v_link" do
+                    %span.glyphicon.glyphicon-remove-sign
+                .col-md-3
+                  = label_tag "Additional charge"
+                  %br/
+                  = ta.select :additional_charge_id, AdditionalCharge.all.map{|p| [p.additional_charge, p.id, {"data-default-amount" => p.default_cost_price.to_f, "data-estimation-amount" => p.default_estimated_price.to_f}]}, {include_blank: true}, {class: "payment_item_select", onchange: "Inventories.payment_amount_select(this); return false;"}
+                .col-md-3
+                  = ta.input :cost_price, as: :string, input_html: {class: "value_class payment_item_value", oninput: "Inventories.calculate_cost_price(this);"}
+                  .append_cost_price.hide
+                    = ta.object.cost_price.to_f
 
-    .row.head_estimated_price_class
-      .add_sign.col-md-3{style: "padding-top:2.5%;"}
-        = a.link_to_remove class: "remove_c_t_v_link" do
-          %span.glyphicon.glyphicon-remove-sign
-      = a.input :ticket_id, as: :hidden, input_html: {value: estimation.ticket.id}
-      .col-md-3
-        = a.association :additional_charge, value_method: :id, label_method: :additional_charge
-      .col-md-2
-        = a.input :cost_price, input_html: {min: "0", class: "est_internal_add_cost_price only_float", oninput: "Inventories.calculate_internal_cost_price();"}
-        .append_cost_price_internal.hide
-      .col-md-2
-        = a.input :estimated_price, input_html: {min: "0", class: "est_internal_add_estimated_price est_estimated_amount only_float", oninput: "Inventories.calculate_internal_cost_price();"}
-        .append_estimated_price_internal.hide
-      .col-md-2
-        %strong Profit:
-        %span.append_profit_margin_internal{style: "font-weight:bold;"}
-      .col-md-12
-        .col-md-1
-        .col-md-11
-          = a.simple_fields_for :ticket_estimation_additional_taxes do |t|
-
-            .row.parent_class_set
-              .add_sign.col-md-3{style: "padding-top:2.5%;"}
-                = t.link_to_remove class: "remove_c_t_v_link" do
-                  %span.glyphicon.glyphicon-remove-sign
-
-              .col-md-2
-                = t.association :tax, label_method: :tax, value_method: :id, input_html: {class: "tax_field_class",id: "tax_field_idwww", onchange: "Tickets.call_es_tax(this); return false;"}
-              .col-md-2
-                = t.input :tax_rate,  as: :hidden, input_html: {id: "tax_rate_hidden_field_id"}
-                - Tax.all.each do |t|
-                  - rate = t.tax_rates.find_by_active(true)
-                  - if rate.present?
-                    .hide.rates{id: "rate_#{rate.id}", data: "#{rate.rate}", value: rate.rate}= "Rate #{rate.rate}% (#{rate.tax.tax})"
-
-              - if f.object.approval_required == true
+                .col-md-3
+                  = ta.input :estimated_price, as: :string, input_html: {class: "estimation_value estimated_value est_add_estimated_price", oninput: "Inventories.calculate_cost_price(this);"}
+                  .append_estimated_price.hide
+                    = ta.object.estimated_price.to_f
                 .col-md-2
-                  = t.input :approved_tax_amount, input_html: {class: "approved_tax_amount_class"}
-              - else
-                .col-md-2
-                  = t.input :estimated_tax_amount, input_html: {class: "estimated_tax_amount_class"}
+                  %strong Profit(%):
+                  .append_profit_margin{style: "font-weight:bold;font-size:125%;"}
+                .col-md-12
+                  .panel-group
+                    .panel.panel-success
+                      .panel-heading Additional taxes
+                      .panel-body
+                        = ta.simple_fields_for :ticket_estimation_additional_taxes do |e|
 
-          = a.link_to_add :ticket_estimation_additional_taxes, class: "small_scale_padding-right2" do
-            %span.glyphicon.glyphicon-plus-sign
-            Add tax
-      
-    %hr
+                          .row.parent_class_set
+                            .add_sign.col-md-3{style: "padding-top:2.5%;"}
+                              = e.link_to_remove class: "remove_c_t_v_link" do
+                                %span.glyphicon.glyphicon-remove-sign
 
-  = f.link_to_add :ticket_estimation_additionals, class: "small_scale_padding-right2" do
-    %span.glyphicon.glyphicon-plus-sign
-    Add additional charge
+                            .col-md-3
+                              = label_tag "Tax"
+                              %br/
+                              = e.select :tax_id, Tax.all.map{|p| ["#{p.tax} (#{p.tax_rates.find_by_active(true).try(:rate).to_f}%)", p.id, {"data-default-amount" => p.tax_rates.find_by_active(true).try(:rate).to_f}]}, {include_blank: true}, {class: "payment_item_select tax_rate_calculation", onchange: "Inventories.payment_amount_select(this); return false;"}
+                            .col-md-3
+                              - if t.object.approval_required == true
+                                = e.input :approved_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class"}
+                              - else
+                                = e.input :estimated_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class"}
+                            .col-md-3
+                              = e.input :tax_rate,  as: :hidden, input_html: { class: "payment_item_value"}
+
+                        = ta.link_to_add :ticket_estimation_additional_taxes, class: "small_scale_padding-right2" do
+                          %span.glyphicon.glyphicon-plus-sign
+                          Tax
+
+            = t.link_to_add :ticket_estimation_additionals do
+              %span.glyphicon.glyphicon-plus-sign
+              Estimation additionals
 
   .row
     .col-md-2
