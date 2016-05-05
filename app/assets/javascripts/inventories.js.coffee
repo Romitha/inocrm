@@ -278,16 +278,20 @@ window.Inventories =
       relatives.find(".append_profit_margin").text(Math.round(this_margin * 100)/100)
       if profit >= this_margin
         relatives.find(".append_profit_margin").addClass("red")
+        $("#estimate_low_margin").val("true")
       else
         relatives.find(".append_profit_margin").removeClass("red")
+        $("#estimate_low_margin").val("")
 
       updated_margin = (updated_total_estimation - updated_total_cost)*100/updated_total_cost
       $("#total_margin_price").text(Math.round(updated_margin * 100)/100)
 
       if profit >= updated_margin
         $("#total_margin_price").addClass("red")
+        $("#estimate_low_margin").val("true")
       else
         $("#total_margin_price").removeClass("red")
+        $("#estimate_low_margin").val("")
 
   payment_amount_select: (e)->
     default_amount = parseFloat($(":checked", e).data("default-amount"))
@@ -328,8 +332,10 @@ window.Inventories =
 
       if profit >= updated_margin
         $("#total_margin_price").addClass("red")
+        $("#estimate_low_margin").val("true")
       else
         $("#total_margin_price").removeClass("red")
+        $("#estimate_low_margin").val("")
 
   approved_amount_calculation: (e)->
     total = parseFloat($("#total_approved_amount").text())

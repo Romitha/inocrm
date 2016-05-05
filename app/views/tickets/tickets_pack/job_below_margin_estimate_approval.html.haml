@@ -84,10 +84,7 @@
                                         = ee.object.estimated_tax_amount
 
                                   .col-md-4
-                                    - if t.object.approval_required == true
-                                      = ee.input :approved_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class"}, label: "Approved tax amount (#{estimate_currency})"
-                                    - else
-                                      = ee.input :estimated_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class"}, label: "Estimated tax amount (#{estimate_currency})"
+                                    = ee.input :approved_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class", value: ee.object.estimated_tax_amount }, label: "Approved tax amount (#{estimate_currency})"
                                   .col-md-4
                                     = ee.input :tax_rate,  as: :hidden, input_html: {id: "tax_rate_hidden_field_id", class: "payment_item_value"}
 
@@ -106,18 +103,18 @@
                             .row.estimate_extend_with_tax
                               .col-md-3.col-xs-3.col-sm-3
                                 %strong{style: "margin-bottom: 5px; display: inline-block;"} Additional charge:
-                                .panel.panel-default
+                                .panel.panel-success
                                   .panel-body.small_scale_padding2
                                     = ta.object.additional_charge.try(:additional_charge)
                               .col-md-3.col-xs-3.col-sm-3
 
                                 %strong{style: "margin-bottom: 5px; display: inline-block;"} Cost price (#{estimate_currency}):
-                                .panel.panel-default
+                                .panel.panel-success
                                   .panel-body.small_scale_padding2
                                     = ta.object.cost_price
                               .col-md-3.col-xs-3.col-sm-3
                                 %strong{style: "margin-bottom: 5px; display: inline-block;"} Estimated price (#{estimate_currency}):
-                                .panel.panel-default
+                                .panel.panel-success
                                   .panel-body.small_scale_padding2
                                     .est_estimated_amount= ta.object.estimated_price
                               .col-md-3.col-xs-3.col-sm-3
@@ -131,7 +128,6 @@
                                     .panel-heading Taxes
                                     .panel-body.tax_wrapper
                                       = ta.simple_fields_for :ticket_estimation_additional_taxes do |e|
-
                                         .row.parent_class_set
                                           .add_sign.col-md-3{style: "padding-top:2.5%;"}
                                             = e.link_to_remove class: "remove_c_t_v_link" do
@@ -142,14 +138,12 @@
                                             %br/
                                             = e.select :tax_id, Tax.all.map{|p| ["#{p.tax} (#{p.tax_rates.find_by_active(true).try(:rate).to_f}%)", p.id, {"data-default-amount" => p.tax_rates.find_by_active(true).try(:rate).to_f}]}, {include_blank: true}, {class: "payment_item_select tax_rate_calculation", onchange: "Inventories.payment_amount_select(this); return false;"}
                                           .col-md-3
-                                            %strong Estimated tax amount:
-                                            %br
-                                            = e.object.estimated_tax_amount
+                                            %strong{style: "margin-bottom: 5px; display: inline-block;"} Estimated tax amount:
+                                            .panel.panel-success
+                                              .panel-body.small_scale_padding2
+                                                = e.object.estimated_tax_amount
                                           .col-md-3
-                                            - if t.object.approval_required == true
-                                              = e.input :approved_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class"}, label: "Approved tax amount (#{estimate_currency})"
-                                            - else
-                                              = e.input :estimated_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class"}, label: "Estimated tax amount (#{estimate_currency})"
+                                            = e.input :approved_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class", value: e.object.estimated_tax_amount }, label: "Approved tax amount (#{estimate_currency})"
                                           .col-md-3
                                             = e.input :tax_rate,  as: :hidden, input_html: { class: "payment_item_value"}
 
@@ -157,17 +151,20 @@
                                         %span.glyphicon.glyphicon-plus-sign
                                         Add tax
                         .row
-                          .col-md-3.col-xs-3.col-sm-3
-                          .col-md-3.col-xs-3.col-sm-3
-                            %strong Cost price total (#{estimate_currency}):
+                          .col-md-3.col-md-offset-6
+                            %strong Total cost price (#{estimate_currency}):
+                            %span#total_cost_price
                             = t.object.ticket_estimation_additionals.sum(:cost_price)
-                          .col-md-3.col-xs-3.col-sm-3
-                            %strong Estimated price total (#{estimate_currency}):
-                            = t.object.ticket_estimation_additionals.sum(:estimated_price)
-                          .col-md-3.col-xs-3.col-sm-3
-                            %strong Approved price total (#{estimate_currency}):
-                            %span#total_approved_amount
-                              0
+                            %br
+                            %strong Total approved stimated price (#{estimate_currency}):
+                            %span#total_estimated_price.for_payment_limit
+                              = estimation.ticket_estimation_additionals.sum(:estimated_price)
+                            %br
+                            %strong Total profit (%):
+                            %span#total_margin_price{style: "font-weight:bold;"}
+                            %span (
+                            %span#db_margin{style: "font-weight:bold;"}= CompanyConfig.first.try(:sup_external_job_profit_margin).to_f
+                            %span )
                   .row
                     .col-md-12
                       = t.input :note, input_html: {value: nil}
@@ -177,7 +174,7 @@
                       %strong Adv. payment amount (#{estimate_currency}):
                       = t.object.advance_payment_amount
                     .col-md-6
-                      = t.input :approved_adv_pmnt_amount, as: :string, label: "Approved adv. payment amount (#{estimate_currency})", oninput: "Inventories.approved_amount_calculation(this) return false;", input_html: {data: {prev: t.object.approved_adv_pmnt_amount.to_f}}
+                      = t.input :approved_adv_pmnt_amount, as: :string, label: "Approved adv. payment amount (#{estimate_currency} #{estimate_currency})", input_html: {data: {prev: t.object.approved_adv_pmnt_amount.to_f}, oninput: "Inventories.approved_amount_calculation(this) return false;", value: t.object.advance_payment_amount }
 
                 = label_tag "Estimation complete"
                 = check_box_tag :estimation_completed
