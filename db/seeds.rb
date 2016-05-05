@@ -239,26 +239,6 @@ spare_part_status_action = [
   ["MPR", "Manufacture Part Requested", "1", "0", "0", "0", "0", "0", "4", 'To Be Requested From Manufacturer'],
 ].each{ |t| SparePartStatusAction.create_with(name: t[1], manufacture_type_index: t[2], store_nc_type_index: t[3], store_ch_type_index: t[4], on_loan_type_index: t[5], name_next: t[9], non_stock_nc_type_index: t[6], non_stock_ch_type_index: t[7], manufacture_ch_type_index: t[8]).find_or_create_by(code: t[0])}
 
-# INSERT INTO `mst_spt_spare_part_status_action` (`code`, `name`, `manufacture_type_index`, `store_nc_type_index`, `store_ch_type_index`, `on_loan_type_index`, `created_at`, `updated_at`, `name_next`, `non_stock_nc_type_index`, `non_stock_ch_type_index`, `manufacture_ch_type_index`) VALUES
-# ('RQT', 'Requested', 0, 0, 1, 0, NULL, '2016-02-17 11:56:48', '', 1, 1, 1),
-# ('ORD', 'Ordered from Manufacturer', 2, 0, 0, 0, NULL, '2016-02-17 11:56:48', 'To Be Ordered From Manufacturer', 0, 0, 5),
-# ('CLT', 'Collected from Manufacturer', 3, 0, 0, 0, NULL, '2016-02-17 11:56:48', 'To Be Collected From Manufacturer', 0, 0, 6),
-# ('RCS', 'Received from Manufacturer', 4, 0, 0, 0, NULL, '2016-02-17 11:56:48', 'To Be Received From Manufacturer', 0, 0, 7),
-# ('ISS', 'Issued', 5, 3, 6, 3, NULL, '2016-02-17 11:56:48', 'To Be Issued', 0, 0, 8),
-# ('RCE', 'Received by Engineer', 6, 4, 7, 4, NULL, '2016-02-17 11:56:48', 'To Be Recieved By Engineer', 0, 0, 9),
-# ('RTN', 'Part Return by Engineer', 7, 5, 0, 5, NULL, '2016-02-17 11:56:48', 'Part To Be Returned By Engineer', 0, 0, 10),
-# ('RPR', 'Returned Part Reject', 8, 6, 0, 6, NULL, '2016-02-17 11:56:48', 'Accept or Reject The Returned Part', 0, 0, 11),
-# ('RPA', 'Returned Part Accepted', 8, 7, 0, 7, NULL, '2016-02-17 11:56:48', 'Accept or Reject The Returned Part', 0, 0, 11),
-# ( 'BND', 'Part Bundled', 10, 0, 0, 0, NULL, '2016-02-17 11:56:48', 'Bundle The Part', 0, 0, 13),
-# ( 'CLS', 'Close', 11, 8, 8, 8, NULL, '2016-02-17 11:56:48', '', 0, 0, 14),
-# ( 'ECM', 'Estimation Completed', 0, 0, 2, 0, NULL, '2016-02-17 11:56:48', 'Complete The Estimation', 0, 0, 2),
-# ( 'CEA', 'Cus. Estimation Approved', 0, 0, 3, 0, NULL, '2016-02-17 11:56:48', 'Approve The Estimation By Customer', 0, 0, 3),
-# ( 'STR', 'Request from Store', 0, 1, 4, 1, NULL, '2016-02-17 11:56:48', 'Request From Store', 0, 0, 0),
-# ( 'APS', 'Approved Store Request', 0, 2, 5, 2, NULL, '2015-08-21 08:09:55', 'Approve or Reject The Store Request', 0, 0, 0),
-# ( 'RJS', 'Reject Store Request', 0, 2, 5, 2, NULL, '2015-08-21 08:09:55', 'Approve or Reject The Store Request', 0, 0, 12),
-# ( 'RBN', 'Ready to Bundle', 9, 0, 0, 0, NULL, '2016-02-17 11:56:48', 'Ready To Bundle', 0, 0, 0),
-# ( 'MPR', 'Manufacture Part Requested', 1, 0, 0, 0, NULL, '2016-02-17 11:56:48', 'To Be Requested From Manufacturer', 0, 0, 4);
-
 workflow_mappings = [
   ["SPPT", "add_ticket", "/tickets/edit-ticket", "SPT_SC_1", "Support - Edit Ticket", "h1", "ticket_id,supp_hd_user",nil],
   ["SPPT", "assign_ticket", "/tickets/assign-ticket", "SPT_SC_2", "Support - Assign Ticket", "h1", "ticket_id", nil],

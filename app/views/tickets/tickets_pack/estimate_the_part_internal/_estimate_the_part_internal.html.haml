@@ -113,7 +113,7 @@
                       = ee.select :tax_id, Tax.all.map{|p| ["#{p.tax} (#{p.tax_rates.find_by_active(true).try(:rate).to_f}%)", p.id, {"data-default-amount" => p.tax_rates.find_by_active(true).try(:rate).to_f}]}, {include_blank: true}, {class: "payment_item_select tax_rate_calculation", onchange: "Inventories.payment_amount_select(this); return false;"}
 
                     .col-md-4
-                      - if t.object.approval_required == true
+                      - if t.object.approval_required
                         = ee.input :approved_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class"}
                       - else
                         = ee.input :estimated_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class"}
@@ -170,7 +170,7 @@
                               %br/
                               = e.select :tax_id, Tax.all.map{|p| ["#{p.tax} (#{p.tax_rates.find_by_active(true).try(:rate).to_f}%)", p.id, {"data-default-amount" => p.tax_rates.find_by_active(true).try(:rate).to_f}]}, {include_blank: true}, {class: "payment_item_select tax_rate_calculation", onchange: "Inventories.payment_amount_select(this); return false;"}
                             .col-md-3
-                              - if t.object.approval_required == true
+                              - if f.object.approval_required
                                 = e.input :approved_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class"}
                               - else
                                 = e.input :estimated_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class"}
@@ -181,40 +181,32 @@
                           %span.glyphicon.glyphicon-plus-sign
                           Tax
 
-            = t.link_to_add :ticket_estimation_additionals do
+            = f.link_to_add :ticket_estimation_additionals do
               %span.glyphicon.glyphicon-plus-sign
               Estimation additionals
 
   .row
-    .col-md-2
 
-      %strong Total Cost:
-      %span#total_internal_cost_price
-
-    .col-md-2
-
-      %strong Total Estimate:
-      %span#total_internal_estimated_price
-
+  .row
     .col-md-3
-      %strong Total profit:
-      %span#total_internal_margin_price{style: "font-weight:bold;"}
+      = f.input :id, as: :hidden
+      = f.input :advance_payment_amount, as: :string, input_html: {class: "only_float", oninput: "Inventories.limit_payment_required(this); return false;"}, label: "Required advance payment amount"
+
+    .col-md-3.col-md-offset-6
+      %strong Total cost price:
+      %span#total_cost_price 0
+      %br
+      %strong Total estimated price:
+      %span#total_estimated_price.for_payment_limit 0
+      %br
+      %strong Total profit (%):
+      %span#total_margin_price{style: "font-weight:bold;"}
       %span (
-      %span#db_margin{style: "font-weight:bold;"}= CompanyConfig.first.try(:sup_internal_part_profit_margin).to_f
+      %span#db_margin{style: "font-weight:bold;"}= CompanyConfig.first.try(:sup_external_job_profit_margin).to_f
       %span )
-      %span %
-    .col-md-5
-      .below_margine_total_internal_margin_price
-      = hidden_field_tag :estimate_low_margin
-  %hr
 
-  .row
-    .col-md-3
-      = f.input :advance_payment_amount, input_html: {min: "0", class: "only_float", value: 0}
-
-  .row
-    .col-md-5
-      = f.input :note, input_html: {value: nil}
+    .col-md-12
+      = f.input :note
       = simple_format estimation.note
 
   .row{style: "margin-bottom:10px;"}
