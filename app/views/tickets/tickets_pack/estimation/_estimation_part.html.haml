@@ -55,13 +55,13 @@
           #{estimation_part.ticket_spare_part.ticket_spare_part_store.try(:inventory_product).try(:inventory_unit).try(:unit)}
           %br/
 
-    - if ticket_estimation_additional.ticket_estimation_part_taxes.present?
+    - if estimation_part.ticket_estimation_part_taxes.present?
       .panel-group
         .panel.panel-success
           .panel-heading Taxes
           .panel-body.tax_wrapper
             .row
-              - ticket_estimation_additional.ticket_estimation_part_taxes.each do |part_tax|
+              - estimation_part.ticket_estimation_part_taxes.each do |part_tax|
                 .col-md-4
                   %strong Tax:
                   = part_tax.tax.tax
