@@ -337,27 +337,27 @@ class InsertInitialValues < ActiveRecord::Migration
       execute("insert into mst_spt_extra_remark (extra_remark) values ('#{value[0]}')")
     end
 
-    [
-      ["RQT", "Requested", "1", "1", "1", "1"],
-      ["ORD", "Ordered from Manufacturer", "2", "0", "3", "0"],
-      ["CLT", "Collected from Manufacturer", "3", "0", "3", "0"],
-      ["RCS", "Received from Manufacturer", "4", "0", "3", "0"],
-      ["ISS", "Issued", "5", "4", "6", "4"],
-      ["RCE", "Received by Engineer", "6", "5", "7", "5"],
-      ["RTN", "Part Return by Engineer", "7", "6", "0", "6"],
-      ["RPR", "Returned Part Reject", "8", "7", "0", "7"],
-      ["RPA", "Returned Part Accepted", "8", "7", "0", "7"],
-      ["BND", "Part Bundled", "10", "0", "0", "0"],
-      ["CLS", "Close", "11", "8", "8", "8"],
-      ["ECM", "Estimation Completed", "0", "0", "2", "0"],
-      ["CEA", "Cus. Estimation Approved", "0", "0", "3", "0"],
-      ["STR", "Request from Store", "0", "2", "4", "2"],
-      ["APS", "Approved Store Request", "0", "3", "5", "3"],
-      ["RJS", "Reject Store Request", "0", "3", "5", "3"],
-      ["RBN", "Ready to Bundle", "9", "0", "0", "0"]
-    ].each do |value|
-      execute("insert into mst_spt_spare_part_status_action (code, name, manufacture_type_index, store_nc_type_index, store_ch_type_index, on_loan_type_index) values ('#{value[0]}', '#{value[1]}', '#{value[2]}', '#{value[3]}', '#{value[4]}', '#{value[5]}')")
-    end
+    # [
+    #   ["RQT", "Requested", "1", "1", "1", "1"],
+    #   ["ORD", "Ordered from Manufacturer", "2", "0", "3", "0"],
+    #   ["CLT", "Collected from Manufacturer", "3", "0", "3", "0"],
+    #   ["RCS", "Received from Manufacturer", "4", "0", "3", "0"],
+    #   ["ISS", "Issued", "5", "4", "6", "4"],
+    #   ["RCE", "Received by Engineer", "6", "5", "7", "5"],
+    #   ["RTN", "Part Return by Engineer", "7", "6", "0", "6"],
+    #   ["RPR", "Returned Part Reject", "8", "7", "0", "7"],
+    #   ["RPA", "Returned Part Accepted", "8", "7", "0", "7"],
+    #   ["BND", "Part Bundled", "10", "0", "0", "0"],
+    #   ["CLS", "Close", "11", "8", "8", "8"],
+    #   ["ECM", "Estimation Completed", "0", "0", "2", "0"],
+    #   ["CEA", "Cus. Estimation Approved", "0", "0", "3", "0"],
+    #   ["STR", "Request from Store", "0", "2", "4", "2"],
+    #   ["APS", "Approved Store Request", "0", "3", "5", "3"],
+    #   ["RJS", "Reject Store Request", "0", "3", "5", "3"],
+    #   ["RBN", "Ready to Bundle", "9", "0", "0", "0"]
+    # ].each do |value|
+    #   execute("insert into mst_spt_spare_part_status_action (code, name, manufacture_type_index, store_nc_type_index, store_ch_type_index, on_loan_type_index) values ('#{value[0]}', '#{value[1]}', '#{value[2]}', '#{value[3]}', '#{value[4]}', '#{value[5]}')")
+    # end
 
     [
       ["ML", "Email"],

@@ -546,11 +546,14 @@ class InvoicesController < ApplicationController
   def update_inform_customer
     TaskAction
     @ticket = Ticket.find params[:ticket_id]
-    @ticket.contact_person1
 
+    #Action 61 - Inform Customer
     user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(61).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
     user_ticket_action.build_inform_customer(inform_customer_params)
     user_ticket_action.save
+
+    flash[:notice] = "Successfully saved."
+    redirect_to todos_url
   end
 
   private

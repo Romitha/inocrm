@@ -1,5 +1,5 @@
 - TaskAction
-= simple_form_for InformCustomer.new, url: update_inform_customer_invoices_path, method: :post, remote: true do |f|
+= simple_form_for InformCustomer.new, url: update_inform_customer_invoices_path, method: :post do |f|
   = hidden_field_tag :ticket_id, @ticket.id
   .col-md-4
     %strong Informed by:
@@ -26,7 +26,7 @@
         .row
           .col-md-4
             %address
-              %strong= i.contact_type.name
+              %strong= i.ticket_contact_type.name
               %br
               = i.contact_address
           .col-md-8

@@ -1493,6 +1493,7 @@ class TicketsController < ApplicationController
     TicketEstimation
     Tax
     Grn
+    Organization
     ticket_id = params[:ticket_id]
     @ticket = Ticket.find_by_id ticket_id
     @product = @ticket.products.first
