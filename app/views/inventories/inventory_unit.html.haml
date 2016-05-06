@@ -3,8 +3,8 @@
   .row
     .col-md-3
       = u.input :unit
-    .col-md-3
-      = u.input :base_unit_id
+    / .col-md-3
+    /   = u.input :base_unit_id
     .col-md-3
       = u.input :base_unit_conversion
     .col-md-3
@@ -13,5 +13,45 @@
     .col-md-6
       = u.input :description
   .row
-    .col-md-6{style: "margin-top:20px;"}
+    .col-md-6{style: "margin-top:20px;margin-bottom:20px;"}
       = u.submit "Save", class: "btn btn-success pull-right", id: "submit_new_inventory_unit"
+#accordion.panel-group
+  - @inventory_unit_all.each_with_index do |inv_unit, index|
+    .panel.panel-primary
+      .panel-heading
+        %h3.panel-title
+          %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
+            #{index+1} Unit : #{inv_unit.unit}
+          - unless inv_unit.is_used_anywhere?
+            = link_to delete_inventory_unit_admins_path(unit_id: inv_unit.id),  :data => { :confirm => 'Are you sure?' } do
+              %span.glyphicon.glyphicon-trash
+
+      .panel-collapse.collapse.in{:id => "#{index}"}
+        .panel-body
+          .row.col-md-12{style: "margin-bottom:20px;"}
+            .col-md-1
+              %strong Unit:
+            .col-md-4
+              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "inventory_unit", name: "unit", url: inline_update_inventory_unit_admins_path(unit_id: inv_unit.id), "original-title" => "Update Inventory Unit code", value: ""}, style: "line-height: 6px;" do
+                = inv_unit.unit
+            .col-md-2
+              %strong Base unit conversion:
+            .col-md-3
+              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "inventory_unit", name: "base_unit_conversion", url: inline_update_inventory_unit_admins_path(unit_id: inv_unit.id), "original-title" => "Update Inventory Unit code", value: ""}, style: "line-height: 6px;" do
+                = inv_unit.base_unit_conversion
+          .row.col-md-12
+            .col-md-2
+              %strong Per base unit:
+            .col-md-4
+              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "inventory_unit", name: "per_base_unit", url: inline_update_inventory_unit_admins_path(unit_id: inv_unit.id), "original-title" => "Update Inventory Unit code"} do
+                = inv_unit.per_base_unit && "Yes" || "No"
+                / .col-md-2
+                /   %strong Per base unit:
+                / .col-md-2
+                /   / = link_to class: "inline_edit load_style", data: {type: "checkbox", resource: "inventory_unit", name: "per_base_unit", url: inline_update_inventory_unit_admins_path(unit_id: inv_unit.id), "original-title" => "Update Inventory Unit code", value: ""}, style: "line-height: 6px;" do
+                /   per base unit
+            .col-md-2
+              %strong Description:
+            .col-md-3
+              = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "inventory_rack", name: "description", url: inline_update_inventory_unit_admins_path(unit_id: inv_unit.id), "original-title" => "Update Inventory Unit code", value: ""}, style: "line-height: 6px;" do
+                = inv_unit.description

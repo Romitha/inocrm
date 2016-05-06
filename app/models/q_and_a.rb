@@ -9,6 +9,10 @@ class QAndA < ActiveRecord::Base
   accepts_nested_attributes_for :q_and_answers, allow_destroy: true
 
   validates_presence_of :question
+
+  def is_used_anywhere?
+    problem_category.present? or task_action.present? or q_and_answers.any? or tickets.any?
+  end
 end
 
 class QAndAnswer < ActiveRecord::Base
@@ -29,6 +33,10 @@ class GeQAndA < ActiveRecord::Base
 
   has_many :ge_q_and_answers, foreign_key: :general_question_id
   accepts_nested_attributes_for :ge_q_and_answers, allow_destroy: true
+
+  def is_used_anywhere?
+    task_action.present? or ge_q_and_answers.any?
+  end
 end
 
 class GeQAndAnswer < ActiveRecord::Base
