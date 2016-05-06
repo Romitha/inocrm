@@ -3933,8 +3933,6 @@ class TicketsController < ApplicationController
         request_spare_part_id = @ticket_spare_part.id
 
         if @ticket_spare_part.request_from == "M"
-
-          # @ticket_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code("RQT").id        
           @ticket_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code("MPR").id unless @ticket_spare_part.cus_chargeable_part
           action_id = TaskAction.find_by_action_no(14).id
           @ticket_spare_part.create_ticket_spare_part_manufacture(payment_expected_manufacture: 0, manufacture_currency_id: @ticket_spare_part.ticket.manufacture_currency_id)

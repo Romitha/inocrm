@@ -81,45 +81,46 @@
         - unless t.object.ticket_spare_part.ticket_spare_part_manufacture.present?
           .col-md-8.head_estimated_price_class
             .row
-              .col-md-10
-                = t.association :supplier, input_html: {class: "est_internal_supplier"}
-              .col-md-3
-                = t.input :cost_price, input_html: {min: "0", class: "est_internal_cost_price only_float", oninput: "Inventories.calculate_internal_cost_price();"}, label: false, placeholder: "Cost price"
-                .append_cost_price_internal.hide
-              .col-md-3
-                = t.input :estimated_price, input_html: {min: "0", class: "est_internal_estimated_price est_estimated_amount only_float", oninput: "Inventories.calculate_internal_cost_price();"}, label: false, placeholder: "entimated price"
-                .append_estimated_price_internal.hide
-              .col-md-4
-                = t.input :warranty_period, input_html: {min: "0", class: "est_internal_warranty only_float"}, label: false, placeholder: "Warranty period in months"
               .col-md-2
-                %strong Profit:
-                %span.append_profit_margin_internal{style: "font-weight:bold;"}
-              .col-md-4
-                .below_margine_append_profit_margin_internal
+                = t.association :supplier, input_html: {class: "est_internal_supplier"}
+              .col-md-2
+                = t.input :cost_price, as: :string, input_html: {class: "value_class only_float", oninput: "Inventories.calculate_cost_price(this);"}
+                .append_cost_price.hide
+                  = t.object.cost_price.to_f
+              .col-md-2
+                = t.input :estimated_price, as: :string, input_html: {class: "estimation_value only_float", oninput: "Inventories.calculate_cost_price(this);"}, label: "Est. price"
+                .append_estimated_price.hide
+                  = t.object.estimated_price.to_f
+              .col-md-3
+                = t.input :warranty_period, input_html: {class: "only_float"}, label: "Warranty (in months)"
+              .col-md-2
+                %strong Profit (%):
+                .append_profit_margin{style: "font-weight:bold;font-size:125%;"}
 
-            .col-md-12
-              .col-md-1
-              .col-md-11
-                = t.simple_fields_for :ticket_estimation_part_taxes do |ee|
+            .panel-group
+              .panel.panel-success
+                .panel-heading Taxes
+                .panel-body.tax_wrapper
+                  = t.simple_fields_for :ticket_estimation_part_taxes do |ee|
 
-                  .row.parent_class_set
-                    .add_sign.col-md-3{style: "padding-top:2.5%;"}
-                      = ee.link_to_remove class: "remove_c_t_v_link" do
-                        %span.glyphicon.glyphicon-remove-sign
+                    .row.parent_class_set
+                      .add_sign.col-md-3{style: "padding-top:2.5%;"}
+                        = ee.link_to_remove class: "remove_c_t_v_link" do
+                          %span.glyphicon.glyphicon-remove-sign
 
-                    .col-md-3
-                      = label_tag "Tax"
-                      %br/
-                      = ee.select :tax_id, Tax.all.map{|p| ["#{p.tax} (#{p.tax_rates.find_by_active(true).try(:rate).to_f}%)", p.id, {"data-default-amount" => p.tax_rates.find_by_active(true).try(:rate).to_f}]}, {include_blank: true}, {class: "payment_item_select tax_rate_calculation", onchange: "Inventories.payment_amount_select(this); return false;"}
+                      .col-md-3
+                        = label_tag "Tax"
+                        %br/
+                        = ee.select :tax_id, Tax.all.map{|p| ["#{p.tax} (#{p.tax_rates.find_by_active(true).try(:rate).to_f}%)", p.id, {"data-default-amount" => p.tax_rates.find_by_active(true).try(:rate).to_f}]}, {include_blank: true}, {class: "payment_item_select tax_rate_calculation", onchange: "Inventories.payment_amount_select(this); return false;"}
 
-                    .col-md-4
-                      = ee.input :estimated_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class"}
-                    .col-md-4
-                      = ee.input :tax_rate,  as: :hidden, input_html: {id: "tax_rate_hidden_field_id", class: "payment_item_value"}
+                      .col-md-4
+                        = ee.input :estimated_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class"}
+                      .col-md-4
+                        = ee.input :tax_rate,  as: :hidden, input_html: {id: "tax_rate_hidden_field_id", class: "payment_item_value"}
 
-                = t.link_to_add :ticket_estimation_part_taxes, class: "small_scale_padding-right2" do
-                  %span.glyphicon.glyphicon-plus-sign
-                  Add tax
+                  = t.link_to_add :ticket_estimation_part_taxes, class: "small_scale_padding-right2" do
+                    %span.glyphicon.glyphicon-plus-sign
+                    Add tax
 
 
   .row
