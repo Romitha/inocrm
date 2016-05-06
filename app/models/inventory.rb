@@ -35,7 +35,7 @@ class InventoryProduct < ActiveRecord::Base
   validates_presence_of :description
 
   def is_used_anywhere?
-    inventories or inventory_serial_items or inventory_product_info or ticket_spare_part_stores or grn_items or inventory_serial_parts or ticket_spare_part_non_stocks or approved_ticket_spare_part_non_stocks.any?
+    inventory_category3.present? or inventories.any? or inventory_unit.present? or inventory_serial_items.any? or inventory_product_info.present? or ticket_spare_part_stores.any? or grn_items.any? or inventory_serial_parts.any? or inventory_serial_items.any? or ticket_spare_part_non_stocks.any? or approved_ticket_spare_part_non_stocks.any?
   end
 
   def generated_item_code
@@ -107,6 +107,10 @@ class Manufacture < ActiveRecord::Base
 
   has_one :inventory_product_info, foreign_key: :manufacture_id
 
+  def is_used_anywhere?
+    inventory_product_info.present?
+  end
+
 end
 
 class InventoryUnit < ActiveRecord::Base
@@ -114,6 +118,10 @@ class InventoryUnit < ActiveRecord::Base
 
   has_many :inventory_products, foreign_key: :unit_id
   has_many :inventory_product_infos
+
+  def is_used_anywhere?
+    inventory_products.any? or inventory_product_infos.any?
+  end
 
 end
 
@@ -187,6 +195,10 @@ class ProductCondition < ActiveRecord::Base
 
   has_many :inventory_serial_items
   has_many :inventory_serial_parts
+
+  def is_used_anywhere?
+    inventory_serial_items.any? or inventory_serial_parts.any?
+  end
 
 end
 
@@ -309,8 +321,24 @@ end
 
 class InventoryDisposalMethod < ActiveRecord::Base
   self.table_name = "mst_inv_disposal_method"
+
+  belongs_to :user, foreign_key: :created_by
+  belongs_to :user, foreign_key: :updated_by
+  has_many :inventory_damages, foreign_key: :disposal_method_id
+  has_many :inventory_requests, foreign_key: :disposal_method_id
+
+  def is_used_anywhere?
+    user or inventory_damages.any? or inventory_requests.any?
+  end
+
 end
 
 class InventoryDamage < ActiveRecord::Base
   self.table_name = "inv_damage"
+  belongs_to :inventory_disposal_method
+end
+
+class InventoryRequest < ActiveRecord::Base
+  self.table_name = "inv_disposal_request"
+  belongs_to :inventory_disposal_method
 end

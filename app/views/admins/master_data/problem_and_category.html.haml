@@ -1,0 +1,67 @@
+= simple_form_for @problem_category, url: update_problem_and_category_admins_path do |f|
+  .row
+    .col-md-4
+      = f.label "Problem category:"
+      = f.select :problem_category_id, ProblemCategory.all.uniq{|a| a.id}.map{|a| [a.name, a.id]}
+    .col-md-3
+      = f.input :answer_type
+    .col-md-3
+      = f.input :compulsory
+  .row
+    .col-md-3
+      = f.input :active
+    .col-md-4
+      = f.label "Action:"
+      = f.select :action_id, TaskAction.all.uniq{|a| a.id}.map{|a| [a.action_description, a.id]}
+    .col-md-3
+      = f.input :question
+  .row{style: "margin-top:20px; margin-bottom:20px;"}
+    .col-md-8
+      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_sla"
+
+#accordion.panel-group
+  - @problem_category_all.each_with_index do |problem_and_category, index|
+    .panel.panel-info
+      .panel-heading
+        %h3.panel-title
+          %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
+            #{index+1} Problem category: #{problem_and_category.problem_category.try(:name)}
+          - unless problem_and_category.is_used_anywhere?
+            = link_to delete_admin_problem_category_admins_path(problem_and_category_id: problem_and_category.id),  :data => { :confirm => 'Are you sure?' } do
+              %span.glyphicon.glyphicon-trash
+
+      .panel-collapse.collapse.in{:id => "#{index}"}
+        .panel-body
+          .row.col-md-12
+            .col-md-2
+              %strong Problem category:
+            .col-md-4
+              = link_to "#", class: "inline_edit", data: {type: "select", source: ProblemCategory.all.collect{|p| {value: p.id, text: p.name}}, resource: "q_and_a", name: "problem_category_id", url: inline_update_problem_and_category_admins_path(problem_and_category_id: problem_and_category.id), "original-title" => "Update problem and category"} do
+                = problem_and_category.problem_category.try(:name)
+            .col-md-2
+              %strong Answer type:
+            .col-md-4
+              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "q_and_a", name: "answer_type", url: inline_update_problem_and_category_admins_path(problem_and_category_id: problem_and_category.id), "original-title" => "Update problem and category", value: ""}, style: "line-height: 6px;" do
+                = problem_and_category.answer_type
+          .row.col-md-12
+            .col-md-1
+              %strong Active:
+            .col-md-5
+              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "q_and_a", name: "active", url: inline_update_problem_and_category_admins_path(problem_and_category_id: problem_and_category.id), "original-title" => "Update problem and category"} do
+                = problem_and_category.active && "Yes" || "No"
+            .col-md-1
+              %strong Compulsory:
+            .col-md-5
+              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "q_and_a", name: "compulsory", url: inline_update_problem_and_category_admins_path(problem_and_category_id: problem_and_category.id), "original-title" => "Update problem and category"} do
+                = problem_and_category.compulsory && "Yes" || "No"
+          .row.col-md-12
+            .col-md-1
+              %strong Action:
+            .col-md-5
+              = link_to "#", class: "inline_edit", data: {type: "select", source: TaskAction.all.collect{|a| {value: a.id, text: a.action_description}}, resource: "q_and_a", name: "action_id", url: inline_update_problem_and_category_admins_path(problem_and_category_id: problem_and_category.id), "original-title" => "Update problem and category"} do
+                = problem_and_category.task_action.try(:action_description)
+            .col-md-1
+              %strong Question:
+            .col-md-5
+              = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "q_and_a", name: "question", url: inline_update_problem_and_category_admins_path(problem_and_category_id: problem_and_category.id), "original-title" => "Update problem and category", value: ""}, style: "line-height: 6px;" do
+                = problem_and_category.question

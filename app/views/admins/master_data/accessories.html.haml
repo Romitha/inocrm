@@ -1,14 +1,35 @@
 = simple_form_for @accessory, url: update_accessories_admins_path do |f|
   .row
+    %ul
+      - @accessory.errors.full_messages.each do |error|
+        %li= error
     .col-md-6
       = f.input :accessory, input_html: {rows: 1}
-  .row{style: "margin-top:20px;"}
+  .row{style: "margin-top:20px; margin-bottom:20px;"}
     .col-md-6
       = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_accessory"
 
 
 
+#accordion.panel-group
+  - @accessory_all.each_with_index do |accessory, index|
+    .panel.panel-info
+      .panel-heading
+        %h3.panel-title
+          %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
+            #{index+1} Accessory : #{accessory.accessory}
+          - unless accessory.is_used_anywhere?
+            = link_to delete_admin_accessory_admins_path(accessory_id: accessory.id),  :data => { :confirm => 'Are you sure?' } do
+              %span.glyphicon.glyphicon-trash
 
+      .panel-collapse.collapse.in{:id => "#{index}"}
+        .panel-body
+          .row.col-md-12
+            .col-md-1
+              %strong Accessory:
+            .col-md-4
+              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "accessory", name: "accessory", url: inline_update_admin_accessory_admins_path(accessory_id: accessory.id), "original-title" => "Update Inventory Unit code", value: ""}, style: "line-height: 6px;" do
+                = accessory.accessory
 
 
 

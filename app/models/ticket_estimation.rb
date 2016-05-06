@@ -106,6 +106,10 @@ class AdditionalCharge < ActiveRecord::Base
 
   has_many :ticket_estimation_additionals, foreign_key: :additional_charge_id
 
+  def is_used_anywhere?
+    ticket_estimation_additionals.any?
+  end
+
 end
 
 class TicketPaymentReceived < ActiveRecord::Base

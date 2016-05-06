@@ -6,7 +6,27 @@
     .col-md-6
       = m.input :created_by,  as: :hidden, input_html: {value: current_user.id}
       = m.input :updated_by,  as: :hidden, input_html: {value: current_user.id}
-  .row{style: "margin-top:20px;"}
+  .row{style: "margin-top:20px;margin-bottom:20px;"}
     .col-md-6
       = m.submit "Save", class: "btn btn-success pull-right", id: "submit_new_inventory_manufacture"
+
+#accordion.panel-group
+  - @inventory_manufacture_all.each_with_index do |maf, index|
+    .panel.panel-primary
+      .panel-heading
+        %h3.panel-title
+          %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
+            #{index+1} manufacture : #{maf.manufacture}
+          - unless maf.is_used_anywhere?
+            = link_to delete_inventory_manufacture_admins_path(manufacture_id: maf.id),  :data => { :confirm => 'Are you sure?' } do
+              %span.glyphicon.glyphicon-trash
+
+      .panel-collapse.collapse.in{:id => "#{index}"}
+        .panel-body
+          .row.col-md-12
+            .col-md-2
+              %strong Manufacture:
+            .col-md-4
+              = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "manufacture", name: "manufacture", url: inline_update_inventory_manufacture_admins_path(manufacture_id: maf.id), "original-title" => "Update rack description", value: ""}, style: "line-height: 6px;" do
+                = maf.manufacture
 

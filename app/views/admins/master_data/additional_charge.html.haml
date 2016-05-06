@@ -9,6 +9,36 @@
   .row
     .col-md-6
       = f.input :default_estimated_price
-  .row{style: "margin-top:20px;"}
+  .row{style: "margin-top:20px; margin-bottom:20px;"}
     .col-md-6
       = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_additional_charge"
+
+#accordion.panel-group
+  - @additional_charge_all.each_with_index do |add_charge, index|
+    .panel.panel-info
+      .panel-heading
+        %h3.panel-title
+          %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
+            Additional Charge : #{add_charge.additional_charge}
+            - unless add_charge.is_used_anywhere?
+              = link_to delete_admin_additional_charge_admins_path(add_charge_id: add_charge.id),  :data => { :confirm => 'Are you sure?' } do
+                %span.glyphicon.glyphicon-trash
+      .panel-collapse.collapse.in{:id => "#{index}"}
+        .panel-body
+          .row.col-md-12
+            .col-md-2
+              %strong Additional Charge:
+            .col-md-4
+              = link_to "#", class: "inline_edit", data: {type: "text", resource: "additional_charge", name: "additional_charge", url:inline_update_admin_additional_charge_admins_path(add_charge_id: add_charge.id), "original-title" => "Update Additional Charge", value: ""}, style: "line-height: 6px;" do
+                = add_charge.additional_charge
+          .row.col-md-12
+            .col-md-2
+              %strong Default cost price:
+            .col-md-4
+              = link_to "#", class: "inline_edit", data: {type: "text", resource: "additional_charge", name: "default_cost_price", url:inline_update_admin_additional_charge_admins_path(add_charge_id: add_charge.id), "original-title" => "Update Additional Charge", value: ""}, style: "line-height: 6px;" do
+                = add_charge.default_cost_price
+            .col-md-3
+              %strong Default estimated price:
+            .col-md-3
+              = link_to "#", class: "inline_edit", data: {type: "text", resource: "additional_charge", name: "default_estimated_price", url:inline_update_admin_additional_charge_admins_path(add_charge_id: add_charge.id), "original-title" => "Update Additional Charge", value: ""}, style: "line-height: 6px;" do
+                = add_charge.default_estimated_price

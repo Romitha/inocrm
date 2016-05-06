@@ -133,6 +133,10 @@ class MstTitle < ActiveRecord::Base
   self.table_name = "mst_title"
   has_one :user, foreign_key: :title_id
   has_one :customer, foreign_key: :title_id
+
+  def is_used_anywhere?
+    user.present? or customer.present?
+  end
 end
 
 class Customer < ActiveRecord::Base
@@ -221,6 +225,10 @@ class SbuRegionalEngineer < ActiveRecord::Base
 
   belongs_to :regional_support_center
   belongs_to :engineer, class_name: "User", foreign_key: :engineer_id
+
+  def is_used_anywhere?
+    engineer.present? or regional_support_center.present?
+  end
 end
 
 class SbuEngineer < ActiveRecord::Base
@@ -228,6 +236,10 @@ class SbuEngineer < ActiveRecord::Base
 
   belongs_to :sbu, foreign_key: :sbu_id
   belongs_to :engineer, class_name: "User", foreign_key: :engineer_id
+
+  def is_used_anywhere?
+    engineer.present?
+  end
 end
 
 class Sbu < ActiveRecord::Base
@@ -236,6 +248,10 @@ class Sbu < ActiveRecord::Base
   has_many :sbu_engineers, foreign_key: :sbu_id
   accepts_nested_attributes_for :sbu_engineers, allow_destroy: true
   has_many :engineers, through: :sbu_engineers, source: :engineer
+
+  def is_used_anywhere?
+    sbu_engineers.any? or engineers.any?
+  end
 
 # class Pet < ActiveRecord::Base
 #   has_many :dogs
@@ -268,6 +284,11 @@ class Feedback < ActiveRecord::Base
   self.table_name = "mst_spt_customer_feedback"
 
   has_many :customer_feedbacks#, foreign_key: :engineer_id
+
+  def is_used_anywhere?
+    Invoice
+    customer_feedbacks.any?
+  end
 end
 
 class TicketEngineer < ActiveRecord::Base

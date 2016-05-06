@@ -301,6 +301,10 @@ class TicketStartAction < ActiveRecord::Base
   has_many :tickets, foreign_key: :job_started_action_id
   accepts_nested_attributes_for :tickets, allow_destroy: true
 
+  def is_used_anywhere?
+    tickets.any?
+  end
+
 end
 
 class TicketRepairType < ActiveRecord::Base
@@ -355,6 +359,10 @@ class Reason < ActiveRecord::Base
   has_many :act_terminate_job_payments, foreign_key: :adjust_reason_id
 
   has_many :act_ticket_close_approves
+
+  def is_used_anywhere?
+    tickets.any? or ticket_re_assign_requests.any? or ticket_terminate_jobs.any? or act_holds.any? or unused_reasons.any? or part_terminated_reasons.any? or return_part_damage_reasons.any? or on_loan_unused_reasons.any? or on_loan_part_terminated_reasons.any? or reject_return_part_reasons.any? or action_warranty_extends.any? or act_terminate_job_payments.any? or act_ticket_close_approves.any?
+  end
 end
 
 class TicketReAssignRequest < ActiveRecord::Base

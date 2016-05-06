@@ -15,10 +15,15 @@
       .panel-heading
         %h3.panel-title
           %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
-            / #{disposal.disposal_method}
-            inventory disposal method #{index+1} : #{disposal.disposal_method}
+            #{index+1} inventory disposal method: #{disposal.disposal_method}
+          - unless disposal.is_used_anywhere?
+            = link_to delete_disposal_method_admins_path(disposal_id: disposal.id),  :data => { :confirm => 'Are you sure?' } do
+              %span.glyphicon.glyphicon-trash
       .panel-collapse.collapse.in{:id => "#{index}"}
         .panel-body
           .row.col-md-12
-            = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "inventory_disposal_method", name: "disposal_method", url:inline_update_disposal_method_admins_path(disposal_method: disposal.id), "original-title" => "Update disposal method", value: ""}, style: "line-height: 6px;" do
-              = disposal.disposal_method
+            .col-md-2
+              %strong disposal method:
+            .col-md-6
+              = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "inventory_disposal_method", name: "disposal_method", url:inline_update_disposal_method_admins_path(disposal_method: disposal.id), "original-title" => "Update disposal method", value: ""}, style: "line-height: 6px;" do
+                = disposal.disposal_method

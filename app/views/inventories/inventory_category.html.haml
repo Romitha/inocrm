@@ -1,5 +1,5 @@
 %h3 Inventory Category
-= simple_nested_form_for @inventory_category1, url: update_inventory_location_admins_path do |c1|
+= simple_nested_form_for @inventory_category1, url: update_inventory_category_admins_path do |c1|
   .panel.panel-info
     .panel-heading
       %h3.panel-title Brand
@@ -71,63 +71,62 @@
       .panel-heading
         %h3.panel-title
           %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
-            Brand : #{brand.name}
+            Brand: #{brand.name}
+          - unless brand.is_used_anywhere?
+            = link_to delete_inventory_brand_admins_path(brand_id: brand.id),  :data => { :confirm => 'Are you sure?' } do
+              %span.glyphicon.glyphicon-trash
       .panel-collapse.collapse.in{:id => "#{index}"}
         .panel-body
           .row.col-md-12
             .col-md-2
               %strong Brand Code:
-            .col-md-10
+            .col-md-4
               = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "inventory_category1", name: "code", url: inline_update_inventory_brand_admins_path(brand_id: brand.id), "original-title" => "Update brand code", value: ""}, style: "line-height: 6px;" do
                 = brand.code
-          .row.col-md-12
             .col-md-2
               %strong Brand Name:
-            .col-md-10
+            .col-md-4
               = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "inventory_category1", name: "name", url: inline_update_inventory_brand_admins_path(brand_id: brand.id), "original-title" => "Update brand name", value: ""}, style: "line-height: 6px;" do
                 = brand.name
-          .row.col-md-12
-            - unless brand.is_used_anywhere?
-              = link_to 'Delete', delete_inventory_brand_admins_path(brand_id: brand.id),  :data => { :confirm => 'Are you sure?' }
           .row.col-md-12
             - brand.inventory_category2s.each do |product|
               .panel.panel-danger
                 .panel-heading
-                  %h3.panel-title Product: #{product.code}
+                  %h3.panel-title 
+                    Product: #{product.code}
+                    - unless product.is_used_anywhere?
+                      = link_to delete_inventory_product_admins_path(product_id: product.id),  :data => { :confirm => 'Are you sure?' } do
+                        %span.glyphicon.glyphicon-trash
                 .panel-body
                   .row.col-md-12
                     .col-md-2
                       %strong Product Code:
-                    .col-md-10
+                    .col-md-4
                       = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "inventory_category2", name: "code", url: inline_update_inventory_product_admins_path(product_id: product.id), "original-title" => "Update product code", value: ""}, style: "line-height: 6px;" do
                         = product.code
-                  .row.col-md-12
                     .col-md-2
                       %strong Product Name:
-                    .col-md-10
+                    .col-md-4
                       = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "inventory_category2", name: "name", url: inline_update_inventory_product_admins_path(product_id: product.id), "original-title" => "Update product name", value: ""}, style: "line-height: 6px;" do
                         = product.name
-                  .row.col-md-12
-                    - unless product.is_used_anywhere?
-                      = link_to 'Delete', delete_inventory_product_admins_path(product_id: product.id),  :data => { :confirm => 'Are you sure?' }
                   .row.col-md-12
                     - product.inventory_category3s.each do |category|
                       .panel.panel-info
                         .panel-heading
-                          %h3.panel-title Category: #{category.code}
+                          %h3.panel-title 
+                            Category: #{category.code}
+                            - unless category.is_used_anywhere?
+                              = link_to delete_inventory_category_admins_path(category_id: category.id),  :data => { :confirm => 'Are you sure?' } do
+                                %span.glyphicon.glyphicon-trash
                         .panel-body
                           .row.col-md-12
                             .col-md-2
                               %strong Category Code:
-                            .col-md-10
+                            .col-md-4
                               = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "inventory_category3", name: "code", url: inline_update_inventory_category_admins_path(category_id: category.id), "original-title" => "Update category code", value: ""}, style: "line-height: 6px;" do
                                 = category.code
-                          .row.col-md-12
                             .col-md-2
                               %strong Category Name:
-                            .col-md-10
+                            .col-md-4
                               = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "inventory_category3", name: "name", url: inline_update_inventory_category_admins_path(category_id: category.id), "original-title" => "Update category name", value: ""}, style: "line-height: 6px;" do
                                 = category.name
-                          .row.col-md-12
-                            - unless category.is_used_anywhere?
-                              = link_to 'Delete', delete_inventory_category_admins_path(category_id: category.id),  :data => { :confirm => 'Are you sure?' }

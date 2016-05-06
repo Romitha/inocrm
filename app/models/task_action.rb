@@ -141,6 +141,11 @@ class RegionalSupportCenter < ActiveRecord::Base
   has_many :sbu_regional_engineers#, foreign_key: :regional_support_center_id
   accepts_nested_attributes_for :sbu_regional_engineers, allow_destroy: true
   has_many :engineers, through: :sbu_regional_engineers
+
+  def is_used_anywhere?
+    User
+    assign_regional_support_centers.any? or sbu_regional_engineers.any? or engineers.any? or organization.present?
+  end
 end
 
 class HpCase < ActiveRecord::Base
@@ -188,6 +193,9 @@ class PaymentItem < ActiveRecord::Base
 
   has_many :act_terminate_job_payments, foreign_key: :payment_item_id
   accepts_nested_attributes_for :act_terminate_job_payments, allow_destroy: true
+  def is_used_anywhere?
+    act_terminate_job_payments.any?
+  end
 end
 
 class ActHold < ActiveRecord::Base

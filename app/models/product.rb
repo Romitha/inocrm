@@ -37,10 +37,15 @@ class ProductBrand < ActiveRecord::Base
   validates_presence_of [:name, :sla_time, :parts_return_days, :currency_id]
   belongs_to :currency, foreign_key: :currency_id
   belongs_to :sla_time, foreign_key: :sla_id
+  belongs_to :organization, foreign_key: :organization_id
 
   validates_uniqueness_of :name
 
   validates_numericality_of [:parts_return_days]
+
+  def is_used_anywhere?
+    products.any? or product_categories.any? or return_parts_bundles.any? or currency.present? or sla_time.present?
+  end
 end
 
 class ProductCategory < ActiveRecord::Base
@@ -52,6 +57,10 @@ class ProductCategory < ActiveRecord::Base
   belongs_to :sla_time, foreign_key: :sla_id
 
   validates_presence_of [:product_brand_id, :name]
+
+  def is_used_anywhere?
+    products.any? or product_brand.present? or sla_time.present?
+  end
 end
 
 class ProductPopStatus < ActiveRecord::Base
@@ -67,6 +76,10 @@ class ProductSoldCountry < ActiveRecord::Base
 
   has_many :inventory_product_info, foreign_key: :country_id
 
+  def is_used_anywhere
+    products.any? or inventory_product_info.present?
+  end
+
 
 end
 
@@ -77,11 +90,16 @@ class InvSerialItem < ActiveRecord::Base
 end
 
 class Accessory < ActiveRecord::Base
+  Ticket
   self.table_name = "mst_spt_accessory"
 
   validates :accessory, presence: true, uniqueness: true
   has_many :ticket_accessories, foreign_key: :accessory_id
   has_many :tickets, through: :ticket_accessories
+
+  def is_used_anywhere?
+    ticket_accessories.any? or tickets.any? 
+  end
 end
 
 # class RepairType < ActiveRecord::Base
