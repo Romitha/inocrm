@@ -73,6 +73,7 @@ class AddModification1ToTable < ActiveRecord::Migration
 
     rename_column :spt_ticket_spare_part_store, :store_issued, :issued
     rename_column :spt_ticket_spare_part_store, :store_issued_at, :issued_at
+    # rename_column :spt_ticket_spare_part_store, :store_issued_by, :issued_by #unable to change. because it is indexed
     rename_column :spt_ticket_on_loan_spare_part, :isssued_at, :issued_at
 
     add_column :inv_damage, :grn_serial_part_id, "INT UNSIGNED NULL DEFAULT NULL"
