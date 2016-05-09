@@ -27,7 +27,7 @@ class AddConstraintNameToTables < ActiveRecord::Migration
       {constraint_name: "fk_spt_ticket_spare_part_store_spt_ticket_spare_part1", foreign_key: "spare_part_id", reference_table: "spt_ticket_spare_part"},
       {constraint_name: "fk_spt_ticket_spare_part_users111", foreign_key: "store_requested_by", reference_table: "users"},
       {constraint_name: "fk_spt_ticket_spare_part_users121", foreign_key: "store_request_approved_by", reference_table: "users"},
-      {constraint_name: "fk_spt_ticket_spare_part_users131", foreign_key: "store_issued_by", reference_table: "users"}
+      {constraint_name: "fk_spt_ticket_spare_part_users131", foreign_key: "issued_by", reference_table: "users"}
     ].each do |attr|
       execute "ALTER TABLE `spt_ticket_spare_part_store` ADD CONSTRAINT `#{attr[:constraint_name]}` FOREIGN KEY (`#{attr[:foreign_key]}`) REFERENCES `#{attr[:reference_table]}` (`id`)"
     end
