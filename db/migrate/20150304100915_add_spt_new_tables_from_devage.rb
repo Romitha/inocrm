@@ -744,7 +744,8 @@ class AddSptNewTablesFromDevage < ActiveRecord::Migration
       t.column :approved_inv_product_id, "int(10) UNSIGNED"
       t.boolean :store_issued, null: false, default: false
       t.datetime :store_issued_at
-      t.column :store_issued_by, "int(10) UNSIGNED"
+      # t.column :store_issued_by, "int(10) UNSIGNED"
+      t.column :issued_by, "int(10) UNSIGNED"
       t.column :inv_srn_id, "int(10) UNSIGNED"
       t.column :inv_srn_item_id, "int(10) UNSIGNED"
       t.column :inv_srr_id, "int(10) UNSIGNED"
