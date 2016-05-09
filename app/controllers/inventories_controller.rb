@@ -1047,7 +1047,7 @@ class InventoriesController < ApplicationController
 
               @inventory = Inventory.where(store_id: @grn_batch.grn_item.grn.store_id, product_id: @grn_batch.grn_item.product_id).order("created_at asc").first
 
-              @inventory.update stock_quantity: (@inventory.stock_quantity - 1), available_quantity: (@inventory.available_quantity - 1)
+              @inventory.update stock_quantity: (@inventory.stock_quantity - 1), available_quantity: (@inventory.available_quantity - 1) if @inventory.present?
               @issued = true
             end
 
@@ -1071,7 +1071,7 @@ class InventoriesController < ApplicationController
 
               @inventory = Inventory.where(store_id: @grn_item.grn.store_id, product_id: @grn_item.product_id).order("created_at asc").first
 
-              @inventory.update stock_quantity: (@inventory.stock_quantity - 1), available_quantity: (@inventory.available_quantity - 1)
+              @inventory.update stock_quantity: (@inventory.stock_quantity - 1), available_quantity: (@inventory.available_quantity - 1) if @inventory.present?
               @issued = true
             end
 

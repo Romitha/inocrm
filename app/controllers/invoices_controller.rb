@@ -537,8 +537,8 @@ class InvoicesController < ApplicationController
     user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(action_no).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
     user_ticket_action.build_act_print_invoice(invoice_id: @invoice.id)
     user_ticket_action.save
+    @total_estimation_amount = @ticket.ticket_estimations.where(foc_approved: false, cust_approved: true).map { |estimation| estimation.approval_required ? (estimation.ticket_estimation_externals.sum(:approved_estimated_price)+estimation.ticket_estimation_parts.sum(:approved_estimated_price)+estimation.ticket_estimation_additionals.sum(:approved_estimated_price)) : (estimation.ticket_estimation_externals.sum(:estimated_price)+estimation.ticket_estimation_parts.sum(:estimated_price)+estimation.ticket_estimation_additionals.sum(:estimated_price)) }.compact.sum
 
-    # redirect_to todos_url, notice: "Successfully updated."
     render "tickets/tickets_pack/estimate_job_final/estimate_job_final"
 
   end

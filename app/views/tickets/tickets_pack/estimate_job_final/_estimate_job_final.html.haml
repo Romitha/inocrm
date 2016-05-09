@@ -40,7 +40,7 @@
       = @total_estimation_amount
       %br/
       %strong Total payments received amount(#{ticket.ticket_currency.code}):
-      = @ticket_payment_received
+      = @ticket.ticket_payment_receiveds.sum(:amount).to_f
       %br/
       = label_tag "Payment completed"
       = check_box_tag :payment_completed, "payment completed"
