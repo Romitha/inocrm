@@ -1925,53 +1925,6 @@ class TicketsController < ApplicationController
     end
   end
 
-  def inform_customer_in_modal
-
-    TaskAction
-
-    @inform_customer = InformCustomer.new
-
-    # terminate_task_action = (params[:terminate_task_action] or session[:terminate_task_action])
-    # Inventory
-    # Grn
-    # session[:terminate_task_action] = params[:terminate_task_action]
-    # if params[:select_inventory] and (params[:inventory_id] or params[:inventory_product_id]) and session[:select_frame]
-    #   @inventory = Inventory.find params[:inventory_id] if params[:inventory_id]
-    #   @inventory_product = InventoryProduct.find params[:inventory_product_id] if params[:inventory_product_id]
-
-    #   if session[:select_frame] == "request_from"
-    #     if @inventory
-    #       session[:store_id] = @inventory.store_id
-    #       session[:inv_product_id] = @inventory.product_id
-    #     elsif @inventory_product
-    #       session[:store_id] = session[:requested_store_id]
-    #       session[:inv_product_id] = @inventory_product.id
-    #     end
-
-    #   elsif session[:select_frame] == "main_product"
-
-    #     if @inventory
-    #       session[:mst_store_id] = @inventory.store_id
-    #       session[:mst_inv_product_id] = @inventory.product_id
-    #     elsif @inventory_product
-    #       session[:mst_store_id] = session[:requested_store_id]
-    #       session[:mst_inv_product_id] = @inventory_product.id
-    #     end
-    #     # session[:mst_store_id] = @inventory.store_id
-    #     # session[:mst_inv_product_id] = @inventory.product_id
-
-    #   end
-    #   if params[:issue_part] == "true"
-    #     approved_inventory_product = (@inventory_product || @inventory.inventory_product)
-    #     if approved_inventory_product.fifo
-    #       @main_part_serial = approved_inventory_product.inventory_serial_items.includes(:inventory).where(inv_inventory: {store_id: session[:requested_store_id].to_i}, inv_status_id: InventorySerialItemStatus.find_by_code("AV").id).sort{|p, n| p.grn_items.last.grn.created_at <=> n.grn_items.last.grn.created_at}
-    #     else
-    #       @main_part_serial = approved_inventory_product.inventory_serial_items.includes(:inventory).where(inv_inventory: {store_id: session[:requested_store_id].to_i}, inv_status_id: InventorySerialItemStatus.find_by_code("AV").id).sort{|p, n| p.grn_items.last.grn.created_at <=> n.grn_items.last.grn.created_at}
-    #     end
-    #   end
-    # end
-  end
-
   def customer_advance_payment
     User
 
