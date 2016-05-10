@@ -338,11 +338,11 @@ class Reason < ActiveRecord::Base
   has_many :part_terminated_reasons, class_name: "TicketSparePart", foreign_key: :part_terminated_reason_id
   accepts_nested_attributes_for :part_terminated_reasons, allow_destroy: true
 
-  has_many :return_part_damage_reasons, class_name: "TicketSparePartStore"#, foreign_key: :part_terminated_reason_id
+  has_many :return_part_damage_reasons, class_name: "TicketSparePartStore", foreign_key: :return_part_damage_reason_id
   accepts_nested_attributes_for :return_part_damage_reasons, allow_destroy: true
 
-  has_many :return_part_damage_reasons, class_name: "TicketOnLoanSparePart"#, foreign_key: :part_terminated_reason_id
-  accepts_nested_attributes_for :return_part_damage_reasons, allow_destroy: true
+  # has_many :onloan_return_part_damage_reasons, class_name: "TicketOnLoanSparePart"#, foreign_key: :part_terminated_reason_id
+  # accepts_nested_attributes_for :return_part_damage_reasons, allow_destroy: true
 
   has_many :on_loan_unused_reasons, class_name: "TicketOnLoanSparePart", foreign_key: :unused_reason_id
   accepts_nested_attributes_for :on_loan_unused_reasons, allow_destroy: true
@@ -358,10 +358,17 @@ class Reason < ActiveRecord::Base
 
   has_many :act_terminate_job_payments, foreign_key: :adjust_reason_id
 
-  has_many :act_ticket_close_approves
+  has_many :act_ticket_close_approves, class_name: "ActTicketCloseApprove", foreign_key: :reject_reason_id
 
   def is_used_anywhere?
-    tickets.any? or ticket_re_assign_requests.any? or ticket_terminate_jobs.any? or act_holds.any? or unused_reasons.any? or part_terminated_reasons.any? or return_part_damage_reasons.any? or on_loan_unused_reasons.any? or on_loan_part_terminated_reasons.any? or reject_return_part_reasons.any? or action_warranty_extends.any? or act_terminate_job_payments.any? or act_ticket_close_approves.any?
+    TaskAction
+    TicketSparePart
+    Warranty
+
+    tickets.any? or ticket_re_assign_requests.any? or ticket_terminate_jobs.any? or act_holds.any? or unused_reasons.any? or part_terminated_reasons.any? or on_loan_unused_reasons.any? or reject_return_part_reasons.any? or act_terminate_job_payments.any? or action_warranty_extends.any? or act_ticket_close_approves.any? or return_part_damage_reasons.any?
+     # or onloan_return_part_damage_reasons.any?
+
+    # tickets.any? or ticket_re_assign_requests.any? or ticket_terminate_jobs.any? or act_holds.any? or unused_reasons.any? or part_terminated_reasons.any? or return_part_damage_reasons.any? or on_loan_unused_reasons.any? or on_loan_part_terminated_reasons.any? or reject_return_part_reasons.any? or action_warranty_extends.any? or act_terminate_job_payments.any? or act_ticket_close_approves.any?
   end
 end
 

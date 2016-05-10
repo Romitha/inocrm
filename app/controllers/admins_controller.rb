@@ -49,23 +49,44 @@ class AdminsController < ApplicationController
     render "inventories/inventory_location"
   end
 
+  # GET, POST
   def inventory_product
     Inventory
     Product
     Currency
     InventorySerialItem
-    @inventory_product1 = InventoryProduct.new
-    @inventory_product_all = InventoryProduct.all
+    if params[:create]
+      @inventory_product = InventoryProduct.new inventory_product_params
+      if @inventory_product.save
+
+        params[:create] = nil
+        @inventory_product = InventoryProduct.new
+        @inventory_product.build_inventory_product_info
+      end
+    else
+      @inventory_product = InventoryProduct.new
+      @inventory_product.build_inventory_product_info
+    end
+
+    @inventory_product_all = InventoryProduct.order(created_at: :desc).select{|i| i.persisted? }
     render "inventories/inventory_product"
   end
 
+  # POST
   def update_inventory_product
-    # Inventory
-    # Product
-    # @inventory_product_all = InventoryProduct.all
-    # @inventory_product1 = InventoryRack.new inventory_product_form_params
-    # @inventory_product1.save
-    # render "inventories/inventory_product"
+    Inventory
+    Product
+    Currency
+    InventorySerialItem
+    @inventory_product = InventoryProduct.new inventory_product_params
+    if @inventory_product.save
+      @inventory_product = InventoryProduct.new
+      @inventory_product.build_inventory_product_info
+
+    end
+
+    @inventory_product_all = InventoryProduct.all.select{|i| i.persisted? }
+    render "inventories/inventory_product"
   end
 
   def inventory_location_update
@@ -97,22 +118,45 @@ class AdminsController < ApplicationController
 
   def inventory_product_condition
     Inventory
-    @inventory_product_condition_all = ProductCondition.all
+    @inventory_product_condition_all = ProductCondition.order(created_at: :desc).select{|i| i.persisted? }
     @inventory_product_condition = ProductCondition.new
     render "inventories/inventory_product_condition"
   end
 
   def update_inventory_product_condition
+    Inventory
+
+    if params[:create]
+      @inventory_product_condition = ProductCondition.new inventory_product_condition_params
+      if @inventory_product_condition.save
+        params[:create] = nil
+        @inventory_product_condition = ProductCondition.new
+      end
+    else
+      @inventory_product_condition = ProductCondition.new
+    end
+
+    @inventory_product_condition_all = ProductCondition.order(created_at: :desc).select{|i| i.persisted? }
+    render "inventories/inventory_product_condition"
   end
 
   def inventory_disposal_method
     Inventory
     @inventory_disposal_method = InventoryDisposalMethod.new
-    @inventory_disposal_method_all = InventoryDisposalMethod.all
+    @inventory_disposal_method_all = InventoryDisposalMethod.order(created_at: :desc).select{|i| i.persisted? }
     render "inventories/inventory_disposal_method"
   end
 
   def update_inventory_disposal_method
+    Inventory
+    @inventory_disposal_method = InventoryDisposalMethod.new inventory_disposal_method_params
+    if @inventory_disposal_method.save
+      @inventory_disposal_method = InventoryDisposalMethod.new
+    end
+
+    @inventory_disposal_method_all = InventoryDisposalMethod.order(created_at: :desc).select{|i| i.persisted? }
+    render "inventories/inventory_disposal_method"
+
   end
 
   def inventory_reason
@@ -123,6 +167,14 @@ class AdminsController < ApplicationController
   end
 
   def update_inventory_reason
+    Inventory
+    @inventory_reason = InventoryReason.new inventory_reason_params
+    if @inventory_reason.save
+      @inventory_reason = InventoryReason.new
+    end
+
+    @inventory_reason_all = InventoryReason.order(created_at: :desc).select{|i| i.persisted? }
+    render "inventories/inventory_reason"
   end
 
   def inventory_manufacture
@@ -133,6 +185,14 @@ class AdminsController < ApplicationController
   end
 
   def update_inventory_manufacture
+    Inventory
+    @inventory_manufacture = Manufacture.new inventory_manufacture_params
+    if @inventory_manufacture.save
+      @inventory_manufacture = Manufacture.new
+    end
+
+    @inventory_manufacture_all = Manufacture.order(created_at: :desc).select{|i| i.persisted? }
+    render "inventories/inventory_manufacture"
 
   end
 
@@ -144,16 +204,33 @@ class AdminsController < ApplicationController
   end
 
   def update_inventory_unit
+    Inventory
+    @inventory_unit = InventoryUnit.new inventory_unit_params
+    if @inventory_unit.save
+      @inventory_unit = InventoryUnit.new
+    end
+
+    @inventory_unit_all = InventoryUnit.order(created_at: :desc).select{|i| i.persisted? }
+    render "inventories/inventory_unit"
   end
 
   def reason
     Ticket
     @reason = Reason.new
-    @reason_all = Reason.all
+    @reason_all = Reason.order(created_at: :desc).select{|i| i.persisted? }
     render "admins/master_data/reason"
   end
 
   def update_reason
+
+    Ticket
+    @reason = Reason.new admin_reason_params
+    if @reason.save
+      @reason = Reason.new
+    end
+
+    @reason_all = Reason.order(created_at: :desc).select{|i| i.persisted? }
+    render "admins/master_data/reason"
 
   end
 
@@ -226,32 +303,52 @@ class AdminsController < ApplicationController
     Product
     Ticket
     @accessory = Accessory.new
-    @accessory_all = Accessory.all
+    @accessory_all = Accessory.order(created_at: :desc).select{|i| i.persisted? }
     render "admins/master_data/accessories"
   end
 
   def update_accessories
+
     Product
     Ticket
-    @accessory_all = Accessory.all
     @accessory = Accessory.new admin_accessory_params
-    @accessory.save
+    if @accessory.save
+      @accessory = Accessory.new
+    end
+
+    @accessory_all = Accessory.order(created_at: :desc).select{|i| i.persisted? }
     render "admins/master_data/accessories"
-    # @r = Re.new reason_params
-    # @r.save
-    #   # @r.errors.full_messages.each do |error|
-    #   #   error.error
-    #   # end
+
+
+    # Product
+    # Ticket
+    # @accessory_all = Accessory.all
+    # @accessory = Accessory.new admin_accessory_params
+    # @accessory.save
+    # render "admins/master_data/accessories"
+    # # @r = Re.new reason_params
+    # # @r.save
+    # #   # @r.errors.full_messages.each do |error|
+    # #   #   error.error
+    # #   # end
   end
 
   def country
     Product
     @country = ProductSoldCountry.new
-    @country_all = ProductSoldCountry.all
+    @country_all = ProductSoldCountry.order(created_at: :desc).select{|i| i.persisted? }
     render "admins/master_data/country"
   end
 
   def update_country
+    Product
+    @country = ProductSoldCountry.new admin_country_params
+    if @country.save
+      @country = ProductSoldCountry.new
+    end
+
+    @country_all = ProductSoldCountry.order(created_at: :desc).select{|i| i.persisted? }
+    render "admins/master_data/country"
   end
 
   def additional_charge
@@ -262,60 +359,101 @@ class AdminsController < ApplicationController
   end
 
   def update_additional_charge
+
     TicketEstimation
-    @add_charge = AdditionalCharge.new admin_add_charge_params
-    if @add_charge.save
-      respond_to do |format|
-        format.html { redirect_to additional_charge_admins_path }
-      end
-    else
-      @add_charge.errors.full_messages.each do |error|
-        error.error
-      end
+    @additional_charge = AdditionalCharge.new admin_add_charge_params
+    if @additional_charge.save
+      @additional_charge = AdditionalCharge.new
     end
+
+    @additional_charge_all = AdditionalCharge.order(created_at: :desc).select{|i| i.persisted? }
+    render "admins/master_data/additional_charge"
+
+    # TicketEstimation
+    # @add_charge = AdditionalCharge.new admin_add_charge_params
+    # if @add_charge.save
+    #   respond_to do |format|
+    #     format.html { redirect_to additional_charge_admins_path }
+    #   end
+    # else
+    #   @add_charge.errors.full_messages.each do |error|
+    #     error.error
+    #   end
+    # end
   end
 
   def customer_feedback
     User
     @customer_feedback = Feedback.new
-    @customer_feedback_all = Feedback.all
+    @customer_feedback_all = Feedback.order(created_at: :desc).select{|i| i.persisted? }
     render "admins/master_data/customer_feedback"
   end
 
   def update_customer_feedback
+    User
+    @customer_feedback = Feedback.new admin_country_params
+    if @customer_feedback.save
+      @customer_feedback = Feedback.new
+    end
+
+    @customer_feedback_all = Feedback.order(created_at: :desc).select{|i| i.persisted? }
+    render "admins/master_data/customer_feedback"
   end
 
   def general_question
     QAndA
     @general_question = GeQAndA.new
-    @general_question_all = GeQAndA.all
+    @general_question_all = GeQAndA.order(created_at: :desc).select{|i| i.persisted? }
     render "admins/master_data/general_question"
   end
 
   def update_general_question
+    QAndA
+    @general_question = GeQAndA.new admin_general_question_params
+    if @general_question.save
+      @general_question = GeQAndA.new
+    end
 
+    @general_question_all = GeQAndA.order(created_at: :desc).select{|i| i.persisted? }
+    render "admins/master_data/general_question"
   end
 
   def payment_item
     TaskAction
     @payment_item = PaymentItem.new
-    @payment_item_all = PaymentItem.all
+    @payment_item_all = PaymentItem.order(created_at: :desc).select{|i| i.persisted? }
     render "admins/master_data/payment_item"
   end
 
   def update_payment_item
+    TaskAction
+    @payment_item = PaymentItem.new admin_payment_item_params
+    if @payment_item.save
+      @payment_item = PaymentItem.new
+    end
+
+    @payment_item_all = PaymentItem.order(created_at: :desc).select{|i| i.persisted? }
+    render "admins/master_data/payment_item"
   end
 
   def sbu
     User
     @sbu = Sbu.new
-    @sbu_all = Sbu.all
+    @sbu_all = Sbu.order(created_at: :desc).select{|i| i.persisted? }
     # @sbu_eng = SbuEngineer.new
     render "admins/master_data/sbu"
 
   end
 
-  def update_sbu
+  def sbu_update
+    User
+    @sbu = Sbu.new sbu_params
+    if @sbu.save
+      @sbu = Sbu.new
+    end
+
+    @sbu_all = Sbu.order(created_at: :desc).select{|i| i.persisted? }
+    render "admins/master_data/sbu"
   end
 
   def regional_support_center
@@ -323,41 +461,77 @@ class AdminsController < ApplicationController
     User
     Organization
     @regional_support_center = RegionalSupportCenter.new
-    @regional_support_center_all = RegionalSupportCenter.all
+    @regional_support_center_all = RegionalSupportCenter.order(created_at: :desc).select{|i| i.persisted? }
     render "admins/master_data/regional_support_center"
   end
 
   def update_regional_support_center
+    TaskAction
+    User
+    Organization
+    @regional_support_center = RegionalSupportCenter.new regional_support_center_params
+    if @regional_support_center.save
+      @regional_support_center = RegionalSupportCenter.new
+    end
 
+    @regional_support_center_all = RegionalSupportCenter.order(created_at: :desc).select{|i| i.persisted? }
+    render "admins/master_data/regional_support_center"
   end
 
   def spare_part_description
     TicketSparePart
     @spare_part_description = SparePartDescription.new
-    @spare_part_description_all = SparePartDescription.all
+    @spare_part_description_all = SparePartDescription.order(created_at: :desc).select{|i| i.persisted? }
     render "admins/master_data/spare_part_description"
 
   end
 
   def update_spare_part_description
+    TaskAction
+    User
+    Organization
+    @spare_part_description = SparePartDescription.new sp_description_params
+    if @spare_part_description.save
+      @spare_part_description = SparePartDescription.new
+    end
 
+    @spare_part_description_all = SparePartDescription.order(created_at: :desc).select{|i| i.persisted? }
+    render "admins/master_data/spare_part_description"
   end
 
   def ticket_start_action
     Ticket
     @ticket_start_action = TicketStartAction.new
-    @ticket_start_action_all = TicketStartAction.all
+    @ticket_start_action_all = TicketStartAction.order(created_at: :desc).select{|i| i.persisted? }
     render "admins/master_data/ticket_start_action"
   end
 
   def update_ticket_start_action
+    Ticket
+    @ticket_start_action = TicketStartAction.new ticket_start_action_params
+    if @ticket_start_action.save
+      @ticket_start_action = TicketStartAction.new
+    end
 
+    @ticket_start_action_all = TicketStartAction.order(created_at: :desc).select{|i| i.persisted? }
+    render "admins/master_data/ticket_start_action"
   end
 
   def sla
     SlaTime
     @sla = SlaTime.new
-    @sla_all = SlaTime.all
+    @sla_all = SlaTime.order(created_at: :desc).select{|i| i.persisted? }
+    render "admins/master_data/sla"
+  end
+
+  def update_sla
+    SlaTime
+    @sla = SlaTime.new sla_params
+    if @sla.save
+      @sla = SlaTime.new
+    end
+
+    @sla_all = SlaTime.order(created_at: :desc).select{|i| i.persisted? }
     render "admins/master_data/sla"
   end
 
@@ -365,7 +539,19 @@ class AdminsController < ApplicationController
     Ticket
     TaskAction
     @problem_category = QAndA.new
-    @problem_category_all = QAndA.all
+    @problem_category_all = QAndA.order(created_at: :desc).select{|i| i.persisted? }
+    render "admins/master_data/problem_and_category"
+  end
+
+  def update_problem_and_category
+    Ticket
+    TaskAction
+    @problem_category = QAndA.new problem_and_category_params
+    if @problem_category.save
+      @problem_category = QAndA.new
+    end
+
+    @problem_category_all = QAndA.order(created_at: :desc).select{|i| i.persisted? }
     render "admins/master_data/problem_and_category"
   end
 
@@ -375,27 +561,40 @@ class AdminsController < ApplicationController
     Organization
     Currency
     @brands_and_category = ProductBrand.new
-    @brands_and_category_all = ProductBrand.all
+    @brands_and_category_all = ProductBrand.order(created_at: :desc).select{|i| i.persisted? }
     render "admins/master_data/brands_and_category"
   end
 
-  def update_sla
-  end
-
-  def update_problem_and_category
-  end
-
   def update_brands_and_category
+    Product
+    SlaTime
+    Organization
+    Currency
+    @brands_and_category = ProductBrand.new brands_and_category_params
+    if @brands_and_category.save
+      @brands_and_category = ProductBrand.new
+    end
+
+    @brands_and_category_all = ProductBrand.order(created_at: :desc).select{|i| i.persisted? }
+    render "admins/master_data/brands_and_category"
   end
 
   def title
     User
     @title = MstTitle.new
-    @title_all = MstTitle.all
+    @title_all = MstTitle.order(created_at: :desc).select{|i| i.persisted? }
     render "admins/master_data/title"
   end
 
   def update_title
+    User
+    @title = MstTitle.new title_params
+    if @title.save
+      @title = MstTitle.new
+    end
+
+    @title_all = MstTitle.order(created_at: :desc).select{|i| i.persisted? }
+    render "admins/master_data/title"
   end
 
   def pop_status
@@ -415,7 +614,7 @@ class AdminsController < ApplicationController
   def inline_update
     Inventory
     @inventory_product_form = InventoryProduct.find params[:product_id]
-    if @inventory_product_form.update inventory_product_form_params
+    if @inventory_product_form.update inventory_product_params
       render json: @inventory_product_form
     end
   end
@@ -481,7 +680,7 @@ class AdminsController < ApplicationController
   def inline_update_inventory_product
     Inventory
     @inventory_product = InventoryCategory2.find params[:product_id]
-    if @inventory_product.update inventory_product_params
+    if @inventory_product.update inventory_category2_params
       render json: @inventory_product
     end
   end
@@ -970,140 +1169,151 @@ class AdminsController < ApplicationController
     end
   end
 
+  def delete_admin_inventory_reason
+    @inventory_reason = InventoryReason.find params[:inventory_reason_id]
+    if @inventory_reason.present?
+      @inventory_reason.delete
+    end
+    respond_to do |format|
+      format.html { redirect_to inventory_reason_admins_path }
+    end
+  end
+
 
   def update_pop_status
   end
 
-  def brands_and_categories_params
-    params.require(:product_brand).permit(:name, :sla_id, :parts_return_days, :warranty_date_format, :currency_id, product_categories_attributes: [:name, :sla_id, :_destroy, :id])
-  end
+  private
+    def brands_and_categories_params
+      params.require(:product_brand).permit(:name, :sla_id, :parts_return_days, :warranty_date_format, :currency_id, product_categories_attributes: [:name, :sla_id, :_destroy, :id])
+    end
 
-  def brands_and_categories_params
-    params.require(:product_brand).permit(:name, :sla_id, :parts_return_days, :warranty_date_format, :currency_id, product_categories_attributes: [:name, :sla_id, :_destroy, :id])
-  end
+    def brands_and_categories_params
+      params.require(:product_brand).permit(:name, :sla_id, :parts_return_days, :warranty_date_format, :currency_id, product_categories_attributes: [:name, :sla_id, :_destroy, :id])
+    end
 
-  def problem_category_params
-    params.require(:problem_category).permit(:name, q_and_as_attributes: [:_destroy, :id, :active, :answer_type, :question, :action_id, :compulsory])
-  end
+    def problem_category_params
+      params.require(:problem_category).permit(:name, q_and_as_attributes: [:_destroy, :id, :active, :answer_type, :question, :action_id, :compulsory])
+    end
 
-  def sbu_params
-    params.require(:sbu).permit(:sbu, sbu_engineers_attributes: [:_destroy, :id, :sbu_id, :engineer_id])
-  end
+    def sbu_params
+      params.require(:sbu).permit(:sbu, sbu_engineers_attributes: [:_destroy, :id, :sbu_id, :engineer_id])
+    end
 
-  def inventory_product_form_params
-    params.require(:inventory_product).permit(:serial_no, :serial_no_order, :sku, :legacy_code, :description, :model_no, :product_no, :spare_part_no, :fifo, :active, :spare_part, :unit_id, inventory_product_info_attributes: [:picture, :secondary_unit_id, :issue_fractional_allowed, :per_secondery_unit_conversion, :need_serial, :need_batch, :country_id, :manufacture_id, :average_cost, :standard_cost, :currency_id])
-  end
+    def inventory_product_params
+      params.require(:inventory_product).permit(:category3_id, :serial_no, :serial_no_order, :sku, :legacy_code, :description, :model_no, :product_no, :spare_part_no, :fifo, :active, :spare_part, :unit_id, :created_by, :updated_by, :non_stock_item, inventory_product_info_attributes: [:picture, :secondary_unit_id, :issue_fractional_allowed, :per_secondery_unit_conversion, :need_serial, :need_batch, :country_id, :manufacture_id, :average_cost, :standard_cost, :currency_id, :remarks])
+    end
 
-  def inventory_product_info_params
-    params.require(:inventory_product_info).permit(:secondary_unit_id, :average_cost, :need_serial, :need_batch, :per_secondery_unit_conversion, :country_id, :manufacture_id, :currency_id, :standard_cost,:average_cost)
-  end
+    def inventory_product_info_params
+      params.require(:inventory_product_info).permit(:secondary_unit_id, :average_cost, :need_serial, :need_batch, :per_secondery_unit_conversion, :country_id, :manufacture_id, :currency_id, :standard_cost,:average_cost)
+    end
 
-  def inventory_product_condition_params
-    params.require(:product_condition).permit(:condition)
-  end
+    def inventory_product_condition_params
+      params.require(:product_condition).permit(:condition, :created_by, :updated_by)
+    end
 
-  def inventory_disposal_method_params 
-    params.require(:inventory_disposal_method).permit(:disposal_method)
-  end
+    def inventory_disposal_method_params
+      params.require(:inventory_disposal_method).permit(:disposal_method, :created_by, :updated_by)
+    end
 
-  def inventory_reason_params
-    params.require(:inventory_reason).permit(:reason, :srn_issue_terminate, :damage, :srr, :disposal)
-  end
+    def inventory_reason_params
+      params.require(:inventory_reason).permit(:reason, :srn_issue_terminate, :damage, :srr, :disposal, :created_by, :updated_by)
+    end
 
-  def inventory_rack_params
-    params.require(:inventory_rack).permit(:description, :location_id, :aisle_image, :created_by, :updated_by,inventory_shelfs_attributes: [:_destroy, :id, :description, :created_by, :updated_by, inventory_bins_attributes: [:_destroy, :id, :description, :created_by, :updated_by]])
-  end
+    def inventory_rack_params
+      params.require(:inventory_rack).permit(:description, :location_id, :aisle_image, :created_by, :updated_by,inventory_shelfs_attributes: [:_destroy, :id, :description, :created_by, :updated_by, inventory_bins_attributes: [:_destroy, :id, :description, :created_by, :updated_by]])
+    end
 
-  def inventory_shelf_params
-    params.require(:inventory_shelf).permit(:description)
-  end
+    def inventory_shelf_params
+      params.require(:inventory_shelf).permit(:description)
+    end
 
-  def inventory_bin_params
-    params.require(:inventory_bin).permit(:description)
-  end
+    def inventory_bin_params
+      params.require(:inventory_bin).permit(:description)
+    end
 
-  def inventory_brand_params
-    params.require(:inventory_category1).permit(:code, :name, :created_by, :created_by, inventory_category2s_attributes: [:_destroy, :id, :code, :name, :created_by, :updated_by, inventory_category3s_attributes: [:_destroy, :id, :code, :name, :created_by, :updated_by] ])
-  end
+    def inventory_brand_params
+      params.require(:inventory_category1).permit(:code, :name, :created_by, :created_by, inventory_category2s_attributes: [:_destroy, :id, :code, :name, :created_by, :updated_by, inventory_category3s_attributes: [:_destroy, :id, :code, :name, :created_by, :updated_by] ])
+    end
 
-  def inventory_product_params
-    params.require(:inventory_category2).permit(:code, :name)
-  end
+    def inventory_category2_params
+      params.require(:inventory_category2).permit(:code, :name)
+    end
 
-  def inventory_category_params
-    params.require(:inventory_category3).permit(:code, :name)
-  end
+    def inventory_category_params
+      params.require(:inventory_category3).permit(:code, :name)
+    end
 
-  def inventory_manufacture_params
-    params.require(:manufacture).permit(:manufacture)
-  end
+    def inventory_manufacture_params
+      params.require(:manufacture).permit(:manufacture, :created_by, :created_by)
+    end
 
-  def inventory_unit_params
-    params.require(:inventory_unit).permit(:unit, :base_unit_id, :base_unit_conversion, :per_base_unit, :description)
-  end
+    def inventory_unit_params
+      params.require(:inventory_unit).permit(:unit, :base_unit_id, :base_unit_conversion, :per_base_unit, :description, :created_by, :created_by)
+    end
 
-  def admin_reason_params
-    params.require(:reason).permit(:hold, :sla_pause, :re_assign_request, :terminate_job, :terminate_spare_part, :warranty_extend, :spare_part_unused, :reject_returned_part, :reject_close, :adjust_terminate_job_payment, :reason)
-  end
+    def admin_reason_params
+      params.require(:reason).permit(:hold, :sla_pause, :re_assign_request, :terminate_job, :terminate_spare_part, :warranty_extend, :spare_part_unused, :reject_returned_part, :reject_close, :adjust_terminate_job_payment, :reason)
+    end
 
-  def admin_country_params
-    params.require(:product_sold_country).permit(:Country, :code)
-  end
+    def admin_country_params
+      params.require(:product_sold_country).permit(:Country, :code)
+    end
 
-  def admin_accessory_params
-    params.require(:accessory).permit(:accessory)
-  end
+    def admin_accessory_params
+      params.require(:accessory).permit(:accessory)
+    end
 
-  def admin_add_charge_params
-    params.require(:additional_charge).permit(:additional_charge, :default_cost_price, :default_estimated_price)
-  end
+    def admin_add_charge_params
+      params.require(:additional_charge).permit(:additional_charge, :default_cost_price, :default_estimated_price)
+    end
 
-  def admin_ad_feedback_params
-    params.require(:feedback).permit(:feedback)
-  end
+    def admin_ad_feedback_params
+      params.require(:feedback).permit(:feedback)
+    end
 
-  def admin_general_question_params
-    params.require(:ge_q_and_a).permit(:question, :answer_type, :active, :compulsory, :action_id)
-  end
+    def admin_general_question_params
+      params.require(:ge_q_and_a).permit(:question, :answer_type, :active, :compulsory, :action_id)
+    end
 
-  def admin_payment_item_params
-    params.require(:payment_item).permit(:name, :default_amount)
-  end
+    def admin_payment_item_params
+      params.require(:payment_item).permit(:name, :default_amount)
+    end
 
-  def regional_support_center_params
-    params.require(:regional_support_center).permit(:organization_id, :active, sbu_regional_engineers_attributes: [:engineer_id])
-  end
+    def regional_support_center_params
+      params.require(:regional_support_center).permit(:organization_id, :active, sbu_regional_engineers_attributes: [:engineer_id])
+    end
 
-  def sburegional_engineer_params
-    params.require(:sbu_regional_engineer).permit(:engineer_id)
-  end
+    def sburegional_engineer_params
+      params.require(:sbu_regional_engineer).permit(:engineer_id)
+    end
 
-  def sp_description_params
-    params.require(:spare_part_description).permit(:description)
-  end
+    def sp_description_params
+      params.require(:spare_part_description).permit(:description)
+    end
 
-  def ticket_start_action_params
-    params.require(:ticket_start_action).permit(:action, :active)
-  end
+    def ticket_start_action_params
+      params.require(:ticket_start_action).permit(:action, :active)
+    end
 
-  def title_params
-    params.require(:mst_title).permit(:title)
-  end
+    def title_params
+      params.require(:mst_title).permit(:title)
+    end
 
-  def sla_params
-    params.require(:sla_time).permit(:sla_time, :description)
-  end
+    def sla_params
+      params.require(:sla_time).permit(:sla_time, :description, :created_by)
+    end
 
-  def brands_and_category_params
-    params.require(:product_brand).permit(:name, :sla_id, :organization_id, :parts_return_days, :warranty_date_format, :currency_id)
-  end
+    def brands_and_category_params
+      params.require(:product_brand).permit(:name, :sla_id, :organization_id, :parts_return_days, :warranty_date_format, :currency_id)
+    end
 
-  def product_category_params
-    params.require(:product_category).permit(:name, :sla_id)
-  end
+    def product_category_params
+      params.require(:product_category).permit(:name, :sla_id)
+    end
 
-  def problem_and_category_params
-    params.require(:q_and_a).permit(:problem_category_id, :question, :answer_type, :active, :action_id, :compulsory)
-  end
+    def problem_and_category_params
+      params.require(:q_and_a).permit(:problem_category_id, :question, :answer_type, :active, :action_id, :compulsory)
+    end
 
 end

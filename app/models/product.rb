@@ -44,6 +44,7 @@ class ProductBrand < ActiveRecord::Base
   validates_numericality_of [:parts_return_days]
 
   def is_used_anywhere?
+    TicketSparePart
     products.any? or product_categories.any? or return_parts_bundles.any? or currency.present? or sla_time.present?
   end
 end
@@ -76,7 +77,8 @@ class ProductSoldCountry < ActiveRecord::Base
 
   has_many :inventory_product_info, foreign_key: :country_id
 
-  def is_used_anywhere
+  def is_used_anywhere?
+    Inventory
     products.any? or inventory_product_info.present?
   end
 

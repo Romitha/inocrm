@@ -16,16 +16,21 @@
         %th No of Events
         %th Amount
         %th Note
-    / %tbody
-    /   - SoPo.all.each_with_index do |so_po, index|
-    /     %tr
-    /       %td
-    /         / - if params[:page]
-    /         /   = (index+1)+ 10**(params[:page].to_i-1)
-    /         / - else
-    /         = (index+1)
-    /       %td
-    /         = so_po.serial_no
+    %tbody
+      - SoPo.all.each_with_index do |so_po, index|
+        %tr
+          %td
+            = (index+1)
+          %td
+            = so_po.po_no
+          %td
+            = so_po.po_date.try(:strftime, "%Y-%m-%d")
+          %td
+
+          %td
+            = so_po.amount
+          %td
+            = so_po.note
     /       %td
     /         = so_po.inventory_serial_item_status.name
     /       %td
