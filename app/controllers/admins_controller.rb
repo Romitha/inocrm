@@ -1201,6 +1201,16 @@ class AdminsController < ApplicationController
   #   end
   # end
 
+  def delete_admin_inventory_reason
+    @inventory_reason = InventoryReason.find params[:inventory_reason_id]
+    if @inventory_reason.present?
+      @inventory_reason.delete
+    end
+    respond_to do |format|
+      format.html { redirect_to inventory_reason_admins_path }
+    end
+  end
+
 
   def update_pop_status
   end
