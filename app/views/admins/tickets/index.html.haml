@@ -1,0 +1,25 @@
+- ticket_statuses = @ticket_statuses
+
+.row
+  - ticket_statuses.each do |ticket_status|
+    .col-md-4
+      .panel{style:"background-color:##{ticket_status.colour};"}
+        .panel-heading
+          / set icon & text colour
+          .row.text-decor
+            .col-md-12.col-xs-4.pull-right.text-right.text6
+              = ticket_status.tickets.count
+            .col-md-5.col-xs-8
+              %i.font7{class: "#{INOCRM_CONFIG["icon"][ticket_status.id-1]}"}
+
+            .col-md-7.col-xs-12
+              - ["Highest", "High", "Normal", "Low", "Lowest"].each do |priority|
+                #{priority} : #{ticket_status.tickets.where(priority: INOCRM_CONFIG["priority"][priority]).count}
+                %br/
+
+        %a{:href => "#"}
+          .panel-footer
+            %span.pull-left #{ticket_status.name}
+            %span.pull-right
+              %i.fa.fa-arrow-circle-right
+            .clearfix

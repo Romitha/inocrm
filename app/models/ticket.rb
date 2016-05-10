@@ -153,7 +153,7 @@ class Ticket < ActiveRecord::Base
   end
 
   def ticket_closed?
-    ticket_status.try(:code) == "CLS"
+    ["CLS", "TBC"].include? ticket_status.try(:code)
   end
 
 end

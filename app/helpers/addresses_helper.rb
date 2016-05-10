@@ -28,6 +28,14 @@ module AddressesHelper
     end
   end
 
+  # def collapse_latest options = {}, &block
+  #   collapse_wrapper options do
+  #     if options[:sub_content].is_a? Array
+  #       options[:sub_content].count.times { collapse options, &block }
+  #     end
+  #   end
+  # end
+
   def initiate_table(options={}, &block)
     opt = options
     content_tag :table, class: "table table-responsive #{opt[:table_type]}", &block
