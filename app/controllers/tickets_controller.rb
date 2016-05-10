@@ -2450,7 +2450,7 @@ class TicketsController < ApplicationController
       end
 
       @ticket.ticket_spare_parts.each do |s|
-        if params[:ticket_spare_part_ids].include? s.id.to_s
+        if params[:ticket_spare_part_ids].to_a.include? s.id.to_s
           s.update close_approved: true, close_approved_action_id: user_ticket_action.id
         else
           s.update close_approved: false, close_approved_action_id: nil
@@ -2458,7 +2458,7 @@ class TicketsController < ApplicationController
       end
 
       @ticket.ticket_on_loan_spare_parts.each do |s|
-        if params[:ticket_on_loan_spare_part_ids].include? s.id.to_s
+        if params[:ticket_on_loan_spare_part_ids].to_a.include? s.id.to_s
           s.update close_approved: true, close_approved_action_id: user_ticket_action.id
         else
           s.update close_approved: false, close_approved_action_id: nil

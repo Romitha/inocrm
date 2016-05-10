@@ -484,6 +484,7 @@ class InventoriesController < ApplicationController
     Ticket
     Invoice
     status_action_id = SparePartStatusAction.find_by_code("CLS").id
+    po_required = false
 
     request_spare_part = params[:request_spare_part].present?
 
@@ -528,10 +529,11 @@ class InventoriesController < ApplicationController
           end
         end
         status_action_id = SparePartStatusAction.find_by_code("CEA").id
+        po_required = true
 
       end
       @estimation.ticket_estimation_parts.each do |ticket_estimation_part|
-        ticket_estimation_part.ticket_spare_part.update_attributes(status_action_id: status_action_id, approved_estimation_part_id: ticket_estimation_part.id)
+        ticket_estimation_part.ticket_spare_part.update_attributes(status_action_id: status_action_id, approved_estimation_part_id: ticket_estimation_part.id, po_required: po_required)
 
         ticket_estimation_part.ticket_spare_part.ticket_spare_part_status_actions.create(status_id: status_action_id, done_by: current_user.id, done_at: DateTime.now)
 

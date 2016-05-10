@@ -225,141 +225,147 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :admins do
-    concerns :attachable
-    collection do
-      get "total-tickets", :action => :total_tickets
-      get "today-open-tickets", :action => :today_open_tickets
-      get "today-closed-tickets", :action => :today_closed_tickets
-      get "open-tickets", :action => :open_tickets
-      get "closed-tickets", :action => :closed_tickets
-      get "total-products", :action => :total_products
-      get "reason"
-      post "update_reason"
-      get "organizations"
-      get "employees"
-      get "accessories"
-      post "update_accessories"
-      get "country"
-      post "update_country"
-      get "additional_charge"
-      post "update_additional_charge"
-      get "customer_feedback"
-      post "update_customer_feedback"
-      get "general_question"
-      post "update_general_question"
-      get "payment_item"
-      post "update_payment_item"
-      get "payment_item"
-      post "update_payment_item"
-      get "sbu"
-      post "sbu_update"
-      get "regional_support_center"
-      post "update_regional_support_center"
-      get "spare_part_description"
-      post "update_spare_part_description"
-      get "ticket_start_action"
-      post "update_ticket_start_action"
-      get "sla"
-      get "problem_and_category"
-      get "brands_and_category"
-      post "update_sla"
-      post "update_problem_and_category"
-      post "update_brands_and_category"
-      get "title"
-      post "update_title"
+  namespace :admins do
+    root "dashboards#index"
+    resources :tickets do
+      collection do
+  #     get "ticket_start_action"
+        get "problem_category"
+        get "q_and_a"
+      end
+    end
+    resources :employees do
+      collection do
+  #     # get "sbu"
+  #     get "regional_support_center"
+        
+      end
+    end
+    resources :users do
+      collection do
+  #     # get "title"
+        
+      end
+    end
+    resources :inventories do
+      collection do
+        [
+          :inventory_location,
+          :inventory_product,
+          :inventory_category,
+          :inventory_product_condition,
+          :inventory_disposal_method,
+          :inventory_reason,
+          :inventory_manufacture,
+          :inventory_unit,
+          :country
+        ].each do |action|
+          match "inventory/#{action}", action: action, via: [:get, :post]
+        end
+        #     get "accessories"
+  #     get "payment_item"
+  #     get "spare_part_description"
+  #     get "reason"
+  #     get "pop_status"
+        get "brands_and_categories"
 
-      get "inventory_location"
-      get "inventory_product"
-      get "inventory_category"
-      get "inventory_product_condition"
-      get "inventory_disposal_method"
-      get "inventory_reason"
-      get "inventory_manufacture"
-      get "inventory_unit"
-      post "update_inventory_location"
-      post "update_inventory_product"
-      post "update_inventory_category"
-      post "update_inventory_product_condition"
-      post "update_inventory_disposal_method"
-      post "update_inventory_reason"
-      post "update_inventory_manufacture"
-      post "update_inventory_unit"
-      put "inventory_location_update"
-      put "inventory_category_update"
-
-
-      get "pop_status"
-      post "update_pop_status"
-      get "about-us", :action => :about_us
-      match "tickets/brands_and_categories", to: "admins#brands_and_categories", via: [:get, :post]
-      match "tickets/problem_category", to: "admins#problem_category", via: [:get, :post]
-      match "tickets/q_and_a", to: "admins#q_and_a", via: [:get, :post]
-      # namespace "/tickets" do
-      #   get 'q_and_a', :action => :ticket_q_and_a
-      # end
-
-      put "inline_update"
-      put "inline_update_product_info"
-      put "inline_update_product_condition"
-      put "inline_update_disposal_method"
-      put "inline_update_inventory_reason"
-      put "inline_update_inventory_location_rack"
-      put "inline_update_inventory_location_shelf"
-      put "inline_update_inventory_location_bin"
-      put "inline_update_inventory_brand"
-      put "inline_update_inventory_product"
-      put "inline_update_inventory_category"
-      put "inline_update_inventory_manufacture"
-      put "inline_update_inventory_unit"
-      put "inline_update_admin_reason"
-      put "inline_update_admin_country"
-      put "inline_update_admin_accessory"
-      put "inline_update_admin_additional_charge"
-      put "inline_update_admin_customer_feedback"
-      put "inline_update_admin_general_question"
-      put "inline_update_admin_payment_item"
-      put "inline_update_admin_sbu"
-      put "inline_update_admin_regional_support_center"
-      put "inline_update_sbu_regional_engineer"
-      put "inline_update_admin_spare_part_description"
-      put "inline_update_admin_ticket_start_action"
-      put "inline_update_admin_title"
-      put "inline_update_admin_sla"
-      put "inline_update_brands_and_category"
-      put "inline_update_product_category"
-      put "inline_update_problem_and_category"
-      get "delete_location_rack"
-      get "delete_location_shelf"
-      get "delete_location_bin"
-      get "delete_inventory_brand"
-      get "delete_inventory_product"
-      get "delete_inventory_category"
-      get "delete_inventory_product_form"
-      get "delete_product_condition"
-      get "delete_disposal_method"
-      get "delete_inventory_manufacture"
-      get "delete_inventory_unit"
-      get "delete_admin_reason"
-      get "delete_admin_country"
-      get "delete_admin_accessory"
-      get "delete_admin_customer_feedback"
-      get "delete_admin_general_question"
-      get "delete_admin_payment_item"
-      get "delete_admin_sbu"
-      get "delete_admin_sbu_engineer"
-      get "delete_admin_regional_support_center"
-      get "delete_sbu_regional_engineer"
-      get "delete_admin_spare_part_description"
-      get "delete_admin_ticket_start_action"
-      get "delete_admin_title"
-      get "delete_admin_sla"
-      get "delete_admin_brands_and_category"
-      get "delete_product_category"
-      get "delete_admin_problem_category"
-      
+      end
+    end
+    resources :dashboards
+    resources :sales do
+      collection do
+  #     get "additional_charge"
+  #     get "sla"
+        
+      end
     end
   end
+  # resources :admins do
+  #   concerns :attachable
+  #   collection do
+  #     get "total-tickets", :action => :total_tickets
+  #     get "today-open-tickets", :action => :today_open_tickets
+  #     get "today-closed-tickets", :action => :today_closed_tickets
+  #     get "open-tickets", :action => :open_tickets
+  #     get "closed-tickets", :action => :closed_tickets
+  #     get "total-products", :action => :total_products
+  #     post "update_reason"
+  #     get "organizations"
+
+  #     get "employees"
+  #     [:sbu, :title].each do |action|
+  #       match "employees/#{action}", action: action, via: [:get, :post]
+  #     end
+
+  #     get "inventory"
+  #     [:sbu, :title].each do |action|
+  #       match "inventory/#{action}", action: action, via: [:get, :post]
+  #     end
+
+  #     post "update_accessories"
+  #     post "update_country"
+  #     post "update_additional_charge"
+  #     get "customer_feedback"
+  #     post "update_customer_feedback"
+  #     get "general_question"
+  #     post "update_general_question"
+  #     post "update_payment_item"
+  #     post "update_regional_support_center"
+  #     post "update_spare_part_description"
+  #     post "update_ticket_start_action"
+  #     post "update_sla"
+  #     post "update_title"
+
+  #     get "inventory_location"
+  #     get "inventory_product"
+  #     get "inventory_category"
+  #     get "inventory_product_condition"
+  #     get "inventory_disposal_method"
+  #     get "inventory_reason"
+  #     get "inventory_manufacture"
+  #     get "inventory_unit"
+  #     post "update_inventory_location"
+  #     post "update_inventory_product"
+  #     post "update_inventory_category"
+  #     post "update_inventory_product_condition"
+  #     post "update_inventory_disposal_method"
+  #     post "update_inventory_reason"
+  #     post "update_inventory_manufacture"
+  #     post "update_inventory_unit"
+  #     put "inventory_location_update"
+  #     put "inventory_category_update"
+
+
+  #     post "update_pop_status"
+  #     get "about-us", :action => :about_us
+  #     match "tickets/brands_and_categories", to: "admins#brands_and_categories", via: [:get, :post]
+  #     match "tickets/problem_category", to: "admins#problem_category", via: [:get, :post]
+  #     match "tickets/q_and_a", to: "admins#q_and_a", via: [:get, :post]
+  #     # namespace "/tickets" do
+  #     #   get 'q_and_a', :action => :ticket_q_and_a
+  #     # end
+
+  #     put "inline_update"
+  #     put "inline_update_product_info"
+  #     put "inline_update_product_condition"
+  #     put "inline_update_disposal_method"
+  #     put "inline_update_inventory_reason"
+  #     put "inline_update_inventory_location_rack"
+  #     put "inline_update_inventory_location_shelf"
+  #     put "inline_update_inventory_location_bin"
+  #     put "inline_update_inventory_brand"
+  #     put "inline_update_inventory_product"
+  #     put "inline_update_inventory_category"
+  #     get "delete_location_rack"
+  #     get "delete_location_shelf"
+  #     get "delete_location_bin"
+  #     get "delete_inventory_brand"
+  #     get "delete_inventory_product"
+  #     get "delete_inventory_category"
+  #     get "delete_inventory_product_form"
+      
+  #   end
+  # end
 
   resources :inventories, except: [:index, :show, :create, :new, :update, :destroy, :edit] do
     collection do
@@ -428,62 +434,7 @@ Rails.application.routes.draw do
       post "update_terminate_invoice"
       post "update_inform_customer"
     end
+
   end
-     
-  # get 'auth/index'
 
-  # The priority is based upon order of creation: first created -> highest priority.
-  # See how all your routes lay out with "rake routes".
-
-  # You can have the root of your site routed with "root"
-  # root 'welcome#index'
-
-  # Example of regular route:
-
-
-  # Example of named route that can be invoked with purchase_url(id: product.id)
-  #   get 'products/:id/purchase' => 'catalog#purchase', as: :purchase
-
-  # Example resource route (maps HTTP verbs to controller actions automatically):
-  #   resources :products
-
-  # Example resource route with options:
-  #   resources :products do
-  #     member do
-  #       get 'short'
-  #       post 'toggle'
-  #     end
-  #
-  #     collection do
-  #       get 'sold'
-  #     end
-  #   end
-
-  # Example resource route with sub-resources:
-  #   resources :products do
-  #     resources :comments, :sales
-  #     resource :seller
-  #   end
-
-  # Example resource route with more complex sub-resources:
-  #   resources :products do
-  #     resources :comments
-  #     resources :sales do
-  #       get 'recent', on: :collection
-  #     end
-  #   end
-
-  # Example resource route with concerns:
-  #   concern :toggleable do
-  #     post 'toggle'
-  #   end
-  #   resources :posts, concerns: :toggleable
-  #   resources :photos, concerns: :toggleable
-
-  # Example resource route within a namespace:
-  #   namespace :admin do
-  #     # Directs /admin/products/* to Admin::ProductsController
-  #     # (app/controllers/admin/products_controller.rb)
-  #     resources :products
-  #   end
 end

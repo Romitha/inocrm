@@ -864,7 +864,7 @@
                     - else
                       Approved: no
                   .col-md-4
-                    Reject Reason: #{action.act_quality_control.reason.try(:reason)}
+                    / Reject Reason: #{action.act_quality_control.reason.try(:reason)}
                     
             -if action.action_id == 58
               .panel-body
@@ -898,16 +898,16 @@
                   .col-md-4
                     Feedback: #{action.customer_feedback.try(:feedback_description)}
 
-            -if action.action_id == 61
+            -if action.action_id == 61 and action.customer_feedback.present?
               .panel-body
                 .row
                   .col-md-4
-                    - if action.customer_feedback.re_opened == true
+                    - if action.customer_feedback.re_opened
                       Re-open: yes
                     - else
                       Re-open: no
                   .col-md-4
-                    - if action.customer_feedback.payment_completed == true
+                    - if action.customer_feedback.payment_completed
                       Payment completed: yes
                     - else
                       Payment completed: no
@@ -943,7 +943,7 @@
                   .col-md-4
                     Payment Expected Manufacture : #{action.request_spare_part.ticket_spare_part.ticket_spare_part_manufacture.try(:payment_expected_manufacture)}
 
-            -if action.action_id == 66 and action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part
+            -if action.action_id == 66 and action.request_on_loan_spare_part.present?
               .panel-body
                 .row
                   .col-md-4
@@ -1024,7 +1024,7 @@
                       customer chargeable: no
 
 
-            -if action.action_id == 74
+            -if action.action_id == 74 and action.action_warranty_repair_type.present?
               .panel-body
                 .row
                   .col-md-4
@@ -1209,7 +1209,7 @@
                   .col-md-4
                     Note: #{action.act_quotation.customer_quotation.try(:note)}
 
-            -if action.action_id == 83
+            -if action.action_id == 83 and action.act_quotation.present?
               .panel-body
                 .row
                   .col-md-4

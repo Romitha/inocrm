@@ -4,6 +4,7 @@ window.Invoices =
     @check_fsr_dynamic_check_behavour()
     @customer_feedback_re_opened()
     @readonly_checkbox_in_customer_feedback()
+    @activate_deducted_amount_terminate_foc()
     return
 
   quotation_change: ->
@@ -158,3 +159,15 @@ window.Invoices =
         $(@).val(final_amount_to_be_paids)
       else
         $("#payment_completed").removeAttr("onclick")
+
+  activate_deducted_amount_terminate_foc: ->
+    if $("#approve_foc_check").is(":checked")
+      $("#deducted_amount_text").prop("disabled", true)
+    else
+      $("#deducted_amount_text").prop("disabled", false)
+
+    $("#approve_foc_check").click ->
+      if $("#approve_foc_check").is(":checked")
+        $("#deducted_amount_text").prop("disabled", true)
+      else
+        $("#deducted_amount_text").prop("disabled", false)

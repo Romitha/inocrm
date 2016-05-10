@@ -212,6 +212,7 @@ class InvoicesController < ApplicationController
           user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(63).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
           user_ticket_action.save
 
+          @ticket.status_id = TicketStatus.find_by_code("CFB").id
 
             # bpm output variables
           bpm_variables.merge! d12_need_to_invoice: d12_need_to_invoice
@@ -554,6 +555,58 @@ class InvoicesController < ApplicationController
 
     flash[:notice] = "Successfully saved."
     redirect_to todos_url
+  end
+
+  def update_terminate_foc
+    TaskAction
+    @ticket = Ticket.find params[:ticket_id]
+    deducted_amount = params[:deducted_amount].to_f
+    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    final_invoice = @ticket.final_invoice
+    ticket_terminate_job = @ticket.user_ticket_actions.order(created_at: :desc).select { |u| u.ticket_terminate_job.present? }.first
+
+    cus_payment_completed = (params[:approve_foc].present? and params[:approve_foc].to_bool)
+
+    if final_invoice.present? and ticket_terminate_job.present?
+      ticket_terminate_job.foc_approved = false
+
+      if continue
+        if params[:approve_foc].to_bool #Approve FOC
+          deducted_amount = 0
+          ticket_terminate_job.foc_approved = cus_payment_completed
+        end
+
+        final_invoice.deducted_amount = deducted_amount
+        final_invoice.total_deduction = deducted_amount
+        final_invoice.net_total_amount = final_invoice.total_amount - final_invoice.total_advance_recieved - final_invoice.total_deduction
+        final_invoice.save
+
+        @ticket.update final_amount_to_be_paid: final_invoice.net_total_amount, cus_payment_completed: cus_payment_completed
+
+        #Action : 59 - Terminate FOC Job Approval
+        user_ticket_action = @ticket.user_ticket_actions.build(action_id: 59, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+        user_ticket_action.save
+
+        ticket_terminate_job.foc_approved_action_id = user_ticket_action.id
+        ticket_terminate_job.save
+
+        # bpm output variables
+        bpm_variables = view_context.initialize_bpm_variables
+        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+        if bpm_response[:status].upcase == "SUCCESS"
+          flash[:notice] = "Successfully updated"
+        else
+          flash[:error] = "Ticket and invoice is updated. but Bpm error"
+        end
+      else
+        flash[:error] = "Bpm error."
+      end
+    else
+      flash[:error] = "Invoice or Terminate job is empty."
+    end
+    redirect_to todos_url
+
   end
 
   private
