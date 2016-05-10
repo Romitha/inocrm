@@ -28,6 +28,9 @@
         %h3.panel-title
           %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
             #{index+1} inventory reason : #{inv_reason.reason}
+          - unless inv_reason.is_used_anywhere?
+            = link_to delete_admin_inventory_reason_admins_path(inventory_reason_id: inv_reason.id),  :data => { :confirm => 'Are you sure?' } do
+              %span.glyphicon.glyphicon-trash
       .panel-collapse.collapse.in{:id => "#{index}"}
         .panel-body
           .row.col-md-12

@@ -32,7 +32,7 @@ class InventoryProduct < ActiveRecord::Base
   has_many :ticket_spare_part_non_stocks, foreign_key: :inv_product_id
   has_many :approved_ticket_spare_part_non_stocks, class_name: "TicketSparePartNonStock", foreign_key: :approved_inv_product_id
 
-  validates_presence_of :description
+  validates_presence_of [:description, :category3_id, :serial_no]
 
   def is_used_anywhere?
     inventory_category3.present? or inventories.any? or inventory_unit.present? or inventory_serial_items.any? or inventory_product_info.present? or ticket_spare_part_stores.any? or grn_items.any? or inventory_serial_parts.any? or inventory_serial_items.any? or ticket_spare_part_non_stocks.any? or approved_ticket_spare_part_non_stocks.any?
@@ -117,7 +117,7 @@ class InventoryUnit < ActiveRecord::Base
   self.table_name = "mst_inv_unit"
 
   has_many :inventory_products, foreign_key: :unit_id
-  has_many :inventory_product_infos
+  has_many :inventory_product_infos, foreign_key: :secondary_unit_id
 
   def is_used_anywhere?
     inventory_products.any? or inventory_product_infos.any?
@@ -274,7 +274,13 @@ end
 class InventoryReason < ActiveRecord::Base
   self.table_name = "mst_inv_reason"
 
-  has_many :damages
+  has_many :damages, foreign_key: :damage_reason_id
+
+  def is_used_anywhere?
+    Damage
+    damages.any?
+  end
+
 end
 
 class InventoryRack < ActiveRecord::Base
@@ -329,7 +335,8 @@ class InventoryDisposalMethod < ActiveRecord::Base
   has_many :inventory_requests, foreign_key: :disposal_method_id
 
   def is_used_anywhere?
-    user or inventory_damages.any? or inventory_requests.any?
+    # inventory_damages.any? or inventory_requests.any? or user.present?
+    inventory_damages.any?
   end
 
 end

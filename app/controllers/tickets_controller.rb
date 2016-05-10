@@ -1942,6 +1942,8 @@ class TicketsController < ApplicationController
   end
 
   def create_invoice_for_hp
+    Inventory
+    TicketSparePart
     if params[:ticket_no].present?
       ticket_id = params[:ticket_no]
       @ticket = Ticket.where("id like ?", "%#{ticket_id}%")

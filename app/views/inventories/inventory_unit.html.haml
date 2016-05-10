@@ -13,6 +13,10 @@
     .col-md-6
       = u.input :description
   .row
+    = u.input :created_by,  as: :hidden, input_html: {value: current_user.id}
+    = u.input :updated_by,  as: :hidden, input_html: {value: current_user.id}
+
+  .row
     .col-md-6{style: "margin-top:20px;margin-bottom:20px;"}
       = u.submit "Save", class: "btn btn-success pull-right", id: "submit_new_inventory_unit"
 #accordion.panel-group

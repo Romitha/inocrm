@@ -18,9 +18,9 @@
         %h3.panel-title
           %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
             #{index+1} Country : #{ad_country.Country}
-          / - unless ad_country.is_used_anywhere?
-          /   = link_to delete_admin_country_admins_path(country_id: ad_country.id),  :data => { :confirm => 'Are you sure?' } do
-          /     %span.glyphicon.glyphicon-trashz
+          - unless ad_country.is_used_anywhere?
+            = link_to delete_admin_country_admins_path(country_id: ad_country.id),  :data => { :confirm => 'Are you sure?' } do
+              %span.glyphicon.glyphicon-trashz
       .panel-collapse.collapse.in{:id => "#{index}"}
         .panel-body
           .row.col-md-12
