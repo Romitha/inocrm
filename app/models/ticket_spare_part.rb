@@ -166,6 +166,7 @@ end
 
 class SparePartDescription < ActiveRecord::Base
   self.table_name = "mst_spt_spare_part_description"
+  validates :description, presence: true, uniqueness: true
 end
 
 class TicketSparePartManufacture < ActiveRecord::Base

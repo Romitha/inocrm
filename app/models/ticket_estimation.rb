@@ -103,6 +103,7 @@ end
 
 class AdditionalCharge < ActiveRecord::Base
   self.table_name = "mst_spt_additional_charge"
+  validates :additional_charge, presence: true, uniqueness: true
 
   has_many :ticket_estimation_additionals, foreign_key: :additional_charge_id
 

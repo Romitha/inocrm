@@ -1,4 +1,4 @@
-= simple_nested_form_for @brands_and_category, url: update_brands_and_category_admins_path do |f|
+= simple_nested_form_for @brands_and_category, url: inventory_brands_and_category_admins_inventories_path(create: true), method: :post do |f|
   .panel.panel-primary
     .panel-heading
       %h3.panel-title Product Brand
@@ -62,7 +62,7 @@
           %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
             #{index+1} Brands & category : #{brands_and_category.name}
           - unless brands_and_category.is_used_anywhere?
-            = link_to delete_admin_brands_and_category_admins_path(brands_and_category_id: brands_and_category.id),  :data => { :confirm => 'Are you sure?' } do
+            = link_to delete_admin_brands_and_category_admins_inventories_path(brands_and_category_id: brands_and_category.id), method: :delete,  :data => { :confirm => 'Are you sure?' } do
               %span.glyphicon.glyphicon-trash
 
       .panel-collapse.collapse.in{:id => "#{index}"}
@@ -71,34 +71,34 @@
             .col-md-2
               %strong Organization:
             .col-md-4
-              = link_to "#", class: "inline_edit", data: {type: "select", source: Organization.all.collect{|organization| {value: organization.id, text: organization.name}}, resource: "product_brand", name: "organization_id", url: inline_update_brands_and_category_admins_path(brands_and_category_id: brands_and_category.id), "original-title" => "Update Brands"} do
+              = link_to "#", class: "inline_edit", data: {type: "select", source: Organization.all.collect{|organization| {value: organization.id, text: organization.name}}, resource: "product_brand", name: "organization_id", url: inventory_brands_and_category_admins_inventories_path(edit: true, brands_and_category_id: brands_and_category.id), "original-title" => "Update Brands"} do
                 = brands_and_category.organization.try(:name)
             .col-md-2
               %strong Currency:
             .col-md-4
-              = link_to "#", class: "inline_edit", data: {type: "select", source: Currency.all.collect{|currency| {value: currency.id, text: currency.currency}}, resource: "product_brand", name: "currency_id", url: inline_update_brands_and_category_admins_path(brands_and_category_id: brands_and_category.id), "original-title" => "Update Brands"} do
+              = link_to "#", class: "inline_edit", data: {type: "select", source: Currency.all.collect{|currency| {value: currency.id, text: currency.currency}}, resource: "product_brand", name: "currency_id", url: inventory_brands_and_category_admins_inventories_path(edit: true, brands_and_category_id: brands_and_category.id), "original-title" => "Update Brands"} do
                 = brands_and_category.currency.try(:currency)
           .row.col-md-12
             .col-md-2
               %strong Sla:
             .col-md-4
-              = link_to "#", class: "inline_edit", data: {type: "select", source: SlaTime.all.collect{|sla| {value: sla.id, text: sla.sla_time}}, resource: "product_brand", name: "sla_id", url: inline_update_brands_and_category_admins_path(brands_and_category_id: brands_and_category.id), "original-title" => "Update Brands"} do
+              = link_to "#", class: "inline_edit", data: {type: "select", source: SlaTime.all.collect{|sla| {value: sla.id, text: sla.sla_time}}, resource: "product_brand", name: "sla_id", url: inventory_brands_and_category_admins_inventories_path(edit: true, brands_and_category_id: brands_and_category.id), "original-title" => "Update Brands"} do
                 = brands_and_category.sla_time.try(:sla_time)
             .col-md-2
               %strong Name:
             .col-md-4
-              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "product_brand", name: "name", url: inline_update_brands_and_category_admins_path(brands_and_category_id: brands_and_category.id), "original-title" => "Update Brands", value: ""}, style: "line-height: 6px;" do
+              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "product_brand", name: "name", url: inventory_brands_and_category_admins_inventories_path(edit: true, brands_and_category_id: brands_and_category.id), "original-title" => "Update Brands", value: ""}, style: "line-height: 6px;" do
                 = brands_and_category.name
           .row.col-md-12
             .col-md-2
               %strong Parts return days:
             .col-md-4
-              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "product_brand", name: "parts_return_days", url: inline_update_brands_and_category_admins_path(brands_and_category_id: brands_and_category.id), "original-title" => "Update Brands", value: ""}, style: "line-height: 6px;" do
+              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "product_brand", name: "parts_return_days", url: inventory_brands_and_category_admins_inventories_path(edit: true, brands_and_category_id: brands_and_category.id), "original-title" => "Update Brands", value: ""}, style: "line-height: 6px;" do
                 = brands_and_category.parts_return_days
             .col-md-2
               %strong Warranty date format:
             .col-md-4
-              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "product_brand", name: "warranty_date_format", url: inline_update_brands_and_category_admins_path(brands_and_category_id: brands_and_category.id), "original-title" => "Update Brands", value: ""}, style: "line-height: 6px;" do
+              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "product_brand", name: "warranty_date_format", url: inventory_brands_and_category_admins_inventories_path(edit: true, brands_and_category_id: brands_and_category.id), "original-title" => "Update Brands", value: ""}, style: "line-height: 6px;" do
                 = brands_and_category.warranty_date_format
           .row.col-md-12
             - brands_and_category.product_categories.each do |product_category|
@@ -107,18 +107,18 @@
                   %h3.panel-title
                     %span Product Category: #{product_category.name}
                     - unless product_category.is_used_anywhere?
-                      = link_to delete_product_category_admins_path(product_category_id: product_category.id),  :data => { :confirm => 'Are you sure?' } do
+                      = link_to delete_product_category_admins_inventories_path(product_category_id: product_category.id),  method: :delete, :data => { :confirm => 'Are you sure?' } do
                         %span.glyphicon.glyphicon-trash
                 .panel-body
                   .row.col-md-12
                     .col-md-2
                       %strong Name:
                     .col-md-4
-                      = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "product_category", name: "name", url: inline_update_product_category_admins_path(product_category_id: product_category.id), "original-title" => "Update Product Category", value: ""}, style: "line-height: 6px;" do
+                      = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "product_category", name: "name", url: inventory_brands_and_category_admins_inventories_path(edit: true, product_category_id: product_category.id), "original-title" => "Update Product Category", value: ""}, style: "line-height: 6px;" do
                         = product_category.name
                     .col-md-2
                       %strong Sla:
                     .col-md-4
-                      = link_to "#", class: "inline_edit", data: {type: "select", source: SlaTime.all.collect{|sla| {value: sla.id, text: sla.sla_time}}, resource: "product_category", name: "sla_id", url: inline_update_product_category_admins_path(product_category_id: product_category.id), "original-title" => "Update Product Category"} do
+                      = link_to "#", class: "inline_edit", data: {type: "select", source: SlaTime.all.collect{|sla| {value: sla.id, text: sla.sla_time}}, resource: "product_category", name: "sla_id", url: inventory_brands_and_category_admins_inventories_path(edit: true, product_category_id: product_category.id), "original-title" => "Update Product Category"} do
                         = product_category.sla_time.try(:sla_time)
 

@@ -1,9 +1,9 @@
 module Admin
-	class SalesController < ApplicationController
-		layout "admin"
+  class SalesController < ApplicationController
+    layout "admin"
 
-		def index
-			
-		end
-	end
+    def index
+
+    end
+  end
 end

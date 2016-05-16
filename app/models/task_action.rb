@@ -144,7 +144,7 @@ class RegionalSupportCenter < ActiveRecord::Base
 
   def is_used_anywhere?
     User
-    assign_regional_support_centers.any? or sbu_regional_engineers.any? or engineers.any? or organization.present?
+    assign_regional_support_centers.any? or sbu_regional_engineers.any? or engineers.any?
   end
 end
 
@@ -193,6 +193,9 @@ class PaymentItem < ActiveRecord::Base
 
   has_many :act_terminate_job_payments, foreign_key: :payment_item_id
   accepts_nested_attributes_for :act_terminate_job_payments, allow_destroy: true
+
+  validates :name, presence: true, uniqueness: true
+
   def is_used_anywhere?
     act_terminate_job_payments.any?
   end

@@ -1,5 +1,5 @@
 %h3 Reason
-= simple_form_for @reason, url: update_reason_admins_path do |f|
+= simple_form_for @reason, url: ticket_reason_admins_tickets_path(create: true), method: :post do |f| # ticket_reason_admins_tickets_path(create: true) ticket_reason_admins_tickets_path(edit: true)
   .row{style: "margin-top:15px;"}
     .col-md-2
       = f.input :hold, wrapper: :append
@@ -46,60 +46,60 @@
             .col-md-3
               %strong Hold:
             .col-md-3
-              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "reason", name: "hold", url: inline_update_admin_reason_admins_path(mst_reason_id: mst_reason.id), "original-title" => "Update admin reason"} do
+              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "reason", name: "hold", url: ticket_reason_admins_tickets_path(edit: true, mst_reason_id: mst_reason.id), "original-title" => "Update admin reason"} do
                 = mst_reason.hold && "Yes" || "No"
             .col-md-3
               %strong Sla pause:
             .col-md-3
-              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "reason", name: "sla_pause", url: inline_update_admin_reason_admins_path(mst_reason_id: mst_reason.id), "original-title" => "Update admin reason"} do
+              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "reason", name: "sla_pause", url: ticket_reason_admins_tickets_path(edit: true, mst_reason_id: mst_reason.id), "original-title" => "Update admin reason"} do
                 = mst_reason.sla_pause && "Yes" || "No"
           .row.col-md-12
             .col-md-3
               %strong Re assign request:
             .col-md-3
-              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "reason", name: "re_assign_request", url: inline_update_admin_reason_admins_path(mst_reason_id: mst_reason.id), "original-title" => "Update admin reason"} do
+              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "reason", name: "re_assign_request", url: ticket_reason_admins_tickets_path(edit: true, mst_reason_id: mst_reason.id), "original-title" => "Update admin reason"} do
                 = mst_reason.re_assign_request && "Yes" || "No"
             .col-md-3
               %strong Terminate job:
             .col-md-3
-              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "reason", name: "terminate_job", url: inline_update_admin_reason_admins_path(mst_reason_id: mst_reason.id), "original-title" => "Update admin reason"} do
+              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "reason", name: "terminate_job", url: ticket_reason_admins_tickets_path(edit: true, mst_reason_id: mst_reason.id), "original-title" => "Update admin reason"} do
                 = mst_reason.terminate_job && "Yes" || "No"
           .row.col-md-12
             .col-md-3
               %strong Terminate spare part:
             .col-md-3
-              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "reason", name: "terminate_spare_part", url: inline_update_admin_reason_admins_path(mst_reason_id: mst_reason.id), "original-title" => "Update admin reason"} do
+              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "reason", name: "terminate_spare_part", url: ticket_reason_admins_tickets_path(edit: true, mst_reason_id: mst_reason.id), "original-title" => "Update admin reason"} do
                 = mst_reason.terminate_spare_part && "Yes" || "No"
             .col-md-3
               %strong Warranty extend:
             .col-md-3
-              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "reason", name: "warranty_extend", url: inline_update_admin_reason_admins_path(mst_reason_id: mst_reason.id), "original-title" => "Update admin reason"} do
+              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "reason", name: "warranty_extend", url: ticket_reason_admins_tickets_path(edit: true, mst_reason_id: mst_reason.id), "original-title" => "Update admin reason"} do
                 = mst_reason.warranty_extend && "Yes" || "No"
           .row.col-md-12
             .col-md-3
               %strong Spare part unused:
             .col-md-3
-              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "reason", name: "spare_part_unused", url: inline_update_admin_reason_admins_path(mst_reason_id: mst_reason.id), "original-title" => "Update admin reason"} do
+              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "reason", name: "spare_part_unused", url: ticket_reason_admins_tickets_path(edit: true, mst_reason_id: mst_reason.id), "original-title" => "Update admin reason"} do
                 = mst_reason.spare_part_unused && "Yes" || "No"
             .col-md-3
               %strong Reject returned part:
             .col-md-3
-              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "reason", name: "reject_returned_part", url: inline_update_admin_reason_admins_path(mst_reason_id: mst_reason.id), "original-title" => "Update admin reason"} do
+              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "reason", name: "reject_returned_part", url: ticket_reason_admins_tickets_path(edit: true, mst_reason_id: mst_reason.id), "original-title" => "Update admin reason"} do
                 = mst_reason.reject_returned_part && "Yes" || "No"
           .row.col-md-12
             .col-md-3
               %strong Reject close:
             .col-md-3
-              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "reason", name: "reject_close", url: inline_update_admin_reason_admins_path(mst_reason_id: mst_reason.id), "original-title" => "Update admin reason"} do
+              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "reason", name: "reject_close", url: ticket_reason_admins_tickets_path(edit: true, mst_reason_id: mst_reason.id), "original-title" => "Update admin reason"} do
                 = mst_reason.reject_close && "Yes" || "No"
             .col-md-3
               %strong Adjust terminate job payment:
             .col-md-3
-              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "reason", name: "adjust_terminate_job_payment", url: inline_update_admin_reason_admins_path(mst_reason_id: mst_reason.id), "original-title" => "Update admin reason"} do
+              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "reason", name: "adjust_terminate_job_payment", url: ticket_reason_admins_tickets_path(edit: true, mst_reason_id: mst_reason.id), "original-title" => "Update admin reason"} do
                 = mst_reason.adjust_terminate_job_payment && "Yes" || "No"
           .row.col-md-12
             .col-md-3
               %strong Reason:
             .col-md-4
-              = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "reason", name: "reason", url: inline_update_admin_reason_admins_path(mst_reason_id: mst_reason.id), "original-title" => "Update admin reason", value: ""}, style: "line-height: 6px;" do
+              = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "reason", name: "reason", url: ticket_reason_admins_tickets_path(edit: true, mst_reason_id: mst_reason.id), "original-title" => "Update admin reason", value: ""}, style: "line-height: 6px;" do
                 = mst_reason.reason

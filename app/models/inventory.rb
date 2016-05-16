@@ -32,7 +32,7 @@ class InventoryProduct < ActiveRecord::Base
   has_many :ticket_spare_part_non_stocks, foreign_key: :inv_product_id
   has_many :approved_ticket_spare_part_non_stocks, class_name: "TicketSparePartNonStock", foreign_key: :approved_inv_product_id
 
-  validates_presence_of [:description, :category3_id, :serial_no]
+  validates_presence_of [:description, :category3_id, :serial_no, :category3_id]
 
   def is_used_anywhere?
     inventory_category3.present? or inventories.any? or inventory_unit.present? or inventory_serial_items.any? or inventory_product_info.present? or ticket_spare_part_stores.any? or grn_items.any? or inventory_serial_parts.any? or inventory_serial_items.any? or ticket_spare_part_non_stocks.any? or approved_ticket_spare_part_non_stocks.any?

@@ -1,0 +1,27 @@
+= simple_form_for @title, url: user_title_admins_users_path(create: true), method: :post do |f|
+  .row
+    .col-md-6
+      = f.input :title, input_html: {rows: 1}
+  .row{style: "margin-top:20px; margin-bottom:20px;"}
+    .col-md-6
+      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_title"
+
+#accordion.panel-group
+  - @title_all.each_with_index do |title, index|
+    .panel.panel-info
+      .panel-heading
+        %h3.panel-title
+          %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
+            #{index+1} Title : #{title.title}
+          - unless title.is_used_anywhere?
+            = link_to delete_admin_title_admins_users_path(title_id: title.id),method: :delete,  :data => { :confirm => 'Are you sure?' } do
+              %span.glyphicon.glyphicon-trash
+
+      .panel-collapse.collapse.in{:id => "#{index}"}
+        .panel-body
+          .row.col-md-12
+            .col-md-1
+              %strong Title:
+            .col-md-3
+              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "mst_title", name: "title", url: user_title_admins_users_path(edit: true, title_id: title.id), "original-title" => "Update Title", value: ""}, style: "line-height: 6px;" do
+                = title.title

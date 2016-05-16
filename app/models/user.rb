@@ -137,6 +137,7 @@ class MstTitle < ActiveRecord::Base
   def is_used_anywhere?
     user.present? or customer.present?
   end
+  validates :title, presence: true, uniqueness: true
 end
 
 class Customer < ActiveRecord::Base
@@ -227,7 +228,7 @@ class SbuRegionalEngineer < ActiveRecord::Base
   belongs_to :engineer, class_name: "User", foreign_key: :engineer_id
 
   def is_used_anywhere?
-    engineer.present? or regional_support_center.present?
+    # engineer.present? or regional_support_center.present?
   end
 end
 
@@ -238,7 +239,7 @@ class SbuEngineer < ActiveRecord::Base
   belongs_to :engineer, class_name: "User", foreign_key: :engineer_id
 
   def is_used_anywhere?
-    engineer.present?
+    # engineer.present?
   end
 end
 
