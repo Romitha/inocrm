@@ -17,7 +17,7 @@ class AddMstTablesFromDevage < ActiveRecord::Migration
     create_table :mst_inv_product, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :category3_id, "INT UNSIGNED NOT NULL"
-      t.decimal :serial_no, null: false, precision: 6, scale: 2
+      t.decimal :serial_no, null: false, precision: 6, scale: 0
       t.integer :serial_no_order, null: false
       t.string :sku
       t.string :legacy_code

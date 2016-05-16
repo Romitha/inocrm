@@ -1,0 +1,58 @@
+.row
+  .col-md-12
+    = panels panel_type: "success", header_content: "Po no: #{@po.po_no}" do
+
+      %h4 Purchase Order Info
+      %dl.dl-horizontal
+        %dt Supplier
+        %dd= @po.supplier.name
+        %dt PO. No
+        %dd= @po.po_no
+        %dt PO. Date
+        %dd= @po.created_at.try(:strftime, "%d %b, %Y")
+        %dt Delivery date
+        %dd= @po.delivery_date.try(:strftime, "%d %b, %Y")
+        %dt Remarks
+        %dd= @po.remarks
+        %dt Delivery to
+        %dd= @po.deliver_to
+        %dt Created at
+        %dd= @po.created_at.try(:strftime, "%d %b, %Y")
+        %dt Created by
+        %dd= @po.created_by_user.email
+
+      %h4 Purchase Order items
+      %table.table.table-bordered
+        %thead
+          %tr
+            %th{colspan: 3} PO item
+            %th{colspan: 2} PRN
+            %th{colspan: 5} Product
+          %tr
+            %th Quantity
+            %th Unit cost
+            %th Unit cost GRN
+            %th Quantity
+            %th Remarks
+            %th product no
+            %th model no
+            %th Serial no
+            %th Description
+            %th Action
+        %tbody
+          - @po.inventory_po_items.where(closed: false).each do |po_item|
+            %tr
+              %td= po_item.quantity
+              %td= po_item.unit_cost
+              %td= po_item.unit_cost_grn
+              %td= po_item.inventory_prn_item.quantity
+              %td= po_item.inventory_prn_item.remarks
+              %td= po_item.inventory_prn_item.inventory_product.product_no
+              %td= po_item.inventory_prn_item.inventory_product.model_no
+              %td= po_item.inventory_prn_item.inventory_product.serial_no
+              %td= po_item.inventory_prn_item.inventory_product.description
+              %td= link_to "Select", grn_admins_inventories_path(purchase_order: "select_po_item", po_item_id: po_item.id), remote: true, class: "po_item_select_link", id: "po_item_#{po_item.id}"
+
+      #grn_item_frame
+
+

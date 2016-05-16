@@ -2,8 +2,8 @@
   .sidebar-nav
     %ul#side-menu.nav.nav-pills.nav-stacked
 
-      - [{path: "#", is_active: "active", content: "About us", icon_symbol: "cube"}, {path: "#", is_active: "active", content: "Organizations", icon_symbol: "sitemap"}, {path: "#", is_active: "active", content: "Employees", icon_symbol: "group"}, {path: admins_tickets_path, is_active: "active", content: "Tickets", icon_symbol: "tty"}, {path: "#", is_active: "active", content: "Permissions", icon_symbol: "shield"}, {path: "#", is_active: "active", content: "Roles", icon_symbol: "paper-plane-o"}, {path: "#", is_active: "active", content: "Sales", icon_symbol: "exchange"}, {path: "#", is_active: "active", content: "Inventory", icon_symbol: "list-alt"}, {path: "#", is_active: "active", content: "Country", icon_symbol: "flag"}].each do |e|
-        %li
-          = link_to e[:path], class: "text6 #{e[:is_active]}" do
+      - [{path: "#", is_active: "#{'active' if controller_name == 'organizations'}", content: "Organizations", icon_symbol: "sitemap"}, {path: "#", is_active: "#{'active' if controller_name == 'employees'}", content: "Employees", icon_symbol: "group"}, {path: admins_tickets_path, is_active: "#{'active' if controller_name == 'tickets'}", content: "Tickets", icon_symbol: "tty"}, {path: "#", is_active: "#{'active' if controller_name == 'roles'}", content: "Roles & Permissions", icon_symbol: "paper-plane-o"}, {path: "#", is_active: "#{'active' if controller_name == 'sales'}", content: "Sales", icon_symbol: "exchange"}, {path: "#", is_active: "#{'active' if controller_name == 'inventories'}", content: "Inventory", icon_symbol: "list-alt"}].each do |e|
+        %li{class: "#{e[:is_active]}"}
+          = link_to e[:path], class: "text6" do
             %span{class: "icon-#{e[:icon_symbol]}"}
             = e[:content]

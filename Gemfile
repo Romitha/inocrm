@@ -101,6 +101,8 @@ gem 'httpi'
 gem "websocket-rails"
 gem 'redis-rails'
 gem 'redcarpet'
+
+gem 'jquery-validation-rails'
 # gem "em-http-request"
 
 # Use debugger

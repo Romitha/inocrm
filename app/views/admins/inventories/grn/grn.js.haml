@@ -1,0 +1,49 @@
+- render_frame = "grn_frame"
+
+- if params[:po_id]
+  - render_frame = "po_frame"
+- elsif params[:po_item_id]
+  - render_frame = "grn_item_frame"
+
+- if params[:next]
+  - if @po_item.errors.present?
+    $("##{render_frame}").html("#{ j render 'admins/inventories/grn/grn_item' }");
+  - else
+    - if Rails.cache.fetch([:po_item_ids]).to_a.count == @po_item.inventory_po.inventory_po_items.count
+      $("##{render_frame}").html("#{j render 'admins/inventories/grn/grn_form' }");
+
+    - else
+      $("##{render_frame}").html("");
+
+- elsif params[:cancel]
+  $("##{render_frame}").html("");
+- else
+  $("##{render_frame}").html("#{ j render 'admins/inventories/grn/'+@render_template }");
+
+- if params[:po_id]
+  $(".po_select_link").css("pointer-events", "inherit").text("Select").parents("tr").eq(0).removeClass("warning");
+  $("#po_#{params[:po_id]}").css("pointer-events", "none").text("Selected").parents("tr").eq(0).addClass("warning");
+- elsif params[:po_item_id]
+  - if params[:next]
+    - if @po_item.errors.present?
+      $("#po_item_#{params[:po_item_id]}").css("pointer-events", "inherit").text("Must try!").parents("tr").eq(0).removeAttr("class").addClass("danger");
+    - else
+      $("#po_item_#{params[:po_item_id]}").css("pointer-events", "inherit").text("Success").parents("tr").eq(0).removeAttr("class").addClass("success");
+
+  - elsif params[:cancel]
+    $("#po_item_#{params[:po_item_id]}").css("pointer-events", "inherit").text("Must try!").parents("tr").eq(0).removeAttr("class").addClass("danger");
+  - else
+    $(".po_item_select_link").each(function(){$(this).css("pointer-events", "inherit").parents("tr").eq(0).removeClass("warning");});
+    $("#po_item_#{params[:po_item_id]}").css("pointer-events", "none").text("Selected").parents("tr").eq(0).addClass("warning");
+
+
+$('.datepicker').datepicker({
+format: "yyyy-m-dd",
+todayBtn: true,
+todayHighlight: true
+});
+
+$(".po_item_select_link, .po_select_link").click(function(){
+Tickets.ajax_loader();
+});
+Tickets.remove_ajax_loader();

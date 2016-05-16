@@ -158,6 +158,7 @@ class InventorySerialItem < ActiveRecord::Base
   has_many :inventory_serial_items_additional_costs, foreign_key: :serial_item_id
 
   has_many :inventory_serial_warranties, foreign_key: :serial_item_id
+  accepts_nested_attributes_for :inventory_serial_warranties, allow_destroy: :true
   has_many :inventory_warranties, through: :inventory_serial_warranties
 
   has_many :grn_serial_parts, foreign_key: :serial_item_id
@@ -348,4 +349,58 @@ end
 class InventoryRequest < ActiveRecord::Base
   self.table_name = "inv_disposal_request"
   belongs_to :inventory_disposal_method
+end
+
+class InventoryPo < ActiveRecord::Base
+  self.table_name = "inv_po"
+
+  belongs_to :supplier, class_name: "Organization", foreign_key: :supplier_id
+  belongs_to :store, class_name: "Organization", foreign_key: :store_id
+  belongs_to :created_by_user, class_name: "User", foreign_key: :created_by
+  belongs_to :approved_by_user, class_name: "User", foreign_key: :approved_by
+
+  has_many :inventory_po_items, foreign_key: :po_id
+end
+
+class InventoryPoItem < ActiveRecord::Base
+  self.table_name = "inv_po_item"
+
+  belongs_to :inventory_po, foreign_key: :po_id
+  belongs_to :inventory_prn_item, foreign_key: :prn_item_id
+
+  has_many :grn_items, foreign_key: :po_item_id
+  accepts_nested_attributes_for :grn_items, allow_destroy: true
+  has_many :grns, through: :grn_items
+
+  has_many :dyna_columns, as: :resourceable, autosave: true
+
+  [:temp_id].each do |dyna_method|
+    define_method(dyna_method) do
+      dyna_columns.find_by_data_key(dyna_method).try(:data_value)
+    end
+
+    define_method("#{dyna_method}=") do |value|
+      data = dyna_columns.find_or_initialize_by(data_key: dyna_method)
+      data.data_value = (value.class==Fixnum ? value : value.strip)
+      data.save# if data.persisted?
+    end
+  end
+end
+
+class InventoryPrn < ActiveRecord::Base
+  self.table_name = "inv_prn"
+
+  belongs_to :store, class_name: "Organization", foreign_key: :store_id
+  belongs_to :created_by_user, class_name: "User", foreign_key: :created_by
+
+  has_many :inventory_prn_items, foreign_key: :prn_id
+end
+
+class InventoryPrnItem < ActiveRecord::Base
+  self.table_name = "inv_prn_item"
+
+  belongs_to :inventory_prn, foreign_key: :prn_id
+  belongs_to :inventory_product, foreign_key: :product_id
+
+  has_many :po_items, foreign_key: :prn_item_id
 end
