@@ -41,7 +41,7 @@
       .row
         .col-md-3
         .col-md-3
-          %strong Estimated price: #{tsp.ticket_estimation.advance_payment_amount}
+          %strong Estimated price (#{tsp.object.ticket.ticket_currency.code}): #{tsp.ticket_estimation.advance_payment_amount}
 
         .col-md-3
           %strong Estimated by: #{User.cached_find_by_id(tsp.ticket_estimation.estimated_by).try(:email)}
@@ -55,7 +55,7 @@
       .row
         .col-md-3
         .col-md-3
-          %strong Advance payment amount:
+          %strong Advance payment amount(#{tsp.object.ticket.ticket_currency.code}):
           = tsp.ticket_estimation.advance_payment_amount
         .col-md-3
           %strong Customer approved by:
