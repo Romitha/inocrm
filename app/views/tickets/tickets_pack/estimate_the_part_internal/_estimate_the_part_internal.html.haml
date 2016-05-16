@@ -185,7 +185,7 @@
   .row
     .col-md-3
       = f.input :id, as: :hidden
-      = f.input :advance_payment_amount, as: :string, input_html: {class: "only_float", oninput: "Inventories.limit_payment_required(this); return false;"}, label: "Required advance payment amount"
+      = f.input :advance_payment_amount, label: "Advance payment amount (#{f.object.ticket.ticket_currency.code})", as: :string, input_html: {class: "only_float", oninput: "Inventories.limit_payment_required(this); return false;"}, label: "Required advance payment amount"
 
     .col-md-3.col-md-offset-6
       %strong Total cost price:

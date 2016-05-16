@@ -135,7 +135,7 @@
           .col-md-12.head_estimated_price_class.estimate_extend_with_tax
             .row.estimate_extend_with_tax
               .col-md-3.col-xs-3.col-sm-3
-                %strong{style: "margin-bottom: 5px; display: inline-block;"} Additional charge:
+                %strong{style: "margin-bottom: 5px; display: inline-block;"} Additional charge (#{ta.object.ticket.ticket_currency.code}):
                 .panel.panel-success
                   .panel-body.small_scale_padding2
                     = ta.object.additional_charge.try(:additional_charge)
