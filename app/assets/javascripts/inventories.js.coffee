@@ -24,6 +24,8 @@ window.Inventories =
     @inventory_product_category()
     @hp_po_function()
     @add_append()
+    @remove_warranty_click()
+    @add_warranty_click()
     return
 
   add_append: ->
@@ -638,3 +640,20 @@ window.Inventories =
         new_grn_batch.addClass("hide")
         new_grn_batch.find("input, select").each ->
           $(@).val("")
+
+  remove_warranty_click: (e)->
+    setTimeout (->
+      $(e).parent(".fields").siblings(".add_warranty").removeClass("hide")
+    ), 200
+
+  add_warranty_click: (e)->
+    setTimeout (->
+      # Tickets.load_datapicker()
+      $('.datepicker').datepicker
+        format: "yyyy-mm-dd"
+        todayBtn: true
+        todayHighlight: true
+
+      if $(e).is(".add_warranty")
+        $(e).addClass("hide")
+    ), 200

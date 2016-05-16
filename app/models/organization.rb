@@ -16,10 +16,6 @@ class Organization < ActiveRecord::Base
   accepts_nested_attributes_for :accounts, allow_destroy: true
   has_many :industry_types, through: :accounts
 
-
-  # has_many :departments
-
-  #2014_11_11
   has_many :users
   has_many :customers
   has_many :product_brands
@@ -171,6 +167,10 @@ class CompanyConfig < ActiveRecord::Base
 
   def next_sup_last_fsr_no
     sup_last_fsr_no.to_i+1
+  end
+
+  def next_sup_last_grn_no
+    inv_last_grn_no.to_i+1
   end
 
 end

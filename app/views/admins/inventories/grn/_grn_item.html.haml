@@ -1,0 +1,111 @@
+- need_serial = @po_item.inventory_prn_item.inventory_product.inventory_product_info.need_serial.present?
+- need_batch = @po_item.inventory_prn_item.inventory_product.inventory_product_info.need_batch.present?
+- inventory_product = @po_item.inventory_prn_item.inventory_product
+- inventory = inventory_product.inventories.first
+
+= simple_nested_form_for @grn_item, url: initialize_grn_admins_inventories_path(po_item_id: @po_item.try(:id)), method: :post, remote: true do |g|
+
+  - if !need_serial and need_batch
+    %fieldset
+      %legend Grn batches
+      = g.simple_fields_for :grn_batches do |b|
+        - b.object.build_inventory_batch unless b.object.inventory_batch.present?
+        = b.simple_fields_for :inventory_batch do |ib|
+          = ib.input :inventory_id, as: :hidden, input_html: {value: inventory.id }
+          = ib.input :product_id, as: :hidden, input_html: {value: inventory_product.id }
+          = ib.input :created_by, as: :hidden, input_html: {value: current_user.id }
+          %fieldset
+            %legend New batch
+            .row
+              .col-md-6
+                = ib.input :lot_no
+              .col-md-6
+                = ib.input :batch_no
+              .col-md-6
+                = ib.input :manufatured_date, as: :string, input_html: {class: "datepicker"}
+              .col-md-6
+                = ib.input :expiry_date, as: :string, input_html: {class: "datepicker"}
+              .col-md-12
+                = ib.input :remarks
+          = b.input :recieved_quantity
+          = b.input :remaining_quantity # Compulsory field in table
+        = b.link_to_remove "Remove"
+      = g.link_to_add "Add", :grn_batches, class: "add_grn_items", onclick: "Inventories.add_warranty_click(this);"
+
+  - if need_serial and !need_batch
+    %fieldset
+      %legend Grn serial items
+      = g.simple_fields_for :grn_serial_items do |b|
+        - b.object.build_inventory_serial_item unless b.object.inventory_serial_item.present?
+
+        = b.simple_fields_for :inventory_serial_item do |ib|
+          = ib.input :inventory_id, as: :hidden, input_html: {value: inventory.id }
+          = ib.input :product_id, as: :hidden, input_html: {value: inventory_product.id }
+          = ib.input :created_by, as: :hidden, input_html: {value: current_user.id }
+          = ib.input :inv_status_id, as: :hidden, input_html: {value: InventorySerialItemStatus.first.id }
+          %fieldset
+            %legend New serial item
+            .row
+              .col-md-4
+                = ib.association :product_condition, label_method: :condition, value_method: :id
+              .col-md-4
+                = ib.input :serial_no
+              .col-md-4
+                = ib.input :ct_no
+              .col-md-6
+                = ib.input :expiry_date, as: :string, input_html: {class: "datepicker"}
+              .col-md-6
+                = ib.input :manufatured_date, as: :string, input_html: {class: "datepicker"}
+              .col-md-4
+                = ib.input :scavenge
+              .col-md-4
+                = ib.input :parts_not_completed
+              .col-md-4
+                = ib.input :damage
+              .col-md-4
+                = ib.input :used
+              .col-md-4
+                = ib.input :repaired
+              .col-md-4
+                = ib.input :reserved
+              .col-md-12
+                = ib.input :remarks
+
+            %fieldset
+              %legend Warranty
+              = ib.simple_fields_for :inventory_serial_warranties do |iw|
+                - iw.object.build_inventory_warranty unless iw.object.inventory_warranty.present?
+                = iw.simple_fields_for :inventory_warranty do |w|
+                  = w.input :created_by, as: :hidden, input_html: {value: current_user.id }
+                  .row
+                    .col-md-4
+                      = w.association :inventory_warranty_type
+                    .col-md-4
+                      = w.input :start_at, as: :string, input_html: {class: "datepicker"}
+                    .col-md-4
+                      = w.input :end_at, as: :string, input_html: {class: "datepicker"}
+                    .col-md-4
+                      = w.input :period_part
+                    .col-md-4
+                      = w.input :period_labour
+                    .col-md-4
+                      = w.input :period_onsight
+                    .col-md-12
+                      = w.input :remarks
+                = iw.link_to_remove "remove warranty", class: "remove_warranty", onclick: "Inventories.remove_warranty_click(this);"
+              = ib.link_to_add "Add warranty", :inventory_serial_warranties, class: "add_warranty add_grn_items #{'hide' if ib.object.inventory_serial_warranties.any? { |w| w.new_record? }}", onclick: "Inventories.add_warranty_click(this);"
+
+
+            = b.link_to_remove "remove"
+
+      = g.link_to_add "Add grn serial item", :grn_serial_items, class: "add_grn_items", onclick: "Inventories.add_warranty_click(this);"
+
+  - if !(need_serial or need_batch)
+    = g.input :recieved_quantity
+  - else
+    = g.input :recieved_quantity, as: :hidden, input_html: {value: (need_serial and !need_batch ? 1 : 0 )}
+  = g.input :remarks
+
+  = g.submit "Cancel", class: "btn btn-link", name: "cancel"
+  = g.submit "Next", class: "btn btn-success btn-sm", name: "next"
+

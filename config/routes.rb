@@ -229,26 +229,28 @@ Rails.application.routes.draw do
     root "dashboards#index"
     resources :tickets do
       collection do
-  #     get "ticket_start_action"
+        get "ticket_start_action"
         get "problem_category"
         get "q_and_a"
       end
     end
     resources :employees do
       collection do
-  #     # get "sbu"
-  #     get "regional_support_center"
-        
+        get "sbu"
+        get "regional_support_center"
       end
     end
     resources :users do
       collection do
-  #     # get "title"
-        
+        get "title"
       end
     end
     resources :inventories do
       collection do
+        get "grn"
+        post "initialize_grn"
+        post "create_grn"
+
         [
           :inventory_location,
           :inventory_product,
@@ -260,7 +262,7 @@ Rails.application.routes.draw do
           :inventory_unit,
           :country
         ].each do |action|
-          match "inventory/#{action}", action: action, via: [:get, :post]
+          match "inventory/#{action.to_s}", action: action, via: [:get, :post]
         end
         #     get "accessories"
   #     get "payment_item"
@@ -279,6 +281,9 @@ Rails.application.routes.draw do
         
       end
     end
+
+    resources :organizations
+    resources :roles
   end
   # resources :admins do
   #   concerns :attachable

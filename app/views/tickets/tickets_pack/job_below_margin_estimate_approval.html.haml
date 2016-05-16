@@ -158,7 +158,7 @@
                             %br
                             %strong Total approved stimated price (#{estimate_currency}):
                             %span#total_estimated_price.for_payment_limit
-                              = estimation.ticket_estimation_additionals.sum(:estimated_price)
+                              = t.object.ticket_estimation_additionals.sum(:estimated_price)
                             %br
                             %strong Total profit (%):
                             %span#total_margin_price{style: "font-weight:bold;"}

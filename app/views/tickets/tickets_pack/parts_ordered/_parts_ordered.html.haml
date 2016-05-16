@@ -687,6 +687,7 @@
           = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
         = hidden_field_tag :ticket_on_loan_spare_part_id, ticket_on_loan_spare_part.id
+        = f.input :id, as: :hidden
 
         - if rce or rpr
           .row
