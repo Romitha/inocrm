@@ -3,7 +3,6 @@
 %fieldset
   %legend Edit Serial No
   = simple_nested_form_for product, url: update_edit_serial_tickets_path, method: :post do |f|
-
     = hidden_field_tag :process_id, Rails.cache.fetch(["/tickets/edit_serial", params[:task_id]])[:process_id]
     = hidden_field_tag :task_id, Rails.cache.fetch(["/tickets/edit_serial", params[:task_id]])[:task_id]
     = hidden_field_tag :owner, Rails.cache.fetch(["/tickets/edit_serial", params[:task_id]])[:owner]
