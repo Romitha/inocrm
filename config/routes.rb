@@ -248,7 +248,7 @@ Rails.application.routes.draw do
           :start_action,
           :sla
         ].each do |action|
-          match "ticket/#{action}", action: action, via: [:get, :post, :put]
+          match "ticket/#{action.to_s}", action: action, via: [:get, :post, :put]
         end
       end
     end
@@ -261,7 +261,7 @@ Rails.application.routes.draw do
         [
           :sbu
         ].each do |action|
-          match "employee/#{action}", action: action, via: [:get, :post, :put] 
+          match "employee/#{action.to_s}", action: action, via: [:get, :post, :put] 
         end
       end
     end
@@ -274,7 +274,7 @@ Rails.application.routes.draw do
         [
           :regional_support_center
         ].each do |action|
-          match "organization/#{action}", action: action, via: [:get, :post, :put] 
+          match "organization/#{action.to_s}", action: action, via: [:get, :post, :put] 
         end
       end
     end
@@ -289,7 +289,7 @@ Rails.application.routes.draw do
           :general_question,
           :title
         ].each do |action|
-          match "user/#{action}", action: action, via: [:get, :post, :put]
+          match "user/#{action.to_s}", action: action, via: [:get, :post, :put]
         end
       end
     end
@@ -332,7 +332,7 @@ Rails.application.routes.draw do
           :manufacture,
           :unit
         ].each do |action|
-          match "inventory/#{action}", action: action, via: [:get, :post, :put]
+          match "inventory/#{action.to_s}", action: action, via: [:get, :post, :put]
         end
         #     get "accessories"
   #     get "payment_item"
@@ -355,92 +355,6 @@ Rails.application.routes.draw do
     resources :organizations
     resources :roles
   end
-  # resources :admins do
-  #   concerns :attachable
-  #   collection do
-  #     get "total-tickets", :action => :total_tickets
-  #     get "today-open-tickets", :action => :today_open_tickets
-  #     get "today-closed-tickets", :action => :today_closed_tickets
-  #     get "open-tickets", :action => :open_tickets
-  #     get "closed-tickets", :action => :closed_tickets
-  #     get "total-products", :action => :total_products
-  #     post "update_reason"
-  #     get "organizations"
-
-  #     get "employees"
-  #     [:sbu, :title].each do |action|
-  #       match "employees/#{action}", action: action, via: [:get, :post]
-  #     end
-
-  #     get "inventory"
-  #     [:sbu, :title].each do |action|
-  #       match "inventory/#{action}", action: action, via: [:get, :post]
-  #     end
-
-  #     post "update_accessories"
-  #     post "update_country"
-  #     post "update_additional_charge"
-  #     get "customer_feedback"
-  #     post "update_customer_feedback"
-  #     get "general_question"
-  #     post "update_general_question"
-  #     post "update_payment_item"
-  #     post "update_regional_support_center"
-  #     post "update_spare_part_description"
-  #     post "update_ticket_start_action"
-  #     post "update_sla"
-  #     post "update_title"
-
-  #     get "inventory_location"
-  #     get "inventory_product"
-  #     get "inventory_category"
-  #     get "inventory_product_condition"
-  #     get "inventory_disposal_method"
-  #     get "inventory_reason"
-  #     get "inventory_manufacture"
-  #     get "inventory_unit"
-  #     post "update_inventory_location"
-  #     post "update_inventory_product"
-  #     post "update_inventory_category"
-  #     post "update_inventory_product_condition"
-  #     post "update_inventory_disposal_method"
-  #     post "update_inventory_reason"
-  #     post "update_inventory_manufacture"
-  #     post "update_inventory_unit"
-  #     put "inventory_location_update"
-  #     put "inventory_category_update"
-
-
-  #     post "update_pop_status"
-  #     get "about-us", :action => :about_us
-  #     match "tickets/brands_and_categories", to: "admins#brands_and_categories", via: [:get, :post]
-  #     match "tickets/problem_category", to: "admins#problem_category", via: [:get, :post]
-  #     match "tickets/q_and_a", to: "admins#q_and_a", via: [:get, :post]
-  #     # namespace "/tickets" do
-  #     #   get 'q_and_a', :action => :ticket_q_and_a
-  #     # end
-
-  #     put "inline_update"
-  #     put "inline_update_product_info"
-  #     put "inline_update_product_condition"
-  #     put "inline_update_disposal_method"
-  #     put "inline_update_inventory_reason"
-  #     put "inline_update_inventory_location_rack"
-  #     put "inline_update_inventory_location_shelf"
-  #     put "inline_update_inventory_location_bin"
-  #     put "inline_update_inventory_brand"
-  #     put "inline_update_inventory_product"
-  #     put "inline_update_inventory_category"
-  #     get "delete_location_rack"
-  #     get "delete_location_shelf"
-  #     get "delete_location_bin"
-  #     get "delete_inventory_brand"
-  #     get "delete_inventory_product"
-  #     get "delete_inventory_category"
-  #     get "delete_inventory_product_form"
-      
-  #   end
-  # end
 
   resources :inventories, except: [:index, :show, :create, :new, :update, :destroy, :edit] do
     collection do
