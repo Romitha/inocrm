@@ -1,0 +1,63 @@
+%h3 Inventory Reason
+= simple_nested_form_for @inventory_reason, url: inventory_reason_admins_inventories_path(create: true), method: :post do |i|
+  .row{style: "margin-top: 15px; "}
+    .col-md-3
+      = i.input :srn_issue_terminate, wrapper: :append
+    .col-md-3
+      = i.input :damage, wrapper: :append
+    .col-md-3
+      = i.input :srr, wrapper: :append
+    .col-md-3
+      = i.input :disposal, wrapper: :append
+  .row
+    .col-md-4
+      = i.input :created_by,  as: :hidden, input_html: {value: current_user.id}
+      = i.input :updated_by,  as: :hidden, input_html: {value: current_user.id}
+      
+  .row
+    .col-md-7
+      = i.input :reason
+  .row{style: "margin-top:20px; margin-bottom:20px;"}
+    .col-md-7
+      = i.submit "Save", class: "btn btn-success pull-right", id: "submit_new_inventory_reason"
+
+#accordion.panel-group
+  - @inventory_reason_all.each_with_index do |inv_reason, index|
+    .panel.panel-info
+      .panel-heading
+        %h3.panel-title
+          %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
+            #{index+1} inventory reason : #{inv_reason.reason}
+          - unless inv_reason.is_used_anywhere?
+            = link_to delete_admin_inventory_reason_admins_inventories_path(inventory_reason_id: inv_reason.id), method: :delete,  :data => { :confirm => 'Are you sure?' } do
+              %span.glyphicon.glyphicon-trash
+      .panel-collapse.collapse.in{:id => "#{index}"}
+        .panel-body
+          .row.col-md-12
+            .col-md-2
+              %strong srn issue terminate:
+            .col-md-4
+              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "inventory_reason", name: "srn_issue_terminate", url: inventory_reason_admins_inventories_path(edit: true, inventory_reason_id: inv_reason.id), "original-title" => "Update reason"} do
+                = inv_reason.srn_issue_terminate && "Yes" || "No"
+            .col-md-2
+              %strong Damage:
+            .col-md-4
+              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "inventory_reason", name: "damage", url: inventory_reason_admins_inventories_path(edit: true, inventory_reason_id: inv_reason.id), "original-title" => "Update reason"} do
+                = inv_reason.damage && "Yes" || "No"
+          .row.col-md-12
+            .col-md-2
+              %strong srr:
+            .col-md-4
+              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "inventory_reason", name: "srr", url: inventory_reason_admins_inventories_path(edit: true, inventory_reason_id: inv_reason.id), "original-title" => "Update reason"} do
+                = inv_reason.srr && "Yes" || "No"
+            .col-md-2
+              %strong Disposal:
+            .col-md-4
+              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "inventory_reason", name: "disposal", url: inventory_reason_admins_inventories_path(edit: true, inventory_reason_id: inv_reason.id), "original-title" => "Update reason"} do
+                = inv_reason.disposal && "Yes" || "No"
+          .row.col-md-12
+            .col-md-2
+              %strong Reason:
+            .col-md-4
+              = link_to "#", class: "inline_edit", data: {type: "textarea", resource: "inventory_reason", name: "reason", url:inventory_reason_admins_inventories_path(edit: true, inventory_reason_id: inv_reason.id), "original-title" => "Update reason", value: ""}, style: "line-height: 6px;" do
+                = inv_reason.reason

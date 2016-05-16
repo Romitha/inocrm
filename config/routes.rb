@@ -232,35 +232,107 @@ Rails.application.routes.draw do
   #     get "ticket_start_action"
         get "problem_category"
         get "q_and_a"
+        delete "delete_admin_reason"
+        delete "delete_admin_country"
+        delete "delete_admin_accessory"
+        delete "delete_admin_additional_charge"
+        delete "delete_admin_spare_part_description"
+        delete "delete_admin_ticket_start_action"
+        delete "delete_admin_sla"
+        [
+          :reason,
+          :country,
+          :accessories,
+          :additional_charge,
+          :spare_part_description,
+          :start_action,
+          :sla
+        ].each do |action|
+          match "ticket/#{action}", action: action, via: [:get, :post, :put]
+        end
       end
     end
     resources :employees do
       collection do
   #     # get "sbu"
   #     get "regional_support_center"
-        
+        delete "delete_admin_sbu"
+        delete "delete_admin_sbu_engineer"
+        [
+          :sbu
+        ].each do |action|
+          match "employee/#{action}", action: action, via: [:get, :post, :put] 
+        end
+      end
+    end
+    resources :organizations do
+      collection do
+  #     # get "sbu"
+  #     get "regional_support_center"
+        delete "delete_admin_regional_support_center"
+        delete "delete_sbu_regional_engineer"
+        [
+          :regional_support_center
+        ].each do |action|
+          match "organization/#{action}", action: action, via: [:get, :post, :put] 
+        end
       end
     end
     resources :users do
       collection do
   #     # get "title"
-        
+        delete "delete_admin_general_question"
+        delete "delete_admin_customer_feedback"
+        delete "delete_admin_title"
+        [
+          :customer_feedback,
+          :general_question,
+          :title
+        ].each do |action|
+          match "user/#{action}", action: action, via: [:get, :post, :put]
+        end
       end
     end
     resources :inventories do
       collection do
+        delete "delete_admin_payment_item"
+        delete "delete_product_category"
+        delete "delete_admin_brands_and_category"
+        delete "delete_problem_category"
+        delete "delete_q_and_a"
+        delete "delete_location_rack"
+        delete "delete_location_shelf"
+        delete "delete_location_bin"
+        delete "delete_inventory_brand"
+        delete "delete_inventory_product"
+        delete "delete_inventory_category"
+        delete "delete_inventory_product_form"
+        delete "delete_product_condition"
+        delete "delete_disposal_method"
+        delete "delete_admin_inventory_reason"
+        delete "delete_inventory_manufacture"
+        delete "delete_inventory_unit"
         [
-          :inventory_location,
+          :location,
           :inventory_product,
-          :inventory_category,
+          :category,
           :inventory_product_condition,
           :inventory_disposal_method,
           :inventory_reason,
           :inventory_manufacture,
           :inventory_unit,
-          :country
+          :country,
+          :payment_item,
+          :brands_and_category,
+          :problem_and_category,
+          :product,
+          :product_condition,
+          :disposal_method,
+          :reason,
+          :manufacture,
+          :unit
         ].each do |action|
-          match "inventory/#{action}", action: action, via: [:get, :post]
+          match "inventory/#{action}", action: action, via: [:get, :post, :put]
         end
         #     get "accessories"
   #     get "payment_item"

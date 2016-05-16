@@ -1,0 +1,26 @@
+= simple_form_for @customer_feedback, url: user_customer_feedback_admins_users_path(create: true), method: :post do |f|
+  .row
+    .col-md-6
+      = f.input :feedback, input_html: {rows: 1}
+  .row{style: "margin-top:20px; margin-bottom:20px;"}
+    .col-md-6
+      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_customer_feedback"
+
+#accordion.panel-group
+  - @customer_feedback_all.each_with_index do |ad_feedback, index|
+    .panel.panel-info
+      .panel-heading
+        %h3.panel-title
+          %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
+            Customer Feedback : #{ad_feedback.feedback}
+            - unless ad_feedback.is_used_anywhere?
+              = link_to delete_admin_customer_feedback_admins_users_path(customer_feedback_id: ad_feedback.id),  method: :delete, :data => { :confirm => 'Are you sure?' } do
+                %span.glyphicon.glyphicon-trash
+      .panel-collapse.collapse.in{:id => "#{index}"}
+        .panel-body
+          .row.col-md-12
+            .col-md-2
+              %strong Customer Feedback:
+            .col-md-4
+              = link_to "#", class: "inline_edit", data: {type: "textarea", resource: "feedback", name: "feedback", url:user_customer_feedback_admins_users_path(edit: true, customer_feedback_id: ad_feedback.id), "original-title" => "Update Customer Feedback", value: ""}, style: "line-height: 6px;" do
+                = ad_feedback.feedback

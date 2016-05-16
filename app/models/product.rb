@@ -45,7 +45,7 @@ class ProductBrand < ActiveRecord::Base
 
   def is_used_anywhere?
     TicketSparePart
-    products.any? or product_categories.any? or return_parts_bundles.any? or currency.present? or sla_time.present?
+    products.any? or product_categories.any? or return_parts_bundles.any?
   end
 end
 
@@ -57,10 +57,10 @@ class ProductCategory < ActiveRecord::Base
   belongs_to :product_brand, foreign_key: :product_brand_id
   belongs_to :sla_time, foreign_key: :sla_id
 
-  validates_presence_of [:product_brand_id, :name]
+  validates_presence_of [:name]
 
   def is_used_anywhere?
-    products.any? or product_brand.present? or sla_time.present?
+    products.any?
   end
 end
 
@@ -73,6 +73,8 @@ end
 class ProductSoldCountry < ActiveRecord::Base
   self.table_name = "mst_country"
 
+  validates :Country, presence: true, uniqueness: true
+  validates :code, presence: true, uniqueness: true
   has_many :products, foreign_key: :sold_country_id
 
   has_many :inventory_product_info, foreign_key: :country_id

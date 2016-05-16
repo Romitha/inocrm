@@ -191,6 +191,12 @@ class ProblemCategory < ActiveRecord::Base
   accepts_nested_attributes_for :q_and_as, allow_destroy: true
 
   validates_presence_of [:name]
+  validates_uniqueness_of :name
+
+  def is_used_anywhere?
+    tickets.any? or q_and_as.any?
+  end
+
 end
 
 class TicketContactType < ActiveRecord::Base
@@ -298,6 +304,7 @@ end
 class TicketStartAction < ActiveRecord::Base
   self.table_name = "mst_spt_ticket_start_action"
 
+  validates :action, presence: true, uniqueness: true
   has_many :tickets, foreign_key: :job_started_action_id
   accepts_nested_attributes_for :tickets, allow_destroy: true
 
@@ -319,6 +326,8 @@ end
 
 class Reason < ActiveRecord::Base
   self.table_name = "mst_spt_reason"
+
+  validates :reason, presence: true, uniqueness: true
 
   has_many :tickets, foreign_key: :hold_reason_id
   accepts_nested_attributes_for :tickets, allow_destroy: true
