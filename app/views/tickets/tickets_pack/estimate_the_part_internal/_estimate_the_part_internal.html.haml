@@ -1,11 +1,11 @@
 - uri = URI(request.url)
 = simple_nested_form_for estimation, url: update_estimate_the_part_internal_inventories_path, method: :post do |f|
 
-  / = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
-  / = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
-  / = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
-  / - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
-  /   = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+  = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
+  = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
+  = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
+  - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
+    = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
   = f.simple_fields_for :ticket_estimation_parts do |t|
 

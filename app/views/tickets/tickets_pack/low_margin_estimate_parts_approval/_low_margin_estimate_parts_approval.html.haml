@@ -121,6 +121,60 @@
                       %td= grn_item.grn.created_at.try(:strftime, "%d-%m-%Y")
                       %td
                         = grn_item.unit_cost
+
+      - unless t.object.ticket_spare_part.ticket_spare_part_manufacture.present?
+        %hr
+        .row.estimate_extend_with_tax
+          .col-md-2
+            %strong Cost Prices (#{t.object.ticket.ticket_currency.code}):
+            %span.append_cost_price
+              = t.object.cost_price.to_f
+          .col-md-3
+            %strong Requested Est. Price (#{t.object.ticket.ticket_currency.code}):
+            %span= t.object.estimated_price.to_f
+            .append_estimated_price.hide= t.object.estimated_price.to_f
+          .col-md-2
+            %span{style: "font-weight:bold;"} Profit :
+            %span.append_profit_margin{style: "font-weight:bold;font-size:125%;"}
+            %span (
+            %span#db_margin{style: "font-weight:bold;"}= CompanyConfig.first.try(:sup_internal_part_profit_margin).to_f
+            %span )
+            %span %
+          .col-md-5
+            = t.input :approved_estimated_price, label: "Approved estimation price (#{ticket.ticket_currency.code})", input_html: {min: "0", class: "estimation_value only_float", oninput: "Inventories.calculate_cost_price(this);", value: t.object.estimated_price.to_f }, wrapper_html: {class: "inline-input"}
+
+          .col-md-12
+            %hr
+            .panel-group
+              .panel.panel-success
+                .panel-heading Additional taxes
+                .panel-body
+                  = t.simple_fields_for :ticket_estimation_part_taxes do |ee|
+                    = ee.input :tax_rate,  as: :hidden, input_html: {id: "tax_rate_hidden_field_id", class: "payment_item_value"}
+
+                    .row.parent_class_set
+
+                      .col-md-4
+                        = label_tag "Tax"
+                        %br/
+                        = ee.select :tax_id, Tax.all.map{|p| ["#{p.tax} (#{p.tax_rates.find_by_active(true).try(:rate).to_f}%)", p.id, {"data-default-amount" => p.tax_rates.find_by_active(true).try(:rate).to_f}]}, {include_blank: true}, {class: "payment_item_select tax_rate_calculation col-md-12", onchange: "Inventories.payment_amount_select(this); return false;"}
+
+                      .col-md-3
+                        %strong{style: "margin-bottom: 5px; display: inline-block;"} Estimated tax amount:
+                        .panel.panel-success
+                          .panel-body.small_scale_padding2
+                            = ee.object.estimated_tax_amount
+
+                      .col-md-4
+                        = ee.input :approved_tax_amount, label: "Approved tax amount (#{ticket.ticket_currency.code})", as: :string, input_html: {class: "estimated_tax_amount_class"}
+                      .add_sign.col-md-3{style: "padding-top:2.5%;"}
+                        = ee.link_to_remove class: "remove_c_t_v_link" do
+                          %span.glyphicon.glyphicon-remove-sign
+
+                = t.link_to_add :ticket_estimation_part_taxes, class: "small_scale_padding-right2" do
+                  %span.glyphicon.glyphicon-plus-sign
+                  Add tax
+
   .row
     .col-md-12
       %fieldset
@@ -157,25 +211,24 @@
                     .panel-heading Taxes
                     .panel-body.tax_wrapper
                       = ta.simple_fields_for :ticket_estimation_additional_taxes do |e|
+                        = e.input :tax_rate,  as: :hidden, input_html: { class: "payment_item_value"}
 
                         .row.parent_class_set
-                          .add_sign.col-md-3{style: "padding-top:2.5%;"}
-                            = e.link_to_remove class: "remove_c_t_v_link" do
-                              %span.glyphicon.glyphicon-remove-sign
 
-                          .col-md-3
+                          .col-md-4
                             = label_tag "Tax"
                             %br/
-                            = e.select :tax_id, Tax.all.map{|p| ["#{p.tax} (#{p.tax_rates.find_by_active(true).try(:rate).to_f}%)", p.id, {"data-default-amount" => p.tax_rates.find_by_active(true).try(:rate).to_f}]}, {include_blank: true}, {class: "payment_item_select tax_rate_calculation", onchange: "Inventories.payment_amount_select(this); return false;"}
+                            = e.select :tax_id, Tax.all.map{|p| ["#{p.tax} (#{p.tax_rates.find_by_active(true).try(:rate).to_f}%)", p.id, {"data-default-amount" => p.tax_rates.find_by_active(true).try(:rate).to_f}]}, {include_blank: true}, {class: "payment_item_select tax_rate_calculation col-md-12", onchange: "Inventories.payment_amount_select(this); return false;"}
                           .col-md-3
                             %strong{style: "margin-bottom: 5px; display: inline-block;"} Estimated tax amount:
                             .panel.panel-success
                               .panel-body.small_scale_padding2
                                 = e.object.estimated_tax_amount
-                          .col-md-3
+                          .col-md-4
                             = e.input :approved_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class", value: e.object.estimated_tax_amount}, label: "Approved tax amount (#{estimate_currency})"
-                          .col-md-3
-                            = e.input :tax_rate,  as: :hidden, input_html: { class: "payment_item_value"}
+                          .add_sign.col-md-3{style: "padding-top:2.5%;"}
+                            = e.link_to_remove class: "remove_c_t_v_link" do
+                              %span.glyphicon.glyphicon-remove-sign
 
                       = ta.link_to_add :ticket_estimation_additional_taxes, class: "small_scale_padding-right2" do
                         %span.glyphicon.glyphicon-plus-sign
