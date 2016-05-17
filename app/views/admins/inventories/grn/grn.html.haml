@@ -1,12 +1,13 @@
 .row
   .col-md-12
     #grn_frame
+      %h4 Create Good Recieve Note (Grn)
+
+      = link_to "With Purchase Order", grn_admins_inventories_path(purchase_order: "yes"), remote: true, class: "btn btn-default btn-sm"
       .btn-group
-        %button.btn.btn-default.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown", :type => "button"}
-          Create Good Recieve Note (GRN)
+        %button{type: :button, class: "btn btn-default dropdown-toggle", "data-toggle"=> "dropdown", "aria-haspopup"=>"true", "aria-expanded"=>"false"}
+          Without Purchase Order
           %span.caret
         %ul.dropdown-menu
-          %li
-            = link_to "With Purchase Order", grn_admins_inventories_path(purchase_order: "yes"), remote: true
-          %li
-            = link_to "Without Purchase Order", grn_admins_inventories_path(purchase_order: "no"), remote: true
+          - Organization.stores.each do |store|
+            %li= link_to store.name, grn_admins_inventories_path(purchase_order: "no", store_id: store.id), remote: true

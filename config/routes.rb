@@ -294,7 +294,15 @@ Rails.application.routes.draw do
       end
     end
     resources :inventories do
+
       collection do
+
+        get "grn"
+        post "initialize_grn"
+        post "create_grn"
+        post "initiate_grn_for_i_product"
+        post "create_grn_for_i_product"
+
         delete "delete_admin_payment_item"
         delete "delete_product_category"
         delete "delete_admin_brands_and_category"
