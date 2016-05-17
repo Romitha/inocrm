@@ -536,7 +536,6 @@ window.Inventories =
     return
 
   calculate_low_approved_price: ->
-
     $(".low_margin_cost_price").each ->
 
       low_margin_estimate_rate = ( parseInt($(@).parents("fieldset").find(".low_margin_estimated_price").text()) - parseInt($(@).parents("fieldset").find(".low_margin_cost_price").text()) )*100/parseInt($(@).parents("fieldset").find(".low_margin_cost_price").text())

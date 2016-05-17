@@ -1495,7 +1495,7 @@ class TicketsController < ApplicationController
     Grn
     Organization
     ticket_id = params[:ticket_id]
-    @ticket = Ticket.find_by_id ticket_id
+    @ticket = Ticket.find ticket_id
     @product = @ticket.products.first
 
     if @ticket
