@@ -1,25 +1,28 @@
-.row
-  .col-md-12
-    = form_tag grn_admins_inventories_path(purchase_order: "search_inventory"), remote: true, method: :get, class: "form-horizontal" do
-      .form-group
-        = label_tag "Brand", "Brand", class: "col-md-2 control-label"
-        .col-md-10
-          = text_field_tag "po[po_no]", nil, placeholder: "Po No", class: "form-control"
-      .form-group
-        = label_tag "PO No", "Po date from", class: "col-md-2 control-label"
-        .col-md-10
-          = text_field_tag "po_date_from", nil, placeholder: "Po Date from", class: "form-control datepicker"
-      .form-group
-        = label_tag "PO No", "Po date to", class: "col-md-2 control-label"
-        .col-md-10
-          = text_field_tag "po_date_to", nil, placeholder: "Po Date to", class: "form-control datepicker"
-      .form-group
-        = label_tag "PO No", "store", class: "col-md-2 control-label"
-        .col-md-10
-          = select_tag "po[store_id]", options_from_collection_for_select(@stores, "id", "name"), class: "form-control"
-      .form-group
-        = label_tag "PO No", "Supplier", class: "col-md-2 control-label"
-        .col-md-10
-          = select_tag "po[supplier_id]", options_from_collection_for_select(@stores, "id", "name"), class: "form-control"
-      .col-md-3
-        = submit_tag "Search", class: "btn btn-success btn-lg"
+%table.table.table-hover
+  %thead
+    %tr
+      %th No
+      %th Category
+      %th Serial code
+      %th Description
+      %th Model no
+      %th Product no
+      %th Part no
+      %th Manufacture
+      %th Unit
+      %th Action
+  %tbody
+    - @inventory_products.each_with_index do |pr, index|
+      %tr
+        %td= index+1
+        %td= pr.inventory_category3.name
+        %td= pr.serial_no
+        %td= pr.description
+        %td= pr.model_no
+        %td= pr.product_no
+        %td= pr.spare_part_no
+        %td= pr.inventory_product_info.manufacture.manufacture
+        %td= pr.inventory_unit.unit
+        %td= link_to "Select", grn_admins_inventories_path(purchase_order: "select_inventory", inventory_product_id: pr.id), remote: true, id: "i_product_#{pr.id}", class: "po_select_link"
+
+#po_frame

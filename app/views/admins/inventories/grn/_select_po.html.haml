@@ -1,25 +1,26 @@
-.row
-  .col-md-12
-    = form_tag grn_admins_inventories_path(purchase_order: "search_po"), remote: true, method: :get, class: "form-horizontal" do
-      .form-group
-        = label_tag "PO No", "Po No", class: "col-md-2 control-label"
-        .col-md-10
-          = text_field_tag "po[po_no]", nil, placeholder: "Po No", class: "form-control"
-      .form-group
-        = label_tag "PO No", "Po date from", class: "col-md-2 control-label"
-        .col-md-10
-          = text_field_tag "po_date_from", nil, placeholder: "Po Date from", class: "form-control datepicker"
-      .form-group
-        = label_tag "PO No", "Po date to", class: "col-md-2 control-label"
-        .col-md-10
-          = text_field_tag "po_date_to", nil, placeholder: "Po Date to", class: "form-control datepicker"
-      .form-group
-        = label_tag "PO No", "store", class: "col-md-2 control-label"
-        .col-md-10
-          = select_tag "po[store_id]", options_from_collection_for_select(@stores, "id", "name"), class: "form-control"
-      .form-group
-        = label_tag "PO No", "Supplier", class: "col-md-2 control-label"
-        .col-md-10
-          = select_tag "po[supplier_id]", options_from_collection_for_select(@stores, "id", "name"), class: "form-control"
-      .col-md-3
-        = submit_tag "Search", class: "btn btn-success btn-lg"
+%table.table.table-hover
+  %thead
+    %tr
+      %th No
+      %th Store
+      %th Supplier Name
+      %th Po. No
+      %th Po. Date
+      %th Delivery date
+      %th Remarks
+      %th Created by
+      %th Action
+  %tbody
+    - @pos.each_with_index do |po, index|
+      %tr
+        %td= index+1
+        %td= po.store.name
+        %td= po.supplier.name
+        %td= po.po_no
+        %td= po.created_at.try(:strftime, "%Y-%m-%d")
+        %td= po.delivery_date.try(:strftime, "%Y-%m-%d")
+        %td= po.remarks
+        %td= po.created_by_user.email
+        %td= link_to "Select", grn_admins_inventories_path(purchase_order: "select_po", po_id: po.id), remote: true, id: "po_#{po.id}", class: "po_select_link"
+
+#po_frame

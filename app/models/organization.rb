@@ -79,6 +79,7 @@ class Organization < ActiveRecord::Base
   has_many :act_job_estimations, foreign_key: :supplier_id
 
   has_many :inventories, foreign_key: :store_id
+  has_many :inventory_products, through: :inventories
 
   has_many :ticket_spare_part_stores, foreign_key: :store_id
 

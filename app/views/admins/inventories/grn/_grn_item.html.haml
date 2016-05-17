@@ -1,9 +1,15 @@
-- need_serial = @po_item.inventory_prn_item.inventory_product.inventory_product_info.need_serial.present?
-- need_batch = @po_item.inventory_prn_item.inventory_product.inventory_product_info.need_batch.present?
-- inventory_product = @po_item.inventory_prn_item.inventory_product
-- inventory = inventory_product.inventories.first
+- if @po_item
+  - need_serial = @po_item.inventory_prn_item.inventory_product.inventory_product_info.need_serial.present?
+  - need_batch = @po_item.inventory_prn_item.inventory_product.inventory_product_info.need_batch.present?
+  - inventory_product = @po_item.inventory_prn_item.inventory_product
+  - inventory = inventory_product.inventories.first
+- elsif @inventory_product
+  - need_serial = @inventory_product.inventory_product_info.need_serial.present?
+  - need_batch = @inventory_product.inventory_product_info.need_batch.present?
+  - inventory_product = @inventory_product
+  - inventory = inventory_product.inventories.first
 
-= simple_nested_form_for @grn_item, url: initialize_grn_admins_inventories_path(po_item_id: @po_item.try(:id)), method: :post, remote: true do |g|
+= simple_nested_form_for @grn_item, url: initialize_grn_admins_inventories_path(po_item_id: (@po_item.try(:id) or @inventory_product.try(:id))), method: :post, remote: true do |g|
 
   - if !need_serial and need_batch
     %fieldset

@@ -515,11 +515,25 @@ module Admins
       case params[:purchase_order]
       when "yes"
         @stores = Organization.stores
-        @render_template = "select_po"
+        @render_template = "search_po"
       when "no"
+        @render_template = "search_inventory"
+
+      when "search_inventory"
+        @store = Organization.find params[:store_id]
+
+        inventory_product_hash = params[:search_inventory].except("brand", "product").to_hash
+        category3_id = inventory_product_hash["mst_inv_product"]["category3_id"]
+        updated_hash = inventory_product_hash["mst_inv_product"].except("category3_id").to_hash.inject({}){|i, (k, v)| i.merge(k.to_sym => "%#{v}%")}
+        @inventory_products = @store.inventory_products.where("category3_id = category3_id", category3_id).where("serial_no like :serial_no and spare_part_no like :spare_part_no and model_no like :model_no and product_no like :product_no and description like :description", updated_hash)
+
         @render_template = "select_inventory"
 
       when "select_inventory"
+        @inventory_product = InventoryProduct.find params[:inventory_product_id]
+
+        @grn_item = Rails.cache.fetch([:grn_item, :i_product, @inventory_product.id ]) { GrnItem.new }
+        @render_template = "grn_item"
         
       when "search_po"
         @pos = InventoryPo.where(closed: false).where("po_no = :po_no or store_id = :store_id or supplier_id = :supplier_id", params[:po])
@@ -528,7 +542,7 @@ module Admins
         end
 
         Rails.cache.delete([:po_item_ids])
-        @render_template = "search_po"
+        @render_template = "select_po"
 
       when "select_po"
         @po = InventoryPo.find params[:po_id]
@@ -615,6 +629,12 @@ module Admins
       Rails.cache.delete([:po_item_ids])
 
       redirect_to grn_admins_inventories_url
+
+    end
+
+    def initiate_grn_for_i_product
+      Inventory
+
 
     end
 

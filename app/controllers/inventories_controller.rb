@@ -53,8 +53,6 @@ class InventoriesController < ApplicationController
 
   def hp_po
     Inventory
-    # Product
-    # @product_brand = ProductBrand.all
     TicketSparePart
     @create_so_po = SoPo.new
     @view_so_pos = SoPo.all
