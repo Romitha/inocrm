@@ -114,7 +114,7 @@
                         = ee.select :tax_id, Tax.all.map{|p| ["#{p.tax} (#{p.tax_rates.find_by_active(true).try(:rate).to_f}%)", p.id, {"data-default-amount" => p.tax_rates.find_by_active(true).try(:rate).to_f}]}, {include_blank: true}, {class: "payment_item_select tax_rate_calculation", onchange: "Inventories.payment_amount_select(this); return false;"}
 
                       .col-md-4
-                        = ee.input :estimated_tax_amount, label: "Estimated Tax Amount (#{ee.object.try(:ticket_estimation_part).try(:ticket).try(:ticket_currency).try(:code)})", as: :string, input_html: {class: "estimated_tax_amount_class"}
+                        = ee.input :estimated_tax_amount, label: "Estimated Tax Amount (#{ticket.ticket_currency.code})", as: :string, input_html: {class: "estimated_tax_amount_class"}
                       .col-md-4
                         = ee.input :tax_rate,  as: :hidden, input_html: {id: "tax_rate_hidden_field_id", class: "payment_item_value"}
 
@@ -140,12 +140,12 @@
                   %br/
                   = ta.select :additional_charge_id, AdditionalCharge.all.map{|p| [p.additional_charge, p.id, {"data-default-amount" => p.default_cost_price.to_f, "data-estimation-amount" => p.default_estimated_price.to_f}]}, {include_blank: true}, {class: "payment_item_select", onchange: "Inventories.payment_amount_select(this); return false;"}
                 .col-md-3
-                  = ta.input :cost_price, label: "Cost Price (#{ta.object.try(:ticket).try(:ticket_currency).try(:code)})", as: :string, input_html: {class: "value_class payment_item_value", oninput: "Inventories.calculate_cost_price(this);"}
+                  = ta.input :cost_price, label: "Cost Price (#{ticket.ticket_currency.code})", as: :string, input_html: {class: "value_class payment_item_value", oninput: "Inventories.calculate_cost_price(this);"}
                   .append_cost_price.hide
                     = ta.object.cost_price.to_f
 
                 .col-md-3
-                  = ta.input :estimated_price, label: "Estimated Price (#{ta.object.try(:ticket).try(:ticket_currency).try(:code)})", as: :string, input_html: {class: "estimation_value estimated_value est_add_estimated_price", oninput: "Inventories.calculate_cost_price(this);"}
+                  = ta.input :estimated_price, label: "Estimated Price (#{ticket.ticket_currency.code})", as: :string, input_html: {class: "estimation_value estimated_value est_add_estimated_price", oninput: "Inventories.calculate_cost_price(this);"}
                   .append_estimated_price.hide
                     = ta.object.estimated_price.to_f
                 .col-md-2
@@ -168,7 +168,7 @@
                               %br/
                               = e.select :tax_id, Tax.all.map{|p| ["#{p.tax} (#{p.tax_rates.find_by_active(true).try(:rate).to_f}%)", p.id, {"data-default-amount" => p.tax_rates.find_by_active(true).try(:rate).to_f}]}, {include_blank: true}, {class: "payment_item_select tax_rate_calculation", onchange: "Inventories.payment_amount_select(this); return false;"}
                             .col-md-3
-                              = e.input :estimated_tax_amount, label: "Estimated tax amount (#{e.object.try(:ticket_estimation_additional).try(:ticket).try(:ticket_currency).try(:code)})", as: :string, input_html: {class: "estimated_tax_amount_class"}
+                              = e.input :estimated_tax_amount, label: "Estimated tax amount (#{ticket.ticket_currency.code})", as: :string, input_html: {class: "estimated_tax_amount_class"}
                             .col-md-3
                               = e.input :tax_rate,  as: :hidden, input_html: { class: "payment_item_value"}
 
