@@ -14,10 +14,10 @@
       %th
   %tbody
     - @search_customers.each do |search_customer|
-      - search_customer.tickets.each do |ticket|
+      - search_customer.tickets.order("created_at ASC ").each do |ticket|
         - index += 1
         %tr
-          / %td #{index}
+          %td #{index}
           %td #{ticket.created_at.to_date }
           %td #{ticket.id}
           %td #{ticket.try(:customer).try(:name)}
