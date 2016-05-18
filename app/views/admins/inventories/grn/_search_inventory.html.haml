@@ -1,33 +1,33 @@
 .row
   .col-md-12
     #search_frame
-      = form_tag grn_admins_inventories_path(purchase_order: "search_inventory"), remote: true, method: :get do
+      = form_tag grn_admins_inventories_path(purchase_order: "search_inventory"), remote: true, method: :get, class: "form-horizontal" do
         = hidden_field_tag :issue_part, params[:issue_part] 
         = hidden_field_tag :select_frame, params[:select_frame] 
         = hidden_field_tag :checked_value, params[:checked_value] 
         .row
           = hidden_field_tag "store_id", params[:store_id]
           / .col-md-3.store
-          .col-md-3.brand
+          .col-md-12.brand
             = label_tag InventoryCategoryCaption.first.caption
-            = select_tag "search_inventory[brand]", options_from_collection_for_select(InventoryCategory1.all, :id, :name, (params[:search_inventory] and params[:search_inventory][:brand])), include_blank: true
-          .col-md-3.product
+            = select_tag "search_inventory[brand]", options_from_collection_for_select(InventoryCategory1.all, :id, :name, (params[:search_inventory] and params[:search_inventory][:brand])), include_blank: true, class: "form-control"
+          .col-md-12.product
             = label_tag InventoryCategoryCaption.second.caption
-            = select_tag "search_inventory[product]", option_groups_from_collection_for_select(InventoryCategory1.all, :inventory_category2s, :name, :id, :name, (params[:search_inventory] and params[:search_inventory][:product])), include_blank: true
-          .col-md-3.category
+            = select_tag "search_inventory[product]", option_groups_from_collection_for_select(InventoryCategory1.all, :inventory_category2s, :name, :id, :name, (params[:search_inventory] and params[:search_inventory][:product])), include_blank: true, class: "form-control"
+          .col-md-12.category
             = label_tag InventoryCategoryCaption.third.caption
-            = select_tag "search_inventory[mst_inv_product][category3_id]", option_groups_from_collection_for_select(InventoryCategory2.all, :inventory_category3s, :name, :id, :name, (params[:search_inventory] and params[:search_inventory][:mst_inv_product][:category3_id])), include_blank: true
+            = select_tag "search_inventory[mst_inv_product][category3_id]", option_groups_from_collection_for_select(InventoryCategory2.all, :inventory_category3s, :name, :id, :name, (params[:search_inventory] and params[:search_inventory][:mst_inv_product][:category3_id])), include_blank: true, class: "form-control"
         .row.small_scale_margin-top1
           .col-md-2.serial_code
-            = text_field_tag "search_inventory[mst_inv_product][serial_no]", (params[:search_inventory] and params[:search_inventory][:mst_inv_product][:serial_no]), :placeholder => "Serial Code", style: "width: 100%;"
+            = text_field_tag "search_inventory[mst_inv_product][serial_no]", (params[:search_inventory] and params[:search_inventory][:mst_inv_product][:serial_no]), :placeholder => "Serial Code", class: "form-control"
           .col-md-2.part_no
-            = text_field_tag "search_inventory[mst_inv_product][spare_part_no]", (params[:search_inventory] and params[:search_inventory][:mst_inv_product][:spare_part_no]), :placeholder => "Part No", style: "width: 100%;"
+            = text_field_tag "search_inventory[mst_inv_product][spare_part_no]", (params[:search_inventory] and params[:search_inventory][:mst_inv_product][:spare_part_no]), :placeholder => "Part No", class: "form-control"
           .col-md-2.model_no
-            = text_field_tag "search_inventory[mst_inv_product][model_no]", (params[:search_inventory] and params[:search_inventory][:mst_inv_product][:model_no]), :placeholder => "Model No", style: "width: 100%;"
+            = text_field_tag "search_inventory[mst_inv_product][model_no]", (params[:search_inventory] and params[:search_inventory][:mst_inv_product][:model_no]), :placeholder => "Model No", class: "form-control"
           .col-md-3.product_no
-            = text_field_tag "search_inventory[mst_inv_product][product_no]", (params[:search_inventory] and params[:search_inventory][:mst_inv_product][:product_no]), :placeholder => "Product No", style: "width: 100%;"
+            = text_field_tag "search_inventory[mst_inv_product][product_no]", (params[:search_inventory] and params[:search_inventory][:mst_inv_product][:product_no]), :placeholder => "Product No", class: "form-control"
           .col-md-3.description
-            = text_field_tag "search_inventory[mst_inv_product][description]", (params[:search_inventory] and params[:search_inventory][:mst_inv_product][:description]), placeholder: "Description", style: "width: 100%;"
+            = text_field_tag "search_inventory[mst_inv_product][description]", (params[:search_inventory] and params[:search_inventory][:mst_inv_product][:description]), placeholder: "Description", class: "form-control"
 
         .row.small_scale_margin-top1
           .col-md-1

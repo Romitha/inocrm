@@ -41,17 +41,22 @@
             %th Action
         %tbody
           - @po.inventory_po_items.where(closed: false).each do |po_item|
-            %tr
-              %td= po_item.quantity
-              %td= po_item.unit_cost
-              %td= po_item.unit_cost_grn
-              %td= po_item.inventory_prn_item.quantity
-              %td= po_item.inventory_prn_item.remarks
-              %td= po_item.inventory_prn_item.inventory_product.product_no
-              %td= po_item.inventory_prn_item.inventory_product.model_no
-              %td= po_item.inventory_prn_item.inventory_product.serial_no
-              %td= po_item.inventory_prn_item.inventory_product.description
-              %td= link_to "Select", grn_admins_inventories_path(purchase_order: "select_po_item", po_item_id: po_item.id), remote: true, class: "po_item_select_link", id: "po_item_#{po_item.id}"
+            - if !po_item.inventory_prn_item.inventory_product.non_stock_item
+              %tr
+                %td= po_item.quantity
+                %td= po_item.unit_cost
+                %td= po_item.unit_cost_grn
+                %td= po_item.inventory_prn_item.quantity
+                %td= po_item.inventory_prn_item.remarks
+                %td= po_item.inventory_prn_item.inventory_product.product_no
+                %td= po_item.inventory_prn_item.inventory_product.model_no
+                %td= po_item.inventory_prn_item.inventory_product.serial_no
+                %td= po_item.inventory_prn_item.inventory_product.description
+                %td
+                  - if po_item.inventory_prn_item.inventory_product.inventories.any?
+                    = link_to "Select", grn_admins_inventories_path(purchase_order: "select_po_item", po_item_id: po_item.id), remote: true, class: "po_item_select_link", id: "po_item_#{po_item.id}"
+                  - else
+                    No inventories
 
       #grn_item_frame
 

@@ -1,3 +1,4 @@
 = simple_form_for @grn, url: create_grn_admins_inventories_path, method: :post do |f|
+	= f.input :po_id, as: :hidden
 	= f.input :remarks
 	= f.submit "Save"
