@@ -2,6 +2,10 @@
   .col-md-12
     = form_tag grn_admins_inventories_path(purchase_order: "search_po"), remote: true, method: :get, class: "form-horizontal" do
       .form-group
+        = label_tag "PO No", "store", class: "col-md-2 control-label"
+        .col-md-10
+          = select_tag "po[store_id]", options_from_collection_for_select(@stores, "id", "name"), class: "form-control"
+      .form-group
         = label_tag "PO No", "Po No", class: "col-md-2 control-label"
         .col-md-10
           = text_field_tag "po[po_no]", nil, placeholder: "Po No", class: "form-control"
@@ -13,10 +17,6 @@
         = label_tag "PO No", "Po date to", class: "col-md-2 control-label"
         .col-md-10
           = text_field_tag "po_date_to", nil, placeholder: "Po Date to", class: "form-control datepicker"
-      .form-group
-        = label_tag "PO No", "store", class: "col-md-2 control-label"
-        .col-md-10
-          = select_tag "po[store_id]", options_from_collection_for_select(@stores, "id", "name"), class: "form-control"
       .form-group
         = label_tag "PO No", "Supplier", class: "col-md-2 control-label"
         .col-md-10

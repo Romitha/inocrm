@@ -3,13 +3,15 @@
   - need_batch = @po_item.inventory_prn_item.inventory_product.inventory_product_info.need_batch.present?
   - inventory_product = @po_item.inventory_prn_item.inventory_product
   - inventory = inventory_product.inventories.first
+  - url = initialize_grn_admins_inventories_path(po_item_id: @po_item.try(:id), inventory_product_id: @inventory_product.try(:id))
 - elsif @inventory_product
   - need_serial = @inventory_product.inventory_product_info.need_serial.present?
   - need_batch = @inventory_product.inventory_product_info.need_batch.present?
   - inventory_product = @inventory_product
   - inventory = inventory_product.inventories.first
+  - url = initiate_grn_for_i_product_admins_inventories_path(inventory_product_id: @inventory_product.try(:id))
 
-= simple_nested_form_for @grn_item, url: initialize_grn_admins_inventories_path(po_item_id: (@po_item.try(:id) or @inventory_product.try(:id))), method: :post, remote: true do |g|
+= simple_nested_form_for @grn_item, url: url, method: :post, remote: true do |g|
 
   - if !need_serial and need_batch
     %fieldset
@@ -33,8 +35,7 @@
                 = ib.input :expiry_date, as: :string, input_html: {class: "datepicker"}
               .col-md-12
                 = ib.input :remarks
-          = b.input :recieved_quantity
-          = b.input :remaining_quantity # Compulsory field in table
+          = b.input :recieved_quantity, as: :string
         = b.link_to_remove "Remove"
       = g.link_to_add "Add", :grn_batches, class: "add_grn_items", onclick: "Inventories.add_warranty_click(this);"
 
@@ -43,6 +44,8 @@
       %legend Grn serial items
       = g.simple_fields_for :grn_serial_items do |b|
         - b.object.build_inventory_serial_item unless b.object.inventory_serial_item.present?
+
+        = b.input :remaining, as: :hidden, input_html: {value: true }
 
         = b.simple_fields_for :inventory_serial_item do |ib|
           = ib.input :inventory_id, as: :hidden, input_html: {value: inventory.id }
@@ -107,11 +110,11 @@
       = g.link_to_add "Add grn serial item", :grn_serial_items, class: "add_grn_items", onclick: "Inventories.add_warranty_click(this);"
 
   - if !(need_serial or need_batch)
-    = g.input :recieved_quantity
+    = g.input :recieved_quantity, as: :string, input_html: {value: 0}
   - else
     = g.input :recieved_quantity, as: :hidden, input_html: {value: (need_serial and !need_batch ? 1 : 0 )}
-  = g.input :remarks
+  = g.input :remarks, label: "Grn item remarks"
 
-  = g.submit "Cancel", class: "btn btn-link", name: "cancel"
-  = g.submit "Next", class: "btn btn-success btn-sm", name: "next"
+  = g.submit "Remove", class: "btn btn-link", name: "cancel"
+  = g.submit "Add", class: "btn btn-success btn-sm", name: "next"
 

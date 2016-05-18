@@ -3,6 +3,7 @@ class Grn < ActiveRecord::Base
 
   belongs_to :store, class_name: "Organization"
   belongs_to :srn
+  belongs_to :inventory_po, foreign_key: :po_id
 
   has_many :grn_items
 
@@ -34,6 +35,7 @@ class GrnItem < ActiveRecord::Base
 
   has_many :gin_sources
   has_many :gin_serial_parts
+  has_many :grn_item_current_unit_cost_histories
 
   has_many :dyna_columns, as: :resourceable, autosave: true
 
@@ -83,4 +85,11 @@ class GrnSerialPart < ActiveRecord::Base
 
   has_many :gin_sources, foreign_key: :grn_serial_part_id
 
+end
+
+class GrnItemCurrentUnitCostHistory < ActiveRecord::Base
+  self.table_name = "inv_grn_item_current_unit_cost_history"
+
+  belongs_to :grn_item
+  belongs_to :created_by_user, foreign_key: :created_by
 end

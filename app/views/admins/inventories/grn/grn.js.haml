@@ -1,15 +1,13 @@
 - render_frame = "grn_frame"
 
-- if params[:po_id] or params[:inventory_product_id]
-  - render_frame = "po_frame"
-- elsif params[:po_item_id]
+- if params[:po_item_id] or params[:inventory_product_id]
   - render_frame = "grn_item_frame"
 
 - if params[:next]
-  - if @po_item.errors.present?
+  - if @grn_item.errors.present?
     $("##{render_frame}").html("#{ j render 'admins/inventories/grn/grn_item' }");
   - else
-    - if Rails.cache.fetch([:po_item_ids]).to_a.count == @po_item.inventory_po.inventory_po_items.count
+    - if Rails.cache.fetch([:po_item_ids]).to_a.count > 0 or Rails.cache.fetch([:inventory_product_ids]).to_a.count > 0
       $("##{render_frame}").html("#{j render 'admins/inventories/grn/grn_form' }");
 
     - else
@@ -25,7 +23,7 @@
   $("#po_#{params[:po_id]}").css("pointer-events", "none").text("Selected").parents("tr").eq(0).addClass("warning");
 - elsif params[:po_item_id] or params[:inventory_product_id]
   - if params[:next]
-    - if @po_item.errors.present?
+    - if @grn_item.errors.present?
       $("#po_item_#{params[:po_item_id]}, #i_product_#{params[:inventory_product_id]}").css("pointer-events", "inherit").text("Must try!").parents("tr").eq(0).removeAttr("class").addClass("danger");
     - else
       $("#po_item_#{params[:po_item_id]}, #i_product_#{params[:inventory_product_id]}").css("pointer-events", "inherit").text("Success").parents("tr").eq(0).removeAttr("class").addClass("success");
