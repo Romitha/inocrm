@@ -643,62 +643,82 @@ module Admins
       Inventory
       Organization
       @grn = Grn.new grn_params
-      if @grn.inventory_po.present?
+      if @grn.inventory_po.present? # With PO Items
         @grn.store_id = @grn.inventory_po.store_id
         @grn.po_id = @grn.inventory_po.id
-      else
+      else                          # Without PO Items
         @grn.store_id = session[:store_id]
       end
       @grn.created_at = DateTime.now
       @grn.created_by = current_user.id
-      @grn.grn_no = CompanyConfig.first.next_sup_last_grn_no
+      @grn.grn_no = CompanyConfig.first.increase_inv_last_grn_no
       @grn.save!
 
+      # With PO Items
       Rails.cache.fetch([:po_item_ids]).to_a.each do | po_item_id |
         po_item = InventoryPoItem.find po_item_id
         grn_item = Rails.cache.fetch([:grn_item, po_item_id ] )
+        tot_recieved_qty = 0
 
-        grn_item.grn_batches.each{ |gb| gb.remaining_quantity = gb.recieved_quantity }
+        grn_item.grn_batches.each do |gb| 
+          gb.remaining_quantity = gb.recieved_quantity 
+          tot_recieved_qty += gb.recieved_quantity
+        end
+        grn_item.grn_serial_items.each do |s|
+          tot_recieved_qty += 1
+        end
+        tot_recieved_qty = grn_item.recieved_quantity if tot_recieved_qty == 0
 
         grn_item.grn_id = @grn.id
         grn_item.po_item_id = po_item.id
         grn_item.product_id = po_item.inventory_prn_item.product_id
-        grn_item.remaining_quantity = grn_item.recieved_quantity
-        grn_item.unit_cost = po_item.unit_cost
-        grn_item.current_unit_cost = po_item.unit_cost
+        grn_item.recieved_quantity = grn_item.remaining_quantity = tot_recieved_qty
+        grn_item.unit_cost = grn_item.current_unit_cost = po_item.unit_cost_grn
         grn_item.currency_id = grn_item.inventory_product.inventory_product_info.currency_id
+        grn_item.inventory_not_updated = false
         grn_item.save!
 
-        # inventory = grn_item.inventory_product.inventories.find_by_store_id(@grn.store_id)
-        # inventory.update stock_quantity: (inventory.stock_quantity + grn_item.inventory_batches.sum(:recieved_quantity))
+        inventory = grn_item.inventory_product.inventories.find_by_store_id(@grn.store_id)
+        inventory.update stock_quantity: (inventory.stock_quantity + tot_recieved_qty), available_quantity: (inventory.available_quantity + tot_recieved_qty)
+
         grn_item.grn_item_current_unit_cost_histories.create created_by: current_user.id, current_unit_cost: grn_item.current_unit_cost
 
         Rails.cache.delete([:grn_item, po_item_id] )
 
+        po_item.update closed: (po_item.quantity.to_f <= po_item.grn_items.sum(:recieved_quantity).to_f )
       end
 
       if @grn.inventory_po.present?
-        @grn.inventory_po.inventory_po_items.each do |po_item|
-          po_item.update closed: (po_item.quantity.to_f <= po_item.grn_items.sum(:recieved_quantity).to_f )
-        end
+        @grn.inventory_po.update closed: @grn.inventory_po.inventory_po_items.all?{ |i| i.closed }
       end
 
+      # Without PO Items
       Rails.cache.fetch([:inventory_product_ids]).to_a.each do | inventory_product_id |
         inventory_product = InventoryProduct.find inventory_product_id
         grn_item = Rails.cache.fetch( [:grn_item, :i_product, inventory_product.id ] )
+        tot_recieved_qty = 0
 
-        grn_item.grn_batches.each{ |gb| gb.remaining_quantity = gb.recieved_quantity }
+        grn_item.grn_batches.each do |gb|
+          gb.remaining_quantity = gb.recieved_quantity
+          tot_recieved_qty += gb.recieved_quantity
+        end
+        grn_item.grn_serial_items.each do |s|
+          tot_recieved_qty += 1
+        end
+        tot_recieved_qty = grn_item.recieved_quantity if tot_recieved_qty == 0
 
         grn_item.grn_id = @grn.id
         grn_item.product_id = inventory_product.id
-        grn_item.remaining_quantity = grn_item.recieved_quantity
-        grn_item.unit_cost = inventory_product.unit_cost
-        grn_item.current_unit_cost = inventory_product.unit_cost
+        grn_item.recieved_quantity = tot_recieved_qty
+        grn_item.remaining_quantity = tot_recieved_qty
+        grn_item.current_unit_cost = grn_item.unit_cost
         grn_item.currency_id = inventory_product.inventory_product_info.currency_id
+        grn_item.inventory_not_updated = false
         grn_item.save!
 
-        # inventory = grn_item.inventory_product.inventories.find_by_store_id(@grn.store_id)
-        # inventory.update stock_quantity: (inventory.stock_quantity + grn_item.inventory_batches.sum(:recieved_quantity))
+        inventory = grn_item.inventory_product.inventories.find_by_store_id(@grn.store_id)
+        inventory.update stock_quantity: (inventory.stock_quantity + tot_recieved_qty), available_quantity: (inventory.available_quantity + tot_recieved_qty)
+
         grn_item.grn_item_current_unit_cost_histories.create created_by: current_user.id, current_unit_cost: grn_item.current_unit_cost
 
         Rails.cache.delete([:grn_item, po_item_id] )
