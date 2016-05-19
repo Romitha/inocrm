@@ -765,7 +765,18 @@ class TicketsController < ApplicationController
   end
 
   def paginate_payment_pending_tickets
-    @search_customers = Rails.cache.read([:search_customers]).page(params[:page]).per(params[:per_page])
+    User
+    if params[:customer_name].present?
+      search_customer_name = params[:customer_name]
+      @search_customers = Customer.where("name like ?", "%#{search_customer_name}%").page(params[:page]).per(params[:per_page])
+      # @search_customers = Kaminari.paginate_array(@search_customers).page(params[:page]).per(params[:per_page])
+    else
+      @search_customers = Customer.all.page(params[:page]).per(params[:per_page])
+      # @search_customers = Kaminari.paginate_array(@search_customers).page(params[:page]).per(params[:per_page])
+    end
+
+    # @search_customers = Rails.cache.read([:search_customers]).page(params[:page]).per(params[:per_page])
+    render "tickets/tickets_pack/customer_advance_payment/paginate_payment_pendings"
   end
 
   def paginate_ticket_grn_items
@@ -1930,15 +1941,16 @@ class TicketsController < ApplicationController
 
     if params[:customer_name].present?
       search_customer_name = params[:customer_name]
-      @search_customers = Customer.where("name like ?", "%#{search_customer_name}%")
-      @search_customers = Kaminari.paginate_array(@search_customers).page(params[:page]).per(10)
+      # @grn_items = GrnItem.all.page(params[:page]).per(3)
+      @search_customers = Customer.where("name like ?", "%#{search_customer_name}%").page(params[:page]).per(3)
+      # @search_customers = Kaminari.paginate_array(@search_customers).page(params[:page]).per(3)
     else
-      @search_customers = Customer.all
-      @search_customers = Kaminari.paginate_array(@search_customers).page(params[:page]).per(10)
+      @search_customers = Customer.all.page(params[:page]).per(3)
+      # @search_customers = Kaminari.paginate_array(@search_customers).page(params[:page]).per(3)
     end
 
-    @customers = Customer.all
-    render "tickets/tickets_pack/customer_advance_paymente"
+    # @search_customers = Customer.all
+    render "tickets/tickets_pack/customer_advance_payment/customer_advance_paymente"
   end
 
   def create_invoice_for_hp
