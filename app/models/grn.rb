@@ -50,6 +50,10 @@ class GrnItem < ActiveRecord::Base
       data.save# if data.persisted?
     end
   end
+
+  validates_presence_of :recieved_quantity
+  # validates_presence_of [:unit_cost, :current_unit_cost, :currency_id, :recieved_quantity, :remaining_quantity, :grn_id], on: :create
+  # validates_presence_of :unit_cost, on: :create
 end
 
 class GrnBatch < ActiveRecord::Base
@@ -61,6 +65,8 @@ class GrnBatch < ActiveRecord::Base
 
   has_many :gin_sources
   has_many :damages
+
+  validates_presence_of :recieved_quantity
 
 end
 

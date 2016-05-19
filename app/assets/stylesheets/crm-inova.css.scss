@@ -434,3 +434,8 @@ abbr{
   display: block;
   float: left;
 }
+label {
+  &.error {
+    color: red;
+  }
+}

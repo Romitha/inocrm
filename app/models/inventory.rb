@@ -139,6 +139,8 @@ class InventoryBatch < ActiveRecord::Base
   belongs_to :inventory
   belongs_to :inventory_product, foreign_key: :product_id
 
+  validates_presence_of [:inventory_id, :product_id, :created_by, :lot_no, :batch_no]
+
 end
 
 class InventorySerialItem < ActiveRecord::Base
@@ -163,6 +165,8 @@ class InventorySerialItem < ActiveRecord::Base
 
   has_many :grn_serial_parts, foreign_key: :serial_item_id
   has_many :grn_items, through: :grn_serial_parts
+
+  validates_presence_of [:inventory_id, :product_id, :serial_no, :product_condition_id, :inv_status_id, :created_by]
 
 end
 
@@ -261,6 +265,8 @@ class InventoryWarranty < ActiveRecord::Base
   has_many :inventory_warranties_for_batches, through: :inventory_batch_warranties, source: :inventory_warranty
 
   belongs_to :inventory_warranty_type, foreign_key: :warranty_type_id
+
+  validates_presence_of [:warranty_type_id, :start_at, :end_at, :created_by]
 
 end
 
