@@ -12,6 +12,5 @@
         = submit_tag "Search", :name => nil
     .row
       .col-md-12
-        #payment_pending_tickets_pagination
-          = render "tickets/payment_pending_tickets", search_customers: @search_customers
+        = render "tickets/tickets_pack/customer_advance_payment/payment_pending_tickets", search_customers: @search_customers
                   
