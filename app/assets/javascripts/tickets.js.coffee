@@ -375,7 +375,7 @@ window.Tickets =
 
   call_extend_warranty_template: ->
     $("#extend_warranty_select").change ->
-      $.post "/tickets/extend_warranty", {switch_to: $(":selected", @).val()}
+      $.post "/tickets/extend_warranty", {switch_to: $(":selected", @).val(), task_id: $(@).data("task-id")}
 
   validate_start_action: ->
     $("#update_start_action").click (e)->
