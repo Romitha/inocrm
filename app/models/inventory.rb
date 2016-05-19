@@ -134,6 +134,7 @@ class InventoryBatch < ActiveRecord::Base
   has_many :inventory_serial_items, foreign_key: :batch_id
 
   has_many :inventory_batch_warranties, foreign_key: :batch_id
+  accepts_nested_attributes_for :inventory_batch_warranties, allow_destroy: true
   has_many :inventory_warranties, through: :inventory_batch_warranties
 
   belongs_to :inventory
@@ -249,6 +250,7 @@ class InventoryBatchWarranty < ActiveRecord::Base
 
   belongs_to :inventory_batch, foreign_key: :batch_id
   belongs_to :inventory_warranty, foreign_key: :warranty_id
+  accepts_nested_attributes_for :inventory_warranty, allow_destroy: true
 end
 
 class InventoryWarranty < ActiveRecord::Base

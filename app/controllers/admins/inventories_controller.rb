@@ -524,10 +524,11 @@ module Admins
         session[:store_id] = @store.id
 
         Rails.cache.delete([:inventory_product_ids])
+        Rails.cache.delete([:po_item_ids])
         inventory_product_hash = params[:search_inventory].except("brand", "product").to_hash
         category3_id = inventory_product_hash["mst_inv_product"]["category3_id"]
-        updated_hash = inventory_product_hash["mst_inv_product"].except("category3_id").to_hash.inject({}){|i, (k, v)| i.merge(k.to_sym => "%#{v}%")}
-        @inventory_products = @store.inventory_products.where("category3_id = category3_id", category3_id).where("serial_no like :serial_no and spare_part_no like :spare_part_no and model_no like :model_no and product_no like :product_no and description like :description", updated_hash)
+        updated_hash = inventory_product_hash["mst_inv_product"].except("category3_id").to_hash.map { |k, v| "#{k} like '%#{v}%'" if v.present? }.compact.join(" and ")
+        @inventory_products = @store.inventory_products.where("category3_id = ?", category3_id).where(updated_hash)
 
         @render_template = "select_inventory"
 
@@ -543,6 +544,7 @@ module Admins
           @pos = @pos.where(created_at: (params[:po_date_from]..params[:po_date_to]))
         end
 
+        Rails.cache.delete([:inventory_product_ids])
         Rails.cache.delete([:po_item_ids])
         session[:po_id] = nil
         @render_template = "select_po"
@@ -791,7 +793,7 @@ module Admins
       end
 
       def grn_item_params
-        params.require(:grn_item).permit(:id, :recieved_quantity, :unit_cost, :remarks, grn_batches_attributes: [:id, :recieved_quantity, :remaining_quantity, :_destroy, inventory_batch_attributes: [:id, :_destroy, :inventory_id, :product_id, :created_by, :lot_no, :batch_no, :manufatured_date, :expiry_date, :remarks, ]], grn_serial_items_attributes: [:id, :_destroy, :recieved_quantity, :remaining, inventory_serial_item_attributes: [:id, :_destroy, :inventory_id, :product_id, :inv_status_id, :created_by, :serial_no, :ct_no, :manufatured_date, :expiry_date, :scavenge, :parts_not_completed, :damage, :used, :repaired, :reserved, :product_condition_id, :remarks, inventory_serial_warranties_attributes: [:id, :_destroy, inventory_warranty_attributes: [:id, :_destroy, :created_by, :start_at, :end_at, :period_part, :period_labour, :period_onsight, :remarks, :warranty_type_id]]]])
+        params.require(:grn_item).permit(:id, :recieved_quantity, :unit_cost, :remarks, grn_batches_attributes: [:id, :recieved_quantity, :remaining_quantity, :_destroy, inventory_batch_attributes: [:id, :_destroy, :inventory_id, :product_id, :created_by, :lot_no, :batch_no, :manufatured_date, :expiry_date, :remarks, inventory_batch_warranties_attributes: [:id, :_destroy, inventory_warranty_attributes: [:id, :_destroy, :created_by, :start_at, :end_at, :period_part, :period_labour, :period_onsight, :remarks, :warranty_type_id]] ]], grn_serial_items_attributes: [:id, :_destroy, :recieved_quantity, :remaining, inventory_serial_item_attributes: [:id, :_destroy, :inventory_id, :product_id, :inv_status_id, :created_by, :serial_no, :ct_no, :manufatured_date, :expiry_date, :scavenge, :parts_not_completed, :damage, :used, :repaired, :reserved, :product_condition_id, :remarks, inventory_serial_warranties_attributes: [:id, :_destroy, inventory_warranty_attributes: [:id, :_destroy, :created_by, :start_at, :end_at, :period_part, :period_labour, :period_onsight, :remarks, :warranty_type_id]]]])
       end
 
       def grn_params
