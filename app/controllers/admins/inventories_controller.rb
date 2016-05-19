@@ -721,7 +721,7 @@ module Admins
 
         grn_item.grn_item_current_unit_cost_histories.create created_by: current_user.id, current_unit_cost: grn_item.current_unit_cost
 
-        Rails.cache.delete([:grn_item, po_item_id] )
+        Rails.cache.delete([:grn_item, :i_product, inventory_product.id ] )
 
       end
 
