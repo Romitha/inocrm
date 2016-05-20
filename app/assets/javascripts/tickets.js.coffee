@@ -49,6 +49,8 @@ window.Tickets =
     $(".fancy_scroll_bar").mCustomScrollbar
       theme:"minimal-dark"
 
+    $("form").validate();
+
   bind_mCustomScrollbar: ->
     $(".fancy_scroll_bar").mCustomScrollbar
       theme: "rounded-dark"

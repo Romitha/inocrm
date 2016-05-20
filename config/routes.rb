@@ -75,9 +75,6 @@ Rails.application.routes.draw do
   resources :tickets do
     concerns :attachable
     collection do
-      post "customer_summary"
-      post "comment_methods"
-      post "reply_ticket"
 
       post "find_by_serial"
 
@@ -91,60 +88,6 @@ Rails.application.routes.draw do
       get "paginate_ticket_histories"
       get "paginate_ticket_grn_items"
       get "paginate_payment_pending_tickets"
-
-      post "create_product_brand"
-      post "create_new_category"
-      post "create_new_product"
-      post "create_product"
-      post "create_customer"
-      post "select_sla"
-      post "create_sla"
-
-      post "create_contact_persons"
-      post "create_contact_person_record"
-      post "create_problem_category"
-      post "create_accessory"
-      post "create_extra_remark"
-      post "after_printer"
-      post "get_template"
-
-      put "product_update"
-      put "ticket_update"
-      post "create_product_country"
-      post "finalize_ticket_save"
-
-      post "q_and_answer_save"
-
-      post "join_tickets"
-      post "update_assign_ticket"
-      post "update_pop_approval"
-      post "call_resolution_template"
-      post "call_mf_order_template"
-      post "call_alert_template"
-
-      # post "order_manufacture_parts_edit_serial_no"
-      # post "update_order_mfp_hold"
-      post "update_order_mfp_part_order"
-      post "update_order_mfp_wrrnty_extnd_rqst"
-      post "update_order_mfp_return_manufacture_part"
-      post "update_order_mfp_termnt_prt_order"
-      post "update_approve_store_parts"
-      post "update_deliver_bundle"
-      post "update_bundle_return_part"
-      # post "update_order_mfp_edit_serial_no"
-      post "update_edit_serial"
-      post "update_close_event"
-
-      post "update_received_and_issued"
-      # get "close_event"
-      post "extend_warranty_update_reject_extend_warranty"
-      post "update_return_manufacture_part"
-      post "hold_unhold"
-      post "update_estimation_part"
-      post "update_return_store_part"
-      post "update_ticket_close_approval"
-      post "update_collect_parts"
-
       get "edit-ticket", :action => :edit_ticket
       get "pop-approval"#, :action => :pop_note
       get "resolution"
@@ -192,6 +135,55 @@ Rails.application.routes.draw do
       get "alert"
 
       get "ajax_show"
+
+      post "create_product_brand"
+      post "create_new_category"
+      post "create_new_product"
+      post "create_product"
+      post "create_customer"
+      post "select_sla"
+      post "create_sla"
+
+      post "create_contact_persons"
+      post "create_contact_person_record"
+      post "create_problem_category"
+      post "create_accessory"
+      post "create_extra_remark"
+      post "after_printer"
+      post "get_template"
+
+      put "product_update"
+      put "ticket_update"
+      post "create_product_country"
+      post "finalize_ticket_save"
+
+      post "q_and_answer_save"
+
+      post "join_tickets"
+      post "update_assign_ticket"
+      post "update_pop_approval"
+      post "call_resolution_template"
+      post "call_mf_order_template"
+      post "call_alert_template"
+      post "update_order_mfp_part_order"
+      post "update_order_mfp_wrrnty_extnd_rqst"
+      post "update_order_mfp_return_manufacture_part"
+      post "update_order_mfp_termnt_prt_order"
+      post "update_approve_store_parts"
+      post "update_deliver_bundle"
+      post "update_bundle_return_part"
+      post "update_edit_serial"
+      post "update_close_event"
+
+      post "update_received_and_issued"
+      post "extend_warranty_update_reject_extend_warranty"
+      post "update_return_manufacture_part"
+      post "hold_unhold"
+      post "update_estimation_part"
+      post "update_return_store_part"
+      post "update_ticket_close_approval"
+      post "update_collect_parts"
+
     end
 
     member do
@@ -239,57 +231,53 @@ Rails.application.routes.draw do
         delete "delete_admin_spare_part_description"
         delete "delete_admin_ticket_start_action"
         delete "delete_admin_sla"
+        delete "delete_admin_general_question"
+        delete "delete_admin_customer_feedback"
         [
           :reason,
-          :country,
           :accessories,
           :additional_charge,
           :spare_part_description,
           :start_action,
-          :sla
+          :customer_feedback,
+          :general_question,
+          :problem_and_category,
         ].each do |action|
-          match "ticket/#{action.to_s}", action: action, via: [:get, :post, :put]
+          match "#{action.to_s}", action: action, via: [:get, :post, :put]
         end
       end
     end
     resources :employees do
       collection do
-  #     # get "sbu"
-  #     get "regional_support_center"
         delete "delete_admin_sbu"
         delete "delete_admin_sbu_engineer"
         [
           :sbu
         ].each do |action|
-          match "employee/#{action.to_s}", action: action, via: [:get, :post, :put] 
+          match "#{action.to_s}", action: action, via: [:get, :post, :put] 
         end
       end
     end
     resources :organizations do
       collection do
-  #     # get "sbu"
-  #     get "regional_support_center"
         delete "delete_admin_regional_support_center"
         delete "delete_sbu_regional_engineer"
         [
-          :regional_support_center
+          :regional_support_center,
+          :country,
+          :sla
         ].each do |action|
-          match "organization/#{action.to_s}", action: action, via: [:get, :post, :put] 
+          match "#{action.to_s}", action: action, via: [:get, :post, :put] 
         end
       end
     end
     resources :users do
       collection do
-  #     # get "title"
-        delete "delete_admin_general_question"
-        delete "delete_admin_customer_feedback"
         delete "delete_admin_title"
         [
-          :customer_feedback,
-          :general_question,
           :title
         ].each do |action|
-          match "user/#{action.to_s}", action: action, via: [:get, :post, :put]
+          match "#{action.to_s}", action: action, via: [:get, :post, :put]
         end
       end
     end
@@ -318,7 +306,7 @@ Rails.application.routes.draw do
         delete "delete_product_condition"
         delete "delete_disposal_method"
         delete "delete_admin_inventory_reason"
-        delete "delete_inventory_manufacture"
+        delete "delete_manufacture"
         delete "delete_inventory_unit"
         [
           :location,
@@ -329,10 +317,8 @@ Rails.application.routes.draw do
           :inventory_reason,
           :inventory_manufacture,
           :inventory_unit,
-          :country,
           :payment_item,
           :brands_and_category,
-          :problem_and_category,
           :product,
           :product_condition,
           :disposal_method,
@@ -340,7 +326,7 @@ Rails.application.routes.draw do
           :manufacture,
           :unit
         ].each do |action|
-          match "inventory/#{action.to_s}", action: action, via: [:get, :post, :put]
+          match "#{action.to_s}", action: action, via: [:get, :post, :put]
         end
         #     get "accessories"
   #     get "payment_item"
@@ -372,14 +358,6 @@ Rails.application.routes.draw do
       get "load_estimation"
       get "load_estimation_ticket_info"
       get "toggle_add_update_return_part"
-      # get "inventory_location"
-      # get "inventory_product"
-      # get "inventory_category"
-      # get "inventory_product_condition"
-      # get "inventory_disposal_method"
-      # get "inventory_reason"
-      # get "inventory_manufacture"
-      # get "inventory_unit"
       get "inventory_master_data"
       get "hp_po"
       get "paginate_hp_po_sales_order"
@@ -397,18 +375,8 @@ Rails.application.routes.draw do
       put "update_low_margin_estimate"
       put "update_delivery_unit"
       put "update_edit_serial"
-      
-      # post "update_inventory_product"
-      # post "update_inventory_category"
-      # post "update_inventory_product_condition"
-      # post "update_inventory_disposal_method"
-      # post "update_inventory_reason"
-      # post "update_inventory_manufacture"
-      # post "update_inventory_unit"
 
-      # post "update_inventory_location"
       post "update_issue_store_parts"
-
       post "update_return_store_part"
       post "update_estimate_the_part_internal"
       post "update_low_margin_estimate_parts_approval"

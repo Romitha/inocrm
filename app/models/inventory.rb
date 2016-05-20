@@ -79,6 +79,7 @@ class InventoryCategory2 < ActiveRecord::Base
 
   has_many :inventory_category3s, foreign_key: :category2_id
   accepts_nested_attributes_for :inventory_category3s, allow_destroy: true
+  has_many :inventory_products, through: :inventory_category3s
 
   def is_used_anywhere?
     inventory_category3s.any?
@@ -91,6 +92,7 @@ class InventoryCategory1 < ActiveRecord::Base
 
   has_many :inventory_category2s, foreign_key: :category1_id
   accepts_nested_attributes_for :inventory_category2s, allow_destroy: true
+  has_many :inventory_category3s, through: :inventory_category2s
 
   def is_used_anywhere?
     inventory_category2s.any?

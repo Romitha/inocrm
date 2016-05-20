@@ -3,6 +3,9 @@
 - if params[:po_item_id] or params[:inventory_product_id]
   - render_frame = "grn_item_frame"
 
+- if params[:search_inventory]
+  - render_frame = "search_inventory_result"
+
 - if params[:next]
   - if @grn_item.errors.present?
     $("##{render_frame}").html("#{ j render 'admins/inventories/grn/grn_item' }");
@@ -46,10 +49,10 @@ $(".po_item_select_link, .po_select_link").click(function(){
 Tickets.ajax_loader();
 });
 
-
-Inventories.filter_product();
-Inventories.filter_category();
-Inventories.filter_store();
+- if params[:purchase_order] == "no"
+  Inventories.filter_product();
+  Inventories.filter_category();
+  Inventories.filter_store();
 
 Tickets.remove_ajax_loader();
 

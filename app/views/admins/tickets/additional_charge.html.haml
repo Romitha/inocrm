@@ -1,5 +1,5 @@
 %h3 Additional Charge
-= simple_form_for @additional_charge, url: ticket_additional_charge_admins_tickets_path(create: true), method: :post do |f|
+= simple_form_for @additional_charge, url:  additional_charge_admins_tickets_path(create: true), method: :post do |f|
   .row{style: "margin-top:15px;"}
     .col-md-6
       = f.input :additional_charge
@@ -29,16 +29,16 @@
             .col-md-2
               %strong Additional Charge:
             .col-md-4
-              = link_to "#", class: "inline_edit", data: {type: "text", resource: "additional_charge", name: "additional_charge", url:ticket_additional_charge_admins_tickets_path(edit: true, add_charge_id: add_charge.id), "original-title" => "Update Additional Charge", value: ""}, style: "line-height: 6px;" do
+              = link_to "#", class: "inline_edit", data: {type: "text", resource: "additional_charge", name: "additional_charge", url: additional_charge_admins_tickets_path(edit: true, add_charge_id: add_charge.id), "original-title" => "Update Additional Charge", value: ""}, style: "line-height: 6px;" do
                 = add_charge.additional_charge
           .row.col-md-12
             .col-md-2
               %strong Default cost price:
             .col-md-4
-              = link_to "#", class: "inline_edit", data: {type: "text", resource: "additional_charge", name: "default_cost_price", url:ticket_additional_charge_admins_tickets_path(edit: true, add_charge_id: add_charge.id), "original-title" => "Update Additional Charge", value: ""}, style: "line-height: 6px;" do
+              = link_to "#", class: "inline_edit", data: {type: "text", resource: "additional_charge", name: "default_cost_price", url: additional_charge_admins_tickets_path(edit: true, add_charge_id: add_charge.id), "original-title" => "Update Additional Charge", value: ""}, style: "line-height: 6px;" do
                 = add_charge.default_cost_price
             .col-md-3
               %strong Default estimated price:
             .col-md-3
-              = link_to "#", class: "inline_edit", data: {type: "text", resource: "additional_charge", name: "default_estimated_price", url:ticket_additional_charge_admins_tickets_path(edit: true, add_charge_id: add_charge.id), "original-title" => "Update Additional Charge", value: ""}, style: "line-height: 6px;" do
+              = link_to "#", class: "inline_edit", data: {type: "text", resource: "additional_charge", name: "default_estimated_price", url: additional_charge_admins_tickets_path(edit: true, add_charge_id: add_charge.id), "original-title" => "Update Additional Charge", value: ""}, style: "line-height: 6px;" do
                 = add_charge.default_estimated_price

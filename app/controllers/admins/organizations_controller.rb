@@ -62,9 +62,65 @@ module Admins
       end
     end
 
+    def country
+      Ticket
+      Product
+      if params[:edit]
+        @admin_country = ProductSoldCountry.find params[:country_id]
+        if @admin_country.update admin_country_params
+          params[:edit] = nil
+          render json: @admin_country
+
+        end
+      else
+        if params[:create]
+          @country = ProductSoldCountry.new admin_country_params
+          if @country.save
+            params[:create] = nil
+            @country = ProductSoldCountry.new
+          end
+        else
+          @country = ProductSoldCountry.new
+        end
+        @country_all = ProductSoldCountry.order(created_at: :desc).select{|i| i.persisted? }
+        # render "admins/tickets/country"
+      end
+
+    end
+
+    def sla
+      SlaTime
+      if params[:edit]
+        @sla = SlaTime.find params[:sla_id]
+        if @sla.update sla_params
+          params[:edit] = nil
+          render json: @sla
+        end
+      else
+        if params[:create]
+          @sla = SlaTime.new sla_params
+          if @sla.save
+            params[:create] = nil
+            @sla = SlaTime.new
+          end
+        else
+          @sla = SlaTime.new
+        end
+        @sla_all = SlaTime.order(created_at: :desc).select{|i| i.persisted? }
+      end
+    end
+
     private
       def regional_support_center_params
         params.require(:regional_support_center).permit(:organization_id, :active, sbu_regional_engineers_attributes: [:engineer_id])
+      end
+
+      def admin_country_params
+        params.require(:product_sold_country).permit(:Country, :code)
+      end
+
+      def sla_params
+        params.require(:sla_time).permit(:sla_time, :description, :created_by)
       end
 
       def sburegional_engineer_params

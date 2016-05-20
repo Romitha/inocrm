@@ -1,5 +1,5 @@
 %h3 Inventory Category
-= simple_nested_form_for @inventory_category1, url: inventory_category_admins_inventories_path(create: true), method: :post do |c1|
+= simple_nested_form_for @inventory_category1, url: category_admins_inventories_path(create: true), method: :post do |c1|
   .panel.panel-info
     .panel-heading
       %h3.panel-title Brand
@@ -81,12 +81,12 @@
             .col-md-2
               %strong Brand Code:
             .col-md-4
-              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "inventory_category1", name: "code", url: inventory_category_admins_inventories_path(edit: true, brand_id: brand.id), "original-title" => "Update brand code", value: ""}, style: "line-height: 6px;" do
+              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "inventory_category1", name: "code", url: category_admins_inventories_path(edit: true, brand_id: brand.id), "original-title" => "Update brand code", value: ""}, style: "line-height: 6px;" do
                 = brand.code
             .col-md-2
               %strong Brand Name:
             .col-md-4
-              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "inventory_category1", name: "name", url: inventory_category_admins_inventories_path(edit: true, brand_id: brand.id), "original-title" => "Update brand name", value: ""}, style: "line-height: 6px;" do
+              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "inventory_category1", name: "name", url: category_admins_inventories_path(edit: true, brand_id: brand.id), "original-title" => "Update brand name", value: ""}, style: "line-height: 6px;" do
                 = brand.name
           .row.col-md-12
             - brand.inventory_category2s.each do |product|
@@ -102,12 +102,12 @@
                     .col-md-2
                       %strong Product Code:
                     .col-md-4
-                      = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "inventory_category2", name: "code", url: inventory_category_admins_inventories_path(edit: true, product_id: product.id), "original-title" => "Update product code", value: ""}, style: "line-height: 6px;" do
+                      = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "inventory_category2", name: "code", url: category_admins_inventories_path(edit: true, product_id: product.id), "original-title" => "Update product code", value: ""}, style: "line-height: 6px;" do
                         = product.code
                     .col-md-2
                       %strong Product Name:
                     .col-md-4
-                      = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "inventory_category2", name: "name", url: inventory_category_admins_inventories_path(edit: true, product_id: product.id), "original-title" => "Update product name", value: ""}, style: "line-height: 6px;" do
+                      = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "inventory_category2", name: "name", url: category_admins_inventories_path(edit: true, product_id: product.id), "original-title" => "Update product name", value: ""}, style: "line-height: 6px;" do
                         = product.name
                   .row.col-md-12
                     - product.inventory_category3s.each do |category|
@@ -116,17 +116,17 @@
                           %h3.panel-title 
                             Category: #{category.code}
                             - unless category.is_used_anywhere?
-                              = link_to delete_inventory_category_admins_inventories_path(category_id: category.id), method: :delete, :data => { :confirm => 'Are you sure?' } do
+                              = link_to delete_category_admins_inventories_path(category_id: category.id), method: :delete, :data => { :confirm => 'Are you sure?' } do
                                 %span.glyphicon.glyphicon-trash
                         .panel-body
                           .row.col-md-12
                             .col-md-2
                               %strong Category Code:
                             .col-md-4
-                              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "inventory_category3", name: "code", url: inventory_category_admins_inventories_path(edit: true, category_id: category.id), "original-title" => "Update category code", value: ""}, style: "line-height: 6px;" do
+                              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "inventory_category3", name: "code", url: category_admins_inventories_path(edit: true, category_id: category.id), "original-title" => "Update category code", value: ""}, style: "line-height: 6px;" do
                                 = category.code
                             .col-md-2
                               %strong Category Name:
                             .col-md-4
-                              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "inventory_category3", name: "name", url: inventory_category_admins_inventories_path(edit: true, category_id: category.id), "original-title" => "Update category name", value: ""}, style: "line-height: 6px;" do
+                              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "inventory_category3", name: "name", url: category_admins_inventories_path(edit: true, category_id: category.id), "original-title" => "Update category name", value: ""}, style: "line-height: 6px;" do
                                 = category.name

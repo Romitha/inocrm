@@ -1,6 +1,6 @@
 %h3 Inventory Location
 
-= simple_nested_form_for @inventory_rack, url: inventory_location_admins_inventories_path(create:true), method: :post do |f|
+= simple_nested_form_for @inventory_rack, url: location_admins_inventories_path(create:true), method: :post do |f|
   .panel.panel-primary
     .panel-heading
       %h3.panel-title Rack
@@ -76,12 +76,12 @@
             .col-md-2
               %strong Rack Description:
             .col-md-4
-              = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "inventory_rack", name: "description", url: inventory_location_admins_inventories_path(edit: true, rack_id: rack.id), "original-title" => "Update rack description", value: ""}, style: "line-height: 6px;" do
+              = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "inventory_rack", name: "description", url: location_admins_inventories_path(edit: true, rack_id: rack.id), "original-title" => "Update rack description", value: ""}, style: "line-height: 6px;" do
                 = rack.description
             .col-md-2
               %strong Rack Location:
             .col-md-4
-              = link_to "#", class: "inline_edit", data: {type: "select", source: Organization.all.collect{|organization| {value: organization.id, text: organization.name}}, resource: "inventory_rack", name: "location_id", url: inventory_location_admins_inventories_path(edit: true, rack_id: rack.id), "original-title" => "Update rack name"} do
+              = link_to "#", class: "inline_edit", data: {type: "select", source: Organization.all.collect{|organization| {value: organization.id, text: organization.name}}, resource: "inventory_rack", name: "location_id", url: location_admins_inventories_path(edit: true, rack_id: rack.id), "original-title" => "Update rack name"} do
                 = rack.organization.name
           .row.col-md-12
             - rack.inventory_shelfs.each do |shelf|
@@ -97,7 +97,7 @@
                     .col-md-3
                       %strong Shelf Description:
                     .col-md-9
-                      = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "inventory_shelf", name: "description", url: inventory_location_admins_inventories_path(edit: true, shelf_id: shelf.id), "original-title" => "Update shelf description", value: ""}, style: "line-height: 6px;" do
+                      = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "inventory_shelf", name: "description", url: location_admins_inventories_path(edit: true, shelf_id: shelf.id), "original-title" => "Update shelf description", value: ""}, style: "line-height: 6px;" do
                         = shelf.description
                   .row.col-md-12
                     - shelf.inventory_bins.each do |bin|
@@ -114,7 +114,7 @@
                               %strong Bin Description:
                             
                             .col-md-9
-                              = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "inventory_bin", name: "description", url: inventory_location_admins_inventories_path(edit: true, bin_id: bin.id), "original-title" => "Update bin description", value: ""}, style: "line-height: 6px;" do
+                              = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "inventory_bin", name: "description", url: location_admins_inventories_path(edit: true, bin_id: bin.id), "original-title" => "Update bin description", value: ""}, style: "line-height: 6px;" do
                                 = bin.description
             
             / = link_to "#", data: {resource: "inventory_rack", name: "description", url: inline_update_inventory_location_bin_admins_path(bin_id: bin.id), "original-title" => "Update bin description", value: ""}, style: "line-height: 6px;" do
