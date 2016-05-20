@@ -619,6 +619,8 @@ module Admins
         Rails.cache.delete([:grn_item, :i_product, @inventory_product.id ] )
       end
 
+      @inventory_products = InventoryProduct.where(id: Rails.cache.fetch([:inventory_product_ids]).to_a)
+
       render "admins/inventories/grn/grn"
 
     end
