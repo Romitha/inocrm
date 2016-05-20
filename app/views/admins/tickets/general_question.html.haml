@@ -1,4 +1,4 @@
-= simple_form_for @general_question, url: general_question_admins_tickets_path(create: true), html: { class: "validate_form" }, method: :post do |f|
+= simple_form_for @general_question, url: general_question_admins_tickets_path(create: true), method: :post do |f|
   .row
     .col-md-6
       = f.input :question, input_html: {rows: 1}
@@ -26,7 +26,7 @@
           %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
             = g_question.question
           - unless g_question.is_used_anywhere?
-            = link_to delete_admin_general_question_admins_tickets_path(g_question_id: g_question.id), method: :delete, :data => { :confirm => 'Are you sure?' } do
+            = link_to delete_admin_general_question_admins_users_path(g_question_id: g_question.id), method: :delete, :data => { :confirm => 'Are you sure?' } do
               %span.glyphicon.glyphicon-trash
 
       .panel-collapse.collapse.in{:id => "#{index}"}

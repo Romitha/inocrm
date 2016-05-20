@@ -1,4 +1,4 @@
-= simple_form_for @country, url: country_admins_organizations_path(create: true), method: :post, html: {class: "validate_form"} do |f|
+= simple_form_for @country, url: country_admins_organizations_path(create: true), method: :post do |f|
   .row
     .col-md-6
       = f.input :Country
@@ -19,7 +19,7 @@
           %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
             = ad_country.Country
           - unless ad_country.is_used_anywhere?
-            = link_to delete_admin_country_admins_organizations_path(country_id: ad_country.id), method: :delete, :data => { :confirm => 'Are you sure?' } do
+            = link_to delete_admin_country_admins_tickets_path(country_id: ad_country.id), method: :delete, :data => { :confirm => 'Are you sure?' } do
               %span.glyphicon.glyphicon-trash
       .panel-collapse.collapse.in{:id => "#{index}"}
         .panel-body
