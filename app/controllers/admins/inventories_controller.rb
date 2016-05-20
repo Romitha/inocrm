@@ -178,6 +178,7 @@ module Admins
           @payment_item = PaymentItem.new
         end
         @payment_item_all = PaymentItem.order(created_at: :desc).select{|i| i.persisted? }
+        render "admins/inventories/payment_item"
       end
     end
 
@@ -216,6 +217,40 @@ module Admins
           @brands_and_category = ProductBrand.new
         end
         @brands_and_category_all = ProductBrand.order(created_at: :desc).select{|i| i.persisted? }
+        render "admins/inventories/brands_and_category"
+      end
+    end
+
+    def problem_and_category
+      Ticket
+      TaskAction
+      Product
+      if params[:edit]
+        if params[:problem_category_id]
+          @problem_category = ProblemCategory.find params[:problem_category_id]
+          if @problem_category.update problem_category_params
+            params[:edit] = nil
+            render json: @problem_category
+          end
+        elsif params[:q_and_a_id]
+          @q_and_a = QAndA.find params[:q_and_a_id]
+          if @q_and_a.update q_and_a_params
+            params[:edit] = nil
+            render json: @q_and_a
+          end
+        end
+      else
+        if params[:create]
+          @problem_category = ProblemCategory.new problem_category_params
+          if @problem_category.save
+            params[:create] = nil
+            @problem_category = ProblemCategory.new
+          end
+        else
+          @problem_category = ProblemCategory.new
+        end
+        @problem_category_all = ProblemCategory.order(created_at: :desc).select{|i| i.persisted? }
+        render "admins/inventories/problem_and_category"
       end
     end
 
@@ -254,6 +289,7 @@ module Admins
           @inventory_rack = InventoryRack.new
         end
         @inventory_all_rack = InventoryRack.order(created_at: :desc).select{|i| i.persisted? }
+        render "admins/inventories/location"
       end
     end
 
@@ -292,6 +328,7 @@ module Admins
           @inventory_category1 = InventoryCategory1.new
         end
         @inventory_category1_all = InventoryCategory1.order(created_at: :desc).select{|i| i.persisted? }
+        render "admins/inventories/category"
       end
     end
 
@@ -326,6 +363,7 @@ module Admins
           @inventory_product = InventoryProduct.new
         end
         @inventory_product_all = InventoryProduct.order(created_at: :desc).select{|i| i.persisted? }
+        render "admins/inventories/product"
       end
     end
 
@@ -349,6 +387,7 @@ module Admins
           @inventory_product_condition = ProductCondition.new
         end
         @inventory_product_condition_all = ProductCondition.order(created_at: :desc).select{|i| i.persisted? }
+        render "admins/inventories/product_condition"
       end
     end
 
@@ -372,6 +411,7 @@ module Admins
           @inventory_disposal_method = InventoryDisposalMethod.new
         end
         @inventory_disposal_method_all = InventoryDisposalMethod.order(created_at: :desc).select{|i| i.persisted? }
+        render "admins/inventories/disposal_method"
       end
     end
 
@@ -395,6 +435,7 @@ module Admins
           @inventory_reason = InventoryReason.new
         end
         @inventory_reason_all = InventoryReason.order(created_at: :desc).select{|i| i.persisted? }
+        render "admins/inventories/reason"
       end
     end
 
@@ -451,6 +492,7 @@ module Admins
           @inventory_unit = InventoryUnit.new
         end
         @inventory_unit_all = InventoryUnit.order(created_at: :desc).select{|i| i.persisted? }
+        render "admins/inventories/unit"
       end
 
     end
@@ -526,6 +568,7 @@ module Admins
 
         @render_template = "grn_item"        
       end
+
       render "admins/inventories/grn/grn"
     end
 
@@ -563,6 +606,7 @@ module Admins
       end
 
       render "admins/inventories/grn/grn"
+
     end
 
     def initiate_grn_for_i_product
@@ -600,6 +644,7 @@ module Admins
       @inventory_products = InventoryProduct.where(id: Rails.cache.fetch([:inventory_product_ids]).to_a)
 
       render "admins/inventories/grn/grn"
+
     end
 
     def create_grn
@@ -709,6 +754,10 @@ module Admins
 
       def product_category_params
         params.require(:product_category).permit(:name, :sla_id)
+      end
+
+      def problem_category_params
+        params.require(:problem_category).permit(:name ,q_and_as_attributes: [:_destroy, :id, :question, :answer_type, :active, :action_id, :compulsory])
       end
 
       def q_and_a_params

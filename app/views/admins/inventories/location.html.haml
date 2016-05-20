@@ -115,3 +115,119 @@
                             .col-md-9
                               = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "inventory_bin", name: "description", url: location_admins_inventories_path(edit: true, bin_id: bin.id), "original-title" => "Update bin description", value: ""}, style: "line-height: 6px;" do
                                 = bin.description
+            
+            / = link_to "#", data: {resource: "inventory_rack", name: "description", url: inline_update_inventory_location_bin_admins_path(bin_id: bin.id), "original-title" => "Update bin description", value: ""}, style: "line-height: 6px;" do
+            /   Delete
+
+/ - @inventory_all_rack.each_with_index do |rack, index|
+/   .panel.panel-info
+/     .panel-heading{:id => "#{index}"}
+/       %h3.panel-title
+/         %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#{index}"}
+/           #{index} #{rack.description}
+/     .b{:id => "#{index}"}
+/       .panel-body
+/         #{index} Panel content
+
+/ = initiate_table table_type: "table-hover table-bordered"  do
+/   = table_header ["Rack Description", "Location", "Aisle image", " "]
+/   %tbody
+/     - @inventory_all_rack.each do |rack|
+/       %tr
+/         %td
+/           = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "rack", name: "rack_description", url: "#", "original-title" => "Update rack description", value: ""}, style: "line-height: 6px;" do
+/             = rack.description
+/         %td
+/           = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "rack", name: "rack_description", url: "#", "original-title" => "Update rack description", value: ""}, style: "line-height: 6px;" do
+/             = rack.organization.name
+/         %td
+/         %td
+/           %table.table
+/             %thead
+/               %th Shelf Description
+/             %tbody
+/               - rack.inventory_shelfs.each do |shelf|
+/                 %tr
+/                   %td
+/                     = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "shelf", name: "shelf_description", url: "#", "original-title" => "Update shelf description", value: ""}, style: "line-height: 6px;" do
+/                       = shelf.description
+/                   %td
+/                     %table.table
+/                       %thead
+/                         %th Bin Description
+/                       %tbody
+/                         - shelf.inventory_bins.each do |bin|
+/                           %tr
+/                             %td
+/                               = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "bin", name: "bin_description", url: "#", "original-title" => "Update bin description", value: ""}, style: "line-height: 6px;" do
+/                                 = bin.description
+/ .row
+/   = link_to "#", class: "inline_edit", data: {type: "select", source: ProductPopStatus.first(3).collect{|category| {value: category.id, text: category.name}}} do
+/     dd
+/211 no
+
+/ = initiate_table table_type: "table-hover table-bordered"  do
+/   = table_header ["Serial_No", "Brand", "Category", "Model", "Product_No", "Country", "POP_Status", "POP_Note"]
+/   = table_body [product.serial_no, product.product_brand.name, product.product_category.name, product.model_no, product.product_no, product.product_sold_country.try(:Country), popstatus, popnote]
+
+/ - @inventory_all_rack.each do |r|
+/   = r.id
+
+/ = simple_nested_form_for @inventory_rack, url: update_inventory_location_admins_path do |f|
+/   .row
+/     %fieldset
+/       %legend Create New Rack
+
+/       .row
+/         .col-md-6
+/           = f.input :description, input_html: {rows: 1}
+/         .col-md-6
+/           = f.label "Organization:"
+/           = f.select :location_id, Organization.all.uniq{|o| o.id}.map{|o| [(o.name ? "#{o.name}" : o.short_name), o.id]}
+/       .row
+/         .col-md-6
+/           = f.label "aisle_image"
+/           = f.file_field :aisle_image, accept: 'image/png,image/gif,image/jpeg,application/pdf'
+/           / = f.input :aisle_image
+/         .col-md-6
+/           = f.input :created_by, as: :hidden, input_html: {value: current_user.id}
+/           = f.input :updated_by, as: :hidden, input_html: {value: current_user.id}
+
+/       .row
+/         = f.simple_fields_for :inventory_shelfs do |inventory_shelf|
+/           %fieldset
+/             %legend create a new shelf 
+/             .row.col-md-12
+/               .col-md-6
+/                 = inventory_shelf.input :description
+/               .col-md-6
+/                 = inventory_shelf.input :created_by, as: :hidden, input_html: {value: current_user.id}
+/                 = inventory_shelf.input :updated_by, as: :hidden, input_html: {value: current_user.id}
+/                 .add_sign
+/                   = inventory_shelf.link_to_remove do
+/                     %span.glyphicon.glyphicon-remove-sign
+/             .row.col-md-12
+/               = inventory_shelf.simple_fields_for :inventory_bins do |inventory_bin|
+/                 %fieldset
+/                   %legend create a new bin
+/                   .row.col-md-12
+/                     .col-md-6
+/                       = inventory_bin.input :description
+/                     .col-md-6
+/                       = inventory_bin.input :created_by, as: :hidden, input_html: {value: current_user.id}
+/                       = inventory_bin.input :updated_by, as: :hidden, input_html: {value: current_user.id}
+/                       .add_sign
+/                         = inventory_bin.link_to_remove do
+/                           %span.glyphicon.glyphicon-remove-sign
+/               .row.col-md-12
+/                 .col-md-12
+/                   = inventory_shelf.link_to_add :inventory_bins do
+/                     %span.glyphicon.glyphicon-plus-sign Add a Bin
+/         .row.col-md-12
+/           .col-md-12
+/             = f.link_to_add :inventory_shelfs do
+/               %span.glyphicon.glyphicon-plus-sign Add a Shelf
+
+/   .row{style: "margin-top:20px;"}
+/     .col-md-12
+/       = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_inventory_location"

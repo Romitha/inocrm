@@ -1,3 +1,10 @@
+/ - if @inventory_product.errors.any?
+/   .row
+/     .col-md-12
+/       %ul
+/         - @inventory_product.errors.full_messages.each do |error|
+/           %li= error
+
 %h3 Inventory Product
 = simple_nested_form_for @inventory_product, url: product_admins_inventories_path(create: true), method: :post do |f|
   .row

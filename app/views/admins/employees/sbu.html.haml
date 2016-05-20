@@ -14,6 +14,17 @@
                 %span.glyphicon.glyphicon-remove-sign
         = f.link_to_add :sbu_engineers do
           %span.glyphicon.glyphicon-plus-sign
+  / .row
+  /   %h4 Add Engineer
+  / .row
+  /   = f.simple_fields_for :sbu_engineers do |engineer|
+  /     .col-md-4
+  /       = engineer.association :engineer, collection: User.all.uniq{|e| e.id}.map{|e| [(e.first_name ? "#{e.name_title} #{e.first_name}" : e.email), e.id]}
+  /       .add_sign
+  /         = engineer.link_to_remove do
+  /           %span.glyphicon.glyphicon-remove-sign
+  /   = f.link_to_add :sbu_engineers do
+  /     %span.glyphicon.glyphicon-plus-sign
   .row{style: "margin-bottom:20px;"}
     .col-md-8
       = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_sbu"
