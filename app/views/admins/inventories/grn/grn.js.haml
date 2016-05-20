@@ -13,6 +13,7 @@
     - if Rails.cache.fetch([:po_item_ids]).to_a.count > 0 or Rails.cache.fetch([:inventory_product_ids]).to_a.count > 0
       $("##{render_frame}").html("#{j render 'admins/inventories/grn/grn_form' }");
 
+
     - else
       $("##{render_frame}").html("");
 
@@ -20,6 +21,10 @@
   $("##{render_frame}").html("");
 - else
   $("##{render_frame}").html("#{ j render 'admins/inventories/grn/'+@render_template }");
+
+- if !params[:purchase_order].present? and params[:inventory_product_id].present?
+  - @selected_grns_for_without_po = true
+  $("#added_grns").html("#{j render 'admins/inventories/grn/select_inventory' }");
 
 - if params[:po_id]
   $(".po_select_link").css("pointer-events", "inherit").text("Select").parents("tr").eq(0).removeClass("warning");
