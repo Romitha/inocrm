@@ -1,5 +1,5 @@
 %h3 Inventory Disposal Method
-= simple_nested_form_for @inventory_disposal_method, url: inventory_disposal_method_admins_inventories_path(create: true), method: :post do |d|
+= simple_nested_form_for @inventory_disposal_method, url: disposal_method_admins_inventories_path(create: true), method: :post do |d|
   .row{style: "margin-top: 15px; "}
     .col-md-8
       = d.input :disposal_method
@@ -25,5 +25,5 @@
             .col-md-2
               %strong disposal method:
             .col-md-6
-              = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "inventory_disposal_method", name: "disposal_method", url:inventory_disposal_method_admins_inventories_path(edit: true, disposal_method: disposal.id), "original-title" => "Update disposal method", value: ""}, style: "line-height: 6px;" do
+              = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "inventory_disposal_method", name: "disposal_method", url: disposal_method_admins_inventories_path(edit: true, disposal_method: disposal.id), "original-title" => "Update disposal method", value: ""}, style: "line-height: 6px;" do
                 = disposal.disposal_method

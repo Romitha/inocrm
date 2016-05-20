@@ -1,5 +1,5 @@
 %h3 Inventory Unit
-= simple_nested_form_for @inventory_unit, url: inventory_unit_admins_inventories_path(create: true), method: :post do |u|
+= simple_nested_form_for @inventory_unit, url: unit_admins_inventories_path(create: true), method: :post do |u|
   .row
     .col-md-3
       = u.input :unit
@@ -27,7 +27,7 @@
           %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
             #{index+1} Unit : #{inv_unit.unit}
           - unless inv_unit.is_used_anywhere?
-            = link_to delete_inventory_unit_admins_inventories_path(unit_id: inv_unit.id), method: :delete, :data => { :confirm => 'Are you sure?' } do
+            = link_to delete_unit_admins_inventories_path(unit_id: inv_unit.id), method: :delete, :data => { :confirm => 'Are you sure?' } do
               %span.glyphicon.glyphicon-trash
 
       .panel-collapse.collapse.in{:id => "#{index}"}
@@ -36,18 +36,18 @@
             .col-md-1
               %strong Unit:
             .col-md-4
-              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "inventory_unit", name: "unit", url: inventory_unit_admins_inventories_path(edit: true, unit_id: inv_unit.id), "original-title" => "Update Inventory Unit code", value: ""}, style: "line-height: 6px;" do
+              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "inventory_unit", name: "unit", url: unit_admins_inventories_path(edit: true, unit_id: inv_unit.id), "original-title" => "Update Inventory Unit code", value: ""}, style: "line-height: 6px;" do
                 = inv_unit.unit
             .col-md-2
               %strong Base unit conversion:
             .col-md-3
-              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "inventory_unit", name: "base_unit_conversion", url: inventory_unit_admins_inventories_path(edit: true, unit_id: inv_unit.id), "original-title" => "Update Inventory Unit code", value: ""}, style: "line-height: 6px;" do
+              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "inventory_unit", name: "base_unit_conversion", url: unit_admins_inventories_path(edit: true, unit_id: inv_unit.id), "original-title" => "Update Inventory Unit code", value: ""}, style: "line-height: 6px;" do
                 = inv_unit.base_unit_conversion
           .row.col-md-12
             .col-md-2
               %strong Per base unit:
             .col-md-4
-              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "inventory_unit", name: "per_base_unit", url: inventory_unit_admins_inventories_path(edit: true, unit_id: inv_unit.id), "original-title" => "Update Inventory Unit code"} do
+              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "inventory_unit", name: "per_base_unit", url: unit_admins_inventories_path(edit: true, unit_id: inv_unit.id), "original-title" => "Update Inventory Unit code"} do
                 = inv_unit.per_base_unit && "Yes" || "No"
                 / .col-md-2
                 /   %strong Per base unit:
@@ -57,5 +57,5 @@
             .col-md-2
               %strong Description:
             .col-md-3
-              = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "inventory_rack", name: "description", url: inventory_unit_admins_inventories_path(edit: true, unit_id: inv_unit.id), "original-title" => "Update Inventory Unit code", value: ""}, style: "line-height: 6px;" do
+              = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "inventory_rack", name: "description", url: unit_admins_inventories_path(edit: true, unit_id: inv_unit.id), "original-title" => "Update Inventory Unit code", value: ""}, style: "line-height: 6px;" do
                 = inv_unit.description

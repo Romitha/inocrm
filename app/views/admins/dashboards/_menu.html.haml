@@ -1,9 +1,106 @@
-.navbar-default
-  .sidebar-nav
-    %ul#side-menu.nav.nav-pills.nav-stacked
+= collapse_wrapper collapse_id: "sidebar-nav" do
+  = collapse collapse_type: "#{controller_name == 'organizations' ? 'primary' : 'default'}", labelledby: "labelledby_organizations", header_content: content_tag(:span, "", class: "icon-sitemap")+"Organizations", collapse_link: "collapse_link_organizations" do
+    .list-group
+      = link_to country_admins_organizations_path, class: "list-group-item #{'active' if params[:action] == 'country' }" do
+        %i.fa.fa-flag
+        Country
+      = link_to regional_support_center_admins_organizations_path, class: "list-group-item #{'active' if params[:action] == 'regional_support_center' }" do
+        %i.fa.fa-sitemap
+        Regional
+      = link_to sla_admins_organizations_path, class: "list-group-item #{'active' if params[:action] == 'sla' }" do
+        %i.fa.fa-clock-o
+        SLA
 
-      - [{path: "#", is_active: "#{'active' if controller_name == 'organizations'}", content: "Organizations", icon_symbol: "sitemap"}, {path: "#", is_active: "#{'active' if controller_name == 'employees'}", content: "Employees", icon_symbol: "group"}, {path: admins_tickets_path, is_active: "#{'active' if controller_name == 'tickets'}", content: "Tickets", icon_symbol: "tty"}, {path: "#", is_active: "#{'active' if controller_name == 'roles'}", content: "Roles & Permissions", icon_symbol: "paper-plane-o"}, {path: "#", is_active: "#{'active' if controller_name == 'sales'}", content: "Sales", icon_symbol: "exchange"}, {path: "#", is_active: "#{'active' if controller_name == 'inventories'}", content: "Inventory", icon_symbol: "list-alt"}].each do |e|
-        %li{class: "#{e[:is_active]}"}
-          = link_to e[:path], class: "text6" do
-            %span{class: "icon-#{e[:icon_symbol]}"}
-            = e[:content]
+    .panel-footer
+      = link_to "Organizations", admins_organizations_path
+
+  = collapse collapse_type: "#{controller_name == 'employees' ? 'primary' : 'default'}", labelledby: "labelledby_employees", header_content: content_tag(:span, "", class: "icon-group")+"Employees", collapse_link: "collapse_link_employees" do
+    %ul.list-group
+      = link_to sbu_admins_employees_path, class: "list-group-item #{'active' if params[:action] == 'sbu' }" do
+        %i.fa.fa-asterisk
+        Sbu
+
+    .panel-footer
+      = link_to "Employees", admins_employees_path
+
+
+
+  = collapse collapse_type: "#{controller_name == 'users' ? 'primary' : 'default'}", labelledby: "labelledby_users", header_content: content_tag(:span, "", class: "icon-group")+"Users", collapse_link: "collapse_link_users" do
+    %ul.list-group
+      = link_to title_admins_users_path, class: "list-group-item #{'active' if params[:action] == 'title' }" do
+        %i.fa.fa-users
+        Title
+
+    .panel-footer
+      = link_to "Users", admins_users_path
+
+  = collapse collapse_type: "#{controller_name == 'tickets' ? 'primary' : 'default'}", labelledby: "labelledby_tickets", header_content: content_tag(:span, "", class: "icon-tty")+"Tickets", collapse_link: "collapse_link_tickets" do
+    %ul.list-group
+      = link_to spare_part_description_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'spare_part_description' }" do
+        %i.fa.fa-file-text-o
+        Spare Part Description
+      = link_to reason_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'reason' }" do
+        %i.fa.fa-comments-o
+        Reason
+      = link_to accessories_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'accessories' }" do
+        %i.fa.fa-laptop
+        Accessory
+      = link_to general_question_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'general_question' }" do
+        %i.fa.fa-question-circle
+        General Question
+      = link_to customer_feedback_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'customer_feedback' }" do
+        %i.fa.fa-smile-o
+        Customer Feedback
+      = link_to start_action_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'start_action' }" do
+        %i.fa.fa-th-list
+        Ticket Start Action
+      = link_to problem_and_category_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'problem_and_category' }" do
+        %i.fa.fa-exclamation-circle
+        Problem & Categories
+
+    .panel-footer
+      = link_to "Tickets", admins_tickets_path
+
+  = collapse collapse_type: "#{controller_name == 'roles' ? 'primary' : 'default'}", labelledby: "labelledby_roles", header_content: content_tag(:span, "", class: "icon-paper-plane-o")+"Roles", collapse_link: "collapse_link_roles" do
+    %ul.list-group
+      sample
+    .panel-footer
+    = link_to "Roles", "#"
+
+  = collapse collapse_type: "#{controller_name == 'sales' ? 'primary' : 'default'}", labelledby: "labelledby_sales", header_content: content_tag(:span, "", class: "icon-exchange")+"Sales", collapse_link: "collapse_link_sales" do
+    %ul.list-group
+      = link_to additional_charge_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'additional_charge' }" do
+        %i.fa.fa-money
+        Additional Charge
+
+    .panel-footer
+      = link_to "Sales", admins_sales_path
+
+  = collapse collapse_type: "#{controller_name == 'inventories' ? 'primary' : 'default'}", labelledby: "labelledby_inventories", header_content: content_tag(:span, "", class: "icon-list-alt")+"Inventories", collapse_link: "collapse_link_inventories" do
+    %ul.list-group
+      = link_to brands_and_category_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'brands_and_category' }" do
+        %i.fa.fa-apple
+        Brands
+      = link_to category_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'category' }" do
+        %i.icon-folder-plus
+        Categories
+      = link_to disposal_method_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'disposal_method' }" do
+        %i.icon-file-text2
+        Disposal methods
+      = link_to location_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'location' }" do
+        %i.icon-books
+        Location
+      = link_to manufacture_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'manufacture' }" do
+        %i.icon-office
+        Manufactures
+      = link_to product_condition_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'product_condition' }" do
+        %i.icon-lab
+        Product conditions
+      = link_to product_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'product' }" do
+        %i.fa.fa-cubes
+        Product
+      = link_to unit_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'unit' }" do
+        %i.icon-meter
+        Unit
+    .panel-footer
+      = link_to "Inventories", admins_inventories_path

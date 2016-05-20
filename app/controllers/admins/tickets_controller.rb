@@ -86,32 +86,6 @@ module Admins
       end
     end
 
-    def country
-      Ticket
-      Product
-      if params[:edit]
-        @admin_country = ProductSoldCountry.find params[:country_id]
-        if @admin_country.update admin_country_params
-          params[:edit] = nil
-          render json: @admin_country
-
-        end
-      else
-        if params[:create]
-          @country = ProductSoldCountry.new admin_country_params
-          if @country.save
-            params[:create] = nil
-            @country = ProductSoldCountry.new
-          end
-        else
-          @country = ProductSoldCountry.new
-        end
-        @country_all = ProductSoldCountry.order(created_at: :desc).select{|i| i.persisted? }
-        render "admins/tickets/country"
-      end
-
-    end
-
     def reason
       Product
       if params[:edit]
@@ -235,26 +209,83 @@ module Admins
       end
     end
 
-    def sla
-      SlaTime
+    def customer_feedback
+      User
+
       if params[:edit]
-        @sla = SlaTime.find params[:sla_id]
-        if @sla.update sla_params
+        @ad_feedback = Feedback.find params[:customer_feedback_id]
+        if @ad_feedback.update admin_customer_feedback_params
           params[:edit] = nil
-          render json: @sla
+          render json: @ad_feedback
         end
       else
         if params[:create]
-          @sla = SlaTime.new sla_params
-          if @sla.save
+          @customer_feedback = Feedback.new admin_customer_feedback_params
+          if @customer_feedback.save
             params[:create] = nil
-            @sla = SlaTime.new
+            @customer_feedback = Feedback.new
           end
         else
-          @sla = SlaTime.new
+          @customer_feedback = Feedback.new
         end
-        @sla_all = SlaTime.order(created_at: :desc).select{|i| i.persisted? }
-        render "admins/tickets/sla"
+        @customer_feedback_all = Feedback.order(created_at: :desc).select{|i| i.persisted? }
+      end
+
+    end
+
+    def general_question
+      QAndA
+
+      if params[:edit]
+        @g_question = GeQAndA.find params[:g_question_id]
+        if @g_question.update admin_general_question_params
+          params[:edit] = nil
+          render json: @g_question
+        end
+      else
+        if params[:create]
+          @general_question = GeQAndA.new admin_general_question_params
+          if @general_question.save
+            params[:create] = nil
+            @general_question = GeQAndA.new
+          end
+        else
+          @general_question = GeQAndA.new
+        end
+        @general_question_all = GeQAndA.order(created_at: :desc).select{|i| i.persisted? }
+      end
+
+    end
+
+    def problem_and_category
+      Ticket
+      TaskAction
+      Product
+      if params[:edit]
+        if params[:problem_category_id]
+          @problem_category = ProblemCategory.find params[:problem_category_id]
+          if @problem_category.update problem_category_params
+            params[:edit] = nil
+            render json: @problem_category
+          end
+        elsif params[:q_and_a_id]
+          @q_and_a = QAndA.find params[:q_and_a_id]
+          if @q_and_a.update q_and_a_params
+            params[:edit] = nil
+            render json: @q_and_a
+          end
+        end
+      else
+        if params[:create]
+          @problem_category = ProblemCategory.new problem_category_params
+          if @problem_category.save
+            params[:create] = nil
+            @problem_category = ProblemCategory.new
+          end
+        else
+          @problem_category = ProblemCategory.new
+        end
+        @problem_category_all = ProblemCategory.order(created_at: :desc).select{|i| i.persisted? }
       end
     end
 
@@ -262,10 +293,6 @@ module Admins
     private
       def admin_reason_params
         params.require(:reason).permit(:hold, :sla_pause, :re_assign_request, :terminate_job, :terminate_spare_part, :warranty_extend, :spare_part_unused, :reject_returned_part, :reject_close, :adjust_terminate_job_payment, :reason)
-      end
-
-      def admin_country_params
-        params.require(:product_sold_country).permit(:Country, :code)
       end
 
       def admin_accessory_params
@@ -283,9 +310,16 @@ module Admins
       def ticket_start_action_params
         params.require(:ticket_start_action).permit(:action, :active)
       end
+      def admin_customer_feedback_params
+        params.require(:feedback).permit(:feedback)
+      end
 
-      def sla_params
-        params.require(:sla_time).permit(:sla_time, :description, :created_by)
+      def admin_general_question_params
+        params.require(:ge_q_and_a).permit(:question, :answer_type, :active, :compulsory, :action_id)
+      end
+
+      def problem_category_params
+        params.require(:problem_category).permit(:name ,q_and_as_attributes: [:_destroy, :id, :question, :answer_type, :active, :action_id, :compulsory])
       end
   end
 end

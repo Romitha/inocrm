@@ -20,3 +20,14 @@
   -webkit-text-shadow:2px 2px 2px black;
   text-shadow:2px 2px 2px black;
 }
+
+#sidebar-nav {
+  .panel-body {
+    padding: 0;
+
+    .list-group-item {
+      border: none;
+      border-bottom: 2px solid #dddddd;
+    }
+  }
+}

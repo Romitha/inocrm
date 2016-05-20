@@ -1,4 +1,4 @@
-= simple_form_for @country, url: ticket_country_admins_tickets_path(create: true), method: :post do |f|
+= simple_form_for @country, url: country_admins_organizations_path(create: true), method: :post do |f|
   .row
     .col-md-6
       = f.input :Country
@@ -17,7 +17,7 @@
       .panel-heading
         %h3.panel-title
           %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
-            #{index+1} Country : #{ad_country.Country}
+            = ad_country.Country
           - unless ad_country.is_used_anywhere?
             = link_to delete_admin_country_admins_tickets_path(country_id: ad_country.id), method: :delete, :data => { :confirm => 'Are you sure?' } do
               %span.glyphicon.glyphicon-trash
@@ -27,10 +27,11 @@
             .col-md-1
               %strong Country:
             .col-md-4
-              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "product_sold_country", name: "Country", url: ticket_country_admins_tickets_path(edit: true, country_id: ad_country.id), "original-title" => "Update admin country", value: ""}, style: "line-height: 6px;" do
+              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "product_sold_country", name: "Country", url: country_admins_organizations_path(edit: true, country_id: ad_country.id), "original-title" => "Update admin country", value: ""}, style: "line-height: 6px;" do
                 = ad_country.Country
             .col-md-1
               %strong Code:
             .col-md-4
-              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "product_sold_country", name: "code", url: ticket_country_admins_tickets_path(edit: true, country_id: ad_country.id), "original-title" => "Update admin country", value: ""}, style: "line-height: 6px;" do
+              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "product_sold_country", name: "code", url: country_admins_organizations_path(edit: true, country_id: ad_country.id), "original-title" => "Update admin country", value: ""}, style: "line-height: 6px;" do
                 = ad_country.code
+= params[:action]

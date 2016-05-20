@@ -1,5 +1,5 @@
 %h3 Regional Support Center
-= simple_nested_form_for @regional_support_center, url: organization_regional_support_center_admins_organizations_path(create: true), method: :post do |f|
+= simple_nested_form_for @regional_support_center, url: regional_support_center_admins_organizations_path(create: true), method: :post do |f|
   .row
     .col-md-2
       = f.input :active, wrapper: :append
@@ -41,12 +41,12 @@
             .col-md-2
               %strong Organization:
             .col-md-4
-              = link_to "#", class: "inline_edit", data: {type: "select", source: Organization.all.collect{|a| {value: a.id, text: a.name}}, resource: "regional_support_center", name: "organization_id", url: organization_regional_support_center_admins_organizations_path(edit: true, regional_support_center_id: regional_support_center.id), "original-title" => "Update Regional Support Center"} do
+              = link_to "#", class: "inline_edit", data: {type: "select", source: Organization.all.collect{|a| {value: a.id, text: a.name}}, resource: "regional_support_center", name: "organization_id", url: regional_support_center_admins_organizations_path(edit: true, regional_support_center_id: regional_support_center.id), "original-title" => "Update Regional Support Center"} do
                 = regional_support_center.organization.try(:name)
             .col-md-1
               %strong Active:
             .col-md-4
-              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "regional_support_center", name: "active", url: organization_regional_support_center_admins_organizations_path(edit: true, regional_support_center_id: regional_support_center.id), "original-title" => "Update Regional Support Center"} do
+              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "regional_support_center", name: "active", url: regional_support_center_admins_organizations_path(edit: true, regional_support_center_id: regional_support_center.id), "original-title" => "Update Regional Support Center"} do
                 = regional_support_center.active && "Yes" || "No"
           .row.col-md-12{style: "margin-top:20px;"}
             - regional_support_center.sbu_regional_engineers.each do |sbu_regional_engineer|
@@ -63,5 +63,5 @@
                     .col-md-1
                       %strong Engineer
                     .col-md-6
-                      = link_to "#", class: "inline_edit", data: {type: "select", source: User.all.collect{|e| {value: e.id, text: e.first_name ? "#{e.name_title} #{e.first_name}" : e.email}}, resource: "sbu_regional_engineer", name: "engineer_id", url:organization_regional_support_center_admins_organizations_path(edit: true, sbu_regional_engineer_id: sbu_regional_engineer.id), "original-title" => "Update Sbu Regional Engineer"} do
+                      = link_to "#", class: "inline_edit", data: {type: "select", source: User.all.collect{|e| {value: e.id, text: e.first_name ? "#{e.name_title} #{e.first_name}" : e.email}}, resource: "sbu_regional_engineer", name: "engineer_id", url: regional_support_center_admins_organizations_path(edit: true, sbu_regional_engineer_id: sbu_regional_engineer.id), "original-title" => "Update Sbu Regional Engineer"} do
                         = sbu_regional_engineer.engineer.first_name ? "#{sbu_regional_engineer.engineer.name_title} #{sbu_regional_engineer.engineer.first_name}" : sbu_regional_engineer.engineer.email

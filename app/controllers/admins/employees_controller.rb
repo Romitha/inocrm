@@ -83,7 +83,6 @@ module Admins
           @sbu = Sbu.new
         end
         @sbu_all = Sbu.order(created_at: :desc).select{|i| i.persisted? }
-        render "admins/employees/sbu"
       end
     end
 

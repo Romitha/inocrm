@@ -1,5 +1,6 @@
 module Admins
   class UsersController < ApplicationController
+    layout "admins"
 
     def delete_admin_customer_feedback
       User
@@ -35,56 +36,6 @@ module Admins
       end
     end
 
-    def customer_feedback
-      User
-
-      if params[:edit]
-        @ad_feedback = Feedback.find params[:customer_feedback_id]
-        if @ad_feedback.update admin_customer_feedback_params
-          params[:edit] = nil
-          render json: @ad_feedback
-        end
-      else
-        if params[:create]
-          @customer_feedback = Feedback.new admin_customer_feedback_params
-          if @customer_feedback.save
-            params[:create] = nil
-            @customer_feedback = Feedback.new
-          end
-        else
-          @customer_feedback = Feedback.new
-        end
-        @customer_feedback_all = Feedback.order(created_at: :desc).select{|i| i.persisted? }
-        render "admins/users/customer_feedback"
-      end
-
-    end
-
-    def general_question
-      QAndA
-
-      if params[:edit]
-        @g_question = GeQAndA.find params[:g_question_id]
-        if @g_question.update admin_general_question_params
-          params[:edit] = nil
-          render json: @g_question
-        end
-      else
-        if params[:create]
-          @general_question = GeQAndA.new admin_general_question_params
-          if @general_question.save
-            params[:create] = nil
-            @general_question = GeQAndA.new
-          end
-        else
-          @general_question = GeQAndA.new
-        end
-        @general_question_all = GeQAndA.order(created_at: :desc).select{|i| i.persisted? }
-        render "admins/users/general_question"
-      end
-
-    end
-
     def title
       User
 
@@ -111,13 +62,6 @@ module Admins
     end
 
     private
-      def admin_customer_feedback_params
-        params.require(:feedback).permit(:feedback)
-      end
-
-      def admin_general_question_params
-        params.require(:ge_q_and_a).permit(:question, :answer_type, :active, :compulsory, :action_id)
-      end
 
       def title_params
         params.require(:mst_title).permit(:title)

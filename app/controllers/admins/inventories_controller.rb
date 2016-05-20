@@ -241,39 +241,6 @@ module Admins
       end
     end
 
-    def problem_and_category
-      Ticket
-      TaskAction
-      Product
-      if params[:edit]
-        if params[:problem_category_id]
-          @problem_category = ProblemCategory.find params[:problem_category_id]
-          if @problem_category.update problem_category_params
-            params[:edit] = nil
-            render json: @problem_category
-          end
-        elsif params[:q_and_a_id]
-          @q_and_a = QAndA.find params[:q_and_a_id]
-          if @q_and_a.update q_and_a_params
-            params[:edit] = nil
-            render json: @q_and_a
-          end
-        end
-      else
-        if params[:create]
-          @problem_category = ProblemCategory.new problem_category_params
-          if @problem_category.save
-            params[:create] = nil
-            @problem_category = ProblemCategory.new
-          end
-        else
-          @problem_category = ProblemCategory.new
-        end
-        @problem_category_all = ProblemCategory.order(created_at: :desc).select{|i| i.persisted? }
-        render "admins/inventories/problem_and_category"
-      end
-    end
-
     def location
       Inventory
       Product
@@ -518,17 +485,34 @@ module Admins
         @render_template = "search_po"
       when "no"
         @render_template = "search_inventory"
+        Rails.cache.fetch([:inventory_product_ids]).to_a.each do |ipid|
+          Rails.cache.delete([:grn_item, :i_product, ipid ])
+        end
+        Rails.cache.delete([:inventory_product_ids])
 
       when "search_inventory"
         @store = Organization.find params[:store_id]
         session[:store_id] = @store.id
 
-        Rails.cache.delete([:inventory_product_ids])
+        Rails.cache.fetch([:po_item_ids]).to_a.each do |poid|
+          Rails.cache.delete([:grn_item, poid] )
+        end
         Rails.cache.delete([:po_item_ids])
+        category1_id = params[:search_inventory]["brand"]
+        category2_id = params[:search_inventory]["product"]
         inventory_product_hash = params[:search_inventory].except("brand", "product").to_hash
         category3_id = inventory_product_hash["mst_inv_product"]["category3_id"]
-        updated_hash = inventory_product_hash["mst_inv_product"].except("category3_id").to_hash.map { |k, v| "#{k} like '%#{v}%'" if v.present? }.compact.join(" and ")
-        @inventory_products = @store.inventory_products.where("category3_id = ?", category3_id).where(updated_hash)
+
+        updated_hash = inventory_product_hash["mst_inv_product"].to_hash.map { |k, v| "#{k} like '%#{v}%'" if v.present? }.compact.join(" and ")
+        if category3_id.present?
+          @inventory_products = @store.inventory_products.where(updated_hash)
+        elsif category2_id.present?
+          @inventory_products = InventoryCategory2.find(category2_id).inventory_products.where(updated_hash)
+        elsif category1_id.present?
+          @inventory_products = InventoryCategory1.find(category1_id).inventory_category3s.map { |c| c.inventory_products.where(updated_hash) }.flatten.uniq
+        else
+          @inventory_products = @store.inventory_products.where(updated_hash)
+        end
 
         @render_template = "select_inventory"
 
@@ -746,10 +730,6 @@ module Admins
 
       def product_category_params
         params.require(:product_category).permit(:name, :sla_id)
-      end
-
-      def problem_category_params
-        params.require(:problem_category).permit(:name ,q_and_as_attributes: [:_destroy, :id, :question, :answer_type, :active, :action_id, :compulsory])
       end
 
       def q_and_a_params
