@@ -90,13 +90,13 @@ module Admins
       Product
       if params[:edit]
         @mst_reason = Reason.find params[:mst_reason_id]
-        if @mst_reason.update admin_reason_params
+        if @mst_reason.update reason_params
           params[:edit] = nil
           render json: @mst_reason
         end
       else
         if params[:create]
-          @reason = Reason.new admin_reason_params
+          @reason = Reason.new reason_params
           if @reason.save
             params[:create] = nil
             @reason = Reason.new
@@ -115,13 +115,13 @@ module Admins
       Ticket
       if params[:edit]
         @admin_accessory = Accessory.find params[:accessory_id]
-        if @admin_accessory.update admin_accessory_params
+        if @admin_accessory.update accessory_params
           params[:edit] = nil
           render json: @admin_accessory
         end
       else
         if params[:create]
-          @accessory = Accessory.new admin_accessory_params
+          @accessory = Accessory.new accessory_params
           if @accessory.save
             params[:create] = nil
             @accessory = Accessory.new
@@ -139,13 +139,13 @@ module Admins
       TicketEstimation
       if params[:edit]
         @add_charge = AdditionalCharge.find params[:add_charge_id]
-        if @add_charge.update admin_add_charge_params
+        if @add_charge.update additional_charge_params
           params[:edit] = nil
           render json: @add_charge
         end
       else
         if params[:create]
-          @additional_charge = AdditionalCharge.new admin_add_charge_params
+          @additional_charge = AdditionalCharge.new additional_charge_params
           if @additional_charge.save
             params[:create] = nil
             @additional_charge = AdditionalCharge.new
@@ -167,13 +167,13 @@ module Admins
       Organization
       if params[:edit]
         @sp_description = SparePartDescription.find params[:sp_description_id]
-        if  @sp_description.update sp_description_params
+        if  @sp_description.update spare_part_description_params
           params[:edit] = nil
           render json: @sp_description
         end
       else
         if params[:create]
-          @spare_part_description = SparePartDescription.new sp_description_params
+          @spare_part_description = SparePartDescription.new spare_part_description_params
           if @spare_part_description.save
             params[:create] = nil
             @spare_part_description = SparePartDescription.new
@@ -214,13 +214,13 @@ module Admins
 
       if params[:edit]
         @ad_feedback = Feedback.find params[:customer_feedback_id]
-        if @ad_feedback.update admin_customer_feedback_params
+        if @ad_feedback.update feedback_params
           params[:edit] = nil
           render json: @ad_feedback
         end
       else
         if params[:create]
-          @customer_feedback = Feedback.new admin_customer_feedback_params
+          @customer_feedback = Feedback.new feedback_params
           if @customer_feedback.save
             params[:create] = nil
             @customer_feedback = Feedback.new
@@ -238,13 +238,13 @@ module Admins
 
       if params[:edit]
         @g_question = GeQAndA.find params[:g_question_id]
-        if @g_question.update admin_general_question_params
+        if @g_question.update ge_q_and_a_params
           params[:edit] = nil
           render json: @g_question
         end
       else
         if params[:create]
-          @general_question = GeQAndA.new admin_general_question_params
+          @general_question = GeQAndA.new ge_q_and_a_params
           if @general_question.save
             params[:create] = nil
             @general_question = GeQAndA.new
@@ -289,32 +289,31 @@ module Admins
       end
     end
 
-
     private
-      def admin_reason_params
+      def reason_params
         params.require(:reason).permit(:hold, :sla_pause, :re_assign_request, :terminate_job, :terminate_spare_part, :warranty_extend, :spare_part_unused, :reject_returned_part, :reject_close, :adjust_terminate_job_payment, :reason)
       end
 
-      def admin_accessory_params
+      def accessory_params
         params.require(:accessory).permit(:accessory)
       end
 
-      def admin_add_charge_params
+      def additional_charge_params
         params.require(:additional_charge).permit(:additional_charge, :default_cost_price, :default_estimated_price)
       end
 
-      def sp_description_params
+      def spare_part_description_params
         params.require(:spare_part_description).permit(:description)
       end
 
       def ticket_start_action_params
         params.require(:ticket_start_action).permit(:action, :active)
       end
-      def admin_customer_feedback_params
+      def feedback_params
         params.require(:feedback).permit(:feedback)
       end
 
-      def admin_general_question_params
+      def ge_q_and_a_params
         params.require(:ge_q_and_a).permit(:question, :answer_type, :active, :compulsory, :action_id)
       end
 

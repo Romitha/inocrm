@@ -13,7 +13,7 @@ module Admins
         @rs_center.delete
       end
       respond_to do |format|
-        format.html { redirect_to organization_regional_support_center_admins_organizations_path }
+        format.html { redirect_to regional_support_center_admins_organizations_path }
       end
     end
 
@@ -24,7 +24,7 @@ module Admins
         @rs_engineer.delete
       end
       respond_to do |format|
-        format.html { redirect_to organization_regional_support_center_admins_organizations_path }
+        format.html { redirect_to regional_support_center_admins_organizations_path }
       end
     end
 

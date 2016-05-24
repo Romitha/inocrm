@@ -1,7 +1,7 @@
 = simple_form_for @spare_part_description, url: spare_part_description_admins_tickets_path(create: true), method: :post do |f|
   .row
     .col-md-6
-      = f.input :description, input_html: {rows: 1}, label: "Spare Part Description"
+      = f.input :description, input_html: {rows: 1, autocomplete: "off"}, label: "Spare Part Description"
   .row{style: "margin-top:20px; margin-bottom:20px;"}
     .col-md-6
       = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_spare_part_description"
@@ -24,3 +24,37 @@
             .col-md-5
               = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "spare_part_description", name: "description", url: spare_part_description_admins_tickets_path(edit: true, sp_description_id: sp_description.id), "original-title" => "Update Spare Part Description", value: ""}, style: "line-height: 6px;" do
                 = sp_description.description
+
+
+:javascript
+  setTimeout(function(){
+  $( "#new_spare_part_description" ).validate({
+    rules: {
+      "spare_part_description[description]": {
+        required: true,
+
+        remote: {
+          url: "/validate_resource",
+          type: "post",
+          data: {
+            resource_name: "SparePartDescription",
+            resource_column: "description",
+            resource_column_value: function() {
+              return $( "input[name = 'spare_part_description[description]']" ).val();
+            }
+          }
+        
+        }
+
+      }
+    },
+    messages: {
+      "spare_part_description[description]": {
+        required: "Required input",
+        remote: "Description is already used."
+      }
+    }
+
+  })
+  alert("hi");
+  }, 1500);
