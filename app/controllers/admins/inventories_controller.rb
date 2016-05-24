@@ -12,7 +12,7 @@ module Admins
         @payment_itemn.delete
       end
       respond_to do |format|
-        format.html { redirect_to inventory_payment_item_admins_inventories_path }
+        format.html { redirect_to payment_item_admins_inventories_path }
       end
     end
 
@@ -23,7 +23,7 @@ module Admins
         @brands_and_category.delete
       end
       respond_to do |format|
-        format.html { redirect_to inventory_brands_and_category_admins_inventories_path }
+        format.html { redirect_to brands_and_category_admins_inventories_path }
       end
     end
 
@@ -34,7 +34,7 @@ module Admins
         @product_category.delete
       end
       respond_to do |format|
-        format.html { redirect_to inventory_brands_and_category_admins_inventories_path }
+        format.html { redirect_to brands_and_category_admins_inventories_path }
       end
     end
 
@@ -45,7 +45,7 @@ module Admins
         @delete_rack.delete
       end
       respond_to do |format|
-        format.html { redirect_to inventory_location_admins_inventories_path }
+        format.html { redirect_to location_admins_inventories_url }
       end
     end
 
@@ -56,7 +56,7 @@ module Admins
         @delete_shelf.delete
       end
       respond_to do |format|
-        format.html { redirect_to inventory_location_admins_inventories_path }
+        format.html { redirect_to location_admins_inventories_url }
       end
     end
 
@@ -67,7 +67,7 @@ module Admins
         @delete_bin.delete
       end
       respond_to do |format|
-        format.html { redirect_to inventory_location_admins_inventories_path }
+        format.html { redirect_to location_admins_inventories_url }
       end
     end
 
@@ -78,7 +78,7 @@ module Admins
         @delete_brand.delete
       end
       respond_to do |format|
-        format.html { redirect_to inventory_category_admins_inventories_path }
+        format.html { redirect_to category_admins_inventories_path }
       end
     end
 
@@ -89,7 +89,7 @@ module Admins
         @delete_product.delete
       end
       respond_to do |format|
-        format.html { redirect_to inventory_category_admins_inventories_path }
+        format.html { redirect_to category_admins_inventories_path }
       end
     end
 
@@ -100,7 +100,7 @@ module Admins
         @delete_category.delete
       end
       respond_to do |format|
-        format.html { redirect_to inventory_category_admins_inventories_path }
+        format.html { redirect_to category_admins_inventories_path }
       end
     end
 
@@ -111,7 +111,7 @@ module Admins
         @inventory_product_condition.delete
       end
       respond_to do |format|
-        format.html { redirect_to inventory_product_condition_admins_inventories_path }
+        format.html { redirect_to product_condition_admins_inventories_path }
       end
     end
 
@@ -122,7 +122,7 @@ module Admins
         @inventory_disposal_method.delete
       end
       respond_to do |format|
-        format.html { redirect_to inventory_disposal_method_admins_inventories_path }
+        format.html { redirect_to disposal_method_admins_inventories_path }
       end
     end
 
@@ -132,7 +132,7 @@ module Admins
         @inventory_reason.delete
       end
       respond_to do |format|
-        format.html { redirect_to inventory_reason_admins_inventories_path }
+        format.html { redirect_to reason_admins_inventories_path }
       end
     end
 
@@ -143,7 +143,7 @@ module Admins
         @delete_manufacture.delete
       end
       respond_to do |format|
-        format.html { redirect_to inventory_manufacture_admins_inventories_path }
+        format.html { redirect_to manufacture_admins_inventories_path }
       end
     end
 
@@ -154,7 +154,7 @@ module Admins
         @inventory_unit.delete
       end
       respond_to do |format|
-        format.html { redirect_to inventory_unit_admins_inventories_path }
+        format.html { redirect_to unit_admins_inventories_path }
       end
     end
 
@@ -178,7 +178,6 @@ module Admins
           @payment_item = PaymentItem.new
         end
         @payment_item_all = PaymentItem.order(created_at: :desc).select{|i| i.persisted? }
-        render "admins/inventories/payment_item"
       end
     end
 
@@ -217,7 +216,6 @@ module Admins
           @brands_and_category = ProductBrand.new
         end
         @brands_and_category_all = ProductBrand.order(created_at: :desc).select{|i| i.persisted? }
-        render "admins/inventories/brands_and_category"
       end
     end
 
@@ -256,7 +254,6 @@ module Admins
           @inventory_rack = InventoryRack.new
         end
         @inventory_all_rack = InventoryRack.order(created_at: :desc).select{|i| i.persisted? }
-        render "admins/inventories/location"
       end
     end
 
@@ -295,7 +292,6 @@ module Admins
           @inventory_category1 = InventoryCategory1.new
         end
         @inventory_category1_all = InventoryCategory1.order(created_at: :desc).select{|i| i.persisted? }
-        render "admins/inventories/category"
       end
     end
 
@@ -330,7 +326,6 @@ module Admins
           @inventory_product = InventoryProduct.new
         end
         @inventory_product_all = InventoryProduct.order(created_at: :desc).select{|i| i.persisted? }
-        render "admins/inventories/product"
       end
     end
 
@@ -354,7 +349,6 @@ module Admins
           @inventory_product_condition = ProductCondition.new
         end
         @inventory_product_condition_all = ProductCondition.order(created_at: :desc).select{|i| i.persisted? }
-        render "admins/inventories/product_condition"
       end
     end
 
@@ -378,7 +372,6 @@ module Admins
           @inventory_disposal_method = InventoryDisposalMethod.new
         end
         @inventory_disposal_method_all = InventoryDisposalMethod.order(created_at: :desc).select{|i| i.persisted? }
-        render "admins/inventories/disposal_method"
       end
     end
 
@@ -402,7 +395,6 @@ module Admins
           @inventory_reason = InventoryReason.new
         end
         @inventory_reason_all = InventoryReason.order(created_at: :desc).select{|i| i.persisted? }
-        render "admins/inventories/reason"
       end
     end
 
@@ -426,7 +418,16 @@ module Admins
           @inventory_manufacture = Manufacture.new
         end
         @inventory_manufacture_all = Manufacture.order(created_at: :desc).select{|i| i.persisted? }
-        render "admins/inventories/manufacture"
+      end
+    end
+
+    def delete_manufacture
+      @inventory_manufacture = Manufacture.find params[:manufacture_id]
+      if @inventory_manufacture.present?
+        @inventory_manufacture.delete
+      end
+      respond_to do |format|
+        format.html { redirect_to manufacture_admins_inventories_path }
       end
     end
 
@@ -450,7 +451,6 @@ module Admins
           @inventory_unit = InventoryUnit.new
         end
         @inventory_unit_all = InventoryUnit.order(created_at: :desc).select{|i| i.persisted? }
-        render "admins/inventories/unit"
       end
 
     end
@@ -526,7 +526,6 @@ module Admins
 
         @render_template = "grn_item"        
       end
-
       render "admins/inventories/grn/grn"
     end
 
@@ -564,7 +563,6 @@ module Admins
       end
 
       render "admins/inventories/grn/grn"
-
     end
 
     def initiate_grn_for_i_product
@@ -602,7 +600,6 @@ module Admins
       @inventory_products = InventoryProduct.where(id: Rails.cache.fetch([:inventory_product_ids]).to_a)
 
       render "admins/inventories/grn/grn"
-
     end
 
     def create_grn

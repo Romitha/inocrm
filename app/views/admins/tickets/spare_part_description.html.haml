@@ -28,6 +28,7 @@
 
 :javascript
   setTimeout(function(){
+  $('#submit_new_spare_part_description').prop('disabled', true);
   $( "#new_spare_part_description" ).validate({
     rules: {
       "spare_part_description[description]": {
@@ -56,5 +57,13 @@
     }
 
   })
-  alert("hi");
-  }, 1500);
+
+  $('#new_spare_part_description input').on('blur keyup', function () {
+    if ($('#new_spare_part_description').valid()) {
+      $('#submit_new_spare_part_description').prop('disabled', false);
+    } else {
+      $('#submit_new_spare_part_description').prop('disabled', true);
+    }
+  });
+  }, 1000);
+

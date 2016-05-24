@@ -1,5 +1,5 @@
 %h3 Inventory Unit
-= simple_nested_form_for @inventory_unit, url: unit_admins_inventories_path(create: true), method: :post do |u|
+= simple_nested_form_for @inventory_unit, url: unit_admins_inventories_path(create: true), html: { class: "validate_form" }, method: :post do |u|
   .row
     .col-md-3
       = u.input :unit
@@ -27,7 +27,7 @@
           %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
             #{index+1} Unit : #{inv_unit.unit}
           - unless inv_unit.is_used_anywhere?
-            = link_to delete_unit_admins_inventories_path(unit_id: inv_unit.id), method: :delete, :data => { :confirm => 'Are you sure?' } do
+            = link_to delete_inventory_unit_admins_inventories_path(unit_id: inv_unit.id), method: :delete, :data => { :confirm => 'Are you sure?' } do
               %span.glyphicon.glyphicon-trash
 
       .panel-collapse.collapse.in{:id => "#{index}"}
