@@ -217,6 +217,7 @@ Rails.application.routes.draw do
     end
   end
 
+  match "validate_resource", controller: "admins/dashboards", action: "validate_resource", via: [:post]
   namespace :admins do
     root "dashboards#index"
     resources :tickets do
