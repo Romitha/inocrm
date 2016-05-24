@@ -1,4 +1,4 @@
-= simple_form_for @accessory, url: accessories_admins_tickets_path(create: true), method: :post do |f|
+= simple_form_for @accessory, url: accessories_admins_tickets_path(create: true), html: {class: "validate_form" }, method: :post do |f|
   .row
     .col-md-6
       = f.input :accessory, input_html: {rows: 1}

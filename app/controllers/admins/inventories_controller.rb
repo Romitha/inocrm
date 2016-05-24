@@ -38,26 +38,6 @@ module Admins
       end
     end
 
-    def delete_problem_category
-      @problem_category = ProblemCategory.find params[:problem_category_id]
-      if @problem_category.present?
-        @problem_category.delete
-      end
-      respond_to do |format|
-        format.html { redirect_to inventory_problem_and_category_admins_inventories_path }
-      end
-    end
-
-    def delete_q_and_a
-      @q_and_a = QAndA.find params[:q_and_a_id]
-      if @q_and_a.present?
-        @q_and_a.delete
-      end
-      respond_to do |format|
-        format.html { redirect_to inventory_problem_and_category_admins_inventories_path }
-      end
-    end
-
     def delete_location_rack
       Inventory
       @delete_rack = InventoryRack.find params[:rack_id]

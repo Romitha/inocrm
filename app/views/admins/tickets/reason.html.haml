@@ -1,5 +1,5 @@
 %h3 Reason
-= simple_form_for @reason, url: reason_admins_tickets_path(create: true), method: :post do |f|
+= simple_form_for @reason, url: reason_admins_tickets_path(create: true), html: {class: "validate_form"}, method: :post do |f|
   .row{style: "margin-top:15px;"}
     .col-md-2
       = f.input :hold, wrapper: :append

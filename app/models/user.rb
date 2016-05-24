@@ -249,9 +249,11 @@ class Sbu < ActiveRecord::Base
   has_many :sbu_engineers, foreign_key: :sbu_id
   accepts_nested_attributes_for :sbu_engineers, allow_destroy: true
   has_many :engineers, through: :sbu_engineers, source: :engineer
+  has_many :user_assign_ticket_actions
 
   def is_used_anywhere?
-    sbu_engineers.any? or engineers.any?
+    TaskAction
+    sbu_engineers.any? or engineers.any? or user_assign_ticket_actions.any?
   end
 
 # class Pet < ActiveRecord::Base
@@ -285,6 +287,8 @@ class Feedback < ActiveRecord::Base
   self.table_name = "mst_spt_customer_feedback"
 
   has_many :customer_feedbacks#, foreign_key: :engineer_id
+
+  validates_presence_of :feedback
 
   def is_used_anywhere?
     Invoice
