@@ -88,6 +88,18 @@ module Admins
 
     end
 
+    def delete_admin_country
+      Ticket
+      Product
+      @admin_country = ProductSoldCountry.find params[:country_id]
+      if @admin_country.present?
+        @admin_country.delete
+      end
+      respond_to do |format|
+        format.html { redirect_to country_admins_organizations_path}
+      end
+    end
+
     def sla
       SlaTime
       if params[:edit]

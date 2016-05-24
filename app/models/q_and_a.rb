@@ -34,6 +34,8 @@ class GeQAndA < ActiveRecord::Base
   has_many :ge_q_and_answers, foreign_key: :general_question_id
   accepts_nested_attributes_for :ge_q_and_answers, allow_destroy: true
   validates_length_of :answer_type, :maximum => 2
+  validates_presence_of :question
+  
   def is_used_anywhere?
     ge_q_and_answers.any?
   end

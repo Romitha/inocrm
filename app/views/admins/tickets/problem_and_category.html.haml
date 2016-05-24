@@ -1,4 +1,4 @@
-= simple_nested_form_for @problem_category, url: problem_and_category_admins_tickets_path(create:true), method: :post do |f|
+= simple_nested_form_for @problem_category, url: problem_and_category_admins_tickets_path(create:true), html: { class: "validate_form" }, method: :post do |f|
   .panel.panel-primary
     .panel-heading
       %h3.panel-title Problem Category
@@ -46,7 +46,7 @@
           %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
             = pc.name
           - unless pc.is_used_anywhere?
-            = link_to delete_problem_category_admins_inventories_path(problem_category_id: pc.id),method: :delete, :data => { :confirm => 'Are you sure?' } do
+            = link_to delete_problem_category_admins_tickets_path(problem_category_id: pc.id), method: :delete, :data => { :confirm => 'Are you sure?' } do
               %span.glyphicon.glyphicon-trash
 
       .panel-collapse.collapse.in{:id => "#{index}"}
@@ -64,7 +64,7 @@
                   %h3.panel-title
                     %span Question: #{q_a.question}
                     - unless q_a.is_used_anywhere?
-                      = link_to delete_q_and_a_admins_inventories_path(q_and_a_id: q_a.id), method: :delete,  :data => { :confirm => 'Are you sure?' } do
+                      = link_to delete_q_and_a_admins_tickets_path(q_and_a_id: q_a.id), method: :delete,  :data => { :confirm => 'Are you sure?' } do
                         %span.glyphicon.glyphicon-trash
                 .panel-body
                   .row.col-md-12

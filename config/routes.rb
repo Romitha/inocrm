@@ -222,11 +222,9 @@ Rails.application.routes.draw do
     root "dashboards#index"
     resources :tickets do
       collection do
-        get "ticket_start_action"
         get "problem_category"
         get "q_and_a"
         delete "delete_admin_reason"
-        delete "delete_admin_country"
         delete "delete_admin_accessory"
         delete "delete_admin_additional_charge"
         delete "delete_admin_spare_part_description"
@@ -234,6 +232,8 @@ Rails.application.routes.draw do
         delete "delete_admin_sla"
         delete "delete_admin_general_question"
         delete "delete_admin_customer_feedback"
+        delete "delete_problem_category"
+        delete "delete_q_and_a"
         [
           :reason,
           :accessories,
@@ -242,7 +242,7 @@ Rails.application.routes.draw do
           :start_action,
           :customer_feedback,
           :general_question,
-          :problem_and_category,
+          :problem_and_category
         ].each do |action|
           match "#{action.to_s}", action: action, via: [:get, :post, :put]
         end
@@ -263,6 +263,7 @@ Rails.application.routes.draw do
       collection do
         delete "delete_admin_regional_support_center"
         delete "delete_sbu_regional_engineer"
+        delete "delete_admin_country"
         [
           :regional_support_center,
           :country,
@@ -295,8 +296,6 @@ Rails.application.routes.draw do
         delete "delete_admin_payment_item"
         delete "delete_product_category"
         delete "delete_admin_brands_and_category"
-        delete "delete_problem_category"
-        delete "delete_q_and_a"
         delete "delete_location_rack"
         delete "delete_location_shelf"
         delete "delete_location_bin"

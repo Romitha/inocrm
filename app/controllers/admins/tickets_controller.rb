@@ -14,19 +14,7 @@ module Admins
         @mst_reason.delete
       end
       respond_to do |format|
-        format.html { redirect_to ticket_reason_admins_tickets_path }
-      end
-    end
-
-    def delete_admin_country
-      Ticket
-      Product
-      @admin_country = ProductSoldCountry.find params[:country_id]
-      if @admin_country.present?
-        @admin_country.delete
-      end
-      respond_to do |format|
-        format.html { redirect_to ticket_country_admins_tickets_path}
+        format.html { redirect_to reason_admins_tickets_path }
       end
     end
 
@@ -38,7 +26,7 @@ module Admins
         @admin_accessory.delete
       end
       respond_to do |format|
-        format.html { redirect_to ticket_accessories_admins_tickets_path}
+        format.html { redirect_to accessories_admins_tickets_path}
       end
     end
 
@@ -49,7 +37,7 @@ module Admins
         @add_charge.delete
       end
       respond_to do |format|
-        format.html { redirect_to ticket_additional_charge_admins_tickets_path }
+        format.html { redirect_to additional_charge_admins_tickets_path }
       end
     end
 
@@ -60,7 +48,7 @@ module Admins
         @sp_description.delete
       end
       respond_to do |format|
-        format.html { redirect_to ticket_spare_part_description_admins_tickets_path }
+        format.html { redirect_to spare_part_description_admins_tickets_path }
       end
     end
 
@@ -71,7 +59,7 @@ module Admins
         @ticket_start_action.delete
       end
       respond_to do |format|
-        format.html { redirect_to ticket_start_action_admins_tickets_path }
+        format.html { redirect_to start_action_admins_tickets_path }
       end
     end
 
@@ -82,7 +70,7 @@ module Admins
         @sla.delete
       end
       respond_to do |format|
-        format.html { redirect_to ticket_sla_admins_tickets_path }
+        format.html { redirect_to sla_admins_tickets_path }
       end
     end
 
@@ -90,16 +78,26 @@ module Admins
       Product
       if params[:edit]
         @mst_reason = Reason.find params[:mst_reason_id]
-        if @mst_reason.update reason_params
-          params[:edit] = nil
-          render json: @mst_reason
+        if @mst_reason.attributes = reason_params
+          if [:hold, :sla_pause, :re_assign_request, :terminate_job, :terminate_spare_part, :warranty_extend, :spare_part_unused, :reject_returned_part, :reject_close, :adjust_terminate_job_payment].any?{|c| @mst_reason.send(c) }
+            params[:edit] = nil
+            render json: @mst_reason
+          else
+            render json: "failed"
+          end
         end
       else
         if params[:create]
           @reason = Reason.new reason_params
-          if @reason.save
-            params[:create] = nil
-            @reason = Reason.new
+          if [:hold, :sla_pause, :re_assign_request, :terminate_job, :terminate_spare_part, :warranty_extend, :spare_part_unused, :reject_returned_part, :reject_close, :adjust_terminate_job_payment].any?{|c| @reason.send(c) }
+
+            if @reason.save
+              params[:create] = nil
+              @reason = Reason.new
+            end
+            flash[:notice] = "Successfully saved!."
+          else
+            flash[:error] = "Please select ateast on condition"
           end
         else
           @reason = Reason.new
@@ -233,6 +231,13 @@ module Admins
 
     end
 
+    def delete_admin_customer_feedback
+      @ad_feedback = Feedback.find params[:customer_feedback_id]
+      @ad_feedback.destroy
+      flash[:notice] = "Successfully deleted!."
+      redirect_to general_question_admins_tickets_url
+    end
+
     def general_question
       QAndA
 
@@ -255,6 +260,13 @@ module Admins
         @general_question_all = GeQAndA.order(created_at: :desc).select{|i| i.persisted? }
       end
 
+    end
+
+    def delete_admin_general_question
+      @g_question = GeQAndA.find params[:g_question_id]
+      @g_question.destroy
+      flash[:notice] = "Successfully deleted!."
+      redirect_to general_question_admins_tickets_url
     end
 
     def problem_and_category
@@ -286,6 +298,26 @@ module Admins
           @problem_category = ProblemCategory.new
         end
         @problem_category_all = ProblemCategory.order(created_at: :desc).select{|i| i.persisted? }
+      end
+    end
+
+    def delete_problem_category
+      @problem_category = ProblemCategory.find params[:problem_category_id]
+      if @problem_category.present?
+        @problem_category.delete
+      end
+      respond_to do |format|
+        format.html { redirect_to problem_and_category_admins_tickets_path }
+      end
+    end
+
+    def delete_q_and_a
+      @q_and_a = QAndA.find params[:q_and_a_id]
+      if @q_and_a.present?
+        @q_and_a.delete
+      end
+      respond_to do |format|
+        format.html { redirect_to problem_and_category_admins_tickets_path }
       end
     end
 

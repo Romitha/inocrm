@@ -101,6 +101,8 @@ class Accessory < ActiveRecord::Base
   has_many :ticket_accessories, foreign_key: :accessory_id
   has_many :tickets, through: :ticket_accessories
 
+  validates_uniqueness_of :accessory, case_sensitive: false
+
   def is_used_anywhere?
     ticket_accessories.any? or tickets.any? 
   end

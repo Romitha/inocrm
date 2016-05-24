@@ -7,12 +7,11 @@ module Admins
 
     def delete_admin_sbu_engineer
       User
+      @sbu = Sbu.find params[:sbu_id]
       @sbu_eng = User.find params[:user_id]
-      if @sbu_eng.present?
-        @sbu_eng.delete
-      end
+      @sbu.engineers.delete @sbu_eng
       respond_to do |format|
-        format.html { redirect_to employee_sbu_admins_employees_path }
+        format.html { redirect_to sbu_admins_employees_path }
       end
     end
 
@@ -23,37 +22,9 @@ module Admins
         @sbu.delete
       end
       respond_to do |format|
-        format.html { redirect_to employee_sbu_admins_employees_path }
+        format.html { redirect_to sbu_admins_employees_path }
       end
     end
-
-    # # PUT params[:sbu_id]
-    # def sbu_engineer
-    # # def sbu
-    #   if params[:edit]
-    #     if params[:use_id]
-    #       @sbu_engineer = User.find params[:use_id]
-    #       @sbu_engineer.update sbu_engineer_params
-    #       render @sbu_engineer
-    #     elsif params[:sbu_id]
-    #       @sbu = Sbu.find params[:sbu_id]
-    #       @sbu.update sbu_params
-    #       render @sbu
-    #     end
-    #   else
-    #     @sbu = Sbu.new sbu_params
-    #     if @sbu.save
-    #       flash[:notice] = "Successfully saved"
-    #     else
-    #       flash[:error] = "Unable to save"
-    #     end
-    #     redirect_to _url
-    #   end
-
-    #   # link_to "", path(edit: true, sbu_engineer_id: 1)
-    #   # link_to "", path(edit: true, sbu_id: 1)
-
-    # end
 
     def sbu
       User
