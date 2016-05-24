@@ -1,5 +1,5 @@
 %h3 Inventory Manufacture
-= simple_nested_form_for @inventory_manufacture, url: manufacture_admins_inventories_path(create:true), method: :post do |m|
+= simple_nested_form_for @inventory_manufacture, url: manufacture_admins_inventories_path(create:true), html: {class: "validate_form" }, method: :post do |m|
   .row{style: "margin-top: 15px; "}
     .col-md-6
       = m.input :manufacture

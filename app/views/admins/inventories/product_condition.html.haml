@@ -1,5 +1,5 @@
 %h3 Inventory Product Condition
-= simple_nested_form_for @inventory_product_condition, url: product_condition_admins_inventories_path(create: true), method: :post do |c|
+= simple_nested_form_for @inventory_product_condition, url: product_condition_admins_inventories_path(create: true), html: {class: "validate_form" }, method: :post do |c|
   .row{style: "margin-top: 15px; "}
     .col-md-8
       = c.input :condition
@@ -26,7 +26,7 @@
             .col-md-1
               %strong Condition:
             .col-md-4
-              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "product_condition", name: "condition", url:product_condition_admins_inventories_path(edit: true, product_condition_id: inv_product_condition.id), "original-title" => "Update product condition", value: ""}, style: "line-height: 6px;" do
+              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "product_condition", name: "condition", url: product_condition_admins_inventories_path(edit: true, product_condition_id: inv_product_condition.id), "original-title" => "Update product condition", value: ""}, style: "line-height: 6px;" do
                 = inv_product_condition.condition
             .col-md-3
               %strong Inventory Serial Items #{inv_product_condition.inventory_serial_items.count}

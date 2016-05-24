@@ -109,6 +109,8 @@ class Manufacture < ActiveRecord::Base
 
   has_one :inventory_product_info, foreign_key: :manufacture_id
 
+  validates_presence_of :manufacture
+
   def is_used_anywhere?
     inventory_product_info.present?
   end
@@ -120,6 +122,8 @@ class InventoryUnit < ActiveRecord::Base
 
   has_many :inventory_products, foreign_key: :unit_id
   has_many :inventory_product_infos, foreign_key: :secondary_unit_id
+
+  validates_presence_of [:unit, :description]
 
   def is_used_anywhere?
     inventory_products.any? or inventory_product_infos.any?
@@ -203,6 +207,8 @@ class ProductCondition < ActiveRecord::Base
 
   has_many :inventory_serial_items
   has_many :inventory_serial_parts
+
+  validates_presence_of :condition
 
   def is_used_anywhere?
     inventory_serial_items.any? or inventory_serial_parts.any?
@@ -298,9 +304,14 @@ class InventoryRack < ActiveRecord::Base
 
   has_many :inventory_shelfs, foreign_key: :rack_id
   accepts_nested_attributes_for :inventory_shelfs, allow_destroy: true
+  has_many :inventory_bins, through: :inventory_shelfs
+
   belongs_to :organization, foreign_key: :location_id
-  belongs_to :user, foreign_key: :created_by
-  belongs_to :user, foreign_key: :updated_by
+  belongs_to :created_user, foreign_key: :created_by
+  belongs_to :updated_user, foreign_key: :updated_by
+
+  validates_presence_of :description
+
 
   def is_used_anywhere?
     inventory_shelfs.any?
@@ -313,9 +324,11 @@ class InventoryShelf < ActiveRecord::Base
 
   has_many :inventory_bins, foreign_key: :shelf_id
   accepts_nested_attributes_for :inventory_bins, allow_destroy: true
+  has_many :inventories, through: :inventory_bins
+
   belongs_to :inventory_rack, foreign_key: :rack_id
-  belongs_to :user, foreign_key: :created_by
-  belongs_to :user, foreign_key: :updated_by
+  belongs_to :created_user, foreign_key: :created_by
+  belongs_to :updated_user, foreign_key: :updated_by
 
   def is_used_anywhere?
     inventory_bins.any?
@@ -326,8 +339,8 @@ class InventoryBin < ActiveRecord::Base
   self.table_name = "mst_inv_bin"
 
   belongs_to :inventory_shelf, foreign_key: :shelf_id
-  belongs_to :user, foreign_key: :created_by
-  belongs_to :user, foreign_key: :updated_by
+  belongs_to :created_user, foreign_key: :created_by
+  belongs_to :updated_user, foreign_key: :updated_by
   has_many :inventories, foreign_key: :bin_id
 
   def is_used_anywhere?

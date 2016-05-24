@@ -1,6 +1,6 @@
 %h3 Inventory Location
 
-= simple_nested_form_for @inventory_rack, url: location_admins_inventories_path(create:true), method: :post do |f|
+= simple_nested_form_for @inventory_rack, url: location_admins_inventories_path(create:true), html: { class: "validate_form" }, method: :post do |f|
   .panel.panel-primary
     .panel-heading
       %h3.panel-title Rack
@@ -9,8 +9,7 @@
         .col-md-6
           = f.input :description, input_html: {rows: 1}
         .col-md-6
-          = f.label "Location:"
-          = f.select :location_id, Organization.all.uniq{|o| o.id}.map{|o| [(o.name ? "#{o.name}" : o.short_name), o.id]}
+          = f.association :organization, collection: Organization.stores, label: "Store", include_blank: false
         .col-md-6
           = f.label "aisle_image"
           = f.file_field :aisle_image, accept: 'image/png,image/gif,image/jpeg,application/pdf'
