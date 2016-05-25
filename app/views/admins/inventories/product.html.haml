@@ -51,6 +51,7 @@
     = f.input :updated_by, as: :hidden, input_html: {value: current_user.id}
   %hr
   .row
+    - f.object.build_inventory_product_info unless f.object.inventory_product_info.present?
     = f.simple_fields_for :inventory_product_info do |d|
       .row
         .col-md-3
