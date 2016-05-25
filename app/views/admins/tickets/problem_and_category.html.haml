@@ -27,7 +27,7 @@
                     .col-md-12
                       .col-md-6
                         = qa.label "Action:"
-                        = qa.select :action_id, TaskAction.all.uniq{|a| a.id}.map{|a| [a.action_description, a.id]}
+                        = qa.select :action_id, TaskAction.where(action_no: [1, 5, 58, 57, 67]).map{|a| [a.action_description, a.id]}
                       .col-md-6
                         = qa.input :question
                         .add_sign
