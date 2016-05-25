@@ -14,12 +14,13 @@
   .row
     .col-md-3
       = f.input :serial_no, input_html: {value: InventorySerialItem.last.serial_no}
-    .col-md-3
-      = f.input :serial_no_order, input_html: {value: InventoryProduct.all.count + 1}
+      = f.input :serial_no_order, input_html: {value: InventoryProduct.all.count + 1, class: "hide"}
     .col-md-3
       = f.input :sku
     .col-md-3
       = f.input :legacy_code
+    .col-md-3
+
   .row
     .col-md-6
       = f.input :description
@@ -113,11 +114,11 @@
             .col-md-4
               = link_to "#", class: "inline_edit", data: {type: "text", resource: "inventory_product", name: "serial_no", url:product_admins_inventories_path(edit: true, product_id: inv_product.id), "original-title" => "Update serial no", value: ""}, style: "line-height: 6px;" do
                 = inv_product.serial_no
-            .col-md-2
-              %strong Serial No Order:
-            .col-md-4
-              = link_to "#", class: "inline_edit", data: {type: "text", resource: "inventory_product", name: "serial_no_order", url:product_admins_inventories_path(edit: true, product_id: inv_product.id), "original-title" => "Update serial no order", value: ""}, style: "line-height: 6px;" do
-                = inv_product.serial_no_order
+            / .col-md-2
+            /   %strong Serial No Order:
+            / .col-md-4
+            /   = link_to "#", class: "inline_edit", data: {type: "text", resource: "inventory_product", name: "serial_no_order", url:product_admins_inventories_path(edit: true, product_id: inv_product.id), "original-title" => "Update serial no order", value: ""}, style: "line-height: 6px;" do
+            /     = inv_product.serial_no_order
           .row.col-md-12
             .col-md-2
               %strong Legacy code:
