@@ -352,5 +352,9 @@ module Admins
       def problem_category_params
         params.require(:problem_category).permit(:name ,q_and_as_attributes: [:_destroy, :id, :question, :answer_type, :active, :action_id, :compulsory])
       end
+
+      def q_and_a_params
+        params.require(:q_and_a).permit(:question, :answer_type, :active, :action_id, :compulsory)
+      end
   end
 end
