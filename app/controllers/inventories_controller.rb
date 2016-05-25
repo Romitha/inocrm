@@ -1136,7 +1136,7 @@ class InventoriesController < ApplicationController
             @ticket_spare_part.update ticket_spare_part_params(@ticket_spare_part)
 
 
-            @ticket_spare_part.ticket_spare_part_store.update inv_gin_id: gin.id, inv_gin_item_id: gin_item.id, cost_price: @part_cost_price, issued: true, issued_at: DateTime.now, store_issued_by: current_user.id
+            @ticket_spare_part.ticket_spare_part_store.update inv_gin_id: gin.id, inv_gin_item_id: gin_item.id, cost_price: @part_cost_price, issued: true, issued_at: DateTime.now, issued_by: current_user.id
 
 
             #Issue store Spare Part
