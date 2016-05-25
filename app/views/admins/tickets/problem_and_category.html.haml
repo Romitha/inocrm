@@ -40,13 +40,11 @@
       .row{style: "margin-top:20px;"}
         .col-md-11
           = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_problem_category"
-#accordion.panel-group
+
+= collapse_wrapper panel_type: "info", collapse_id: "problem_category_collapse" do
   - @problem_category_all.each_with_index do |pc, index|
-    .panel.panel-primary
-      .panel-heading
-        %h3.panel-title
-          %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
-            = pc.name
-          - unless pc.is_used_anywhere?
-            = link_to delete_problem_category_admins_tickets_path(problem_category_id: pc.id), method: :delete, :data => { :confirm => 'Are you sure?' } do
-              %span.glyphicon.glyphicon-trash
+    = collapse collapse_type: "info", labelledby: "labelledby_#{index}", header_content: pc.name, collapse_link: "link_#{index+1}" do
+      = pc.name
+      - unless pc.is_used_anywhere?
+        = link_to delete_problem_category_admins_tickets_path(problem_category_id: pc.id), method: :delete, :data => { :confirm => 'Are you sure?' } do
+          %span.glyphicon.glyphicon-trash
