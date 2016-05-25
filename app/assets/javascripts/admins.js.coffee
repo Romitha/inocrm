@@ -1,11 +1,19 @@
 window.Admins =
   setup: ->
     @admin_menu_dropdown()
+    @admin_ticket_reason()
     return
 
   admin_menu_dropdown: ->
     $(".with_submenu a.pull-right").click ->
       $("span",this).toggleClass("icon-chevron-left icon-chevron-down");
+
+  admin_ticket_reason: ->
+    $("#reason_hold").click ->
+      if $(@).is(':checked')
+        $("#fff").removeClass("hide")
+      else
+        $("#fff").addClass("hide")
 
 
     # OPTIMIZE <div id='translControl'></div>
