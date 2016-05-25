@@ -1197,7 +1197,7 @@ class InventoriesController < ApplicationController
         # @inventory_serial_part.update inventory_serial_part_params
       else
         @inventory_serial_part = InventorySerialPart.new inventory_serial_part_params
-        @prev_inventory_serial_part = InventorySerialPart.find session[:serial_part_id]
+        # @prev_inventory_serial_part = InventorySerialPart.find session[:serial_part_id]
         @add_rec = true
       end
 
@@ -1208,7 +1208,7 @@ class InventoriesController < ApplicationController
         # @inventory_serial_item.update inventory_serial_item_params
       else
         @inventory_serial_item = InventorySerialItem.new inventory_serial_item_params
-        @prev_inventory_serial_item = InventorySerialItem.find session[:serial_item_id]
+        # @prev_inventory_serial_item = InventorySerialItem.find session[:serial_item_id]
         @add_rec = true
       end
 
@@ -1218,7 +1218,7 @@ class InventoriesController < ApplicationController
         # @inventory_batch.update inventory_batch_params
       else
         @inventory_batch = InventoryBatch.new inventory_batch_params
-        @prev_grn_batch = InventoryBatch.find session[:grn_batch_id]
+        # @prev_grn_batch = InventoryBatch.find session[:grn_batch_id]
         @add_rec = true
       end
 
@@ -1228,7 +1228,7 @@ class InventoriesController < ApplicationController
         @grn_item.update grn_item_params
       else
         @grn_item = GrnItem.new grn_item_params
-        @prev_grn_item = GrnItem.find session[:grn_item_id]
+        # @prev_grn_item = GrnItem.find session[:grn_item_id]
         @add_rec = true
       end
     end
