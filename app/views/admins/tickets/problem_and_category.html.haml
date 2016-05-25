@@ -17,7 +17,9 @@
                   .row.col-md-12
                     .col-md-12
                       .col-md-4
-                        = qa.input :answer_type
+                        = label_tag "Answer Type"
+                        = qa.select :answer_type, options_for_select([["Yes No", "YN"], ["Text", "TX"]])
+                        / = qa.input :answer_type
                       .col-md-4
                         = qa.input :compulsory
                       .col-md-4
@@ -77,7 +79,8 @@
                     .col-md-2
                       %strong Answer type:
                     .col-md-4
-                      = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "q_and_a", name: "answer_type", url: problem_and_category_admins_tickets_path(edit: true, q_and_a_id: q_a.id), "original-title" => "Update QAndA", value: ""}, style: "line-height: 6px;" do
+                      / = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "q_and_a", name: "answer_type", url: problem_and_category_admins_tickets_path(edit: true, q_and_a_id: q_a.id), "original-title" => "Update QAndA", value: ""}, style: "line-height: 6px;" do
+                      = link_to "#", class: "inline_edit load_style", data: {type: "select", source: [{value: "YN",text: "Yes No"}, {value: "TX",text: "Text"}], resource: "q_and_a", name: "answer_type", url: problem_and_category_admins_tickets_path(edit: true, q_and_a_id: q_a.id), "original-title" => "Update QAndA"} do
                         = q_a.answer_type
                     .col-md-1
                       %strong Active:
