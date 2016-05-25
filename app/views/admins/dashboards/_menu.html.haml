@@ -57,6 +57,15 @@
       = link_to problem_and_category_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'problem_and_category' }" do
         %i.fa.fa-exclamation-circle
         Problem & Categories
+      = link_to additional_charge_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'additional_charge' }" do
+        %i.fa.fa-money
+        Additional Charge
+      = link_to brands_and_category_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'brands_and_category' }" do
+        %i.fa.fa-apple
+        Brands
+      = link_to category_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'category' }" do
+        %i.icon-folder-plus
+        Categories
 
     .panel-footer
       = link_to "Tickets", admins_tickets_path
@@ -69,21 +78,12 @@
 
   = collapse collapse_type: "#{controller_name == 'sales' ? 'primary' : 'default'}", labelledby: "labelledby_sales", header_content: content_tag(:span, "", class: "icon-exchange")+"Sales", collapse_link: "collapse_link_sales" do
     %ul.list-group
-      = link_to additional_charge_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'additional_charge' }" do
-        %i.fa.fa-money
-        Additional Charge
 
     .panel-footer
       = link_to "Sales", admins_sales_path
 
   = collapse collapse_type: "#{controller_name == 'inventories' ? 'primary' : 'default'}", labelledby: "labelledby_inventories", header_content: content_tag(:span, "", class: "icon-list-alt")+"Inventories", collapse_link: "collapse_link_inventories" do
     %ul.list-group
-      = link_to brands_and_category_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'brands_and_category' }" do
-        %i.fa.fa-apple
-        Brands
-      = link_to category_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'category' }" do
-        %i.icon-folder-plus
-        Categories
       = link_to disposal_method_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'disposal_method' }" do
         %i.icon-file-text2
         Disposal methods
