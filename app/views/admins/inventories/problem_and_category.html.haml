@@ -1,0 +1,192 @@
+= simple_nested_form_for @problem_category, url: inventory_problem_and_category_admins_inventories_path(create:true), method: :post do |f|
+  .panel.panel-primary
+    .panel-heading
+      %h3.panel-title Problem Category
+    .panel-body
+      .row
+        .col-md-6
+          = f.label "Problem category:"
+          = f.input :name, input_html: {rows: 1}
+        .col-md-12
+          .row
+            = f.simple_fields_for :q_and_as do |qa|
+              .panel.panel-danger
+                .panel-heading
+                  %h3.panel-title QAndA
+                .panel-body
+                  .row.col-md-12
+                    .col-md-12
+                      .col-md-4
+                        = label_tag "Answer Type"
+                        = qa.select :answer_type, options_for_select([["Yes No", "YN"], ["Text", "TX"]])
+                      .col-md-4
+                        = qa.input :compulsory
+                      .col-md-4
+                        = qa.input :active
+                    .col-md-12
+                      .col-md-6
+                        = qa.label "Action:"
+                        = qa.select :action_id, TaskAction.all.uniq{|a| a.id}.map{|a| [a.action_description, a.id]}
+                      .col-md-6
+                        = qa.input :question
+                        .add_sign
+                          = qa.link_to_remove do
+                            %span.glyphicon.glyphicon-remove-sign
+            .row.col-md-12
+              .col-md-12
+                = f.link_to_add :q_and_as do
+                  %span.glyphicon.glyphicon-plus-sign Add QAndA
+      .row{style: "margin-top:20px;"}
+        .col-md-11
+          = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_problem_category"
+#accordion.panel-group
+  - @problem_category_all.each_with_index do |pc, index|
+    .panel.panel-primary
+      .panel-heading
+        %h3.panel-title
+          %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
+            #{index+1} Problem Category : #{pc.name}
+          - unless pc.is_used_anywhere?
+            = link_to delete_problem_category_admins_inventories_path(problem_category_id: pc.id),method: :delete, :data => { :confirm => 'Are you sure?' } do
+              %span.glyphicon.glyphicon-trash
+
+      .panel-collapse.collapse.in{:id => "#{index}"}
+        .panel-body
+          .row.col-md-12
+            .col-md-2
+              %strong Problem Category:
+            .col-md-4
+              = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "problem_category", name: "name", url: inventory_problem_and_category_admins_inventories_path(edit: true, problem_category_id: pc.id), "original-title" => "Update Problem Category", value: ""}, style: "line-height: 6px;" do
+                = pc.name
+          .row.col-md-12
+            - pc.q_and_as.each do |q_a|
+              .panel.panel-danger
+                .panel-heading
+                  %h3.panel-title
+                    %span Question: #{q_a.question}
+                    - unless q_a.is_used_anywhere?
+                      = link_to delete_q_and_a_admins_inventories_path(q_and_a_id: q_a.id), method: :delete,  :data => { :confirm => 'Are you sure?' } do
+                        %span.glyphicon.glyphicon-trash
+                .panel-body
+                  .row.col-md-12
+                    .col-md-3
+                      %strong Question:
+                    .col-md-9
+                      = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "q_and_a", name: "question", url: inventory_problem_and_category_admins_inventories_path(edit: true, q_and_a_id: q_a.id), "original-title" => "Update QAndA", value: ""}, style: "line-height: 6px;" do
+                        = q_a.question
+                  .row.col-md-12
+                    .col-md-2
+                      %strong Answer type:
+                    .col-md-4
+                      / = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "q_and_a", name: "answer_type", url: inventory_problem_and_category_admins_inventories_path(edit: true, q_and_a_id: q_a.id), "original-title" => "Update QAndA", value: ""}, style: "line-height: 6px;" do
+                      = link_to "#", class: "inline_edit load_style", data: {type: "select", source: [{value: "YN",text: "Select"}, {value: "TX",text: "text"}], resource: "q_and_a", name: "answer_type", url: inventory_problem_and_category_admins_inventories_path(edit: true, q_and_a_id: q_a.id), "original-title" => "Update QAndA"} do
+                        = q_a.answer_type
+                    .col-md-1
+                      %strong Active:
+                    .col-md-5
+                      = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "q_and_a", name: "active", url: inventory_problem_and_category_admins_inventories_path(edit: true, q_and_a_id: q_a.id), "original-title" => "Update QAndA"} do
+                        = q_a.active && "Yes" || "No"
+                  .row.col-md-12
+                    .col-md-1
+                      %strong Compulsory:
+                    .col-md-5
+                      = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "q_and_a", name: "compulsory", url: inventory_problem_and_category_admins_inventories_path(edit: true,  q_and_a_id: q_a.id), "original-title" => "Update QAndA"} do
+                        = q_a.compulsory && "Yes" || "No"
+                    .col-md-1
+                      %strong Action:
+                    .col-md-5
+                      = link_to "#", class: "inline_edit", data: {type: "select", source: TaskAction.all.collect{|a| {value: a.id, text: a.action_description}}, resource: "q_and_a", name: "action_id", url: inventory_problem_and_category_admins_inventories_path(edit: true,  q_and_a_id: q_a.id), "original-title" => "Update QAndA"} do
+                        = q_a.task_action.try(:action_description)
+                  .row.col-md-12
+                    .col-md-1
+                      %strong Question:
+                    .col-md-5
+                      = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "q_and_a", name: "question", url: inventory_problem_and_category_admins_inventories_path(edit: true, q_and_a_id: q_a.id), "original-title" => "Update QAndA", value: ""}, style: "line-height: 6px;" do
+                        = q_a.question
+                    
+
+
+
+
+
+
+
+
+                  
+
+
+
+
+
+
+
+
+
+/ = simple_form_for @problem_category, url: inventory_problem_and_category_admins_inventories_path(create: true), method: :post do |f|
+/   .row
+/     .col-md-4
+/       = f.label "Problem category:"
+/       = f.select :problem_category_id, ProblemCategory.all.uniq{|a| a.id}.map{|a| [a.name, a.id]}
+/     .col-md-3
+/       = f.input :answer_type
+/     .col-md-3
+/       = f.input :compulsory
+/   .row
+/     .col-md-3
+/       = f.input :active
+/     .col-md-4
+/       = f.label "Action:"
+/       = f.select :action_id, TaskAction.all.uniq{|a| a.id}.map{|a| [a.action_description, a.id]}
+/     .col-md-3
+/       = f.input :question
+/   .row{style: "margin-top:20px; margin-bottom:20px;"}
+/     .col-md-8
+/       = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_sla"
+
+/ #accordion.panel-group
+/   - @problem_category_all.each_with_index do |problem_and_category, index|
+/     .panel.panel-info
+/       .panel-heading
+/         %h3.panel-title
+/           %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
+/             #{index+1} Problem category: #{problem_and_category.problem_category.try(:name)}
+/           - unless problem_and_category.is_used_anywhere?
+/             = link_to delete_admin_problem_category_admins_inventories_path(problem_and_category_id: problem_and_category.id),method: :delete, :data => { :confirm => 'Are you sure?' } do
+/               %span.glyphicon.glyphicon-trash
+
+/       .panel-collapse.collapse.in{:id => "#{index}"}
+/         .panel-body
+/           .row.col-md-12
+/             .col-md-2
+/               %strong Problem category:
+/             .col-md-4
+/               / = link_to "#", class: "inline_edit", data: {type: "select", source: ProblemCategory.all.collect{|p| {value: p.id, text: p.name}}, resource: "q_and_a", name: "problem_category_id", url: inventory_problem_and_category_admins_inventories_path(edit: true, problem_and_category_id: problem_and_category.id), "original-title" => "Update problem and category"} do
+/               = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "problem_category", name: "name", url: inventory_problem_and_category_admins_inventories_path(edit_other: true, problem_and_category_id: problem_and_category.problem_category.id), "original-title" => "Update problem and category", value: ""}, style: "line-height: 6px;" do
+/                 = problem_and_category.problem_category.try(:name)
+/             .col-md-2
+/               %strong Answer type:
+/             .col-md-4
+/               = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "q_and_a", name: "answer_type", url: inventory_problem_and_category_admins_inventories_path(edit: true, problem_and_category_id: problem_and_category.id), "original-title" => "Update problem and category", value: ""}, style: "line-height: 6px;" do
+/                 = problem_and_category.answer_type
+/           .row.col-md-12
+/             .col-md-1
+/               %strong Active:
+/             .col-md-5
+/               = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "q_and_a", name: "active", url: inventory_problem_and_category_admins_inventories_path(edit: true, problem_and_category_id: problem_and_category.id), "original-title" => "Update problem and category"} do
+/                 = problem_and_category.active && "Yes" || "No"
+/             .col-md-1
+/               %strong Compulsory:
+/             .col-md-5
+/               = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "q_and_a", name: "compulsory", url: inventory_problem_and_category_admins_inventories_path(edit: true,  problem_and_category_id: problem_and_category.id), "original-title" => "Update problem and category"} do
+/                 = problem_and_category.compulsory && "Yes" || "No"
+/           .row.col-md-12
+/             .col-md-1
+/               %strong Action:
+/             .col-md-5
+/               = link_to "#", class: "inline_edit", data: {type: "select", source: TaskAction.all.collect{|a| {value: a.id, text: a.action_description}}, resource: "q_and_a", name: "action_id", url: inventory_problem_and_category_admins_inventories_path(edit: true,  problem_and_category_id: problem_and_category.id), "original-title" => "Update problem and category"} do
+/                 = problem_and_category.task_action.try(:action_description)
+/             .col-md-1
+/               %strong Question:
+/             .col-md-5
+/               = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "q_and_a", name: "question", url: inventory_problem_and_category_admins_inventories_path(edit: true, problem_and_category_id: problem_and_category.id), "original-title" => "Update problem and category", value: ""}, style: "line-height: 6px;" do
+/                 = problem_and_category.question

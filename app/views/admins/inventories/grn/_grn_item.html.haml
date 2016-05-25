@@ -11,7 +11,7 @@
   - inventory = inventory_product.inventories.first
   - url = initiate_grn_for_i_product_admins_inventories_path(inventory_product_id: @inventory_product.try(:id))
 
-= simple_nested_form_for @grn_item, url: url, method: :post, remote: true do |g|
+= simple_nested_form_for @grn_item, url: url, method: :post, remote: true do |g| #, html: {id: "sample"}
 
   - if !need_serial and need_batch
     %fieldset
