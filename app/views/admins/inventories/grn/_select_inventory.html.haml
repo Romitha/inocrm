@@ -27,7 +27,7 @@
           %td= pr.model_no
           %td= pr.product_no
           %td= pr.spare_part_no
-          %td= pr.inventory_product_info.manufacture.manufacture
+          %td= pr.inventory_product_info.manufacture.try(:manufacture)
           %td= pr.inventory_unit.unit
           %td= link_to "Select", grn_admins_inventories_path(purchase_order: "select_inventory", inventory_product_id: pr.id), remote: true, id: "#{@selected_grns_for_without_po ? 's_i_product_'+pr.id.to_s : 'i_product_'+pr.id.to_s }", class: "po_select_link"
   %hr
