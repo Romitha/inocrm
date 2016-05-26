@@ -310,7 +310,7 @@ class InventoryRack < ActiveRecord::Base
   belongs_to :created_user, foreign_key: :created_by
   belongs_to :updated_user, foreign_key: :updated_by
 
-  validates_presence_of :description
+  validates_presence_of [:description, :location_id]
 
 
   def is_used_anywhere?
