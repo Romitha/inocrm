@@ -216,13 +216,13 @@
       %tbody
         - grn_batch.inventory_batch.inventory_warranties.each do |inventory_warranty|
           %tr
-            %td= inventory.start_at
-            %td= inventory.end_at
-            %td= inventory.period_part
-            %td= inventory.period_labour
-            %td= inventory.period_onsight
-            %td= inventory.inventory_warranty_type.try(:name)
-            %td= inventory.remarks
+            %td= inventory_warranty.start_at
+            %td= inventory_warranty.end_at
+            %td= inventory_warranty.period_part
+            %td= inventory_warranty.period_labour
+            %td= inventory_warranty.period_onsight
+            %td= inventory_warranty.inventory_warranty_type.try(:name)
+            %td= inventory_warranty.remarks
 
   =radio_button_tag "radio_part", "add_batch", ((onloan_request and active_spare_part.spare_part_status_use.code == "USD") or ( !onloan_request and active_spare_part.ticket_spare_part.spare_part_status_use.code == "USD")), data: {uri_path: uri.path, object_class: form_inv_batch.class.to_s, task_id: params[:task_id], owner: params[:owner], process_id: params[:process_id], currency_code: gin_source.grn_item.currency.code, currency_id: gin_source.grn_item.currency_id, grn_cost: gin_source.grn_item.unit_cost, active_spare_part: (onloan_request ? "#{onloan_spare_part.class.to_s}-#{onloan_spare_part.id}" : "#{spare_part.class.to_s}-#{spare_part.id}")}, class: "toggle_add_update"
   =label_tag :type_order, "Add new Serial Part"
