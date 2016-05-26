@@ -1,4 +1,5 @@
-= simple_nested_form_for @problem_category, url: problem_and_category_admins_tickets_path(create:true), html: { class: "validate_form" }, method: :post do |f|
+= simple_nested_form_for @problem_category, url: problem_and_category_admins_tickets_path, html: { class: "validate_form" }, method: :post do |f|
+  = hidden_field_tag :problem_category_id, f.object.id
   .panel.panel-primary
     .panel-heading
       %h3.panel-title Problem Category
@@ -39,7 +40,7 @@
                   %span.glyphicon.glyphicon-plus-sign Add QAndA
       .row{style: "margin-top:20px;"}
         .col-md-11
-          = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_problem_category"
+          = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_problem_category", name: "#{params[:edit_more] ? 'update' : 'create'}"
 #accordion.panel-group
   - @problem_category_all.each_with_index do |pc, index|
     .panel.panel-primary
@@ -53,6 +54,10 @@
 
       .panel-collapse.collapse.in{:id => "#{index}"}
         .panel-body
+          .row.col-md-12
+            .col-md-2.pull-right
+              = link_to problem_and_category_admins_tickets_path(edit_more: true, problem_category_id: pc.id), method: :post do
+                %span.glyphicon.glyphicon-pencil Edit More>>
           .row.col-md-12
             .col-md-2
               %strong Problem Category:

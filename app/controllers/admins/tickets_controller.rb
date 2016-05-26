@@ -273,6 +273,11 @@ module Admins
       Ticket
       TaskAction
       Product
+
+      # if params[:edit_more]
+      #   @problem_category = ProblemCategory.find params[:problem_category_id]
+      # end
+
       if params[:edit]
         if params[:problem_category_id]
           @problem_category = ProblemCategory.find params[:problem_category_id]
@@ -294,9 +299,20 @@ module Admins
             params[:create] = nil
             @problem_category = ProblemCategory.new
           end
+        elsif params[:edit_more]
+          @problem_category = ProblemCategory.find params[:problem_category_id]
+
+        elsif params[:update]
+          @problem_category = ProblemCategory.find params[:problem_category_id]
+          if @problem_category.update problem_category_params
+            params[:update] = nil
+            @problem_category = ProblemCategory.new
+          end
+
         else
           @problem_category = ProblemCategory.new
         end
+
         @problem_category_all = ProblemCategory.order(created_at: :desc).select{|i| i.persisted? }
       end
     end
@@ -351,6 +367,10 @@ module Admins
 
       def problem_category_params
         params.require(:problem_category).permit(:name ,q_and_as_attributes: [:_destroy, :id, :question, :answer_type, :active, :action_id, :compulsory])
+      end
+
+      def problem_category2_params
+        params.require(:problem_category).permit(:name,q_and_as_attributes: [:question, :answer_type, :active, :action_id, :compulsory])
       end
 
       def q_and_a_params
