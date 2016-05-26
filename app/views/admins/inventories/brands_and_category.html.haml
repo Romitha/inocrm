@@ -56,6 +56,8 @@
           - unless brands_and_category.is_used_anywhere?
             = link_to delete_admin_brands_and_category_admins_inventories_path(brands_and_category_id: brands_and_category.id), method: :delete,  :data => { :confirm => 'Are you sure?' } do
               %span.glyphicon.glyphicon-trash
+          = link_to brands_and_category_admins_inventories_path(brands_and_category_id: brands_and_category.id, edit_more: true), method: :post do
+              %span Edit More
 
       .panel-collapse.collapse.in{:id => "#{index}"}
         .panel-body
@@ -92,6 +94,35 @@
             .col-md-4
               = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "product_brand", name: "warranty_date_format", url: brands_and_category_admins_inventories_path(edit: true, brands_and_category_id: brands_and_category.id), "original-title" => "Update Brands", value: ""}, style: "line-height: 6px;" do
                 = brands_and_category.warranty_date_format
+
+          / .col-md-10
+          /   .row
+          /     = brands_and_category.object.simple_fields_for :product_categories do |product_category|
+          /       .panel.panel-danger
+          /         .panel-heading
+          /           %h3.panel-title Product Category
+          /         .panel-body
+          /           .row.col-md-10
+          /             .col-md-4
+          /               = product_category.label "sla:"
+          /               = product_category.select :sla_id, SlaTime.all.map{|a| [a.sla_time, a.id]}
+          /             .col-md-6
+          /               = product_category.input :name
+          /               .add_sign
+          /                 = product_category.link_to_remove do
+          /                   %span.glyphicon.glyphicon-remove-sign
+          /     .row.col-md-12
+          /       .col-md-12
+          /         = brands_and_category.object.link_to_add :product_categories do
+          /           %span.glyphicon.glyphicon-plus-sign Add a Category
+          / .row{style: "margin-top:20px;"}
+          /   .col-md-11
+          /     = brands_and_category.object.submit "Save", class: "btn btn-success pull-right", id: "submit_new_brands_and_category"
+
+
+
+
+
           .row.col-md-12
             - brands_and_category.product_categories.each do |product_category|
               .panel.panel-danger

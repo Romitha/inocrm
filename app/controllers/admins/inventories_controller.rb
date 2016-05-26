@@ -167,6 +167,7 @@ module Admins
           params[:edit] = nil
           render json: @payment_item
         end
+
       else
         if params[:create]
           @payment_item = PaymentItem.new admin_payment_item_params
