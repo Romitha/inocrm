@@ -28,7 +28,8 @@
                     .col-md-12
                       .col-md-6
                         = qa.label "Action:"
-                        = qa.select :action_id, TaskAction.where(action_no: [1, 5, 58, 57, 67]).map{|a| [a.action_description, a.id]}
+                        / = qa.select :action_id, TaskAction.where(action_no: [1, 5, 58, 57, 67]).map{|a| [a.action_description, a.id]}
+                        = qa.select :action_id, options_for_select([["Add Ticket", 1], ["Engineer Resolution", 5], ["Quality Control", 57], ["Customer Feed Back", 58]])
                       .col-md-6
                         = qa.input :question
                         .add_sign
@@ -100,7 +101,7 @@
                     .col-md-1
                       %strong Action:
                     .col-md-5
-                      = link_to "#", class: "inline_edit", data: {type: "select", source: TaskAction.all.collect{|a| {value: a.id, text: a.action_description}}, resource: "q_and_a", name: "action_id", url: problem_and_category_admins_tickets_path(edit: true,  q_and_a_id: q_a.id), "original-title" => "Update QAndA"} do
+                      = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Add Ticket",5=>"Engineer Resolution",57=>"Quality Control",58=>"Customer Feed Back"}, resource: "q_and_a", name: "action_id", url: problem_and_category_admins_tickets_path(edit: true,  q_and_a_id: q_a.id), "original-title" => "Update QAndA"} do
                         = q_a.task_action.try(:action_description)
                   .row.col-md-12
                     .col-md-1
