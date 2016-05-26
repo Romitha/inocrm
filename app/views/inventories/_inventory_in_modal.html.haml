@@ -99,7 +99,7 @@
                 %td= inventory_product.product_no
                 %td= inventory_product.spare_part_no
                 %td= inventory_product.inventory_unit.unit
-                %td= inventory_product.inventory_product_info.need_serial ? "Serial" : (inventory_product.inventory_product_info.need_batch ? "Batch" : "")
+                %td= inventory_product.inventory_product_info ? inventory_product.inventory_product_info.need_serial ? "Serial" : (inventory_product.inventory_product_info.need_batch ? "Batch" : "") : "No product info"
                 %td= link_to("Select", inventory_in_modal_inventories_path(select_inventory: true, inventory_product_id: inventory_product.id, select_frame: session[:select_frame], issue_part: params[:issue_part]), remote: true)
 
         = tab_content tabpointer: :non_stock_tab do

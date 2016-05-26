@@ -39,6 +39,17 @@ window.Warranties =
         $("#warranty_end_at").prop('disabled', true);
     return
 
+  update_end_at: (e)->
+    this_value = $(e).val()
+    end_at = $(e).parents().eq(2).siblings().find(".updateable_end_at")
+    end_at.val("")
+    end_at.datepicker 'remove'
+    end_at.datepicker
+      format: "yyyy-mm-dd"
+      todayBtn: true
+      todayHighlight: true
+      startDate: this_value
+
   tab_trigger: ->
     $('#qa').trigger 'click'
     $("#save_next").click()
