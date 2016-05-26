@@ -15,7 +15,7 @@
 
   - if !need_serial and need_batch
     %fieldset
-      %legend Grn batches
+      %legend GRN Batches
       = g.simple_fields_for :grn_batches do |b|
         - b.object.build_inventory_batch unless b.object.inventory_batch.present?
         = b.simple_fields_for :inventory_batch do |ib|
@@ -23,16 +23,16 @@
           = ib.input :product_id, as: :hidden, input_html: {value: inventory_product.id }
           = ib.input :created_by, as: :hidden, input_html: {value: current_user.id }
           %fieldset
-            %legend New batch
+            %legend New Batch
             .row
               .col-md-6
                 = ib.input :lot_no
               .col-md-6
                 = ib.input :batch_no
               .col-md-6
-                = ib.input :manufatured_date, as: :string, input_html: {class: "datepicker"}
+                = ib.input :manufatured_date, as: :string, input_html: {class: "datepicker", onblur: "Warranties.update_end_at(this); return false;"}
               .col-md-6
-                = ib.input :expiry_date, as: :string, input_html: {class: "datepicker"}
+                = ib.input :expiry_date, as: :string, input_html: {class: "datepicker updateable_end_at"}
               .col-md-12
                 = ib.input :remarks
 
@@ -50,23 +50,23 @@
                     .col-md-4
                       = w.input :end_at, as: :string, input_html: {class: "datepicker updateable_end_at"}
                     .col-md-4
-                      = w.input :period_part
+                      = w.input :period_part, as: :integer
                     .col-md-4
-                      = w.input :period_labour
+                      = w.input :period_labour, as: :integer
                     .col-md-4
-                      = w.input :period_onsight
+                      = w.input :period_onsight, as: :integer
                     .col-md-12
                       = w.input :remarks
                 = iw.link_to_remove "remove warranty", class: "remove_warranty", onclick: "Inventories.remove_warranty_click(this);"
               = ib.link_to_add "Add warranty", :inventory_batch_warranties, class: "add_warranty add_grn_items #{'hide' if ib.object.inventory_batch_warranties.any? { |w| w.new_record? }}", onclick: "Inventories.add_warranty_click(this);"
 
-          = b.input :recieved_quantity, as: :float, input_html: {value: 0, required: true }
+          = b.input :recieved_quantity, as: :float, input_html: {value: 0, required: true }, label: "Received quantity"
         = b.link_to_remove "Remove"
       = g.link_to_add "Add", :grn_batches, class: "add_grn_items", onclick: "Inventories.add_warranty_click(this);"
 
   - if need_serial and !need_batch
     %fieldset
-      %legend Grn serial items
+      %legend GRn Serial items
       = g.simple_fields_for :grn_serial_items do |b|
         - b.object.build_inventory_serial_item unless b.object.inventory_serial_item.present?
 
@@ -85,11 +85,11 @@
               .col-md-4
                 = ib.input :serial_no
               .col-md-4
-                = ib.input :ct_no, as: :integer
+                = ib.input :ct_no, as: :integer, label: "CT No"
               .col-md-6
-                = ib.input :manufatured_date, as: :string, input_html: {class: "datepicker"}
+                = ib.input :manufatured_date, as: :string, input_html: {class: "datepicker", onblur: "Warranties.update_end_at(this); return false;"}
               .col-md-6
-                = ib.input :expiry_date, as: :string, input_html: {class: "datepicker"}
+                = ib.input :expiry_date, as: :string, input_html: {class: "datepicker updateable_end_at"}
               .col-md-4
                 = ib.input :scavenge
               .col-md-4
@@ -132,14 +132,14 @@
 
             = b.link_to_remove "remove"
 
-      = g.link_to_add "Add grn serial item", :grn_serial_items, class: "add_grn_items", onclick: "Inventories.add_warranty_click(this);"
+      = g.link_to_add "Add GRN Serial item", :grn_serial_items, class: "add_grn_items", onclick: "Inventories.add_warranty_click(this);"
 
   - if !(need_serial or need_batch)
-    = g.input :recieved_quantity, as: :decimal, input_html: {value: 0, required: true }
+    = g.input :recieved_quantity, as: :decimal, input_html: {value: 0, required: true }, label: "Received quantity"
   - else
     = g.input :recieved_quantity, as: :hidden, input_html: {value: (need_serial and !need_batch ? 1 : 0 )}
   = g.input :unit_cost, as: :float, label: "Unit cost (#{inventory_product.inventory_product_info.currency.code})", input_html: { required: true } if @inventory_product.present?
-  = g.input :remarks, label: "Grn item remarks"
+  = g.input :remarks, label: "GRN Item remarks"
 
   = g.submit "Remove", class: "btn btn-link", name: "cancel", data: {disable_with: "Please wait..."}
   = g.submit "Add", class: "btn btn-success btn-sm", name: "next", data: {disable_with: "Please wait..."}
