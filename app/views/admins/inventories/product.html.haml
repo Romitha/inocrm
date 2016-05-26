@@ -14,7 +14,7 @@
   .row
     .col-md-3
       = f.input :serial_no, input_html: {value: InventorySerialItem.last.serial_no}
-      = f.input :serial_no_order, input_html: {value: InventoryProduct.all.count + 1, class: "hide"}
+      = f.input :serial_no_order, as: :hidden, input_html: {value: InventoryProduct.all.count + 1}
     .col-md-3
       = f.input :sku
     .col-md-3
