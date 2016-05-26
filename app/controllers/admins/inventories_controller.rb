@@ -213,6 +213,18 @@ module Admins
           else
             flash[:error] = "Unable to save"
           end
+
+        elsif params[:edit_more]
+          @brands_and_category = ProductBrand.find params[:brands_and_category_id]
+
+        elsif params[:update]
+          @brands_and_category = ProductBrand.find params[:brands_and_category_id]
+          if @brands_and_category.update brands_and_category_params
+            params[:update] = nil
+            @brands_and_category = ProductBrand.new
+          end
+
+
         else
           @brands_and_category = ProductBrand.new
         end
@@ -251,6 +263,17 @@ module Admins
             params[:create] = nil
             @inventory_rack = InventoryRack.new
           end
+
+        elsif params[:edit_more]
+          @inventory_rack = InventoryRack.find params[:rack_id]
+
+        elsif params[:update]
+          @inventory_rack = InventoryRack.find params[:rack_id]
+          if @inventory_rack.update inventory_rack_params
+            params[:update] = nil
+            @inventory_rack = InventoryRack.new
+          end
+
         else
           @inventory_rack = InventoryRack.new
         end
@@ -289,6 +312,17 @@ module Admins
             params[:create] = nil
             @inventory_category1 = InventoryCategory1.new
           end
+
+        elsif params[:edit_more]
+          @inventory_category1 = InventoryCategory1.find params[:brand_id]
+
+        elsif params[:update]
+          @inventory_category1 = InventoryCategory1.find params[:brand_id]
+          if @inventory_category1.update inventory_brand_params
+            params[:update] = nil
+            @inventory_category1 = InventoryCategory1.new
+          end
+
         else
           @inventory_category1 = InventoryCategory1.new
         end

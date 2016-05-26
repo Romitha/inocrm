@@ -50,6 +50,17 @@ module Admins
             params[:create] = nil
             @sbu = Sbu.new
           end
+
+        elsif params[:edit_more]
+          @sbu = Sbu.find params[:sbu_id]
+
+        elsif params[:update]
+          @sbu = Sbu.find params[:sbu_id]
+          if @sbu.update sbu_params
+            params[:update] = nil
+            @sbu = Sbu.new
+          end
+
         else
           @sbu = Sbu.new
         end

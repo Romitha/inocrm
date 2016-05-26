@@ -54,6 +54,17 @@ module Admins
             params[:create] = nil
             @regional_support_center = RegionalSupportCenter.new
           end
+
+        elsif params[:edit_more]
+          @regional_support_center = RegionalSupportCenter.find params[:regional_support_center_id]
+
+        elsif params[:update]
+          @regional_support_center = RegionalSupportCenter.find params[:regional_support_center_id]
+          if @regional_support_center.update regional_support_center_params
+            params[:update] = nil
+            @regional_support_center = RegionalSupportCenter.new
+          end
+
         else
           @regional_support_center = RegionalSupportCenter.new
         end

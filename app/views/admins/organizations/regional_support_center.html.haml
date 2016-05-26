@@ -1,5 +1,6 @@
 %h3 Regional Support Center
-= simple_nested_form_for @regional_support_center, url: regional_support_center_admins_organizations_path(create: true), method: :post do |f|
+= simple_nested_form_for @regional_support_center, url: regional_support_center_admins_organizations_path, method: :post do |f|
+  = hidden_field_tag :regional_support_center_id, f.object.id
   .row
     .col-md-2
       = f.input :active, wrapper: :append
@@ -22,7 +23,7 @@
             %span.glyphicon.glyphicon-plus-sign
   .row{style:"margin-bottom:20px;"}
     .col-md-10
-      = f.submit "Save", class: "btn btn-success pull-right", data: {disable_with: "Please wait..."}
+      = f.submit "Save", class: "btn btn-success pull-right", data: {disable_with: "Please wait..."}, name: "#{params[:edit_more] ? 'update' : 'create'}"
 
 #accordion.panel-group
   - @regional_support_center_all.each_with_index do |regional_support_center, index|
@@ -37,6 +38,10 @@
 
       .panel-collapse.collapse.in{:id => "#{index}"}
         .panel-body
+          .row.col-md-12
+            .col-md-2.pull-right
+              = link_to regional_support_center_admins_organizations_path(edit_more: true, regional_support_center_id: regional_support_center.id), method: :post do
+                %span.glyphicon.glyphicon-pencil Edit More>>
           .row.col-md-12
             .col-md-2
               %strong Organization:

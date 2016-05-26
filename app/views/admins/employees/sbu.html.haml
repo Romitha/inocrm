@@ -1,4 +1,5 @@
-= simple_nested_form_for @sbu, url: sbu_admins_employees_path(create: true), html: {class: "validate_form"}, method: :post do |f|
+= simple_nested_form_for @sbu, url: sbu_admins_employees_path, html: {class: "validate_form"}, method: :post do |f|
+  = hidden_field_tag :sbu_id, f.object.id
   .row
     .col-md-4
       = f.input :sbu
@@ -8,7 +9,7 @@
       .row
         = f.simple_fields_for :sbu_engineers do |engineer|
           .col-md-6
-            = engineer.association :engineer, collection: User.all.uniq{|e| e.id}.map{|e| [(e.first_name ? "#{e.name_title} #{e.first_name}" : e.email), e.id]}
+            = engineer.association :engineer, collection: User.all.map{|a| [a.email, a.id]}
             .add_sign
               = engineer.link_to_remove do
                 %span.glyphicon.glyphicon-remove-sign
@@ -16,7 +17,7 @@
           %span.glyphicon.glyphicon-plus-sign
   .row{style: "margin-bottom:20px;"}
     .col-md-8
-      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_sbu"
+      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_sbu", name: "#{params[:edit_more] ? 'update' : 'create'}"
 
 #accordion.panel-group
   - @sbu_all.each_with_index do |sbu, index|
@@ -31,6 +32,10 @@
 
       .panel-collapse.collapse.in{:id => "#{index}"}
         .panel-body
+          .row.col-md-12
+            .col-md-2.pull-right
+              = link_to sbu_admins_employees_path(edit_more: true, sbu_id: sbu.id), method: :post do
+                %span.glyphicon.glyphicon-pencil Edit More>>
           .row.col-md-12
             .col-md-1
               %strong Sbu:
@@ -50,5 +55,5 @@
                     .col-md-1
                       %strong Engineer:
                     .col-md-9
-                      = link_to "#", class: "inline_edit", data: {type: "select", source: User.all.collect{|a| {value: a.id, text: a.user_name}}, resource: "sbu_engineer", name: "engineer_id", url: sbu_admins_employees_path(edit: true, engineer_id: engineer.id), "original-title" => "Update Admin Sbu"} do
-                        = engineer.try(:user_name)
+                      = link_to "#", class: "inline_edit", data: {type: "select", source: User.all.collect{|a| {value: a.id, text: a.email}}, resource: "sbu_engineer", name: "engineer_id", url: sbu_admins_employees_path(edit: true, engineer_id: engineer.id), "original-title" => "Update Admin Sbu"} do
+                        = engineer.try(:email)

@@ -1,6 +1,7 @@
 %h3 Inventory Location
 
-= simple_nested_form_for @inventory_rack, url: location_admins_inventories_path(create:true), html: { class: "validate_form" }, method: :post do |f|
+= simple_nested_form_for @inventory_rack, url: location_admins_inventories_path, html: { class: "validate_form" }, method: :post do |f|
+  = hidden_field_tag :rack_id, f.object.id
   .panel.panel-primary
     .panel-heading
       %h3.panel-title Rack
@@ -57,7 +58,7 @@
                   %span.glyphicon.glyphicon-plus-sign Add a Shelf
       .row{style: "margin-top:20px;"}
         .col-md-11
-          = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_inventory_location"
+          = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_inventory_location", name: "#{params[:edit_more] ? 'update' : 'create'}"
 #accordion.panel-group
   - @inventory_all_rack.each_with_index do |rack, index|
     .panel.panel-primary
@@ -71,6 +72,10 @@
 
       .panel-collapse.collapse.in{:id => "#{index}"}
         .panel-body
+          .row.col-md-12
+            .col-md-2.pull-right
+              = link_to location_admins_inventories_path(edit_more: true, rack_id: rack.id), method: :post do
+                %span.glyphicon.glyphicon-pencil Edit More>>
           .row.col-md-12
             .col-md-2
               %strong Rack Description:

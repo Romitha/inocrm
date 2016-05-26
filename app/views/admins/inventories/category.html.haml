@@ -1,5 +1,6 @@
 %h3 Inventory Category
-= simple_nested_form_for @inventory_category1, url: category_admins_inventories_path(create: true), method: :post do |c1|
+= simple_nested_form_for @inventory_category1, url: category_admins_inventories_path, method: :post do |c1|
+  = hidden_field_tag :brand_id, c1.object.id
   .panel.panel-info
     .panel-heading
       %h3.panel-title Brand
@@ -63,7 +64,7 @@
                   %span.glyphicon.glyphicon-plus-sign Add a product
         .row{style: "margin-top:20px;"}
           .col-md-11
-            = c1.submit "Save", class: "btn btn-success pull-right", id: "submit_new_inventory_category1"
+            = c1.submit "Save", class: "btn btn-success pull-right", id: "submit_new_inventory_category1", name: "#{params[:edit_more] ? 'update' : 'create'}"
 
 #accordion.panel-group
   - @inventory_category1_all.each_with_index do |brand, index|
@@ -77,6 +78,10 @@
               %span.glyphicon.glyphicon-trash
       .panel-collapse.collapse.in{:id => "#{index}"}
         .panel-body
+          .row.col-md-12
+            .col-md-2.pull-right
+              = link_to category_admins_inventories_path(edit_more: true, brand_id: brand.id), method: :post do
+                %span.glyphicon.glyphicon-pencil Edit More>>
           .row.col-md-12
             .col-md-2
               %strong Brand Code:
@@ -116,7 +121,7 @@
                           %h3.panel-title 
                             Category: #{category.code}
                             - unless category.is_used_anywhere?
-                              = link_to delete_category_admins_inventories_path(category_id: category.id), method: :delete, :data => { :confirm => 'Are you sure?' } do
+                              = link_to delete_inventory_category_admins_inventories_path(category_id: category.id), method: :delete, :data => { :confirm => 'Are you sure?' } do
                                 %span.glyphicon.glyphicon-trash
                         .panel-body
                           .row.col-md-12
