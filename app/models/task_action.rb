@@ -194,7 +194,8 @@ class PaymentItem < ActiveRecord::Base
   has_many :act_terminate_job_payments, foreign_key: :payment_item_id
   accepts_nested_attributes_for :act_terminate_job_payments, allow_destroy: true
 
-  validates :name, presence: true, uniqueness: true
+  # validates :name, presence: true, uniqueness: true
+  # validates :default_amount, :length => { :minimum => 6, :maximum => 6 }
 
   def is_used_anywhere?
     act_terminate_job_payments.any?

@@ -74,6 +74,39 @@ module Admins
       end
     end
 
+    def delete_dispatch_method
+      Invoice
+      @dispatch_method = DispatchMethod.find params[:dispatch_method_id]
+      if @dispatch_method.present?
+        @dispatch_method.delete
+      end
+      respond_to do |format|
+        format.html { redirect_to dispatch_method_admins_tickets_path}
+      end
+    end
+
+    def delete_payment_term
+      TaskAction
+      @payment_term = PaymentTerm.find params[:payment_term_id]
+      if @payment_term.present?
+        @payment_term.delete
+      end
+      respond_to do |format|
+        format.html { redirect_to payment_term_admins_tickets_path }
+      end
+    end
+
+    def delete_admin_payment_item
+      TaskAction
+      @payment_item = PaymentItem.find params[:payment_item_id]
+      if @payment_item.present?
+        @payment_item.delete
+      end
+      respond_to do |format|
+        format.html { redirect_to payment_item_admins_tickets_path }
+      end
+    end
+
     def reason
       Product
       if params[:edit]
@@ -104,6 +137,77 @@ module Admins
         end
         @reason_all = Reason.order(created_at: :desc).select{|i| i.persisted? }
         render "admins/tickets/reason"
+      end
+
+    end
+
+    def payment_item
+      TaskAction
+
+      if params[:edit]
+        @payment_item = PaymentItem.find params[:payment_item_id]
+        if @payment_item.update admin_payment_item_params
+          params[:edit] = nil
+          render json: @payment_item
+        end
+
+      else
+        if params[:create]
+          @payment_item = PaymentItem.new admin_payment_item_params
+          if @payment_item.save
+            params[:create] = nil
+            @payment_item = PaymentItem.new
+          end
+        else
+          @payment_item = PaymentItem.new
+        end
+        @payment_item_all = PaymentItem.order(created_at: :desc).select{|i| i.persisted? }
+      end
+    end
+
+    def payment_term
+      Invoice
+      if params[:edit]
+        @payment_term = PaymentTerm.find params[:payment_term_id]
+        if @payment_term.update payment_term_params
+          params[:edit] = nil
+          render json: @payment_term
+        end
+
+      else
+        if params[:create]
+          @payment_term = PaymentTerm.new payment_term_params
+          if @payment_term.save
+            params[:create] = nil
+            @payment_term = PaymentTerm.new
+          end
+        else
+          @payment_term = PaymentTerm.new
+        end
+        @payment_term_all = PaymentTerm.order(created_at: :desc).select{|i| i.persisted? }
+      end
+    end
+
+    def dispatch_method
+      Invoice
+      if params[:edit]
+        @dispatch_method = DispatchMethod.find params[:dispatch_method_id]
+        if @dispatch_method.update dispatch_method_params
+          params[:edit] = nil
+          render json: @dispatch_method
+        end
+      else
+        if params[:create]
+          @dispatch_method = DispatchMethod.new dispatch_method_params
+          if @dispatch_method.save
+            params[:create] = nil
+            @dispatch_method = DispatchMethod.new
+          end
+        else
+          @dispatch_method = DispatchMethod.new
+        end
+        @dispatch_method_all = DispatchMethod.order(created_at: :desc).select{|i| i.persisted? }
+        render "admins/tickets/dispatch_method"
       end
 
     end
@@ -334,6 +438,11 @@ module Admins
     end
 
     private
+
+      def admin_payment_item_params
+        params.require(:payment_item).permit(:name, :default_amount)
+      end
+
       def reason_params
         params.require(:reason).permit(:hold, :sla_pause, :re_assign_request, :terminate_job, :terminate_spare_part, :warranty_extend, :spare_part_unused, :reject_returned_part, :reject_close, :adjust_terminate_job_payment, :reason)
       end
@@ -371,6 +480,14 @@ module Admins
 
       def q_and_a_params
         params.require(:q_and_a).permit(:question, :answer_type, :active, :action_id, :compulsory)
+      end
+
+      def dispatch_method_params
+        params.require(:dispatch_method).permit(:name)
+      end
+
+      def payment_term_params
+        params.require(:payment_term).permit(:name, :description)
       end
   end
 end

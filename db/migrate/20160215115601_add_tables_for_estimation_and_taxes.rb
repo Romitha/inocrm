@@ -74,7 +74,7 @@ class AddTablesForEstimationAndTaxes < ActiveRecord::Migration
 
       t.index  :invoice_id, name: "fk_spt_ticket_invoice_estimation_spt_ticket_invoice1_idx"
       t.index  :estimation_id, name: "fk_spt_ticket_invoice_estimation_spt_ticket_estimation1_idx"
-
+      t.timestamps
     end
 
     create_table :spt_ticket_invoice_advance_payment, id: false do |t|
@@ -84,7 +84,7 @@ class AddTablesForEstimationAndTaxes < ActiveRecord::Migration
 
       t.index  :invoice_id, name: "fk_spt_ticket_invoice_advance_payment_spt_ticket_invoice1_idx"
       t.index  :payment_received_id, name: "fk_spt_ticket_invoice_advance_payment_spt_ticket_payment_re_idx"
-
+      t.timestamps
     end
 
     create_table :spt_ticket_estimation_additional_tax, id: false do |t|
@@ -139,12 +139,14 @@ class AddTablesForEstimationAndTaxes < ActiveRecord::Migration
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.string :name
       t.string :description
+      t.timestamps
     end
 
     create_table :mst_tax, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.string :tax
       t.text :description
+      t.timestamps
     end
 
     create_table :mst_tax_rate, id: false do |t|
@@ -179,6 +181,7 @@ class AddTablesForEstimationAndTaxes < ActiveRecord::Migration
       t.index :approved_by, name: "fk_spt_ticket_spare_part_users12"
       t.index :approved_inv_product_id, name: "fk_spt_ticket_spare_part_mst_inv_product2"
       t.index :spare_part_id, name: "fk_spt_ticket_spare_part_store_spt_ticket_spare_part1_idx"
+      t.timestamps
 
     end
 

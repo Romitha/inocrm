@@ -5,17 +5,6 @@ module Admins
     def index
     end
 
-    def delete_admin_payment_item
-      TaskAction
-      @payment_itemn = PaymentItem.find params[:payment_item_id]
-      if @payment_itemn.present?
-        @payment_itemn.delete
-      end
-      respond_to do |format|
-        format.html { redirect_to payment_item_admins_inventories_path }
-      end
-    end
-
     def delete_admin_brands_and_category
       Product
       @brands_and_category = ProductBrand.find params[:brands_and_category_id]
@@ -155,30 +144,6 @@ module Admins
       end
       respond_to do |format|
         format.html { redirect_to unit_admins_inventories_path }
-      end
-    end
-
-    def payment_item
-      TaskAction
-
-      if params[:edit]
-        @payment_item = PaymentItem.find params[:payment_item_id]
-        if @payment_item.update admin_payment_item_params
-          params[:edit] = nil
-          render json: @payment_item
-        end
-
-      else
-        if params[:create]
-          @payment_item = PaymentItem.new admin_payment_item_params
-          if @payment_item.save
-            params[:create] = nil
-            @payment_item = PaymentItem.new
-          end
-        else
-          @payment_item = PaymentItem.new
-        end
-        @payment_item_all = PaymentItem.order(created_at: :desc).select{|i| i.persisted? }
       end
     end
 
@@ -793,9 +758,6 @@ module Admins
     end
 
     private
-      def admin_payment_item_params
-        params.require(:payment_item).permit(:name, :default_amount)
-      end
 
       def brands_and_category_params
         params.require(:product_brand).permit(:name, :sla_id, :organization_id, :parts_return_days, :warranty_date_format, :currency_id, product_categories_attributes: [:id, :_destroy, :name, :sla_id])

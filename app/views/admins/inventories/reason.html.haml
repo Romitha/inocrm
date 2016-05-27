@@ -1,5 +1,5 @@
 %h3 Inventory Reason
-= simple_nested_form_for @inventory_reason, url: inventory_reason_admins_inventories_path(create: true), method: :post do |i|
+= simple_nested_form_for @inventory_reason, url: reason_admins_inventories_path(create: true), method: :post do |i|
   .row{style: "margin-top: 15px; "}
     .col-md-3
       = i.input :srn_issue_terminate, wrapper: :append

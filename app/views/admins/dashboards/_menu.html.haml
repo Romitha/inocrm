@@ -54,6 +54,33 @@
       = link_to brands_and_category_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'brands_and_category' }" do
         %i.fa.fa-apple
         Brands
+      = link_to category_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'category' }" do
+        %i.icon-folder-plus
+        Categories
+      = link_to dispatch_method_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'dispatch_method' }" do
+        %i.fa.fa-certificate
+        Dispatch Method
+      = link_to payment_item_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'payment_item' }" do
+        %i.fa.fa-arrows
+        Payment item
+      = link_to payment_term_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'payment_term' }" do
+        %i.fa.fa-bullseye
+        Payment term
+
+    .panel-footer
+      = link_to "Tickets", admins_tickets_path
+
+  = collapse collapse_type: "#{controller_name == 'roles' ? 'primary' : 'default'}", labelledby: "labelledby_roles", header_content: content_tag(:span, "", class: "icon-paper-plane-o")+"Roles", collapse_link: "collapse_link_roles" do
+    %ul.list-group
+      sample
+    .panel-footer
+    = link_to "Roles", "#"
+
+  = collapse collapse_type: "#{controller_name == 'sales' ? 'primary' : 'default'}", labelledby: "labelledby_sales", header_content: content_tag(:span, "", class: "icon-exchange")+"Sales", collapse_link: "collapse_link_sales" do
+    %ul.list-group
+
+    .panel-footer
+      = link_to "Sales", admins_sales_path
 
   = collapse collapse_type: "#{controller_name == 'inventories' ? 'primary' : 'default'}", labelledby: "labelledby_inventories", header_content: content_tag(:span, "", class: "icon-list-alt")+"Inventories", collapse_link: "collapse_link_inventories" do
     .list-group.small_scale_margin0
@@ -81,3 +108,8 @@
       = link_to inventory_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'inventory' }" do
         %i.icon-meter
         Inventory
+      = link_to reason_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'inventory_reason' }" do
+        %i.icon-meter
+        Reason
+    .panel-footer
+      = link_to "Inventories", admins_inventories_path

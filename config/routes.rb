@@ -234,6 +234,9 @@ Rails.application.routes.draw do
         delete "delete_admin_customer_feedback"
         delete "delete_problem_category"
         delete "delete_q_and_a"
+        delete "delete_dispatch_method"
+        delete "delete_admin_payment_item"
+        delete "delete_payment_term"
         [
           :reason,
           :accessories,
@@ -243,6 +246,9 @@ Rails.application.routes.draw do
           :customer_feedback,
           :general_question,
           :problem_and_category,
+          :dispatch_method,
+          :payment_item,
+          :payment_term
         ].each do |action|
           match "#{action.to_s}", action: action, via: [:get, :post, :put]
         end
@@ -293,7 +299,6 @@ Rails.application.routes.draw do
         post "initiate_grn_for_i_product"
         post "create_grn_for_i_product"
 
-        delete "delete_admin_payment_item"
         delete "delete_product_category"
         delete "delete_admin_brands_and_category"
         delete "delete_location_rack"
@@ -317,7 +322,6 @@ Rails.application.routes.draw do
           :inventory_reason,
           :inventory_manufacture,
           :inventory_unit,
-          :payment_item,
           :brands_and_category,
           :product,
           :product_condition,

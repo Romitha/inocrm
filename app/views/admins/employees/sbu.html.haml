@@ -40,7 +40,7 @@
             .col-md-1
               %strong Sbu:
             .col-md-4
-              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "sbu", name: "sbu", url: sbu_admins_employees_path(edit: true, sbu_id: sbu.id), "original-title" => "Update Admin Sbu", value: ""}, style: "line-height: 6px;" do
+              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "sbu", name: "sbu", url: sbu_admins_employees_path(edit: true, sbu_id: sbu.id), "original-title" => "Update Admin Sbu", value: sbu.sbu}, style: "line-height: 6px;" do
                 = sbu.sbu
           .row.col-md-12
             - sbu.engineers.each do |engineer|

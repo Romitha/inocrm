@@ -78,6 +78,11 @@ class DispatchMethod < ActiveRecord::Base
   self.table_name = "mst_spt_dispatch_method"
 
   has_many :customer_feedbacks
+
+  def is_used_anywhere?
+    customer_feedbacks.any?
+  end
+
 end
 
 class CustomerQuotation < ActiveRecord::Base
@@ -112,6 +117,10 @@ class PaymentTerm < ActiveRecord::Base
 
   has_many :ticket_invoices
   has_many :customer_quotations
+
+  def is_used_anywhere?
+    ticket_invoices.any? or customer_quotations.any?
+  end
 
 end
 
