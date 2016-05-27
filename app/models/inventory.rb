@@ -7,6 +7,8 @@ class Inventory < ActiveRecord::Base
   has_many :inventory_serial_items
 
   belongs_to :inventory_bin, foreign_key: :bin_id
+  belongs_to :created_by_user, class_name: "User", foreign_key: :created_by
+  belongs_to :updated_by_user, class_name: "User", foreign_key: :updated_by
 end
 
 class InventoryProduct < ActiveRecord::Base

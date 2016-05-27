@@ -735,14 +735,14 @@ module Admins
 
     def inventory
       if params[:edit]
-        @inventory = Inventory.find params[:g_question_id]
+        @inventory = Inventory.find params[:inventory_id]
         if @inventory.update inventory_params
           params[:edit] = nil
           render json: @inventory
         end
       elsif params[:filter_products_by_store_id]
         store_product_ids = Organization.stores.find(params[:filter_products_by_store_id]).inventory_product_ids
-        @products = InventoryProduct.where.not(id: store_product_ids).map { |p| [p.product_no, p.id] }
+        @products = InventoryProduct.where.not(id: store_product_ids).map { |p| [p.serial_no, p.id] }
         render json: {options: view_context.options_for_select(@products)}
       else
         if params[:create]
