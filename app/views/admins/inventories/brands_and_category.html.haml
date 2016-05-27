@@ -12,7 +12,7 @@
           = f.label "Currency:"
           = f.select :currency_id, Currency.all.map{|a| [a.currency, a.id]}
         .col-md-4
-          = f.label "sla:"
+          = f.label "SLA Time (hrs):"
           = f.select :sla_id, SlaTime.all.map{|a| [a.sla_time, a.id]}
         
       .row
@@ -32,7 +32,7 @@
               .panel-body
                 .row.col-md-10
                   .col-md-4
-                    = product_category.label "sla:"
+                    = product_category.label "SLA Time (hrs):"
                     = product_category.select :sla_id, SlaTime.all.map{|a| [a.sla_time, a.id]}
                   .col-md-6
                     = product_category.input :name
@@ -79,7 +79,7 @@
                 = brands_and_category.currency.try(:currency)
           .row.col-md-12
             .col-md-2
-              %strong Sla:
+              %strong SLA Time (hrs):
             .col-md-4
               = link_to "#", class: "inline_edit", data: {type: "select", source: SlaTime.all.collect{|sla| {value: sla.id, text: sla.sla_time}}, resource: "product_brand", name: "sla_id", url: brands_and_category_admins_inventories_path(edit: true, brands_and_category_id: brands_and_category.id), "original-title" => "Update Brands"} do
                 = brands_and_category.sla_time.try(:sla_time)
@@ -117,7 +117,7 @@
                       = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "product_category", name: "name", url: brands_and_category_admins_inventories_path(edit: true, product_category_id: product_category.id), "original-title" => "Update Product Category", value: ""}, style: "line-height: 6px;" do
                         = product_category.name
                     .col-md-2
-                      %strong Sla:
+                      %strong SLA Time (hrs):
                     .col-md-4
                       = link_to "#", class: "inline_edit", data: {type: "select", source: SlaTime.all.collect{|sla| {value: sla.id, text: sla.sla_time}}, resource: "product_category", name: "sla_id", url: brands_and_category_admins_inventories_path(edit: true, product_category_id: product_category.id), "original-title" => "Update Product Category"} do
                         = product_category.sla_time.try(:sla_time)

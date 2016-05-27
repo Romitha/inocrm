@@ -3,7 +3,7 @@
     / .col-md-4
     /   = f.select :created_by, User.all.uniq{|e| e.id}.map{|e| [(e.first_name ? "#{e.name_title} #{e.first_name}" : e.email), e.id]}
     .col-md-3
-      = f.input :sla_time
+      = f.input :sla_time, label: "SLA Time (hrs)"
     .col-md-3
       = f.input :created_by,  as: :hidden, input_html: {value: current_user.id}
 
@@ -31,7 +31,7 @@
         .panel-body
           .row.col-md-12
             .col-md-2
-              %strong Sla time:
+              %strong SLA Time (hrs) :
             .col-md-4
               = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "sla_time", name: "sla_time", url: ticket_sla_admins_tickets_path(edit: true, sla_id: sla.id), "original-title" => "Update sla", value: ""}, style: "line-height: 6px;" do
                 = sla.sla_time

@@ -20,11 +20,11 @@
       = f.input :sla_id, as: :hidden
     .row
       .col-md-12
-        %strong SLA time
-        = label_tag "Select SLA Time" do
+        %strong SLA time (in Hours)
+        = label_tag "Select SLA Time (hrs)" do
           = radio_button_tag "name", "sla_time", false, class: "radio_for_sla", data: {param: "select_sla"}
           Select
-        = label_tag "Create SLA Time", class: "small_scale_margin-left2" do
+        = label_tag "Create SLA Time (hrs) ", class: "small_scale_margin-left2" do
           = radio_button_tag "name", "description", false, class: "radio_for_sla", data: {param: "create_sla"}
           Create
         #sla_content
