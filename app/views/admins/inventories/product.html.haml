@@ -1,5 +1,5 @@
 %h3 Inventory Product
-= simple_nested_form_for @inventory_product, url: product_admins_inventories_path(create: true), method: :post do |f|
+= simple_nested_form_for @inventory_product, url: product_admins_inventories_path(create: true), method: :post, html: {class: "validate_form"} do |f|
   .row
     .col-md-3.brand
       = label_tag InventoryCategoryCaption.first.caption
@@ -9,11 +9,11 @@
       = select_tag "search_inventory[product]", option_groups_from_collection_for_select(InventoryCategory1.all, :inventory_category2s, :name, :id, :name, (params[:search_inventory] and params[:search_inventory][:product])), include_blank: true
     .col-md-3.category
       = label_tag InventoryCategoryCaption.third.caption
-      = f.association :inventory_category3, collection: InventoryCategory2.all, as: :grouped_select, group_method: :inventory_category3s, group_label_method: :name, label_method: :name, value_method: :id, label: false
+      = f.association :inventory_category3, input_html: {required: true}, collection: InventoryCategory2.all, as: :grouped_select, group_method: :inventory_category3s, group_label_method: :name, label_method: :name, value_method: :id, label: false
 
   .row
     .col-md-3
-      = f.input :serial_no, input_html: {value: InventorySerialItem.last.serial_no}
+      = f.input :serial_no, as: :decimal, input_html: {value: InventorySerialItem.last.serial_no, required: true}
       = f.input :serial_no_order, as: :hidden, input_html: {value: InventoryProduct.all.count + 1}
     .col-md-3
       = f.input :sku
@@ -23,7 +23,7 @@
 
   .row
     .col-md-6
-      = f.input :description
+      = f.input :description, input_html: {required: true}
   .row
     .col-md-3
       = f.input :model_no
@@ -32,7 +32,7 @@
     .col-md-3
       = f.input :spare_part_no
     .col-md-3
-      = f.input :non_stock_item
+      = f.input :non_stock_item, wrapper: :append
       / = check_box_tag(:non_stock_item)
       / = label_tag(:non_stock_item, "non stock item")
   .row
@@ -110,122 +110,101 @@
       .panel-collapse.collapse.in{:id => "#{index}"}
         .panel-body
           .row.col-md-12
-            .col-md-2
-              %strong Serial No:
-            .col-md-4
+            .col-md-6
+              Serial No:
               = link_to "#", class: "inline_edit", data: {type: "text", resource: "inventory_product", name: "serial_no", url:product_admins_inventories_path(edit: true, product_id: inv_product.id), "original-title" => "Update serial no", value: ""}, style: "line-height: 6px;" do
                 = inv_product.serial_no
           .row.col-md-12
-            .col-md-2
-              %strong Legacy code:
-            .col-md-4
+            .col-md-6
+              Legacy code:
               = link_to "#", class: "inline_edit", data: {type: "text", resource: "inventory_product", name: "legacy_code", url:product_admins_inventories_path(edit: true, product_id: inv_product.id), "original-title" => "Update legacy code", value: ""}, style: "line-height: 6px;" do
                 = inv_product.legacy_code
-            .col-md-2
-              %strong sku:
-            .col-md-4
+            .col-md-6
+              SKU:
               = link_to "#", class: "inline_edit", data: {type: "text", resource: "inventory_product", name: "sku", url:product_admins_inventories_path(edit: true, product_id: inv_product.id), "original-title" => "Update sku", value: ""}, style: "line-height: 6px;" do
                 = inv_product.sku
           .row.col-md-12
-            .col-md-2
-              %strong Model No:
-            .col-md-4
+            .col-md-6
+              Model No:
               = link_to "#", class: "inline_edit", data: {type: "text", resource: "inventory_product", name: "model_no", url:product_admins_inventories_path(edit: true, product_id: inv_product.id), "original-title" => "Update model no", value: ""}, style: "line-height: 6px;" do
                 = inv_product.model_no
-            .col-md-2
-              %strong Product No:
-            .col-md-4
+            .col-md-6
+              Product No:
               = link_to "#", class: "inline_edit", data: {type: "text", resource: "inventory_product", name: "product_no", url:product_admins_inventories_path(edit: true, product_id: inv_product.id), "original-title" => "Update product no", value: ""}, style: "line-height: 6px;" do
                 = inv_product.product_no
           .row.col-md-12
-            .col-md-2
-              %strong  Spare part No:
-            .col-md-4
+            .col-md-6
+              Spare part No:
               = link_to "#", class: "inline_edit", data: {type: "text", resource: "inventory_product", name: "spare_part_no", url:product_admins_inventories_path(edit: true, product_id: inv_product.id), "original-title" => "Update spare part no", value: ""}, style: "line-height: 6px;" do
                 = inv_product.spare_part_no
-            .col-md-2
-              %strong Description:
-            .col-md-4
+            .col-md-6
+              Description:
               = link_to "#", class: "inline_edit", data: {type: "textarea", resource: "inventory_product", name: "description", url:product_admins_inventories_path(edit: true, product_id: inv_product.id), "original-title" => "Update product description", value: ""}, style: "line-height: 6px;" do
                 = inv_product.description
 
           .row.col-md-12
-            .col-md-2
-              %strong spare part:
-            .col-md-4
+            .col-md-6
+              Spare part:
               = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "inventory_product", name: "spare_part", url: product_admins_inventories_path(edit: true, product_id: inv_product.id), "original-title" => "Update spare part"} do
                 = inv_product.spare_part && "Yes" || "No"
-            .col-md-2
-              %strong unit:
-            .col-md-4
+            .col-md-6
+              Unit:
               = link_to "#", class: "inline_edit", data: {type: "select", source: InventoryUnit.all.collect{|invunit| {value: invunit.id, text: invunit.unit}}, resource: "inventory_product", name: "unit_id", url: product_admins_inventories_path(edit: true, product_id: inv_product.id), "original-title" => "Update rack name"} do
                 = inv_product.inventory_unit.try(:unit)
 
           .row.col-md-12
-            .col-md-2
-              %strong fifo:
-            .col-md-4
+            .col-md-6
+              FIFO:
               = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "inventory_product", name: "fifo", url: product_admins_inventories_path(edit: true, product_id: inv_product.id), "original-title" => "Update fifo"} do
                 = inv_product.fifo && "Yes" || "No"
-            .col-md-2
-              %strong active:
-            .col-md-4
+            .col-md-6
+              Active:
               = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "inventory_product", name: "active", url: product_admins_inventories_path(edit: true, product_id: inv_product.id), "original-title" => "Update active"} do
                 = inv_product.active && "Yes" || "No"
             - if inv_product.inventory_product_info.present?
               .row.col-md-12
-                .col-md-2
-                  %strong  Secondary unit:
-                .col-md-4
+                .col-md-6
+                  Secondary unit:
                   = link_to "#", class: "inline_edit", data: {type: "select", source: InventoryUnit.all.collect{|unit| {value: unit.id, text:  unit.unit}}, resource: "inventory_product_info", name: "secondary_unit_id", url: product_admins_inventories_path(edit: true, product_info_id: inv_product.inventory_product_info.product_id), "original-title" => "Update secondary unit"} do
                     = inv_product.inventory_product_info.inventory_unit.try(:unit)
-                .col-md-2
-                  %strong  Manufacture:
-                .col-md-4
+                .col-md-6
+                  Manufacture:
                   = link_to "#", class: "inline_edit", data: {type: "select", source:Manufacture.all.collect{|m| {value: m.id, text:  m.manufacture}}, resource: "inventory_product_info", name: "manufacture_id", url: product_admins_inventories_path(edit: true, product_info_id: inv_product.inventory_product_info.product_id), "original-title" => "Update product info manufacture"} do
                     = inv_product.inventory_product_info.manufacture.try(:manufacture)
               .row.col-md-12
-                .col-md-2
-                  %strong  Country:
-                .col-md-4
+                .col-md-6
+                  Country:
                   = link_to "#", class: "inline_edit", data: {type: "select", source: ProductSoldCountry.all.collect{|c| {value: c.id, text:  c.Country}}, resource: "inventory_product_info", name: "country_id", url: product_admins_inventories_path(edit: true, product_info_id: inv_product.inventory_product_info.product_id), "original-title" => "Update inventory country"} do
                     = inv_product.inventory_product_info.product_sold_country.try(:Country)
-                .col-md-2
-                  %strong Currency:
-                .col-md-4
+                .col-md-6
+                  Currency:
                   = link_to "#", class: "inline_edit", data: {type: "select", source: Currency.all.collect{|c| {value: c.id, text:  c.currency}}, resource: "inventory_product_info", name: "currency_id", url: product_admins_inventories_path(edit: true, product_info_id: inv_product.inventory_product_info.product_id), "original-title" => "Update product info Currency"} do
                     = inv_product.inventory_product_info.currency.try(:currency)
               .row.col-md-12
-                .col-md-2
-                  %strong  Average cost:
-                .col-md-4
+                .col-md-6
+                  Average cost:
                   = link_to "#", class: "inline_edit", data: {type: "text", resource: "inventory_product_info", name: "average_cost", url:product_admins_inventories_path(edit: true, product_info_id: inv_product.inventory_product_info.product_id), "original-title" => "Update Average cost", value: ""}, style: "line-height: 6px;" do
                     = inv_product.inventory_product_info.try(:average_cost)
-                .col-md-2
-                  %strong Standard cost:
-                .col-md-4
+                .col-md-6
+                  Standard cost:
                   = link_to "#", class: "inline_edit", data: {type: "text", resource: "inventory_product_info", name: "standard_cost", url:product_admins_inventories_path(edit: true, product_info_id: inv_product.inventory_product_info.product_id), "original-title" => "Update Standard cost", value: ""}, style: "line-height: 6px;" do
                     = inv_product.inventory_product_info.try(:standard_cost)
 
               .row.col-md-12
-                .col-md-3
-                  %strong Issue Fractional Allowed:
-                .col-md-3
+                .col-md-6
+                  Issue Fractional Allowed:
                   = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "inventory_product", name: "issue_fractional_allowed", url: product_admins_inventories_path(edit: true, product_info_id: inv_product.inventory_product_info.product_id), "original-title" => "Update Issue Fractional Allowed"} do
                     = inv_product.inventory_product_info.issue_fractional_allowed && "Yes" || "No"
-                .col-md-3
-                  %strong Per Secondery Unit Conversion :
-                .col-md-3
+                .col-md-6
+                  Per Secondery Unit Conversion :
                   = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "inventory_product", name: "per_secondery_unit_conversion", url: product_admins_inventories_path(edit: true, product_info_id: inv_product.inventory_product_info.product_id), "original-title" => "Update Per Secondery Unit Conversion"} do
                     = inv_product.inventory_product_info.per_secondery_unit_conversion && "Yes" || "No"
               .row.col-md-12
-                .col-md-3
-                  %strong Need Serial:
-                .col-md-3
+                .col-md-6
+                  Need Serial:
                   = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "inventory_product", name: "need_serial", url: product_admins_inventories_path(edit: true, product_info_id: inv_product.inventory_product_info.product_id), "original-title" => "Update Need Serial"} do
                     = inv_product.inventory_product_info.need_serial && "Yes" || "No"
-                .col-md-3
-                  %strong Need Batch:
-                .col-md-3
+                .col-md-6
+                  Need Batch:
                   = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "inventory_product", name: "need_batch", url: product_admins_inventories_path(edit: true, product_info_id: inv_product.inventory_product_info.product_id), "original-title" => "Update Need Batch"} do
                     = inv_product.inventory_product_info.need_batch && "Yes" || "No"
