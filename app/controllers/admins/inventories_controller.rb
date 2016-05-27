@@ -733,6 +733,31 @@ module Admins
 
     end
 
+    def inventory
+      if params[:edit]
+        @inventory = Inventory.find params[:g_question_id]
+        if @inventory.update inventory_params
+          params[:edit] = nil
+          render json: @inventory
+        end
+      elsif params[:filter_products_by_store_id]
+        store_product_ids = Organization.stores.find(params[:filter_products_by_store_id]).inventory_product_ids
+        @products = InventoryProduct.where.not(id: store_product_ids).map { |p| [p.product_no, p.id] }
+        render json: {options: view_context.options_for_select(@products)}
+      else
+        if params[:create]
+          @inventory = Inventory.new inventory_params
+          if @inventory.save
+            params[:create] = nil
+            @inventory = Inventory.new
+          end
+        else
+          @inventory = Inventory.new
+        end
+        @inventory_all = Inventory.order(created_at: :desc).select{|i| i.persisted? }
+      end
+    end
+
     private
       def admin_payment_item_params
         params.require(:payment_item).permit(:name, :default_amount)
@@ -748,6 +773,10 @@ module Admins
 
       def q_and_a_params
         params.require(:inventory_shelf).permit(:description)
+      end
+
+      def inventory_params
+        params.require(:inventory).permit(:id, :product_id, :store_id, :stock_quantity, :reserved_quantity, :available_quantity, :reorder_level, :reorder_quantity, :max_quantity, :safty_stock_quantity, :lead_time_in_days, :inventory_bin, :remarks, :created_by)
       end
 
       def inventory_rack_params

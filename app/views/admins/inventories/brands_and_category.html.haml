@@ -100,6 +100,7 @@
               = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "product_brand", name: "warranty_date_format", url: brands_and_category_admins_inventories_path(edit: true, brands_and_category_id: brands_and_category.id), "original-title" => "Update Brands", value: ""}, style: "line-height: 6px;" do
                 = brands_and_category.warranty_date_format
 
+
           .row.col-md-12
             - brands_and_category.product_categories.each do |product_category|
               .panel.panel-danger
@@ -121,4 +122,3 @@
                     .col-md-4
                       = link_to "#", class: "inline_edit", data: {type: "select", source: SlaTime.all.collect{|sla| {value: sla.id, text: sla.sla_time}}, resource: "product_category", name: "sla_id", url: brands_and_category_admins_inventories_path(edit: true, product_category_id: product_category.id), "original-title" => "Update Product Category"} do
                         = product_category.sla_time.try(:sla_time)
-

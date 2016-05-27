@@ -274,10 +274,6 @@ module Admins
       TaskAction
       Product
 
-      # if params[:edit_more]
-      #   @problem_category = ProblemCategory.find params[:problem_category_id]
-      # end
-
       if params[:edit]
         if params[:problem_category_id]
           @problem_category = ProblemCategory.find params[:problem_category_id]

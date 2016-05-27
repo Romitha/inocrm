@@ -36,31 +36,6 @@ module Admins
       end
     end
 
-    def title
-      User
-
-      if params[:edit]
-        @title = MstTitle.find params[:title_id]
-        if @title.update title_params
-          params[:edit] = nil
-          render json: @title
-        end
-      else
-        if params[:create]
-          @title = MstTitle.new title_params
-          if @title.save
-            params[:create] = nil
-            @title = MstTitle.new
-          end
-        else
-          @title = MstTitle.new
-        end
-        @title_all = MstTitle.order(created_at: :desc).select{|i| i.persisted? }
-        render "admins/users/title"
-      end
-
-    end
-
     private
 
       def title_params

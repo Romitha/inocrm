@@ -2,6 +2,7 @@ window.Admins =
   setup: ->
     @admin_menu_dropdown()
     @admin_ticket_reason()
+    @filter_non_store_products()
     return
 
   admin_menu_dropdown: ->
@@ -16,42 +17,12 @@ window.Admins =
         $("#fff").addClass("hide")
 
 
-    # OPTIMIZE <div id='translControl'></div>
-    # <br>Title : <input type='textbox' id="transl1"/>
-    # <br>Body<br><textarea id="transl2" style="width:600px;height:200px"></textarea>
-    # %footer.navbar-inverse
-    #   = render "layouts/footer"
-
-    # <script type="text/javascript" src="http://www.google.com/jsapi">
-
-    # </script>
-
-    # <script type="text/javascript">
-    # // Load the Google Transliterate API
-    # google.load("elements", "1", {
-    # packages: "transliteration"
-    # });
-
-    # function onLoad() {
-    # var options = {
-    # sourceLanguage: 'en',
-    # destinationLanguage: ['hi','kn','ml','ta','te'],
-    # shortcutKey: 'ctrl+g',
-    # transliterationEnabled: true
-    # };
-
-    # // Create an instance on TransliterationControl with the required
-    # // options.
-    # var control =
-    # new google.elements.transliteration.TransliterationControl(options);
-
-    # // Enable transliteration in the textfields with the given ids.
-    # var ids = [ "transl1", "transl2" ];
-    # control.makeTransliteratable(ids);
-
-    # // Show the transliteration control which can be used to toggle between
-    # // English and Hindi and also choose other destination language.
-    # control.showControl('translControl');
-    # }
-    # google.setOnLoadCallback(onLoad);
-    # </script>
+  filter_non_store_products: ->
+    # inventory_products = $("#inventory_product_id").html()
+    $("#inventory_product_id").empty()
+    $("#inventory_store_id").change ->
+      this_value = $(@).val()
+      $.get "/admins/inventories/inventory?filter_products_by_store_id=#{this_value}", (data) ->
+        options = data.options
+        console.log options
+        $("#inventory_product_id").html(options)

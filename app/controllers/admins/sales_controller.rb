@@ -1,6 +1,6 @@
-module Admin
+module Admins
   class SalesController < ApplicationController
-    layout "admin"
+    layout "admins"
 
     def index
 

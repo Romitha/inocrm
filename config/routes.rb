@@ -242,7 +242,7 @@ Rails.application.routes.draw do
           :start_action,
           :customer_feedback,
           :general_question,
-          :problem_and_category
+          :problem_and_category,
         ].each do |action|
           match "#{action.to_s}", action: action, via: [:get, :post, :put]
         end
@@ -267,7 +267,7 @@ Rails.application.routes.draw do
         [
           :regional_support_center,
           :country,
-          :sla
+          :sla,
         ].each do |action|
           match "#{action.to_s}", action: action, via: [:get, :post, :put] 
         end
@@ -277,7 +277,7 @@ Rails.application.routes.draw do
       collection do
         delete "delete_admin_title"
         [
-          :title
+          :title,
         ].each do |action|
           match "#{action.to_s}", action: action, via: [:get, :post, :put]
         end
@@ -324,29 +324,17 @@ Rails.application.routes.draw do
           :disposal_method,
           :reason,
           :manufacture,
-          :unit
+          :unit,
+          :inventory
         ].each do |action|
           match "#{action.to_s}", action: action, via: [:get, :post, :put]
         end
-        #     get "accessories"
-  #     get "payment_item"
-  #     get "spare_part_description"
-  #     get "reason"
-  #     get "pop_status"
-        get "brands_and_categories"
 
       end
     end
     resources :dashboards
-    resources :sales do
-      collection do
-  #     get "additional_charge"
-  #     get "sla"
-        
-      end
-    end
+    resources :sales
 
-    resources :organizations
     resources :roles
   end
 

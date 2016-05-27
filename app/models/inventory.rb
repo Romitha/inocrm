@@ -15,6 +15,7 @@ class InventoryProduct < ActiveRecord::Base
   belongs_to :inventory_category3, foreign_key: :category3_id
 
   has_many :inventories, foreign_key: :product_id
+  has_many :stores, through: :inventories, source: :organization
 
   belongs_to :inventory_unit, foreign_key: :unit_id
   has_many :inventory_serial_items, foreign_key: :product_id
