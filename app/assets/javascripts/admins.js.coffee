@@ -3,6 +3,7 @@ window.Admins =
     @admin_menu_dropdown()
     @admin_ticket_reason()
     @filter_non_store_products()
+    @product_validate()
     return
 
   admin_menu_dropdown: ->
@@ -26,3 +27,10 @@ window.Admins =
         options = data.options
         console.log options
         $("#inventory_product_id").html(options)
+
+  product_validate: ->
+    $("#validate_inventory_product").validate
+      rules:
+        "inventory_product[serial_no]":
+          required: true,
+          digits: true
