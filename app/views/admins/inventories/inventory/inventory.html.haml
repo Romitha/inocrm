@@ -1,37 +1,12 @@
-= simple_form_for @inventory, url: inventory_admins_inventories_path, method: :post, html: {class: "validate_form"} do |f|
-  .row
-    .col-md-6
-      = f.association :organization
-    .col-md-6
-      = f.association :inventory_product, collection: Organization.stores, as: :grouped_select, group_method: :inventory_products, group_label_method: :id, label_method: :product_no, value_method: :id
-    .col-md-3
-      = f.input :stock_quantity
-    .col-md-3
-      = f.input :reserved_quantity
-    .col-md-3
-      = f.input :available_quantity
-    .col-md-3
-      = f.input :reorder_level
-    .col-md-3
-      = f.input :reorder_quantity
-    .col-md-3
-      = f.input :max_quantity
-    .col-md-3
-      = f.input :safty_stock_quantity
-    .col-md-3
-      = f.input :lead_time_in_days
-    .col-md-3
-      = f.association :inventory_bin, label_method: :description
-    .col-md-12
-      = f.input :remarks
-      = f.input :created_by, as: :hidden, input_html: {value: current_user.id}
-    .col-md-3
-      = f.submit "Save", class: "btn btn-success btn-sm", name: "create"
-  %hr
-
+#inventory_frame
+  %h4 Select Store
+  %ul
+    - @stores.each do |store|
+      %li= link_to store.name, inventory_admins_inventories_path(store_id: store.id), remote: true
+%hr
 = collapse_wrapper collapse_id: "inventory_list", labelledby: "inv_labelledby" do
   - @inventory_all.each do |inventory|
-    = collapse collapse_type: "info", labelledby: "labelledby", header_content: "Serial no: #{inventory.inventory_product.serial_no}", collapse_link: "invlink_#{inventory.id}", collapse_id: "inventory_list" do
+    = collapse collapse_type: "info", labelledby: "labelledby", header_content: "product: #{inventory.inventory_product.generated_item_code} - store: #{inventory.organization.name}", collapse_link: "invlink_#{inventory.id}", collapse_id: "inventory_list" do
       .row
         .col-md-3
           %strong Store:
@@ -76,7 +51,7 @@
           = inventory.created_by_user.email
         .col-md-6
           %strong Bin description:
-          = inventory.inventory_bin.description
+          = inventory.inventory_bin.try(:description)
         .col-md-12
           %strong Remarks:
           = link_to "#", class: "inline_edit", data: {type: "text", resource: "inventory", name: "remarks", url: inventory_admins_inventories_path(edit: true, inventory_id: inventory.id), "original-title" => "Update Product Category"} do

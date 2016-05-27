@@ -349,7 +349,6 @@ module Admins
             render json: @inventory_product
           end
         end
-
       else
         if params[:create]
           @inventory_product = InventoryProduct.new inventory_product_params
@@ -361,6 +360,7 @@ module Admins
           @inventory_product = InventoryProduct.new
         end
         @inventory_product_all = InventoryProduct.order(created_at: :desc).select{|i| i.persisted? }
+
       end
     end
 
@@ -734,16 +734,49 @@ module Admins
     end
 
     def inventory
+      Inventory
+      Grn
+
       if params[:edit]
         @inventory = Inventory.find params[:inventory_id]
         if @inventory.update inventory_params
           params[:edit] = nil
           render json: @inventory
         end
-      elsif params[:filter_products_by_store_id]
-        store_product_ids = Organization.stores.find(params[:filter_products_by_store_id]).inventory_product_ids
-        @products = InventoryProduct.where.not(id: store_product_ids).map { |p| [p.serial_no, p.id] }
-        render json: {options: view_context.options_for_select(@products)}
+
+      elsif params[:search_product]
+        category1_id = params[:search_inventory]["brand"]
+        category2_id = params[:search_inventory]["product"]
+        inventory_product_hash = params[:search_inventory].except("brand", "product").to_hash
+        category3_id = inventory_product_hash["mst_inv_product"]["category3_id"]
+
+        @store = Organization.find params[:store_id]
+        session[:store_id] = @store.id
+        updated_hash = inventory_product_hash["mst_inv_product"].to_hash.map { |k, v| "#{k} like '%#{v}%'" if v.present? }.compact.join(" and ")
+        if category3_id.present?
+          @inventory_products = @store.inventory_products.where(updated_hash)
+        elsif category2_id.present?
+          @inventory_products = InventoryCategory2.find(category2_id).inventory_products.where(updated_hash)
+        elsif category1_id.present?
+          @inventory_products = InventoryCategory1.find(category1_id).inventory_category3s.map { |c| c.inventory_products.where(updated_hash) }.flatten.uniq
+        else
+          @inventory_products = @store.inventory_products.where(updated_hash)
+        end
+        @render_template = "admins/inventories/inventory/select_inventory"
+        render "admins/inventories/inventory/inventory"
+
+      elsif params[:store_id]
+        @render_template = "admins/inventories/inventory/search_products"
+        @store_available = true
+        render "admins/inventories/inventory/inventory"
+
+      elsif params[:select_product]
+        @store = Organization.find session[:store_id]
+        @inventory = Inventory.new
+        @inventory_product = InventoryProduct.find params[:inventory_product_id]
+        @render_template = "admins/inventories/inventory/inventory_form"
+        render "admins/inventories/inventory/inventory"
+
       else
         if params[:create]
           @inventory = Inventory.new inventory_params
@@ -751,10 +784,11 @@ module Admins
             params[:create] = nil
             @inventory = Inventory.new
           end
-        else
-          @inventory = Inventory.new
         end
+        @stores = Organization.stores
         @inventory_all = Inventory.order(created_at: :desc).select{|i| i.persisted? }
+        render "admins/inventories/inventory/inventory"
+
       end
     end
 
@@ -776,7 +810,7 @@ module Admins
       end
 
       def inventory_params
-        params.require(:inventory).permit(:id, :product_id, :store_id, :stock_quantity, :reserved_quantity, :available_quantity, :reorder_level, :reorder_quantity, :max_quantity, :safty_stock_quantity, :lead_time_in_days, :inventory_bin, :remarks, :created_by)
+        params.require(:inventory).permit(:id, :product_id, :store_id, :bin_id, :stock_quantity, :reserved_quantity, :available_quantity, :reorder_level, :reorder_quantity, :max_quantity, :safty_stock_quantity, :lead_time_in_days, :inventory_bin, :remarks, :created_by)
       end
 
       def inventory_rack_params

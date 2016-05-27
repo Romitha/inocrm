@@ -1,0 +1,49 @@
+%fieldset
+  %legend Inventory
+  = simple_form_for @inventory, url: inventory_admins_inventories_path, method: :post, html: {class: "validate_form"} do |f|
+    = f.input :created_by, as: :hidden, input_html: {value: current_user.id}
+    = f.input :stock_quantity, as: :hidden, input_html: {value: 0}
+    = f.input :available_quantity, as: :hidden, input_html: {value: 0}
+
+    .row
+      .col-md-6
+        %strong Store:
+        = @store.name
+        = f.input :store_id, as: :hidden, input_html: {value: @store.id }
+      .col-md-6
+        %strong Product:
+        = @inventory_product.generated_item_code
+        = f.input :product_id, as: :hidden, input_html: {value: @inventory_product.id }
+    %hr
+    .row
+      .col-md-2
+        = f.input :reserved_quantity
+      .col-md-2
+        = f.input :reorder_level
+      .col-md-2
+        = f.input :reorder_quantity
+      .col-md-2
+        = f.input :max_quantity
+      .col-md-2
+        = f.input :safty_stock_quantity
+      .col-md-2
+        = f.input :lead_time_in_days
+    .row
+      .col-md-4
+        = label_tag "Rack"
+        = select_tag "search_inventory[brand]", options_from_collection_for_select(InventoryRack.all, :id, :description), include_blank: true, class: "form-control"
+      .col-md-4
+        = label_tag "Shelf"
+        = select_tag "search_inventory[product]", option_groups_from_collection_for_select(InventoryRack.all, :inventory_shelfs, :description, :id, :description), include_blank: true, class: "form-control"
+      .col-md-4
+        = f.association :inventory_bin, input_html: {required: true, id: "inventory_product_category3_id" }, collection: InventoryShelf.all, as: :grouped_select, group_method: :inventory_bins, group_label_method: :description, label_method: :description, value_method: :id, label: "Bin"
+
+    .row
+      .col-md-12
+        = f.input :remarks
+    .row
+      .col-md-3
+        = f.submit "Save", class: "btn btn-success btn-sm", name: "create"
+
+= javascript_tag do
+  $(".validate_form").validate();

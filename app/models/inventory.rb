@@ -9,6 +9,8 @@ class Inventory < ActiveRecord::Base
   belongs_to :inventory_bin, foreign_key: :bin_id
   belongs_to :created_by_user, class_name: "User", foreign_key: :created_by
   belongs_to :updated_by_user, class_name: "User", foreign_key: :updated_by
+
+  validates_presence_of [:store_id, :product_id, :stock_quantity, :available_quantity, :reserved_quantity, :created_by]
 end
 
 class InventoryProduct < ActiveRecord::Base
@@ -43,7 +45,7 @@ class InventoryProduct < ActiveRecord::Base
   end
 
   def generated_item_code
-   "#{id}-#{serial_no}"
+   "#{inventory_category3.code}#{CompanyConfig.first.inv_category_seperator}#{inventory_category3.inventory_category2.code}#{CompanyConfig.first.inv_category_seperator}#{inventory_category3.inventory_category2.inventory_category1.code}#{CompanyConfig.first.inv_category_seperator}#{serial_no}"
   end
 
 end
