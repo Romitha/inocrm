@@ -13,7 +13,9 @@
   .row
     .col-md-6
       = f.label "Action:"
-      = f.select :action_id, TaskAction.all.uniq{|a| a.id}.map{|a| [a.action_description, a.id]}, {include_blank: false}, {class: "form-control"}
+      / = f.select :action_id, TaskAction.all.uniq{|a| a.id}.map{|a| [a.action_description, a.id]}, {include_blank: false}, {class: "form-control"}
+      = f.select :action_id, options_for_select([["Add Ticket", 1], ["Engineer Resolution", 5], ["Quality Control", 57], ["Customer Feed Back", 58]]), {include_blank: false}, {class: "form-control"}
+
   .row{style: "margin-bottom: 20px;"}
     .col-md-8
       = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_general_question"
@@ -35,12 +37,12 @@
             .col-md-1
               %strong Question:
             .col-md-5
-              = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "ge_q_and_a", name: "question", url: general_question_admins_tickets_path(edit: true, g_question_id: g_question.id), "original-title" => "Update General question", value: ""}, style: "line-height: 6px;" do
+              = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "ge_q_and_a", name: "question", url: general_question_admins_tickets_path(edit: true, g_question_id: g_question.id), "original-title" => "Update General question", value: g_question.question}, style: "line-height: 6px;" do
                 = g_question.question
             .col-md-2
               %strong Answer type:
             .col-md-3
-              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "ge_q_and_a", name: "answer_type", url: general_question_admins_tickets_path(edit: true, g_question_id: g_question.id), "original-title" => "Update General question", value: ""}, style: "line-height: 6px;" do
+              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "ge_q_and_a", name: "answer_type", url: general_question_admins_tickets_path(edit: true, g_question_id: g_question.id), "original-title" => "Update General question", value: g_question.answer_type}, style: "line-height: 6px;" do
                 = g_question.answer_type
           .row.col-md-12
             .col-md-1
@@ -57,5 +59,5 @@
             .col-md-1
               %strong Action:
             .col-md-4
-              = link_to "#", class: "inline_edit", data: {type: "select", source: TaskAction.all.collect{|a| {value: a.id, text: a.action_description}}, resource: "ge_q_and_a", name: "action_id", url: general_question_admins_tickets_path(edit: true, g_question_id: g_question.id), "original-title" => "Update General question"} do
+              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Add Ticket",5=>"Engineer Resolution",57=>"Quality Control",58=>"Customer Feed Back"}, resource: "ge_q_and_a", name: "action_id", url: general_question_admins_tickets_path(edit: true, g_question_id: g_question.id), "original-title" => "Update General question"} do
                 = g_question.task_action.try(:action_description)
