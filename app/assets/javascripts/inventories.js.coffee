@@ -61,6 +61,7 @@ window.Inventories =
     category_list_html = category_list.html()
     category_list.empty()
     $("#search_inventory_brand").change ->
+      $("#inventory_product_category3_id").val("")
       selected = $("#search_inventory_brand :selected").text()
       filtered_option = $(category_list_html).filter("optgroup[label='#{selected}']").html()
       category_list.html("<option></option>"+filtered_option).trigger('chosen:updated')

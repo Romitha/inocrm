@@ -1,5 +1,5 @@
 %h3 Inventory Product
-= simple_nested_form_for @inventory_product, url: product_admins_inventories_path(create: true), method: :post, html: {id: "validate_inventory_product"} do |f|
+= simple_nested_form_for @inventory_product, url: product_admins_inventories_path(create: true), method: :post, html: {id: "validate_inventory_product", class: "validate_form"} do |f|
   .row
     .col-md-4.brand
       = label_tag InventoryCategoryCaption.first.caption
@@ -7,7 +7,7 @@
     .col-md-4.product
       = label_tag InventoryCategoryCaption.second.caption
       = select_tag "search_inventory[product]", option_groups_from_collection_for_select(InventoryCategory1.all, :inventory_category2s, :name, :id, :name, (params[:search_inventory] and params[:search_inventory][:product])), include_blank: true, class: "form-control"
-    .col-md-4.category
+    .col-md-4.category{style: "color: #900303;"}
       = label_tag InventoryCategoryCaption.third.caption
       = f.association :inventory_category3, input_html: {required: true}, collection: InventoryCategory2.all, as: :grouped_select, group_method: :inventory_category3s, group_label_method: :name, label_method: :name, value_method: :id, label: false
 
@@ -21,7 +21,7 @@
       = f.input :legacy_code
 
   .row
-    .col-md-12
+    .col-md-12{style: "color: #900303;"}
       = f.input :description, input_html: {required: true}
   .row
     .col-md-3
@@ -32,7 +32,7 @@
       = f.input :spare_part_no
     .col-md-3
       = f.label "Unit : "
-      = f.select :unit_id, InventoryUnit.all.uniq{|i| i.id}.map{|o| [o.unit, o.id]}, {include_blank: true}, {class: "form-control"}
+      = f.select :unit_id, InventoryUnit.all.uniq{|i| i.id}.map{|o| [o.unit, o.id]}, {include_blank: true}, input_html: {required: true}
   .row
     .col-md-3
       = f.input :fifo, wrapper: :append

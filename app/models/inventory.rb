@@ -37,7 +37,7 @@ class InventoryProduct < ActiveRecord::Base
   has_many :ticket_spare_part_non_stocks, foreign_key: :inv_product_id
   has_many :approved_ticket_spare_part_non_stocks, class_name: "TicketSparePartNonStock", foreign_key: :approved_inv_product_id
 
-  # validates_presence_of [:description, :category3_id, :serial_no, :category3_id]
+  validates_presence_of [:unit_id, :category3_id, :serial_no]
   validates :serial_no, :length => { :minimum => 6, :maximum => 6 }
 
   def is_used_anywhere?
