@@ -539,6 +539,7 @@
           .col-md-3
             %strong
               FSR No:
+              = ticket_on_loan_spare_part.ticket_spare_part.try(:ticket_fsr) and ticket_on_loan_spare_part.ticket_spare_part.ticket_fsr.ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])
           .col-md-3
             %strong
               Faulty Serial No:

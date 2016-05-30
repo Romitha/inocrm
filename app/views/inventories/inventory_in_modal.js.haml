@@ -1,6 +1,6 @@
 - if @inventory or @inventory_product or @non_stock
   $("#inventory_modal").modal('hide');
-  - @inventory_product = @non_stock
+  - @inventory_product = @non_stock if @non_stock.present?
   - content_for :content_for do
     %dl.dl-horizontal
       - unless @non_stock

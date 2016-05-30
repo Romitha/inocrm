@@ -15,16 +15,16 @@
     - session[:serial_part_item_id] = serial_part.inventory_serial_item.id
     - session[:serial_part_id] = serial_part.id
 
-    Recieve Returned Inventory Serial Part (Part of main product)
+    Receive Returned Inventory Serial Part (Part of main product)
   - elsif grn_serial_item
     - session[:serial_item_id] = grn_serial_item.id
-    Recieve Returned Inventory Serial Item
+    Receive Returned Inventory Serial Item
   - elsif grn_batch
     - session[:grn_batch_id] = grn_batch.id
-    Recieve Returned Inventory Batch Item
+    Receive Returned Inventory Batch Item
   - else
     - session[:grn_item_id] = grn_item.id
-    Recieve Returned Inventory Item
+    Receive Returned Inventory Item
 
   - if onloan_request
     (On loan)
@@ -158,8 +158,10 @@
     .col-md-12
       =radio_button_tag "radio_part", "add_part", ((onloan_request and active_spare_part.spare_part_status_use.code == "USD") or ( !onloan_request and active_spare_part.ticket_spare_part.spare_part_status_use.code == "USD")), data: {uri_path: uri.path, object_class: form_serial_part_or_item.class.to_s, task_id: params[:task_id], owner: params[:owner], process_id: params[:process_id], currency_code: gin_source.grn_item.currency.code, currency_id: gin_source.grn_item.currency_id, grn_cost: gin_source.grn_item.unit_cost, active_spare_part: (onloan_request ? "#{onloan_spare_part.class.to_s}-#{onloan_spare_part.id}" : "#{spare_part.class.to_s}-#{spare_part.id}")}, class: "toggle_add_update"
       =label_tag :type_order, "Add new Serial Part"
+
       =radio_button_tag "radio_part", "update_part", !((onloan_request and active_spare_part.spare_part_status_use.code == "USD") or ( !onloan_request and active_spare_part.ticket_spare_part.spare_part_status_use.code == "USD")), data: {uri_path: uri.path, object_class: form_serial_part_or_item.class.to_s, object_id: serial_or_item.id, task_id: params[:task_id], owner: params[:owner], process_id: params[:process_id], currency_code: gin_source.grn_item.currency.code, currency_id: gin_source.grn_item.currency_id, grn_cost: gin_source.grn_item.unit_cost, active_spare_part: (onloan_request ? "#{onloan_spare_part.class.to_s}-#{onloan_spare_part.id}" : "#{spare_part.class.to_s}-#{spare_part.id}")}, class: "toggle_add_update"
       =label_tag :type_order, "Update Existing Serial Part"
+
       =radio_button_tag "radio_part", "reject", false, data: {reject: true, uri_path: uri.path, task_id: params[:task_id], owner: params[:owner], process_id: params[:process_id], active_spare_part: (onloan_request ? "#{onloan_spare_part.class.to_s}-#{onloan_spare_part.id}" : "#{spare_part.class.to_s}-#{spare_part.id}")}, class: "toggle_add_update"
       =label_tag :type_order, "Reject"
 
@@ -269,13 +271,15 @@
 
   %hr
 
-  =radio_button_tag "radio_part", "add_batch", ((onloan_request and active_spare_part.spare_part_status_use.code == "USD") or ( !onloan_request and active_spare_part.ticket_spare_part.spare_part_status_use.code == "USD")), data: {uri_path: uri.path, object_class: form_grn_item.class.to_s, task_id: params[:task_id], owner: params[:owner], process_id: params[:process_id], currency_code: gin_source.grn_item.currency.code, currency_id: gin_source.grn_item.currency_id, grn_cost: gin_source.grn_item.unit_cost, active_spare_part: (onloan_request ? "#{onloan_spare_part.class.to_s}-#{onloan_spare_part.id}" : "#{spare_part.class.to_s}-#{spare_part.id}")}, class: "toggle_add_update"
-  =label_tag :type_order, "Add new Serial Item"
   .hide
     =radio_button_tag "radio_part", "update_part", !((onloan_request and active_spare_part.spare_part_status_use.code == "USD") or ( !onloan_request and active_spare_part.ticket_spare_part.spare_part_status_use.code == "USD")), data: {uri_path: uri.path, object_class: form_grn_item.class.to_s, object_id: grn_item.id, task_id: params[:task_id], owner: params[:owner], process_id: params[:process_id], currency_code: gin_source.grn_item.currency.code, currency_id: gin_source.grn_item.currency_id, grn_cost: gin_source.grn_item.unit_cost, active_spare_part: (onloan_request ? "#{onloan_spare_part.class.to_s}-#{onloan_spare_part.id}" : "#{spare_part.class.to_s}-#{spare_part.id}")}, class: "toggle_add_update"
     =label_tag :type_order, "Update Existing Serial Item"
+
+  =radio_button_tag "radio_part", "add_batch", ((onloan_request and active_spare_part.spare_part_status_use.code == "USD") or ( !onloan_request and active_spare_part.ticket_spare_part.spare_part_status_use.code == "USD")), data: {uri_path: uri.path, object_class: form_grn_item.class.to_s, task_id: params[:task_id], owner: params[:owner], process_id: params[:process_id], currency_code: gin_source.grn_item.currency.code, currency_id: gin_source.grn_item.currency_id, grn_cost: gin_source.grn_item.unit_cost, active_spare_part: (onloan_request ? "#{onloan_spare_part.class.to_s}-#{onloan_spare_part.id}" : "#{spare_part.class.to_s}-#{spare_part.id}")}, class: "toggle_add_update"
+  =label_tag :type_order, "Add New Serial Item"
+
   =radio_button_tag "radio_part", "reject", false, data: {reject: true, uri_path: uri.path, task_id: params[:task_id], owner: params[:owner], process_id: params[:process_id], active_spare_part: (onloan_request ? "#{onloan_spare_part.class.to_s}-#{onloan_spare_part.id}" : "#{spare_part.class.to_s}-#{spare_part.id}")}, class: "toggle_add_update"
-  =label_tag :type_order, "Reject"
+  =label_tag :type_order, "Reject Item"
 
   .add_form
     = render "tickets/tickets_pack/return_store_part/grn_item_form", form_grn_item: form_grn_item, uri: uri, ticket_spare_part: (onloan_request ? onloan_spare_part : spare_part), currency_code: gin_source.grn_item.currency.code, currency_id: gin_source.grn_item.currency_id, grn_cost: gin_source.grn_item.unit_cost

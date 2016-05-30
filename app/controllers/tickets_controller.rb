@@ -91,7 +91,7 @@ class TicketsController < ApplicationController
       else
 
         # format.js {render :find_by_serial}
-        format.js {render js: "alert('Please enter valid and required information.');"}
+        format.js {render js: "alert('Please enter valid and required information.'); Tickets.remove_ajax_loader();"}
       end
 
     end
@@ -1558,7 +1558,6 @@ class TicketsController < ApplicationController
       @estimation = TicketEstimation.find params[:part_estimation_id]
     end
 
-    @grn_items = GrnItem.all.page(params[:page]).per(3)
     Rails.cache.delete([:histories, @product.id])
     Rails.cache.delete([:join, @ticket.id])
 
@@ -3404,7 +3403,7 @@ class TicketsController < ApplicationController
     engineer_id = params[:engineer_id]
 
     if continue
-      if @ticket.update(append_remark_ticket_params(@ticket))
+      if @ticket.update(ticket_params)
         @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(5).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id)
 
         @ticket.ticket_status_resolve = TicketStatusResolve.find_by_code("NAP")
@@ -3445,7 +3444,7 @@ class TicketsController < ApplicationController
     end
 
     if warranty_constraint
-      if @ticket.update append_remark_ticket_params(@ticket)
+      if @ticket.update ticket_params
         user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(72).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id)
         user_ticket_action.build_action_warranty_repair_type(ticket_warranty_type_id: @ticket.warranty_type_id, cus_chargeable: @ticket.cus_chargeable)
 
@@ -3463,7 +3462,7 @@ class TicketsController < ApplicationController
 
   def update_change_ticket_repair_type
     engineer_id = params[:engineer_id]
-    if @ticket.update append_remark_ticket_params(@ticket)
+    if @ticket.update ticket_params
       user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(73).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id)
       user_ticket_action.build_action_warranty_repair_type(ticket_repair_type_id: @ticket.repair_type_id)
 
@@ -3477,7 +3476,7 @@ class TicketsController < ApplicationController
     continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
 
     if continue
-      if @ticket.update append_remark_ticket_params(@ticket)
+      if @ticket.update ticket_params
 
         # bpm output variables
 
@@ -3503,7 +3502,7 @@ class TicketsController < ApplicationController
   def update_hold
     TaskAction
  
-    if !@ticket.status_hold and @ticket.update append_remark_ticket_params(@ticket)
+    if !@ticket.status_hold and @ticket.update ticket_params
 
       act_hold = @ticket.user_ticket_actions.last.act_hold
 
@@ -3646,7 +3645,7 @@ class TicketsController < ApplicationController
     engineer_id = params[:engineer_id]
 
     if continue
-      if @ticket.update append_remark_ticket_params(@ticket)
+      if @ticket.update ticket_params
 
         # bpm output variables
 
@@ -3679,7 +3678,7 @@ class TicketsController < ApplicationController
     engineer_id = params[:engineer_id]
 
     if continue
-      if @ticket.update append_remark_ticket_params(@ticket)
+      if @ticket.update ticket_params
 
         @ticket.ticket_close_approval_required = (@ticket.ticket_fsrs.any? or @ticket.ticket_spare_parts.any?)
         @ticket.ticket_status_resolve = TicketStatusResolve.find_by_code("RSV")
@@ -3724,7 +3723,7 @@ class TicketsController < ApplicationController
     continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
 
     if continue
-      if @ticket.update append_remark_ticket_params(@ticket)
+      if @ticket.update ticket_params
 
         # bpm output variables
 
@@ -3754,7 +3753,7 @@ class TicketsController < ApplicationController
     continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
 
     if continue
-      if @ticket.update append_remark_ticket_params(@ticket)
+      if @ticket.update ticket_params
 
         # bpm output variables
 
@@ -3849,7 +3848,7 @@ class TicketsController < ApplicationController
 
     if continue
 
-      if @ticket.update append_remark_ticket_params(@ticket)
+      if @ticket.update ticket_params
 
         user_ticket_action = @ticket.user_ticket_actions.last
         job_estimate = user_ticket_action.job_estimation
@@ -4182,14 +4181,6 @@ class TicketsController < ApplicationController
 
     def return_bundle_params
       params.require(:return_parts_bundle).permit(:id, :bundle_no, :note)
-    end
-
-    def append_remark_ticket_params(ticket)
-      t_params = ticket_params
-      t_params["remarks"] = t_params["remarks"].present? ? "#{t_params['remarks']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{ticket.remarks}" : ticket.remarks
-
-      t_params
-
     end
 
 end

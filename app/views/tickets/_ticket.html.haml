@@ -1,0 +1,34 @@
+.row
+  .col-xs-6.col-md-6
+    %h4 Ticket
+    %dl.dl-horizontal
+      %dt No
+      %dd
+        = link_to ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"]), ticket
+      %dt Date
+      %dd= ticket.created_at.try(:strftime, "%m-%d-%Y")
+      %dt By
+      %dd= ticket.created_by
+      %dt Status
+      %dd= ticket.ticket_status.name
+      %dt Problem Category
+      %dd= ticket.problem_category.try(:name)
+      %dt Problem Description
+      %dd= ticket.problem_description
+      %br
+      %dt Customer
+      %dd #{ticket.customer and ticket.customer.mst_title.title} #{ticket.customer and ticket.customer.name.capitalize }
+      %dt Contact person1
+      %dd #{ticket.contact_person1 and ticket.contact_person1.mst_title.title} #{ticket.contact_person1 and ticket.contact_person1.name.capitalize}
+      %dt Contact person2
+      %dd #{ticket.contact_person2 and ticket.contact_person2.mst_title.title} #{ticket.contact_person2 and ticket.contact_person2.name.capitalize}
+      %dt Report person
+      %dd #{ticket.report_person and ticket.report_person.mst_title.title} #{ticket.report_person and ticket.report_person.name.capitalize}
+      %br
+      %dt Engineer
+      %dd= User.find_by_id(ticket.owner_engineer_id).try(:first_name)
+      %dt Reported by
+      %dd
+      %dt Resolution summary
+      %dd= ticket.resolution_summary
+      %br

@@ -1,7 +1,6 @@
 - ticket = @ticket
 - product = @product
 - estimation = @estimation
-- grn_items = @grn_items
 - histories = histories
 = render "tickets/tickets_pack/ticket_header", ticket: ticket, product: product
 
@@ -13,4 +12,4 @@
         = render "tickets/tickets_pack/ticket_info", ticket: ticket, product: product
     = tab_content tabpointer: :estimate_the_part_internal, active_class: "active" do
       = tab_panel do
-        = render "tickets/tickets_pack/estimate_the_part_internal/estimate_the_part_internal", estimation: estimation, ticket: ticket, grn_items: grn_items, histories: histories
+        = render "tickets/tickets_pack/estimate_the_part_internal/estimate_the_part_internal", estimation: estimation, ticket: ticket, histories: histories

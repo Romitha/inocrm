@@ -31,7 +31,7 @@
 
   - ge_q_and_answers = ticket.ge_q_and_answers
 
-= simple_nested_form_for ticket, url: update_quality_control_invoices_path, method: :post do |f| # update_quality_control_invoices_path
+= simple_nested_form_for ticket, url: update_quality_control_invoices_path, html: {class: "validate_form"}, method: :post do |f| # update_quality_control_invoices_path
   = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
   = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
   = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]

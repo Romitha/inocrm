@@ -37,8 +37,15 @@ class TicketSparePart < ActiveRecord::Base
 
   validates_presence_of :spare_part_description
 
+  belongs_to :engineer, class_name: "User", foreign_key: :engineer_id
+
   before_save do |ticket_spare_part|
-    ticket_spare_part.note = "#{self.note} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(ticket_spare_part.current_user_id).email}</span><br/>#{ticket_spare_part.note_was}" if ticket_spare_part.persisted? and self.note_changed? and self.note.present?
+   if ticket_spare_part.persisted? and ticket_spare_part.note_changed? and ticket_spare_part.note.present?
+      ticket_spare_part_note = "#{ticket_spare_part.note} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(ticket_spare_part.current_user_id).email}</span><br/>#{ticket_spare_part.note_was}"
+    else
+      ticket_spare_part_note = ticket_spare_part.note_was
+    end
+    ticket_spare_part.note = ticket_spare_part_note
   end
 
   def flush_cache

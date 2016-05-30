@@ -8,7 +8,12 @@
     - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
       = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
-    = f.association :reject_reason, label_method: :reason, value_method: :id, label: "Request reason"
-    = f.input :reject_note, label: "Request note"
-    = f.input :extended, as: :hidden, input_html: {value: false}
-    = f.submit "Save"
+    .row
+      .col-md-3
+      = f.association :reject_reason, label_method: :reason, value_method: :id, label: "Request reason"
+      .col-md-3
+        = f.input :reject_note, label: "Request note"
+      .col-md-6
+        = f.input :extended, as: :hidden, input_html: {value: false}
+      .col-md-12
+        = f.submit "Save"

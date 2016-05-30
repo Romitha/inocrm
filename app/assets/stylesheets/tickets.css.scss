@@ -358,3 +358,8 @@ dd{
     border-width:thin 0px 0px 0px;
   }
 }
+
+#paginate_grns {
+  max-height: 300px;
+  overflow: auto;
+}

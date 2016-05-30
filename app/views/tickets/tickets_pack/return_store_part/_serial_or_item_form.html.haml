@@ -1,4 +1,4 @@
-= simple_nested_form_for form_serial_part_or_item, url: update_return_store_part_inventories_path, method: :post, html: {class: "form_serial_part_or_item"} do |f| # update_return_store_part_inventories_path
+= simple_nested_form_for form_serial_part_or_item, url: update_return_store_part_inventories_path, method: :post, html: {class: "form_serial_part_or_item validate_form"} do |f| # update_return_store_part_inventories_path
 
   - if f.object.new_record?
     = link_to "change product", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true

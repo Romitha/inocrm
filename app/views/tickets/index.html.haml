@@ -1,0 +1,6 @@
+- tickets = @tickets
+%h3 Tickets
+
+- tickets.each do |ticket|
+  .border-all.small_scale_padding1.small_scale_margin-bottom1.ticket_list
+    = render "tickets/ticket", ticket: ticket

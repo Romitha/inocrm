@@ -108,7 +108,12 @@ class Ticket < ActiveRecord::Base
   validates_inclusion_of :cus_chargeable, in: [true, false]
 
   before_save do |ticket|
-    ticket.remarks = "#{ticket.remarks} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(ticket.current_user_id).email}</span><br/>#{ticket.remarks_was}" if ticket.persisted? and self.remarks_changed? and self.remarks.present?
+   if ticket.persisted? and ticket.remarks_changed? and ticket.remarks.present?
+      ticket_remarks = "#{ticket.remarks} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(ticket.current_user_id).email}</span><br/>#{ticket.remarks_was}"
+    else
+      ticket_remarks = ticket.remarks_was
+    end
+    ticket.remarks = ticket_remarks
   end
 
   [:initiated_by, :initiated_by_id, :current_user_id].each do |dyna_method|

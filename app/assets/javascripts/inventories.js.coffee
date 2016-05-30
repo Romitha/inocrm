@@ -135,20 +135,19 @@ window.Inventories =
       $(".add_part").addClass("hide")
 
   checked_quality_control: ->
-
     $("#act_quality_control_reject_reason").click ->
       if $(@).is(":checked")
         $("#dynamic_action_id").val($(@).data("approve-action-no"))
         $("#reject_reason_sec_hide").addClass("hide")
         $("#change_value_submit").val("Approve")
         $("#change_value_submit").attr("name", "approve")
-        $("#reject_reason").prop("disabled", true)
+        $("#reject_reason").prop({"disabled": true, "required": false})
 
       else
         $("#dynamic_action_id").val($(@).data("reject-action-no"))
         $("#reject_reason_sec_hide").removeClass("hide")
         $("#change_value_submit").val("Reject")
-        $("#reject_reason").prop("disabled", false)
+        $("#reject_reason").prop({"disabled": false, "required": true})
         $("#change_value_submit").attr("name", "reject")
 
   disable_upon_manufacture: ->
@@ -218,11 +217,12 @@ window.Inventories =
       else
         submit_form.submit()
 
-  request_from_store: ->
+  request_from_store: (e)->
     if $("input[name='mst_store_id']").val() and ( !$("input[name='store_id']").val() or ($("input[name='store_id']").val() != $("input[name='mst_store_id']").val()))
+      e.preventDefault()
       alert "Please select same store for the main product!"
     else
-      false
+      return
 
   submit_on_loan_spare_part: ->
     @disable_part()

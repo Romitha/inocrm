@@ -219,25 +219,166 @@ mst_spt_general_question = [
 
 TicketSparePart
 spare_part_status_action = [
-  ["RQT", "Requested", "0", "0", "1", "0", "1", "1", "1"],
-  ["ORD", "Ordered from Manufacturer", "2", "0", "0", "0", "0", "0", "5", 'To Be Ordered From Manufacturer'],
-  ["CLT", "Collected from Manufacturer", "3", "0", "0", "0", "0", "0", "6", 'To Be Collected From Manufacturer'],
-  ["RCS", "Received from Manufacturer", "4", "0", "0", "0", "0", "0", "7", 'To Be Received From Manufacturer'],
-  ["ISS", "Issued", "5", "3", "6", "3", "0", "0", "8", 'To Be Issued'],
-  ["RCE", "Received by Engineer", "6", "4", "7", "4", "0", "0", "9", 'To Be Recieved By Engineer'],
-  ["RTN", "Part Return by Engineer", "7", "5", "0", "5", "0", "0", "10", 'Part To Be Returned By Engineer'],
-  ["RPR", "Returned Part Reject", "8", "6", "0", "6", "0", "0", "11", 'Accept or Reject The Returned Part'],
-  ["RPA", "Returned Part Accepted", "8", "7", "0", "7", "0", "0", "11", 'Accept or Reject The Returned Part'],
-  ["BND", "Part Bundled", "10", "0", "0", "0", "0", "0", "13", 'Bundle The Part'],
-  ["CLS", "Close", "11", "8", "8", "8", "0", "0", "14"],
-  ["ECM", "Estimation Completed", "0", "0", "2", "0", "0", "0", "2", 'Complete The Estimation'],
-  ["CEA", "Cus. Estimation Approved", "0", "0", "3", "0", "0", "0", "3", 'Approve The Estimation By Customer'],
-  ["STR", "Request from Store", "0", "1", "4", "1", "0", "0", "0", 'Request From Store'],
-  ["APS", "Approved Store Request", "0", "2", "5", "2", "0", "0", "0", 'Approve or Reject The Store Request'],
-  ["RJS", "Reject Store Request", "0", "2", "5", "2", "0", "0", "12", 'Approve or Reject The Store Request'],
-  ["RBN", "Ready to Bundle", "9", "0", "0", "0", "0", "0", "0", 'Ready To Bundle'],
-  ["MPR", "Manufacture Part Requested", "1", "0", "0", "0", "0", "0", "4", 'To Be Requested From Manufacturer'],
-].each{ |t| SparePartStatusAction.create_with(name: t[1], manufacture_type_index: t[2], store_nc_type_index: t[3], store_ch_type_index: t[4], on_loan_type_index: t[5], name_next: t[9], non_stock_nc_type_index: t[6], non_stock_ch_type_index: t[7], manufacture_ch_type_index: t[8]).find_or_create_by(code: t[0])}
+  ["RQT", "Requested", 0,1,0,1,0,1,1],
+  ["ORD", "Ordered from Manufacturer", 2,5,0,0,0,0,0, 'To Be Ordered From Manufacturer'],
+  ["CLT", "Collected from Manufacturer", 3,6,0,0,0,0,0, 'To Be Collected From Manufacturer'],
+  ["RCS", "Received from Manufacturer", 4,7,0,0,0,0,0, 'To Be Received From Manufacturer'],
+  ["ISS", "Issued", 5,8,3,6,3,0,0, 'To Be Issued'],
+  ["RCE", "Received by Engineer", 6,9,4,7,4,0,0, 'To Be Recieved By Engineer'],
+  ["RTN", "Part Return by Engineer", 7,10,5,0,5,0,0, 'Part To Be Returned By Engineer'],
+  ["RPR", "Returned Part Reject", 8,11,6,0,6,0,0, 'Accept or Reject The Returned Part'],
+  ["RPA", "Returned Part Accepted", 8,11,6,0,6,0,0, 'Accept or Reject The Returned Part'],
+  ["BND", "Part Bundled", 10,13,0,0,0,0,0, 'Bundle The Part'],
+  ["CLS", "Close", 11,14,7,8,7,2,4],
+  ["ECM", "Estimation Completed", 0,2,0,2,0,0,2, 'Complete The Estimation'],
+  ["CEA", "Cus. Estimation Approved", 0,3,0,3,0,0,3, 'Approve The Estimation By Customer'],
+  ["STR", "Request from Store", 0,0,1,4,1,0,0, 'Request From Store'],
+  ["APS", "Approved Store Request", 0,0,2,5,2,0,0, 'Approve or Reject The Store Request'],
+  ["RJS", "Reject Store Request", 0,0,2,5,2,0,0, 'Approve or Reject The Store Request'],
+  ["RBN", "Ready to Bundle", 9,12,0,0,0,0,0, 'Ready To Bundle'],
+  ["MPR", "Manufacture Part Requested", 1,4,0,0,0,0,0, 'To Be Requested From Manufacturer'],
+].each{ |t| SparePartStatusAction.create_with(name: t[1], manufacture_type_index: t[2], manufacture_ch_type_index: t[3], store_nc_type_index: t[4], store_ch_type_index: t[5], on_loan_type_index: t[6], non_stock_nc_type_index: t[7], non_stock_ch_type_index: t[8], name_next: t[9]).find_or_create_by(code: t[0])}
+# UPDATE `mst_spt_spare_part_status_action` SET
+# manufacture_type_index = (
+#  CASE code WHEN "RQT" THEN 0 
+#           WHEN "ORD" THEN  2 
+#           WHEN "CLT" THEN  3 
+#           WHEN "RCS" THEN  4 
+#           WHEN "ISS" THEN  5 
+#           WHEN "RCE" THEN  6 
+#           WHEN "RTN" THEN  7 
+#           WHEN "RPR" THEN  8 
+#           WHEN "RPA" THEN  8 
+#           WHEN "BND" THEN  10
+#           WHEN "CLS" THEN  11
+#           WHEN "ECM" THEN  0 
+#           WHEN "CEA" THEN  0 
+#           WHEN "STR" THEN  0 
+#           WHEN "APS" THEN  0 
+#           WHEN "RJS" THEN  0 
+#           WHEN "RBN" THEN  9 
+#           WHEN "MPR" THEN  1 
+#  END),
+#  manufacture_ch_type_index = (
+#  CASE code WHEN "RQT" THEN  1 
+#             WHEN "ORD" THEN 5 
+#             WHEN "CLT" THEN 6 
+#             WHEN "RCS" THEN 7 
+#             WHEN "ISS" THEN 8 
+#             WHEN "RCE" THEN 9 
+#             WHEN "RTN" THEN 10
+#             WHEN "RPR" THEN 11
+#             WHEN "RPA" THEN 11
+#             WHEN "BND" THEN 13
+#             WHEN "CLS" THEN 14
+#             WHEN "ECM" THEN 2 
+#             WHEN "CEA" THEN 3 
+#             WHEN "STR" THEN 0 
+#             WHEN "APS" THEN 0 
+#             WHEN "RJS" THEN 0 
+#             WHEN "RBN" THEN 12
+#             WHEN "MPR" THEN 4 
+#  END),
+#  store_nc_type_index = (
+#  CASE code WHEN "RQT" THEN 0
+#           WHEN "ORD" THEN  0
+#           WHEN "CLT" THEN  0
+#           WHEN "RCS" THEN  0
+#           WHEN "ISS" THEN  3
+#           WHEN "RCE" THEN  4
+#           WHEN "RTN" THEN  5
+#           WHEN "RPR" THEN  6
+#           WHEN "RPA" THEN  6
+#           WHEN "BND" THEN  0
+#           WHEN "CLS" THEN  7
+#           WHEN "ECM" THEN  0
+#           WHEN "CEA" THEN  0
+#           WHEN "STR" THEN  1
+#           WHEN "APS" THEN  2
+#           WHEN "RJS" THEN  2
+#           WHEN "RBN" THEN  0
+#           WHEN "MPR" THEN  0
+#  END),
+#  store_ch_type_index = (
+#  CASE code WHEN "RQT" THEN 1
+#           WHEN "ORD" THEN  0
+#           WHEN "CLT" THEN  0
+#           WHEN "RCS" THEN  0
+#           WHEN "ISS" THEN  6
+#           WHEN "RCE" THEN  7
+#           WHEN "RTN" THEN  0
+#           WHEN "RPR" THEN  0
+#           WHEN "RPA" THEN  0
+#           WHEN "BND" THEN  0
+#           WHEN "CLS" THEN  8
+#           WHEN "ECM" THEN  2
+#           WHEN "CEA" THEN  3
+#           WHEN "STR" THEN  4
+#           WHEN "APS" THEN  5
+#           WHEN "RJS" THEN  5
+#           WHEN "RBN" THEN  0
+#           WHEN "MPR" THEN  0
+#  END),
+#  on_loan_type_index = (
+#  CASE code WHEN "RQT" THEN 1
+#             WHEN "ORD" THEN 0
+#             WHEN "CLT" THEN 0
+#             WHEN "RCS" THEN 0
+#             WHEN "ISS" THEN 4
+#             WHEN "RCE" THEN 5
+#             WHEN "RTN" THEN 6
+#             WHEN "RPR" THEN 7
+#             WHEN "RPA" THEN 7
+#             WHEN "BND" THEN 0
+#             WHEN "CLS" THEN 8
+#             WHEN "ECM" THEN 0
+#             WHEN "CEA" THEN 0
+#             WHEN "STR" THEN 2
+#             WHEN "APS" THEN 3
+#             WHEN "RJS" THEN 3
+#             WHEN "RBN" THEN 0
+#             WHEN "MPR" THEN 0
+#  END),
+#  non_stock_nc_type_index = (
+#  CASE code WHEN "RQT" THEN 0
+#           WHEN "ORD" THEN  0
+#           WHEN "CLT" THEN  0
+#           WHEN "RCS" THEN  0
+#           WHEN "ISS" THEN  3
+#           WHEN "RCE" THEN  4
+#           WHEN "RTN" THEN  5
+#           WHEN "RPR" THEN  6
+#           WHEN "RPA" THEN  6
+#           WHEN "BND" THEN  0
+#           WHEN "CLS" THEN  7
+#           WHEN "ECM" THEN  0
+#           WHEN "CEA" THEN  0
+#           WHEN "STR" THEN  1
+#           WHEN "APS" THEN  2
+#           WHEN "RJS" THEN  2
+#           WHEN "RBN" THEN  0
+#           WHEN "MPR" THEN  0
+#  END),
+#  non_stock_ch_type_index = (
+#  CASE code WHEN "RQT" THEN 1
+#           WHEN "ORD" THEN  0
+#           WHEN "CLT" THEN  0
+#           WHEN "RCS" THEN  0
+#           WHEN "ISS" THEN  0
+#           WHEN "RCE" THEN  0
+#           WHEN "RTN" THEN  0
+#           WHEN "RPR" THEN  0
+#           WHEN "RPA" THEN  0
+#           WHEN "BND" THEN  0
+#           WHEN "CLS" THEN  4
+#           WHEN "ECM" THEN  2
+#           WHEN "CEA" THEN  3
+#           WHEN "STR" THEN  0
+#           WHEN "APS" THEN  0
+#           WHEN "RJS" THEN  0
+#           WHEN "RBN" THEN  0
+#           WHEN "MPR" THEN  0
+#  END);
 
 workflow_mappings = [
   ["SPPT", "add_ticket", "/tickets/edit-ticket", "SPT_SC_1", "Support - Edit Ticket", "h1", "ticket_id,supp_hd_user",nil],

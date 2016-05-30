@@ -15,7 +15,7 @@
                 .col-md-3
                   %p By: #{Rails.cache.fetch([:action_by, action.action_by]){User.find(action.action_by)}.user_name}
                 .col-md-2
-                  %p Re-Open: #{action.re_open_index > 0 ? 'Yes ('+#{action.re_open_index.to_s}+')' : 'No'}
+                  %p Re-Open: #{action.re_open_index > 0 ? 'Yes ('+action.re_open_index.to_s+')' : 'No'}
 
           
             -if action.action_id == 2
@@ -710,7 +710,7 @@
                     .col-md-4
                       Store Issued By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:issued_by)).try(:user_name)}
 
-            -if action.action_id == 51
+            - if action.action_id == 51
               .panel-body
                 .row
                   .col-md-4
@@ -718,26 +718,26 @@
                   .col-md-4
                     Spare Part Description: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.spare_part_description}
                   .col-md-4 
-                    -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.cus_chargeable_part == true
+                    -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.cus_chargeable_part
                       Customer Chargeable: Yes
                     -else
                       Customer Chargeable: No
                 .row
                   .col-md-4
-                    -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'M'
+                    - if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'M'
                       Request From Manufacture
-                    -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'S'
+                    - if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'S'
                       Request From Store
-                  -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'S'
+                  - if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'S'
                     .col-md-4
                       Store Id: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.store_id}
                     .col-md-4
                       Product Item Code: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
 
-                -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'S'
+                - if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'S'
                   .row
                     .col-md-4
-                      Store Requested By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_requested_by)).try(:user_name)}
+                      Store Requested By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_requested_by)).try(:email)}
                     .col-md-4
                       Store Request Approved By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_request_approved_by)).try(:user_name)}
                     .col-md-4
