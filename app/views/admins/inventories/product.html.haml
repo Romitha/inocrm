@@ -1,5 +1,5 @@
 %h3 Inventory Product
-= simple_nested_form_for @inventory_product, url: product_admins_inventories_path(create: true), method: :post, html: {id: "validate_inventory_product", class: "validate_form"} do |f|
+= simple_nested_form_for @inventory_product, url: product_admins_inventories_path(create: true), method: :post, html: {id: "validate_inventory_product"} do |f|
   .row
     .col-md-4.brand
       = label_tag InventoryCategoryCaption.first.caption
