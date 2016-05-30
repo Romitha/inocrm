@@ -24,23 +24,24 @@
     .col-md-12{style: "color: #900303;"}
       = f.input :description, input_html: {required: true}
   .row
-    .col-md-3
+    .col-md-4
       = f.input :model_no
-    .col-md-3
+    .col-md-4
       = f.input :product_no
-    .col-md-3
+    .col-md-4
       = f.input :spare_part_no
-    .col-md-3{style: "color: #900303;"}
-      = f.label "Unit : "
-      = f.select :unit_id, InventoryUnit.all.uniq{|i| i.id}.map{|o| [o.unit, o.id]}, {include_blank: true}, {required: true}
   .row
-    .col-md-3
+    .col-md-4
+      = f.label "Unit : ", {style: "color: #900303;"}
+      = f.select :unit_id, InventoryUnit.all.uniq{|i| i.id}.map{|o| [o.unit, o.id]}, {include_blank: true}, {required: true}
+    .col-md-4
       = f.input :fifo, wrapper: :append
-    .col-md-3
+  .row
+    .col-md-4
       = f.input :active, wrapper: :append
-    .col-md-3
+    .col-md-4
       = f.input :spare_part, wrapper: :append
-    .col-md-3
+    .col-md-4
       = f.input :non_stock_item, wrapper: :append
 
   .row
