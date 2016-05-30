@@ -306,6 +306,8 @@ module Admins
           if @inventory_product_form.update inventory_product_params
             params[:edit] = nil
             render json: @inventory_product_form
+          else
+            render json: @inventory_product_form.errors
           end
         elsif params[:product_info_id]
           @inventory_product1 = InventoryProductInfo.find params[:product_info_id]

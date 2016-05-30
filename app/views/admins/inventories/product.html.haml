@@ -14,7 +14,7 @@
 
   .row
     .col-md-4
-      = f.input :serial_no, as: :decimal, input_html: {value: InventorySerialItem.last.serial_no, required: true, maxlength: 6}
+      = f.input :serial_no, as: :decimal, input_html: {value: InventorySerialItem.last.serial_no, required: true, maxlength: 6, minlength: 6}
       = f.input :serial_no_order, as: :hidden, input_html: {value: InventoryProduct.all.count + 1}
     .col-md-4
       = f.input :sku
