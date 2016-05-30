@@ -71,7 +71,7 @@
                 %td= inventory.inventory_product.product_no
                 %td= inventory.inventory_product.spare_part_no
                 %td= inventory.inventory_product.inventory_unit.unit
-                %td= inventory.inventory_product.inventory_product_info.need_serial ? "Serial" : (inventory.inventory_product.inventory_product_info.need_batch ? "Batch" : "")
+                %td= inventory.inventory_product.inventory_product_info ? (inventory.inventory_product.inventory_product_info.need_serial ? "Serial" : (inventory.inventory_product.inventory_product_info.need_batch ? "Batch" : "")) : ""
 
                 %td= inventory.available_quantity
                 %td= link_to("Select", inventory_in_modal_inventories_path(select_inventory: true, inventory_id: inventory.id, select_frame: session[:select_frame], issue_part: params[:issue_part]), remote: true)

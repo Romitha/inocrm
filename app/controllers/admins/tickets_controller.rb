@@ -437,6 +437,56 @@ module Admins
       end
     end
 
+    def brands_and_category
+      Product
+      SlaTime
+      Organization
+      Currency
+
+      if params[:edit]
+
+        if params[:brands_and_category_id]
+          @brands_and_category = ProductBrand.find params[:brands_and_category_id]
+          if @brands_and_category.update brands_and_category_params
+            params[:edit] = nil
+            render json: @brands_and_category
+          end
+        elsif params[:product_category_id]
+          @product_category = ProductCategory.find params[:product_category_id]
+          if @product_category.update product_category_params
+            params[:edit] = nil
+            render json: @product_category
+          end
+        end
+
+      else
+        if params[:create]
+          @brands_and_category = ProductBrand.new brands_and_category_params
+          if @brands_and_category.save
+            params[:create] = nil
+            @brands_and_category = ProductBrand.new
+          else
+            flash[:error] = "Unable to save"
+          end
+
+        elsif params[:edit_more]
+          @brands_and_category = ProductBrand.find params[:brands_and_category_id]
+
+        elsif params[:update]
+          @brands_and_category = ProductBrand.find params[:brands_and_category_id]
+          if @brands_and_category.update brands_and_category_params
+            params[:update] = nil
+            @brands_and_category = ProductBrand.new
+          end
+
+
+        else
+          @brands_and_category = ProductBrand.new
+        end
+        @brands_and_category_all = ProductBrand.order(created_at: :desc).select{|i| i.persisted? }
+      end
+    end
+
     private
 
       def admin_payment_item_params

@@ -317,6 +317,8 @@ Rails.application.routes.draw do
           :location,
           :inventory_product,
           :category,
+          :inventory_brand,
+          :inventory_product_category,
           :inventory_product_condition,
           :inventory_disposal_method,
           :inventory_reason,

@@ -15,7 +15,7 @@
                 .col-md-3
                   %p By: #{Rails.cache.fetch([:action_by, action.action_by]){User.find(action.action_by)}.user_name}
                 .col-md-2
-                  %p Re-Open: #{action.re_open_index > 0 ? 'Yes (#{action.re_open_index})' : 'No'}
+                  %p Re-Open: #{action.re_open_index > 0 ? 'Yes ('+#{action.re_open_index.to_s}+')' : 'No'}
 
           
             -if action.action_id == 2
@@ -1226,17 +1226,17 @@
                   .col-md-4
                     Note: #{action.act_quotation.customer_quotation.try(:note)}
 
-            -if action.action_id == 84
+            -if action.action_id == 84 and action.act_print_invoice
               .panel-body
                 .row
                   .col-md-4
-                    Invoice no: #{action.act_print_invoice.invoice.try.invoice_no.to_s.rjust(6, INOCRM_CONFIG['invoice_no_format']) }
+                    Invoice no: #{action.act_print_invoice.invoice.invoice_no.to_s.rjust(6, INOCRM_CONFIG['invoice_no_format']) }
                   .col-md-4
-                    Note: #{action.act_print_invoice.invoice.try.note }
+                    Note: #{action.act_print_invoice.invoice.note }
                   .col-md-4
-                    Print Count: #{action.act_print_invoice.invoice.try.print_count}
+                    Print Count: #{action.act_print_invoice.invoice.print_count}
 
-            -if action.action_id == 85
+            -if action.action_id == 85 and action.act_quotation
               .panel-body
                 .row
                   .col-md-4

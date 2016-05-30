@@ -51,7 +51,7 @@
       = link_to additional_charge_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'additional_charge' }" do
         %i.fa.fa-money
         Additional Charge
-      = link_to brands_and_category_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'brands_and_category' }" do
+      = link_to brands_and_category_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'brands_and_category' }" do
         %i.fa.fa-apple
         Brands
       = link_to category_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'category' }" do
@@ -84,11 +84,17 @@
 
   = collapse collapse_type: "#{controller_name == 'inventories' ? 'primary' : 'default'}", labelledby: "labelledby_inventories", header_content: content_tag(:span, "", class: "icon-list-alt")+"Inventories", collapse_link: "collapse_link_inventories" do
     .list-group.small_scale_margin0
+      = link_to inventory_brand_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'inventory_brand' }" do
+        %i.icon-paper
+        Brand category
+      = link_to inventory_product_category_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'inventory_product_catory' }" do
+        %i.icon-stack-2
+        Product category
       = link_to category_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'category' }" do
-        %i.fa.fa-file-text-o
+        %i.icon-layers
         Category
       = link_to disposal_method_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'disposal_method' }" do
-        %i.icon-file-text2
+        %i.icon-repeat
         Disposal methods
       = link_to location_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'location' }" do
         %i.icon-books

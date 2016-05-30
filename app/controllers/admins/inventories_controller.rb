@@ -246,52 +246,83 @@ module Admins
       end
     end
 
-    def category
+    def inventory_brand
       Inventory
       if params[:edit]
-
-        if params[:brand_id]
-          @inventory_brand = InventoryCategory1.find params[:brand_id]
-          if @inventory_brand.update inventory_brand_params
-            params[:edit] = nil
-            render json: @inventory_brand
-          end
-        elsif params[:product_id]
-          @inventory_product = InventoryCategory2.find params[:product_id]
-          if @inventory_product.update inventory_category2_params
-            params[:edit] = nil
-            render json: @inventory_product
-          end
-        elsif params[:category_id]
-          @inventory_category = InventoryCategory3.find params[:category_id]
-          if @inventory_category.update inventory_category_params
-            params[:edit] = nil
-            render json: @inventory_category
-          end
+        @inventory_brand = InventoryCategory1.find params[:inventory_category1_id]
+        if @inventory_brand.update inventory_category1_params
+          params[:edit] = nil
+          render json: @inventory_brand
         end
 
       else
         if params[:create]
-          @inventory_category1 = InventoryCategory1.new inventory_brand_params
-          if @inventory_category1.save
+          @inventory_brand = InventoryCategory1.new inventory_category1_params
+          if @inventory_brand.save
             params[:create] = nil
-            @inventory_category1 = InventoryCategory1.new
+            @inventory_brand = InventoryCategory1.new
           end
+        else
+          @inventory_brand = InventoryCategory1.new
+        end
+        @inventory_brand_all = InventoryCategory1.order(created_at: :desc).select{|i| i.persisted? }
+      end
+    end
 
+    def inventory_product_category
+      Inventory
+      if params[:edit]
+        @inventory_product_category = InventoryCategory2.find params[:inventory_category2_id]
+        if @inventory_product_category.update inventory_category2_params
+          params[:edit] = nil
+          render json: @inventory_product_category
+        end
+
+      else
+        if params[:create]
+          @inventory_product_category = InventoryCategory2.new inventory_category2_params
+          if @inventory_product_category.save
+            params[:create] = nil
+            @inventory_product_category = InventoryCategory2.new
+          end
+        else
+          @inventory_product_category = InventoryCategory2.new
+        end
+        @inventory_product_category_all = InventoryCategory2.order(created_at: :desc).select{|i| i.persisted? }
+      end
+    end
+
+    def category
+      Inventory
+      Inventory
+      if params[:edit]
+        @inventory_category = InventoryCategory3.find params[:inventory_category3_id]
+        if @inventory_category.update inventory_category3_params
+          params[:edit] = nil
+          render json: @inventory_category
+        end
+
+      else
+        if params[:create]
+          @inventory_category = InventoryCategory3.new inventory_category3_params
+          if @inventory_category.save
+            params[:create] = nil
+            @inventory_category = InventoryCategory3.new
+          end
         elsif params[:edit_more]
-          @inventory_category1 = InventoryCategory1.find params[:brand_id]
+          @inventory_category = InventoryCategory3.find params[:inventory_category3_id]
 
         elsif params[:update]
-          @inventory_category1 = InventoryCategory1.find params[:brand_id]
-          if @inventory_category1.update inventory_brand_params
+          @inventory_category = InventoryCategory3.find params[:inventory_category3_id]
+          if @inventory_category.update inventory_category3_params
             params[:update] = nil
-            @inventory_category1 = InventoryCategory1.new
+            @inventory_category = InventoryCategory3.new
           end
 
         else
-          @inventory_category1 = InventoryCategory1.new
+          @inventory_category = InventoryCategory3.new
         end
-        @inventory_category1_all = InventoryCategory1.order(created_at: :desc).select{|i| i.persisted? }
+        @inventory_category_all = InventoryCategory3.order(created_at: :desc).select{|i| i.persisted? }
       end
     end
 
@@ -761,10 +792,6 @@ module Admins
 
     private
 
-      def brands_and_category_params
-        params.require(:product_brand).permit(:name, :sla_id, :organization_id, :parts_return_days, :warranty_date_format, :currency_id, product_categories_attributes: [:id, :_destroy, :name, :sla_id])
-      end
-
       def product_category_params
         params.require(:product_category).permit(:name, :sla_id)
       end
@@ -789,16 +816,16 @@ module Admins
         params.require(:inventory_bin).permit(:description)
       end
 
-      def inventory_brand_params
-        params.require(:inventory_category1).permit(:code, :name, :created_by, :created_by, inventory_category2s_attributes: [:_destroy, :id, :code, :name, :created_by, :updated_by, inventory_category3s_attributes: [:_destroy, :id, :code, :name, :created_by, :updated_by] ])
+      def inventory_category1_params
+        params.require(:inventory_category1).permit(:code, :name, :created_by, :created_by)
+      end
+
+      def inventory_category3_params
+        params.require(:inventory_category3).permit(:code, :name, :created_by, :category2_id)
       end
 
       def inventory_category2_params
-        params.require(:inventory_category2).permit(:code, :name)
-      end
-
-      def inventory_category_params
-        params.require(:inventory_category3).permit(:code, :name)
+        params.require(:inventory_category2).permit(:code, :name, :created_by, :category1_id)
       end
 
       def inventory_product_params

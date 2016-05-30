@@ -47,6 +47,8 @@
                 %dd
                   = t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.try(:spare_part_no)
                 %dt Available Qnty
+                %dd
+                  = t.object.ticket_spare_part.ticket_spare_part_store.inventory_product.inventories.find_by_store_id(t.object.ticket_spare_part.ticket_spare_part_store.store_id).available_quantity
 
             .spare_part_select.pull-left
               = link_to "Change part", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true
@@ -202,7 +204,7 @@
 
     .col-md-12
       = hidden_field_tag :estimate_low_margin, id: "estimate_low_margin"
-      = f.input :note
+      = f.input :note, input_html: {value: nil}
       = simple_format estimation.note
 
 

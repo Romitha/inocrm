@@ -33,8 +33,6 @@
                   %th
                     Contacts
                   %th
-                    Ticket
-                  %th
                     Organization
                   %th
                     Function
@@ -55,10 +53,6 @@
                       - customer.contact_type_values.each do |c_value|
                         #{c_value.contact_type.name}: #{c_value.value}
                         %br/
-
-                    %td
-                      - customer.tickets.each do |ticket|
-                        #{ticket.ticket_no.to_s.rjust(5, INOCRM_CONFIG["ticket_no_format"])} #{ticket.ticket_status.name}
                     %td
                       = link_to customer.organization.name, organization_path(customer.organization), target: "_blank" if customer.organization
                     %td

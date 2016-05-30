@@ -5,7 +5,6 @@
       = d.input :disposal_method
     .col-md-4
       = d.input :created_by, as: :hidden, input_html: {value: current_user.id}
-      = d.input :updated_by, as: :hidden, input_html: {value: current_user.id}
   .row{style: "margin-top:20px; margin-bottom:20px;"}
     .col-md-8
       = d.submit "Save", class: "btn btn-success pull-right", id: "submit_new_inventory_disposal_method"

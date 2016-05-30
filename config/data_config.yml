@@ -11,6 +11,7 @@ fsr_no_format: "F00000"
 receipt_no_format: "000000"
 invoice_no_format: "000000"
 quotation_no_format: "Q00000"
+inventory_serial_no_format: "000000"
 
 answer_type_for_q_and_a:
   "yes/no" : "YN"

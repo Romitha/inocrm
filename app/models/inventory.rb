@@ -45,7 +45,7 @@ class InventoryProduct < ActiveRecord::Base
   end
 
   def generated_item_code
-   "#{inventory_category3.code}#{CompanyConfig.first.inv_category_seperator}#{inventory_category3.inventory_category2.code}#{CompanyConfig.first.inv_category_seperator}#{inventory_category3.inventory_category2.inventory_category1.code}#{CompanyConfig.first.inv_category_seperator}#{serial_no}"
+   "#{inventory_category3.code}#{CompanyConfig.first.inv_category_seperator}#{inventory_category3.inventory_category2.code}#{CompanyConfig.first.inv_category_seperator}#{inventory_category3.inventory_category2.inventory_category1.code}#{CompanyConfig.first.inv_category_seperator}#{serial_no.to_s.rjust(6, INOCRM_CONFIG["inventory_serial_no_format"])}"
   end
 
 end
@@ -67,32 +67,6 @@ class InventoryProductInfo < ActiveRecord::Base
 
 end
 
-class InventoryCategory3 < ActiveRecord::Base
-  self.table_name = "mst_inv_category3"
-
-  belongs_to :inventory_category2, foreign_key: :category2_id
-  has_many :inventory_products, foreign_key: :category3_id
-
-  def is_used_anywhere?
-    inventory_products.any?
-  end
-end
-
-class InventoryCategory2 < ActiveRecord::Base
-  self.table_name = "mst_inv_category2"
-
-  belongs_to :inventory_category1, foreign_key: :category1_id
-
-  has_many :inventory_category3s, foreign_key: :category2_id
-  accepts_nested_attributes_for :inventory_category3s, allow_destroy: true
-  has_many :inventory_products, through: :inventory_category3s
-
-  def is_used_anywhere?
-    inventory_category3s.any?
-  end
-
-end
-
 class InventoryCategory1 < ActiveRecord::Base
   self.table_name = "mst_inv_category1"
 
@@ -104,6 +78,33 @@ class InventoryCategory1 < ActiveRecord::Base
     inventory_category2s.any?
   end
 
+end
+
+class InventoryCategory2 < ActiveRecord::Base
+  self.table_name = "mst_inv_category2"
+
+  belongs_to :inventory_category1, foreign_key: :category1_id
+
+  has_many :inventory_category3s, foreign_key: :category2_id
+  accepts_nested_attributes_for :inventory_category3s, allow_destroy: true
+
+  has_many :inventory_products, through: :inventory_category3s
+
+  def is_used_anywhere?
+    inventory_category3s.any?
+  end
+
+end
+
+class InventoryCategory3 < ActiveRecord::Base
+  self.table_name = "mst_inv_category3"
+
+  belongs_to :inventory_category2, foreign_key: :category2_id
+  has_many :inventory_products, foreign_key: :category3_id
+
+  def is_used_anywhere?
+    inventory_products.any?
+  end
 end
 
 class InventoryCategoryCaption < ActiveRecord::Base

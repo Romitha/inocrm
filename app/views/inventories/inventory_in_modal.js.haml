@@ -9,20 +9,20 @@
           = @inventory ? @inventory.organization.name : Organization.find(session[:requested_store_id]).name
       %dt Item Code
       %dd
-        = @inventory ? @inventory.inventory_product.serial_no : @inventory_product.serial_no
+        = @inventory ? (@inventory_product or @inventory.inventory_product).serial_no : @inventory_product.serial_no
       %dt Item Description
 
       %dd
-        = @inventory ? @inventory.inventory_product.description : @inventory_product.description
+        = @inventory ? (@inventory_product or @inventory.inventory_product).description : @inventory_product.description
       %dt Model No
       %dd
-        = @inventory ? @inventory.inventory_product.model_no : @inventory_product.model_no
+        = @inventory ? (@inventory_product or @inventory.inventory_product).model_no : @inventory_product.model_no
       %dt Product No
       %dd
-        = @inventory ? @inventory.inventory_product.product_no : @inventory_product.product_no
+        = @inventory ? (@inventory_product or @inventory.inventory_product).product_no : @inventory_product.product_no
       %dt Part No
       %dd
-        = @inventory ? @inventory.inventory_product.spare_part_no : @inventory_product.spare_part_no
+        = @inventory ? (@inventory_product or @inventory.inventory_product).spare_part_no : @inventory_product.spare_part_no
       - unless @non_stock
         %dt Available Qnty
         %dd

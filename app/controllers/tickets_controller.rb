@@ -2523,34 +2523,6 @@ class TicketsController < ApplicationController
     end
   end
 
-  def deliver_bundle
-    Inventory
-    Product
-    Warranty
-    ContactNumber
-    QAndA
-    TaskAction
-    Inventory
-    TicketSparePart
-    # ticket_id = params[:ticket_id]
-    # @ticket = Ticket.find_by_id ticket_id
-    # session[:ticket_id] = @ticket.id
-
-    bundle_id = params[:bundle_id]
-    @return_bundle = ReturnPartsBundle.find bundle_id
-    @return_bundle_manufactures = @return_bundle.ticket_spare_part_manufactures.where(collected_manufacture: true)
-    session[:bundle_id] = params[:bundle_id]
-
-    if @ticket
-      @product = @ticket.products.first
-      Rails.cache.delete([:histories, @product.id])
-      Rails.cache.delete([:join, @ticket.id])
-    end
-    respond_to do |format|
-      format.html {render "tickets/tickets_pack/deliver_bundle/deliver_bundle"}
-    end
-  end
-
   def customer_feedback
     ContactNumber
     QAndA
@@ -3082,7 +3054,7 @@ class TicketsController < ApplicationController
       end
     when "recieve_unit"
       @recieve_unit = @ticket.ticket_deliver_units.where(received: false, collected: true).first
-    when "delivcall_resolutier_unit"
+    when "deliver_unit"
       TicketEstimation
       @ticket_deliver_unit = @ticket.ticket_deliver_units.build
 
