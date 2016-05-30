@@ -324,7 +324,6 @@ Rails.application.routes.draw do
           :inventory_reason,
           :inventory_manufacture,
           :inventory_unit,
-          :brands_and_category,
           :product,
           :product_condition,
           :disposal_method,

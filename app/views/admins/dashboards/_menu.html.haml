@@ -51,12 +51,6 @@
       = link_to additional_charge_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'additional_charge' }" do
         %i.fa.fa-money
         Additional Charge
-      = link_to brands_and_category_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'brands_and_category' }" do
-        %i.fa.fa-apple
-        Brands
-      = link_to category_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'category' }" do
-        %i.icon-folder-plus
-        Categories
       = link_to dispatch_method_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'dispatch_method' }" do
         %i.fa.fa-certificate
         Dispatch Method
