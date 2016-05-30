@@ -1397,6 +1397,8 @@ class InventoriesController < ApplicationController
 
             @inv_grn.save
 
+            @inv_grn_item.grn_item_current_unit_cost_histories.create created_by: current_user.id, current_unit_cost: @inv_grn_item.current_unit_cost
+
             #inv_inventory Edit
             #Inventory not updated
 
@@ -1544,6 +1546,7 @@ class InventoriesController < ApplicationController
             @inv_grn_serial_item.remaining = 1
             @inv_grn.save
 
+            @inv_grn_item.grn_item_current_unit_cost_histories.create created_by: current_user.id, current_unit_cost: @inv_grn_item.current_unit_cost
 
             # inv_damage - Add
             if params[:damage_reason_check].present?
@@ -1658,6 +1661,8 @@ class InventoriesController < ApplicationController
             @inv_grn_batch.damage_quantity = params[:damage_reason_check].present? ? 1 : 0
             @inv_grn.save
 
+            @inv_grn_item.grn_item_current_unit_cost_histories.create created_by: current_user.id, current_unit_cost: @inv_grn_item.current_unit_cost
+
             #inv_inventory Edit
             if params[:damage_reason_check].present?
               @inventory_batch.inventory.update({
@@ -1736,6 +1741,8 @@ class InventoriesController < ApplicationController
               @grn_item.inventory_not_updated = false
               @grn_item.main_product_id = nil
               @inv_grn.save
+
+              @inv_grn_item.grn_item_current_unit_cost_histories.create created_by: current_user.id, current_unit_cost: @inv_grn_item.current_unit_cost
 
               #inv_inventory Edit
               @inv_inventory = Inventory.where(product_id: @grn_item.product_id, store_id: @inv_srr.store.id).first

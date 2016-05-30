@@ -703,6 +703,51 @@ class TicketsController < ApplicationController
     end
   end
 
+  def update_edit_ticket
+    @ticket = Ticket.find params[:ticket_id]
+    update_completed = params[:update_complete].present?
+    @ticket.attributes = ticket_params
+
+    if @ticket.save
+      if request.xhr?
+        render json: @ticket
+      else
+        if update_completed
+          continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
+          if continue
+            if @ticket.status_id == TicketStatus.find_by_code("CLS").id
+              flash[:error] = "Ticket is closed."
+            else
+              # bpm output variables
+              di_pop_approval_pending = ["RCD", "RPN", "APN", "LPN", "APV"].include?(@ticket.products.first.product_pop_status.try(:code)) ? "Y" : "N"
+              priority = @ticket.priority
+
+              bpm_variables = view_context.initialize_bpm_variables.merge(di_pop_approval_pending: di_pop_approval_pending, priority: priority)
+
+              bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+              if bpm_response[:status].upcase == "SUCCESS"
+                view_context.ticket_bpm_headers params[:process_id], @ticket.id, ""
+                flash[:notice] = "Successfully updated."
+              else
+                flash[:error] = "ticket is updated. but Bpm error"
+              end
+            end
+
+          else
+            flash[:error] = "Bpm error!"
+
+          end
+        else
+          flash[:notice] = "Successfully saved."
+        end
+      end
+    else
+      flash[:error] = "Unable to update. Please try again!"
+    end
+
+  end
+
   def product_update
     @product = Product.find(params[:product_id])
     formatted_product_params = product_params
