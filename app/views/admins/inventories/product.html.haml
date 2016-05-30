@@ -1,5 +1,6 @@
 %h3 Inventory Product
-= simple_nested_form_for @inventory_product, url: product_admins_inventories_path(create: true), method: :post, html: {id: "validate_inventory_product"} do |f|
+= simple_nested_form_for @inventory_product, url: product_admins_inventories_path, method: :post, html: {id: "validate_inventory_product"} do |f|
+  = hidden_field_tag :product_id, f.object.id
   .row
     .col-md-4.brand
       = label_tag InventoryCategoryCaption.first.caption
@@ -60,10 +61,10 @@
       .col-md-3
         = d.input :per_secondery_unit_conversion, wrapper: :append
     .row
-      .col-md-3
-        = d.association :currency, label_method: :currency
-      .col-md-3
-        = d.association :inventory_unit, label_method: :unit
+      .col-md-3{style: "color: #900303;"}
+        = d.association :currency, label_method: :currency, input_html: {required: true}
+      .col-md-3{style: "color: #900303;"}
+        = d.association :inventory_unit, label_method: :unit, input_html: {required: true}
       .col-md-3
         = d.association :product_sold_country, label_method: :Country
       .col-md-3
@@ -82,7 +83,7 @@
 
   .row
     .col-md-12
-      = f.submit "Save", class: "btn btn-success", id: "submit_new_inventory_product"
+      = f.submit "Save", class: "btn btn-success", id: "submit_new_inventory_product", name: "#{params[:edit_more] ? 'update' : 'create'}"
   %hr
 
 #accordion.panel-group
@@ -181,18 +182,18 @@
               .row.col-md-12
                 .col-md-6
                   Issue Fractional Allowed:
-                  = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "inventory_product", name: "issue_fractional_allowed", url: product_admins_inventories_path(edit: true, product_info_id: inv_product.inventory_product_info.product_id), "original-title" => "Update Issue Fractional Allowed"} do
+                  = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "inventory_product_info", name: "issue_fractional_allowed", url: product_admins_inventories_path(edit: true, product_info_id: inv_product.inventory_product_info.product_id), "original-title" => "Update Issue Fractional Allowed"} do
                     = inv_product.inventory_product_info.issue_fractional_allowed && "Yes" || "No"
                 .col-md-6
                   Per Secondery Unit Conversion :
-                  = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "inventory_product", name: "per_secondery_unit_conversion", url: product_admins_inventories_path(edit: true, product_info_id: inv_product.inventory_product_info.product_id), "original-title" => "Update Per Secondery Unit Conversion"} do
+                  = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "inventory_product_info", name: "per_secondery_unit_conversion", url: product_admins_inventories_path(edit: true, product_info_id: inv_product.inventory_product_info.product_id), "original-title" => "Update Per Secondery Unit Conversion"} do
                     = inv_product.inventory_product_info.per_secondery_unit_conversion && "Yes" || "No"
               .row.col-md-12
                 .col-md-6
                   Need Serial:
-                  = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "inventory_product", name: "need_serial", url: product_admins_inventories_path(edit: true, product_info_id: inv_product.inventory_product_info.product_id), "original-title" => "Update Need Serial"} do
+                  = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "inventory_product_info", name: "need_serial", url: product_admins_inventories_path(edit: true, product_info_id: inv_product.inventory_product_info.product_id), "original-title" => "Update Need Serial"} do
                     = inv_product.inventory_product_info.need_serial && "Yes" || "No"
                 .col-md-6
                   Need Batch:
-                  = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "inventory_product", name: "need_batch", url: product_admins_inventories_path(edit: true, product_info_id: inv_product.inventory_product_info.product_id), "original-title" => "Update Need Batch"} do
+                  = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "inventory_product_info", name: "need_batch", url: product_admins_inventories_path(edit: true, product_info_id: inv_product.inventory_product_info.product_id), "original-title" => "Update Need Batch"} do
                     = inv_product.inventory_product_info.need_batch && "Yes" || "No"

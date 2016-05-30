@@ -1,0 +1,28 @@
+%h3 Dispatch Method
+= simple_form_for @dispatch_method, url: dispatch_method_admins_tickets_path(create: true), html: {class: "validate_form"}, method: :post do |f|
+  .row{style: "margin-top:15px;"}
+    .col-md-5
+      = f.input :name, input_html: {required: true}
+  .row{style: "margin-top:20px; margin-bottom:20px;"}
+    .col-md-6
+      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_reason"
+
+#accordion.panel-group
+  - @dispatch_method_all.each_with_index do |dm, index|
+    .panel.panel-info
+      .panel-heading
+        %h3.panel-title
+          %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
+            = dm.name
+          - unless dm.is_used_anywhere?
+            = link_to delete_dispatch_method_admins_tickets_path(dispatch_method_id: dm.id), method: :delete, :data => { :confirm => 'Are you sure?' }do
+              %span.glyphicon.glyphicon-trash
+
+      .panel-collapse.collapse.in{:id => "#{index}"}
+        .panel-body
+          .row.col-md-12
+            .col-md-1
+              %strong Name:
+            .col-md-3
+              = link_to "#", class: "inline_edit load_style", data: {value: dm.name, type: "text", resource: "dispatch_method", name: "name", url: dispatch_method_admins_tickets_path(edit: true, dispatch_method_id: dm.id), "original-title" => "Update dispatch method"}, style: "line-height: 6px;" do
+                = dm.name

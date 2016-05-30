@@ -308,10 +308,10 @@ module Admins
             render json: @inventory_product_form
           end
         elsif params[:product_info_id]
-          @inventory_product1 = InventoryProductInfo.find params[:product_id]
+          @inventory_product1 = InventoryProductInfo.find params[:product_info_id]
           if @inventory_product1.update inventory_product_info_params
             params[:edit] = nil
-            render json: @inventory_product
+            render json: @inventory_product1
           end
         end
       else
@@ -803,8 +803,12 @@ module Admins
         params.require(:inventory_product).permit(:category3_id, :serial_no, :serial_no_order, :sku, :legacy_code, :description, :model_no, :product_no, :spare_part_no, :fifo, :active, :spare_part, :unit_id, :created_by, :updated_by, :non_stock_item, inventory_product_info_attributes: [:picture, :secondary_unit_id, :issue_fractional_allowed, :per_secondery_unit_conversion, :need_serial, :need_batch, :country_id, :manufacture_id, :average_cost, :standard_cost, :currency_id, :remarks])
       end
 
+      # def inventory_product_info_params
+      #   params.require(:inventory_product_info).permit(:secondary_unit_id, :average_cost, :need_serial, :need_batch, :per_secondery_unit_conversion, :country_id, :manufacture_id, :currency_id, :standard_cost,:average_cost)
+      # end
+
       def inventory_product_info_params
-        params.require(:inventory_product_info).permit(:secondary_unit_id, :average_cost, :need_serial, :need_batch, :per_secondery_unit_conversion, :country_id, :manufacture_id, :currency_id, :standard_cost,:average_cost)
+        params.require(:inventory_product_info).permit(:secondary_unit_id, :manufacture_id, :country_id, :currency_id, :average_cost, :standard_cost, :issue_fractional_allowed, :per_secondery_unit_conversion, :need_serial,:need_batch)
       end
 
       def inventory_product_condition_params
