@@ -16,7 +16,7 @@
       
   .row
     .col-md-7
-      = i.input :reason
+      = i.input :reason, input_html: {required: true}
   .row{style: "margin-top:20px; margin-bottom:20px;"}
     .col-md-7
       = i.submit "Save", class: "btn btn-success pull-right", id: "submit_new_inventory_reason"

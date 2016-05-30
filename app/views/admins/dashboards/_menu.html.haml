@@ -106,10 +106,10 @@
         %i.icon-meter
         Unit
       = link_to inventory_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'inventory' }" do
-        %i.icon-meter
+        %i.fa.fa-adjust
         Inventory
       = link_to reason_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'inventory_reason' }" do
-        %i.icon-meter
+        %i.fa.fa-comments
         Reason
     .panel-footer
       = link_to "Inventories", admins_inventories_path
