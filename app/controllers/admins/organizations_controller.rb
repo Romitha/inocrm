@@ -32,6 +32,7 @@ module Admins
       TaskAction
       User
       Organization
+      Role
 
       if params[:edit]
         if params[:regional_support_center_id]

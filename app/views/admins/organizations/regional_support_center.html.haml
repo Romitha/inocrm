@@ -14,7 +14,8 @@
       .row
         = f.simple_fields_for :sbu_regional_engineers do |engineer|
           .col-md-12
-            = engineer.association :engineer, collection: User.all.uniq{|e| e.id}.map{|e| [(e.first_name ? "#{e.name_title} #{e.first_name}" : e.email), e.id]}
+            / = engineer.association :engineer, collection: User.all.uniq{|e| e.id}.map{|e| [(e.first_name ? "#{e.name_title} #{e.first_name}" : e.email), e.id]}
+            = engineer.association :engineer, collection: User.joins(:roles).where(roles: {id: 4}), label_method: :email
             .add_sign
               = engineer.link_to_remove do
                 %span.glyphicon.glyphicon-remove-sign
@@ -68,5 +69,5 @@
                     .col-md-1
                       %strong Engineer
                     .col-md-6
-                      = link_to "#", class: "inline_edit", data: {type: "select", source: User.all.collect{|e| {value: e.id, text: e.first_name ? "#{e.name_title} #{e.first_name}" : e.email}}, resource: "sbu_regional_engineer", name: "engineer_id", url: regional_support_center_admins_organizations_path(edit: true, sbu_regional_engineer_id: sbu_regional_engineer.id), "original-title" => "Update Sbu Regional Engineer"} do
+                      = link_to "#", class: "inline_edit", data: {type: "select", source: User.joins(:roles).where(roles: {id: 4}).collect{|u| {value: u.id, text: u.email}} , resource: "sbu_regional_engineer", name: "engineer_id", url: regional_support_center_admins_organizations_path(edit: true, sbu_regional_engineer_id: sbu_regional_engineer.id), "original-title" => "Update Sbu Regional Engineer"} do
                         = sbu_regional_engineer.engineer.first_name ? "#{sbu_regional_engineer.engineer.name_title} #{sbu_regional_engineer.engineer.first_name}" : sbu_regional_engineer.engineer.email

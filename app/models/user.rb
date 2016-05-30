@@ -2,6 +2,9 @@ class User < ActiveRecord::Base
   # self.table_name = "users"
 
   belongs_to :mst_title, foreign_key: :title_id
+  has_and_belongs_to_many :roles, :join_table => :users_roles # f the default name of the join table, based on lexical ordering, is not what you want, you can use the :join_table option to override the default. http://guides.rubyonrails.org/association_basics.html
+
+  # belongs_to :users_role, foreign_key: :user_id
 
   mount_uploader :avatar, AvatarUploader
 
@@ -33,7 +36,7 @@ class User < ActiveRecord::Base
   has_many :regional_support_centers, through: :sbu_regional_engineers
 
   has_many :ticket_engineers, class_name: "TicketEngineer", foreign_key: :user_id
-  has_many :users, through: :ticket_engineers
+  # has_many :users, through: :ticket_engineers
 
   has_many :act_ticket_close_approves
 
