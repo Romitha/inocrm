@@ -30,9 +30,9 @@
       = f.input :product_no
     .col-md-3
       = f.input :spare_part_no
-    .col-md-3
+    .col-md-3{style: "color: #900303;"}
       = f.label "Unit : "
-      = f.select :unit_id, InventoryUnit.all.uniq{|i| i.id}.map{|o| [o.unit, o.id]}, {include_blank: true}, input_html: {required: true}
+      = f.select :unit_id, InventoryUnit.all.uniq{|i| i.id}.map{|o| [o.unit, o.id]}, {include_blank: true}, {required: true}
   .row
     .col-md-3
       = f.input :fifo, wrapper: :append
