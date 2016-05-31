@@ -1,15 +1,15 @@
 = simple_nested_form_for @sbu, url: sbu_admins_employees_path, html: {class: "validate_form"}, method: :post do |f|
   = hidden_field_tag :sbu_id, f.object.id
   .row
-    .col-md-4
-      = f.input :sbu
+    .col-md-4{style: "color: #900303;"}
+      = f.input :sbu, input_html: {required: true}
     .col-md-6
       .row
         %h4 Add Engineer
       .row
         = f.simple_fields_for :sbu_engineers do |engineer|
           .col-md-6
-            = engineer.association :engineer, collection: User.all.map{|a| [a.email, a.id]}
+            = engineer.association :engineer, collection: User.joins(:roles).where(roles: {id: 4}), label_method: :email
             .add_sign
               = engineer.link_to_remove do
                 %span.glyphicon.glyphicon-remove-sign
