@@ -3286,7 +3286,7 @@ class TicketsController < ApplicationController
       end
 
       #create record spt_ticket_spare_part_store
-      spt_ticket_spare_part.ticket_spare_part_store.update(store_id: params[:store_id], inv_product_id: params[:inv_product_id], mst_inv_product_id: params[:mst_inv_product_id], estimation_required: spt_ticket_spare_part.cus_chargeable_part, ticket_estimation_part_id: ticket_estimation_part.id, store_requested: !spt_ticket_spare_part.cus_chargeable_part, store_requested_at: ( !spt_ticket_spare_part.cus_chargeable_part ? DateTime.now : nil), store_requested_by: ( !spt_ticket_spare_part.cus_chargeable_part ? current_user.id : nil))
+      spt_ticket_spare_part.ticket_spare_part_store.update(store_id: params[:store_id], inv_product_id: params[:inv_product_id], mst_inv_product_id: params[:mst_inv_product_id], store_requested: !spt_ticket_spare_part.cus_chargeable_part, store_requested_at: ( !spt_ticket_spare_part.cus_chargeable_part ? DateTime.now : nil), store_requested_by: ( !spt_ticket_spare_part.cus_chargeable_part ? current_user.id : nil))
 
       #delete record spt_ticket_spare_part_manufacture
       spt_ticket_spare_part.ticket_spare_part_manufacture.delete
@@ -3297,14 +3297,12 @@ class TicketsController < ApplicationController
       user_ticket_action.build_request_spare_part(ticket_spare_part_id: spt_ticket_spare_part.id)
       user_ticket_action.save
 
-
       # bpm output variables
       bpm_variables = view_context.initialize_bpm_variables.merge(d28_request_store_part_2: "Y", d29_part_estimate_required_2: d29_part_estimate_required_2)
 
       @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
 
       bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
-
 
       if @bpm_response1[:status].try(:upcase) == "SUCCESS"
         @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name])

@@ -222,6 +222,8 @@ window.Inventories =
     if $("input[name='mst_store_id']").val() != "" and ( $("input[name='store_id']").val() == "" or ($("input[name='store_id']").val() != $("input[name='mst_store_id']").val()))
       e.preventDefault()
       alert "Please select same store for the main product!"
+    else
+      $(e).parents("form").eq(0).submit()
 
   submit_on_loan_spare_part: ->
     @disable_part()
