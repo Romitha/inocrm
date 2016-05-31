@@ -64,17 +64,17 @@
     .panel-footer
       = link_to "Tickets", admins_tickets_path
 
-  = collapse collapse_type: "#{controller_name == 'roles' ? 'primary' : 'default'}", labelledby: "labelledby_roles", header_content: content_tag(:span, "", class: "icon-paper-plane-o")+"Roles", collapse_link: "collapse_link_roles" do
-    %ul.list-group
-      sample
-    .panel-footer
-    = link_to "Roles", "#"
+  / = collapse collapse_type: "#{controller_name == 'roles' ? 'primary' : 'default'}", labelledby: "labelledby_roles", header_content: content_tag(:span, "", class: "icon-paper-plane-o")+"Roles", collapse_link: "collapse_link_roles" do
+  /   %ul.list-group
+  /     sample
+  /   .panel-footer
+  /   = link_to "Roles", "#"
 
-  = collapse collapse_type: "#{controller_name == 'sales' ? 'primary' : 'default'}", labelledby: "labelledby_sales", header_content: content_tag(:span, "", class: "icon-exchange")+"Sales", collapse_link: "collapse_link_sales" do
-    %ul.list-group
+  / = collapse collapse_type: "#{controller_name == 'sales' ? 'primary' : 'default'}", labelledby: "labelledby_sales", header_content: content_tag(:span, "", class: "icon-exchange")+"Sales", collapse_link: "collapse_link_sales" do
+  /   %ul.list-group
 
-    .panel-footer
-      = link_to "Sales", admins_sales_path
+  /   .panel-footer
+  /     = link_to "Sales", admins_sales_path
 
   = collapse collapse_type: "#{controller_name == 'inventories' ? 'primary' : 'default'}", labelledby: "labelledby_inventories", header_content: content_tag(:span, "", class: "icon-list-alt")+"Inventories", collapse_link: "collapse_link_inventories" do
     .list-group.small_scale_margin0
@@ -111,5 +111,5 @@
       = link_to reason_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'inventory_reason' }" do
         %i.fa.fa-comments
         Reason
-    .panel-footer
-      = link_to "Inventories", admins_inventories_path
+    / .panel-footer
+    /   = link_to "Inventories", admins_inventories_path
