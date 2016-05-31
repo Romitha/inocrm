@@ -1,13 +1,13 @@
 %h3 Inventory Reason
-= simple_nested_form_for @inventory_reason, url: reason_admins_inventories_path(create: true), method: :post do |i|
+= simple_nested_form_for @inventory_reason, url: reason_admins_inventories_path(create: true), method: :post, html: { class: "validate_form" } do |i|
   .row{style: "margin-top: 15px; "}
-    .col-md-3
+    .col-md-3{style: "color: #900303;"}
       = i.input :srn_issue_terminate, wrapper: :append
-    .col-md-3
+    .col-md-3{style: "color: #900303;"}
       = i.input :damage, wrapper: :append
-    .col-md-3
+    .col-md-3{style: "color: #900303;"}
       = i.input :srr, wrapper: :append
-    .col-md-3
+    .col-md-3{style: "color: #900303;"}
       = i.input :disposal, wrapper: :append
   .row
     .col-md-4
@@ -15,8 +15,8 @@
       = i.input :updated_by,  as: :hidden, input_html: {value: current_user.id}
       
   .row
-    .col-md-7
-      = i.input :reason
+    .col-md-7{style: "color: #900303;"}
+      = i.input :reason, input_html: {required: true}
   .row{style: "margin-top:20px; margin-bottom:20px;"}
     .col-md-7
       = i.submit "Save", class: "btn btn-success pull-right", id: "submit_new_inventory_reason"
