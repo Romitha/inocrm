@@ -120,9 +120,13 @@ class TicketFsr < ActiveRecord::Base
 
   has_many :ticket_spare_parts, foreign_key: :fsr_id
 
-
   before_save do |ticket_fsr|
-    ticket_fsr.remarks = "#{self.remarks} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(ticket_fsr.current_user_id).email}</span><br/>#{ticket_fsr.remarks_was}" if ticket_fsr.persisted? and self.remarks_changed? and self.remarks.present?
+   if ticket_fsr.persisted? and ticket_fsr.remarks_changed? and ticket_fsr.remarks.present?
+      ticket_fsr_note = "#{ticket_fsr.remarks} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(ticket_fsr.current_user_id).email}</span><br/>#{ticket_fsr.remarks_was}"
+    else
+      ticket_fsr_note = ticket_fsr.remarks_was
+    end
+    ticket_fsr.remarks = ticket_spare_part_note
   end
 
   has_many :dyna_columns, as: :resourceable, autosave: true
@@ -155,7 +159,12 @@ class TicketDeliverUnit < ActiveRecord::Base
   has_many :dyna_columns, as: :resourceable, autosave: true
 
   before_save do |ticket_deliver_unit|
-    ticket_deliver_unit.note = "#{self.note} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(self.current_user_id).email}</span><br/>#{self.note_was}" if ticket_deliver_unit.persisted? and self.note_changed? and self.note.present?
+   if ticket_deliver_unit.persisted? and ticket_deliver_unit.note_changed? and ticket_deliver_unit.note.present?
+      ticket_deliver_unit_note = "#{ticket_deliver_unit.note} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(ticket_deliver_unit.current_user_id).email}</span><br/>#{ticket_deliver_unit.note_was}"
+    else
+      ticket_deliver_unit_note = ticket_deliver_unit.note_was
+    end
+    ticket_deliver_unit.note = ticket_spare_part_note
   end
 
   [:current_user_id].each do |dyna_method|

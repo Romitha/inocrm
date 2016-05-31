@@ -48,7 +48,7 @@
     = label_tag "Damage reason", "Damage reason", class: "damage_reason_label"
     = select_tag :damage_reason, options_from_collection_for_select(InventoryReason.where(damage: true), "id", "reason"), class: "damage_reason"
   .row
-    = f.input :unit_cost, wrapper_html: {class: "col-md-3"}, input_html: {value: grn_cost}
+    = f.input :unit_cost, wrapper_html: {class: "col-md-3"}, input_html: {value: grn_cost}, required: true
     .col-md-12
       = label_tag "Remarks"
       %textarea{class: "text optional form-control", name: "note"}

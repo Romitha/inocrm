@@ -1,4 +1,4 @@
-= simple_form_for form_inv_batch, url: update_return_store_part_inventories_path, method: :post, html: {class: "form_inv_batch"} do |f|
+= simple_form_for form_inv_batch, url: update_return_store_part_inventories_path, method: :post, html: {class: "form_inv_batch validate_form"} do |f|
 
   = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
   = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
@@ -49,7 +49,7 @@
       .col-md-3
         %label{for: "inventory_serial_part_unit_cody", class: "text optional control-label"}
           Unit cost (#{currency_code})
-        %input{type: "number", id: "grn_item_unit_cost", name: "grn_item[unit_cost]", class: "numeric decimal optional form-control"}
+        %input{type: "number", id: "grn_item_unit_cost", name: "grn_item[unit_cost]", class: "numeric decimal optional form-control", required: "required"}
         %input{type: "hidden", id: "grn_item_currency_id", name: "grn_item[currency_id]", value: "#{currency_id}"}
     .row
       .col-md-12

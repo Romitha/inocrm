@@ -1236,13 +1236,13 @@ class InventoriesController < ApplicationController
     if @onloan_request
       @onloan_request_part = TicketOnLoanSparePart.find params[:request_onloan_spare_part_id]
 
-      @onloan_request_part.update(note: "#{params[:note]} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@onloan_request_part.note}") if params[:note].present?
+      @onloan_request_part.update(note: params[:note])
 
       @allready_received = @onloan_request_part.ret_part_received
     else
       @ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
 
-      @ticket_spare_part.update(note: "#{params[:note]} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket_spare_part.note}") if params[:note].present?
+      @ticket_spare_part.update(note: params[:note])
 
       @allready_received = @ticket_spare_part.returned_part_accepted
     end
@@ -1646,7 +1646,7 @@ class InventoriesController < ApplicationController
               remaining_quantity: 1,
               reserved_quantity: 0,
               damage_quantity: (params[:damage_reason_check].present? ? 1 : 0),
-              current_unit_cost: @grn_item_attributes["unit_cost"],
+              current_unit_cost: @inv_grn_item.unit_cost,
               srr_item_id: @inv_srr_item.id,
               inventory_not_updated: false,
               main_product_id: nil
