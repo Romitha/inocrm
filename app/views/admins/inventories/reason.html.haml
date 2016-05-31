@@ -37,27 +37,27 @@
             .col-md-2
               %strong srn issue terminate:
             .col-md-4
-              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "inventory_reason", name: "srn_issue_terminate", url: inventory_reason_admins_inventories_path(edit: true, inventory_reason_id: inv_reason.id), "original-title" => "Update reason"} do
+              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "inventory_reason", name: "srn_issue_terminate", url: reason_admins_inventories_path(edit: true, inventory_reason_id: inv_reason.id), "original-title" => "Update reason"} do
                 = inv_reason.srn_issue_terminate && "Yes" || "No"
             .col-md-2
               %strong Damage:
             .col-md-4
-              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "inventory_reason", name: "damage", url: inventory_reason_admins_inventories_path(edit: true, inventory_reason_id: inv_reason.id), "original-title" => "Update reason"} do
+              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "inventory_reason", name: "damage", url: reason_admins_inventories_path(edit: true, inventory_reason_id: inv_reason.id), "original-title" => "Update reason"} do
                 = inv_reason.damage && "Yes" || "No"
           .row.col-md-12
             .col-md-2
               %strong srr:
             .col-md-4
-              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "inventory_reason", name: "srr", url: inventory_reason_admins_inventories_path(edit: true, inventory_reason_id: inv_reason.id), "original-title" => "Update reason"} do
+              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "inventory_reason", name: "srr", url: reason_admins_inventories_path(edit: true, inventory_reason_id: inv_reason.id), "original-title" => "Update reason"} do
                 = inv_reason.srr && "Yes" || "No"
             .col-md-2
               %strong Disposal:
             .col-md-4
-              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "inventory_reason", name: "disposal", url: inventory_reason_admins_inventories_path(edit: true, inventory_reason_id: inv_reason.id), "original-title" => "Update reason"} do
+              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "inventory_reason", name: "disposal", url: reason_admins_inventories_path(edit: true, inventory_reason_id: inv_reason.id), "original-title" => "Update reason"} do
                 = inv_reason.disposal && "Yes" || "No"
           .row.col-md-12
             .col-md-2
               %strong Reason:
             .col-md-4
-              = link_to "#", class: "inline_edit", data: {type: "textarea", resource: "inventory_reason", name: "reason", url:inventory_reason_admins_inventories_path(edit: true, inventory_reason_id: inv_reason.id), "original-title" => "Update reason", value: inv_reason.reason}, style: "line-height: 6px;" do
+              = link_to "#", class: "inline_edit", data: {type: "textarea", resource: "inventory_reason", name: "reason", url:reason_admins_inventories_path(edit: true, inventory_reason_id: inv_reason.id), "original-title" => "Update reason", value: inv_reason.reason}, style: "line-height: 6px;" do
                 = inv_reason.reason
