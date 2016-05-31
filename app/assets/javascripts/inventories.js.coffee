@@ -60,6 +60,7 @@ window.Inventories =
     category_list = $("#search_inventory_product")
     category_list_html = category_list.html()
     category_list.empty()
+    $("#search_inventory_brand").val("")
     $("#search_inventory_brand").change ->
       $("#inventory_product_category3_id").val("")
       selected = $("#search_inventory_brand :selected").text()
