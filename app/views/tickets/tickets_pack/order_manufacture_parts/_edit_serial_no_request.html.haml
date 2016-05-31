@@ -25,6 +25,6 @@
         = f.simple_fields_for :ticket_product_serials do |sr|
           - if sr.object.ticket_id == ticket.id
             = sr.association :ref_product_serial, value_method: :id, label_method: :serial_no
-    = label_tag "Task completed", true, true
-    = check_box_tag "complete_task" # this is for extend_warranty purpose. this can be used anywhere as render
+    = label_tag "Task completed"
+    = check_box_tag "complete_task", true, true # this is for extend_warranty purpose. this can be used anywhere as render
     = f.submit "Save", class: "btn btn-success"
