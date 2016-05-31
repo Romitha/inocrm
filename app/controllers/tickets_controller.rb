@@ -2050,36 +2050,16 @@ class TicketsController < ApplicationController
     Ticket
     User
     Product
-    # @ticket = Ticket.search(params[:search])
 
-    if params[:ticket_no].present?
-      ticket_id = params[:ticket_no]
-      @ticket = Ticket.where("id like ?", "%#{ticket_id}%")
+    if params[:ticket_no].present? and params[:serial_no].present?
+      @tickets = Ticket.joins(:products).where(ticket_no: params[:ticket_no], spt_product_serial: {serial_no: params[:serial_no]})
+    elsif params[:ticket_no].present?
+      @tickets = Ticket.where(ticket_no: params[:ticket_no])
+    elsif params[:serial_no].present?
+      @tickets = Ticket.joins(:products).where(spt_product_serial: {serial_no: params[:serial_no]})
     else
-      if params[:serial_no].present?
-       serial_no = params[:serial_no]
-       @product = Product.where("serial_no like ?", "%#{serial_no}%")
-      else
-        @ticket = Ticket.all
-      end
+      @tickets = Ticket.all
     end
-
-
-    # if params[:ticket_no].present?
-    #   ticket_id = params[:ticket_no]
-    #   @ticket = Ticket.where("id like ?", "%#{ticket_id}%")
-    # else
-
-    #   @ticket = Ticket.all
-    # end
-
-    # if params[:serial_no].present?
-    #   serial_no = params[:serial_no]
-    #   @serial_no = Product.where("serial_no like ?", "%#{serial_no}%")
-    # else
-    #   @serial_no = Product.all
-    # end
-
 
     render "tickets/tickets_pack/customer_inquire/customer_inquire"
   end
@@ -2087,18 +2067,6 @@ class TicketsController < ApplicationController
   def add_edit_contract
     render "tickets/tickets_pack/add_edit_contract"
   end
-
-
-
-  # def self.search(search)
-  #   if search
-  #     Ticket.find(:all, :conditions => ['id LIKE ?', "%#{search}%"])
-  #   else
-  #     Ticket.find(:all)
-  #   end
-  # end
-
-
 
   def alert
 
