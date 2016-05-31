@@ -32,9 +32,34 @@ module Admins
         @title.delete
       end
       respond_to do |format|
-        format.html { redirect_to user_title_admins_users_path }
+        format.html { redirect_to title_admins_users_path }
       end
     end
+
+    def title
+      User
+
+      if params[:edit]
+        @title = MstTitle.find params[:title_id]
+        if @title.update title_params
+          params[:edit] = nil
+          render json: @title
+        end
+
+      else
+        if params[:create]
+          @title = MstTitle.new title_params
+          if @title.save
+            params[:create] = nil
+            @title = MstTitle.new
+          end
+        else
+          @title = MstTitle.new
+        end
+        @title_all = MstTitle.order(created_at: :desc).select{|i| i.persisted? }
+      end
+    end
+
 
     private
 
