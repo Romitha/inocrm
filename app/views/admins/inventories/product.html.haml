@@ -54,9 +54,9 @@
   = f.simple_fields_for :inventory_product_info do |d|
     .row
       .col-md-3
-        = d.input :need_serial, wrapper: :append
+        = d.input :need_serial, wrapper: :append, input_html: {value: false}
       .col-md-3
-        = d.input :need_batch, wrapper: :append
+        = d.input :need_batch, wrapper: :append, input_html: {value: false}
       .col-md-3
         = d.input :issue_fractional_allowed, wrapper: :append
       .col-md-3
