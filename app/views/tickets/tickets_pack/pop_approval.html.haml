@@ -26,11 +26,6 @@
 
       #product_load
         = simple_nested_form_for ticket, url: update_pop_approval_tickets_path, method: :post do |f|
-          / = hidden_field_tag :ticket_id, params[:ticket_id]
-          / = hidden_field_tag :process_id, params[:process_id]
-          / = hidden_field_tag :task_id, params[:task_id]
-          / = hidden_field_tag :owner, params[:owner]
-
           = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
           = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
           = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
