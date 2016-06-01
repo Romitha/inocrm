@@ -22,16 +22,22 @@
       = du.input :received_at, as: :hidden, input_html: {value: DateTime.now.strftime("%d-%m-%Y %H:%M")}
       = du.input :received_by, as: :hidden, input_html: {value: current_user.id}
       .row
-        .col-md-12
-          .col-md-4
-            Organization: #{@recieve_unit.organization.name}
-          .col-md-4
-            %div Unit collected at: #{@recieve_unit.collected_at.try :strftime, "%d-%m-%Y %H:%M"}
-          .col-md-4
-            %div Unit collected by: #{User.find_by_id(@recieve_unit.collected_by).try :first_name}
-      = du.input :note, input_html: {value: nil}
-      = simple_format du.object.note
-    = f.input :remarks, input_html: {value: nil}
-    = simple_format ticket.remarks
+        .col-md-4
+          %strong Organization:
+          = @recieve_unit.organization.name
+        .col-md-4
+          %strong Unit collected at:
+          = @recieve_unit.collected_at.try :strftime, "%d-%m-%Y %H:%M"
+        .col-md-4
+          %strong Unit collected by:
+          = User.find_by_id(@recieve_unit.collected_by).try :first_name
+      .row
+        .col-md-6
+          = du.input :note, input_html: {value: nil}
+          = simple_format du.object.note
 
-    = f.submit "Save", class: "btn btn-success", id: "deliver_unit_submit"
+        .col-md-6
+          = f.input :remarks, input_html: {value: nil}
+          = simple_format ticket.remarks
+        .col-md-12
+          = f.submit "Save", class: "btn btn-success", id: "deliver_unit_submit"

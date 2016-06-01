@@ -1,7 +1,7 @@
 - uri = URI(request.url)
 %fieldset
   %legend Reject extend warranty
-  = simple_form_for @reject_warranty_extend, url: extend_warranty_update_reject_extend_warranty_tickets_path, method: :post do |f|
+  = simple_form_for @reject_warranty_extend, url: extend_warranty_update_reject_extend_warranty_tickets_path, method: :post, html: {class: "validate_form"} do |f|
     = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
     = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
     = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
@@ -10,9 +10,9 @@
 
     .row
       .col-md-3
-      = f.association :reject_reason, label_method: :reason, value_method: :id, label: "Request reason"
+      = f.association :reject_reason, label_method: :reason, value_method: :id, label: "Request reason", collection: Reason.where(warranty_extend: true)
       .col-md-3
-        = f.input :reject_note, label: "Request note"
+        = f.input :reject_note, label: "Request note", required: true
       .col-md-6
         = f.input :extended, as: :hidden, input_html: {value: false}
       .col-md-12
