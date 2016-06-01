@@ -26,7 +26,13 @@ window.Inventories =
     @add_append()
     @remove_warranty_click()
     @add_warranty_click()
+    @need_serial_or_batch()
     return
+
+  need_serial_or_batch: ->
+    $(".need_serial_batch_check").change ->
+      if $(@).is(":checked")
+        $(".need_serial_batch_check").not(@).attr('checked', false)
 
   add_append: ->
     $(".add_id2").click (e)->
