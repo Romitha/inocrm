@@ -1,11 +1,11 @@
 - uri = URI(request.url)
 = simple_nested_form_for ticket, url: update_check_fsr_ticket_path(ticket.id), method: :post do |f| # update_check_fsr_ticket_path(ticket.id)
 
-  = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
-  = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
-  = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
-  - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
-    = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+  / = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
+  / = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
+  / = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
+  / - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
+  /   = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
   .row
     .col-md-6.col-xs-6
       Ticket Completed (Approve To Close):
@@ -114,12 +114,12 @@
                   = fsr.travel_hours
                 %hr
                 .col-md-12
-                  %h4 For Invocing
+                  %h4 For Invoicing
                 .col-md-3
                   %strong Engineer Time Travel:
                   = fsr.engineer_time_travel
                 .col-md-3
-                  %strong Engineer Time On-Sight:
+                  %strong Engineer Time On Sight:
                   = fsr.engineer_time_on_site
                 .col-md-3
                   %strong Other Charges Mileage:
@@ -158,7 +158,7 @@
                             %td= tsp.ticket_spare_part_manufacture.try(:event_closed) ? "Yes" : "No"
 
                   .col-md-3
-                    = ff.label "Approve fsr"
+                    = ff.label "Approve FSR"
                     = ff.check_box :approved, class: "dynamic_check"
                   .col-md-9
                     = ff.input :remarks, input_html: {value: nil}

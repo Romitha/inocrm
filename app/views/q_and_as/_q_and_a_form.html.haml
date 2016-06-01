@@ -57,4 +57,4 @@
           = qa.input :answer, required: qa.object.q_and_a.compulsory, input_html: {rows: 1}
   .row
     .col-md-12
-      = f.submit "#{current_page?(controller: 'warranties', action: 'new') ? 'Next' : 'Save'}", class: "btn btn-sm btn-success", data: { disable_with: "Please wait..." }, class: "btn btn-success", "id"=>"save_next"
+      = f.submit "#{current_page?(controller: 'warranties', action: 'new') ? 'Next' : 'Save'}", class: "btn btn-sm btn-success", data: { disable_with: "Please wait..." }, class: "btn btn-success small_scale_margin-left3", "id"=>"save_next"

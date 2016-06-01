@@ -25,7 +25,7 @@
   %strong Total amount:
   = number_to_currency(invoice.total_amount, precision: 3, unit: invoice.ticket.ticket_currency.code)
   %br/
-  %strong Total advance recieved:
+  %strong Total advance received:
   = number_to_currency(invoice.total_advance_recieved, precision: 3, unit: invoice.ticket.ticket_currency.code)
   %br/
   %strong.red Total deduction:
@@ -132,7 +132,7 @@
           %td= act_terminate_job_payment.amount_before_adjust
           %td.sub_amount= act_terminate_job_payment.amount
 
-  %h4 Payment recieved
+  %h4 Payment received
   %table.table.table-responsive.table-condensed.table-bordered
     %thead
       %tr

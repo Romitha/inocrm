@@ -33,7 +33,7 @@
       = tab_content active_class: "active", tabpointer: "product_details" do
         .product
           = initiate_table table_type: "table-hover table-bordered"  do
-            = table_header ["Serial_No", "Brand", "Category", "Model", "Product_No", "Country", "POP_Status", "POP_Note"]
+            = table_header ["Serial No", "Brand", "Category", "Model", "Product_No", "Country", "POP Status", "POP Note"]
             = table_body [product.serial_no, product.product_brand.name, product.product_category.name, product.model_no, product.product_no, product.product_sold_country.try(:Country), popstatus, popnote]
 
         #form_frame

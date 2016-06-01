@@ -67,8 +67,8 @@
         .row
           .col-md-12
             = render "q_and_as/q_and_a_form", customer: customer, action_no: 1, url: q_and_answer_save_tickets_path, remote: true
-            = link_to "Back", create_customer_tickets_path(customer_id: customer.id), remote: true, method: :post
-            %br
+            = link_to "Back", create_customer_tickets_path(customer_id: customer.id), remote: true, method: :post, class: "customize_position"
+
 #warranties_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "warranties_modal", "aria-hidden" => true}
   .modal-dialog
     .modal-content

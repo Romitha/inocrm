@@ -143,7 +143,7 @@
       %strong Min.Advanced Payment (#{estimation.ticket.ticket_currency.code}) :
       #{number_with_precision estimation.advance_payment_amount, precision: 2}
   .col-md-4
-    %strong Advanced Payment Recieved (#{estimation.ticket.ticket_currency.code}) :
+    %strong Advanced Payment Received (#{estimation.ticket.ticket_currency.code}) :
     #{number_with_precision estimation.ticket.ticket_payment_receiveds.where(type_id: TicketPaymentReceivedType.find_by_code("AD").id).sum(:amount).to_i, precision: 2}
 .row
   .col-md-12

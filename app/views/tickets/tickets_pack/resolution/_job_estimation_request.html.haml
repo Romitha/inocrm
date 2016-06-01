@@ -21,7 +21,7 @@
         = label_tag "Description"
         = text_area_tag :description, nil, class: "form-control"
       = uf.simple_fields_for :job_estimation do |rf|
-        = rf.association :organization, include_blank: false, label: "Repair by"
+        = rf.association :organization, include_blank: false, label: "Repaired by"
 
     = f.simple_fields_for "ticket_estimations_attributes[]", @ticket_estimation do |du|
       = du.input :note, wrapper_html: {style: "clear: both;"}

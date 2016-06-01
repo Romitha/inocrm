@@ -10,7 +10,7 @@
       .row
         .col-md-2.small_scale_margin-top2
           %p FSR No: #{fsr.object.ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])}
-        = fsr.input :completion_level, as: :radio_buttons, label: false, wrapper_html: {class: "col-md-2 small_scale_margin-top2 small_scale_margin-left3"}, collection: {"Full" => "F","Patial" => "P"}, wrapper: :append
+        = fsr.input :completion_level, as: :radio_buttons, label: false, wrapper_html: {class: "col-md-2 small_scale_margin-top2 small_scale_margin-left3"}, collection: {"Full" => "F","Partial" => "P"}, wrapper: :append
         .col-md-4
           = fsr.input :work_started_at, as: :string, input_html: {class: "datepicker", value: (@ticket_fsr.work_started_at and @ticket_fsr.work_started_at.strftime("%d %b, %Y"))}
         .col-md-3
@@ -24,7 +24,7 @@
       .row
         = fsr.input :resolution, input_html: {value: nil}, wrapper_html: {class: "col-md-6"}
         .col-md-6
-          = fsr.input :remarks, input_html: {value: nil}, label: "Remarks (Fsr)"
+          = fsr.input :remarks, input_html: {value: nil}, label: "Remarks (FSR)"
           = simple_format fsr.object.remarks
 
         

@@ -453,7 +453,7 @@
 
         - if iss and (manufacture_warranty or manufacture_chargeable or store_warranty or store_chargeable)
           = hidden_field_tag :recieved, "recieved"
-          = f.submit "recieved", name: "recieved", class: "btn btn-sm btn-success"
+          = f.submit "received", name: "recieved", class: "btn btn-sm btn-success"
 
         - if (non_stock_chargeable and cea) or (non_stock_warranty and rqt)
           = hidden_field_tag :non_stock_complete, "non_stock_complete"
@@ -730,7 +730,7 @@
           = hidden_field_tag :terminate, "terminate"
 
         = f.submit "terminate", name: "terminate", class: "btn btn-sm btn-success" if str
-        = f.submit "recieved", name: "recieved", class: "btn btn-sm btn-success" if iss
+        = f.submit "received", name: "recieved", class: "btn btn-sm btn-success" if iss
         - if rce or rpr
           %label{:for => "Update without return"} Update without return
           = check_box_tag "update_without_return", true, false, class: "small_scale_margin-right1"
