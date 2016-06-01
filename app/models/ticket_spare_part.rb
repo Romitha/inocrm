@@ -164,7 +164,7 @@ class TicketDeliverUnit < ActiveRecord::Base
     else
       ticket_deliver_unit_note = ticket_deliver_unit.note_was
     end
-    ticket_deliver_unit.note = ticket_spare_part_note
+    ticket_deliver_unit.note = ticket_deliver_unit_note
   end
 
   [:current_user_id].each do |dyna_method|

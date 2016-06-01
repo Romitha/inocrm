@@ -214,7 +214,6 @@ window.Inventories =
 
       else if $("input[name='mst_store_id']").val() and ( !$("input[name='store_id']").val() or ($("input[name='store_id']").val() != $("input[name='mst_store_id']").val()))
         alert "Please select same store for the main product!"
-
       else
         submit_form.submit()
 

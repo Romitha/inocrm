@@ -1,9 +1,3 @@
-/ - session[:edit_ticket] ||= @edit_ticket
-/ - if !@edit_ticket and !request.xhr?
-/   - session[:edit_ticket] = false
-/ hi
-/ = params[:controller]
-/ = params[:action]
 - remarks = capture do
   = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "ticket", name: "remarks", url: "#", "original-title" => "Update remarks", value: ""}, style: "line-height: 6px;" do
     = simple_format ticket.remarks.to_s.split('<br/>')[0]
@@ -124,16 +118,3 @@
     %h4 Resolution Summary
   .col-md-10
     %dd= ticket.resolution_summary
-
-/ = params[:controller]
-/ %br
-/ = params[:action]
-/ %br
-/ = request.xhr? ? "yes" : "no"
-
-/ %br
-/ edit_ticket
-/ = current_page?(controller: "tickets", action: "edit_ticket", ticket_id: ticket.id)
-/ %br
-/ ajax_show
-/ = current_page?(controller: "tickets", action: "ajax_show", ticket_id: ticket.id)
