@@ -1,12 +1,11 @@
 module ApplicationHelper
-
+  #                               PRINT_SPPT_FSR, print_fsr_tag_value(fsr)method, fsr template from print template table
   def request_printer_application print_request_type, tag_values, print_template
     # 3$|#REQUEST_TYPE=PRINT_TICKET$|#DATETIME=2015/06/21 12:10 PM$|#DUPLICATE=$|#TICKET_REF=T0005$|#.....$|#TEMPLATE=< xml data >
     delim = "$|#"
     request_type = "REQUEST_TYPE="
     template = "TEMPLATE="
     if tag_values.is_a? Array
-      # rq_str = "#{delim.length}#{delim}#{request_type}#{print_request_type}#{delim}#{tag_values.join(delim)}#{delim}#{template}"
       rq_str = "#{delim.length}#{delim}#{request_type}#{print_request_type}#{delim}#{tag_values.join(delim)}#{delim}#{template}#{print_template}"
 
     else
