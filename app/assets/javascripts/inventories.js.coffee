@@ -26,8 +26,15 @@ window.Inventories =
     @add_append()
     @remove_warranty_click()
     @add_warranty_click()
+    @need_serial_or_batch()
     return
 
+  need_serial_or_batch: ->
+    $("#inventory_product_inventory_product_info_attributes_need_serial, #inventory_product_inventory_product_info_attributes_need_batch").change ->
+      if $("#inventory_product_inventory_product_info_attributes_need_serial").is(":checked")
+        $("#inventory_product_inventory_product_info_attributes_need_batch").attr('checked', false)
+      if $("#inventory_product_inventory_product_info_attributes_need_batch").is(":checked")
+        $("#inventory_product_inventory_product_info_attributes_need_serial").attr('checked', false)
   add_append: ->
     $(".add_id2").click (e)->
       e.preventDefault()
