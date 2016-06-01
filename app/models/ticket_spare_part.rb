@@ -122,11 +122,11 @@ class TicketFsr < ActiveRecord::Base
 
   before_save do |ticket_fsr|
    if ticket_fsr.persisted? and ticket_fsr.remarks_changed? and ticket_fsr.remarks.present?
-      ticket_fsr_note = "#{ticket_fsr.remarks} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(ticket_fsr.current_user_id).email}</span><br/>#{ticket_fsr.remarks_was}"
+      ticket_fsr_remarks = "#{ticket_fsr.remarks} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(ticket_fsr.current_user_id).email}</span><br/>#{ticket_fsr.remarks_was}"
     else
-      ticket_fsr_note = ticket_fsr.remarks_was
+      ticket_fsr_remarks = ticket_fsr.remarks_was
     end
-    ticket_fsr.remarks = ticket_spare_part_note
+    ticket_fsr.remarks = ticket_fsr_remarks
   end
 
   has_many :dyna_columns, as: :resourceable, autosave: true
