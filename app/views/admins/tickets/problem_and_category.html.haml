@@ -75,17 +75,18 @@
                       = link_to delete_q_and_a_admins_tickets_path(q_and_a_id: q_a.id), method: :delete,  :data => { :confirm => 'Are you sure?' } do
                         %span.glyphicon.glyphicon-trash
                 .panel-body
+                  / .row.col-md-12
+                  /   .col-md-3
+                  /     %strong Question:
+                  /   .col-md-9
+                  /     = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "q_and_a", name: "question", url: problem_and_category_admins_tickets_path(edit: true, q_and_a_id: q_a.id), "original-title" => "Update QAndA", value: ""}, style: "line-height: 6px;" do
+                  /       = q_a.question
                   .row.col-md-12
-                    .col-md-3
-                      %strong Question:
-                    .col-md-9
-                      = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "q_and_a", name: "question", url: problem_and_category_admins_tickets_path(edit: true, q_and_a_id: q_a.id), "original-title" => "Update QAndA", value: ""}, style: "line-height: 6px;" do
-                        = q_a.question
-                  .row.col-md-12
-                    .col-md-2
-                      %strong Answer type:
-                    .col-md-4
-                      = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "q_and_a", name: "answer_type", url: problem_and_category_admins_tickets_path(edit: true, q_and_a_id: q_a.id), "original-title" => "Update QAndA", value: ""}, style: "line-height: 6px;" do
+                    .col-md-1
+                      %strong Type:
+                    .col-md-5{style: "margin-top: 1px;"}
+                      / = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "q_and_a", name: "answer_type", url: problem_and_category_admins_tickets_path(edit: true, q_and_a_id: q_a.id), "original-title" => "Update QAndA", value: q_a.answer_type}, style: "line-height: 6px;" do
+                      = link_to "#", class: "inline_edit", data: {type: "select", source: {"YN" => "Yes-No", "TX" => "Text"}, resource: "q_and_a", name: "answer_type", url: problem_and_category_admins_tickets_path(edit: true,  q_and_a_id: q_a.id), "original-title" => "Update QAndA"} do
                         = q_a.answer_type
                     .col-md-1
                       %strong Active:
@@ -95,17 +96,17 @@
                   .row.col-md-12
                     .col-md-1
                       %strong Compulsory:
-                    .col-md-5
+                    .col-md-5{style: "margin-top: 2px; margin-left:3px;"}
                       = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "q_and_a", name: "compulsory", url: problem_and_category_admins_tickets_path(edit: true,  q_and_a_id: q_a.id), "original-title" => "Update QAndA"} do
                         = q_a.compulsory && "Yes" || "No"
                     .col-md-1
                       %strong Action:
-                    .col-md-5
+                    .col-md-4
                       = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Add Ticket",5=>"Engineer Resolution",57=>"Quality Control",58=>"Customer Feed Back"}, resource: "q_and_a", name: "action_id", url: problem_and_category_admins_tickets_path(edit: true,  q_and_a_id: q_a.id), "original-title" => "Update QAndA"} do
                         = q_a.task_action.try(:action_description)
                   .row.col-md-12
                     .col-md-1
                       %strong Question:
-                    .col-md-5
-                      = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "q_and_a", name: "question", url: problem_and_category_admins_tickets_path(edit: true, q_and_a_id: q_a.id), "original-title" => "Update QAndA", value: ""}, style: "line-height: 6px;" do
+                    .col-md-5{style: "margin-top: 6px"}
+                      = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "q_and_a", name: "question", url: problem_and_category_admins_tickets_path(edit: true, q_and_a_id: q_a.id), "original-title" => "Update QAndA", value: q_a.question}, style: "line-height: 6px;" do
                         = q_a.question
