@@ -307,12 +307,18 @@ window.Tickets =
       $("#assign_to_for_regional").removeClass("hide")
       $(".assign_to_for_regional_label").removeClass("hide")
 
+      $(".recorrection_class").addClass("recorrection_position")
+      $(".pass_to_recorrection_hiddable").addClass("regional_support_center_position")
+
     else
       $("#regional_support_center_chosen, #regional_support_center").parents().eq(1).addClass("hide")
       $("#regional_support_center_chosen, #regional_support_center").val("")
       $("#assign_sbu_chosen, #assign_sbu").parents().eq(1).removeClass("hide")
       $("#assign_to_for_regional").addClass("hide").val("")
       $(".assign_to_for_regional_label").addClass("hide")
+
+      $(".recorrection_class").removeClass("recorrection_position")
+      $(".pass_to_recorrection_hiddable").removeClass("regional_support_center_position")
 
     if $("#pass_to_re_correction").is(":checked")
       $(".pass_to_recorrection_hiddable").each ->
