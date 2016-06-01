@@ -30,11 +30,10 @@ window.Inventories =
     return
 
   need_serial_or_batch: ->
-    $("#inventory_product_inventory_product_info_attributes_need_serial, #inventory_product_inventory_product_info_attributes_need_batch").change ->
-      if $("#inventory_product_inventory_product_info_attributes_need_serial").is(":checked")
-        $("#inventory_product_inventory_product_info_attributes_need_batch").attr('checked', false)
-      if $("#inventory_product_inventory_product_info_attributes_need_batch").is(":checked")
-        $("#inventory_product_inventory_product_info_attributes_need_serial").attr('checked', false)
+    $(".need_serial_batch_check").change ->
+      if $(@).is(":checked")
+        $(".need_serial_batch_check").not(@).attr('checked', false)
+
   add_append: ->
     $(".add_id2").click (e)->
       e.preventDefault()
