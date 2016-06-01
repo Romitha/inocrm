@@ -154,6 +154,8 @@ Rails.application.routes.draw do
 
       put "product_update"
       put "ticket_update"
+      put "update_edit_ticket"
+
       post "create_product_country"
       post "finalize_ticket_save"
 

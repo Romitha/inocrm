@@ -1,11 +1,19 @@
-- remarks = capture do
-  = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "ticket", name: "remarks", url: "#", "original-title" => "Update remarks", value: ""}, style: "line-height: 6px;" do
-    = simple_format ticket.remarks.to_s.split('<br/>')[0]
+- if params[:edit_ticket]
+  = simple_form_for ticket, url: update_edit_ticket_tickets_path, method: :put do |f|
+    = f.input :id, as: :hidden
 
-  -if ticket.remarks.present?
-    %button.btn.btn-link#remarks_popover{"data-container" => "body", "data-content" => ticket.remarks.to_s, "data-placement" => "bottom", "data-toggle" => "popover", "data-trigger" =>"focus", :type => "button","data-html"=>"true",class: "has-popover"}
-      More
+    = hidden_field_tag :process_id, Rails.cache.fetch(["/tickets/edit-ticket", session[:task_id]])[:process_id]
+    = hidden_field_tag :task_id, Rails.cache.fetch(["/tickets/edit-ticket", session[:task_id]])[:task_id]
+    = hidden_field_tag :owner, Rails.cache.fetch(["/tickets/edit-ticket", session[:task_id]])[:owner]
+    - Rails.cache.fetch(["/tickets/edit-ticket", session[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
+      = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
+    .row
+      .col-md-12
+        = label_tag "Complete update"
+        = check_box_tag :update_complete, true, true, onchange: "Tickets.update_complete(this); return false;"
+        = f.submit "Complete update", class: "btn btn-success btn-sm", id: "complete_update_submit"
+  %hr
 .row
   .col-md-2
     %h4 Product
@@ -37,29 +45,29 @@
     %dl.dl-horizontal
       %dt Informed method
       %dd
-        = link_to_if current_page?(controller: "tickets", action: "edit_ticket") ,"#{ticket.inform_method.name}", "#" , class: "inline_edit", data: {type: "select", source: InformMethod.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "pop_status_id", url: "#", "original-title" => "Update inform_method"} do
+        = link_to_if params[:edit_ticket],"#{ticket.inform_method.name}", "#" , class: "inline_edit", data: {type: "select", source: InformMethod.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "pop_status_id", url: update_edit_ticket_tickets_path(ticket_id: ticket.id, edit_ticket: true), "original-title" => "Update inform_method"} do
           = ticket.inform_method.name
 
       %dt Job type
       %dd
-        = link_to_if current_page?(controller: "tickets", action: "edit_ticket") ,"#{ticket.job_type.name}","#", class: "inline_edit", data: {type: "select", source: JobType.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "job_type_id", url: "#", "original-title" => "Update job_type"} do
+        = link_to_if params[:edit_ticket],"#{ticket.job_type.name}","#", class: "inline_edit", data: {type: "select", source: JobType.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "job_type_id", url: update_edit_ticket_tickets_path(ticket_id: ticket.id, edit_ticket: true), "original-title" => "Update job_type"} do
           = ticket.job_type.name #ticket.job_type.name
 
       %dt Ticket type
       %dd #{ticket.ticket_type.name} #{"(Regional support job)" if ticket.regional_support_job}
       %dt Type of warranty
       %dd
-        = link_to_if current_page?(controller: "tickets", action: "edit_ticket") ,"#{ticket.warranty_type.name}","#",class: "inline_edit", data: {type: "select", source: WarrantyType.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "warranty_type_id", url: "#", "original-title" => "Update warranty_type"} do
+        = link_to_if params[:edit_ticket],"#{ticket.warranty_type.name}","#",class: "inline_edit", data: {type: "select", source: WarrantyType.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "warranty_type_id", url: update_edit_ticket_tickets_path(ticket_id: ticket.id, edit_ticket: true), "original-title" => "Update warranty_type"} do
           = ticket.warranty_type.name #ticket.warranty_type.name
 
       %dt Customer chargeable
       %dd
-        = link_to_if current_page?(controller: "tickets", action: "edit_ticket") ,"#{ticket.cus_chargeable ? 'Yes' : 'No'}","#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "ticket", name: "repair_type_id", url: "#", "original-title" => "Update repair_type"} do
+        = link_to_if params[:edit_ticket],"#{ticket.cus_chargeable ? 'Yes' : 'No'}","#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "ticket", name: "repair_type_id", url: update_edit_ticket_tickets_path(ticket_id: ticket.id, edit_ticket: true), "original-title" => "Update repair_type"} do
           = ticket.cus_chargeable ? "Yes" : "No" #ticket.cus_chargeable ? "Yes" : "No"
 
       %dt Repair type
       %dd
-        = link_to_if current_page?(controller: "tickets", action: "edit_ticket") ,"#{ticket.ticket_repair_type.try(:name)}","#",class: "inline_edit", data: {type: "select", source: TicketRepairType.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "repair_type_id", url: "#", "original-title" => "Update repair_type"} do
+        = link_to_if params[:edit_ticket],"#{ticket.ticket_repair_type.try(:name)}","#",class: "inline_edit", data: {type: "select", source: TicketRepairType.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "repair_type_id", url: update_edit_ticket_tickets_path(ticket_id: ticket.id, edit_ticket: true), "original-title" => "Update repair_type"} do
           = ticket.ticket_repair_type.try(:name) #ticket.repair_type.try(:name)
 
   .col-md-5
@@ -108,10 +116,12 @@
   .col-md-2
     %h4 Remarks
   .col-md-10
-    - if ticket.remarks.present?
-      %dd
-        = link_to_if current_page?(controller: "tickets", action: "edit_ticket") , remarks do
-          = simple_format ticket.remarks
+    %dd
+      = link_to_if params[:edit_ticket], simple_format(ticket.remarks), "#" , class: "inline_edit", data: {type: "textarea", resource: "ticket", name: "remarks", url: update_edit_ticket_tickets_path(ticket_id: ticket.id, edit_ticket: true), "original-title" => "Update inform_method", value: ""} do
+        = simple_format ticket.remarks
+      - if ticket.remarks.present?
+        %button.btn.btn-link#remarks_popover{"data-container" => "body", "data-content" => ticket.remarks.to_s, "data-placement" => "bottom", "data-toggle" => "popover", "data-trigger" =>"focus", :type => "button","data-html"=>"true",class: "has-popover"}
+          More
   %hr
 .row
   .col-md-2

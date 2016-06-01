@@ -255,20 +255,6 @@ window.Tickets =
       filtered_option = $(category_list_html).filter("optgroup[label='#{selected}']").html()
       category_list.empty().html(filtered_option).trigger('chosen:updated')
 
-  regional_support_job_active: ->
-    _this = this
-    if !$("#ticket_ticket_type_id_2").is(":checked")
-      $(".ticket_regional_support_job input[type='checkbox']").prop('checked', false)
-      $(".ticket_regional_support_job").addClass("hide")
-    $(".ticket_type").click ->
-      if $(@).attr("id") == "ticket_ticket_type_id_2"
-        $(".ticket_regional_support_job").removeClass("hide")
-      else
-        $(".ticket_regional_support_job").addClass("hide")
-        $(".ticket_regional_support_job input[type='checkbox']").prop('checked', false)
-      _this.pass_to_re_correction()
-
-
   touch_refresh: ->
     $("#create_contact_person").trigger("click")
 
@@ -298,39 +284,24 @@ window.Tickets =
       return
 
   pass_to_re_correction: ->
-
     if $("#ticket_regional_support_job").is(":checked")
-      $("#regional_support_center_chosen, #regional_support_center").parents().eq(1).removeClass("hide")
-      $("#assign_sbu_chosen, #assign_sbu").parents().eq(1).addClass("hide")
-      $("#assign_sbu_chosen, #assign_sbu").val("")
-      $("#assign_to").val("")
-      $("#assign_to_for_regional").removeClass("hide")
-      $(".assign_to_for_regional_label").removeClass("hide")
-
-      $(".recorrection_class").addClass("recorrection_position")
-      $(".pass_to_recorrection_hiddable").addClass("regional_support_center_position")
+      $(".regional_visible").removeClass("hide")
+      $(".regional_visible select").prop("disabled", false)
+      $(".regional_hiddible").addClass("hide")
+      $(".regional_hiddible select").prop("disabled", true)
 
     else
-      $("#regional_support_center_chosen, #regional_support_center").parents().eq(1).addClass("hide")
-      $("#regional_support_center_chosen, #regional_support_center").val("")
-      $("#assign_sbu_chosen, #assign_sbu").parents().eq(1).removeClass("hide")
-      $("#assign_to_for_regional").addClass("hide").val("")
-      $(".assign_to_for_regional_label").addClass("hide")
-
-      $(".recorrection_class").removeClass("recorrection_position")
-      $(".pass_to_recorrection_hiddable").removeClass("regional_support_center_position")
+      $(".regional_hiddible").removeClass("hide")
+      $(".regional_hiddible, select").prop("disabled", false)
+      $(".regional_visible").addClass("hide")
+      $(".regional_visible select").prop("disabled", true)
 
     if $("#pass_to_re_correction").is(":checked")
-      $(".pass_to_recorrection_hiddable").each ->
-        $(@).addClass("hide")
-        $("#assign_sbu_chosen, #assign_sbu").val("")
-        $("#regional_support_center_chosen, #regional_support_center").val("")
-        $("#assign_to").val("")
-      $("#assign_to_for_regional").addClass("hide").val("")
-      $(".assign_to_for_regional_label").addClass("hide")
+      $(".pass_to_recorrection_hiddible").addClass("hide")
+      $(".pass_to_recorrection_hiddible select, .pass_to_recorrection_hiddible input").prop("disabled", true)
     else
-      $(".pass_to_recorrection_hiddable").each ->
-        $(@).removeClass("hide")
+      $(".pass_to_recorrection_hiddible").removeClass("hide")
+      $(".pass_to_recorrection_hiddible select, .pass_to_recorrection_hiddible input").prop("disabled", false)
 
   pass_to_re_correction_trigger: ->
     $("#pass_to_re_correction").click =>
@@ -515,7 +486,7 @@ window.Tickets =
     $(".ajax_loader").click ->
       __this = this
       _this.ajax_loader()
-      $.get "/tickets/ajax_show", {partial_template_for_show: $(__this).data("partial-template-for-show"), ticket_id: $(__this).data("ticket-id")}
+      $.get "/tickets/ajax_show", {partial_template_for_show: $(__this).data("partial-template-for-show"), ticket_id: $(__this).data("ticket-id"), edit_ticket: $(__this).data("edit-ticket")}
       # setTimeout (->
       #   return
       # ), 500
@@ -549,6 +520,12 @@ window.Tickets =
     $('.part_of_main_product_checkbox').click ->
       $(".part_of_main_product_checkbox").parent().parent().removeClass("success")
       $(@).parent().parent().addClass("success")
+
+  update_complete: (e)->
+    if $(e).is(":checked")
+      $("#complete_update_submit").prop("disabled", false)
+    else
+      $("#complete_update_submit").prop("disabled", true)
 
   assign_value_to_select: ->
     $(".request_part_request_from .radio-inline input").click ->
