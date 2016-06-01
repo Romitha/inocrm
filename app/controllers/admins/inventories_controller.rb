@@ -701,14 +701,15 @@ module Admins
         @store = Organization.find params[:store_id]
         session[:store_id] = @store.id
         updated_hash = inventory_product_hash["mst_inv_product"].to_hash.map { |k, v| "#{k} like '%#{v}%'" if v.present? }.compact.join(" and ")
+        store_product_ids = @store.inventory_product_ids.uniq
         if category3_id.present?
-          @inventory_products = @store.inventory_products.where(updated_hash)
+          @inventory_products = InventoryProduct.where.not(id: store_product_ids).where(updated_hash)
         elsif category2_id.present?
-          @inventory_products = InventoryCategory2.find(category2_id).inventory_products.where(updated_hash)
+          @inventory_products = InventoryCategory2.find(category2_id).inventory_products.where.not(id: store_product_ids).where(updated_hash)
         elsif category1_id.present?
-          @inventory_products = InventoryCategory1.find(category1_id).inventory_category3s.map { |c| c.inventory_products.where(updated_hash) }.flatten.uniq
+          @inventory_products = InventoryCategory1.find(category1_id).inventory_category3s.map { |c| c.inventory_products.where(updated_hash) }.flatten.uniq.keep_if{|p| !store_product_ids.uniq.include?(p.id) }
         else
-          @inventory_products = @store.inventory_products.where(updated_hash)
+          @inventory_products = InventoryProduct.where.not(id: store_product_ids).where(updated_hash)
         end
         @render_template = "admins/inventories/inventory/select_inventory"
         render "admins/inventories/inventory/inventory"
