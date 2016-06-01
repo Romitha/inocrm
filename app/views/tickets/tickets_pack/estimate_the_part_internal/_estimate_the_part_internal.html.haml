@@ -7,125 +7,126 @@
   - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
     = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
-  = f.simple_fields_for :ticket_estimation_parts do |t|
+  .estimate_extend_with_tax
+    = f.simple_fields_for :ticket_estimation_parts do |t|
 
-    %fieldset
-      %legend Part No: #{t.object.ticket_spare_part.try(:spare_part_no)} (#{t.object.ticket_spare_part.ticket_spare_part_store ? 'Store' : t.object.ticket_spare_part.ticket_spare_part_manufacture.present? ? 'Manufacture' : t.object.ticket_spare_part.ticket_spare_part_non_stock.present? ? 'Non Stock' : ''})
-      .row
-        .col-md-3
-          %strong Part No:
-          #{t.object.ticket_spare_part.try(:spare_part_no)}
-        .col-md-3
-          %strong Part description:
-          #{t.object.ticket_spare_part.try(:spare_part_description)}
-        .col-md-3
-          %strong Part status:
-          #{t.object.ticket_spare_part.try(:spare_part_status_action).try(:name)}
-      %hr
-      - part_store_or_non_stock = t.object.ticket_spare_part.ticket_spare_part_store or t.object.ticket_spare_part.ticket_spare_part_non_stock
-      - if part_store_or_non_stock.present?
+      %fieldset
+        %legend Part No: #{t.object.ticket_spare_part.try(:spare_part_no)} (#{t.object.ticket_spare_part.ticket_spare_part_store ? 'Store' : t.object.ticket_spare_part.ticket_spare_part_manufacture.present? ? 'Manufacture' : t.object.ticket_spare_part.ticket_spare_part_non_stock.present? ? 'Non Stock' : ''})
         .row
-          .col-md-5
-            %h4 Requested part
-            .request_from
-              %dl.dl-horizontal
-                - if part_store_or_non_stock.is_a? TicketSparePartStore
-                  %dt Store
+          .col-md-3
+            %strong Part No:
+            #{t.object.ticket_spare_part.try(:spare_part_no)}
+          .col-md-3
+            %strong Part description:
+            #{t.object.ticket_spare_part.try(:spare_part_description)}
+          .col-md-3
+            %strong Part status:
+            #{t.object.ticket_spare_part.try(:spare_part_status_action).try(:name)}
+        %hr
+        - part_store_or_non_stock = t.object.ticket_spare_part.ticket_spare_part_store or t.object.ticket_spare_part.ticket_spare_part_non_stock
+        - if part_store_or_non_stock.present?
+          .row
+            .col-md-5
+              %h4 Requested part
+              .request_from
+                %dl.dl-horizontal
+                  - if part_store_or_non_stock.is_a? TicketSparePartStore
+                    %dt Store
+                    %dd
+                      = part_store_or_non_stock.store.try(:name)
+                  %dt Item Code
                   %dd
-                    = part_store_or_non_stock.store.try(:name)
-                %dt Item Code
-                %dd
-                  = part_store_or_non_stock.inventory_product.try(:serial_no)
-                %dt Item Description
-                %dd
-                  = part_store_or_non_stock.inventory_product.try(:description)
-                %dt Model No
-                %dd
-                  = part_store_or_non_stock.inventory_product.try(:model_no)
-                %dt Product No
-                %dd
-                  = part_store_or_non_stock.inventory_product.try(:product_no)
-                %dt Part No
-                %dd
-                  = part_store_or_non_stock.inventory_product.try(:spare_part_no)
-                - if part_store_or_non_stock.is_a? TicketSparePartStore
-                  %dt Available Qnty
+                    = part_store_or_non_stock.inventory_product.try(:serial_no)
+                  %dt Item Description
                   %dd
-                    = part_store_or_non_stock.inventory_product.inventories.find_by_store_id(t.object.ticket_spare_part.ticket_spare_part_store.store_id).try(:available_quantity)
+                    = part_store_or_non_stock.inventory_product.try(:description)
+                  %dt Model No
+                  %dd
+                    = part_store_or_non_stock.inventory_product.try(:model_no)
+                  %dt Product No
+                  %dd
+                    = part_store_or_non_stock.inventory_product.try(:product_no)
+                  %dt Part No
+                  %dd
+                    = part_store_or_non_stock.inventory_product.try(:spare_part_no)
+                  - if part_store_or_non_stock.is_a? TicketSparePartStore
+                    %dt Available Qnty
+                    %dd
+                      = part_store_or_non_stock.inventory_product.inventories.find_by_store_id(t.object.ticket_spare_part.ticket_spare_part_store.store_id).try(:available_quantity)
 
-            .spare_part_select.pull-left
-              = link_to "Change part", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true
+              .spare_part_select.pull-left
+                = link_to "Change part", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true
 
-          .col-md-7
-            #paginate_grns
-              /= paginate grn_items, remote: true, method: :get, params: {controller: "tickets", action: "paginate_ticket_grn_items", per_page: 3}
-              %table.table
-                %thead
-                  %tr
-                    %th No
-                    %th Grn no
-                    %th Date Purchased
-                    %th Price
-                %tbody
-                  - part_store_or_non_stock.inventory_product.grn_items.each_with_index do |grn_item, index|
+            .col-md-7
+              #paginate_grns
+                /= paginate grn_items, remote: true, method: :get, params: {controller: "tickets", action: "paginate_ticket_grn_items", per_page: 3}
+                %table.table
+                  %thead
                     %tr
-                      %td= index+1
-                      %td= grn_item.grn.grn_no
-                      %td= grn_item.grn.created_at.try(:strftime, "%d-%m-%Y")
-                      %td
-                        = grn_item.unit_cost
-                        (#{grn_item.currency.code})
+                      %th No
+                      %th Grn no
+                      %th Date Purchased
+                      %th Price
+                  %tbody
+                    - part_store_or_non_stock.inventory_product.grn_items.each_with_index do |grn_item, index|
+                      %tr
+                        %td= index+1
+                        %td= grn_item.grn.grn_no
+                        %td= grn_item.grn.created_at.try(:strftime, "%d-%m-%Y")
+                        %td
+                          = grn_item.unit_cost
+                          (#{grn_item.currency.code})
 
-      .row
-        .col-md-4
-          = t.simple_fields_for :ticket_spare_part do |p|
-            = p.input :current_user_id, as: :hidden, input_html: {value: current_user.id}
-            = p.input :note, input_html: {value: nil}
-            = simple_format p.object.note
+        .row
+          .col-md-3
+            = t.simple_fields_for :ticket_spare_part do |p|
+              = p.input :current_user_id, as: :hidden, input_html: {value: current_user.id}
+              = p.input :note, input_html: {value: nil}
+              = simple_format p.object.note
 
-        - unless t.object.ticket_spare_part.ticket_spare_part_manufacture.present?
-          .col-md-8.head_estimated_price_class
-            .row
-              .col-md-2
-                = t.association :supplier, input_html: {class: "est_internal_supplier"}
-              .col-md-2
-                = t.input :cost_price, label: "Cost Price (#{ticket.ticket_currency.code})", as: :string, input_html: {class: "value_class only_float", oninput: "Inventories.calculate_cost_price(this);"}
-                .append_cost_price.hide
-                  = t.object.cost_price.to_f
-              .col-md-2
-                = t.input :estimated_price, label: "Est. Price (#{ticket.ticket_currency.code})", as: :string, input_html: {class: "estimation_value only_float", oninput: "Inventories.calculate_cost_price(this);"}, label: "Est. price"
-                .append_estimated_price.hide
-                  = t.object.estimated_price.to_f
-              .col-md-3
-                = t.input :warranty_period, input_html: {class: "only_float"}, label: "Warranty (in months)"
-              .col-md-2
-                %strong Profit (%):
-                .append_profit_margin{style: "font-weight:bold;font-size:125%;"}
+          - unless t.object.ticket_spare_part.ticket_spare_part_manufacture.present?
+            .col-md-9.head_estimated_price_class
+              .row
+                .col-md-2
+                  = t.association :supplier, input_html: {class: "est_internal_supplier"}
+                .col-md-3
+                  = t.input :cost_price, label: "Cost Price (#{ticket.ticket_currency.code})", as: :string, input_html: {class: "value_class only_float", oninput: "Inventories.calculate_cost_price(this);"}
+                  .append_cost_price.hide
+                    = t.object.cost_price.to_f
+                .col-md-3
+                  = t.input :estimated_price, label: "Est. Price (#{ticket.ticket_currency.code})", as: :string, input_html: {class: "estimation_value only_float", oninput: "Inventories.calculate_cost_price(this);"}, label: "Est. price"
+                  .append_estimated_price.hide
+                    = t.object.estimated_price.to_f
+                .col-md-2
+                  = t.input :warranty_period, input_html: {class: "only_float"}, label: "Warranty(Months)"
+                .col-md-2
+                  %strong Profit (%):
+                  .append_profit_margin{style: "font-weight:bold;font-size:125%;"}
 
-            .panel-group
-              .panel.panel-success
-                .panel-heading Taxes
-                .panel-body.tax_wrapper
-                  = t.simple_fields_for :ticket_estimation_part_taxes do |ee|
+              .panel-group
+                .panel.panel-success
+                  .panel-heading Taxes
+                  .panel-body.tax_wrapper
+                    = t.simple_fields_for :ticket_estimation_part_taxes do |ee|
 
-                    .row.parent_class_set
-                      .add_sign.col-md-3{style: "padding-top:2.5%;"}
-                        = ee.link_to_remove class: "remove_c_t_v_link" do
-                          %span.glyphicon.glyphicon-remove-sign
+                      .row.parent_class_set
+                        .add_sign.col-md-3{style: "padding-top:2.5%;"}
+                          = ee.link_to_remove class: "remove_c_t_v_link" do
+                            %span.glyphicon.glyphicon-remove-sign
 
-                      .col-md-3
-                        = label_tag "Tax"
-                        %br/
-                        = ee.select :tax_id, Tax.all.map{|p| ["#{p.tax} (#{p.tax_rates.find_by_active(true).try(:rate).to_f}%)", p.id, {"data-default-amount" => p.tax_rates.find_by_active(true).try(:rate).to_f}]}, {include_blank: true}, {class: "payment_item_select tax_rate_calculation", onchange: "Inventories.payment_amount_select(this); return false;"}
+                        .col-md-3
+                          = label_tag "Tax"
+                          %br/
+                          = ee.select :tax_id, Tax.all.map{|p| ["#{p.tax} (#{p.tax_rates.find_by_active(true).try(:rate).to_f}%)", p.id, {"data-default-amount" => p.tax_rates.find_by_active(true).try(:rate).to_f}]}, {include_blank: true}, {class: "payment_item_select tax_rate_calculation", onchange: "Inventories.payment_amount_select(this); return false;"}
 
-                      .col-md-4
-                        = ee.input :estimated_tax_amount, label: "Estimated Tax Amount (#{ticket.ticket_currency.code})", as: :string, input_html: {class: "estimated_tax_amount_class"}
-                      .col-md-4
-                        = ee.input :tax_rate,  as: :hidden, input_html: {id: "tax_rate_hidden_field_id", class: "payment_item_value"}
+                        .col-md-4
+                          = ee.input :estimated_tax_amount, label: "Estimated tax amount (#{ticket.ticket_currency.code})", as: :string, input_html: {class: "estimated_tax_amount_class"}
+                        .col-md-4
+                          = ee.input :tax_rate,  as: :hidden, input_html: {id: "tax_rate_hidden_field_id", class: "payment_item_value"}
 
-                  = t.link_to_add :ticket_estimation_part_taxes, class: "small_scale_padding-right2" do
-                    %span.glyphicon.glyphicon-plus-sign
-                    Add tax
+                    = t.link_to_add :ticket_estimation_part_taxes, class: "small_scale_padding-right2" do
+                      %span.glyphicon.glyphicon-plus-sign
+                      Tax
 
 
   .row
