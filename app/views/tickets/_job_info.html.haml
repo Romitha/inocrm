@@ -62,7 +62,7 @@
 
       %dt Customer chargeable
       %dd
-        = link_to_if params[:edit_ticket],"#{ticket.cus_chargeable ? 'Yes' : 'No'}","#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "ticket", name: "repair_type_id", url: update_edit_ticket_tickets_path(ticket_id: ticket.id, edit_ticket: true), "original-title" => "Update repair_type"} do
+        = link_to_if params[:edit_ticket],"#{ticket.cus_chargeable ? 'Yes' : 'No'}","#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "ticket", name: "cus_chargeable", url: update_edit_ticket_tickets_path(ticket_id: ticket.id, edit_ticket: true), "original-title" => "Update cus_chargeable"} do
           = ticket.cus_chargeable ? "Yes" : "No" #ticket.cus_chargeable ? "Yes" : "No"
 
       %dt Repair type
