@@ -12,7 +12,7 @@
       .col-md-3
       = f.association :reject_reason, label_method: :reason, value_method: :id, label: "Request reason", collection: Reason.where(warranty_extend: true)
       .col-md-3
-        = f.input :reject_note, label: "Request note", required: true
+        = f.input :reject_note, required: true
       .col-md-6
         = f.input :extended, as: :hidden, input_html: {value: false}
       .col-md-12

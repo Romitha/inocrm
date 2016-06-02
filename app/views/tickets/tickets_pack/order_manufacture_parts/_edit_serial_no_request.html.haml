@@ -2,7 +2,7 @@
 - product = @product
 
 - uri = URI(request.url)
-- uri_path = uri.path == "/tickets/edit_serial" ? uri.path : "/#{params[:controller].split('/').last}/#{params[:action]}"
+- uri_path = (uri.path == "/tickets/edit_serial") ? uri.path : uri.path == "/tickets/call_mf_order_template" ? "/tickets/order_manufacture_parts" : "/#{params[:controller].split('/').last}/#{params[:action]}"
 %fieldset
   %legend Edit Serial No
   = simple_nested_form_for product, url: update_edit_serial_tickets_path, method: :post do |f|

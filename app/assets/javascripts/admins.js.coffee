@@ -20,7 +20,6 @@ window.Admins =
 
 
   filter_non_store_products: ->
-    # inventory_products = $("#inventory_product_id").html()
     $("#inventory_product_id").empty()
     $("#inventory_store_id").change ->
       this_value = $(@).val()
@@ -48,3 +47,8 @@ window.Admins =
         child_node.html(filtered_html)
       else
         child_node.empty()
+
+  filter_product: (e)->
+    this_value = $(e).val()
+    $.get "/admins/inventories/filter_brand_product?#{$(e).data('filter-params')}=#{this_value}&render_dom=#{$(e).data('render-dom')}"
+

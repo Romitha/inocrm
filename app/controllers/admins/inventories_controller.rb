@@ -5,6 +5,26 @@ module Admins
     def index
     end
 
+    def filter_brand_product
+      Inventory
+      case
+      when params[:inventory_category1_id].present?
+        inventory_product_category1 = InventoryCategory1.find params[:inventory_category1_id]
+        @inventory_product_category_all = inventory_product_category1.inventory_category2s
+        @render_template = "inventory_product_categories"
+
+      when params[:inventory_category21_id].present?
+        inventory_product_category1 = InventoryCategory1.find params[:inventory_category21_id]
+        @inventory_category_all = inventory_product_category1.inventory_category3s
+        @render_template = "categories"
+
+      when params[:inventory_category22_id].present?
+        inventory_product_category2 = InventoryCategory2.find params[:inventory_category22_id]
+        @inventory_category_all = inventory_product_category2.inventory_category3s
+        @render_template = "categories"
+      end
+    end
+
     def delete_admin_brands_and_category
       Product
       @brands_and_category = ProductBrand.find params[:brands_and_category_id]

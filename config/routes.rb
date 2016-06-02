@@ -337,6 +337,8 @@ Rails.application.routes.draw do
           match "#{action.to_s}", action: action, via: [:get, :post, :put]
         end
 
+        get "filter_brand_product"
+
       end
     end
     resources :dashboards

@@ -64,24 +64,12 @@
     .panel-footer
       = link_to "Tickets", admins_tickets_path
 
-  / = collapse collapse_type: "#{controller_name == 'roles' ? 'primary' : 'default'}", labelledby: "labelledby_roles", header_content: content_tag(:span, "", class: "icon-paper-plane-o")+"Roles", collapse_link: "collapse_link_roles" do
-  /   %ul.list-group
-  /     sample
-  /   .panel-footer
-  /   = link_to "Roles", "#"
-
-  / = collapse collapse_type: "#{controller_name == 'sales' ? 'primary' : 'default'}", labelledby: "labelledby_sales", header_content: content_tag(:span, "", class: "icon-exchange")+"Sales", collapse_link: "collapse_link_sales" do
-  /   %ul.list-group
-
-  /   .panel-footer
-  /     = link_to "Sales", admins_sales_path
-
   = collapse collapse_type: "#{controller_name == 'inventories' ? 'primary' : 'default'}", labelledby: "labelledby_inventories", header_content: content_tag(:span, "", class: "icon-list-alt")+"Inventories", collapse_link: "collapse_link_inventories" do
     .list-group.small_scale_margin0
       = link_to inventory_brand_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'inventory_brand' }" do
         %i.icon-paper
         Brand category
-      = link_to inventory_product_category_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'inventory_product_catory' }" do
+      = link_to inventory_product_category_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'inventory_product_category' }" do
         %i.icon-stack-2
         Product category
       = link_to category_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'category' }" do

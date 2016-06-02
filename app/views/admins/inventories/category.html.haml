@@ -19,12 +19,12 @@
         = c1.object.inventory_category2.name
     .col-md-3
       = c1.input :code, label: "Category Code", input_html: {required: true}
-      - if c1
+      - if c1.object.present?
         %strong Category Code:
         = c1.object.code
     .col-md-3
       = c1.input :name, label: "Category Name", input_html: {required: true}
-      - if c1
+      - if c1.object.present?
         %strong Category Name:
         = c1.object.name
 
@@ -33,23 +33,5 @@
       = c1.submit "Save", class: "btn btn-success", id: "submit_new_inventory_category", name: "#{params[:edit_more] ? 'update' : 'create'}"
 
 %hr
-= collapse_wrapper collapse_id: "category", labelledby: "labelledby" do
-  - @inventory_category_all.each do |inventory_category|
-    = collapse collapse_type: "success", labelledby: "labelledby_#{inventory_category.id}", header_content: inventory_category.name, collapse_link: "link_#{inventory_category.id}", collapse_id: "category category " do
-      .row
-        .col-md-4
-          %strong Product:
-          = inventory_category.inventory_category2.name
-          / = link_to "#", class: "inline_edit", data: {type: "select", resource: "inventory_category3", source: InventoryCategory2.all.collect{|category2| {value: category2.id, text: category2.name}}, name: "category2_id", url: category_admins_inventories_path(edit: true, inventory_category3_id: inventory_category.id), "original-title" => "Update Product Category"} do
-          /   = inventory_category.inventory_category2.name
-        .col-md-4
-          %strong Category Code:
-          = link_to "#", class: "inline_edit", data: {type: "text", resource: "inventory_category3", name: "code", url: category_admins_inventories_path(edit: true, inventory_category3_id: inventory_category.id), "original-title" => "Update Product Category"} do
-            = inventory_category.code
-        .col-md-4
-          %strong Category Name:
-          = link_to "#", class: "inline_edit", data: {type: "text", resource: "inventory_category3", name: "name", url: category_admins_inventories_path(edit: true, inventory_category3_id: inventory_category.id), "original-title" => "Update Product Category"} do
-            = inventory_category.name
-
-
-      = link_to "Edit more", category_admins_inventories_path(edit_more: true, inventory_category3_id: inventory_category.id)
+#categories
+  = render "categories"

@@ -39,6 +39,8 @@ window.Users =
   request_printer_application: (print_object, print_object_id, request_type, tag_value, action)->
     _this = this
     $.post "/tickets/get_template", {print_object: print_object, print_object_id: print_object_id, request_type: request_type, tag_value: tag_value}, (data)->
+      # headers:
+      #   "Access-Control-Allow-Origin": "*"
       $.ajax
         async: false
         method: 'post'
