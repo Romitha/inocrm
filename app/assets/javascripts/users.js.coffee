@@ -41,10 +41,12 @@ window.Users =
     $.post "/tickets/get_template", {print_object: print_object, print_object_id: print_object_id, request_type: request_type, tag_value: tag_value}, (data)->
       # headers:
       #   "Access-Control-Allow-Origin": "*"
+      url = decodeURIComponent(data.url)
+      console.log url
       $.ajax
         async: false
         method: 'post'
-        url: data["url"]
+        url: url
         data: data["request_printer_template"]
         timeout: 4000
         success: (result)->
