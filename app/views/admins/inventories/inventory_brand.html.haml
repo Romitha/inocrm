@@ -1,7 +1,7 @@
 = simple_form_for @inventory_brand, url: inventory_brand_admins_inventories_path, method: :post, html: {class: "validate_form"} do |f|
   = f.input :created_by, as: :hidden, input_html: {value: current_user.id}
-  = f.input :code, input_html: {required: true}
-  = f.input :name, input_html: {required: true}
+  = f.input :code, label: "Brand code", input_html: {required: true}
+  = f.input :name, label: "Brand name", input_html: {required: true}
   = f.submit "Save", class: "btn btn-sm btn-success", name: "#{params[:edit_more] ? 'update' : 'create'}"
 
 %hr
@@ -10,10 +10,11 @@
     = collapse collapse_type: "success", labelledby: "labelledby_#{inventory_brand.id}", header_content: inventory_brand.name, collapse_link: "link_#{inventory_brand.id}", collapse_id: "product_brand" do
       .row
         .col-md-4
-          %strong Name:
-          = link_to "#", class: "inline_edit", data: {type: "text", resource: "inventory_category1", name: "name", url: inventory_brand_admins_inventories_path(edit: true, inventory_category1_id: inventory_brand.id), "original-title" => "Update Product Category"} do
-            = inventory_brand.name
-        .col-md-4
-          %strong Code:
+          %strong Brand code:
           = link_to "#", class: "inline_edit", data: {type: "text", resource: "inventory_category1", name: "code", url: inventory_brand_admins_inventories_path(edit: true, inventory_category1_id: inventory_brand.id), "original-title" => "Update Product Category"} do
             = inventory_brand.code
+
+        .col-md-5
+          %strong Brand name:
+          = link_to "#", class: "inline_edit", data: {type: "text", resource: "inventory_category1", name: "name", url: inventory_brand_admins_inventories_path(edit: true, inventory_category1_id: inventory_brand.id), "original-title" => "Update Product Category"} do
+            = inventory_brand.name
