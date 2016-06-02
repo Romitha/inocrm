@@ -18,15 +18,9 @@
         %strong Product:
         = c1.object.inventory_category2.name
     .col-md-3
-      = c1.input :code, label: "Category Code", input_html: {required: true}
-      - if c1.object.present?
-        %strong Category Code:
-        = c1.object.code
+      = c1.input :code, label: "Brand code", input_html: {required: true}, label: "Category code"
     .col-md-3
-      = c1.input :name, label: "Category Name", input_html: {required: true}
-      - if c1.object.present?
-        %strong Category Name:
-        = c1.object.name
+      = c1.input :name, label: "Brand name", input_html: {required: true}, label: "Category name"
 
   .row
     .col-md-12
