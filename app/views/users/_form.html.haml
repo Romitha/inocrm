@@ -1,19 +1,26 @@
 = user.is_customer
 .row
-  = simple_form_for user, html: {multipart: true} do |f|
+  = simple_form_for user, html: {multipart: true, class: "validate_form"} do |f|
     - if user.errors.present?
-      = panels header_content: "Something gone wrong", panel_type: "danger" do
-        %ul
-          - user.errors.full_messages.each do |message|
-            %li= message
+      .col-md-12
+        = panels header_content: "Something gone wrong", panel_type: "danger" do
+          %ul
+            - user.errors.full_messages.each do |message|
+              %li= message
     .col-md-12
-      = f.input :email, placeholder: "Email", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Email"}
-      = f.input :user_name, placeholder: "User name", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "User Name"}
+      = f.input :email, placeholder: "Email", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Email"}, required: true
+      .row
+        .col-md-2
+          = f.association :mst_title, required: true, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Title"}, label: "Title"
+        .col-md-5
+          = f.input :first_name, placeholder: "First name", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "First Name"}, required: true
+        .col-md-5
+          = f.input :last_name, placeholder: "Last name", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Last Name"}, required: true
       - if session[:is_customer]=="false"
         .has-tooltip{data: {toggle: "tooltip", placement: "left"}, title: "Designation"}
-          = f.association :designation, collection: (user.organization.try(:designations) || []), include_blank: false, input_html: { class: 'chosen-select'}
-        = f.input :password, placeholder: "Password", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Password"}
-        = f.input :password_confirmation, placeholder: "Confirm new password", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Confirm new password"}
+          = f.association :designation, collection: (user.organization.try(:designations) || []), include_blank: false, input_html: { class: 'chosen-select'}, required: true
+        = f.input :password, placeholder: "Password", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Password"}, required: true
+        = f.input :password_confirmation, placeholder: "Confirm new password", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Confirm new password"}, required: true
         = f.association :organization, as: :hidden
       = f.input :is_customer, as: :hidden, input_html: {value: session[:is_customer]}
-      = f.submit
+      = f.submit "Save", class: "btn btn-xs btn-success"

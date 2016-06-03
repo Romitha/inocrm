@@ -122,7 +122,7 @@ class UsersController < ApplicationController
     end
 
     def user_params
-      params.require(:user).permit(:is_customer, :email, :avatar, :coord_x, :coord_y, :coord_w, :coord_h, :user_name, {role_ids: []}, :organization_id, :designation_id, :department_id, :password, :password_confirmation, :NIC, :epf_no, :date_joined_at, :first_name, :last_name, :name_title, addresses_attributes: [:id, :category, :address, :_destroy])
+      params.require(:user).permit(:is_customer, :email, :avatar, :coord_x, :coord_y, :coord_w, :coord_h, :user_name, {role_ids: []}, :organization_id, :designation_id, :department_id, :password, :password_confirmation, :NIC, :epf_no, :date_joined_at, :first_name, :last_name, :title_id, addresses_attributes: [:id, :category, :address, :_destroy])
     end
 
 end
