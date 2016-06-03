@@ -366,6 +366,8 @@ class InventoryDisposalMethod < ActiveRecord::Base
   has_many :inventory_damages, foreign_key: :disposal_method_id
   has_many :inventory_requests, foreign_key: :disposal_method_id
 
+  validates :disposal_method, presence: true, uniqueness: true
+
   def is_used_anywhere?
     # inventory_damages.any? or inventory_requests.any? or user.present?
     inventory_damages.any?
