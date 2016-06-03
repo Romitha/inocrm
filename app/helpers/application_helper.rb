@@ -254,8 +254,8 @@ module ApplicationHelper
       quantity = 1
       currency_1 = ticket_invoice_estimation.ticket_estimation.currency.code
 
-      if ticket_invoice_estimation.ticket_estimation.estimation_externals.present?
-        estimation_external = ticket_invoice_estimation.ticket_estimation.estimation_externals.first
+      if ticket_invoice_estimation.ticket_estimation.ticket_estimation_externals.present?
+        estimation_external = ticket_invoice_estimation.ticket_estimation.ticket_estimation_externals.first
         item_index += 1
         description = estimation_external.description
 
