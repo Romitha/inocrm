@@ -265,14 +265,7 @@ module ApplicationHelper
         total_amount += totalprice
         net_total_amount += totalprice
 
-        repeat_data += "INDEX_NO="   +item_index+"$|#"
-        repeat_data += "ITEM_CODE=$|#"
-        repeat_data += "DESCRIPTION="+description+"$|#"
-        repeat_data += "QUANTITY="   +quantity+"$|#"
-        repeat_data += "UNIT_PRICE=" +unit_price+"$|#"
-        repeat_data += "CURRENCY1="  +currency_1+"$|#"
-        repeat_data += "TOTAL_PRICE="+totalprice+"$|#"
-        repeat_data += "CURRENCY2="  +currency_1+"$|#"
+        repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => quantity, "UNIT_PRICE" => unit_price, "CURRENCY1" => currency_1, "TOTAL_PRICE" => totalprice, "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
 
         estimation_external.ticket_estimation_external_taxes.each do |ticket_estimation_external_tax|
           item_index += 1
@@ -284,14 +277,7 @@ module ApplicationHelper
           total_amount += totalprice
           net_total_amount += totalprice
 
-          repeat_data += "INDEX_NO="   +item_index+"$|#"
-          repeat_data += "ITEM_CODE=$|#"
-          repeat_data += "DESCRIPTION="+description+"$|#"
-          repeat_data += "QUANTITY="   +"$|#"
-          repeat_data += "UNIT_PRICE=" +unit_price+"$|#"
-          repeat_data += "CURRENCY1="  +currency_1+"$|#"
-          repeat_data += "TOTAL_PRICE="+totalprice+"$|#"
-          repeat_data += "CURRENCY2="  +currency_1+"$|#"
+          repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => "", "UNIT_PRICE" => unit_price, "CURRENCY1" => currency_1, "TOTAL_PRICE" => totalprice, "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
         end
       end
 
@@ -307,14 +293,7 @@ module ApplicationHelper
         total_amount += totalprice
         net_total_amount += totalprice
 
-        repeat_data += "INDEX_NO="   +item_index+"$|#"
-        repeat_data += "ITEM_CODE="  +item_code+"$|#"
-        repeat_data += "DESCRIPTION="+description+"$|#"
-        repeat_data += "QUANTITY="   +quantity+"$|#"
-        repeat_data += "UNIT_PRICE=" +unit_price+"$|#"
-        repeat_data += "CURRENCY1="  +currency_1+"$|#"
-        repeat_data += "TOTAL_PRICE="+totalprice+"$|#"
-        repeat_data += "CURRENCY2="  +currency_1+"$|#"
+        repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => item_code, "DESCRIPTION" => description, "QUANTITY" => quantity, "UNIT_PRICE" => unit_price, "CURRENCY1" => currency_1, "TOTAL_PRICE" => totalprice, "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
 
         estimation_part.ticket_estimation_part_taxes.each do |ticket_estimation_part_tax|
           item_index += 1
@@ -326,14 +305,7 @@ module ApplicationHelper
           total_amount += totalprice
           net_total_amount += totalprice
 
-          repeat_data += "INDEX_NO="   +item_index+"$|#"
-          repeat_data += "ITEM_CODE=$|#"
-          repeat_data += "DESCRIPTION="+description+"$|#"
-          repeat_data += "QUANTITY="   +"$|#"
-          repeat_data += "UNIT_PRICE=" +unit_price+"$|#"
-          repeat_data += "CURRENCY1="  +currency_1+"$|#"
-          repeat_data += "TOTAL_PRICE="+totalprice+"$|#"
-          repeat_data += "CURRENCY2="  +currency_1+"$|#"
+          repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => "", "UNIT_PRICE" => unit_price, "CURRENCY1" => currency_1, "TOTAL_PRICE" => totalprice, "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
         end
       end
 
@@ -346,14 +318,7 @@ module ApplicationHelper
         total_amount += totalprice
         net_total_amount += totalprice
 
-        repeat_data += "INDEX_NO="   +item_index+"$|#"
-        repeat_data += "ITEM_CODE=$|#"
-        repeat_data += "DESCRIPTION="+description+"$|#"
-        repeat_data += "QUANTITY="   +quantity+"$|#"
-        repeat_data += "UNIT_PRICE=" +unit_price+"$|#"
-        repeat_data += "CURRENCY1="  +currency_1+"$|#"
-        repeat_data += "TOTAL_PRICE="+totalprice+"$|#"
-        repeat_data += "CURRENCY2="  +currency_1+"$|#"
+        repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => quantity, "UNIT_PRICE" => unit_price, "CURRENCY1" => currency_1, "TOTAL_PRICE" => totalprice, "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
 
         ticket_estimation_additional.ticket_estimation_additional_taxes.each do |ticket_estimation_additional_tax|
           item_index += 1
@@ -364,14 +329,7 @@ module ApplicationHelper
           total_amount += totalprice
           net_total_amount += totalprice
 
-          repeat_data += "INDEX_NO="   +item_index+"$|#"
-          repeat_data += "ITEM_CODE=$|#"
-          repeat_data += "DESCRIPTION="+description+"$|#"
-          repeat_data += "QUANTITY="   +"$|#"
-          repeat_data += "UNIT_PRICE=" +unit_price+"$|#"
-          repeat_data += "CURRENCY1="  +currency_1+"$|#"
-          repeat_data += "TOTAL_PRICE="+totalprice+"$|#"
-          repeat_data += "CURRENCY2="  +currency_1+"$|#"
+          repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => "", "UNIT_PRICE" => unit_price, "CURRENCY1" => currency_1, "TOTAL_PRICE" => totalprice, "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
         end
       end
     end
@@ -386,14 +344,7 @@ module ApplicationHelper
       total_amount += totalprice
       net_total_amount += totalprice
 
-      repeat_data += "INDEX_NO="   +item_index+"$|#"
-      repeat_data += "ITEM_CODE=$|#"
-      repeat_data += "DESCRIPTION="+description+"$|#"
-      repeat_data += "QUANTITY="   +quantity+"$|#"
-      repeat_data += "UNIT_PRICE=" +unit_price+"$|#"
-      repeat_data += "CURRENCY1="  +currency_1+"$|#"
-      repeat_data += "TOTAL_PRICE="+totalprice+"$|#"
-      repeat_data += "CURRENCY2="  +currency_1+"$|#"
+      repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => quantity, "UNIT_PRICE" => unit_price, "CURRENCY1" => currency_1, "TOTAL_PRICE" => totalprice, "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
     end
 
     invoice.ticket_invoice_advance_payments.each do |ticket_invoice_advance_payment|
@@ -406,14 +357,7 @@ module ApplicationHelper
       total_advance_recieved += totalprice
       net_total_amount += totalprice
 
-      repeat_data += "INDEX_NO="   +item_index+"$|#"
-      repeat_data += "ITEM_CODE=$|#"
-      repeat_data += "DESCRIPTION="+description+"$|#"
-      repeat_data += "QUANTITY="   +"$|#"
-      repeat_data += "UNIT_PRICE=" +unit_price+"$|#"
-      repeat_data += "CURRENCY1="  +currency_1+"$|#"
-      repeat_data += "TOTAL_PRICE="+totalprice+"$|#"
-      repeat_data += "CURRENCY2="  +currency_1+"$|#"
+      repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => "", "UNIT_PRICE" => unit_price, "CURRENCY1" => currency_1, "TOTAL_PRICE" => totalprice, "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
 
       if invoice.deducted_amount.to_d > 0
         currency_1 = invoice.currency.code
@@ -424,14 +368,7 @@ module ApplicationHelper
         total_deduction += totalprice
         net_total_amount += totalprice
 
-        repeat_data += "INDEX_NO="   +item_index+"$|#"
-        repeat_data += "ITEM_CODE=$|#"
-        repeat_data += "DESCRIPTION="+description+"$|#"
-        repeat_data += "QUANTITY="   +"$|#"
-        repeat_data += "UNIT_PRICE=" +unit_price+"$|#"
-        repeat_data += "CURRENCY1="  +currency_1+"$|#"
-        repeat_data += "TOTAL_PRICE="+totalprice+"$|#"
-        repeat_data += "CURRENCY2="  +currency_1+"$|#"
+        repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => "", "UNIT_PRICE" => unit_price, "CURRENCY1" => currency_1, "TOTAL_PRICE" => totalprice, "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
       end
 
       @db_total_amount = invoice.total_amount

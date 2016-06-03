@@ -93,7 +93,7 @@
                             = ta.input :ticket_id, as: :hidden, input_html: {value: ticket.id}
                             .row.estimate_extend_with_tax
                               .col-md-1.small_scale_padding-top2
-                                = ta.link_to_remove class: "remove_c_t_v_link" do
+                                = ta.link_to_remove class: "remove_c_t_v_link", onclick: "Inventories.remove_cost_estimation(this); return false;" do
                                   %span.glyphicon.glyphicon-remove-sign
                               .col-md-3
                                 = label_tag "Additional charge"

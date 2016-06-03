@@ -263,7 +263,6 @@ window.Inventories =
     prev_cost_price = parseFloat(relatives.find(".append_cost_price").text())
     next_val = parseFloat($(e).val())
 
-
     total_estimation = parseFloat($("#total_estimated_price").text())
     total_cost = parseFloat($("#total_cost_price").text())
 
@@ -345,6 +344,32 @@ window.Inventories =
       else
         $("#total_margin_price").removeClass("red")
         $("#estimate_low_margin").val("")
+
+  remove_cost_estimation: (e)->
+    this_e = $(e)
+    r_estimation_price = parseFloat(this_e.parents(".estimate_extend_with_tax").eq(0).find(".append_estimated_price").text())
+    r_cost_price = parseFloat(this_e.parents(".estimate_extend_with_tax").eq(0).find(".append_cost_price").text())
+
+    total_cost_price = $("#total_cost_price").text()
+    total_estimation_price = $("#total_estimated_price").text()
+
+    total_cost_price -= r_cost_price
+    total_estimation_price -= r_estimation_price
+
+    $("#total_cost_price").text(total_cost_price)
+    $("#total_estimated_price").text(total_estimation_price)
+
+    updated_margin = (total_estimation_price - total_cost_price)*100/total_cost_price
+    $("#total_margin_price").text(Math.round(updated_margin * 100)/100)
+    profit = parseFloat($("#db_margin").text())
+
+    if profit >= updated_margin
+      $("#total_margin_price").addClass("red")
+      $("#estimate_low_margin").val("true")
+    else
+      $("#total_margin_price").removeClass("red")
+      $("#estimate_low_margin").val("")
+
 
   approved_amount_calculation: (e)->
     total = parseFloat($("#total_approved_amount").text())
