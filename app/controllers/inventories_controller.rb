@@ -1882,11 +1882,14 @@ class InventoriesController < ApplicationController
         else
           estimation.update estimation_params
 
+          t_cost_price = estimation.ticket_estimation_parts.sum(:cost_price).to_f + estimation.ticket_estimation_additionals.sum(:cost_price).to_f
+
           t_est_price = estimation.ticket_estimation_parts.sum(:estimated_price).to_f + estimation.ticket_estimation_additionals.sum(:estimated_price).to_f
 
           if t_est_price > 0
             estimation.update_attribute(:cust_approval_required, true)
-            d19_estimate_internal_below_margin = params[:estimate_low_margin] == "true" ? "Y" : "N"
+
+            d19_estimate_internal_below_margin = (((t_est_price - t_cost_price)*100/t_cost_price) < CompanyConfig.first.try(:sup_internal_part_profit_margin).to_f) ? "Y" : "N"
           else
             estimation.update_attribute(:cust_approval_required, false)
             d19_estimate_internal_below_margin = "N"

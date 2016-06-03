@@ -3242,7 +3242,7 @@ class TicketsController < ApplicationController
         d29_part_estimate_required_2  = "Y"
 
         #create record spt_ticket_estimation
-        @ticket_estimation = @ticket.ticket_estimations.create(requested_at: DateTime.now, requested_by: current_user.id, status_id: SparePartStatusAction.find_by_code("RQT").id, currency_id: @ticket.base_currency_id)
+        @ticket_estimation = @ticket.ticket_estimations.create(requested_at: DateTime.now, requested_by: current_user.id, status_id: SparePartStatusAction.find_by_code("RQT").id, currency_id: @ticket.base_currency_id, request_type: "PT")
 
         #create record spt_ticket_estimation_part
         ticket_estimation_part = @ticket_estimation.ticket_estimation_parts.create(ticket_id: @ticket.id, ticket_spare_part_id: spt_ticket_spare_part.id)
@@ -3806,6 +3806,7 @@ class TicketsController < ApplicationController
 
         ticket_estimation.ticket_estimation_externals.build(ticket_id: @ticket.id, repair_by_id: job_estimate.supplier_id, description: params[:description])
         ticket_estimation.engineer_id = engineer_id
+        ticket_estimation.request_type = "EX"
         ticket_estimation.save
 
         # bpm output variables
@@ -3901,7 +3902,7 @@ class TicketsController < ApplicationController
           user_ticket_action = @ticket_spare_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket_spare_part.ticket.re_open_count, action_id: action_id, action_engineer_id: engineer_id)
           user_ticket_action.build_request_spare_part(ticket_spare_part_id: @ticket_spare_part.id)
 
-          @ticket_estimation = @ticket_spare_part.ticket.ticket_estimations.build requested_at: DateTime.now, requested_by: current_user.id, approval_required: true, status_id: EstimationStatus.find_by_code("RQS").id, currency_id: @ticket_spare_part.ticket.base_currency_id, engineer_id: engineer_id
+          @ticket_estimation = @ticket_spare_part.ticket.ticket_estimations.build requested_at: DateTime.now, requested_by: current_user.id, approval_required: true, status_id: EstimationStatus.find_by_code("RQS").id, currency_id: @ticket_spare_part.ticket.base_currency_id, engineer_id: engineer_id, request_type: "PT"
           ticket_estimation_part = @ticket_estimation.ticket_estimation_parts.build ticket_id: @ticket_spare_part.ticket.id, ticket_spare_part_id: @ticket_spare_part.id
 
           user_ticket_action.save
