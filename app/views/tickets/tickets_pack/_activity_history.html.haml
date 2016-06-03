@@ -914,7 +914,7 @@
                   .col-md-4
                     Feedback: #{action.customer_feedback.try(:feedback_description)}
 
-            -if action.action_id == 62
+            -if action.action_id == 62 and action.inform_customer
               .panel-body
                 .row
                   .col-md-4

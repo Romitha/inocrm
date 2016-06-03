@@ -1,6 +1,6 @@
 = collapse_wrapper collapse_id: "product_category", labelledby: "labelledby" do
   - @inventory_product_category_all.each do |inventory_product_category|
-    = collapse collapse_type: "success", labelledby: "labelledby_#{inventory_product_category.id}", header_content: inventory_product_category.name, collapse_link: "link_#{inventory_product_category.id}", collapse_id: "product_category" do
+    = collapse collapse_type: "success", labelledby: "labelledby_#{inventory_product_category.id}", header_content: "#{inventory_product_category.name} -> #{inventory_product_category.inventory_category1.name}", collapse_link: "link_#{inventory_product_category.id}", collapse_id: "product_category" do
       .row
         .col-md-4
           %strong Name:

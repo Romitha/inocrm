@@ -7,13 +7,13 @@
     .col-md-3.brand
       .form-group
         = label_tag InventoryCategoryCaption.first.caption
-        = select_tag "search_inventory[brand]", options_from_collection_for_select(InventoryCategory1.all, :id, :name, (params[:search_inventory] and params[:search_inventory][:brand])), include_blank: true, class: "form-control parent_class", data: {child_select_class: "category2_id"}
+        = select_tag "search_inventory[brand]", options_from_collection_for_select(InventoryCategory1.all, :id, :name, (params[:search_inventory] and params[:search_inventory][:brand])), include_blank: true, class: "form-control parent_class", onchange: "Admins.filter_product(this); return false;", data: {"filter-params" => "inventory_category21_id", "render-dom" => "categories", child_select_class: "category2_id"}
 
       - if c1.object.inventory_category2
         %strong Brand:
         = c1.object.inventory_category2.inventory_category1.name
     .col-md-3
-      = c1.input :category2_id, collection: InventoryCategory1.all, as: :grouped_select, group_method: :inventory_category2s, group_label_method: :id, input_html: {class: "category2_id", required: true}, label: "Product"
+      = c1.input :category2_id, collection: InventoryCategory1.all, as: :grouped_select, group_method: :inventory_category2s, group_label_method: :id, input_html: {class: "category2_id", onchange: "Admins.filter_product(this); return false;", required: true, data: {"filter-params" => "inventory_category22_id", "render-dom" => "categories"}}, label: "Product"
       - if c1.object.inventory_category2
         %strong Product:
         = c1.object.inventory_category2.name

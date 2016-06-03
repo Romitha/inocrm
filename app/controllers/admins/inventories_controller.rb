@@ -23,6 +23,7 @@ module Admins
         @inventory_category_all = inventory_product_category2.inventory_category3s
         @render_template = "categories"
       end
+      @renderDom = params[:render_dom]
     end
 
     def delete_admin_brands_and_category
@@ -170,6 +171,7 @@ module Admins
     def location
       Inventory
       Product
+
       if params[:edit]
         if params[:rack_id]
           @inventory_rack = InventoryRack.find params[:rack_id]
@@ -214,6 +216,7 @@ module Admins
         end
         @inventory_all_rack = InventoryRack.order(created_at: :desc).select{|i| i.persisted? }
       end
+
     end
 
     def inventory_brand
@@ -263,7 +266,6 @@ module Admins
     end
 
     def category
-      Inventory
       Inventory
       if params[:edit]
         @inventory_category = InventoryCategory3.find params[:inventory_category3_id]
@@ -327,7 +329,7 @@ module Admins
         else
           @inventory_product = InventoryProduct.new
         end
-        @inventory_product_all = InventoryProduct.order(created_at: :desc).select{|i| i.persisted? }
+        @inventory_product_all = InventoryProduct.order(created_at: :desc).select{ |i| i.persisted? }
 
       end
     end

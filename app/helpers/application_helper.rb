@@ -32,7 +32,6 @@ module ApplicationHelper
       "PRODUCT_NO=#{ticket.products.first.product_no}",
       "PROBLEM_DESC1=#{ticket.problem_description.to_s[0..100]}",
       "PROBLEM_DESC2=#{ticket.problem_description.to_s[101..200]}",
-      # "WARRANTY=#{'X' if ticket.warranty_type.code == 'CW' or ticket.warranty_type.code == 'MW'}",
       "WARRANTY=#{'X' if ticket.products.first.warranties.any?{|w| (w.start_at.to_date..w.end_at.to_date).include?(ticket.created_at.to_date)}}",
       "CHARGEABLE=#{'X' if ticket.cus_chargeable}",
       "NEED_POP=#{'X' if ticket.products.first.product_pop_status.code != 'NAP'}",
@@ -61,7 +60,7 @@ module ApplicationHelper
       "COMPANY_NAME=#{fsr.ticket.customer.mst_title.title} #{fsr.ticket.customer.name}",
       "ADDRESS=#{fsr.ticket.customer.address1} #{fsr.ticket.customer.address2} #{fsr.ticket.customer.address3} #{fsr.ticket.customer.address4}",
       "TICKET_REF=#{fsr.ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG['ticket_no_format'])}",
-      "ENGINEER=#{fsr.ticket.owner_engineer and fsr.ticket.owner_engineer.user.email}",
+      "ENGINEER=#{fsr.ticket.owner_engineer and fsr.ticket.owner_engineer.user.full_name}",
       "SERIAL_NO=#{fsr.ticket.products.first.serial_no}",
       "PRODUCT_DETAILS=#{[fsr.ticket.products.first.product_brand.name, fsr.ticket.products.first.product_category.name, fsr.ticket.products.first.model_no, fsr.ticket.products.first.product_no].join(' / ')}",
       "PRODUCT_BRAND=#{fsr.ticket.products.first.product_brand.name}",
@@ -76,25 +75,6 @@ module ApplicationHelper
   end
 
   def print_receipt_tag_value receipt
-    [
-      "DUPLICATE=#{receipt.receipt_print_count > 0 ? 'D' : ''}",
-      "RECEIPT_NO=#{receipt.id.to_s.rjust(6, INOCRM_CONFIG['receipt_no_format'])}",
-      "COMPANY_NAME=#{receipt.ticket.customer.mst_title.title} #{receipt.ticket.customer.name}",
-      "TICKET_REF=#{receipt.ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG['ticket_no_format'])}",
-      "AMOUNT=#{receipt.amount}",
-      "INVOICE_NO=#{receipt.invoice.try.invoice_no.to_s.rjust(6, INOCRM_CONFIG['invoice_no_format']) if receipt.invoice}",
-      "DESCRIPTION=#{receipt.receipt_description.truncate(18)}",
-      "PAYMENT_TYPE=#{TicketPaymentReceivedType::TYPES.key(receipt.payment_type)}",
-      "PAYMENT_NOTE=#{receipt.payment_note.try(:truncate, 18)}",
-      "TYPE=#{receipt.ticket_payment_received_type.name}",
-      "NOTE=#{receipt.note.try(:truncate, 18)}",
-      "CREATED_DATE=#{receipt.created_at.strftime(INOCRM_CONFIG['long_date_format'])}",
-      "CREATED_TIME=#{receipt.created_at.strftime(INOCRM_CONFIG['time_format'])}",
-      "CREATED_BY=#{User.cached_find_by_id(receipt.received_by).email}"
-    ]
-  end
-
-  def print_invoice_tag_value invoice
     [
       "DUPLICATE=#{receipt.receipt_print_count > 0 ? 'D' : ''}",
       "RECEIPT_NO=#{receipt.id.to_s.rjust(6, INOCRM_CONFIG['receipt_no_format'])}",
@@ -215,14 +195,16 @@ module ApplicationHelper
 
 
   def print_ticket_invoice_tag_value ticket_invoice  #REQUEST_TYPE=PRINT_SPPT_INVOICE
+    Invoice
+    ContactNumber
     invoice = ticket_invoice
 
-    ticket = invoice.ticket    
+    ticket = invoice.ticket
     ticket_date = ticket.created_at.strftime(INOCRM_CONFIG['long_date_format'])
     ticket_time = ticket.created_at.strftime(INOCRM_CONFIG['time_format'])
     ticket_ref = ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG['ticket_no_format'])
     company_name = ticket.customer.mst_title.title+" "+ticket.customer.name
-    contact_person = ticket.contact_person1.mst_title.title +" "+ticket.contact_person1.name
+    contact_person = "#{ticket.contact_person1.mst_title.title} #{ticket.contact_person1.name}"
     address1 = ticket.customer.address1
     address2 = ticket.customer.address2
     address3 = ticket.customer.address3
@@ -243,7 +225,7 @@ module ApplicationHelper
     extra_remark3 = ticket.ticket_extra_remarks.third.try(:extra_remark).try(:extra_remark)
     extra_remark4 = ticket.ticket_extra_remarks.fourth.try(:extra_remark).try(:extra_remark)
     extra_remark5 = ticket.ticket_extra_remarks.fifth.try(:extra_remark).try(:extra_remark)
-    extra_remark6 = ticket.ticket_extra_remarks.sixth.try(:extra_remark).try(:extra_remark)
+    extra_remark6 = ticket.ticket_extra_remarks[5].try(:extra_remark).try(:extra_remark)
     remark = ticket.remarks.split('<span class=\'pop_note_e_time\'>').first if ticket.remarks.present?
     accessory1 = ticket.accessories.first.try(:accessory)
     accessory2 = ticket.accessories.second.try(:accessory)
@@ -254,14 +236,14 @@ module ApplicationHelper
     resolution_summary1 = ticket.resolution_summary.to_s[0..100]
     resolution_summary2 = ticket.resolution_summary.to_s[101..200]
     invoice_no = invoice.invoice_no.to_s.rjust(6, INOCRM_CONFIG['invoice_no_format'])
-    payment_term = invoice.try.payment_term.name
+    payment_term = invoice.try(:payment_term).try(:name)
     special_note = ticket.note
     invoice_note = invoice.note
-    created_by = ticket.created_by.user.name
+    created_by = User.cached_find_by_id(ticket.created_by).try(:full_name)
 
     total_amount = 0
     net_total_amount = 0
-    currency = invoice.currency.code
+    currency = invoice.currency.try(:code)
     total_advance_recieved = 0
     total_deduction = 0
     balance_tobe_paid = 0
@@ -452,14 +434,14 @@ module ApplicationHelper
         repeat_data += "CURRENCY2="  +currency_1+"$|#"
       end
 
-      db_total_amount = invoice.total_amount
+      @db_total_amount = invoice.total_amount
       db_net_total_amount = invoice.net_total_amount
-      db_total_advance_recieved = -invoice.total_advance_recieved
-      db_total_deduction = -invoice.total_deduction
-      if (db_total_amount != total_amount) or (db_net_total_amount != net_total_amount) or (db_total_advance_recieved != total_advance_recieved) or (db_total_deduction != total_deduction)
-        total_error="Calculation Error In Totals"
+      @db_total_advance_recieved = -invoice.total_advance_recieved
+      @db_total_deduction = -invoice.total_deduction
+      if (@db_total_amount != total_amount) or (db_net_total_amount != net_total_amount) or (@db_total_advance_recieved != total_advance_recieved) or (@db_total_deduction != total_deduction)
+        @total_error="Calculation Error In Totals"
       end
-      balance_tobe_paid = db_total_amount + db_total_advance_recieved + db_total_deduction
+      balance_tobe_paid = @db_total_amount + @db_total_advance_recieved + @db_total_deduction
 
     end
 
@@ -480,11 +462,11 @@ module ApplicationHelper
       "CREATED_TIME=#{ticket_time}",
       "PAYMENT_TERM=#{payment_term}",
       repeat_data,
-      "TOTAL_AMOUNT=#{db_total_amount}",
+      "TOTAL_AMOUNT=#{@db_total_amount}",
       "CURRENCY3=#{currency}",
-      "TOTAL_ADVANCE_RECEIVED=#{db_total_advance_recieved}",
+      "TOTAL_ADVANCE_RECEIVED=#{@db_total_advance_recieved}",
       "CURRENCY4=#{currency}",
-      "TOTAL_DEDUCTION=#{db_total_deduction}",
+      "TOTAL_DEDUCTION=#{@db_total_deduction}",
       "CURRENCY5=#{currency}",
       "BALANCE_TO_BE_PAID=#{balance_tobe_paid}",
       "CURRENCY6=#{currency}",
@@ -492,7 +474,7 @@ module ApplicationHelper
       "CREATED_BY=#{created_by}",
       "RESOLUTION_SUMMARY1=#{resolution_summary1}",
       "RESOLUTION_SUMMARY2=#{resolution_summary2}",
-      "TOTAL_ERROR=#{total_error}",
+      "TOTAL_ERROR=#{@total_error}",
     ]
 
   end

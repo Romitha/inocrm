@@ -29,9 +29,6 @@ class TicketsController < ApplicationController
 
   end
 
-  # available caches
-    # new_ticket, ticket_params, histories, existing_customer, new_product_with_pop_doc_url, created_warranty
-
   def new
     Rails.cache.delete([:new_ticket, request.remote_ip.to_s, session[:time_now]])
     Rails.cache.delete([:ticket_params, request.remote_ip.to_s, session[:time_now]])
@@ -2943,7 +2940,7 @@ class TicketsController < ApplicationController
       user_ticket_action.build_act_payment_received(ticket_payment_received_id: @receipt.id, invoice_completed: false)
       user_ticket_action.save
  
-    when "print_invoice"
+    when "print_ticket_invoice"
       Invoice
       @invoice = TicketInvoice.find(params[:print_object_id])
       @ticket = @invoice.ticket
