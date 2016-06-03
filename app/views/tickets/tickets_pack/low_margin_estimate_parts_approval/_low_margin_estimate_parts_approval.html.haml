@@ -60,7 +60,6 @@
 
           .col-md-6
             #paginate_grns
-              / = paginate grn_items, remote: true, method: :get, params: {controller: "tickets", action: "paginate_ticket_grn_items", per_page: 3}
               %table.table
                 %thead
                   %tr

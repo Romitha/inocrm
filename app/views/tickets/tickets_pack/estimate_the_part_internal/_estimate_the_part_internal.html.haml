@@ -87,7 +87,7 @@
             .col-md-9.head_estimated_price_class
               .row
                 .col-md-2
-                  = t.association :supplier, input_html: {class: "est_internal_supplier"}
+                  = t.association :supplier, collection: Organization.stores, input_html: {class: "est_internal_supplier"}
                 .col-md-3
                   = t.input :cost_price, label: "Cost Price (#{ticket.ticket_currency.code})", as: :string, input_html: {class: "value_class only_float", oninput: "Inventories.calculate_cost_price(this);"}
                   .append_cost_price.hide
@@ -138,7 +138,7 @@
               = ta.input :ticket_id, as: :hidden, input_html: {value: ticket.id}
               .row.estimate_extend_with_tax
                 .col-md-1.small_scale_padding-top2
-                  = ta.link_to_remove class: "remove_c_t_v_link" do
+                  = ta.link_to_remove class: "remove_c_t_v_link", onclick: "Inventories.remove_cost_estimation(this); return false;" do
                     %span.glyphicon.glyphicon-remove-sign
                 .col-md-3
                   = label_tag "Additional charge"
