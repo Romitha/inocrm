@@ -286,7 +286,7 @@ module ApplicationHelper
           description = "Part No: #{estimation_part.ticket_spare_part.spare_part_no} #{estimation_part.ticket_spare_part.spare_part_description}"
           item_code = estimation_part.ticket_spare_part.spare_part_store.present? ? estimation_part.ticket_spare_part.spare_part_store.approved_inventory_product.item_code : ""
 
-          unit_price = invoice_estimation.ticket_estimation.approval_required ? estimation_part.approved_estimated_price : estimation_part.estimated_price
+          unit_price = ticket_invoice_estimation.ticket_estimation.approval_required ? estimation_part.approved_estimated_price : estimation_part.estimated_price
 
           totalprice = unit_price
           total_amount += totalprice
@@ -298,7 +298,7 @@ module ApplicationHelper
             item_index += 1
             description = "#{ticket_estimation_part_tax.tax.tax} (#{ticket_estimation_part_tax.tax_rate})"
 
-            unit_price = invoice_estimation.ticket_estimation.approval_required ? ticket_estimation_part_tax.approved_tax_amount : ticket_estimation_part_tax.estimated_tax_amount
+            unit_price = ticket_invoice_estimation.ticket_estimation.approval_required ? ticket_estimation_part_tax.approved_tax_amount : ticket_estimation_part_tax.estimated_tax_amount
         
             totalprice = unit_price
             total_amount += totalprice
@@ -311,7 +311,7 @@ module ApplicationHelper
         ticket_invoice_estimation.ticket_estimation.ticket_estimation_additionals.each do |ticket_estimation_additional|
           item_index += 1
           description = ticket_estimation_additional.additional_charge.additional_charge
-          unit_price = invoice_estimation.ticket_estimation.approval_required ? ticket_estimation_additional.approved_estimated_price : ticket_estimation_additional.estimated_price
+          unit_price = ticket_invoice_estimation.ticket_estimation.approval_required ? ticket_estimation_additional.approved_estimated_price : ticket_estimation_additional.estimated_price
 
           totalprice = unit_price
           total_amount += totalprice
@@ -322,7 +322,7 @@ module ApplicationHelper
           ticket_estimation_additional.ticket_estimation_additional_taxes.each do |ticket_estimation_additional_tax|
             item_index += 1
             description = "#{ticket_estimation_additional_tax.tax.tax} (#{ticket_estimation_additional_tax.tax_rate})"
-            unit_price = invoice_estimation.ticket_estimation.approval_required ? ticket_estimation_additional_tax.approved_tax_amount : ticket_estimation_additional_tax.estimated_tax_amount
+            unit_price = ticket_invoice_estimation.ticket_estimation.approval_required ? ticket_estimation_additional_tax.approved_tax_amount : ticket_estimation_additional_tax.estimated_tax_amount
           
             totalprice = unit_price
             total_amount += totalprice
