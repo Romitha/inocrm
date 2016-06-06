@@ -29,6 +29,7 @@
       = du.input :status_id, as: :hidden, input_html: {value: EstimationStatus.find_by_code("RQS").id}
       = du.input :requested_at, as: :hidden, input_html: {value: DateTime.now.strftime("%d-%m-%Y %H:%M")}
       = du.input :requested_by, as: :hidden, input_html: {value: current_user.id}
+      = du.input :request_type, as: :hidden, input_html: {value: "EX"}
 
 
     = f.input :remarks, input_html: {value: nil}
