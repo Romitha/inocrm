@@ -269,7 +269,7 @@ module ApplicationHelper
 
         estimation_external.ticket_estimation_external_taxes.each do |ticket_estimation_external_tax|
           item_index += 1
-          description = ticket_estimation_external_tax.tax.tax + "  (" + ticket_estimation_external_tax.tax_rate + ")"
+          description = "#{ticket_estimation_external_tax.tax.tax} (#{ticket_estimation_external_tax.tax_rate})"
           quantity = 1
           unit_price = ticket_invoice_estimation.ticket_estimation.approval_required ? ticket_estimation_external_tax.approved_tax_amount : ticket_estimation_external_tax.estimated_tax_amount
 
@@ -297,7 +297,7 @@ module ApplicationHelper
 
         estimation_part.ticket_estimation_part_taxes.each do |ticket_estimation_part_tax|
           item_index += 1
-          description = ticket_estimation_part_tax.tax.tax + "  (" + ticket_estimation_part_tax.tax_rate + ")"
+          description = "#{ticket_estimation_part_tax.tax.tax} (#{ticket_estimation_part_tax.tax_rate})"
 
           unit_price = invoice_estimation.ticket_estimation.approval_required ? ticket_estimation_part_tax.approved_tax_amount : ticket_estimation_part_tax.estimated_tax_amount
       
@@ -322,7 +322,7 @@ module ApplicationHelper
 
         ticket_estimation_additional.ticket_estimation_additional_taxes.each do |ticket_estimation_additional_tax|
           item_index += 1
-          description = ticket_estimation_additional_tax.tax.tax + "  (" + ticket_estimation_additional_tax.tax_rate + ")"
+          description = "#{ticket_estimation_additional_tax.tax.tax} (#{ticket_estimation_additional_tax.tax_rate})"
           unit_price = invoice_estimation.ticket_estimation.approval_required ? ticket_estimation_additional_tax.approved_tax_amount : ticket_estimation_additional_tax.estimated_tax_amount
         
           totalprice = unit_price
@@ -351,7 +351,7 @@ module ApplicationHelper
       currency_1 = ticket_invoice_advance_payment.ticket_payment_received.currency.code
       
       item_index += 1
-      description = "Advanced Payment Recieved on :"+ ticket_invoice_advance_payment.ticket_payment_received.recieved_at.strftime(INOCRM_CONFIG['long_date_format']+' '+INOCRM_CONFIG['time_format'])
+      description = "Advanced Payment Recieved on : #{ticket_invoice_advance_payment.ticket_payment_received.recieved_at.strftime(INOCRM_CONFIG['long_date_format']+' '+INOCRM_CONFIG['time_format'])}"
       unit_price = -ticket_invoice_advance_payment.ticket_payment_received.amount
       totalprice = unit_price
       total_advance_recieved += totalprice
