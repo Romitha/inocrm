@@ -71,7 +71,7 @@ class TodosController < ApplicationController
 
       @redirect_url = "#{url}?process_id=#{process_instance_id}&task_id=#{task_id}&owner=#{owner}&#{@bpm_input_variables.map{|e| e[:variable_id]+'='+e[:value]}.join('&')}"
     else
-      Rails.cache.delete(session[:cache_key])
+      Rails.cache.delete(session[:cache_key]) if session[:cache_key].present?
       @redirect_url = todos_url
       @flash_message = "Task is not available."
     end
