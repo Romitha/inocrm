@@ -352,7 +352,7 @@ module ApplicationHelper
       currency_1 = ticket_invoice_advance_payment.ticket_payment_received.currency.code
       
       item_index += 1
-      description = "Advanced Payment Recieved on : #{ticket_invoice_advance_payment.ticket_payment_received.recieved_at.strftime(INOCRM_CONFIG['long_date_format']+' '+INOCRM_CONFIG['time_format'])}"
+      description = "Advanced Payment Recieved on : #{ticket_invoice_advance_payment.ticket_payment_received.received_at.strftime(INOCRM_CONFIG['long_date_format']+' '+INOCRM_CONFIG['time_format'])}"
       unit_price = -ticket_invoice_advance_payment.ticket_payment_received.amount
       totalprice = unit_price
       total_advance_recieved += totalprice
