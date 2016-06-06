@@ -2,11 +2,11 @@
 = simple_nested_form_for @inventory_reason, url: reason_admins_inventories_path(create: true), method: :post, html: { class: "validate_form" } do |i|
   .row{style: "margin-top: 15px; "}
     .col-md-3{style: "color: #900303;"}
-      = i.input :srn_issue_terminate, wrapper: :append
+      = i.input :srn_issue_terminate, label: "SRN Issue Terminate", wrapper: :append
     .col-md-3{style: "color: #900303;"}
       = i.input :damage, wrapper: :append
     .col-md-3{style: "color: #900303;"}
-      = i.input :srr, wrapper: :append
+      = i.input :srr, label: "SRR", wrapper: :append
     .col-md-3{style: "color: #900303;"}
       = i.input :disposal, wrapper: :append
   .row
