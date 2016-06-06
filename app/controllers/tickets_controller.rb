@@ -2978,7 +2978,7 @@ class TicketsController < ApplicationController
       TicketPaymentReceived.find_by_id params[:print_object_id]
     when "delivery"
       @ticket = Ticket.find(params[:print_object_id])
-    when "ticket_invoice"
+    when "invoice"
       Invoice
       @ticket_invoice = TicketInvoice.find(params[:print_object_id])
 
