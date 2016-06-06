@@ -8,6 +8,7 @@
 
   - if f.object.new_record?
     = link_to "change product", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true
+    .request_from
     %br/
     = f.input :product_id, as: :hidden, input_html: {id: "inv_product_id"}
 

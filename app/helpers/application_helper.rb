@@ -279,57 +279,58 @@ module ApplicationHelper
 
           repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => "", "UNIT_PRICE" => unit_price, "CURRENCY1" => currency_1, "TOTAL_PRICE" => totalprice, "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
         end
-      end
 
-      if ticket_invoice_estimation.ticket_estimation.ticket_estimation_parts.present?
-        estimation_part = ticket_invoice_estimation.ticket_estimation.ticket_estimation_parts.first
-        item_index += 1
-        description = "Part No: "+estimation_part.ticket_spare_part.spare_part_no+" "+ estimation_part.ticket_spare_part.spare_part_description
-        item_code = estimation_part.ticket_spare_part.spare_part_store.present? ? estimation_part.ticket_spare_part.spare_part_store.approved_inventory_product.item_code : ""
-
-        unit_price = invoice_estimation.ticket_estimation.approval_required ? estimation_part.approved_estimated_price : estimation_part.estimated_price
-
-        totalprice = unit_price
-        total_amount += totalprice
-        net_total_amount += totalprice
-
-        repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => item_code, "DESCRIPTION" => description, "QUANTITY" => quantity, "UNIT_PRICE" => unit_price, "CURRENCY1" => currency_1, "TOTAL_PRICE" => totalprice, "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
-
-        estimation_part.ticket_estimation_part_taxes.each do |ticket_estimation_part_tax|
+        if ticket_invoice_estimation.ticket_estimation.ticket_estimation_parts.present?
+          estimation_part = ticket_invoice_estimation.ticket_estimation.ticket_estimation_parts.first
           item_index += 1
-          description = "#{ticket_estimation_part_tax.tax.tax} (#{ticket_estimation_part_tax.tax_rate})"
+          description = "Part No: #{estimation_part.ticket_spare_part.spare_part_no} #{estimation_part.ticket_spare_part.spare_part_description}"
+          item_code = estimation_part.ticket_spare_part.spare_part_store.present? ? estimation_part.ticket_spare_part.spare_part_store.approved_inventory_product.item_code : ""
 
-          unit_price = invoice_estimation.ticket_estimation.approval_required ? ticket_estimation_part_tax.approved_tax_amount : ticket_estimation_part_tax.estimated_tax_amount
-      
+          unit_price = invoice_estimation.ticket_estimation.approval_required ? estimation_part.approved_estimated_price : estimation_part.estimated_price
+
           totalprice = unit_price
           total_amount += totalprice
           net_total_amount += totalprice
 
-          repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => "", "UNIT_PRICE" => unit_price, "CURRENCY1" => currency_1, "TOTAL_PRICE" => totalprice, "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
-        end
-      end
+          repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => item_code, "DESCRIPTION" => description, "QUANTITY" => quantity, "UNIT_PRICE" => unit_price, "CURRENCY1" => currency_1, "TOTAL_PRICE" => totalprice, "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
 
-      ticket_invoice_estimation.ticket_estimation.ticket_estimation_additionals.each do |ticket_estimation_additional|
-        item_index += 1
-        description = ticket_estimation_additional.additional_charge.additional_charge
-        unit_price = invoice_estimation.ticket_estimation.approval_required ? ticket_estimation_additional.approved_estimated_price : ticket_estimation_additional.estimated_price
+          estimation_part.ticket_estimation_part_taxes.each do |ticket_estimation_part_tax|
+            item_index += 1
+            description = "#{ticket_estimation_part_tax.tax.tax} (#{ticket_estimation_part_tax.tax_rate})"
 
-        totalprice = unit_price
-        total_amount += totalprice
-        net_total_amount += totalprice
-
-        repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => quantity, "UNIT_PRICE" => unit_price, "CURRENCY1" => currency_1, "TOTAL_PRICE" => totalprice, "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
-
-        ticket_estimation_additional.ticket_estimation_additional_taxes.each do |ticket_estimation_additional_tax|
-          item_index += 1
-          description = "#{ticket_estimation_additional_tax.tax.tax} (#{ticket_estimation_additional_tax.tax_rate})"
-          unit_price = invoice_estimation.ticket_estimation.approval_required ? ticket_estimation_additional_tax.approved_tax_amount : ticket_estimation_additional_tax.estimated_tax_amount
+            unit_price = invoice_estimation.ticket_estimation.approval_required ? ticket_estimation_part_tax.approved_tax_amount : ticket_estimation_part_tax.estimated_tax_amount
         
+            totalprice = unit_price
+            total_amount += totalprice
+            net_total_amount += totalprice
+
+            repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => "", "UNIT_PRICE" => unit_price, "CURRENCY1" => currency_1, "TOTAL_PRICE" => totalprice, "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
+          end
+        end
+
+        ticket_invoice_estimation.ticket_estimation.ticket_estimation_additionals.each do |ticket_estimation_additional|
+          item_index += 1
+          description = ticket_estimation_additional.additional_charge.additional_charge
+          unit_price = invoice_estimation.ticket_estimation.approval_required ? ticket_estimation_additional.approved_estimated_price : ticket_estimation_additional.estimated_price
+
           totalprice = unit_price
           total_amount += totalprice
           net_total_amount += totalprice
 
-          repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => "", "UNIT_PRICE" => unit_price, "CURRENCY1" => currency_1, "TOTAL_PRICE" => totalprice, "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
+          repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => quantity, "UNIT_PRICE" => unit_price, "CURRENCY1" => currency_1, "TOTAL_PRICE" => totalprice, "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
+
+          ticket_estimation_additional.ticket_estimation_additional_taxes.each do |ticket_estimation_additional_tax|
+            item_index += 1
+            description = "#{ticket_estimation_additional_tax.tax.tax} (#{ticket_estimation_additional_tax.tax_rate})"
+            unit_price = invoice_estimation.ticket_estimation.approval_required ? ticket_estimation_additional_tax.approved_tax_amount : ticket_estimation_additional_tax.estimated_tax_amount
+          
+            totalprice = unit_price
+            total_amount += totalprice
+            net_total_amount += totalprice
+
+            repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => "", "UNIT_PRICE" => unit_price, "CURRENCY1" => currency_1, "TOTAL_PRICE" => totalprice, "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
+
+          end
         end
       end
     end
