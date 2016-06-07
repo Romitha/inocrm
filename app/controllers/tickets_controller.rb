@@ -303,7 +303,6 @@ class TicketsController < ApplicationController
         @ticket.contact_person1 ||= @product.tickets.last.try(:contact_person1)
         @ticket.contact_person2 ||= @product.tickets.last.try(:contact_person2)
         @ticket.report_person ||= @product.tickets.last.try(:report_person)
-        puts @ticket.contact_person1
         Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @ticket)
         session[:customer_id] = @new_customer.id
         @notice = "Great! #{@new_customer.name} is added."

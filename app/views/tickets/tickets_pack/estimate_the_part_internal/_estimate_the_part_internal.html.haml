@@ -194,10 +194,10 @@
 
     .col-md-3.col-md-offset-6
       %strong Total cost price:
-      %span#total_cost_price 0
+      %span#total_cost_price= [f.object.ticket_estimation_parts.sum(:cost_price), f.object.ticket_estimation_additionals.sum(:cost_price)].sum
       %br
       %strong Total estimated price:
-      %span#total_estimated_price.for_payment_limit 0
+      %span#total_estimated_price.for_payment_limit= [f.object.ticket_estimation_parts.sum(:estimated_price), f.object.ticket_estimation_additionals.sum(:estimated_price)].sum
       %br
       %strong Total profit (%):
       %span#total_margin_price{style: "font-weight:bold;"}

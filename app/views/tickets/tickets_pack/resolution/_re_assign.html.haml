@@ -20,7 +20,7 @@
       .row
         = uf.simple_fields_for :ticket_re_assign_request do |rf|
           .col-md-12
-            = rf.association :reason, label_method: :reason, value_method: :id, include_blank: false
+            = rf.association :reason, label_method: :reason, value_method: :id, include_blank: false, collection: Reason.where(re_assign_request: true)
         .col-md-12
           = f.input :remarks, input_html: {value: nil}
           = simple_format ticket.remarks

@@ -34,10 +34,10 @@
           %td= boolean_in_word i.customer_sent, "Yes", "No"
           %td= boolean_in_word i.canceled, "Yes", "No"
           %td= i.currency.code
-          %td= i.total_cost
-          %td= i.total_amount
-          %td= i.ticket_invoice_total_taxes.sum(:amount)
-          %td= i.total_deduction
-          %td= i.total_advance_recieved
-          %td= i.net_total_amount
+          %td= number_to_currency i.total_cost, delimiter: ",", unit: ticket.ticket_currency.code, format: "%u %n"
+          %td= number_to_currency i.total_amount, delimiter: ",", unit: ticket.ticket_currency.code, format: "%u %n"
+          %td= number_to_currency i.ticket_invoice_total_taxes.sum(:amount), delimiter: ",", unit: ticket.ticket_currency.code, format: "%u %n"
+          %td= number_to_currency i.total_deduction, delimiter: ",", unit: ticket.ticket_currency.code, format: "%u %n"
+          %td= number_to_currency i.total_advance_recieved, delimiter: ",", unit: ticket.ticket_currency.code, format: "%u %n"
+          %td= number_to_currency i.net_total_amount, delimiter: ",", unit: ticket.ticket_currency.code, format: "%u %n"
           %td= link_to "edit/print", edit_invoice_ajax_invoices_path(invoice_id: i.id, task_id: params[:task_id], ticket_id: ticket.id, action_type: "update"), remote: true
