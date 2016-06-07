@@ -8,12 +8,25 @@ class TicketsController < ApplicationController
   respond_to :html, :json
 
   def ticket_in_modal
+
     ct = params[:ct]
     fa = params[:fa]
+    if ct == "undefined"
+      @ct = ""
+    else
+      @ct = ct
+    end
+
+    if fa == "undefined"
+      @fa = ""
+    else
+      @fa = fa
+    end
+
     ticket_id = params[:ticket_id]
     @ticket = Ticket.find params[:ticket_id]
 
-    ticket_spare_part = TicketSparePart.where("faulty_ct_no like ? and faulty_serial_no like ?", "%#{ct}%", "%#{fa}%")
+    ticket_spare_part = TicketSparePart.where("faulty_ct_no like ? and faulty_serial_no like ?", "#{ct}%", "#{fa}%")
     @filtered_ticket_spare_part = ticket_spare_part.select{|s| s.ticket_id != @ticket.id }
     render "tickets/tickets_pack/resolution/ticket_in_modal"
   end
@@ -2013,7 +2026,9 @@ class TicketsController < ApplicationController
   end
 
   def add_edit_contract
-    render "tickets/tickets_pack/add_edit_contract"
+    Ticket
+    @contract = TicketContract.new
+    render "tickets/tickets_pack/add_edit_contract/add_edit_contract"
   end
 
   def alert

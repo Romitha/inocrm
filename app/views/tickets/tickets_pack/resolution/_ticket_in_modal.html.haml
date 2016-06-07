@@ -2,6 +2,13 @@
   %button.close{"data-dismiss" => "modal", :type => "button"} &times;
   %h4.modal-title Previous Details
 .modal-body
+  .row
+    .col-md-3
+      %strong Faulty Serial No
+      = @fa
+    .col-md-3
+      %strong Faulty CT No
+      = @ct
   %table.table.table-striped
     %thead
       %tr
