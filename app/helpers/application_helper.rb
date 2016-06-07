@@ -259,7 +259,7 @@ module ApplicationHelper
         item_index += 1
         description = estimation_external.description
 
-        unit_price = ticket_invoice_estimation.ticket_estimation.approval_required ? estimation_external.approved_estimated_price : estimation_external.estimated_price
+        unit_price = ticket_invoice_estimation.ticket_estimation.approval_required ? estimation_external.approved_estimated_price.to_f : estimation_external.estimated_price.to_f
 
         totalprice = unit_price
         total_amount += totalprice
@@ -271,7 +271,7 @@ module ApplicationHelper
           item_index += 1
           description = "#{ticket_estimation_external_tax.tax.tax} (#{ticket_estimation_external_tax.tax_rate})"
           quantity = 1
-          unit_price = ticket_invoice_estimation.ticket_estimation.approval_required ? ticket_estimation_external_tax.approved_tax_amount : ticket_estimation_external_tax.estimated_tax_amount
+          unit_price = ticket_invoice_estimation.ticket_estimation.approval_required ? ticket_estimation_external_tax.approved_tax_amount.to_f : ticket_estimation_external_tax.estimated_tax_amount.to_f
 
           totalprice = unit_price
           total_amount += totalprice
@@ -288,7 +288,7 @@ module ApplicationHelper
         description = "Part No: #{estimation_part.ticket_spare_part.spare_part_no} #{estimation_part.ticket_spare_part.spare_part_description}"
         item_code = estimation_part.ticket_spare_part.ticket_spare_part_store.present? ? estimation_part.ticket_spare_part.ticket_spare_part_store.approved_inventory_product.item_code : ""
 
-        unit_price = ticket_invoice_estimation.ticket_estimation.approval_required ? estimation_part.approved_estimated_price : estimation_part.estimated_price
+        unit_price = ticket_invoice_estimation.ticket_estimation.approval_required ? estimation_part.approved_estimated_price.to_f : estimation_part.estimated_price.to_f
 
         totalprice = unit_price
         total_amount += totalprice
@@ -300,7 +300,7 @@ module ApplicationHelper
           item_index += 1
           description = "#{ticket_estimation_part_tax.tax.tax} (#{ticket_estimation_part_tax.tax_rate})"
 
-          unit_price = ticket_invoice_estimation.ticket_estimation.approval_required ? ticket_estimation_part_tax.approved_tax_amount : ticket_estimation_part_tax.estimated_tax_amount
+          unit_price = ticket_invoice_estimation.ticket_estimation.approval_required ? ticket_estimation_part_tax.approved_tax_amount.to_f : ticket_estimation_part_tax.estimated_tax_amount.to_f
       
           totalprice = unit_price
           total_amount += totalprice
@@ -313,7 +313,7 @@ module ApplicationHelper
       ticket_invoice_estimation.ticket_estimation.ticket_estimation_additionals.each do |ticket_estimation_additional|
         item_index += 1
         description = ticket_estimation_additional.additional_charge.additional_charge
-        unit_price = ticket_invoice_estimation.ticket_estimation.approval_required ? ticket_estimation_additional.approved_estimated_price : ticket_estimation_additional.estimated_price
+        unit_price = ticket_invoice_estimation.ticket_estimation.approval_required ? ticket_estimation_additional.approved_estimated_price.to_f : ticket_estimation_additional.estimated_price.to_f
 
         totalprice = unit_price
         total_amount += totalprice
@@ -324,7 +324,7 @@ module ApplicationHelper
         ticket_estimation_additional.ticket_estimation_additional_taxes.each do |ticket_estimation_additional_tax|
           item_index += 1
           description = "#{ticket_estimation_additional_tax.tax.tax} (#{ticket_estimation_additional_tax.tax_rate})"
-          unit_price = ticket_invoice_estimation.ticket_estimation.approval_required ? ticket_estimation_additional_tax.approved_tax_amount : ticket_estimation_additional_tax.estimated_tax_amount
+          unit_price = ticket_invoice_estimation.ticket_estimation.approval_required ? ticket_estimation_additional_tax.approved_tax_amount.to_f : ticket_estimation_additional_tax.estimated_tax_amount.to_f
         
           totalprice = unit_price
           total_amount += totalprice
@@ -340,7 +340,7 @@ module ApplicationHelper
       currency_1 = ticket_invoice_terminate.act_terminate_job_payment.currency.code
       item_index += 1
       description = ticket_invoice_terminate.act_terminate_job_payment.payment_item.name
-      unit_price = -ticket_invoice_terminate.act_terminate_job_payment.amount
+      unit_price = -ticket_invoice_terminate.act_terminate_job_payment.amount.to_f
 
       totalprice = unit_price
       total_amount += totalprice
@@ -354,7 +354,7 @@ module ApplicationHelper
       
       item_index += 1
       description = "Advanced Payment Recieved on : #{ticket_invoice_advance_payment.ticket_payment_received.received_at.strftime(INOCRM_CONFIG['long_date_format'])}"
-      unit_price = -ticket_invoice_advance_payment.ticket_payment_received.amount
+      unit_price = -ticket_invoice_advance_payment.ticket_payment_received.amount.to_f
       totalprice = unit_price
       total_advance_recieved += totalprice
       net_total_amount += totalprice
@@ -365,7 +365,7 @@ module ApplicationHelper
         currency_1 = invoice.currency.code
         item_index += 1
         description = "Deduction"
-        unit_price = -invoice.deducted_amount
+        unit_price = -invoice.deducted_amount.to_f
         totalprice = unit_price
         total_deduction += totalprice
         net_total_amount += totalprice
