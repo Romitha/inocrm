@@ -362,26 +362,27 @@ module ApplicationHelper
 
       repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => "", "UNIT_PRICE" => "", "CURRENCY1" => "", "TOTAL_PRICE" => standard_currency_format(totalprice), "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
 
-      if invoice.deducted_amount.to_d > 0
-        currency_1 = invoice.currency.code
-        #item_index += 1
-        description = "Deduction"
-        unit_price = -invoice.deducted_amount.to_f
-        totalprice = unit_price
-        total_deduction += totalprice
-        net_total_amount += totalprice
 
-        # repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => "", "UNIT_PRICE" => "", "CURRENCY1" => "", "TOTAL_PRICE" => totalprice, "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
-      end
+    end
 
-      @db_total_amount = invoice.total_amount
-      db_net_total_amount = invoice.net_total_amount
-      @db_total_advance_recieved = -invoice.total_advance_recieved
-      @db_total_deduction = -invoice.total_deduction
-      if (db_net_total_amount != net_total_amount) or (@db_total_advance_recieved != total_advance_recieved) or (@db_total_deduction != total_deduction)
-        @total_error="Calculation Error In Totals: net_total_amount=#{net_total_amount} total_advance_recieved=#{total_advance_recieved} total_deduction=#{total_deduction}"
-      end
+    if invoice.deducted_amount.to_d > 0
+      currency_1 = invoice.currency.code
+      item_index += 1
+      description = "Deduction"
+      unit_price = -invoice.deducted_amount.to_f
+      totalprice = unit_price
+      total_deduction += totalprice
+      net_total_amount += totalprice
 
+      repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => "", "UNIT_PRICE" => "", "CURRENCY1" => "", "TOTAL_PRICE" => totalprice, "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
+    end
+
+    @db_total_amount = invoice.total_amount
+    db_net_total_amount = invoice.net_total_amount
+    @db_total_advance_recieved = -invoice.total_advance_recieved
+    @db_total_deduction = -invoice.total_deduction
+    if (db_net_total_amount != net_total_amount) or (@db_total_advance_recieved != total_advance_recieved) or (@db_total_deduction != total_deduction)
+      @total_error="Calculation Error In Totals: net_total_amount=#{net_total_amount} total_advance_recieved=#{total_advance_recieved} total_deduction=#{total_deduction}"
     end
 
     [
