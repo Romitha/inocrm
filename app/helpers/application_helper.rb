@@ -247,6 +247,7 @@ module ApplicationHelper
     total_advance_recieved = 0
     total_deduction = 0
     balance_tobe_paid = 0
+    db_net_total_amount = 0
 
     item_index = 0
     repeat_data = ""
