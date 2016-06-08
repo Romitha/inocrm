@@ -63,17 +63,6 @@ module Admins
       end
     end
 
-    def delete_admin_sla
-      SlaTime
-      @sla = SlaTime.find params[:sla_id]
-      if @sla.present?
-        @sla.delete
-      end
-      respond_to do |format|
-        format.html { redirect_to sla_admins_tickets_path }
-      end
-    end
-
     def delete_dispatch_method
       Invoice
       @dispatch_method = DispatchMethod.find params[:dispatch_method_id]

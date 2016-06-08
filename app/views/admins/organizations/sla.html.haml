@@ -24,7 +24,7 @@
           %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
             #{index+1} sla : #{sla.description}
           - unless sla.is_used_anywhere?
-            = link_to delete_admin_sla_admins_tickets_path(sla_id: sla.id),  method: :delete, :data => { :confirm => 'Are you sure?' } do
+            = link_to delete_admin_sla_admins_organizations_path(sla_id: sla.id),  method: :delete, :data => { :confirm => 'Are you sure?' } do
               %span.glyphicon.glyphicon-trash
 
       .panel-collapse.collapse.in{:id => "#{index}"}
