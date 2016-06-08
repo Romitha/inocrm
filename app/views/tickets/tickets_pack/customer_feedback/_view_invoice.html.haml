@@ -22,20 +22,20 @@
   %strong Canceled:
   = boolean_in_word invoice.canceled, "Yes", "No"
   %hr
-  %strong Total amount:
-  = number_to_currency(invoice.total_amount, precision: 3, unit: invoice.ticket.ticket_currency.code)
+  %strong Total amount (#{invoice.ticket.ticket_currency.code}):
+  = number_to_currency(invoice.total_amount, precision: 3)
   %br/
-  %strong Total advance received:
-  = number_to_currency(invoice.total_advance_recieved, precision: 3, unit: invoice.ticket.ticket_currency.code)
+  %strong Total advance received (#{invoice.ticket.ticket_currency.code}):
+  = number_to_currency(invoice.total_advance_recieved, precision: 3)
   %br/
-  %strong.red Total deduction:
-  = number_to_currency(invoice.total_deduction, precision: 3, unit: invoice.ticket.ticket_currency.code)
+  %strong.red Total deduction (#{invoice.ticket.ticket_currency.code}):
+  = number_to_currency(invoice.total_deduction, precision: 3)
   %br/
-  %strong.red Total cost:
-  = number_to_currency(invoice.total_cost, precision: 3, unit: invoice.ticket.ticket_currency.code)
+  %strong.red Total cost (#{invoice.ticket.ticket_currency.code}):
+  = number_to_currency(invoice.total_cost, precision: 3)
   %br/
-  %strong Net total amount:
-  = number_to_currency(invoice.net_total_amount, precision: 3, unit: invoice.ticket.ticket_currency.code)
+  %strong Net total amount (#{invoice.ticket.ticket_currency.code}):
+  = number_to_currency(invoice.net_total_amount, precision: 3)
   %br/
   = link_to "Print invoice", "#", class: "btn btn-sm btn-success", onclick: "Users.request_printer_application('ticket_invoice', '#{ticket.final_invoice_id}', 'receipt_request_type', 'print_ticket_invoice_tag_value', 'print_invoice'); false;"
 .col-md-9
