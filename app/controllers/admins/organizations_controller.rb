@@ -6,6 +6,17 @@ module Admins
       
     end
 
+    def delete_admin_sla
+      SlaTime
+      @sla = SlaTime.find params[:sla_id]
+      if @sla.present?
+        @sla.delete
+      end
+      respond_to do |format|
+        format.html { redirect_to sla_admins_organizations_path }
+      end
+    end
+
     def delete_admin_regional_support_center
       User
       @rs_center = RegionalSupportCenter.find params[:regional_support_center_id]
