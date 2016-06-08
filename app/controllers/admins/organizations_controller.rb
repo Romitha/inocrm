@@ -82,7 +82,8 @@ module Admins
         if @admin_country.update admin_country_params
           params[:edit] = nil
           render json: @admin_country
-
+        else
+          render json: @admin_country.errors.full_messages.join
         end
       else
         if params[:create]

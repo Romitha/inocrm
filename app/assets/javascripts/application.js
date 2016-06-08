@@ -31,8 +31,15 @@
 //= require chosen-jquery
 //= require mustache
 //= require_tree .
-$.fn.editable.defaults.mode = 'inline';
-$.fn.editable.defaults.ajaxOptions = {type: "PUT"};
+$.fn.editable.defaults.ajaxOptions = {type: "PUT", mode: "inline"};
+$.fn.editable.defaults.error = function(response, newValue){
+  if(response.status == 500){
+    alert(response.responseText);
+  }
+  else{
+    return response.responseText;
+  }
+}
 
 
 $.fn.regexMask = function (mask) {

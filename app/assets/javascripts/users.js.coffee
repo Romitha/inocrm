@@ -46,6 +46,8 @@ window.Users =
       $.ajax
         async: false
         method: 'post'
+        headers:
+          "Content-Type": "application/javascript; charset=utf-8"
         url: url
         data: data["request_printer_template"]
         timeout: 4000

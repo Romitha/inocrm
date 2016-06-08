@@ -44,6 +44,8 @@ module Admins
         if @title.update title_params
           params[:edit] = nil
           render json: @title
+        else
+          render json: @title.errors.full_messages.join
         end
 
       else

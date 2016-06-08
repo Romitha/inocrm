@@ -265,7 +265,7 @@ module ApplicationHelper
         total_amount += totalprice
         net_total_amount += totalprice
 
-        repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => quantity, "UNIT_PRICE" => unit_price, "CURRENCY1" => currency_1, "TOTAL_PRICE" => totalprice, "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
+        repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => quantity, "UNIT_PRICE" => standard_currency_format(unit_price), "CURRENCY1" => currency_1, "TOTAL_PRICE" => totalprice, "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
 
         estimation_external.ticket_estimation_external_taxes.each do |ticket_estimation_external_tax|
           item_index += 1
@@ -277,7 +277,7 @@ module ApplicationHelper
           total_amount += totalprice
           net_total_amount += totalprice
 
-          repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => "", "UNIT_PRICE" => "", "CURRENCY1" => "", "TOTAL_PRICE" => totalprice, "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
+          repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => "", "UNIT_PRICE" => "", "CURRENCY1" => "", "TOTAL_PRICE" => standard_currency_format(totalprice), "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
         end
 
       end
@@ -294,7 +294,7 @@ module ApplicationHelper
         total_amount += totalprice
         net_total_amount += totalprice
 
-        repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => item_code, "DESCRIPTION" => description, "QUANTITY" => quantity, "UNIT_PRICE" => unit_price, "CURRENCY1" => currency_1, "TOTAL_PRICE" => totalprice, "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
+        repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => item_code, "DESCRIPTION" => description, "QUANTITY" => quantity, "UNIT_PRICE" => standard_currency_format(unit_price), "CURRENCY1" => currency_1, "TOTAL_PRICE" => standard_currency_format(totalprice), "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
 
         estimation_part.ticket_estimation_part_taxes.each do |ticket_estimation_part_tax|
           item_index += 1
@@ -306,7 +306,7 @@ module ApplicationHelper
           total_amount += totalprice
           net_total_amount += totalprice
 
-          repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => "", "UNIT_PRICE" => "", "CURRENCY1" => "", "TOTAL_PRICE" => totalprice, "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
+          repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => "", "UNIT_PRICE" => "", "CURRENCY1" => "", "TOTAL_PRICE" => standard_currency_format(totalprice), "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
         end
       end
 
@@ -319,7 +319,7 @@ module ApplicationHelper
         total_amount += totalprice
         net_total_amount += totalprice
 
-        repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => quantity, "UNIT_PRICE" => unit_price, "CURRENCY1" => currency_1, "TOTAL_PRICE" => totalprice, "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
+        repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => quantity, "UNIT_PRICE" => standard_currency_format(unit_price), "CURRENCY1" => currency_1, "TOTAL_PRICE" => standard_currency_format(totalprice), "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
 
         ticket_estimation_additional.ticket_estimation_additional_taxes.each do |ticket_estimation_additional_tax|
           item_index += 1
@@ -330,7 +330,7 @@ module ApplicationHelper
           total_amount += totalprice
           net_total_amount += totalprice
 
-          repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => "", "UNIT_PRICE" => "", "CURRENCY1" => "", "TOTAL_PRICE" => totalprice, "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
+          repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => "", "UNIT_PRICE" => "", "CURRENCY1" => "", "TOTAL_PRICE" => standard_currency_format(totalprice), "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
 
         end
       end
@@ -340,13 +340,13 @@ module ApplicationHelper
       currency_1 = ticket_invoice_terminate.act_terminate_job_payment.currency.code
       item_index += 1
       description = ticket_invoice_terminate.act_terminate_job_payment.payment_item.name
-      unit_price = -ticket_invoice_terminate.act_terminate_job_payment.amount.to_f
+      unit_price = ticket_invoice_terminate.act_terminate_job_payment.amount.to_f
 
       totalprice = unit_price
       total_amount += totalprice
       net_total_amount += totalprice
 
-      repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => quantity, "UNIT_PRICE" => unit_price, "CURRENCY1" => currency_1, "TOTAL_PRICE" => totalprice, "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
+      repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => quantity, "UNIT_PRICE" => standard_currency_format(unit_price), "CURRENCY1" => currency_1, "TOTAL_PRICE" => standard_currency_format(totalprice), "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
     end
 
     invoice.ticket_invoice_advance_payments.each do |ticket_invoice_advance_payment|
@@ -359,11 +359,11 @@ module ApplicationHelper
       total_advance_recieved += totalprice
       net_total_amount += totalprice
 
-      repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => "", "UNIT_PRICE" => "", "CURRENCY1" => "", "TOTAL_PRICE" => totalprice, "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
+      repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => "", "UNIT_PRICE" => "", "CURRENCY1" => "", "TOTAL_PRICE" => standard_currency_format(totalprice), "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
 
       if invoice.deducted_amount.to_d > 0
         currency_1 = invoice.currency.code
-        item_index += 1
+        #item_index += 1
         description = "Deduction"
         unit_price = -invoice.deducted_amount.to_f
         totalprice = unit_price
@@ -378,9 +378,8 @@ module ApplicationHelper
       @db_total_advance_recieved = -invoice.total_advance_recieved
       @db_total_deduction = -invoice.total_deduction
       if (db_net_total_amount != net_total_amount) or (@db_total_advance_recieved != total_advance_recieved) or (@db_total_deduction != total_deduction)
-        @total_error="Calculation Error In Totals"
+        @total_error="Calculation Error In Totals: net_total_amount=#{net_total_amount} total_advance_recieved=#{total_advance_recieved} total_deduction=#{total_deduction}"
       end
-      balance_tobe_paid = db_net_total_amount
 
     end
 
@@ -401,13 +400,13 @@ module ApplicationHelper
       "CREATED_TIME=#{ticket_time}",
       "PAYMENT_TERM=#{payment_term}",
       repeat_data,
-      "TOTAL_AMOUNT=#{number_to_currency @db_total_amount, unit: ticket.ticket_currency.code, separator: '.', delimiter: ',', format: '%u. %n'}",
+      "TOTAL_AMOUNT=#{standard_currency_format total_amount}",
       "CURRENCY3=#{currency}",
-      "TOTAL_ADVANCE_RECEIVED=#{number_to_currency @db_total_advance_recieved, delimiter: ',', unit: ticket.ticket_currency.code, negative_format: '(%u. %n)'}",
+      "TOTAL_ADVANCE_RECEIVED=#{standard_currency_format @db_total_advance_recieved}",
       "CURRENCY4=#{currency}",
-      "TOTAL_DEDUCTION=#{number_to_currency @db_total_deduction, delimiter: ',', unit: ticket.ticket_currency.code, negative_format: '(%u. %n)'}",
+      "TOTAL_DEDUCTION=#{standard_currency_format @db_total_deduction}",
       "CURRENCY5=#{currency}",
-      "BALANCE_TO_BE_PAID=#{number_to_currency balance_tobe_paid, unit: ticket.ticket_currency.code, separator: '.', delimiter: ',', format: '%u. %n'}",
+      "BALANCE_TO_BE_PAID=#{standard_currency_format db_net_total_amount}",
       "CURRENCY6=#{currency}",
       "NOTE=#{invoice_note}",
       "CREATED_BY=#{created_by}",
@@ -417,8 +416,6 @@ module ApplicationHelper
     ]
 
   end
-
-  
 
   def ticket_bpm_headers(process_id, ticket_id, spare_part_id = nil, onloan_spare_part_id = nil)
     TicketSparePart
@@ -504,5 +501,9 @@ module ApplicationHelper
       end
     end
 
+  end
+
+  def standard_currency_format number
+    number_with_precision number.to_f, separator: '.', delimiter: ',', precision: 2
   end
 end
