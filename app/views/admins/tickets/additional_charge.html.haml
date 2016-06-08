@@ -36,9 +36,9 @@
               %strong Default cost price:
             .col-md-4
               = link_to "#", class: "inline_edit", data: {type: "text", resource: "additional_charge", name: "default_cost_price", url: additional_charge_admins_tickets_path(edit: true, add_charge_id: add_charge.id), "original-title" => "Update Additional Charge", value: ""}, style: "line-height: 6px;" do
-                = add_charge.default_cost_price
+                = number_with_precision add_charge.default_cost_price, precision: 2
             .col-md-3
               %strong Default estimated price:
             .col-md-3
               = link_to "#", class: "inline_edit", data: {type: "text", resource: "additional_charge", name: "default_estimated_price", url: additional_charge_admins_tickets_path(edit: true, add_charge_id: add_charge.id), "original-title" => "Update Additional Charge", value: ""}, style: "line-height: 6px;" do
-                = add_charge.default_estimated_price
+                = number_with_precision add_charge.default_estimated_price, precision: 2

@@ -214,7 +214,7 @@
               .col-md-3
                 %strong 
                   Estimated price (#{tsp.ticket_estimation.currency.code}):
-                #{tsp.estimated_price}
+                #{number_with_precision tsp.estimated_price, precision: 2}
 
               .col-md-3
                 %strong
@@ -234,7 +234,7 @@
               .col-md-3
                 %strong
                   Est. additional amount (#{tsp.ticket_estimation.currency.code}):
-                = tsp.ticket_estimation.ticket_estimation_additionals.sum(:estimated_price)
+                = number_with_precision tsp.ticket_estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2
               .col-md-3
                 %strong
                   Estimate warranty:
@@ -381,13 +381,13 @@
 
       = simple_form_for ticket_spare_part, url: update_part_order_inventories_path, method: :put do |f| # update_part_order_inventories_path
 
-        = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
-        = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
-        = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
-        - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
-          = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+        / = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
+        / = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
+        / = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
+        / - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
+        /   = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
-        = hidden_field_tag :ticket_spare_part_id, ticket_spare_part.id
+        / = hidden_field_tag :ticket_spare_part_id, ticket_spare_part.id
 
 
         - if (rqt and non_stock_warranty) or (cea and non_stock_chargeable)

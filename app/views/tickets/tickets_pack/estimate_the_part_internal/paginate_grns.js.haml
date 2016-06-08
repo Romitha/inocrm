@@ -14,7 +14,7 @@
           %td= grn_item.grn.grn_no
           %td= grn_item.grn.created_at.try(:strftime, "%d-%m-%Y")
           %td
-            = grn_item.unit_cost
+            = number_with_precision grn_item.unit_cost, precision: 2
             (#{grn_item.currency.code})
 
 $("#paginate_grns").html("#{j content_for :content_for}");

@@ -8,6 +8,6 @@
         %dd
           = grn_item.id
         %dt Price
-        %dd= grn_item.unit_cost
+        %dd= number_with_precision grn_item.unit_cost, precision: 2
         %dt Currency
         %dd= Currency.find_by_id(grn_item.currency_id).try(:currency)

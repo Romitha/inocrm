@@ -49,17 +49,17 @@
                         %strong Cost price (#{estimate_currency}):
                         .panel.panel-default
                           .panel-body.small_scale_padding2
-                            = te.object.cost_price
+                            = number_with_precision te.object.cost_price, precision: 2
                       .col-md-3
                         %strong Estimated price (#{estimate_currency}):
                         .panel.panel-default
                           .panel-body.small_scale_padding2
-                            .est_estimated_amount= te.object.estimated_price
+                            .est_estimated_amount= number_with_precision te.object.estimated_price, precision: 2
                       .col-md-3
                         %strong Approved amount (#{estimate_currency}):
                         = te.input :approved_estimated_price, as: :string, label: false, input_html: {class: "estimation_value only_float", oninput: "Inventories.calculate_cost_price(this);"}
                         .append_estimated_price.hide
-                          = te.object.estimated_price.to_f
+                          = number_with_precision te.object.estimated_price, precision: 2
                       .col-md-12
                         .panel-group
                           .panel.panel-success
@@ -108,19 +108,19 @@
                                     = ta.object.additional_charge.try(:additional_charge)
                               .col-md-3.col-xs-3.col-sm-3
 
-                                %strong{style: "margin-bottom: 5px; display: inline-block;"} Cost price (#{estimate_currency}):
+                                %strong{style: "margin-bottom: 5px; display: inline-block;"} Cost price (#{number_with_precision estimate_currency, precision: 2}):
                                 .panel.panel-success
                                   .panel-body.small_scale_padding2
                                     = ta.object.cost_price
                               .col-md-3.col-xs-3.col-sm-3
-                                %strong{style: "margin-bottom: 5px; display: inline-block;"} Estimated price (#{estimate_currency}):
+                                %strong{style: "margin-bottom: 5px; display: inline-block;"} Estimated price (#{number_with_precision estimate_currency, precision: 2}):
                                 .panel.panel-success
                                   .panel-body.small_scale_padding2
-                                    .est_estimated_amount= ta.object.estimated_price
+                                    .est_estimated_amount= number_with_precision ta.object.estimated_price, precision: 2
                               .col-md-3.col-xs-3.col-sm-3
                                 = ta.input :approved_estimated_price, as: :string, input_html: {class: "estimation_value only_float", oninput: "Inventories.calculate_cost_price(this);"}, label: "Approved estimated price (#{estimate_currency})"
                                 .append_estimated_price.hide
-                                  = ta.object.approved_estimated_price.to_f
+                                  = number_with_precision ta.object.approved_estimated_price, precision: 2
 
                               .col-md-12
                                 .panel-group
@@ -152,13 +152,13 @@
                                         Add tax
                         .row
                           .col-md-3.col-md-offset-6
-                            %strong Total cost price (#{estimate_currency}):
+                            %strong Total cost price (#{number_with_precision estimate_currency, precision: 2}):
                             %span#total_cost_price
-                            = t.object.ticket_estimation_additionals.sum(:cost_price)
+                            = number_with_precision t.object.ticket_estimation_additionals.sum(:cost_price), precision: 2
                             %br
-                            %strong Total approved stimated price (#{estimate_currency}):
+                            %strong Total approved stimated price (#{number_with_precision estimate_currency, precision: 2}):
                             %span#total_estimated_price.for_payment_limit
-                              = t.object.ticket_estimation_additionals.sum(:estimated_price)
+                              = number_with_precision t.object.ticket_estimation_additionals.sum(:estimated_price), precision: 2
                             %br
                             %strong Total profit (%):
                             %span#total_margin_price{style: "font-weight:bold;"}

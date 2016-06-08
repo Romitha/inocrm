@@ -164,7 +164,7 @@
               .col-md-3
                 %strong 
                   Estimated price (#{tsp.ticket_estimation.currency.code}):
-                #{tsp.estimated_price}
+                #{number_with_precision tsp.estimated_price, precision: 2}
 
               .col-md-3
                 %strong
@@ -184,7 +184,7 @@
               .col-md-3
                 %strong
                   Est. additional amount (#{tsp.ticket_estimation.currency.code}):
-                = tsp.ticket_estimation.ticket_estimation_additionals.sum(:estimated_price)
+                = number_with_precision tsp.ticket_estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2
               .col-md-3
                 %strong
                   Estimate warranty:

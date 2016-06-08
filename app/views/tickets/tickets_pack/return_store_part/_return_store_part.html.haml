@@ -125,7 +125,7 @@
             = gin_source.main_part_grn_serial_item.grn_item.grn.grn_no
           .col-md-6
             %strong GRN Cost:
-            = gin_source.main_part_grn_serial_item.grn_item.unit_cost
+            = number_with_precision gin_source.main_part_grn_serial_item.grn_item.unit_cost, precision: 2
 
           - content_for :main_part_more_info do
             .col-md-12
@@ -269,7 +269,7 @@
 
     .col-md-3
       %strong Grn Cost (#{grn_item.currency.code}):
-      = grn_item.unit_cost
+      = number_with_precision grn_item.unit_cost, precision: 2
 
   %hr
   .hide

@@ -47,7 +47,7 @@
                       .col-md-2
                         = te.input :cost_price, label: "Cost Price (#{ticket.ticket_currency.code})", as: :string, input_html: {class: "value_class only_float", oninput: "Inventories.calculate_cost_price(this);"}
                         .append_cost_price.hide
-                          = te.object.cost_price.to_f
+                          = number_with_precision te.object.cost_price, precision: 2
                       .col-md-2
                         = te.input :estimated_price, label: "Estimated Price (#{ticket.ticket_currency.code})", as: :string, input_html: {class: "estimation_value only_float", oninput: "Inventories.calculate_cost_price(this);"}
                         .append_estimated_price.hide
@@ -102,12 +102,12 @@
                               .col-md-3
                                 = ta.input :cost_price, label: "Cost Price (#{ticket.ticket_currency.code})", as: :string, input_html: {class: "value_class payment_item_value", oninput: "Inventories.calculate_cost_price(this);"}
                                 .append_cost_price.hide
-                                  = ta.object.cost_price.to_f
+                                  = number_with_precision ta.object.cost_price, precision: 2
 
                               .col-md-3
                                 = ta.input :estimated_price, label: "Estimated Price (#{ticket.ticket_currency.code})", as: :string, input_html: {class: "estimation_value estimated_value est_add_estimated_price", oninput: "Inventories.calculate_cost_price(this);"}
                                 .append_estimated_price.hide
-                                  = ta.object.estimated_price.to_f
+                                  = number_with_precision ta.object.estimated_price, precision: 2
                               .col-md-2
                                 %strong Profit(%):
                                 .append_profit_margin{style: "font-weight:bold;font-size:125%;"}

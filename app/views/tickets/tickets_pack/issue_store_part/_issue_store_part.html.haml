@@ -41,7 +41,7 @@
       .row
         .col-md-3
         .col-md-3
-          %strong Estimated price (#{ticket.ticket_currency.code}): #{tsp.ticket_estimation.advance_payment_amount}
+          %strong Estimated price (#{ticket.ticket_currency.code}): #{number_with_precision tsp.ticket_estimation.advance_payment_amount, precision: 2}
 
         .col-md-3
           %strong Estimated by: #{User.cached_find_by_id(tsp.ticket_estimation.estimated_by).try(:email)}

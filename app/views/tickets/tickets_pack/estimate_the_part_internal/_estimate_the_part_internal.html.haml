@@ -73,7 +73,7 @@
                         %td= grn_item.grn.grn_no
                         %td= grn_item.grn.created_at.try(:strftime, "%d-%m-%Y")
                         %td
-                          = grn_item.unit_cost
+                          = number_with_precision grn_item.unit_cost, precision: 2
                           (#{grn_item.currency.code})
 
         .row
@@ -91,11 +91,11 @@
                 .col-md-3
                   = t.input :cost_price, label: "Cost Price (#{ticket.ticket_currency.code})", as: :string, input_html: {class: "value_class only_float", oninput: "Inventories.calculate_cost_price(this);"}
                   .append_cost_price.hide
-                    = t.object.cost_price.to_f
+                    = number_with_precision t.object.cost_price, precision: 2
                 .col-md-3
                   = t.input :estimated_price, label: "Est. Price (#{ticket.ticket_currency.code})", as: :string, input_html: {class: "estimation_value only_float", oninput: "Inventories.calculate_cost_price(this);"}, label: "Est. price"
                   .append_estimated_price.hide
-                    = t.object.estimated_price.to_f
+                    = number_with_precision t.object.estimated_price, precision: 2
                 .col-md-2
                   = t.input :warranty_period, input_html: {class: "only_float"}, label: "Warranty(Months)"
                 .col-md-2
@@ -147,12 +147,12 @@
                 .col-md-3
                   = ta.input :cost_price, label: "Cost Price (#{ticket.ticket_currency.code})", as: :string, input_html: {class: "value_class payment_item_value", oninput: "Inventories.calculate_cost_price(this);"}
                   .append_cost_price.hide
-                    = ta.object.cost_price.to_f
+                    = number_with_precision ta.object.cost_price, precision: 2
 
                 .col-md-3
                   = ta.input :estimated_price, label: "Estimated Price (#{ticket.ticket_currency.code})", as: :string, input_html: {class: "estimation_value estimated_value est_add_estimated_price", oninput: "Inventories.calculate_cost_price(this);"}
                   .append_estimated_price.hide
-                    = ta.object.estimated_price.to_f
+                    = number_with_precision ta.object.estimated_price, precision: 2
                 .col-md-2
                   %strong Profit(%):
                   .append_profit_margin{style: "font-weight:bold;font-size:125%;"}
@@ -194,10 +194,10 @@
 
     .col-md-3.col-md-offset-6
       %strong Total cost price:
-      %span#total_cost_price= [f.object.ticket_estimation_parts.sum(:cost_price), f.object.ticket_estimation_additionals.sum(:cost_price)].sum
+      %span#total_cost_price= number_with_precision [f.object.ticket_estimation_parts.sum(:cost_price), f.object.ticket_estimation_additionals.sum(:cost_price)].sum, precision: 2
       %br
       %strong Total estimated price:
-      %span#total_estimated_price.for_payment_limit= [f.object.ticket_estimation_parts.sum(:estimated_price), f.object.ticket_estimation_additionals.sum(:estimated_price)].sum
+      %span#total_estimated_price.for_payment_limit= number_with_precision [f.object.ticket_estimation_parts.sum(:estimated_price), f.object.ticket_estimation_additionals.sum(:estimated_price)].sum, precision: 2
       %br
       %strong Total profit (%):
       %span#total_margin_price{style: "font-weight:bold;"}

@@ -81,7 +81,7 @@
         %td= boolean_in_word ticket.final_invoice.customer_sent, "Yes", "No"
         %td= boolean_in_word ticket.final_invoice.canceled, "Yes", "No"
         %td= ticket.final_invoice.currency.code
-        %td= ticket.final_invoice.total_cost
+        %td= number_with_precision ticket.final_invoice.total_cost, precision: 2
         %td= ticket.final_invoice.total_amount
         %td= ticket.final_invoice.ticket_invoice_total_taxes.sum(:amount)
         %td= ticket.final_invoice.total_deduction

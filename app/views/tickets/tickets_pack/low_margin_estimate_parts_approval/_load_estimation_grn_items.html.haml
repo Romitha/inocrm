@@ -14,5 +14,5 @@
       %tr
         %td= index+1
         %td= g.created_at
-        %td= g.unit_cost
-        %td= g.unit_cost
+        %td= number_with_precision g.unit_cost, precision: 2
+        %td= number_with_precision g.unit_cost, precision: 2

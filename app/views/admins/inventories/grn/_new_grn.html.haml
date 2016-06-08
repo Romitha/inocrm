@@ -41,8 +41,8 @@
             - if !po_item.inventory_prn_item.inventory_product.non_stock_item
               %tr
                 %td= po_item.quantity
-                %td= po_item.unit_cost
-                %td= po_item.unit_cost_grn
+                %td= number_with_precision po_item.unit_cost, precision: 2
+                %td= number_with_precision po_item.unit_cost_grn, precision: 2
                 %td= po_item.inventory_prn_item.inventory_product.product_no
                 %td= po_item.inventory_prn_item.inventory_product.model_no
                 %td= po_item.inventory_prn_item.inventory_product.serial_no

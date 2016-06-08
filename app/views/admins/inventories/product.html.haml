@@ -174,11 +174,11 @@
                 .col-md-6
                   Average cost:
                   = link_to "#", class: "inline_edit", data: {type: "text", resource: "inventory_product_info", name: "average_cost", url:product_admins_inventories_path(edit: true, product_info_id: inv_product.inventory_product_info.product_id), "original-title" => "Update Average cost", value: inv_product.inventory_product_info.try(:average_cost)}, style: "line-height: 6px;" do
-                    = inv_product.inventory_product_info.try(:average_cost)
+                    = number_with_precision inv_product.inventory_product_info.try(:average_cost), precision: 2
                 .col-md-6
                   Standard cost:
                   = link_to "#", class: "inline_edit", data: {type: "text", resource: "inventory_product_info", name: "standard_cost", url:product_admins_inventories_path(edit: true, product_info_id: inv_product.inventory_product_info.product_id), "original-title" => "Update Standard cost", value: inv_product.inventory_product_info.try(:standard_cost)}, style: "line-height: 6px;" do
-                    = inv_product.inventory_product_info.try(:standard_cost)
+                    = number_with_precision inv_product.inventory_product_info.try(:standard_cost), precision: 2
 
               .row.col-md-12
                 .col-md-6

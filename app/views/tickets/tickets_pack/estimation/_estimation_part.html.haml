@@ -71,9 +71,9 @@
                 .col-md-4
                   %strong Tax amount (#{estimation.ticket.ticket_currency.code}):
                   - if estimation.approval_required
-                    = part_tax.approved_tax_amount
+                    = number_with_precision part_tax.approved_tax_amount, precision: 2
                   - else
-                    = part_tax.estimated_tax_amount
+                    = number_with_precision part_tax.estimated_tax_amount, precision: 2
     .row
       .col-md-12
         %strong Note :
@@ -86,14 +86,14 @@
       #{ticket_estimation_additional.additional_charge.try(:additional_charge)}
     .col-md-4
       %strong Cost Price(#{estimation.ticket.ticket_currency.code}) :
-      #{ticket_estimation_additional.cost_price}
+      #{number_with_precision ticket_estimation_additional.cost_price, precision: 2}
     .col-md-4
       - if estimation.approval_required
         %strong Estimate Price (#{estimation.ticket.ticket_currency.code}) :
-        #{ticket_estimation_additional.approved_estimated_price}
+        #{number_with_precision ticket_estimation_additional.approved_estimated_price, precision: 2}
       - else
         %strong Estimate Price (#{estimation.ticket.ticket_currency.code}) :
-        #{ticket_estimation_additional.estimated_price}
+        #{number_with_precision ticket_estimation_additional.estimated_price, precision: 2}
 
   - if ticket_estimation_additional.ticket_estimation_additional_taxes.present?
     .panel-group
@@ -111,9 +111,9 @@
               .col-md-4
                 %strong Tax amount (#{estimation.ticket.ticket_currency.code}):
                 - if estimation.approval_required
-                  = additional_tax.approved_tax_amount
+                  = number_with_precision additional_tax.approved_tax_amount, precision: 2 
                 - else
-                  = additional_tax.estimated_tax_amount
+                  = number_with_precision additional_tax.estimated_tax_amount, precision: 2
 
 .row
   .col-md-4
