@@ -30,7 +30,7 @@
       = label_tag "Damage"
       = check_box_tag :damage_reason_check, true, false, class: "damage_reason_check"
       = label_tag "Damage reason", "Damage reason", class: "damage_reason_label"
-      = select_tag :damage_reason, options_from_collection_for_select(InventoryReason.where(damage: true), "id", "reason"), class: "damage_reason"
+      = select_tag :damage_reason, options_from_collection_for_select(InventoryReason.where(damage: true), "id", "reason"), class: "damage_reason", include_blank: false
 
   .col-md-8
     = f.input :remarks, label: "Inventory part remarks", input_html: {value: nil}

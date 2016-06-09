@@ -121,8 +121,10 @@ class TicketFsr < ActiveRecord::Base
   has_many :ticket_spare_parts, foreign_key: :fsr_id
 
   before_save do |ticket_fsr|
-   if ticket_fsr.persisted? and ticket_fsr.remarks_changed? and ticket_fsr.remarks.present?
+    if ticket_fsr.persisted? and ticket_fsr.remarks_changed? and ticket_fsr.remarks.present?
       ticket_fsr_remarks = "#{ticket_fsr.remarks} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(ticket_fsr.current_user_id).email}</span><br/>#{ticket_fsr.remarks_was}"
+    elsif ticket_fsr.new_record?
+      ticket_fsr_remarks = ticket_fsr.remarks
     else
       ticket_fsr_remarks = ticket_fsr.remarks_was
     end
@@ -159,8 +161,10 @@ class TicketDeliverUnit < ActiveRecord::Base
   has_many :dyna_columns, as: :resourceable, autosave: true
 
   before_save do |ticket_deliver_unit|
-   if ticket_deliver_unit.persisted? and ticket_deliver_unit.note_changed? and ticket_deliver_unit.note.present?
+    if ticket_deliver_unit.persisted? and ticket_deliver_unit.note_changed? and ticket_deliver_unit.note.present?
       ticket_deliver_unit_note = "#{ticket_deliver_unit.note} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(ticket_deliver_unit.current_user_id).email}</span><br/>#{ticket_deliver_unit.note_was}"
+    elsif ticket_deliver_unit.new_record?
+      ticket_deliver_unit_note = ticket_deliver_unit.note  
     else
       ticket_deliver_unit_note = ticket_deliver_unit.note_was
     end

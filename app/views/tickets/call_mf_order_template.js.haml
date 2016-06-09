@@ -1,3 +1,4 @@
 $("#mf_order_templates").html("#{j render @call_template, ticket: @ticket, spare_part: @spare_part, product: @product}");
 Inventories.disable_part();
 Inventories.submit_spare_part();
+$(".validate_form").validate();

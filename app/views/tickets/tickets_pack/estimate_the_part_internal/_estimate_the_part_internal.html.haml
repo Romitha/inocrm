@@ -23,7 +23,7 @@
             %strong Part status:
             #{t.object.ticket_spare_part.try(:spare_part_status_action).try(:name)}
         %hr
-        - part_store_or_non_stock = t.object.ticket_spare_part.ticket_spare_part_store or t.object.ticket_spare_part.ticket_spare_part_non_stock
+        - part_store_or_non_stock = (t.object.ticket_spare_part.ticket_spare_part_store or t.object.ticket_spare_part.ticket_spare_part_non_stock)
         - if part_store_or_non_stock.present?
           .row
             .col-md-5

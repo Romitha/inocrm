@@ -47,7 +47,7 @@
     = label_tag "Damage"
     = check_box_tag :damage_reason_check, true, false, class: "damage_reason_check"
     = label_tag "Damage reason", "Damage reason", class: "damage_reason_label"
-    = select_tag :damage_reason, options_from_collection_for_select(InventoryReason.where(damage: true), "id", "reason"), class: "damage_reason"
+    = select_tag :damage_reason, options_from_collection_for_select(InventoryReason.where(damage: true), "id", "reason"), class: "damage_reason", include_blank: false
   .row
     = f.input :unit_cost, wrapper_html: {class: "col-md-3"}, input_html: {value: grn_cost}, required: true
     .col-md-12

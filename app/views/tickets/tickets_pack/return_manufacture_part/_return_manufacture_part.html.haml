@@ -63,7 +63,7 @@
 
 .row
   .col-md-12
-    = simple_nested_form_for ticket_spare_part, url: update_return_manufacture_part_tickets_path, method: :post do |f|
+    = simple_nested_form_for ticket_spare_part, url: update_return_manufacture_part_tickets_path, method: :post, html: {class: "validate_form"} do |f|
       = f.input :id, as: :hidden
       .accept_returned_part
         = f.input :returned_part_accepted, as: :radio_buttons, collection: {"Accept Returned Part" => true, "Reject Return Part" => false}, label:false, wrapper: :append, checked: true
@@ -87,9 +87,9 @@
           = f.simple_fields_for :ticket_spare_part_manufacture do |rm|
             = rm.input :event_closed, wrapper: :append, input_html: {checked: true}
             = rm.input :ready_to_bundle, wrapper: :append, input_html: {checked: true}, label: "Ready to bundle (Needs return to manufacturer)"
-            = rm.input :payment_expected_manufacture, label: "Payment Expected from Manufacturer (#{product.product_brand.currency.try(:code)}):", input_html: {class: "input_toggler"}
+            = rm.input :payment_expected_manufacture, label: "Payment Expected from Manufacturer (#{product.product_brand.currency.try(:code)}):", input_html: {class: "input_toggler"}, required: true
             = rm.input :po_required, wrapper: :append, label: "PO Required:"
 
-      = f.input :note, input_html: {value: nil}
+      = f.input :note, input_html: {value: nil}, required: true
       = simple_format ticket_spare_part.note
       = f.submit "Save", class: "btn btn-success"#, onclick: "Tickets.presence_validater(this, {presence: ['#ticket_spare_part_note']}); return false;"

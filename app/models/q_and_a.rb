@@ -10,6 +10,8 @@ class QAndA < ActiveRecord::Base
 
   validates_presence_of :question
 
+  scope :actives, -> {where(active: true)}
+
   def is_used_anywhere?
     q_and_answers.any? or tickets.any?
   end
@@ -35,6 +37,8 @@ class GeQAndA < ActiveRecord::Base
   accepts_nested_attributes_for :ge_q_and_answers, allow_destroy: true
   validates_length_of :answer_type, :maximum => 2
   validates_presence_of :question
+
+  scope :actives, -> {where(active: true)}
   
   def is_used_anywhere?
     ge_q_and_answers.any?

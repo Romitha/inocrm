@@ -1,6 +1,6 @@
 %fieldset
   %legend Request From Store
-  = simple_nested_form_for spare_part, url: update_order_mfp_return_manufacture_part_tickets_path, method: :post do |f|
+  = simple_nested_form_for spare_part, url: update_order_mfp_return_manufacture_part_tickets_path, method: :post, html: {class: "validate_form"} do |f|
     = hidden_field_tag :process_id, Rails.cache.fetch(["/tickets/order_manufacture_parts", params[:task_id]])[:process_id]
     = hidden_field_tag :task_id, Rails.cache.fetch(["/tickets/order_manufacture_parts", params[:task_id]])[:task_id]
     = hidden_field_tag :owner, Rails.cache.fetch(["/tickets/order_manufacture_parts", params[:task_id]])[:owner]
@@ -35,7 +35,7 @@
         = simple_format f.object.note
     .row
       .col-md-12
-        = f.submit "Save", class: "btn btn-success", onclick: "Inventories.request_from_store();"
+        = f.submit "Save", class: "btn btn-success", onclick: "Inventories.request_from_store(event, this);"
 
 #inventory_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "inventory_modal", "aria-hidden" => true}
   .modal-dialog.modal-lg

@@ -108,8 +108,10 @@ class Ticket < ActiveRecord::Base
   validates_inclusion_of :cus_chargeable, in: [true, false]
 
   before_save do |ticket|
-   if ticket.persisted? and ticket.remarks_changed? and ticket.remarks.present?
+    if ticket.persisted? and ticket.remarks_changed? and ticket.remarks.present?
       ticket_remarks = "#{ticket.remarks} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(ticket.current_user_id).email}</span><br/>#{ticket.remarks_was}"
+    elsif ticket.new_record?
+      ticket_remarks = ticket.remarks  
     else
       ticket_remarks = ticket.remarks_was
     end

@@ -643,17 +643,6 @@ class TicketsController < ApplicationController
       warranty_constraint = @product.warranties.select{|w| w.warranty_type_id == @ticket.warranty_type_id and (w.start_at.to_date..w.end_at.to_date).include?(Date.today)}.present?
     end
 
-    # if @ticket.status_id != @status_close_id
-    #   bpm_response = view_context.send_request_process_data process_history: true, process_instance_id: 1, variable_id: "ticket_id"
-    #   if !bpm_response[:status].present? or bpm_response[:status].upcase == "ERROR"
-    #     render js: "alert('BPM error. Please continue after rectify BPM.');"
-    #   elsif not warranty_constraint
-    #     render js: "alert('There are no present #{@ticket.warranty_type.name} for the product to initiate particular warranty related ticket.')"
-    #   else
-    #     continue = true
-    #   end
-    # end
-
     bpm_response = view_context.send_request_process_data process_history: true, process_instance_id: 1, variable_id: "ticket_id"
     if !bpm_response[:status].present? or bpm_response[:status].upcase == "ERROR"
       render js: "alert('BPM error. Please continue after rectify BPM.');"
@@ -749,8 +738,6 @@ class TicketsController < ApplicationController
     @ticket.attributes = ticket_params
     if @ticket.valid?
       Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @ticket)
-      # Rails.cache.write(:ticket_params, ticket_params)
-      # render js: "alert('Q and A are successfully saved');"
       render "remarks"
     else
       render js: "alert('Please complete required questions');"
@@ -1102,7 +1089,7 @@ class TicketsController < ApplicationController
       @user_assign_ticket_action = @user_ticket_action.build_user_assign_ticket_action
       @assign_regional_support_center = @user_ticket_action.assign_regional_support_centers.build
 
-      @ge_questions = GeQAndA.where(action_id: 5)
+      @ge_questions = GeQAndA.actives.where(action_id: 5)
     end
     respond_to do |format|
       format.html {render "tickets/tickets_pack/resolution"}
@@ -2565,7 +2552,7 @@ class TicketsController < ApplicationController
       Rails.cache.delete([:join, @ticket.id])
     end
     supp_engr_user = params[:supp_engr_user]
-    @ge_questions = GeQAndA.where(action_id: 5)
+    @ge_questions = GeQAndA.actives.where(action_id: 5)
     @action_no = 57
     @user_ticket_action = @ticket.user_ticket_actions.build
     @act_quality_control = @user_ticket_action.build_act_quality_control
@@ -3293,9 +3280,9 @@ class TicketsController < ApplicationController
       end
 
       if bpm_response[:status].upcase == "SUCCESS"
-        @flash_message = {error: "Successfully updated."}
+        @flash_message = {notice: "Successfully updated."}
       else
-        @flash_message = {error: "ticket is updated. but Bpm error"}
+        @flash_message = {notice: "ticket is updated. but Bpm error"}
       end
 
       @flash_message = {error: "#{@flash_message} Unable to start new process."} if @bpm_process_error

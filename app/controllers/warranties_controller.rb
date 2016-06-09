@@ -19,7 +19,7 @@ class WarrantiesController < ApplicationController
     @warranty = Warranty.new(product_serial_id: session[:product_id])
     QAndA
 
-    @ge_questions = GeQAndA.where(action_id: 1)
+    @ge_questions = GeQAndA.actives.where(action_id: 1)
     if params[:function_param] == "display_form"
       @display_form = true
     elsif params[:function_param] == "display_form_for_pop"
@@ -38,7 +38,7 @@ class WarrantiesController < ApplicationController
     @customer = Customer.find_by_id(session[:customer_id])
     @product = Product.find(session[:product_id])
     @warranties = @product.warranties
-    @ge_questions = GeQAndA.where(action_id: 1)
+    @ge_questions = GeQAndA.actives.where(action_id: 1)
     if params[:warranty_id]
       @warranty = Warranty.find(params[:warranty_id])
     else
@@ -91,7 +91,7 @@ class WarrantiesController < ApplicationController
     @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
     @customer = Customer.find_by_id(session[:customer_id])
     @product = Product.find_by_id(session[:product_id])
-    @ge_questions = GeQAndA.where(action_id: 1)
+    @ge_questions = GeQAndA.actives.where(action_id: 1)
     @warranties = @product.warranties
 
     @warranty = Warranty.find(params[:id])

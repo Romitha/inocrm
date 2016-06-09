@@ -10,7 +10,7 @@
       %a{:href => todos_path} 
         %i.fa.fa-repeat
 
-  .col-xs-6.col-md-4
+  .col-xs-6.col-md-4.hide
     #sort_by
       %p Sort by
       = select(:todolist, :sorted, options_for_select([["Date", "1"], ["Priority", "2"], ["Module", "3"]]))

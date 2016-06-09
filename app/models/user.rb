@@ -101,7 +101,7 @@ class User < ActiveRecord::Base
   scope :customers, -> {select{|user| user.is_customer?}}
 
   def full_name
-    "#{try(:mst_title).try(:title)}. #{first_name} #{last_name}"
+    "#{try(:mst_title).try(:title)} #{first_name} #{last_name}"
   end
 
   def full_name=(full_name)
