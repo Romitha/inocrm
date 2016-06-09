@@ -239,7 +239,7 @@ module ApplicationHelper
     payment_term = invoice.try(:payment_term).try(:name)
     special_note = ticket.note
     invoice_note = invoice.note
-    created_by = User.cached_find_by_id(ticket.created_by).try(:full_name)
+    created_by = invoice.created_by_ch_eng.full_name
 
     total_amount = 0
     net_total_amount = 0

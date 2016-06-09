@@ -46,7 +46,7 @@
 
       .col-md-6
         .request_part_request_from
-          = f.input :request_from, as: :radio_buttons, collection: {"Manufacture" => "M", "Store" => "S", "Non Stock" => "NS"}, wrapper: :append, disabled: ("M" if @ticket_spare_part.ticket.warranty_type.code == "NW" or @ticket_spare_part.ticket.warranty_type.code == "UW"), checked: ("S" if @ticket_spare_part.ticket.cus_chargeable or @ticket_spare_part.ticket.warranty_type.code == "NW" or @ticket_spare_part.ticket.warranty_type.code == "UW")
+          = f.input :request_from, as: :radio_buttons, collection: {"Manufacture" => "M", "Store" => "S", "Non Stock" => "NS"}, wrapper: :append, disabled: ("M" if ["NW", "UW"].include?(@ticket_spare_part.ticket.warranty_type.code)), checked: ("S" if @ticket_spare_part.ticket.cus_chargeable or ["NW", "UW"].include?(@ticket_spare_part.ticket.warranty_type.code))
         .spare_part_select
           = link_to "select", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true, class: "hide"
 
