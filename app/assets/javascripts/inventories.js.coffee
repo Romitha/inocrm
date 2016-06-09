@@ -313,7 +313,6 @@ window.Inventories =
       estimated_value = $(e).parents(".estimate_extend_with_tax").eq(0).find(".append_estimated_price").text()
       if !isNaN(parseFloat(estimated_value)) and !isNaN(default_amount)
         calculated_tax = default_amount * estimated_value/100
-        console.log calculated_tax
         $(e).parents(".parent_class_set").eq(0).find(".estimated_tax_amount_class").val(calculated_tax)
 
     if $(e).parent().siblings().find(".estimated_value").length > 0

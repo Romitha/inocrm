@@ -149,7 +149,7 @@
                 %strong{style: "margin-bottom: 5px; display: inline-block;"} Cost price (#{number_with_precision estimate_currency, precision: 2}):
                 .panel.panel-success
                   .panel-body.small_scale_padding2
-                    = number_with_precision ta.object.cost_price, precision: 2
+                    = number_with_precision (ta.object.cost_price.to_f or 0), precision: 2
               .col-md-3.col-xs-3.col-sm-3
                 %strong{style: "margin-bottom: 5px; display: inline-block;"} Estimated price (#{number_with_precision estimate_currency, precision: 2}):
                 .panel.panel-success
@@ -158,7 +158,7 @@
               .col-md-3.col-xs-3.col-sm-3
                 = ta.input :approved_estimated_price, as: :string, input_html: {class: "estimation_value only_float", oninput: "Inventories.calculate_cost_price(this);", value: ta.object.estimated_price }, label: "Approved estimated price (#{estimate_currency})"
                 .append_estimated_price.hide
-                  = number_with_precision ta.object.estimated_price, precision: 2
+                  = number_with_precision (ta.object.estimated_price.to_f or 0), precision: 2
 
               .col-md-12
                 .panel-group

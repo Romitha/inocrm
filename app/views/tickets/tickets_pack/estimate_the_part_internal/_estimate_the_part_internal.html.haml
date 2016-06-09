@@ -7,8 +7,8 @@
   - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
     = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
-  .estimate_extend_with_tax
-    = f.simple_fields_for :ticket_estimation_parts do |t|
+  = f.simple_fields_for :ticket_estimation_parts do |t|
+    .estimate_extend_with_tax
 
       %fieldset
         %legend Part No: #{t.object.ticket_spare_part.try(:spare_part_no)} (#{t.object.ticket_spare_part.ticket_spare_part_store ? 'Store' : t.object.ticket_spare_part.ticket_spare_part_manufacture.present? ? 'Manufacture' : t.object.ticket_spare_part.ticket_spare_part_non_stock.present? ? 'Non Stock' : ''})
@@ -91,11 +91,11 @@
                 .col-md-3
                   = t.input :cost_price, label: "Cost Price (#{ticket.ticket_currency.code})", as: :string, input_html: {class: "value_class only_float", oninput: "Inventories.calculate_cost_price(this);"}
                   .append_cost_price.hide
-                    = number_with_precision t.object.cost_price, precision: 2
+                    = number_with_precision (t.object.cost_price.to_f or 0), precision: 2
                 .col-md-3
                   = t.input :estimated_price, label: "Est. Price (#{ticket.ticket_currency.code})", as: :string, input_html: {class: "estimation_value only_float", oninput: "Inventories.calculate_cost_price(this);"}, label: "Est. price"
                   .append_estimated_price.hide
-                    = number_with_precision t.object.estimated_price, precision: 2
+                    = number_with_precision (t.object.estimated_price or 0), precision: 2
                 .col-md-2
                   = t.input :warranty_period, input_html: {class: "only_float"}, label: "Warranty(Months)"
                 .col-md-2
@@ -147,12 +147,12 @@
                 .col-md-3
                   = ta.input :cost_price, label: "Cost Price (#{ticket.ticket_currency.code})", as: :string, input_html: {class: "value_class payment_item_value", oninput: "Inventories.calculate_cost_price(this);"}
                   .append_cost_price.hide
-                    = number_with_precision ta.object.cost_price, precision: 2
+                    = number_with_precision (ta.object.cost_price.to_f or 0), precision: 2
 
                 .col-md-3
                   = ta.input :estimated_price, label: "Estimated Price (#{ticket.ticket_currency.code})", as: :string, input_html: {class: "estimation_value estimated_value est_add_estimated_price", oninput: "Inventories.calculate_cost_price(this);"}
                   .append_estimated_price.hide
-                    = number_with_precision ta.object.estimated_price, precision: 2
+                    = number_with_precision (ta.object.estimated_price.to_f or 0), precision: 2
                 .col-md-2
                   %strong Profit(%):
                   .append_profit_margin{style: "font-weight:bold;font-size:125%;"}
