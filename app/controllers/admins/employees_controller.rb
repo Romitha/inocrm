@@ -35,12 +35,16 @@ module Admins
           if @sbu_eng.update sbu_eng_params
             params[:edit] = nil
             render json: @sbu_eng
+          else
+            render json: @sbu_eng.errors.full_messages.join
           end
         elsif params[:sbu_id]
           @sbu = Sbu.find params[:sbu_id]
           if @sbu.update sbu_params
             params[:edit] = nil
             render json: @sbu
+          else
+            render json: @sbu.errors.full_messages.join
           end
         end
       else

@@ -105,7 +105,7 @@ module Admins
             params[:edit] = nil
             render json: @mst_reason
           else
-            render json: "failed"
+            render json: @mst_reason.errors.full_messages.join
           end
         end
       else
@@ -138,6 +138,8 @@ module Admins
         if @payment_item.update admin_payment_item_params
           params[:edit] = nil
           render json: @payment_item
+        else
+          render json: @payment_item.errors.full_messages.join
         end
 
       else
@@ -161,6 +163,8 @@ module Admins
         if @payment_term.update payment_term_params
           params[:edit] = nil
           render json: @payment_term
+        else
+          render json: @payment_term.errors.full_messages.join
         end
 
       else
@@ -184,6 +188,8 @@ module Admins
         if @dispatch_method.update dispatch_method_params
           params[:edit] = nil
           render json: @dispatch_method
+        else
+          render json: @dispatch_method.errors.full_messages.join
         end
       else
         if params[:create]
@@ -209,6 +215,8 @@ module Admins
         if @admin_accessory.update accessory_params
           params[:edit] = nil
           render json: @admin_accessory
+        else
+          render json: @admin_accessory.errors.full_messages.join
         end
       else
         if params[:create]
@@ -233,6 +241,8 @@ module Admins
         if @add_charge.update additional_charge_params
           params[:edit] = nil
           render json: @add_charge
+        else
+          render json: @add_charge.errors.full_messages.join
         end
       else
         if params[:create]
@@ -261,6 +271,8 @@ module Admins
         if  @sp_description.update spare_part_description_params
           params[:edit] = nil
           render json: @sp_description
+        else
+          render json: @sp_description.errors.full_messages.join
         end
       else
         if params[:create]
@@ -284,6 +296,8 @@ module Admins
         if @ticket_start_action.update ticket_start_action_params
           params[:edit] = nil
           render json: @ticket_start_action
+        else
+          render json: @ticket_start_action.errors.full_messages.join
         end
       else
         if params[:create]
@@ -308,6 +322,8 @@ module Admins
         if @ad_feedback.update feedback_params
           params[:edit] = nil
           render json: @ad_feedback
+        else
+          render json: @ad_feedback.errors.full_messages.join
         end
       else
         if params[:create]
@@ -339,6 +355,8 @@ module Admins
         if @g_question.update ge_q_and_a_params
           params[:edit] = nil
           render json: @g_question
+        else
+          render json: @g_question.errors.full_messages.join
         end
       else
         if params[:create]
@@ -373,12 +391,16 @@ module Admins
           if @problem_category.update problem_category_params
             params[:edit] = nil
             render json: @problem_category
+          else
+            render json: @problem_category.errors.full_messages.join
           end
         elsif params[:q_and_a_id]
           @q_and_a = QAndA.find params[:q_and_a_id]
           if @q_and_a.update q_and_a_params
             params[:edit] = nil
             render json: @q_and_a
+          else
+            render json: @q_and_a.errors.full_messages.join
           end
         end
       else
@@ -439,12 +461,16 @@ module Admins
           if @brands_and_category.update brands_and_category_params
             params[:edit] = nil
             render json: @brands_and_category
+          else
+            render json: @brands_and_category.errors.full_messages.join
           end
         elsif params[:product_category_id]
           @product_category = ProductCategory.find params[:product_category_id]
           if @product_category.update product_category_params
             params[:edit] = nil
             render json: @product_category
+          else
+            render json: @product_category.errors.full_messages.join
           end
         end
 

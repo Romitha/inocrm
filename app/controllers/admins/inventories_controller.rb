@@ -178,18 +178,24 @@ module Admins
           if @inventory_rack.update inventory_rack_params
             params[:edit] = nil
             render json: @inventory_rack
+          else
+            render json: @inventory_rack.errors.full_messages.join
           end
         elsif params[:shelf_id]
           @inventory_shelf = InventoryShelf.find params[:shelf_id]
           if @inventory_shelf.update inventory_shelf_params
             params[:edit] = nil
             render json: @inventory_shelf
+          else
+            render json: @inventory_shelf.errors.full_messages.join
           end
         elsif params[:bin_id]
           @inventory_bin = InventoryBin.find params[:bin_id]
           if @inventory_bin.update inventory_bin_params
             params[:edit] = nil
             render json: @inventory_bin
+          else
+            render json: @inventory_bin.errors.full_messages.join
           end
         end
 
@@ -249,6 +255,8 @@ module Admins
         if @inventory_product_category.update inventory_category2_params
           params[:edit] = nil
           render json: @inventory_product_category
+        else
+          render json: @inventory_product_category.errors.full_messages.join
         end
 
       else
@@ -272,6 +280,8 @@ module Admins
         if @inventory_category.update inventory_category3_params
           params[:edit] = nil
           render json: @inventory_category
+        else
+          render json: @inventory_category.errors.full_messages.join
         end
 
       else
@@ -310,13 +320,15 @@ module Admins
             params[:edit] = nil
             render json: @inventory_product_form
           else
-            render json: @inventory_product_form.errors
+            render json: @inventory_product_form.errors.full_messages.join
           end
         elsif params[:product_info_id]
           @inventory_product1 = InventoryProductInfo.find params[:product_info_id]
           if @inventory_product1.update inventory_product_info_params
             params[:edit] = nil
             render json: @inventory_product1
+          else
+            render json: @inventory_product1.errors.full_messages.join
           end
         end
       else
@@ -341,6 +353,8 @@ module Admins
         if @inventory_product_condition.update inventory_product_condition_params
           params[:edit] = nil
           render json: @inventory_product_condition
+        else
+          render json: @inventory_product_condition.errors.full_messages.join
         end
 
       else
@@ -364,6 +378,8 @@ module Admins
         if @inventory_disposal_method.update inventory_disposal_method_params
           params[:edit] = nil
           render json: @inventory_disposal_method
+        else
+          render json: @inventory_disposal_method.errors.full_messages.join
         end
 
       else
@@ -387,6 +403,8 @@ module Admins
         if @inventory_reason.update inventory_reason_params
           params[:edit] = nil
           render json: @inventory_reason
+        else
+          render json: @inventory_reason.errors.full_messages.join
         end
 
       else
@@ -410,6 +428,8 @@ module Admins
         if @inventory_manufacture.update inventory_manufacture_params
           params[:edit] = nil
           render json: @inventory_manufacture
+        else
+          render json: @inventory_manufacture.errors.full_messages.join
         end
 
       else
@@ -443,6 +463,8 @@ module Admins
         if @inventory_unit.update inventory_unit_params
           params[:edit] = nil
           render json: @inventory_unit
+        else
+          render json: @inventory_unit.errors.full_messages.join
         end
 
       else
@@ -712,6 +734,8 @@ module Admins
         if @inventory.update inventory_params
           params[:edit] = nil
           render json: @inventory
+        else
+          render json: @inventory.errors.full_messages.join
         end
 
       elsif params[:search_product]
@@ -804,10 +828,6 @@ module Admins
       def inventory_product_params
         params.require(:inventory_product).permit(:category3_id, :serial_no, :serial_no_order, :sku, :legacy_code, :description, :model_no, :product_no, :spare_part_no, :fifo, :active, :spare_part, :unit_id, :created_by, :updated_by, :non_stock_item, inventory_product_info_attributes: [:picture, :secondary_unit_id, :issue_fractional_allowed, :per_secondery_unit_conversion, :need_serial, :need_batch, :country_id, :manufacture_id, :average_cost, :standard_cost, :currency_id, :remarks])
       end
-
-      # def inventory_product_info_params
-      #   params.require(:inventory_product_info).permit(:secondary_unit_id, :average_cost, :need_serial, :need_batch, :per_secondery_unit_conversion, :country_id, :manufacture_id, :currency_id, :standard_cost,:average_cost)
-      # end
 
       def inventory_product_info_params
         params.require(:inventory_product_info).permit(:secondary_unit_id, :manufacture_id, :country_id, :currency_id, :average_cost, :standard_cost, :issue_fractional_allowed, :per_secondery_unit_conversion, :need_serial,:need_batch)

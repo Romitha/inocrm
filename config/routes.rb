@@ -231,7 +231,6 @@ Rails.application.routes.draw do
         delete "delete_admin_additional_charge"
         delete "delete_admin_spare_part_description"
         delete "delete_admin_ticket_start_action"
-        delete "delete_admin_sla"
         delete "delete_admin_general_question"
         delete "delete_admin_customer_feedback"
         delete "delete_problem_category"
@@ -272,6 +271,7 @@ Rails.application.routes.draw do
         delete "delete_admin_regional_support_center"
         delete "delete_sbu_regional_engineer"
         delete "delete_admin_country"
+        delete "delete_admin_sla"
         [
           :regional_support_center,
           :country,

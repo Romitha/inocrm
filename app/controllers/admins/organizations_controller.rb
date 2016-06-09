@@ -51,12 +51,16 @@ module Admins
           if @regional_support_center.update regional_support_center_params
             params[:edit] = nil
             render json: @regional_support_center
+          else
+            render json: @regional_support_center.errors.full_messages.join
           end
         elsif params[:sbu_regional_engineer_id]
           @sbu_regional_engineer = SbuRegionalEngineer.find params[:sbu_regional_engineer_id]
           if @sbu_regional_engineer.update sburegional_engineer_params
             params[:edit] = nil
             render json: @sbu_regional_engineer
+          else
+            render json: @sbu_regional_engineer.errors.full_messages.join
           end
         end
       else
@@ -107,7 +111,6 @@ module Admins
           @country = ProductSoldCountry.new
         end
         @country_all = ProductSoldCountry.order(created_at: :desc).select{|i| i.persisted? }
-        # render "admins/tickets/country"
       end
 
     end
@@ -131,6 +134,8 @@ module Admins
         if @sla.update sla_params
           params[:edit] = nil
           render json: @sla
+        else
+          render json: @sla.errors.full_messages.join
         end
       else
         if params[:create]
