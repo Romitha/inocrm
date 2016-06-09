@@ -56,7 +56,7 @@ module ApplicationHelper
   def print_fsr_tag_value fsr
     [
       "DUPLICATE=#{fsr.print_count > 0 ? 'D' : ''}",
-      "FSR_NO=#{fsr.id.to_s.rjust(6, INOCRM_CONFIG['fsr_no_format'])}",
+      "FSR_NO=#{fsr.ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG['fsr_no_format'])}",
       "COMPANY_NAME=#{fsr.ticket.customer.mst_title.title} #{fsr.ticket.customer.name}",
       "ADDRESS=#{fsr.ticket.customer.address1} #{fsr.ticket.customer.address2} #{fsr.ticket.customer.address3} #{fsr.ticket.customer.address4}",
       "TICKET_REF=#{fsr.ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG['ticket_no_format'])}",
