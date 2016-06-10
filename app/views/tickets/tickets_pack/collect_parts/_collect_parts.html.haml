@@ -24,7 +24,7 @@
         - @manufacture_parts.each_with_index do |manufacture_part, i|
           %tr
             %th= i+1
-            %th #{manufacture_part.ticket_spare_part.engineer.try(:email)}
+            %th #{manufacture_part.ticket_spare_part.engineer.try(:first_name)}
             %td #{manufacture_part.created_at.strftime "%m-%d-%Y"}
             %td #{manufacture_part.ticket_spare_part.spare_part_no}
             %td #{manufacture_part.ticket_spare_part.spare_part_description}
