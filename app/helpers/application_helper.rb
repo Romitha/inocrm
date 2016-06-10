@@ -347,7 +347,7 @@ module ApplicationHelper
       total_amount += totalprice
       net_total_amount += totalprice
 
-      repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => quantity, "UNIT_PRICE" => standard_currency_format(unit_price), "CURRENCY1" => currency_1, "TOTAL_PRICE" => standard_currency_format(totalprice), "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
+      repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => "", "UNIT_PRICE" => standard_currency_format(unit_price), "CURRENCY1" => currency_1, "TOTAL_PRICE" => standard_currency_format(totalprice), "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
     end
 
     invoice.ticket_invoice_advance_payments.each do |ticket_invoice_advance_payment|
