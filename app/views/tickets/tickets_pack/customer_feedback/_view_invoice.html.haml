@@ -1,44 +1,69 @@
 - invoice = ticket.final_invoice
 
-.col-md-3
-  %strong Invoice no:
-  = invoice.invoice_no.to_s.rjust(6, INOCRM_CONFIG["invoice_no_format"])
+.col-md-4
+  .col-md-8
+    %strong Invoice no:
+  .col-md-4
+    = invoice.invoice_no.to_s.rjust(6, INOCRM_CONFIG["invoice_no_format"])
   %br
-  %strong Currency:
-  = ticket.ticket_currency.code
+  .col-md-8
+    %strong Currency:
+  .col-md-4
+    = ticket.ticket_currency.code
   %br/
-  %strong Deducted amount:
-  = invoice.deducted_amount
+  .col-md-8
+    %strong Deducted amount:
+  .col-md-4
+    = number_to_currency(invoice.deducted_amount, precision: 2)
   %br/
-  %strong Payment term:
-  = invoice.payment_term.name
+  .col-md-8
+    %strong Payment term:
+  .col-md-4
+    / = invoice.payment_term.name
   %br/
-  %strong Note:
-  = invoice.note
+  .col-md-8
+    %strong Note:
+  .col-md-4
+    = invoice.note
   %br/
-  %strong Sent to customer:
-  = boolean_in_word invoice.customer_sent, "Yes", "No"
+  .col-md-8
+    %strong Sent to customer:
+  .col-md-4
+    = boolean_in_word invoice.customer_sent, "Yes", "No"
   %br/
-  %strong Canceled:
-  = boolean_in_word invoice.canceled, "Yes", "No"
+  .col-md-8
+    %strong Canceled:
+  .col-md-4
+    = boolean_in_word invoice.canceled, "Yes", "No"
   %hr
-  %strong Total amount (#{invoice.ticket.ticket_currency.code}):
-  = number_to_currency(invoice.total_amount, precision: 3)
+  .col-md-8
+    %strong Total amount (#{invoice.ticket.ticket_currency.code}):
+  .col-md-4
+    = number_to_currency(invoice.total_amount, precision: 2)
   %br/
-  %strong Total advance received (#{invoice.ticket.ticket_currency.code}):
-  = number_to_currency(invoice.total_advance_recieved, precision: 3)
+  .col-md-8
+    %strong Total advance received (#{invoice.ticket.ticket_currency.code}):
+  .col-md-4
+    = number_to_currency(invoice.total_advance_recieved, precision: 2)
   %br/
-  %strong.red Total deduction (#{invoice.ticket.ticket_currency.code}):
-  = number_to_currency(invoice.total_deduction, precision: 3)
+  .col-md-8
+    %strong.red Total deduction (#{invoice.ticket.ticket_currency.code}):
+  .col-md-4
+    = number_to_currency(invoice.total_deduction, precision: 2)
   %br/
-  %strong.red Total cost (#{invoice.ticket.ticket_currency.code}):
-  = number_to_currency(invoice.total_cost, precision: 3)
+  .col-md-8
+    %strong.red Total cost (#{invoice.ticket.ticket_currency.code}):
+  .col-md-4
+    = number_to_currency(invoice.total_cost, precision: 2)
   %br/
-  %strong Net total amount (#{invoice.ticket.ticket_currency.code}):
-  = number_to_currency(invoice.net_total_amount, precision: 3)
+  .col-md-8
+    %strong Net total amount (#{invoice.ticket.ticket_currency.code}):
+  .col-md-4
+    = number_to_currency(invoice.net_total_amount, precision: 2)
   %br/
-  = link_to "Print invoice", "#", class: "btn btn-sm btn-success", onclick: "Users.request_printer_application('ticket_invoice', '#{ticket.final_invoice_id}', 'receipt_request_type', 'print_ticket_invoice_tag_value', 'print_invoice'); false;"
-.col-md-9
+  .col-md-12
+    = link_to "Print invoice", "#", class: "btn btn-sm btn-success", onclick: "Users.request_printer_application('ticket_invoice', '#{ticket.final_invoice_id}', 'receipt_request_type', 'print_ticket_invoice_tag_value', 'print_invoice'); false;"
+.col-md-8
   %h4 Estimations
   %table.table.table-responsive.table-condensed.table-bordered
     %thead
