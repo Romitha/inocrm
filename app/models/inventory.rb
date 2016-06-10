@@ -47,7 +47,7 @@ class InventoryProduct < ActiveRecord::Base
 
   def generated_item_code
     Organization
-   "#{inventory_category3.code}#{CompanyConfig.first.inv_category_seperator}#{inventory_category3.inventory_category2.code}#{CompanyConfig.first.inv_category_seperator}#{inventory_category3.inventory_category2.inventory_category1.code}#{CompanyConfig.first.inv_category_seperator}#{serial_no.to_s.rjust(6, INOCRM_CONFIG["inventory_serial_no_format"])}"
+   "#{inventory_category3.inventory_category2.inventory_category1.code}#{CompanyConfig.first.inv_category_seperator}#{inventory_category3.inventory_category2.code}#{CompanyConfig.first.inv_category_seperator}#{inventory_category3.code}#{CompanyConfig.first.inv_category_seperator}#{serial_no.to_s.rjust(6, INOCRM_CONFIG["inventory_serial_no_format"])}"
   end
 
 end
