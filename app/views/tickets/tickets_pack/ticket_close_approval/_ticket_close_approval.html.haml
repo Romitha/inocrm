@@ -101,7 +101,7 @@
                   .col-md-6
                     Other Charges Repairs : #{fsr.object.other_repairs}
                   .col-md-12
-                    Resolution : #{fsr.object.resolution}
+                    Resolution : #{simple_format fsr.object.resolution}
                   .col-md-12
                     Level of Completion : #{fsr.object.completion_level}
                 .col-md-12{style: "margin-top: 15px;"}
@@ -145,7 +145,8 @@
                     = fsr.label "Approved"
                     = fsr.check_box :approved
                   .col-md-9
-                    = fsr.input :remarks
+                    = fsr.input :remarks, input_html: {value: nil}
+                    = simple_format fsr.object.remarks
       .row.col-md-12.col-xs-12{style: "margin-top:20px; margin-bottom:20px;"}
         .col-md-6.col-xs-6
           = f.label "Job Belongs to:"
