@@ -192,20 +192,9 @@ class InvoicesController < ApplicationController
       end
     else
       if continue
+        @ticket.cus_payment_required = true
 
-        if @ticket.final_amount_to_be_paid.to_f > 0
-          @ticket.cus_payment_required = true
-          # @ticket.save
-          d12_need_to_invoice = "Y"
-        else
-          # @ticket.save
-          d12_need_to_invoice = "N"
-          payment_completed = true
-        end
-
-        if payment_completed
-          @ticket.cus_payment_completed = true
-        end
+        d12_need_to_invoice = foc_payment_required ? "N" : "Y"
 
         if !updated_only
           # 63 - Estimate Job Final
