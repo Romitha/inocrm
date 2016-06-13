@@ -26,9 +26,11 @@
   .col-md-4
     %strong Faulty Serial No:
     #{spare_part.faulty_serial_no}
+    = hidden_field_tag :ticket_spare_part_faulty_serial_no, spare_part.faulty_serial_no
   .col-md-4
     %strong Faulty CT No:
     #{spare_part.faulty_ct_no}
+    = hidden_field_tag :ticket_spare_part_faulty_ct_no, spare_part.faulty_ct_no
   .col-md-4
     %button.btn.btn-primary.btn-xs{onclick: "Tickets.check_previous(this); return false;", type: "button", data: {"ticket-id" => spare_part.ticket.id}} Check Previous Detail
 
