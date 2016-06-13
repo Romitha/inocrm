@@ -366,7 +366,7 @@ class TicketsController < ApplicationController
       end
       @contact_person_for_customer.new_record? ? @build_contact_person.contact_person_contact_types.build([{contact_type_id: 2}, {contact_type_id: 4}]) : @build_contact_person.contact_person_contact_types.build(@c_p_c_t_attribs)
 
-      @header = "Contact Person"
+      # @header = "Contact Person"
     when "edit_create_contact_person"
       @ticket = Ticket.find_by_id(session[:ticket_id])
       if params[:contact_person] == "1"

@@ -1,5 +1,5 @@
 %fieldset
-  %legend= @header
+  / %legend= @header
   - if build_contact_person.new_record?
     = simple_nested_form_for build_contact_person, url: create_contact_person_record_tickets_path, method: :post, remote: true do |f|
       .row
