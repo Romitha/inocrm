@@ -214,11 +214,11 @@ class AddTablesForEstimationAndTaxes < ActiveRecord::Migration
       {name: "fk_spt_ticket_invoice_advance_payment_spt_ticket_invoice1", column: :invoice_id, reference_table: :spt_ticket_invoice, table: :spt_ticket_invoice_advance_payment},
       {name: "fk_spt_ticket_invoice_advance_payment_spt_ticket_payment_rece1", column: :payment_received_id, reference_table: :spt_ticket_payment_received, table: :spt_ticket_invoice_advance_payment},
       {name: "fk_spt_ticket_estimation_additional_tax_mst_tax1", column: :tax_id, reference_table: :mst_tax, table: :spt_ticket_estimation_additional_tax},
-      {name: "fk_spt_ticket_estimation_additional_tax_spt_ticket_estimation1", column: :estimation_additional_id, reference_table: :spt_ticket_estimation_additional, table: :spt_ticket_estimation_additional_tax},
+      {name: "fk_spt_ticket_estimation_additional_tax_spt_ticket_estimation1", column: :estimation_additional_id, reference_table: :spt_ticket_estimation_additional, table: :spt_ticket_estimation_additional_tax, more_options: {on_delete: :restrict}},
       {name: "fk_spt_ticket_estimation_additional_tax_mst_tax10", column: :tax_id, reference_table: :mst_tax, table: :spt_ticket_estimation_part_tax},
-      {name: "fk_spt_ticket_estimation_part_tax_spt_ticket_estimation_part1", column: :estimation_part_id, reference_table: :spt_ticket_estimation_part, table: :spt_ticket_estimation_part_tax},
+      {name: "fk_spt_ticket_estimation_part_tax_spt_ticket_estimation_part1", column: :estimation_part_id, reference_table: :spt_ticket_estimation_part, table: :spt_ticket_estimation_part_tax, more_options: {on_delete: :restrict}},
       {name: "fk_spt_ticket_estimation_additional_tax_mst_tax100", column: :tax_id, reference_table: :mst_tax, table: :spt_ticket_estimation_external_tax},
-      {name: "fk_spt_ticket_estimation_external_tax_spt_ticket_estimation_e1", column: :estimation_external_id, reference_table: :spt_ticket_estimation_external, table: :spt_ticket_estimation_external_tax},
+      {name: "fk_spt_ticket_estimation_external_tax_spt_ticket_estimation_e1", column: :estimation_external_id, reference_table: :spt_ticket_estimation_external, table: :spt_ticket_estimation_external_tax, more_options: {on_delete: :restrict}},
       {name: "fk_mst_tax_rate_users1", column: :created_by, reference_table: :users, table: :mst_tax_rate},
       {name: "fk_mst_tax_rate_mst_tax1", column: :tax_id, reference_table: :mst_tax, table: :mst_tax_rate},
       {name: "fk_spt_act_print_invoice_spt_ticket_invoice1", column: :invoice_id, reference_table: :spt_ticket_invoice, table: :spt_act_print_invoice},
@@ -230,7 +230,7 @@ class AddTablesForEstimationAndTaxes < ActiveRecord::Migration
       {name: "fk_spt_ticket_spare_part_store_spt_ticket_spare_part10", column: :spare_part_id, table: :spt_ticket_spare_part_non_stock, reference_table: :spt_ticket_spare_part},
     ]
     .each do |f|
-      add_foreign_key f[:table], f[:reference_table], name: f[:name], column: f[:column]
+      add_foreign_key f[:table], f[:reference_table], {name: f[:name], column: f[:column]}.merge(f[:more_options].to_h)
     end
   end
 end

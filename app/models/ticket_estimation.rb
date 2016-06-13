@@ -6,17 +6,17 @@ class TicketEstimation < ActiveRecord::Base
   has_many :ticket_estimation_externals, foreign_key: :ticket_estimation_id
   accepts_nested_attributes_for :ticket_estimation_externals, allow_destroy: true
 
-  has_many :job_estimations, foreign_key: :ticket_estimation_id
-  accepts_nested_attributes_for :job_estimations, allow_destroy: true
-
-  has_many :act_job_estimations, foreign_key: :ticket_estimation_id
-  accepts_nested_attributes_for :act_job_estimations, allow_destroy: true
-
   has_many :ticket_estimation_parts, foreign_key: :ticket_estimation_id
   accepts_nested_attributes_for :ticket_estimation_parts, allow_destroy: true
 
   has_many :ticket_estimation_additionals, foreign_key: :ticket_estimation_id
   accepts_nested_attributes_for :ticket_estimation_additionals, allow_destroy: true
+
+  has_many :job_estimations, foreign_key: :ticket_estimation_id
+  accepts_nested_attributes_for :job_estimations, allow_destroy: true
+
+  has_many :act_job_estimations, foreign_key: :ticket_estimation_id
+  accepts_nested_attributes_for :act_job_estimations, allow_destroy: true
 
   belongs_to :estimation_status, foreign_key: :status_id
   belongs_to :currency, foreign_key: :currency_id

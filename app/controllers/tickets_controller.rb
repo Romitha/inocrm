@@ -2173,6 +2173,7 @@ class TicketsController < ApplicationController
     Inventory
     TicketSparePart
     @ticket = Ticket.find_by_id params[:ticket_id]
+    @edit_serial = true
     if @ticket
       @product = @ticket.products.first
       @warranties = @product.warranties

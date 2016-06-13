@@ -1,5 +1,4 @@
 class InventoriesController < ApplicationController
-
   before_action :find_ticket, only: [:update_low_margin_estimate, :update_estimate_job, :update_delivery_unit]
 
   def inventory_in_modal
@@ -80,33 +79,30 @@ class InventoriesController < ApplicationController
   def search_inventories
     Inventory
     respond_to do |format|
-
-      query_hash = {}
+      category1_id = params[:search_inventory]["brand"]
+      category2_id = params[:search_inventory]["product"]
+      inventory_product_hash = params[:search_inventory].except("brand", "product").to_hash
+      session[:requested_store_id] = inventory_product_hash["store_id"].to_i
       @display_results = true
-      store_hash = params[:search_inventory].except("brand", "product", "mst_inv_product").to_hash
-      session[:requested_store_id] = store_hash["store_id"].to_i
+      @store = Organization.find session[:requested_store_id]
 
-      mst_inv_product = params[:search_inventory].except("brand", "product")["mst_inv_product"].to_hash.delete_if { |k, v| v.blank? }
-
-      mst_inv_product_like = mst_inv_product.map { |v| v.first == "category3_id" ? v.first+" = "+v.last : v.first+" like '%"+v.last+"%'" }.join(" and ")
-      mst_inv_product_for_inventory_like = mst_inv_product.map { |v| v.first == "category3_id" ? "mst_inv_product."+v.first+" = "+v.last : "mst_inv_product."+v.first+" like '%"+v.last+"%'" }.join(" and ")
+      category = {mst_inv_category2: category2_id, mst_inv_category1: category1_id}.map { |k, v| "#{k}.id = #{v}" if v.present? }.compact.join(" and ")
+      updated_hash = inventory_product_hash["mst_inv_product"].to_hash.map { |k, v| "#{k} like '%#{v}%'" if v.present? }.compact.join(" and ")
+      updated_hash_for_inventory = inventory_product_hash["mst_inv_product"].to_hash.map { |k, v| "mst_inv_product.#{k} like '%#{v}%'" if v.present? }.compact.join(" and ")
+      updated_hash = [updated_hash, category].map { |e| e if e.present? }.compact.join(" and ")
+      updated_hash_for_inventory = [updated_hash_for_inventory, category].map { |e| e if e.present? }.compact.join(" and ")
 
       if params[:select_frame] == "main_product"
-        @inventories = Inventory.joins(inventory_product: :inventory_product_info).where(store_id: store_hash["store_id"].to_i, mst_inv_product_info: {need_serial: true}).where(mst_inv_product_for_inventory_like).references(:mst_inv_product)
-        avoidable_inventory_product_ids = @inventories.map { |inventory| inventory.product_id }.compact
+        @inventories = @store.inventories.joins(inventory_product: [:inventory_product_info, inventory_category3: {inventory_category2: :inventory_category1}]).where(mst_inv_product_info: {need_serial: true}).where(updated_hash_for_inventory).references(:mst_inv_product)
 
-        mst_non_inv_product_like = mst_inv_product_like.present? ? mst_inv_product_like+" and non_stock_item = 1 " : "non_stock_item = 1"
-        mst_inv_product_like = mst_inv_product_like.present? ? mst_inv_product_like+" and non_stock_item != 1 " : "non_stock_item != 1"
-        @inventory_products = InventoryProduct.where.not(id: avoidable_inventory_product_ids).where(mst_inv_product_like).joins(:inventory_product_info).where(mst_inv_product_info: {need_serial: true})
-        @non_stock_products = InventoryProduct.where.not(id: avoidable_inventory_product_ids).where(mst_non_inv_product_like).joins(:inventory_product_info).where(mst_inv_product_info: {need_serial: true})
+        @inventory_products = InventoryProduct.joins(:inventory_product_info, inventory_category3: {inventory_category2: :inventory_category1}).where(mst_inv_product_info: {need_serial: true}).where(updated_hash).to_a.keep_if {|p| !p.non_stock_item.present? and p.inventories.empty? }
+        @non_stock_products = InventoryProduct.joins(:inventory_product_info, inventory_category3: {inventory_category2: :inventory_category1}).where(mst_inv_product_info: {need_serial: true}).where(updated_hash).to_a.keep_if {|p| p.non_stock_item.present? and p.inventories.empty? }
+
       else
-        @inventories = Inventory.joins(:inventory_product).where(store_id: store_hash["store_id"].to_i).where(mst_inv_product_for_inventory_like).references(:mst_inv_product)
-        avoidable_inventory_product_ids = @inventories.map { |inventory| inventory.product_id }.compact
-        mst_non_inv_product_like = mst_inv_product_like.present? ? mst_inv_product_like+" and non_stock_item = 1 " : "non_stock_item = 1"
-        mst_inv_product_like = mst_inv_product_like.present? ? mst_inv_product_like+" and non_stock_item != 1 " : "non_stock_item != 1"
-        @inventory_products = InventoryProduct.where.not(id: avoidable_inventory_product_ids).where(mst_inv_product_like)
+        @inventories = @store.inventories.joins(inventory_product: [:inventory_product_info, inventory_category3: {inventory_category2: :inventory_category1}]).where(updated_hash_for_inventory).references(:mst_inv_product)
+        @inventory_products = InventoryProduct.joins(:inventory_product_info, inventory_category3: {inventory_category2: :inventory_category1}).where(mst_inv_product_info: {need_serial: true}).where(updated_hash).to_a.keep_if {|p| !p.non_stock_item.present? and p.inventories.empty? }
+        @non_stock_products = InventoryProduct.joins(:inventory_product_info, inventory_category3: {inventory_category2: :inventory_category1}).where(mst_inv_product_info: {need_serial: true}).where(updated_hash).to_a.keep_if {|p| p.non_stock_item.present? and p.inventories.empty? }
 
-        @non_stock_products = InventoryProduct.where(mst_non_inv_product_like)
       end
 
       format.js {render :inventory_in_modal}
@@ -1865,6 +1861,7 @@ class InventoriesController < ApplicationController
 
   def update_estimate_the_part_internal
     TaskAction
+    Tax
     estimation = TicketEstimation.find params[:part_estimation_id]
     @ticket = Ticket.find params[:ticket_id]
 

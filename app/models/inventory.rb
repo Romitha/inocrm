@@ -41,6 +41,25 @@ class InventoryProduct < ActiveRecord::Base
   validates_uniqueness_of :serial_no, scope: :category3_id
   validates :serial_no, :length => { :maximum => 6 }
 
+  has_many :dyna_columns, as: :resourceable, autosave: true
+
+  after_save do |inventory|
+    inventory.generated_code = inventory.generated_item_code
+  end
+
+  [:generated_code].each do |dyna_method|
+    define_method(dyna_method) do
+      dyna_columns.find_by_data_key(dyna_method).try(:data_value)
+    end
+
+    define_method("#{dyna_method}=") do |value|
+      data = dyna_columns.find_or_initialize_by(data_key: dyna_method)
+      data.data_value = (value.class==Fixnum ? value : value.strip)
+      @is_customer = data.data_value if dyna_method==:is_customer
+      data.save if data.persisted?
+    end
+  end
+
   def is_used_anywhere?
     inventory_category3.present? or inventories.any? or inventory_unit.present? or inventory_serial_items.any? or inventory_product_info.present? or ticket_spare_part_stores.any? or grn_items.any? or inventory_serial_parts.any? or inventory_serial_items.any? or ticket_spare_part_non_stocks.any? or approved_ticket_spare_part_non_stocks.any?
   end
