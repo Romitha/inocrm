@@ -208,6 +208,9 @@ class ActHold < ActiveRecord::Base
 
   belongs_to :user_ticket_action, foreign_key: :ticket_action_id
   belongs_to :reason, foreign_key: :reason_id
+
+  validates :reason_id, presence: true
+
 end
 
 class ActFsr < ActiveRecord::Base
