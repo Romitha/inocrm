@@ -26,7 +26,7 @@
           - if sr.object.ticket_id == ticket.id
             = sr.association :ref_product_serial, value_method: :id, label_method: :serial_no
 
-    - if @complete_task or @edi_serial
+    - if @complete_task or @edit_serial
       = label_tag "Task completed"
       = check_box_tag "complete_task", true, true # this is for extend_warranty purpose. this can be used anywhere as render
 
