@@ -5,7 +5,8 @@
 .row
   .col-md-4
     %strong FSR No:
-    = spare_part.fsr_id.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"]) if spare_part.fsr_id
+    - if spare_part.fsr_id
+      = spare_part.ticket_fsr.ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])
   .col-md-4
     %strong Product Brand:
     #{product.product_brand.name}

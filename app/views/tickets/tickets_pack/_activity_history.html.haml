@@ -77,7 +77,9 @@
               .panel-body 
                 .row
                   .col-md-4
-                    FSR No : #{action.act_fsr.fsr_id.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])}
+                    FSR No :
+                    -if action.act_fsr.fsr_id
+                      = action.act_fsr.ticket_fsr.ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])
                   .col-md-4
                     -if action.act_fsr.print_fsr == true
                       Print FSR : Yes
@@ -992,7 +994,9 @@
               .panel-body 
                 .row
                   .col-md-4
-                    FSR No : #{action.act_fsr.fsr_id.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])}
+                    FSR No :
+                    - if action.act_fsr.fsr_id
+                      = action.act_fsr.ticket_fsr.ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])
                   .col-md-4
                     -if action.act_fsr.print_fsr == true
                       Print FSR : Yes
