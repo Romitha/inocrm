@@ -14,7 +14,8 @@
   .col-md-8
     %strong Deducted amount:
   .col-md-4
-    = number_to_currency(invoice.deducted_amount, precision: 2)
+    = number_with_precision invoice.deducted_amount, precision: 2
+    / = number_to_currency(invoice.deducted_amount, precision: 2)
   %br/
   .col-md-8
     %strong Payment term:
@@ -37,29 +38,29 @@
     = boolean_in_word invoice.canceled, "Yes", "No"
   %hr
   .col-md-8
-    %strong Total amount (#{invoice.ticket.ticket_currency.code}):
-  .col-md-4
-    = number_to_currency(invoice.total_amount, precision: 2)
+    %strong Total amount:
+  .col-md-4{style: "align: right"}
+    = number_to_currency invoice.total_amount, delimiter: ",", unit: invoice.ticket.ticket_currency.code, format: "%u %n"
   %br/
   .col-md-8
-    %strong Total advance received (#{invoice.ticket.ticket_currency.code}):
-  .col-md-4
-    = number_to_currency(invoice.total_advance_recieved, precision: 2)
+    %strong Total advance received:
+  .col-md-4{style: "align: right"}
+    = number_to_currency invoice.total_advance_recieved, delimiter: ",", unit: invoice.ticket.ticket_currency.code, format: "%u %n"
   %br/
   .col-md-8
-    %strong.red Total deduction (#{invoice.ticket.ticket_currency.code}):
+    %strong.red Total deduction:
   .col-md-4
-    = number_to_currency(invoice.total_deduction, precision: 2)
+    = number_to_currency invoice.total_deduction, delimiter: ",", unit: invoice.ticket.ticket_currency.code, format: "%u %n"
   %br/
   .col-md-8
-    %strong.red Total cost (#{invoice.ticket.ticket_currency.code}):
+    %strong.red Total cost:
   .col-md-4
-    = number_to_currency(invoice.total_cost, precision: 2)
+    = number_to_currency invoice.total_cost, delimiter: ",", unit: invoice.ticket.ticket_currency.code, format: "%u %n"
   %br/
   .col-md-8
-    %strong Net total amount (#{invoice.ticket.ticket_currency.code}):
+    %strong Net total amount:
   .col-md-4
-    = number_to_currency(invoice.net_total_amount, precision: 2)
+    = number_to_currency invoice.net_total_amount, delimiter: ",", unit: invoice.ticket.ticket_currency.code, format: "%u %n"
   %br/
   .col-md-12
     = link_to "Print invoice", "#", class: "btn btn-sm btn-success", onclick: "Users.request_printer_application('ticket_invoice', '#{ticket.final_invoice_id}', 'receipt_request_type', 'print_ticket_invoice_tag_value', 'print_invoice'); false;"
