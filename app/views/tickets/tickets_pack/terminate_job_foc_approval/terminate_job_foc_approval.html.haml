@@ -9,7 +9,7 @@
 = render "tickets/tickets_pack/ticket_header", ticket: ticket, product: product
 
 = tab_panel do
-  = tab_nav_tab({class: "small_scale_margin-bottom1"}, ticket_info: {content: "Ticket info"}, terminate_job_foc_approval: {content: "Terminate job foc approval", active_class: "active"})
+  = tab_nav_tab({class: "small_scale_margin-bottom1"}, ticket_info: {content: "Ticket info"}, terminate_job_foc_approval: {content: "Terminate job foc approval", active_class: "active"}, view_invoice: {content: "Invoice"})
   .tab-content
     = tab_content tabpointer: :ticket_info do
       = tab_panel do
@@ -17,3 +17,7 @@
     = tab_content tabpointer: :return_store_part, active_class: "active" do
       = tab_panel do
         = render "tickets/tickets_pack/terminate_job_foc_approval/terminate_job_foc_approval", ticket: ticket, ticket_action: ticket_action
+    - if ticket.final_invoice_id.present?
+      = tab_content tabpointer: :view_invoice do
+        = tab_panel do
+          = render "tickets/tickets_pack/customer_feedback/view_invoice", ticket: ticket
