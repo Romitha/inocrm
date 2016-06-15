@@ -161,13 +161,18 @@ window.Invoices =
         $("#payment_completed").removeAttr("onclick")
 
   activate_deducted_amount_terminate_foc: ->
+    deducted_amount = $("#deducted_amount_text").val()
     if $("#approve_foc_check").is(":checked")
-      $("#deducted_amount_text").prop("disabled", true)
+      $("#deducted_amount_text").prop("readonly", true)
+      $("#deducted_amount_text").val(deducted_amount)
     else
-      $("#deducted_amount_text").prop("disabled", false)
+      $("#deducted_amount_text").prop("readonly", false)
+      $("#deducted_amount_text").val("0")
 
     $("#approve_foc_check").click ->
       if $("#approve_foc_check").is(":checked")
-        $("#deducted_amount_text").prop("disabled", true)
+        $("#deducted_amount_text").prop("readonly", true)
+        $("#deducted_amount_text").val(deducted_amount)
       else
-        $("#deducted_amount_text").prop("disabled", false)
+        $("#deducted_amount_text").prop("readonly", false)
+        $("#deducted_amount_text").val("0")
