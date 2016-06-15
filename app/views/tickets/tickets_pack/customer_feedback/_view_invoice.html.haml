@@ -39,27 +39,27 @@
   %hr
   .col-md-8
     %strong Total amount:
-  .col-md-4{style: "align: right"}
+  .col-md-4{style: "text-align: right"}
     = number_to_currency invoice.total_amount, delimiter: ",", unit: invoice.ticket.ticket_currency.code, format: "%u %n"
   %br/
   .col-md-8
     %strong Total advance received:
-  .col-md-4{style: "align: right"}
+  .col-md-4{style: "text-align: right"}
     = number_to_currency invoice.total_advance_recieved, delimiter: ",", unit: invoice.ticket.ticket_currency.code, format: "%u %n"
   %br/
   .col-md-8
     %strong.red Total deduction:
-  .col-md-4
+  .col-md-4{style: "text-align: right"}
     = number_to_currency invoice.total_deduction, delimiter: ",", unit: invoice.ticket.ticket_currency.code, format: "%u %n"
   %br/
   .col-md-8
     %strong.red Total cost:
-  .col-md-4
+  .col-md-4{style: "text-align: right"}
     = number_to_currency invoice.total_cost, delimiter: ",", unit: invoice.ticket.ticket_currency.code, format: "%u %n"
   %br/
   .col-md-8
     %strong Net total amount:
-  .col-md-4
+  .col-md-4{style: "text-align: right"}
     = number_to_currency invoice.net_total_amount, delimiter: ",", unit: invoice.ticket.ticket_currency.code, format: "%u %n"
   %br/
   .col-md-12
