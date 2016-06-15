@@ -146,10 +146,10 @@
 
                   .col-md-3.col-md-offset-6
                     %strong Total cost price:
-                    %span#total_cost_price 0
+                    %span#total_cost_price= number_with_precision [t.object.ticket_estimation_parts.sum(:cost_price), t.object.ticket_estimation_additionals.sum(:cost_price)].sum, precision: 2
                     %br
                     %strong Total estimated price:
-                    %span#total_estimated_price.for_payment_limit 0
+                    %span#total_estimated_price.for_payment_limit= number_with_precision [t.object.ticket_estimation_parts.sum(:estimated_price), t.object.ticket_estimation_additionals.sum(:estimated_price)].sum, precision: 2
                     %br
                     %strong Total profit (%):
                     %span#total_margin_price{style: "font-weight:bold;"}
