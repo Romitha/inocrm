@@ -24,8 +24,8 @@
       .col-md-6
         = f.simple_fields_for :ticket_product_serials do |sr|
           - if sr.object.ticket_id == ticket.id
-            = f.input :ref_product_serial, label:"Ref product serial"
-            / = sr.association :ref_product_serial, value_method: :id, label_method: :serial_no
+            / = f.input :ref_product_serial, label:"Ref product serial"
+            = sr.association :ref_product_serial, value_method: :id, label_method: :serial_no, input_html: {class: "chosen-select"}
 
     - if @complete_task or @edit_serial
       = label_tag "Task completed"
