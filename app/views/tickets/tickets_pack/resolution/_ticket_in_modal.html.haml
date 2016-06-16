@@ -14,10 +14,9 @@
       %tr
         %th No
         %th Requested at
-        %th Requested by
+        %th Requested by Engineer
         %th Faulty Serial No
         %th Faulty CT No
-        %th Engineer
         %th Ticket No
         %th Customer
         %th Ticket Date
@@ -30,7 +29,6 @@
           %td= User.cached_find_by_id(spare_part.requested_by).try(:first_name)
           %td #{spare_part.try(:faulty_serial_no)}
           %td #{spare_part.try(:faulty_ct_no)}
-          %td= User.cached_find_by_id(spare_part.engineer_id).try(:first_name)
           %td #{spare_part.ticket.ticket_no.to_s.rjust(5, INOCRM_CONFIG["ticket_no_format"])}
           %td #{spare_part.ticket.customer.try(:name)}
           %td #{spare_part.ticket.created_at.to_date}

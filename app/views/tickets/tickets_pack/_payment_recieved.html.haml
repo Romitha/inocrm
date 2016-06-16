@@ -4,19 +4,22 @@
   %thead
     %tr
       %th No
-      %th Paid At
+      %th Received at
+      %th Recieved By
+      %th Note
       %th Payment Type
       %th Amount
-      %th Note
       %th Inoice No
-      %th Recieved By
+
   %tbody
     - ticket.ticket_payment_receiveds.each_with_index do |payment, index|
       %tr
         %th{:scope => "row"} #{index+1}
-        %td= payment.try(:created_at).try(:strftime, "%d %b, %Y")
+        %td= payment.try(:received_at).try(:strftime, "%d %b, %Y")
+        %td= User.find_by_id(payment.try(:received_by)).try(:full_name)
+        %td= payment.try(:note)
         %td= payment.ticket_payment_received_type.try(:name)
         %td= number_to_currency payment.try(:amount), delimiter: ",", unit: payment.currency.code, format: "%u %n"
-        %td= payment.try(:note)
-        %td= payment.ticket_invoice.try(:invoice_no).to_s.rjust(6, INOCRM_CONFIG['invoice_no_format'])
-        %td= User.find_by_id(payment.try(:received_by)).try(:email)
+        %td
+        -if payment.ticket_invoice.present?
+          = payment.ticket_invoice.try(:invoice_no).to_s.rjust(6, INOCRM_CONFIG['invoice_no_format'])
