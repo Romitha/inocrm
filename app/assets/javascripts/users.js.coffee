@@ -68,7 +68,7 @@ window.Users =
       $.post $("#create_fsr_form").attr("action"), $("#create_fsr_form").serialize(), (data) ->
         if data["print_fsr"]
           _this.request_printer_application('fsr', data['fsr_id'], 'fsr_request_type', 'print_fsr_tag_value', 'print_fsr')
-          alert "Fsr is being printed."
+          alert "FSR is being printed."
         else
-          alert "Fsr is created."
+          alert "FSR is created."
         window.location.href= "/tickets/#{data['ticket_id']}"
