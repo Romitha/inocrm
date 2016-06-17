@@ -42,6 +42,8 @@ class User < ActiveRecord::Base
 
   validates_uniqueness_of :user_name
 
+  after_commit :flush_cache
+
   # validates_presence_of :password, if: Proc.new {|user| user.is_customer? }
   # FIXME this is sample text
 
@@ -127,7 +129,11 @@ class User < ActiveRecord::Base
   end
 
   def self.cached_find_by_id id
-    Rails.cache.fetch(["User", :find_by_id, id]){ find_by_id id }
+    Rails.cache.fetch(["User", :find_by_id, id.to_i]){ find_by_id id }
+  end
+
+  def flush_cache
+    Rails.cache.delete(["User", :find_by_id, id.to_i])
   end
 
 end
@@ -222,6 +228,8 @@ class District < ActiveRecord::Base
   has_many :customers, foreign_key: :district_id
 
   has_many :contact_person_contact_types, foreign_key: :contact_report_person_id
+  has_many :addresses
+  has_many :contact_numbers
 end
 
 class SbuRegionalEngineer < ActiveRecord::Base

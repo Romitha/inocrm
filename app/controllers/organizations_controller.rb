@@ -4,34 +4,23 @@ class OrganizationsController < ApplicationController
   before_action :set_organization, only: [:show, :edit, :update, :relate, :remove_relation, :dashboard, :option_for_vat_number, :demote_as_department, :remove_department_org]
 
   def index
-    case params["category"]
-    when "organization_suppliers"
-      @organizations = Organization.organization_suppliers
-    when "individual_suppliers"
-      @organizations = Organization.individual_suppliers
-    when "organization_customers"
-      @organizations = Organization.organization_customers
-    when "individual_customers"
-      @organizations = Organization.individual_customers
-    else
-      @organizations = Organization.where(refers: nil).order("created_at DESC")
-    end
-
+    @dealer_type = DealerType.find_by_code params[:category]
+    @accounts = @dealer_type.accounts
   end
 
   def new
-    @organization = Organization.new(category: params[:category])
+    @organization = Organization.new
   end
 
   def edit
-    # @address = @organization.addresses.build
+    Product
     respond_to do |format|
       format.html
     end
   end
 
   def show
-
+    Product
   end
 
   def create
@@ -39,10 +28,11 @@ class OrganizationsController < ApplicationController
 
     respond_to do |format|
       if @organization.save
-        @organization.update created_at: DateTime.now, created_by: current_user.id
-        @organization.accounts.each do |a|
-          a.update created_by: current_user.id, active: true
-        end
+        @organization.update created_by: current_user.id
+        account = @organization.account
+        account.update created_by: current_user.id, active: true
+        account.dealer_types << DealerType.find_by_code(params[:category])
+
         format.html {redirect_to @organization, notice: "#{@organization.category} is successfully created."}
       else
         format.html {render :new}
@@ -120,7 +110,7 @@ class OrganizationsController < ApplicationController
   def option_for_vat_number
     selected_organization = Organization.find_by_id params[:selected_organization_id]
     respond_to do |format|
-      format.json {render json: {current_vat_number: @organization.vat_number, new_vat_number: selected_organization.vat_number, current_organization_name: @organization.name, relation_organization_name: selected_organization.name}}
+      format.json {render json: {current_vat_number: @organization.vat_number, new_vat_number: selected_organization.try(:vat_number), current_organization_name: @organization.name, relation_organization_name: selected_organization.try(:name)}}
     end
   end
 
@@ -154,6 +144,6 @@ class OrganizationsController < ApplicationController
     end
 
     def organization_params
-      params.require(:organization).permit(:name, :department_org_id, :category, :description, :logo, :vat_number, :type_id, :web_site, :code, :short_name, addresses_attributes: [:id, :category, :address, :primary, :_destroy],  contact_numbers_attributes: [:id, :category, :value, :_destroy], accounts_attributes: [:id, :_destroy, :industry_types_id])
+      params.require(:organization).permit(:name, :department_org_id, :category, :description, :logo, :vat_number, :type_id, :web_site, :code, :short_name, addresses_attributes: [:id, :category, :address, :primary, :_destroy],  contact_numbers_attributes: [:id, :category, :value, :_destroy], account_attributes: [:id, :_destroy, :industry_types_id])
     end
 end

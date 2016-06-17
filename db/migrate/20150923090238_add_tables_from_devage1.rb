@@ -19,7 +19,7 @@ class AddTablesFromDevage1 < ActiveRecord::Migration
 		create_table :accounts_dealer_type, id: false do |t|
 			t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
 			t.column :dealer_types_id, "int(10) UNSIGNED NOT NULL"
-			t.column :dealers_id, "int(10) UNSIGNED NOT NULL"
+			t.column :account_id, "int(10) UNSIGNED NOT NULL"
 		end
 
 		create_table :mst_industry_types, id: false do |t|
@@ -30,7 +30,7 @@ class AddTablesFromDevage1 < ActiveRecord::Migration
 
 		[
 			{constraint_name: "fk_dealers_dealer_type_options_dealer_types1", foreign_key: "dealer_types_id", reference_table: "mst_dealer_types"},
-			{constraint_name: "fk_dealers_dealer_type_dealers1", foreign_key: "dealers_id", reference_table: "accounts"}
+			{constraint_name: "fk_dealers_dealer_type_dealers1", foreign_key: "account_id", reference_table: "accounts"}
 		].each do |attr|
 
 			add_foreign_key(:accounts_dealer_type, attr[:reference_table].to_sym, name: attr[:constraint_name], column: attr[:foreign_key])

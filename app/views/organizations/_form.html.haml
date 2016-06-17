@@ -35,20 +35,22 @@
       = f.association :organization_type    
     .col-md-4.pull-right
       = f.input :web_site, placeholder: "Web Site", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Web Site"}
-  .row
-    = f.simple_fields_for :accounts do |a|
-      = a.association :industry_type
-      = a.link_to_remove "Remove"
-    = f.link_to_add "Add", :accounts
+
+  - f.object.build_account if !f.object.account.present? and f.object.refers != "VSIS"
+  = f.simple_fields_for :account do |a|
+    .row
+      .col-md-12{class: "has-tooltip", title: "Industry type", data: {toggle: "tooltip", placement: "left"}}
+        = a.association :industry_type, include_blank: false
+
   .row
     .col-md-12
       = f.input :description, placeholder: "Description", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Description"}
-      = f.input :category, as: :hidden
+      = hidden_field_tag :category, params[:category] 
 
   .row
     .col-md-12
       .pull-right
-        = f.submit nil, class: "btn btn-success"
+        = f.submit "Save", class: "btn btn-success"
 
   %br
 

@@ -11,6 +11,12 @@ class ContactNumber < ActiveRecord::Base
 
   scope :primary_contactnumber, -> {where(primary: true)}
   scope :nonprimary_contactnumber, -> {where(primary: false)}
+
+  belongs_to :country, class_name: "ProductSoldCountry"
+  belongs_to :province
+  belongs_to :district
+  belongs_to :organization_contact_type, foreign_key: :type_id
+
 end
 
 class ContactType < ActiveRecord::Base
