@@ -9,10 +9,10 @@
       = @all_payment_received
     .col-md-3
       %strong Balance Amount to be Paid (#{ticket.ticket_currency.code}):
-      = @total_estimation_amount - @all_payment_received
+      .for_payment_limit= @total_estimation_amount - @all_payment_received
     .col-md-3
       %strong Total Minimum Amount (#{ticket.ticket_currency.code}):
-      .for_payment_limit= @total_minimum_amount 
+      = @total_minimum_amount
   %hr
   %fieldset
     %legend Advance Payment Invoice
