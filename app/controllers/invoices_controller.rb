@@ -546,7 +546,7 @@ class InvoicesController < ApplicationController
     redirect_to todos_url
   end
 
-  def update_terminate_foc
+  def update_terminate_foc_approval
     TaskAction
     @ticket = Ticket.find params[:ticket_id]
     deducted_amount = params[:deducted_amount].to_f
@@ -570,7 +570,7 @@ class InvoicesController < ApplicationController
         final_invoice.net_total_amount = final_invoice.total_amount - final_invoice.total_advance_recieved - final_invoice.total_deduction
         final_invoice.save
 
-        @ticket.update final_amount_to_be_paid: final_invoice.net_total_amount, cus_payment_completed: cus_payment_completed
+        @ticket.update final_amount_to_be_paid: final_invoice.net_total_amount, cus_payment_completed: cus_payment_completed, status_id: TicketStatus.find_by_code("CFB").id
 
         #Action : 59 - Terminate FOC Job Approval
         user_ticket_action = @ticket.user_ticket_actions.build(action_id: 59, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
