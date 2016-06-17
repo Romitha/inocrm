@@ -394,6 +394,7 @@ Rails.application.routes.draw do
       post "update_quotation"
       post "update_invoice"
       post "update_terminate_invoice"
+      post "update_terminate_foc_approval"
       post "update_inform_customer"
     end
 

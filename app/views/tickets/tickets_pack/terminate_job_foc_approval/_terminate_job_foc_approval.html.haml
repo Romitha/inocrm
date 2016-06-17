@@ -1,7 +1,7 @@
 - uri = URI(request.url)
 %fieldset
   %legend Terminate Job
-  = simple_nested_form_for ticket, url: update_terminate_job_ticket_path(ticket), method: :post do |f|
+  = simple_nested_form_for ticket, url: update_terminate_foc_approval_invoices_path, method: :post do |f|
 
     = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
     = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]

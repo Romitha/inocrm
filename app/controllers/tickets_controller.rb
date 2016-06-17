@@ -656,6 +656,7 @@ class TicketsController < ApplicationController
       if @ticket.save
         @ticket.products << @product
         @product.update_attribute :last_ticket_id, @ticket.id
+        @ticket.customer.update_attribute :last_ticket_id, @ticket.id
 
         ticket_user_action = @ticket.user_ticket_actions.create(action_at: DateTime.now, action_by: current_user.id, re_open_index: 0, action_id: TaskAction.find_by_action_no(1).id) # Add ticket action
 
