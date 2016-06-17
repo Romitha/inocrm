@@ -67,7 +67,7 @@
             %li= error
     %fieldset
       %legend New customer
-      = simple_nested_form_for customer, url: create_customer_tickets_path, method: :post, remote: true do |f|
+      = simple_nested_form_for customer, url: create_customer_tickets_path, method: :post, remote: true#, html: {id: "validate_contact_type"} do |f|
         = f.input :organization_id, as: :hidden
         .row
           = f.association :mst_title, label:"Title", collection: MstTitle.all.map{|t| [t.title, t.id]},wrapper_html: {class:"col-md-2"}, selected: 1
@@ -81,7 +81,7 @@
           = f.input :address3, wrapper_html: {class:"col-md-6"}, label: false, placeholder: "Line 3"
         .row
 
-          = f.input :address4, label: "City", wrapper_html: {class:"col-md-6"}, label: false, placeholder: "City"
+          = f.input :address4, wrapper_html: {class:"col-md-6"}, label: false, placeholder: "City"
         .row
           = f.association :district, label:"District", wrapper_html: {class:"col-md-6"}
 

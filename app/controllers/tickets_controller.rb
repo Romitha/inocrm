@@ -2983,6 +2983,9 @@ class TicketsController < ApplicationController
     when "invoice"
       Invoice
       @ticket_invoice = TicketInvoice.find(params[:print_object_id])
+    when "quotation"
+      Invoice
+      @quotation = CustomerQuotation.find(params[:print_object_id])
 
     end
     print_template_object = PrintTemplate.first

@@ -186,7 +186,7 @@ module ApplicationHelper
   end
 
   def print_customer_quotation_tag_value quotation #REQUEST_TYPE=PRINT_SPPT_QUOTATION
-    Quotation
+    Invoice
     ContactNumber
 
     ticket = quotation.ticket
@@ -228,19 +228,23 @@ module ApplicationHelper
     quotation_no = quotation.customer_quotation_no.to_s.rjust(6, INOCRM_CONFIG['quotation_no_format'])
     special_note = ticket.note
     quotation_note = quotation.note
-    created_by = User.cached_find_by_id(quotation.created_by).full_name
-    payment_term = quotation.payment_term.name
+    created_by = User.cached_find_by_id(quotation.created_by).try(:full_name)
+    payment_term = quotation.payment_term.try(:name)
     validity_period = quotation.validity_period
     delivery_period = quotation.delivery_period
     warranty = quotation.warranty
 
     total_amount = 0
+    net_total_amount = 0
     total_advance_amount = 0
+    totalprice = 0
+    unit_price = 0
     currency = quotation.currency.try(:code)
 
     item_index = 0
     repeat_data = ""
-    quotation.ticket_customer_quotation_estimation.each do |ticket_quotation_estimation|
+    # quotation.ticket_customer_quotation_estimation.each do |ticket_quotation_estimation|
+    quotation.customer_quotation_estimations.each do |ticket_quotation_estimation|
       quantity = 1
       currency_1 = ticket_quotation_estimation.ticket_estimation.currency.code
       advance_amount = ticket_quotation_estimation.ticket_estimation.approval_required ? ticket_quotation_estimation.ticket_estimation.approved_adv_pmnt_amount.to_f : ticket_quotation_estimation.ticket_estimation.advance_payment_amount.to_f
@@ -277,7 +281,7 @@ module ApplicationHelper
         estimation_part = ticket_quotation_estimation.ticket_estimation.ticket_estimation_parts.first
         item_index += 1
         description = "Part No: #{estimation_part.ticket_spare_part.spare_part_no} #{estimation_part.ticket_spare_part.spare_part_description}"
-        item_code = estimation_part.ticket_spare_part.ticket_spare_part_store.present? ? estimation_part.ticket_spare_part.ticket_spare_part_store.approved_inventory_product.generated_item_code : ""
+        item_code = estimation_part.ticket_spare_part.ticket_spare_part_store.present? ? estimation_part.ticket_spare_part.ticket_spare_part_store.try(:approved_inventory_product).try(:generated_item_code) : ""
 
         unit_price = ticket_quotation_estimation.ticket_estimation.approval_required ? estimation_part.approved_estimated_price.to_f : estimation_part.estimated_price.to_f
 

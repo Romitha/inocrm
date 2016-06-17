@@ -55,7 +55,7 @@ class AddNewOrganizationLevelTables < ActiveRecord::Migration
 
     execute "SET FOREIGN_KEY_CHECKS = 0"
     [
-      { table: :organizations, reference_table: :accounts, name: "fk_accounts_organizations", column: :account_id },
+      { table: :accounts, reference_table: :organizations, name: "fk_accounts_organizations", column: :organization_id },
       { table: :customer_service_levels, reference_table: :mst_service_levels, name: "fk_customer_service_levels_mst_service_levels", column: :service_level_id },
       { table: :addresses, reference_table: :mst_contact_types, name: "fk_addresses_mst_contact_type", column: :type_id },
       { table: :addresses, reference_table: :mst_country, name: "fk_addresses_mst_country", column: :country_id },
