@@ -13,7 +13,7 @@ module ApplicationHelper
     end
   end
 
-  def print_ticket_tag_value ticket
+  def print_ticket_tag_value ticket #REQUEST_TYPE=PRINT_SPPT_TICKET
     [
       "DUPLICATE=#{ticket.ticket_print_count > 0 ? 'D' : ''}",
       "DATETIME=#{ticket.created_at.strftime(INOCRM_CONFIG['long_date_format']+' '+INOCRM_CONFIG['time_format'])}",
@@ -53,7 +53,7 @@ module ApplicationHelper
 
   end
 
-  def print_fsr_tag_value fsr
+  def print_fsr_tag_value fsr #REQUEST_TYPE=PRINT_SPPT_FSR
     [
       "DUPLICATE=#{fsr.print_count > 0 ? 'D' : ''}",
       "FSR_NO=#{fsr.ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG['fsr_no_format'])}",
@@ -74,7 +74,7 @@ module ApplicationHelper
     ]    
   end
 
-  def print_receipt_tag_value receipt
+  def print_receipt_tag_value receipt #REQUEST_TYPE=PRINT_SPPT_RECEIPT
     [
       "DUPLICATE=#{receipt.receipt_print_count > 0 ? 'D' : ''}",
       "RECEIPT_NO=#{receipt.id.to_s.rjust(6, INOCRM_CONFIG['receipt_no_format'])}",
@@ -103,6 +103,7 @@ module ApplicationHelper
       deliver_datetime = customer_feedback.user_ticket_action.action_at.try(:strftime, INOCRM_CONFIG['long_date_format']+' '+INOCRM_CONFIG['time_format'])
       deliver_method = customer_feedback.dispatch_method.name
       deliver_note = customer_feedback.feedback_description
+      delivered_by = User.cached_find_by_id(customer_feedback.user_ticket_action.action_by).full_name 
     end
 
     final_invoice = ticket.ticket_invoices.order(created_at: :desc).find_by_canceled false
@@ -173,7 +174,8 @@ module ApplicationHelper
     repeat_data += "RIGHT_LINE_TITLE=Delevry Date:" +"$|#"+"RIGHT_LINE_DATA="+deliver_datetime.to_s+"$|#"
     repeat_data += "RIGHT_LINE_TITLE=Delevry Method:" +"$|#"+"RIGHT_LINE_DATA="+deliver_method.to_s+"$|#"
     repeat_data += "RIGHT_LINE_TITLE=Delevry Note:" +"$|#"+"RIGHT_LINE_DATA="+deliver_note.to_s+"$|#"
-    repeat_data += "RIGHT_LINE_TITLE=Signature:"    +"$|#"
+    repeat_data += "RIGHT_LINE_TITLE=Released By:" +"$|#"+"RIGHT_LINE_DATA="+delivered_by.to_s+"$|#"
+    repeat_data += "RIGHT_LINE_TITLE=Signature:" +"$|#"
 
     [
       "DUPLICATE_D=#{ticket.ticket_complete_print_count > 0 ? 'D' : ''}",
@@ -183,14 +185,202 @@ module ApplicationHelper
 
   end
 
-  def print_customer_quotation_tag_value qutation
+  def print_customer_quotation_tag_value quotation #REQUEST_TYPE=PRINT_SPPT_QUOTATION
+    Quotation
+    ContactNumber
+
+    ticket = quotation.ticket
+    ticket_date = ticket.created_at.strftime(INOCRM_CONFIG['long_date_format'])
+    ticket_time = ticket.created_at.strftime(INOCRM_CONFIG['time_format'])
+    ticket_ref = ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG['ticket_no_format'])
+    company_name = ticket.customer.mst_title.title+" "+ticket.customer.name
+    contact_person = "#{ticket.contact_person1.mst_title.title} #{ticket.contact_person1.name}"
+    address1 = ticket.customer.address1
+    address2 = ticket.customer.address2
+    address3 = ticket.customer.address3
+    address4 = ticket.customer.address4
+    telephone = ticket.customer.contact_type_values.select{|c| c.contact_type.name == "Telephone"}.first.try(:value)
+    mobile = ticket.customer.contact_type_values.select{|c| c.contact_type.mobile}.first.try(:value)
+    fax = ticket.customer.contact_type_values.select{|c| c.contact_type.name == "Fax"}.first.try(:value)
+    email = ticket.customer.contact_type_values.select{|c| c.contact_type.email}.first.try(:value)
+    product_brand = ticket.products.first.product_brand.name
+    product_category = ticket.products.first.product_category.name
+    model_no = ticket.products.first.model_no
+    serial_no = ticket.products.first.serial_no
+    product_no = ticket.products.first.product_no
+    problem_des1 = ticket.problem_description.to_s[0..100]
+    problem_des2 = ticket.problem_description.to_s[101..200]
+    extra_remark1 = ticket.ticket_extra_remarks.first.try(:extra_remark).try(:extra_remark)
+    extra_remark2 = ticket.ticket_extra_remarks.second.try(:extra_remark).try(:extra_remark)
+    extra_remark3 = ticket.ticket_extra_remarks.third.try(:extra_remark).try(:extra_remark)
+    extra_remark4 = ticket.ticket_extra_remarks.fourth.try(:extra_remark).try(:extra_remark)
+    extra_remark5 = ticket.ticket_extra_remarks.fifth.try(:extra_remark).try(:extra_remark)
+    extra_remark6 = ticket.ticket_extra_remarks[5].try(:extra_remark).try(:extra_remark)
+    remark = ticket.remarks.split('<span class=\'pop_note_e_time\'>').first if ticket.remarks.present?
+    accessory1 = ticket.accessories.first.try(:accessory)
+    accessory2 = ticket.accessories.second.try(:accessory)
+    accessory3 = ticket.accessories.third.try(:accessory)
+    accessory4 = ticket.accessories.fourth.try(:accessory)
+    accessory5 = ticket.accessories.fifth.try(:accessory)
+    accessory_other = ticket.other_accessories
+    resolution_summary1 = ticket.resolution_summary.to_s[0..100]
+    resolution_summary2 = ticket.resolution_summary.to_s[101..200]
+    quotation_no = quotation.customer_quotation_no.to_s.rjust(6, INOCRM_CONFIG['quotation_no_format'])
+    special_note = ticket.note
+    quotation_note = quotation.note
+    created_by = User.cached_find_by_id(quotation.created_by).full_name
+    payment_term = quotation.payment_term.name
+    validity_period = quotation.validity_period
+    delivery_period = quotation.delivery_period
+    warranty = quotation.warranty
+
+    total_amount = 0
+    total_advance_amount = 0
+    currency = quotation.currency.try(:code)
+
+    item_index = 0
+    repeat_data = ""
+    quotation.ticket_customer_quotation_estimation.each do |ticket_quotation_estimation|
+      quantity = 1
+      currency_1 = ticket_quotation_estimation.ticket_estimation.currency.code
+      advance_amount = ticket_quotation_estimation.ticket_estimation.approval_required ? ticket_quotation_estimation.ticket_estimation.approved_adv_pmnt_amount.to_f : ticket_quotation_estimation.ticket_estimation.advance_payment_amount.to_f
+      total_advance_amount += advance_amount
+
+      if ticket_quotation_estimation.ticket_estimation.ticket_estimation_externals.present?
+        estimation_external = ticket_quotation_estimation.ticket_estimation.ticket_estimation_externals.first
+        item_index += 1
+        description = estimation_external.description
+
+        unit_price = ticket_quotation_estimation.ticket_estimation.approval_required ? estimation_external.approved_estimated_price.to_f : estimation_external.estimated_price.to_f
+
+        totalprice = unit_price
+        total_amount += totalprice
+
+        repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => quantity, "UNIT_PRICE" => standard_currency_format(unit_price), "CURRENCY1" => currency_1, "TOTAL_PRICE" => totalprice, "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
+
+        estimation_external.ticket_estimation_external_taxes.each do |ticket_estimation_external_tax|
+          item_index += 1
+          description = "#{ticket_estimation_external_tax.tax.tax} (#{ticket_estimation_external_tax.tax_rate})"
+          quantity = 1
+          unit_price = ticket_quotation_estimation.ticket_estimation.approval_required ? ticket_estimation_external_tax.approved_tax_amount.to_f : ticket_estimation_external_tax.estimated_tax_amount.to_f
+
+          totalprice = unit_price
+          total_amount += totalprice
+          net_total_amount += totalprice
+
+          repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => "", "UNIT_PRICE" => "", "CURRENCY1" => "", "TOTAL_PRICE" => standard_currency_format(totalprice), "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
+        end
+
+      end
+
+      if ticket_quotation_estimation.ticket_estimation.ticket_estimation_parts.present?
+        estimation_part = ticket_quotation_estimation.ticket_estimation.ticket_estimation_parts.first
+        item_index += 1
+        description = "Part No: #{estimation_part.ticket_spare_part.spare_part_no} #{estimation_part.ticket_spare_part.spare_part_description}"
+        item_code = estimation_part.ticket_spare_part.ticket_spare_part_store.present? ? estimation_part.ticket_spare_part.ticket_spare_part_store.approved_inventory_product.generated_item_code : ""
+
+        unit_price = ticket_quotation_estimation.ticket_estimation.approval_required ? estimation_part.approved_estimated_price.to_f : estimation_part.estimated_price.to_f
+
+        totalprice = unit_price
+        total_amount += totalprice
+        net_total_amount += totalprice
+
+        repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => item_code, "DESCRIPTION" => description, "QUANTITY" => quantity, "UNIT_PRICE" => standard_currency_format(unit_price), "CURRENCY1" => currency_1, "TOTAL_PRICE" => standard_currency_format(totalprice), "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
+
+        estimation_part.ticket_estimation_part_taxes.each do |ticket_estimation_part_tax|
+          item_index += 1
+          description = "#{ticket_estimation_part_tax.tax.tax} (#{ticket_estimation_part_tax.tax_rate})"
+
+          unit_price = ticket_quotation_estimation.ticket_estimation.approval_required ? ticket_estimation_part_tax.approved_tax_amount.to_f : ticket_estimation_part_tax.estimated_tax_amount.to_f
+      
+          totalprice = unit_price
+          total_amount += totalprice
+
+          repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => "", "UNIT_PRICE" => "", "CURRENCY1" => "", "TOTAL_PRICE" => standard_currency_format(totalprice), "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
+        end
+      end
+
+      ticket_quotation_estimation.ticket_estimation.ticket_estimation_additionals.each do |ticket_estimation_additional|
+        item_index += 1
+        description = ticket_estimation_additional.additional_charge.additional_charge
+        unit_price = ticket_quotation_estimation.ticket_estimation.approval_required ? ticket_estimation_additional.approved_estimated_price.to_f : ticket_estimation_additional.estimated_price.to_f
+
+        totalprice = unit_price
+        total_amount += totalprice
+
+        repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => quantity, "UNIT_PRICE" => standard_currency_format(unit_price), "CURRENCY1" => currency_1, "TOTAL_PRICE" => standard_currency_format(totalprice), "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
+
+        ticket_estimation_additional.ticket_estimation_additional_taxes.each do |ticket_estimation_additional_tax|
+          item_index += 1
+          description = "#{ticket_estimation_additional_tax.tax.tax} (#{ticket_estimation_additional_tax.tax_rate})"
+          unit_price = ticket_quotation_estimation.ticket_estimation.approval_required ? ticket_estimation_additional_tax.approved_tax_amount.to_f : ticket_estimation_additional_tax.estimated_tax_amount.to_f
+        
+          totalprice = unit_price
+          total_amount += totalprice
+
+          repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => "", "UNIT_PRICE" => "", "CURRENCY1" => "", "TOTAL_PRICE" => standard_currency_format(totalprice), "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
+
+        end
+      end
+    end
+
+
     [
+      "DUPLICATE_D=#{ticket.ticket_complete_print_count > 0 ? 'D' : ''}",
+      "QUOTATION_NO=#{quotation_no}",
+      "PRODUCT_BRAND=#{product_brand}",
+      "MODEL_NO=#{model_no}",
+      "SERIAL_NO=#{serial_no}",
+      "PRODUCT_NO=#{product_no}",
+      "COMPANY_NAME=#{company_name}",
+      "ADDRESS1=#{address1}",
+      "ADDRESS2=#{address2}",
+      "ADDRESS3=#{address3}",
+      "ADDRESS4=#{address4}",
+      "TICKET_REF=#{ticket_ref}",
+      "CREATED_DATE=#{ticket_date}",
+      "CREATED_TIME=#{ticket_time}",
+      "VALIDITY_PERIOD=#{validity_period}",
+      "DELIVERY_PERIOD=#{delivery_period}",
+      repeat_data,
+      "TOTAL_AMOUNT=#{standard_currency_format total_amount}",
+      "CURRENCY3=#{currency}",
+      "MINIMUM_ADVANCE_PAYMENT=#{standard_currency_format total_advance_amount}",
+      "CURRENCY4=#{currency}",
+      "PAYMENT_TERM=#{payment_term}",
+      "WARRANTY=#{warranty}",
+      "NOTE=#{quotation_note}",
+      "CREATED_BY=#{created_by}"
     ]
+
   end
 
-  def print_bundle_tag_value bundle
+  def print_bundle_tag_value bundle  #REQUEST_TYPE=PRINT_SPPT_BUNDLE_HP
+
+    repeat_data = ""
+    total_count = 0
+    bundle.ticket_spare_parts.each_with_index do |spare_part, index|
+      index_no = index+1
+      total_count = index+1
+      event_no = spare_part.ticket_spare_part_manufacture.event_no
+      spare_part_no = spare_part.spare_part_no
+      used_status = spare_part.status_use.name
+      
+      repeat_data += {"INDEX_NO" => index_no, "EVENT_NO" => event_no, "SPARE_PART_NO" => spare_part_no, "USED_STATUS" => used_status}.map { |k, v| "#{k}=#{v}$|#" }.join
+    end
+
     [
+      "BUNDLE_NO=#{bundle.bundle_no}",
+      "CREATED_DATE=#{bundle.created_at.strftime(INOCRM_CONFIG['long_date_format'])}",
+      "CREATED_TIME=#{bundle.created_at.strftime(INOCRM_CONFIG['time_format'])}",
+      repeat_data,
+      "TOTAL_COUNT=#{total_count}",
+      "NOTE1=#{bundle.note.to_s[0..100]}",
+      "NOTE2=#{bundle.note.to_s[101..200]}",
+      "NOTE3=#{bundle.note.to_s[201..300]}",
+      "CREATED_BY=#{User.cached_find_by_id(bundle.created_by).full_name}"
     ]
+
   end
 
 
