@@ -12,9 +12,10 @@ class Organization < ActiveRecord::Base
   has_many :ticket_deliver_units, foreign_key: :deliver_to_id
   accepts_nested_attributes_for :ticket_deliver_units, allow_destroy: true
 
-  has_many :accounts
-  accepts_nested_attributes_for :accounts, allow_destroy: true
-  has_many :industry_types, through: :accounts
+  has_one :account
+  accepts_nested_attributes_for :account, allow_destroy: true
+  has_one :industry_type, through: :account
+  has_many :accounts_dealer_types, through: :account
 
   has_many :users
   has_many :customers
@@ -25,7 +26,7 @@ class Organization < ActiveRecord::Base
 
   has_many :tickets
 
-  TYPES = %w(organization_supplier organization_customer individual_supplier individual_customer)
+  TYPES = %w(SUP CUS INDSUP INDCUS)
 
   scope :organization_suppliers, -> {where(category: TYPES[0])}
   scope :individual_suppliers, -> {where(category: TYPES[2])}
@@ -182,8 +183,12 @@ class Account < ActiveRecord::Base
   belongs_to :organization
   belongs_to :industry_type, foreign_key: :industry_types_id
 
-  has_many :account_dealer_types
-  has_many :dealer_types, through: :account_dealer_types
+  has_many :accounts_dealer_types
+  has_many :dealer_types, through: :accounts_dealer_types
+
+  def created_user
+    User.cached_find_by_id(created_by)
+  end
 end
 
 class IndustryType < ActiveRecord::Base
@@ -193,8 +198,8 @@ class IndustryType < ActiveRecord::Base
   has_many :organizations, through: :accounts
 end
 
-class AccountDealerType < ActiveRecord::Base
-  self.table_name = "account_dealer_type"
+class AccountsDealerType < ActiveRecord::Base
+  self.table_name = "accounts_dealer_type"
 
   belongs_to :dealer_type, foreign_key: :dealer_types_id
   belongs_to :account
@@ -203,6 +208,6 @@ end
 class DealerType < ActiveRecord::Base
   self.table_name = "mst_dealer_types"
 
-  has_many :account_dealer_types, foreign_key: :dealer_types_id
-  has_many :accounts, through: :account_dealer_types
+  has_many :accounts_dealer_types, foreign_key: :dealer_types_id
+  has_many :accounts, through: :accounts_dealer_types
 end

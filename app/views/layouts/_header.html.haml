@@ -27,11 +27,11 @@
           = link_to "supplier", "#", id: "supplier_dropdown", class: "dropdown-toggle supplier text-hide nav-icon", data: {toggle: "dropdown", placement: "bottom"}, "aria-haspopup" => "true", "aria-expanded" => "true", title: "Supplier", rel: "tooltip"
           %ul.dropdown-menu{"aria-labelledby" => "supplier_dropdown"}
             %li{role: "presentation"}
-              = link_to organizations_path(category: "organization_suppliers") do
+              = link_to organizations_path(category: Organization::TYPES[0]) do
                 %span= image_tag "organization_suppliers.png", style: "width: 12%;"
                 %span Organization Suppliers
             %li{role: "presentation"}
-              = link_to organizations_path(category: "individual_suppliers") do
+              = link_to organizations_path(category: Organization::TYPES[2]) do
                 %span= image_tag "individual_supplier.png", style: "width: 12%;"
                 %span Individual Suppliers
             - if can? :new, Organization
@@ -44,18 +44,18 @@
           = link_to "Customers", "#", class: "dropdown-toggle customers text-hide nav-icon", id: "customer_dropdown", data: {toggle: "dropdown", placement: "bottom"}, title: "Customer", rel: "tooltip"
           %ul.dropdown-menu{"aria-labelledby" => "customer_dropdown"}
             %li{role: "presentation"}
-              = link_to organizations_path(category: "organization_customers") do
+              = link_to organizations_path(category: Organization::TYPES[1]) do
                 %span= image_tag "organization_customers.png", style: "width: 12%;"
                 %span Organizaion Customers
             %li{role: "presentation"}
-              = link_to individual_customers_users_path do
+              = link_to organizations_path(category: Organization::TYPES[3]) do
                 %span= image_tag "individual_customer.png", style: "width: 12%;"
                 %span Individual Customers
             - if can? :new, Organization
               %li.divider
               %li.dropdown-header Create Customer
               %li{role: "presentation"}= link_to "New Organization Customer", new_organization_path(category: Organization::TYPES[1])
-              %li{role: "presentation"}= link_to "New Individual Customer", new_user_path(is_customer: true)#new_organization_path(category: Organization::TYPES[3])
+              %li{role: "presentation"}= link_to "New Individual Customer", new_organization_path(category: Organization::TYPES[3])
 
         %li.dropdown.small_scale_margin-right10{role: "presentation"}
           = link_to "Supports", "#", class: "dropdown-toggle tickets text-hide nav-icon", id: "ticket_dropdown", data: {toggle: "dropdown", placement: "bottom"}, title: "Support tickets", rel: "tooltip"

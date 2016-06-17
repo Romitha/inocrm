@@ -11,4 +11,24 @@ class Address < ActiveRecord::Base
 
   scope :primary_address, -> {where(primary: true)}
   scope :non_primary_address, -> {where(primary: false)}
+
+  belongs_to :country, class_name: "ProductSoldCountry"
+  belongs_to :province
+  belongs_to :district
+  belongs_to :organization_contact_type, foreign_key: :type_id
+
+end
+
+class Province < ActiveRecord::Base
+  self.table_name = "mst_province"
+
+  has_many :addresses
+  has_many :contact_numbers
+end
+
+class OrganizationContactType < ActiveRecord::Base
+  self.table_name = "mst_contact_types"
+
+  has_many :addresses
+  has_many :contact_numbers
 end

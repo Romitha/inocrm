@@ -444,4 +444,13 @@ end
 
 WorkflowMapping.find(11).update(process_name: "SPPT_MFR_PART_REQUEST")
 
+[
+  ["SUP", "Supplier"],
+  ["INDSUP", "Individual Supplier"],
+  ["CUS", "Customer"],
+  ["INDCUS", "Individual Customer"]
+].each do |t|
+  DealerType.create_with(name: t[1]).find_or_create_by(code: t[0])
+end
+
 CompanyConfig.create sup_last_fsr_no: 0, inv_last_srn_no: 0, inv_last_srr_no: 0, inv_last_sbn_no: 0, inv_last_prn_no: 0, inv_last_grn_no: 0, inv_last_gin_no: 0, sup_last_quotation_no: 0, sup_last_bundle_no: 0 unless CompanyConfig.any? #, sup_sla_id: 0 is foreign key constraint

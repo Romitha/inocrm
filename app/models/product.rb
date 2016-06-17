@@ -79,6 +79,9 @@ class ProductSoldCountry < ActiveRecord::Base
 
   has_many :inventory_product_info, foreign_key: :country_id
 
+  has_many :addresses
+  has_many :contact_numbers
+
   def is_used_anywhere?
     Inventory
     products.any? or inventory_product_info.present?
