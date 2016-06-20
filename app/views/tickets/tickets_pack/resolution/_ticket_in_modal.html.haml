@@ -14,7 +14,7 @@
       %tr
         %th No
         %th Requested at
-        %th Requested by Engineer
+        %th Requested by
         %th Faulty Serial No
         %th Faulty CT No
         %th Ticket No
@@ -26,7 +26,7 @@
         %tr
           %th{:scope => "row"} #{index+1}
           %td #{spare_part.try(:requested_at).try(:to_date)}
-          %td= User.cached_find_by_id(spare_part.requested_by).try(:first_name)
+          %td= User.cached_find_by_id(spare_part.requested_by).try(:full_name)
           %td #{spare_part.try(:faulty_serial_no)}
           %td #{spare_part.try(:faulty_ct_no)}
           %td #{spare_part.ticket.ticket_no.to_s.rjust(5, INOCRM_CONFIG["ticket_no_format"])}

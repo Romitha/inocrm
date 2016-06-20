@@ -49,14 +49,14 @@ window.Invoices =
     $("#amount_to_be_paid_value").val(Math.round(amount_to_be_paid * 100)/100)
     $("#total_amount_value").val(total_deduction)
 
-    $("#total_tax").text(total_tax)
+    $("#total_tax").text(parseFloat(total_tax).toFixed(2))
     $("#total_tax_value").val(total_tax)
 
-    $("#sub_amount").text(sub_amount)
+    $("#sub_amount").text(parseFloat(sub_amount).toFixed(2))
     $("#sub_amount_value").val(sub_amount)
-    $("#final_total_amount").text(final_total_amount)
-    $("#min_adv_payment").text(min_adv_payment)
-    $("#total_payment").text(total_payment)
+    $("#final_total_amount").text(parseFloat(final_total_amount).toFixed(2))
+    $("#min_adv_payment").text(parseFloat(min_adv_payment).toFixed(2))
+    $("#total_payment").text(parseFloat(total_payment).toFixed(2))
     $("#total_payment_value").val(total_payment)
 
     $(".action").click ->
@@ -76,12 +76,12 @@ window.Invoices =
 
       $("#amount_to_be_paid").text(Math.round(amount_to_be_paid * 100)/100)
       $("#amount_to_be_paid_value").val(Math.round(amount_to_be_paid * 100)/100)
-      $("#total_tax").text(total_tax)
-      $("#sub_amount").text(sub_amount)
+      $("#total_tax").text(parseFloat(total_tax).toFixed(2))
+      $("#sub_amount").text(parseFloat(sub_amount).toFixed(2))
       $("#sub_amount_value").val(sub_amount)
-      $("#final_total_amount").text(final_total_amount)
-      $("#min_adv_payment").text(min_adv_payment)
-      $("#total_payment").text(total_payment)
+      $("#final_total_amount").text(parseFloat(final_total_amount).toFixed(2))
+      $("#min_adv_payment").text(parseFloat(min_adv_payment).toFixed(2))
+      $("#total_payment").text(parseFloat(total_payment).toFixed(2))
       $("#total_payment_value").val(total_payment)
 
   check_fsr_dynamic_check_behavour: ->
