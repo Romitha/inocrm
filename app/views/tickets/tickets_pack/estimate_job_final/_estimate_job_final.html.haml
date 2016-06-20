@@ -16,7 +16,7 @@
 
       - if f.object.ticket_terminated
         - act_terminate_job = ticket.user_ticket_actions.map{|u| u.ticket_terminate_job if u.ticket_terminate_job.present? }.compact.first
-        = label_tag "Foc"
+        = label_tag "FOC"
         = radio_button_tag :foc_payment_required, "true", act_terminate_job.try(:foc_requested)
         = label_tag "Payment required"
         = radio_button_tag :foc_payment_required, "false", !act_terminate_job.try(:foc_requested)
