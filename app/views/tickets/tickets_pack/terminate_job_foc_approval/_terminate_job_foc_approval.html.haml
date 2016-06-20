@@ -1,6 +1,6 @@
 - uri = URI(request.url)
 %fieldset
-  %legend Terminate Job
+  %legend Terminate Job FOC
   = simple_nested_form_for ticket, url: update_terminate_foc_approval_invoices_path, method: :post do |f|
 
     = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
