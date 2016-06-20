@@ -2,11 +2,11 @@
 
 - active_spare_part = onloan_request ? onloan_spare_part : spare_part.ticket_spare_part_store
 
-- gin_source = active_spare_part.srr_item.gin_sources.first
-- serial_part = gin_source.grn_serial_part.try(:inventory_serial_part)
-- grn_serial_item = gin_source.grn_serial_item
-- grn_batch = gin_source.grn_batch
-- grn_item = gin_source.grn_item
+- gin_source = active_spare_part.try(:srr_item).try(:gin_sources).try(:first)
+- serial_part = gin_source.try(:grn_serial_part).try(:inventory_serial_part)
+- grn_serial_item = gin_source.try(:grn_serial_item)
+- grn_batch = gin_source.try(:grn_batch)
+- grn_item = gin_source.try(:grn_item)
 
 - serial_or_item = (serial_part || grn_serial_item.try(:inventory_serial_item))
 
@@ -46,12 +46,12 @@
     #{User.cached_find_by_id((onloan_request ? onloan_spare_part : spare_part).try(:part_returned_by)).try(:user_name)}
 %hr
 .row
-  .col-md-4
+  .col-md-3
     %strong Issued Part
-  .col-md-4
+  .col-md-3
     %strong Part No:
     #{spare_part.try(:spare_part_no)}
-  .col-md-4
+  .col-md-3
     %strong Part Description:
     #{spare_part.try(:spare_part_description)}
 
@@ -206,10 +206,11 @@
       %strong Remarks:
       = grn_batch.inventory_batch.remarks
   %hr
+
   - if grn_batch.inventory_batch.inventory_warranties.present?
     %table.table.table-striped
       %thead
-        %td
+        %tr
           %th Start at
           %th End at
           %th part
