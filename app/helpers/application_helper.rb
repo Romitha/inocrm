@@ -93,6 +93,18 @@ module ApplicationHelper
     ]
   end
 
+  def print_ticket_sticker_tag_value ticket  #REQUEST_TYPE=PRINT_SPPT_TICKET_STICKER
+
+    ticket_ref = ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG['ticket_no_format'])
+    image_barcode = ""
+
+    [
+      "TICKET_REF=#{ticket_ref}",
+      "IMAGE_BARCODE=#{image_barcode}",
+    ]
+
+  end
+
   def print_ticket_delivery_note_tag_value ticket  #REQUEST_TYPE=PRINT_SPPT_TICKET_COMPLETE
     TaskAction
     Invoice
