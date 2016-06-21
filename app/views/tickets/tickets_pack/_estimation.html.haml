@@ -74,4 +74,30 @@
             = number_with_precision estimation.advance_payment_amount, precision: 2
         %td= estimation.estimation_status.name
 
+%strong Quotations
+.row
+  .col-md-12
+    %table.table.table-responsive.table-condensed.table-bordered
+      %thead
+        %tr
+          %th No
+          %th Validity period
+          %th Warranty
+          %th Customer contacted
+          %th Canceled
+          %th Action
+
+      %tbody
+        - ticket.customer_quotations.each_with_index do |quotation, index|
+          %tr
+            %td
+              = index+1
+            %td.validity_period= quotation.try(:validity_period)
+            %td= quotation.try(:warranty)
+            %td= quotation.customer_contacted ? "Yes" : "No"
+            %td= quotation.canceled ? "Yes" : "No"
+            %td
+              = link_to "#", onclick: "Users.request_printer_application('quotation', '#{quotation.id}', 'quotation_request_type', 'print_customer_quotation_tag_value', 'print_customer_quotation'); false;", id: "ticket_quotation", data: {disable_with: "Printing..."}, class: "btn btn-default" do
+                = ticket.ticket_print_count.to_i > 0 ? "Re-Print Quotation" : "Print Quotation"
+
 #estimation_ajax_frame_ticket_info

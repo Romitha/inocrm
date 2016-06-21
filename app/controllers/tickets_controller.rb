@@ -811,6 +811,7 @@ class TicketsController < ApplicationController
     QAndA
     Inventory
     TaskAction
+    Tax
     @ticket = Ticket.find params[:ticket_id]
     # @edit_ticket = session[:edit_ticket]
 
