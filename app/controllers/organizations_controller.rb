@@ -1,11 +1,15 @@
 class OrganizationsController < ApplicationController
   load_and_authorize_resource
   # before_action :authenticate_user!
-  before_action :set_organization, only: [:show, :edit, :update, :relate, :remove_relation, :dashboard, :option_for_vat_number, :demote_as_department, :remove_department_org]
+  before_action :set_organization, only: [:show, :edit, :update, :relate, :remove_relation, :dashboard, :option_for_vat_number, :demote_as_department, :remove_department_org, :pin_relation]
 
   def index
-    @dealer_type = DealerType.find_by_code params[:category]
-    @accounts = @dealer_type.accounts
+    if params[:search_members]
+      @organizations = Organization.joins(:organization_type).where("mst_organization_types.id = ? and organizations.name like ? and short_name like ?", params[:type_id], "%#{params[:name]}%", "%#{params[:short_name]}%").references(:mst_organization_types)
+    else
+      @dealer_type = DealerType.find_by_code params[:category]
+      @accounts = @dealer_type.accounts
+    end
   end
 
   def new
@@ -114,22 +118,17 @@ class OrganizationsController < ApplicationController
     end
   end
 
-  def remove_relation
-    relation_organization = Organization.find_by_id params[:relation_organization]
-
-    case params[:relation]
-    when "Parent"
-      relation_organization.parent_organization = nil
-      relation_organization.save
-      flash[:notice] = "Parent relationship is removed successfully"
-    when "Member"
-      @organization.parent_organization = nil
-      @organization.save
-      flash[:notice] = "Member relationship is removed successfully"
+  def pin_relation
+    @relation_organization = Organization.find_by_id params[:parent_organization]
+    case params[:pin_direction]
+    when "closed"
+      @relation_organization.members << @organization
+    when "opened"
+      @organization.update parent_organization_id: nil
     else
       flash[:error] = "Something gone wrong. Please try again."
     end
-    redirect_to @organization
+    render :index
   end
 
   def dashboard

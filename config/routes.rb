@@ -50,7 +50,7 @@ Rails.application.routes.draw do
     member do
       get "dashboard"
       put "relate"
-      get "remove_relation"
+      get "pin_relation"
       post "option_for_vat_number"
       patch "demote_as_department"
       delete "remove_department_org"

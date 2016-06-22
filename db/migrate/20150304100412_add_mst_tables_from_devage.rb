@@ -17,7 +17,7 @@ class AddMstTablesFromDevage < ActiveRecord::Migration
     create_table :mst_inv_product, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :category3_id, "INT UNSIGNED NOT NULL"
-      t.decimal :serial_no, null: false, precision: 6, scale: 0
+      t.decimal :serial_no, null: false, precision: 6, scale: 0, unique: true
       t.integer :serial_no_order, null: false
       t.string :sku
       t.string :legacy_code
@@ -49,7 +49,7 @@ class AddMstTablesFromDevage < ActiveRecord::Migration
       t.datetime :updated_at
     end
 
-    create_table :mst_organizations_types, id: false do |t|
+    create_table :mst_organization_types, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.string :code, null:false
       t.string :name, null:false

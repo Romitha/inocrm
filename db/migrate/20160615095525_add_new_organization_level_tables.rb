@@ -35,6 +35,13 @@ class AddNewOrganizationLevelTables < ActiveRecord::Migration
 
     end
 
+    create_table :mst_organization_types, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.string :name
+      t.timestamps
+
+    end
+
     add_column :addresses, :type_id, "int(10) UNSIGNED"
     add_index :addresses, :type_id, name: "fk_addresses_type_idx"
     add_column :addresses, :country_id, "int(10) UNSIGNED"

@@ -104,7 +104,7 @@ class Organization < ActiveRecord::Base
 end
 
 class OrganizationType < ActiveRecord::Base
-  self.table_name = "mst_organizations_types"
+  self.table_name = "mst_organization_types"
 
   has_many :organizations, foreign_key: "type_id"
 end

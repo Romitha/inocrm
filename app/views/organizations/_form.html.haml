@@ -1,4 +1,4 @@
-- tapbar = [["Address", "#addresses#{organization.id}"], ["Contact Details", "#contacts#{organization.id}"], ["#{[Organization::TYPES[1], Organization::TYPES[3]].include?(organization.category) ? 'Contact Persons' : 'Employees'}", "#contact_persons#{organization.id}"], ["Documents & Attachements", "#documents#{organization.id}"], ["Designations", "#designations#{organization.id}"], ["Organization Relations", "#organization_relations#{organization.id}"], ["Roles and Permissions", "#roles_and_permissions#{organization.id}"], ["Departments", "#organization_departments#{organization.id}"]]
+- tapbar = [["Address", "#addresses#{organization.id}"], ["Contact Details", "#contacts#{organization.id}"], ["#{[Organization::TYPES[1], Organization::TYPES[3]].include?(organization.category) ? 'Contact Persons' : 'Employees'}", "#contact_persons#{organization.id}"], ["Documents & Attachements", "#documents#{organization.id}"], ["Designations", "#designations#{organization.id}"], ["Organization Relations", "#organization_relations#{organization.id}"], ["Roles and Permissions", "#roles_and_permissions#{organization.id}"]]
 
 = simple_nested_form_for organization do |f|
   - if organization.errors.present?
@@ -91,9 +91,8 @@
     .tab-pane.limit-height{id: "designations#{organization.id}"}
       = render "designations/form", designation: organization.designations.build
 
-      .fixed-height
-        - organization.designations.order("created_at DESC").each do |designation|
-          = render "designations/designation", designation: designation
+      - organization.designations.order("created_at DESC").each do |designation|
+        = render "designations/designation", designation: designation
 
     .tab-pane.limit-height{id: "documents#{organization.id}"}
       = render "document_attachments/form", document_attachment: organization.document_attachments.build
@@ -104,11 +103,9 @@
 
     - unless Organization::TYPES[2,3].include?(organization.category)
       .tab-pane.limit-height{id: "organization_relations#{organization.id}"}
+        #org_members
+          = render "organizations/members", organizations: organization.members
         = render "organizations/parent_member", parent_member: organization
-        .fixed-height
-          = render "organizations/member",organization: organization.parent_organization, relation: "Parent", relation_organization: organization if organization.parent_organization.present?
-          - organization.members.order("created_at DESC").each do |member|
-            = render "organizations/member", organization: member, relation: "Member", relation_organization: organization
 
     .tab-pane.limit-height{id: "organization_departments#{organization.id}"}
       - organization.members.each do |org|
