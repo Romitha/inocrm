@@ -1,39 +1,39 @@
 class AddNewOrganizationLevelTables < ActiveRecord::Migration
   def change
-    # create_table :customer_service_levels, id: false do |t|
-    #   t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
-    #   t.column :service_level_id, "int(10) UNSIGNED NOT NULL"
+    create_table :customer_service_levels, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.column :service_level_id, "int(10) UNSIGNED NOT NULL"
 
-    #   t.index :service_level_id, name: "fk_user_customers_service_level_idx"
-    #   t.timestamps
+      t.index :service_level_id, name: "fk_user_customers_service_level_idx"
+      t.timestamps
 
-    #   # origin user_customers
-    # end
+      # origin user_customers
+    end
 
-    # create_table :mst_service_levels, id: false do |t|
-    #   t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
-    #   t.string :name
-    #   t.integer :response_time
-    #   t.integer :resolution_time
-    #   t.boolean :defaulted, null: false, default: false
-    #   t.timestamps
+    create_table :mst_service_levels, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.string :name
+      t.integer :response_time
+      t.integer :resolution_time
+      t.boolean :defaulted, null: false, default: false
+      t.timestamps
 
-    # end
+    end
 
-    # create_table :mst_contact_types, id: false do |t|
-    #   t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
-    #   t.string :name, null: false
-    #   t.string :code, null: false
-    #   t.timestamps
+    create_table :mst_contact_types, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.string :name, null: false
+      t.string :code, null: false
+      t.timestamps
 
-    # end
+    end
 
-    # create_table :mst_province, id: false do |t|
-    #   t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
-    #   t.string :name
-    #   t.timestamps
+    create_table :mst_province, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
+      t.string :name
+      t.timestamps
 
-    # end
+    end
 
     add_column :addresses, :type_id, "int(10) UNSIGNED"
     add_index :addresses, :type_id, name: "fk_addresses_type_idx"
