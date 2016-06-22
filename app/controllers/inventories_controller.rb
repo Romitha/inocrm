@@ -100,8 +100,8 @@ class InventoriesController < ApplicationController
 
       else
         @inventories = @store.inventories.joins(inventory_product: [:inventory_product_info, inventory_category3: {inventory_category2: :inventory_category1}]).where(updated_hash_for_inventory).references(:mst_inv_product)
-        @inventory_products = InventoryProduct.joins(:inventory_product_info, inventory_category3: {inventory_category2: :inventory_category1}).where(mst_inv_product_info: {need_serial: true}).where(updated_hash).to_a.keep_if {|p| !p.non_stock_item.present? and p.inventories.empty? }
-        @non_stock_products = InventoryProduct.joins(:inventory_product_info, inventory_category3: {inventory_category2: :inventory_category1}).where(mst_inv_product_info: {need_serial: true}).where(updated_hash).to_a.keep_if {|p| p.non_stock_item.present? and p.inventories.empty? }
+        @inventory_products = InventoryProduct.joins(:inventory_product_info, inventory_category3: {inventory_category2: :inventory_category1}).where(updated_hash).to_a.keep_if {|p| !p.non_stock_item.present? and p.inventories.empty? }
+        @non_stock_products = InventoryProduct.joins(:inventory_product_info, inventory_category3: {inventory_category2: :inventory_category1}).where(updated_hash).to_a.keep_if {|p| p.non_stock_item.present? and p.inventories.empty? }
 
       end
 
