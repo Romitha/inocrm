@@ -81,7 +81,7 @@ module ApplicationHelper
       "COMPANY_NAME=#{receipt.ticket.customer.mst_title.title} #{receipt.ticket.customer.name}",
       "TICKET_REF=#{receipt.ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG['ticket_no_format'])}",
       "AMOUNT=#{receipt.amount}",
-      "INVOICE_NO=#{receipt.invoice.try.invoice_no.to_s.rjust(6, INOCRM_CONFIG['invoice_no_format']) if receipt.invoice}",
+      "INVOICE_NO=#{receipt.ticket_invoice.try.invoice_no.to_s.rjust(6, INOCRM_CONFIG['invoice_no_format']) if receipt.ticket_invoice}",
       "DESCRIPTION=#{receipt.receipt_description.truncate(18)}",
       "PAYMENT_TYPE=#{TicketPaymentReceivedType::TYPES.key(receipt.payment_type)}",
       "PAYMENT_NOTE=#{receipt.payment_note.try(:truncate, 18)}",
@@ -89,7 +89,7 @@ module ApplicationHelper
       "NOTE=#{receipt.note.try(:truncate, 18)}",
       "CREATED_DATE=#{receipt.created_at.strftime(INOCRM_CONFIG['long_date_format'])}",
       "CREATED_TIME=#{receipt.created_at.strftime(INOCRM_CONFIG['time_format'])}",
-      "CREATED_BY=#{User.cached_find_by_id(receipt.received_by).email}"
+      "CREATED_BY=#{User.cached_find_by_id(receipt.received_by).full_name}"
     ]
   end
 
