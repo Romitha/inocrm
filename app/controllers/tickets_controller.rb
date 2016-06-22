@@ -2604,9 +2604,9 @@ class TicketsController < ApplicationController
         @paginated_fifo_grn_serial_items = Kaminari.paginate_array(@fifo_grn_serial_items).page(params[:page]).per(10)
       end
     elsif @onloan_or_store.approved_inventory_product.inventory_product_info.need_batch
-      @grn_batches = GrnBatch.where(grn_item_id: @onloan_or_store.approved_inventory_product.grn_item_ids).page(params[:page]).per(10)
+      @grn_batches = GrnBatch.where(grn_item_id: @onloan_or_store.approved_inventory_product.grn_item_ids).where("remaining_quantity > 0").page(params[:page]).per(10)
     else
-      grn_items = @onloan_or_store.approved_inventory_product.grn_items.where(inventory_not_updated: false)
+      grn_items = @onloan_or_store.approved_inventory_product.grn_items.where(inventory_not_updated: false).where("remaining_quantity > 0")
 
       @grns = Kaminari.paginate_array(grn_items).page(params[:page]).per(10)
     end
