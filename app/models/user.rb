@@ -166,6 +166,10 @@ class Customer < ActiveRecord::Base
   belongs_to :district, foreign_key: :district_id
 
   belongs_to :organization
+
+  def full_name
+    "#{try(:mst_title).try(:title)} #{name}"
+  end
 end
 
 class ContactPerson1 < ActiveRecord::Base
