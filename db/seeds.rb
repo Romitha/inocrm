@@ -89,13 +89,19 @@ mst_currency = [
 ].each{ |t| TicketCurrency.create_with(currency: t[0], symbol: t[2], base_currency: t[3]).find_or_create_by(code: t[1])}
 ContactNumber
 
+contact_type_validate = [
+  ['NA', "Not Applicable"],
+  ["PN", "Phone Number"],
+  ["EM", "Email"],
+].each{ |t| ContactTypeValidate.create_with(name: t[1]).find_or_create_by(code: t[0])}
+
 mst_spt_customer_contact_type = [
-  ["Telephone", false, false],
-  ["Mobile", true, false],
-  ["Fax", false, false],
-  ["E-Mail", false, true],
-  ["Skype", false, false]
-].each{ |t| ContactType.create_with(name: t[0]).find_or_create_by(mobile: t[1], email: t[2])}
+  ["Telephone", false, false, 2],
+  ["Mobile", true, false, 3],
+  ["Fax", false, false, 2],
+  ["E-Mail", false, true, 1],
+  ["Skype", false, false, 2]
+].each{ |t| ContactType.create_with(name: t[0]).find_or_create_by(mobile: t[1], email: t[2], validate_id: t[3])}
 
 mst_title = [
   ["Mr."],
