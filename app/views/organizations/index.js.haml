@@ -1,0 +1,7 @@
+- if params[:pin_direction]
+	$("#organization_wrapper_#{@organization.id}").html("#{j render 'member', organization: @organization}");
+	$("#org_members").html("#{j render 'members', organizations: @relation_organization.members}");
+- else
+	$("#search_members").html("#{j render 'members', organizations: @organizations}");
+
+Tickets.remove_ajax_loader();
