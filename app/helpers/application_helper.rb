@@ -110,6 +110,34 @@ module ApplicationHelper
     Invoice
     ContactNumber
     customer_feedback = ticket.user_ticket_actions.select{ |u| u.customer_feedback.present? and not u.customer_feedback.re_opened }.last # may or may not
+    customer = ticket.customer
+    product = ticket.products.first
+    accessories = ticket.accessories
+    final_invoice = ticket.ticket_invoices.order(created_at: :desc).find_by_canceled false
+
+    ticket_ref = ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG['ticket_no_format'])
+    ticket_datetime = ticket.created_at.strftime(INOCRM_CONFIG['long_date_format']+' '+INOCRM_CONFIG['time_format'])
+    company_name = customer.full_name
+    address1 = customer.address1
+    address2 = customer.address2
+    address3 = customer.address3
+    address4 = customer.address4
+    mobile = customer.contact_type_values.select{|c| c.contact_type.mobile }.first.try(:value)
+    serial_no = product.serial_no
+    model_no = product.model_no
+    product_category = product.product_category.name
+    special_note = ticket.note
+    accessory1 = accessories.first.try(:accessory)
+    accessory2 = accessories.second.try(:accessory)
+    accessory3 = accessories.third.try(:accessory)
+    accessory4 = accessories.fourth.try(:accessory)
+    accessory5 = accessories.fifth.try(:accessory)
+    accessory_other = ticket.other_accessories
+    problem_des1 = ticket.problem_description.to_s[0..100]
+    problem_des2 = ticket.problem_description.to_s[101..200]
+    resolution_summary1 = ticket.resolution_summary.to_s[0..100]
+    resolution_summary2 = ticket.resolution_summary.to_s[101..200]
+    invoice_no = (final_invoice and final_invoice.invoice_no.to_s.rjust(6, INOCRM_CONFIG['invoice_no_format']))
 
     if customer_feedback
       deliver_datetime = customer_feedback.user_ticket_action.action_at.try(:strftime, INOCRM_CONFIG['long_date_format']+' '+INOCRM_CONFIG['time_format'])
@@ -118,76 +146,35 @@ module ApplicationHelper
       delivered_by = User.cached_find_by_id(customer_feedback.user_ticket_action.action_by).full_name 
     end
 
-    final_invoice = ticket.ticket_invoices.order(created_at: :desc).find_by_canceled false
-    ticket_datetime = ticket.created_at.strftime(INOCRM_CONFIG['long_date_format']+' '+INOCRM_CONFIG['time_format'])
-    ticket_ref = ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG['ticket_no_format'])
-    company_name = ticket.customer.mst_title.title+" "+ticket.customer.name
-    contact_person = ticket.contact_person1.mst_title.title+" "+ticket.contact_person1.name
-    address1 = ticket.customer.address1
-    address2 = ticket.customer.address2
-    address3 = ticket.customer.address3
-    address4 = ticket.customer.address4
-    telephone = ticket.customer.contact_type_values.select{|c| c.contact_type.name == "Telephone"}.first.try(:value)
-    mobile = ticket.customer.contact_type_values.select{|c| c.contact_type.mobile}.first.try(:value)
-    fax = ticket.customer.contact_type_values.select{|c| c.contact_type.name == "Fax"}.first.try(:value)
-    email = ticket.customer.contact_type_values.select{|c| c.contact_type.email}.first.try(:value)
-    product_brand = ticket.products.first.product_brand.name
-    product_category = ticket.products.first.product_category.name
-    model_no = ticket.products.first.model_no
-    serial_no = ticket.products.first.serial_no
-    product_no = ticket.products.first.product_no
-    problem_des1 = ticket.problem_description.to_s[0..100]
-    problem_des2 = ticket.problem_description.to_s[101..200]
-    warranty = "Yes" if ticket.products.first.warranties.any?{|w| (w.start_at.to_date..w.end_at.to_date).include?(ticket.created_at.to_date)}
-    chargeable = "Yes" if ticket.cus_chargeable
-    extra_remark1 = ticket.ticket_extra_remarks.first.try(:extra_remark).try(:extra_remark)
-    extra_remark2 = ticket.ticket_extra_remarks.second.try(:extra_remark).try(:extra_remark)
-    extra_remark3 = ticket.ticket_extra_remarks.third.try(:extra_remark).try(:extra_remark)
-    extra_remark4 = ticket.ticket_extra_remarks.fourth.try(:extra_remark).try(:extra_remark)
-    extra_remark5 = ticket.ticket_extra_remarks.fifth.try(:extra_remark).try(:extra_remark)
-    extra_remark6 = ticket.ticket_extra_remarks[5].try(:extra_remark).try(:extra_remark)
-    remark = ticket.remarks.split('<span class=\'pop_note_e_time\'>') if ticket.remarks.present?
-    accessory1 = ticket.accessories.first.try(:accessory)
-    accessory2 = ticket.accessories.second.try(:accessory)
-    accessory3 = ticket.accessories.third.try(:accessory)
-    accessory4 = ticket.accessories.fourth.try(:accessory)
-    accessory5 = ticket.accessories.fifth.try(:accessory)
-    accessory_other = ticket.other_accessories
-    resolution_summary1 = ticket.resolution_summary.to_s[0..100]
-    resolution_summary2 = ticket.resolution_summary.to_s[101..200]
-    invoice_no = (final_invoice and final_invoice.invoice_no.to_s.rjust(6, INOCRM_CONFIG['invoice_no_format']))
-    special_note = ticket.note
-
     repeat_data = ""
-    repeat_data += "LEFT_LINE_TITLE=Ticket #:"    +"$|#"+"LEFT_LINE_DATA="+ticket_ref+"  -  "+ticket_datetime+"$|#"
-    repeat_data += "LEFT_LINE_TITLE=Delivered To :" +"$|#"+"LEFT_LINE_DATA="+company_name+"$|#"
-    repeat_data += "LEFT_LINE_TITLE="     +"$|#"+"LEFT_LINE_DATA="+address1+"$|#" if address1
-    repeat_data += "LEFT_LINE_TITLE="     +"$|#"+"LEFT_LINE_DATA="+address2+"$|#" if address2
-    repeat_data += "LEFT_LINE_TITLE="     +"$|#"+"LEFT_LINE_DATA="+address3+"$|#" if address3
-    repeat_data += "LEFT_LINE_TITLE="     +"$|#"+"LEFT_LINE_DATA="+address4+"$|#" if address4
-    repeat_data += "LEFT_LINE_TITLE=Mobile No :"    +"$|#"+"LEFT_LINE_DATA="+mobile+"$|#" if mobile
-    repeat_data += "LEFT_LINE_TITLE=Serial No :"    +"$|#"+"LEFT_LINE_DATA="+serial_no+"$|#"
-    repeat_data += "LEFT_LINE_TITLE=Product Brand :"  +"$|#"+"LEFT_LINE_DATA="+product_brand+"$|#"
-    repeat_data += "LEFT_LINE_TITLE=Model No :"   +"$|#"+"LEFT_LINE_DATA="+model_no+"$|#"
-    repeat_data += "LEFT_LINE_TITLE=Product Category :" +"$|#"+"LEFT_LINE_DATA="+product_category+"$|#"
-    repeat_data += "LEFT_LINE_TITLE=Special Notes :"  +"$|#"+"LEFT_LINE_DATA="+special_note.to_s[0..100]+"$|#" if special_note.to_s[0..100]
-    repeat_data += "LEFT_LINE_TITLE="     +"$|#"+"LEFT_LINE_DATA="+special_note.to_s[101..200]+"$|#" if special_note.to_s[101..200]
-    repeat_data += "LEFT_LINE_TITLE=Accessories :"    +"$|#"+"LEFT_LINE_DATA="+accessory1+"$|#" if accessory1
-    repeat_data += "LEFT_LINE_TITLE="     +"$|#"+"LEFT_LINE_DATA="+accessory2+"$|#" if accessory2
-    repeat_data += "LEFT_LINE_TITLE="     +"$|#"+"LEFT_LINE_DATA="+accessory3+"$|#" if accessory3
-    repeat_data += "LEFT_LINE_TITLE="     +"$|#"+"LEFT_LINE_DATA="+accessory4+"$|#" if accessory4
-    repeat_data += "LEFT_LINE_TITLE="     +"$|#"+"LEFT_LINE_DATA="+accessory5+"$|#" if accessory5
-    repeat_data += "LEFT_LINE_TITLE=Other Accessories :"  +"$|#"+"LEFT_LINE_DATA="+accessory_other+"$|#" if accessory_other
-    repeat_data += "RIGHT_LINE_TITLE=Problem Desc. :" +"$|#"+"RIGHT_LINE_DATA="+problem_des1+"$|#" if problem_des1
-    repeat_data += "RIGHT_LINE_TITLE="      +"$|#"+"RIGHT_LINE_DATA="+problem_des2+"$|#" if problem_des2
-    repeat_data += "RIGHT_LINE_TITLE=Resolution :"    +"$|#"+"RIGHT_LINE_DATA="+resolution_summary1+"$|#" if resolution_summary1
-    repeat_data += "RIGHT_LINE_TITLE="      +"$|#"+"RIGHT_LINE_DATA="+resolution_summary2+"$|#" if resolution_summary2
-    repeat_data += "RIGHT_LINE_TITLE=Invoice #:"    +"$|#"+"RIGHT_LINE_DATA="+invoice_no+"$|#" if invoice_no
-    repeat_data += "RIGHT_LINE_TITLE=Delevry Date:" +"$|#"+"RIGHT_LINE_DATA="+deliver_datetime.to_s+"$|#"
-    repeat_data += "RIGHT_LINE_TITLE=Delevry Method:" +"$|#"+"RIGHT_LINE_DATA="+deliver_method.to_s+"$|#"
-    repeat_data += "RIGHT_LINE_TITLE=Delevry Note:" +"$|#"+"RIGHT_LINE_DATA="+deliver_note.to_s+"$|#"
-    repeat_data += "RIGHT_LINE_TITLE=Released By:" +"$|#"+"RIGHT_LINE_DATA="+delivered_by.to_s+"$|#"
-    repeat_data += "RIGHT_LINE_TITLE=Signature:" +"$|#"
+
+    repeat_data += ({
+      "Ticket #:" => "#{ticket_ref} - #{ticket_datetime}",
+      "Delivered To :" => [company_name, address1, address2, address3, address4],
+      "Mobile No" => mobile,
+      "Serial No" => serial_no,
+      "Product Brand" => product_brand,
+      "Model No" => model_no,
+      "Product Category" => product_category,
+      "Special Notes" => [special_note.to_s[0..100], special_note.to_s[101..200],special_note.to_s[101..200]],
+      "Accessories" => [accessory1, accessory2, accessory3, accessory4, accessory5],
+      "Other Accessories" => accessory_other,
+    }.map do |k, v|
+      v.is_a?(Array) ? "LEFT_LINE_TITLE=#{k}$|#LEFT_LINE_DATA=#{v.first}$|#" + v.from(1).map { |v| "LEFT_LINE_TITLE=$|#LEFT_LINE_DATA=#{v}$|#" }.join : "LEFT_LINE_TITLE=#{k}$|#LEFT_LINE_DATA=#{v}$|#"
+    end).join
+
+    repeat_data += ({
+      "Problem Desc." => [problem_des1, problem_des2],
+      "Resolution" => [resolution_summary1, resolution_summary2],
+      "Invoice #:" => invoice_no,
+      "Delevery Date:" => deliver_datetime,
+      "Delevery Method:" => deliver_method,
+      "Delevery Note:" => deliver_note,
+      "Released By:" => delivered_by,
+      "Signature:" => "",
+    }.map do |k, v|
+      v.is_a?(Array) ? "RIGHT_LINE_TITLE=#{k}$|#RIGHT_LINE_DATA=#{v.first}$|#" + v.from(1).map { |v| "RIGHT_LINE_TITLE=$|#RIGHT_LINE_DATA=#{v}$|#" }.join : "RIGHT_LINE_TITLE=#{k}$|#RIGHT_LINE_DATA=#{v}$|#"
+    end).join
 
     [
       "DUPLICATE_D=#{ticket.ticket_complete_print_count > 0 ? 'D' : ''}",
@@ -255,19 +242,19 @@ module ApplicationHelper
 
     item_index = 0
     repeat_data = ""
-    # quotation.ticket_customer_quotation_estimation.each do |ticket_quotation_estimation|
     quotation.customer_quotation_estimations.each do |ticket_quotation_estimation|
+      ticket_estimation = ticket_quotation_estimation.ticket_estimation
       quantity = 1
-      currency_1 = ticket_quotation_estimation.ticket_estimation.currency.code
-      advance_amount = ticket_quotation_estimation.ticket_estimation.approval_required ? ticket_quotation_estimation.ticket_estimation.approved_adv_pmnt_amount.to_f : ticket_quotation_estimation.ticket_estimation.advance_payment_amount.to_f
+      currency_1 = ticket_estimation.currency.code
+      advance_amount = ticket_estimation.approval_required ? ticket_estimation.approved_adv_pmnt_amount.to_f : ticket_estimation.advance_payment_amount.to_f
       total_advance_amount += advance_amount
 
-      if ticket_quotation_estimation.ticket_estimation.ticket_estimation_externals.present?
-        estimation_external = ticket_quotation_estimation.ticket_estimation.ticket_estimation_externals.first
+      if ticket_estimation.ticket_estimation_externals.present?
+        estimation_external = ticket_estimation.ticket_estimation_externals.first
         item_index += 1
         description = estimation_external.description
 
-        unit_price = ticket_quotation_estimation.ticket_estimation.approval_required ? estimation_external.approved_estimated_price.to_f : estimation_external.estimated_price.to_f
+        unit_price = ticket_estimation.approval_required ? estimation_external.approved_estimated_price.to_f : estimation_external.estimated_price.to_f
 
         totalprice = unit_price
         total_amount += totalprice
@@ -278,7 +265,7 @@ module ApplicationHelper
           item_index += 1
           description = "#{ticket_estimation_external_tax.tax.tax} (#{ticket_estimation_external_tax.tax_rate})"
           quantity = 1
-          unit_price = ticket_quotation_estimation.ticket_estimation.approval_required ? ticket_estimation_external_tax.approved_tax_amount.to_f : ticket_estimation_external_tax.estimated_tax_amount.to_f
+          unit_price = ticket_estimation.approval_required ? ticket_estimation_external_tax.approved_tax_amount.to_f : ticket_estimation_external_tax.estimated_tax_amount.to_f
 
           totalprice = unit_price
           total_amount += totalprice
@@ -289,13 +276,13 @@ module ApplicationHelper
 
       end
 
-      if ticket_quotation_estimation.ticket_estimation.ticket_estimation_parts.present?
-        estimation_part = ticket_quotation_estimation.ticket_estimation.ticket_estimation_parts.first
+      if ticket_estimation.ticket_estimation_parts.present?
+        estimation_part = ticket_estimation.ticket_estimation_parts.first
         item_index += 1
         description = "Part No: #{estimation_part.ticket_spare_part.spare_part_no} #{estimation_part.ticket_spare_part.spare_part_description}"
-        item_code = estimation_part.ticket_spare_part.ticket_spare_part_store.present? ? estimation_part.ticket_spare_part.ticket_spare_part_store.try(:approved_inventory_product).try(:generated_item_code) : ""
+        item_code = estimation_part.ticket_spare_part.ticket_spare_part_store.present? ? estimation_part.ticket_spare_part.ticket_spare_part_store.approved_inventory_product.try(:generated_item_code) : ""
 
-        unit_price = ticket_quotation_estimation.ticket_estimation.approval_required ? estimation_part.approved_estimated_price.to_f : estimation_part.estimated_price.to_f
+        unit_price = ticket_estimation.approval_required ? estimation_part.approved_estimated_price.to_f : estimation_part.estimated_price.to_f
 
         totalprice = unit_price
         total_amount += totalprice
@@ -307,7 +294,7 @@ module ApplicationHelper
           item_index += 1
           description = "#{ticket_estimation_part_tax.tax.tax} (#{ticket_estimation_part_tax.tax_rate})"
 
-          unit_price = ticket_quotation_estimation.ticket_estimation.approval_required ? ticket_estimation_part_tax.approved_tax_amount.to_f : ticket_estimation_part_tax.estimated_tax_amount.to_f
+          unit_price = ticket_estimation.approval_required ? ticket_estimation_part_tax.approved_tax_amount.to_f : ticket_estimation_part_tax.estimated_tax_amount.to_f
       
           totalprice = unit_price
           total_amount += totalprice
@@ -316,10 +303,10 @@ module ApplicationHelper
         end
       end
 
-      ticket_quotation_estimation.ticket_estimation.ticket_estimation_additionals.each do |ticket_estimation_additional|
+      ticket_estimation.ticket_estimation_additionals.each do |ticket_estimation_additional|
         item_index += 1
         description = ticket_estimation_additional.additional_charge.additional_charge
-        unit_price = ticket_quotation_estimation.ticket_estimation.approval_required ? ticket_estimation_additional.approved_estimated_price.to_f : ticket_estimation_additional.estimated_price.to_f
+        unit_price = ticket_estimation.approval_required ? ticket_estimation_additional.approved_estimated_price.to_f : ticket_estimation_additional.estimated_price.to_f
 
         totalprice = unit_price
         total_amount += totalprice
@@ -329,7 +316,7 @@ module ApplicationHelper
         ticket_estimation_additional.ticket_estimation_additional_taxes.each do |ticket_estimation_additional_tax|
           item_index += 1
           description = "#{ticket_estimation_additional_tax.tax.tax} (#{ticket_estimation_additional_tax.tax_rate})"
-          unit_price = ticket_quotation_estimation.ticket_estimation.approval_required ? ticket_estimation_additional_tax.approved_tax_amount.to_f : ticket_estimation_additional_tax.estimated_tax_amount.to_f
+          unit_price = ticket_estimation.approval_required ? ticket_estimation_additional_tax.approved_tax_amount.to_f : ticket_estimation_additional_tax.estimated_tax_amount.to_f
         
           totalprice = unit_price
           total_amount += totalprice
