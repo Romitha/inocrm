@@ -125,6 +125,7 @@ module ApplicationHelper
     mobile = customer.contact_type_values.select{|c| c.contact_type.mobile }.first.try(:value)
     serial_no = product.serial_no
     model_no = product.model_no
+    product_brand = product.product_brand.name
     product_category = product.product_category.name
     special_note = ticket.note
     accessory1 = accessories.first.try(:accessory)
