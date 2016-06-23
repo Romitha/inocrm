@@ -2980,14 +2980,20 @@ class TicketsController < ApplicationController
     when "receipt"
       Ticket
       TicketPaymentReceived.find_by_id params[:print_object_id]
-    when "delivery"
-      @ticket = Ticket.find(params[:print_object_id])
+    when "ticket_complete"
+      Ticket.find(params[:print_object_id])
     when "invoice"
       Invoice
-      @ticket_invoice = TicketInvoice.find(params[:print_object_id])
+      TicketInvoice.find(params[:print_object_id])
     when "quotation"
       Invoice
-      @quotation = CustomerQuotation.find(params[:print_object_id])
+      CustomerQuotation.find(params[:print_object_id])
+    when "bundle_hp"
+      TicketSparePart
+      ReturnPartsBundle.find(params[:print_object_id])
+    when "ticket_sticker"
+      Invoice
+      CustomerQuotation.find(params[:print_object_id])
 
     end
     print_template_object = PrintTemplate.first

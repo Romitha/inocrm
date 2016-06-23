@@ -15,9 +15,10 @@ class TicketSparePart < ActiveRecord::Base
 
   has_one :ticket_spare_part_manufacture, foreign_key: :spare_part_id
   accepts_nested_attributes_for :ticket_spare_part_manufacture, allow_destroy: true
+  has_many :ticket_spare_parts, through: :ticket_spare_part_manufacture
 
   has_one :ticket_spare_part_store, foreign_key: :spare_part_id
-  accepts_nested_attributes_for :ticket_spare_part_store, allow_destroy: true
+  # accepts_nested_attributes_for :return_parts_bundles, allow_destroy: true
 
   has_one :ticket_spare_part_non_stock, foreign_key: :spare_part_id
   accepts_nested_attributes_for :ticket_spare_part_non_stock, allow_destroy: true
@@ -193,8 +194,8 @@ class TicketSparePartManufacture < ActiveRecord::Base
   self.table_name = "spt_ticket_spare_part_manufacture"
 
   belongs_to :ticket_spare_part, foreign_key: :spare_part_id
-  belongs_to :manufacture_currency, class_name: "Currency", foreign_key: :manufacture_currency_id
   belongs_to :return_parts_bundle
+  belongs_to :manufacture_currency, class_name: "Currency", foreign_key: :manufacture_currency_id
 
   has_many :so_po_items, foreign_key: :ticket_spare_part_item_id
 
