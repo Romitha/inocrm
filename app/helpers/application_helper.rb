@@ -109,7 +109,7 @@ module ApplicationHelper
     TaskAction
     Invoice
     ContactNumber
-    customer_feedback = ticket.user_ticket_actions.select{ |u| u.customer_feedback.present? and not u.customer_feedback.re_opened }.last # may or may not
+    customer_feedback = ticket.user_ticket_actions.select{ |u| u.customer_feedback.present? and not u.customer_feedback.re_opened }.last.try(:customer_feedback) # may or may not
     customer = ticket.customer
     product = ticket.products.first
     accessories = ticket.accessories
