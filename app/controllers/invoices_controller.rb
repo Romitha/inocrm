@@ -414,6 +414,8 @@ class InvoicesController < ApplicationController
       action_no = 84
     end
     @customer_quotation.ticket_id = @ticket.id
+    @customer_quotation.currency_id = @ticket.ticket_currency.id
+    @customer_quotation.created_by = current_user.id
     @customer_quotation.save
     @customer_quotation.ticket_estimation_ids = checked_estimation_ids
 

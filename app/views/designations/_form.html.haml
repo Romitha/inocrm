@@ -1,5 +1,5 @@
 .col-md-12
-  = simple_form_for [designation.organization, designation] do |designation|
+  = simple_form_for [designation.organization, designation], html: {class: "validate_form"} do |designation|
     .row
       = panels panel_type: "success", header_content: "Add designation" do
         - if designation.object.errors.present?

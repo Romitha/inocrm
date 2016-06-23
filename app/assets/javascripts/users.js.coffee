@@ -31,7 +31,7 @@ window.Users =
       progress: (e, data) ->
         if data.context
           progress = parseInt(data.loaded/data.total*100, 10)
-          data.context.find(".progress-bar").css("width", progress+"%").html(progress+"%")
+          data.context.find(".progress-bar").css("width", progress+"%").attr("aria-valuenow", "#{progress}").html(progress+"%")
           if progress==100
             $("#ajax-loader").addClass("hide")
             # $(".profile_image_wrapper").empty();

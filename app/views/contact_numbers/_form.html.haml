@@ -1,4 +1,4 @@
-= simple_form_for contact_number, url: polymorphic_path([contact_number.c_numberable, contact_number]) do |contact_number|
+= simple_form_for contact_number, url: polymorphic_path([contact_number.c_numberable, contact_number]), html: {class: "validate_form"} do |contact_number|
   .row
     = panels panel_type: "success", header_content: "Add contact_number" do
       - if contact_number.object.errors.present?

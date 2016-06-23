@@ -12,9 +12,9 @@ class AddTablesForEstimationAndTaxes < ActiveRecord::Migration
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :ticket_id, "INT UNSIGNED NOT NULL"
       t.column :customer_quotation_no, "INT UNSIGNED NOT NULL"
-      t.column :currency_id, "INT UNSIGNED DEFAULT NULL"
+      t.column :currency_id, "INT UNSIGNED DEFAULT NOT NULL"
       t.column :payment_term_id, "INT UNSIGNED DEFAULT NULL"
-      t.column :created_by, "INT UNSIGNED DEFAULT NULL"
+      t.column :created_by, "INT UNSIGNED DEFAULT NOT NULL"
       t.boolean :customer_contacted, null: false, default: false
       t.boolean :canceled, null: false, default: false
       t.boolean :advance_payment_requested, null: false, default: false

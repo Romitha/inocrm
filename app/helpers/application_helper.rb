@@ -152,29 +152,29 @@ module ApplicationHelper
     repeat_data += ({
       "Ticket #:" => "#{ticket_ref} - #{ticket_datetime}",
       "Delivered To :" => [company_name, address1, address2, address3, address4],
-      "Mobile No" => mobile,
-      "Serial No" => serial_no,
-      "Product Brand" => product_brand,
-      "Model No" => model_no,
-      "Product Category" => product_category,
-      "Special Notes" => [special_note.to_s[0..100], special_note.to_s[101..200],special_note.to_s[101..200]],
-      "Accessories" => [accessory1, accessory2, accessory3, accessory4, accessory5],
-      "Other Accessories" => accessory_other,
+      "Mobile No :" => mobile,
+      "Serial No :" => serial_no,
+      "Product Brand :" => product_brand,
+      "Model No :" => model_no,
+      "Product Category :" => product_category,
+      "Special Notes :" => [special_note.to_s[0..100], special_note.to_s[101..200],special_note.to_s[101..200]],
+      "Accessories :" => [accessory1, accessory2, accessory3, accessory4, accessory5],
+      "Other Accessories :" => accessory_other,
     }.map do |k, v|
-      v.is_a?(Array) ? "LEFT_LINE_TITLE=#{k}$|#LEFT_LINE_DATA=#{v.first}$|#" + v.from(1).map { |v| "LEFT_LINE_TITLE=$|#LEFT_LINE_DATA=#{v}$|#" }.join : "LEFT_LINE_TITLE=#{k}$|#LEFT_LINE_DATA=#{v}$|#"
+      v.is_a?(Array) ? "LEFT_LINE_TITLE=#{k}$|#LEFT_LINE_DATA=#{v.first}$|#" + v.from(1).map { |e| "LEFT_LINE_TITLE=$|#LEFT_LINE_DATA=#{e}$|#" }.join : "LEFT_LINE_TITLE=#{k}$|#LEFT_LINE_DATA=#{v}$|#"
     end).join
 
     repeat_data += ({
-      "Problem Desc." => [problem_des1, problem_des2],
-      "Resolution" => [resolution_summary1, resolution_summary2],
+      "Reported failure :" => [problem_des1, problem_des2],
+      "Resolution :" => [resolution_summary1, resolution_summary2],
       "Invoice #:" => invoice_no,
-      "Delevery Date:" => deliver_datetime,
-      "Delevery Method:" => deliver_method,
-      "Delevery Note:" => deliver_note,
-      "Released By:" => delivered_by,
-      "Signature:" => "",
+      "Delevery Date :" => deliver_datetime,
+      "Delevery Method :" => deliver_method,
+      "Delevery Note :" => deliver_note,
+      "Released By :" => delivered_by,
+      "Signature :" => "",
     }.map do |k, v|
-      v.is_a?(Array) ? "RIGHT_LINE_TITLE=#{k}$|#RIGHT_LINE_DATA=#{v.first}$|#" + v.from(1).map { |v| "RIGHT_LINE_TITLE=$|#RIGHT_LINE_DATA=#{v}$|#" }.join : "RIGHT_LINE_TITLE=#{k}$|#RIGHT_LINE_DATA=#{v}$|#"
+      v.is_a?(Array) ? "RIGHT_LINE_TITLE=#{k}$|#RIGHT_LINE_DATA=#{v.first}$|#" + v.from(1).map { |e| "RIGHT_LINE_TITLE=$|#RIGHT_LINE_DATA=#{e}$|#" }.join : "RIGHT_LINE_TITLE=#{k}$|#RIGHT_LINE_DATA=#{v}$|#"
     end).join
 
     [

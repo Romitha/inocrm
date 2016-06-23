@@ -1,6 +1,6 @@
 - tapbar = [["Address", "#addresses#{organization.id}"], ["Contact Details", "#contacts#{organization.id}"], ["#{[Organization::TYPES[1], Organization::TYPES[3]].include?(organization.category) ? 'Contact Persons' : 'Employees'}", "#contact_persons#{organization.id}"], ["Documents & Attachements", "#documents#{organization.id}"], ["Designations", "#designations#{organization.id}"], ["Organization Relations", "#organization_relations#{organization.id}"], ["Roles and Permissions", "#roles_and_permissions#{organization.id}"]]
 
-= simple_nested_form_for organization do |f|
+= simple_nested_form_for organization, html: {class: "validate_form"} do |f|
   - if organization.errors.present?
     .row
       = panels header_content: "Something gone wrong", panel_type: "danger" do
@@ -11,8 +11,7 @@
     .col-md-2
       = image_tag organization.logo.url, class: "img-responsive" if organization.logo.present?
       .btn.btn-success.btn-file.has-tooltip{data: {toggle: "tooltip", placement: "left"}, title: "Upload organization Logo"}
-        Upload Logo
-        = f.input :logo, label: false, placeholder: "Upload organization Logo", wrapper_html: {class: "margin-none"}
+        = f.input :logo, as: :file, label: "Upload Logo", placeholder: "Upload organization Logo", wrapper_html: {class: "margin-none"}
 
       .organization_attachment_wrapper
 
@@ -32,7 +31,7 @@
       .col-md-4
         = f.input :vat_number, placeholder: "Vat Number", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Vat Number"}
     .col-md-4
-      = f.association :organization_type    
+      = f.association :organization_type, include_blank: false
     .col-md-4.pull-right
       = f.input :web_site, placeholder: "Web Site", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Web Site"}
 
