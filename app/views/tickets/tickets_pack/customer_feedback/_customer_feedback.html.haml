@@ -2,7 +2,7 @@
 - ticket = @ticket
 
 - if  !@continue and @ticket_payment_received.new_record?
-  = simple_nested_form_for @ticket_payment_received, url: update_customer_feedback_invoices_path, method: :post, remote: true, html{ class: "validate_form" } do |f|
+  = simple_nested_form_for @ticket_payment_received, url: update_customer_feedback_invoices_path, method: :post, remote: true, html: { class: "validate_form" } do |f|
 
     = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
     = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
