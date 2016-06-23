@@ -480,7 +480,7 @@
                     .col-md-4
                       Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
 
-            -if action.action_id == 40
+            -if action.action_id == 40 and action.action_warranty_extend
               .panel-body 
                 .row
                   .col-md-4
@@ -990,7 +990,7 @@
                   .col-md-4
                     Reject Reason: #{action.act_quality_control.reason.try(:reason)}
 
-            -if action.action_id == 71
+            -if action.action_id == 71 and action.act_fsr
               .panel-body 
                 .row
                   .col-md-4
