@@ -1,13 +1,13 @@
 .col-md-12
-  = simple_form_for [designation.organization, designation], html: {class: "validate_form"} do |designation|
+  = simple_form_for [designation.organization, designation], html: {class: "validate_form"} do |f|
     .row
       = panels panel_type: "success", header_content: "Add designation" do
-        - if designation.object.errors.present?
+        - if f.object.errors.present?
           %ul.alert.alert-danger
-            - designation.object.errors.full_messages.each do |error|
+            - f.object.errors.full_messages.each do |error|
               %li= error
 
-        = designation.input :name, placeholder: "name of designation",input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Designation name"}
-        = designation.input :description, placeholder: "description of designation",input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Designation description"}
-        = designation.input :organization_id, as: :hidden
-        = designation.submit "Add new designation", class: "btn btn-success pull-right", id: "submit_new_designation"
+        = f.input :name, placeholder: "name of designation",input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Designation name"}
+        = f.input :description, placeholder: "description of designation",input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Designation description"}
+        = f.input :organization_id, as: :hidden
+        = f.submit "Add new designation", class: "btn btn-success pull-right", id: "submit_new_designation"

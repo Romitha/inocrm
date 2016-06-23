@@ -150,6 +150,19 @@ module ApplicationHelper
     repeat_data = ""
 
     repeat_data += ({
+      "Reported failure :" => [problem_des1, problem_des2],
+      "Resolution :" => [resolution_summary1, resolution_summary2],
+      "Invoice #:" => invoice_no,
+      "Delevery Date :" => deliver_datetime,
+      "Delevery Method :" => deliver_method,
+      "Delevery Note :" => deliver_note,
+      "Released By :" => delivered_by,
+      "Signature :" => "",
+    }.map do |k, v|
+      v.is_a?(Array) ? "RIGHT_LINE_TITLE=#{k}$|#RIGHT_LINE_DATA=#{v.first}$|#" + v.from(1).map { |e| "RIGHT_LINE_TITLE=$|#RIGHT_LINE_DATA=#{e}$|#" }.join : "RIGHT_LINE_TITLE=#{k}$|#RIGHT_LINE_DATA=#{v}$|#"
+    end).join
+
+    repeat_data += ({
       "Ticket #:" => "#{ticket_ref} - #{ticket_datetime}",
       "Delivered To :" => [company_name, address1, address2, address3, address4],
       "Mobile No :" => mobile,
@@ -162,19 +175,6 @@ module ApplicationHelper
       "Other Accessories :" => accessory_other,
     }.map do |k, v|
       v.is_a?(Array) ? "LEFT_LINE_TITLE=#{k}$|#LEFT_LINE_DATA=#{v.first}$|#" + v.from(1).map { |e| "LEFT_LINE_TITLE=$|#LEFT_LINE_DATA=#{e}$|#" }.join : "LEFT_LINE_TITLE=#{k}$|#LEFT_LINE_DATA=#{v}$|#"
-    end).join
-
-    repeat_data += ({
-      "Reported failure :" => [problem_des1, problem_des2],
-      "Resolution :" => [resolution_summary1, resolution_summary2],
-      "Invoice #:" => invoice_no,
-      "Delevery Date :" => deliver_datetime,
-      "Delevery Method :" => deliver_method,
-      "Delevery Note :" => deliver_note,
-      "Released By :" => delivered_by,
-      "Signature :" => "",
-    }.map do |k, v|
-      v.is_a?(Array) ? "RIGHT_LINE_TITLE=#{k}$|#RIGHT_LINE_DATA=#{v.first}$|#" + v.from(1).map { |e| "RIGHT_LINE_TITLE=$|#RIGHT_LINE_DATA=#{e}$|#" }.join : "RIGHT_LINE_TITLE=#{k}$|#RIGHT_LINE_DATA=#{v}$|#"
     end).join
 
     [

@@ -40,7 +40,7 @@ class User < ActiveRecord::Base
 
   has_many :act_ticket_close_approves
 
-  validates_uniqueness_of :user_name
+  # validates_uniqueness_of :user_name
 
   after_commit :flush_cache
 
