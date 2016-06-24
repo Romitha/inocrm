@@ -142,25 +142,12 @@ module ApplicationHelper
 
     if customer_feedback
       deliver_datetime = customer_feedback.user_ticket_action.action_at.try(:strftime, INOCRM_CONFIG['long_date_format']+' '+INOCRM_CONFIG['time_format'])
-      deliver_method = customer_feedback.dispatch_method.name
+      deliver_method = customer_feedback.dispatch_method.try(:name)
       deliver_note = customer_feedback.feedback_description
       delivered_by = User.cached_find_by_id(customer_feedback.user_ticket_action.action_by).full_name 
     end
 
     repeat_data = ""
-
-    repeat_data += ({
-      "Reported failure :" => [problem_des1, problem_des2],
-      "Resolution :" => [resolution_summary1, resolution_summary2],
-      "Invoice #:" => invoice_no,
-      "Delevery Date :" => deliver_datetime,
-      "Delevery Method :" => deliver_method,
-      "Delevery Note :" => deliver_note,
-      "Released By :" => delivered_by,
-      "Signature :" => "",
-    }.map do |k, v|
-      v.is_a?(Array) ? "RIGHT_LINE_TITLE=#{k}$|#RIGHT_LINE_DATA=#{v.first}$|#" + v.from(1).map { |e| "RIGHT_LINE_TITLE=$|#RIGHT_LINE_DATA=#{e}$|#" }.join : "RIGHT_LINE_TITLE=#{k}$|#RIGHT_LINE_DATA=#{v}$|#"
-    end).join
 
     repeat_data += ({
       "Ticket #:" => "#{ticket_ref} - #{ticket_datetime}",
@@ -175,6 +162,19 @@ module ApplicationHelper
       "Other Accessories :" => accessory_other,
     }.map do |k, v|
       v.is_a?(Array) ? "LEFT_LINE_TITLE=#{k}$|#LEFT_LINE_DATA=#{v.first}$|#" + v.from(1).map { |e| "LEFT_LINE_TITLE=$|#LEFT_LINE_DATA=#{e}$|#" }.join : "LEFT_LINE_TITLE=#{k}$|#LEFT_LINE_DATA=#{v}$|#"
+    end).join
+
+    repeat_data += ({
+      "Reported failure :" => [problem_des1, problem_des2],
+      "Resolution :" => [resolution_summary1, resolution_summary2],
+      "Invoice #:" => invoice_no,
+      "Delevery Date :" => deliver_datetime,
+      "Delevery Method :" => deliver_method,
+      "Delevery Note :" => deliver_note,
+      "Released By :" => delivered_by,
+      "Signature :" => "",
+    }.map do |k, v|
+      v.is_a?(Array) ? "RIGHT_LINE_TITLE=#{k}$|#RIGHT_LINE_DATA=#{v.first}$|#" + v.from(1).map { |e| "RIGHT_LINE_TITLE=$|#RIGHT_LINE_DATA=#{e}$|#" }.join : "RIGHT_LINE_TITLE=#{k}$|#RIGHT_LINE_DATA=#{v}$|#"
     end).join
 
     [
