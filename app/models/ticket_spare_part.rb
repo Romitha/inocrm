@@ -18,6 +18,8 @@ class TicketSparePart < ActiveRecord::Base
   has_many :ticket_spare_parts, through: :ticket_spare_part_manufacture
 
   has_one :ticket_spare_part_store, foreign_key: :spare_part_id
+  accepts_nested_attributes_for :ticket_spare_part_store, allow_destroy: true
+
   # accepts_nested_attributes_for :return_parts_bundles, allow_destroy: true
 
   has_one :ticket_spare_part_non_stock, foreign_key: :spare_part_id

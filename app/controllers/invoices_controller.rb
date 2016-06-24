@@ -554,7 +554,7 @@ class InvoicesController < ApplicationController
     deducted_amount = params[:deducted_amount].to_f
     continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
     final_invoice = @ticket.final_invoice
-    ticket_terminate_job = @ticket.user_ticket_actions.order(created_at: :desc).select { |u| u.ticket_terminate_job.present? }.first
+    ticket_terminate_job = @ticket.user_ticket_actions.order(created_at: :desc).select { |u| u.ticket_terminate_job.present? }.first.try(:ticket_terminate_job)
 
     cus_payment_completed = (params[:approve_foc].present? and params[:approve_foc].to_bool)
 
