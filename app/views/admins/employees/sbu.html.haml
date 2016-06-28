@@ -19,41 +19,57 @@
     .col-md-8
       = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_sbu", name: "#{params[:edit_more] ? 'update' : 'create'}"
 
-#accordion.panel-group
-  - @sbu_all.each_with_index do |sbu, index|
-    .panel.panel-info
-      .panel-heading
-        %h3.panel-title
-          %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
-            #{sbu.sbu}
-          - unless sbu.is_used_anywhere?
-            = link_to delete_admin_sbu_admins_employees_path(sbu_id: sbu.id),method: :delete,  :data => { :confirm => 'Are you sure?' } do
-              %span.glyphicon.glyphicon-trash
+/ #accordion.panel-group
+/   - @sbu_all.each_with_index do |sbu, index|
+/     .panel.panel-info
+/       .panel-heading
+/         %h3.panel-title
+/           %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
+/             #{sbu.sbu}
+/           - unless sbu.is_used_anywhere?
+/             = link_to delete_admin_sbu_admins_employees_path(sbu_id: sbu.id),method: :delete,  :data => { :confirm => 'Are you sure?' } do
+/               %span.glyphicon.glyphicon-trash
 
-      .panel-collapse.collapse.in{:id => "#{index}"}
-        .panel-body
-          .row.col-md-12
-            .col-md-2.pull-right
-              = link_to sbu_admins_employees_path(edit_more: true, sbu_id: sbu.id), method: :post do
-                %span.glyphicon.glyphicon-pencil Edit More>>
-          .row.col-md-12
-            .col-md-1
-              %strong Sbu:
-            .col-md-4
-              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "sbu", name: "sbu", url: sbu_admins_employees_path(edit: true, sbu_id: sbu.id), "original-title" => "Update Admin Sbu", value: sbu.sbu}, style: "line-height: 6px;" do
-                = sbu.sbu
-          .row.col-md-12
-            - sbu.engineers.each do |engineer|
-              .panel.panel-danger
-                .panel-heading
-                  %h3.panel-title
-                    %span Engineer: #{engineer.user_name}
-                    = link_to delete_admin_sbu_engineer_admins_employees_path(user_id: engineer.id, sbu_id: sbu.id),method: :delete,  :data => { :confirm => 'Are you sure?' } do
-                      %span.glyphicon.glyphicon-trash
-                .panel-body
-                  .row.col-md-12
-                    .col-md-1
-                      %strong Engineer:
-                    .col-md-9
-                      = link_to "#", class: "inline_edit", data: {type: "select", source: User.all.collect{|a| {value: a.id, text: a.email}}, resource: "sbu_engineer", name: "engineer_id", url: sbu_admins_employees_path(edit: true, engineer_id: engineer.id), "original-title" => "Update Admin Sbu"} do
-                        = engineer.try(:email)
+/       .panel-collapse.collapse.in{:id => "#{index}"}
+/         .panel-body
+
+= collapse_wrapper collapse_id: "emp_sbu_list", labelledby: "emp_sbu_labelledby" do
+  - @sbu_all.each_with_index do |sbu, index|
+    = collapse collapse_type: "info", labelledby: "labelledby_#{sbu.id}", header_content: "#{index+1} #{sbu.sbu}", collapse_link: "emppayment_termlink_#{sbu.id}", collapse_id: "emp_sbu_list" do
+      .pull-right
+        - unless sbu.is_used_anywhere?
+          = link_to delete_admin_sbu_admins_employees_path(sbu_id: sbu.id), method: :delete, rel: "tooltip", :data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Delete" do
+            %span.glyphicon.glyphicon-trash
+
+      .row.col-md-12
+        .col-md-2.pull-right
+          = link_to sbu_admins_employees_path(edit_more: true, sbu_id: sbu.id), method: :post do
+            %span.glyphicon.glyphicon-pencil Edit More>>
+      .row.col-md-12
+        .col-md-1
+          %strong Sbu:
+        .col-md-4
+          = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "sbu", name: "sbu", url: sbu_admins_employees_path(edit: true, sbu_id: sbu.id), "original-title" => "Update Admin Sbu", value: sbu.sbu}, style: "line-height: 6px;" do
+            = sbu.sbu
+      .row.col-md-12
+        / - sbu.engineers.each do |engineer|
+        /   .panel.panel-danger
+        /     .panel-heading
+        /       %h3.panel-title
+        /         %span Engineer: #{engineer.user_name}
+        /         = link_to delete_admin_sbu_engineer_admins_employees_path(user_id: engineer.id, sbu_id: sbu.id),method: :delete,  :data => { :confirm => 'Are you sure?' } do
+        /           %span.glyphicon.glyphicon-trash
+        /     .panel-body
+        = collapse_wrapper collapse_id: "ticket_sbuengineer_list", labelledby: "tic_sbuengineer_labelledby" do
+          - sbu.engineers.each do |engineer|
+            = collapse collapse_type: "danger", labelledby: "labelledby_#{engineer.id}", header_content: "Engineer: #{engineer.user_name}", collapse_link: "ticpsbuengineerlink_#{engineer.id}", collapse_id: "ticket_sbuengineer_list" do
+              .pull-right
+                / - unless sbu.is_used_anywhere?
+                = link_to delete_admin_sbu_engineer_admins_employees_path(user_id: engineer.id, sbu_id: sbu.id), method: :delete, rel: "tooltip", :data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Delete" do
+                  %span.glyphicon.glyphicon-trash
+              .row.col-md-12
+                .col-md-1
+                  %strong Engineer:
+                .col-md-9
+                  = link_to "#", class: "inline_edit", data: {type: "select", source: User.all.collect{|a| {value: a.id, text: a.email}}, resource: "sbu_engineer", name: "engineer_id", url: sbu_admins_employees_path(edit: true, engineer_id: engineer.id), "original-title" => "Update Admin Sbu"} do
+                    = engineer.try(:email)

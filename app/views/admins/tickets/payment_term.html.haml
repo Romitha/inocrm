@@ -10,27 +10,36 @@
     .col-md-6
       = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_payment_term"
 
-#accordion.panel-group
-  - @payment_term_all.each_with_index do |payment_term, index|
-    .panel.panel-info
-      .panel-heading
-        %h3.panel-title
-          %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
-            #{index+1} Payment Term : #{payment_term.name}
-          - unless payment_term.is_used_anywhere?
-            = link_to delete_payment_term_admins_tickets_path(payment_term_id: payment_term.id), method: :delete, :data => { :confirm => 'Are you sure?' } do
-              %span.glyphicon.glyphicon-trash
+/ #accordion.panel-group
+/   - @payment_term_all.each_with_index do |payment_term, index|
+/     .panel.panel-info
+/       .panel-heading
+/         %h3.panel-title
+/           %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
+/             #{index+1} Payment Term : #{payment_term.name}
+/           - unless payment_term.is_used_anywhere?
+/             = link_to delete_payment_term_admins_tickets_path(payment_term_id: payment_term.id), method: :delete, :data => { :confirm => 'Are you sure?' } do
+/               %span.glyphicon.glyphicon-trash
 
-      .panel-collapse.collapse.in{:id => "#{index}"}
-        .panel-body
-          .row.col-md-12
-            .col-md-1
-              %strong Name:
-            .col-md-3
-              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "payment_term", name: "name", url: payment_term_admins_tickets_path(edit: true, payment_term_id: payment_term.id), "original-title" => "Update Payment Term", value: payment_term.name}, style: "line-height: 6px;" do
-                = payment_term.name
-            .col-md-2
-              %strong Description:
-            .col-md-3
-              = link_to "#", class: "inline_edit load_style only_float", data: {type: "text", resource: "payment_term", name: "description", url: payment_term_admins_tickets_path(edit: true, payment_term_id: payment_term.id), "original-title" => "Update Payment Term", value: payment_term.description}, style: "line-height: 6px;" do
-                = payment_term.description
+/       .panel-collapse.collapse.in{:id => "#{index}"}
+/         .panel-body
+
+= collapse_wrapper collapse_id: "ticket_payment_term_list", labelledby: "tic_payment_term_labelledby" do
+  - @payment_term_all.each_with_index do |payment_term, index|
+    = collapse collapse_type: "info", labelledby: "labelledby_#{payment_term.id}", header_content: "#{index+1} Payment Term : #{payment_term.name}", collapse_link: "ticpayment_termlink_#{payment_term.id}", collapse_id: "ticket_payment_term_list" do
+      .pull-right
+        - unless payment_term.is_used_anywhere?
+          = link_to delete_payment_term_admins_tickets_path(payment_term_id: payment_term.id), method: :delete, rel: "tooltip", :data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Delete" do
+            %span.glyphicon.glyphicon-trash
+
+      .row.col-md-12
+        .col-md-1
+          %strong Name:
+        .col-md-3
+          = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "payment_term", name: "name", url: payment_term_admins_tickets_path(edit: true, payment_term_id: payment_term.id), "original-title" => "Update Payment Term", value: payment_term.name}, style: "line-height: 6px;" do
+            = payment_term.name
+        .col-md-2
+          %strong Description:
+        .col-md-3
+          = link_to "#", class: "inline_edit load_style only_float", data: {type: "text", resource: "payment_term", name: "description", url: payment_term_admins_tickets_path(edit: true, payment_term_id: payment_term.id), "original-title" => "Update Payment Term", value: payment_term.description}, style: "line-height: 6px;" do
+            = payment_term.description

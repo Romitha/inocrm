@@ -26,48 +26,66 @@
     .col-md-10
       = f.submit "Save", class: "btn btn-success pull-right", data: {disable_with: "Please wait..."}, name: "#{params[:edit_more] ? 'update' : 'create'}"
 
-#accordion.panel-group
-  - @regional_support_center_all.each_with_index do |regional_support_center, index|
-    .panel.panel-info
-      .panel-heading
-        %h3.panel-title
-          %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
-            #{index+1} Regional Support Center : #{regional_support_center.organization.name}
-          - unless regional_support_center.is_used_anywhere?
-            = link_to delete_admin_regional_support_center_admins_organizations_path(regional_support_center_id: regional_support_center.id), method: :delete , :data => { :confirm => 'Are you sure?' } do
-              %span.glyphicon.glyphicon-trash
+/ #accordion.panel-group
+/   - @regional_support_center_all.each_with_index do |regional_support_center, index|
+/     .panel.panel-info
+/       .panel-heading
+/         %h3.panel-title
+/           %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
+/             #{index+1} Regional Support Center : #{regional_support_center.organization.name}
+/           - unless regional_support_center.is_used_anywhere?
+/             = link_to delete_admin_regional_support_center_admins_organizations_path(regional_support_center_id: regional_support_center.id), method: :delete , :data => { :confirm => 'Are you sure?' } do
+/               %span.glyphicon.glyphicon-trash
 
-      .panel-collapse.collapse.in{:id => "#{index}"}
-        .panel-body
-          .row.col-md-12
-            .col-md-2.pull-right
-              = link_to regional_support_center_admins_organizations_path(edit_more: true, regional_support_center_id: regional_support_center.id), method: :post do
-                %span.glyphicon.glyphicon-pencil Edit More>>
-          .row.col-md-12
-            .col-md-2
-              %strong Organization:
-            .col-md-4
-              = link_to "#", class: "inline_edit", data: {type: "select", source: Organization.all.collect{|a| {value: a.id, text: a.name}}, resource: "regional_support_center", name: "organization_id", url: regional_support_center_admins_organizations_path(edit: true, regional_support_center_id: regional_support_center.id), "original-title" => "Update Regional Support Center"} do
-                = regional_support_center.organization.try(:name)
-            .col-md-1
-              %strong Active:
-            .col-md-4
-              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "regional_support_center", name: "active", url: regional_support_center_admins_organizations_path(edit: true, regional_support_center_id: regional_support_center.id), "original-title" => "Update Regional Support Center"} do
-                = regional_support_center.active && "Yes" || "No"
-          .row.col-md-12{style: "margin-top:20px;"}
-            - regional_support_center.sbu_regional_engineers.each do |sbu_regional_engineer|
-              .panel.panel-danger
-                .panel-heading
-                  %h3.panel-title
-                    %span Engineer:
+/       .panel-collapse.collapse.in{:id => "#{index}"}
+/         .panel-body
+
+= collapse_wrapper collapse_id: "org_regional_support_center_list", labelledby: "org_regional_support_center_labelledby" do
+  - @regional_support_center_all.each_with_index do |regional_support_center, index|
+    = collapse collapse_type: "info", labelledby: "labelledby_#{regional_support_center.id}", header_content: "#{index+1} Regional Support Center : #{regional_support_center.organization.name}", collapse_link: "org_regional_support_centerlink_#{regional_support_center.id}", collapse_id: "org_regional_support_center_list" do
+      .pull-right
+        - unless regional_support_center.is_used_anywhere?
+          = link_to delete_admin_regional_support_center_admins_organizations_path(regional_support_center_id: regional_support_center.id), method: :delete, rel: "tooltip", :data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Delete" do
+            %span.glyphicon.glyphicon-trash
+
+      .row.col-md-12
+        .col-md-2.pull-right
+          = link_to regional_support_center_admins_organizations_path(edit_more: true, regional_support_center_id: regional_support_center.id), method: :post do
+            %span.glyphicon.glyphicon-pencil Edit More>>
+      .row.col-md-12
+        .col-md-2
+          %strong Organization:
+        .col-md-4
+          = link_to "#", class: "inline_edit", data: {type: "select", source: Organization.all.collect{|a| {value: a.id, text: a.name}}, resource: "regional_support_center", name: "organization_id", url: regional_support_center_admins_organizations_path(edit: true, regional_support_center_id: regional_support_center.id), "original-title" => "Update Regional Support Center"} do
+            = regional_support_center.organization.try(:name)
+        .col-md-1
+          %strong Active:
+        .col-md-4
+          = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "regional_support_center", name: "active", url: regional_support_center_admins_organizations_path(edit: true, regional_support_center_id: regional_support_center.id), "original-title" => "Update Regional Support Center"} do
+            = regional_support_center.active && "Yes" || "No"
+      .row.col-md-12{style: "margin-top:20px;"}
+        / - regional_support_center.sbu_regional_engineers.each do |sbu_regional_engineer|
+        /   .panel.panel-danger
+        /     .panel-heading
+        /       %h3.panel-title
+        /         %span Engineer:
+        /         = sbu_regional_engineer.engineer.first_name ? "#{sbu_regional_engineer.engineer.name_title} #{sbu_regional_engineer.engineer.first_name}" : sbu_regional_engineer.engineer.email
+        /         - unless sbu_regional_engineer.is_used_anywhere?
+        /           = link_to delete_sbu_regional_engineer_admins_organizations_path(sbu_regional_engineer_id: sbu_regional_engineer.id),method: :delete ,  :data => { :confirm => 'Are you sure?' } do
+        /             %span.glyphicon.glyphicon-trash
+        /     .panel-body
+
+        = collapse_wrapper collapse_id: "org_sbu_regional_engineer_list", labelledby: "org_sbu_regional_engineer_labelledby" do
+          - regional_support_center.sbu_regional_engineers.each do |sbu_regional_engineer|
+            = collapse collapse_type: "danger", labelledby: "labelledby_#{sbu_regional_engineer.id}", header_content: "Engineer: #{sbu_regional_engineer.engineer.first_name ? "#{sbu_regional_engineer.engineer.name_title} #{sbu_regional_engineer.engineer.first_name}" : sbu_regional_engineer.engineer.email}", collapse_link: "org_sbu_regional_engineerlink_#{sbu_regional_engineer.id}", collapse_id: "org_sbu_regional_engineer_list" do
+              .pull-right
+                - unless sbu_regional_engineer.is_used_anywhere?
+                  = link_to delete_sbu_regional_engineer_admins_organizations_path(sbu_regional_engineer_id: sbu_regional_engineer.id), method: :delete, rel: "tooltip", :data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Delete" do
+                    %span.glyphicon.glyphicon-trash
+
+              .row.col-md-12
+                .col-md-1
+                  %strong Engineer
+                .col-md-6
+                  = link_to "#", class: "inline_edit", data: {type: "select", source: User.joins(:roles).where(roles: {id: 4}).collect{|u| {value: u.id, text: u.email}} , resource: "sbu_regional_engineer", name: "engineer_id", url: regional_support_center_admins_organizations_path(edit: true, sbu_regional_engineer_id: sbu_regional_engineer.id), "original-title" => "Update Sbu Regional Engineer"} do
                     = sbu_regional_engineer.engineer.first_name ? "#{sbu_regional_engineer.engineer.name_title} #{sbu_regional_engineer.engineer.first_name}" : sbu_regional_engineer.engineer.email
-                    - unless sbu_regional_engineer.is_used_anywhere?
-                      = link_to delete_sbu_regional_engineer_admins_organizations_path(sbu_regional_engineer_id: sbu_regional_engineer.id),method: :delete ,  :data => { :confirm => 'Are you sure?' } do
-                        %span.glyphicon.glyphicon-trash
-                .panel-body
-                  .row.col-md-12
-                    .col-md-1
-                      %strong Engineer
-                    .col-md-6
-                      = link_to "#", class: "inline_edit", data: {type: "select", source: User.joins(:roles).where(roles: {id: 4}).collect{|u| {value: u.id, text: u.email}} , resource: "sbu_regional_engineer", name: "engineer_id", url: regional_support_center_admins_organizations_path(edit: true, sbu_regional_engineer_id: sbu_regional_engineer.id), "original-title" => "Update Sbu Regional Engineer"} do
-                        = sbu_regional_engineer.engineer.first_name ? "#{sbu_regional_engineer.engineer.name_title} #{sbu_regional_engineer.engineer.first_name}" : sbu_regional_engineer.engineer.email

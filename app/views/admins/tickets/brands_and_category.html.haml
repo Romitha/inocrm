@@ -1,4 +1,4 @@
-= simple_nested_form_for @brands_and_category, url: brands_and_category_admins_tickets_path, method: :post do |f|
+= simple_nested_form_for @brands_and_category, url: brands_and_category_admins_tickets_path, html: { class: "validate_form" }, method: :post do |f|
   = hidden_field_tag :brands_and_category_id, f.object.id
   .panel.panel-primary
     .panel-heading

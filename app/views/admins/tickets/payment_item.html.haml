@@ -10,27 +10,36 @@
     .col-md-6
       = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_payment_item"
 
-#accordion.panel-group
-  - @payment_item_all.each_with_index do |payment_item, index|
-    .panel.panel-info
-      .panel-heading
-        %h3.panel-title
-          %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
-            #{index+1} Payment Item : #{payment_item.name}
-          - unless payment_item.is_used_anywhere?
-            = link_to delete_admin_payment_item_admins_tickets_path(payment_item_id: payment_item.id), method: :delete, :data => { :confirm => 'Are you sure?' } do
-              %span.glyphicon.glyphicon-trash
+/ #accordion.panel-group
+/   - @payment_item_all.each_with_index do |payment_item, index|
+/     .panel.panel-info
+/       .panel-heading
+/         %h3.panel-title
+/           %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
+/             #{index+1} Payment Item : #{payment_item.name}
+/           - unless payment_item.is_used_anywhere?
+/             = link_to delete_admin_payment_item_admins_tickets_path(payment_item_id: payment_item.id), method: :delete, :data => { :confirm => 'Are you sure?' } do
+/               %span.glyphicon.glyphicon-trash
 
-      .panel-collapse.collapse.in{:id => "#{index}"}
-        .panel-body
-          .row.col-md-12
-            .col-md-1
-              %strong Name:
-            .col-md-3
-              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "payment_item", name: "name", url: payment_item_admins_tickets_path(edit: true, payment_item_id: payment_item.id), "original-title" => "Update Payment Item", value: payment_item.name}, style: "line-height: 6px;" do
-                = payment_item.name
-            .col-md-2
-              %strong Default amount:
-            .col-md-3
-              = link_to "#", class: "inline_edit load_style only_float", data: {type: "text", resource: "payment_item", name: "default_amount", url: payment_item_admins_tickets_path(edit: true, payment_item_id: payment_item.id), "original-title" => "Update Payment Item", value: payment_item.default_amount}, style: "line-height: 6px;" do
-                = number_with_precision(payment_item.default_amount, precision: 2)
+/       .panel-collapse.collapse.in{:id => "#{index}"}
+/         .panel-body
+
+= collapse_wrapper collapse_id: "ticket_payment_item_list", labelledby: "tic_payment_item_labelledby" do
+  - @payment_item_all.each_with_index do |payment_item, index|
+    = collapse collapse_type: "info", labelledby: "labelledby_#{payment_item.id}", header_content: "#{index+1} Payment Item : #{payment_item.name}", collapse_link: "ticpayment_itemlink_#{payment_item.id}", collapse_id: "ticket_payment_item_list" do
+      .pull-right
+        - unless payment_item.is_used_anywhere?
+          = link_to delete_admin_payment_item_admins_tickets_path(payment_item_id: payment_item.id), method: :delete, rel: "tooltip", :data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Delete" do
+            %span.glyphicon.glyphicon-trash
+
+      .row.col-md-12
+        .col-md-1
+          %strong Name:
+        .col-md-3
+          = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "payment_item", name: "name", url: payment_item_admins_tickets_path(edit: true, payment_item_id: payment_item.id), "original-title" => "Update Payment Item", value: payment_item.name}, style: "line-height: 6px;" do
+            = payment_item.name
+        .col-md-2
+          %strong Default amount:
+        .col-md-3
+          = link_to "#", class: "inline_edit load_style only_float", data: {type: "text", resource: "payment_item", name: "default_amount", url: payment_item_admins_tickets_path(edit: true, payment_item_id: payment_item.id), "original-title" => "Update Payment Item", value: payment_item.default_amount}, style: "line-height: 6px;" do
+            = number_with_precision(payment_item.default_amount, precision: 2)

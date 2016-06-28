@@ -68,7 +68,7 @@ module Admins
         else
           @sbu = Sbu.new
         end
-        @sbu_all = Sbu.order(created_at: :desc).select{|i| i.persisted? }
+        @sbu_all = Sbu.order(updated_at: :desc).select{|i| i.persisted? }
       end
     end
 

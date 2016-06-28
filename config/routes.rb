@@ -128,7 +128,7 @@ Rails.application.routes.draw do
       get "create_invoice_for_hp"
       get "terminate_job_foc_approval"
       get "customer_inquire"
-      get "add_edit_contract"
+      get "add_edit_contract", to: "tickets#add_edit_contract", via: [:get, :post, :put]
       get "inform_customer_in_modal"
       get "master_data"
 
@@ -238,6 +238,7 @@ Rails.application.routes.draw do
         delete "delete_dispatch_method"
         delete "delete_admin_payment_item"
         delete "delete_payment_term"
+        delete "delete_admin_brands_and_category"
         [
           :reason,
           :accessories,
@@ -249,7 +250,8 @@ Rails.application.routes.draw do
           :problem_and_category,
           :dispatch_method,
           :payment_item,
-          :payment_term
+          :payment_term,
+          :brands_and_category
         ].each do |action|
           match "#{action.to_s}", action: action, via: [:get, :post, :put]
         end

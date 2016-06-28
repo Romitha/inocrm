@@ -59,64 +59,90 @@
       .row{style: "margin-top:20px;"}
         .col-md-11
           = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_inventory_location", name: "#{params[:edit_more] ? 'update' : 'create'}"
-#accordion.panel-group
-  - @inventory_all_rack.each_with_index do |rack, index|
-    .panel.panel-primary
-      .panel-heading
-        %h3.panel-title
-          %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
-            #{index+1} Rack : #{rack.description}
-          - unless rack.is_used_anywhere?
-            = link_to delete_location_rack_admins_inventories_path(rack_id: rack.id),method: :delete, :data => { :confirm => 'Are you sure?' } do
-              %span.glyphicon.glyphicon-trash
+/ #accordion.panel-group
+/   - @inventory_all_rack.each_with_index do |rack, index|
+/     .panel.panel-primary
+/       .panel-heading
+/         %h3.panel-title
+/           %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
+/             #{index+1} Rack : #{rack.description}
+/           - unless rack.is_used_anywhere?
+/             = link_to delete_location_rack_admins_inventories_path(rack_id: rack.id),method: :delete, :data => { :confirm => 'Are you sure?' } do
+/               %span.glyphicon.glyphicon-trash
 
-      .panel-collapse.collapse.in{:id => "#{index}"}
-        .panel-body
-          .row.col-md-12
-            .col-md-2.pull-right
-              = link_to location_admins_inventories_path(edit_more: true, rack_id: rack.id), method: :post do
-                %span.glyphicon.glyphicon-pencil Edit More>>
-          .row.col-md-12
-            .col-md-2
-              %strong Rack Description:
-            .col-md-4
-              = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "inventory_rack", name: "description", url: location_admins_inventories_path(edit: true, rack_id: rack.id), "original-title" => "Update rack description", value: ""}, style: "line-height: 6px;" do
-                = rack.description
-            .col-md-2
-              %strong Rack Location:
-            .col-md-4
-              = link_to "#", class: "inline_edit", data: {type: "select", source: Organization.all.collect{|organization| {value: organization.id, text: organization.name}}, resource: "inventory_rack", name: "location_id", url: location_admins_inventories_path(edit: true, rack_id: rack.id), "original-title" => "Update rack name"} do
-                = rack.organization.name
-          .row.col-md-12
-            - rack.inventory_shelfs.each do |shelf|
-              .panel.panel-danger
-                .panel-heading
-                  %h3.panel-title
-                    %span Shelf: #{shelf.description}
-                    - unless shelf.is_used_anywhere?
-                      = link_to delete_location_shelf_admins_inventories_path(shelf_id: shelf.id),method: :delete,  :data => { :confirm => 'Are you sure?' } do
-                        %span.glyphicon.glyphicon-trash
-                .panel-body
-                  .row.col-md-12
-                    .col-md-3
-                      %strong Shelf Description:
-                    .col-md-9
-                      = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "inventory_shelf", name: "description", url: location_admins_inventories_path(edit: true, shelf_id: shelf.id), "original-title" => "Update shelf description", value: ""}, style: "line-height: 6px;" do
-                        = shelf.description
-                  .row.col-md-12
-                    - shelf.inventory_bins.each do |bin|
-                      .panel.panel-info
-                        .panel-heading
-                          %h3.panel-title 
-                            Bin: #{bin.description}
-                            - unless bin.is_used_anywhere?
-                              = link_to delete_location_bin_admins_inventories_path(bin_id: bin.id),method: :delete,  :data => { :confirm => 'Are you sure?' } do
-                                %span.glyphicon.glyphicon-trash
-                        .panel-body
-                          .row.col-md-12
-                            .col-md-3
-                              %strong Bin Description:
-                            
-                            .col-md-9
-                              = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "inventory_bin", name: "description", url: location_admins_inventories_path(edit: true, bin_id: bin.id), "original-title" => "Update bin description", value: ""}, style: "line-height: 6px;" do
-                                = bin.description
+/       .panel-collapse.collapse.in{:id => "#{index}"}
+/         .panel-body
+
+= collapse_wrapper collapse_id: "inventory_rack_list", labelledby: "inv_rack_labelledby" do
+  - @inventory_all_rack.each_with_index do |rack, index|
+    = collapse collapse_type: "primary", labelledby: "labelledby_#{rack.id}", header_content: "#{index+1} Rack : #{rack.description}", collapse_link: "invracklink_#{rack.id}", collapse_id: "inventory_rack_list" do
+      .pull-right
+        - unless rack.is_used_anywhere?
+          = link_to delete_location_rack_admins_inventories_path(rack_id: rack.id),method: :delete, rel: "tooltip", :data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Delete" do
+            %span.glyphicon.glyphicon-trash
+
+      .row.col-md-12
+        .col-md-2.pull-right
+          = link_to location_admins_inventories_path(edit_more: true, rack_id: rack.id), method: :post do
+            %span.glyphicon.glyphicon-pencil Edit More>>
+      .row.col-md-12
+        .col-md-2
+          %strong Rack Description:
+        .col-md-4
+          = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "inventory_rack", name: "description", url: location_admins_inventories_path(edit: true, rack_id: rack.id), "original-title" => "Update rack description", value: ""}, style: "line-height: 6px;" do
+            = rack.description
+        .col-md-2
+          %strong Rack Location:
+        .col-md-4
+          = link_to "#", class: "inline_edit", data: {type: "select", source: Organization.all.collect{|organization| {value: organization.id, text: organization.name}}, resource: "inventory_rack", name: "location_id", url: location_admins_inventories_path(edit: true, rack_id: rack.id), "original-title" => "Update rack name"} do
+            = rack.organization.name
+      .row.col-md-12
+        / - rack.inventory_shelfs.each do |shelf|
+        /   .panel.panel-danger
+        /     .panel-heading
+        /       %h3.panel-title
+        /         %span Shelf: #{shelf.description}
+        /         - unless shelf.is_used_anywhere?
+        /           = link_to delete_location_shelf_admins_inventories_path(shelf_id: shelf.id),method: :delete,  :data => { :confirm => 'Are you sure?' } do
+        /             %span.glyphicon.glyphicon-trash
+        /     .panel-body
+
+        = collapse_wrapper collapse_id: "inventory_shelf_list", labelledby: "inv_shelf_labelledby" do
+          - rack.inventory_shelfs.each do |shelf|
+            = collapse collapse_type: "danger", labelledby: "labelledby_#{shelf.id}", header_content: "Shelf: #{shelf.description}", collapse_link: "invshelflink_#{shelf.id}", collapse_id: "inventory_shelf_list" do
+              .pull-right
+                - unless shelf.is_used_anywhere?
+                  = link_to delete_location_shelf_admins_inventories_path(shelf_id: shelf.id), method: :delete, rel: "tooltip", :data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Delete" do
+                    %span.glyphicon.glyphicon-trash
+
+              .row.col-md-12
+                .col-md-3
+                  %strong Shelf Description:
+                .col-md-9
+                  = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "inventory_shelf", name: "description", url: location_admins_inventories_path(edit: true, shelf_id: shelf.id), "original-title" => "Update shelf description", value: ""}, style: "line-height: 6px;" do
+                    = shelf.description
+              .row.col-md-12
+                / - shelf.inventory_bins.each do |bin|
+                /   .panel.panel-info
+                /     .panel-heading
+                /       %h3.panel-title
+                /         Bin: #{bin.description}
+                /         - unless bin.is_used_anywhere?
+                /           = link_to delete_location_bin_admins_inventories_path(bin_id: bin.id),method: :delete,  :data => { :confirm => 'Are you sure?' } do
+                /             %span.glyphicon.glyphicon-trash
+                /     .panel-body
+                = collapse_wrapper collapse_id: "inventory_bin_list", labelledby: "inv_bin_labelledby" do
+                  - shelf.inventory_bins.each do |bin|
+                    = collapse collapse_type: "info", labelledby: "labelledby_#{bin.id}", header_content: "Bin: #{bin.description}", collapse_link: "invbinlink_#{bin.id}", collapse_id: "inventory_bin_list" do
+                      .pull-right
+                        - unless bin.is_used_anywhere?
+                          = link_to delete_location_bin_admins_inventories_path(bin_id: bin.id), method: :delete, rel: "tooltip", :data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Delete" do
+                            %span.glyphicon.glyphicon-trash
+
+                      .row.col-md-12
+                        .col-md-3
+                          %strong Bin Description:
+
+                        .col-md-9
+                          = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "inventory_bin", name: "description", url: location_admins_inventories_path(edit: true, bin_id: bin.id), "original-title" => "Update bin description", value: ""}, style: "line-height: 6px;" do
+                            = bin.description

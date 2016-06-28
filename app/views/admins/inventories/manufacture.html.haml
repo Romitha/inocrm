@@ -10,23 +10,31 @@
     .col-md-6
       = m.submit "Save", class: "btn btn-success pull-right", id: "submit_new_inventory_manufacture"
 
-#accordion.panel-group
-  - @inventory_manufacture_all.each_with_index do |maf, index|
-    .panel.panel-primary
-      .panel-heading
-        %h3.panel-title
-          %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
-            #{index+1} manufacture : #{maf.manufacture}
-          - unless maf.is_used_anywhere?
-            = link_to delete_manufacture_admins_inventories_path(manufacture_id: maf.id),method: :delete,  :data => { :confirm => 'Are you sure?' } do
-              %span.glyphicon.glyphicon-trash
+/ #accordion.panel-group
+/   - @inventory_manufacture_all.each_with_index do |maf, index|
+/     .panel.panel-primary
+/       .panel-heading
+/         %h3.panel-title
+/           %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
+/             #{index+1} manufacture : #{maf.manufacture}
+/           - unless maf.is_used_anywhere?
+/             = link_to delete_manufacture_admins_inventories_path(manufacture_id: maf.id),method: :delete,  :data => { :confirm => 'Are you sure?' } do
+/               %span.glyphicon.glyphicon-trash
 
-      .panel-collapse.collapse.in{:id => "#{index}"}
-        .panel-body
-          .row.col-md-12
-            .col-md-2
-              %strong Manufacture:
-            .col-md-4
-              = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "manufacture", name: "manufacture", url: manufacture_admins_inventories_path(edit: true, manufacture_id: maf.id), "original-title" => "Update rack description", value: ""}, style: "line-height: 6px;" do
-                = maf.manufacture
+= collapse_wrapper collapse_id: "inventory_manufacture_list", labelledby: "inv_manufacture_labelledby" do
+  - @inventory_manufacture_all.each_with_index do |maf, index|
+    = collapse collapse_type: "primary", labelledby: "labelledby_#{maf.id}", header_content: "#{index+1} manufacture : #{maf.manufacture}", collapse_link: "invmanufacturelink_#{maf.id}", collapse_id: "inventory_manufacture_list" do
+      .pull-right
+        - unless maf.is_used_anywhere?
+          = link_to delete_manufacture_admins_inventories_path(manufacture_id: maf.id), method: :delete, rel: "tooltip", :data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Delete" do
+            %span.glyphicon.glyphicon-trash
+
+      / .panel-collapse.collapse.in{:id => "#{index}"}
+      /   .panel-body
+      .row.col-md-12
+        .col-md-2
+          %strong Manufacture:
+        .col-md-4
+          = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "manufacture", name: "manufacture", url: manufacture_admins_inventories_path(edit: true, manufacture_id: maf.id), "original-title" => "Update rack description", value: ""}, style: "line-height: 6px;" do
+            = maf.manufacture
 

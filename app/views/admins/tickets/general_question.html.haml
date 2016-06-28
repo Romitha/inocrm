@@ -20,44 +20,52 @@
     .col-md-8
       = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_general_question"
 
-#accordion.panel-group
-  - @general_question_all.each_with_index do |g_question, index|
-    .panel.panel-info
-      .panel-heading
-        %h3.panel-title
-          %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
-            = g_question.question
-          - unless g_question.is_used_anywhere?
-            = link_to delete_admin_general_question_admins_tickets_path(g_question_id: g_question.id), method: :delete, :data => { :confirm => 'Are you sure?' } do
-              %span.glyphicon.glyphicon-trash
+/ #accordion.panel-group
+/   - @general_question_all.each_with_index do |g_question, index|
+/     .panel.panel-info
+/       .panel-heading
+/         %h3.panel-title
+/           %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
+/             = g_question.question
+/           - unless g_question.is_used_anywhere?
+/             = link_to delete_admin_general_question_admins_tickets_path(g_question_id: g_question.id), method: :delete, :data => { :confirm => 'Are you sure?' } do
+/               %span.glyphicon.glyphicon-trash
 
-      .panel-collapse.collapse.in{:id => "#{index}"}
-        .panel-body
-          .row.col-md-12
-            .col-md-1
-              %strong Question:
-            .col-md-5
-              = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "ge_q_and_a", name: "question", url: general_question_admins_tickets_path(edit: true, g_question_id: g_question.id), "original-title" => "Update General question", value: g_question.question}, style: "line-height: 6px;" do
-                = g_question.question
-            .col-md-2
-              %strong Answer type:
-            .col-md-3
-              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "ge_q_and_a", name: "answer_type", url: general_question_admins_tickets_path(edit: true, g_question_id: g_question.id), "original-title" => "Update General question", value: g_question.answer_type}, style: "line-height: 6px;" do
-                = g_question.answer_type
-          .row.col-md-12
-            .col-md-1
-              %strong Active:
-            .col-md-5
-              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "ge_q_and_a", name: "active", url: general_question_admins_tickets_path(edit: true, g_question_id: g_question.id), "original-title" => "Update General question"} do
-                = g_question.active && "Yes" || "No"
-            .col-md-2
-              %strong Compulsory:
-            .col-md-4
-              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "ge_q_and_a", name: "compulsory", url: general_question_admins_tickets_path(edit: true, g_question_id: g_question.id), "original-title" => "Update General question"} do
-                = g_question.compulsory && "Yes" || "No"
-          .row.col-md-12
-            .col-md-1
-              %strong Action:
-            .col-md-4
-              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Add Ticket",5=>"Engineer Resolution",57=>"Quality Control",58=>"Customer Feed Back"}, resource: "ge_q_and_a", name: "action_id", url: general_question_admins_tickets_path(edit: true, g_question_id: g_question.id), "original-title" => "Update General question"} do
-                = g_question.task_action.try(:action_description)
+/       .panel-collapse.collapse.in{:id => "#{index}"}
+/         .panel-body
+
+= collapse_wrapper collapse_id: "ticket_general_question_list", labelledby: "tic_general_question_labelledby" do
+  - @general_question_all.each_with_index do |g_question, index|
+    = collapse collapse_type: "info", labelledby: "labelledby_#{g_question.id}", header_content: "#{g_question.question}", collapse_link: "ticgeneral_questionlink_#{g_question.id}", collapse_id: "ticket_general_question_list" do
+      .pull-right
+        - unless g_question.is_used_anywhere?
+          = link_to delete_admin_general_question_admins_tickets_path(g_question_id: g_question.id), method: :delete, rel: "tooltip", :data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Delete" do
+            %span.glyphicon.glyphicon-trash
+      .row.col-md-12
+        .col-md-1
+          %strong Question:
+        .col-md-5
+          = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "ge_q_and_a", name: "question", url: general_question_admins_tickets_path(edit: true, g_question_id: g_question.id), "original-title" => "Update General question", value: g_question.question}, style: "line-height: 6px;" do
+            = g_question.question
+        .col-md-2
+          %strong Answer type:
+        .col-md-3
+          = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "ge_q_and_a", name: "answer_type", url: general_question_admins_tickets_path(edit: true, g_question_id: g_question.id), "original-title" => "Update General question", value: g_question.answer_type}, style: "line-height: 6px;" do
+            = g_question.answer_type
+      .row.col-md-12
+        .col-md-1
+          %strong Active:
+        .col-md-5
+          = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "ge_q_and_a", name: "active", url: general_question_admins_tickets_path(edit: true, g_question_id: g_question.id), "original-title" => "Update General question"} do
+            = g_question.active && "Yes" || "No"
+        .col-md-2
+          %strong Compulsory:
+        .col-md-4
+          = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "ge_q_and_a", name: "compulsory", url: general_question_admins_tickets_path(edit: true, g_question_id: g_question.id), "original-title" => "Update General question"} do
+            = g_question.compulsory && "Yes" || "No"
+      .row.col-md-12
+        .col-md-1
+          %strong Action:
+        .col-md-4
+          = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Add Ticket",5=>"Engineer Resolution",57=>"Quality Control",58=>"Customer Feed Back"}, resource: "ge_q_and_a", name: "action_id", url: general_question_admins_tickets_path(edit: true, g_question_id: g_question.id), "original-title" => "Update General question"} do
+            = g_question.task_action.try(:action_description)

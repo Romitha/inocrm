@@ -84,7 +84,7 @@ module Admins
         else
           @regional_support_center = RegionalSupportCenter.new
         end
-        @regional_support_center_all = RegionalSupportCenter.order(created_at: :desc).select{|i| i.persisted? }
+        @regional_support_center_all = RegionalSupportCenter.order(updated_at: :desc).select{|i| i.persisted? }
         render "admins/organizations/regional_support_center"
       end
     end
@@ -110,7 +110,7 @@ module Admins
         else
           @country = ProductSoldCountry.new
         end
-        @country_all = ProductSoldCountry.order(created_at: :desc).select{|i| i.persisted? }
+        @country_all = ProductSoldCountry.order(updated_at: :desc).select{|i| i.persisted? }
       end
 
     end
@@ -147,7 +147,7 @@ module Admins
         else
           @sla = SlaTime.new
         end
-        @sla_all = SlaTime.order(created_at: :desc).select{|i| i.persisted? }
+        @sla_all = SlaTime.order(updated_at: :desc).select{|i| i.persisted? }
       end
     end
 

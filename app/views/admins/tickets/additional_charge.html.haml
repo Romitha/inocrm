@@ -13,32 +13,41 @@
     .col-md-6
       = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_additional_charge"
 
-#accordion.panel-group
+/ #accordion.panel-group
+/   - @additional_charge_all.each_with_index do |add_charge, index|
+/     .panel.panel-info
+/       .panel-heading
+/         %h3.panel-title
+/           %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
+/             Additional Charge : #{add_charge.additional_charge}
+/             - unless add_charge.is_used_anywhere?
+/               = link_to delete_admin_additional_charge_admins_tickets_path(add_charge_id: add_charge.id),  method: :delete, :data => { :confirm => 'Are you sure?' } do
+/                 %span.glyphicon.glyphicon-trash
+/       .panel-collapse.collapse.in{:id => "#{index}"}
+/         .panel-body
+
+= collapse_wrapper collapse_id: "ticket_additional_charge_list", labelledby: "tic_additional_charge_labelledby" do
   - @additional_charge_all.each_with_index do |add_charge, index|
-    .panel.panel-info
-      .panel-heading
-        %h3.panel-title
-          %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
-            Additional Charge : #{add_charge.additional_charge}
-            - unless add_charge.is_used_anywhere?
-              = link_to delete_admin_additional_charge_admins_tickets_path(add_charge_id: add_charge.id),  method: :delete, :data => { :confirm => 'Are you sure?' } do
-                %span.glyphicon.glyphicon-trash
-      .panel-collapse.collapse.in{:id => "#{index}"}
-        .panel-body
-          .row.col-md-12
-            .col-md-2
-              %strong Additional Charge:
-            .col-md-4
-              = link_to "#", class: "inline_edit", data: {type: "text", resource: "additional_charge", name: "additional_charge", url: additional_charge_admins_tickets_path(edit: true, add_charge_id: add_charge.id), "original-title" => "Update Additional Charge", value: ""}, style: "line-height: 6px;" do
-                = add_charge.additional_charge
-          .row.col-md-12
-            .col-md-2
-              %strong Default cost price:
-            .col-md-4
-              = link_to "#", class: "inline_edit", data: {type: "text", resource: "additional_charge", name: "default_cost_price", url: additional_charge_admins_tickets_path(edit: true, add_charge_id: add_charge.id), "original-title" => "Update Additional Charge", value: ""}, style: "line-height: 6px;" do
-                = number_with_precision add_charge.default_cost_price, precision: 2
-            .col-md-3
-              %strong Default estimated price:
-            .col-md-3
-              = link_to "#", class: "inline_edit", data: {type: "text", resource: "additional_charge", name: "default_estimated_price", url: additional_charge_admins_tickets_path(edit: true, add_charge_id: add_charge.id), "original-title" => "Update Additional Charge", value: ""}, style: "line-height: 6px;" do
-                = number_with_precision add_charge.default_estimated_price, precision: 2
+    = collapse collapse_type: "info", labelledby: "labelledby_#{add_charge.id}", header_content: "Additional Charge : #{add_charge.additional_charge}", collapse_link: "ticadditional_chargelink_#{add_charge.id}", collapse_id: "ticket_additional_charge_list" do
+      .pull-right
+        - unless add_charge.is_used_anywhere?
+          = link_to delete_admin_additional_charge_admins_tickets_path(add_charge_id: add_charge.id), method: :delete, rel: "tooltip", :data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Delete" do
+            %span.glyphicon.glyphicon-trash
+
+      .row.col-md-12
+        .col-md-2
+          %strong Additional Charge:
+        .col-md-4
+          = link_to "#", class: "inline_edit", data: {type: "text", resource: "additional_charge", name: "additional_charge", url: additional_charge_admins_tickets_path(edit: true, add_charge_id: add_charge.id), "original-title" => "Update Additional Charge", value: ""}, style: "line-height: 6px;" do
+            = add_charge.additional_charge
+      .row.col-md-12
+        .col-md-2
+          %strong Default cost price:
+        .col-md-4
+          = link_to "#", class: "inline_edit", data: {type: "text", resource: "additional_charge", name: "default_cost_price", url: additional_charge_admins_tickets_path(edit: true, add_charge_id: add_charge.id), "original-title" => "Update Additional Charge", value: ""}, style: "line-height: 6px;" do
+            = number_with_precision add_charge.default_cost_price, precision: 2
+        .col-md-3
+          %strong Default estimated price:
+        .col-md-3
+          = link_to "#", class: "inline_edit", data: {type: "text", resource: "additional_charge", name: "default_estimated_price", url: additional_charge_admins_tickets_path(edit: true, add_charge_id: add_charge.id), "original-title" => "Update Additional Charge", value: ""}, style: "line-height: 6px;" do
+            = number_with_precision add_charge.default_estimated_price, precision: 2

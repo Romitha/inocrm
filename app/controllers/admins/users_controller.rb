@@ -58,7 +58,7 @@ module Admins
         else
           @title = MstTitle.new
         end
-        @title_all = MstTitle.order(created_at: :desc).select{|i| i.persisted? }
+        @title_all = MstTitle.order(updated_at: :desc).select{|i| i.persisted? }
       end
     end
 

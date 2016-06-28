@@ -54,4 +54,7 @@
       = f.input :id, as: :hidden
       = f.input :note, input_html: {value: nil}
       %P= return_bundle.note
+      - if f.object.persisted?
+        = link_to "#", onclick: "Users.request_printer_application('bundle_hp', '#{f.object.id}', 'bundle_hp_request_type', 'print_bundle_tag_value', 'print_bundle'); false;", data: {disable_with: "Printing..."}, class: "btn btn-default" do
+            Print Bundle
       = f.submit "#{return_bundle.delivered ? 'continue' : 'deliver bundle'}", class: "btn btn-success btn-sm"

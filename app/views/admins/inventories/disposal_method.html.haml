@@ -8,21 +8,29 @@
   .row{style: "margin-top:20px; margin-bottom:20px;"}
     .col-md-8
       = d.submit "Save", class: "btn btn-success pull-right", id: "submit_new_inventory_disposal_method"
-#accordion.panel-group
+/ #accordion.panel-group
+/   - @inventory_disposal_method_all.each_with_index do |disposal, index|
+/     .panel.panel-info
+/       .panel-heading
+/         %h3.panel-title
+/           %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
+/             #{index+1} inventory disposal method: #{disposal.disposal_method}
+/           - unless disposal.is_used_anywhere?
+/             = link_to delete_disposal_method_admins_inventories_path(disposal_id: disposal.id), method: :delete,  :data => { :confirm => 'Are you sure?' } do
+/               %span.glyphicon.glyphicon-trash
+/       .panel-collapse.collapse.in{:id => "#{index}"}
+/         .panel-body
+
+= collapse_wrapper collapse_id: "inv_disposal_method_list", labelledby: "inv_disposal_method_labelledby" do
   - @inventory_disposal_method_all.each_with_index do |disposal, index|
-    .panel.panel-info
-      .panel-heading
-        %h3.panel-title
-          %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
-            #{index+1} inventory disposal method: #{disposal.disposal_method}
-          - unless disposal.is_used_anywhere?
-            = link_to delete_disposal_method_admins_inventories_path(disposal_id: disposal.id), method: :delete,  :data => { :confirm => 'Are you sure?' } do
-              %span.glyphicon.glyphicon-trash
-      .panel-collapse.collapse.in{:id => "#{index}"}
-        .panel-body
-          .row.col-md-12
-            .col-md-2
-              %strong disposal method:
-            .col-md-6
-              = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "inventory_disposal_method", name: "disposal_method", url: disposal_method_admins_inventories_path(edit: true, disposal_method: disposal.id), "original-title" => "Update disposal method", value: ""}, style: "line-height: 6px;" do
-                = disposal.disposal_method
+    = collapse collapse_type: "info", labelledby: "inv_disposal_method_labelledby_#{disposal.id}", header_content: "#{index+1} inventory disposal method: #{disposal.disposal_method}", collapse_link: "invdisposal_methodlink_#{disposal.id}", collapse_id: "inv_disposal_method_list" do
+      .pull-right
+        - unless disposal.is_used_anywhere?
+          = link_to delete_disposal_method_admins_inventories_path(disposal_id: disposal.id), method: :delete, rel: "tooltip",  :data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Delete" do
+            %span.glyphicon.glyphicon-trash
+      .row.col-md-12
+        .col-md-2
+          %strong disposal method:
+        .col-md-6
+          = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "inventory_disposal_method", name: "disposal_method", url: disposal_method_admins_inventories_path(edit: true, disposal_method: disposal.id), "original-title" => "Update disposal method", value: ""}, style: "line-height: 6px;" do
+            = disposal.disposal_method

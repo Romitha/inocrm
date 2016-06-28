@@ -27,6 +27,9 @@
 
   = collapse collapse_type: "#{controller_name == 'tickets' ? 'primary' : 'default'}", labelledby: "labelledby_tickets", header_content: content_tag(:span, "", class: "icon-tty")+"Tickets", collapse_link: "collapse_link_tickets" do
     .list-group.small_scale_margin0
+      = link_to brands_and_category_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'brands_and_category' }" do
+        %i.icon-paper
+        Brand category
       = link_to spare_part_description_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'spare_part_description' }" do
         %i.fa.fa-file-text-o
         Spare Part Description

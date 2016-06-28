@@ -8,22 +8,31 @@
 
 
 
-#accordion.panel-group
-  - @accessory_all.each_with_index do |accessory, index|
-    .panel.panel-info
-      .panel-heading
-        %h3.panel-title
-          %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
-            = accessory.accessory
-          - unless accessory.is_used_anywhere?
-            = link_to delete_admin_accessory_admins_tickets_path(accessory_id: accessory.id), method: :delete,  :data => { :confirm => 'Are you sure?' } do
-              %span.glyphicon.glyphicon-trash
+/ #accordion.panel-group
+/   - @accessory_all.each_with_index do |accessory, index|
+/     .panel.panel-info
+/       .panel-heading
+/         %h3.panel-title
+/           %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
+/             = accessory.accessory
+/           - unless accessory.is_used_anywhere?
+/             = link_to delete_admin_accessory_admins_tickets_path(accessory_id: accessory.id), method: :delete,  :data => { :confirm => 'Are you sure?' } do
+/               %span.glyphicon.glyphicon-trash
 
-      .panel-collapse.collapse.in{:id => "#{index}"}
-        .panel-body
-          .row.col-md-12
-            .col-md-1
-              %strong Accessory:
-            .col-md-4
-              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "accessory", name: "accessory", url: accessories_admins_tickets_path(edit: true, accessory_id: accessory.id), "original-title" => "Update Inventory Unit code", value: ""}, style: "line-height: 6px;" do
-                = accessory.accessory
+/       .panel-collapse.collapse.in{:id => "#{index}"}
+/         .panel-body
+
+= collapse_wrapper collapse_id: "ticket_accessory_list", labelledby: "tic_accessory_labelledby" do
+  - @accessory_all.each_with_index do |accessory, index|
+    = collapse collapse_type: "info", labelledby: "labelledby_#{accessory.id}", header_content: "#{accessory.accessory}", collapse_link: "ticaccessorylink_#{accessory.id}", collapse_id: "ticket_accessory_list" do
+      .pull-right
+        - unless accessory.is_used_anywhere?
+          = link_to delete_admin_accessory_admins_tickets_path(accessory_id: accessory.id), method: :delete, rel: "tooltip", :data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Delete" do
+            %span.glyphicon.glyphicon-trash
+
+      .row.col-md-12
+        .col-md-1
+          %strong Accessory:
+        .col-md-4
+          = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "accessory", name: "accessory", url: accessories_admins_tickets_path(edit: true, accessory_id: accessory.id), "original-title" => "Update Inventory Unit code", value: ""}, style: "line-height: 6px;" do
+            = accessory.accessory

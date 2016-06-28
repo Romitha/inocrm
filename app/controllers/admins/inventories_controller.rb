@@ -220,7 +220,7 @@ module Admins
         else
           @inventory_rack = InventoryRack.new
         end
-        @inventory_all_rack = InventoryRack.order(created_at: :desc).select{|i| i.persisted? }
+        @inventory_all_rack = InventoryRack.order(updated_at: :desc).select{|i| i.persisted? }
       end
 
     end
@@ -244,7 +244,7 @@ module Admins
         else
           @inventory_brand = InventoryCategory1.new
         end
-        @inventory_brand_all = InventoryCategory1.order(created_at: :desc).select{|i| i.persisted? }
+        @inventory_brand_all = InventoryCategory1.order(updated_at: :desc).select{|i| i.persisted? }
       end
     end
 
@@ -269,7 +269,7 @@ module Admins
         else
           @inventory_product_category = InventoryCategory2.new
         end
-        @inventory_product_category_all = InventoryCategory2.order(created_at: :desc).select{|i| i.persisted? }
+        @inventory_product_category_all = InventoryCategory2.order(updated_at: :desc).select{|i| i.persisted? }
       end
     end
 
@@ -304,7 +304,7 @@ module Admins
         else
           @inventory_category = InventoryCategory3.new
         end
-        @inventory_category_all = InventoryCategory3.order(created_at: :desc).select{|i| i.persisted? }
+        @inventory_category_all = InventoryCategory3.order(updated_at: :desc).select{|i| i.persisted? }
       end
     end
 
@@ -341,7 +341,7 @@ module Admins
         else
           @inventory_product = InventoryProduct.new
         end
-        @inventory_product_all = InventoryProduct.order(created_at: :desc).select{ |i| i.persisted? }
+        @inventory_product_all = InventoryProduct.order(updated_at: :desc).select{ |i| i.persisted? }
 
       end
     end
@@ -367,7 +367,7 @@ module Admins
         else
           @inventory_product_condition = ProductCondition.new
         end
-        @inventory_product_condition_all = ProductCondition.order(created_at: :desc).select{|i| i.persisted? }
+        @inventory_product_condition_all = ProductCondition.order(updated_at: :desc).select{|i| i.persisted? }
       end
     end
 
@@ -392,7 +392,7 @@ module Admins
         else
           @inventory_disposal_method = InventoryDisposalMethod.new
         end
-        @inventory_disposal_method_all = InventoryDisposalMethod.order(created_at: :desc).select{|i| i.persisted? }
+        @inventory_disposal_method_all = InventoryDisposalMethod.order(updated_at: :desc).select{|i| i.persisted? }
       end
     end
 
@@ -417,7 +417,7 @@ module Admins
         else
           @inventory_reason = InventoryReason.new
         end
-        @inventory_reason_all = InventoryReason.order(created_at: :desc).select{|i| i.persisted? }
+        @inventory_reason_all = InventoryReason.order(updated_at: :desc).select{|i| i.persisted? }
       end
     end
 
@@ -442,7 +442,7 @@ module Admins
         else
           @inventory_manufacture = Manufacture.new
         end
-        @inventory_manufacture_all = Manufacture.order(created_at: :desc).select{|i| i.persisted? }
+        @inventory_manufacture_all = Manufacture.order(updated_at: :desc).select{|i| i.persisted? }
       end
     end
 
@@ -477,7 +477,7 @@ module Admins
         else
           @inventory_unit = InventoryUnit.new
         end
-        @inventory_unit_all = InventoryUnit.order(created_at: :desc).select{|i| i.persisted? }
+        @inventory_unit_all = InventoryUnit.order(updated_at: :desc).select{|i| i.persisted? }
       end
 
     end
@@ -781,7 +781,7 @@ module Admins
           end
         end
         @stores = Organization.stores
-        @inventory_all = Inventory.order(created_at: :desc).select{|i| i.persisted? }
+        @inventory_all = Inventory.order( updatd_at: :desc).select{|i| i.persisted? }
         render "admins/inventories/inventory/inventory"
 
       end
@@ -850,7 +850,7 @@ module Admins
       end
 
       def inventory_unit_params
-        params.require(:inventory_unit).permit(:unit, :base_unit_id, :base_unit_conversion, :per_base_unit, :description, :created_by, :created_by)
+        params.require(:inventory_unit).permit(:unit, :base_unit_conversion, :per_base_unit, :description, :created_by, :updated_by)
       end
 
       def inventory_po_item_params
