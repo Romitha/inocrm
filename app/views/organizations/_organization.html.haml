@@ -1,4 +1,4 @@
-- tapbar = [["Address", "#addresses#{organization.id}"], ["Contact Details", "#contacts#{organization.id}"], ["#{[Organization::TYPES[1], Organization::TYPES[3]].include?(organization.category) ? 'Contact Persons' : 'Employees'}", "#contact_persons#{organization.id}"], ["Documents & Attachements", "#documents#{organization.id}"], ["Designations", "#designations#{organization.id}"], ["Organization Relations", "#organization_relations#{organization.id}"], ["Roles and Permissions", "#roles_and_permissions#{organization.id}"], ["Departments", "#organization_departments#{organization.id}"]]
+- tapbar = [["Address", "#addresses#{organization.id}"], ["#{[Organization::TYPES[1], Organization::TYPES[3]].include?(organization.category) ? 'Contact Persons' : 'Employees'}", "#contact_persons#{organization.id}"], ["Documents & Attachements", "#documents#{organization.id}"], ["Designations", "#designations#{organization.id}"], ["Organization Relations", "#organization_relations#{organization.id}"], ["Roles and Permissions", "#roles_and_permissions#{organization.id}"], ["Departments", "#organization_departments#{organization.id}"]]
 
 .row
   .col-md-1
@@ -55,12 +55,6 @@
             = render "addresses/address", address: address
           - organization.addresses.non_primary_address.order("created_at DESC").each do |address|
             = render "addresses/address", address: address
-      .tab-pane.limit-height{id: "contacts#{organization.id}"}
-        .fixed-height
-          - organization.contact_numbers.primary_contactnumber.order("created_at DESC").each do |contact_number|
-            = render "contact_numbers/contact_number", contact_number: contact_number
-          - organization.contact_numbers.nonprimary_contactnumber.order("created_at DESC").each do |contact_number|
-            = render "contact_numbers/contact_number", contact_number: contact_number
       .tab-pane.limit-height{id: "contact_persons#{organization.id}"}
         / .fixed-height
         .limit-height

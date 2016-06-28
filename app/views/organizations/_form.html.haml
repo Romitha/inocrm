@@ -1,4 +1,4 @@
-- tapbar = [["Address", "#addresses#{organization.id}"], ["Contact Details", "#contacts#{organization.id}"], ["#{[Organization::TYPES[1], Organization::TYPES[3]].include?(organization.category) ? 'Contact Persons' : 'Employees'}", "#contact_persons#{organization.id}"], ["Documents & Attachements", "#documents#{organization.id}"], ["Designations", "#designations#{organization.id}"], ["Organization Relations", "#organization_relations#{organization.id}"], ["Roles and Permissions", "#roles_and_permissions#{organization.id}"]]
+- tapbar = [["Address", "#addresses#{organization.id}"], ["#{[Organization::TYPES[1], Organization::TYPES[3]].include?(organization.category) ? 'Contact Persons' : 'Employees'}", "#contact_persons#{organization.id}"], ["Documents & Attachements", "#documents#{organization.id}"], ["Designations", "#designations#{organization.id}"], ["Organization Relations", "#organization_relations#{organization.id}"], ["Roles and Permissions", "#roles_and_permissions#{organization.id}"]]
 
 = simple_nested_form_for organization, html: {class: "validate_form"} do |f|
   - if organization.errors.present?
@@ -73,13 +73,6 @@
       .fixed-height
         - organization.addresses.order("created_at DESC").each do |address|
           = render "addresses/address", address: address
-
-    .tab-pane.limit-height{id: "contacts#{organization.id}"}
-      = render "contact_numbers/form", contact_number: organization.contact_numbers.build
-
-      .fixed-height
-        - organization.contact_numbers.order("created_at DESC").each do |contact_number|
-          = render "contact_numbers/contact_number", contact_number: contact_number
 
     .tab-pane.limit-height{id: "contact_persons#{organization.id}"}
       = link_to "Add Employee", new_user_path(organization_id: encrypt_org(organization.id)), class: "btn btn-primary btn-sm small_scale_margin-bottom1"
