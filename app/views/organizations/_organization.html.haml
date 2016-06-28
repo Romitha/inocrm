@@ -74,9 +74,15 @@
       - unless Organization::TYPES[2,3].include?(organization.category)
         .tab-pane.limit-height{id: "organization_relations#{organization.id}"}
           .fixed-height
-            = render "organizations/member",organization: organization.parent_organization, relation: "Parent", relation_organization: organization if organization.parent_organization.present?
-            - organization.members.order("created_at DESC").each do |member|
-              = render "organizations/member", organization: member, relation: "Member", relation_organization: organization
+            .row
+              .col-md-2.col-xs-12.col-sm-2{style: "padding-left:0;"}
+                = tab_nav_tab({class: "tabs-left", id: "secondary_tab"}, parent_org: {content: "Parent", active_class: "active job_c"}, child_org: {content: "Members"})
+              .col-md-10.col-xs-12.col-sm-10
+                .tab-content
+                  = tab_content tabpointer: :parent_org, active_class: "active" do
+                    = render "organizations/member",organization: organization.parent_organization, relation: "Parent", relation_organization: organization if organization.parent_organization.present?
+                  = tab_content tabpointer: :child_org do
+                    = render "organizations/members", organizations: organization.members
 
       .tab-pane.limit-height{id: "organization_departments#{organization.id}"}
         .fixed-height

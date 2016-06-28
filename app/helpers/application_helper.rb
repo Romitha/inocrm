@@ -147,9 +147,7 @@ module ApplicationHelper
       delivered_by = User.cached_find_by_id(customer_feedback.user_ticket_action.action_by).full_name 
     end
 
-    repeat_data = ""
-
-    repeat_data += ({
+    left_data = {
       "Ticket #:" => "#{ticket_ref} - #{ticket_datetime}",
       "Delivered To :" => [company_name, address1, address2, address3, address4],
       "Mobile No :" => mobile,
@@ -162,9 +160,9 @@ module ApplicationHelper
       "Other Accessories :" => accessory_other,
     }.map do |k, v|
       v.is_a?(Array) ? "LEFT_LINE_TITLE=#{k}$|#LEFT_LINE_DATA=#{v.first}$|#" + v.from(1).map { |e| "LEFT_LINE_TITLE=$|#LEFT_LINE_DATA=#{e}$|#" }.join : "LEFT_LINE_TITLE=#{k}$|#LEFT_LINE_DATA=#{v}$|#"
-    end).join
+    end
 
-    repeat_data += ({
+    right_data = {
       "Reported failure :" => [problem_des1, problem_des2],
       "Resolution :" => [resolution_summary1, resolution_summary2],
       "Invoice #:" => invoice_no,
@@ -175,7 +173,15 @@ module ApplicationHelper
       "Signature :" => "",
     }.map do |k, v|
       v.is_a?(Array) ? "RIGHT_LINE_TITLE=#{k}$|#RIGHT_LINE_DATA=#{v.first}$|#" + v.from(1).map { |e| "RIGHT_LINE_TITLE=$|#RIGHT_LINE_DATA=#{e}$|#" }.join : "RIGHT_LINE_TITLE=#{k}$|#RIGHT_LINE_DATA=#{v}$|#"
-    end).join
+    end
+
+    if left_data.count > right_data.count
+      right_data.fill("RIGHT_LINE_TITLE=$|#RIGHT_LINE_DATA=$|#", right_data.count, (left_data.count - right_data.count))
+    elsif left_data.count < right_data.count
+      left_data.fill("LEFT_LINE_TITLE=$|#LEFT_LINE_DATA=$|#", left_data.count, (right_data.count - left_data.count))
+    end
+
+    repeat_data = (left_data + right_data).join
 
     [
       "DUPLICATE_D=#{ticket.ticket_complete_print_count > 0 ? 'D' : ''}",

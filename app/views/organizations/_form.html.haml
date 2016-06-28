@@ -99,12 +99,6 @@
           = render "organizations/members", organizations: organization.members
         = render "organizations/parent_member", parent_member: organization
 
-    .tab-pane.limit-height{id: "organization_departments#{organization.id}"}
-      - organization.members.each do |org|
-        - if org.organization_type.try(:code) == "DPT"
-          .col-md-12
-            = org.name
-
     - if organization.refers == "VSIS"
       .tab-pane.limit-height{id: "roles_and_permissions#{organization.id}"}
         .fixed-height
