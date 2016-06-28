@@ -147,6 +147,8 @@ module ApplicationHelper
       delivered_by = User.cached_find_by_id(customer_feedback.user_ticket_action.action_by).full_name 
     end
 
+    left_count = right_count = 0
+
     left_data = {
       "Ticket #:" => "#{ticket_ref} - #{ticket_datetime}",
       "Delivered To :" => [company_name, address1, address2, address3, address4],
@@ -159,7 +161,13 @@ module ApplicationHelper
       "Accessories :" => [accessory1, accessory2, accessory3, accessory4, accessory5],
       "Other Accessories :" => accessory_other,
     }.map do |k, v|
-      v.is_a?(Array) ? "LEFT_LINE_TITLE=#{k}$|#LEFT_LINE_DATA=#{v.first}$|#" + v.from(1).map { |e| "LEFT_LINE_TITLE=$|#LEFT_LINE_DATA=#{e}$|#" }.join : "LEFT_LINE_TITLE=#{k}$|#LEFT_LINE_DATA=#{v}$|#"
+      if v.is_a?(Array)
+        left_count += v.count
+        "LEFT_LINE_TITLE=#{k}$|#LEFT_LINE_DATA=#{v.first}$|#" + v.from(1).map { |e| "LEFT_LINE_TITLE=$|#LEFT_LINE_DATA=#{e}$|#" }.join
+      else
+        left_count += 1
+        "LEFT_LINE_TITLE=#{k}$|#LEFT_LINE_DATA=#{v}$|#"
+      end
     end
 
     right_data = {
@@ -172,13 +180,20 @@ module ApplicationHelper
       "Released By :" => delivered_by,
       "Signature :" => "",
     }.map do |k, v|
-      v.is_a?(Array) ? "RIGHT_LINE_TITLE=#{k}$|#RIGHT_LINE_DATA=#{v.first}$|#" + v.from(1).map { |e| "RIGHT_LINE_TITLE=$|#RIGHT_LINE_DATA=#{e}$|#" }.join : "RIGHT_LINE_TITLE=#{k}$|#RIGHT_LINE_DATA=#{v}$|#"
+      if v.is_a?(Array)
+        right_count += v.count
+        "RIGHT_LINE_TITLE=#{k}$|#RIGHT_LINE_DATA=#{v.first}$|#" + v.from(1).map { |e| "RIGHT_LINE_TITLE=$|#RIGHT_LINE_DATA=#{e}$|#" }.join
+      else
+        right_count += 1
+        "RIGHT_LINE_TITLE=#{k}$|#RIGHT_LINE_DATA=#{v}$|#"
+      end
+
     end
 
-    if left_data.count > right_data.count
-      right_data.fill("RIGHT_LINE_TITLE=$|#RIGHT_LINE_DATA=$|#", right_data.count, (left_data.count - right_data.count))
-    elsif left_data.count < right_data.count
-      left_data.fill("LEFT_LINE_TITLE=$|#LEFT_LINE_DATA=$|#", left_data.count, (right_data.count - left_data.count))
+    if left_count > right_count
+      right_data.fill("RIGHT_LINE_TITLE=$|#RIGHT_LINE_DATA=$|#", right_data.count, (left_count - right_count))
+    elsif left_count < right_count
+      left_data.fill("LEFT_LINE_TITLE=$|#LEFT_LINE_DATA=$|#", left_data.count, (right_count - left_count))
     end
 
     repeat_data = (left_data + right_data).join
