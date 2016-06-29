@@ -2965,7 +2965,7 @@ class TicketsController < ApplicationController
     when "print_bundle"
       TicketSparePart
       @bundle = ReturnPartsBundle.find(params[:print_object_id])
-      @bundle.update_attribute(:print_count, (@bundle.print_count+1))
+      # @bundle.update_attribute(:print_count, (@bundle.print_count+1))
     end
     render nothing: true
   end
