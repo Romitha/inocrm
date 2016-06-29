@@ -42,6 +42,11 @@
       = initiate_table table_type: "table-hover table-bordered" do
         = table_header ["Name", "Address", "Contacts"]
         = table_body ["#{customer.mst_title.try(:name)} #{customer.name}", "#{customer.address1}, #{customer.address2}, #{customer.address3}, #{customer.address4}, #{customer.district.try(:name)}", customer_contact_types]
+      - if customer.organization.present?
+        %h4 Organization
+        = initiate_table table_type: "table-hover table-bordered" do
+          = table_header ["Name", "VAT", "Industry type"]
+          = table_body ["#{customer.organization.name}", "#{customer.organization.vat_number}", customer.organization.industry_type.name]
       
 
 

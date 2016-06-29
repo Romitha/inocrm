@@ -72,19 +72,25 @@
                 %th
                   Customers
             %tbody
-              - organizations.each do |organization|
+              - organization_customers.each do |org_customer|
                 %tr
                   %td
-                    = organization.name
+                    = org_customer.organization.name
 
                   %td
-                    %strong Address:
-                    #{organization.addresses.primary_address.first}
+                    = org_customer.address1
                     %br/
-                    %strong Contact Number:
-                    #{organization.contact_numbers.primary_contactnumber.first}
+                    = org_customer.address2
+                    %br/
+                    = org_customer.address3
+                    %br/
+                    = org_customer.address4
                   %td
-                    = link_to "select", "#", onclick: "Tickets.assign_customer('', '#{organization.id}', 'create'); false;"
+                    - org_customer.contact_type_values.each do |c_value|
+                      #{c_value.contact_type.name}: #{c_value.value}
+                      %br/
+                  %td
+                    = link_to "select", "#", onclick: "Tickets.assign_customer('#{org_customer.id}', '', 'create'); false;"
 
 .modal-footer
   %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close

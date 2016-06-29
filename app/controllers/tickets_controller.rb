@@ -265,15 +265,19 @@ class TicketsController < ApplicationController
     if params[:function_param]
       @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
       @customers = []
-      @organizations = []
+      @organization_customers = []
       @display_select_option = true if params[:function_param]=="create"
     elsif params[:select_customer]
       search_customer = params[:search_customer].strip
-      customers_nameonly = Customer.where("name like ?", "%#{search_customer}%")
-      customers_nameandnum = ContactTypeValue.where("value like ?", "%#{search_customer}%").map{|c| c.customer}
+      customers_nameonly = Customer.where("name like ?", "%#{search_customer}%").where(organization_id: nil)
+      customers_nameandnum = ContactTypeValue.where("value like ?", "%#{search_customer}%").map{|c| c.customer if c.customer.organization_id.nil? }.compact
       customers_borth = customers_nameonly + customers_nameandnum
       @customers = Kaminari.paginate_array(customers_borth.uniq).page(params[:page]).per(INOCRM_CONFIG["pagination"]["customer_per_page"])
-      @organizations = Kaminari.paginate_array(Organization.where("type_id != 4 and refers != 'VSIS' and name like ?", "%#{search_customer}%")).page(params[:page]).per(INOCRM_CONFIG["pagination"]["organization_per_page"])
+
+      org_customers_nameonly = Customer.where("organization_id != NULL and name like ?", "%#{search_customer}%")
+      org_customers_nameandnum = ContactTypeValue.where("value like ?", "%#{search_customer}%").map{|c| c.customer if c.customer.organization_id.present? }.compact
+      org_customers_borth = org_customers_nameonly + org_customers_nameandnum
+      @organization_customers = Kaminari.paginate_array(org_customers_borth.uniq).page(params[:page]).per(INOCRM_CONFIG["pagination"]["organization_per_page"])
     end
     if params[:customer_id].present?
       existed_customer = Customer.find params[:customer_id]
