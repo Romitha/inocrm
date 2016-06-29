@@ -30,6 +30,9 @@ Rails.application.routes.draw do
       member do
         post "make_primary_contact_number"
       end
+      collection do
+        delete "destroy_customer_contact_detail"
+      end
     end
   end
 
@@ -54,6 +57,7 @@ Rails.application.routes.draw do
       post "option_for_vat_number"
       patch "demote_as_department"
       delete "remove_department_org"
+      put "inline_customer_contact_detail"
     end
     concerns :attachable
   end

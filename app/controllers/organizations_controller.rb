@@ -17,6 +17,7 @@ class OrganizationsController < ApplicationController
   end
 
   def edit
+    ContactNumber
     Product
     respond_to do |format|
       format.html
@@ -24,6 +25,7 @@ class OrganizationsController < ApplicationController
   end
 
   def show
+    ContactNumber
     Product
   end
 
@@ -45,14 +47,24 @@ class OrganizationsController < ApplicationController
   end
 
   def update
+    ContactNumber
     respond_to do |format|
       if @organization.update_attributes(organization_params)
-        format.html {redirect_to root_url, notice: "Organization #{@organization.name} has been updated successfully"}
+        format.html {redirect_to organization_path(@organization), notice: "Organization #{@organization.name} has been updated successfully"}
         format.json { head :no_content } # 204 No Content
       else
         format.html {render :edit}
         format.json { render json: @organization.errors, status: :unprocessable_entity }
       end
+    end
+  end
+
+  def inline_customer_contact_detail
+    @customer = Customer.find params[:customer_id]
+    if @customer.update customer_params
+      render json: @customer
+    else
+      render json: @customer.errors.full_messages.join
     end
   end
 
@@ -143,6 +155,10 @@ class OrganizationsController < ApplicationController
     end
 
     def organization_params
-      params.require(:organization).permit(:name, :department_org_id, :category, :description, :logo, :vat_number, :type_id, :web_site, :code, :short_name, addresses_attributes: [:id, :category, :address, :primary, :_destroy],  contact_numbers_attributes: [:id, :category, :value, :_destroy], account_attributes: [:id, :_destroy, :industry_types_id])
+      params.require(:organization).permit(:name, :department_org_id, :category, :description, :logo, :vat_number, :type_id, :web_site, :code, :short_name, addresses_attributes: [:id, :category, :address, :primary, :_destroy],  contact_numbers_attributes: [:id, :category, :value, :_destroy], account_attributes: [:id, :_destroy, :industry_types_id], customers_attributes: [:id, :_destroy, :organization_id, :title_id, :name, :address1, :address2, :address3, :address4, :district_id, contact_type_values_attributes: [:id, :contact_type_id, :value, :_destroy]])
+    end
+
+    def customer_params
+      params.require(:customer).permit(:id, :_destroy, :organization_id, :title_id, :name, :address1, :address2, :address3, :address4, :district_id, contact_type_values_attributes: [:id, :contact_type_id, :value, :_destroy])
     end
 end

@@ -174,9 +174,9 @@ module ApplicationHelper
       "Reported failure :" => [problem_des1, problem_des2],
       "Resolution :" => [resolution_summary1, resolution_summary2],
       "Invoice #:" => invoice_no,
-      "Delevery Date :" => deliver_datetime,
-      "Delevery Method :" => deliver_method,
-      "Delevery Note :" => deliver_note,
+      "Delivery Date :" => deliver_datetime,
+      "Delivery Method :" => deliver_method,
+      "Delivery Note :" => deliver_note,
       "Released By :" => delivered_by,
       "Signature :" => "",
     }.map do |k, v|

@@ -273,7 +273,7 @@ class TicketsController < ApplicationController
       customers_nameandnum = ContactTypeValue.where("value like ?", "%#{search_customer}%").map{|c| c.customer}
       customers_borth = customers_nameonly + customers_nameandnum
       @customers = Kaminari.paginate_array(customers_borth.uniq).page(params[:page]).per(INOCRM_CONFIG["pagination"]["customer_per_page"])
-      @organizations = Kaminari.paginate_array(Organization.where("name like ?", "%#{search_customer}%")).page(params[:page]).per(INOCRM_CONFIG["pagination"]["organization_per_page"])
+      @organizations = Kaminari.paginate_array(Organization.where("type_id != 4 and refers != 'VSIS' and name like ?", "%#{search_customer}%")).page(params[:page]).per(INOCRM_CONFIG["pagination"]["organization_per_page"])
     end
     if params[:customer_id].present?
       existed_customer = Customer.find params[:customer_id]

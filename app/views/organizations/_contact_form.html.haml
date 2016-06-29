@@ -1,0 +1,43 @@
+#new_customer_form
+  %fieldset
+    %legend New contact details
+    = simple_nested_form_for organization, url: organization_path, method: :put, html: {class: "validate_form"} do |o|
+      = o.simple_fields_for "customers_attributes[]", o.object.customers.build do |f|
+        = f.input :organization_id, as: :hidden
+        .row
+          .col-md-2
+            = f.association :mst_title, label:"Title", collection: MstTitle.all.map{|t| [t.title, t.id]}, selected: 1
+          .col-md-10
+            = f.input :name
+        .row
+          .col-md-6
+            .row
+              .col-md-12
+                = f.input :address1, label: "Address", placeholder: "Line 1"
+              .col-md-12
+                = f.input :address2, label: false, placeholder: "Line 2"
+              .col-md-12
+                = f.input :address3, label: false, placeholder: "Line 3"
+              .col-md-12
+
+                = f.input :address4, label: false, placeholder: "City"
+              .col-md-12
+                = f.association :district, label:"District"
+
+          .col-md-6
+            = f.simple_fields_for :contact_type_values do |fc|
+              .row
+                .col-md-1.padding-top1
+                  = fc.link_to_remove class: "remove_c_t_v_link" do
+                    %span.glyphicon.glyphicon-remove-sign
+                .col-md-5
+                  =label_tag "Contact type"
+                  = fc.select :contact_type_id, ContactType.all.map {|c| [c.name, c.id]}, {}, class: "form-control"
+                .col-md-6
+                  = fc.input :value
+
+            .add_sign{style: "width: 100%;"}
+              = f.link_to_add :contact_type_values, style: "clear: both;display: block;" do
+                Add a contact type
+                %span.glyphicon.glyphicon-plus-sign
+      = o.submit "Save", class: "btn btn-success btn-sm", data: {disable_with: "Please wait..."}

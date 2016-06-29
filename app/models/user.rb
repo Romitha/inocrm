@@ -170,6 +170,10 @@ class Customer < ActiveRecord::Base
   def full_name
     "#{try(:mst_title).try(:title)} #{name}"
   end
+
+  def is_used_anywhere?
+    tickets.any?# or contact_types.any?
+  end
 end
 
 class ContactPerson1 < ActiveRecord::Base

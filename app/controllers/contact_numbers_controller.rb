@@ -43,6 +43,16 @@ class ContactNumbersController < ApplicationController
     end
   end
 
+  def destroy_customer_contact_detail
+    @organization = Organization.find params[:organization_id]
+    ContactNumber
+    @customer = Customer.find params[:customer_id]
+    @customer.contact_types.delete_all
+    @customer.destroy
+    redirect_to organization_path(@organization), notice: "Successfully deleted!"
+
+  end
+
   def make_primary_contact_number
     ContactNumber.where(primary: true).each do |contact_number|
       contact_number.update_attribute(:primary, false)

@@ -70,11 +70,9 @@
                 %th
                   Contacts
                 %th
-                  Ticket
-                %th
                   Customers
             %tbody
-              - organizations.last(3).each do |organization|
+              - organizations.each do |organization|
                 %tr
                   %td
                     = organization.name
@@ -85,11 +83,6 @@
                     %br/
                     %strong Contact Number:
                     #{organization.contact_numbers.primary_contactnumber.first}
-
-                  %td
-                    - organization.customers.each do |customer|
-                      #{customer.name} #{link_to "select", "#", onclick: "Tickets.assign_customer('#{customer.id}', '', 'select'); false;"}
-                      %br/
                   %td
                     = link_to "select", "#", onclick: "Tickets.assign_customer('', '#{organization.id}', 'create'); false;"
 

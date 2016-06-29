@@ -19,6 +19,7 @@ class Organization < ActiveRecord::Base
 
   has_many :users
   has_many :customers
+  accepts_nested_attributes_for :customers, allow_destroy: true
   has_many :product_brands
 
   has_many :document_attachments, as: :attachable
@@ -26,45 +27,10 @@ class Organization < ActiveRecord::Base
 
   has_many :tickets
 
-  TYPES = %w(SUP CUS INDSUP INDCUS)
-
-  scope :organization_suppliers, -> {where(category: TYPES[0])}
-  scope :individual_suppliers, -> {where(category: TYPES[2])}
-  scope :organization_customers, -> {where(category: TYPES[1])}
-  scope :individual_customers, -> {where(category: TYPES[3])}
-  scope :owner, -> {where(refers: "VSIS").first}
-
-  scope :stores, -> { where(type_id: 4)}
-
-  validates_format_of :web_site, :with => URI::regexp(%w(http https))
-
   # self join table tricks
   has_many :members, class_name: "Organization", foreign_key: "parent_organization_id"
   belongs_to :parent_organization, class_name: "Organization"
-
-  validates :description, presence: true
-  validates :name, presence: true
-  validates :short_name, presence: true
-
-  validates_presence_of :vat_number, if: Proc.new {|organization| TYPES[0,2].include?(organization.category)}
-
   has_many :dyna_columns, as: :resourceable
-
-  [:previous_vat_number].each do |dyna_method|
-    define_method(dyna_method) do
-      self.dyna_columns.find_by_data_key(dyna_method).try(:data_value)
-    end
-
-    define_method("#{dyna_method}=") do |value|
-      data = self.dyna_columns.find_or_initialize_by(data_key: dyna_method)
-      data.data_value = (value.class==Fixnum ? value : value.strip)
-      data.save
-    end
-  end
-
-  def employees
-    users.order("created_at DESC").select{|user| !user.is_customer? }
-  end
 
   #it is used for @organization.departments or @organization.department_org
   # department_org says, org of department, cause @organization is also department. In other word, department is also a type of organization.
@@ -97,6 +63,41 @@ class Organization < ActiveRecord::Base
 
   has_many :requested_location_srns, class_name: "Srn", foreign_key: :requested_location_id
 
+  TYPES = %w(SUP CUS INDSUP INDCUS)
+
+  scope :organization_suppliers, -> {where(category: TYPES[0])}
+  scope :individual_suppliers, -> {where(category: TYPES[2])}
+  scope :organization_customers, -> {where(category: TYPES[1])}
+  scope :individual_customers, -> {where(category: TYPES[3])}
+  scope :owner, -> {where(refers: "VSIS").first}
+
+  scope :stores, -> { where(type_id: 4)}
+
+  validates_format_of :web_site, :with => URI::regexp(%w(http https))
+
+
+  validates :description, presence: true
+  validates :name, presence: true
+  validates :short_name, presence: true
+
+  validates_presence_of :vat_number, if: Proc.new {|organization| TYPES[0,2].include?(organization.category)}
+
+
+  [:previous_vat_number].each do |dyna_method|
+    define_method(dyna_method) do
+      self.dyna_columns.find_by_data_key(dyna_method).try(:data_value)
+    end
+
+    define_method("#{dyna_method}=") do |value|
+      data = self.dyna_columns.find_or_initialize_by(data_key: dyna_method)
+      data.data_value = (value.class==Fixnum ? value : value.strip)
+      data.save
+    end
+  end
+
+  def employees
+    users.order("created_at DESC").select{|user| !user.is_customer? }
+  end
 
   def self.major_organization(category)
     where(category: category, department_org_id: nil)

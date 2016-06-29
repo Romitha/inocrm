@@ -1,0 +1,27 @@
+%dl.dl-horizontal
+  %dt
+    Name:
+  %dd
+    = customer.full_name
+  %dt
+    Address:
+  %dd
+    = link_to customer.address1, "#", class: "inline_edit", data: {type: "text", resource: "customer", name: "address1", url: inline_customer_contact_detail_organization_path(customer_id: customer.id), "original-title" => "Update line1"}
+    %br/
+    = link_to customer.address2, "#", class: "inline_edit", data: {type: "text", resource: "customer", name: "address2", url: inline_customer_contact_detail_organization_path(customer_id: customer.id), "original-title" => "Update line1"}
+    %br/
+    = link_to customer.address3, "#", class: "inline_edit", data: {type: "text", resource: "customer", name: "address3", url: inline_customer_contact_detail_organization_path(customer_id: customer.id), "original-title" => "Update line1"}
+    %br/
+    = link_to customer.address4, "#", class: "inline_edit", data: {type: "text", resource: "customer", name: "address4", url: inline_customer_contact_detail_organization_path(customer_id: customer.id), "original-title" => "Update line1"}
+    %br/
+  %dt
+    Destrict:
+  %dd
+    = customer.district.name
+  - customer.contact_type_values.each do |c|
+    %dt
+      = c.contact_type.name
+    %dd
+      = c.value
+- if not customer.is_used_anywhere?
+  = link_to "remove", destroy_customer_contact_detail_organization_contact_numbers_path(customer.organization, customer_id: customer.id),method: :delete, data: { confirm: "Are you sure? do you want to delete? It cannot be undone!" }
