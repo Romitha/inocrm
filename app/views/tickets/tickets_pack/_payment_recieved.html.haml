@@ -63,5 +63,5 @@
         %td= number_to_currency ticket.final_invoice.total_advance_recieved, delimiter: ",", unit: ticket.ticket_currency.code, format: "%u %n"
         %td= number_to_currency ticket.final_invoice.net_total_amount, delimiter: ",", unit: ticket.ticket_currency.code, format: "%u %n"
         %td
-          = link_to "#", onclick: "Users.request_printer_application('ticket_invoice', '#{ticket.final_invoice.id}', 'receipt_request_type', 'print_ticket_invoice_tag_value', 'print_invoice'); false;", id: "ticket_invoice", data: {disable_with: "Printing..."}, class: "btn btn-default" do
-            = ticket.ticket_print_count.to_i > 0 ? "Re-Print Invoice" : "Print Invoice"
+          = link_to "#", onclick: "Users.request_printer_application('invoice', '#{ticket.final_invoice.id}', 'invoice_request_type', 'print_ticket_invoice_tag_value', 'print_ticket_invoice'); false;", id: "ticket_print", data: {disable_with: "Printing..."}, class: "btn btn-default" do
+            Print

@@ -389,7 +389,7 @@ module ApplicationHelper
       total_count = index+1
       event_no = spare_part.ticket_spare_part_manufacture.event_no
       spare_part_no = spare_part.spare_part_no
-      used_status = spare_part.status_use.name
+      used_status = spare_part.spare_part_status_use.name
       
       repeat_data += {"INDEX_NO" => index_no, "EVENT_NO" => event_no, "SPARE_PART_NO" => spare_part_no, "USED_STATUS" => used_status}.map { |k, v| "#{k}=#{v}$|#" }.join
     end
