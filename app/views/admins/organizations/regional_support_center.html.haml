@@ -14,8 +14,7 @@
       .row
         = f.simple_fields_for :sbu_regional_engineers do |engineer|
           .col-md-12
-            / = engineer.association :engineer, collection: User.all.uniq{|e| e.id}.map{|e| [(e.first_name ? "#{e.name_title} #{e.first_name}" : e.email), e.id]}
-            = engineer.association :engineer, collection: User.joins(:roles).where(roles: {id: 4}), label_method: :email
+            = engineer.association :engineer, label_method: :full_name
             .add_sign
               = engineer.link_to_remove do
                 %span.glyphicon.glyphicon-remove-sign
@@ -25,20 +24,6 @@
   .row{style:"margin-bottom:20px;"}
     .col-md-10
       = f.submit "Save", class: "btn btn-success pull-right", data: {disable_with: "Please wait..."}, name: "#{params[:edit_more] ? 'update' : 'create'}"
-
-/ #accordion.panel-group
-/   - @regional_support_center_all.each_with_index do |regional_support_center, index|
-/     .panel.panel-info
-/       .panel-heading
-/         %h3.panel-title
-/           %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
-/             #{index+1} Regional Support Center : #{regional_support_center.organization.name}
-/           - unless regional_support_center.is_used_anywhere?
-/             = link_to delete_admin_regional_support_center_admins_organizations_path(regional_support_center_id: regional_support_center.id), method: :delete , :data => { :confirm => 'Are you sure?' } do
-/               %span.glyphicon.glyphicon-trash
-
-/       .panel-collapse.collapse.in{:id => "#{index}"}
-/         .panel-body
 
 = collapse_wrapper collapse_id: "org_regional_support_center_list", labelledby: "org_regional_support_center_labelledby" do
   - @regional_support_center_all.each_with_index do |regional_support_center, index|

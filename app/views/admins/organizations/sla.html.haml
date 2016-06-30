@@ -1,7 +1,5 @@
 = simple_form_for @sla, url: sla_admins_organizations_path(create: true), method: :post do |f|
   .row
-    / .col-md-4
-    /   = f.select :created_by, User.all.uniq{|e| e.id}.map{|e| [(e.first_name ? "#{e.name_title} #{e.first_name}" : e.email), e.id]}
     .col-md-3
       = f.input :sla_time, label: "SLA Time (hrs)"
     .col-md-3
@@ -16,23 +14,9 @@
     .col-md-8
       = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_sla"
 
-/ #accordion.panel-group
-/   - @sla_all.each_with_index do |sla, index|
-/     .panel.panel-info
-/       .panel-heading
-/         %h3.panel-title
-/           %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
-/             #{index+1} sla : #{sla.description}
-/           - unless sla.is_used_anywhere?
-/             = link_to delete_admin_sla_admins_organizations_path(sla_id: sla.id),  method: :delete, :data => { :confirm => 'Are you sure?' } do
-/               %span.glyphicon.glyphicon-trash
-
-/       .panel-collapse.collapse.in{:id => "#{index}"}
-/         .panel-body
-
 = collapse_wrapper collapse_id: "org_sla_list", labelledby: "org_sla_labelledby" do
   - @sla_all.each_with_index do |sla, index|
-    = collapse collapse_type: "info", labelledby: "labelledby_#{sla.id}", header_content: "#{index+1} sla : #{sla.description}", collapse_link: "org_sbu_regional_engineerlink_#{sbu_regional_engineer.id}", collapse_id: "org_sla_list" do
+    = collapse collapse_type: "info", labelledby: "labelledby_#{sla.id}", header_content: "#{index+1} sla : #{sla.description}", collapse_link: "sla_link#{sla.id}", collapse_id: "org_sla_list" do
       .pull-right
         - unless sla.is_used_anywhere?
           = link_to delete_admin_sla_admins_organizations_path(sla_id: sla.id), method: :delete, rel: "tooltip", :data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Delete" do

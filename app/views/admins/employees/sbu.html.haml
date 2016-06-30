@@ -9,7 +9,7 @@
       .row
         = f.simple_fields_for :sbu_engineers do |engineer|
           .col-md-6
-            = engineer.association :engineer, collection: User.joins(:roles).where(roles: {id: 4}), label_method: :email
+            = engineer.association :engineer, label_method: :full_name
             .add_sign
               = engineer.link_to_remove do
                 %span.glyphicon.glyphicon-remove-sign
@@ -18,20 +18,6 @@
   .row{style: "margin-bottom:20px;"}
     .col-md-8
       = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_sbu", name: "#{params[:edit_more] ? 'update' : 'create'}"
-
-/ #accordion.panel-group
-/   - @sbu_all.each_with_index do |sbu, index|
-/     .panel.panel-info
-/       .panel-heading
-/         %h3.panel-title
-/           %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
-/             #{sbu.sbu}
-/           - unless sbu.is_used_anywhere?
-/             = link_to delete_admin_sbu_admins_employees_path(sbu_id: sbu.id),method: :delete,  :data => { :confirm => 'Are you sure?' } do
-/               %span.glyphicon.glyphicon-trash
-
-/       .panel-collapse.collapse.in{:id => "#{index}"}
-/         .panel-body
 
 = collapse_wrapper collapse_id: "emp_sbu_list", labelledby: "emp_sbu_labelledby" do
   - @sbu_all.each_with_index do |sbu, index|
@@ -52,14 +38,6 @@
           = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "sbu", name: "sbu", url: sbu_admins_employees_path(edit: true, sbu_id: sbu.id), "original-title" => "Update Admin Sbu", value: sbu.sbu}, style: "line-height: 6px;" do
             = sbu.sbu
       .row.col-md-12
-        / - sbu.engineers.each do |engineer|
-        /   .panel.panel-danger
-        /     .panel-heading
-        /       %h3.panel-title
-        /         %span Engineer: #{engineer.user_name}
-        /         = link_to delete_admin_sbu_engineer_admins_employees_path(user_id: engineer.id, sbu_id: sbu.id),method: :delete,  :data => { :confirm => 'Are you sure?' } do
-        /           %span.glyphicon.glyphicon-trash
-        /     .panel-body
         = collapse_wrapper collapse_id: "ticket_sbuengineer_list", labelledby: "tic_sbuengineer_labelledby" do
           - sbu.engineers.each do |engineer|
             = collapse collapse_type: "danger", labelledby: "labelledby_#{engineer.id}", header_content: "Engineer: #{engineer.user_name}", collapse_link: "ticpsbuengineerlink_#{engineer.id}", collapse_id: "ticket_sbuengineer_list" do
