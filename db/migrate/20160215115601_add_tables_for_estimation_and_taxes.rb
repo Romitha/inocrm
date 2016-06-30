@@ -5,16 +5,16 @@ class AddTablesForEstimationAndTaxes < ActiveRecord::Migration
     add_column :mst_spt_templates, :quotation, :text
     add_column :mst_spt_templates, :bundle_hp_request_type, :string, default: "PRINT_SPPT_BUNDLE_HP"
     add_column :mst_spt_templates, :bundle_hp, :text
-    add_column :company_config, :sup_last_quotation_no, "INT UNSIGNED NULL DEFAULT NULL"
-    add_column :company_config, :sup_last_bundle_no, "INT UNSIGNED NULL DEFAULT NULL"
+    add_column :company_config, :sup_last_quotation_no, "INT UNSIGNED NULL NULL"
+    add_column :company_config, :sup_last_bundle_no, "INT UNSIGNED NULL NULL"
 
     create_table :spt_ticket_customer_quotation, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :ticket_id, "INT UNSIGNED NOT NULL"
       t.column :customer_quotation_no, "INT UNSIGNED NOT NULL"
-      t.column :currency_id, "INT UNSIGNED DEFAULT NOT NULL"
-      t.column :payment_term_id, "INT UNSIGNED DEFAULT NULL"
-      t.column :created_by, "INT UNSIGNED DEFAULT NOT NULL"
+      t.column :currency_id, "INT UNSIGNED NOT NULL"
+      t.column :payment_term_id, "INT UNSIGNED NULL"
+      t.column :created_by, "INT UNSIGNED NOT NULL"
       t.boolean :customer_contacted, null: false, default: false
       t.boolean :canceled, null: false, default: false
       t.boolean :advance_payment_requested, null: false, default: false
