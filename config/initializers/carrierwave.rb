@@ -17,7 +17,7 @@ when "staging"
   stfp_server = "192.168.100.155"
   user = 'root'
   password = 'redhat'
-  sftp_folder = "/var/www/inovacrm_assets/"
+  sftp_folder = "/var/www/inovacrm_assets/#{Rails.env}"
 end
 
 CarrierWave.configure do |config|
