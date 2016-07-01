@@ -66,7 +66,7 @@ class UsersController < ApplicationController
 
   #Functions for ajax
   def initiate_user_profile_edit
-
+    Product
     @template_params = params[:template_params]
     case @template_params
     when "addresses_primary_details"

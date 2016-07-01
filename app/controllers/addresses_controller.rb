@@ -24,7 +24,8 @@ class AddressesController < ApplicationController
     respond_to do |format|
       if @address.addressable_type == "User"
         if current_user.valid_password?(params[:current_user_password])
-          if @address.save
+
+          if @address.save!
             format.html {redirect_to profile_user_path(@address.addressable), notice: "Address is successfully created."}
           else
             format.html {redirect_to profile_user_path(@address.addressable), error: "Something gone error with address field. #{@address.errors.full_messages.join(',')}"}
@@ -76,6 +77,6 @@ class AddressesController < ApplicationController
     end
 
     def address_params
-      params.require(:address).permit(:category, :address, :primary, :addressable_type, :addressable_id)
+      params.require(:address).permit(:category, :address, :primary, :addressable_type, :addressable_id, :country_id, :province_id, :district_id, :type_id)
     end
 end

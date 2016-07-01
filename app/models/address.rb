@@ -7,7 +7,7 @@ class Address < ActiveRecord::Base
   validates :address, presence: true
   # validates :category, presence: true
 
-  validates_uniqueness_of :primary, conditions: -> { where(primary: true)}, scope: [:addressable_id, :addressable_type]
+  # validates_uniqueness_of :primary, conditions: -> { where(primary: true)}, scope: [:addressable_id, :addressable_type]
 
   scope :primary_address, -> {where(primary: true)}
   scope :non_primary_address, -> {where(primary: false)}

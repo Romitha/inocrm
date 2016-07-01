@@ -5,16 +5,16 @@
         %ul.alert.alert-danger
           - address.object.errors.full_messages.each do |error|
             %li= error
-      .col-md-4
-        = address.association :country, label_method: :Country, input_html: {class: "chosen-select"}
-      .col-md-4
-        = address.association :province, input_html: {class: "chosen-select"}
-      .col-md-4
-        = address.association :district, input_html: {class: "chosen-select"}
+      / .col-md-4
+      /   = address.association :country, label_method: :Country, input_html: {class: "chosen-select"}
+      / .col-md-4
+      /   = address.association :province, input_html: {class: "chosen-select"}
+      / .col-md-4
+      /   = address.association :district, input_html: {class: "chosen-select"}
       .col-md-3
         .has-tooltip{data: {toggle: "tooltip", placement: "left"}, title: "Type"}
-          / = address.input :category, collection: Address::TYPES, include_blank: false, input_html: {class: "chosen-select"}
-          = address.association :organization_contact_type, required: true, input_html: {class: "chosen-select"}
+          = address.input :category, collection: Address::TYPES, include_blank: false, input_html: {class: "chosen-select"}
+          / = address.association :organization_contact_type, required: true, input_html: {class: "chosen-select"}
         = address.input :addressable_type, as: :hidden
         = address.input :addressable_id, as: :hidden
 
@@ -24,6 +24,7 @@
         .form-group.col-md-12
           = password_field_tag "current_user_password", nil, placeholder: "password", class: "form-control has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Password"
       .col-md-12
-        = address.label "Make primary"
-        = address.check_box :primary
+        .hide
+          = address.label "Make primary"
+          = address.check_box :primary
         = address.submit "Add new address", class: "btn btn-success btn-sm", id: "submit_new_address"

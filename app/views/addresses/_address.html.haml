@@ -9,5 +9,3 @@
     = link_to "#", class: "inline_edit", data: {type: "textarea", resource: "address", name: "address", url: polymorphic_path([address.addressable, address]), "original-title" => "Update address"} do
       %address= address.address
   %hr
-
-/ = render "addresses/mustache_template", mustache: {a: "a"}

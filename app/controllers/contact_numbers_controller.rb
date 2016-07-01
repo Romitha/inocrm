@@ -70,6 +70,6 @@ class ContactNumbersController < ApplicationController
     end
 
     def contact_number_params
-      params.require(:contact_number).permit(:category, :value, :primary, :c_numberable_type, :c_numberable_id)
+      params.require(:contact_number).permit(:category, :value, :primary, :c_numberable_type, :c_numberable_id, :country_id, :province_id, :district_id, :type_id)
     end
 end
