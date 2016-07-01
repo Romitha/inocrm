@@ -4,7 +4,7 @@
   .col-md-1
     = link_to organization do
       = image_tag (organization.logo.thumb.url || "organization_image.png"), class: "img-responsive"
-  .col-md-11
+  .col-md-10.pull-right
     %h4.strong
       .edit_organization
         = link_to edit_organization_path(organization), class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Edit #{organization.name}" do
