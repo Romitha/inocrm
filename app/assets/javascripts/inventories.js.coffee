@@ -707,3 +707,7 @@ window.Inventories =
     store_id = $(elem).data("storeId")
     $.get "/admins/inventories/srn?store_id=#{store_id}&srn_callback=call_search"
     return
+
+  assign_product: (product_id)->
+    $("#new_srn .fields").last().find(".product_id").val(product_id)
+    $("#search_product").modal("hide")

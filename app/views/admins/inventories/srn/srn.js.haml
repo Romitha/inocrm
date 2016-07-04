@@ -1,0 +1,12 @@
+- if @modal_active
+  $("#search_product").modal({backdrop: "static"});
+  $("#search_product .modal-body").html("#{j render 'admins/inventories/srn/search_inventory'}");
+  Inventories.filter_product();
+  Inventories.filter_category();
+  Inventories.filter_store();
+- elsif @select_inventory
+  $("#select_inventories").html("#{j render 'admins/inventories/srn/select_inventory'}");
+
+Tickets.remove_ajax_loader();
+
+$("a[rel~=popover], .has-popover").popover();

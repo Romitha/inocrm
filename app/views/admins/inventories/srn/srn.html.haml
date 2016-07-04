@@ -1,0 +1,20 @@
+= simple_nested_form_for @srn, url: "#" do |f|
+  = f.input :created_by, as: :hidden, input_html: {value: current_user.id}
+  = f.association :store, input_html: {onchange: "Inventories.call_from_store(this); return false;"}
+  = f.input :required_at, as: :string, input_html: {class: "datepicker"}
+  = f.input :remarks
+  = f.simple_fields_for :srn_items do |s|
+    = s.input :product_id, as: :hidden, input_html: {class: "product_id"}
+    .product_info
+    = s.input :quantity
+    = s.input :remarks
+    = s.link_to_remove "Remove"
+  = f.link_to_add "Add", :srn_items, id: "storeIdPass", class: "hide", onclick: "Inventories.search_product(this); return false;"
+
+#search_product.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "search_product", "aria-hidden" => true}
+  .modal-dialog.modal-lg
+    .modal-content
+      .modal-header
+        %h4.modal-title Select Product
+      .modal-body
+      .modal-footer

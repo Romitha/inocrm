@@ -1,0 +1,33 @@
+- if @inventory_products.any?
+  %hr
+  %table.table.table-hover
+    %thead
+      %tr
+        %th No
+        %th Brand
+        %th Product
+        %th Category
+        %th Serial code
+        %th Description
+        %th Model no
+        %th Product no
+        %th Part no
+        %th Manufacture
+        %th Unit
+        %th Action
+    %tbody
+      - @inventory_products.each_with_index do |pr, index|
+        %tr
+          %td= index+1
+          %td= pr.inventory_category3.inventory_category2.inventory_category1.name
+          %td= pr.inventory_category3.inventory_category2.name
+          %td= pr.inventory_category3.name
+          %td= pr.serial_no
+          %td= pr.description
+          %td= pr.model_no
+          %td= pr.product_no
+          %td= pr.spare_part_no
+          %td= pr.inventory_product_info and pr.inventory_product_info.manufacture.try(:manufacture)
+          %td= pr.inventory_unit.unit
+          %td= link_to "Select", "#", onclick: "Inventories.assign_product('#{pr.id}'); return false;"
+  %hr

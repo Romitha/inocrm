@@ -42,7 +42,7 @@
                   = f.association :ticket_type, as: :radio_buttons, wrapper: :append, input_html: {class: "ticket_type"}
                 .col-md-3
                   .strong Job type
-                  = f.select :job_type_id, options_from_collection_for_select(JobType.all, :id, :name), {},{class: "form-control"}
+                  = f.select :job_type_id, options_from_collection_for_select(JobType.all, :id, :name), {}, {class: "form-control"}
 
               .pass_to_recorrection_hiddible
                 .row
@@ -59,7 +59,7 @@
                       = ua.select :sbu_id, options_from_collection_for_select(Sbu.all, :id, :sbu), {include_blank: true}, id: "assign_sbu", class: "form-control"
                     .col-md-6
                       %strong Engineer
-                      = ua.select :assign_to, option_groups_from_collection_for_select(Sbu.all, :engineers, :sbu, :id, :user_name), {include_blank: false}, id: "assign_to", class: "form-control"
+                      = ua.select :assign_to, option_groups_from_collection_for_select(Sbu.all, :engineers, :sbu, :id, :full_name), {include_blank: false}, id: "assign_to", class: "form-control"
 
         .row
           .col-md-12

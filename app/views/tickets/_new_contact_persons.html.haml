@@ -46,10 +46,7 @@
         %h4 Organization
         = initiate_table table_type: "table-hover table-bordered" do
           = table_header ["Name", "VAT", "Industry type"]
-          = table_body ["#{customer.organization.name}", "#{customer.organization.vat_number}", customer.organization.industry_type.name]
-      
-
-
+          = table_body ["#{customer.organization.name}", "#{customer.organization.vat_number}", customer.organization.industry_type.try(:name)]
 
 %strong.name_validate Customer
 = label_tag "Select Customer", class: "small_scale_margin-right1 small_scale_margin-left2" do

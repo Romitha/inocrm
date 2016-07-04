@@ -512,13 +512,13 @@ module Admins
 
         updated_hash = inventory_product_hash["mst_inv_product"].to_hash.map { |k, v| "#{k} like '%#{v}%'" if v.present? }.compact.join(" and ")
         if category3_id.present?
-          @inventory_products = @store.inventory_products.where(updated_hash)
+          @inventory_products = @store.inventory_products.where(updated_hash).uniq
         elsif category2_id.present?
-          @inventory_products = InventoryCategory2.find(category2_id).inventory_products.where(updated_hash)
+          @inventory_products = InventoryCategory2.find(category2_id).inventory_products.where(updated_hash).uniq
         elsif category1_id.present?
           @inventory_products = InventoryCategory1.find(category1_id).inventory_category3s.map { |c| c.inventory_products.where(updated_hash) }.flatten.uniq
         else
-          @inventory_products = @store.inventory_products.where(updated_hash)
+          @inventory_products = @store.inventory_products.where(updated_hash).uniq
         end
 
         @render_template = "select_inventory"
@@ -807,13 +807,13 @@ module Admins
 
         updated_hash = inventory_product_hash["mst_inv_product"].to_hash.map { |k, v| "#{k} like '%#{v}%'" if v.present? }.compact.join(" and ")
         if category3_id.present?
-          @inventory_products = @store.inventory_products.where(updated_hash)
+          @inventory_products = @store.inventory_products.where(updated_hash).uniq
         elsif category2_id.present?
-          @inventory_products = InventoryCategory2.find(category2_id).inventory_products.where(updated_hash)
+          @inventory_products = InventoryCategory2.find(category2_id).inventory_products.where(updated_hash).uniq
         elsif category1_id.present?
           @inventory_products = InventoryCategory1.find(category1_id).inventory_category3s.map { |c| c.inventory_products.where(updated_hash) }.flatten.uniq
         else
-          @inventory_products = @store.inventory_products.where(updated_hash)
+          @inventory_products = @store.inventory_products.where(updated_hash).uniq
         end
         @select_inventory = true
       else
