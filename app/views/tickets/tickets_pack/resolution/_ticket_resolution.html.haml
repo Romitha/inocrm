@@ -66,5 +66,3 @@
 .form-group
   #resolution_templates
     =render "tickets/tickets_pack/resolution/start_action", ticket: ticket unless ticket.user_ticket_actions.find_by_action_id(TaskAction.find_by_action_no(5).id).present?
-
-/ = Rails.cache.fetch(["/tickets/resolution", params[:task_id]]).inspect

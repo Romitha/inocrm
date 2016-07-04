@@ -787,6 +787,45 @@ module Admins
       end
     end
 
+    def srn
+      case params[:srn_callback]
+      when "call_search"
+        Inventory
+        @modal_active = true
+      when "search_inventory"
+        @store = Organization.find params[:store_id]
+        session[:store_id] = @store.id
+
+        Rails.cache.fetch([:po_item_ids]).to_a.each do |poid|
+          Rails.cache.delete([:grn_item, poid] )
+        end
+        Rails.cache.delete([:po_item_ids])
+        category1_id = params[:search_inventory]["brand"]
+        category2_id = params[:search_inventory]["product"]
+        inventory_product_hash = params[:search_inventory].except("brand", "product").to_hash
+        category3_id = inventory_product_hash["mst_inv_product"]["category3_id"]
+
+        updated_hash = inventory_product_hash["mst_inv_product"].to_hash.map { |k, v| "#{k} like '%#{v}%'" if v.present? }.compact.join(" and ")
+        if category3_id.present?
+          @inventory_products = @store.inventory_products.where(updated_hash)
+        elsif category2_id.present?
+          @inventory_products = InventoryCategory2.find(category2_id).inventory_products.where(updated_hash)
+        elsif category1_id.present?
+          @inventory_products = InventoryCategory1.find(category1_id).inventory_category3s.map { |c| c.inventory_products.where(updated_hash) }.flatten.uniq
+        else
+          @inventory_products = @store.inventory_products.where(updated_hash)
+        end
+        @select_inventory = true
+      else
+        @srn = Srn.new
+      end
+      if request.xhr?
+        render "admins/inventories/srn/srn.js"
+      else
+        render "admins/inventories/srn/srn"
+      end
+    end
+
     private
 
       def product_category_params

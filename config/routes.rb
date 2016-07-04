@@ -307,6 +307,8 @@ Rails.application.routes.draw do
         post "initiate_grn_for_i_product"
         post "create_grn_for_i_product"
 
+        get "srn"
+
         delete "delete_product_category"
         delete "delete_admin_brands_and_category"
         delete "delete_location_rack"

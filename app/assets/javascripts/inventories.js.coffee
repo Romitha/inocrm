@@ -698,3 +698,12 @@ window.Inventories =
       if $(e).is(".add_warranty")
         $(e).addClass("hide")
     ), 200
+
+  call_from_store: (elem) ->
+    this_val = $(elem).val()
+    $("#storeIdPass").data("storeId", this_val).removeClass("hide")
+
+  search_product: (elem)->
+    store_id = $(elem).data("storeId")
+    $.get "/admins/inventories/srn?store_id=#{store_id}&srn_callback=call_search"
+    return
