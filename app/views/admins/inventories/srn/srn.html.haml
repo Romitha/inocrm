@@ -6,6 +6,7 @@
   = f.simple_fields_for :srn_items do |s|
     = s.input :product_id, as: :hidden, input_html: {class: "product_id"}
     .product_info
+
     = s.input :quantity
     = s.input :remarks
     = s.link_to_remove "Remove"
@@ -18,3 +19,6 @@
         %h4.modal-title Select Product
       .modal-body
       .modal-footer
+
+%script{type: "text/html", id: "load_permissions_output"}
+  
