@@ -9,7 +9,7 @@
             %li= message
   .row
     .col-md-1
-      = image_tag organization.logo.thumb.url, class: "img-responsive" if organization.logo.present?
+      = image_tag organization.logo.url, class: "img-responsive" if organization.logo.present?
       .btn.btn-success.btn-file.has-tooltip{data: {toggle: "tooltip", placement: "left"}, title: "Upload organization Logo"}
         = f.input :logo, as: :file, label: "Upload Logo", placeholder: "Upload organization Logo", wrapper_html: {class: "margin-none"}
 

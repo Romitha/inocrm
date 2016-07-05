@@ -3,7 +3,7 @@
 .row
   .col-md-1
     = link_to organization do
-      = image_tag (organization.logo.thumb.url || "organization_image.png"), class: "img-responsive"
+      = image_tag (organization.logo.url || "organization_image.png"), class: "img-responsive"
   .col-md-10.pull-right
     %h4.strong
       .edit_organization
