@@ -1,60 +1,40 @@
-= simple_nested_form_for @problem_category, url: problem_and_category_admins_tickets_path, html: { class: "validate_form" }, method: :post do |f|
-  = hidden_field_tag :problem_category_id, f.object.id
-  .panel.panel-primary
-    .panel-heading
-      %h3.panel-title Problem Category
-    .panel-body
-      .row
-        .col-md-6
-          = f.label "Problem category:"
-          = f.input :name, input_html: {rows: 1}
-        .col-md-12
+%fieldset
+  %legend Problem categories
+  = simple_nested_form_for @problem_category, url: problem_and_category_admins_tickets_path, html: { class: "validate_form" }, method: :post do |f|
+    = hidden_field_tag :problem_category_id, f.object.id
+    .row
+      .col-md-12
+        = f.input :name, input_html: {rows: 1}
+    = f.simple_fields_for :q_and_as do |qa|
+      .panel.panel-info
+        .panel-heading
+          %h3.panel-title Q And A
+        .panel-body
           .row
-            = f.simple_fields_for :q_and_as do |qa|
-              .panel.panel-danger
-                .panel-heading
-                  %h3.panel-title Q And A
-                .panel-body
-                  .row.col-md-12
-                    .col-md-12
-                      .col-md-4
-                        = label_tag "Answer Type"
-                        = qa.select :answer_type, options_for_select([["Yes No", "YN"], ["Text", "TX"]])
-                        / = qa.input :answer_type
-                      .col-md-4
-                        = qa.input :compulsory
-                      .col-md-4
-                        = qa.input :active
-                    .col-md-12
-                      .col-md-6
-                        = qa.label "Action:"
-                        / = qa.select :action_id, TaskAction.where(action_no: [1, 5, 58, 57, 67]).map{|a| [a.action_description, a.id]}
-                        = qa.select :action_id, options_for_select([["Add Ticket", 1], ["Engineer Resolution", 5], ["Quality Control", 57], ["Customer Feed Back", 58]])
-                      .col-md-6
-                        = qa.input :question
-                        .add_sign
-                          = qa.link_to_remove do
-                            %span.glyphicon.glyphicon-remove-sign
-            .row.col-md-12
-              .col-md-12
-                = f.link_to_add :q_and_as do
-                  %span.glyphicon.glyphicon-plus-sign Add Q And A
-      .row{style: "margin-top:20px;"}
-        .col-md-11
-          = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_problem_category", name: "#{params[:edit_more] ? 'update' : 'create'}"
-/ #accordion.panel-group
-/   - @problem_category_all.each_with_index do |pc, index|
-/     .panel.panel-primary
-/       .panel-heading
-/         %h3.panel-title
-/           %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
-/             = pc.name
-/           - unless pc.is_used_anywhere?
-/             = link_to delete_problem_category_admins_tickets_path(problem_category_id: pc.id), method: :delete, :data => { :confirm => 'Are you sure?' } do
-/               %span.glyphicon.glyphicon-trash
-
-/       .panel-collapse.collapse.in{:id => "#{index}"}
-/         .panel-body
+            .col-md-1.small_scale_padding-top1
+              = qa.link_to_remove do
+                %span.glyphicon.glyphicon-remove-sign
+            .col-md-4
+              = qa.input :compulsory
+            .col-md-4
+              = qa.input :active
+          .row
+            .col-md-2
+              = label_tag "Answer type:"
+              = qa.select :answer_type, options_for_select([["Yes No", "YN"], ["Text", "TX"]]), {}, class: "form-control"
+            .col-md-4
+              = qa.label "Action:"
+              = qa.select :action_id, options_for_select([["Add Ticket", 1], ["Engineer Resolution", 5], ["Quality Control", 57], ["Customer Feed Back", 58]]), {}, class: "form-control"
+            .col-md-6
+              = qa.input :question
+    .row
+      .col-md-12
+        = f.link_to_add :q_and_as do
+          %span.glyphicon.glyphicon-plus-sign
+          Add Q And A
+    .row{style: "margin-top:20px;"}
+      .col-md-11
+        = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_problem_category", name: "#{params[:edit_more] ? 'update' : 'create'}"
 
 = collapse_wrapper collapse_id: "ticket_problem_category_list", labelledby: "tic_problem_category_labelledby" do
   - @problem_category_all.each_with_index do |pc, index|
