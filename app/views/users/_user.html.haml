@@ -24,7 +24,7 @@
         .col-md-11
           - user.roles.each do |role|
             %div
-              = link_to role.name, edit_organization_roles_and_permission_path(role.resource, role), class: "#{%w(text-primary text-muted text-success text-info text-warning text-danger).sample}"
+              = link_to role.name, edit_organization_roles_and_permission_path(role.resource, role)#, class: "#{%w(text-primary text-muted text-success text-info text-warning text-danger).sample}"
     - else
       %br/
       .inline-block.has-tooltip{data: {toggle: "tooltip", placement: "bottom"}, title: "(Primary) address"}

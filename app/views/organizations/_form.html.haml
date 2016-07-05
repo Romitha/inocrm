@@ -68,7 +68,6 @@
   .tab-content.small_scale_margin-top1
 
     .tab-pane.limit-height{id: "addresses#{organization.id}"}
-      / = render "addresses/form", address: organization.addresses.build
       .row
         - organization.customers.each do |customer|
           .col-md-6
