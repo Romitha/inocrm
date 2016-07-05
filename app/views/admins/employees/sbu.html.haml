@@ -1,20 +1,20 @@
 = simple_nested_form_for @sbu, url: sbu_admins_employees_path, html: {class: "validate_form"}, method: :post do |f|
   = hidden_field_tag :sbu_id, f.object.id
   .row
-    .col-md-4{style: "color: #900303;"}
-      = f.input :sbu, input_html: {required: true}
-    .col-md-6
-      .row
-        %h4 Add Engineer
-      .row
-        = f.simple_fields_for :sbu_engineers do |engineer|
-          .col-md-6
-            = engineer.association :engineer, label_method: :full_name
+    .col-md-12
+      = f.input :sbu, required: true
+    .col-md-12
+      %h4 Add Engineer
+      = f.simple_fields_for :sbu_engineers do |engineer|
+        .row
+          .col-md-1
             .add_sign
               = engineer.link_to_remove do
                 %span.glyphicon.glyphicon-remove-sign
-        = f.link_to_add :sbu_engineers do
-          %span.glyphicon.glyphicon-plus-sign
+          .col-md-11
+            = engineer.association :engineer, label_method: :full_name, collection: User.select{|u| u.roles.any?{|r| r.bpm_module_roles.any?{|b| b.code == "supp_engr"} } }
+      = f.link_to_add :sbu_engineers do
+        %span.glyphicon.glyphicon-plus-sign
   .row{style: "margin-bottom:20px;"}
     .col-md-8
       = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_sbu", name: "#{params[:edit_more] ? 'update' : 'create'}"

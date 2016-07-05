@@ -1,35 +1,30 @@
-= simple_form_for @sla, url: sla_admins_organizations_path(create: true), method: :post do |f|
-  .row
-    .col-md-3
-      = f.input :sla_time, label: "SLA Time (hrs)"
-    .col-md-3
-      = f.input :created_by,  as: :hidden, input_html: {value: current_user.id}
-
-  .row
-    .col-md-8
-      = f.input :description
-
-
-  .row{style: "margin-top:20px; margin-bottom:20px;"}
-    .col-md-8
-      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_sla"
+%fieldset
+  %legend SLA
+  = simple_form_for @sla, url: sla_admins_organizations_path(create: true), method: :post do |f|
+    = f.input :created_by,  as: :hidden, input_html: {value: current_user.id}
+    .row
+      .col-md-2
+        = f.input :sla_time, label: "SLA Time (hrs)"
+      .col-md-10
+        = f.input :description
+    .row
+      .col-md-12
+        = f.submit "Save", class: "btn btn-success btn-sm", id: "submit_new_sla"
 
 = collapse_wrapper collapse_id: "org_sla_list", labelledby: "org_sla_labelledby" do
   - @sla_all.each_with_index do |sla, index|
-    = collapse collapse_type: "info", labelledby: "labelledby_#{sla.id}", header_content: "#{index+1} sla : #{sla.description}", collapse_link: "sla_link#{sla.id}", collapse_id: "org_sla_list" do
+    = collapse collapse_type: "info", labelledby: "labelledby_#{sla.id}", header_content: sla.description, collapse_link: "sla_link#{sla.id}", collapse_id: "org_sla_list" do
       .pull-right
         - unless sla.is_used_anywhere?
           = link_to delete_admin_sla_admins_organizations_path(sla_id: sla.id), method: :delete, rel: "tooltip", :data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Delete" do
             %span.glyphicon.glyphicon-trash
 
-      .row.col-md-12
-        .col-md-2
+      .row
+        .col-md-12
           %strong SLA Time (hrs) :
-        .col-md-4
-          = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "sla_time", name: "sla_time", url: sla_admins_organizations_path(edit: true, sla_id: sla.id), "original-title" => "Update sla", value: ""}, style: "line-height: 6px;" do
+          = link_to "#", class: "inline_edit", data: {type: "text", resource: "sla_time", name: "sla_time", url: sla_admins_organizations_path(edit: true, sla_id: sla.id), "original-title" => "Update sla", value: ""} do
             = sla.sla_time
-        .col-md-1
+        .col-md-12
           %strong Description:
-        .col-md-3
-          = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "sla_time", name: "description", url: sla_admins_organizations_path(edit: true, sla_id: sla.id), "original-title" => "Update sla", value: ""}, style: "line-height: 6px;" do
+          = link_to "#", class: "inline_edit", data: {type: "text", resource: "sla_time", name: "description", url: sla_admins_organizations_path(edit: true, sla_id: sla.id), "original-title" => "Update sla", value: ""} do
             = sla.description

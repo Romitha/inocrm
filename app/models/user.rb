@@ -106,6 +106,10 @@ class User < ActiveRecord::Base
     "#{try(:mst_title).try(:title)} #{first_name} #{last_name}"
   end
 
+  # def self.engineers
+  #   # u.roles.any?{|r| r.bpm_module_roles.any?{|b| b.code == "supp_engr"} }    
+  # end
+
   def full_name=(full_name)
     splitted_names = full_name.strip.split(" ")
     self.first_name = splitted_names[0]
