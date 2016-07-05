@@ -33,7 +33,7 @@ module Admins
         @brands_and_category.delete
       end
       respond_to do |format|
-        format.html { redirect_to brands_and_category_admins_inventories_path }
+        format.html { redirect_to brands_and_category_admins_tickets_path }
       end
     end
 
@@ -44,7 +44,7 @@ module Admins
         @product_category.delete
       end
       respond_to do |format|
-        format.html { redirect_to brands_and_category_admins_inventories_path }
+        format.html { redirect_to brands_and_category_admins_tickets_path }
       end
     end
 
