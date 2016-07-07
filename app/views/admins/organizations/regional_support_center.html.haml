@@ -14,12 +14,12 @@
       .row
         = f.simple_fields_for :sbu_regional_engineers do |engineer|
           .col-md-12
-            = engineer.association :engineer, label_method: :full_name
+            = engineer.association :engineer, collection: User.select{|u| u.roles.any?{|r| r.bpm_module_roles.any?{|b| b.code == "supp_engr"} } }, label_method: :full_name, input_html: {class: "chosen-select"}
             .add_sign
               = engineer.link_to_remove do
                 %span.glyphicon.glyphicon-remove-sign
         .col-md-6
-          = f.link_to_add :sbu_regional_engineers do
+          = f.link_to_add :sbu_regional_engineers, onclick: "setTimeout(function(){Organizations.enable_chosen()}, 200); return false;" do
             %span.glyphicon.glyphicon-plus-sign
   .row{style:"margin-bottom:20px;"}
     .col-md-10
@@ -48,18 +48,8 @@
         .col-md-4
           = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "regional_support_center", name: "active", url: regional_support_center_admins_organizations_path(edit: true, regional_support_center_id: regional_support_center.id), "original-title" => "Update Regional Support Center"} do
             = regional_support_center.active && "Yes" || "No"
-      .row.col-md-12{style: "margin-top:20px;"}
-        / - regional_support_center.sbu_regional_engineers.each do |sbu_regional_engineer|
-        /   .panel.panel-danger
-        /     .panel-heading
-        /       %h3.panel-title
-        /         %span Engineer:
-        /         = sbu_regional_engineer.engineer.first_name ? "#{sbu_regional_engineer.engineer.name_title} #{sbu_regional_engineer.engineer.first_name}" : sbu_regional_engineer.engineer.email
-        /         - unless sbu_regional_engineer.is_used_anywhere?
-        /           = link_to delete_sbu_regional_engineer_admins_organizations_path(sbu_regional_engineer_id: sbu_regional_engineer.id),method: :delete ,  :data => { :confirm => 'Are you sure?' } do
-        /             %span.glyphicon.glyphicon-trash
-        /     .panel-body
 
+      .row.col-md-12{style: "margin-top:20px;"}
         = collapse_wrapper collapse_id: "org_sbu_regional_engineer_list", labelledby: "org_sbu_regional_engineer_labelledby" do
           - regional_support_center.sbu_regional_engineers.each do |sbu_regional_engineer|
             = collapse collapse_type: "danger", labelledby: "labelledby_#{sbu_regional_engineer.id}", header_content: "Engineer: #{sbu_regional_engineer.engineer.first_name ? "#{sbu_regional_engineer.engineer.name_title} #{sbu_regional_engineer.engineer.first_name}" : sbu_regional_engineer.engineer.email}", collapse_link: "org_sbu_regional_engineerlink_#{sbu_regional_engineer.id}", collapse_id: "org_sbu_regional_engineer_list" do
