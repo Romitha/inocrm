@@ -8,8 +8,7 @@
       .panel-body
         .row
           .col-md-4
-            = f.label "Organization:"
-            = f.select :organization_id, Organization.organization_suppliers
+            = f.association :supplier, collection: Organization.organization_suppliers, label_method: :name
           .col-md-4
             = f.label "Currency:"
             = f.select :currency_id, Currency.all.map{|a| [a.currency, a.id]}
