@@ -308,6 +308,7 @@ Rails.application.routes.draw do
         post "create_grn_for_i_product"
 
         get "srn"
+        post "create_srn"
 
         delete "delete_product_category"
         delete "delete_admin_brands_and_category"
@@ -363,7 +364,7 @@ Rails.application.routes.draw do
       get "load_estimation"
       get "load_estimation_ticket_info"
       get "toggle_add_update_return_part"
-      get "inventory_master_data"
+      post "product_info"
       get "hp_po"
       get "paginate_hp_po_sales_order"
       get "add_spare_parts_so_po_ajax"

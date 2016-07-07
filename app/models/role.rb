@@ -31,4 +31,5 @@ class BpmModule < ActiveRecord::Base
   self.table_name = "mst_module"
 
   has_many :bpm_module_roles, foreign_key: :module_id
+  has_many :srns, foreign_key: :requested_module_id
 end

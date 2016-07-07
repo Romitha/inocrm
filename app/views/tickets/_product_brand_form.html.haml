@@ -11,12 +11,13 @@
   %legend Create new product brand
   = simple_nested_form_for product_brand, url: create_product_brand_tickets_path, remote: true do |f|
     .row
+      = f.association :supplier, collection: Organization.organization_suppliers.to_a + Organization.individual_suppliers.to_a, wrapper_html: {class:"col-md-3"}
       = f.input :name, wrapper_html: {class:"col-md-3"}
-      = f.input :parts_return_days, wrapper_html: {class:"col-md-3 press"}, input_html: {min: "0"}
-      = f.input :warranty_date_format, wrapper_html: {class:"col-md-3"}, label: "Warranty date format", collection: ["dd M, yyyy","dd, yyyy, M","M, yyyy, dd", "M, dd, yyyy", "yyyy, M, dd", "yyyy, dd, M"]
+      = f.input :warranty_date_format, wrapper_html: {class:"col-md-2"}, label: "Warranty date format", collection: ["dd M, yyyy","dd, yyyy, M","M, yyyy, dd", "M, dd, yyyy", "yyyy, M, dd", "yyyy, dd, M", "yyyy.mm.dd"]
       .col-md-2
         = label_tag "Currency" 
-        = f.select :currency_id, options_from_collection_for_select(Currency.all, :id, :currency), {}
+        = f.select :currency_id, options_from_collection_for_select(Currency.all, :id, :currency), {}, class: "form-control"
+      = f.input :parts_return_days, wrapper_html: {class:"col-md-2 press"}, input_html: {min: "0"}
       = f.input :sla_id, as: :hidden
     .row
       .col-md-12

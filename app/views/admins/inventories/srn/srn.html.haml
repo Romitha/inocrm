@@ -1,24 +1,61 @@
-= simple_nested_form_for @srn, url: "#" do |f|
-  = f.input :created_by, as: :hidden, input_html: {value: current_user.id}
-  = f.association :store, input_html: {onchange: "Inventories.call_from_store(this); return false;"}
-  = f.input :required_at, as: :string, input_html: {class: "datepicker"}
-  = f.input :remarks
-  = f.simple_fields_for :srn_items do |s|
-    = s.input :product_id, as: :hidden, input_html: {class: "product_id"}
-    .product_info
+= render "admins/inventories/srn/form"
+/ %hr
 
-    = s.input :quantity
-    = s.input :remarks
-    = s.link_to_remove "Remove"
-  = f.link_to_add "Add", :srn_items, id: "storeIdPass", class: "hide", onclick: "Inventories.search_product(this); return false;"
+/ = paginate @srn_all, remote: false, method: :get
+/ = collapse_wrapper collapse_id: "srn", labelledby: "labelledby" do
+/   - @srn_all.each do |srn|
+/     = collapse collapse_type: "info", labelledby: "labelledby_#{srn.id}", header_content: srn.srn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_srn_no_format"]), collapse_link: "link_#{srn.id}", collapse_id: "srn" do
+/       %dl.dl-horizontal
+/         %dt Store:
+/         %dd= srn.store.name
+/         %dt Srn No:
+/         %dd= srn.srn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_srn_no_format"])
+/         %dt Create at:
+/         %dd= srn.created_at.strftime("%Y-%m-%d %H:%M")
+/         %dt Created by:
+/         %dd= srn.created_by_user.full_name
+/         %dt Remarks:
+/         %dd= srn.remarks
 
-#search_product.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "search_product", "aria-hidden" => true}
-  .modal-dialog.modal-lg
-    .modal-content
-      .modal-header
-        %h4.modal-title Select Product
-      .modal-body
-      .modal-footer
+/         - srn.srn_items.each do |srn_item|
+/           = collapse collapse_type: "success", labelledby: "labelledbyitem_#{srn_item.id}", header_content: "Srn item: #{srn_item.remarks.truncate(20)}", collapse_link: "linkitem_#{srn_item.id}", collapse_id: "srn_item" do
+/             %dl.dl-horizontal
+/               %dt Quantity:
+/               %dd= srn_item.quantity
+/               %dt Remarks:
+/               %dd= srn_item.remarks
+/               %dt Create at:
+/               %dd= srn_item.created_at.strftime("%Y-%m-%d %H:%M")
+/               %dt Returnable:
+/               %dd= boolean_in_word srn_item.returnable, "Yes", "No"
+/               %dt Spare part:
+/               %dd= boolean_in_word srn_item.spare_part, "Yes", "No"
+/             .row
+/               .col-md-6
+/                 %h4 Part
+/                 %dl.dl-horizontal
+/                   %dt Item code:
+/                   %dd= srn_item.inventory_product.generated_item_code
+/                   %dt Item description:
+/                   %dd= srn_item.inventory_product.description
+/                   %dt Order unit:
+/                   %dd= srn_item.inventory_product.inventory_unit.unit
+/                   %dt Stock in hand:
+/                   %dd= srn_item.inventory_product.inventories.find_by_store_id(srn.store_id).try(:stock_quantity)
+/                   %dt Item type:
+/                   %dd= srn_item.inventory_product.inventory_product_info.need_serial ? "Serial" : srn_item.inventory_product.inventory_product_info.need_batch ? "Batch" : "Non Serial or Non Batch"
 
-%script{type: "text/html", id: "load_permissions_output"}
-  
+/               - if srn_item.main_inventory_product.present?
+/                 .col-md-6
+/                   %h4 Main Part
+/                   %dl.dl-horizontal
+/                     %dt Item code:
+/                     %dd= srn_item.main_inventory_product.generated_item_code
+/                     %dt Item description:
+/                     %dd= srn_item.main_inventory_product.description
+/                     %dt Order unit:
+/                     %dd= srn_item.main_inventory_product.inventory_unit.unit
+/                     %dt Stock in hand:
+/                     %dd= srn_item.main_inventory_product.inventories.find_by_store_id(srn.store_id).try(:stock_quantity)
+/                     %dt Item type:
+/                     %dd= srn_item.main_inventory_product.inventory_product_info.need_serial ? "Serial" : srn_item.main_inventory_product.inventory_product_info.need_batch ? "Batch" : "Non Serial or Non Batch"

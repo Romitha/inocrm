@@ -31,3 +31,8 @@
     }
   }
 }
+
+.not-active {
+  pointer-events: none;
+  cursor: default;
+}

@@ -98,6 +98,12 @@ group :development do
   gem 'capistrano-rails-console'
 end
 
+group :test do
+  gem 'cucumber-rails', :require => false
+  # database_cleaner is not required, but highly recommended
+  gem 'database_cleaner'
+end
+
 gem 'httpi'
 
 gem "websocket-rails"

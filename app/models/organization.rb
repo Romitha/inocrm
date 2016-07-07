@@ -99,6 +99,26 @@ class Organization < ActiveRecord::Base
     users.order("created_at DESC").select{|user| !user.is_customer? }
   end
 
+  def self.organization_suppliers
+    # DealerType.find_by_code("SUP").accounts.map{|a| a.organization}.compact
+    joins(accounts_dealer_types: :dealer_type).where("mst_dealer_types.code = 'SUP'").references(:dealer_type)
+  end
+
+  def self.organization_customers
+    # DealerType.find_by_code("SUP").accounts.map{|a| a.organization}.compact
+    joins(accounts_dealer_types: :dealer_type).where("mst_dealer_types.code = 'CUS'").references(:dealer_type)
+  end
+
+  def self.individual_suppliers
+    # DealerType.find_by_code("SUP").accounts.map{|a| a.organization}.compact
+    joins(accounts_dealer_types: :dealer_type).where("mst_dealer_types.code = 'INDSUP'").references(:dealer_type)
+  end
+
+  def self.individual_suppliers
+    # DealerType.find_by_code("SUP").accounts.map{|a| a.organization}.compact
+    joins(accounts_dealer_types: :dealer_type).where("mst_dealer_types.code = 'INDCUS'").references(:dealer_type)
+  end
+
   def self.major_organization(category)
     where(category: category, department_org_id: nil)
   end
@@ -174,6 +194,10 @@ class CompanyConfig < ActiveRecord::Base
 
   def next_sup_last_grn_no
     inv_last_grn_no.to_i+1
+  end
+
+  def next_sup_last_srn_no
+    inv_last_srn_no.to_i+1
   end
 
 end

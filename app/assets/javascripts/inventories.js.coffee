@@ -701,13 +701,29 @@ window.Inventories =
 
   call_from_store: (elem) ->
     this_val = $(elem).val()
-    $("#storeIdPass").data("storeId", this_val).removeClass("hide")
+    $("#store_controller").removeClass("hide")
+    $("#storeIdPass").data("storeId", this_val)
+    $(".srn_store").addClass("hide")
 
   search_product: (elem)->
     store_id = $(elem).data("storeId")
-    $.get "/admins/inventories/srn?store_id=#{store_id}&srn_callback=call_search"
+    product_type = $(elem).data("producttype")
+    $.get "/admins/inventories/srn?store_id=#{store_id}&srn_callback=call_search&product_type=#{product_type}"
+    if product_type == "product_id"
+      setTimeout ( ->
+        $("#new_srn .fields").last().find(".mainStoreIdPass").data("storeId", store_id)
+        console.log "product_id"
+      ), 200
     return
 
-  assign_product: (product_id)->
-    $("#new_srn .fields").last().find(".product_id").val(product_id)
+  assign_product: (product_id, store_id, product_type)->
+    applyable_dom = $("#new_srn .fields").last()
+    applyable_dom.find("."+product_type).val(product_id)
+
+    $.post("/inventories/product_info", {product_id: product_id, store_id: store_id}, (data)->
+      applyable_dom.find("."+product_type+"_output").html Mustache.to_html($('#product_info_mustache').html(), data)
+    ).done( (date)->
+    ).fail( ->
+      alert "There are some errors. please try again"
+    )
     $("#search_product").modal("hide")

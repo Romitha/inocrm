@@ -4,6 +4,13 @@
   Inventories.filter_product();
   Inventories.filter_category();
   Inventories.filter_store();
+
+  $('#search_product').on('hidden.bs.modal', function (e) {
+  if($("#new_srn .fields").last().find(".product_id").val() == "" ) {
+  $("#new_srn .fields").last().find(".srn_item_remove").trigger("click");
+  }
+  })
+
 - elsif @select_inventory
   $("#select_inventories").html("#{j render 'admins/inventories/srn/select_inventory'}");
 

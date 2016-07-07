@@ -29,5 +29,5 @@
           %td= pr.spare_part_no
           %td= pr.inventory_product_info and pr.inventory_product_info.manufacture.try(:manufacture)
           %td= pr.inventory_unit.unit
-          %td= link_to "Select", "#", onclick: "Inventories.assign_product('#{pr.id}'); return false;"
+          %td= link_to "Select", "#", onclick: "Inventories.assign_product('#{pr.id}', '#{session[:store_id]}', '#{params[:product_type]}'); return false;"
   %hr

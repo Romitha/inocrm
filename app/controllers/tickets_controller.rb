@@ -4067,7 +4067,7 @@ class TicketsController < ApplicationController
     end
 
     def product_brand_params
-      params.require(:product_brand).permit(:sla_id, :name, :parts_return_days, :warenty_date_formate, :currency_id)
+      params.require(:product_brand).permit(:sla_id, :name, :parts_return_days, :warenty_date_format, :currency_id, :organization_id)
     end
 
     def product_params

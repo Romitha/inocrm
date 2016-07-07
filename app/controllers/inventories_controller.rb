@@ -2024,7 +2024,13 @@ class InventoriesController < ApplicationController
 
   end
 
-  def inventory_master_data
+  def product_info
+    Inventory
+    @product = InventoryProduct.find params[:product_id]
+    stock_quantity = @product.inventories.find_by_store_id(params[:store_id]).try(:stock_quantity)
+    item_type = @product.inventory_product_info.need_serial ? "Serial" : @product.inventory_product_info.need_batch ? "Batch" : "Non Serial or Non Batch"
+    product_filter_json = {generated_item_code: @product.generated_item_code, description: @product.description, unit: @product.inventory_unit.unit, stock_in_hand: stock_quantity, item_type: item_type}
+    render json: product_filter_json
   end
 
   def toggle_add_update_return_part

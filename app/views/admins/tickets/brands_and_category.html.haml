@@ -9,7 +9,7 @@
         .row
           .col-md-4
             = f.label "Organization:"
-            = f.select :organization_id, Organization.all.map{|a| [a.name, a.id]}
+            = f.select :organization_id, Organization.organization_suppliers
           .col-md-4
             = f.label "Currency:"
             = f.select :currency_id, Currency.all.map{|a| [a.currency, a.id]}
@@ -58,15 +58,14 @@
           - unless brands_and_category.is_used_anywhere?
             = link_to delete_admin_brands_and_category_admins_tickets_path(brands_and_category_id: brands_and_category.id), method: :delete,  :data => { :confirm => 'Are you sure?' } do
               %span.glyphicon.glyphicon-trash
-          = link_to brands_and_category_admins_tickets_path(brands_and_category_id: brands_and_category.id, edit_more: true), method: :post do
-            %span Edit More
 
       .panel-collapse.collapse.in{:id => "#{index}"}
         .panel-body
           .row.col-md-12
             .col-md-2.pull-right
               = link_to brands_and_category_admins_tickets_path(edit_more: true, brands_and_category_id: brands_and_category.id), method: :post do
-                %span.glyphicon.glyphicon-pencil Edit More>>
+                %span.glyphicon.glyphicon-pencil
+                Edit More >>
           .row.col-md-12
             .col-md-2
               %strong Organization:
@@ -87,18 +86,18 @@
             .col-md-2
               %strong Name:
             .col-md-4
-              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "product_brand", name: "name", url: brands_and_category_admins_tickets_path(edit: true, brands_and_category_id: brands_and_category.id), "original-title" => "Update Brands"}, style: "line-height: 6px;" do
+              = link_to "#", class: "inline_edit", data: {type: "text", resource: "product_brand", name: "name", url: brands_and_category_admins_tickets_path(edit: true, brands_and_category_id: brands_and_category.id), "original-title" => "Update Brands"} do
                 = brands_and_category.name
           .row.col-md-12
             .col-md-2
               %strong Parts return days:
             .col-md-4
-              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "product_brand", name: "parts_return_days", url: brands_and_category_admins_tickets_path(edit: true, brands_and_category_id: brands_and_category.id), "original-title" => "Update Brands"}, style: "line-height: 6px;" do
+              = link_to "#", class: "inline_edit", data: {type: "text", resource: "product_brand", name: "parts_return_days", url: brands_and_category_admins_tickets_path(edit: true, brands_and_category_id: brands_and_category.id), "original-title" => "Update Brands"} do
                 = brands_and_category.parts_return_days
             .col-md-2
               %strong Warranty date format:
             .col-md-4
-              = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "product_brand", name: "warranty_date_format", url: brands_and_category_admins_tickets_path(edit: true, brands_and_category_id: brands_and_category.id), "original-title" => "Update Brands", value: ""}, style: "line-height: 6px;" do
+              = link_to "#", class: "inline_edit", data: {type: "text", resource: "product_brand", name: "warranty_date_format", url: brands_and_category_admins_tickets_path(edit: true, brands_and_category_id: brands_and_category.id), "original-title" => "Update Brands"} do
                 = brands_and_category.warranty_date_format
 
 
@@ -116,7 +115,7 @@
                     .col-md-2
                       %strong Name:
                     .col-md-4
-                      = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "product_category", name: "name", url: brands_and_category_admins_tickets_path(edit: true, product_category_id: product_category.id), "original-title" => "Update Product Category"}, style: "line-height: 6px;" do
+                      = link_to "#", class: "inline_edit", data: {type: "text", resource: "product_category", name: "name", url: brands_and_category_admins_tickets_path(edit: true, product_category_id: product_category.id), "original-title" => "Update Product Category"} do
                         = product_category.name
                     .col-md-2
                       %strong SLA Time (hrs):

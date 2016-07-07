@@ -788,6 +788,9 @@ module Admins
     end
 
     def srn
+      Organization
+      Role
+      Inventory
       case params[:srn_callback]
       when "call_search"
         Inventory
@@ -795,11 +798,6 @@ module Admins
       when "search_inventory"
         @store = Organization.find params[:store_id]
         session[:store_id] = @store.id
-
-        Rails.cache.fetch([:po_item_ids]).to_a.each do |poid|
-          Rails.cache.delete([:grn_item, poid] )
-        end
-        Rails.cache.delete([:po_item_ids])
         category1_id = params[:search_inventory]["brand"]
         category2_id = params[:search_inventory]["product"]
         inventory_product_hash = params[:search_inventory].except("brand", "product").to_hash
@@ -818,12 +816,25 @@ module Admins
         @select_inventory = true
       else
         @srn = Srn.new
+        @srn_all = Srn.order(updated_at: :desc).page(params[:page]).per(10)
       end
       if request.xhr?
         render "admins/inventories/srn/srn.js"
       else
         render "admins/inventories/srn/srn"
       end
+    end
+
+    def create_srn
+      @srn = Srn.new srn_params
+      if @srn.save
+        Organization
+        CompanyConfig.first.increase_inv_last_srn_no
+        flash[:notice] = "Successfully created."
+      else
+        flash[:error] = "Unable to save. Please verify any validations"
+      end
+      redirect_to srn_admins_inventories_url
     end
 
     private
@@ -902,6 +913,10 @@ module Admins
 
       def grn_params
         params.require(:grn).permit(:remarks, :po_id)
+      end
+
+      def srn_params
+        params.require(:srn).permit(:id, :srn_no, :requested_module_id, :created_by, :store_id, :required_at, :remarks, srn_items_attributes: [:id, :product_id, :main_product_id, :quantity, :remarks, :_destroy, :returnable, :spare_part])
       end
 
   end

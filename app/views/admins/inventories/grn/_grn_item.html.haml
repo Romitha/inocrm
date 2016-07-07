@@ -135,7 +135,7 @@
       = g.link_to_add "Add GRN Serial item", :grn_serial_items, class: "add_grn_items", onclick: "Inventories.add_warranty_click(this);"
 
   - if !(need_serial or need_batch)
-    = g.input :recieved_quantity, as: :decimal, input_html: {value: 0, required: true }, label: "Received quantity"
+    = g.input :recieved_quantity, as: :decimal, input_html: {value: (g.object.recieved_quantity || 0), required: true }, label: "Received quantity"
   - else
     = g.input :recieved_quantity, as: :hidden, input_html: {value: (need_serial and !need_batch ? 1 : 0 )}
   = g.input :unit_cost, as: :float, label: "Unit cost (#{inventory_product.inventory_product_info.currency.code})", input_html: { required: true } if @inventory_product.present?

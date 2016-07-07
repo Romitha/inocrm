@@ -423,7 +423,7 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.column :created_by, "int(10) UNSIGNED NOT NULL"
       t.column :requested_module_id, "int(10) UNSIGNED NOT NULL"
       t.boolean :closed, null: false, default: false
-      t.datetime :created_at, null: false
+      t.timestamps
     end
 
     create_table :inv_srn_item, id: false do |t|

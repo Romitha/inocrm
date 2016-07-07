@@ -37,7 +37,7 @@ class ProductBrand < ActiveRecord::Base
   validates_presence_of [:name, :sla_time, :parts_return_days, :currency_id]
   belongs_to :currency, foreign_key: :currency_id
   belongs_to :sla_time, foreign_key: :sla_id
-  belongs_to :organization, foreign_key: :organization_id
+  belongs_to :supplier, class_name: "Organization", foreign_key: :organization_id
 
   validates_uniqueness_of :name
 
