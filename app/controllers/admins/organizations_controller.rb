@@ -153,7 +153,7 @@ module Admins
 
     private
       def regional_support_center_params
-        params.require(:regional_support_center).permit(:organization_id, :active, sbu_regional_engineers_attributes: [:engineer_id])
+        params.require(:regional_support_center).permit(:organization_id, :active, sbu_regional_engineers_attributes: [:id, :_destroy, :engineer_id])
       end
 
       def admin_country_params
