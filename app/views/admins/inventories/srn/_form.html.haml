@@ -19,8 +19,12 @@
       .col-md-3
         = f.input :required_at, as: :string, input_html: {class: "datepicker"}
       .col-md-3
+        = f.input :so_no, label: "Sales Order No"
+      .col-md-3
+        = f.association :so_customer, collection: Organization.organization_customers
+      .col-md-3
         = f.association :requested_module, required: true
-      .col-md-6
+      .col-md-12
         = f.input :remarks
     = f.simple_fields_for :srn_items do |s|
       = s.input :product_id, as: :hidden, input_html: {class: "product_id"}

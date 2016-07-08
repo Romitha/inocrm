@@ -8,18 +8,6 @@
   .row{style: "margin-top:20px; margin-bottom:20px;"}
     .col-md-8
       = d.submit "Save", class: "btn btn-success pull-right", id: "submit_new_inventory_disposal_method"
-/ #accordion.panel-group
-/   - @inventory_disposal_method_all.each_with_index do |disposal, index|
-/     .panel.panel-info
-/       .panel-heading
-/         %h3.panel-title
-/           %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
-/             #{index+1} inventory disposal method: #{disposal.disposal_method}
-/           - unless disposal.is_used_anywhere?
-/             = link_to delete_disposal_method_admins_inventories_path(disposal_id: disposal.id), method: :delete,  :data => { :confirm => 'Are you sure?' } do
-/               %span.glyphicon.glyphicon-trash
-/       .panel-collapse.collapse.in{:id => "#{index}"}
-/         .panel-body
 
 = collapse_wrapper collapse_id: "inv_disposal_method_list", labelledby: "inv_disposal_method_labelledby" do
   - @inventory_disposal_method_all.each_with_index do |disposal, index|

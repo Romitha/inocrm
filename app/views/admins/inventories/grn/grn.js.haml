@@ -5,6 +5,12 @@
 
 - if params[:search_inventory]
   - render_frame = "search_inventory_result"
+  $("a[href='#grn_form_collapse_search_link']").trigger("click");
+
+- if params[:purchase_order] == "select_inventory"
+  if(!$("#grn_form_collapse_frame_link").is(".in")) {
+  $("a[href='#grn_form_collapse_frame_link']").trigger("click");
+  }
 
 - if params[:next]
   - if @grn_item.errors.present?

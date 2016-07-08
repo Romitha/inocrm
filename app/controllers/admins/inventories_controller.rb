@@ -912,11 +912,11 @@ module Admins
       end
 
       def grn_params
-        params.require(:grn).permit(:remarks, :po_id)
+        params.require(:grn).permit(:remarks, :po_id, :po_no)
       end
 
       def srn_params
-        params.require(:srn).permit(:id, :srn_no, :requested_module_id, :created_by, :store_id, :required_at, :remarks, srn_items_attributes: [:id, :product_id, :main_product_id, :quantity, :remarks, :_destroy, :returnable, :spare_part])
+        params.require(:srn).permit(:id, :srn_no, :requested_module_id, :created_by, :store_id, :required_at, :remarks, :so_no, :so_customer_id, srn_items_attributes: [:id, :product_id, :main_product_id, :quantity, :remarks, :_destroy, :returnable, :spare_part])
       end
 
   end

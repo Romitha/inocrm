@@ -1,4 +1,7 @@
+- Organization
 = simple_form_for @grn, url: create_grn_admins_inventories_path, method: :post do |f|
-	= f.input :po_id, as: :hidden
-	= f.input :remarks
-	= f.submit "Save"
+  = f.input :po_id, as: :hidden
+  - unless params[:po_item_id].present?
+    = f.input :po_no
+  = f.input :remarks
+  = f.submit "Save", class: "btn btn-sm btn-success"

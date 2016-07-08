@@ -3,6 +3,7 @@ class Srn < ActiveRecord::Base
 
   belongs_to :store, -> { where(type_id: 4) }, class_name: "Organization"
   belongs_to :requested_location, class_name: "Organization"
+  belongs_to :so_customer, class_name: "Organization"
   belongs_to :requested_module, class_name: "BpmModule", foreign_key: :requested_module_id
   belongs_to :created_by_user, class_name: "User", foreign_key: :created_by
 
