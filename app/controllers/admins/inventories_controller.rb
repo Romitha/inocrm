@@ -744,6 +744,9 @@ module Admins
       else
         uploaded_io = params[:import_csv]
         reference_resource = params[:refer_resource_class].classify.constantize.find params[:refer_resource_id]
+
+        Dir.mkdir(File.join(Rails.root, "public", "uploads"), 755) unless Dir.exist?(File.join(Rails.root, "public", "uploads"))
+
         File.open(Rails.root.join('public', 'uploads', uploaded_io.original_filename), 'wb') do |file|
           file.write(uploaded_io.read)
         end

@@ -75,7 +75,7 @@
     = tab_panel do
       = tab_nav_tab({class: "small_scale_margin-bottom1"}, single_serial_item: {content: "Item by item", active_class: "active"}, bulk_update: {content: "Bulk update"})
       .tab-content
-        = tab_content tabpointer: :single_serial_item do
+        = tab_content tabpointer: :single_serial_item, active_class: "active" do
           %fieldset
             %legend GRN Serial items
             = g.simple_fields_for :grn_serial_items do |b|
@@ -157,10 +157,10 @@
                   = link_to "Clear", upload_grn_file_admins_inventories_path(clear_import: true, inventory_product_id: inventory_product.id), remote: true, class: "clear_import"
                 - else
                 = initiate_table table_type: "table-bordered" do
-                  = table_header ["Serial No", "CT No"]
+                  = table_header ["No", "Serial No", "CT No"]
                   = multi_table_body do
-                    - Rails.cache.fetch([ :serial_item, :i_product, inventory_product.id ]).to_a.each do |is|
-                      = multi_table_row [is.serial_no, is.ct_no]
+                    - Rails.cache.fetch([ :serial_item, :i_product, inventory_product.id ]).to_a.each_with_index do |is, index|
+                      = multi_table_row [index+1]+[is.serial_no, is.ct_no]
             .col-md-4
               = panels panel_type: "warning", header_content: "Instruction" do
                 %ul

@@ -4,10 +4,10 @@
       = link_to "Clear", upload_grn_file_admins_inventories_path(clear_import: true, inventory_product_id: params[:inventory_product_id].to_i), remote: true, class: "clear_import"
 
     = initiate_table table_type: "table-bordered" do
-      = table_header ["Serial No", "CT No"]
+      = table_header ["No", "Serial No", "CT No"]
       = multi_table_body do
-        - Rails.cache.fetch([ :serial_item, :i_product, params[:inventory_product_id].to_i ]).to_a.each do |is|
-          = multi_table_row [is.serial_no, is.ct_no]
+        - Rails.cache.fetch([ :serial_item, :i_product, params[:inventory_product_id].to_i ]).to_a.each_with_index do |is, index|
+          = multi_table_row [index+1]+[is.serial_no, is.ct_no]
 
   - if params[:new_bulk_upload_serial].present?
     $("#bulk_serial_item_render").modal("hide");
@@ -22,10 +22,10 @@
 
   - content_for :content_for_sheet do
     = initiate_table table_type: "table-bordered" do
-      = table_header ["Serial No", "CT No"]
+      = table_header ["No", "Serial No", "CT No"]
       = multi_table_body do
-        - (@sheet.last_row - 1).times.each do |r|
-          = multi_table_row @sheet.row(r+2)
+        - (@sheet.last_row - 1).times.each_with_index do |r, index|
+          = multi_table_row [index+1]+@sheet.row(r+2)
 
   $("#result_sheet").html('#{j content_for :content_for_sheet}');
 
