@@ -27,6 +27,7 @@
   $("##{render_frame}").html("");
 - else
   $("##{render_frame}").html("#{ j render 'admins/inventories/grn/'+@render_template }");
+  Admins.import_csv_upload();
 
 - if !params[:purchase_order].present? and params[:inventory_product_id].present?
   - @selected_grns_for_without_po = true

@@ -1,0 +1,61 @@
+= simple_nested_form_for @inventory_serial_item, url: upload_grn_file_admins_inventories_path, remote: true, html: {id: "bulk_serial_validate_form" } do |ib|
+  = hidden_field_tag :timestamp, @time_store
+  = hidden_field_tag :inventory_product_id, ib.object.product_id
+  = ib.input :inventory_id, as: :hidden
+  = ib.input :product_id, as: :hidden
+  = ib.input :created_by, as: :hidden
+  = ib.input :inv_status_id, as: :hidden, input_html: {value: InventorySerialItemStatus.find_by_code("AV").id }
+  %fieldset
+    %legend New serial item
+    .row
+      .col-md-4
+        = ib.association :product_condition, label_method: :condition, value_method: :id
+      .col-md-4
+        = ib.input :manufatured_date, as: :string, input_html: {class: "datepicker", onblur: "Warranties.update_end_at(this); return false;"}
+      .col-md-4
+        = ib.input :expiry_date, as: :string, input_html: {class: "datepicker updateable_end_at"}
+      .col-md-4
+        = ib.input :scavenge, wrapper: :append
+      .col-md-4
+        = ib.input :parts_not_completed, wrapper: :append
+      .col-md-4
+        = ib.input :damage, wrapper: :append
+      .col-md-4
+        = ib.input :used, wrapper: :append
+      .col-md-4
+        = ib.input :repaired, wrapper: :append
+      .col-md-4
+        = ib.input :reserved, wrapper: :append
+      .col-md-12
+        = ib.input :remarks
+
+    %fieldset
+      %legend Warranty
+      = ib.simple_fields_for :inventory_serial_warranties do |iw|
+        - iw.object.build_inventory_warranty unless iw.object.inventory_warranty.present?
+        = iw.simple_fields_for :inventory_warranty do |w|
+          = w.input :created_by, as: :hidden, input_html: {value: current_user.id }
+          .row
+            .col-md-4
+              = w.association :inventory_warranty_type
+            .col-md-4
+              = w.input :start_at, as: :string, input_html: {class: "datepicker", onblur: "Warranties.update_end_at(this); return false;"}
+            .col-md-4
+              = w.input :end_at, as: :string, input_html: {class: "datepicker updateable_end_at"}
+            .col-md-4
+              = w.input :period_part, as: :integer
+            .col-md-4
+              = w.input :period_labour, as: :integer
+            .col-md-4
+              = w.input :period_onsight, as: :integer
+            .col-md-12
+              = w.input :remarks
+        = iw.link_to_remove "remove warranty", class: "remove_warranty", onclick: "Inventories.remove_warranty_click(this);"
+      = ib.link_to_add "Add warranty", :inventory_serial_warranties, class: "add_warranty add_grn_items #{'hide' if ib.object.inventory_serial_warranties.any? { |w| w.new_record? }}", onclick: "Inventories.add_warranty_click(this);"
+
+    = ib.submit "Add", class: "btn btn-sm btn-success", name: "new_bulk_upload_serial", data: {disable_with: "Please wait..."}
+
+#result_sheet
+
+= javascript_tag do
+  $("#bulk_serial_validate_form").validate();

@@ -220,7 +220,7 @@ module Admins
         else
           @inventory_rack = InventoryRack.new
         end
-        @inventory_all_rack = InventoryRack.order(updated_at: :desc).select{|i| i.persisted? }
+        @inventory_all_rack = InventoryRack.order(updated_at: :desc)
       end
 
     end
@@ -244,7 +244,7 @@ module Admins
         else
           @inventory_brand = InventoryCategory1.new
         end
-        @inventory_brand_all = InventoryCategory1.order(updated_at: :desc).select{|i| i.persisted? }
+        @inventory_brand_all = InventoryCategory1.order(updated_at: :desc)
       end
     end
 
@@ -269,7 +269,7 @@ module Admins
         else
           @inventory_product_category = InventoryCategory2.new
         end
-        @inventory_product_category_all = InventoryCategory2.order(updated_at: :desc).select{|i| i.persisted? }
+        @inventory_product_category_all = InventoryCategory2.order(updated_at: :desc)
       end
     end
 
@@ -304,7 +304,7 @@ module Admins
         else
           @inventory_category = InventoryCategory3.new
         end
-        @inventory_category_all = InventoryCategory3.order(updated_at: :desc).select{|i| i.persisted? }
+        @inventory_category_all = InventoryCategory3.order(updated_at: :desc)
       end
     end
 
@@ -367,7 +367,7 @@ module Admins
         else
           @inventory_product_condition = ProductCondition.new
         end
-        @inventory_product_condition_all = ProductCondition.order(updated_at: :desc).select{|i| i.persisted? }
+        @inventory_product_condition_all = ProductCondition.order(updated_at: :desc)
       end
     end
 
@@ -392,7 +392,7 @@ module Admins
         else
           @inventory_disposal_method = InventoryDisposalMethod.new
         end
-        @inventory_disposal_method_all = InventoryDisposalMethod.order(updated_at: :desc).select{|i| i.persisted? }
+        @inventory_disposal_method_all = InventoryDisposalMethod.order(updated_at: :desc)
       end
     end
 
@@ -417,7 +417,7 @@ module Admins
         else
           @inventory_reason = InventoryReason.new
         end
-        @inventory_reason_all = InventoryReason.order(updated_at: :desc).select{|i| i.persisted? }
+        @inventory_reason_all = InventoryReason.order(updated_at: :desc)
       end
     end
 
@@ -442,7 +442,7 @@ module Admins
         else
           @inventory_manufacture = Manufacture.new
         end
-        @inventory_manufacture_all = Manufacture.order(updated_at: :desc).select{|i| i.persisted? }
+        @inventory_manufacture_all = Manufacture.order(updated_at: :desc)
       end
     end
 
@@ -471,13 +471,12 @@ module Admins
         if params[:create]
           @inventory_unit = InventoryUnit.new inventory_unit_params
           if @inventory_unit.save
-            params[:create] = nil
             @inventory_unit = InventoryUnit.new
           end
         else
           @inventory_unit = InventoryUnit.new
         end
-        @inventory_unit_all = InventoryUnit.order(updated_at: :desc).select{|i| i.persisted? }
+        @inventory_unit_all = InventoryUnit.order(updated_at: :desc)
       end
 
     end
@@ -494,6 +493,7 @@ module Admins
         @render_template = "search_inventory"
         Rails.cache.fetch([:inventory_product_ids]).to_a.each do |ipid|
           Rails.cache.delete([:grn_item, :i_product, ipid ])
+          Rails.cache.delete([ :serial_item, :i_product, ipid ])
         end
         Rails.cache.delete([:inventory_product_ids])
 
@@ -622,6 +622,7 @@ module Admins
         Rails.cache.write([:inventory_product_ids], a)
 
         Rails.cache.delete([:grn_item, :i_product, @inventory_product.id ] )
+        Rails.cache.delete([ :serial_item, :i_product, @inventory_product.id ])
       end
 
       @inventory_products = InventoryProduct.where(id: Rails.cache.fetch([:inventory_product_ids]).to_a)
@@ -686,6 +687,8 @@ module Admins
       Rails.cache.fetch([:inventory_product_ids]).to_a.each do | inventory_product_id |
         inventory_product = InventoryProduct.find inventory_product_id
         grn_item = Rails.cache.fetch( [:grn_item, :i_product, inventory_product.id ] )
+        bulk_serial_items = Rails.cache.fetch([:serial_item, :i_product, inventory_product.id ] )
+        grn_item.inventory_serial_items << bulk_serial_items
         tot_recieved_qty = 0
 
         grn_item.grn_batches.each do |gb|
@@ -712,6 +715,7 @@ module Admins
         grn_item.grn_item_current_unit_cost_histories.create created_by: current_user.id, current_unit_cost: grn_item.current_unit_cost
 
         Rails.cache.delete([:grn_item, :i_product, inventory_product.id ] )
+        Rails.cache.delete([:serial_item, :i_product, inventory_product.id ] )
 
       end
 
@@ -722,6 +726,36 @@ module Admins
       session[:store_id] = nil
 
       redirect_to grn_admins_inventories_url
+
+    end
+
+    def upload_grn_file
+      Inventory
+      if params[:new_bulk_upload_serial].present?
+        accessible_inventory_serial_item_params = inventory_serial_item_params
+        # params[:inventory_product_id].to_i is used to connect to grn.
+        Rails.cache.write([ :serial_item, :i_product, params[:inventory_product_id].to_i ], Rails.cache.fetch([:bulk_serial, params[:timestamp].to_i ]).map { |s| InventorySerialItem.new(accessible_inventory_serial_item_params.merge(serial_no: s[0], ct_no: s[1])) })
+
+        Rails.cache.delete( [:bulk_serial, params[:timestamp].to_i ] )
+
+      elsif params[:clear_import].present?
+        Rails.cache.delete([ :serial_item, :i_product, params[:inventory_product_id].to_i ])
+
+      else
+        uploaded_io = params[:import_csv]
+        reference_resource = params[:refer_resource_class].classify.constantize.find params[:refer_resource_id]
+        File.open(Rails.root.join('public', 'uploads', uploaded_io.original_filename), 'wb') do |file|
+          file.write(uploaded_io.read)
+        end
+        @inventory_serial_item = InventorySerialItem.new inventory_id: params[:inventory_id], product_id: params[:inventory_product_id], created_by: current_user.id
+
+        @sheet = Roo::Spreadsheet.open(File.join(Rails.root, "public", "uploads", uploaded_io.original_filename))
+        @time_store = Time.now.strftime("%H%M%S")
+        Rails.cache.fetch([:bulk_serial, @time_store.to_i ]) { (@sheet.last_row - 1).times.map{|m| @sheet.row(m+2)} }
+        File.delete(File.join(Rails.root, "public", "uploads", uploaded_io.original_filename))
+
+      end
+      render "admins/inventories/grn/upload_grn_file"
 
     end
 
@@ -781,7 +815,7 @@ module Admins
           end
         end
         @stores = Organization.stores
-        @inventory_all = Inventory.order( updatd_at: :desc).select{|i| i.persisted? }
+        @inventory_all = Inventory.order( updatd_at: :desc)
         render "admins/inventories/inventory/inventory"
 
       end
@@ -909,6 +943,10 @@ module Admins
 
       def grn_item_params
         params.require(:grn_item).permit(:id, :recieved_quantity, :unit_cost, :remarks, grn_batches_attributes: [:id, :recieved_quantity, :remaining_quantity, :_destroy, inventory_batch_attributes: [:id, :_destroy, :inventory_id, :product_id, :created_by, :lot_no, :batch_no, :manufatured_date, :expiry_date, :remarks, inventory_batch_warranties_attributes: [:id, :_destroy, inventory_warranty_attributes: [:id, :_destroy, :created_by, :start_at, :end_at, :period_part, :period_labour, :period_onsight, :remarks, :warranty_type_id]] ]], grn_serial_items_attributes: [:id, :_destroy, :recieved_quantity, :remaining, inventory_serial_item_attributes: [:id, :_destroy, :inventory_id, :product_id, :inv_status_id, :created_by, :serial_no, :ct_no, :manufatured_date, :expiry_date, :scavenge, :parts_not_completed, :damage, :used, :repaired, :reserved, :product_condition_id, :remarks, inventory_serial_warranties_attributes: [:id, :_destroy, inventory_warranty_attributes: [:id, :_destroy, :created_by, :start_at, :end_at, :period_part, :period_labour, :period_onsight, :remarks, :warranty_type_id]]]])
+      end
+
+      def inventory_serial_item_params
+        params.require(:inventory_serial_item).permit(:id, :inventory_id, :product_id, :inv_status_id, :created_by, :serial_no, :ct_no, :manufatured_date, :expiry_date, :scavenge, :parts_not_completed, :damage, :used, :repaired, :reserved, :product_condition_id, :remarks, inventory_serial_warranties_attributes: [:id, :_destroy, inventory_warranty_attributes: [:id, :_destroy, :created_by, :start_at, :end_at, :period_part, :period_labour, :period_onsight, :remarks, :warranty_type_id]])
       end
 
       def grn_params

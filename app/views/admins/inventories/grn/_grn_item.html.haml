@@ -11,7 +11,14 @@
   - inventory = inventory_product.inventories.first
   - url = initiate_grn_for_i_product_admins_inventories_path(inventory_product_id: @inventory_product.try(:id))
 
-= simple_nested_form_for @grn_item, url: url, method: :post, remote: true do |g|
+- if @po_item.present?
+  - resource_reference_id = @po_item.id
+  - resource_reference_class = @po_item.class
+- else
+  - resource_reference_id = @inventory_product.id
+  - resource_reference_class = @inventory_product.class
+
+= simple_nested_form_for @grn_item, url: url, method: :post, remote: true, html: {class: "validate_form"} do |g|
 
   - if !need_serial and need_batch
     %fieldset
@@ -65,74 +72,108 @@
       = g.link_to_add "Add", :grn_batches, class: "add_grn_items", onclick: "Inventories.add_warranty_click(this);"
 
   - if need_serial and !need_batch
-    %fieldset
-      %legend GRn Serial items
-      = g.simple_fields_for :grn_serial_items do |b|
-        - b.object.build_inventory_serial_item unless b.object.inventory_serial_item.present?
-
-        = b.input :remaining, as: :hidden, input_html: {value: true }
-
-        = b.simple_fields_for :inventory_serial_item do |ib|
-          = ib.input :inventory_id, as: :hidden, input_html: {value: inventory.id }
-          = ib.input :product_id, as: :hidden, input_html: {value: inventory_product.id }
-          = ib.input :created_by, as: :hidden, input_html: {value: current_user.id }
-          = ib.input :inv_status_id, as: :hidden, input_html: {value: InventorySerialItemStatus.find_by_code("AV").id }
+    = tab_panel do
+      = tab_nav_tab({class: "small_scale_margin-bottom1"}, single_serial_item: {content: "Item by item", active_class: "active"}, bulk_update: {content: "Bulk update"})
+      .tab-content
+        = tab_content tabpointer: :single_serial_item do
           %fieldset
-            %legend New serial item
-            .row
-              .col-md-4
-                = ib.association :product_condition, label_method: :condition, value_method: :id
-              .col-md-4
-                = ib.input :serial_no
-              .col-md-4
-                = ib.input :ct_no, as: :integer, label: "CT No"
-              .col-md-6
-                = ib.input :manufatured_date, as: :string, input_html: {class: "datepicker", onblur: "Warranties.update_end_at(this); return false;"}
-              .col-md-6
-                = ib.input :expiry_date, as: :string, input_html: {class: "datepicker updateable_end_at"}
-              .col-md-4
-                = ib.input :scavenge
-              .col-md-4
-                = ib.input :parts_not_completed
-              .col-md-4
-                = ib.input :damage
-              .col-md-4
-                = ib.input :used
-              .col-md-4
-                = ib.input :repaired
-              .col-md-4
-                = ib.input :reserved
-              .col-md-12
-                = ib.input :remarks
+            %legend GRN Serial items
+            = g.simple_fields_for :grn_serial_items do |b|
+              - b.object.build_inventory_serial_item unless b.object.inventory_serial_item.present?
 
-            %fieldset
-              %legend Warranty
-              = ib.simple_fields_for :inventory_serial_warranties do |iw|
-                - iw.object.build_inventory_warranty unless iw.object.inventory_warranty.present?
-                = iw.simple_fields_for :inventory_warranty do |w|
-                  = w.input :created_by, as: :hidden, input_html: {value: current_user.id }
+              = b.input :remaining, as: :hidden, input_html: {value: true }
+
+              = b.simple_fields_for :inventory_serial_item do |ib|
+                = ib.input :inventory_id, as: :hidden, input_html: {value: inventory.id }
+                = ib.input :product_id, as: :hidden, input_html: {value: inventory_product.id }
+                = ib.input :created_by, as: :hidden, input_html: {value: current_user.id }
+                = ib.input :inv_status_id, as: :hidden, input_html: {value: InventorySerialItemStatus.find_by_code("AV").id }
+                %fieldset
+                  %legend New serial item
                   .row
                     .col-md-4
-                      = w.association :inventory_warranty_type
+                      = ib.association :product_condition, label_method: :condition, value_method: :id
                     .col-md-4
-                      = w.input :start_at, as: :string, input_html: {class: "datepicker", onblur: "Warranties.update_end_at(this); return false;"}
+                      = ib.input :serial_no
                     .col-md-4
-                      = w.input :end_at, as: :string, input_html: {class: "datepicker updateable_end_at"}
+                      = ib.input :ct_no, as: :integer, label: "CT No"
+                    .col-md-6
+                      = ib.input :manufatured_date, as: :string, input_html: {class: "datepicker", onblur: "Warranties.update_end_at(this); return false;"}
+                    .col-md-6
+                      = ib.input :expiry_date, as: :string, input_html: {class: "datepicker updateable_end_at"}
                     .col-md-4
-                      = w.input :period_part, as: :integer
+                      = ib.input :scavenge
                     .col-md-4
-                      = w.input :period_labour, as: :integer
+                      = ib.input :parts_not_completed
                     .col-md-4
-                      = w.input :period_onsight, as: :integer
+                      = ib.input :damage
+                    .col-md-4
+                      = ib.input :used
+                    .col-md-4
+                      = ib.input :repaired
+                    .col-md-4
+                      = ib.input :reserved
                     .col-md-12
-                      = w.input :remarks
-                = iw.link_to_remove "remove warranty", class: "remove_warranty", onclick: "Inventories.remove_warranty_click(this);"
-              = ib.link_to_add "Add warranty", :inventory_serial_warranties, class: "add_warranty add_grn_items #{'hide' if ib.object.inventory_serial_warranties.any? { |w| w.new_record? }}", onclick: "Inventories.add_warranty_click(this);"
+                      = ib.input :remarks
+
+                  %fieldset
+                    %legend Warranty
+                    = ib.simple_fields_for :inventory_serial_warranties do |iw|
+                      - iw.object.build_inventory_warranty unless iw.object.inventory_warranty.present?
+                      = iw.simple_fields_for :inventory_warranty do |w|
+                        = w.input :created_by, as: :hidden, input_html: {value: current_user.id }
+                        .row
+                          .col-md-4
+                            = w.association :inventory_warranty_type
+                          .col-md-4
+                            = w.input :start_at, as: :string, input_html: {class: "datepicker", onblur: "Warranties.update_end_at(this); return false;"}
+                          .col-md-4
+                            = w.input :end_at, as: :string, input_html: {class: "datepicker updateable_end_at"}
+                          .col-md-4
+                            = w.input :period_part, as: :integer
+                          .col-md-4
+                            = w.input :period_labour, as: :integer
+                          .col-md-4
+                            = w.input :period_onsight, as: :integer
+                          .col-md-12
+                            = w.input :remarks
+                      = iw.link_to_remove "remove warranty", class: "remove_warranty", onclick: "Inventories.remove_warranty_click(this);"
+                    = ib.link_to_add "Add warranty", :inventory_serial_warranties, class: "add_warranty add_grn_items #{'hide' if ib.object.inventory_serial_warranties.any? { |w| w.new_record? }}", onclick: "Inventories.add_warranty_click(this);"
+
+                  = b.link_to_remove "remove"
+
+            = g.link_to_add "Add GRN Serial item", :grn_serial_items, class: "add_grn_items", onclick: "Inventories.add_warranty_click(this);"
+          
+        = tab_content tabpointer: :bulk_update do
+          .row
+            .col-md-8
+              .btn.btn-info.btn-mini.fileinput-button{style: "min-height: 10px;"}
+                %span Import CSV
+                = file_field_tag "import_csv", id: "import_csv_upload"
+                #data_carrier{data: {"referenceId" => resource_reference_id, "referenceClass" => resource_reference_class, inventoryid: inventory.id, inventoryproductid: inventory_product.id, grnobjectid: g.object.object_id }}
+              .import_csv_wrapper.small_scale_margin-bottom1
+              .control-buttons
+                - if Rails.cache.fetch([ :serial_item, :i_product, inventory_product.id ]).present?
+                  = link_to "Clear", upload_grn_file_admins_inventories_path(clear_import: true, inventory_product_id: inventory_product.id), remote: true, class: "clear_import"
+                - else
+                = initiate_table table_type: "table-bordered" do
+                  = table_header ["Serial No", "CT No"]
+                  = multi_table_body do
+                    - Rails.cache.fetch([ :serial_item, :i_product, inventory_product.id ]).to_a.each do |is|
+                      = multi_table_row [is.serial_no, is.ct_no]
+            .col-md-4
+              = panels panel_type: "warning", header_content: "Instruction" do
+                %ul
+                  %li Upload file must be <strong>XLSX</strong> format (Eg: Microsoft Excel sheet)
+                  %li File capacity must be less than <strong>1Mb</strong>
+                  %li Format must be <strong>Serial No, CT No</strong> order
 
 
-            = b.link_to_remove "remove"
-
-      = g.link_to_add "Add GRN Serial item", :grn_serial_items, class: "add_grn_items", onclick: "Inventories.add_warranty_click(this);"
+          %script#import_csv_upload_output{type: "text/x-tmpl"}
+            .import_csv_upload.span12
+              {%= o.name %}
+              .progress
+                .progress-bar.progress-bar-success.progress-bar-striped{role: "progressbar", "aria-valuemax" => 100, "aria-valuemin" => 0, "aria-valuenow" => 0}
 
   - if !(need_serial or need_batch)
     = g.input :recieved_quantity, as: :decimal, input_html: {value: (g.object.recieved_quantity || 0), required: true }, label: "Received quantity"
@@ -144,5 +185,14 @@
   = g.submit "Remove", class: "btn btn-link", name: "cancel", data: {disable_with: "Please wait..."}
   = g.submit "Add", class: "btn btn-success btn-sm", name: "next", data: {disable_with: "Please wait..."}
 
+
+#bulk_serial_item_render.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "bulk_serial_item_render", "aria-hidden" => true}
+  .modal-dialog.modal-lg
+    .modal-content
+      .modal-header
+        %h4.modal-title Bulk update
+      .modal-body
+      .modal-footer
+
 = javascript_tag do
-  $("#new_grn_item").validate();
+  $(".validate_form").validate()

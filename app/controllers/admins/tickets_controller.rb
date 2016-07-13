@@ -124,7 +124,7 @@ module Admins
         else
           @reason = Reason.new
         end
-        @reason_all = Reason.order(updated_at: :desc).select{|i| i.persisted? }
+        @reason_all = Reason.order(updated_at: :desc)
         render "admins/tickets/reason"
       end
 
@@ -152,7 +152,7 @@ module Admins
         else
           @payment_item = PaymentItem.new
         end
-        @payment_item_all = PaymentItem.order(updated_at: :desc).select{|i| i.persisted? }
+        @payment_item_all = PaymentItem.order(updated_at: :desc)
       end
     end
 
@@ -177,7 +177,7 @@ module Admins
         else
           @payment_term = PaymentTerm.new
         end
-        @payment_term_all = PaymentTerm.order(updated_at: :desc).select{|i| i.persisted? }
+        @payment_term_all = PaymentTerm.order(updated_at: :desc)
       end
     end
 
@@ -201,7 +201,7 @@ module Admins
         else
           @dispatch_method = DispatchMethod.new
         end
-        @dispatch_method_all = DispatchMethod.order(updated_at: :desc).select{|i| i.persisted? }
+        @dispatch_method_all = DispatchMethod.order(updated_at: :desc)
         render "admins/tickets/dispatch_method"
       end
 
@@ -228,7 +228,7 @@ module Admins
         else
           @accessory = Accessory.new
         end
-        @accessory_all = Accessory.order(updated_at: :desc).select{|i| i.persisted? }
+        @accessory_all = Accessory.order(updated_at: :desc)
         render "admins/tickets/accessories"
       end
 
@@ -254,7 +254,7 @@ module Admins
         else
           @additional_charge = AdditionalCharge.new
         end
-        @additional_charge_all = AdditionalCharge.order(updated_at: :desc).select{|i| i.persisted? }
+        @additional_charge_all = AdditionalCharge.order(updated_at: :desc)
         render "admins/tickets/additional_charge"
       end
 
@@ -284,7 +284,7 @@ module Admins
         else
           @spare_part_description = SparePartDescription.new
         end
-        @spare_part_description_all = SparePartDescription.order(updated_at: :desc).select{|i| i.persisted? }
+        @spare_part_description_all = SparePartDescription.order(updated_at: :desc)
         render "admins/tickets/spare_part_description"
       end
     end
@@ -309,7 +309,7 @@ module Admins
         else
           @ticket_start_action = TicketStartAction.new
         end
-        @ticket_start_action_all = TicketStartAction.order(updated_at: :desc).select{|i| i.persisted? }
+        @ticket_start_action_all = TicketStartAction.order(updated_at: :desc)
         render "admins/tickets/start_action"
       end
     end
@@ -335,7 +335,7 @@ module Admins
         else
           @customer_feedback = Feedback.new
         end
-        @customer_feedback_all = Feedback.order(updated_at: :desc).select{|i| i.persisted? }
+        @customer_feedback_all = Feedback.order(updated_at: :desc)
       end
 
     end
@@ -368,7 +368,7 @@ module Admins
         else
           @general_question = GeQAndA.new
         end
-        @general_question_all = GeQAndA.order(updated_at: :desc).select{|i| i.persisted? }
+        @general_question_all = GeQAndA.order(updated_at: :desc)
       end
 
     end
@@ -424,7 +424,7 @@ module Admins
           @problem_category = ProblemCategory.new
         end
 
-        @problem_category_all = ProblemCategory.order(updated_at: :desc).select{|i| i.persisted? }
+        @problem_category_all = ProblemCategory.order(updated_at: :desc)
       end
     end
 
@@ -498,7 +498,7 @@ module Admins
         else
           @brands_and_category = ProductBrand.new
         end
-        @brands_and_category_all = ProductBrand.order(updated_at: :desc).select{|i| i.persisted? }
+        @brands_and_category_all = ProductBrand.order(updated_at: :desc)
       end
     end
 

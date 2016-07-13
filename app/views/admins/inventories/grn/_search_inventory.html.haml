@@ -43,10 +43,10 @@
       .col-md-12
         #search_inventory_result
 
-  = collapse collapse_type: "info", labelledby: "grn_form_collapse_frame", header_content: "Grn items", collapse_link: "grn_form_collapse_frame_link", collapse_id: "grn_form_collapse" do
+  = collapse collapse_type: "info", labelledby: "grn_form_collapse_frame", header_content: "GRN items", collapse_link: "grn_form_collapse_frame_link", collapse_id: "grn_form_collapse" do
     .row
       .col-md-6
-        %strong Grn No:
+        %strong GRN No:
         = CompanyConfig.first.next_sup_last_grn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_grn_no_format"])
       .col-md-6
         %strong Created by:

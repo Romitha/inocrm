@@ -24,11 +24,11 @@ class GrnItem < ActiveRecord::Base
 
   has_many :grn_serial_items, foreign_key: :grn_item_id
   accepts_nested_attributes_for :grn_serial_items, allow_destroy: true
-  has_many :inventory_serial_item_for_grn_serial_items, through: :grn_serial_items
+  has_many :inventory_serial_items, through: :grn_serial_items
 
-  has_many :grn_serial_parts, foreign_key: :grn_item_id
-  has_many :inventory_serial_item_for_grn_serial_parts, through: :grn_serial_parts
-  has_many :inventory_serial_parts, through: :grn_serial_parts
+  # has_many :grn_serial_parts, foreign_key: :grn_item_id
+  # has_many :inventory_serial_item_for_grn_serial_parts, through: :grn_serial_parts
+  # has_many :inventory_serial_parts, through: :grn_serial_parts
 
   has_many :damages
   accepts_nested_attributes_for :damages, allow_destroy: true
@@ -82,16 +82,16 @@ class GrnSerialItem < ActiveRecord::Base
 
 end
 
-class GrnSerialPart < ActiveRecord::Base
-  self.table_name = "inv_grn_serial_part"
+# class GrnSerialPart < ActiveRecord::Base
+#   self.table_name = "inv_grn_serial_part"
 
-  belongs_to :grn_item
-  belongs_to :inventory_serial_item, foreign_key: :serial_item_id
-  belongs_to :inventory_serial_part, foreign_key: :inv_serial_part_id
+#   belongs_to :grn_item
+#   belongs_to :inventory_serial_item, foreign_key: :serial_item_id
+#   belongs_to :inventory_serial_part, foreign_key: :inv_serial_part_id
 
-  has_many :gin_sources, foreign_key: :grn_serial_part_id
+#   has_many :gin_sources, foreign_key: :grn_serial_part_id
 
-end
+# end
 
 class GrnItemCurrentUnitCostHistory < ActiveRecord::Base
   self.table_name = "inv_grn_item_current_unit_cost_history"

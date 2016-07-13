@@ -3,7 +3,7 @@
   = f.input :srn_no, as: :hidden, input_html: {value: CompanyConfig.first.next_sup_last_srn_no}
   .row
     .col-md-6
-      %strong Srn No:
+      %strong SRN No:
       = CompanyConfig.first.next_sup_last_srn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_srn_no_format"])
     .col-md-6
       %strong Created by:
@@ -21,9 +21,9 @@
       .col-md-3
         = f.input :so_no, label: "Sales Order No"
       .col-md-3
-        = f.association :so_customer, collection: Organization.organization_customers
+        = f.association :so_customer, collection: Organization.organization_customers, label: "SO customer"
       .col-md-3
-        = f.association :requested_module, required: true
+        = f.association :requested_module, required: true, collection: BpmModule.select{|b| [2, 4].include? b.id }
       .col-md-12
         = f.input :remarks
     = f.simple_fields_for :srn_items do |s|

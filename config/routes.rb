@@ -302,6 +302,7 @@ Rails.application.routes.draw do
       collection do
 
         get "grn"
+        match "upload_grn_file", action: :upload_grn_file, via: [:get, :post]
         post "initialize_grn"
         post "create_grn"
         post "initiate_grn_for_i_product"
