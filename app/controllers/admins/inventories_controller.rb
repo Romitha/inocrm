@@ -688,7 +688,7 @@ module Admins
         inventory_product = InventoryProduct.find inventory_product_id
         grn_item = Rails.cache.fetch( [:grn_item, :i_product, inventory_product.id ] )
         bulk_serial_items = Rails.cache.fetch([:serial_item, :i_product, inventory_product.id ] )
-        grn_item.inventory_serial_items << bulk_serial_items
+        grn_item.inventory_serial_items << bulk_serial_items if bulk_serial_items.present?
         tot_recieved_qty = 0
 
         grn_item.grn_batches.each do |gb|
