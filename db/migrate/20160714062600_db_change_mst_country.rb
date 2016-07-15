@@ -1,8 +1,8 @@
 class DbChangeMstCountry < ActiveRecord::Migration
   def change
-    # add_column :mst_country, :local, :boolean, null: false, default: false
+    add_column :mst_country, :local, :boolean, null: false, default: false
 
-    # remove_foreign_key :addresses, name: :fk_addresses_mst_contact_type
+    remove_foreign_key :addresses, name: :fk_addresses_mst_contact_type
     remove_index :addresses, name: :fk_addresses_type_idx
     remove_column :addresses, :type_id
 
