@@ -1,0 +1,92 @@
+.row
+  .col-md-6
+    %strong GIN No:
+    = CompanyConfig.first.next_sup_last_gin_no.to_s.rjust(5, INOCRM_CONFIG["inventory_gin_no_format"])
+  .col-md-6
+    %strong Created by:
+    = current_user.full_name
+  .col-md-6
+    %strong Store:
+    = @srn.store.name
+  .col-md-6
+    %strong Created at:
+    = DateTime.now.try(:strftime, "%Y-%m-%d %H:%M")
+
+%fieldset
+  %legend SRN
+  .row
+    .col-md-6
+      %strong SRN No:
+      = @srn.srn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_srn_no_format"])
+      %br/
+      %strong Required Date:
+      = @srn.required_at.try(:strftime, "%Y-%m-%d")
+      %br/
+    .col-md-6
+      %strong Created by:
+      = @srn.created_by_user.full_name
+      %br/
+      %strong Created at:
+      = @srn.created_at.try(:strftime, "%Y-%m-%d")
+
+%H4 GIN Items
+= simple_nested_form_for @gin, url: "#" do |f|
+  = f.input :store_id, as: :hidden
+  = f.input :srn_id, as: :hidden
+  = collapse_wrapper collapse_id: "gin_form_collapse", labelledby: "gin_form_collapse_labelledby" do
+    - index = 0
+    = f.simple_fields_for :gin_items do |i|
+      - index += 1
+      = collapse collapse_type: "info", labelledby: "gin_form_collapse_search", header_content: "No: #{index}", collapse_link: "gin_form_collapse_search_inv_#{i.object_id}", collapse_id: "gin_form_collapse" do
+    
+        - product = i.object.inventory_product
+        - need_serial = product.inventory_product_info.need_serial.present?
+        - need_batch = product.inventory_product_info.need_batch.present?
+        - stock_quantity = product.inventories.find_by_store_id(f.object.store_id).try(:stock_quantity)
+        - if product.inventories.find_by_store_id(f.object.store_id).try(:inventory_bin)
+          - inventory_bin = product.inventories.find_by_store_id(f.object.store_id).inventory_bin.description
+          - inventory_shelf = product.inventories.find_by_store_id(f.object.store_id).inventory_bin.inventory_shelf.description
+          - inventory_rack = product.inventories.find_by_store_id(f.object.store_id).inventory_bin.inventory_shelf.inventory_rack.description
+
+        = i.input :product_id, as: :hidden
+        = i.input :srn_item_id, as: :hidden
+        %dl.dl-horizontal
+          %dt Item code:
+          %dd= product.generated_item_code
+          %dt Item description:
+          %dd= product.description
+          %dt Unit:
+          %dd= product.inventory_unit.unit
+          %dt Requested quantity:
+          %dd
+          / - if need_serial and need_batch
+          /   %dt PO Remarks:
+          /   %dd {{item_type}}
+          / - else
+          /   %dt SRN Remarks:
+          /   %dd {{item_type}}
+          %dt Balanced Qty to be issued:
+          %dd
+          %dt Stock in hand:
+          %dd= stock_quantity
+          %dt Rack:
+          %dd= inventory_rack
+          %dt Shelf:
+          %dd= inventory_shelf
+          %dt Bin:
+          %dd= inventory_bin
+
+        .row
+          .col-md-12
+            - if need_serial and !need_batch
+              = link_to "Add serial item", "#"
+            - elsif need_batch and !need_serial
+              = link_to "Add batch", "#"
+
+          .col-md-3
+            = i.input :issued_quantity
+          .col-md-9
+            = i.input :remarks
+
+  = f.input :remarks
+  = f.submit "Save", class: "btn btn-sm btn-success"

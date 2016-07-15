@@ -311,6 +311,8 @@ Rails.application.routes.draw do
         get "srn"
         post "create_srn"
 
+        get "gin"
+
         delete "delete_product_category"
         delete "delete_admin_brands_and_category"
         delete "delete_location_rack"

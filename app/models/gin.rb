@@ -5,6 +5,7 @@ class Gin < ActiveRecord::Base
   belongs_to :user
 
   has_many :gin_items
+  accepts_nested_attributes_for :gin_items, allow_destroy: true
   has_many :ticket_spare_part_stores, foreign_key: :inv_gin_id
   has_many :ticket_on_loan_spare_parts, foreign_key: :inv_gin_id
 end

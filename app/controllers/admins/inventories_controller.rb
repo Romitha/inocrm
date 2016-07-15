@@ -490,12 +490,8 @@ module Admins
         @stores = Organization.stores
         @render_template = "search_po"
       when "no"
+        puts Rails.cache.fetch([:inventory_product_ids])
         @render_template = "search_inventory"
-        Rails.cache.fetch([:inventory_product_ids]).to_a.each do |ipid|
-          Rails.cache.delete([:grn_item, :i_product, ipid ])
-          Rails.cache.delete([ :serial_item, :i_product, ipid ])
-        end
-        Rails.cache.delete([:inventory_product_ids])
 
       when "search_inventory"
         @store = Organization.find params[:store_id]
@@ -520,6 +516,12 @@ module Admins
         else
           @inventory_products = @store.inventory_products.where(updated_hash).uniq
         end
+
+        @inventory_products.to_a.each do |ipid|
+          Rails.cache.delete([:grn_item, :i_product, ipid.id ])
+          Rails.cache.delete([:serial_item, :i_product, ipid.id ])
+        end
+        Rails.cache.delete([:inventory_product_ids])
 
         @render_template = "select_inventory"
 
@@ -696,6 +698,7 @@ module Admins
           tot_recieved_qty += gb.recieved_quantity
         end
         grn_item.grn_serial_items.each do |s|
+          s.remaining = true
           tot_recieved_qty += 1
         end
         tot_recieved_qty = grn_item.recieved_quantity if tot_recieved_qty == 0
@@ -872,6 +875,34 @@ module Admins
         flash[:error] = "Unable to save. Please verify any validations"
       end
       redirect_to srn_admins_inventories_url
+    end
+
+    def gin
+      case params[:gin_callback]
+      when "search_srn"
+        search_srn = params[:search_srn].except("srn_date_from", "srn_date_to").map{|k, v| "#{k} like '%#{v}%'"}.join(" and ")
+        @srns = Srn.where(search_srn)
+        @srns = @srns.where("created_at >= :start_date AND created_at <= :end_date", {start_date: params[:search_srn][:srn_date_from], end_date: params[:search_srn][:srn_date_to]}) if params[:search_srn][:srn_date_from].present? and params[:search_srn][:srn_date_to].present?
+      when "select_srn"
+        Inventory
+        Organization
+        @srn = Srn.find params[:srn_id]
+        @gin = @srn.gins.build store_id: @srn.store_id
+        puts @srn.store_id
+        @srn.srn_items.each do |srn_item|
+          # not null: returned_quantity
+          @gin.gin_items.build product_id: srn_item.product_id, srn_item_id: srn_item.id#, product_condition_id: srn_item., 
+        end
+
+      else
+      end
+
+      if request.xhr?
+        render "admins/inventories/gin/gin.js"
+      else
+        render "admins/inventories/gin/gin"
+      end
+      
     end
 
     private

@@ -200,6 +200,10 @@ class CompanyConfig < ActiveRecord::Base
     inv_last_srn_no.to_i+1
   end
 
+  def next_sup_last_gin_no
+    inv_last_gin_no.to_i+1
+  end
+
 end
 
 class Account < ActiveRecord::Base
