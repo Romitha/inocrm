@@ -6,9 +6,7 @@ class AddMoreColumnsInInventories < ActiveRecord::Migration
     add_column :inv_srn, :so_customer_id, "INT UNSIGNED"
 
     add_index :inv_srn, :so_customer_id, name: "fk_inv_srn_organzations1_idx"
-    execute "SET FOREIGN_KEY_CHECKS = 0"
     add_foreign_key :inv_srn, :organizations, name: "fk_inv_srn_organzations1", column: :so_customer_id
-    execute "SET FOREIGN_KEY_CHECKS = 1"
 
   end
 end
