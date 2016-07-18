@@ -4,7 +4,7 @@ class Address < ActiveRecord::Base
 
   TYPES = %w(Billing Shipping Support Office Home)
 
-  validates :address, presence: true
+  validates :address1, presence: true
   # validates :category, presence: true
 
   # validates_uniqueness_of :primary, conditions: -> { where(primary: true)}, scope: [:addressable_id, :addressable_type]

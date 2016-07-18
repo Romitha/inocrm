@@ -122,6 +122,18 @@ class Organization < ActiveRecord::Base
   def self.major_organization(category)
     where(category: category, department_org_id: nil)
   end
+
+  def primary_address
+    addresses.primary_address.first
+  end
+
+  def self.customers
+    joins(accounts_dealer_types: :dealer_type).where("mst_dealer_types.code = 'CUS' or mst_dealer_types.code = 'INDCUS'").references(:dealer_type)
+  end
+
+  def self.suppliers
+    joins(accounts_dealer_types: :dealer_type).where("mst_dealer_types.code = 'SUP' or mst_dealer_types.code = 'INDSUP'").references(:dealer_type)
+  end
 end
 
 class OrganizationType < ActiveRecord::Base

@@ -3,6 +3,7 @@ class Gin < ActiveRecord::Base
   belongs_to :store, class_name: "Organization"
   belongs_to :srn
   belongs_to :user
+  belongs_to :product_condition
 
   has_many :gin_items
   accepts_nested_attributes_for :gin_items, allow_destroy: true

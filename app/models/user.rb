@@ -164,8 +164,8 @@ class Customer < ActiveRecord::Base
 
   belongs_to :mst_title, foreign_key: :title_id
 
-  validates_presence_of [:title_id, :name, :address1]
-  validates :address4, presence: {message: "City can't be blank"}
+  validates_presence_of [:name, :address1]
+  # validates :address4, presence: {message: "City can't be blank"}
 
   belongs_to :district, foreign_key: :district_id
 

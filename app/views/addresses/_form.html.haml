@@ -5,20 +5,21 @@
         %ul.alert.alert-danger
           - address.object.errors.full_messages.each do |error|
             %li= error
-      / .col-md-4
-      /   = address.association :country, label_method: :Country, input_html: {class: "chosen-select"}
-      / .col-md-4
-      /   = address.association :province, input_html: {class: "chosen-select"}
-      / .col-md-4
-      /   = address.association :district, input_html: {class: "chosen-select"}
+      .col-md-4
+        = address.association :country, label_method: :Country, input_html: {class: "chosen-select"}
+      .col-md-4
+        = address.association :province, input_html: {class: "chosen-select"}
+      .col-md-4
+        = address.association :district, input_html: {class: "chosen-select"}
       .col-md-3
         .has-tooltip{data: {toggle: "tooltip", placement: "left"}, title: "Type"}
           = address.input :category, collection: Address::TYPES, include_blank: false, input_html: {class: "chosen-select"}
-          / = address.association :organization_contact_type, required: true, input_html: {class: "chosen-select"}
         = address.input :addressable_type, as: :hidden
         = address.input :addressable_id, as: :hidden
 
-      = address.input :address, wrapper_html: {class: "col-md-8 pull-right"}, label:"Address", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Type the Address"}
+      = address.input :address1, wrapper_html: {class: "col-md-8 pull-right"}, label:"Line1", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Type the Line1"}
+      = address.input :address2, wrapper_html: {class: "col-md-8 pull-right"}, label:"Line2", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Type the Line2"}
+      = address.input :address3, wrapper_html: {class: "col-md-8 pull-right"}, label:"Line3", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Type the Line3"}
 
       - if address.object.addressable_type == "User"
         .form-group.col-md-12

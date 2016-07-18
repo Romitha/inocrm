@@ -274,10 +274,10 @@ class TicketsController < ApplicationController
       customers_borth = customers_nameonly + customers_nameandnum
       @customers = Kaminari.paginate_array(customers_borth.uniq).page(params[:page]).per(INOCRM_CONFIG["pagination"]["customer_per_page"])
 
-      org_customers_nameonly = Customer.where("organization_id != NULL and name like ?", "%#{search_customer}%")
-      org_customers_nameandnum = ContactTypeValue.where("value like ?", "%#{search_customer}%").map{|c| c.customer if c.customer.organization_id.present? }.compact
-      org_customers_borth = org_customers_nameonly + org_customers_nameandnum
-      @organization_customers = Kaminari.paginate_array(org_customers_borth.uniq).page(params[:page]).per(INOCRM_CONFIG["pagination"]["organization_per_page"])
+      org_customers_nameonly = Organization.customers.where("organizations.name like ?", "%#{search_customer}%")
+      # org_customers_nameandnum = ContactTypeValue.where("value like ?", "%#{search_customer}%").map{|c| c.customer if c.customer.organization_id.present? }.compact
+      org_customers_borth = org_customers_nameonly#.select{|o| o.primary_address.present? }# + org_customers_nameandnum
+      @organization_customers = Kaminari.paginate_array(org_customers_borth).page(params[:page]).per(INOCRM_CONFIG["pagination"]["organization_per_page"])
     end
     if params[:customer_id].present?
       existed_customer = Customer.find params[:customer_id]
@@ -301,7 +301,7 @@ class TicketsController < ApplicationController
     @product = Product.find session[:product_id]
     @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
     respond_to do |format|
-      if params[:customer_id]
+      if params[:customer_id].present?
         @new_customer = Customer.find params[:customer_id]
         @ticket.customer_id = @new_customer.id
         @ticket.contact_person1 ||= @product.tickets.last.try(:contact_person1)
@@ -312,6 +312,25 @@ class TicketsController < ApplicationController
         @notice = "Great! #{@new_customer.name} is added."
 
         format.js {render :create_contact_persons}
+
+      elsif params[:organization_id].present?
+        organization = Organization.find params[:organization_id]
+        if organization.primary_address.present?
+          @new_customer = Customer.new organization.primary_address.attributes.select{|a| ["address1", "address2", "address3", "district_id"].include? a }
+          @new_customer.organization_id = organization.id
+          @new_customer.name = organization.name
+
+          if @new_customer.save!
+            @ticket.customer_id = @new_customer.id
+            session[:customer_id] = @new_customer.id
+            Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @ticket)
+            @notice = "Great! #{@new_customer.name} is saved."
+            format.js {render :create_contact_persons}
+          else
+            @display_select_option = true
+            format.js {render :new_customer}
+          end
+        end
       else
         @new_customer = Customer.new customer_params
         if @new_customer.save
@@ -893,7 +912,7 @@ class TicketsController < ApplicationController
       @variables = {ticket: @ticket}
 
     when "estimation"
-
+      Invoice
       # product = @ticket.products.first
       @user_ticket_actions = @ticket.cached_user_ticket_actions
 

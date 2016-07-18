@@ -60,8 +60,6 @@
         %li.dropdown.small_scale_margin-right10{role: "presentation"}
           = link_to "Supports", "#", class: "dropdown-toggle tickets text-hide nav-icon", id: "ticket_dropdown", data: {toggle: "dropdown", placement: "bottom"}, title: "Support tickets", rel: "tooltip"
           %ul.dropdown-menu{"aria-labelledby" => "ticket_dropdown"}
-            %li{role: "presentation"}= link_to "Master Data", master_data_tickets_path
-
             %li{role: "presentation"}= link_to "HP PO", hp_po_inventories_path
             %li{role: "presentation"}= link_to "Create Invoice for HP", create_invoice_for_hp_tickets_path
             %li{role: "presentation"}= link_to "Customer Advance Payment", customer_advance_payment_tickets_path

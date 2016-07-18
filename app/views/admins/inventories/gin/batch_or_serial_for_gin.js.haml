@@ -1,0 +1,6 @@
+$("#batch_or_serial_modal").modal({backdrop: "static"});
+- case params[:batch_or_serial]
+- when "batch"
+  $("#batch_or_serial_modal .modal-body").html("#{j render 'admins/inventories/gin/batch_list'}");
+- when "serial"
+  $("#batch_or_serial_modal .modal-body").html("#{j render 'admins/inventories/gin/serial_list'}");

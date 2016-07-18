@@ -889,12 +889,10 @@ module Admins
         @srn = Srn.find params[:srn_id]
         @gin = @srn.gins.build store_id: @srn.store_id
         puts @srn.store_id
-        @srn.srn_items.each do |srn_item|
+        @srn.srn_items.where(closed: false).each do |srn_item|
           # not null: returned_quantity
           @gin.gin_items.build product_id: srn_item.product_id, srn_item_id: srn_item.id#, product_condition_id: srn_item., 
         end
-
-      else
       end
 
       if request.xhr?
@@ -903,6 +901,22 @@ module Admins
         render "admins/inventories/gin/gin"
       end
       
+    end
+
+    def batch_or_serial_for_gin
+      Inventory
+      @product = InventoryProduct.find params[:product_id]
+      @inventory = product.inventories.find_by_store_id params[:store_id]
+      @grn_items = @product.grn_items.where(srn_item_id: params[:srn_item_id])
+
+      case params[:batch_or_serial]
+      when "batch"
+        @batches = InventoryBatch.where(product_id: params[:product_id], inventory_id: params[:inventory_id])
+      when "serial"
+        @inventory_serial_items = InventorySerialItem.where(product_id: params[:product_id], inventory_id: params[:inventory_id])
+      end
+
+      render "admins/inventories/gin/batch_or_serial_for_gin"
     end
 
     private

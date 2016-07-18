@@ -72,25 +72,22 @@
                 %th
                   Customers
             %tbody
-              - organization_customers.each do |org_customer|
+              - organization_customers.each do |org|
                 %tr
                   %td
-                    = org_customer.organization.name
+                    = link_to_if current_user.has_role?(:admin, Organization.first), org.name, edit_organization_path(org), target: "_blank"
 
-                  %td
-                    = org_customer.address1
-                    %br/
-                    = org_customer.address2
-                    %br/
-                    = org_customer.address3
-                    %br/
-                    = org_customer.address4
-                  %td
-                    - org_customer.contact_type_values.each do |c_value|
-                      #{c_value.contact_type.name}: #{c_value.value}
+                  - if org.primary_address.present?
+                    %td
+                      = org.primary_address.address1
                       %br/
-                  %td
-                    = link_to "select", "#", onclick: "Tickets.assign_customer('#{org_customer.id}', '', 'create'); false;"
+                      = org.primary_address.address2
+                      %br/
+                      = org.primary_address.address3
+                    %td
+                      = link_to "select", "#", onclick: "Tickets.assign_customer('', '#{org.id}', 'create'); false;"
+                  - else
+                    %td{colspan: 2} No primary address for the customer. Please Set any primary address.
 
 .modal-footer
   %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close

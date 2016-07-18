@@ -312,6 +312,7 @@ Rails.application.routes.draw do
         post "create_srn"
 
         get "gin"
+        get "batch_or_serial_for_gin"
 
         delete "delete_product_category"
         delete "delete_admin_brands_and_category"
@@ -372,8 +373,6 @@ Rails.application.routes.draw do
       get "paginate_hp_po_sales_order"
       get "add_spare_parts_so_po_ajax"
       get "view_hp_po_sales_spare_parts_ajax"
-
-      
 
       patch "update_estimation_part_customer_approval"
       patch "update_estimation_external_customer_approval"

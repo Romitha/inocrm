@@ -68,15 +68,14 @@
   .tab-content.small_scale_margin-top1
 
     .tab-pane.limit-height{id: "addresses#{organization.id}"}
-      .row
-        - organization.customers.each do |customer|
-          .col-md-6
-            = render "contact", customer: customer if customer.persisted?
-      = render "contact_form", organization: organization
-
-      .fixed-height
-        - organization.addresses.order("created_at DESC").each do |address|
-          = render "addresses/address", address: address if address.persisted?
+      / .row
+      /   - organization.customers.each do |customer|
+      /     .col-md-6
+      /       = render "contact", customer: customer if customer.persisted?
+      / = render "contact_form", organization: organization
+      = render "addresses/form", address: organization.addresses.build
+      - organization.addresses.order("created_at DESC").each do |address|
+        = render "addresses/address", address: address if address.persisted?
 
     .tab-pane.limit-height{id: "contact_persons#{organization.id}"}
       = link_to "Add Employee", new_user_path(organization_id: encrypt_org(organization.id)), class: "btn btn-primary btn-sm small_scale_margin-bottom1"

@@ -42,11 +42,12 @@
         - product = i.object.inventory_product
         - need_serial = product.inventory_product_info.need_serial.present?
         - need_batch = product.inventory_product_info.need_batch.present?
+        - inventory = product.inventories.find_by_store_id(f.object.store_id)
         - stock_quantity = product.inventories.find_by_store_id(f.object.store_id).try(:stock_quantity)
-        - if product.inventories.find_by_store_id(f.object.store_id).try(:inventory_bin)
-          - inventory_bin = product.inventories.find_by_store_id(f.object.store_id).inventory_bin.description
-          - inventory_shelf = product.inventories.find_by_store_id(f.object.store_id).inventory_bin.inventory_shelf.description
-          - inventory_rack = product.inventories.find_by_store_id(f.object.store_id).inventory_bin.inventory_shelf.inventory_rack.description
+        - if inventory.try(:inventory_bin)
+          - inventory_bin = inventory.inventory_bin.description
+          - inventory_shelf = inventory.inventory_bin.inventory_shelf.description
+          - inventory_rack = inventory.inventory_bin.inventory_shelf.inventory_rack.description
 
         = i.input :product_id, as: :hidden
         = i.input :srn_item_id, as: :hidden
@@ -57,14 +58,6 @@
           %dd= product.description
           %dt Unit:
           %dd= product.inventory_unit.unit
-          %dt Requested quantity:
-          %dd
-          / - if need_serial and need_batch
-          /   %dt PO Remarks:
-          /   %dd {{item_type}}
-          / - else
-          /   %dt SRN Remarks:
-          /   %dd {{item_type}}
           %dt Balanced Qty to be issued:
           %dd
           %dt Stock in hand:
@@ -79,14 +72,26 @@
         .row
           .col-md-12
             - if need_serial and !need_batch
-              = link_to "Add serial item", "#"
+              = link_to "Add serial item", batch_or_serial_for_gin_admins_inventories_path(store_id: f.object.store_id, product_id: i.object.product_id, srn_item_id: i.object.srn_item_id, batch_or_serial: "serial"), remote: true
             - elsif need_batch and !need_serial
-              = link_to "Add batch", "#"
+              = link_to "Add batch", batch_or_serial_for_gin_admins_inventories_path(store_id: f.object.store_id, product_id: i.object.product_id, srn_item_id: i.object.srn_item_id, batch_or_serial: "batch"), remote: true
 
-          .col-md-3
+          .col-md-2
             = i.input :issued_quantity
-          .col-md-9
+          .col-md-3
+            = i.association :product_condition
+          .col-md-7
             = i.input :remarks
+  .row
+    .col-md-12
+      = f.input :remarks
+    .col-md-12
+      = f.submit "Save", class: "btn btn-sm btn-success"
 
-  = f.input :remarks
-  = f.submit "Save", class: "btn btn-sm btn-success"
+#batch_or_serial_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "batch_or_serial_modal", "aria-hidden" => true}
+  .modal-dialog.modal-lg
+    .modal-content
+      .modal-header
+        %h4.modal-title
+      .modal-body
+      .modal-footer

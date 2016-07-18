@@ -1,0 +1,21 @@
+.row
+	.col-md-4
+		%strong Item code:
+		= @product.generated_item_code
+	.col-md-4
+		%strong Item description:
+		= @product.description
+	.col-md-4
+		%strong Unit:
+		= @product.inventory_unit.unit
+	.col-md-4
+		%strong Balance Qty to be issued:
+		#balance_qty
+	.col-md-4
+		%strong Stock Qty:
+		= @inventory.stock_quantity
+	.col-md-4
+		%strong Issue type:
+		= boolean_in_word @product.fifo, "FIFO", "LIFO"
+	.col-md-4
+		%strong Selected Qty:
