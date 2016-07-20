@@ -1,11 +1,11 @@
 = simple_form_for @country, url: country_admins_organizations_path(create: true), method: :post, html: {class: "validate_form"} do |f|
-  .row
-    .col-md-6
-      = f.input :Country
-      
+
   .row
     .col-md-6
       = f.input :code
+  .row
+    .col-md-6
+      = f.input :Country
 
   .row{style: "margin-top:20px; margin-bottom:20px;"}
     .col-md-6

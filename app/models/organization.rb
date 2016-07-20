@@ -63,6 +63,8 @@ class Organization < ActiveRecord::Base
 
   has_many :requested_location_srns, class_name: "Srn", foreign_key: :requested_location_id
 
+  belongs_to :mst_title, foreign_key: :title_id
+
   TYPES = %w(SUP CUS INDSUP INDCUS)
 
   scope :organization_suppliers, -> {where(category: TYPES[0])}
@@ -76,7 +78,7 @@ class Organization < ActiveRecord::Base
   validates_format_of :web_site, :with => URI::regexp(%w(http https))
 
 
-  validates :description, presence: true
+  validates :title_id, presence: true
   validates :name, presence: true
   validates :short_name, presence: true
 

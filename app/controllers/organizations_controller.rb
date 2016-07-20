@@ -46,6 +46,21 @@ class OrganizationsController < ApplicationController
     end
   end
 
+  def dealer_types
+    @organization = Organization.find params[:organization_id]
+    account = @organization.account
+
+    dealer_type_ids = params[:dealer_type_ids].to_a
+
+    DealerType.where(id: dealer_type_ids).each do |did|
+      account.dealer_types << DealerType.find(did)
+    end
+
+    respond_to do |format|
+      format.html {redirect_to edit_organization_url(@organization)}
+    end
+  end
+
   def update
     ContactNumber
     respond_to do |format|
@@ -155,7 +170,7 @@ class OrganizationsController < ApplicationController
     end
 
     def organization_params
-      params.require(:organization).permit(:name, :department_org_id, :category, :description, :logo, :vat_number, :type_id, :web_site, :code, :short_name, addresses_attributes: [:id, :category, :address, :primary, :_destroy],  contact_numbers_attributes: [:id, :category, :value, :_destroy], account_attributes: [:id, :_destroy, :industry_types_id], customers_attributes: [:id, :_destroy, :organization_id, :title_id, :name, :address1, :address2, :address3, :address4, :district_id, contact_type_values_attributes: [:id, :contact_type_id, :value, :_destroy]])
+      params.require(:organization).permit(:title_id, :name, :department_org_id, :category, :description, :logo, :vat_number, :type_id, :web_site, :code, :short_name, addresses_attributes: [:id, :category, :address, :primary, :_destroy],  contact_numbers_attributes: [:id, :category, :value, :_destroy], account_attributes: [:id, :_destroy, :industry_types_id], customers_attributes: [:id, :_destroy, :organization_id, :title_id, :name, :address1, :address2, :address3, :address4, :district_id, contact_type_values_attributes: [:id, :contact_type_id, :value, :_destroy]])
     end
 
     def customer_params

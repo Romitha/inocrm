@@ -1,0 +1,31 @@
+/ .col-md-12
+/   = simple_form_for [dealer_type.organization, dealer_type], html: {class: "validate_form"} do |f|
+/     .row
+/       = panels panel_type: "success", header_content: "Add dealer types" do
+/         - if f.object.errors.present?
+/           %ul.alert.alert-danger
+/             - f.object.errors.full_messages.each do |error|
+/               %li= error
+
+/         / = f.input :name, placeholder: "name of designation",input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Designation name"}
+/         / = f.input :description, placeholder: "description of designation",input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Designation description"}
+/         / = f.input :organization_id, as: :hidden
+/         = f.submit "Add dealer types", class: "btn btn-success pull-right", id: "submit_dealer_type"
+
+- d_odd = organization.accounts_dealer_types.first.dealer_type.id.odd?
+.col-md-12
+  = form_tag dealer_types_organization_path(organization), :method => :post do
+    .row
+      = hidden_field_tag :organization_id, organization.id
+      - DealerType.select{|d| d_odd ? d.id.odd? : d.id.even? }.each do |d|
+        = label_tag d.name
+        = check_box_tag "dealer_type_ids[]", d.id, organization.accounts_dealer_types.pluck(:dealer_types_id).include?(d.id), disabled: (organization.accounts_dealer_types.pluck(:dealer_types_id).include?(d.id)? true : false), class: "dealer_type_check"
+    .row
+      = submit_tag "Save", class: "btn btn-success pull-left hide", id: "save_dealer_type"
+
+/ $(".dealer_type_check").each
+/   enable_save = false
+/   if !$(@).is(":checked")
+/     enable_save = true
+/   if enable_save
+/     $("#save_dealer_type").removeClass("hide")

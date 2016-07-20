@@ -5,6 +5,7 @@ window.Organizations =
     # @toggle_tapbar()
     @organization_logo_upload()
     @chosen_select_disable_search()
+    @dealer_type_check()
     return
 
   show_more_less: ->
@@ -59,6 +60,14 @@ window.Organizations =
     $('.nav-tabs a').click (e) ->
       e.preventDefault()
       $(@).tab('toggle')
+
+  dealer_type_check: ->
+    $(".dealer_type_check").each ->
+      enable_save = false
+      if !$(@).is(":checked")
+        enable_save = true
+      if enable_save
+        $("#save_dealer_type").removeClass("hide")
 
   organization_logo_upload: ->
     $("#organization_logo").fileupload

@@ -1,4 +1,4 @@
-- tapbar = [["Address", "#addresses#{organization.id}"], ["#{[Organization::TYPES[1], Organization::TYPES[3]].include?(organization.category) ? 'Contact Persons' : 'Employees'}", "#contact_persons#{organization.id}"], ["Documents & Attachements", "#documents#{organization.id}"], ["Designations", "#designations#{organization.id}"], ["Organization Relations", "#organization_relations#{organization.id}"], ["Roles and Permissions", "#roles_and_permissions#{organization.id}"]]
+- tapbar = [["Address", "#addresses#{organization.id}"], ["#{[Organization::TYPES[1], Organization::TYPES[3]].include?(organization.category) ? 'Contact Persons' : 'Employees'}", "#contact_persons#{organization.id}"], ["Documents & Attachements", "#documents#{organization.id}"], ["Designations", "#designations#{organization.id}"], ["Organization Relations", "#organization_relations#{organization.id}"], ["Roles and Permissions", "#roles_and_permissions#{organization.id}"], ["Dealer Types", "#dealer_types#{organization.id}"]]
 
 = simple_nested_form_for organization, html: {class: "validate_form"} do |f|
   - if organization.errors.present?
@@ -23,6 +23,10 @@
 
 
     .col-md-10.pull-right
+      - if params[:category].to_s[0..2] == "IND"
+        = f.label "Title ", {style: "color: #900303;"}
+        = f.select :title_id, MstTitle.all.uniq{|t| t.id}.map{|o| [o.title, o.id]}, {required: true}
+
       = f.input :name, placeholder: "Name of Organization / Business", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Organization/Business Name"}
       / %blockquote
       = f.input :short_name, placeholder: "Short name of Organization / Business", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Short name of Organization / Business"}
@@ -60,7 +64,7 @@
         - tapbar.each do |link_info|
           - if tapbar[5]==link_info or tapbar[7] == link_info
             %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"} unless(Organization::TYPES[2,3].include?(organization.category))
-          - elsif tapbar[6]==link_info
+          - elsif tapbar[7]==link_info
             %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"} if organization.refers=="VSIS"
           - else
             %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"}
@@ -108,3 +112,9 @@
           = link_to "Add Roles and set Permissions", new_organization_roles_and_permission_path(organization), class: "btn btn-primary btn-sm small_scale_margin-bottom1"
           - organization.roles.order("created_at DESC").each do |role|
             = render "roles_and_permissions/role", role: role
+
+    .tab-pane.limit-height{id: "dealer_types#{organization.id}"}
+      = render "dealer_types/form", organization: organization
+
+      / - organization.accounts_dealer_types.order("created_at DESC").each do |accounts_dealer_type|
+      /   = render "dealer_types/dealer_type", dealer_type: accounts_dealer_type

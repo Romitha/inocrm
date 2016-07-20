@@ -58,6 +58,7 @@ Rails.application.routes.draw do
       patch "demote_as_department"
       delete "remove_department_org"
       put "inline_customer_contact_detail"
+      post "dealer_types"
     end
     concerns :attachable
   end
