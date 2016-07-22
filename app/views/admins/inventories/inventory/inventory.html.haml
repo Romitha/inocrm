@@ -50,6 +50,12 @@
           %strong Created by:
           = inventory.created_by_user.email
         .col-md-6
+          %strong Rack description:
+          = inventory.inventory_bin.try(:inventory_shelf).try(:inventory_rack).try(:description)
+        .col-md-6
+          %strong Shelf description:
+          = inventory.inventory_bin.try(:inventory_shelf).try(:description)
+        .col-md-6
           %strong Bin description:
           = inventory.inventory_bin.try(:description)
         .col-md-12
