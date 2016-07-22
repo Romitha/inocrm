@@ -1,4 +1,4 @@
-- tapbar = [["Address", "#addresses#{organization.id}"], ["#{[Organization::TYPES[1], Organization::TYPES[3]].include?(organization.category) ? 'Contact Persons' : 'Employees'}", "#contact_persons#{organization.id}"], ["Documents & Attachements", "#documents#{organization.id}"], ["Designations", "#designations#{organization.id}"], ["Organization Relations", "#organization_relations#{organization.id}"], ["Roles and Permissions", "#roles_and_permissions#{organization.id}"], ["Departments", "#organization_departments#{organization.id}"]]
+- tapbar = [["Address", "#addresses#{organization.id}"], ["#{[Organization::TYPES[1], Organization::TYPES[3]].include?(organization.category) ? 'Contact Persons' : 'Employees'}", "#contact_persons#{organization.id}"], ["Documents & Attachements", "#documents#{organization.id}"], ["Designations", "#designations#{organization.id}"], ["Organization Relations", "#organization_relations#{organization.id}"], ["Roles and Permissions", "#roles_and_permissions#{organization.id}"]]
 
 .row
   .col-md-1
@@ -83,12 +83,12 @@
                   = tab_content tabpointer: :child_org do
                     = render "organizations/members", organizations: organization.members
 
-      .tab-pane.limit-height{id: "organization_departments#{organization.id}"}
-        .fixed-height
-          - organization.members.each do |org|
-            - if org.organization_type.try(:code) == "DPT"
-              .col-md-12
-                = org.name
+      / .tab-pane.limit-height{id: "organization_departments#{organization.id}"}
+      /   .fixed-height
+      /     - organization.members.each do |org|
+      /       - if org.organization_type.try(:code) == "DPT"
+      /         .col-md-12
+      /           = org.name
 
       - if organization.refers == "VSIS"
         .tab-pane.limit-height{id: "roles_and_permissions#{organization.id}"}
