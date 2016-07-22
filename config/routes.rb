@@ -314,6 +314,7 @@ Rails.application.routes.draw do
 
         get "gin"
         get "batch_or_serial_for_gin"
+        post "create_gin"
 
         delete "delete_product_category"
         delete "delete_admin_brands_and_category"

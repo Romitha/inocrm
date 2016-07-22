@@ -30,7 +30,7 @@
       = @srn.created_at.try(:strftime, "%Y-%m-%d")
 
 %H4 GIN Items
-= simple_nested_form_for @gin, url: "#" do |f|
+= simple_nested_form_for @gin, url: create_gin_admins_inventories_path do |f|
   = f.input :store_id, as: :hidden
   = f.input :srn_id, as: :hidden
   = collapse_wrapper collapse_id: "gin_form_collapse", labelledby: "gin_form_collapse_labelledby" do
@@ -38,12 +38,12 @@
     = f.simple_fields_for :gin_items do |i|
       - index += 1
       = collapse collapse_type: "info", labelledby: "gin_form_collapse_search", header_content: "No: #{index}", collapse_link: "gin_form_collapse_search_inv_#{i.object_id}", collapse_id: "gin_form_collapse" do
-    
         - product = i.object.inventory_product
         - need_serial = product.inventory_product_info.need_serial.present?
         - need_batch = product.inventory_product_info.need_batch.present?
         - inventory = product.inventories.find_by_store_id(f.object.store_id)
         - stock_quantity = product.inventories.find_by_store_id(f.object.store_id).try(:stock_quantity)
+
         - if inventory.try(:inventory_bin)
           - inventory_bin = inventory.inventory_bin.description
           - inventory_shelf = inventory.inventory_bin.inventory_shelf.description
@@ -75,13 +75,21 @@
               = link_to "Add serial item", batch_or_serial_for_gin_admins_inventories_path(store_id: f.object.store_id, product_id: i.object.product_id, srn_item_id: i.object.srn_item_id, batch_or_serial: "serial"), remote: true
             - elsif need_batch and !need_serial
               = link_to "Add batch", batch_or_serial_for_gin_admins_inventories_path(store_id: f.object.store_id, product_id: i.object.product_id, srn_item_id: i.object.srn_item_id, batch_or_serial: "batch"), remote: true
+          - if !need_serial and !need_batch
+            .col-md-2
+              = i.input :issued_quantity
+          - else
+            = i.input :issued_quantity, as: :hidden, input_html: {id: "issued_quantity_input#{i.object.srn_item_id}"}
+            .col-md-2
+              %strong Issued quantity
+              %div{id: "issued_quantity_text#{i.object.srn_item_id}"}
 
-          .col-md-2
-            = i.input :issued_quantity
           .col-md-3
-            = i.association :product_condition
+            = i.association :product_condition, label_method: :condition
           .col-md-7
             = i.input :remarks
+          .col-md-12
+            %div{id: "batch_or_serial_frame#{i.object.srn_item_id}"}
   .row
     .col-md-12
       = f.input :remarks
@@ -89,9 +97,3 @@
       = f.submit "Save", class: "btn btn-sm btn-success"
 
 #batch_or_serial_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "batch_or_serial_modal", "aria-hidden" => true}
-  .modal-dialog.modal-lg
-    .modal-content
-      .modal-header
-        %h4.modal-title
-      .modal-body
-      .modal-footer

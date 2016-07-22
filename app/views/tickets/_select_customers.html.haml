@@ -60,6 +60,7 @@
                       = link_to "edit", "#", onclick: "Tickets.customer_select('create', '#{customer.id}'); false;; false;"
 
     #organization.tab-pane{:role => "tabpanel"}
+      = paginate organization_customers, remote: true, method: :get if organization_customers.present?
       .row
         .table-responsive.col-md-8.table-stiped.table
           %table.table

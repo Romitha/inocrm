@@ -23,6 +23,9 @@ class InventoryProduct < ActiveRecord::Base
 
   belongs_to :inventory_unit, foreign_key: :unit_id
   has_many :inventory_serial_items, foreign_key: :product_id
+  has_many :inventory_serial_parts, foreign_key: :product_id
+  has_many :inventory_batches, foreign_key: :product_id
+  has_many :grn_batches, through: :inventory_batches
 
   has_one :inventory_product_info, foreign_key: :product_id
   accepts_nested_attributes_for :inventory_product_info, allow_destroy: true
@@ -31,9 +34,6 @@ class InventoryProduct < ActiveRecord::Base
 
   has_many :grn_items, foreign_key: :product_id
 
-  has_many :inventory_serial_parts, foreign_key: :product_id
-
-  has_many :inventory_serial_items
   has_many :ticket_spare_part_non_stocks, foreign_key: :inv_product_id
   has_many :approved_ticket_spare_part_non_stocks, class_name: "TicketSparePartNonStock", foreign_key: :approved_inv_product_id
 

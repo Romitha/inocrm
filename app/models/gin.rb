@@ -3,7 +3,6 @@ class Gin < ActiveRecord::Base
   belongs_to :store, class_name: "Organization"
   belongs_to :srn
   belongs_to :user
-  belongs_to :product_condition
 
   has_many :gin_items
   accepts_nested_attributes_for :gin_items, allow_destroy: true
@@ -18,6 +17,7 @@ class GinItem < ActiveRecord::Base
   belongs_to :inventory_product, foreign_key: :product_id
   belongs_to :srn_item, foreign_key: :srn_item_id
   belongs_to :currency
+  belongs_to :product_condition
 
   has_many :gin_sources#, foreign_key: :gin_item_id
   has_many :ticket_spare_part_stores, foreign_key: :inv_gin_item_id

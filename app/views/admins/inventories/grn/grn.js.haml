@@ -12,7 +12,7 @@
   $("a[href='#grn_form_collapse_frame_link']").trigger("click");
   }
 
-- if params[:next]
+- if params[:next] or params[:cancel]
   - if @grn_item.errors.present?
     $("##{render_frame}").html("#{ j render 'admins/inventories/grn/grn_item' }");
   - else
@@ -23,8 +23,6 @@
     - else
       $("##{render_frame}").html("");
 
-- elsif params[:cancel]
-  $("##{render_frame}").html("");
 - else
   $("##{render_frame}").html("#{ j render 'admins/inventories/grn/'+@render_template }");
   Admins.import_csv_upload();

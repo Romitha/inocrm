@@ -1,0 +1,76 @@
+= collapse_wrapper collapse_id: "gin_serial_item_collapse_#{params[:srn_item_id].to_i}", labelledby: "gin_serial_item_collapse_labelledby" do
+  - Rails.cache.fetch([:gin, (params[:serial_flag] == 'true' ? :grn_serial_items : :grn_batches), params[:srn_item_id].to_i]).to_a.each do |serial_or_batch_item|
+    = collapse collapse_type: "info", labelledby: "gin_serial_item_collapse_search", header_content: "No: #{serial_or_batch_item.grn_item.grn.grn_no}", collapse_link: "gin_serial_item_collapse_search_inv_#{serial_or_batch_item.id}", collapse_id: "gin_serial_item_collapse_#{params[:srn_item_id].to_i}" do
+      - serial_or_batch = serial_or_batch_item.try(:inventory_serial_item).present? ? serial_or_batch_item.inventory_serial_item : serial_or_batch_item.inventory_batch
+      %fieldset
+        - if serial_or_batch.is_a? InventorySerialItem
+          %legend Serial No: #{serial_or_batch.serial_no}
+        - else
+          %legend Serial No: #{serial_or_batch.batch_no}
+
+        .row
+          - if serial_or_batch.is_a? InventorySerialItem
+            .col-md-3
+              %strong Serial No:
+              = serial_or_batch.serial_no
+            .col-md-3
+              %strong CT No:
+              = serial_or_batch.ct_no
+            .col-md-3
+              %strong Condition:
+              = serial_or_batch.product_condition.condition
+            .col-md-3
+              %strong Scavenge:
+              = boolean_in_word serial_or_batch.scavenge, "Yes", "No"
+            .col-md-3
+              %strong Part not completed:
+              = boolean_in_word serial_or_batch.parts_not_completed, "Yes", "No"
+            .col-md-3
+              %strong Damaged:
+              = boolean_in_word serial_or_batch.damage, "Yes", "No"
+            .col-md-3
+              %strong Used:
+              = boolean_in_word serial_or_batch.used, "Yes", "No"
+            .col-md-3
+              %strong Repaired:
+              = boolean_in_word serial_or_batch.repaired, "Yes", "No"
+            .col-md-3
+              %strong Reserved:
+              = boolean_in_word serial_or_batch.reserved, "Yes", "No"
+          - else
+            %strong Batch No:
+            = serial_or_batch.batch_no
+          .col-md-3
+            %strong Manufactured date:
+            = serial_or_batch.manufatured_date.try(:strftime, "%Y-%m-%d")
+          .col-md-3
+            %strong Expiry date:
+            = serial_or_batch.expiry_date.try(:strftime, "%Y-%m-%d")
+          .col-md-12
+            %strong Remarks
+            = serial_or_batch.remarks
+        - serial_or_batch.inventory_warranties.each do |inventory_warranty|
+          %fieldset
+            %legend Warranty
+            .row
+              .col-md-3
+                %strong Type:
+                = inventory_warranty.inventory_warranty_type.name
+              .col-md-3
+                %strong Start at:
+                = inventory_warranty.start_at.try(:strftime, "%Y-%m-%d")
+              .col-md-3
+                %strong End at:
+                = inventory_warranty.end_at.try(:strftime, "%Y-%m-%d")
+              .col-md-3
+                %strong Period part:
+                = inventory_warranty.period_part
+              .col-md-3
+                %strong Period labour:
+                = inventory_warranty.period_labour
+              .col-md-3
+                %strong Period On-Sight(in months):
+                = inventory_warranty.period_onsight
+              .col-md-12
+                %strong Remarks:
+                = inventory_warranty.remarks

@@ -727,3 +727,37 @@ window.Inventories =
       alert "There are some errors. please try again"
     )
     $("#search_product").modal("hide")
+
+  selected_quantity: (e)->
+    selected_quantity = parseInt($("#selected_quantity").text())
+    stock_quantity = parseInt($("#stock_quantity").text())
+    if $(e).is(":checked")
+      selected_quantity += 1
+    else
+      selected_quantity -= 1
+    $("#selected_quantity").text(selected_quantity)
+    $("#balance_to_be_issued").text(stock_quantity-selected_quantity)
+
+  apply_for_batch: ->
+    balance_quantity_batch = parseFloat($("#balance_quantity_batch").data("fixed"))
+    $(".batch_quantity").keyup ->
+      selected_quantity_batch = 0
+      this_elem = $(this)
+      this_value = parseFloat(this_elem.val())
+      remaining_quantity_batch = parseFloat(this_elem.parent().siblings().find(".remaining_quantity_batch").text())
+
+      if !isNaN(this_value)
+
+        if this_value > 0
+          this_elem.next().find("input").prop("checked", true)
+          if this_value > remaining_quantity_batch
+            this_elem.val(remaining_quantity_batch)
+        else
+          this_elem.next().find("input").prop("checked", false)
+
+        $(".batch_quantity").each ->
+          if !isNaN($(this).val())
+            selected_quantity_batch += parseFloat($(this).val())
+
+        $("#selected_quantity_batch").text(selected_quantity_batch)
+        $("#balance_quantity_batch").text(balance_quantity_batch - selected_quantity_batch)

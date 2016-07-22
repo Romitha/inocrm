@@ -1,0 +1,70 @@
+.modal-dialog.modal-lg
+  .modal-content
+    .modal-header
+      %h4.modal-title Select Serial items
+    .modal-body
+      .row
+        .col-md-4
+          %strong Store:
+          = @store.name
+        .col-md-4
+          %strong Item code:
+          = @product.generated_item_code
+        .col-md-4
+          %strong Item description:
+          = @product.description
+        .col-md-4
+          %strong Stock quantity:
+          #stock_quantity= @inventory.stock_quantity
+        .col-md-4
+          %strong Unit:
+          = @product.inventory_unit.unit
+        .col-md-4
+          %strong Issue type:
+          = boolean_in_word @product.fifo, "FIFO", "LIFO"
+        .col-md-4
+          %strong Selected quantity:
+          #selected_quantity 0
+        .col-md-4
+          %strong Balance Qty to be issued:
+          #balance_to_be_issued= @inventory.stock_quantity
+
+      %hr
+      .row
+        .col-md-2
+          %strong NO
+        .col-md-2
+          %strong GRN No
+        .col-md-2
+          %strong Serial No
+        .col-md-2
+          %strong CT No
+        .col-md-2
+          %strong Condition
+        .col-md-2
+          %strong Select
+
+      %hr
+      = form_tag batch_or_serial_for_gin_admins_inventories_path(batch_or_serial: "issued_qty", serial_flag: "true"), method: :get, remote: true do
+        = hidden_field_tag :srn_item_id, params[:srn_item_id]
+        - counter = 0
+        - @grn_items.each do |grn_item|
+          - grn_item.grn_serial_items.where(remaining: true).each_with_index do |grn_serial_item, index1|
+            .row
+              .col-md-2
+                = counter += 1
+              .col-md-2
+                = grn_item.grn.grn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_grn_no_format"])
+              .col-md-2
+                = grn_item.inventory_product.generated_item_code
+              .col-md-2
+                = grn_serial_item.inventory_serial_item.try(:ct_no)
+              .col-md-2
+                = grn_serial_item.inventory_serial_item.try(:product_condition).try(:condition)
+              .col-md-2
+                = check_box_tag "grn_serial_item_ids[]", grn_serial_item.id, false, onchange: "Inventories.selected_quantity(this); return false;"
+          - if grn_item.grn_serial_items.where(remaining: true).any?
+            %hr
+
+        .modal-footer
+          = submit_tag "Select", class: "btn btn-sm btn-success btn-primary"

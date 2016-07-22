@@ -4,6 +4,7 @@ class Grn < ActiveRecord::Base
   belongs_to :store, class_name: "Organization"
   belongs_to :srn
   belongs_to :inventory_po, foreign_key: :po_id
+  belongs_to :supplier#, -> { where(id: 2) }#, foreign_key: :po_id
 
   has_many :grn_items
 

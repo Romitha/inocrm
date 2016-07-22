@@ -1,6 +1,13 @@
 $("#batch_or_serial_modal").modal({backdrop: "static"});
 - case params[:batch_or_serial]
 - when "batch"
-  $("#batch_or_serial_modal .modal-body").html("#{j render 'admins/inventories/gin/batch_list'}");
+  $("#batch_or_serial_modal").html("#{j render 'admins/inventories/gin/batch_list'}");
 - when "serial"
-  $("#batch_or_serial_modal .modal-body").html("#{j render 'admins/inventories/gin/serial_list'}");
+  $("#batch_or_serial_modal").html("#{j render 'admins/inventories/gin/serial_list'}");
+- when "issued_qty"
+  $("#batch_or_serial_modal").modal("hide");
+  $("#issued_quantity_input#{params[:srn_item_id]}").val("#{@count}");
+  $("#issued_quantity_text#{params[:srn_item_id]}").text("#{@count}");
+  $("#batch_or_serial_frame#{params[:srn_item_id]}").html("#{j render 'admins/inventories/gin/gin_items'}");
+
+Inventories.apply_for_batch();
