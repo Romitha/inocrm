@@ -20,7 +20,7 @@
           %td= srn.srn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_srn_no_format"])
           %td= srn.created_at.try(:strftime, "%Y-%m-%d")
           %td= srn.required_at.try(:strftime, "%Y-%m-%d")
-          %td{title: srn.remarks}= srn.remarks.truncate(50)
+          %td{title: srn.remarks}= srn.remarks.try :truncate, 50
           %td= srn.created_by_user.full_name
           %td= link_to "Select", gin_admins_inventories_path(gin_callback: "select_srn", srn_id: srn.id), remote: true
   %hr

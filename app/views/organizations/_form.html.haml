@@ -113,8 +113,9 @@
           - organization.roles.order("created_at DESC").each do |role|
             = render "roles_and_permissions/role", role: role
 
-    .tab-pane.limit-height{id: "dealer_types#{organization.id}"}
-      = render "dealer_types/form", organization: organization
+    - unless organization.refers == "VSIS"
+      .tab-pane.limit-height{id: "dealer_types#{organization.id}"}
+        = render "dealer_types/form", organization: organization
 
       / - organization.accounts_dealer_types.order("created_at DESC").each do |accounts_dealer_type|
       /   = render "dealer_types/dealer_type", dealer_type: accounts_dealer_type
