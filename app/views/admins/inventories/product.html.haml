@@ -14,7 +14,7 @@
 
   .row
     .col-md-4
-      = f.input :serial_no, as: :decimal, input_html: {required: true, maxlength: 6, minlength: 6}
+      = f.input :serial_no, as: :string, input_html: {required: true, maxlength: 6, minlength: 6}
       / value: InventorySerialItem.last.serial_no, or value: InventoryProduct.last.serial_no + 1,reomve from above
       = f.input :serial_no_order, as: :hidden, input_html: {value: InventoryProduct.all.count + 1}
     .col-md-4
@@ -102,7 +102,7 @@
 
 = collapse_wrapper collapse_id: "inventory_product_list", labelledby: "inv_product_labelledby" do
   - @inventory_product_all.each_with_index do |inv_product, index|
-    = collapse collapse_type: "info", labelledby: "labelledby_#{inv_product.id}", header_content: "Inventory Product Serial No : #{inv_product.serial_no}", collapse_link: "invunitlink_#{inv_product.id}", collapse_id: "inventory_product_list" do
+    = collapse collapse_type: "info", labelledby: "labelledby_#{inv_product.id}", header_content: "Inventory Product: #{inv_product.generated_item_code} #{inv_product.description}", collapse_link: "invunitlink_#{inv_product.id}", collapse_id: "inventory_product_list" do
       .pull-right
         - unless inv_product.is_used_anywhere?
           = link_to delete_inventory_product_form_admins_inventories_path(product_id: inv_product.id), method: :delete, rel: "tooltip", :data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Delete" do
