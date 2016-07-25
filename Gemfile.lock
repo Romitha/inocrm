@@ -424,6 +424,3 @@ DEPENDENCIES
   watir
   web-console
   websocket-rails
-
-BUNDLED WITH
-   1.11.2

@@ -2617,19 +2617,22 @@ class TicketsController < ApplicationController
 
     if @onloan_or_store.approved_inventory_product.inventory_product_info.need_serial
       @fifo_grn_serial_items = []
+
+      grn_item_ids = @onloan_or_store.approved_inventory_product.grn_items.select{|grn_item| grn_item.grn.store_id == @onloan_or_store.approved_store_id}.map{|grn_item| grn_item.id}
+
       if @onloan_or_store.approved_inventory_product.fifo
-        @fifo_grn_serial_items = GrnSerialItem.includes(:inventory_serial_item).where(grn_item_id: @onloan_or_store.approved_inventory_product.grn_items.select{|grn_item| grn_item.grn.store_id == @onloan_or_store.approved_store_id}.map{|grn_item| grn_item.id}, remaining: 1).sort{|p, n| p.grn_item.grn.created_at <=> n.grn_item.grn.created_at}
+        @fifo_grn_serial_items = GrnSerialItem.includes(:inventory_serial_item).where(grn_item_id: grn_item_ids, remaining: 1).sort{|p, n| p.grn_item.grn.created_at <=> n.grn_item.grn.created_at}
 
         @paginated_fifo_grn_serial_items = Kaminari.paginate_array(@fifo_grn_serial_items).page(params[:page]).per(10)
       else
-        @fifo_grn_serial_items = GrnSerialItem.includes(:inventory_serial_item).where(grn_item_id: @onloan_or_store.approved_inventory_product.grn_items.select{|grn_item| grn_item.grn.store_id == @onloan_or_store.approved_store_id}.map{|grn_item| grn_item.id}, remaining: 1).sort{|p, n| n.grn_item.grn.created_at <=> p.grn_item.grn.created_at}
+        @fifo_grn_serial_items = GrnSerialItem.includes(:inventory_serial_item).where(grn_item_id: grn_item_ids, remaining: 1).sort{|p, n| n.grn_item.grn.created_at <=> p.grn_item.grn.created_at}
 
         @paginated_fifo_grn_serial_items = Kaminari.paginate_array(@fifo_grn_serial_items).page(params[:page]).per(10)
       end
     elsif @onloan_or_store.approved_inventory_product.inventory_product_info.need_batch
-      @grn_batches = GrnBatch.where(grn_item_id: @onloan_or_store.approved_inventory_product.grn_item_ids).where("remaining_quantity > 0").page(params[:page]).per(10)
+      @grn_batches = GrnBatch.where(grn_item_id: grn_item_ids).where("remaining_quantity > 0").page(params[:page]).per(10)
     else
-      grn_items = @onloan_or_store.approved_inventory_product.grn_items.where(inventory_not_updated: false).where("remaining_quantity > 0")
+      grn_items = @onloan_or_store.approved_inventory_product.grn_items.where(inventory_not_updated: false).where("remaining_quantity > 0").select{|grn_item| grn_item.grn.store_id == @onloan_or_store.approved_store_id}
 
       @grns = Kaminari.paginate_array(grn_items).page(params[:page]).per(10)
     end

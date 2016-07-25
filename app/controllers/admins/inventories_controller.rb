@@ -939,13 +939,175 @@ module Admins
       @product = InventoryProduct.find params[:product_id]
       @inventory = @product.inventories.find_by_store_id params[:store_id]
       @srn_item = SrnItem.find params[:srn_item_id]
-      @grn_items = @product.grn_items.joins(:grn).where("remaining_quantity > 0 ").order("inv_grn.created_at #{@product.fifo ? 'ASC' : 'DESC' }")
+      @grn_items = @product.grn_items.joins(:grn).where("remaining_quantity > 0 and inv_grn.store_id = #{@store.id}").order("inv_grn.created_at #{@product.fifo ? 'ASC' : 'DESC' }")
       render "admins/inventories/gin/batch_or_serial_for_gin"
 
     end
 
     def create_gin
       @gin = Gin.new gin_params
+
+      @gin.gin_items.each{|gin_item| @gin.gin_items.delete(gin_item) if gin_item.new_record? and gin_item.issued_quantity <= 0 }
+
+      @gin.gin_items.each do |gin_item|
+
+        iss_from_inventory_not_updated = false
+        issued = false
+        product_id = nil
+        tot_cost_price  = nil
+        main_product_id  = nil
+        currency_id  = nil
+        iss_grn_item_id  = nil
+        iss_grn_batch_id  = nil
+        iss_grn_serial_item_id  = nil
+        iss_grn_serial_part_id  = nil
+        iss_main_part_grn_serial_item_id  = nil
+        iss_quantity = 0
+        returnable = false
+
+
+        if gin_item.srn_item.issue_terminated
+          gin_item.issued_quantity = 0
+          gin_item.srn_item.update closed: true
+        end
+
+        if gin_item.issued_quantity > 0
+
+          unless gin_item.srn_item.main_product_id.present?
+            returnable = gin_item.srn_item.returnable
+            @spare_part = gin_item.srn_item.spare_part
+
+            store = @gin.store
+            product = gin_item.inventory_product
+            @inventory = product.inventories.find_by_store_id store.id
+
+            if product.inventory_product_info.need_serial #Issue Serial Item
+              Rails.cache.fetch([ :gin, :grn_serial_items, gin_item.srn_item_id.to_i ]).to_a.each do |grn_serial_item|
+
+                iss_from_inventory_not_updated = grn_serial_item.grn_item.inventory_not_updated
+                if grn_serial_item.remaining and (grn_serial_item.inventory_serial_item.inv_status_id == InventorySerialItemStatus.find_by_code("AV").id) and not iss_from_inventory_not_updated
+
+                  product_id = grn_serial_item.inventory_serial_item.inventory_product.id
+                  tot_cost_price  = grn_serial_item.grn_item.current_unit_cost.to_d + grn_serial_item.inventory_serial_item.inventory_serial_items_additional_costs.sum(:cost).to_d #inventory_serial_items_additional_costs
+                  currency_id  = grn_serial_item.grn_item.currency_id
+
+                  iss_grn_serial_item_id  = grn_serial_item.id
+                  iss_grn_item_id  = grn_serial_item.grn_item.id
+
+                  grn_serial_item.update remaining: false
+
+                  grn_serial_item.grn_item.update remaining_quantity: (grn_serial_item.grn_item.remaining_quantity-1)
+
+                  grn_serial_item.inventory_serial_item.update inv_status_id: InventorySerialItemStatus.find_by_code("NA").id, updated_by: current_user.id
+
+                  grn_serial_item.inventory_serial_item.inventory.update "stock_quantity = stock_quantity+1 and available_quantity = available_quantity+1"
+
+                  gin_item.gin_sources.build(grn_item_id: iss_grn_item_id, grn_serial_item_id: iss_grn_serial_item_id, issued_quantity: 1, unit_cost: tot_cost_price, returned_quantity: 0)#inv_gin_source
+
+                  issued = true
+                  iss_quantity += 1
+                end
+              end
+
+            elsif product.inventory_product_info.need_batch #Issue Batch Item
+
+                Rails.cache.fetch([ :gin, :grn_batches, gin_item.srn_item_id.to_i ]).to_a.each do |grn_batch|
+
+                  gin_source = grn_batch.gin_sources.first
+                  grn_batch_issued_qty = gin_source.issued_quantity
+
+                  if grn_batch.remaining_quantity > 0  and not grn_batch.grn_item.inventory_not_updated and grn_batch.remaining_quantity.to_f >= grn_batch_issued_qty.to_f
+
+                    product_id = grn_batch.grn_item.product_id
+                    tot_cost_price  = grn_batch.grn_item.current_unit_cost
+                    currency_id  = grn_batch.grn_item.currency_id
+
+                    # iss_grn_serial_item_id  = nil
+                    iss_grn_item_id  = grn_batch.grn_item.id
+                    iss_grn_batch_id  = grn_batch.id
+                    # iss_grn_serial_part_id  = nil
+                    # iss_main_part_grn_serial_item_id  = nil
+
+
+                    @grn_batch.update remaining_quantity: (grn_batch.remaining_quantity- grn_batch_issued_qty)
+
+                    @grn_batch.grn_item.update remaining_quantity: (grn_batch.grn_item.remaining_quantity- grn_batch_issued_qty)
+
+                    @inventory.update "stock_quantity = stock_quantity-#{grn_batch_issued_qty} and available_quantity = available_quantity-#{grn_batch_issued_qty}" if @inventory.present?
+
+                    gin_source.attributes = gin_source.attributes.merge(grn_batch_id: iss_grn_batch_id, unit_cost: tot_cost_price, returned_quantity: 0)#inv_gin_source                    
+
+                    issued = true
+                    iss_quantity += grn_batch_issued_qty
+                  end
+                end
+
+            else #Issue Non Serial / Non Batch Item
+              @grn_items = product.grn_items.joins(:grn).where("remaining_quantity > 0 and inv_grn.store_id = #{store.id}").order("inv_grn.created_at #{product.fifo ? 'ASC' : 'DESC' }")
+
+              @grn_items.each do |grn_item|
+
+                if grn_item.remaining_quantity >= (gin_item.issued_quantity - iss_quantity)
+                  grn_item_issued_qty = gin_item.issued_quantity - iss_quantity
+                else
+                  grn_item_issued_qty = grn_item.remaining_quantity
+                end
+
+                if grn_item.remaining_quantity > 0  and not grn_item.inventory_not_updated and (grn_item.remaining_quantity >= grn_item_issued_qty) and (gin_item.issued_quantity > iss_quantity)
+
+                  product_id = grn_item.product_id
+                  tot_cost_price  = grn_item.current_unit_cost
+                  currency_id  = grn_item.currency_id
+
+                  # iss_grn_serial_item_id  = nil
+                  iss_grn_item_id  = grn_item.id
+                  # iss_grn_batch_id  = nil
+                  # iss_grn_serial_part_id  = nil
+                  # iss_main_part_grn_serial_item_id  = nil
+
+                  grn_item.update remaining_quantity: (grn_item.remaining_quantity - grn_item_issued_qty)
+
+                  @inventory.update "stock_quantity = stock_quantity-#{grn_item_issued_qty} and available_quantity = available_quantity-#{grn_item_issued_qty}" if @inventory.present?
+
+                  gin_item.gin_sources.build(grn_item_id: iss_grn_item_id, issued_quantity: grn_item_issued_qty, unit_cost: tot_cost_price, returned_quantity: 0)#inv_gin_source
+
+                  issued = true
+                  iss_quantity += grn_item_issued_qty
+                end
+              end
+            end
+
+          end
+        end
+
+        if issued
+          #gin = @srn_item.srn.gins.create(created_by: current_user.id, created_at: DateTime.now, gin_no: CompanyConfig.first.increase_inv_last_gin_no, store_id: @srn_item.srn.store.id, remarks: (@spare_part_note || @onloan_note) )#inv_gin
+
+          gin_item.attributes = gin_item.attributes.merge(
+          product_id: product_id,
+          issued_quantity: iss_quantity,
+          currency_id: currency_id,
+          returned_quantity: 0,
+          returnable: returnable,
+          spare_part: @spare_part
+          )#inv_gin_item
+
+          gin_item.srn_item.update closed: (gin_item.srn_item.quantity <= gin_item.srn_item.gin_items.sum(:issued_quantity))
+
+          flash[:notice] = "Issued."
+
+        else
+          flash[:error] = iss_from_inventory_not_updated ? "Trying to issue from inventory not updated GRN" : "Stock Remaining Quantity is zero."
+        end
+
+      end
+
+      @gin.attributes = @gin.attributes.merge(created_by: current_user.id, gin_no: CompanyConfig.first.increase_inv_last_gin_no )#inv_gin
+      @gin.save
+
+      @gin.srn.update closed: true if @gin.srn.srn_items.all?{|srn_item| srn_item.closed }
+
+      redirect_to gin_admins_inventories_url
     end
 
     private
