@@ -56,11 +56,10 @@
           %strong Shelf description:
           = inventory.inventory_bin.try(:inventory_shelf).try(:description)
 
-        - if inventory.try(:bin_id) != nil
-          .col-md-6
-            %strong Bin description:
-            = link_to "#", class: "inline_edit", data: {type: "textarea", resource: "inventory_bin", name: "description", url: location_admins_inventories_path(edit: true, bin_id: inventory.bin_id), "original-title" => "Update bin description", value: "#{inventory.inventory_product.try(:description)}"} do
-              = inventory.inventory_bin.try(:description)
+        .col-md-6
+          %strong Bin description:
+          = inventory.inventory_bin.try(:description)
+
         .col-md-12
           %strong Remarks:
           = link_to "#", class: "inline_edit", data: {type: "text", resource: "inventory", name: "remarks", url: inventory_admins_inventories_path(edit: true, inventory_id: inventory.id), "original-title" => "Update Product Category"} do
