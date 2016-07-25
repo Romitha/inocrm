@@ -825,7 +825,7 @@ module Admins
           end
         end
         @stores = Organization.stores
-        @inventory_all = Inventory.order( updatd_at: :desc)
+        @inventory_all = Inventory.order( store_id: :asc)
         render "admins/inventories/inventory/inventory"
 
       end
