@@ -15,6 +15,7 @@
   #store_controller.hide
     .row
       .col-md-12
+        %h4#store_name
         = link_to "Change store", srn_admins_inventories_path
       .col-md-3
         = f.input :required_at, as: :string, input_html: {class: "datepicker"}
@@ -27,27 +28,29 @@
       .col-md-12
         = f.input :remarks
     = f.simple_fields_for :srn_items do |s|
-      = s.input :product_id, as: :hidden, input_html: {class: "product_id"}
-      = s.input :main_product_id, as: :hidden, input_html: {class: "main_product_id"}
-      .row
-        .col-md-6
-          %h3 Part
-          .product_id_output
-        .col-md-6
-          %h3 Main part
-          = link_to "Select main part", "#", class: "mainStoreIdPass", data: {producttype: "main_product_id"}, onclick: "Inventories.search_product(this); return false;"
-          .main_product_id_output
-      .row
-        .col-md-1
-          = s.link_to_remove "Remove", class: "srn_item_remove"
-        .col-md-2
-          = s.input :returnable, wrapper: :append
-        .col-md-2
-          = s.input :spare_part, wrapper: :append
-        .col-md-2
-          = s.input :quantity, input_html: {value: (s.object.quantity || 0)}, required: true
-        .col-md-5
-          = s.input :remarks
+      = panels panel_type: "info", header_content: "Srn Items" do
+        = s.input :product_id, as: :hidden, input_html: {class: "product_id"}
+
+        = s.input :main_product_id, as: :hidden, input_html: {class: "main_product_id"}
+        .row
+          .col-md-6
+            %h3 Part
+            .product_id_output
+          .col-md-6
+            %h3 Main part
+            = link_to "Select main part", "#", class: "mainStoreIdPass", data: {producttype: "main_product_id"}, onclick: "Inventories.search_product(this); return false;"
+            .main_product_id_output
+        .row
+          .col-md-1
+            = s.link_to_remove "Remove", class: "srn_item_remove"
+          .col-md-2
+            = s.input :returnable, wrapper: :append
+          .col-md-2
+            = s.input :spare_part, wrapper: :append
+          .col-md-2
+            = s.input :quantity, input_html: {value: (s.object.quantity || 0)}, required: true
+          .col-md-5
+            = s.input :remarks
     .row
       .col-md-12
         = f.link_to_add "Add", :srn_items, id: "storeIdPass", data: {producttype: "product_id"}, onclick: "Inventories.search_product(this); return false;"

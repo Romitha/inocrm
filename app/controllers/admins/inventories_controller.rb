@@ -892,7 +892,6 @@ module Admins
         Organization
         @srn = Srn.find params[:srn_id]
         @gin = @srn.gins.build store_id: @srn.store_id
-        puts @srn.store_id
         @srn.srn_items.where(closed: false).each do |srn_item|
           Rails.cache.delete([ :gin, :grn_serial_items, srn_item.id ])
           Rails.cache.delete([ :gin, :grn_batches, srn_item.id ])
@@ -912,6 +911,8 @@ module Admins
     def batch_or_serial_for_gin
       Inventory
       Grn
+      Srn
+      Gin
 
       if params[:batch_or_serial] == "issued_qty"
         if params[:grn_serial_item_ids].present?
@@ -921,11 +922,14 @@ module Admins
         elsif params[:grn_batch_ids].present?
           grn_batches = GrnBatch.where(id: params[:grn_batch_ids])
           params[:recieved_quantity].each do |k, v|
-            grn_batches.select{|b| b.recieved_quantity = v if b.id == k.to_i }
+            grn_batches.select{|b| b.gin_sources.build(issued_quantity: v) if b.id == k.to_i }
           end
 
           Rails.cache.write([ :gin, :grn_batches, params[:srn_item_id].to_i ], grn_batches)
           @count = grn_batches.inject(0){|i, b| i+b.recieved_quantity.to_i }
+        else
+          Rails.cache.delete([ :gin, :grn_serial_items, params[:srn_item_id].to_i ])
+          Rails.cache.delete([ :gin, :grn_batches, params[:srn_item_id].to_i ])
         end
 
         render "admins/inventories/gin/batch_or_serial_for_gin" and return
@@ -934,6 +938,7 @@ module Admins
       @store = Organization.find params[:store_id]
       @product = InventoryProduct.find params[:product_id]
       @inventory = @product.inventories.find_by_store_id params[:store_id]
+      @srn_item = SrnItem.find params[:srn_item_id]
       @grn_items = @product.grn_items.joins(:grn).where("remaining_quantity > 0 ").order("inv_grn.created_at #{@product.fifo ? 'ASC' : 'DESC' }")
       render "admins/inventories/gin/batch_or_serial_for_gin"
 

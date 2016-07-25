@@ -27,7 +27,7 @@
           #selected_quantity 0
         .col-md-4
           %strong Balance Qty to be issued:
-          #balance_to_be_issued= @inventory.stock_quantity
+          #balance_to_be_issued= @srn_item.quantity.to_f
 
       %hr
       .row

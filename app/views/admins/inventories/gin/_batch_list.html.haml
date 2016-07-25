@@ -15,7 +15,7 @@
           = @product.inventory_unit.unit
         .col-md-4
           %strong Balance Qty to be issued:
-          %span#balance_quantity_batch{data: {fixed: @inventory.stock_quantity}}= @inventory.stock_quantity
+          %span#balance_quantity_batch{data: {fixed: @srn_item.quantity.to_f}}= @srn_item.quantity.to_f
         .col-md-4
           %strong Stock Qty:
           = @inventory.stock_quantity

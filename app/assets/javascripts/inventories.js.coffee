@@ -704,6 +704,7 @@ window.Inventories =
     $("#store_controller").removeClass("hide")
     $("#storeIdPass").data("storeId", this_val)
     $(".srn_store").addClass("hide")
+    $("#store_name").text($(":selected", elem).text())
 
   search_product: (elem)->
     store_id = $(elem).data("storeId")
