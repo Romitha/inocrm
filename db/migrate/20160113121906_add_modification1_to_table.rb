@@ -29,21 +29,21 @@ class AddModification1ToTable < ActiveRecord::Migration
 
     change_column :inv_srr_item_source, :unit_cost, :decimal, precision: 13, scale: 2, default: nil
 
-    # create_table :inv_grn_serial_part, id: false do |t|
-    #   t.column :id, "INT UNSIGNED NOT NULL, PRIMARY KEY (id)"
-    #   t.column :grn_item_id, "INT UNSIGNED NOT NULL"
-    #   t.column :serial_item_id, "INT UNSIGNED NOT NULL"
-    #   t.column :inv_serial_part_id, "INT UNSIGNED DEFAULT NULL"
-    #   t.boolean :remaining, null: false, default: true
+    create_table :inv_grn_serial_part, id: false do |t|
+      t.column :id, "INT UNSIGNED NOT NULL, PRIMARY KEY (id)"
+      t.column :grn_item_id, "INT UNSIGNED NOT NULL"
+      t.column :serial_item_id, "INT UNSIGNED NOT NULL"
+      t.column :inv_serial_part_id, "INT UNSIGNED DEFAULT NULL"
+      t.boolean :remaining, null: false, default: true
 
-    #   t.index :grn_item_id, name: "fk_grn_item_part"
-    #   t.index :serial_item_id, name: "fk_grn_serial_inventory_serial_item_part"
-    #   t.index :inv_serial_part_id, name: "fk_inv_serial_part_id_part"
-    # end
+      t.index :grn_item_id, name: "fk_grn_item_part"
+      t.index :serial_item_id, name: "fk_grn_serial_inventory_serial_item_part"
+      t.index :inv_serial_part_id, name: "fk_inv_serial_part_id_part"
+    end
 
-    # add_foreign_key :inv_grn_serial_part, :inv_grn_item, name: "fk_grn_item_part", column: :grn_item_id, on_delete: :restrict, on_update: :restrict
-    # add_foreign_key :inv_grn_serial_part, :inv_inventory_serial_item, name: "fk_grn_serial_inventory_serial_item_part", column: :serial_item_id, on_delete: :restrict, on_update: :restrict
-    # add_foreign_key :inv_grn_serial_part, :inv_inventory_serial_part, name: "fk_inv_serial_part_id_part", column: :inv_serial_part_id, on_delete: :restrict, on_update: :restrict
+    add_foreign_key :inv_grn_serial_part, :inv_grn_item, name: "fk_grn_item_part", column: :grn_item_id, on_delete: :restrict, on_update: :restrict
+    add_foreign_key :inv_grn_serial_part, :inv_inventory_serial_item, name: "fk_grn_serial_inventory_serial_item_part", column: :serial_item_id, on_delete: :restrict, on_update: :restrict
+    add_foreign_key :inv_grn_serial_part, :inv_inventory_serial_part, name: "fk_inv_serial_part_id_part", column: :inv_serial_part_id, on_delete: :restrict, on_update: :restrict
 
     remove_foreign_key :inv_grn_serial_item, column: :inv_serial_part_id
     remove_index :inv_grn_serial_item, column: :inv_serial_part_id
@@ -54,8 +54,8 @@ class AddModification1ToTable < ActiveRecord::Migration
 
     add_index :inv_gin_source, :grn_serial_part_id
     add_index :inv_gin_source, :main_part_grn_serial_item_id
-    # add_foreign_key :inv_gin_source, :inv_grn_serial_part, name: "fk_gin_source_grn_serial_part", column: :grn_serial_part_id, on_delete: :restrict, on_update: :restrict
-    # add_foreign_key :inv_gin_source, :inv_grn_serial_item, name: "fk_gin_source_main_part_grn_serial_item", column: :main_part_grn_serial_item_id, on_delete: :restrict, on_update: :restrict
+    add_foreign_key :inv_gin_source, :inv_grn_serial_part, name: "fk_gin_source_grn_serial_part", column: :grn_serial_part_id, on_delete: :restrict, on_update: :restrict
+    add_foreign_key :inv_gin_source, :inv_grn_serial_item, name: "fk_gin_source_main_part_grn_serial_item", column: :main_part_grn_serial_item_id, on_delete: :restrict, on_update: :restrict
 
     remove_foreign_key :inv_gin_source, column: :serial_part_id
     remove_index :inv_gin_source, name: "fk_inv_gin_source_inv_inventory_serial_part1"
@@ -78,7 +78,7 @@ class AddModification1ToTable < ActiveRecord::Migration
 
     add_column :inv_damage, :grn_serial_part_id, "INT UNSIGNED NULL DEFAULT NULL"
     add_index :inv_damage, :grn_serial_part_id
-    # add_foreign_key :inv_damage, :inv_grn_serial_part, name: "fk_inventory_damage_grn_serial_part", column: :grn_serial_part_id, on_delete: :restrict, on_update: :restrict
+    add_foreign_key :inv_damage, :inv_grn_serial_part, name: "fk_inventory_damage_grn_serial_part", column: :grn_serial_part_id, on_delete: :restrict, on_update: :restrict
 
     remove_foreign_key :inv_damage, name: "fk_inv_damage_inv_inventory_serial_part1"
     remove_column :inv_damage, :serial_part_id

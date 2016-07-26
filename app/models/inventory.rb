@@ -198,8 +198,8 @@ class InventorySerialItem < ActiveRecord::Base
   accepts_nested_attributes_for :inventory_serial_warranties, allow_destroy: :true
   has_many :inventory_warranties, through: :inventory_serial_warranties
 
-  # has_many :grn_serial_parts, foreign_key: :serial_item_id
-  # has_many :grn_items, through: :grn_serial_parts
+  has_many :grn_serial_parts, foreign_key: :serial_item_id
+  has_many :grn_item_for_parts, through: :grn_serial_parts, source: :grn_item
 
   validates_presence_of [:inventory_id, :product_id, :serial_no, :product_condition_id, :inv_status_id, :created_by]
 
@@ -223,10 +223,9 @@ class InventorySerialPart < ActiveRecord::Base
   has_many :inventory_serial_part_warranties, foreign_key: :serial_part_id
   has_many :inventory_warranties, through: :inventory_serial_part_warranties
   has_many :damages
-  # has_many :grn_serial_parts, foreign_key: :inv_serial_part_id
 
-  # # has_many :grn_serial_parts, foreign_key: :inv_serial_part_id
-  # has_many :grn_items, through: :grn_serial_parts
+  has_many :grn_serial_parts, foreign_key: :inv_serial_part_id
+  has_many :grn_items, through: :grn_serial_parts
 
 end
 

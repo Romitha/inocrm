@@ -51,6 +51,9 @@
 
         = i.input :product_id, as: :hidden
         = i.input :srn_item_id, as: :hidden
+        = i.input :returnable, as: :hidden
+        = i.input :spare_part, as: :hidden
+
         %dl.dl-horizontal
           %dt Item code:
           %dd= product.generated_item_code
@@ -90,10 +93,12 @@
             = i.input :remarks
           .col-md-12
             %div{id: "batch_or_serial_frame#{i.object.srn_item_id}"}
-  .row
-    .col-md-12
-      = f.input :remarks
-    .col-md-12
-      = f.submit "Save", class: "btn btn-sm btn-success"
+
+  - if f.object.gin_items.present?
+    .row
+      .col-md-12
+        = f.input :remarks
+      .col-md-12
+        = f.submit "Save", class: "btn btn-sm btn-success"
 
 #batch_or_serial_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "batch_or_serial_modal", "aria-hidden" => true}

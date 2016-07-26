@@ -26,5 +26,6 @@ class SrnItem < ActiveRecord::Base
   has_many :ticket_spare_part_stores, foreign_key: :inv_srn_item_id
   has_many :ticket_on_loan_spare_parts, foreign_key: :inv_srn_item_id
   has_many :gin_items
+  has_many :grn_items
   has_many :gins, through: :gin_items
 end

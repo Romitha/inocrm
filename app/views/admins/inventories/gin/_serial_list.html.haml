@@ -50,21 +50,21 @@
         - counter = 0
         - @grn_items.each do |grn_item|
           - grn_item.grn_serial_items.where(remaining: true).each_with_index do |grn_serial_item, index1|
-            .row
-              .col-md-2
-                = counter += 1
-              .col-md-2
-                = grn_item.grn.grn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_grn_no_format"])
-              .col-md-2
-                = grn_item.inventory_product.generated_item_code
-              .col-md-2
-                = grn_serial_item.inventory_serial_item.try(:ct_no)
-              .col-md-2
-                = grn_serial_item.inventory_serial_item.try(:product_condition).try(:condition)
-              .col-md-2
-                = check_box_tag "grn_serial_item_ids[]", grn_serial_item.id, false, onchange: "Inventories.selected_quantity(this); return false;"
-          - if grn_item.grn_serial_items.where(remaining: true).any?
-            %hr
+            - if grn_serial_item.inventory_serial_item.inv_status_id == InventorySerialItemStatus.find_by_code("AV").id
+              .row
+                .col-md-2
+                  = counter += 1
+                .col-md-2
+                  = grn_item.grn.grn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_grn_no_format"])
+                .col-md-2
+                  = grn_item.inventory_product.generated_item_code
+                .col-md-2
+                  = grn_serial_item.inventory_serial_item.try(:ct_no)
+                .col-md-2
+                  = grn_serial_item.inventory_serial_item.try(:product_condition).try(:condition)
+                .col-md-2
+                  = check_box_tag "grn_serial_item_ids[]", grn_serial_item.id, false, onchange: "Inventories.selected_quantity(this); return false;"
+              %hr
 
         .modal-footer
           = submit_tag "Select", class: "btn btn-sm btn-success btn-primary"
