@@ -2,6 +2,12 @@
   - @inventory_product_category_all.each do |inventory_product_category|
     = collapse collapse_type: "success", labelledby: "labelledby_#{inventory_product_category.id}", header_content: "#{inventory_product_category.name} -> #{inventory_product_category.inventory_category1.name}", collapse_link: "link_#{inventory_product_category.id}", collapse_id: "product_category" do
       .row
+        .col-md-12
+          .pull-right
+            - unless inventory_product_category.is_used_anywhere?
+              = link_to delete_inventory_product_category_admins_inventories_path(product_id: inventory_product_category.id),method: :delete, rel: "tooltip", :data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Delete" do
+                %span.glyphicon.glyphicon-trash
+      .row
         .col-md-4
           %strong Name:
           = link_to "#", class: "inline_edit", data: {type: "text", resource: "inventory_category2", name: "name", url: inventory_product_category_admins_inventories_path(edit: true, inventory_category2_id: inventory_product_category.id), "original-title" => "Update Product Category"} do

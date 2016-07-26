@@ -112,7 +112,7 @@ class InventoryCategory2 < ActiveRecord::Base
   has_many :inventory_products, through: :inventory_category3s
 
   def is_used_anywhere?
-    inventory_category3s.any?
+    inventory_category3s.any? or inventory_products.any?
   end
 
 end

@@ -323,6 +323,7 @@ Rails.application.routes.draw do
         delete "delete_location_bin"
         delete "delete_inventory_brand"
         delete "delete_inventory_product"
+        delete "delete_inventory_product_category"
         delete "delete_inventory_category"
         delete "delete_inventory_product_form"
         delete "delete_product_condition"

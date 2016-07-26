@@ -103,6 +103,17 @@ module Admins
       end
     end
 
+    def delete_inventory_product_category
+      Inventory
+      @delete_product = InventoryCategory2.find params[:product_id]
+      if @delete_product.present?
+        @delete_product.delete
+      end
+      respond_to do |format|
+        format.html { redirect_to inventory_product_category_admins_inventories_path }
+      end
+    end
+
     def delete_inventory_category
       Inventory
       @delete_category = InventoryCategory3.find params[:category_id]
