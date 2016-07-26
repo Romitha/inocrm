@@ -964,7 +964,7 @@ class InventoriesController < ApplicationController
             @iss_main_part_grn_serial_item = @main_inventory_serial_part.inventory_serial_item.grn_serial_items.joins(grn_item: :grn).where(inv_grn_item: {inventory_not_updated: false}, remaining: true).order("inv_grn.created_at asc, inv_grn_item.id asc, inv_grn_serial_item.id asc").references(:inv_grn).last
           end
 
-          if (@main_inventory_serial_part.inv_status_id == InventorySerialItemStatus.find_by_code("AV").id) and @grn_serial_part.present? and @iss_main_part_grn_serial_item.present?
+          if (@main_inventory_serial_part.inv_status_id == InventorySerialItemStatus.find_by_code("AV").id) and @grn_serial_part.present? and @iss_main_part_grn_serial_item.present? and @grn_serial_part.grn_item.grn.store_id == @srn_item.srn.store.id
 
             @inventory_not_updated = true
             @product_id = @main_inventory_serial_part.inventory_product.id
@@ -999,7 +999,7 @@ class InventoriesController < ApplicationController
             @grn_serial_item = GrnSerialItem.find(grn_serial_item_id)
 
             @iss_from_inventory_not_updated = @grn_serial_item.grn_item.inventory_not_updated
-            if @grn_serial_item.remaining and (@grn_serial_item.inventory_serial_item.inv_status_id == InventorySerialItemStatus.find_by_code("AV").id) and not @iss_from_inventory_not_updated
+            if @grn_serial_item.remaining and (@grn_serial_item.inventory_serial_item.inv_status_id == InventorySerialItemStatus.find_by_code("AV").id) and not @iss_from_inventory_not_updated and @grn_serial_item.grn_item.grn.store_id == @srn_item.srn.store.id
 
               @product_id = @grn_serial_item.inventory_serial_item.inventory_product.id
               @product_condition_id  = @grn_serial_item.inventory_serial_item.product_condition_id
@@ -1025,7 +1025,8 @@ class InventoriesController < ApplicationController
           elsif grn_batch_id.present? #Issue Batch Item
             @grn_batch = GrnBatch.find(grn_batch_id)
 
-            if @grn_batch.remaining_quantity > 0  and not @grn_batch.grn_item.inventory_not_updated
+            if @grn_batch.remaining_quantity > 0  and not @grn_batch.grn_item.inventory_not_updated and @grn_batch.grn_item.grn.store_id == @srn_item.srn.store.id
+
 
               @product_id = @grn_batch.grn_item.inventory_product.id
               @product_condition_id  = product_condition_id
@@ -1052,7 +1053,7 @@ class InventoriesController < ApplicationController
           elsif grn_item_id.present? #Issue Just a GRN Item
             @grn_item = GrnItem.find(grn_item_id)
 
-            if @grn_item.remaining_quantity > 0  and not @grn_item.inventory_not_updated
+            if @grn_item.remaining_quantity > 0  and not @grn_item.inventory_not_updated and @grn_item.grn.store_id = @srn_item.srn.store.id
 
               @product_id = @grn_item.inventory_product.id
               @product_condition_id  = product_condition_id

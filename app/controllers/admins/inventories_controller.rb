@@ -960,6 +960,7 @@ module Admins
 
       @gin.gin_items.each{|gin_item| @gin.gin_items.delete(gin_item) if gin_item.new_record? and gin_item.issued_quantity <= 0 }
 
+      save_gin = false
       @gin.gin_items.each do |gin_item|
 
         iss_from_inventory_not_updated = false
@@ -982,6 +983,8 @@ module Admins
           gin_item.srn_item.update closed: true
         end
 
+        gin_item.issued_quantity = gin_item.srn_item.grn_items.sum(:issued_quantity) if gin_item.issued_quantity > gin_item.srn_item.grn_items.sum(:issued_quantity)
+
         if gin_item.issued_quantity > 0
 
           unless gin_item.srn_item.main_product_id.present?
@@ -996,7 +999,7 @@ module Admins
               Rails.cache.fetch([ :gin, :grn_serial_items, gin_item.srn_item_id.to_i ]).to_a.each do |grn_serial_item|
 
                 iss_from_inventory_not_updated = grn_serial_item.grn_item.inventory_not_updated
-                if grn_serial_item.remaining and (grn_serial_item.inventory_serial_item.inv_status_id == InventorySerialItemStatus.find_by_code("AV").id) and not iss_from_inventory_not_updated
+                if grn_serial_item.remaining and (grn_serial_item.inventory_serial_item.inv_status_id == InventorySerialItemStatus.find_by_code("AV").id) and not iss_from_inventory_not_updated and grn_serial_item.grn_item.grn.store_id = gin.store_id
 
                   product_id = grn_serial_item.inventory_serial_item.inventory_product.id
                   tot_cost_price  = grn_serial_item.grn_item.current_unit_cost.to_d + grn_serial_item.inventory_serial_item.inventory_serial_items_additional_costs.sum(:cost).to_d #inventory_serial_items_additional_costs
@@ -1027,7 +1030,7 @@ module Admins
                   gin_source = grn_batch.gin_sources.first
                   grn_batch_issued_qty = gin_source.issued_quantity
 
-                  if grn_batch.remaining_quantity > 0  and not grn_batch.grn_item.inventory_not_updated and grn_batch.remaining_quantity.to_f >= grn_batch_issued_qty.to_f
+                  if grn_batch.remaining_quantity > 0  and not grn_batch.grn_item.inventory_not_updated and grn_batch.remaining_quantity.to_f >= grn_batch_issued_qty.to_f and grn_batch.grn_item.grn.store_id = gin.store_id
 
                     product_id = grn_batch.grn_item.product_id
                     tot_cost_price  = grn_batch.grn_item.current_unit_cost
@@ -1064,7 +1067,7 @@ module Admins
                   grn_item_issued_qty = grn_item.remaining_quantity
                 end
 
-                if grn_item.remaining_quantity > 0  and not grn_item.inventory_not_updated and (grn_item.remaining_quantity >= grn_item_issued_qty) and (gin_item.issued_quantity > iss_quantity)
+                if grn_item.remaining_quantity > 0  and not grn_item.inventory_not_updated and (grn_item.remaining_quantity >= grn_item_issued_qty) and (gin_item.issued_quantity > iss_quantity) and grn_item.grn.store_id = gin.store_id
 
                   product_id = grn_item.product_id
                   tot_cost_price  = grn_item.current_unit_cost
@@ -1105,7 +1108,7 @@ module Admins
 
           gin_item.srn_item.update closed: (gin_item.srn_item.quantity <= gin_item.srn_item.gin_items.sum(:issued_quantity))
 
-          flash[:notice] = "Issued."
+          save_gin = true
 
         else
           flash[:error] = iss_from_inventory_not_updated ? "Trying to issue from inventory not updated GRN" : "Stock Remaining Quantity is zero."
@@ -1113,10 +1116,16 @@ module Admins
 
       end
 
-      @gin.attributes = @gin.attributes.merge(created_by: current_user.id, gin_no: CompanyConfig.first.increase_inv_last_gin_no )#inv_gin
-      @gin.save
+      if save_gin 
+        @gin.attributes = @gin.attributes.merge(created_by: current_user.id, gin_no: CompanyConfig.first.increase_inv_last_gin_no )#inv_gin
+        @gin.save
 
-      @gin.srn.update closed: true if @gin.srn.srn_items.all?{|srn_item| srn_item.closed }
+        @gin.srn.update closed: true if @gin.srn.srn_items.all?{|srn_item| srn_item.closed }
+
+        flash[:notice] = "Issued."
+      else
+        flash[:error] = "Issue Failed."
+      end
 
       redirect_to gin_admins_inventories_url
     end
