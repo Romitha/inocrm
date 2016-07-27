@@ -28,7 +28,8 @@
         .col-md-4
           %strong Balance Qty to be issued:
           #balance_to_be_issued= @srn_item.quantity.to_f
-
+        .col-md-4.pull-right
+          = submit_tag "Select", class: "btn btn-sm btn-success btn-primary"
       %hr
       .row
         .col-md-2
@@ -66,5 +67,5 @@
                   = check_box_tag "grn_serial_item_ids[]", grn_serial_item.id, false, onchange: "Inventories.selected_quantity(this); return false;"
               %hr
 
-        .modal-footer
-          = submit_tag "Select", class: "btn btn-sm btn-success btn-primary"
+        / .modal-footer
+        /   = submit_tag "Select", class: "btn btn-sm btn-success btn-primary"

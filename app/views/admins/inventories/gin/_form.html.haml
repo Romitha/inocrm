@@ -37,7 +37,7 @@
     - index = 0
     = f.simple_fields_for :gin_items do |i|
       - index += 1
-      = collapse collapse_type: "info", labelledby: "gin_form_collapse_search", header_content: "No: #{index}", collapse_link: "gin_form_collapse_search_inv_#{i.object_id}", collapse_id: "gin_form_collapse" do
+      = collapse collapse_type: "info", labelledby: "gin_form_collapse_search", header_content: "No: #{index} #{i.object.inventory_product.generated_item_code} #{i.object.inventory_product.description}", collapse_link: "gin_form_collapse_search_inv_#{i.object_id}", collapse_id: "gin_form_collapse" do
         - product = i.object.inventory_product
         - need_serial = product.inventory_product_info.need_serial.present?
         - need_batch = product.inventory_product_info.need_batch.present?
