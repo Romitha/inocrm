@@ -27,24 +27,26 @@
           %span#selected_quantity_batch 0
 
       %hr
-      .row
-        .col-md-2
-          %strong NO
-        .col-md-2
-          %strong GRN No
-        .col-md-2
-          %strong Lot No
-        .col-md-2
-          %strong Batch No
-        .col-md-2
-          %strong Available quantity
-        .col-md-2
-          %strong Select
-
-      %hr
       = form_tag batch_or_serial_for_gin_admins_inventories_path(batch_or_serial: "issued_qty", serial_flag: "false"), method: :get, remote: true do
         = hidden_field_tag :srn_item_id, params[:srn_item_id]
         - counter = 0
+
+        .col-md-12= submit_tag "Issue", class: "btn btn-sm btn-success pull-right"
+        .row
+          .col-md-2
+            %strong NO
+          .col-md-2
+            %strong GRN No
+          .col-md-2
+            %strong Lot No
+          .col-md-2
+            %strong Batch No
+          .col-md-2
+            %strong Available quantity
+          .col-md-2
+            %strong Select
+
+        %hr
         - @grn_items.each do |grn_item|
           - grn_item.grn_batches.where("remaining_quantity > 0").each_with_index do |grn_batch, index1|
             .row
@@ -63,6 +65,3 @@
                 .hide= check_box_tag "grn_batch_ids[]", grn_batch.id, false, id: "grn_batch_ids_#{grn_batch.id}"
           - if grn_item.grn_batches.where("remaining_quantity > 0").any?
             %hr
-
-        .modal-footer
-          = submit_tag "Select", class: "btn btn-sm btn-success btn-primary"
