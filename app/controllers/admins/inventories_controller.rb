@@ -957,14 +957,13 @@ module Admins
 
     def create_gin
       Srn
+      Organization
+      Inventory
       @gin = Gin.new gin_params
 
       @gin.gin_items.each{|gin_item| @gin.gin_items.delete(gin_item) if gin_item.new_record? and gin_item.issued_quantity.to_f <= 0 }
 
       @gin.gin_items.each do |gin_item|
-        puts "**********"
-        puts "gone inside"
-        puts "**********"
         if gin_item.srn_item.issue_terminated
           gin_item.issued_quantity = 0
 
@@ -972,25 +971,16 @@ module Admins
 
         end
 
-        gin_item.issued_quantity = gin_item.srn_item.quantity if gin_item.issued_quantity > gin_item.srn_item.quantity
-        # gin_item.issued_quantity = ([gin_item.issued_quantity.to_f] << gin_item.srn_item.quantity.to_f).min
+        # gin_item.issued_quantity = gin_item.srn_item.gin_items.sum(:issued_quantity) if gin_item.issued_quantity > gin_item.srn_item.gin_items.sum(:issued_quantity)
+        gin_item.issued_quantity = gin_item.srn_item.quantity - gin_item.srn_item.gin_items.sum(:issued_quantity) if gin_item.issued_quantity.to_f > gin_item.srn_item.gin_items.sum(:issued_quantity)
 
         if gin_item.issued_quantity > 0
-          puts "**********"
-          puts "gone inside issued quantity bigger"
-          puts "**********"
           unless gin_item.srn_item.main_product_id.present?
             store = @gin.store
             product = gin_item.inventory_product
             @inventory = product.inventories.find_by_store_id store.id
-            puts "**********"
-            puts "gone inside not main product"
-            puts "**********"
             # if product.inventory_product_info.need_serial #Issue Serial Item
             Rails.cache.fetch([ :gin, :grn_serial_items, gin_item.srn_item_id.to_i ]).to_a.each do |grn_serial_item|
-              puts "**********"
-              puts "gone inside serial item"
-              puts "**********"
               product_id = grn_serial_item.inventory_serial_item.product_id
 
               tot_cost_price = grn_serial_item.grn_item.current_unit_cost.to_d + grn_serial_item.inventory_serial_item.inventory_serial_items_additional_costs.sum(:cost).to_d #inventory_serial_items_additional_costs
@@ -1001,11 +991,13 @@ module Admins
 
               grn_serial_item.update remaining: false
 
-              grn_serial_item.grn_item.update "remaining_quantity = remaining_quantity-1"
+              grn_serial_item.grn_item.decrement! :remaining_quantity, 1
 
               grn_serial_item.inventory_serial_item.update inv_status_id: InventorySerialItemStatus.find_by_code("NA").id, updated_by: current_user.id
 
-              grn_serial_item.inventory_serial_item.inventory.update "stock_quantity = stock_quantity+1 and available_quantity = available_quantity+1"
+              [:stock_quantity, :available_quantity].each do |attrib|
+                grn_serial_item.inventory_serial_item.inventory.increment! attrib, 1
+              end
 
               gin_item.gin_sources.build(grn_item_id: grn_serial_item.grn_item_id, grn_serial_item_id: grn_serial_item.id, issued_quantity: 1, unit_cost: tot_cost_price, returned_quantity: 0)#inv_gin_source
 
@@ -1016,9 +1008,6 @@ module Admins
 
             # elsif product.inventory_product_info.need_batch #Issue Batch Item
             Rails.cache.fetch([ :gin, :grn_batches, gin_item.srn_item_id.to_i ]).to_a.each do |grn_batch|
-              puts "**********"
-              puts "gone inside batch"
-              puts "**********"
               gin_source = grn_batch.gin_sources.select{|g| g.new_record? }.first
               grn_batch_issued_qty = gin_source.issued_quantity
 
@@ -1035,11 +1024,15 @@ module Admins
                 # iss_main_part_grn_serial_item_id  = nil
 
 
-                @grn_batch.update "remaining_quantity = remaining_quantity-#{grn_batch_issued_qty}"#remaining_quantity: (grn_batch.remaining_quantity- grn_batch_issued_qty)
+                # @grn_batch.update "remaining_quantity = remaining_quantity-#{grn_batch_issued_qty}"#remaining_quantity: (grn_batch.remaining_quantity- grn_batch_issued_qty)
+                @grn_batch.decrement! :remaining_quantity, grn_batch_issued_qty
+                @grn_batch.grn_item.decrement! :remaining_quantity, grn_batch_issued_qty
 
-                @grn_batch.grn_item.update "remaining_quantity = remaining_quantity-#{grn_batch_issued_qty}"#remaining_quantity: (grn_batch.grn_item.remaining_quantity- grn_batch_issued_qty)
-
-                @inventory.update "stock_quantity = stock_quantity-#{grn_batch_issued_qty} and available_quantity = available_quantity-#{grn_batch_issued_qty}" if @inventory.present?
+                # @grn_batch.grn_item.update "remaining_quantity = remaining_quantity-#{grn_batch_issued_qty}"#remaining_quantity: (grn_batch.grn_item.remaining_quantity- grn_batch_issued_qty)
+                [:stock_quantity, :available_quantity].each do |attrib|
+                  @inventory.decrement! attrib, grn_batch_issued_qty if @inventory.present?
+                end
+                # @inventory.update "stock_quantity = stock_quantity-#{grn_batch_issued_qty} and available_quantity = available_quantity-#{grn_batch_issued_qty}" if @inventory.present?
 
                 gin_source.attributes = gin_source.attributes.merge(grn_batch_id: iss_grn_batch_id, unit_cost: tot_cost_price, returned_quantity: 0)#inv_gin_source                    
 
@@ -1060,9 +1053,13 @@ module Admins
                 # product_id = grn_item.product_id
                 tot_cost_price  = grn_item.current_unit_cost
 
-                grn_item.update "remaining_quantity = remaining_quantity-#{grn_item_issued_qty}"#remaining_quantity: (grn_item.remaining_quantity - grn_item_issued_qty)
+                grn_item.decrement! :remaining_quantity, grn_item_issued_qty
 
-                @inventory.update "stock_quantity = stock_quantity-#{grn_item_issued_qty} and available_quantity = available_quantity-#{grn_item_issued_qty}" if @inventory.present?
+                # grn_item.update "remaining_quantity = remaining_quantity-#{grn_item_issued_qty}"#remaining_quantity: (grn_item.remaining_quantity - grn_item_issued_qty)
+                [:stock_quantity, :available_quantity].each do |attrib|
+                  @inventory.decrement! attrib, grn_item_issued_qty if @inventory.present?
+                end
+                # @inventory.update "stock_quantity = stock_quantity-#{grn_item_issued_qty} and available_quantity = available_quantity-#{grn_item_issued_qty}" if @inventory.present?
 
                 gin_item.gin_sources.build(grn_item_id: grn_item.id, issued_quantity: grn_item_issued_qty, unit_cost: tot_cost_price, returned_quantity: 0)#inv_gin_source
 
