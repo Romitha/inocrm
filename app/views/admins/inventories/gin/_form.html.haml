@@ -62,7 +62,7 @@
           %dt Unit:
           %dd= product.inventory_unit.unit
           %dt Balanced Qty to be issued:
-          %dd
+          %dd= i.object.srn_item.quantity.to_f
           %dt Stock in hand:
           %dd= stock_quantity
           %dt Rack:

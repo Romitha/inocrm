@@ -731,7 +731,7 @@ window.Inventories =
 
   selected_quantity: (e)->
     selected_quantity = parseInt($("#selected_quantity").text())
-    stock_quantity = parseInt($("#stock_quantity").text())
+    stock_quantity = parseInt($("#balance_to_be_issued").text())
     if $(e).is(":checked")
       selected_quantity += 1
     else
