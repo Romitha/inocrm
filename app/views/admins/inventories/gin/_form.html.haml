@@ -30,7 +30,7 @@
       = @srn.created_at.try(:strftime, "%Y-%m-%d")
 
 %H4 GIN Items
-= simple_nested_form_for @gin, url: create_gin_admins_inventories_path do |f|
+= simple_nested_form_for @gin, url: create_gin_admins_inventories_path, html: {class: "validate_form"} do |f|
   = f.input :store_id, as: :hidden
   = f.input :srn_id, as: :hidden
   = collapse_wrapper collapse_id: "gin_form_collapse", labelledby: "gin_form_collapse_labelledby" do
@@ -88,7 +88,7 @@
               %div{id: "issued_quantity_text#{i.object.srn_item_id}"}
 
           .col-md-3
-            = i.association :product_condition, label_method: :condition
+            = i.association :product_condition, label_method: :condition, required: true
           .col-md-7
             = i.input :remarks
           .col-md-12

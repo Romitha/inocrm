@@ -731,13 +731,13 @@ window.Inventories =
 
   selected_quantity: (e)->
     selected_quantity = parseInt($("#selected_quantity").text())
-    stock_quantity = parseInt($("#balance_to_be_issued").text())
+    balance_quantity = parseInt($("#balance_to_be_issued").data("fixed"))
     if $(e).is(":checked")
       selected_quantity += 1
     else
       selected_quantity -= 1
     $("#selected_quantity").text(selected_quantity)
-    $("#balance_to_be_issued").text(stock_quantity-selected_quantity)
+    $("#balance_to_be_issued").text(balance_quantity-selected_quantity)
 
   apply_for_batch: ->
     balance_quantity_batch = parseFloat($("#balance_quantity_batch").data("fixed"))
