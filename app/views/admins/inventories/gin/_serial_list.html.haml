@@ -14,7 +14,7 @@
           %strong Item description:
           = @product.description
         .col-md-4
-          %strong Stock quantity:
+          Stock quantity:
           #stock_quantity= @inventory.stock_quantity
         .col-md-4
           %strong Unit:
@@ -58,7 +58,8 @@
                 .col-md-2
                   = grn_item.grn.grn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_grn_no_format"])
                 .col-md-2
-                  = grn_item.inventory_product.generated_item_code
+                  / = grn_item.inventory_product.generated_item_code
+                  = grn_serial_item.inventory_serial_item.try(:serial_no).to_s.rjust(5, INOCRM_CONFIG["inventory_serial_no_format"])
                 .col-md-2
                   = grn_serial_item.inventory_serial_item.try(:ct_no)
                 .col-md-2
