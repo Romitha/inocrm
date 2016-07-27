@@ -996,7 +996,7 @@ module Admins
               grn_serial_item.inventory_serial_item.update inv_status_id: InventorySerialItemStatus.find_by_code("NA").id, updated_by: current_user.id
 
               [:stock_quantity, :available_quantity].each do |attrib|
-                grn_serial_item.inventory_serial_item.inventory.increment! attrib, 1
+                grn_serial_item.inventory_serial_item.inventory.decrement! attrib, 1
               end
 
               gin_item.gin_sources.build(grn_item_id: grn_serial_item.grn_item_id, grn_serial_item_id: grn_serial_item.id, issued_quantity: 1, unit_cost: tot_cost_price, returned_quantity: 0)#inv_gin_source
