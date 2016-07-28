@@ -28,4 +28,6 @@ class SrnItem < ActiveRecord::Base
   has_many :gin_items
   has_many :grn_items
   has_many :gins, through: :gin_items
+
+  validates :quantity, :numericality => {:greater_than => 0}
 end
