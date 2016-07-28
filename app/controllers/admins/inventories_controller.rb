@@ -1046,26 +1046,26 @@ module Admins
 
               iss_quantity1 = 0
               @grn_items.each do |grn_item|
-                grn_item_issued_qty = grn_item.remaining_quantity >= gin_item.issued_quantity ? gin_item.issued_quantity : grn_item.remaining_quantity
+                grn_item_issued_qty = grn_item.remaining_quantity >= (gin_item.issued_quantity - iss_quantity1) ? (gin_item.issued_quantity - iss_quantity1) : grn_item.remaining_quantity
 
-                # if grn_item.remaining_quantity >= grn_item_issued_qty# and (gin_item.issued_quantity > iss_quantity)# and grn_item.grn.store_id == gin.store_id
+                if grn_item.remaining_quantity >= grn_item_issued_qty and (gin_item.issued_quantity > iss_quantity1)# and grn_item.grn.store_id == gin.store_id
+                  # product_id = grn_item.product_id
 
-                # product_id = grn_item.product_id
-                tot_cost_price  = grn_item.current_unit_cost
+                  tot_cost_price  = grn_item.current_unit_cost
 
-                grn_item.decrement! :remaining_quantity, grn_item_issued_qty
+                  grn_item.decrement! :remaining_quantity, grn_item_issued_qty
 
-                # grn_item.update "remaining_quantity = remaining_quantity-#{grn_item_issued_qty}"#remaining_quantity: (grn_item.remaining_quantity - grn_item_issued_qty)
-                [:stock_quantity, :available_quantity].each do |attrib|
-                  @inventory.decrement! attrib, grn_item_issued_qty if @inventory.present?
+                  # grn_item.update "remaining_quantity = remaining_quantity-#{grn_item_issued_qty}"#remaining_quantity: (grn_item.remaining_quantity - grn_item_issued_qty)
+                  [:stock_quantity, :available_quantity].each do |attrib|
+                    @inventory.decrement! attrib, grn_item_issued_qty if @inventory.present?
+                  end
+                  # @inventory.update "stock_quantity = stock_quantity-#{grn_item_issued_qty} and available_quantity = available_quantity-#{grn_item_issued_qty}" if @inventory.present?
+
+                  gin_item.gin_sources.build(grn_item_id: grn_item.id, issued_quantity: grn_item_issued_qty, unit_cost: tot_cost_price, returned_quantity: 0)#inv_gin_source
+
+                  # issued = true
+                  iss_quantity1 += grn_item_issued_qty
                 end
-                # @inventory.update "stock_quantity = stock_quantity-#{grn_item_issued_qty} and available_quantity = available_quantity-#{grn_item_issued_qty}" if @inventory.present?
-
-                gin_item.gin_sources.build(grn_item_id: grn_item.id, issued_quantity: grn_item_issued_qty, unit_cost: tot_cost_price, returned_quantity: 0)#inv_gin_source
-
-                # issued = true
-                iss_quantity1 += grn_item_issued_qty
-                # end
               end
               gin_item.issued_quantity = iss_quantity1
             end
