@@ -1067,7 +1067,7 @@ module Admins
                 iss_quantity1 += grn_item_issued_qty
                 # end
               end
-              gin_item.issued_quantity = iss_quantity
+              gin_item.issued_quantity = iss_quantity1
             end
 
           end
