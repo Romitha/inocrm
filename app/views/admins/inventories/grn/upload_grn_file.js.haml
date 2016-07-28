@@ -3,6 +3,50 @@
     - if Rails.cache.fetch([ :serial_item, :i_product, params[:inventory_product_id].to_i ]).present?
       = link_to "Clear", upload_grn_file_admins_inventories_path(clear_import: true, inventory_product_id: params[:inventory_product_id].to_i), remote: true, class: "clear_import"
 
+    - serial_item = Rails.cache.fetch([ :serial_item, :i_product, params[:inventory_product_id].to_i ]).to_a.first
+    - if serial_item.present?
+      %br
+      %dl.dl-horizontal
+        %dt Product Condition
+        %dd= serial_item.product_condition.condition
+        %dt Manufatured Date
+        %dd= serial_item.manufatured_date.try(:strftime, "%Y-%m-%d")
+        %dt Expiry Date
+        %dd= serial_item.expiry_date.try(:strftime, "%Y-%m-%d")
+        %dt Scavenge:
+        %dd= boolean_in_word serial_item.scavenge, "Yes", "No"
+        %dt Parts not completed:
+        %dd= boolean_in_word serial_item.parts_not_completed, "Yes", "No"
+        %dt Damage:
+        %dd= boolean_in_word serial_item.damage, "Yes", "No"
+        %dt Used:
+        %dd= boolean_in_word serial_item.used, "Yes", "No"
+        %dt Repaired:
+        %dd= boolean_in_word serial_item.repaired, "Yes", "No"
+        %dt Reserved:
+        %dd= boolean_in_word serial_item.reserved, "Yes", "No"
+        %dt Remarks
+        %dd= serial_item.try(:remarks)
+
+      - if serial_item.inventory_serial_warranties.present?
+        - serial_item.inventory_serial_warranties.each do |wr|
+          .warrant{style: "font-weight: bold;"}
+            .col-md-6
+              Warranty type: #{wr.inventory_warranty.inventory_warranty_type.name}
+            .col-md-3
+              Start at: #{wr.inventory_warranty.start_at.try(:strftime, "%Y-%m-%d")}
+            .col-md-3
+              End at: #{wr.inventory_warranty.end_at.try(:strftime, "%Y-%m-%d")}
+            .col-md-3
+              Period part: #{wr.inventory_warranty.try(:period_part)}
+            .col-md-3
+              Period labour: #{wr.inventory_warranty.try(:period_labour)}
+            .col-md-3
+              Period onsight: #{wr.inventory_warranty.try(:period_onsight)}
+            .col-md-12
+              Remarks: #{wr.inventory_warranty.try(:remarks)}
+
+
     = initiate_table table_type: "table-bordered" do
       = table_header ["No", "Serial No", "CT No"]
       = multi_table_body do
