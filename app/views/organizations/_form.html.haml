@@ -27,9 +27,9 @@
         = f.label "Title ", {style: "color: #900303;"}
         = f.select :title_id, MstTitle.all.uniq{|t| t.id}.map{|o| [o.title, o.id]}, {required: true}
 
-      = f.input :name, placeholder: "Name of Organization / Business", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Organization/Business Name"}
+      = f.input :name, placeholder: "Name", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Name"}
       / %blockquote
-      = f.input :short_name, placeholder: "Short name of Organization / Business", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Short name of Organization / Business"}
+      = f.input :short_name, placeholder: "Short name", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Short name"}
   .row
     - unless Organization::TYPES[2,3].include?(organization.category)
       .col-md-4
