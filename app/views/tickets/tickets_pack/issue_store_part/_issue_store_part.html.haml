@@ -271,10 +271,10 @@
                 %thead
                   %tr
                     %th No
-                    %th Grn No
-                    %th Grn date 
-                    %th Grn received qty
-                    %th Grn remaining qty
+                    %th GRN No
+                    %th GRN date 
+                    %th GRN received qty
+                    %th GRN remaining qty
                     %th Batch no
                     %th Lot No
                     %th Available quantity
@@ -427,10 +427,10 @@
       .row
         .col-md-12
           - if spare_part
-            = f.input :note, input_html: { value: nil}
+            = f.input :note, input_html: { value: f.object.note}
             = simple_format f.object.note
           - elsif @onloan_request
-            = sto.input :note, input_html: { value: nil}
+            = sto.input :note, input_html: { value: sto.object.note}
             = simple_format sto.object.note
         .col-md-12
           = f.submit "Save", class: "btn btn-success btn-sm", id: "approve_store_part"

@@ -569,6 +569,12 @@ module Admins
       render "admins/inventories/grn/grn"
     end
 
+    def search_grn
+      Inventory
+      Grn
+      render "admins/inventories/grn/search_grn"
+    end
+
     def initialize_grn
       Inventory
       Grn

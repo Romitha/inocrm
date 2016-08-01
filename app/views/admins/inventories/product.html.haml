@@ -4,7 +4,7 @@
   .row
     .col-md-4.brand
       = label_tag InventoryCategoryCaption.first.caption
-      = select_tag "search_inventory[brand]", options_from_collection_for_select(InventoryCategory1.all, :id, :name, (params[:search_inventory] and params[:search_inventory][:brand])), include_blank: true, class: "form-control"
+      = select_tag "search_inventory[brand]", options_from_collection_for_select(InventoryCategory1.all, :id, :name, (params[:search_inventory] and params[:search_inventory][:brand])), include_blank: true, class: "form-control", required: true
     .col-md-4.product
       = label_tag InventoryCategoryCaption.second.caption
       = select_tag "search_inventory[product]", option_groups_from_collection_for_select(InventoryCategory1.all, :inventory_category2s, :name, :id, :name, (params[:search_inventory] and params[:search_inventory][:product])), include_blank: true, class: "form-control"
@@ -207,3 +207,11 @@
               Need Batch:
               = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "inventory_product_info", name: "need_batch", url: product_admins_inventories_path(edit: true, product_info_id: inv_product.inventory_product_info.product_id), "original-title" => "Update Need Batch"} do
                 = inv_product.inventory_product_info.need_batch && "Yes" || "No"
+          .row.col-md-12
+            .col-md-6
+              Product: #{inv_product.inventory_category3.inventory_category2.inventory_category1.name}
+            .col-md-6
+              Brand: #{inv_product.inventory_category3.inventory_category2.name}
+          .row.col-md-12
+            .col-md-6
+              Catergory: #{inv_product.inventory_category3.name}
