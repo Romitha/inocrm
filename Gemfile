@@ -113,6 +113,8 @@ gem 'redcarpet'
 
 gem 'jquery-validation-rails'
 gem "roo"
+gem "tire"
+
 # gem "em-http-request"
 
 # Use debugger

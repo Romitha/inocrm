@@ -2022,16 +2022,18 @@ class TicketsController < ApplicationController
     Ticket
     User
     Product
+    Warranty
 
-    if params[:ticket_no].present? and params[:serial_no].present?
-      @tickets = Ticket.joins(:products).where(ticket_no: params[:ticket_no], spt_product_serial: {serial_no: params[:serial_no]})
-    elsif params[:ticket_no].present?
-      @tickets = Ticket.where(ticket_no: params[:ticket_no])
-    elsif params[:serial_no].present?
-      @tickets = Ticket.joins(:products).where(spt_product_serial: {serial_no: params[:serial_no]})
-    else
-      @tickets = Ticket.all
-    end
+    # if params[:ticket_no].present? and params[:serial_no].present?
+    #   @tickets = Ticket.joins(:products).where(ticket_no: params[:ticket_no], spt_product_serial: {serial_no: params[:serial_no]})
+    # elsif params[:ticket_no].present?
+    #   @tickets = Ticket.where(ticket_no: params[:ticket_no])
+    # elsif params[:serial_no].present?
+    #   @tickets = Ticket.joins(:products).where(spt_product_serial: {serial_no: params[:serial_no]})
+    # else
+    # end
+    # @tickets = Ticket.search(params)
+    @products = Product.search(params)
 
     render "tickets/tickets_pack/customer_inquire/customer_inquire"
   end

@@ -1,6 +1,54 @@
 class Product < ActiveRecord::Base
   self.table_name = "spt_product_serial"
 
+  include Tire::Model::Search
+  include Tire::Model::Callbacks
+
+  mapping do
+    indexes :tickets, type: "nested"
+  end
+
+  def self.search(params)  
+    tire.search(page: (params[:page] || 1), per_page: 10) do
+      query { string params[:query] } if params[:query].present?
+
+      # filter :range, published_at: { lte: Time.zone.now} 
+      # raise to_curl
+
+
+    end
+  end
+
+  def to_indexed_json
+    Warranty
+    to_json(
+      only: [:id, :serial_no, :model_no, :product_no],
+      methods: [:category_name, :warranty_type_name, :brand_name],
+      include: {
+        tickets: {
+          only: [:created_at, :cus_chargeable, :id],
+          methods: [:customer_name, :ticket_status_name, :warranty_type_name, :ticket_no_with_padding],
+        },
+        product_pop_status: {
+          only: [:name, :code]
+        }
+      }
+    )
+
+  end
+
+  def category_name
+    product_category.name
+  end
+
+  def warranty_type_name
+    warranty_type.name
+  end
+
+  def brand_name
+    product_brand.name
+  end
+
   mount_uploader :pop_doc_url, PopDocUrlUploader
 
   has_many :ticket_product_serials, foreign_key: :product_serial_id

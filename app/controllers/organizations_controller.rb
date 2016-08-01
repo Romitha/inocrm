@@ -4,6 +4,7 @@ class OrganizationsController < ApplicationController
   before_action :set_organization, only: [:show, :edit, :update, :relate, :remove_relation, :dashboard, :option_for_vat_number, :demote_as_department, :remove_department_org, :pin_relation]
 
   def index
+    ContactNumber
     if params[:search_members]
       @organizations = Organization.joins(:organization_type).where("mst_organization_types.id = ? and organizations.name like ? and short_name like ?", params[:type_id], "%#{params[:name]}%", "%#{params[:short_name]}%").references(:mst_organization_types)
     else

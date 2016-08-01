@@ -1,4 +1,4 @@
-= simple_form_for address, url: polymorphic_path([address.addressable, address]), html: {class: "validate_form"} do |address|
+= simple_form_for address, url: polymorphic_path([address.addressable, address]), html: {class: "validate_form1"} do |address|
   .row
     = panels panel_type: "success", header_content: "Add Address" do
       - if address.object.errors.present?
@@ -29,3 +29,6 @@
           = address.label "Make primary"
           = address.check_box :primary
         = address.submit "Add new address", class: "btn btn-success btn-sm", id: "submit_new_address"
+
+= javascript_tag do
+  setTimeout(function(){$(".validate_form1").validate()}, 200);

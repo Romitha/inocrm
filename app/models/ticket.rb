@@ -1,6 +1,33 @@
 class Ticket < ActiveRecord::Base
-
   self.table_name = "spt_ticket"
+
+  include Tire::Model::Search
+  include Tire::Model::Callbacks
+
+  def self.search(params)  
+    tire.search(load: true) do
+      query { string params[:query] } if params[:query].present?
+
+      # filter :range, published_at: { lte: Time.zone.now} 
+    end
+  end
+
+  def customer_name
+    customer.full_name
+  end
+
+  def ticket_status_name
+    ticket_status.name
+  end
+
+  def warranty_type_name
+    warranty_type.name
+  end
+
+  def ticket_no_with_padding
+    ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
+  end
+
 
   belongs_to :ticket_type, foreign_key: :ticket_type_id
   belongs_to :warranty_type, foreign_key: :warranty_type_id

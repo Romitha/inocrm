@@ -51,11 +51,9 @@
     .tab-content.small_scale_margin-top1
       .tab-pane.limit-height{id: "addresses#{organization.id}"}
         .row
-          - organization.customers.each do |customer|
-            .col-md-6
-              = render "contact", customer: customer
+          - organization.addresses.order("created_at DESC").each do |address|
+            = render "addresses/address", address: address if address.persisted?
       .tab-pane.limit-height{id: "contact_persons#{organization.id}"}
-        / .fixed-height
         .limit-height
           - organization.employees.each do |user|
             = render "users/user", user: user
