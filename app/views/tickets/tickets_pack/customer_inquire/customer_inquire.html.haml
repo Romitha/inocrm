@@ -1,13 +1,21 @@
 
 - products = @products
 
+= paginate products, remote: false, method: :get
+
 %h3 Customer Inquire
 .row.small_scale_margin-bottom1
   %form{:action => customer_inquire_tickets_path, :method => "get"}
     .col-md-11
-      = text_field_tag "query", params[:query], class: "form-control", placeholder: "Type any. for target seach, ticket_no:0001 likewise."
+      = text_field_tag "query", params[:query], class: "form-control", placeholder: "Type any. for target seach, type: laptop or name:laptop likewise."
     .col-md-1
       = submit_tag "Search", :name => nil, class: "btn btn-sm btn-success"
+    .col-md-12
+      %blockquote
+        %p Any product related information can be searched
+        .small Ex: if any product name is laptop, type: "laptop" or "name:laptop"
+        %p Any ticket related search can be done:
+        .small Ex: If any ticket_no is T00001, type: "T00001" or "tickets.suppor_ticket_no:T00001"
 
 - products.each_with_index do |product, index|
   - if product.tickets.any?
@@ -49,7 +57,7 @@
           - product.tickets.each_with_index do |ticket, index|
             %tr
               %td= index+1
-              %td= ticket.ticket_no_with_padding
+              %td= ticket.support_ticket_no
               %td= ticket.customer_name
               %td= ticket.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
               %td= ticket.ticket_status_name
@@ -57,3 +65,4 @@
               %td= ticket.warranty_type_name
               %td
                 = link_to "Select", ticket_path(ticket.id)
+= paginate products, remote: false, method: :get

@@ -24,7 +24,7 @@ class Ticket < ActiveRecord::Base
     warranty_type.name
   end
 
-  def ticket_no_with_padding
+  def support_ticket_no
     ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
   end
 

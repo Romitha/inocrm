@@ -5,11 +5,11 @@ class Product < ActiveRecord::Base
   include Tire::Model::Callbacks
 
   mapping do
-    indexes :tickets, type: "nested"
+    indexes :tickets, type: "nested", include_in_parent: true
   end
 
   def self.search(params)  
-    tire.search(page: (params[:page] || 1), per_page: 10) do
+    tire.search(page: params[:page], per_page: 5) do
       query { string params[:query] } if params[:query].present?
 
       # filter :range, published_at: { lte: Time.zone.now} 
@@ -27,7 +27,7 @@ class Product < ActiveRecord::Base
       include: {
         tickets: {
           only: [:created_at, :cus_chargeable, :id],
-          methods: [:customer_name, :ticket_status_name, :warranty_type_name, :ticket_no_with_padding],
+          methods: [:customer_name, :ticket_status_name, :warranty_type_name, :support_ticket_no],
         },
         product_pop_status: {
           only: [:name, :code]
