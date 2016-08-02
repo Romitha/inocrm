@@ -1,10 +1,10 @@
 %fieldset
-  %legend Sbu
+  %legend SBU
   = simple_nested_form_for @sbu, url: sbu_admins_employees_path, html: {class: "validate_form"}, method: :post do |f|
     = hidden_field_tag :sbu_id, f.object.id
     .row
       .col-md-12
-        = f.input :sbu, required: true
+        = f.input :sbu, label: "SBU", required: true
       .col-md-12
         %h4 Add Engineer(s)
         = f.simple_fields_for :sbu_engineers do |engineer|
@@ -35,7 +35,7 @@
             %span.glyphicon.glyphicon-pencil Edit More>>
       .row.col-md-12
         .col-md-1
-          %strong Sbu:
+          %strong SBU:
         .col-md-4
           = link_to "#", class: "inline_edit", data: {type: "text", resource: "sbu", name: "sbu", url: sbu_admins_employees_path(edit: true, sbu_id: sbu.id), "original-title" => "Update Admin Sbu", value: sbu.sbu} do
             = sbu.sbu

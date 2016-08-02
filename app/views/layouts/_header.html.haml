@@ -71,7 +71,7 @@
           = link_to "Inventory", "#", class: "dropdown-toggle inventory text-hide nav-icon", id: "inventory_dropdown", data: {toggle: "dropdown", placement: "bottom"}, title: "Inventory", rel: "tooltip"
           %ul.dropdown-menu{"aria-labelledby" => "inventory_dropdown"}
             %li{role: "presentation"}= link_to "GRN", grn_admins_inventories_path
-            %li.dropdown-header= link_to "Search GRN", search_grn_admins_inventories_path
+            %li{role: "presentation"}= link_to "Search GRN", search_grn_admins_inventories_path
             %li.divider
             / %li.menu-item{role: "presentation"}= link_to "Search GRN", "#"
             %li{role: "presentation"}= link_to "SRN", srn_admins_inventories_path
