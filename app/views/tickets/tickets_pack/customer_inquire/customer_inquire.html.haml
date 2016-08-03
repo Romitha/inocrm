@@ -18,51 +18,51 @@
         .small Ex: If any ticket_no is T00001, type: "T00001" or "tickets.suppor_ticket_no:T00001"
 
 - products.each_with_index do |product, index|
-  - if product.tickets.any?
-    = panels panel_type: "info", header_content: "Serial No: #{product.serial_no}" do
-      %h4 Product:
-      .row
-        .col-md-2
-          %strong Serial No:
-          = product.serial_no
-        .col-md-2
-          %strong Brand:
-          = product.brand
-        .col-md-2
-          %strong Category:
-          = product.category
-        .col-md-2
-          %strong Model No:
-          = product.model_no
-        .col-md-2
-          %strong Product No:
-          = product.product_no
-        .col-md-2
-          %strong POP Status:
-          = product.product_pop_status.name
-      %hr
-      %h4 Ticket:
-      %table.table.table-hover
-        %thead
+  / - if product.tickets.any?
+  = panels panel_type: "info", header_content: "Serial No: #{product.serial_no}" do
+    %h4 Product:
+    .row
+      .col-md-2
+        %strong Serial No:
+        = product.serial_no
+      .col-md-2
+        %strong Brand:
+        = product.brand_name
+      .col-md-2
+        %strong Category:
+        = product.category_name
+      .col-md-2
+        %strong Model No:
+        = product.model_no
+      .col-md-2
+        %strong Product No:
+        = product.product_no
+      .col-md-2
+        %strong POP Status:
+        = product.product_pop_status.name
+    %hr
+    %h4 Ticket:
+    %table.table.table-hover
+      %thead
+        %tr
+          %th No
+          %th Ticket No
+          %th Customer
+          %th Created at
+          %th Status
+          %th Chargeable
+          %th Warranty type
+          %th
+      %tbody
+        - product.tickets.each_with_index do |ticket, index|
           %tr
-            %th No
-            %th Ticket No
-            %th Customer
-            %th Created at
-            %th Status
-            %th Chargeable
-            %th Warranty type
-            %th
-        %tbody
-          - product.tickets.each_with_index do |ticket, index|
-            %tr
-              %td= index+1
-              %td= ticket.support_ticket_no
-              %td= ticket.customer_name
-              %td= ticket.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
-              %td= ticket.ticket_status_name
-              %td= boolean_in_word ticket.cus_chargeable, "Yes", "No"
-              %td= ticket.warranty_type_name
-              %td
-                = link_to "Select", ticket_path(ticket.id)
+            %td= index+1
+            %td= ticket.support_ticket_no
+            %td= ticket.customer_name
+            %td= ticket.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
+            %td= ticket.ticket_status_name
+            %td= boolean_in_word ticket.cus_chargeable, "Yes", "No"
+            %td= ticket.warranty_type_name
+            %td
+              = link_to "Select", ticket_path(ticket.id)
 = paginate products, remote: false, method: :get
