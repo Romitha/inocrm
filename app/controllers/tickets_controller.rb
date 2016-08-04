@@ -2034,7 +2034,8 @@ class TicketsController < ApplicationController
     # end
     # @tickets = Ticket.search(params)
     # @products = Kaminari.paginate_array(Product.search(params)).page(params[:page]).per(1)
-    @products = Product.search(params)
+    # @products = Product.search(params)
+    @tickets = Ticket.search(params)
 
     render "tickets/tickets_pack/customer_inquire/customer_inquire"
   end

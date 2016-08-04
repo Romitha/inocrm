@@ -4,12 +4,40 @@ class Ticket < ActiveRecord::Base
   include Tire::Model::Search
   include Tire::Model::Callbacks
 
+  mapping do
+    indexes :products, type: "nested", include_in_parent: true
+  end
+
   def self.search(params)  
-    tire.search(load: true) do
-      query { string params[:query] } if params[:query].present?
+    tire.search(page: (params[:page] || 1), per_page: 5) do
+      query do
+        boolean do
+          must { string params[:query] } if params[:query].present?
+          must { range :created_at, lte: params[:range_to].to_date } if params[:range_to].present?
+          must { range :created_at, gte: params[:range_from].to_date } if params[:range_from].present?
+          # must { term :author_id, params[:author_id] } if params[:author_id].present?
+        end
+      end
+      sort { by :created_at, "desc" } if params[:query].blank?
+      highlight :serial_no, :options => { :tag => '<strong class="highlight">' } if params[:query].present?
 
       # filter :range, published_at: { lte: Time.zone.now} 
     end
+  end
+
+  def to_indexed_json
+    Warranty
+    to_json(
+      only: [:created_at, :cus_chargeable, :id],
+      methods: [:customer_name, :ticket_status_name, :warranty_type_name, :support_ticket_no],
+      include: {
+        products: {
+          only: [:id, :serial_no, :model_no, :product_no, :created_at],
+          methods: [:category_name, :warranty_type_name, :brand_name],
+        }
+      }
+    )
+
   end
 
   def customer_name

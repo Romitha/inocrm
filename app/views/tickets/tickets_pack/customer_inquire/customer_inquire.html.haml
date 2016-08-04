@@ -1,68 +1,112 @@
 
-- products = @products
+- tickets = @tickets
 
-= paginate products, remote: false, method: :get
 
 %h3 Customer Inquire
 .row.small_scale_margin-bottom1
   %form{:action => customer_inquire_tickets_path, :method => "get"}
-    .col-md-11
+    .col-md-5
       = text_field_tag "query", params[:query], class: "form-control", placeholder: "Type any. for target seach, type: laptop or name:laptop likewise."
+    .col-md-3
+      = text_field_tag "range_from", params[:range_from], class: "form-control datepicker", placeholder: "Select From date"
+    .col-md-3
+      = text_field_tag "range_to", params[:range_to], class: "form-control datepicker", placeholder: "Select To date"
     .col-md-1
       = submit_tag "Search", :name => nil, class: "btn btn-sm btn-success"
     .col-md-12
       %blockquote
         %p Any product related information can be searched
-        .small Ex: if any product name is laptop, type: "laptop" or "name:laptop"
+        .small Ex: if any product name is hp, type: "brand_name:hp"
         %p Any ticket related search can be done:
-        .small Ex: If any ticket_no is T00001, type: "T00001" or "tickets.suppor_ticket_no:T00001"
+        .small Ex: If any ticket_no is T00001, type: "T00001" or "suppor_ticket_no:T00001"
+        %p Any ticket customer chargeable can be done:
+        .small Ex: If any ticket_no customer chargeable is yes, type: "cus_chargeable:1 or 0"
 
-- products.each_with_index do |product, index|
-  / - if product.tickets.any?
-  = panels panel_type: "info", header_content: "Serial No: #{product.serial_no}" do
-    %h4 Product:
-    .row
-      .col-md-2
-        %strong Serial No:
-        = product.serial_no
-      .col-md-2
-        %strong Brand:
-        = product.brand_name
-      .col-md-2
-        %strong Category:
-        = product.category_name
-      .col-md-2
-        %strong Model No:
-        = product.model_no
-      .col-md-2
-        %strong Product No:
-        = product.product_no
-      .col-md-2
-        %strong POP Status:
-        = product.product_pop_status.name
-    %hr
-    %h4 Ticket:
-    %table.table.table-hover
-      %thead
-        %tr
-          %th No
-          %th Ticket No
-          %th Customer
-          %th Created at
-          %th Status
-          %th Chargeable
-          %th Warranty type
-          %th
-      %tbody
-        - product.tickets.each_with_index do |ticket, index|
-          %tr
-            %td= index+1
-            %td= ticket.support_ticket_no
-            %td= ticket.customer_name
-            %td= ticket.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
-            %td= ticket.ticket_status_name
-            %td= boolean_in_word ticket.cus_chargeable, "Yes", "No"
-            %td= ticket.warranty_type_name
-            %td
-              = link_to "Select", ticket_path(ticket.id)
-= paginate products, remote: false, method: :get
+= paginate tickets, remote: false, method: :get
+.row
+  .col-md-1
+    %strong No
+  .col-md-1
+    %strong Ticket No
+  .col-md-2
+    %strong Customer
+  .col-md-1
+    %strong Serial No
+  .col-md-1
+    %strong Brand
+  .col-md-1
+    %strong Category
+  .col-md-1
+    %strong Created at
+  .col-md-2
+    %strong Status
+  .col-md-1
+    %strong Chargeable
+  .col-md-1
+    %strong Warranty type
+%hr
+- tickets.each_with_index do |ticket, index|
+  .row
+    .col-md-1= index+1
+    .col-md-1= ticket.support_ticket_no
+    .col-md-2= ticket.customer_name
+    .col-md-1= ticket.products.first.serial_no
+    .col-md-1= ticket.products.first.brand_name
+    .col-md-1= ticket.products.first.category_name
+    .col-md-1= ticket.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
+    .col-md-2= ticket.ticket_status_name
+    .col-md-1= boolean_in_word ticket.cus_chargeable, "Yes", "No"
+    .col-md-1= ticket.warranty_type_name
+  %hr
+= paginate tickets, remote: false, method: :get
+
+/ = paginate products, remote: false, method: :get
+/ - products.each_with_index do |product, index|
+/   / - if product.tickets.any?
+/   = panels panel_type: "info", header_content: "Serial No: #{product.serial_no}" do
+/     %h4 Product:
+/     .row
+/       .col-md-2
+/         %strong Serial No:
+/         = product.serial_no
+/       .col-md-2
+/         %strong Brand:
+/         = product.brand_name
+/       .col-md-2
+/         %strong Category:
+/         = product.category_name
+/       .col-md-2
+/         %strong Model No:
+/         = product.model_no
+/       .col-md-2
+/         %strong Product No:
+/         = product.product_no
+/       .col-md-2
+/         %strong POP Status:
+/         = product.product_pop_status.name
+/     %hr
+/     %h4 Ticket:
+/     %table.table.table-hover
+/       %thead
+/         %tr
+/           %th No
+/           %th Ticket No
+/           %th Customer
+/           %th Created at
+/           %th Status
+/           %th Chargeable
+/           %th Warranty type
+/           %th
+/       %tbody
+/         - product.tickets.each_with_index do |ticket, index|
+/           %tr
+/             %td= index+1
+/             %td= ticket.support_ticket_no
+/             %td= ticket.customer_name
+/             %td= ticket.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
+/             %td= ticket.ticket_status_name
+/             %td= boolean_in_word ticket.cus_chargeable, "Yes", "No"
+/             %td= ticket.warranty_type_name
+/             %td
+/               = link_to "Select", ticket_path(ticket.id)
+/ = paginate products, remote: false, method: :get
