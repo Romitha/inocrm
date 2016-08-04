@@ -52,7 +52,7 @@
     = link_to ticket, target: "_blank" do
       .col-md-1
         - if params[:page]
-          = (index+1)+ 10**(params[:page].to_i-1)
+          = (index+1)+ 10*(params[:page].to_i-1)
         - else
           = (index+1)
 
