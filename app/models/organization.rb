@@ -62,6 +62,7 @@ class Organization < ActiveRecord::Base
   accepts_nested_attributes_for :gins, allow_destroy: true
 
   has_many :requested_location_srns, class_name: "Srn", foreign_key: :requested_location_id
+  has_many :inventory_racks, foreign_key: :location_id
 
   belongs_to :mst_title, foreign_key: :title_id
 

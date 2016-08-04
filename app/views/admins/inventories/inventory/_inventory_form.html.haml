@@ -31,7 +31,7 @@
     .row
       .col-md-4
         = label_tag "Rack"
-        = select_tag "search_inventory[brand]", options_from_collection_for_select(InventoryRack.all, :id, :description), include_blank: true, class: "form-control"
+        = select_tag "search_inventory[brand]", options_from_collection_for_select(@store.inventory_racks, :id, :description), include_blank: true, class: "form-control"
       .col-md-4
         = label_tag "Shelf"
         = select_tag "search_inventory[product]", option_groups_from_collection_for_select(InventoryRack.all, :inventory_shelfs, :description, :id, :description), include_blank: true, class: "form-control"
