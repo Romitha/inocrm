@@ -9,7 +9,7 @@ class Ticket < ActiveRecord::Base
   end
 
   def self.search(params)  
-    tire.search(page: (params[:page] || 1), per_page: 5) do
+    tire.search(page: (params[:page] || 1), per_page: 10) do
       query do
         boolean do
           must { string params[:query] } if params[:query].present?
