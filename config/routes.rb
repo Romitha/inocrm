@@ -298,6 +298,12 @@ Rails.application.routes.draw do
         end
       end
     end
+    resources :searches do
+      collection do
+        get "search_grn"
+        post "update_grn_cost"
+      end
+    end
     resources :inventories do
 
       collection do

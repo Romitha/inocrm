@@ -1,0 +1,58 @@
+- grnitem = @grnitem
+
+.row
+  .col-md-12
+    %strong.h4 Store:
+    %strong.h4=grnitem.grn.store.name
+.row{style: "margin-top:20px;"}
+  .col-md-3
+    Item code:
+    =grnitem.inventory_product.generated_item_code
+  .col-md-3
+    Item Description:
+    =grnitem.inventory_product.try(:description)
+  .col-md-3
+    Remaining Quantity:
+    =grnitem.remaining_quantity
+  .col-md-3
+    Recieved Unit:
+    =grnitem.try(:inventory_product).try(:inventory_unit).try(:unit)
+.row{style: "margin-top:50px;"}
+  .col-md-6
+    = simple_nested_form_for grnitem, url: update_grn_cost_admins_searches_path( grnitem_id: grnitem.id), method: :post, html: {class: "validate_form"} do |f|
+      .row
+        = f.simple_fields_for "grn_item_current_unit_cost_histories_attributes[]", f.object.grn_item_current_unit_cost_histories.build do |c|
+          = c.input :created_at, as: :hidden, input_html: {value: DateTime.now.strftime("%d-%m-%Y %H:%M")}
+          = c.input :created_by, as: :hidden, input_html: {value: current_user.id}
+          = c.input :grn_item_id, as: :hidden, input_html: {value: grnitem.id}
+          = c.input :current_unit_cost, label: "Cost", wrapper_html: {class: "col-md-6"}
+      .row
+        .col-md-9
+          = f.input :remarks, input_html: { value: nil}
+          = grnitem.remarks
+      .row{style: "margin-top:20px; margin-bottom:20px;"}
+        .col-md-3
+          = link_to search_grn_admins_searches_path, "role" => "button",class: "btn btn-info pull-right" do
+            Search GRN  
+        .col-md-3
+          = link_to search_grn_admins_searches_path(grn_callback: "select_grn",grn_id: grnitem.grn.id), "role" => "button",class: "btn btn-warning pull-right" do
+            Previous Page
+        .col-md-3
+          = f.submit "Add New Cost", class: "btn btn-success pull-right"
+          
+  .col-md-6
+    %table.table.table-hover
+      %thead
+        %tr
+          %th No
+          %th Date
+          %th Cost
+          %th By
+      %tbody
+        - grnitem.grn_item_current_unit_cost_histories.each_with_index do |cost, index|
+          - if cost.persisted?
+            %tr
+              %td= index+1
+              %td=cost.try(:created_at).try(:strftime, "%Y-%m-%d")
+              %td=cost.try(:current_unit_cost)
+              %td=cost.try(:created_by_user).try(:email)
