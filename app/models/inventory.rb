@@ -74,7 +74,7 @@ end
 class InventoryProductInfo < ActiveRecord::Base
   self.table_name = "mst_inv_product_info"
 
-  belongs_to :inventory_product, foreign_key: :product_id
+  belongs_to :inventory_product, foreign_key: :product_no
 
   belongs_to :manufacture, foreign_key: :manufacture_id
 
@@ -150,6 +150,7 @@ class InventoryUnit < ActiveRecord::Base
 
   has_many :inventory_products, foreign_key: :unit_id
   has_many :inventory_product_infos, foreign_key: :secondary_unit_id
+  has_many :inventory_po, foreign_key: :unit_id
 
   validates_presence_of [:unit, :description]
 
@@ -172,7 +173,7 @@ class InventoryBatch < ActiveRecord::Base
   has_many :inventory_warranties, through: :inventory_batch_warranties
 
   belongs_to :inventory
-  belongs_to :inventory_product, foreign_key: :product_id
+  belongs_to :inventory_product, foreign_key: :product_no
 
   validates_presence_of [:inventory_id, :product_id, :created_by, :lot_no, :batch_no]
 
@@ -419,6 +420,7 @@ class InventoryPoItem < ActiveRecord::Base
 
   belongs_to :inventory_po, foreign_key: :po_id
   belongs_to :inventory_prn_item, foreign_key: :prn_item_id
+  belongs_to :inventory_unit, foreign_key: :unit_id
 
   has_many :grn_items, foreign_key: :po_item_id
   accepts_nested_attributes_for :grn_items, allow_destroy: true

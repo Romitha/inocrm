@@ -1,0 +1,260 @@
+.row
+  .col-md-3
+    %strong  GRN No:
+    = @grn.grn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_grn_no_format"])
+  .col-md-3
+    %strong Store:
+    = @grn.store.name
+  .col-md-3
+    Created At:
+    = @grn.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
+  .col-md-3
+    Created By:
+    = @grn.created_by_user.try(:full_name)
+.row
+  .col-md-3
+    PO No:
+    = @grn.try(:po_no)
+  .col-md-3
+    Supplier Name:
+    = @grn.supplier.try(:name)
+  .col-md-6
+    Remarks:
+    = @grn.try(:remarks)
+.row
+  .col-md-12
+    %h4.strong GRN Items
+= collapse_wrapper collapse_id: "grn_item_list", labelledby: "grn_item_list_labelledby" do
+  - @grn.grn_items.each_with_index do |grnitem, index|
+    - inventory = grnitem.inventory_product.inventories.find_by_store_id(grnitem.grn.store_id)
+
+    = collapse collapse_type: "info", labelledby: "grn_item_list_labelledby_#{grnitem.id}", header_content: "GRN Item #{index+1} - #{grnitem.inventory_product.generated_item_code}", collapse_link: "grn_itemlink_#{grnitem.id}", collapse_id: "grn_item_list" do
+      .row
+        .col-md-3
+          Item code:
+          =grnitem.inventory_product.generated_item_code
+        .col-md-3
+          Item Description:
+          =grnitem.inventory_product.try(:description)
+        .col-md-3
+          Requested Quantity:
+          =grnitem.try(:inventory_po_item).try(:quantity)
+        .col-md-3
+          Requested Unit:
+          =grnitem.try(:inventory_po_item).try(:inventory_unit).try(:unit)
+      .row
+        .col-md-3
+          %strong Recieved Quantity:
+          =grnitem.recieved_quantity
+        .col-md-3
+          Recieved Unit:
+          =grnitem.try(:inventory_product).try(:inventory_unit).try(:unit)
+        .col-md-3
+          PO Remarks:
+          =grnitem.try(:inventory_po_item).try(:remarks)
+        .col-md-3
+          Remarks:
+          =grnitem.remarks
+      .row
+        .col-md-12
+          %strong Remaining Quantity:
+          =grnitem.remaining_quantity
+      .row
+        .col-md-3
+          Stock In Hand:
+          - if inventory.present?
+            =inventory.try(:stock_quantity)
+        .col-md-3
+          Rack:
+          - if inventory.present?
+            =inventory.try(:inventory_bin).try(:inventory_shelf).try(:inventory_rack).try(:description)
+        .col-md-3
+          Shelf:
+          - if inventory.present?
+            =inventory.try(:inventory_bin).try(:inventory_shelf).try(:description)
+        .col-md-3
+          Bin:
+          - if inventory.present?
+            =inventory.try(:inventory_bin).try(:description)
+      .row{style: "margin-top:10px;"}
+        .col-md-9
+          %p.bg-info.h5.strong{style: "text-align: center;"} GRN Cost Adgestments
+        .col-md-3
+          = link_to search_grn_admins_searches_path(grn_callback: "change_cost",grnitem_id: grnitem.id), "role" => "button", class: "btn btn-info" do
+            Change Cost
+      - grnitem.grn_item_current_unit_cost_histories.each_with_index do |cost, index|
+        .row
+          .col-md-3
+            Date:
+            =cost.try(:created_at).try(:strftime, "%Y-%m-%d")
+          .col-md-3
+            Cost:
+            =cost.try(:current_unit_cost)
+          .col-md-3
+            Done By:
+            =cost.try(:created_by_user).try(:email)
+      .row
+        .col-md-12
+          / - if grnitem.inventory_product.inventory_product_info.try(:need_serial) == false && grnitem.inventory_product.inventory_product_info.try(:need_batch) == true
+          = collapse_wrapper collapse_id: "batch_list", labelledby: "batch_list_labelledby" do
+            - grnitem.grn_batches.each_with_index do |batch, index|
+              = collapse collapse_type: "success", labelledby: "batch_list_labelledby_#{batch.id}", header_content: "Batch #{index+1} - #{batch.inventory_batch.try(:batch_no)}", collapse_link: "batchlink_#{batch.id}", collapse_id: "batch_list" do
+                .row
+                  .col-md-4
+                    Lot No:
+                    =batch.inventory_batch.try(:lot_no)
+                  .col-md-4
+                    Manufacture Date:
+                    =batch.inventory_batch.try(:manufatured_date).try(:strftime, "%Y-%m-%d")
+                  .col-md-4
+                    %strong Recieved Quantity:
+                    =batch.recieved_quantity
+                .row
+                  .col-md-4
+                    Batch No:
+                    =batch.inventory_batch.try(:batch_no)
+                  .col-md-4
+                    Expiry Date:
+                    =batch.inventory_batch.try(:expiry_date).try(:strftime, "%Y-%m-%d")
+                  .col-md-4
+                    %strong Remaining Quantity:
+                    =batch.remaining_quantity
+                .row
+                  .col-md-12
+                    Remarks:
+                    =batch.inventory_batch.try(:remarks)
+                .row
+                  .col-md-12
+                    = collapse_wrapper collapse_id: "warranty_list", labelledby: "warranty_list_labelledby" do
+                      - batch.inventory_batch.inventory_batch_warranties.each_with_index do |warranty, index|
+                        = collapse collapse_type: "warning", labelledby: "warranty_list_labelledby_#{warranty.id}", header_content: "Warranty #{index+1} - #{warranty.inventory_warranty.inventory_warranty_type.name}", collapse_link: "warrantylink_#{warranty.id}", collapse_id: "warranty_list" do
+                          .row
+                            .col-md-4
+                              Type:
+                              =warranty.inventory_warranty.inventory_warranty_type.name
+                            .col-md-4
+                              Start At:
+                              =warranty.inventory_warranty.try(:start_at).try(:strftime, "%Y-%m-%d")
+                            .col-md-4
+                              End At:
+                              =warranty.inventory_warranty.try(:end_at).try(:strftime, "%Y-%m-%d")
+                          .row
+                            .col-md-4
+                              Period Part:
+                              =warranty.inventory_warranty.try(:period_part)
+                            .col-md-4
+                              Period Labour:
+                              =warranty.inventory_warranty.try(:period_labour)
+                            .col-md-4
+                              Period On-Sight:
+                              =warranty.inventory_warranty.try(:period_onsight)
+                          .row
+                            .col-md-12
+                              Remarks:
+                              =warranty.inventory_warranty.try(:remarks)
+
+      .row
+        .col-md-12
+          / - if grnitem.inventory_product.inventory_product_info.try(:need_serial) == true && grnitem.inventory_product.inventory_product_info.try(:need_batch) == false
+          = collapse_wrapper collapse_id: "serial_item_list", labelledby: "serial_item_list_labelledby" do
+            - grnitem.grn_serial_items.each_with_index do |serial_item, index|
+              = collapse collapse_type: "success", labelledby: "serial_item_list_labelledby_#{serial_item.id}", header_content: "Serial Item #{index+1}", collapse_link: "serial_itemlink_#{serial_item.id}", collapse_id: "serial_item_list" do
+                .row
+                  .col-md-4
+                    Serial No:
+                    =serial_item.inventory_serial_item.try(:serial_no)
+                  .col-md-4
+                    Manufacture Date:
+                    =serial_item.inventory_serial_item.try(:manufatured_date).try(:strftime, "%Y-%m-%d")
+                  .col-md-4
+                    %strong Available:
+                    -if serial_item.remaining == true
+                      Yes
+                    -else
+                      No
+
+                .row
+                  .col-md-4
+                    CT No:
+                    =serial_item.inventory_serial_item.try(:ct_no)
+                  .col-md-4
+                    Expiry Date:
+                    =serial_item.inventory_serial_item.try(:expiry_date).try(:strftime, "%Y-%m-%d")
+                  .col-md-4
+                    Condition:
+                    =serial_item.inventory_serial_item.product_condition.condition
+                .row
+                  .col-md-4
+                    Scavenge:
+                    -if serial_item.inventory_serial_item.scavenge == true
+                      Yes
+                    -else
+                      No
+                  .col-md-4
+                    Parts not completed:
+                    -if serial_item.inventory_serial_item.parts_not_completed == true
+                      Yes
+                    -else
+                      No
+                  .col-md-4
+                    Damage:
+                    -if serial_item.inventory_serial_item.damage == true
+                      Yes
+                    -else
+                      No
+                .row
+                  .col-md-4
+                    Used:
+                    -if serial_item.inventory_serial_item.used == true
+                      Yes
+                    -else
+                      No
+                  .col-md-4
+                    Repaired:
+                    -if serial_item.inventory_serial_item.repaired == true
+                      Yes
+                    -else
+                      No
+                  .col-md-4
+                    Reserved:
+                    -if serial_item.inventory_serial_item.reserved == true
+                      Yes
+                    -else
+                      No
+                .row
+                  .col-md-12
+                    Remarks:
+                    =serial_item.inventory_serial_item.try(:remarks)
+                .row
+                  .col-md-12
+                    = collapse_wrapper collapse_id: "s_warranty_list", labelledby: "s_warranty_list_labelledby" do
+                      - serial_item.inventory_serial_item.inventory_serial_warranties.each_with_index do |s_warranty, index|
+                        = collapse collapse_type: "warning", labelledby: "s_warranty_list_labelledby_#{s_warranty.id}", header_content: "Warranty #{index+1} - #{s_warranty.inventory_warranty.inventory_warranty_type.name}", collapse_link: "s_warrantylink_#{s_warranty.id}", collapse_id: "s_warranty_list" do
+                          .row
+                            .col-md-4
+                              Type:
+                              =s_warranty.inventory_warranty.inventory_warranty_type.name
+                            .col-md-4
+                              Start At:
+                              =s_warranty.inventory_warranty.try(:start_at).try(:strftime, "%Y-%m-%d")
+                            .col-md-4
+                              End At:
+                              =s_warranty.inventory_warranty.try(:end_at).try(:strftime, "%Y-%m-%d")
+                          .row
+                            .col-md-4
+                              Period Part:
+                              =s_warranty.inventory_warranty.try(:period_part)
+                            .col-md-4
+                              Period Labour:
+                              =s_warranty.inventory_warranty.try(:period_labour)
+                            .col-md-4
+                              Period On-Sight:
+                              =s_warranty.inventory_warranty.try(:period_onsight)
+                          .row
+                            .col-md-12
+                              Remarks:
+                              =s_warranty.inventory_warranty.try(:remarks)
+      .row
+        .col-md-12
+          Remarks:
+          =grnitem.try(:remarks)

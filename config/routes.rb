@@ -298,12 +298,17 @@ Rails.application.routes.draw do
         end
       end
     end
+    resources :searches do
+      collection do
+        get "search_grn"
+        post "update_grn_cost"
+      end
+    end
     resources :inventories do
 
       collection do
 
         get "grn"
-        get "search_grn"
         match "upload_grn_file", action: :upload_grn_file, via: [:get, :post]
         post "initialize_grn"
         post "create_grn"
