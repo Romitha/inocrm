@@ -113,7 +113,8 @@ gem 'redcarpet'
 
 gem 'jquery-validation-rails'
 gem "roo"
-gem "tire"
+gem "tire", git: "https://github.com/karmi/retire.git"
+gem "whenever", :require => false
 
 # gem "em-http-request"
 

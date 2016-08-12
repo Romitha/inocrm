@@ -34,9 +34,36 @@ task :flush_logfile do
   if logfile.size >= 10.megabytes
     File.delete logfile
     new_logfile = File.new File.join(path, "log", "#{stage}.log"), "w"
-    new_logfile.chmod 0777
+    new_logfile.chmod 0664
   end
 
   exit
 
+end
+
+namespace :tire do
+  task deep_import: :environment do
+    pclass = eval(ENV['PCLASS'].to_s)
+    klass = eval(ENV['CLASS'].to_s)
+    total = klass.count rescue nil
+    params = eval(ENV['PARAMS'].to_s) || {}
+
+    if ENV['INDEX']
+      index = Tire::Index.new(ENV['INDEX'])
+      params[:index] = index.name
+    else
+      index = klass.tire.index
+    end
+
+    Tire::Tasks::Import.add_pagination_to_klass(klass)
+    Tire::Tasks::Import.progress_bar(klass, total) if total
+
+    Tire::Tasks::Import.delete_index(index) if ENV['FORCE']
+    Tire::Tasks::Import.create_index(index, klass)
+
+    Tire::Tasks::Import.import_model(index, klass, params)
+    puts '[IMPORT] Done.'
+
+  end
+  
 end
