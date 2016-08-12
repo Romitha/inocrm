@@ -18,10 +18,10 @@ class Ticket < ActiveRecord::Base
           # must { term :author_id, params[:author_id] } if params[:author_id].present?
         end
       end
-      sort { by :created_at, "desc" } if params[:query].blank?
-      highlight :serial_no, :options => { :tag => '<strong class="highlight">' } if params[:query].present?
-
-      # filter :range, published_at: { lte: Time.zone.now} 
+      sort { by :created_at, "desc" }
+      highlight customer_name: {number_of_fragments: 0}, ticket_status_name: {number_of_fragments: 0}, :options => { :tag => '<strong class="highlight">' } if params[:query].present?
+      # filter :range, published_at: { lte: Time.zone.now}
+      # raise to_curl
     end
   end
 

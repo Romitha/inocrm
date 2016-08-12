@@ -58,63 +58,13 @@
 
       .col-md-1= ticket.support_ticket_no
       .col-md-2= ticket.customer_name
-      .col-md-1= ticket.products.first.serial_no
-      .col-md-1= ticket.products.first.brand_name
-      .col-md-1= ticket.products.first.category_name
+      .col-md-1= ticket.products.first.try(:serial_no)
+      .col-md-1= ticket.products.first.try(:brand_name)
+      .col-md-1= ticket.products.first.try(:category_name)
       .col-md-1= ticket.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
       .col-md-2= ticket.ticket_status_name
       .col-md-1= boolean_in_word ticket.cus_chargeable, "Yes", "No"
       .col-md-1= ticket.warranty_type_name
   %hr
-= paginate tickets, remote: false, method: :get
 
-/ = paginate products, remote: false, method: :get
-/ - products.each_with_index do |product, index|
-/   / - if product.tickets.any?
-/   = panels panel_type: "info", header_content: "Serial No: #{product.serial_no}" do
-/     %h4 Product:
-/     .row
-/       .col-md-2
-/         %strong Serial No:
-/         = product.serial_no
-/       .col-md-2
-/         %strong Brand:
-/         = product.brand_name
-/       .col-md-2
-/         %strong Category:
-/         = product.category_name
-/       .col-md-2
-/         %strong Model No:
-/         = product.model_no
-/       .col-md-2
-/         %strong Product No:
-/         = product.product_no
-/       .col-md-2
-/         %strong POP Status:
-/         = product.product_pop_status.name
-/     %hr
-/     %h4 Ticket:
-/     %table.table.table-hover
-/       %thead
-/         %tr
-/           %th No
-/           %th Ticket No
-/           %th Customer
-/           %th Created at
-/           %th Status
-/           %th Chargeable
-/           %th Warranty type
-/           %th
-/       %tbody
-/         - product.tickets.each_with_index do |ticket, index|
-/           %tr
-/             %td= index+1
-/             %td= ticket.support_ticket_no
-/             %td= ticket.customer_name
-/             %td= ticket.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
-/             %td= ticket.ticket_status_name
-/             %td= boolean_in_word ticket.cus_chargeable, "Yes", "No"
-/             %td= ticket.warranty_type_name
-/             %td
-/               = link_to "Select", ticket_path(ticket.id)
-/ = paginate products, remote: false, method: :get
+= paginate tickets, remote: false, method: :get
