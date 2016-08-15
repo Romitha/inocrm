@@ -37,7 +37,7 @@ class User < ActiveRecord::Base
 
   has_many :ticket_engineers, class_name: "TicketEngineer", foreign_key: :user_id
   # has_many :users, through: :ticket_engineers
-  has_many :grns
+  has_many :grns, foreign_key: :created_by
   has_many :act_ticket_close_approves
 
   # validates_uniqueness_of :user_name
