@@ -45,15 +45,15 @@ class Product < ActiveRecord::Base
   end
 
   def category_name
-    product_category.name
+    product_category.try(:name)
   end
 
   def warranty_type_name
-    warranty_type.name
+    warranty_type.try(:name)
   end
 
   def brand_name
-    product_brand.name
+    product_brand.try(:name)
   end
 
   mount_uploader :pop_doc_url, PopDocUrlUploader
