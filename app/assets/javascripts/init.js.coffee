@@ -11,4 +11,5 @@ $ ->
   Warranties.setup()
   Lives.setup()
   Invoices.setup()
+  Searches.setup()
   return
