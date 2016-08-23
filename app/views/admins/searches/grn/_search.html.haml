@@ -19,6 +19,11 @@
             .col-md-1
               .search
                 = submit_tag "Search", class: "btn btn-sm btn-warning"
+            .col-md-1
+              .reset
+                / = link_to "Reset", "role" => "button", onclick: "Searches.reset_searchgrn(); return false;",class: "btn btn-warning" do
+                / Reset
+                = link_to "Reset", "#", onclick: "Searches.reset_searchgrn(); return false;", class: "resetgrn"
 
 - if @grns.any?
   .row
@@ -38,10 +43,16 @@
         %tbody
           - @grns.each_with_index do |grn, index|
             %tr
-              %td= index+1
+              / %td= params[:page]
+              / %td= index+1
+              %td
+                - if params[:page]
+                  = (index+1)+ 5*(params[:page].to_i-1)
+                - else
+                  = (index+1)
               %td= grn.store_name
               %td= grn.grn_no_format
-              %td= grn.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
+              %td= grn.formated_created_at
               / %td= grn.try(:po_id).to_s.rjust(5, INOCRM_CONFIG["inventory_po_no_format"])
               %td= grn.po_no
               %td= grn.supplier_name

@@ -2,7 +2,7 @@
   .col-md-12
     = form_tag grn_admins_inventories_path(purchase_order: "search_po"), remote: true, method: :get, class: "form-horizontal" do
       .form-group
-        = label_tag "PO No", "store", class: "col-md-2 control-label"
+        = label_tag "PO No", "Store", class: "col-md-2 control-label"
         .col-md-10
           = select_tag "po[store_id]", options_from_collection_for_select(@stores, "id", "name"), class: "form-control"
       .form-group

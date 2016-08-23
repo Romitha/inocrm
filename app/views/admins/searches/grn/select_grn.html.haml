@@ -44,10 +44,10 @@
           =grnitem.try(:inventory_po_item).try(:inventory_unit).try(:unit)
       .row
         .col-md-3
-          %strong Recieved Quantity:
+          %strong Received Quantity:
           =grnitem.recieved_quantity
         .col-md-3
-          Recieved Unit:
+          Received Unit:
           =grnitem.try(:inventory_product).try(:inventory_unit).try(:unit)
         .col-md-3
           PO Remarks:
@@ -78,7 +78,7 @@
             =inventory.try(:inventory_bin).try(:description)
       .row{style: "margin-top:10px;"}
         .col-md-9
-          %p.bg-info.h5.strong{style: "text-align: center;"} GRN Cost Adgestments
+          %p.bg-info.h5.strong{style: "text-align: center;"} GRN Cost Adjustments
         .col-md-3
           = link_to search_grn_admins_searches_path(grn_callback: "change_cost",grnitem_id: grnitem.id), "role" => "button", class: "btn btn-info" do
             Change Cost

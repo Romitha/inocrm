@@ -14,19 +14,20 @@ class Grn < ActiveRecord::Base
         boolean do
           must { string params[:grn_no] } if params[:grn_no].present?
           must { term :store_id, params[:store_id] } if params[:store_id].present?
-          must { range :created_at, lte: params[:range_to].to_date } if params[:range_to].present?
-          must { range :created_at, gte: params[:range_from].to_date } if params[:range_from].present?
+          must { range :formated_created_at, lte: params[:range_to].to_date } if params[:range_to].present?
+          must { range :formated_created_at, gte: params[:range_from].to_date } if params[:range_from].present?
           # filter :range, published_at: { lte: Time.zone.now}
           # raise to_curl
         end
       end
+      sort { by :grn_no, "asc" }
     end
   end
 
   def to_indexed_json
     to_json(
-      only: [:id, :store_id, :created_by, :remarks, :created_at, :po_no, :supplier_id],
-      methods: [:store_name, :supplier_name, :grn_no_format],
+      only: [:id, :store_id, :created_by, :remarks, :po_no, :supplier_id],
+      methods: [:store_name, :supplier_name, :grn_no_format, :formated_created_at],
       include: {
         created_by_user: {
           methods: [:full_name],
@@ -46,6 +47,10 @@ class Grn < ActiveRecord::Base
 
   def supplier_name
     supplier.try(:name)
+  end
+
+  def formated_created_at
+    created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
   end
 
   belongs_to :store, class_name: "Organization"

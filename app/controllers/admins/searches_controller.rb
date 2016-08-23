@@ -6,9 +6,9 @@ module Admins
       Inventory
       User
       Grn
-      @update_grn_item = GrnItem.find params[:grnitem_id]
-      @update_grn_item.update update_grn_item_params
       @grnitem = GrnItem.find params[:grnitem_id]
+      @grnitem.update update_grn_item_params
+      @grnitem.update current_unit_cost: @grnitem.grn_item_current_unit_cost_histories.order(created_at: :desc).first.current_unit_cost
       render "admins/searches/grn/change_cost"
     end
 
