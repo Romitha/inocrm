@@ -789,7 +789,7 @@ module Admins
     def create_grn_for_main_part
       Organization
       Inventory
-      @grn = Grn.new store_id: params[:store_id], created_by: current_user.id, grn_no: CompanyConfig.first.next_sup_last_grn_no
+      @grn = Grn.new store_id: params[:store_id], created_by: current_user.id, grn_no: CompanyConfig.first.increase_sup_last_grn_no
       @inventory_serial_item = InventorySerialItem.find params[:inventory_serial_item_id]
       @inventory_serial_item.attributes = inventory_serial_item_params
 

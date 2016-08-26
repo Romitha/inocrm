@@ -253,7 +253,7 @@
                 .col-md-6
                   = p.input :expiry_date, as: :string, input_html: {class: "datepicker", value: p.object.expiry_date.try(:strftime, INOCRM_CONFIG["short_date_format"])}
                 .col-md-6
-                  = p.association :product_condition, label_method: :condition
+                  = p.association :product_condition, label_method: :condition, required: true
                 .col-md-6
                   = p.association :inventory_serial_item_status, label: "Status"
                 
