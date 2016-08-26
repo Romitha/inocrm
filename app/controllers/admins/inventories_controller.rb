@@ -797,6 +797,7 @@ module Admins
         if p.new_record?
           p.grn_serial_parts.each do |gp|
             gp.grn_item.current_unit_cost = gp.grn_item.unit_cost
+            gp.grn_item.grn_item_current_unit_cost_histories.build current_unit_cost: gp.grn_item.current_unit_cost, created_by: current_user.id
             gp.grn_item.grn = @grn
           end
 
