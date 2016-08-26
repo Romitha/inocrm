@@ -16,7 +16,11 @@ end
 class InventoryProduct < ActiveRecord::Base
   self.table_name = "mst_inv_product"
 
+  include Tire::Model::Search
+  include Tire::Model::Callbacks
+
   belongs_to :inventory_category3, foreign_key: :category3_id
+  belongs_to :created_by_user, class_name: "User", foreign_key: :created_by
 
   has_many :inventories, foreign_key: :product_id
   has_many :stores, through: :inventories, source: :organization
@@ -69,12 +73,85 @@ class InventoryProduct < ActiveRecord::Base
    "#{inventory_category3.inventory_category2.inventory_category1.code}#{CompanyConfig.first.inv_category_seperator}#{inventory_category3.inventory_category2.code}#{CompanyConfig.first.inv_category_seperator}#{inventory_category3.code}#{CompanyConfig.first.inv_category_seperator}#{serial_no.to_s.rjust(6, INOCRM_CONFIG["inventory_serial_no_format"])}"
   end
 
+
   def generated_serial_no
     serial_no.to_s.rjust(5, INOCRM_CONFIG["inventory_serial_no_format"])
   end
 
   def generated_serial_no=(generated_serial_no)
     self.serial_no = generated_serial_no.to_s.rjust(5, INOCRM_CONFIG["inventory_serial_no_format"])
+  end
+
+  def category3_id
+    inventory_category3.id
+  end
+
+  def category2_id
+    inventory_category3.inventory_category2.id
+  end
+
+  def category1_id
+    inventory_category3.inventory_category2.inventory_category1.id
+  end
+
+  def category3_name
+    inventory_category3.name
+  end
+
+  def category2_name
+    inventory_category3.inventory_category2.name
+  end
+
+  def category1_name
+    inventory_category3.inventory_category2.inventory_category1.name
+  end
+
+  mapping do
+    indexes :inventory_product_info, type: "nested", include_in_parent: true
+    indexes :inventory_unit, type: "nested", include_in_parent: true
+    indexes :stores, type: "nested", include_in_parent: true
+  end
+
+  def self.search(params)
+    tire.search(page: (params[:page] || 1), per_page: 10) do
+      query do
+        boolean do
+          must { string params[:query] } if params[:query].present?
+          # must { term "stores.id", params[:store_id] } if params[:store_id].present?
+          # puts params[:store_id]
+        end
+      end
+      sort { by :created_at, "desc" }
+      # filter :range, published_at: { lte: Time.zone.now}
+      # raise to_curl
+    end
+  end
+
+  def to_indexed_json
+    Inventory
+    to_json(
+      only: [:description, :model_no, :product_no, :spare_part_no, :created_at],
+      methods: [:category3_id, :category2_id, :category1_id, :category3_name, :category2_name, :category1_name, :generated_item_code],
+      include: {
+        inventory_unit: {
+          only: [:unit],
+          },
+        inventory_product_info: {
+          include: {
+            manufacture: {
+              only: [:manufacture]
+            },
+          }
+        },
+        stores: {
+          only: [:name, :id]
+        },
+        # inventories: {
+        #   only: [:store_id, :product_id, :stock_quantity, :available_quantity]
+        # }
+      }
+    )
+
   end
 
 end
@@ -190,6 +267,9 @@ end
 class InventorySerialItem < ActiveRecord::Base
   self.table_name = "inv_inventory_serial_item"
 
+  include Tire::Model::Search
+  include Tire::Model::Callbacks
+
   belongs_to :inventory_batch, foreign_key: :batch_id
   belongs_to :inventory
   belongs_to :product_condition
@@ -197,11 +277,14 @@ class InventorySerialItem < ActiveRecord::Base
   belongs_to :inventory_product, foreign_key: :product_id
 
   has_many :inventory_serial_parts, foreign_key: :serial_item_id
+  accepts_nested_attributes_for :inventory_serial_parts, allow_destroy: true
 
   has_many :grn_serial_items, foreign_key: :serial_item_id
+  accepts_nested_attributes_for :grn_serial_items, allow_destroy: true
   has_many :grn_items, through: :grn_serial_items
 
   has_many :inventory_serial_items_additional_costs, foreign_key: :serial_item_id
+  accepts_nested_attributes_for :inventory_serial_items_additional_costs, allow_destroy: true
 
   has_many :inventory_serial_warranties, foreign_key: :serial_item_id
   accepts_nested_attributes_for :inventory_serial_warranties, allow_destroy: :true
@@ -211,6 +294,60 @@ class InventorySerialItem < ActiveRecord::Base
   has_many :grn_item_for_parts, through: :grn_serial_parts, source: :grn_item
 
   validates_presence_of [:inventory_id, :product_id, :serial_no, :product_condition_id, :inv_status_id, :created_by]
+
+  mapping do
+    Grn
+    indexes :inventory_product, type: "nested", include_in_parent: true
+    indexes :product_condition, type: "nested", include_in_parent: true
+    indexes :grn_items, type: "nested", include_in_parent: true
+    indexes :inventory_serial_item_status, type: "nested", include_in_parent: true
+    indexes :inventory, type: "nested", include_in_parent: true
+  end
+
+  def self.search(params)
+    tire.search(page: (params[:page] || 1), per_page: 10) do
+      query do
+        boolean do
+          must { string params[:query] } if params[:query].present?
+          # must { term :store_id, params[:store_id] } if params[:store_id].present?
+          # puts params[:store_id]
+        end
+      end
+      sort { by :created_at, "desc" }
+      # filter :range, published_at: { lte: Time.zone.now}
+      # raise to_curl
+    end
+  end
+
+  def to_indexed_json
+    Inventory
+    to_json(
+      only: [:serial_no, :ct_no, :damaged, :used, :scavenge, :repaired, :reserved, :parts_not_completed, :manufatured_date, :expiry_date, :remarks, :created_at],
+      include: {
+        inventory_product: {
+          only: [:description, :model_no, :product_no, :spare_part_no, :created_at],
+          methods: [:category3_id, :category2_id, :category1_id, :generated_item_code],
+        },
+        product_condition: {
+          only: [:name],
+        },
+        inventory_serial_item_status: {
+          only: [:name],
+        },
+        inventory: {
+          only: [:store_id],
+        },
+        grn_items: {
+          include: {
+            grn: {
+              only: [:grn_no, :created_at, :store_id],
+            },
+          },
+        },
+      },
+    )
+
+  end
 
 end
 
@@ -230,10 +367,12 @@ class InventorySerialPart < ActiveRecord::Base
   accepts_nested_attributes_for :inventory_serial_part_additional_costs, allow_destroy: true
 
   has_many :inventory_serial_part_warranties, foreign_key: :serial_part_id
+  accepts_nested_attributes_for :inventory_serial_part_warranties, allow_destroy: true
   has_many :inventory_warranties, through: :inventory_serial_part_warranties
   has_many :damages
 
   has_many :grn_serial_parts, foreign_key: :inv_serial_part_id
+  accepts_nested_attributes_for :grn_serial_parts, allow_destroy: true
   has_many :grn_items, through: :grn_serial_parts
 
 end
@@ -270,6 +409,7 @@ class InventorySerialItemsAdditionalCost < ActiveRecord::Base
   self.table_name = "inv_serial_additional_cost"
 
   belongs_to :inventory_serial_item, foreign_key: :serial_item_id
+  belongs_to :created_by_user, foreign_key: :created_by, class: User
 end
 
 class InventorySerialPartWarranty < ActiveRecord::Base
@@ -277,6 +417,7 @@ class InventorySerialPartWarranty < ActiveRecord::Base
 
   belongs_to :inventory_serial_part, foreign_key: :serial_part_id
   belongs_to :inventory_warranty, foreign_key: :warranty_id
+  accepts_nested_attributes_for :inventory_warranty, allow_destroy: true
 end
 
 class InventorySerialWarranty < ActiveRecord::Base

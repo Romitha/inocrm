@@ -313,6 +313,7 @@ Rails.application.routes.draw do
         match "upload_grn_file", action: :upload_grn_file, via: [:get, :post]
         post "initialize_grn"
         post "create_grn"
+        patch "create_grn_for_main_part"
         post "initiate_grn_for_i_product"
         post "create_grn_for_i_product"
 
@@ -372,6 +373,7 @@ Rails.application.routes.draw do
 
   resources :inventories, except: [:index, :show, :create, :new, :update, :destroy, :edit] do
     collection do
+      get "search_inventory_product"
       get "inventory_in_modal"
       get "search_inventories"
       get "load_serial_and_part"

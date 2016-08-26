@@ -717,6 +717,24 @@ window.Inventories =
       ), 200
     return
 
+  search_product_for_part: (elem)->
+    console.log $(elem).data("modalid")
+    store_id = unless $(elem).data("storeid") is "undefined" then $(elem).data("storeid") else ""
+    modal_id = unless $(elem).data("modalid") is "undefined" then $(elem).data("modalid") else ""
+    render_id = unless $(elem).data("renderid") is "undefined" then $(elem).data("renderid") else ""
+    remote = unless $(elem).data("remote") is "undefined" then $(elem).data("remote") else ""
+    select_path = unless $(elem).data("selectpath") is "undefined" then $(elem).data("selectpath") else ""
+    select_options = unless $(elem).data("selectoptions") is "undefined" then $(elem).data("selectoptions") else ""
+
+    $.get "/inventories/search_inventory_product?store_id=#{store_id}&render_id=#{render_id}&modal_id=#{modal_id}&remote=#{remote}&select_path=#{select_path}&select_options=#{select_options}"
+
+    setTimeout (->
+      $('.datepicker').datepicker
+        format: "yyyy-mm-dd"
+        todayBtn: true
+        todayHighlight: true
+      ), 100
+
   assign_product: (product_id, store_id, product_type)->
     applyable_dom = $("#new_srn .fields").last()
     applyable_dom.find("."+product_type).val(product_id)
@@ -728,6 +746,13 @@ window.Inventories =
       alert "There are some errors. please try again"
     )
     $("#search_product").modal("hide")
+
+  assign_i_product: (elem, dom1, ref_dom)->
+    _this = $(elem)
+    console.log $("##{ref_dom}").prev().attr("class")
+    $("##{dom1}").modal("hide");
+    $("##{ref_dom}").prev().find(".product_info").html _this.data("content")
+    $("##{ref_dom}").prev().find(".dynamic_main_product_id").val(_this.data("productid"))
 
   selected_quantity: (e)->
     selected_quantity = parseInt($("#selected_quantity").text())

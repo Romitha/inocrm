@@ -30,7 +30,7 @@ class AddModification1ToTable < ActiveRecord::Migration
     change_column :inv_srr_item_source, :unit_cost, :decimal, precision: 13, scale: 2, default: nil
 
     create_table :inv_grn_serial_part, id: false do |t|
-      t.column :id, "INT UNSIGNED NOT NULL, PRIMARY KEY (id)"
+      t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
       t.column :grn_item_id, "INT UNSIGNED NOT NULL"
       t.column :serial_item_id, "INT UNSIGNED NOT NULL"
       t.column :inv_serial_part_id, "INT UNSIGNED DEFAULT NULL"

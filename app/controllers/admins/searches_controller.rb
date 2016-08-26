@@ -32,7 +32,7 @@ module Admins
 
     private
       def update_grn_item_params
-        params.require(:grn_item).permit(:remarks, grn_item_current_unit_cost_histories_attributes: [:id, :current_unit_cost, :created_by, :created_at])
+        params.require(:grn_item).permit(:remarks, :current_user_id, grn_item_current_unit_cost_histories_attributes: [:id, :current_unit_cost, :created_by, :created_at])
       end
   end
 end

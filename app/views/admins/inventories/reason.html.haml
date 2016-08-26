@@ -21,19 +21,6 @@
     .col-md-7
       = i.submit "Save", class: "btn btn-success pull-right", id: "submit_new_inventory_reason"
 
-/ #accordion.panel-group
-/   - @inventory_reason_all.each_with_index do |inv_reason, index|
-/     .panel.panel-info
-/       .panel-heading
-/         %h3.panel-title
-/           %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
-/             #{index+1} inventory reason : #{inv_reason.reason}
-/           - unless inv_reason.is_used_anywhere?
-/             = link_to delete_admin_inventory_reason_admins_inventories_path(inventory_reason_id: inv_reason.id), method: :delete,  :data => { :confirm => 'Are you sure?' } do
-/               %span.glyphicon.glyphicon-trash
-/       .panel-collapse.collapse.in{:id => "#{index}"}
-/         .panel-body
-
 = collapse_wrapper collapse_id: "inventory_reason_list", labelledby: "inv_reason_labelledby" do
   - @inventory_reason_all.each_with_index do |inv_reason, index|
     = collapse collapse_type: "info", labelledby: "labelledby_#{inv_reason.id}", header_content: "#{index+1} inventory reason : #{inv_reason.reason}", collapse_link: "invreasonlink_#{inv_reason.id}", collapse_id: "inventory_reason_list" do

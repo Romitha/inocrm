@@ -20,16 +20,15 @@
 .row{style: "margin-top:50px;"}
   .col-md-6
     = simple_nested_form_for grnitem, url: update_grn_cost_admins_searches_path( grnitem_id: grnitem.id), method: :post, html: {class: "validate_form"} do |f|
+      = f.input :current_user_id, as: :hidden, input_html: {value: current_user.id}
       .row
         = f.simple_fields_for "grn_item_current_unit_cost_histories_attributes[]", f.object.grn_item_current_unit_cost_histories.build do |c|
-          = c.input :created_at, as: :hidden, input_html: {value: DateTime.now.strftime("%d-%m-%Y %H:%M")}
           = c.input :created_by, as: :hidden, input_html: {value: current_user.id}
-          = c.input :grn_item_id, as: :hidden, input_html: {value: grnitem.id}
           = c.input :current_unit_cost, label: "Cost", wrapper_html: {class: "col-md-6"}
       .row
         .col-md-9
           = f.input :remarks, input_html: { value: nil}
-          = grnitem.remarks
+          = simple_format grnitem.remarks
       .row{style: "margin-top:20px; margin-bottom:20px;"}
         .col-md-3
           = link_to search_grn_admins_searches_path, "role" => "button",class: "btn btn-info pull-right" do

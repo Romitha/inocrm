@@ -575,6 +575,39 @@ module Admins
       render "admins/inventories/grn/search_grn"
     end
 
+    def grn_main_part
+      Inventory
+      Grn
+      Organization
+      @store = Organization.find params[:store_id] if params[:store_id].present?
+
+      if params[:search].present?
+        store_id = params[:store_id]
+
+        refined_search_query = params[:search_inventory].except('inventory_product').map{|k, v| "#{k}:#{v}" if k.present? and v.present? }.compact.join(" AND ")
+        refined_inventory_product = params[:search_inventory][:inventory_product].map { |k, v| "inventory_product.#{k}:#{v}" if v.present? }.compact.join(" AND ")
+        # refined_inventory_serial_items = params[:search_inventory].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
+
+        refined_search = [refined_search_query, refined_inventory_product, "inventory.store_id:#{store_id}"].map{|v| v if v.present? }.compact.join(" AND ")
+        params[:query] = refined_search
+
+        @inventory_serial_items = InventorySerialItem.search(params)
+
+      elsif params[:inventory_serial_item_id].present?
+        @store = Organization.find params[:store_id]
+        @inventory_serial_item = InventorySerialItem.find params[:inventory_serial_item_id]
+        @grn_item = GrnItem.new
+        render "admins/inventories/grn/main_part/selected_main_part_form" and return
+
+      elsif @store
+        params[:query] = "inventory.store_id:#{@store.id}"
+        @inventory_serial_items = InventorySerialItem.search(params)
+
+      end
+      render "admins/inventories/grn/main_part/search_main_part"
+
+    end
+
     def initialize_grn
       Inventory
       Grn
@@ -751,6 +784,32 @@ module Admins
 
       redirect_to grn_admins_inventories_url
 
+    end
+
+    def create_grn_for_main_part
+      Organization
+      Inventory
+      @grn = Grn.new store_id: params[:store_id], created_by: current_user.id, grn_no: CompanyConfig.first.next_sup_last_grn_no
+      @inventory_serial_item = InventorySerialItem.find params[:inventory_serial_item_id]
+      @inventory_serial_item.attributes = inventory_serial_item_params
+
+      @inventory_serial_item.inventory_serial_parts.each do |p|
+        if p.new_record?
+          p.grn_serial_parts.each do |gp|
+            gp.grn_item.current_unit_cost = gp.grn_item.unit_cost
+            gp.grn_item.grn = @grn
+          end
+
+        end
+      end
+      @grn.save
+      if @inventory_serial_item.save
+        flash[:notice] = "Successfully saved."
+
+      else
+        flash[:alert] = "Unable to save. Please review submission again. #{@inventory_serial_item.errors.full_messages.join(', ')}"
+      end
+      redirect_to grn_main_part_admins_inventories_url
     end
 
     def upload_grn_file
@@ -1195,7 +1254,7 @@ module Admins
       end
 
       def inventory_serial_item_params
-        params.require(:inventory_serial_item).permit(:id, :inventory_id, :product_id, :inv_status_id, :created_by, :serial_no, :ct_no, :manufatured_date, :expiry_date, :scavenge, :parts_not_completed, :damage, :used, :repaired, :reserved, :product_condition_id, :remarks, inventory_serial_warranties_attributes: [:id, :_destroy, inventory_warranty_attributes: [:id, :_destroy, :created_by, :start_at, :end_at, :period_part, :period_labour, :period_onsight, :remarks, :warranty_type_id]])
+        params.require(:inventory_serial_item).permit(:id, :inventory_id, :product_id, :inv_status_id, :created_by, :serial_no, :ct_no, :manufatured_date, :expiry_date, :scavenge, :parts_not_completed, :damage, :used, :repaired, :reserved, :product_condition_id, :remarks, inventory_serial_warranties_attributes: [:id, :_destroy, inventory_warranty_attributes: [:id, :_destroy, :created_by, :start_at, :end_at, :period_part, :period_labour, :period_onsight, :remarks, :warranty_type_id]], inventory_serial_items_additional_costs_attributes: [:id, :_destroy, :cost, :note, :currency_id, :created_by, ], grn_serial_items_attributes: [:id, :_destroy, grn_item_attributes: [:_destroy, :main_product_id, :unit_cost, :remarks, :id, :current_user_id]  ], inventory_serial_parts_attributes: [ :id, :product_id, :_destroy, :serial_no, :ct_no, :manufatured_date, :expiry_date, :product_condition_id, :inv_status_id, :created_by, :scavenge, :damage, :used, :repaired, :reserved, :added, :parts_not_completed, :remarks, grn_serial_parts_attributes: [:id, :_destroy, :serial_item_id, grn_item_attributes: [:id, :_destroy, :recieved_quantity, :remaining_quantity, :current_unit_cost, :currency_id, :product_id, :current_user_id, :main_product_id, :unit_cost, :remarks]], inventory_serial_part_warranties_attributes: [ :id, :_destroy, inventory_warranty_attributes: [:id, :_destroy, :warranty_type_id, :start_at, :end_at, :period_part, :period_labour, :period_onsight, :remarks, :created_by]], inventory_serial_part_additional_costs_attributes: [:id, :_destroy, :cost, :note, :currency_id, :created_by] ] )
       end
 
       def grn_params

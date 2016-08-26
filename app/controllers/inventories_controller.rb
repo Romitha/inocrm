@@ -109,6 +109,39 @@ class InventoriesController < ApplicationController
     end
   end
 
+  def search_inventory_product
+    Inventory
+    @store = Organization.find params[:store_id] if params[:store_id].present?
+    @remote = params[:remote].to_bool if params[:remote].present?
+    @display_method = {}
+    @select_path = params[:select_path] if params[:select_path].present?
+    if params[:select_options].present?
+      @select_options = Hash[params[:select_options].strip.split("<>").map { |e| e.strip.split(":") }]
+      session[:select_options] = @select_options
+    end
+
+    if params[:modal_id].present?
+      @display_method.merge! modal: {modal_id: params[:modal_id]}
+    elsif params[:render_id].present?
+      @display_method.merge! inpage: {render_id: params[:render_id]}
+    end
+    @select_options = session[:select_options]
+
+    store_id = params[:store_id]
+    if params[:search].present?
+      refined_inventory_product = params[:search_inventory][:inventory_product].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
+      # refined_inventory_serial_items = params[:search_inventory].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
+
+      refined_search = [refined_inventory_product, "stores.id:#{store_id}"].map{|v| v if v.present? }.compact.join(" AND ")
+      params[:query] = refined_search
+    else
+      params[:query] = "stores.id:#{store_id}"
+    end
+
+    @inventory_products = InventoryProduct.search(params)
+    render "inventories/inventory_products/select_product"
+  end
+
   def update_part_order
 
     ticket_spare_part = TicketSparePart.find params[:ticket_spare_part_id]

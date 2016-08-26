@@ -9,7 +9,7 @@ class Grn < ActiveRecord::Base
   # end
 
   def self.search(params)
-    tire.search(page: params[:page], per_page: 5) do
+    tire.search(page: params[:page], per_page: 10) do
       query do
         boolean do
           must { string params[:grn_no] } if params[:grn_no].present?
@@ -66,6 +66,9 @@ end
 class GrnItem < ActiveRecord::Base
   self.table_name = "inv_grn_item"
 
+  include Tire::Model::Search
+  include Tire::Model::Callbacks
+
   belongs_to :srn_item
   belongs_to :grn
   belongs_to :inventory_product, foreign_key: :product_id
@@ -93,9 +96,20 @@ class GrnItem < ActiveRecord::Base
   has_many :grn_item_current_unit_cost_histories
   accepts_nested_attributes_for :grn_item_current_unit_cost_histories, allow_destroy: true
 
+  before_save do |grn_item|
+    if grn_item.persisted? and grn_item.remarks_changed? and grn_item.remarks.present?
+      grn_item_remarks = "#{grn_item.remarks} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(grn_item.current_user_id).email}</span><br/>#{grn_item.remarks_was}"
+    elsif grn_item.new_record?
+      grn_item_remarks = grn_item.remarks  
+    else
+      grn_item_remarks = grn_item.remarks_was
+    end
+    grn_item.remarks = grn_item_remarks
+  end
+
   has_many :dyna_columns, as: :resourceable, autosave: true
 
-  [:flagged_as].each do |dyna_method|
+  [:flagged_as, :current_user_id].each do |dyna_method|
     define_method(dyna_method) do
       dyna_columns.find_by_data_key(dyna_method).try(:data_value)
     end
@@ -110,6 +124,55 @@ class GrnItem < ActiveRecord::Base
   validates_presence_of :recieved_quantity
   # validates_presence_of [:unit_cost, :current_unit_cost, :currency_id, :recieved_quantity, :remaining_quantity, :grn_id], on: :create
   # validates_presence_of :unit_cost, on: :create
+
+  mapping do
+    indexes :inventory_product, type: "nested", include_in_parent: true
+    indexes :inventory_serial_items, type: "nested", include_in_parent: true
+    indexes :grn, type: "nested", include_in_parent: true
+  end
+
+  def self.search(params)  
+    tire.search(page: (params[:page] || 1), per_page: 10) do
+      query do
+        boolean do
+          must { string params[:query] } if params[:query].present?
+          # must { term :store_id, params[:store_id] } if params[:store_id].present?
+          # puts params[:store_id]
+        end
+      end
+      sort { by :created_at, "desc" }
+      # filter :range, published_at: { lte: Time.zone.now}
+      # raise to_curl
+    end
+  end
+
+  def to_indexed_json
+    Inventory
+    to_json(
+      only: [:serial_no, :ct_no, :created_at],
+      include: {
+        inventory_product: {
+          only: [:description, :model_no, :product_no, :spare_part_no, :created_at],
+          methods: [:category3_id, :category2_id, :category1_id, :generated_item_code],
+        },
+        inventory_serial_items: {
+          only: [:serial_no, :ct_no, :damaged, :used, :scavenge, :repaired, :reserved, :parts_not_completed, :manufatured_date, :expiry_date, :remarks],
+          include: {
+            product_condition: {
+              only: [:name]
+            },
+            inventory_serial_item_status: {
+              only: [:name]
+            }
+          }
+        },
+        grn: {
+          only: [:grn_no, :created_at, :store_id]
+        }
+      }
+    )
+
+  end
 end
 
 class GrnBatch < ActiveRecord::Base
@@ -130,6 +193,7 @@ class GrnSerialItem < ActiveRecord::Base
   self.table_name = "inv_grn_serial_item"
 
   belongs_to :grn_item, foreign_key: :grn_item_id
+  accepts_nested_attributes_for :grn_item, allow_destroy: true
   belongs_to :inventory_serial_item, foreign_key: :serial_item_id
   accepts_nested_attributes_for :inventory_serial_item, allow_destroy: true
 
@@ -142,6 +206,7 @@ class GrnSerialPart < ActiveRecord::Base
   self.table_name = "inv_grn_serial_part"
 
   belongs_to :grn_item
+  accepts_nested_attributes_for :grn_item, allow_destroy: true
   belongs_to :inventory_serial_item, foreign_key: :serial_item_id
   belongs_to :inventory_serial_part, foreign_key: :inv_serial_part_id
 

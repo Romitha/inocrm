@@ -20,20 +20,6 @@
     .col-md-6{style: "margin-top:20px;margin-bottom:20px;"}
       = u.submit "Save", class: "btn btn-success pull-right", id: "submit_new_inventory_unit"
 
-/ #accordion.panel-group
-/   - @inventory_unit_all.each_with_index do |inv_unit, index|
-/     .panel.panel-primary
-/       .panel-heading
-/         %h3.panel-title
-/           %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
-/             #{index+1} Unit : #{inv_unit.unit}
-/           - unless inv_unit.is_used_anywhere?
-/             = link_to delete_inventory_unit_admins_inventories_path(unit_id: inv_unit.id), method: :delete, :data => { :confirm => 'Are you sure?' } do
-/               %span.glyphicon.glyphicon-trash
-
-/       .panel-collapse.collapse.in{:id => "#{index}"}
-/         .panel-body
-
 = collapse_wrapper collapse_id: "inventory_unit_list", labelledby: "inv_unit_labelledby" do
   - @inventory_unit_all.each_with_index do |inv_unit, index|
     = collapse collapse_type: "info", labelledby: "labelledby_#{inv_unit.id}", header_content: "#{index+1} Unit : #{inv_unit.unit}", collapse_link: "invunitlink_#{inv_unit.id}", collapse_id: "inventory_unit_list" do

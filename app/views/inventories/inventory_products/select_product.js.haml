@@ -1,0 +1,18 @@
+- if params[:search]
+  $("#result_inventory_products").html("#{j render 'inventories/inventory_products/inventory_products'}");
+
+- else
+  - if @display_method[:modal]
+    $("##{@display_method[:modal][:modal_id]}").modal({backdrop: "static"});
+    $("##{@display_method[:modal][:modal_id]} .modal-body").html("#{j render 'inventories/inventory_products/search_inventory', remote: @remote}");
+    Inventories.filter_product();
+    Inventories.filter_category();
+    Inventories.filter_store();
+
+  - elsif @display_method[:inpage]
+    $("##{@display_method[:inpage][:render_id]}").html("#{j render 'inventories/inventory_products/search_inventory', remote: @remote}");
+
+  - else
+    console.log("no render mechanism called #{@display_method[:inpage]}");
+
+$("a[rel~=popover], .has-popover").popover()

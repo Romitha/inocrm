@@ -1,0 +1,364 @@
+- inventory_product = @inventory_serial_item.inventory_product
+- inventory = @inventory_serial_item.inventory
+.row
+  .col-md-4
+    = panels panel_type: "info", header_content: "GRN No: #{CompanyConfig.first.next_sup_last_grn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_grn_no_format"])}" do
+      %dl.dl-horizontal
+        %dt GRN No:
+        %dd= CompanyConfig.first.next_sup_last_grn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_grn_no_format"])
+        %dt Store:
+        %dd= inventory.organization.name
+        %dt Created at:
+        %dd= Time.now.strftime(INOCRM_CONFIG["short_date_format"])
+        %dt Created by:
+        %dd= current_user.full_name
+
+  .col-md-4
+    = panels panel_type: "info", header_content: "Item Code: #{inventory_product.generated_item_code}" do
+      %dl.dl-horizontal
+        %dt Item code:
+        %dd= inventory_product.generated_item_code
+        %dt Item description:
+        %dd= inventory_product.description
+        %dt Rack:
+        %dd= inventory.inventory_bin.inventory_shelf.inventory_rack.description
+        %dt Shelf:
+        %dd= inventory.inventory_bin.inventory_shelf.description
+        %dt Bin:
+        %dd= inventory.inventory_bin.description
+        %dt Stock in hand:
+        %dd= inventory.stock_quantity
+
+  .col-md-4
+    = panels panel_type: "info", header_content: "Serial No: #{@inventory_serial_item.serial_no}" do
+      %dl.dl-horizontal
+        %dt Serial No:
+        %dd= @inventory_serial_item.serial_no
+        %dt CT No:
+        %dd= @inventory_serial_item.ct_no
+        %dt Manufactured date:
+        %dd= @inventory_serial_item.manufatured_date.try :strftime, INOCRM_CONFIG["short_date_format"]
+        %dt Expiry date:
+        %dd= @inventory_serial_item.expiry_date.try :strftime, INOCRM_CONFIG["short_date_format"]
+        %dt Condition:
+        %dd= @inventory_serial_item.product_condition.condition
+      %span.label.label-info= boolean_in_word @inventory_serial_item.scavenge, "Scavenge", ""
+      %span.label.label-info= boolean_in_word @inventory_serial_item.parts_not_completed, "Part not completed", ""
+      %span.label.label-info= boolean_in_word @inventory_serial_item.damage, "Damaged", ""
+      %span.label.label-info= boolean_in_word @inventory_serial_item.used, "Used", ""
+      %span.label.label-info= boolean_in_word @inventory_serial_item.repaired, "Repaired", ""
+      %span.label.label-info= boolean_in_word @inventory_serial_item.reserved, "Reserved", ""
+
+      %hr
+      = simple_format @inventory_serial_item.remarks
+
+      = collapse_wrapper collapse_id: "inventory_serial_warranty_list", labelledby: "inv_unit_labelledby" do
+        - @inventory_serial_item.inventory_warranties.each_with_index do |inventory_warranty, index|
+          = collapse collapse_type: "warning", labelledby: "labelledby_#{inventory_warranty.id}", header_content: "#{index+1} Type : #{inventory_warranty.inventory_warranty_type.name}", collapse_link: "invunitlink_#{inventory_warranty.id}", collapse_id: "inventory_serial_warranty_list" do
+            %dl.dl-horizontal
+              %dt Start at:
+              %dd= inventory_warranty.created_at.strftime(INOCRM_CONFIG["short_date_format"])
+              %dt End at:
+              %dd= inventory_warranty.end_at.strftime(INOCRM_CONFIG["short_date_format"])
+              %dt Period part:
+              %dd= inventory_warranty.period_part
+              %dt Period labour:
+              %dd= inventory_warranty.period_labour
+              %dt Period On-Sight:
+              %dd= inventory_warranty.period_onsight
+              %dt Remarks:
+              %dd= simple_format inventory_warranty.remarks
+
+= simple_nested_form_for @inventory_serial_item, url: create_grn_for_main_part_admins_inventories_path(inventory_serial_item_id: @inventory_serial_item.id ), html: {class: "validate_form"} do |f|
+  = hidden_field_tag :store_id, @store.id, id: "store1_id"
+  - if @inventory_serial_item.errors.any?
+    .row
+      - @inventory_serial_item.errors.full_messages.each do |error|
+        .col-md-12= error
+
+  = panels panel_type: "info", header_content: "Serial item additional costs" do
+    .row
+      = f.simple_fields_for :inventory_serial_items_additional_costs do |c|
+        .col-md-1
+          = c.link_to_remove class: "remove_c_t_v_link", title: "Remove item additional cost" do
+            %span.glyphicon.glyphicon-remove-sign
+        - if c.object.persisted?
+          .col-md-2
+            %strong Cost:
+            = c.object.cost
+          .col-md-3
+            %strong Note:
+            = c.object.note
+          .col-md-3
+            %strong Created at:
+            = c.object.created_at.strftime(INOCRM_CONFIG["short_date_format"])
+          .col-md-3
+            %strong Created by:
+            = c.object.created_by_user.try(:full_name)
+        - else
+          = c.input :currency_id, as: :hidden, input_html: {value: f.object.grn_serial_items.first.grn_item.currency_id}
+          = c.input :created_by, as: :hidden, input_html: {value: current_user.id}
+          .col-md-5
+            = c.input :cost, as: :string
+          .col-md-6
+            = c.input :note
+        %hr
+
+      = f.link_to_add :inventory_serial_items_additional_costs, class: "col-md-12" do
+        %span.glyphicon.glyphicon-plus-sign
+        Add Item Additional Cost
+
+  / = panels panel_type: "info", header_content: "Grn item" do
+  /   .row
+  /     = f.simple_fields_for :grn_serial_items do |s|
+  /       = s.simple_fields_for :grn_item do |g|
+  /         = g.input :current_user_id, as: :hidden, input_html: {value: current_user.id}
+  /         = g.input :main_product_id, as: :hidden, input_html: {class: "dynamic_main_product_id"}
+  /         .col-md-12
+  /           = g.input :unit_cost, as: :string
+  /         .col-md-12
+  /           = g.input :remarks, input_html: {value: nil}
+  /           = simple_format g.object.remarks
+
+
+  - if inventory_product.inventory_product_info.need_serial and !inventory_product.inventory_product_info.need_batch
+    = panels panel_type: "info", header_content: "Serial parts" do
+
+      = f.simple_fields_for :inventory_serial_parts do |p|
+        - if p.object.persisted?
+          %fieldset
+            %legend Serial part: #{p.object.serial_no}
+            %h4 Product Info
+            .row
+              .col-md-3
+                %strong Serial No: 
+                = p.object.inventory_product.generated_item_code
+              .col-md-3
+                %strong Model No: 
+                = p.object.inventory_product.model_no
+              .col-md-3
+                %strong Product No: 
+                = p.object.inventory_product.product_no
+              .col-md-3
+                %strong Created by: 
+                = p.object.inventory_product.created_by_user.full_name
+            %hr
+            %h4 Serial part info
+            .row
+              .col-md-6
+                .row
+                  .col-md-6
+                    %strong Serial No:
+                    = p.object.serial_no
+                  .col-md-6
+                    %strong CT No:
+                    = p.object.ct_no
+                  .col-md-6
+                    %strong Manufactured date:
+                    = p.object.manufatured_date.try :strftime, INOCRM_CONFIG["short_date_format"]
+                  .col-md-6
+                    %strong Expiry date:
+                    = p.object.expiry_date.try :strftime, INOCRM_CONFIG["short_date_format"]
+                  .col-md-6
+                    %strong Product condition:
+                    = p.object.product_condition.try :condition
+                  .col-md-6
+                    %strong Status:
+                    = p.object.inventory_serial_item_status.try :name
+                  .col-md-12
+                    = simple_format p.object.remarks
+              .col-md-6
+                .row
+                  - [:damage, :scavenge, :used, :repaired, :reserved, :added, :parts_not_completed].each do |flag|
+                    .col-md-3
+                      %span.label{class: "label-#{p.object.send(flag) ? 'success' : 'default' }"}= flag.to_s
+                %hr
+                .help-block <span class='label label-success'>Green</span> background means active. Ex: part is damaged. <span class='label label-default'>Grey</span> brackground means inactive, Ex: part is not damaged
+            %fieldset
+              %legend Grn
+              - p.object.grn_serial_parts.each do |gs|
+                .row
+                  .col-md-3
+                    %strong Unit cost:
+                    = gs.grn_item.unit_cost
+                  .col-md-3
+                    %strong Currency:
+                    = gs.grn_item.currency.currency
+                  .col-md-3
+                    %strong Main part Serial No:
+                    = gs.inventory_serial_item.serial_no
+                  .col-md-3
+                    %strong Main part CT No:
+                    = gs.inventory_serial_item.ct_no
+                  .col-md-12
+                    %strong Remarks:
+                    = simple_format gs.grn_item.remarks
+                %hr
+            %fieldset
+              %legend Part warranties
+              - p.object.inventory_warranties.each do |warranty|
+                .row
+                  .col-md-3
+                    %strong Warranty type:
+                    = warranty.inventory_warranty_type.name
+                  .col-md-3
+                    %strong Start at:
+                    = warranty.start_at.try :strftime, INOCRM_CONFIG["short_date_format"]
+                  .col-md-3
+                    %strong End at:
+                    = warranty.end_at.try :strftime, INOCRM_CONFIG["short_date_format"]
+                  .col-md-3
+                    %strong Period part:
+                    = warranty.period_part
+                  .col-md-3
+                    %strong Period labour:
+                    = warranty.period_labour
+                  .col-md-3
+                    %strong Period on sight:
+                    = warranty.period_onsight
+                  .col-md-6
+                    %strong Remarks:
+                    = warranty.remarks
+                %hr
+
+
+            %fieldset
+              %legend Part Additional Costs
+              - p.object.inventory_serial_part_additional_costs.each do |additional_cost|
+                .row
+                  .col-md-2
+                    %strong Warranty type:
+                    = additional_cost.cost
+                  .col-md-10
+                    %strong Note:
+                    = additional_cost.note
+                    
+
+        - else
+          .product_info
+          .row
+            = p.input :product_id, as: :hidden, input_html: {class: "dynamic_main_product_id"}
+            = p.input :created_by, as: :hidden, input_html: {value: current_user.id}
+            .col-md-1.add_sign
+              = p.link_to_remove title: "Remove Serial Part" do
+                %span.glyphicon.glyphicon-remove-sign
+            .col-md-6
+              .row
+                .col-md-6
+                  = p.input :serial_no
+                .col-md-6
+                  = p.input :ct_no
+                .col-md-6
+                  = p.input :manufatured_date, as: :string, input_html: {class: "datepicker", value: p.object.manufatured_date.try(:strftime, INOCRM_CONFIG["short_date_format"])}
+                .col-md-6
+                  = p.input :expiry_date, as: :string, input_html: {class: "datepicker", value: p.object.expiry_date.try(:strftime, INOCRM_CONFIG["short_date_format"])}
+                .col-md-6
+                  = p.association :product_condition, label_method: :condition
+                .col-md-6
+                  = p.association :inventory_serial_item_status, label: "Status"
+                
+            .col-md-5
+              .row
+                .col-md-12
+                  = p.input :scavenge, wrapper: :append
+                .col-md-12
+                  = p.input :damage, wrapper: :append
+                .col-md-12
+                  = p.input :used, wrapper: :append
+                .col-md-12
+                  = p.input :repaired, wrapper: :append
+                .col-md-12
+                  = p.input :reserved, wrapper: :append
+                .col-md-12
+                  = p.input :added, wrapper: :append, label: "Add as upgrade"
+                .col-md-12
+                  = p.input :parts_not_completed, wrapper: :append
+            .col-md-12
+              = p.input :remarks
+
+          = panels panel_type: "info", header_content: "Grn item" do
+            .row
+              - p.object.grn_serial_parts.build unless p.object.grn_serial_parts.any?
+              = p.simple_fields_for :grn_serial_parts do |gp|
+                - gp.object.build_grn_item unless gp.object.build_grn_item.present?
+
+                = gp.input :serial_item_id, as: :hidden, input_html: { value: @inventory_serial_item.id }
+                = gp.simple_fields_for :grn_item do |g|
+                  = g.input :recieved_quantity, as: :hidden, input_html: {value: 0}
+                  = g.input :remaining_quantity, as: :hidden, input_html: {value: 0}
+                  = g.input :current_unit_cost, as: :hidden, input_html: {value: 0}
+                  = g.input :currency_id, as: :hidden, input_html: {value: f.object.grn_serial_items.first.grn_item.currency_id}
+                  = g.input :product_id, as: :hidden, input_html: {class: "dynamic_main_product_id"}
+
+                  = g.input :current_user_id, as: :hidden, input_html: {value: current_user.id}
+                  = g.input :main_product_id, as: :hidden, input_html: {class: "dynamic_main_product_id"}
+                  .col-md-2
+                    = g.input :unit_cost, as: :string, required: true
+                  .col-md-10
+                    = g.input :remarks
+
+          = panels panel_type: "success", header_content: "Serial part warranties" do
+            .row
+              = p.simple_fields_for :inventory_serial_part_warranties do |w|
+                - w.object.build_inventory_warranty unless w.object.inventory_warranty.present?
+                = w.simple_fields_for :inventory_warranty do |iw|
+                  = iw.input :created_by, as: :hidden, input_html: {value: current_user.id }
+                  .col-md-1
+                    = iw.link_to_remove  class: "remove_c_t_v_link", title: "Remove item additional cost" do
+                      %span.glyphicon.glyphicon-remove-sign
+                  .col-md-2
+                    = iw.association :inventory_warranty_type
+                  .col-md-2
+                    = iw.input :start_at, as: :string, input_html: {class: "datepicker", value: iw.object.start_at.try(:strftime, INOCRM_CONFIG["short_date_format"])}
+                  .col-md-2
+                    = iw.input :end_at, as: :string, input_html: {class: "datepicker", value: iw.object.end_at.try(:strftime, INOCRM_CONFIG["short_date_format"])}
+                  .col-md-2
+                    = iw.input :period_part, label: "Part"
+                  .col-md-1
+                    = iw.input :period_labour, label: "Labour"
+                  .col-md-2
+                    = iw.input :period_onsight, label: "On sight"
+                  .col-md-12
+                    = iw.input :remarks
+              .col-md-12
+                = p.link_to_add :inventory_serial_part_warranties, class: "col-md-12", onclick: "Inventories.add_warranty_click(this);" do
+                  %span.glyphicon.glyphicon-plus-sign
+                  Add part warranty
+
+          = panels panel_type: "success", header_content: "Serial part additional costs" do
+            .row
+              = p.simple_fields_for :inventory_serial_part_additional_costs do |c|
+                = c.input :currency_id, as: :hidden, input_html: { value: f.object.grn_serial_items.first.grn_item.currency_id }
+                = c.input :created_by, as: :hidden, input_html: {value: current_user.id }
+                .col-md-1
+                  = c.link_to_remove  class: "remove_c_t_v_link", title: "Remove item additional cost" do
+                    %span.glyphicon.glyphicon-remove-sign
+                .col-md-5
+                  = c.input :cost, as: :string
+                .col-md-6
+                  = c.input :note
+              .col-md-12
+                = p.link_to_add "Add part cost", :inventory_serial_part_additional_costs
+
+      .col-md-12
+        = f.link_to_add :inventory_serial_parts, class: "col-md-12", id: "add_serial_part", onclick: "Inventories.search_product_for_part(this); return false;", data: {storeId: @store.id, id: "store1_id", modalId: "modal_for_main_part", remote: "true", selectpath: "", selectoptions: "onclick:Inventories.assign_i_product(this, 'modal_for_main_part', 'add_serial_part');"} do
+          %span.glyphicon.glyphicon-plus-sign
+          Add serial part
+  .row
+    .col-md-12
+      = f.input :remarks, input_html: {value: nil}
+      = simple_format f.object.remarks
+  .row
+    .col-md-12
+      = f.submit "Save", class: "btn btn-sm btn-success"
+
+
+
+#modal_for_main_part.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "modal_for_main_part", "aria-hidden" => true}
+  .modal-dialog.modal-lg
+    .modal-content
+      .modal-header
+        %h4.modal-title Select Product
+      .modal-body
+      .modal-footer
+        

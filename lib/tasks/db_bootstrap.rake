@@ -34,7 +34,7 @@ task :flush_logfile do
   if logfile.size >= 10.megabytes
     File.delete logfile
     new_logfile = File.new File.join(path, "log", "#{stage}.log"), "w"
-    new_logfile.chmod 0664
+    # new_logfile.chmod 0664 have to symlink
   end
 
   exit

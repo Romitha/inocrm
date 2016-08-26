@@ -1,0 +1,51 @@
+= paginate @inventory_products, remote: true, method: :get
+
+- if @inventory_products.any?
+  %hr
+  .row
+    .col-md-1.strong No
+    .col-md-2.strong Category
+    .col-md-2.strong Serial code
+    .col-md-2.strong Model no
+    .col-md-2.strong Product no
+    .col-md-2.strong Part no
+    .col-md-1.strong Action
+  %hr
+
+
+  - @inventory_products.each_with_index do |pr, index|
+    - content_for :inventory_p_more, flush: true do
+      %ul
+        %li
+          %strong Unit:
+          #{pr.inventory_unit.unit}
+        %li
+          %strong Manufacture:
+          #{pr.inventory_product_info and pr.inventory_product_info.manufacture.try(:manufacture)}
+        %li
+          %strong Brand:
+          #{pr.category1_name}
+        %li
+          %strong Product:
+          #{pr.category2_name}
+        
+
+      %strong Description:
+      #{simple_format pr.description}
+
+    - content_for :select_result, flush: true do
+      %dl.dl-horizontal
+        %dt Item code:
+        %dd= pr.generated_item_code
+        %dt Item description:
+        %dd= pr.description
+    .row
+      .col-md-1{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Serial No: #{pr.generated_item_code}", "data-content"=> yield(:inventory_p_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }= index+1
+      .col-md-2= pr.category3_name
+      .col-md-2= pr.generated_item_code
+      .col-md-2= pr.model_no
+      .col-md-2= pr.product_no
+      .col-md-2= pr.spare_part_no
+      .col-md-1= link_to "Select", (@select_path || "#"), (@select_options || {}).merge({data: {content: (yield :select_result ), productid: pr.id}})
+    %hr
+= paginate @inventory_products, remote: true, method: :get

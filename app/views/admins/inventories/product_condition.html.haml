@@ -10,18 +10,6 @@
     .col-md-8
       = c.submit "Save", class: "btn btn-success pull-right", id: "submit_new_inventory_product_condition"
 %h3 Inventory Product Conditions
-/ #accordion.panel-group
-/   - @inventory_product_condition_all.each_with_index do |inv_product_condition, index|
-/     .panel.panel-info
-/       .panel-heading
-/         %h3.panel-title
-/           %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
-/             Condition: #{inv_product_condition.condition}
-/             / #{inv_product_condition.condition}
-/             / inventory product #{index+1} : #{inv_product_condition.condition}
-/             / = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "product_condition", name: "condition", url:inline_update_product_condition_admins_path(product_condition_id: inv_product_condition.id), "original-title" => "Update product condition", value: ""}, style: "line-height: 6px;" do
-/       .panel-collapse.collapse.in{:id => "#{index}"}
-/         .panel-body
 = collapse_wrapper collapse_id: "inventory_product_condition_list", labelledby: "inv_product_condition_labelledby" do
   - @inventory_product_condition_all.each_with_index do |inv_product_condition, index|
     = collapse collapse_type: "info", labelledby: "labelledby_#{inv_product_condition.id}", header_content: "#{inv_product_condition.condition}", collapse_link: "invproduct_conditionlink_#{inv_product_condition.id}", collapse_id: "inventory_product_condition_list" do
@@ -39,7 +27,3 @@
           %strong Inventory Serial Items #{inv_product_condition.inventory_serial_items.count}
         .col-md-3
           %strong Inventory Serial Parts #{inv_product_condition.inventory_serial_parts.count}
-        / .col-md-1
-        /   - unless inv_product_condition.is_used_anywhere?
-        /     = link_to delete_product_condition_admins_inventories_path(product_condition_id: inv_product_condition.id),method: :delete, :data => { :confirm => 'Are you sure?' } do
-        /       %span.glyphicon.glyphicon-trash
