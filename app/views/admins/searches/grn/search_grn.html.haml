@@ -42,7 +42,7 @@
                 %td= index+1
                 %td= grn.store_name
                 %td= grn.grn_no_format
-                %td= grn.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
+                %td= grn.created_at.to_date.try :strftime, INOCRM_CONFIG["short_date_format"]
                 / %td= grn.try(:po_id).to_s.rjust(5, INOCRM_CONFIG["inventory_po_no_format"])
                 %td= grn.po_no
                 %td= grn.supplier_name
