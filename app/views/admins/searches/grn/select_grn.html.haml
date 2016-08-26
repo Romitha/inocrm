@@ -22,13 +22,17 @@
     Remarks:
     = @grn.try(:remarks)
 .row
-  .col-md-12
+  .col-md-9
     %h4.strong GRN Items
+  .col-md-3
+    = link_to search_grn_admins_searches_path, "role" => "button",class: "btn btn-info" do
+      Search GRN
+
 = collapse_wrapper collapse_id: "grn_item_list", labelledby: "grn_item_list_labelledby" do
   - @grn.grn_items.each_with_index do |grnitem, index|
     - inventory = grnitem.inventory_product.inventories.find_by_store_id(grnitem.grn.store_id)
 
-    = collapse collapse_type: "info", labelledby: "grn_item_list_labelledby_#{grnitem.id}", header_content: "GRN Item #{index+1} - #{grnitem.inventory_product.generated_item_code}", collapse_link: "grn_itemlink_#{grnitem.id}", collapse_id: "grn_item_list" do
+    = collapse collapse_type: "info", labelledby: "grn_item_list_labelledby_#{grnitem.id}", header_content: "GRN Item #{index+1} - #{grnitem.inventory_product.generated_item_code} #{grnitem.inventory_product.try(:description)}", collapse_link: "grn_itemlink_#{grnitem.id}", collapse_id: "grn_item_list" do
       .row
         .col-md-3
           Item code:
@@ -56,9 +60,12 @@
           Remarks:
           =grnitem.remarks
       .row
-        .col-md-12
+        .col-md-3
           %strong Remaining Quantity:
           =grnitem.remaining_quantity
+        .col-md-3
+          %strong Currency:
+          =grnitem.currency.try(:currency)
       .row
         .col-md-3
           Stock In Hand:
@@ -82,8 +89,9 @@
         .col-md-3
           = link_to search_grn_admins_searches_path(grn_callback: "change_cost",grnitem_id: grnitem.id), "role" => "button", class: "btn btn-info" do
             Change Cost
+      - cost_count = grnitem.grn_item_current_unit_cost_histories.count
       - grnitem.grn_item_current_unit_cost_histories.each_with_index do |cost, index|
-        .row
+        .row{class: "#{cost_count == (index+1) ? 'text-danger' : ''}"}
           .col-md-3
             Date:
             =cost.try(:created_at).try(:strftime, "%Y-%m-%d")

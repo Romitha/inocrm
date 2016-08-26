@@ -5,7 +5,7 @@
       #search_frame
         = form_tag search_grn_admins_searches_path, method: :get, class: "form-horizontal" do
           .row
-            .col-md-12.brand
+            .col-md-4.brand
               = label_tag "Store"
               = select_tag :store_id, options_from_collection_for_select(Organization.stores, :id, :name, params[:store_id]), include_blank: true, class: "form-control"
           .row.small_scale_margin-top1

@@ -1,0 +1,70 @@
+
+- tickets = @tickets
+
+
+%h3 Customer Inquire
+.row.small_scale_margin-bottom1
+  %form{:action => customer_inquire_admins_searches_path, :method => "get"}
+    .col-md-5
+      = text_field_tag "query", params[:query], class: "form-control", placeholder: "Type any. for target seach, type: laptop or name:laptop likewise."
+    .col-md-3
+      = text_field_tag "range_from", params[:range_from], class: "form-control datepicker", placeholder: "Select From date"
+    .col-md-3
+      = text_field_tag "range_to", params[:range_to], class: "form-control datepicker", placeholder: "Select To date"
+    .col-md-1
+      = submit_tag "Search", :name => nil, class: "btn btn-sm btn-success"
+    .col-md-12
+      = collapse_wrapper collapse_id: "t_hint" do
+        = collapse collapse_type: "info", labelledby: "t_hint_labelby", header_content: "Useful search tips", collapse_link: "t_hint_link", collapse_id: "t_hint" do
+          %blockquote
+            %p Any product related information can be searched
+            .small Ex: if any product name is hp, type: "brand_name:hp"
+            %p Any ticket related search can be done:
+            .small Ex: If any ticket_no is T00001, type: "T00001" or "suppor_ticket_no:T00001"
+            %p Any ticket customer chargeable can be done:
+            .small Ex: If any ticket_no customer chargeable is yes, type: "cus_chargeable:1 or 0"
+
+= paginate tickets, remote: false, method: :get
+.row
+  .col-md-1
+    %strong No
+  .col-md-1
+    %strong Ticket No
+  .col-md-2
+    %strong Customer
+  .col-md-1
+    %strong Serial No
+  .col-md-1
+    %strong Brand
+  .col-md-1
+    %strong Category
+  .col-md-1
+    %strong Created at
+  .col-md-2
+    %strong Status
+  .col-md-1
+    %strong Chargeable
+  .col-md-1
+    %strong Warranty type
+%hr
+- tickets.each_with_index do |ticket, index|
+  .row
+    = link_to ticket, target: "_blank" do
+      .col-md-1
+        - if params[:page]
+          = (index+1)+ 10*(params[:page].to_i-1)
+        - else
+          = (index+1)
+
+      .col-md-1= ticket.support_ticket_no
+      .col-md-2= ticket.customer_name
+      .col-md-1= ticket.products.first.try(:serial_no)
+      .col-md-1= ticket.products.first.try(:brand_name)
+      .col-md-1= ticket.products.first.try(:category_name)
+      .col-md-1= ticket.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
+      .col-md-2= ticket.ticket_status_name
+      .col-md-1= boolean_in_word ticket.cus_chargeable, "Yes", "No"
+      .col-md-1= ticket.warranty_type_name
+  %hr
+
+= paginate tickets, remote: false, method: :get
