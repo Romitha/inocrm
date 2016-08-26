@@ -3,7 +3,7 @@
 
 - else
   - if @display_method[:modal]
-    $("##{@display_method[:modal][:modal_id]}").modal({backdrop: "static"});
+    $("##{@display_method[:modal][:modal_id]}").modal({backdrop: "static", keyboard: false});
     $("##{@display_method[:modal][:modal_id]} .modal-body").html("#{j render 'inventories/inventory_products/search_inventory', remote: @remote}");
     Inventories.filter_product();
     Inventories.filter_category();
