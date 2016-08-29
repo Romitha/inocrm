@@ -19,8 +19,9 @@
 
 # Learn more: http://github.com/javan/whenever
 
-every 1.minute do
+every 1.hour do
 	command "mysqldump -uroot -pmysql --skip-triggers --compact --no-create-info inocrm_dev > #{path}/timestamp_$(date +\%Y\%m\%d\%H\%M\%S).sql"
+	# command "mysqldump -uroot -h192.168.100.156 -pVsisInoCrm_app_123 inova_crm_pro > /root/Dropbox-Uploader/timestamp_$(date +\%Y\%m\%d\%H\%M\%S).sql"
 	# Visit http://dev.mysql.com/doc/refman/5.7/en/mysqldump.html for more argument info
 	# command "/Users/umeshblader/Projects/git/Dropbox-Uploader/dropbox_uploader.sh upload "
 

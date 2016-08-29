@@ -83,7 +83,7 @@ class InventoryProduct < ActiveRecord::Base
   end
 
   def category3_id
-    inventory_category3.id
+    inventory_category3.try :id
   end
 
   def category2_id
@@ -95,7 +95,7 @@ class InventoryProduct < ActiveRecord::Base
   end
 
   def category3_name
-    inventory_category3.name
+    inventory_category3.try :name
   end
 
   def category2_name
