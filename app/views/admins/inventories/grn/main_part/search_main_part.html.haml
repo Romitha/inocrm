@@ -1,6 +1,6 @@
 - if @store
   = collapse_wrapper collapse_id: "grn_main_part_form_collapse", labelledby: "grn_main_part_form_collapse_labelledby" do
-    = collapse collapse_type: "info", labelledby: "grn_main_part_form_collapse_search", header_content: "Search GRNs", collapse_link: "grn_main_part_form_collapse_search_inv", collapse_id: "grn_main_part_form_collapse", collapse_in: "#{ !@store.present? ? 'in' : ''}" do
+    = collapse collapse_type: "info", labelledby: "grn_main_part_form_collapse_search", header_content: "Search main items", collapse_link: "grn_main_part_form_collapse_search_inv", collapse_id: "grn_main_part_form_collapse", collapse_in: "#{ !@store.present? ? 'in' : ''}" do
       .row
         .col-md-12
           %fieldset
@@ -38,7 +38,7 @@
                     .search
                       = submit_tag "Search", class: "btn btn-sm btn-warning", name: "search"
 
-    = collapse collapse_type: "info", labelledby: "grn_main_part_form_collapse_search1", header_content: "GRNs", collapse_link: "grn_main_part_form_collapse_search_inv1", collapse_id: "grn_main_part_form_collapse", collapse_in: "#{ @store.present? ? 'in' : ''}" do
+    = collapse collapse_type: "info", labelledby: "grn_main_part_form_collapse_search1", header_content: "Main items", collapse_link: "grn_main_part_form_collapse_search_inv1", collapse_id: "grn_main_part_form_collapse", collapse_in: "#{ @store.present? ? 'in' : ''}" do
       - if params[:search_inventory].present?
         = panels panel_type: "warning", header_content: "Search critaria" do
           .row
@@ -120,6 +120,9 @@
               %li
                 %strong Product No:
                 = inventory_serial_item.inventory_product.product_no
+          %strong Description:
+          #{inventory_serial_item.inventory_product.description}
+          %br/
           %strong Remarks:
           #{simple_format inventory_serial_item.remarks}
         .row

@@ -512,21 +512,18 @@ module Admins
           Rails.cache.delete([:grn_item, poid] )
         end
         Rails.cache.delete([:po_item_ids])
-        category1_id = params[:search_inventory]["brand"]
-        category2_id = params[:search_inventory]["product"]
-        inventory_product_hash = params[:search_inventory].except("brand", "product").to_hash
-        category3_id = inventory_product_hash["mst_inv_product"]["category3_id"]
 
-        updated_hash = inventory_product_hash["mst_inv_product"].to_hash.map { |k, v| "#{k} like '%#{v}%'" if v.present? }.compact.join(" and ")
-        if category3_id.present?
-          @inventory_products = @store.inventory_products.where(updated_hash).uniq
-        elsif category2_id.present?
-          @inventory_products = InventoryCategory2.find(category2_id).inventory_products.where(updated_hash).uniq
-        elsif category1_id.present?
-          @inventory_products = InventoryCategory1.find(category1_id).inventory_category3s.map { |c| c.inventory_products.where(updated_hash) }.flatten.uniq
+        if params[:search].present?
+
+          refined_inventory_product = params[:search_inventory][:inventory_product].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
+
+          refined_search = [refined_inventory_product, "stores.id:#{@store.id}"].map{|v| v if v.present? }.compact.join(" AND ")
+          params[:query] = refined_search
         else
-          @inventory_products = @store.inventory_products.where(updated_hash).uniq
+          params[:query] = "stores.id:#{@store.id}"
         end
+
+        @inventory_products = InventoryProduct.search(params)
 
         @inventory_products.to_a.each do |ipid|
           Rails.cache.delete([:grn_item, :i_product, ipid.id ])

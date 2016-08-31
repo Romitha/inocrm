@@ -108,19 +108,6 @@
         %span.glyphicon.glyphicon-plus-sign
         Add Item Additional Cost
 
-  / = panels panel_type: "info", header_content: "Grn item" do
-  /   .row
-  /     = f.simple_fields_for :grn_serial_items do |s|
-  /       = s.simple_fields_for :grn_item do |g|
-  /         = g.input :current_user_id, as: :hidden, input_html: {value: current_user.id}
-  /         = g.input :main_product_id, as: :hidden, input_html: {class: "dynamic_main_product_id"}
-  /         .col-md-12
-  /           = g.input :unit_cost, as: :string
-  /         .col-md-12
-  /           = g.input :remarks, input_html: {value: nil}
-  /           = simple_format g.object.remarks
-
-
   - if inventory_product.inventory_product_info.need_serial and !inventory_product.inventory_product_info.need_batch
     = panels panel_type: "info", header_content: "Serial parts" do
 
@@ -284,8 +271,8 @@
 
                 = gp.input :serial_item_id, as: :hidden, input_html: { value: @inventory_serial_item.id }
                 = gp.simple_fields_for :grn_item do |g|
-                  = g.input :recieved_quantity, as: :hidden, input_html: {value: 0}
-                  = g.input :remaining_quantity, as: :hidden, input_html: {value: 0}
+                  = g.input :recieved_quantity, as: :hidden, input_html: {value: 1}
+                  = g.input :remaining_quantity, as: :hidden, input_html: {value: 1}
                   = g.input :current_unit_cost, as: :hidden, input_html: {value: 0}
                   = g.input :currency_id, as: :hidden, input_html: {value: f.object.grn_serial_items.first.grn_item.currency_id}
                   = g.input :product_id, as: :hidden, input_html: {class: "dynamic_main_product_id"}
