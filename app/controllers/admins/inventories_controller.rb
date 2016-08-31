@@ -796,6 +796,7 @@ module Admins
             gp.grn_item.current_unit_cost = gp.grn_item.unit_cost
             gp.grn_item.grn_item_current_unit_cost_histories.build current_unit_cost: gp.grn_item.current_unit_cost, created_by: current_user.id
             gp.grn_item.grn = @grn
+            gp.grn_item.inventory_not_updated = true
           end
 
         end
