@@ -678,7 +678,7 @@ module Admins
         # Rails.cache.delete([ :serial_item, :i_product, @inventory_product.id ])
       end
 
-      @inventory_products = InventoryProduct.where(id: Rails.cache.fetch([:inventory_product_ids]).to_a)
+      @inventory_products = Kaminari.paginate_array(InventoryProduct.where(id: Rails.cache.fetch([:inventory_product_ids]).to_a)).page(params[:page]).per(10)
 
       render "admins/inventories/grn/grn"
     end
