@@ -5,6 +5,8 @@
       %li= link_to store.name, inventory_admins_inventories_path(store_id: store.id), remote: true
 %hr
 = collapse_wrapper collapse_id: "inventory_list", labelledby: "inv_labelledby" do
+  = paginate @inventory_all, remote: false, method: :get
+
   - @inventory_all.each do |inventory|
     = collapse collapse_type: "info", labelledby: "labelledby", header_content: "store: #{inventory.organization.name} [Item code: #{inventory.inventory_product.generated_item_code} - product description: #{inventory.inventory_product.try(:description)}]", collapse_link: "invlink_#{inventory.id}", collapse_id: "inventory_list" do
       .row
@@ -64,3 +66,5 @@
           %strong Remarks:
           = link_to "#", class: "inline_edit", data: {type: "text", resource: "inventory", name: "remarks", url: inventory_admins_inventories_path(edit: true, inventory_id: inventory.id), "original-title" => "Update Product Category"} do
             = inventory.remarks
+
+  = paginate @inventory_all, remote: false, method: :get

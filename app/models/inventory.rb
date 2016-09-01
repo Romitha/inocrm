@@ -11,6 +11,15 @@ class Inventory < ActiveRecord::Base
   belongs_to :updated_by_user, class_name: "User", foreign_key: :updated_by
 
   validates_presence_of [:store_id, :product_id, :stock_quantity, :available_quantity, :reserved_quantity, :created_by]
+
+  after_create :update_relation_index
+
+  def update_relation_index
+    [:inventory_product].each do |parent|
+      self.send(parent).update_index
+      
+    end
+  end
 end
 
 class InventoryProduct < ActiveRecord::Base
@@ -340,7 +349,8 @@ class InventorySerialItem < ActiveRecord::Base
         grn_items: {
           include: {
             grn: {
-              only: [:grn_no, :created_at, :store_id],
+              only: [:created_at, :store_id],
+              methods: [:grn_no_format]
             },
           },
         },

@@ -900,7 +900,7 @@ module Admins
           end
         end
         @stores = Organization.stores
-        @inventory_all = Inventory.order( store_id: :asc)
+        @inventory_all = Kaminari.paginate_array(Inventory.order( store_id: :asc)).page(params[:page]).per(10)
         render "admins/inventories/inventory/inventory"
 
       end
