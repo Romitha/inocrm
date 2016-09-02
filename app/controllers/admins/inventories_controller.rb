@@ -251,6 +251,7 @@ module Admins
           if @inventory_brand.save
             params[:create] = nil
             @inventory_brand = InventoryCategory1.new
+            flash[:notice] = "Successfully saved."
           end
         else
           @inventory_brand = InventoryCategory1.new

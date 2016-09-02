@@ -54,5 +54,14 @@ end
 # Possible values are :truncation and :transaction
 # The :transaction strategy is faster, but might give you threading problems.
 # See https://github.com/cucumber/cucumber-rails/blob/master/features/choose_javascript_database_strategy.feature
+# Capybara.register_driver :selenium_chrome do |app| 
+#   # profile = Selenium::WebDriver::Firefox::Profile.new 
+#   Capybara::Selenium::Driver.new( app, :browser => :chrome ) 
+#   # , :profile => profile
+# end
+
 Cucumber::Rails::Database.javascript_strategy = :truncation
 
+# Capybara.default_driver = :webkit
+# Capybara.current_driver = :selenium_chrome
+Capybara.javascript_driver = :webkit
