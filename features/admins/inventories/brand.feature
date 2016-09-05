@@ -1,3 +1,4 @@
+@selenium
 Feature: Adding and viewing brands
   Brand has two attributes called brand name and brand code.
   brand name and brand code must be unique.

@@ -1,9 +1,3 @@
-/ - if @inventory_product.errors.any?
-/   .row
-/     .col-md-12
-/       %ul
-/         - @inventory_product.errors.full_messages.each do |error|
-/           %li= error
 
 %h3 Inventory Product
 = simple_nested_form_for @inventory_product, url: inventory_product_admins_path(create: true) do |f|
@@ -13,15 +7,10 @@
       = select_tag "search_inventory[brand]", options_from_collection_for_select(InventoryCategory1.all, :id, :name, (params[:search_inventory] and params[:search_inventory][:brand])), include_blank: true
     .col-md-3.product
       = label_tag InventoryCategoryCaption.second.caption
-      = select_tag "search_inventory[product]", option_groups_from_collection_for_select(InventoryCategory1.all, :inventory_category2s, :name, :id, :name, (params[:search_inventory] and params[:search_inventory][:product])), include_blank: true
+      = select_tag "search_inventory[product]", option_groups_from_collection_for_select(InventoryCategory1.all, :inventory_category2s, :id, :id, :name, (params[:search_inventory] and params[:search_inventory][:product])), include_blank: true
     .col-md-3.category
       = label_tag InventoryCategoryCaption.third.caption
-      = f.association :inventory_category3, collection: InventoryCategory2.all, as: :grouped_select, group_method: :inventory_category3s, group_label_method: :name, label_method: :name, value_method: :id, label: false
-      
-      / = select_tag "search_inventory[mst_inv_product][category3_id]", option_groups_from_collection_for_select(InventoryCategory2.all, :inventory_category3s, :name, :id, :name, (params[:search_inventory] and params[:search_inventory][:mst_inv_product][:category3_id])), include_blank: true
-      
-      / = f.input :country_id, collection: @continents, as: :grouped_select, group_method: :countries, , label_method: :company_name, value_method: :id
-      / f.association :product_category, collection: ProductBrand.all, as: :grouped_select, group_method: :product_categories
+      = f.association :inventory_category3, collection: InventoryCategory2.all, as: :grouped_select, group_method: :inventory_category3s, group_label_method: :id, label_method: :name, value_method: :id, label: false
   .row
     .col-md-3
       = f.input :serial_no, input_html: {value: InventorySerialItem.last.serial_no}

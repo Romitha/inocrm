@@ -7,10 +7,10 @@
       = select_tag "search_inventory[brand]", options_from_collection_for_select(InventoryCategory1.all, :id, :name, (params[:search_inventory] and params[:search_inventory][:brand])), include_blank: true, class: "form-control", required: true
     .col-md-4.product
       = label_tag InventoryCategoryCaption.second.caption
-      = select_tag "search_inventory[product]", option_groups_from_collection_for_select(InventoryCategory1.all, :inventory_category2s, :name, :id, :name, (params[:search_inventory] and params[:search_inventory][:product])), include_blank: true, class: "form-control"
+      = select_tag "search_inventory[product]", option_groups_from_collection_for_select(InventoryCategory1.all, :inventory_category2s, :id, :id, :name, (params[:search_inventory] and params[:search_inventory][:product])), include_blank: true, class: "form-control"
     .col-md-4.category{style: "color: #900303;"}
       = label_tag InventoryCategoryCaption.third.caption
-      = f.association :inventory_category3, input_html: {required: true}, collection: InventoryCategory2.all, as: :grouped_select, group_method: :inventory_category3s, group_label_method: :name, label_method: :name, value_method: :id, label: false
+      = f.association :inventory_category3, input_html: {required: true}, collection: InventoryCategory2.all, as: :grouped_select, group_method: :inventory_category3s, group_label_method: :id, label_method: :name, value_method: :id, label: false
 
   .row
     .col-md-4
@@ -87,20 +87,9 @@
       = f.submit "Save", class: "btn btn-success", id: "submit_new_inventory_product", name: "#{params[:edit_more] ? 'update' : 'create'}"
   %hr
 
-/ #accordion.panel-group
-/   - @inventory_product_all.each_with_index do |inv_product, index|
-/     .panel.panel-info
-/       .panel-heading
-/         %h3.panel-title
-/           %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
-/             Inventory Product Serial No : #{inv_product.serial_no}
-/             - unless inv_product.is_used_anywhere?
-/               = link_to delete_inventory_product_form_admins_inventories_path(product_id: inv_product.id), method: :delete, :data => { :confirm => 'Are you sure?' } do
-/                 %span.glyphicon.glyphicon-trash
-/       .panel-collapse.collapse.in{:id => "#{index}"}
-/         .panel-body
-
 = collapse_wrapper collapse_id: "inventory_product_list", labelledby: "inv_product_labelledby" do
+  = paginate @inventory_product_all, remote: false, method: :get
+
   - @inventory_product_all.each_with_index do |inv_product, index|
     = collapse collapse_type: "info", labelledby: "labelledby_#{inv_product.id}", header_content: "Inventory Product: #{inv_product.generated_item_code} #{inv_product.description}", collapse_link: "invunitlink_#{inv_product.id}", collapse_id: "inventory_product_list" do
       .pull-right
@@ -237,3 +226,4 @@
 
             %script{type: "text/html", id: "load_files"}
               = render "document_attachments/autoload"
+  = paginate @inventory_product_all, remote: false, method: :get

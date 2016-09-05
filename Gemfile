@@ -104,7 +104,7 @@ group :test do
   gem 'database_cleaner'
   # gem 'watir'
   gem 'capybara'
-  gem 'selenium-webdriver'
+  gem 'selenium-webdriver', '~> 3.0.0.beta3'
   gem "capybara-webkit"
   gem 'rspec-rails'
 end

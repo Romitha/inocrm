@@ -252,6 +252,9 @@ module Admins
             params[:create] = nil
             @inventory_brand = InventoryCategory1.new
             flash[:notice] = "Successfully saved."
+          else
+            flash[:alert] = "Unable to save. Please review..."
+
           end
         else
           @inventory_brand = InventoryCategory1.new
@@ -349,11 +352,16 @@ module Admins
           if @inventory_product.save
             params[:create] = nil
             @inventory_product = InventoryProduct.new
+            flash[:notice] = "Successfully saved."
+          else
+            flash[:alert] = "Unable to save. Please review."
           end
         else
           @inventory_product = InventoryProduct.new
         end
-        @inventory_product_all = InventoryProduct.order(updated_at: :desc).select{ |i| i.persisted? }
+        # @inventory_product_all = InventoryProduct.order(updated_at: :desc).select{ |i| i.persisted? }
+        @inventory_product_all = Kaminari.paginate_array(InventoryProduct.order( updated_at: :desc)).page(params[:page]).per(10)
+
 
       end
     end
@@ -898,6 +906,9 @@ module Admins
           if @inventory.save
             params[:create] = nil
             @inventory = Inventory.new
+            flash[:notice] = "Successfully saved."
+          else
+            flash[:alert] = "Unable to saved. Please review."
           end
         end
         @stores = Organization.stores

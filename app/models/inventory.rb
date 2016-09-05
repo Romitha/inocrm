@@ -193,6 +193,9 @@ class InventoryCategory1 < ActiveRecord::Base
     inventory_category2s.any?
   end
 
+  validates :name, presence: true, uniqueness: true
+  validates :code, presence: true, uniqueness: true
+
 end
 
 class InventoryCategory2 < ActiveRecord::Base
@@ -209,6 +212,9 @@ class InventoryCategory2 < ActiveRecord::Base
     inventory_category3s.any? or inventory_products.any?
   end
 
+  validates :name, presence: true, uniqueness: true
+  validates :code, presence: true, uniqueness: true
+
 end
 
 class InventoryCategory3 < ActiveRecord::Base
@@ -220,6 +226,9 @@ class InventoryCategory3 < ActiveRecord::Base
   def is_used_anywhere?
     inventory_products.any?
   end
+
+  validates :name, presence: true, uniqueness: true
+  validates :code, presence: true, uniqueness: true
 end
 
 class InventoryCategoryCaption < ActiveRecord::Base

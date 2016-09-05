@@ -61,8 +61,10 @@
           %dd= product.description
           %dt Unit:
           %dd= product.inventory_unit.unit
-          %dt Balanced Qty to be issued:
+          %dt Requested Qty:
           %dd= i.object.srn_item.quantity.to_f
+          %dt Balanced Qty to be issued:
+          %dd= i.object.srn_item.quantity.to_f - i.object.srn_item.gin_items.sum(:issued_quantity)
           %dt Stock in hand:
           %dd= stock_quantity
           %dt Rack:
@@ -94,10 +96,12 @@
           .col-md-12
             %div{id: "batch_or_serial_frame#{i.object.srn_item_id}"}
 
-  - if f.object.gin_items.present?
+
+  - if f.object.gin_items.count > 0
     .row
       .col-md-12
-        = f.input :remarks
+        = f.input :remarks, input_html: {value: nil}
+        = simple_format f.object.remarks
       .col-md-12
         = f.submit "Save", class: "btn btn-sm btn-success"
 

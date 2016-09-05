@@ -60,8 +60,12 @@ end
 #   # , :profile => profile
 # end
 
+
+# Selenium::WebDriver::Firefox::Binary.path = "/Applications/Firefox.app/Contents/MacOS/firefox"
+# driver = Selenium::WebDriver.for :firefox, marionette: false
+
 Cucumber::Rails::Database.javascript_strategy = :truncation
 
 # Capybara.default_driver = :webkit
 # Capybara.current_driver = :selenium_chrome
-Capybara.javascript_driver = :webkit
+# Capybara.javascript_driver = :webkit
