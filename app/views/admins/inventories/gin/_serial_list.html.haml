@@ -27,7 +27,7 @@
           #selected_quantity 0
         .col-md-4
           %strong Balance Qty to be issued:
-          #balance_to_be_issued{data: {fixed: @srn_item.quantity.to_f}}= @srn_item.quantity.to_f
+          #balance_to_be_issued{data: {fixed: @srn_item.quantity.to_f}}= @srn_item.quantity.to_f - @srn_item.gin_items.sum(:issued_quantity)
       %hr
       = form_tag batch_or_serial_for_gin_admins_inventories_path(batch_or_serial: "issued_qty", serial_flag: "true"), method: :get, remote: true do
         = hidden_field_tag :srn_item_id, params[:srn_item_id]
