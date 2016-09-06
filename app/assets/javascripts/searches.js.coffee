@@ -1,7 +1,6 @@
 window.Searches =
 
   setup: ->
-    @reset_searchgrn()
     return
 
 

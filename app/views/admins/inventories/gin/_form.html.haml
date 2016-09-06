@@ -1,3 +1,5 @@
+= link_to "Re-search", gin_admins_inventories_path
+- stock_quantity = 0
 .row
   .col-md-6
     %strong GIN No:
@@ -66,7 +68,8 @@
           %dt Balanced Qty to be issued:
           %dd= i.object.srn_item.quantity.to_f - i.object.srn_item.gin_items.sum(:issued_quantity)
           %dt Stock in hand:
-          %dd= stock_quantity
+          %dd
+            %span{class: "label label-#{stock_quantity <= 0 ? 'danger' : 'default'}"}= stock_quantity
           %dt Rack:
           %dd= inventory_rack
           %dt Shelf:
@@ -96,8 +99,7 @@
           .col-md-12
             %div{id: "batch_or_serial_frame#{i.object.srn_item_id}"}
 
-
-  - if f.object.gin_items.count > 0
+  - if stock_quantity > 0
     .row
       .col-md-12
         = f.input :remarks, input_html: {value: nil}
