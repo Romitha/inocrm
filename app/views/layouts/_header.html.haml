@@ -22,6 +22,24 @@
               %li{role: "presentation"}
                 = link_to admins_root_path do
                   Admin board
+              %li.dropdown-submenu{role: "presentation"}
+                = link_to "Inventory", "#"
+                %ul.dropdown-menu
+                  %li.dropdown-submenu{role: "presentation"}
+                    = link_to "Create", "#"
+                    %ul.dropdown-menu
+                      %li.dropdown-header GRN
+                      %li{role: "presentation"}= link_to "GRN", grn_admins_inventories_path
+                      %li{role: "presentation"}= link_to "Part of main unit", grn_main_part_admins_inventories_path
+                      %li.divider
+                      %li{role: "presentation"}= link_to "SRN", srn_admins_inventories_path
+                      %li{role: "presentation"}= link_to "GIN", gin_admins_inventories_path
+                      %li{role: "presentation"}= link_to "SRR", "#"
+
+                  %li.dropdown-submenu{role: "presentation"}
+                    = link_to "Search", "#"
+                    %ul.dropdown-menu
+                      %li{role: "presentation"}= link_to "GRN", search_grn_admins_searches_path
 
         %li.dropdown.small_scale_margin-right10{role: "presentation"}
           = link_to "supplier", "#", id: "supplier_dropdown", class: "dropdown-toggle supplier text-hide nav-icon", data: {toggle: "dropdown", placement: "bottom"}, "aria-haspopup" => "true", "aria-expanded" => "true", title: "Supplier", rel: "tooltip"
@@ -66,21 +84,6 @@
             %li{role: "presentation"}= link_to "Customer Inquire", customer_inquire_tickets_path
             %li{role: "presentation"}= link_to "Add Edit Contract", "#"
             %li{role: "presentation"}= link_to "New Support Ticket", new_ticket_path
-
-        %li.dropdown.small_scale_margin-right10{role: "presentation"}
-          = link_to "Inventory", "#", class: "dropdown-toggle inventory text-hide nav-icon", id: "inventory_dropdown", data: {toggle: "dropdown", placement: "bottom"}, title: "Inventory", rel: "tooltip"
-          %ul.dropdown-menu{"aria-labelledby" => "inventory_dropdown"}
-            %li.dropdown-header GRN
-            %li{role: "presentation"}= link_to "Create", grn_admins_inventories_path
-            %li{role: "presentation"}= link_to "Create for part of main unit", grn_main_part_admins_inventories_path
-            %li{role: "presentation"}= link_to "Search", search_grn_admins_searches_path
-            %li.divider
-            / %li.menu-item{role: "presentation"}= link_to "Search GRN", "#"
-            %li{role: "presentation"}= link_to "SRN", srn_admins_inventories_path
-            %li{role: "presentation"}= link_to "GIN", gin_admins_inventories_path
-            %li{role: "presentation"}= link_to "SRR", "#"
-
-            / %li{role: "presentation"}= link_to "New Inventory", "#"
 
         - if user_signed_in?
           %li.dropdown.profile_image_dropdown
