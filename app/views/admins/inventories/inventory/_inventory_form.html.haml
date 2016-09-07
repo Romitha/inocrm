@@ -34,9 +34,9 @@
         = select_tag "search_inventory[brand]", options_from_collection_for_select(@store.inventory_racks, :id, :description), include_blank: true, class: "form-control"
       .col-md-4
         = label_tag "Shelf"
-        = select_tag "search_inventory[product]", option_groups_from_collection_for_select(InventoryRack.all, :inventory_shelfs, :description, :id, :description), include_blank: true, class: "form-control"
+        = select_tag "search_inventory[product]", option_groups_from_collection_for_select(InventoryRack.all, :inventory_shelfs, :id, :id, :description), include_blank: true, class: "form-control"
       .col-md-4
-        = f.association :inventory_bin, input_html: {required: true, id: "inventory_product_category3_id" }, collection: InventoryShelf.all, as: :grouped_select, group_method: :inventory_bins, group_label_method: :description, label_method: :description, value_method: :id, label: "Bin"
+        = f.association :inventory_bin, input_html: {required: true, id: "inventory_product_category3_id" }, collection: InventoryShelf.all, as: :grouped_select, group_method: :inventory_bins, group_label_method: :id, label_method: :description, value_method: :id, label: "Bin"
 
     .row
       .col-md-12
