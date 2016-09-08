@@ -473,6 +473,3 @@ DEPENDENCIES
   web-console
   websocket-rails
   whenever
-
-BUNDLED WITH
-   1.11.2

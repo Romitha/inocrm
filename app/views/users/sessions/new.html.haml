@@ -1,19 +1,26 @@
-.col-sm-4.center
-  %fieldset
-    %legend Log in
-    .center.col-sm-9
-      = form_for(resource, as: resource_name, url: session_path(resource_name)) do |f|
-        .input-group.small_scale_padding-bottom2
-          .input-group-addon.glyphicon.glyphicon-user
-          = f.email_field :email, autofocus: true, class: "form-control col-sm-12", placeholder: "Email or username"
-        .input-group.small_scale_padding-bottom2
-          .input-group-addon.glyphicon.glyphicon-eye-close
-          = f.password_field :password, autocomplete: "off", class: "form-control col-sm-12", placeholder: "Password"
-        - if devise_mapping.rememberable?
-          .checkbox
-            %label
-              = f.check_box :remember_me
-              Remember me
-        .button.small_scale_padding-bottom2
-          = f.submit "Log in", class: "btn btn-primary btn-lg btn-block"
-        / = render "users/share
+.container.margin-top1
+  #loginbox.mainbox.margin-auto.col-md-6.remove-float
+    .panel.panel-info
+      .navbar.navbar-inverse
+        .panel-title.margin-auto.remove-float.col-xs-7.col-sm-3.col-md-3.small_scale_padding-top2
+          = image_tag("logo.png")
+      .panel-body
+        .center.col-sm-9
+          = form_for(resource, as: resource_name, url: session_path(resource_name)) do |f|
+            .input-group
+              %span.input-group-addon
+                %i.glyphicon.glyphicon-user
+              = f.email_field :email, autofocus: true, class: "form-control col-sm-12", placeholder: "Email"
+            .input-group.margin-top1
+              %span.input-group-addon
+                %i.glyphicon.glyphicon-eye-close
+              = f.password_field :password, autocomplete: "off", class: "form-control col-sm-12", placeholder: "Password"
+            - if devise_mapping.rememberable?
+              .checkbox
+                %label
+                  = f.check_box :remember_me
+                  Remember me
+            .button.small_scale_padding-bottom2
+              = f.submit "Log in", class: "btn btn-primary btn-block btn-lg"
+            / = render "users/share
+
