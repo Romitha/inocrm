@@ -1,12 +1,12 @@
-Given /^I am authorized user with role of admin$/ do
-  visit('/users/sign_out') # ensure that at least
-  visit('/users/sign_in')
+Given /^I am authorized user$/ do
+  step "I am Unauthorized user"
+  step "I go to sign in page"
   within("#new_user") do
-    fill_in 'user[email]', :with => "admin@inovacrm.com"
-    fill_in 'user[password]', :with => "123456789"
+    step "I enter user email like admin@inovacrm.com"
+    step "I enter user password like 123456789"
   end
-  step "press Log in button"
-  expect(page).to have_content "Signed in successfully."
+  step "I click Log in"
+  step "I should see expected Signed in successfully."
 end
 
 When /^Go to admin brand screen in inventories.$/ do
@@ -14,7 +14,7 @@ When /^Go to admin brand screen in inventories.$/ do
   expect(page).to have_current_path('/admins/inventories/inventory_brand')
 end
 
-When /^I enter brand (.*): (.*)$/ do |name, brand_name|
+And /^I enter brand (.*): (.*)$/ do |name, brand_name|
   expect(page).to have_current_path('/admins/inventories/inventory_brand')
 
   within("#new_inventory_category1") do
@@ -23,20 +23,23 @@ When /^I enter brand (.*): (.*)$/ do |name, brand_name|
 end
 
 When /^I click (.*)$/ do |save_button|
-  expect(page).to have_current_path('/admins/inventories/inventory_brand')
+  # expect(page).to have_current_path('/admins/inventories/inventory_brand')
 
   click_button save_button
 end
 
 Then /^I should see expected (.*)$/ do |message|
-  expect(page).to have_current_path('/admins/inventories/inventory_brand')
+  # expect(page).to have_current_path('/admins/inventories/inventory_brand')
   expect(page).to have_content message
 end
 
-When /^brand (.*) is empty$/ do |name|
-  expect(find_field("inventory_category1[#{name}]").value).to eq ""
-end
-
-Then /^I should see error message like This field is required in brand (.*) field$/ do |name|
-  expect(find("#inventory_category1_#{name}-error")).to have_content "This field is required."
+Given /^I able to see (.*):$/ do |table|
+  table.hashes.each do |hash|
+    within("#new_user") do
+      fill_in 'user[email]', :with => hash["email"]
+      fill_in 'user[password]', :with => hash["password"]
+    end
+    step "press Log in button"
+    step "I able to login to InoCrm system as #{hash['email']}."
+  end
 end

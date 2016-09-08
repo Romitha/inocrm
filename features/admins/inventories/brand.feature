@@ -4,12 +4,13 @@ Feature: Adding and viewing brands
   brand name and brand code must be unique.
 
   Background:
-    Given I am authorized user with role of admin
+    Given I am authorized user
     When Go to admin brand screen in inventories.
 
+
   Scenario Outline: Adding brand to system.
-    When I enter brand name: <brandName>
-    And I enter brand code: <brandCode>
+    And I enter inventory_category1 name like <brandName>
+    And I enter inventory_category1 code like <brandCode>
     And I click Save
     Then I should see expected <message>
 
@@ -19,24 +20,37 @@ Feature: Adding and viewing brands
       |  brand2       |  7        | Successfully saved              |
 
     Scenarios: Brand name is empty:
+      | brandName     | brandCode | message                         |
       |               |  6        | This field is required          |
 
     Scenarios: Brand code is empty:
+      | brandName     | brandCode | message                         |
       |  brand3       |           | This field is required          |
 
     Scenarios: Duplicate brand entry:
-      |  brand2       |  7        | Brand is already available      |
+      | brandName     | brandCode | message                         |
+      |  brand2       |  7        | has already been taken      |
 
-  @javascript
-  Scenario: Empty brand name:
-    When brand name is empty
-    And I click Save
-    Then I should see error message like This field is required in brand name field
+  # @javascript
+  # Scenario: Empty brand name:
+  #   When brand name is empty
+  #   And I click Save
+  #   Then I should see error message like This field is required in brand name field
 
-  Scenario: Empty brand code:
-    When brand code is empty
-    Then I should see error message like This field is required in brand code field
+  # Scenario: Empty brand code:
+  #   When brand code is empty
+  #   Then I should see error message like This field is required in brand code field
 
-  Scenario: already available brand:
-    When brandName or brandCode is already available
-    Then I should see error message like brand name already exist
+  # Scenario: already available brand:
+  #   When brandName or brandCode is already available
+  #   Then I should see error message like brand name already exist
+
+  @data_availability
+  Scenario Outline: Checking availability of data from database.
+    Given within each id <wrapper>
+    Given I able to see <code> in the hml dom class inline_edit
+    And I able to see <name> in the hml dom class inline_edit
+
+      Examples:    
+        | wrapper  |code | name    | 
+        | brand1   | 5   | brand1  |

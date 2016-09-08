@@ -3,7 +3,6 @@ window.Searches =
   setup: ->
     return
 
-
   reset_searchgrn:->
     $("#store_id").val("")
     $("#grn_no").val("")

@@ -224,7 +224,6 @@ window.Inventories =
         submit_form.submit()
 
   request_from_store: (e, elem)->
-    console.log $("input[name='ticket_spare_part[ticket_spare_part_store_attributes][part_of_main_product]']").is(":checked")
     if $("input[name='store_id']").val() == ""
       e.preventDefault()
       alert "Please select store product!"
