@@ -701,7 +701,7 @@ window.Inventories =
   call_from_store: (elem) ->
     this_val = $(elem).val()
     $("#store_controller").removeClass("hide")
-    $("#storeIdPass").data("storeId", this_val)
+    $(".applyStoreId").data("storeId", this_val)
     $(".srn_store").addClass("hide")
     $("#store_name").text($(":selected", elem).text())
 

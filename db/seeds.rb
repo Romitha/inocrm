@@ -34,6 +34,9 @@ unless(user)
   rpermissions.each { |rp| Rpermission.create_with(controller_resource: rp[1], controller_action: rp[2]).find_or_create_by(name: rp[0]) }
   admin.rpermission_ids = [1,2,3,4,5,6,7]
   default_user.rpermission_ids = [2, 4, 5]
+
+  Organization.stores.create name: "store1", description: "This is sample store", web_site: "http://www.store1.com", short_name: "this is sample name", parent_organization_id: organization.id
+
 end
 
 Ticket

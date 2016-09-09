@@ -1048,7 +1048,10 @@ module Admins
         end
 
         # gin_item.issued_quantity = gin_item.srn_item.gin_items.sum(:issued_quantity) if gin_item.issued_quantity > gin_item.srn_item.gin_items.sum(:issued_quantity)
-        gin_item.issued_quantity = gin_item.srn_item.quantity - gin_item.srn_item.gin_items.sum(:issued_quantity) if gin_item.issued_quantity > (gin_item.srn_item.quantity - gin_item.srn_item.gin_items.sum(:issued_quantity))
+        already_issued_quantities = gin_item.srn_item.gin_items.sum(:issued_quantity)
+        store_requested_quantities = gin_item.srn_item.quantity
+
+        gin_item.issued_quantity = store_requested_quantities - already_issued_quantities if gin_item.issued_quantity > (store_requested_quantities - already_issued_quantities)
 
         if gin_item.issued_quantity > 0
           unless gin_item.srn_item.main_product_id.present?
@@ -1188,6 +1191,12 @@ module Admins
       end
 
       redirect_to gin_admins_inventories_url
+    end
+
+    def prn
+      respond_to do |format|
+        format.html {render "admins/inventories/prn/prn"}
+      end
     end
 
     private

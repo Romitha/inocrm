@@ -5,7 +5,7 @@ Given /^I am authorized user$/ do
     step "I enter user email like admin@inovacrm.com"
     step "I enter user password like 123456789"
   end
-  step "I click Log in"
+  step "I click button Log in"
   step "I should see expected Signed in successfully."
 end
 
@@ -22,10 +22,16 @@ And /^I enter brand (.*): (.*)$/ do |name, brand_name|
   end
 end
 
-When /^I click (.*)$/ do |save_button|
+When /^I click button (.*)$/ do |save_button|
   # expect(page).to have_current_path('/admins/inventories/inventory_brand')
 
   click_button save_button
+end
+
+When /^I click link (.*)$/ do |save_button|
+  # expect(page).to have_current_path('/admins/inventories/inventory_brand')
+
+  click_link save_button
 end
 
 Then /^I should see expected (.*)$/ do |message|

@@ -9,5 +9,10 @@ FactoryGirl.define do
   factory :brand, class: InventoryCategory1 do
     
   end
+
+  factory :organization do
+  	name "store1"
+  	description "This is sample description"
+  end
   
 end

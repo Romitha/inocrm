@@ -309,6 +309,9 @@ Rails.application.routes.draw do
       collection do
 
         get "grn"
+        get "srr"
+        get "po"
+        get "prn"
         get "grn_main_part"
         match "upload_grn_file", action: :upload_grn_file, via: [:get, :post]
         post "initialize_grn"

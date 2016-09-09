@@ -1,0 +1,8 @@
+- if @store
+- else
+
+  .list-group#store-list
+    - Organization.stores.each do |store|
+      = link_to prn_admins_inventories_path(store_id: store.id), class: "list-group-item" do
+        %h4.list-group-item-heading{id: "store_name_#{store.id}"}= store.name
+        .list-group-item-text{id: "store_desc_#{store.id}"}= simple_format store.description
