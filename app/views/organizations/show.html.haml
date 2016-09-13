@@ -1,2 +1,64 @@
 - organization = @organization
+
+- tapbar = [["Address", "#addresses#{organization.id}"], ["#{[Organization::TYPES[1], Organization::TYPES[3]].include?(organization.category) ? 'Contact Persons' : 'Employees'}", "#contact_persons#{organization.id}"], ["Documents & Attachements", "#documents#{organization.id}"], ["Designations", "#designations#{organization.id}"], ["Organization Relations", "#organization_relations#{organization.id}"], ["Roles and Permissions", "#roles_and_permissions#{organization.id}"]]
+
+
 = render "organization", organization: organization
+
+.row
+  .col-md-12
+    %ul.nav.nav-tabs{role: "tablist"}
+      - tapbar.each do |link_info|
+        - if tapbar[5]==link_info or tapbar[7]==link_info
+          %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"} unless(Organization::TYPES[2,3].include?(organization.category))
+        - elsif tapbar[6]==link_info
+          %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"} if organization.refers=="VSIS"
+        - else
+          %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"}
+
+    .tab-content.small_scale_margin-top1
+      .tab-pane.limit-height{id: "addresses#{organization.id}"}
+        .row
+          - organization.addresses.order("created_at DESC").each do |address|
+            = render "addresses/address", address: address if address.persisted?
+      .tab-pane.limit-height{id: "contact_persons#{organization.id}"}
+        .limit-height
+          - organization.employees.each do |user|
+            = render "users/user", user: user
+
+      .tab-pane.limit-height{id: "designations#{organization.id}"}
+        .fixed-height
+          - organization.designations.order("created_at DESC").each do |designation|
+            = render "designations/designation", designation: designation
+
+      .tab-pane.limit-height{id: "documents#{organization.id}"}
+        .fixed-height
+          - organization.document_attachments.order("created_at DESC").each do |document_attachment|
+            = render "document_attachments/documents_attachments", document_attachment: document_attachment
+
+      - unless Organization::TYPES[2,3].include?(organization.category)
+        .tab-pane.limit-height{id: "organization_relations#{organization.id}"}
+          .fixed-height
+            .row
+              .col-md-2.col-xs-12.col-sm-2{style: "padding-left:0;"}
+                = tab_nav_tab({class: "tabs-left", id: "secondary_tab"}, parent_org: {content: "Parent", active_class: "active job_c"}, child_org: {content: "Members"})
+              .col-md-10.col-xs-12.col-sm-10
+                .tab-content
+                  = tab_content tabpointer: :parent_org, active_class: "active" do
+                    = render "organizations/member",organization: organization.parent_organization, relation: "Parent", relation_organization: organization if organization.parent_organization.present?
+                  = tab_content tabpointer: :child_org do
+                    = render "organizations/members", organizations: organization.members
+
+      / .tab-pane.limit-height{id: "organization_departments#{organization.id}"}
+      /   .fixed-height
+      /     - organization.members.each do |org|
+      /       - if org.organization_type.try(:code) == "DPT"
+      /         .col-md-12
+      /           = org.name
+
+      - if organization.refers == "VSIS"
+        .tab-pane.limit-height{id: "roles_and_permissions#{organization.id}"}
+          .fixed-height
+            = link_to "Add Roles and set Permissions", new_organization_roles_and_permission_path(organization), class: "btn btn-primary btn-sm small_scale_margin-bottom1"
+            - organization.roles.order("created_at DESC").each do |role|
+              = render "roles_and_permissions/role", role: role

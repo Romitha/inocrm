@@ -107,7 +107,6 @@ group :test do
   gem 'selenium-webdriver', '~> 3.0.0.beta3'
   gem "capybara-webkit" # sudo apt-get install libqt4-dev libqtwebkit-dev
   gem 'rspec-rails'
-  gem "factory_girl_rails"
 end
 
 gem 'httpi'
@@ -120,6 +119,7 @@ gem 'jquery-validation-rails'
 gem "roo"
 gem "tire", git: "https://github.com/karmi/retire.git"
 gem "whenever", :require => false
+gem "factory_girl_rails"
 
 
 # gem "em-http-request"

@@ -283,6 +283,7 @@ Rails.application.routes.draw do
           :regional_support_center,
           :country,
           :sla,
+          :store_and_branch,
         ].each do |action|
           match "#{action.to_s}", action: action, via: [:get, :post, :put] 
         end

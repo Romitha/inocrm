@@ -57,6 +57,8 @@ module TodosHelper
         # "lk.inova:INOCRM:1.0.0.6"
         # "lk.inova:INOCRM:1.0.0.9"
         "lk.inova:INOCRM:1.0.1.0"
+      when "test"
+        "lk.inova:INOCRM:1.0.1.0"
       end
         
     end

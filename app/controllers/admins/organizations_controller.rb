@@ -3,7 +3,7 @@ module Admins
     layout "admins"
 
     def index
-      
+
     end
 
     def delete_admin_sla
@@ -89,16 +89,42 @@ module Admins
       end
     end
 
+    def store_and_branch
+      Ticket
+      Product
+      if params[:edit]
+        @organization = Organization.find params[:country_id]
+        if @organization.update organization_params
+          params[:edit] = nil
+          render json: @organization
+        else
+          render json: @organization.errors.full_messages.join
+        end
+      else
+        if params[:create]
+          @organization = Organization.new organization_params
+          @organization.parent_organization = Organization.owner
+          if @organization.save
+            params[:create] = nil
+            @organization = Organization.new
+          end
+        else
+          @organization = Organization.new
+        end
+        @organization_all = Organization.order(updated_at: :desc)
+      end
+    end
+
     def country
       Ticket
       Product
       if params[:edit]
-        @admin_country = ProductSoldCountry.find params[:country_id]
-        if @admin_country.update admin_country_params
+        @store_and_branch = Organization.find params[:country_id]
+        if @store_and_branch.update admin_country_params
           params[:edit] = nil
-          render json: @admin_country
+          render json: @store_and_branch
         else
-          render json: @admin_country.errors.full_messages.join
+          render json: @store_and_branch.errors.full_messages.join
         end
       else
         if params[:create]
@@ -167,5 +193,9 @@ module Admins
       def sburegional_engineer_params
         params.require(:sbu_regional_engineer).permit(:engineer_id)
       end
+
+    def organization_params
+      params.require(:organization).permit(:title_id, :name, :department_org_id, :category, :description, :logo, :vat_number, :type_id, :web_site, :code, :short_name, addresses_attributes: [:id, :category, :address, :primary, :_destroy],  contact_numbers_attributes: [:id, :category, :value, :_destroy], account_attributes: [:id, :_destroy, :industry_types_id], customers_attributes: [:id, :_destroy, :organization_id, :title_id, :name, :address1, :address2, :address3, :address4, :district_id, contact_type_values_attributes: [:id, :contact_type_id, :value, :_destroy]])
+    end
   end
 end

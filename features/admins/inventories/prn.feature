@@ -7,8 +7,9 @@ Feature: Creating Purchase Order.
     When Go to admin PRN form screen in inventories.
 
   Scenario: Select store
-    Given I able to see store name store1 within store-list
-      | name   | description         |
-      | store1 | this is sample name |
+    Given I able to see store information within store-list
+      | field       | content               | content_holder |
+      | name        | store1                | #store_name_2  |
+      | description | This is sample store  | #store_desc_2  |
     And I click link store1
     And I able to see prn form

@@ -130,7 +130,7 @@ class InventoryProduct < ActiveRecord::Base
           # puts params[:store_id]
         end
       end
-      sort { by :created_at, "desc" }
+      sort { by :created_at, "desc" } if params[:query].present?
       # filter :range, published_at: { lte: Time.zone.now}
       # raise to_curl
     end

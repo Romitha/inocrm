@@ -4,14 +4,18 @@ When /^Go to admin PRN form screen in inventories.$/ do
   # expect(page.status_code).to eq 200
 end
 
-Given /^I able to see store name (.*) within (.*)$/ do |name, wrapper|
-  # within("##{wrapper}") do
-  #   expect(find(".list-group-item-heading")).to have_content name
-  # end
+Given /^I able to see store information within (.*)$/ do |wrapper, table|
+  within("##{wrapper}") do
+    # expect(find(".list-group-item-heading")).to have_content name
+    table.hashes.each do |hash|
+      # FactoryGirl.create :organization, hash
+      expect(find("#{hash['content_holder']}")).to have_content(hash['content'])
+    end
+  end
 end
 
 Given(/^I able to see prn form$/) do
-  pending # Write code here that turns the phrase above into concrete actions
+  expect(page).to have_selector('#new_prn')
 end
 
 # Given(/^I create store with:$/) do |table|

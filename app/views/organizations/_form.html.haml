@@ -1,6 +1,6 @@
 - tapbar = [["Address", "#addresses#{organization.id}"], ["#{[Organization::TYPES[1], Organization::TYPES[3]].include?(organization.category) ? 'Contact Persons' : 'Employees'}", "#contact_persons#{organization.id}"], ["Documents & Attachements", "#documents#{organization.id}"], ["Designations", "#designations#{organization.id}"], ["Organization Relations", "#organization_relations#{organization.id}"], ["Roles and Permissions", "#roles_and_permissions#{organization.id}"], ["Dealer Types", "#dealer_types#{organization.id}"]]
 
-= simple_nested_form_for organization, html: {class: "validate_form"} do |f|
+= simple_nested_form_for organization, url: url, html: {class: "validate_form"} do |f|
   - if organization.errors.present?
     .row
       = panels header_content: "Something gone wrong", panel_type: "danger" do
@@ -33,17 +33,18 @@
   .row
     - unless Organization::TYPES[2,3].include?(organization.category)
       .col-md-4
-        = f.input :vat_number, placeholder: "Vat Number", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Vat Number"}
+        = f.input :vat_number, placeholder: "VAT Number", input_html: {class: "has-tooltip #{'for_store_and_branch' if params[:action] == 'store_and_branch'}", data: {toggle: "tooltip", placement: "left"}, title: "VAT Number"}
     .col-md-4
       = f.association :organization_type, include_blank: false
     .col-md-4.pull-right
-      = f.input :web_site, placeholder: "Web Site", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Web Site"}
+      = f.input :web_site, placeholder: "Web Site", input_html: {class: "has-tooltip #{'for_store_and_branch' if params[:action] == 'store_and_branch'}", data: {toggle: "tooltip", placement: "left"}, title: "Web Site"}
 
-  - f.object.build_account if !f.object.account.present? and f.object.refers != "VSIS"
-  = f.simple_fields_for :account do |a|
-    .row
-      .col-md-12{class: "has-tooltip", title: "Industry type", data: {toggle: "tooltip", placement: "left"}}
-        = a.association :industry_type, include_blank: false
+  - unless params[:action] == "store_and_branch"
+    - f.object.build_account if !f.object.account.present? and f.object.refers != "VSIS"
+    = f.simple_fields_for :account do |a|
+      .row
+        .col-md-12{class: "has-tooltip", title: "Industry type", data: {toggle: "tooltip", placement: "left"}}
+          = a.association :industry_type, include_blank: false
 
   .row
     .col-md-12
