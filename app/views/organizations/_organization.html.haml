@@ -1,7 +1,7 @@
 - tapbar = [["Address", "#addresses#{organization.id}"], ["#{[Organization::TYPES[1], Organization::TYPES[3]].include?(organization.category) ? 'Contact Persons' : 'Employees'}", "#contact_persons#{organization.id}"], ["Documents & Attachements", "#documents#{organization.id}"], ["Designations", "#designations#{organization.id}"], ["Organization Relations", "#organization_relations#{organization.id}"], ["Roles and Permissions", "#roles_and_permissions#{organization.id}"]]
 
 .row
-  .col-md-1
+  .col-md-1.margin-auto.col-xs-4.col-sm-2
     = link_to organization do
       = image_tag (organization.logo.url || "organization_image.png"), class: "img-responsive"
   .col-md-10.pull-right

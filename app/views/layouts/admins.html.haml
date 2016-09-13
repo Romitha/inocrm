@@ -14,7 +14,7 @@
   %body
     = render "layouts/header"
 
-    .container-fluid
+    .container.main-content
       .row
         .col-lg-12
           = bootstrap_flash
@@ -26,8 +26,7 @@
       .screener
       #notification_window.hide
       .push
-      .row
-        %footer.navbar-inverse
-          = render "layouts/footer"
+    %footer.navbar-inverse
+      = render "layouts/footer"
 
     = javascript_include_tag "application"

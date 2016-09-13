@@ -11,14 +11,14 @@
       = javascript_include_tag "//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.6.1/html5shiv.js"
     = stylesheet_link_tag "application", :media => "all"
 
-
   %body
-    .container
+    .container.main-content
       .row
         .col-lg-12
           #fade
             = bootstrap_flash
           = yield
-      %footer
-        %p &copy; Company 2014
+    .push
+    %footer.navbar-inverse
+      = render "layouts/footer"
     = javascript_include_tag "application"
