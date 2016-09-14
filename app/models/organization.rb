@@ -76,7 +76,7 @@ class Organization < ActiveRecord::Base
 
   scope :stores, -> { where(type_id: 4)}
 
-  validates_format_of :web_site, :with => URI::regexp(%w(http https))
+  validates_format_of :web_site, :with => URI::regexp(%w(http https)), if: Proc.new{|o| o.web_site.present? }
 
 
   # validates :title_id, presence: true
