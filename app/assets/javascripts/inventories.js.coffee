@@ -760,8 +760,13 @@ window.Inventories =
       selected_quantity += 1
     else
       selected_quantity -= 1
-    $("#selected_quantity").text(selected_quantity)
-    $("#balance_to_be_issued").text(balance_quantity-selected_quantity)
+    # $("#balance_to_be_issued").text(balance_quantity-selected_quantity)
+    if (balance_quantity - selected_quantity) < 0
+      alert "Selected quantity is exceeding balance quantity."
+      $(e).prop("checked", false)
+    else
+      $("#selected_quantity").text(selected_quantity)
+
 
   apply_for_batch: ->
     balance_quantity_batch = parseFloat($("#balance_quantity_batch").data("fixed"))
@@ -785,4 +790,6 @@ window.Inventories =
             selected_quantity_batch += parseFloat($(this).val())
 
         $("#selected_quantity_batch").text(selected_quantity_batch)
-        $("#balance_quantity_batch").text(balance_quantity_batch - selected_quantity_batch)
+        # $("#balance_quantity_batch").text(balance_quantity_batch - selected_quantity_batch)
+      else
+        this_elem.val("0")
