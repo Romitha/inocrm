@@ -22,7 +22,7 @@
           %td= pr.inventory_category3.inventory_category2.inventory_category1.name
           %td= pr.inventory_category3.inventory_category2.name
           %td= pr.inventory_category3.name
-          %td= pr.serial_no
+          %td= pr.generated_serial_no
           %td= pr.description
           %td= pr.model_no
           %td= pr.product_no
@@ -30,4 +30,3 @@
           %td= pr.inventory_product_info and pr.inventory_product_info.manufacture.try(:manufacture)
           %td= pr.inventory_unit.unit
           %td= link_to "Select", inventory_admins_inventories_path(select_product: true, inventory_product_id: pr.id), remote: true
-  %hr
