@@ -15,7 +15,7 @@ Given /^I able to see store information within (.*)$/ do |wrapper, table|
 end
 
 Given(/^I able to see prn form$/) do
-  expect(page).to have_selector('#new_prn')
+  expect(page).to have_selector('#new_inventory_prn')
 end
 
 # Given(/^I create store with:$/) do |table|

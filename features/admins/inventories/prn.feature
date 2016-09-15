@@ -13,3 +13,5 @@ Feature: Creating Purchase Order.
       | description | This is sample store  | #store_desc_2  |
     And I click link store1
     And I able to see prn form
+    # And I abe to enter date
+    # And I abe to enter remarks
