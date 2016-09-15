@@ -96,6 +96,17 @@ class GrnItem < ActiveRecord::Base
   has_many :grn_item_current_unit_cost_histories
   accepts_nested_attributes_for :grn_item_current_unit_cost_histories, allow_destroy: true
 
+  after_create :update_relation_index
+
+  def update_relation_index
+    [:inventory_serial_items].each do |children|
+      self.send(children).each do |child|
+        child.update_index
+      end
+
+    end
+  end
+
   before_save do |grn_item|
     if grn_item.persisted? and grn_item.remarks_changed? and grn_item.remarks.present?
       grn_item_remarks = "#{grn_item.remarks} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(grn_item.current_user_id).email}</span><br/>#{grn_item.remarks_was}"
@@ -167,12 +178,14 @@ class GrnItem < ActiveRecord::Base
           }
         },
         grn: {
-          only: [:grn_no, :created_at, :store_id]
+          only: [:grn_no, :created_at, :store_id],
+          methods: [:grn_no_format]
         }
       }
     )
 
   end
+
 end
 
 class GrnBatch < ActiveRecord::Base

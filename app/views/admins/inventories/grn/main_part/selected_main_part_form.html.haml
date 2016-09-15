@@ -1,73 +1,76 @@
 - inventory_product = @inventory_serial_item.inventory_product
 - inventory = @inventory_serial_item.inventory
-.row
-  .col-md-4
-    = panels panel_type: "info", header_content: "GRN No: #{CompanyConfig.first.next_sup_last_grn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_grn_no_format"])}" do
-      %dl.dl-horizontal
-        %dt GRN No:
-        %dd= CompanyConfig.first.next_sup_last_grn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_grn_no_format"])
-        %dt Store:
-        %dd= inventory.organization.name
-        %dt Created at:
-        %dd= Time.now.strftime(INOCRM_CONFIG["short_date_format"])
-        %dt Created by:
-        %dd= current_user.full_name
 
-  .col-md-4
-    = panels panel_type: "info", header_content: "Item Code: #{inventory_product.generated_item_code}" do
-      %dl.dl-horizontal
-        %dt Item code:
-        %dd= inventory_product.generated_item_code
-        %dt Item description:
-        %dd= inventory_product.description
-        %dt Rack:
-        %dd= inventory.inventory_bin.inventory_shelf.inventory_rack.description
-        %dt Shelf:
-        %dd= inventory.inventory_bin.inventory_shelf.description
-        %dt Bin:
-        %dd= inventory.inventory_bin.description
-        %dt Stock in hand:
-        %dd= inventory.stock_quantity
+= collapse_wrapper collapse_id: "main_wrapper", labelledby: "main_wrapper_labelledby" do
+  = collapse collapse_type: "success", labelledby: "labelledby_main_wrapper", header_content: "Item code: #{inventory_product.generated_item_code}", collapse_link: "main_wrapper_link", collapse_id: "main_wrapper" do
+    .row
+      .col-md-4
+        = panels panel_type: "info", header_content: "GRN No: #{CompanyConfig.first.next_sup_last_grn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_grn_no_format"])}" do
+          %dl
+            %dt GRN No:
+            %dd= CompanyConfig.first.next_sup_last_grn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_grn_no_format"])
+            %dt Store:
+            %dd= inventory.organization.name
+            %dt Created at:
+            %dd= Time.now.strftime(INOCRM_CONFIG["short_date_format"])
+            %dt Created by:
+            %dd= current_user.full_name
 
-  .col-md-4
-    = panels panel_type: "info", header_content: "Serial No: #{@inventory_serial_item.serial_no}" do
-      %dl.dl-horizontal
-        %dt Serial No:
-        %dd= @inventory_serial_item.serial_no
-        %dt CT No:
-        %dd= @inventory_serial_item.ct_no
-        %dt Manufactured date:
-        %dd= @inventory_serial_item.manufatured_date.try :strftime, INOCRM_CONFIG["short_date_format"]
-        %dt Expiry date:
-        %dd= @inventory_serial_item.expiry_date.try :strftime, INOCRM_CONFIG["short_date_format"]
-        %dt Condition:
-        %dd= @inventory_serial_item.product_condition.condition
-      %span.label.label-info= boolean_in_word @inventory_serial_item.scavenge, "Scavenge", ""
-      %span.label.label-info= boolean_in_word @inventory_serial_item.parts_not_completed, "Part not completed", ""
-      %span.label.label-info= boolean_in_word @inventory_serial_item.damage, "Damaged", ""
-      %span.label.label-info= boolean_in_word @inventory_serial_item.used, "Used", ""
-      %span.label.label-info= boolean_in_word @inventory_serial_item.repaired, "Repaired", ""
-      %span.label.label-info= boolean_in_word @inventory_serial_item.reserved, "Reserved", ""
+      .col-md-4
+        = panels panel_type: "info", header_content: "Item Code: #{inventory_product.generated_item_code}" do
+          %dl
+            %dt Item code:
+            %dd= inventory_product.generated_item_code
+            %dt Item description:
+            %dd= inventory_product.description
+            %dt Rack:
+            %dd= inventory.inventory_bin.inventory_shelf.inventory_rack.description
+            %dt Shelf:
+            %dd= inventory.inventory_bin.inventory_shelf.description
+            %dt Bin:
+            %dd= inventory.inventory_bin.description
+            %dt Stock in hand:
+            %dd= inventory.stock_quantity
 
-      %hr
-      = simple_format @inventory_serial_item.remarks
+      .col-md-4
+        = panels panel_type: "info", header_content: "Serial No: #{@inventory_serial_item.serial_no}" do
+          %dl
+            %dt Serial No:
+            %dd= @inventory_serial_item.serial_no
+            %dt CT No:
+            %dd= @inventory_serial_item.ct_no
+            %dt Manufactured date:
+            %dd= @inventory_serial_item.manufatured_date.try :strftime, INOCRM_CONFIG["short_date_format"]
+            %dt Expiry date:
+            %dd= @inventory_serial_item.expiry_date.try :strftime, INOCRM_CONFIG["short_date_format"]
+            %dt Condition:
+            %dd= @inventory_serial_item.product_condition.condition
+          %span.label.label-info= boolean_in_word @inventory_serial_item.scavenge, "Scavenge", ""
+          %span.label.label-info= boolean_in_word @inventory_serial_item.parts_not_completed, "Part not completed", ""
+          %span.label.label-info= boolean_in_word @inventory_serial_item.damage, "Damaged", ""
+          %span.label.label-info= boolean_in_word @inventory_serial_item.used, "Used", ""
+          %span.label.label-info= boolean_in_word @inventory_serial_item.repaired, "Repaired", ""
+          %span.label.label-info= boolean_in_word @inventory_serial_item.reserved, "Reserved", ""
 
-      = collapse_wrapper collapse_id: "inventory_serial_warranty_list", labelledby: "inv_unit_labelledby" do
-        - @inventory_serial_item.inventory_warranties.each_with_index do |inventory_warranty, index|
-          = collapse collapse_type: "warning", labelledby: "labelledby_#{inventory_warranty.id}", header_content: "#{index+1} Type : #{inventory_warranty.inventory_warranty_type.name}", collapse_link: "invunitlink_#{inventory_warranty.id}", collapse_id: "inventory_serial_warranty_list" do
-            %dl.dl-horizontal
-              %dt Start at:
-              %dd= inventory_warranty.created_at.strftime(INOCRM_CONFIG["short_date_format"])
-              %dt End at:
-              %dd= inventory_warranty.end_at.strftime(INOCRM_CONFIG["short_date_format"])
-              %dt Period part:
-              %dd= inventory_warranty.period_part
-              %dt Period labour:
-              %dd= inventory_warranty.period_labour
-              %dt Period On-Sight:
-              %dd= inventory_warranty.period_onsight
-              %dt Remarks:
-              %dd= simple_format inventory_warranty.remarks
+          %hr
+          = simple_format @inventory_serial_item.remarks
+
+          = collapse_wrapper collapse_id: "inventory_serial_warranty_list", labelledby: "inv_unit_labelledby" do
+            - @inventory_serial_item.inventory_warranties.each_with_index do |inventory_warranty, index|
+              = collapse collapse_type: "warning", labelledby: "labelledby_#{inventory_warranty.id}", header_content: "#{index+1} Type : #{inventory_warranty.inventory_warranty_type.name}", collapse_link: "invunitlink_#{inventory_warranty.id}", collapse_id: "inventory_serial_warranty_list" do
+                %dl.dl-horizontal
+                  %dt Start at:
+                  %dd= inventory_warranty.created_at.strftime(INOCRM_CONFIG["short_date_format"])
+                  %dt End at:
+                  %dd= inventory_warranty.end_at.strftime(INOCRM_CONFIG["short_date_format"])
+                  %dt Period part:
+                  %dd= inventory_warranty.period_part
+                  %dt Period labour:
+                  %dd= inventory_warranty.period_labour
+                  %dt Period On-Sight:
+                  %dd= inventory_warranty.period_onsight
+                  %dt Remarks:
+                  %dd= simple_format inventory_warranty.remarks
 
 = simple_nested_form_for @inventory_serial_item, url: create_grn_for_main_part_admins_inventories_path(inventory_serial_item_id: @inventory_serial_item.id ), html: {class: "validate_form"} do |f|
   = hidden_field_tag :store_id, @store.id, id: "store1_id"

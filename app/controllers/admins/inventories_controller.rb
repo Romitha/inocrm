@@ -1194,6 +1194,12 @@ module Admins
     end
 
     def prn
+      Inventory
+
+      if params[:store_id].present?
+        @store = Organization.find params[:store_id]
+        @prn = InventoryPrn.new
+      end
       respond_to do |format|
         format.html {render "admins/inventories/prn/prn"}
       end

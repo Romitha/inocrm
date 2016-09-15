@@ -88,7 +88,7 @@
         .col-md-1
           %strong Status
         .col-md-1
-          %strong{title: "Parts Not Completed"} P.N.Completed
+          %strong{title: "Parts Not Completed"} P.N. Completed
         .col-md-1
           %strong Scavenge
         .col-md-1
@@ -132,20 +132,17 @@
             - else
               = (index+1)
 
-          .col-md-1
-            - inventory_serial_item.grn_items.each do |item|
+          - inventory_serial_item.grn_items.each do |item|
+            .col-md-1
               = item.grn.grn_no_format
-              %br/
-          .col-md-1
-            - inventory_serial_item.grn_items.each do |item|
+            .col-md-1
               = item.grn.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
-              %br/
           .col-md-1
             = inventory_serial_item.serial_no
           .col-md-1
             = inventory_serial_item.ct_no
           .col-md-1
-            = inventory_serial_item.product_condition.try(:name)
+            = inventory_serial_item.product_condition.try(:condition)
           .col-md-1
             = inventory_serial_item.inventory_serial_item_status.try(:name)
           .col-md-1

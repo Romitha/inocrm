@@ -15,6 +15,7 @@ inventory_serial_no_format: "000000"
 inventory_srn_no_format: "000000"
 inventory_grn_no_format: "000000"
 inventory_gin_no_format: "000000"
+inventory_prn_no_format: "000000"
 
 answer_type_for_q_and_a:
   "yes/no" : "YN"

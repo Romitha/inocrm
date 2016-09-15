@@ -351,7 +351,7 @@ class InventorySerialItem < ActiveRecord::Base
           methods: [:category3_id, :category2_id, :category1_id, :generated_item_code],
         },
         product_condition: {
-          only: [:name],
+          only: [:condition],
         },
         inventory_serial_item_status: {
           only: [:name],
@@ -363,7 +363,7 @@ class InventorySerialItem < ActiveRecord::Base
           include: {
             grn: {
               only: [:created_at, :store_id],
-              methods: [:grn_no_format]
+              methods: [:grn_no_format],
             },
           },
         },
@@ -620,6 +620,7 @@ class InventoryPrn < ActiveRecord::Base
   belongs_to :created_by_user, class_name: "User", foreign_key: :created_by
 
   has_many :inventory_prn_items, foreign_key: :prn_id
+  has_many :inventory_products, through: :inventory_prn_items
 end
 
 class InventoryPrnItem < ActiveRecord::Base
