@@ -1205,6 +1205,19 @@ module Admins
       end
     end
 
+    def create_prn
+      @prn = InventoryPrn.new prn_params
+      respond_to do |format|
+        if @prn.save
+          flash[:notice] = "Successfully saved"
+        else
+          flash[:alert] = "Unable to save. Please review."
+        end
+
+        format.html{ redirect_to prn_admins_inventories_url }
+      end
+    end
+
     private
 
       def product_category_params
@@ -1293,6 +1306,10 @@ module Admins
 
       def gin_params
         params.require(:gin).permit(:id, :store_id, :srn_id, :remarks, gin_items_attributes: [:id, :_destroy, :product_id, :srn_item_id, :issued_quantity, :product_condition_id, :remarks, :returnable, :spare_part ])
+      end
+
+      def prn_params
+        params.require(:inventory_prn).permit(:id, :store_id, :created_by, :prn_no, :required_at, :remarks, inventory_prn_items_attributes: [:id, :product_id, :_destroy, :quantity, :remarks])
       end
 
   end

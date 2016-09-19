@@ -146,6 +146,7 @@ class InventoryProduct < ActiveRecord::Base
           only: [:unit],
           },
         inventory_product_info: {
+          only: [:need_serial, :need_batch],
           include: {
             manufacture: {
               only: [:manufacture]
@@ -155,9 +156,9 @@ class InventoryProduct < ActiveRecord::Base
         stores: {
           only: [:name, :id]
         },
-        # inventories: {
-        #   only: [:store_id, :product_id, :stock_quantity, :available_quantity]
-        # }
+        inventories: {
+          only: [:store_id, :product_id, :stock_quantity, :available_quantity]
+        }
       }
     )
 
@@ -620,7 +621,7 @@ class InventoryPrn < ActiveRecord::Base
   belongs_to :created_by_user, class_name: "User", foreign_key: :created_by
 
   has_many :inventory_prn_items, foreign_key: :prn_id
-  accepts_nested_attributes_for :inventory_prn_items, allow_destroy: :true
+  accepts_nested_attributes_for :inventory_prn_items, allow_destroy: true
   has_many :inventory_products, through: :inventory_prn_items
 end
 

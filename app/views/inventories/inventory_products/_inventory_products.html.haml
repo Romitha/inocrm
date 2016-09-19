@@ -39,6 +39,12 @@
         %dd= pr.generated_item_code
         %dt Item description:
         %dd= pr.description
+        %dt Order unit
+        %dd= pr.inventory_unit.unit
+        %dt Stock in hand
+        %dd= pr.inventories.map { |i| i.stock_quantity if i.store_id.to_i == @store.id }.compact.join(", ")
+        %dt Item type
+        %dd= pr.inventory_product_info.need_serial ? "Serial" : pr.inventory_product_info.need_batch ? "Batch" : "Non of Serial or Batch"
     .row
       .col-md-1{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Serial No: #{pr.generated_item_code}", "data-content"=> yield(:inventory_p_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }= index+1
       .col-md-2= pr.category3_name
