@@ -1,36 +1,30 @@
-.row
-  .col-md-1.margin-auto.col-xs-4.col-sm-2
+.row.panel.panel-default
+  .col-md-1.col-xs-4.col-sm-2.small_scale_margin-top1
     = link_to organization do
       = image_tag (organization.logo.url || "organization_image.png"), class: "img-responsive"
-  .col-md-10.pull-right
-    %h4.strong
-      .edit_organization
+  .container.col-md-8.col-sm-5.col-xs-4
+    .edit_organization
+      %span.h4.strong
         = link_to edit_organization_path(organization), class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Edit #{organization.name}" do
           = glyph(:pencil, {:tag => :span})
           = organization.name
-        - organization.accounts_dealer_types.each do |d|
-          %span.label.label-success= d.dealer_type.name
-
-    %blockquote.font1
-      = organization.short_name
-      %br/
-      (Industry type: #{organization.industry_type.try(:name)})
-
-.row
-  .col-md-3
-    %strong Vat Number:
-    = organization.vat_number
-  .col-md-3
-    %strong Created at:
-    = organization.account and organization.account.created_at.strftime(INOCRM_CONFIG["short_date_format"])
-  .col-md-3
-    %strong Created by:
-    = organization.account and organization.account.created_user.full_name
-  .col-md-3.pull-right.text-right= link_to "Visit website",organization.web_site, data: {toggle: "tooltip", placement: "bottom"}, title: organization.web_site, rel: "tooltip", :target => "_blank" 
-.row.small_scale_margin-top1
-  .col-md-12
-    .panel.panel-default
-      .panel-body.show-limit
-        %p= organization.description
-        .hide_screen
-          = link_to "More >>", "#", onclick: "Organizations.toggle_more(); return false;", class: "hide more_toggle"
+      %em.font1
+        = organization.short_name
+    .small_scale_margin-top1= link_to "Visit website",organization.web_site, data: {toggle: "tooltip", placement: "bottom"}, title: organization.web_site, rel: "tooltip", :target => "_blank"    
+    %p= organization.description
+    = link_to "More >>", "#", onclick: "Organizations.toggle_more(); return false;", class: "hide more_toggle"
+    - organization.accounts_dealer_types.each do |d|
+      %span.label.label-success= d.dealer_type.name
+  %ul.list-group.pull-right
+    %li.list-group-item
+      %strong Vat Number:
+      = organization.vat_number
+    %li.list-group-item
+      %strong Created at:
+      = organization.account and organization.account.created_at.strftime(INOCRM_CONFIG["short_date_format"])
+    %li.list-group-item
+      %strong Created by:
+      = organization.account and organization.account.created_user.full_name
+    %li.list-group-item
+      %strong Industry type:
+      #{organization.industry_type.try(:name)}
