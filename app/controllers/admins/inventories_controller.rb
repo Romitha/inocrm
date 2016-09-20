@@ -1206,9 +1206,12 @@ module Admins
     end
 
     def create_prn
+      Organization
       @prn = InventoryPrn.new prn_params
+
       respond_to do |format|
         if @prn.save
+          CompanyConfig.first.increase_inv_last_prn_no
           flash[:notice] = "Successfully saved"
         else
           flash[:alert] = "Unable to save. Please review."

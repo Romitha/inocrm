@@ -14,8 +14,10 @@ Given /^I able to see store information within (.*)$/ do |wrapper, table|
   end
 end
 
-Given(/^I able to see prn form$/) do
-  expect(page).to have_selector('#new_inventory_prn')
+Given /^I able to see (.*) with dom element (.*)$/ do |element_name, dom_element|
+  # wait_until { page.find("#"+dom_element).visible? }
+  sleep 1
+  expect(page).to have_selector("#"+dom_element)
 end
 
 # Given(/^I create store with:$/) do |table|
