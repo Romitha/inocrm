@@ -121,7 +121,7 @@ textarea{
     }
   }
 }
-
+  
 @for $index from 0 through 12 {  
   .text#{$index}{
     font-size: ($index * 0.25em) !important;
@@ -191,9 +191,12 @@ textarea{
 .white{
   color: white;
 }
-
 .grey {
   color: #dddddd;
+}
+
+.italic_grey{
+  color: #686868;
 }
 
 .margin-none{

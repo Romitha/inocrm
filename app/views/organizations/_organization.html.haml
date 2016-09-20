@@ -8,7 +8,7 @@
         = link_to edit_organization_path(organization), class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Edit #{organization.name}" do
           = glyph(:pencil, {:tag => :span})
           = organization.name
-      %em.font1
+      %em.font1.italic_grey
         = organization.short_name
     .small_scale_margin-top1= link_to "Visit website",organization.web_site, data: {toggle: "tooltip", placement: "bottom"}, title: organization.web_site, rel: "tooltip", :target => "_blank"    
     %p= organization.description
