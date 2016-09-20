@@ -1,8 +1,8 @@
-.row.panel.panel-default
+.row.panel.panel-default{style:"border:1px solid black;"}
   .col-md-1.col-xs-4.col-sm-2.small_scale_margin-top1
     = link_to organization do
       = image_tag (organization.logo.url || "organization_image.png"), class: "img-responsive"
-  .container.col-md-8.col-sm-5.col-xs-4
+  .container.col-md-8.col-sm-5.col-xs-8.small_scale_padding-top1.small_scale_padding-bottom1{style:"border-right :1px solid black;"}
     .edit_organization
       %span.h4.strong
         = link_to edit_organization_path(organization), class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Edit #{organization.name}" do
@@ -15,16 +15,18 @@
     = link_to "More >>", "#", onclick: "Organizations.toggle_more(); return false;", class: "hide more_toggle"
     - organization.accounts_dealer_types.each do |d|
       %span.label.label-success= d.dealer_type.name
-  %ul.list-group.pull-right
-    %li.list-group-item
-      %strong Vat Number:
-      = organization.vat_number
-    %li.list-group-item
-      %strong Created at:
-      = organization.account and organization.account.created_at.strftime(INOCRM_CONFIG["short_date_format"])
-    %li.list-group-item
-      %strong Created by:
-      = organization.account and organization.account.created_user.full_name
-    %li.list-group-item
-      %strong Industry type:
-      #{organization.industry_type.try(:name)}
+  .div.col-md-3.col-sm-5.col-xs-10.small_scale_padding-top1.small_scale_padding-bottom1
+    %table.table-default.col-md-offset-1.col-sm-offset-1
+      %tbody
+        %tr
+          %th.pull-right Vat Number : &nbsp;
+          %td= organization.vat_number
+        %tr
+          %th.pull-right Created at : &nbsp;
+          %td= organization.account and organization.account.created_at.strftime(INOCRM_CONFIG["short_date_format"])
+        %tr
+          %th.pull-right Created by : &nbsp;
+          %td= organization.account and organization.account.created_user.full_name
+        %tr
+          %th.pull-right Industry type : &nbsp;
+          %td #{organization.industry_type.try(:name)}
