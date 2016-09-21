@@ -45,26 +45,27 @@
   .col-md-1
     %strong Chargeable
   .col-md-1
-    %strong Warranty type
+    %strong Warranty
 %hr
 - tickets.each_with_index do |ticket, index|
   .row
-    = link_to ticket, target: "_blank" do
-      .col-md-1
-        - if params[:page]
-          = (index+1)+ 10*(params[:page].to_i-1)
-        - else
-          = (index+1)
+    .col-md-1
+      - if params[:page]
+        = (index+1)+ 10*(params[:page].to_i-1)
+      - else
+        = (index+1)
 
+    = link_to ticket, target: "_blank" do
       .col-md-1= ticket.support_ticket_no
-      .col-md-2= ticket.customer_name
-      .col-md-1= ticket.products.first.try(:serial_no)
-      .col-md-1= ticket.products.first.try(:brand_name)
-      .col-md-1= ticket.products.first.try(:category_name)
-      .col-md-1= ticket.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
-      .col-md-2= ticket.ticket_status_name
-      .col-md-1= boolean_in_word ticket.cus_chargeable, "Yes", "No"
-      .col-md-1= ticket.warranty_type_name
+    .col-md-2= ticket.customer_name
+    .col-md-1= ticket.products.first.try(:serial_no)
+    .col-md-1= ticket.products.first.try(:brand_name)
+    .col-md-1= ticket.products.first.try(:category_name)
+    .col-md-1= ticket.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
+    .col-md-2= ticket.ticket_status_name
+    .col-md-1= boolean_in_word ticket.cus_chargeable, "Yes", "No"
+    .col-md-1= ticket.warranty_type_name.split(" ").first
   %hr
 
 = paginate tickets, remote: false, method: :get
+
