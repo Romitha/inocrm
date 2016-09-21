@@ -922,29 +922,27 @@ module Admins
       Organization
       Role
       Inventory
+      @store = Organization.find params[:store_id] if params[:store_id].present?
       case params[:srn_callback]
       when "call_search"
         Inventory
         @modal_active = true
-      when "search_inventory"
-        @store = Organization.find params[:store_id]
-        session[:store_id] = @store.id
-        category1_id = params[:search_inventory]["brand"]
-        category2_id = params[:search_inventory]["product"]
-        inventory_product_hash = params[:search_inventory].except("brand", "product").to_hash
-        category3_id = inventory_product_hash["mst_inv_product"]["category3_id"]
+      # when "search_inventory"
+      #   store_id = @store.id
+      #   if params[:search].present?
+      #     refined_inventory_product = params[:search_inventory][:inventory_product].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
+      #     # refined_inventory_serial_items = params[:search_inventory].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
 
-        updated_hash = inventory_product_hash["mst_inv_product"].to_hash.map { |k, v| "#{k} like '%#{v}%'" if v.present? }.compact.join(" and ")
-        if category3_id.present?
-          @inventory_products = @store.inventory_products.where(updated_hash).uniq
-        elsif category2_id.present?
-          @inventory_products = InventoryCategory2.find(category2_id).inventory_products.where(updated_hash).uniq
-        elsif category1_id.present?
-          @inventory_products = InventoryCategory1.find(category1_id).inventory_category3s.map { |c| c.inventory_products.where(updated_hash) }.flatten.uniq
-        else
-          @inventory_products = @store.inventory_products.where(updated_hash).uniq
-        end
-        @select_inventory = true
+      #     refined_search = [refined_inventory_product, "stores.id:#{store_id}"].map{|v| v if v.present? }.compact.join(" AND ")
+      #     params[:query] = refined_search
+      #   else
+      #     params[:query] = "stores.id:#{store_id}"
+      #   end
+
+      #   session[:store_id] = @store.id
+      #   @inventory_products = InventoryProduct.search(params)
+
+      #   @select_inventory = true
       else
         @srn = Srn.new
         @srn_all = Srn.order(updated_at: :desc).page(params[:page]).per(10)

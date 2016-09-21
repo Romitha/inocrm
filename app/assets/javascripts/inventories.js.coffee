@@ -701,20 +701,21 @@ window.Inventories =
   call_from_store: (elem) ->
     this_val = $(elem).val()
     $("#store_controller").removeClass("hide")
-    $(".applyStoreId").data("storeId", this_val)
+    $(".applyStoreId").data({"storeId": this_val, "storeid": this_val})
     $(".srn_store").addClass("hide")
     $("#store_name").text($(":selected", elem).text())
 
-  search_product: (elem)->
-    store_id = $(elem).data("storeId")
-    product_type = $(elem).data("producttype")
-    $.get "/admins/inventories/srn?store_id=#{store_id}&srn_callback=call_search&product_type=#{product_type}"
-    if product_type == "product_id"
-      setTimeout ( ->
-        $("#new_srn .fields").last().find(".mainStoreIdPass").data("storeId", store_id)
-        console.log "product_id"
-      ), 200
-    return
+  assign_main_i_product_for_srn: (elem, result_out_dom)->
+    store_id = $(elem).data("storeid")
+    # product_type = $(elem).data("producttype")
+    # $.get "/admins/inventories/srn?store_id=#{store_id}&srn_callback=call_search&product_type=#{product_type}"
+    # if product_type == "product_id"
+    #   setTimeout ( ->
+    #     $("#new_srn .fields").last().find(".mainStoreIdPass").data("storeId", store_id)
+    #     console.log "product_id"
+    #   ), 200
+    # return
+    console.log store_id
 
   search_product_for_part: (elem)->
     console.log $(elem).data("modalid")
@@ -734,6 +735,11 @@ window.Inventories =
         todayHighlight: true
       ), 100
 
+    if $(elem).data("mainpartavailable")
+      setTimeout ( ->
+        $(elem).prev().find(".applyStoreId").data({"storeId": store_id, "storeid": store_id})
+      ), 200
+
   assign_product: (product_id, store_id, product_type)->
     applyable_dom = $("#new_srn .fields").last()
     applyable_dom.find("."+product_type).val(product_id)
@@ -748,10 +754,11 @@ window.Inventories =
 
   assign_i_product: (elem, dom1, ref_dom)->
     _this = $(elem)
-    console.log $("##{ref_dom}").prev().attr("class")
     $("##{dom1}").modal("hide");
-    $("##{ref_dom}").prev().find(".product_info").html _this.data("content")
-    $("##{ref_dom}").prev().find(".dynamic_main_product_id").val(_this.data("productid"))
+    console.log $("##{ref_dom}").prev().attr("id")#find(".product_info:eq(0)").length
+    $("##{ref_dom}").prev().find(".product_info:eq(0)").html _this.data("content")
+
+    $("##{ref_dom}").prev().find(".dynamic_main_product_id:eq(0)").val(_this.data("productid"))
 
   selected_quantity: (e)->
     selected_quantity = parseInt($("#selected_quantity").text())
