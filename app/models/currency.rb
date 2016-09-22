@@ -8,7 +8,8 @@ class Currency < ActiveRecord::Base
   has_many :grn_items
 
   has_many :inventory_product_info, foreign_key: :currency_id
+  has_many :inventory_product_info, foreign_key: :currency_id
   has_many :act_terminate_job_payments
 
-  has_many :ticket_invoices, foreign_key: :currency_id
+  has_many :inventory_serial_items_additional_cost, foreign_key: :currency_id
 end

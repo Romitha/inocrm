@@ -3,15 +3,17 @@
 - if @inventory_products.any?
   %hr
   .row
-    .col-md-1.strong No
-    .col-md-2.strong Category
+    .col-md-1.strong{style: "text-align: center;"} No
+    .col-md-1.strong Category
     .col-md-2.strong Serial code
-    .col-md-2.strong Model no
-    .col-md-2.strong Product no
-    .col-md-2.strong Part no
-    .col-md-1.strong Action
+    .col-md-1.strong Model no
+    .col-md-1.strong Product no
+    .col-md-1.strong Part no
+    -if params[:from_where] == "inv_searched_by"
+      .col-md-1.strong item code
+      .col-md-1.strong Stock Qty
+    .col-md-2.strong Action
   %hr
-
 
   - @inventory_products.each_with_index do |pr, index|
     - content_for :inventory_p_more, flush: true do
@@ -28,10 +30,51 @@
         %li
           %strong Product:
           #{pr.category2_name}
-        
+        %li
+          %strong Type:
+          #{pr.inventory_product_info.need_serial == true ? "Serial" : "Non Serial or Batch"}
+          #{pr.inventory_product_info.need_batch == true ? "Batch" : "Non Serial or Batch"}
+        %li
+          %strong Currency:
+          =Currency.find_by_id(pr.inventory_product_info.currency_id).try(:currency)
+        -if params[:from_where] == "inv_searched_by"
+          %li
+            %strong Available Qty:
+            =Inventory.find_by_product_id(pr.id).try(:available_quantity)
+          %li
+            %strong Stock Cost
+            - batch_stock_cost = 0
+            - serial_item_stock_cost = 0
+            - add_cost_sum = 0
+            - sum_of_curnt_unit_cost = 0
+
+            - pr.grn_items.each do |grn_item|
+              - if grn_item.grn.store_id.to_i == params[:store_id].to_i
+                // ######### for non batch non serial #######
+                - sum_of_curnt_unit_cost = grn_item.current_unit_cost.to_i + sum_of_curnt_unit_cost
+
+                // ######### for batch #######
+                - grn_item.try(:grn_batches).each do |grn_batch|
+                  - batch_stock_cost = ((grn_item.current_unit_cost.to_i)*(grn_batch.remaining_quantity.to_i)) + batch_stock_cost
+
+                // ######### for serial item #######
+                - grn_item.try(:grn_serial_items).each do |grn_serial_item|
+                  -if grn_serial_item.remaining == 1
+                    - grn_serial_item.try(:inventory_serial_item).try(:inventory_serial_items_additional_costs).each do |add_cost|
+                      - add_cost_sum = add_cost.cost.to_i + add_cost_sum
+                - serial_item_stock_cost = add_cost_sum + sum_of_curnt_unit_cost
+
+            -if pr.inventory_product_info.need_serial == true
+              = serial_item_stock_cost
+            -if pr.inventory_product_info.need_batch == true
+              = batch_stock_cost
+            -else
+              = sum_of_curnt_unit_cost
 
       %strong Description:
       #{simple_format pr.description}
+      %strong Remarks:
+      #{pr.try(:remarks)}
 
     - content_for :select_result, flush: true do
       %dl.dl-horizontal
@@ -47,11 +90,25 @@
         %dd= pr.inventory_product_info.need_serial ? "Serial" : pr.inventory_product_info.need_batch ? "Batch" : "Non of Serial or Batch"
     .row
       .col-md-1{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Serial No: #{pr.generated_item_code}", "data-content"=> yield(:inventory_p_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }= index+1
-      .col-md-2= pr.category3_name
+      .col-md-1= pr.category3_name
       .col-md-2= pr.generated_item_code
-      .col-md-2= pr.model_no
-      .col-md-2= pr.product_no
-      .col-md-2= pr.spare_part_no
-      .col-md-1= link_to "Select", (@select_path || "#"), (@select_options || {}).merge({data: {content: (yield :select_result ), productid: pr.id}})
+      .col-md-1= pr.model_no
+      .col-md-1= pr.product_no
+      .col-md-1= pr.spare_part_no
+      - if params[:from_where] == "inv_searched_by"
+        .col-md-1
+          code
+        .col-md-1
+          =Inventory.find_by_product_id(pr.id).try(:stock_quantity)
+        .col-md-2
+          -if pr.inventory_product_info.need_serial == true
+            = link_to "Serial Items", inv_searched_by_admins_searches_path(select_action: "select_serial_items", inv_pro_id: pr.id, store: params[:store_id] ), class: "btn btn-default btn-sm"
+          -if pr.inventory_product_info.need_batch == true
+            = link_to "Batches", inv_searched_by_admins_searches_path(select_action: "select_batches", inv_pro_id: pr.id, store: params[:store_id] ), class: "btn btn-default btn-sm"
+          -else
+            = link_to "Non Serial or Batch", inv_searched_by_admins_searches_path(select_action: "select_non_serial_or_batch", inv_pro_id: pr.id, store: params[:store_id] ), class: "btn btn-default btn-sm"
+      - else
+        .col-md-1= link_to "Select", (@select_path || "#"), (@select_options || {}).merge({data: {content: (yield :select_result ), productid: pr.id}})
+
     %hr
 = paginate @inventory_products, remote: true, method: :get

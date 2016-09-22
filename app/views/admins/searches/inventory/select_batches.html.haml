@@ -1,0 +1,109 @@
+- pr = @inv_pro
+.col-md-12
+  %h4.strong Store: #{Inventory.find_by_store_id(@store).store_name}
+.col-md-4
+  Item Code:
+  = pr.generated_item_code
+.col-md-8
+  Item Description:
+  = pr.description
+%strong
+  .col-md-4
+    Stock Quantity : #{Inventory.find_by_store_id(@store).stock_quantity}
+  .col-md-4
+    Reserved Quantity : #{Inventory.find_by_store_id(@store).reserved_quantity}
+  .col-md-4
+    Max Quantity : #{Inventory.find_by_store_id(@store).max_quantity}
+.col-md-4
+  Unit: #{pr.inventory_unit.unit}
+.col-md-4
+  Currency : #{pr.inventory_product_info.currency_type}
+%strong
+  .col-md-4
+    Issue Type: #{pr.fifo == true ? "FIFO" : "Not FIFO"}
+
+= paginate @inventory_batches, remote: false, method: :get
+
+.row.margin-top2
+  .col-md-1{style: "text-align:center"}
+    %strong No
+  .col-md-1
+    %strong Batch No
+  .col-md-1
+    %strong Lot No
+  .col-md-1
+    %strong GRN No
+  .col-md-1
+    %strong GRN Date
+  .col-md-1
+    %strong Available Quantity
+  .col-md-1
+    %strong Damage Quantity
+  .col-md-2
+    %strong Currency
+  .col-md-1
+    %strong Current GRN Cost
+  .col-md-1
+    %strong Total Cost
+  .col-md-1
+    %strong Select
+%hr
+
+- @inventory_batches.each_with_index do |inventory_batch, index|
+  - content_for :grn_more, flush: true do
+    %ul
+      - if inventory_batch.manufatured_date
+        %li
+          %strong Manufactured date:
+          #{inventory_batch.manufatured_date.to_date.strftime(INOCRM_CONFIG["short_date_format"])}
+      - if inventory_batch.expiry_date
+        %li
+          %strong Expiry date:
+          #{inventory_batch.expiry_date.to_date.strftime(INOCRM_CONFIG["short_date_format"])}
+    %strong Remarks:
+    #{simple_format inventory_batch.remarks}
+  .row
+    .col-md-1{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Batch No: #{inventory_batch.batch_no}", "data-content"=> yield(:grn_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "bottom" }
+      - if params[:page]
+        = (index+1) + 10*(params[:page].to_i-1)
+      - else
+        = (index+1)
+    .col-md-1
+      = inventory_batch.batch_no
+    .col-md-1
+      = inventory_batch.lot_no
+    .col-md-1
+      - inventory_batch.grn_batches.each do |grn_batch|
+        = grn_batch.grn_item.grn.grn_no
+        %br/
+    .col-md-1
+      - inventory_batch.grn_batches.each do |grn_batch|
+        = grn_batch.grn_item.grn.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
+        %br/
+    .col-md-1
+      - inventory_batch.grn_batches.each do |grn_batch|
+        = grn_batch.remaining_quantity
+        %br/
+    .col-md-1
+      - inventory_batch.grn_batches.each do |grn_batch|
+        = grn_batch.damage_quantity
+        %br/
+    .col-md-2
+      - inventory_batch.grn_batches.each do |grn_batch|
+        = grn_batch.grn_item.currency.currency
+        %br/
+    .col-md-1
+      - inventory_batch.grn_batches.each do |grn_batch|
+        = number_with_precision grn_batch.grn_item.current_unit_cost, precision: 2
+        %br/
+    .col-md-1
+      - inventory_batch.grn_batches.each do |grn_batch|
+        - rem = grn_batch.remaining_quantity
+        - cost = grn_batch.grn_item.current_unit_cost
+        - ans = rem*cost
+        = number_with_precision ans, precision: 2
+    .col-md-1
+      = link_to "Select", inv_searched_by_admins_searches_path(select_action: "select_inventory_batch_more", inventory_batch_id: inventory_batch.id, store: @store ), class: "btn btn-default btn-sm"
+      
+  %hr
+= paginate @inventory_batches, remote: false, method: :get

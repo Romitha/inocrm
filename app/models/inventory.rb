@@ -1,6 +1,73 @@
 class Inventory < ActiveRecord::Base
   self.table_name = "inv_inventory"
 
+  include Tire::Model::Search
+  include Tire::Model::Callbacks
+
+  # mapping do
+  #   indexes :tickets, type: "nested", include_in_parent: true
+  # end
+
+  def self.search(params)
+    tire.search(page: params[:page], per_page: 10) do
+      query do
+        boolean do
+          # must { string params[:grn_no] } if params[:grn_no].present?
+          must { term :store_id, params[:store_id] } if params[:store_id].present?
+          must { term :product_id, params["search_inventory[product]"] } if params["search_inventory[product]"].present?
+
+          # must { range :formated_created_at, lte: params[:range_to].to_date } if params[:range_to].present?
+          # must { range :formated_created_at, gte: params[:range_from].to_date } if params[:range_from].present?
+          # filter :range, published_at: { lte: Time.zone.now}
+          # raise to_curl
+        end
+      end
+      # sort { by :grn_no, "asc" }
+    end
+  end
+
+  def to_indexed_json
+    to_json(
+      only: [:id, :store_id, :stock_quantity, :reserved_quantity, :max_quantity],
+      methods: [:store_name]
+      # include: {
+      #   created_by_user: {
+      #     methods: [:full_name],
+      #   }
+      # }
+    )
+
+  end
+
+  # def to_indexed_json
+  #   to_json(
+  #     only: [:id, :store_id, :grn_no, :created_by, :remarks, :po_no, :supplier_id],
+  #     methods: [:store_name, :supplier_name, :grn_no_format, :formated_created_at],
+  #     include: {
+  #       created_by_user: {
+  #         methods: [:full_name],
+  #       }
+  #     }
+  #   )
+
+  # end
+
+  # def grn_no_format
+  #   grn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_grn_no_format"])
+  # end
+
+  def store_name
+    organization.name
+  end
+
+  # def supplier_name
+  #   supplier.try(:name)
+  # end
+
+  # def formated_created_at
+  #   created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
+  # end
+
   belongs_to :organization, -> { where(type_id: 4) }, foreign_key: :store_id
   belongs_to :inventory_product, foreign_key: :product_id
 
@@ -119,6 +186,9 @@ class InventoryProduct < ActiveRecord::Base
     indexes :inventory_product_info, type: "nested", include_in_parent: true
     indexes :inventory_unit, type: "nested", include_in_parent: true
     indexes :stores, type: "nested", include_in_parent: true
+    indexes :grn_items, type: "nested", include_in_parent: true
+    indexes :inventory_batches, type: "nested", include_in_parent: true
+
   end
 
   def self.search(params)
@@ -139,7 +209,7 @@ class InventoryProduct < ActiveRecord::Base
   def to_indexed_json
     Inventory
     to_json(
-      only: [:description, :model_no, :product_no, :spare_part_no, :created_at],
+      only: [:id, :description, :model_no, :product_no, :spare_part_no, :fifo, :created_at],
       methods: [:category3_id, :category2_id, :category1_id, :category3_name, :category2_name, :category1_name, :generated_item_code],
       include: {
         inventory_unit: {
@@ -149,16 +219,41 @@ class InventoryProduct < ActiveRecord::Base
           only: [:need_serial, :need_batch],
           include: {
             manufacture: {
-              only: [:manufacture]
+              only: [:manufacture, :need_serial, :need_batch, :remarks, :currency_id],
+              methods: [:currency_type],
             },
-          }
+          },
         },
         stores: {
           only: [:name, :id]
         },
         inventories: {
           only: [:store_id, :product_id, :stock_quantity, :available_quantity]
-        }
+        },
+        grn_items: {
+          only: [:id, :current_unit_cost],
+          include: {
+            grn: {
+              only: [:grn_no, :currency_id, :created_at, :store_id],
+            },
+            grn_batches: {
+              only: [:id, :remaining_quantity],
+            },
+            grn_serial_items: {
+              only: [:id, :remaining],
+              include: {
+                inventory_serial_item:{
+                  only:[:id],
+                  include: {
+                    inventory_serial_items_additional_costs:{
+                      only:[:id, :cost],
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
       }
     )
 
@@ -180,6 +275,10 @@ class InventoryProductInfo < ActiveRecord::Base
   belongs_to :inventory_unit, foreign_key: :secondary_unit_id
 
   belongs_to :product_sold_country, foreign_key: :country_id
+
+  def currency_type
+    currency.currency
+  end
 
 end
 
@@ -271,6 +370,9 @@ end
 class InventoryBatch < ActiveRecord::Base
   self.table_name = "inv_inventory_batch"
 
+  include Tire::Model::Search
+  include Tire::Model::Callbacks
+
   has_many :grn_batches
   has_many :grn_items, through: :grn_batches
 
@@ -284,6 +386,52 @@ class InventoryBatch < ActiveRecord::Base
   belongs_to :inventory_product, foreign_key: :product_id
 
   validates_presence_of [:inventory_id, :product_id, :created_by, :lot_no, :batch_no]
+
+  mapping do
+    Grn
+    indexes :inventory_product, type: "nested", include_in_parent: true
+    indexes :grn_items, type: "nested", include_in_parent: true
+    indexes :inventory, type: "nested", include_in_parent: true
+  end
+
+  def self.search(params)
+    tire.search(page: (params[:page] || 1), per_page: 10) do
+      query do
+        boolean do
+          must { string params[:query] } if params[:query].present?
+        end
+      end
+      sort { by :created_at, "desc" }
+    end
+  end
+
+  def to_indexed_json
+    Inventory
+    to_json(
+      only: [:id, :lot_no, :batch_no, :product_id, :remarks, :manufatured_date, :expiry_date, :created_at],
+      include: {
+        inventory_product: {
+          only: [:id, :description, :model_no, :product_no, :spare_part_no, :created_at],
+          methods: [:category3_id, :category2_id, :category1_id, :generated_item_code],
+        },
+        inventory: {
+          only: [:store_id,:damage_quantity, :available_quantity, :grn_item_id],
+        },
+        grn_items: {
+          include: {
+            grn: {
+              only: [:grn_no, :currency_id, :created_at, :store_id],
+            },
+          },
+        },
+      },
+    )
+
+  end
+
+  # def grn_item_currency
+  #   grn_item.currency.currency
+  # end
 
 end
 
@@ -346,9 +494,10 @@ class InventorySerialItem < ActiveRecord::Base
     Inventory
     to_json(
       only: [:serial_no, :ct_no, :damaged, :used, :scavenge, :repaired, :reserved, :parts_not_completed, :manufatured_date, :expiry_date, :remarks, :created_at],
+      methods: [:generated_serial_no],
       include: {
         inventory_product: {
-          only: [:description, :model_no, :product_no, :spare_part_no, :created_at],
+          only: [:id, :description, :model_no, :product_no, :spare_part_no, :created_at],
           methods: [:category3_id, :category2_id, :category1_id, :generated_item_code],
         },
         product_condition: {
@@ -363,8 +512,9 @@ class InventorySerialItem < ActiveRecord::Base
         grn_items: {
           include: {
             grn: {
-              only: [:created_at, :store_id],
+              
               methods: [:grn_no_format],
+              only: [:grn_no, :created_at, :store_id],
             },
           },
         },
@@ -372,6 +522,14 @@ class InventorySerialItem < ActiveRecord::Base
     )
 
   end
+
+  def generated_serial_no
+    serial_no.to_s.rjust(5, INOCRM_CONFIG["inventory_serial_no_format"])
+  end
+
+  # def store_id
+
+  # end
 
 end
 
@@ -432,8 +590,33 @@ end
 class InventorySerialItemsAdditionalCost < ActiveRecord::Base
   self.table_name = "inv_serial_additional_cost"
 
+  # include Tire::Model::Search
+  # include Tire::Model::Callbacks
+
   belongs_to :inventory_serial_item, foreign_key: :serial_item_id
   belongs_to :created_by_user, foreign_key: :created_by, class: User
+  belongs_to :currency, foreign_key: :currency_id
+
+  # def self.search(params)
+  #   tire.search(page: (params[:page] || 1), per_page: 10) do
+  #     query do
+  #       boolean do
+  #         must { string params[:query] } if params[:query].present?
+  #       end
+  #     end
+  #     sort { by :created_at, "desc" }
+  #   end
+  # end
+
+  # def to_indexed_json
+  #   Inventory
+  #   Currency
+  #   to_json(
+  #     only: [:id, :cost, :currency_id, :note, :created_by, :created_at]
+  #   )
+
+  # end
+
 end
 
 class InventorySerialPartWarranty < ActiveRecord::Base

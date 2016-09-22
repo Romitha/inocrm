@@ -20,6 +20,11 @@
               .col-md-1
                 .search
                   = submit_tag "Search", class: "btn btn-sm btn-warning"
+              .col-md-1
+                .reset
+                  / = link_to "Reset", "role" => "button", onclick: "Searches.reset_searchgrn(); return false;",class: "btn btn-warning" do
+                  / Reset
+                  = link_to "Reset", "#", onclick: "Searches.reset_searchgrn(); return false;", class: "resetgrn"
 
   - if @grns.any?
     .row
