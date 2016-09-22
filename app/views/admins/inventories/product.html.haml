@@ -14,7 +14,7 @@
 
   .row
     .col-md-4
-      = f.input :generated_serial_no, required: true, as: :string, input_html: {maxlength: 6, minlength: 6, class: "only_float"}
+      = f.input :generated_serial_no, required: true, as: :string, input_html: {maxlength: 6, minlength: 6, class: "only_float"}, label: "Serial No"
       / value: InventorySerialItem.last.serial_no, or value: InventoryProduct.last.serial_no + 1,reomve from above
       = f.input :serial_no_order, as: :hidden, input_html: {value: InventoryProduct.all.count + 1}
     .col-md-4

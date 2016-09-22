@@ -13,10 +13,11 @@
         %br/
         %strong Created at:
         = DateTime.now.strftime("%Y-%m-%d %H:%M")
-
-      .col-md-3
+      .col-md-12
+        = link_to "Change store", prn_admins_inventories_path
+      .col-md-3.small_scale_padding-top1
         = f.input :required_at, as: :string, input_html: {class: "datepicker"}, label: "Required date"
-      .col-md-9
+      .col-md-9.small_scale_padding-top1
         = f.input :remarks
 
       = f.simple_fields_for :inventory_prn_items do |i|
