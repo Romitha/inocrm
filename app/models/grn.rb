@@ -103,8 +103,11 @@ class GrnItem < ActiveRecord::Base
       self.send(children).each do |child|
         child.update_index
       end
-
     end
+
+    # [:grn].each do |parent|
+    #   self.send(parent).update_index
+    # end
   end
 
   before_save do |grn_item|

@@ -504,6 +504,7 @@ module Admins
     def grn
       Inventory
       Grn
+      Organization
 
       case params[:purchase_order]
       when "yes"
@@ -779,6 +780,10 @@ module Admins
 
         Rails.cache.delete([:grn_item, :i_product, inventory_product.id ] )
         Rails.cache.delete([:serial_item, :i_product, inventory_product.id ] )
+
+        InventorySerialItem.where(id: grn_item.inventory_serial_item_ids).each do |item|
+          item.update_index
+        end
 
       end
 
