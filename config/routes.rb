@@ -303,7 +303,7 @@ Rails.application.routes.draw do
       collection do
         get "search_grn"
         post "update_grn_cost"
-        get "inv_searched_by"
+        get "inventories"
 
         delete "delete_inv_sitem_additional_cost"
         post "action_inv_serial_item_addcost"

@@ -5,6 +5,6 @@
 
   .list-group
     - Organization.stores.each do |store|
-      = link_to inv_searched_by_admins_searches_path(store_id: store.id), class: "list-group-item" do
+      = link_to inventories_admins_searches_path(store_id: store.id), class: "list-group-item" do
         %h4.list-group-item-heading= store.name
         .list-group-item-text= simple_format store.description

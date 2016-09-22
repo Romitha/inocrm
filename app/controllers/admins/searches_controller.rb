@@ -30,7 +30,7 @@ module Admins
       end
     end
 
-    def inv_searched_by
+    def inventories
       Inventory
       User
       @remote = true
@@ -80,7 +80,7 @@ module Admins
         @inventory_non_serial_non_batch_id = InventorySerialPart.find params[:inventory_non_serial_non_batch_id] if params[:inventory_non_serial_non_batch_id].present?
         render "admins/searches/inventory/select_non_serial_or_batch_more"
       else
-        render "admins/searches/inventory/inv_searched_by"
+        render "admins/searches/inventory/inventories"
       end
     end
 

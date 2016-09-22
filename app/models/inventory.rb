@@ -113,6 +113,8 @@ class InventoryProduct < ActiveRecord::Base
   has_many :ticket_spare_part_stores, foreign_key: :inv_product_id
 
   has_many :grn_items, foreign_key: :product_id
+  has_many :grn_serial_items, through: :grn_items
+  has_many :grn_batches, through: :grn_items
 
   has_many :ticket_spare_part_non_stocks, foreign_key: :inv_product_id
   has_many :approved_ticket_spare_part_non_stocks, class_name: "TicketSparePartNonStock", foreign_key: :approved_inv_product_id
@@ -210,7 +212,7 @@ class InventoryProduct < ActiveRecord::Base
     Inventory
     to_json(
       only: [:id, :description, :model_no, :product_no, :spare_part_no, :fifo, :created_at],
-      methods: [:category3_id, :category2_id, :category1_id, :category3_name, :category2_name, :category1_name, :generated_item_code],
+      methods: [:category3_id, :category2_id, :category1_id, :category3_name, :category2_name, :category1_name, :generated_item_code, :generated_serial_no],
       include: {
         inventory_unit: {
           only: [:unit],
@@ -230,27 +232,35 @@ class InventoryProduct < ActiveRecord::Base
         inventories: {
           only: [:store_id, :product_id, :stock_quantity, :available_quantity]
         },
+        grn_batches: {
+          only: [:id, :remaining_quantity],
+          include: {
+            grn_item: {
+              only: [:current_unit_cost]
+            },
+          },
+        },
+        grn_serial_items: {
+          only: [:id, :remaining],
+          include: {
+            grn_item: {
+              only: [:current_unit_cost]
+            },
+            inventory_serial_item:{
+              only:[:id],
+              include: {
+                inventory_serial_items_additional_costs:{
+                  only:[:id, :cost],
+                },
+              },
+            },
+          },
+        },
         grn_items: {
-          only: [:id, :current_unit_cost],
+          only: [:id, :current_unit_cost, :remaining_quantity],
           include: {
             grn: {
               only: [:grn_no, :currency_id, :created_at, :store_id],
-            },
-            grn_batches: {
-              only: [:id, :remaining_quantity],
-            },
-            grn_serial_items: {
-              only: [:id, :remaining],
-              include: {
-                inventory_serial_item:{
-                  only:[:id],
-                  include: {
-                    inventory_serial_items_additional_costs:{
-                      only:[:id, :cost],
-                    },
-                  },
-                },
-              },
             },
           },
         },
