@@ -1,6 +1,6 @@
 = simple_form_for @inventory_brand, url: inventory_brand_admins_inventories_path, method: :post, html: {class: "validate_form"} do |f|
   = f.input :created_by, as: :hidden, input_html: {value: current_user.id}
-  = f.input :code, label: "Brand code", input_html: {required: true}
+  = f.input :code, label: "Brand code", required: true, input_html: { maxlength: InventoryCategoryCaption.first.code_length }
   = f.input :name, label: "Brand name", input_html: {required: true}
   = f.submit "Save", class: "btn btn-sm btn-success", name: "#{params[:edit_more] ? 'update' : 'create'}"
 

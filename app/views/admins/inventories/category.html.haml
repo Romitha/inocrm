@@ -18,9 +18,9 @@
         %strong Product:
         = c1.object.inventory_category2.name
     .col-md-3
-      = c1.input :code, label: "Brand code", input_html: {required: true}, label: "Category code"
+      = c1.input :code, label: "Category code", required: true, input_html: {maxlength: InventoryCategoryCaption.third.code_length }
     .col-md-3
-      = c1.input :name, label: "Brand name", input_html: {required: true}, label: "Category name"
+      = c1.input :name, required: true, label: "Category name"
 
   .row
     .col-md-12

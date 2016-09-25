@@ -119,6 +119,10 @@ class InventoryProduct < ActiveRecord::Base
   has_many :ticket_spare_part_non_stocks, foreign_key: :inv_product_id
   has_many :approved_ticket_spare_part_non_stocks, class_name: "TicketSparePartNonStock", foreign_key: :approved_inv_product_id
 
+  has_many :inventory_prn_items, foreign_key: :product_id
+  accepts_nested_attributes_for :inventory_prn_items, allow_destroy: true
+  has_many :inventory_prns, through: :inventory_prn_items
+
   validates_presence_of [:unit_id, :category3_id, :serial_no]
   validates_uniqueness_of :serial_no, scope: :category3_id
   validates :serial_no, :length => { :maximum => 6 }
@@ -182,6 +186,10 @@ class InventoryProduct < ActiveRecord::Base
 
   def category1_name
     inventory_category3.inventory_category2.inventory_category1.name
+  end
+
+  def last_prn_item
+    inventory_prn_items.last
   end
 
   mapping do
@@ -600,32 +608,9 @@ end
 class InventorySerialItemsAdditionalCost < ActiveRecord::Base
   self.table_name = "inv_serial_additional_cost"
 
-  # include Tire::Model::Search
-  # include Tire::Model::Callbacks
-
   belongs_to :inventory_serial_item, foreign_key: :serial_item_id
   belongs_to :created_by_user, foreign_key: :created_by, class: User
   belongs_to :currency, foreign_key: :currency_id
-
-  # def self.search(params)
-  #   tire.search(page: (params[:page] || 1), per_page: 10) do
-  #     query do
-  #       boolean do
-  #         must { string params[:query] } if params[:query].present?
-  #       end
-  #     end
-  #     sort { by :created_at, "desc" }
-  #   end
-  # end
-
-  # def to_indexed_json
-  #   Inventory
-  #   Currency
-  #   to_json(
-  #     only: [:id, :cost, :currency_id, :note, :created_by, :created_at]
-  #   )
-
-  # end
 
 end
 
@@ -773,12 +758,56 @@ end
 class InventoryPo < ActiveRecord::Base
   self.table_name = "inv_po"
 
+  include Tire::Model::Search
+  include Tire::Model::Callbacks
+
   belongs_to :supplier, class_name: "Organization", foreign_key: :supplier_id
   belongs_to :store, class_name: "Organization", foreign_key: :store_id
   belongs_to :created_by_user, class_name: "User", foreign_key: :created_by
   belongs_to :approved_by_user, class_name: "User", foreign_key: :approved_by
+  belongs_to :currency
 
   has_many :inventory_po_items, foreign_key: :po_id
+  accepts_nested_attributes_for :inventory_po_items, allow_destroy: true
+
+  has_many :inventory_po_taxes, foreign_key: :po_id
+  accepts_nested_attributes_for :inventory_po_taxes, allow_destroy: true
+
+  mapping do
+    indexes :products, type: "nested", include_in_parent: true
+  end
+
+  def self.search(params)  
+    tire.search(page: (params[:page] || 1), per_page: 10) do
+      query do
+        boolean do
+          must { string params[:query] } if params[:query].present?
+          must { range :created_at, lte: params[:range_to].to_date } if params[:range_to].present?
+          must { range :created_at, gte: params[:range_from].to_date } if params[:range_from].present?
+          # must { term :author_id, params[:author_id] } if params[:author_id].present?
+        end
+      end
+      sort { by :created_at, "desc" }
+      highlight customer_name: {number_of_fragments: 0}, ticket_status_name: {number_of_fragments: 0}, :options => { :tag => '<strong class="highlight">' } if params[:query].present?
+      # filter :range, published_at: { lte: Time.zone.now}
+      # raise to_curl
+    end
+  end
+
+  def to_indexed_json
+    Warranty
+    to_json(
+      only: [:created_at, :cus_chargeable, :id],
+      methods: [:customer_name, :ticket_status_name, :warranty_type_name, :support_ticket_no],
+      include: {
+        products: {
+          only: [:id, :serial_no, :model_no, :product_no, :created_at],
+          methods: [:category_name, :warranty_type_name, :brand_name],
+        }
+      }
+    )
+
+  end
 end
 
 class InventoryPoItem < ActiveRecord::Base
@@ -807,8 +836,17 @@ class InventoryPoItem < ActiveRecord::Base
   end
 end
 
+class InventoryPoTax < ActiveRecord::Base
+  self.table_name = "inv_po_tax"
+
+  belongs_to :inventory_po, foreign_key: :po_id
+end
+
 class InventoryPrn < ActiveRecord::Base
   self.table_name = "inv_prn"
+
+  include Tire::Model::Search
+  include Tire::Model::Callbacks
 
   belongs_to :store, class_name: "Organization", foreign_key: :store_id
   belongs_to :created_by_user, class_name: "User", foreign_key: :created_by
@@ -816,6 +854,49 @@ class InventoryPrn < ActiveRecord::Base
   has_many :inventory_prn_items, foreign_key: :prn_id
   accepts_nested_attributes_for :inventory_prn_items, allow_destroy: true
   has_many :inventory_products, through: :inventory_prn_items
+
+
+  mapping do
+    indexes :products, type: "nested", include_in_parent: true
+  end
+
+  def self.search(params)  
+    tire.search(page: (params[:page] || 1), per_page: 10) do
+      query do
+        boolean do
+          must { string params[:query] } if params[:query].present?
+          must { range :required_at, lte: params[:range_to].to_date } if params[:range_to].present?
+          must { range :required_at, gte: params[:range_from].to_date } if params[:range_from].present?
+          # must { term :author_id, params[:author_id] } if params[:author_id].present?
+        end
+      end
+      sort { by :created_at, "desc" }
+      # highlight customer_name: {number_of_fragments: 0}, ticket_status_name: {number_of_fragments: 0}, :options => { :tag => '<strong class="highlight">' } if params[:query].present?
+      # filter :range, published_at: { lte: Time.zone.now}
+      # raise to_curl
+    end
+  end
+
+  def to_indexed_json
+    Warranty
+    to_json(
+      only: [:created_at, :prn_no, :store_id, :required_at, :remarks, :closed],
+      methods: [:store_name, :formated_prn_no, :created_by_user_full_name],
+    )
+
+  end
+
+  def store_name
+    store.name
+  end
+
+  def formated_prn_no
+    prn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_prn_no_format"])
+  end
+
+  def created_by_user_full_name
+    created_by_user.full_name
+  end
 end
 
 class InventoryPrnItem < ActiveRecord::Base
@@ -824,5 +905,5 @@ class InventoryPrnItem < ActiveRecord::Base
   belongs_to :inventory_prn, foreign_key: :prn_id
   belongs_to :inventory_product, foreign_key: :product_id
 
-  has_many :po_items, foreign_key: :prn_item_id
+  has_many :inventory_po_items, foreign_key: :prn_item_id
 end

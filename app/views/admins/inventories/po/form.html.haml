@@ -1,0 +1,107 @@
+= simple_nested_form_for @po, url: create_po_admins_inventories_path, html: {class: "validate_form"} do |f|
+  = f.input :created_by, as: :hidden, input_html: { value: current_user.id }
+  / = f.input :po_no, as: :hidden, input_html: {value: CompanyConfig.first.next_inv_last_po_no}
+  = f.input :store_id, as: :hidden, input_html: {value: @store.id }
+  .row
+    / .col-md-6
+    /   %strong PO No:
+    /   = CompanyConfig.first.next_sup_last_po_no.to_s.rjust(5, INOCRM_CONFIG["inventory_po_no_format"])
+    .col-md-6.text-right
+      %strong Created by:
+      = current_user.full_name
+      %br/
+      %strong Created at:
+      = DateTime.now.strftime("%Y-%m-%d %H:%M")
+    .col-md-12
+      = link_to "Change store", po_admins_inventories_path
+    .col-md-3
+      = f.input :po_no
+    .col-md-3
+      = f.input :delivery_date, as: :string, input_html: {class: "datepicker"}, label: "Deliver date"
+    .col-md-3
+      = f.input :your_ref, label: "Your reference"
+    .col-md-3
+      = f.input :payment_term
+    .col-md-2
+      = f.input :discount_amount
+    .col-md-2
+      = f.association :currency, label_method: :currency
+    .col-md-3
+      = f.input :deliver_to
+    .col-md-5
+      = f.input :remarks
+
+    .col-md-8
+      %h4 Add Items
+      = f.simple_fields_for :inventory_po_items do |i|
+        - if i.object.inventory_prn_item and i.object.inventory_prn_item.inventory_product
+          .row
+            .col-md-6
+              %h4 Product Information
+              %dl
+                %dt Item code:
+                %dd= i.object.inventory_prn_item.inventory_product.generated_item_code
+                %dt Item description:
+                %dd= i.object.inventory_prn_item.inventory_product.description
+                %dt Order unit
+                %dd= i.object.inventory_prn_item.inventory_product.inventory_unit.unit
+                %dt Stock in hand
+                %dd= i.object.inventory_prn_item.inventory_product.inventories.map { |i| i.stock_quantity if i.store_id.to_i == @store.id }.compact.join(", ")
+                %dt Type
+                %dd= i.object.inventory_prn_item.inventory_product.inventory_product_info.need_serial ? "Serial" : i.object.inventory_prn_item.inventory_product.inventory_product_info.need_batch ? "Batch" : "Non of Serial or Batch"
+                %dt PRN remarks
+                %dd= i.object.inventory_prn_item.remarks
+            .col-md-6
+              - last_prn_item = i.object.inventory_prn_item.inventory_product.last_prn_item
+              - if last_prn_item.present?
+                %h4 Last PRN Information
+                %dl
+                  %dt No:
+                  %dd= last_prn_item.inventory_prn.formated_prn_no
+                  %dt Quantity
+                  %dd= last_prn_item.quantity
+                  %dt Date
+                  %dd= last_prn_item.inventory_prn.created_at.strftime(INOCRM_CONFIG["short_date_format"])
+                  %dt Total PO quantity
+                  %dd= last_prn_item.inventory_po_items.sum(:quantity)
+                  %dt Created by
+                  %dd= last_prn_item.inventory_prn.created_by_user_full_name
+        = i.input :prn_item_id, as: :hidden
+        %hr
+        .row
+          .col-md-1
+            = i.link_to_remove class: "remove_c_t_v_link", title: "Remove item" do
+              %span.glyphicon.glyphicon-remove-sign
+          .col-md-4
+            = i.input :quantity
+          .col-md-3
+            = i.input :unit_cost
+          .col-md-4
+            = i.input :unit_cost_grn
+          .col-md-12
+            = i.input :remarks
+      / .row
+      /   .col-md-12
+      /     = f.link_to_add :inventory_po_items do
+      /       %span.glyphicon.glyphicon-plus-sign
+      /       Add Item
+
+    .col-md-4
+      %h4 Add Taxes
+      = f.simple_fields_for :inventory_po_taxes do |t|
+        %hr
+        .row
+          .col-md-1
+            = t.link_to_remove class: "remove_c_t_v_link", title: "Remove tax" do
+              %span.glyphicon.glyphicon-remove-sign
+          .col-md-5
+            = t.input :tax
+          .col-md-5
+            = t.input :amount
+      .row
+        .col-md-12
+          = f.link_to_add :inventory_po_taxes do
+            %span.glyphicon.glyphicon-plus-sign
+            Add tax
+    .col-md-12
+      = f.submit "Save", class: "btn btn-sm btn-success"

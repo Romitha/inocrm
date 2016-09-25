@@ -17,6 +17,23 @@
   - @inventory_products.each_with_index do |pr, index|
     - inventories = pr.inventories.map { |i| i if i.store_id.to_i == @store.id }.compact
 
+    - if @select_options and @select_options["clicked_area"] == "prn"
+      - last_prn_item = InventoryProduct.find(pr.id).last_prn_item
+      - if last_prn_item.present?
+        - content_for :last_prn_item_info, flush: true do
+          %h4 Last PRN Information
+          %dl.dl-horizontal
+            %dt No:
+            %dd= last_prn_item.inventory_prn.formated_prn_no
+            %dt Quantity
+            %dd= last_prn_item.quantity
+            %dt Date
+            %dd= last_prn_item.inventory_prn.created_at.strftime(INOCRM_CONFIG["short_date_format"])
+            %dt Total PO quantity
+            %dd= last_prn_item.inventory_po_items.sum(:quantity)
+            %dt Created by
+            %dd= last_prn_item.inventory_prn.created_by_user_full_name
+
     - content_for :inventory_p_more, flush: true do
       %ul
         %li
@@ -61,7 +78,12 @@
         %dd= pr.inventories.map { |i| i.stock_quantity if i.store_id.to_i == @store.id }.compact.join(", ")
 
     .row
-      .col-md-1{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Serial No: #{pr.generated_item_code}", "data-content"=> yield(:inventory_p_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }= index+1
+      .col-md-1{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Serial No: #{pr.generated_item_code}", "data-content"=> yield(:inventory_p_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }
+        - if params[:page]
+          = (index+1)+ 10**(params[:page].to_i-1)
+        - else
+          = (index+1)
+
       .col-md-2= pr.inventory_product_info.need_serial ? "Serial" : pr.inventory_product_info.need_batch ? "Batch" : "Non of Serial or Batch"
       .col-md-2= pr.generated_serial_no
       .col-md-2= pr.generated_item_code
@@ -81,13 +103,13 @@
       - if params[:from_where] == "inventories"
         .col-md-1
           - if pr.inventory_product_info.need_serial
-            = link_to "Serial", inventories_admins_searches_path(select_action: "select_serial_items", inv_pro_id: pr.id, store: params[:store_id] ), class: "btn-link"
+            = link_to "Select", inventories_admins_searches_path(select_action: "select_serial_items", inv_pro_id: pr.id, store: params[:store_id] ), class: "btn-link"
           - if pr.inventory_product_info.need_batch
-            = link_to "Batch", inventories_admins_searches_path(select_action: "select_batches", inv_pro_id: pr.id, store: params[:store_id] ), class: "btn-link"
+            = link_to "Select", inventories_admins_searches_path(select_action: "select_batches", inv_pro_id: pr.id, store: params[:store_id] ), class: "btn-link"
           - if !(pr.inventory_product_info.need_serial or pr.inventory_product_info.need_batch)
-            = link_to "Non", inventories_admins_searches_path(select_action: "select_non_serial_or_batch", inv_pro_id: pr.id, store: params[:store_id] ), class: "btn-link"
+            = link_to "Select", inventories_admins_searches_path(select_action: "select_non_serial_or_batch", inv_pro_id: pr.id, store: params[:store_id] ), class: "btn-link"
       - else
-        .col-md-1= link_to "Select", (@select_path || "#"), (@select_options || {}).merge({data: {content: (yield :select_result ), productid: pr.id}})
+        .col-md-1= link_to "Select", (@select_path || "#"), (@select_options || {}).merge({data: {content: (yield :select_result ), productid: pr.id, prncontent: (yield :last_prn_item_info)}})
 
     %hr
   .row.strong

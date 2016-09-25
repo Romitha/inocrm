@@ -1,0 +1,52 @@
+= form_tag po_admins_inventories_path, method: :get do
+  .row
+    .col-md-3
+      = label_tag "Store"
+      = select_tag "search_prn[store_id]", options_from_collection_for_select(Organization.stores, :id, :name), include_blank: false, class: "form-control"
+    .col-md-3
+      = label_tag "PRN No"
+      = text_field_tag "search_prn[prn_no]", nil, class: "form-control"
+    .col-md-3
+      = label_tag "Required from"
+      = text_field_tag "range_from", nil, class: "form-control datepicker"
+    .col-md-3
+      = label_tag "Required to"
+      = text_field_tag "range_to", nil, class: "form-control datepicker"
+    .col-md-12.small_scale_margin-top1
+      = submit_tag "Search", class: "btn btn-sm btn-success", name: "search"
+
+- if @prns.present?
+  = paginate @prns, remote: true, method: :get
+  .row
+    .col-md-1
+      %strong No
+    .col-md-2
+      %strong Store
+    .col-md-1
+      %strong PRN No
+    .col-md-1
+      %strong PRN Date
+    .col-md-1
+      %strong Required date
+    .col-md-2
+      %strong Remarks
+    .col-md-2
+      %strong Created by
+    .col-md-2
+      %strong Action
+  %hr
+  - @prns.each_with_index do |prn, index|
+    .row
+      .col-md-1
+        - if params[:page]
+          = (index+1)+ 10**(params[:page].to_i-1)
+        - else
+          = (index+1)
+      .col-md-2= prn.store_name
+      .col-md-1= prn.formated_prn_no
+      .col-md-1= prn.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
+      .col-md-1= prn.required_at.to_date.try :strftime, INOCRM_CONFIG["short_date_format"]
+      .col-md-2= prn.remarks
+      .col-md-2= prn.created_by_user_full_name
+      .col-md-2= link_to "Select", po_admins_inventories_path(prn_id: prn.id)
+  = paginate @prns, remote: true, method: :get

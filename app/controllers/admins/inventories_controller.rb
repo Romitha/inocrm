@@ -576,6 +576,47 @@ module Admins
       render "admins/inventories/grn/grn"
     end
 
+    def po
+      Inventory
+      if params[:prn_id].present?
+        @prn = InventoryPrn.find params[:prn_id]
+        @po = InventoryPo.new
+        @prn.inventory_prn_items.each do |prn_item|
+          @po.inventory_po_items.build quantity: prn_item.quantity, prn_item_id: prn_item.id
+        end
+        @store = @prn.store
+        render "admins/inventories/po/form"
+      else
+        if params[:search].present?
+          refined_prn = params[:search_prn].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
+
+          refined_search = [refined_prn, "closed:false"].map{|v| v if v.present? }.compact.join(" AND ")
+          params[:query] = refined_search
+        end
+
+        @prns = InventoryPrn.search(params)
+
+        render "admins/inventories/po/search_prn"
+
+      end
+    end
+
+    def create_po
+      Organization
+      @po = InventoryPo.new po_params
+
+      respond_to do |format|
+        if @po.save
+          CompanyConfig.first.increase_inv_last_po_no
+          flash[:notice] = "Successfully saved"
+        else
+          flash[:alert] = "Unable to save. Please review."
+        end
+
+        format.html{ redirect_to po_admins_inventories_url }
+      end
+    end
+
     def search_grn
       Inventory
       Grn
@@ -932,22 +973,6 @@ module Admins
       when "call_search"
         Inventory
         @modal_active = true
-      # when "search_inventory"
-      #   store_id = @store.id
-      #   if params[:search].present?
-      #     refined_inventory_product = params[:search_inventory][:inventory_product].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
-      #     # refined_inventory_serial_items = params[:search_inventory].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
-
-      #     refined_search = [refined_inventory_product, "stores.id:#{store_id}"].map{|v| v if v.present? }.compact.join(" AND ")
-      #     params[:query] = refined_search
-      #   else
-      #     params[:query] = "stores.id:#{store_id}"
-      #   end
-
-      #   session[:store_id] = @store.id
-      #   @inventory_products = InventoryProduct.search(params)
-
-      #   @select_inventory = true
       else
         @srn = Srn.new
         @srn_all = Srn.order(updated_at: :desc).page(params[:page]).per(10)
@@ -1316,6 +1341,10 @@ module Admins
 
       def prn_params
         params.require(:inventory_prn).permit(:id, :store_id, :created_by, :prn_no, :required_at, :remarks, inventory_prn_items_attributes: [:id, :product_id, :_destroy, :quantity, :remarks])
+      end
+
+      def po_params
+        params.require(:inventory_po).permit(:id, :created_by, :store_id, :po_no, :delivery_date, :your_ref, :payment_term, :discount_amount, :currency_id, :remarks, :deliver_to, inventory_po_items_attributes: [ :id, :_destroy, :prn_item_id, :quantity, :unit_cost, :unit_cost_grn, :remarks ], inventory_po_taxes_attributes: [ :id, :_destroy, :tax, :amount ] )
       end
 
   end
