@@ -121,6 +121,8 @@ gem "tire", git: "https://github.com/karmi/retire.git"
 gem "whenever", :require => false
 gem "factory_girl_rails"
 
+gem 'angularjs-rails'
+
 
 # gem "em-http-request"
 

@@ -494,9 +494,12 @@ window.Tickets =
 
   remote_true_loader: ->
     _this = this
-    $("[data-remote]").on "ajax:success", (e, data, status, xhr) ->
+    $("[data-remote]").on( "ajax:success", (e, data, status, xhr) ->
       _this.ajax_loader()
-    return
+    )
+    # .on "ajax:error", (e, xhr, status, error) ->
+    #   console.log error
+    #   alert "Something wrong with server. Please try again or contact system administrator. Thank you."
 
   update_without_return: ->
     $("#update_without_return").click ->

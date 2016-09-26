@@ -65,5 +65,11 @@ namespace :tire do
     puts '[IMPORT] Done.'
 
   end
+
+  task index_all_model: :environment do
+    [['Grn'], ['GrnItem', 'Grn'], ['InventoryProduct', 'Inventory'], ['InventorySerialItem', 'Inventory'], ['Product'], ['Ticket'], ['InventoryPrn', 'Inventory']].each do |models|
+      system "rake environment tire:deep_import CLASS=#{models.first} PCLASS=#{models.last} FORCE=true"
+    end
+  end
   
 end

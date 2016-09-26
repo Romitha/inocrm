@@ -197,7 +197,10 @@ class InventoryProduct < ActiveRecord::Base
     indexes :inventory_unit, type: "nested", include_in_parent: true
     indexes :stores, type: "nested", include_in_parent: true
     indexes :grn_items, type: "nested", include_in_parent: true
+    indexes :grn_batches, type: "nested", include_in_parent: true
+    indexes :grn_serial_items, type: "nested", include_in_parent: true
     indexes :inventory_batches, type: "nested", include_in_parent: true
+    indexes :inventories, type: "nested", include_in_parent: true
 
   end
 
@@ -210,7 +213,7 @@ class InventoryProduct < ActiveRecord::Base
           # puts params[:store_id]
         end
       end
-      sort { by :created_at, "desc" } if params[:query].present?
+      sort { by :created_at, {order: :desc} } if params[:query].present?
       # filter :range, published_at: { lte: Time.zone.now}
       # raise to_curl
     end
@@ -227,6 +230,7 @@ class InventoryProduct < ActiveRecord::Base
         },
         inventory_product_info: {
           only: [:need_serial, :need_batch],
+          methods: [:currency_type],
           include: {
             manufacture: {
               only: [:manufacture, :need_serial, :need_batch, :remarks, :currency_id],
@@ -295,7 +299,7 @@ class InventoryProductInfo < ActiveRecord::Base
   belongs_to :product_sold_country, foreign_key: :country_id
 
   def currency_type
-    currency.currency
+    currency.code
   end
 
 end
