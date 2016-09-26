@@ -81,7 +81,7 @@
 
     .row
       .col-md-1{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Item code: #{pr.generated_item_code}", "data-content"=> yield(:inventory_p_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }= index+1
-      .col-md-2 #{pr.category1_name}
+      .col-md-2= pr.category1_name
       .col-md-2= pr.category2_name
       .col-md-2= pr.category3_name
 
