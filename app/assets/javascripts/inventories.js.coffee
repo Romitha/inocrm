@@ -726,7 +726,7 @@ window.Inventories =
     select_path = unless $(elem).data("selectpath") is "undefined" then $(elem).data("selectpath") else ""
     select_options = unless $(elem).data("selectoptions") is "undefined" then $(elem).data("selectoptions") else ""
 
-    $.get "/inventories/search_inventory_product?store_id=#{store_id}&render_id=#{render_id}&modal_id=#{modal_id}&remote=#{remote}&select_path=#{select_path}&select_options=#{select_options}"
+    $.get("/inventories/search_inventory_product?store_id=#{store_id}&render_id=#{render_id}&modal_id=#{modal_id}&remote=#{remote}&select_path=#{select_path}&select_options=#{select_options}").fail(-> alert "Something went wrong in search engine. Please rectify with system administrator.")
 
     setTimeout (->
       $('.datepicker').datepicker

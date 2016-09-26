@@ -14,23 +14,25 @@
       = DateTime.now.strftime("%Y-%m-%d %H:%M")
     .col-md-12
       = link_to "Change store", po_admins_inventories_path
+  .row
     .col-md-3
-      = f.input :po_no
+      = f.input :po_no, required: true
     .col-md-3
       = f.input :delivery_date, as: :string, input_html: {class: "datepicker"}, label: "Deliver date"
     .col-md-3
       = f.input :your_ref, label: "Your reference"
     .col-md-3
       = f.input :payment_term
+  .row
     .col-md-2
-      = f.input :discount_amount
+      = f.input :discount_amount, required: true
     .col-md-2
-      = f.association :currency, label_method: :currency
+      = f.association :currency, label_method: :currency, required: true
     .col-md-3
       = f.input :deliver_to
     .col-md-5
       = f.input :remarks
-
+  .row
     .col-md-8
       %h4 Add Items
       = f.simple_fields_for :inventory_po_items do |i|
@@ -72,12 +74,14 @@
           .col-md-1
             = i.link_to_remove class: "remove_c_t_v_link", title: "Remove item" do
               %span.glyphicon.glyphicon-remove-sign
-          .col-md-4
-            = i.input :quantity
           .col-md-3
-            = i.input :unit_cost
-          .col-md-4
-            = i.input :unit_cost_grn
+            = i.input :quantity, required: true, as: :string
+          .col-md-3
+            = i.association :inventory_unit, label_method: :unit, required: true
+          .col-md-2
+            = i.input :unit_cost, required: true, as: :string
+          .col-md-3
+            = i.input :unit_cost_grn, required: true, as: :string
           .col-md-12
             = i.input :remarks
       / .row
@@ -95,9 +99,9 @@
             = t.link_to_remove class: "remove_c_t_v_link", title: "Remove tax" do
               %span.glyphicon.glyphicon-remove-sign
           .col-md-5
-            = t.input :tax
+            = t.input :tax, required: true
           .col-md-5
-            = t.input :amount
+            = t.input :amount, required: true
       .row
         .col-md-12
           = f.link_to_add :inventory_po_taxes do
