@@ -9,7 +9,7 @@
   = pr.description
 %strong
   .col-md-4
-    Stock Quantity : #{Inventory.find_by_store_id(@store).stock_quantity}
+    Stock Quantity : #{Inventory.find_by_product_id(pr.id).try(:stock_quantity)}
   .col-md-4
     Reserved Quantity : #{Inventory.find_by_store_id(@store).reserved_quantity}
   .col-md-4
@@ -24,7 +24,7 @@
 
 = paginate @inventory_non_serial_non_batches, remote: false, method: :get
 
-.row.margin-top2
+.row.margin-top1
   .col-md-1{style: "text-align:center"}
     %strong No
   .col-md-1
@@ -74,6 +74,18 @@
       - qnty = inventory_non_serial_non_batch.remaining_quantity
       =cost*qnty
     .col-md-1
-      = link_to "Select", inv_searched_by_admins_searches_path(select_action: "select_non_serial_or_batch_more", inventory_non_serial_non_batch_id: inventory_non_serial_non_batch.id, store: @store ), class: "btn btn-default btn-sm"
+      = link_to "Select", inventories_admins_searches_path(select_action: "select_non_serial_or_batch_more", inventory_non_serial_non_batch_id: inventory_non_serial_non_batch.id, store: @store ), class: "btn btn-default btn-sm"
   %hr
 = paginate @inventory_non_serial_non_batches, remote: false, method: :get
+
+.row
+  .col-md-3.pull-right
+    /     - tot_cost = 0
+    /     - ans = 0
+    /     - @inventory_non_serial_non_batches.each do |inventory_non_serial_non_batch|
+    /       - cost = inventory_non_serial_non_batch.current_unit_cost
+    /       - qnty = inventory_non_serial_non_batch.remaining_quantity
+    /       - tot_cost = cost*qnty
+    /       - ans = ans + tot_cost
+
+    %strong Total Cost : #{number_with_precision @ans, precision: 2}

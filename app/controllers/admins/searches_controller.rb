@@ -43,6 +43,18 @@ module Admins
         @store = params[:store]
         @inv_pro = InventoryProduct.find params[:inv_pro_id] if params[:inv_pro_id].present?
         @inventory_serial_items = Kaminari.paginate_array(@inv_pro.inventory_serial_items).page(params[:page]).per(10)
+        tot_cost = 0
+        @ans = 0
+        @inv_pro.inventory_serial_items.each do |inventory_serial_item|
+          add_cost = inventory_serial_item.inventory_serial_items_additional_costs.sum(:cost)
+          inventory_serial_item.grn_items.each do |grn_item|
+            rem_q = grn_item.remaining_quantity
+            crnt_ucost = grn_item.current_unit_cost
+            tot_cost = add_cost+(rem_q*crnt_ucost)
+            @ans = @ans + tot_cost
+        end
+      end
+
         render "admins/searches/inventory/select_serial_items"
 
       when "select_serial_item_more"
@@ -62,12 +74,32 @@ module Admins
         @store = params[:store]
         @inv_pro = InventoryProduct.find params[:inv_pro_id] if params[:inv_pro_id].present?
         @inventory_batches = Kaminari.paginate_array(@inv_pro.inventory_batches).page(params[:page]).per(10)
+        tot_cost = 0
+        @ans = 0
+        @inv_pro.inventory_batches.each do |inventory_batch|
+          inventory_batch.grn_batches.each do |grn_batch|
+            rem = grn_batch.remaining_quantity
+            cost = grn_batch.grn_item.current_unit_cost
+            tot_cost = rem*cost
+            @ans = @ans + tot_cost
+          end
+        end
+
         render "admins/searches/inventory/select_batches"
 
       when "select_non_serial_or_batch"
         @store = params[:store]
         @inv_pro = InventoryProduct.find params[:inv_pro_id] if params[:inv_pro_id].present?  
         @inventory_non_serial_non_batches = Kaminari.paginate_array(@inv_pro.grn_items).page(params[:page]).per(10)
+        tot_cost = 0
+        @ans = 0
+        @inv_pro.grn_items.each do |inventory_non_serial_non_batch|
+          cost = inventory_non_serial_non_batch.current_unit_cost
+          qnty = inventory_non_serial_non_batch.remaining_quantity
+          tot_cost = cost*qnty
+          @ans = @ans + tot_cost
+        end
+
         render "admins/searches/inventory/select_non_serial_or_batch"
 
       when "select_inventory_batch_more"

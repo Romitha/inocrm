@@ -25,6 +25,8 @@
         = text_field_tag "search_inventory[inventory_product][model_no]", nil, :placeholder => "Model No", class: "form-control"
       .col-md-3.product_no
         = text_field_tag "search_inventory[inventory_product][product_no]", nil, :placeholder => "Product No", class: "form-control"
+      .col-md-2.serial_code
+        = text_field_tag "search_inventory[inventory_product][serial_no]", nil, :placeholder => "Serial Code", class: "form-control"
       .col-md-12.description.small_scale_margin-top1
         = text_field_tag "search_inventory[inventory_product][description]", nil, placeholder: "Description", class: "form-control"
 
@@ -32,5 +34,9 @@
       .col-md-1
         .search
           = submit_tag "Search", class: "btn btn-sm btn-warning", name: "search"
+      .col-md-1
+        .reset
+          = link_to "#","role" => "button" ,onclick: "Searches.reset_searchinventory(); return false;", class: "btn btn-danger" do
+            Cancel
 
 #result_inventory_products

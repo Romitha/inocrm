@@ -183,7 +183,7 @@
         .col-md-8
           GRN Remarks: #{grn_item.grn.remarks}
       - if @inv_sitem_addcost.present?
-        - if params[:edit].present?
+        - if params[:load].present?
           .col-md-12
             %table.table.table-hover
               %thead
@@ -232,19 +232,14 @@
                       = User.find_by_id(current_user.id).try(:full_name)
                     %td= f.submit "Save", class: "btn btn-sm btn-success"
 
-                  
-
-
-
-
       - if @inventory_serial_item_add_cost.present?
         .row{style: "margin-top:15px;"}
           .col-md-12.pull-right
             = link_to action_inv_serial_item_addcost_admins_searches_path(inventory_serial_item_id: inventory_serial_item_id.id, store: store, new_add: true), method: :post, rel: "tooltip", :data => { toggle: "tooltip", placement: "left" }, title: "Add new Additional Cost" do
               %span.glyphicon.glyphicon-plus
+              Add
           .col-md-12{style: "background-color: #98FB98; text-align:center"}
             %strong Additional Costs
-            Add
           .col-md-12
             %table.table.table-hover
               %thead
@@ -252,7 +247,7 @@
                   %th No
                   %th Date
                   %th Currency
-                  %th Cost
+                  %th.text-right Cost
                   %th Note
                   %th By
                   %th
@@ -262,7 +257,7 @@
                     %td= index+1
                     %td= cost.created_at.try(:strftime, "%Y-%m-%d")
                     %td= product.inventory_product_info.try(:currency).currency
-                    %td= cost.cost
+                    %td.text-right= number_with_precision cost.cost, precision: 2
                     %td= cost.note
                     %td= cost.created_by_user.full_name
                     %td
@@ -428,7 +423,7 @@
           /   - ans = rem*cost
           /   = number_with_precision ans, precision: 2
         .col-md-1
-          = link_to "Select", inv_searched_by_admins_searches_path(select_action: "select_inventory_serial_part_more", inventory_serial_part_id: inventory_serial_part.id, store: @store ), class: "btn btn-default btn-sm"
+          = link_to "Select", inventories_admins_searches_path(select_action: "select_inventory_serial_part_more", inventory_serial_part_id: inventory_serial_part.id, store: @store ), class: "btn btn-default btn-sm"
           
       %hr
     = paginate @inventory_serial_parts, remote: false, method: :get

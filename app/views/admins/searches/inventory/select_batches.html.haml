@@ -9,7 +9,8 @@
   = pr.description
 %strong
   .col-md-4
-    Stock Quantity : #{Inventory.find_by_store_id(@store).stock_quantity}
+    Stock Quantity : #{Inventory.find_by_product_id(pr.id).try(:stock_quantity)}
+    /#{Inventory.find_by_store_id(@store).stock_quantity}
   .col-md-4
     Reserved Quantity : #{Inventory.find_by_store_id(@store).reserved_quantity}
   .col-md-4
@@ -41,9 +42,9 @@
     %strong Damage Quantity
   .col-md-2
     %strong Currency
-  .col-md-1
+  .col-md-1.text-right
     %strong Current GRN Cost
-  .col-md-1
+  .col-md-1.text-right
     %strong Total Cost
   .col-md-1
     %strong Select
@@ -92,18 +93,30 @@
       - inventory_batch.grn_batches.each do |grn_batch|
         = grn_batch.grn_item.currency.currency
         %br/
-    .col-md-1
+    .col-md-1.text-right
       - inventory_batch.grn_batches.each do |grn_batch|
         = number_with_precision grn_batch.grn_item.current_unit_cost, precision: 2
         %br/
-    .col-md-1
+    .col-md-1.text-right
       - inventory_batch.grn_batches.each do |grn_batch|
         - rem = grn_batch.remaining_quantity
         - cost = grn_batch.grn_item.current_unit_cost
         - ans = rem*cost
         = number_with_precision ans, precision: 2
     .col-md-1
-      = link_to "Select", inv_searched_by_admins_searches_path(select_action: "select_inventory_batch_more", inventory_batch_id: inventory_batch.id, store: @store ), class: "btn btn-default btn-sm"
+      = link_to "Select", inventories_admins_searches_path(select_action: "select_inventory_batch_more", inventory_batch_id: inventory_batch.id, store: @store ), class: "btn btn-default btn-sm"
       
   %hr
 = paginate @inventory_batches, remote: false, method: :get
+.row
+  .col-md-3.pull-right
+    /     - tot_cost = 0
+    /     - ans = 0
+    /     - @inventory_batches.each do |inventory_batch|
+    /       - inventory_batch.grn_batches.each do |grn_batch|
+    /         - rem = grn_batch.remaining_quantity
+    /         - cost = grn_batch.grn_item.current_unit_cost
+    /         - tot_cost = rem*cost
+    /         - ans = ans + tot_cost
+
+    %strong Total Cost : #{number_with_precision @ans, precision: 2}

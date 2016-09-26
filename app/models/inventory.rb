@@ -219,8 +219,8 @@ class InventoryProduct < ActiveRecord::Base
   def to_indexed_json
     Inventory
     to_json(
-      only: [:id, :description, :model_no, :product_no, :spare_part_no, :fifo, :created_at],
-      methods: [:category3_id, :category2_id, :category1_id, :category3_name, :category2_name, :category1_name, :generated_item_code, :generated_serial_no],
+      only: [:id, :description, :model_no, :product_no, :spare_part_no, :fifo, :created_at, :serial_no],
+      methods: [:serial_code, :category3_id, :category2_id, :category1_id, :category3_name, :category2_name, :category1_name, :generated_item_code],
       include: {
         inventory_unit: {
           only: [:unit],
