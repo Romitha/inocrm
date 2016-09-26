@@ -1,9 +1,12 @@
-- if @store
+- if @store or params[:all]
   = render "inventories/inventory_products/search_inventory"
 
 - else
 
   .list-group
+    = link_to inventories_admins_searches_path(all: true), class: "list-group-item" do
+      %h4.list-group-item-heading All Stores
+      .list-group-item-text All Stores
     - Organization.stores.each do |store|
       = link_to inventories_admins_searches_path(store_id: store.id), class: "list-group-item" do
         %h4.list-group-item-heading= store.name

@@ -132,18 +132,21 @@ class InventoriesController < ApplicationController
       refined_inventory_product = params[:search_inventory][:inventory_product].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
       # refined_inventory_serial_items = params[:search_inventory].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
 
-      refined_search = [refined_inventory_product, "stores.id:#{store_id}"].map{|v| v if v.present? }.compact.join(" AND ")
+      refined_search = [refined_inventory_product, ("stores.id:#{store_id}" if store_id.present?)].map{|v| v if v.present? }.compact.join(" AND ")
       params[:query] = refined_search
     else
-      params[:query] = "stores.id:#{store_id}"
+      params[:query] = ("stores.id:#{store_id}" if store_id.present?)
     end
     @inventory_products = InventoryProduct.search(params)
+    puts "*******"
+    puts @inventory_products.map { |e| e.id }
+    puts "*******"
 
-    # if params[:from_where] == "inventories"
-    @total_sum_of_stock_cost = @inventory_products.sum{|pr| pr.grn_serial_items.sum{|g| g.grn_item.current_unit_cost.to_f + g.inventory_serial_item.inventory_serial_items_additional_costs.sum{|c| c.cost.to_f }} + pr.grn_batches.sum{|g| g.grn_item.current_unit_cost.to_f * g.remaining_quantity.to_f } + pr.grn_items.sum{|g| g.remaining_quantity.to_f * g.current_unit_cost.to_f } }
-    @total_stock_quantity = @inventory_products.sum{|pr| pr.inventories.map { |i| i.stock_quantity.to_f if i.store_id.to_i == @store.id }.compact.sum }
-    @total_available_quantity = @inventory_products.sum{|pr| pr.inventories.map { |i| i.available_quantity.to_f if i.store_id.to_i == @store.id }.compact.sum }
-    # end
+    if @store
+      @total_sum_of_stock_cost = @inventory_products.sum{|pr| pr.grn_serial_items.sum{|g| g.grn_item.current_unit_cost.to_f + g.inventory_serial_item.inventory_serial_items_additional_costs.sum{|c| c.cost.to_f }} + pr.grn_batches.sum{|g| g.grn_item.current_unit_cost.to_f * g.remaining_quantity.to_f } + pr.grn_items.sum{|g| g.remaining_quantity.to_f * g.current_unit_cost.to_f } }
+      @total_stock_quantity = @inventory_products.sum{|pr| pr.inventories.map { |i| i.stock_quantity.to_f if i.store_id.to_i == @store.id }.compact.sum }
+      @total_available_quantity = @inventory_products.sum{|pr| pr.inventories.map { |i| i.available_quantity.to_f if i.store_id.to_i == @store.id }.compact.sum }
+    end
     render "inventories/inventory_products/select_product"
   end
 

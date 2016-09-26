@@ -224,7 +224,7 @@ class InventoryProduct < ActiveRecord::Base
       include: {
         inventory_unit: {
           only: [:unit],
-          },
+        },
         inventory_product_info: {
           only: [:need_serial, :need_batch],
           include: {

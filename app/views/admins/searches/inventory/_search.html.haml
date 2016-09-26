@@ -2,8 +2,8 @@
   .col-md-12
     %fieldset
       %legend Inventory Search
-      = form_tag inv_searched_by_admins_searches_path, method: :get, class: "form-horizontal" do
-        = hidden_field_tag :inv_searched_by_param, "inv_search_result"
+      = form_tag inventories_admins_searches_path, method: :get, class: "form-horizontal" do
+        = hidden_field_tag :inventories_param, "inv_search_result"
         / = hi :in..., "inv..."
         .row
           .col-md-12

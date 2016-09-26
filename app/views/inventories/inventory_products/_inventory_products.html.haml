@@ -15,7 +15,8 @@
   %hr
 
   - @inventory_products.each_with_index do |pr, index|
-    - inventories = pr.inventories.map { |i| i if i.store_id.to_i == @store.id }.compact
+    - if @store
+      - inventories = pr.inventories.map { |i| i if i.store_id.to_i == @store.id }.compact
 
     - if @select_options and @select_options["clicked_area"] == "prn"
       - last_prn_item = InventoryProduct.find(pr.id).last_prn_item
@@ -60,7 +61,6 @@
         %li
           %strong Part No:
           = pr.spare_part_no
-
       %strong Description:
       #{simple_format pr.description}
       %strong Remarks:
@@ -74,17 +74,23 @@
         %dd= pr.description
         %dt Order unit
         %dd= pr.inventory_unit.unit
-        %dt Stock in hand
-        %dd= pr.inventories.map { |i| i.stock_quantity if i.store_id.to_i == @store.id }.compact.join(", ")
+
+        - if @store
+          %dt Stock in hand
+          %dd= pr.inventories.map { |i| i.stock_quantity if i.store_id.to_i == @store.id }.compact.join(", ")
 
     .row
       .col-md-1{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Item code: #{pr.generated_item_code}", "data-content"=> yield(:inventory_p_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }= index+1
       .col-md-2 #{pr.category1_name}
       .col-md-2= pr.category2_name
       .col-md-2= pr.category3_name
-      .col-md-1.text-right= inventories.sum{|i| i.stock_quantity.to_f }
+
+      - if @store
+        .col-md-1.text-right= inventories.sum{|i| i.stock_quantity.to_f }
       .col-md-1= pr.inventory_product_info.currency_type
-      .col-md-1.text-right= inventories.sum{|i| i.available_quantity.to_f }
+
+      - if @store
+        .col-md-1.text-right= inventories.sum{|i| i.available_quantity.to_f }
       .col-md-1.text-right
         - if pr.inventory_product_info.need_serial
           = pr.grn_serial_items.sum{|g| g.grn_item.current_unit_cost.to_f + g.inventory_serial_item.inventory_serial_items_additional_costs.sum{|c| c.cost.to_f }}
@@ -94,7 +100,6 @@
 
         - else
           = pr.grn_items.sum{|g| g.remaining_quantity.to_f * g.current_unit_cost.to_f }
-
       - if params[:from_where] == "inventories"
         .col-md-1
           - if pr.inventory_product_info.need_serial

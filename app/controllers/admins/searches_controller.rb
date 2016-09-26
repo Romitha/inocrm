@@ -52,8 +52,8 @@ module Admins
             crnt_ucost = grn_item.current_unit_cost
             tot_cost = add_cost+(rem_q*crnt_ucost)
             @ans = @ans + tot_cost
+          end
         end
-      end
 
         render "admins/searches/inventory/select_serial_items"
 
