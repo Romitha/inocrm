@@ -6,7 +6,7 @@
   .col-md-4
     = label_tag "Brand Name"
     = select_tag "search_inventory[brand]", options_from_collection_for_select(InventoryCategory1.all, :id, :name, (params[:search_inventory] and params[:search_inventory][:brand])), include_blank: true
-.row
+.row.padding-bottom1
   %table.table.table-hover.table-stripped
     %thead
       %tr
@@ -39,3 +39,219 @@
     /         = so_po.scavenge ? "Scavenge" : ""
     /       %td
     /         = so_po.damage ? "Damaged" : ""
+.row
+  %ul.nav.nav-tabs
+    %li.active
+      %a{"data-toggle" => "tab", :href => "#createInvoice"} Create Invoice for Sales Order
+    %li
+      %a{"data-toggle" => "tab", :href => "#viewInvoice"} View Invoices for Sales Orders
+  .tab-content
+    #createInvoice.tab-pane.fade.in.active
+      .row.small_scale_padding-top1
+        .container
+          %table.table-default.col-md-3
+            %tbody
+              %tr
+                %th.text-right Invoice No : &nbsp;
+                %td
+                  %input{:type => "text", :name => "invoiceNum", :class => "text"} &nbsp;&nbsp;
+              %tr
+                %th.text-right PO No : &nbsp;
+                %td
+                  / PO number here
+              %tr
+                %th.text-right Sales Order No : &nbsp;
+                %td
+                  / Sales order number here
+          %table.table-default.col-md-offset-1.col-sm-offset-1
+            %tbody
+              %tr
+                %th.text-right Invoice Date : &nbsp;
+                %td
+                  %form.form-inline
+                    #datetimepicker1.input-group.date
+                      %input.form-control{:type => "text"}/
+                      %span.input-group-addon
+                        %span.glyphicon.glyphicon-calendar
+              %tr
+                %th.text-right PO Date : &nbsp;
+                %td
+                  / PO date here
+              %tr
+                %th.text-right Amount ($) : &nbsp;
+                %td
+                  / Amount here
+      .row.small_scale_padding-top1.small_scale_padding-bottom1
+        %table.table.table-hover.table-stripped
+          %thead
+            %tr
+              %th No
+              %th Event No
+              %th Order No
+              %th Date Ordered
+              %th Part No
+              %th Description
+              %th Ticket No
+              %th Serial No
+              %th Expected Amount
+              %th Amount ($)
+          %tbody
+            - SoPo.all.each_with_index do |so_po, index|
+              %tr
+                %td
+                  = (index+1)
+                %td
+                  / Add Event No
+                %td
+                  / Add Order Date
+                %td
+                  / Add Date Events
+                %td
+                  / Add Part No
+                %td
+                  / Add Description
+                %td
+                  / Add Ticket No
+                %td
+                  / Add Serial No
+                %td
+                  / Add Expected Amount
+                %td
+                  / Add Amount ($)
+      .row.small_scale_padding-bottom1
+        %form
+          .form-inline
+            .form-group.form-group-lg.col-md-6
+              %label.col-sm-2.control-label{:for => "note"} Note:
+              %textarea.push.col-md-8.col-sm-offset-1{:type => "text", :name => "note", :class => "text"}
+            .form-group.form-group-lg.col-md-6
+              %label.col-sm-2.control-label{:for => "invoiceNote"} Invoice Note:
+              %textarea.push.col-md-8.col-sm-offset-1{:type => "text", :name => "invoiceNote", :class => "text"}
+      .row
+        .div.pull-right.small_scale_padding-top1.small_scale_padding-bottom1
+          %button.btn.btn-default{:type => "submit"} View Invoice
+          %button.btn.btn-default{:type => "submit"} Print Invoice
+          %button.btn.btn-default{:type => "submit"} Submit
+          %button.btn.btn-default{:type => "submit"} Cancel
+
+    #viewInvoice.tab-pane.fade
+      .row
+        .col-md-4.small_scale_padding-top1
+          %strong Invoices and Sales Orders
+      .row.small_scale_padding-top1.small_scale_padding-bottom1
+        %table.table.table-hover.table-stripped
+          %thead
+            %tr
+              %th No
+              %th Invoice No
+              %th Invoice Date
+              %th Sales Order
+              %th Sales Order Date
+              %th PO No
+              %th PO Date
+              %th No of Events
+              %th Amount ($)
+              %th Note
+          %tbody
+            - SoPo.all.each_with_index do |so_po, index|
+              %tr
+                %td
+                  = (index+1)
+                %td
+                  / Invoice No
+                %td
+                  / Invoice Date
+                %td
+                  / Sales Order
+                %td
+                  / Sales Order Date
+                %td
+                  / PO No
+                %td
+                  / PO Date
+                %td
+                  / No of Events
+                %td
+                  / Amount ($)
+                %td
+                  / Note
+      .row.small_scale_padding-top1
+        .container
+          %table.table-default.col-md-3
+            %tbody
+              %tr
+                %th.text-right Invoice No : &nbsp;
+                %td
+                  / Invoice number here
+              %tr
+                %th.text-right PO No : &nbsp;
+                %td
+                  / PO number here
+              %tr
+                %th.text-right Sales Order No : &nbsp;
+                %td
+                  / Sales order number here
+          %table.table-default.col-md-3
+            %tbody
+              %tr
+                %th.text-right Invoice Date : &nbsp;
+                %td
+                  / Invoice number here
+              %tr
+                %th.text-right PO Date : &nbsp;
+                %td
+                  / PO number here
+              %tr
+                %th.text-right Sales Order Date : &nbsp;
+                %td
+                  / Sales order number here
+          %table.table-default.col-md-3
+            %tbody
+              %tr
+                %th.text-right Amount ($) : &nbsp;
+                %td
+                  / Invoice number here
+      .row.small_scale_padding-top1.small_scale_padding-bottom1
+        %table.table.table-hover.table-stripped
+          %thead
+            %tr
+              %th No
+              %th Event No
+              %th Order No
+              %th Date Ordered
+              %th Part No
+              %th Description
+              %th Ticket No
+              %th Serial No
+              %th Expected Amount
+              %th Amount ($)
+          %tbody
+            - SoPo.all.each_with_index do |so_po, index|
+              %tr
+                %td
+                  = (index+1)
+                %td
+                  / Add Event No
+                %td
+                  / Add Order Date
+                %td
+                  / Add Date Events
+                %td
+                  / Add Part No
+                %td
+                  / Add Description
+                %td
+                  / Add Ticket No
+                %td
+                  / Add Serial No
+                %td
+                  / Add Expected Amount
+                %td
+                  / Add Amount ($)
+      .row
+        .col-md-4
+          = label_tag "Note :"
+          /Note here
+        .col-md-4
+          = label_tag "Invoice Note :"
+          /Invoice note here

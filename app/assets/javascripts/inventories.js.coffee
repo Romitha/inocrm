@@ -27,6 +27,7 @@ window.Inventories =
     @remove_warranty_click()
     @add_warranty_click()
     @need_serial_or_batch()
+    @invoice_datepicker()
     return
 
   need_serial_or_batch: ->
@@ -810,3 +811,6 @@ window.Inventories =
     else
       $(".for_store_and_branch").addClass("hide")
     return
+
+  invoice_datepicker: () ->
+    $('#datetimepicker1').datetimepicker();
