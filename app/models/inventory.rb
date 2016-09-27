@@ -79,11 +79,11 @@ class Inventory < ActiveRecord::Base
 
   validates_presence_of [:store_id, :product_id, :stock_quantity, :available_quantity, :reserved_quantity, :created_by]
 
-  after_create :update_relation_index
+  after_save :update_relation_index
 
   def update_relation_index
     [:inventory_product].each do |parent|
-      self.send(parent).update_index
+      parent.to_s.classify.constantize.find(self.send(parent).id).update_index
       
     end
   end
@@ -92,6 +92,7 @@ end
 class InventoryProduct < ActiveRecord::Base
   self.table_name = "mst_inv_product"
 
+  # https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html will be describing more...
   include Tire::Model::Search
   include Tire::Model::Callbacks
 
@@ -213,9 +214,10 @@ class InventoryProduct < ActiveRecord::Base
           # puts params[:store_id]
         end
       end
-      sort { by :created_at, {order: :desc} } if params[:query].present?
+      sort { by :created_at, {order: "desc", ignore_unmapped: true} }
       # filter :range, published_at: { lte: Time.zone.now}
       # raise to_curl
+      highlight :description => { :number_of_fragments => 3 }, :options => { :tag => "<strong class='highlight'>" }
     end
   end
 
@@ -423,7 +425,7 @@ class InventoryBatch < ActiveRecord::Base
           must { string params[:query] } if params[:query].present?
         end
       end
-      sort { by :created_at, "desc" }
+      sort { by :created_at, {order: "desc", ignore_unmapped: true} }
     end
   end
 
@@ -506,7 +508,7 @@ class InventorySerialItem < ActiveRecord::Base
           # puts params[:store_id]
         end
       end
-      sort { by :created_at, "desc" }
+      sort { by :created_at, {order: "desc", ignore_unmapped: true} }
       # filter :range, published_at: { lte: Time.zone.now}
       # raise to_curl
     end

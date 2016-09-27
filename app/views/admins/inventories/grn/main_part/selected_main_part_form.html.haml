@@ -278,10 +278,10 @@
                   = g.input :remaining_quantity, as: :hidden, input_html: {value: 1}
                   = g.input :current_unit_cost, as: :hidden, input_html: {value: 0}
                   = g.input :currency_id, as: :hidden, input_html: {value: f.object.grn_serial_items.first.grn_item.currency_id}
-                  = g.input :product_id, as: :hidden, input_html: {class: "dynamic_main_product_id"}
+                  = g.input :product_id, as: :hidden, input_html: {class: "applicable_product_id"}
 
                   = g.input :current_user_id, as: :hidden, input_html: {value: current_user.id}
-                  = g.input :main_product_id, as: :hidden, input_html: {class: "dynamic_main_product_id"}
+                  = g.input :main_product_id, as: :hidden, input_html: {class: "applicable_product_id"}
                   .col-md-2
                     = g.input :unit_cost, as: :string, required: true
                   .col-md-10

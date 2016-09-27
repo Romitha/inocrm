@@ -760,6 +760,7 @@ window.Inventories =
     $("##{ref_dom}").prev().find(".product_info:eq(0)").html _this.data("content")
 
     $("##{ref_dom}").prev().find(".dynamic_main_product_id:eq(0)").val(_this.data("productid"))
+    $(".applicable_product_id").val(_this.data("productid"))
 
   selected_quantity: (e)->
     selected_quantity = parseInt($("#selected_quantity").text())

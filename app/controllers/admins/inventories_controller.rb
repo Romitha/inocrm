@@ -594,7 +594,11 @@ module Admins
           params[:query] = refined_search
         end
 
-        @prns = InventoryPrn.search(params)
+        begin
+          @prns = InventoryPrn.search(params)
+        rescue Exception => e
+          flash[:alert] = "There are no Purchase recieve notes. Please generate and continue..."
+        end
 
         render "admins/inventories/po/search_prn"
 
@@ -1126,25 +1130,18 @@ module Admins
 
                 # iss_grn_serial_item_id  = nil
                 iss_grn_item_id  = grn_batch.grn_item_id
-                # iss_grn_serial_part_id  = nil
-                # iss_main_part_grn_serial_item_id  = nil
 
 
-                # @grn_batch.update "remaining_quantity = remaining_quantity-#{grn_batch_issued_qty}"#remaining_quantity: (grn_batch.remaining_quantity- grn_batch_issued_qty)
                 grn_batch.remaining_quantity = ( grn_batch.remaining_quantity.to_f-grn_batch_issued_qty.to_f )
                 grn_batch.grn_item.decrement! :remaining_quantity, grn_batch_issued_qty
 
-                # @grn_batch.grn_item.update "remaining_quantity = remaining_quantity-#{grn_batch_issued_qty}"#remaining_quantity: (grn_batch.grn_item.remaining_quantity- grn_batch_issued_qty)
                 [:stock_quantity, :available_quantity].each do |attrib|
                   @inventory.decrement! attrib, grn_batch_issued_qty if @inventory.present?
                 end
-                # @inventory.update "stock_quantity = stock_quantity-#{grn_batch_issued_qty} and available_quantity = available_quantity-#{grn_batch_issued_qty}" if @inventory.present?
 
                 gin_source.attributes = gin_source.attributes.merge(grn_item_id: iss_grn_item_id, unit_cost: tot_cost_price, returned_quantity: 0)#inv_gin_source                    
                 gin_source.gin_item = gin_item
 
-                # issued = true
-                # iss_quantity += grn_batch_issued_qty
               end
             end
 
@@ -1162,15 +1159,12 @@ module Admins
 
                   grn_item.decrement! :remaining_quantity, grn_item_issued_qty
 
-                  # grn_item.update "remaining_quantity = remaining_quantity-#{grn_item_issued_qty}"#remaining_quantity: (grn_item.remaining_quantity - grn_item_issued_qty)
                   [:stock_quantity, :available_quantity].each do |attrib|
                     @inventory.decrement! attrib, grn_item_issued_qty if @inventory.present?
                   end
-                  # @inventory.update "stock_quantity = stock_quantity-#{grn_item_issued_qty} and available_quantity = available_quantity-#{grn_item_issued_qty}" if @inventory.present?
 
                   gin_item.gin_sources.build(grn_item_id: grn_item.id, issued_quantity: grn_item_issued_qty, unit_cost: tot_cost_price, returned_quantity: 0)#inv_gin_source
 
-                  # issued = true
                   iss_quantity1 += grn_item_issued_qty
                 end
               end
@@ -1180,24 +1174,9 @@ module Admins
           end
         end
 
-        # if issued
-          #gin = @srn_item.srn.gins.create(created_by: current_user.id, created_at: DateTime.now, gin_no: CompanyConfig.first.increase_inv_last_gin_no, store_id: @srn_item.srn.store.id, remarks: (@spare_part_note || @onloan_note) )#inv_gin
         gin_item.returned_quantity = 0
-        # gin_item.attributes = gin_item.attributes.merge(
-        # # issued_quantity: iss_quantity,
-        # # currency_id: currency_id,
-        # returned_quantity: 0,
-        # # returnable: returnable,
-        # # spare_part: @spare_part
-        # )#inv_gin_item
 
         gin_item.srn_item.update closed: (gin_item.srn_item.quantity <= gin_item.srn_item.gin_items.sum(:issued_quantity))
-
-        # save_gin = true
-
-        # else
-        #   flash[:error] = iss_from_inventory_not_updated ? "Trying to issue from inventory not updated GRN" : "Stock Remaining Quantity is zero."
-        # end
 
       end
 
