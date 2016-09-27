@@ -138,9 +138,6 @@ class InventoriesController < ApplicationController
       params[:query] = ("stores.id:#{store_id}" if store_id.present?)
     end
     @inventory_products = InventoryProduct.search(params)
-    puts "*******"
-    puts @inventory_products.map { |e| e.id }
-    puts "*******"
 
     if @store
       @total_sum_of_stock_cost = @inventory_products.sum{|pr| pr.grn_serial_items.sum{|g| g.grn_item.current_unit_cost.to_f + g.inventory_serial_item.inventory_serial_items_additional_costs.sum{|c| c.cost.to_f }} + pr.grn_batches.sum{|g| g.grn_item.current_unit_cost.to_f * g.remaining_quantity.to_f } + pr.grn_items.sum{|g| g.remaining_quantity.to_f * g.current_unit_cost.to_f } }

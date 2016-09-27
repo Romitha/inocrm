@@ -1,4 +1,5 @@
 - pr = @inv_pro
+- inventories = @store.inventories.where(product_id: pr.id) if @store.present?
 .col-md-12
   / %h4.strong Store: #{Inventory.find_by_store_id(@store).store_name}
 .col-md-4
@@ -8,13 +9,14 @@
   Item Description:
   = pr.description
 %strong
-  .col-md-4
-    Stock Quantity : #{Inventory.find_by_product_id(pr.id).try(:stock_quantity)}
-    /#{Inventory.find_by_store_id(@store).stock_quantity}
-  .col-md-4
-    Reserved Quantity : #{Inventory.find_by_store_id(@store).reserved_quantity}
-  .col-md-4
-    Max Quantity : #{Inventory.find_by_store_id(@store).max_quantity}
+  - if inventories.present?
+    .col-md-4
+      Stock Quantity : #{inventories.sum(:stock_quantity)}
+      /#{Inventory.find_by_store_id(@store).stock_quantity}
+    .col-md-4
+      Reserved Quantity : #{inventories.sum(:reserved_quantity)}
+    .col-md-4
+      Max Quantity : #{inventories.sum(:max_quantity) }
 .col-md-4
   Unit: #{pr.inventory_unit.unit}
 .col-md-4
