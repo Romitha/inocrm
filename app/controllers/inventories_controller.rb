@@ -132,10 +132,10 @@ class InventoriesController < ApplicationController
       refined_inventory_product = params[:search_inventory][:inventory_product].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
       # refined_inventory_serial_items = params[:search_inventory].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
 
-      refined_search = [refined_inventory_product, ("stores.id:#{store_id}" if store_id.present?)].map{|v| v if v.present? }.compact.join(" AND ")
+      refined_search = [refined_inventory_product, (store_id.present? ? "stores.id:#{store_id}" : "_exists_:stores")].map{|v| v if v.present? }.compact.join(" AND ")
       params[:query] = refined_search
     else
-      params[:query] = ("stores.id:#{store_id}" if store_id.present?)
+      params[:query] = (store_id.present? ? "stores.id:#{store_id}" : "_exists_:stores")
     end
     @inventory_products = InventoryProduct.search(params)
 
