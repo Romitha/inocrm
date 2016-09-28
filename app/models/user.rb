@@ -259,7 +259,7 @@ class SbuEngineer < ActiveRecord::Base
   self.table_name = "mst_spt_sbu_engineer"
 
   belongs_to :sbu, foreign_key: :sbu_id
-  belongs_to :engineer, class_name: "User", foreign_key: :engineer_id
+  belongs_to :engineer, ->(u) { u.roles.any?{|r| r.bpm_module_roles.any?{|b| b.code == "supp_engr"} } }, class_name: "User", foreign_key: :engineer_id
 
   def is_used_anywhere?
     # engineer.present?

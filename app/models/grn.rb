@@ -96,12 +96,15 @@ class GrnItem < ActiveRecord::Base
   has_many :grn_item_current_unit_cost_histories
   accepts_nested_attributes_for :grn_item_current_unit_cost_histories, allow_destroy: true
 
-  after_create :update_relation_index
+  after_save :update_relation_index
 
   def update_relation_index
     [:inventory_serial_items].each do |children|
       self.send(children).each do |child|
-        child.update_index
+        # child.update_index
+        # parent.to_s.classify.constantize.find(self.send(parent).id).update_index
+        children.to_s.classify.constantize.find(child.id).update_index
+
       end
     end
 
