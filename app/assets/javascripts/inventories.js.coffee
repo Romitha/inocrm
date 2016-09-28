@@ -708,14 +708,6 @@ window.Inventories =
 
   assign_main_i_product_for_srn: (elem, result_out_dom)->
     store_id = $(elem).data("storeid")
-    # product_type = $(elem).data("producttype")
-    # $.get "/admins/inventories/srn?store_id=#{store_id}&srn_callback=call_search&product_type=#{product_type}"
-    # if product_type == "product_id"
-    #   setTimeout ( ->
-    #     $("#new_srn .fields").last().find(".mainStoreIdPass").data("storeId", store_id)
-    #     console.log "product_id"
-    #   ), 200
-    # return
     console.log store_id
 
   search_product_for_part: (elem)->
