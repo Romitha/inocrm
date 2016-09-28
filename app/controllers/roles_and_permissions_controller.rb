@@ -28,7 +28,7 @@ class RolesAndPermissionsController < ApplicationController
     if @role.save
       @role.rpermission_ids = rpermission_ids
       flash[:notice] = "Roles and Permissions are successfully assigned"
-      redirect_to edit_organization_url(@organization)
+      redirect_to new_organization_roles_and_permission_url(@organization)
     else
       flash[:error] = "Roles and Permissions are not successfully assigned. Please correct those errors and try again"
       redirect_to new_organization_roles_and_permission_url(@organization)
