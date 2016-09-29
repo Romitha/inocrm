@@ -1,0 +1,67 @@
+= paginate @customers_suppliers, remote: true, method: :get
+
+- if @customers_suppliers.any?
+  %hr
+  .row
+    .col-md-1.strong{style: "text-align: center;"} No
+    .col-md-2.strong Name
+    .col-md-2.strong Address
+    .col-md-2.strong Phone No
+    .col-md-2.strong Dealer type
+    .col-md-2.strong Industry type
+    .col-md-1.strong Action
+  %hr
+
+  - @customers_suppliers.each_with_index do |pr, index|
+    - content_for :customer_supplier_p_more, flush: true do
+      more
+
+    - content_for :select_result, flush: true do
+      %dl.dl-horizontal
+        %dt Supplier:
+        %dd= pr.name
+        %dt Dealer type:
+        %dd
+          %ul.padding0
+            - pr.accounts_dealer_types.each do |dealer|
+              %li= dealer.dealer_name
+        %dt Industry type
+        %dd= pr.industry_type.name
+        %dt Address
+        %dd
+          %ul.padding0
+            - pr.addresses.each do |address|
+              %li= address.full_address
+        %dt Phone No
+        %dd
+          %ul.padding0
+            - pr.contact_numbers.each do |contact_number|
+              %li= contact_number.value
+
+        - if @store
+          %dt Stock in hand
+          %dd= pr.inventories.map { |i| i.stock_quantity if i.store_id.to_i == @store.id }.compact.join(", ")
+
+    .row
+      .col-md-1{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Name: #{pr.name}", "data-content"=> yield(:customer_supplier_p_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }= index+1
+      .col-md-2= pr.name
+      .col-md-2
+        %ul.padding0
+          - pr.addresses.each do |address|
+            %li= address.full_address
+      .col-md-2
+        - pr.contact_numbers.each do |contact_number|
+          %li= contact_number.value
+
+      .col-md-2
+        %ul.padding0
+          - pr.accounts_dealer_types.each do |dealer|
+            %li= dealer.dealer_name
+
+      .col-md-2= pr.industry_type.name
+
+      .col-md-1= link_to "Select", (@select_path || "#"), (@select_options || {}).merge({data: {content: (yield :select_result ), customersupplierid: pr.id }})
+
+    %hr
+
+= paginate @customers_suppliers, remote: true, method: :get
