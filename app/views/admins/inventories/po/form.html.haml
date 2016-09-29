@@ -58,7 +58,7 @@
                 %dt Item description:
                 %dd= i.object.inventory_prn_item.inventory_product.description
                 %dt Balance to be issued:
-                %dd= @prn.inventory_prn_items.sum(:quantity) - i.object.inventory_prn_item.inventory_product.inventory_po_items.sum(:quantity)
+                %dd= i.object.inventory_prn_item.quantity - i.object.inventory_prn_item.inventory_po_items.sum(:quantity)
                 %dt Order unit
                 %dd= i.object.inventory_prn_item.inventory_product.inventory_unit.unit
                 %dt Stock in hand
@@ -85,7 +85,7 @@
                   %dt Unit cost
                   %dd= last_po_item.unit_cost
                   %dt Total recieved quantity
-                  %dd= i.object.inventory_prn_item.inventory_product.inventory_po_items.sum(:quantity)
+                  %dd= last_po_item.inventory_po.inventory_po_items.sum(:quantity)
                   %dt Created by
                   %dd= last_po_item.inventory_po.created_by_user.full_name
                   %dt PO Unit
@@ -99,7 +99,7 @@
             = i.link_to_remove class: "remove_c_t_v_link", title: "Remove item" do
               %span.glyphicon.glyphicon-remove-sign
           .col-md-3
-            = i.input :quantity, required: true, as: :string, input_html: {value: @prn.inventory_prn_items.sum(:quantity) - i.object.inventory_prn_item.inventory_product.inventory_po_items.sum(:quantity)}
+            = i.input :quantity, required: true, as: :string, input_html: {value: i.object.inventory_prn_item.quantity - i.object.inventory_prn_item.inventory_po_items.sum(:quantity)}
           .col-md-3
             = i.association :inventory_unit, label_method: :unit, required: true
           .col-md-2

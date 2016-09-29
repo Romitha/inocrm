@@ -581,18 +581,19 @@ module Admins
       if params[:prn_id].present?
         @prn = InventoryPrn.find params[:prn_id]
         @po = InventoryPo.new
-        @prn.inventory_prn_items.each do |prn_item|
+        @prn.inventory_prn_items.where(closed: false).each do |prn_item|
           @po.inventory_po_items.build quantity: prn_item.quantity, prn_item_id: prn_item.id
         end
         @store = @prn.store
         render "admins/inventories/po/form"
       else
+        refined_search = "closed:false"
         if params[:search].present?
           refined_prn = params[:search_prn].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
 
-          refined_search = [refined_prn, "closed:false"].map{|v| v if v.present? }.compact.join(" AND ")
-          params[:query] = refined_search
+          refined_search = [refined_prn, refined_search].map{|v| v if v.present? }.compact.join(" AND ")
         end
+        params[:query] = refined_search
 
         @prns = InventoryPrn.search(params)
         # begin
@@ -607,6 +608,7 @@ module Admins
 
     def create_po
       Organization
+      Inventory
       @po = InventoryPo.new po_params
 
       respond_to do |format|
@@ -614,8 +616,11 @@ module Admins
         @store = @prn.store
 
         if @po.save
-          # CompanyConfig.first.increase_inv_last_po_no
-          @po.update closed: (@po.inventory_po_items.sum(:quantity) >= @prn.inventory_prn_items.sum(:quantity))
+          @prn.inventory_prn_items.each do |prn_item|
+            prn_item.update closed: true if prn_item.quantity <= prn_item.inventory_po_items.sum(:quantity)
+          end
+          @prn.update closed: true if @prn.inventory_prn_items.all?{ |e| e.closed }
+
           flash[:notice] = "Successfully saved"
           format.html{ redirect_to po_admins_inventories_url }
         else

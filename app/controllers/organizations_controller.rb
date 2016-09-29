@@ -39,6 +39,7 @@ class OrganizationsController < ApplicationController
         account = @organization.account
         account.update created_by: current_user.id, active: true
         account.dealer_types << DealerType.find_by_code(params[:category])
+        Organization.find(@organization.id).update_index
 
         format.html {redirect_to @organization, notice: "#{@organization.category} is successfully created."}
       else
