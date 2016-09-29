@@ -5,7 +5,7 @@
       = hidden_field_tag "type", @select_options['type']
       .col-md-4
         = label_tag "Dealer type"
-        = select_tag "search_customers_suppliers[organization][accounts_dealer_types.dealer_id]", options_from_collection_for_select(DealerType.all, :id, :name, nil), include_blank: true, class: "form-control", id: "search_customers_suppliers_brand"
+        = select_tag "search_customers_suppliers[organization][accounts_dealer_types.dealer_id]", options_from_collection_for_select(DealerType.where(id: (@select_options['type'] == 'customer' ? [3, 4] : [1, 2])), :id, :name, nil), include_blank: true, class: "form-control", id: "search_customers_suppliers_brand"
       .col-md-4
         = label_tag "Industry type"
         = select_tag "search_customers_suppliers[organization][industry_type.id]", options_from_collection_for_select(IndustryType.all, :id, :name, nil), include_blank: true, class: "form-control", id: "search_customers_suppliers_product"

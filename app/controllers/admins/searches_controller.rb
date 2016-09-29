@@ -220,7 +220,7 @@ module Admins
         @display_method.merge! inpage: {render_id: params[:render_id]}
       end
       @select_options = session[:select_options]
-      refined_search = "accounts_dealer_types.dealer_code:#{((@select_options and @select_options[:type]) or params[:type]) == 'customer' ? '(CUS OR INDCUS)' : '(SUP OR INDSUP)'}"
+      refined_search = "accounts_dealer_types.dealer_code:#{((@select_options and @select_options[:type] == 'customer') or params[:type]) == 'customer' ? '(CUS OR INDCUS)' : '(SUP OR INDSUP)'}"
       if params[:search].present?
         refined_customers_suppliers = params[:search_customers_suppliers][:organization].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
 

@@ -153,8 +153,6 @@ class Organization < ActiveRecord::Base
       query do
         boolean do
           must { string params[:query] } if params[:query].present?
-          # must { term "stores.id", params[:store_id] } if params[:store_id].present?
-          # puts params[:store_id]
         end
       end
       sort { by :created_at, {order: "desc", ignore_unmapped: true} }
@@ -184,6 +182,7 @@ class Organization < ActiveRecord::Base
     )
 
   end
+
 end
 
 class OrganizationType < ActiveRecord::Base
