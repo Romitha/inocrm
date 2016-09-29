@@ -45,7 +45,6 @@ Feature: Adding and viewing brands
   #   When brandName or brandCode is already available
   #   Then I should see error message like brand name already exist
 
-  @data_availability
   Scenario Outline: Checking availability of data from database.
     Given within each id <wrapper>
     Given I able to see <code> in the hml dom class inline_edit

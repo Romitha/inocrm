@@ -72,3 +72,20 @@ window.Users =
         else
           alert "FSR is created."
         window.location.href= "/tickets/#{data['ticket_id']}"
+
+  search_customers: (elem)->
+    modal_id = unless $(elem).data("modalid") is "undefined" then $(elem).data("modalid") else ""
+    render_id = unless $(elem).data("renderid") is "undefined" then $(elem).data("renderid") else ""
+    remote = unless $(elem).data("remote") is "undefined" then $(elem).data("remote") else ""
+    select_path = unless $(elem).data("selectpath") is "undefined" then $(elem).data("selectpath") else ""
+    select_options = unless $(elem).data("selectoptions") is "undefined" then $(elem).data("selectoptions") else ""
+
+    $.get("/admins/searches/search_customers_suppliers?render_id=#{render_id}&modal_id=#{modal_id}&remote=#{remote}&select_path=#{select_path}&select_options=#{select_options}").fail(-> alert "Something went wrong in search engine. Please rectify with system administrator.")
+
+  assign_customer: (elem, dom1, ref_dom)->
+    _this = $(elem)
+    $("##{dom1}").modal("hide");
+    console.log $("##{ref_dom}").prev().attr("id")#find(".product_info:eq(0)").length
+    $("##{ref_dom}").prev().find(".customer_supplier_info:eq(0)").html _this.data("content")
+
+    $("##{ref_dom}").prev().find(".dynamic_customer_supplier_id:eq(0)").val(_this.data("customersupplierid"))

@@ -7,12 +7,12 @@ class AddPoTables < ActiveRecord::Migration
       t.column :store_id, "INT UNSIGNED NOT NULL"
       t.column :currency_id, "INT UNSIGNED NOT NULL"
       t.column :created_by, "INT UNSIGNED NOT NULL"
-      t.column :approved_by, "INT UNSIGNED NOT NULL"
+      t.column :approved_by, "INT UNSIGNED"
 
       t.datetime :delivery_date
       t.datetime :approved_at
 
-      t.string :po_no
+      t.string :po_no, null: false
       t.string :your_ref
 
       t.text :payment_term

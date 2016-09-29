@@ -116,6 +116,7 @@ class InventoryProduct < ActiveRecord::Base
   has_many :grn_items, foreign_key: :product_id
   has_many :grn_serial_items, through: :grn_items
   has_many :grn_batches, through: :grn_items
+  has_many :only_grn_items, -> { only_grn_items }, class_name: "GrnItem", foreign_key: :product_id
 
   has_many :ticket_spare_part_non_stocks, foreign_key: :inv_product_id
   has_many :approved_ticket_spare_part_non_stocks, class_name: "TicketSparePartNonStock", foreign_key: :approved_inv_product_id
@@ -123,12 +124,14 @@ class InventoryProduct < ActiveRecord::Base
   has_many :inventory_prn_items, foreign_key: :product_id
   accepts_nested_attributes_for :inventory_prn_items, allow_destroy: true
   has_many :inventory_prns, through: :inventory_prn_items
+  has_many :inventory_po_items, through: :inventory_prn_items
 
   validates_presence_of [:unit_id, :category3_id, :serial_no]
   validates_uniqueness_of :serial_no, scope: :category3_id
   validates :serial_no, :length => { :maximum => 6 }
 
   has_many :dyna_columns, as: :resourceable, autosave: true
+
 
   after_save do |inventory|
     inventory.generated_code = inventory.generated_item_code
@@ -193,11 +196,16 @@ class InventoryProduct < ActiveRecord::Base
     inventory_prn_items.last
   end
 
+  def last_po_item
+    inventory_po_items.last
+  end
+
   mapping do
     indexes :inventory_product_info, type: "nested", include_in_parent: true
     indexes :inventory_unit, type: "nested", include_in_parent: true
     indexes :stores, type: "nested", include_in_parent: true
     indexes :grn_items, type: "nested", include_in_parent: true
+    indexes :only_grn_items, type: "nested", include_in_parent: true
     indexes :grn_batches, type: "nested", include_in_parent: true
     indexes :grn_serial_items, type: "nested", include_in_parent: true
     indexes :inventory_batches, type: "nested", include_in_parent: true
@@ -271,6 +279,14 @@ class InventoryProduct < ActiveRecord::Base
           },
         },
         grn_items: {
+          only: [:id, :current_unit_cost, :remaining_quantity],
+          include: {
+            grn: {
+              only: [:grn_no, :currency_id, :created_at, :store_id],
+            },
+          },
+        },
+        only_grn_items: {
           only: [:id, :current_unit_cost, :remaining_quantity],
           include: {
             grn: {
@@ -779,41 +795,43 @@ class InventoryPo < ActiveRecord::Base
   has_many :inventory_po_taxes, foreign_key: :po_id
   accepts_nested_attributes_for :inventory_po_taxes, allow_destroy: true
 
-  mapping do
-    indexes :products, type: "nested", include_in_parent: true
-  end
+  validates_presence_of [:supplier_id, :store_id, :po_no, :discount_amount]
 
-  def self.search(params)  
-    tire.search(page: (params[:page] || 1), per_page: 10) do
-      query do
-        boolean do
-          must { string params[:query] } if params[:query].present?
-          must { range :created_at, lte: params[:range_to].to_date } if params[:range_to].present?
-          must { range :created_at, gte: params[:range_from].to_date } if params[:range_from].present?
-          # must { term :author_id, params[:author_id] } if params[:author_id].present?
-        end
-      end
-      sort { by :created_at, "desc" }
-      highlight customer_name: {number_of_fragments: 0}, ticket_status_name: {number_of_fragments: 0}, :options => { :tag => '<strong class="highlight">' } if params[:query].present?
-      # filter :range, published_at: { lte: Time.zone.now}
-      # raise to_curl
-    end
-  end
+  # mapping do
+  #   indexes :products, type: "nested", include_in_parent: true
+  # end
 
-  def to_indexed_json
-    Warranty
-    to_json(
-      only: [:created_at, :cus_chargeable, :id],
-      methods: [:customer_name, :ticket_status_name, :warranty_type_name, :support_ticket_no],
-      include: {
-        products: {
-          only: [:id, :serial_no, :model_no, :product_no, :created_at],
-          methods: [:category_name, :warranty_type_name, :brand_name],
-        }
-      }
-    )
+  # def self.search(params)  
+  #   tire.search(page: (params[:page] || 1), per_page: 10) do
+  #     query do
+  #       boolean do
+  #         must { string params[:query] } if params[:query].present?
+  #         must { range :created_at, lte: params[:range_to].to_date } if params[:range_to].present?
+  #         must { range :created_at, gte: params[:range_from].to_date } if params[:range_from].present?
+  #         # must { term :author_id, params[:author_id] } if params[:author_id].present?
+  #       end
+  #     end
+  #     sort { by :created_at, "desc" }
+  #     highlight customer_name: {number_of_fragments: 0}, ticket_status_name: {number_of_fragments: 0}, :options => { :tag => '<strong class="highlight">' } if params[:query].present?
+  #     # filter :range, published_at: { lte: Time.zone.now}
+  #     # raise to_curl
+  #   end
+  # end
 
-  end
+  # def to_indexed_json
+  #   Warranty
+  #   to_json(
+  #     only: [:created_at, :cus_chargeable, :id],
+  #     methods: [:customer_name, :ticket_status_name, :warranty_type_name, :support_ticket_no],
+  #     include: {
+  #       products: {
+  #         only: [:id, :serial_no, :model_no, :product_no, :created_at],
+  #         methods: [:category_name, :warranty_type_name, :brand_name],
+  #       }
+  #     }
+  #   )
+
+  # end
 end
 
 class InventoryPoItem < ActiveRecord::Base
@@ -876,7 +894,7 @@ class InventoryPrn < ActiveRecord::Base
           # must { term :author_id, params[:author_id] } if params[:author_id].present?
         end
       end
-      sort { by :created_at, "desc" }
+      sort { by :created_at, {order: "desc", ignore_unmapped: true} }
       # highlight customer_name: {number_of_fragments: 0}, ticket_status_name: {number_of_fragments: 0}, :options => { :tag => '<strong class="highlight">' } if params[:query].present?
       # filter :range, published_at: { lte: Time.zone.now}
       # raise to_curl

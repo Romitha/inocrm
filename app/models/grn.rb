@@ -87,6 +87,7 @@ class GrnItem < ActiveRecord::Base
   has_many :grn_serial_parts, foreign_key: :grn_item_id
   # has_many :inventory_serial_item_for_grn_serial_parts, through: :grn_serial_parts
   # has_many :inventory_serial_parts, through: :grn_serial_parts
+  scope :only_grn_items, -> { joins(:grn_serial_items, :grn_batches).where(inv_grn_batch: { grn_item_id: nil }, inv_grn_serial_item: { grn_item_id: nil })}
 
   has_many :damages
   accepts_nested_attributes_for :damages, allow_destroy: true

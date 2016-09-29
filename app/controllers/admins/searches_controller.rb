@@ -205,6 +205,35 @@ module Admins
       render "admins/searches/inventory/select_inventory_serial_part_more"
     end
 
+    def search_customers_suppliers
+      @remote = params[:remote].to_bool if params[:remote].present?
+      @display_method = {}
+      @select_path = params[:select_path] if params[:select_path].present?
+      if params[:select_options].present?
+        @select_options = Hash[params[:select_options].strip.split("<>").map { |e| e.strip.split(":") }]
+        session[:select_options] = @select_options
+      end
+
+      if params[:modal_id].present?
+        @display_method.merge! modal: {modal_id: params[:modal_id]}
+      elsif params[:render_id].present?
+        @display_method.merge! inpage: {render_id: params[:render_id]}
+      end
+      @select_options = session[:select_options]
+      refined_search = "accounts_dealer_types.dealer_code:#{((@select_options and @select_options[:type]) or params[:type]) == 'customer' ? '(CUS OR INDCUS)' : '(SUP OR INDSUP)'}"
+      if params[:search].present?
+        refined_customers_suppliers = params[:search_customers_suppliers][:organization].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
+
+        refined_search = [refined_search, refined_customers_suppliers].map{|v| v if v.present? }.compact.join(" AND ")
+
+      end
+      puts refined_search
+      params[:query] = refined_search
+      @customers_suppliers = Organization.search(params)
+
+      render "admins/searches/customers_suppliers/select_customers_suppliers"
+    end
+
     private
 
       def update_grn_item_params
