@@ -301,6 +301,8 @@ Rails.application.routes.draw do
     end
     resources :searches do
       collection do
+        get "search_customers_suppliers"
+
         get "search_grn"
         post "update_grn_cost"
         get "inventories"

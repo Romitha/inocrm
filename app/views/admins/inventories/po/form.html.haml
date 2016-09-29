@@ -1,19 +1,31 @@
+= link_to "Change store", po_admins_inventories_path
 = simple_nested_form_for @po, url: create_po_admins_inventories_path, html: {class: "validate_form"} do |f|
+  = hidden_field_tag :prn_id, @prn.id
   = f.input :created_by, as: :hidden, input_html: { value: current_user.id }
   / = f.input :po_no, as: :hidden, input_html: {value: CompanyConfig.first.next_inv_last_po_no}
   = f.input :store_id, as: :hidden, input_html: {value: @store.id }
   .row
-    / .col-md-6
-    /   %strong PO No:
-    /   = CompanyConfig.first.next_sup_last_po_no.to_s.rjust(5, INOCRM_CONFIG["inventory_po_no_format"])
+    .col-md-12
+      - if @po.errors.any?
+        %ul
+          - @po.errors.full_messages.each do |error|
+            %li.alert.alert-danger= error
+    .col-md-6
+      /   %strong PO No:
+      /   = CompanyConfig.first.next_sup_last_po_no.to_s.rjust(5, INOCRM_CONFIG["inventory_po_no_format"])
+      .customer_supplier
+        = f.input :supplier_id, as: :hidden, input_html: {class: "dynamic_customer_supplier_id" }
+        .customer_supplier_info
+      = link_to "javascript:void(0)", id: "add_customer", onclick: "Users.search_customers(this); return false;", data: {modalId: "modal_for_main_part", remote: "true", selectpath: "", selectoptions: "onclick:Users.assign_customer(this, 'modal_for_main_part', 'add_customer');<>type:supplier"} do
+        Select customer
+
     .col-md-6.text-right
       %strong Created by:
       = current_user.full_name
       %br/
       %strong Created at:
       = DateTime.now.strftime("%Y-%m-%d %H:%M")
-    .col-md-12
-      = link_to "Change store", po_admins_inventories_path
+
   .row
     .col-md-3
       = f.input :po_no, required: true
@@ -45,6 +57,8 @@
                 %dd= i.object.inventory_prn_item.inventory_product.generated_item_code
                 %dt Item description:
                 %dd= i.object.inventory_prn_item.inventory_product.description
+                %dt Balance to be issued:
+                %dd= @prn.inventory_prn_items.sum(:quantity) - i.object.inventory_prn_item.inventory_product.inventory_po_items.sum(:quantity)
                 %dt Order unit
                 %dd= i.object.inventory_prn_item.inventory_product.inventory_unit.unit
                 %dt Stock in hand
@@ -54,20 +68,30 @@
                 %dt PRN remarks
                 %dd= i.object.inventory_prn_item.remarks
             .col-md-6
-              - last_prn_item = i.object.inventory_prn_item.inventory_product.last_prn_item
-              - if last_prn_item.present?
-                %h4 Last PRN Information
+              - last_po_item = i.object.inventory_prn_item.inventory_product.last_po_item
+              - if last_po_item.present?
+                %h4 Last PO Information
                 %dl
                   %dt No:
-                  %dd= last_prn_item.inventory_prn.formated_prn_no
+                  %dd= last_po_item.inventory_po.po_no
+                  %dt Supplier
+                  %dd= last_po_item.inventory_po.supplier.name
+                  %dt Item status
+                  %dd= boolean_in_word last_po_item.inventory_po.closed, "Closed", "Open"
                   %dt Quantity
-                  %dd= last_prn_item.quantity
+                  %dd= last_po_item.quantity
                   %dt Date
-                  %dd= last_prn_item.inventory_prn.created_at.strftime(INOCRM_CONFIG["short_date_format"])
-                  %dt Total PO quantity
-                  %dd= last_prn_item.inventory_po_items.sum(:quantity)
+                  %dd= last_po_item.inventory_po.created_at.strftime(INOCRM_CONFIG["short_date_format"])
+                  %dt Unit cost
+                  %dd= last_po_item.unit_cost
+                  %dt Total recieved quantity
+                  %dd= i.object.inventory_prn_item.inventory_product.inventory_po_items.sum(:quantity)
                   %dt Created by
-                  %dd= last_prn_item.inventory_prn.created_by_user_full_name
+                  %dd= last_po_item.inventory_po.created_by_user.full_name
+                  %dt PO Unit
+                  %dd= last_po_item.inventory_unit.unit
+                  %dt Currency
+                  %dd= last_po_item.inventory_po.currency.code
         = i.input :prn_item_id, as: :hidden
         %hr
         .row
@@ -75,7 +99,7 @@
             = i.link_to_remove class: "remove_c_t_v_link", title: "Remove item" do
               %span.glyphicon.glyphicon-remove-sign
           .col-md-3
-            = i.input :quantity, required: true, as: :string
+            = i.input :quantity, required: true, as: :string, input_html: {value: @prn.inventory_prn_items.sum(:quantity) - i.object.inventory_prn_item.inventory_product.inventory_po_items.sum(:quantity)}
           .col-md-3
             = i.association :inventory_unit, label_method: :unit, required: true
           .col-md-2
@@ -84,11 +108,6 @@
             = i.input :unit_cost_grn, required: true, as: :string
           .col-md-12
             = i.input :remarks
-      / .row
-      /   .col-md-12
-      /     = f.link_to_add :inventory_po_items do
-      /       %span.glyphicon.glyphicon-plus-sign
-      /       Add Item
 
     .col-md-4
       %h4 Add Taxes
@@ -109,3 +128,11 @@
             Add tax
     .col-md-12
       = f.submit "Save", class: "btn btn-sm btn-success"
+
+#modal_for_main_part.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "modal_for_main_part", "aria-hidden" => true}
+  .modal-dialog.modal-lg
+    .modal-content
+      .modal-header
+        %h4.modal-title Select Suppliers
+      .modal-body
+      .modal-footer

@@ -17,6 +17,10 @@ class Address < ActiveRecord::Base
   belongs_to :district
   belongs_to :organization_contact_type, foreign_key: :type_id
 
+  def full_address
+    "#{address1}, #{address2}, #{address3}, #{city}"
+  end
+
 end
 
 class Province < ActiveRecord::Base

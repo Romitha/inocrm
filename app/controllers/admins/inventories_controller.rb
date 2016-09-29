@@ -594,11 +594,11 @@ module Admins
           params[:query] = refined_search
         end
 
-        begin
-          @prns = InventoryPrn.search(params)
-        rescue Exception => e
-          flash[:alert] = "There are no Purchase recieve notes. Please generate and continue..."
-        end
+        @prns = InventoryPrn.search(params)
+        # begin
+        # rescue Exception => e
+        #   flash[:alert] = "There are no Purchase recieve notes. Please generate and continue..."
+        # end
 
         render "admins/inventories/po/search_prn"
 
@@ -610,14 +610,19 @@ module Admins
       @po = InventoryPo.new po_params
 
       respond_to do |format|
+        @prn = InventoryPrn.find params[:prn_id]
+        @store = @prn.store
+
         if @po.save
-          CompanyConfig.first.increase_inv_last_po_no
+          # CompanyConfig.first.increase_inv_last_po_no
+          @po.update closed: (@po.inventory_po_items.sum(:quantity) >= @prn.inventory_prn_items.sum(:quantity))
           flash[:notice] = "Successfully saved"
+          format.html{ redirect_to po_admins_inventories_url }
         else
           flash[:alert] = "Unable to save. Please review."
+          format.html{ render "admins/inventories/po/form"}
         end
 
-        format.html{ redirect_to po_admins_inventories_url }
       end
     end
 
@@ -1323,7 +1328,7 @@ module Admins
       end
 
       def po_params
-        params.require(:inventory_po).permit(:id, :created_by, :store_id, :po_no, :delivery_date, :your_ref, :payment_term, :discount_amount, :currency_id, :remarks, :deliver_to, inventory_po_items_attributes: [ :id, :_destroy, :prn_item_id, :quantity, :unit_cost, :unit_cost_grn, :remarks ], inventory_po_taxes_attributes: [ :id, :_destroy, :tax, :amount ] )
+        params.require(:inventory_po).permit(:id, :created_by, :store_id, :supplier_id, :po_no, :delivery_date, :your_ref, :payment_term, :discount_amount, :currency_id, :remarks, :deliver_to, inventory_po_items_attributes: [ :id, :_destroy, :prn_item_id, :quantity, :unit_cost, :unit_id, :unit_cost_grn, :remarks ], inventory_po_taxes_attributes: [ :id, :_destroy, :tax, :amount ] )
       end
 
   end

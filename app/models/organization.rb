@@ -2,6 +2,9 @@ class Organization < ActiveRecord::Base
   resourcify
   mount_uploader :logo, LogoUploader
 
+  include Tire::Model::Search
+  include Tire::Model::Callbacks
+
   has_many :addresses, as: :addressable
   accepts_nested_attributes_for :addresses, allow_destroy: true
 
@@ -137,6 +140,50 @@ class Organization < ActiveRecord::Base
   def self.suppliers
     joins(accounts_dealer_types: :dealer_type).where("mst_dealer_types.code = 'SUP' or mst_dealer_types.code = 'INDSUP'").references(:dealer_type)
   end
+
+  mapping do
+    indexes :industry_type, type: "nested", include_in_parent: true
+    indexes :accounts_dealer_types, type: "nested", include_in_parent: true
+    indexes :addresses, type: "nested", include_in_parent: true
+    indexes :contact_numbers, type: "nested", include_in_parent: true
+  end
+
+  def self.search(params)
+    tire.search(page: params[:page], per_page: 10) do
+      query do
+        boolean do
+          must { string params[:query] } if params[:query].present?
+          # must { term "stores.id", params[:store_id] } if params[:store_id].present?
+          # puts params[:store_id]
+        end
+      end
+      sort { by :created_at, {order: "desc", ignore_unmapped: true} }
+    end
+  end
+
+  def to_indexed_json
+    to_json(
+      only: [:id, :name],
+      # methods: [:store_name],
+      include: {
+        industry_type: {
+          only: [:id, :name],
+        },
+        accounts_dealer_types: {
+          only: [:id],
+          methods: [:dealer_id, :dealer_name, :dealer_code],
+        },
+        addresses: {
+          only: [:id],
+          methods: [:full_address],
+        },
+        contact_numbers: {
+          only: [:value],
+        },
+      },
+    )
+
+  end
 end
 
 class OrganizationType < ActiveRecord::Base
@@ -265,6 +312,18 @@ class AccountsDealerType < ActiveRecord::Base
 
   belongs_to :dealer_type, foreign_key: :dealer_types_id
   belongs_to :account
+
+  def dealer_id
+    dealer_type.id
+  end
+
+  def dealer_name
+    dealer_type.name
+  end
+
+  def dealer_code
+    dealer_type.code
+  end
 end
 
 class DealerType < ActiveRecord::Base
