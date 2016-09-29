@@ -1,0 +1,24 @@
+#search_frame_customer_supplier
+  = form_tag search_customers_suppliers_admins_searches_path, method: :get, class: "form-horizontal", remote: @remote do
+    .row
+      = hidden_field_tag "from_where", params[:action]
+      = hidden_field_tag "type", @select_options['type']
+      .col-md-4
+        = label_tag "Dealer type"
+        = select_tag "search_customers_suppliers[organization][accounts_dealer_types.dealer_id]", options_from_collection_for_select(DealerType.all, :id, :name, nil), include_blank: true, class: "form-control", id: "search_customers_suppliers_brand"
+      .col-md-4
+        = label_tag "Industry type"
+        = select_tag "search_customers_suppliers[organization][industry_type.id]", options_from_collection_for_select(IndustryType.all, :id, :name, nil), include_blank: true, class: "form-control", id: "search_customers_suppliers_product"
+      .col-md-2
+        = label_tag "Name"
+        = text_field_tag "search_customers_suppliers[organization][name]", nil, :placeholder => "Name", class: "form-control"
+      .col-md-2
+        = label_tag "Phone no"
+        = text_field_tag "search_customers_suppliers[organization][contact_numbers.value]", nil, :placeholder => "Phone No", class: "form-control"
+
+    .row.small_scale_margin-top1
+      .col-md-1
+        .search
+          = submit_tag "Search", class: "btn btn-sm btn-warning", name: "search"
+
+#result_customers_suppliers
