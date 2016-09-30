@@ -18,7 +18,7 @@
 
   - @inventory_products.each_with_index do |pr, index|
     - if @store
-      - inventories = pr.inventories.map { |i| i if i.store_id.to_i == @store.id }.compact
+      - inventories = pr.inventories#.map { |i| i if i.store_id.to_i == @store.id }.compact
 
     - if @select_options and @select_options["clicked_area"] == "prn"
       - last_prn_item = InventoryProduct.find(pr.id).last_prn_item

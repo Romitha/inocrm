@@ -293,14 +293,6 @@ class InventoryProduct < ActiveRecord::Base
             },
           },
         },
-        only_grn_items: {
-          only: [:id, :current_unit_cost, :remaining_quantity],
-          include: {
-            grn: {
-              only: [:grn_no, :currency_id, :created_at, :store_id],
-            },
-          },
-        },
       }
     )
 

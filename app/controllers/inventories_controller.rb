@@ -140,14 +140,14 @@ class InventoriesController < ApplicationController
     end
     @inventory_products = InventoryProduct.search(params)
 
-    @total_sum_of_stock_cost = @inventory_products.sum{|pr| pr.grn_serial_items.sum{|g| g.grn_item.current_unit_cost.to_f + g.inventory_serial_item.inventory_serial_items_additional_costs.sum{|c| c.cost.to_f }} + pr.grn_batches.sum{|g| g.grn_item.current_unit_cost.to_f * g.remaining_quantity.to_f } + pr.only_grn_items.sum{|g| g.remaining_quantity.to_f * g.current_unit_cost.to_f } }
+    @total_sum_of_stock_cost = @inventory_products.sum{|pr| pr.inventory_product_info.need_serial ? (pr.grn_serial_items.sum{|g| g.grn_item.current_unit_cost.to_f + g.inventory_serial_item.inventory_serial_items_additional_costs.sum{|c| c.cost.to_f }}) : pr.inventory_product_info.need_batch ? pr.grn_batches.sum{|g| g.grn_item.current_unit_cost.to_f * g.remaining_quantity.to_f } : pr.grn_items.sum{|g| g.remaining_quantity.to_f * g.current_unit_cost.to_f } }
 
     if @store
-      @total_stock_quantity = @inventory_products.sum{|pr| pr.inventories.map { |i| i.stock_quantity.to_f if i.store_id.to_i == @store.id }.compact.sum }
-      @total_available_quantity = @inventory_products.sum{|pr| pr.inventories.map { |i| i.available_quantity.to_f if i.store_id.to_i == @store.id }.compact.sum }
+      @total_stock_quantity = @inventory_products.sum{|pr| pr.inventories.sum { |i| i.stock_quantity.to_f } }
+      @total_available_quantity = @inventory_products.sum{|pr| pr.inventories.sum { |i| i.available_quantity.to_f } }
     else
-    @total_stock_quantity = Inventory.sum(:stock_quantity)
-    @total_available_quantity = Inventory.sum(:available_quantity)
+      @total_stock_quantity = Inventory.sum(:stock_quantity)
+      @total_available_quantity = Inventory.sum(:available_quantity)
     end
     render "inventories/inventory_products/select_product"
   end
