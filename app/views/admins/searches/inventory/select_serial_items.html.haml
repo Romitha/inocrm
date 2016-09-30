@@ -1,29 +1,36 @@
 - pr = @inv_pro
-- inventories = @store.inventories.where(product_id: pr.id) if @store.present?
+- inventories = Inventory.where(product_id: pr.id) if @store.present?
 .col-md-12
-  / %h4.strong Store: #{Inventory.find_by_store_id(@store).store_name}
+  - if @store.present?
+    %h4.strong Store: #{inventories.find_by_store_id(@store.to_i).try(:name)}
 .col-md-4
-  Item Code:
+  %strong Item Code:
   = pr.generated_item_code
 .col-md-8
-  Item Description:
+  %strong Item Description:
   = pr.description
 %strong
   - if inventories.present?
     .col-md-4
-      Stock Quantity : #{inventories.sum(:stock_quantity)}
+      %strong Stock Quantity:
+      #{inventories.sum(:stock_quantity)}
       /#{Inventory.find_by_store_id(@store).stock_quantity}
     .col-md-4
-      Reserved Quantity : #{inventories.sum(:reserved_quantity)}
+      %strong Reserved Quantity:
+      #{inventories.sum(:reserved_quantity)}
     .col-md-4
-      Max Quantity : #{inventories.sum(:max_quantity) }
+      %strong Max Quantity:
+      #{inventories.sum(:max_quantity) }
 .col-md-4
-  Unit: #{pr.inventory_unit.unit}
+  %strong Unit:
+  #{pr.inventory_unit.unit}
 .col-md-4
-  Currency : #{pr.inventory_product_info.currency_type}
+  %strong Currency:
+  #{pr.inventory_product_info.currency_type}
 %strong
   .col-md-4
-    Issue Type: #{pr.fifo == true ? "FIFO" : "Not FIFO"}
+    %strong Issue Type:
+    #{pr.fifo == true ? "FIFO" : "Not FIFO"}
 
 = paginate @inventory_serial_items, remote: false, method: :get
 
@@ -41,15 +48,15 @@
   .col-md-1
     %strong Condition
   .col-md-1
-    %strong Status
-  .col-md-1
-    %strong{title: "Parts Not Completed"} P.N.Compl.
-  .col-md-1
-    %strong Scavenge
-  .col-md-1
-    %strong Damaged
+    %strong Currency
+  .col-md-1.text-right
+    %strong Current GRN Cost
+  .col-md-1.text-right
+    %strong Addition Cost:
   .col-md-1.text-right
     %strong Total Cost:
+  .col-md-1
+    %strong Available:
   .col-md-1
     %strong Action
 %hr
@@ -72,28 +79,20 @@
           %strong Expiry date:
           #{inventory_serial_item.expiry_date.to_date.strftime(INOCRM_CONFIG["short_date_format"])}
       %li
-        %strong Currency:
-        / = inventory_serial_item.inventory_product.inventory_product_info.try(:currency).try(:currency)
-        - inventory_serial_item.grn_items.each do |grn_item|
-          #{grn_item.currency.currency}
-
+        %strong Status
+        = inventory_serial_item.inventory_serial_item_status.try(:name)
       %li
-        %strong Current GRN Cost:
-        - inventory_serial_item.grn_items.each do |grn_item|
-          = number_with_precision grn_item.current_unit_cost, precision: 2
+        %strong{title: "Parts Not Completed"} P.N.Compl.
+        = boolean_in_word inventory_serial_item.parts_not_completed, "Yes", "No"
       %li
-        %strong Addition Cost:
-        = number_with_precision inventory_serial_item.inventory_serial_items_additional_costs.sum(:cost), precision: 2
+        %strong Scavenge
+        = boolean_in_word inventory_serial_item.scavenge, "Yes", "No"
       %li
         %strong Used
-        
         = boolean_in_word inventory_serial_item.used, "Yes", "No"
-        
-
       %li
-        %strong Available:
-        - inventory_serial_item.grn_items.each do |grn_item|
-          = grn_item.remaining_quantity
+        %strong Damaged
+        = boolean_in_word inventory_serial_item.damage, "Yes", "No"
 
     %strong Remarks:
     #{simple_format inventory_serial_item.remarks}
@@ -119,13 +118,14 @@
     .col-md-1
       = inventory_serial_item.product_condition.try :condition
     .col-md-1
-      = inventory_serial_item.inventory_serial_item_status.try(:name)
-    .col-md-1
-      = boolean_in_word inventory_serial_item.parts_not_completed, "Yes", "No"
-    .col-md-1
-      = boolean_in_word inventory_serial_item.scavenge, "Yes", "No"
-    .col-md-1
-      = boolean_in_word inventory_serial_item.damage, "Yes", "No"
+      - inventory_serial_item.grn_items.each do |grn_item|
+        #{grn_item.currency.currency}
+    .col-md-1.text-right
+      - inventory_serial_item.grn_items.each do |grn_item|
+        = number_with_precision grn_item.current_unit_cost, precision: 2
+    .col-md-1.text-right
+      = number_with_precision inventory_serial_item.inventory_serial_items_additional_costs.sum(:cost), precision: 2
+
     .col-md-1.text-right
       - add_cost = inventory_serial_item.inventory_serial_items_additional_costs.sum(:cost)
       - inventory_serial_item.grn_items.each do |grn_item|
@@ -133,6 +133,10 @@
         - crnt_ucost = grn_item.current_unit_cost
         - tot_cost = add_cost+(rem_q*crnt_ucost)
         = number_with_precision tot_cost, precision: 2
+    .col-md-1
+      - inventory_serial_item.grn_items.each do |grn_item|
+        = grn_item.remaining_quantity.present? ? "Yes" : "No"
+
     .col-md-1
       = link_to "Select", inventories_admins_searches_path(select_action: "select_serial_item_more", inventory_serial_item_id: inventory_serial_item.id, store: @store ), class: "btn btn-default btn-sm"
   %hr

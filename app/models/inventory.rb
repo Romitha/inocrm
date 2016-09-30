@@ -98,6 +98,7 @@ class InventoryProduct < ActiveRecord::Base
 
   belongs_to :inventory_category3, foreign_key: :category3_id
   belongs_to :created_by_user, class_name: "User", foreign_key: :created_by
+  belongs_to :updated_by_user, class_name: "User", foreign_key: :updated_by
 
   has_many :inventories, foreign_key: :product_id
   has_many :stores, through: :inventories, source: :organization
@@ -198,6 +199,12 @@ class InventoryProduct < ActiveRecord::Base
 
   def last_po_item
     inventory_po_items.last
+  def created_by_from_user
+    created_by_user.full_name
+  end
+
+  def updated_by_from_user
+    updated_by_user.full_name
   end
 
   mapping do
@@ -222,7 +229,7 @@ class InventoryProduct < ActiveRecord::Base
           # puts params[:store_id]
         end
       end
-      sort { by :created_at, {order: "desc", ignore_unmapped: true} }
+      sort { by :generated_item_code, {order: "asc", ignore_unmapped: true} }
       # filter :range, published_at: { lte: Time.zone.now}
       # raise to_curl
       highlight :description => { :number_of_fragments => 3 }, :options => { :tag => "<strong class='highlight'>" }
@@ -232,8 +239,8 @@ class InventoryProduct < ActiveRecord::Base
   def to_indexed_json
     Inventory
     to_json(
-      only: [:id, :description, :model_no, :product_no, :spare_part_no, :fifo, :created_at, :serial_no],
-      methods: [:category3_id, :category2_id, :category1_id, :category3_name, :category2_name, :category1_name, :generated_serial_no, :generated_item_code],
+      only: [:id, :description, :model_no, :product_no, :spare_part_no, :fifo, :created_at, :serial_no, :remarks, :created_by_user, :updated_by_user],
+      methods: [:category3_id, :category2_id, :category1_id, :category3_name, :category2_name, :category1_name, :generated_serial_no, :generated_item_code, :created_by_from_user, :updated_by_from_user],
       include: {
         inventory_unit: {
           only: [:unit],
@@ -448,7 +455,7 @@ class InventoryBatch < ActiveRecord::Base
   def to_indexed_json
     Inventory
     to_json(
-      only: [:id, :lot_no, :batch_no, :product_id, :remarks, :manufatured_date, :expiry_date, :created_at],
+      only: [:id, :lot_no, :batch_no, :product_id, :remarks, :manufatured_date, :expiry_date, :created_at, :remarks],
       include: {
         inventory_product: {
           only: [:id, :description, :model_no, :product_no, :spare_part_no, :created_at],

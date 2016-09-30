@@ -6,7 +6,10 @@
       / .col-md-3.store
       .col-md-12.store
         %strong Store:
-        = Organization.find_by_id(params[:store_id]).try(:name)
+        - if params[:all].present?
+          All Stores
+        - else
+          = Organization.find_by_id(params[:store_id]).try(:name)
       .col-md-12.brand
         = label_tag InventoryCategoryCaption.first.caption
         = select_tag "search_inventory[inventory_product][category1_id]", options_from_collection_for_select(InventoryCategory1.all, :id, :name, (params[:search_inventory] and params[:search_inventory][:category1_id])), include_blank: true, class: "form-control", id: "search_inventory_brand"
@@ -34,7 +37,7 @@
       .col-md-1
         .search
           = submit_tag "Search", class: "btn btn-sm btn-warning", name: "search"
-      .col-md-1
+      .col-md-1.hide
         .reset
           = link_to "#","role" => "button" ,onclick: "Searches.reset_searchinventory(); return false;", class: "btn btn-danger" do
             Cancel

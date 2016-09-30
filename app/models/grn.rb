@@ -26,13 +26,8 @@ class Grn < ActiveRecord::Base
 
   def to_indexed_json
     to_json(
-      only: [:id, :store_id, :grn_no, :created_by, :remarks, :po_no, :supplier_id, :created_at],
-      methods: [:store_name, :supplier_name, :grn_no_format, :formated_created_at],
-      include: {
-        created_by_user: {
-          methods: [:full_name],
-        }
-      }
+      only: [:id, :store_id, :grn_no, :created_by, :remarks, :po_no, :supplier_id, :created_at, :created_by_user],
+      methods: [:store_name, :supplier_name, :grn_no_format, :formated_created_at, :created_by_from_user],
     )
 
   end
@@ -51,6 +46,10 @@ class Grn < ActiveRecord::Base
 
   def formated_created_at
     created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
+  end
+
+  def created_by_from_user
+    created_by_user.full_name
   end
 
   belongs_to :store, class_name: "Organization"

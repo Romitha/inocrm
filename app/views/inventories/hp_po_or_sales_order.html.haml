@@ -6,10 +6,11 @@
     %strong.h4 Parts to be PO
   .col-md-6
     = label_tag InventoryCategoryCaption.first.caption
-    = select_tag "search_inventory[brand]", options_from_collection_for_select(InventoryCategory1.all, :id, :name, (params[:search_inventory] and params[:search_inventory][:brand])), include_blank: true
+    = select_tag "search_inventory[brand]", options_from_collection_for_select(ProductBrand.all, :id, :name, (params[:search_inventory] and params[:search_inventory][:brand])), include_blank: true
 
 .row
-  = paginate @ticket_spare_part, remote: true, method: :get, params: {controller: "inventories", action: "paginate_hp_po_sales_order", rendering_id: "#paginate_hp_po_sales", per_page: 3, rendering_file: "view_hp_po_sales"}
+  = paginate @ticket_spare_part, remote: false, method: :get
+  / = paginate @ticket_spare_part, remote: true, method: :get, params: {controller: "inventories", action: "paginate_hp_po_sales_order", rendering_id: "#paginate_hp_po_sales", per_page: 3, rendering_file: "view_hp_po_sales"}
 
   #paginate_hp_po_sales
   %table.table.table-hover

@@ -17,8 +17,6 @@
     %hr
     .row
       .col-md-2
-        = f.input :reserved_quantity
-      .col-md-2
         = f.input :reorder_level
       .col-md-2
         = f.input :reorder_quantity
@@ -28,6 +26,8 @@
         = f.input :safty_stock_quantity
       .col-md-2
         = f.input :lead_time_in_days
+      .col-md-2.hide
+        = f.input :reserved_quantity
     .row
       .col-md-4
         = label_tag "Rack"

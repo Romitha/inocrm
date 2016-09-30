@@ -53,10 +53,11 @@ class InventoriesController < ApplicationController
   def hp_po
     Inventory
     TicketSparePart
+    Product
     @create_so_po = SoPo.new
     @view_so_pos = SoPo.all
-    @ticket_spare_part = TicketSparePart.all.page(params[:page]).per(3)
-
+    # @ticket_spare_part = TicketSparePart.all.page(params[:page]).per(3)
+    @ticket_spare_part = Kaminari.paginate_array(TicketSparePart.all).page(params[:page]).per(10)
     render "inventories/hp_po_or_sales_order"
   end
 

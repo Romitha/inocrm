@@ -31,6 +31,7 @@ module Admins
     end
 
     def inventories
+      Grn
       Inventory
       User
       @remote = true
@@ -42,7 +43,12 @@ module Admins
       when "select_serial_items"
         @store = params[:store]
         @inv_pro = InventoryProduct.find params[:inv_pro_id] if params[:inv_pro_id].present?
-        @inventory_serial_items = Kaminari.paginate_array(@inv_pro.inventory_serial_items).page(params[:page]).per(10)
+        # **************
+        @inventory_serial_items_co = @inv_pro.grn_serial_items.map { |g| g.inventory_serial_item }
+        # **************
+        @inventory_serial_items = Kaminari.paginate_array(@inventory_serial_items_co).page(params[:page]).per(10)
+
+
         tot_cost = 0
         @ans = 0
         @inv_pro.inventory_serial_items.each do |inventory_serial_item|
@@ -73,7 +79,13 @@ module Admins
       when "select_batches"
         @store = params[:store]
         @inv_pro = InventoryProduct.find params[:inv_pro_id] if params[:inv_pro_id].present?
-        @inventory_batches = Kaminari.paginate_array(@inv_pro.inventory_batches).page(params[:page]).per(10)
+
+        # **************
+        @inventory_batches_co = @inv_pro.grn_batches.map { |g| g.inventory_batch }
+        # **************
+
+        @inventory_batches = Kaminari.paginate_array(@inventory_batches_co).page(params[:page]).per(10)
+
         tot_cost = 0
         @ans = 0
         @inv_pro.inventory_batches.each do |inventory_batch|
@@ -89,8 +101,12 @@ module Admins
 
       when "select_non_serial_or_batch"
         @store = params[:store]
-        @inv_pro = InventoryProduct.find params[:inv_pro_id] if params[:inv_pro_id].present?  
-        @inventory_non_serial_non_batches = Kaminari.paginate_array(@inv_pro.grn_items).page(params[:page]).per(10)
+        @inv_pro = InventoryProduct.find params[:inv_pro_id] if params[:inv_pro_id].present?
+
+        # **************
+        @non_serial_or_batch = @inv_pro.grn_items.select { |g| !g.inventory_serial_items.any?   or !g.inventory_batches.any?  }
+        # **************
+        @inventory_non_serial_non_batches = Kaminari.paginate_array(@non_serial_or_batch).page(params[:page]).per(10)
         tot_cost = 0
         @ans = 0
         @inv_pro.grn_items.each do |inventory_non_serial_non_batch|
@@ -109,7 +125,7 @@ module Admins
         render "admins/searches/inventory/select_inventory_batch_more"
       when "select_non_serial_or_batch_more"
         @store = params[:store]
-        @inventory_non_serial_non_batch_id = InventorySerialPart.find params[:inventory_non_serial_non_batch_id] if params[:inventory_non_serial_non_batch_id].present?
+        @inventory_non_serial_non_batch_id = GrnItem.find(params[:inventory_non_serial_non_batch_id]) if params[:inventory_non_serial_non_batch_id].present?
         render "admins/searches/inventory/select_non_serial_or_batch_more"
       else
         render "admins/searches/inventory/inventories"

@@ -1,8 +1,9 @@
 -store = @store
 -inventory_serial_part_id = @inventory_serial_part_id
 -product = inventory_serial_part_id.inventory_product
-
-%h4.strong Store: #{Inventory.find_by_store_id(store).store_name} 
+- inventories = Inventory.where(product_id: pr.id) if @store.present?
+- if @store.present?
+  %h4.strong Store: #{inventories.find_by_store_id(@store.to_i).try(:name)}
 
 
 = collapse_wrapper collapse_id: "select_serial_part_form_collapse", labelledby: "select_serial_part_form_collapse_labelledby" do
