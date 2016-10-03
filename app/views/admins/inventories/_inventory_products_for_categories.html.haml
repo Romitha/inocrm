@@ -1,0 +1,27 @@
+%table.table.col-md-12
+  %thead
+    %tr
+      %th No
+      %th Brand Code
+      %th Brand
+      %th Category Code
+      %th Category
+      %th Product Code
+      %th Product
+  %tbody
+    - @inventory_products_all.each_with_index do |inventory_product, index|
+      %tr
+        %td
+          = (index+1)
+        %td
+          = inventory_product.inventory_category3.inventory_category2.inventory_category1.code
+        %td
+          = inventory_product.inventory_category3.inventory_category2.inventory_category1.name
+        %td
+          = inventory_product.inventory_category3.code
+        %td
+          = inventory_product.inventory_category3.name
+        %td
+          = inventory_product.generated_item_code
+        %td
+          = inventory_product.generated_serial_no

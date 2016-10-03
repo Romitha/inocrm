@@ -38,16 +38,18 @@ window.Admins =
 
   filter_child: ->
     parent_node = $(".parent_class")
-    child_node = parent_node.parents().eq(2).find("."+parent_node.data("child-select-class"))
-    child_html = child_node.html()
-    child_node.empty()
+    parent_node.each ->
+      parent_inherit_point = $(@).parents(".parent_inherit_point").eq(0)
+      child_node = parent_inherit_point.next().find("."+$(@).data("child-select-class"))
+      child_html = child_node.html()
+      child_node.empty()
 
-    parent_node.change ->
-      filtered_html = $(child_html).filter("optgroup[label = '#{$(@).val()}']").html()
-      if filtered_html
-        child_node.html(filtered_html)
-      else
-        child_node.empty()
+      $(@).change ->
+        filtered_html = $(child_html).filter("optgroup[label = '#{$(@).val()}']").html()
+        if filtered_html
+          child_node.html(filtered_html)
+        else
+          child_node.empty()
 
   filter_product: (e)->
     this_value = $(e).val()

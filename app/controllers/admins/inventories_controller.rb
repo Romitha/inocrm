@@ -22,6 +22,11 @@ module Admins
         inventory_product_category2 = InventoryCategory2.find params[:inventory_category22_id]
         @inventory_category_all = inventory_product_category2.inventory_category3s
         @render_template = "categories"
+
+      when params[:inventory_category23_id].present?
+        inventory_product_category3 = InventoryCategory3.find params[:inventory_category23_id]
+        @inventory_products_all = inventory_product_category3.inventory_products
+        @render_template = "inventory_products_for_categories"
       end
       @renderDom = params[:render_dom]
     end
@@ -320,6 +325,7 @@ module Admins
           @inventory_category = InventoryCategory3.new
         end
         @inventory_category_all = InventoryCategory3.order(updated_at: :desc)
+        @inventory_products_all = []
       end
     end
 

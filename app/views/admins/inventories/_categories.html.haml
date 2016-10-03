@@ -1,17 +1,21 @@
-= collapse_wrapper collapse_id: "category", labelledby: "labelledby" do
-  - @inventory_category_all.each do |inventory_category|
-    = collapse collapse_type: "success", labelledby: "labelledby_#{inventory_category.id}", header_content: "#{inventory_category.inventory_category2.inventory_category1.name} -> #{inventory_category.inventory_category2.name} -> #{inventory_category.name}", collapse_link: "link_#{inventory_category.id}", collapse_id: "category" do
-      .row
-        .col-md-4
-          %strong Name:
-          = link_to "#", class: "inline_edit", data: {type: "text", resource: "inventory_category3", name: "name", url: category_admins_inventories_path(edit: true, inventory_category3_id: inventory_category.id), "original-title" => "Update Product Category"} do
-            = inventory_category.name
-        .col-md-4
-          %strong Code:
-          = link_to "#", class: "inline_edit", data: {type: "text", resource: "inventory_category3", name: "code", url: category_admins_inventories_path(edit: true, inventory_category3_id: inventory_category.id), "original-title" => "Update Product Category"} do
-            = inventory_category.code
-        .col-md-4
-          %strong Brand:
-          = inventory_category.inventory_category2.name
-
-      = link_to "Edit more", category_admins_inventories_path(edit_more: true, inventory_category3_id: inventory_category.id )
+.row
+  %table.table
+    %thead
+      %tr
+        %th Name
+        %th Code
+        %th Brand
+        %th Edit
+    %tbody
+      - @inventory_category_all.each do |inventory_category|
+        %tr
+          %td
+            = link_to "#", class: "inline_edit", data: {type: "text", resource: "inventory_category3", name: "name", url: category_admins_inventories_path(edit: true, inventory_category3_id: inventory_category.id), "original-title" => "Update Product Category"} do
+              = inventory_category.name
+          %td
+            = link_to "#", class: "inline_edit", data: {type: "text", resource: "inventory_category3", name: "code", url: category_admins_inventories_path(edit: true, inventory_category3_id: inventory_category.id), "original-title" => "Update Product Category"} do
+              = inventory_category.code
+          %td
+            = inventory_category.inventory_category2.inventory_category1.name
+          %td
+            = link_to "Edit more", category_admins_inventories_path(edit_more: true, inventory_category3_id: inventory_category.id )
