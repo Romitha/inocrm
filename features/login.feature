@@ -9,7 +9,7 @@ Scenario Outline: Login to InoCrm page.
   And I find login form
   And I enter user email like <email>
   And I enter user password like <password>
-  And I click Log in
+  And I click button Log in
   Then I should see expected <message>
 
   Scenarios: Successfull login:
