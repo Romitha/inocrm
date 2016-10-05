@@ -1,38 +1,4 @@
-- pr = @inv_pro
-- inventories = pr.inventories
-.row
-  .col-md-12
-    %strong Store:
-    %span
-      - if @store.present?
-        = @store.name
-      - else
-        All stores
-
-  .col-md-12
-    = panels panel_type: "success", header_content: "#{pr.generated_item_code}" do
-      .row
-        .col-md-3
-          %strong Item Code:
-          = pr.generated_item_code
-        .col-md-6
-          %strong Item Description:
-          = pr.description
-        .col-md-3
-          %strong Issue type:
-          = boolean_in_word pr.fifo, "FIFO", "No FIFO"
-        .col-md-3
-          %strong Stock quantity:
-          = inventories.sum(:stock_quantity)
-        .col-md-3
-          %strong Reserved quantity:
-          = inventories.sum(:reserved_quantity)
-        .col-md-3
-          %strong Unit:
-          = pr.inventory_unit.unit
-        .col-md-3
-          %strong Currency:
-          = pr.inventory_product_info.currency_type
+= render "admins/searches/inventory/serial_batch_non_header"
 
 .row
   .col-md-1
@@ -126,7 +92,7 @@
       = boolean_in_word grn_serial_item.grn_item.remaining_quantity, "Yes", "No"
 
     .col-md-1
-      = link_to "Select", inventories_admins_searches_path(select_action: "select_serial_item_more", inventory_serial_item_id: grn_serial_item.inventory_serial_item.id, store_id: @store )
+      = link_to "Select", inventories_admins_searches_path(select_action: "select_serial_item_more", inventory_serial_item_id: grn_serial_item.inventory_serial_item.id, store_id: @store.try(:id) )
   %hr
 .row
   .col-md-3.pull-right.text-right

@@ -92,5 +92,8 @@ window.Users =
 
   print_ticket_sticker: (ticket_no)->
     $.get( "http://localhost:8883/index.html", {code: ticket_no}, (data) ->
-    ).fail ->
-      alert "Some error occured in request to printer application. Please rectify and try again."
+    ).done( (data)->
+      alert "successfully printed."
+    ).fail (response)->
+      if response.statusText == 'error'
+        alert "Some error occured in request to printer application. Please rectify and try again."

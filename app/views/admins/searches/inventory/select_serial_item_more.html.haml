@@ -12,182 +12,10 @@
 
 = collapse_wrapper collapse_id: "select_serial_item_form_collapse", labelledby: "select_serial_item_form_collapse_labelledby" do
   = collapse collapse_type: "info", labelledby: "select_serial_item_form_collapse_search", header_content: "Product", collapse_link: "select_serial_item_form_collapse_product", collapse_id: "select_serial_item_form_collapse" do
-    .row
-      .col-md-3
-        %strong Brand:
-        = product.category2_name
-      .col-md-3
-        %strong Product:
-        = product.category3_name
-      .col-md-3
-        %strong Category:
-        = product.category2_name
-      .col-md-3
-        %strong Serial Code:
-        = product.generated_serial_no
-      .col-md-12
-        %hr
-      .col-md-3
-        %strong Item Code:
-        = product.generated_item_code
-      .col-md-3
-        %strong Item Description:
-        = product.try(:description)
-      .col-md-3
-        %strong Unit:
-        = product.inventory_unit.unit
-      .col-md-3
-        %strong SKU:
-        = product.sku
-      .col-md-12
-        %hr
-      .col-md-3
-        %strong Legacy code:
-        = product.legacy_code
-      .col-md-3
-        %strong Model no:
-        = product.model_no
-      .col-md-3
-        %strong Product no:
-        = product.product_no
-      .col-md-3
-        %strong Spare part no:
-        = product.spare_part_no
-      .col-md-12
-        %hr
-      .col-md-3
-        %strong FIFO:
-        = boolean_in_word product.fifo, "Yes", "No"
-      .col-md-3
-        %strong Active:
-        = boolean_in_word product.active, "Yes", "No"
-      .col-md-3
-        %strong Non stock item:
-        = boolean_in_word product.non_stock_item,"Yes", "No"
-      .col-md-3
-        %strong Spare part:
-        = boolean_in_word product.spare_part,"Yes", "No"
-      .col-md-12
-        %hr
-      .col-md-3
-        %strong Secondary unit:
-        = product.inventory_product_info.secondary_unit_id
-      .col-md-3
-        %strong{title: "Secondery unit convertion"} S. u. conv.:
-        = product.inventory_product_info.secondery_unit_convertion
-      .col-md-3
-        %strong{title: "Per secondery unit conversion"} P. s. u. conv.:
-        = boolean_in_word product.inventory_product_info.per_secondery_unit_conversion, "Yes", "No"
-      .col-md-3
-        %strong Country:
-        = product.inventory_product_info.try(:product_sold_country).try(:Country)
-      .col-md-12
-        %hr
-      .col-md-3
-        %strong Manufacture:
-        = product.inventory_product_info.try(:manufacture).try(:manufacture)
-      .col-md-3
-        %strong abc class:
-        = product.inventory_product_info.try(:abc_class)
-      .col-md-2
-        %strong{title: "Issue fractional allowed"} Issue f. allowed:
-        = boolean_in_word product.inventory_product_info.issue_fractional_allowed, "Yes", "No"
-      .col-md-2
-        %strong Need serial:
-        = boolean_in_word product.inventory_product_info.need_serial, "Yes", "No"
-      .col-md-2
-        %strong Need Batch:
-        = boolean_in_word product.inventory_product_info.need_batch, "Yes", "No"
-      .col-md-12
-        %hr
-      .col-md-3
-        %strong Average cost:
-        = number_with_precision product.inventory_product_info.average_cost, precision: 2
-      .col-md-3
-        %strong Standard cost:
-        = product.inventory_product_info.standard_cost
-      .col-md-3
-        %strong Currency:
-        = product.inventory_product_info.currency.currency
-      .col-md-3
-        %strong Remarks:
-        = product.inventory_product_info.remarks
-      .col-md-12
-        %hr
-      .col-md-2
-        %strong Created By:
-        = product.created_by_from_user
-      .col-md-2
-        %strong Created At:
-        = product.created_at.try(:strftime, "%Y-%m-%d")
-      .col-md-2
-        %strong Updated By:
-        / = User.find_by_id(product.try(:updated_by)).try(:user_name)}
-        = product.updated_by_from_user
-      .col-md-2
-        %strong Updated At:
-        = product.try(:updated_at).try(:strftime, "%Y-%m-%d")
-      .col-md-4
-        = image_tag (product.inventory_product_info.try(:picture) || "no_image.jpg"), class: "img-responsive padding-top1 padding-bottom1 view_img_product"
+    = render "admins/searches/inventory/product_info", product: product
 
   = collapse collapse_type: "info", labelledby: "select_serial_item_form_collapse_search", header_content: "Inventory Infomation", collapse_link: "select_serial_item_form_collapse_inv_info", collapse_id: "select_serial_item_form_collapse" do
-    .row
-      .col-md-4
-        %strong Stock Quantity:
-        #{number_with_precision inventory_serial_item.inventory.stock_quantity, precision: 2}
-      .col-md-4
-        %strong Rack:
-        #{inventory_serial_item.inventory.try(:inventory_bin).try(:inventory_shelf).try(:inventory_rack).try(:description)}
-      .col-md-4
-        %strong Created At:
-        #{inventory_serial_item.inventory.created_at.try(:strftime, "%Y-%m-%d")}
-    .row
-      .col-md-4
-        %strong Available Quantity:
-        #{inventory_serial_item.inventory.available_quantity}
-      .col-md-4
-        %strong Shelf:
-        #{inventory_serial_item.inventory.try(:inventory_bin).try(:inventory_shelf).try(:description)}
-      .col-md-4
-        %strong Created By:
-        #{User.find_by_id(inventory_serial_item.inventory.created_by).try(:user_name)}
-    .row
-      .col-md-4
-        %strong Reserved Quantity:
-        #{number_with_precision inventory_serial_item.inventory.reserved_quantity, precision: 2}
-      .col-md-4
-        %strong Bin:
-        #{inventory_serial_item.inventory.try(:inventory_bin).try(:description)}
-      .col-md-4
-        %strong Updated At:
-        #{inventory_serial_item.inventory.try(:updatd_at).try(:strftime, "%Y-%m-%d")}
-    .row
-      .col-md-4
-        %strong Reorder Level:
-        #{number_with_precision inventory_serial_item.inventory.try(:reorder_level), precision: 2}
-      .col-md-4
-        %strong Lead Time In Days:
-        #{inventory_serial_item.inventory.try(:lead_time_in_days)}
-      .col-md-4
-        %strong Updated By:
-        #{User.find_by_id(inventory_serial_item.inventory.try(:updated_by)).try(:user_name)}
-    .row
-      .col-md-4
-        %strong Reorder Quantity:
-        #{number_with_precision inventory_serial_item.inventory.try(:reorder_quantity), precision: 2}
-      .col-md-4
-        %strong Reorder Period In Days:
-        #{inventory_serial_item.inventory.try(:reorder_period_in_days)}
-      .col-md-4
-        %strong Safty Stock Quantity:
-        #{number_with_precision inventory_serial_item.inventory.try(:safty_stock_quantity), precision: 2}
-    .row
-      .col-md-4
-        %strong Max Qquantity:
-        #{number_with_precision inventory_serial_item.inventory.try(:max_quantity), precision: 2}
-      .col-md-8
-        %strong Remarks:
-        #{inventory_serial_item.inventory.try(:remarks)}
+    = render "admins/searches/inventory/inventory_info", inventory: inventory
 
   = collapse collapse_type: "info", labelledby: "select_serial_item_form_collapse_search", header_content: "Serial Item Item", collapse_link: "select_serial_item_form_collapse_batch_item", collapse_id: "select_serial_item_form_collapse" do
     .row
@@ -234,7 +62,7 @@
               #{b_warranty.inventory_warranty.try(:remarks)}
 
   = collapse collapse_type: "info", labelledby: "select_serial_item_form_collapse_search", header_content: "Cost", collapse_link: "select_serial_item_form_collapse_cost", collapse_id: "select_serial_item_form_collapse" do
-    - inventory_serial_item.grn_serial_items.where(remaining: true).each do |grn_serial_item|
+    - inventory_serial_item.grn_serial_items.active_serial_items.each do |grn_serial_item|
       .row
         .col-md-4
           %strong Currency:
@@ -261,10 +89,11 @@
           %strong GRN Remarks:
           = grn_serial_item.grn_item.grn.remarks
 
-        = simple_nested_form_for inventory_serial_item, url: "#", remote: true, html: {class: "validate_form"} do |f|
+        = simple_nested_form_for inventory_serial_item, url: create_additional_cost_admins_inventories_path(type: "InventorySerialItem", id: inventory_serial_item.id), method: :post, html: {class: "validate_form"} do |f|
           = f.input :id, as: :hidden
           .col-md-12
             = f.simple_fields_for :inventory_serial_items_additional_costs do |g|
+              = g.input :currency_id, as: :hidden, input_html: {value: grn_serial_item.grn_item.currency.id}
               .row
                 = g.input :created_by, as: :hidden, input_html: {value: current_user.id}
                 .col-md-1.small_scale_padding-top3
@@ -357,29 +186,24 @@
             %li
               %strong Expiry date:
               #{inventory_serial_part.expiry_date.to_date.strftime(INOCRM_CONFIG["short_date_format"])}
+
+          - inventory_serial_part.grn_serial_parts.active_serial_parts.each do |grn_serial_part|
+            %li
+              %strong Currency
+              = grn_serial_part.grn_item.currency.currency
+            %li
+              %strong GRN Cost
+              = number_with_precision grn_serial_part.grn_item.current_unit_cost, precision: 2
+            %li
+              %strong Available
+              = grn_serial_part.grn_item.remaining_quantity
           %li
-            %strong Currency
-            - inventory_serial_part.grn_items.each do |grn_item|
-              #{grn_item.currency.currency}
-          %li
-            %strong GRN Cost
-            - inventory_serial_part.grn_items.each do |grn_item|
-              = number_with_precision grn_item.current_unit_cost, precision: 2
-          %li
-            %strong Addition Cost
+            %strong Additional Cost
             = number_with_precision inventory_serial_part.inventory_serial_part_additional_costs.sum(:cost), precision: 2
           %li
             %strong Total Cost
-            - add_cost = inventory_serial_part.inventory_serial_part_additional_costs.sum(:cost)
-            - inventory_serial_part.grn_items.each do |grn_item|
-              - rem_q = grn_item.remaining_quantity
-              - crnt_ucost = grn_item.current_unit_cost
-              - tot_cost = add_cost+(rem_q*crnt_ucost)
-              = number_with_precision tot_cost, precision: 2
-          %li
-            %strong Available
-            - inventory_serial_part.grn_items.each do |grn_item|
-              = grn_item.remaining_quantity
+            - tot_cost = inventory_serial_part.inventory_serial_part_additional_costs.sum(:cost) + inventory_serial_part.grn_serial_parts.active_serial_parts.inject(0){|i, k| i+ k.grn_item.remaining_quantity*k.grn_item.current_unit_cost}
+            = number_with_precision tot_cost, precision: 2
 
         %strong Remarks:
         #{simple_format inventory_serial_part.remarks}
@@ -389,54 +213,26 @@
             = (index+1) + 10*(params[:page].to_i-1)
           - else
             = (index+1)
-        .col-md-1
-          - inventory_serial_part.grn_serial_parts.each do |grn_serial_part|
-            = grn_serial_part.grn_item.grn.grn_no
-            / = inventory_batch.batch_no
-        .col-md-1
-          - inventory_serial_part.grn_serial_parts.each do |grn_serial_part|
+        - inventory_serial_part.grn_serial_parts.active_serial_parts.each do |grn_serial_part|
+          .col-md-1
+            = grn_serial_part.grn_item.grn.grn_no_format
+          .col-md-1
             = grn_serial_part.grn_item.grn.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
-            / = inventory_batch.lot_no
         .col-md-1
           = inventory_serial_part.serial_no
-          / / - inventory_batch.grn_batches.each do |grn_batch|
-          /   = grn_batch.grn_item.grn.grn_no
-          /   %br/
         .col-md-1
-          = inventory_serial_part.try(:ct_no)
-          / - inventory_batch.grn_batches.each do |grn_batch|
-          /   = grn_batch.grn_item.grn.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
-          /   %br/
+          = inventory_serial_part.ct_no
         .col-md-1
           = inventory_serial_part.product_condition.condition
-          / - inventory_batch.grn_batches.each do |grn_batch|
-          /   = grn_batch.remaining_quantity
-          /   %br/
         .col-md-1
           = inventory_serial_part.inventory_serial_item_status.try(:name)
-          
-          / - inventory_batch.grn_batches.each do |grn_batch|
-          /   = grn_batch.damage_quantity
-          /   %br/
         .col-md-2
           = boolean_in_word inventory_serial_part.parts_not_completed, "Yes", "No"
-          / - inventory_batch.grn_batches.each do |grn_batch|
-          /   = grn_batch.grn_item.currency.currency
-          /   %br/
         .col-md-1
           = boolean_in_word inventory_serial_part.scavenge, "Yes", "No"
-          
-          / - inventory_batch.grn_batches.each do |grn_batch|
-          /   = number_with_precision grn_batch.grn_item.current_unit_cost, precision: 2
-          /   %br/
         .col-md-1
           = boolean_in_word inventory_serial_part.damage, "Yes", "No"
-          / - inventory_batch.grn_batches.each do |grn_batch|
-          /   - rem = grn_batch.remaining_quantity
-          /   - cost = grn_batch.grn_item.current_unit_cost
-          /   - ans = rem*cost
-          /   = number_with_precision ans, precision: 2
         .col-md-1
-          = link_to "Select", inventories_admins_searches_path(select_action: "select_inventory_serial_part_more", inventory_serial_part_id: inventory_serial_part.id, store: @store ), class: "btn btn-default btn-sm"
+          = link_to "Select", inventories_admins_searches_path(select_action: "select_inventory_serial_part_more", inventory_serial_part_id: inventory_serial_part.id, store_id: @store.try(:id) )
           
       %hr

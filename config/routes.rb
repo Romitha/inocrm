@@ -304,20 +304,7 @@ Rails.application.routes.draw do
         get "search_customers_suppliers"
 
         get "search_grn"
-        post "update_grn_cost"
         get "inventories"
-
-        delete "delete_inv_sitem_additional_cost"
-        post "action_inv_serial_item_addcost"
-        post "create_new_inv_sitem_addcost"
-
-        #=====for parts=================================
-
-        delete "delete_inv_sitem_part_additional_cost"
-        post "action_inv_serial_item_part_addcost"
-        post "create_new_inv_sitem_part_addcost"
-
-        #========================================
 
       end
     end
@@ -336,6 +323,8 @@ Rails.application.routes.draw do
         patch "create_grn_for_main_part"
         post "initiate_grn_for_i_product"
         post "create_grn_for_i_product"
+
+        post "create_additional_cost"
 
         get "srn"
         post "create_srn"

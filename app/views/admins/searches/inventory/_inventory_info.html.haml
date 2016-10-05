@@ -1,0 +1,57 @@
+.row
+  .col-md-4
+    %strong Stock Quantity:
+    = number_with_precision inventory.stock_quantity, precision: 2
+  .col-md-4
+    %strong Rack:
+    = inventory.inventory_bin.try(:inventory_shelf).try(:inventory_rack).try(:description)
+  .col-md-4
+    %strong Created At:
+    = inventory.created_at.try(:strftime, "%Y-%m-%d")
+.row
+  .col-md-4
+    %strong Available Quantity:
+    = inventory.available_quantity
+  .col-md-4
+    %strong Shelf:
+    = inventory.inventory_bin.try(:inventory_shelf).try(:description)
+  .col-md-4
+    %strong Created By:
+    = inventory.created_by_user.full_name
+.row
+  .col-md-4
+    %strong Reserved Quantity:
+    = number_with_precision inventory.reserved_quantity, precision: 2
+  .col-md-4
+    %strong Bin:
+    = inventory.inventory_bin.try(:description)
+  .col-md-4
+    %strong Updated At:
+    = inventory.updatd_at.try(:strftime, "%Y-%m-%d")
+.row
+  .col-md-4
+    %strong Reorder Level:
+    = number_with_precision inventory.reorder_level, precision: 2
+  .col-md-4
+    %strong Lead Time In Days:
+    = inventory.lead_time_in_days
+  .col-md-4
+    %strong Updated By:
+    = inventory.updated_by_user.try(:full_name)
+.row
+  .col-md-4
+    %strong Reorder Quantity:
+    = number_with_precision inventory.reorder_quantity, precision: 2
+  .col-md-4
+    %strong Reorder Period In Days:
+    = inventory.reorder_period_in_days
+  .col-md-4
+    %strong Safty Stock Quantity:
+    = number_with_precision inventory.safty_stock_quantity, precision: 2
+.row
+  .col-md-4
+    %strong Max Qquantity:
+    = number_with_precision inventory.max_quantity, precision: 2
+  .col-md-8
+    %strong Remarks:
+    = inventory.remarks
