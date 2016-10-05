@@ -3,13 +3,13 @@
 .col-md-10.col-xs-12.col-sm-10
   .tab-content
     .row.small_scale_margin-bottom1
-      - if ticket.job_finished == true
+      - if ticket.job_finished
         .pull-right.small_scale_padding-left1
           = link_to "#", onclick: "Users.request_printer_application('ticket_complete', '#{ticket.id}', 'ticket_complete_request_type', 'print_ticket_delivery_note_tag_value', 'print_ticket_delivery_note'); false;", data: {disable_with: "Printing..."}, class: "btn btn-default" do
             = ticket.ticket_print_count.to_i > 0 ? "Re-Print TDN" : "Print TDN"
       .pull-right
-        = link_to "#", onclick: "Users.request_printer_application('ticket_sticker', '#{ticket.id}', 'ticket_sticker_request_type', 'print_ticket_sticker_tag_value', 'print_ticket'); false;", data: {disable_with: "Printing..."}, class: "btn btn-default" do
-          = ticket.ticket_print_count.to_i > 0 ? "Re-Print Sticker" : "Print Sticker"
+        = link_to "#", onclick: "Users.print_ticket_sticker('#{ticket.support_ticket_no}'); false;", data: {disable_with: "Printing..."}, class: "btn btn-default" do
+          Print Sticker
 
       .pull-right.small_scale_padding-right1
         = link_to "#", onclick: "Users.request_printer_application('ticket', '#{ticket.id}', 'ticket_request_type', 'print_ticket_tag_value', 'print_ticket'); false;", id: "ticket_print", data: {disable_with: "Printing..."}, class: "btn btn-default" do

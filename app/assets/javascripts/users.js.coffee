@@ -89,3 +89,8 @@ window.Users =
     $("##{ref_dom}").prev().find(".customer_supplier_info:eq(0)").html _this.data("content")
 
     $("##{ref_dom}").prev().find(".dynamic_customer_supplier_id:eq(0)").val(_this.data("customersupplierid"))
+
+  print_ticket_sticker: (ticket_no)->
+    $.get( "http://localhost:8883/index.html", {code: ticket_no}, (data) ->
+    ).fail ->
+      alert "Some error occured in request to printer application. Please rectify and try again."

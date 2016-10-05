@@ -560,6 +560,7 @@ module Admins
         if params[:po_date_from].to_date and params[:po_date_to].to_date
           @pos = @pos.where(created_at: (params[:po_date_from]..params[:po_date_to]))
         end
+        session[:store_id] = params[:po][:store_id]
 
         Rails.cache.delete([:inventory_product_ids])
         Rails.cache.delete([:po_item_ids])
@@ -616,12 +617,14 @@ module Admins
       Organization
       Inventory
       @po = InventoryPo.new po_params
+      @po.inventory_po_items.each{|po_item| @po.inventory_po_items.delete(po_item) if po_item.new_record? and po_item.quantity.to_f <= 0 }
 
       respond_to do |format|
         @prn = InventoryPrn.find params[:prn_id]
         @store = @prn.store
 
         if @po.save
+          CompanyConfig.first.increase_inv_last_po_no
           @prn.inventory_prn_items.each do |prn_item|
             prn_item.update closed: true if prn_item.quantity <= prn_item.inventory_po_items.sum(:quantity)
           end

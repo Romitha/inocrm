@@ -216,10 +216,10 @@ class CompanyConfig < ActiveRecord::Base
     inv_last_grn_no
   end
 
-  # def increase_inv_last_po_no
-  #   update inv_last_po_no: (inv_last_po_no.to_i+1)
-  #   inv_last_po_no
-  # end
+  def increase_inv_last_po_no
+    update inv_last_po_no: (inv_last_po_no.to_i+1)
+    inv_last_po_no
+  end
 
   def increase_sup_last_invoice_no
     update sup_last_invoice_no: (sup_last_invoice_no.to_i+1)
@@ -279,9 +279,9 @@ class CompanyConfig < ActiveRecord::Base
     inv_last_prn_no.to_i+1
   end
 
-  # def next_inv_last_po_no
-  #   inv_last_po_no.to_i+1
-  # end
+  def next_inv_last_po_no
+    inv_last_po_no.to_i+1
+  end
 
 end
 
