@@ -117,13 +117,13 @@
         .col-md-1
           - if pr.inventory_product_info.need_serial
             - if InventoryProduct.find_by_id(pr.id).inventory_serial_items.count > 0
-              = link_to "Select", inventories_admins_searches_path(select_action: "select_serial_items", inv_pro_id: pr.id, store: params[:store_id] ), class: "btn-link"
+              = link_to "Select", inventories_admins_searches_path(select_action: "select_serial_items", inv_pro_id: pr.id, store_id: params[:store_id] ), class: "btn-link"
           - if pr.inventory_product_info.need_batch
             - if InventoryProduct.find_by_id(pr.id).inventory_batches.count > 0
-              = link_to "Select", inventories_admins_searches_path(select_action: "select_batches", inv_pro_id: pr.id, store: params[:store_id] ), class: "btn-link"
+              = link_to "Select", inventories_admins_searches_path(select_action: "select_batches", inv_pro_id: pr.id, store_id: params[:store_id] ), class: "btn-link"
           - if !(pr.inventory_product_info.need_serial or pr.inventory_product_info.need_batch)
             - if InventoryProduct.find_by_id(pr.id).grn_items.count > 0
-              = link_to "Select", inventories_admins_searches_path(select_action: "select_non_serial_or_batch", inv_pro_id: pr.id, store: params[:store_id] ), class: "btn-link"
+              = link_to "Select", inventories_admins_searches_path(select_action: "select_non_serial_or_batch", inv_pro_id: pr.id, store_id: params[:store_id] ), class: "btn-link"
       - else
         .col-md-1= link_to "Select", (@select_path || "#"), (@select_options || {}).merge({data: {content: (yield :select_result ), productid: pr.id, prncontent: (yield :last_prn_item_info)}})
 

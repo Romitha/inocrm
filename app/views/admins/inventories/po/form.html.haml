@@ -2,7 +2,7 @@
 = simple_nested_form_for @po, url: create_po_admins_inventories_path, html: {class: "validate_form"} do |f|
   = hidden_field_tag :prn_id, @prn.id
   = f.input :created_by, as: :hidden, input_html: { value: current_user.id }
-  / = f.input :po_no, as: :hidden, input_html: {value: CompanyConfig.first.next_inv_last_po_no}
+  = f.input :po_no, as: :hidden, input_html: {value: CompanyConfig.first.next_inv_last_po_no}
   = f.input :store_id, as: :hidden, input_html: {value: @store.id }
   .row
     .col-md-12
@@ -11,8 +11,8 @@
           - @po.errors.full_messages.each do |error|
             %li.alert.alert-danger= error
     .col-md-6
-      /   %strong PO No:
-      /   = CompanyConfig.first.next_sup_last_po_no.to_s.rjust(5, INOCRM_CONFIG["inventory_po_no_format"])
+      %strong PO No:
+      = CompanyConfig.first.next_inv_last_po_no.to_s.rjust(5, INOCRM_CONFIG["inventory_po_no_format"])
       .customer_supplier
         = f.input :supplier_id, as: :hidden, input_html: {class: "dynamic_customer_supplier_id" }
         .customer_supplier_info
@@ -25,28 +25,45 @@
       %br/
       %strong Created at:
       = DateTime.now.strftime("%Y-%m-%d %H:%M")
+  %hr
+  .row
+    .col-md-6
+      .row
+        .col-md-3
+          = f.input :discount_amount, required: true, label: "Discount"
+        .col-md-3
+          = f.association :currency, label_method: :currency, required: true
+        .col-md-3
+          = f.input :delivery_date, as: :string, input_html: {class: "datepicker"}, label: "Deliver date"
+        .col-md-3
+          = f.input :your_ref, label: "Your reference"
+        .col-md-3
+          = f.input :payment_term
+        .col-md-3
+          = f.input :deliver_to
+        .col-md-6
+          = f.input :remarks
 
-  .row
-    .col-md-3
-      = f.input :po_no, required: true
-    .col-md-3
-      = f.input :delivery_date, as: :string, input_html: {class: "datepicker"}, label: "Deliver date"
-    .col-md-3
-      = f.input :your_ref, label: "Your reference"
-    .col-md-3
-      = f.input :payment_term
-  .row
-    .col-md-2
-      = f.input :discount_amount, required: true
-    .col-md-2
-      = f.association :currency, label_method: :currency, required: true
-    .col-md-3
-      = f.input :deliver_to
-    .col-md-5
-      = f.input :remarks
-  .row
-    .col-md-8
-      %h4 Add Items
+        .col-md-12
+          %h4 Add Taxes
+          = f.simple_fields_for :inventory_po_taxes do |t|
+            %hr
+            .row
+              .col-md-1
+                = t.link_to_remove class: "remove_c_t_v_link", title: "Remove tax" do
+                  %span.glyphicon.glyphicon-remove-sign
+              .col-md-5
+                = t.input :tax, required: true
+              .col-md-5
+                = t.input :amount, required: true
+          .row
+            .col-md-12
+              = f.link_to_add :inventory_po_taxes do
+                %span.glyphicon.glyphicon-plus-sign
+                Add tax
+
+    .col-md-6
+      %h4 PO Items
       = f.simple_fields_for :inventory_po_items do |i|
         - if i.object.inventory_prn_item and i.object.inventory_prn_item.inventory_product
           .row
@@ -95,37 +112,21 @@
         = i.input :prn_item_id, as: :hidden
         %hr
         .row
-          .col-md-1
-            = i.link_to_remove class: "remove_c_t_v_link", title: "Remove item" do
-              %span.glyphicon.glyphicon-remove-sign
+          / .col-md-1
+          /   = i.link_to_remove class: "remove_c_t_v_link", title: "Remove item" do
+          /     %span.glyphicon.glyphicon-remove-sign
           .col-md-3
             = i.input :quantity, required: true, as: :string, input_html: {value: i.object.inventory_prn_item.quantity - i.object.inventory_prn_item.inventory_po_items.sum(:quantity)}
           .col-md-3
             = i.association :inventory_unit, label_method: :unit, required: true
-          .col-md-2
+          .col-md-3
             = i.input :unit_cost, required: true, as: :string
           .col-md-3
             = i.input :unit_cost_grn, required: true, as: :string
           .col-md-12
             = i.input :remarks
 
-    .col-md-4
-      %h4 Add Taxes
-      = f.simple_fields_for :inventory_po_taxes do |t|
-        %hr
-        .row
-          .col-md-1
-            = t.link_to_remove class: "remove_c_t_v_link", title: "Remove tax" do
-              %span.glyphicon.glyphicon-remove-sign
-          .col-md-5
-            = t.input :tax, required: true
-          .col-md-5
-            = t.input :amount, required: true
-      .row
-        .col-md-12
-          = f.link_to_add :inventory_po_taxes do
-            %span.glyphicon.glyphicon-plus-sign
-            Add tax
+    
     .col-md-12
       = f.submit "Save", class: "btn btn-sm btn-success"
 

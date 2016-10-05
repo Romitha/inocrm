@@ -37,37 +37,24 @@ module Admins
       @remote = true
       @inv_searched_by = true
       @store = Organization.find params[:store_id] if params[:store_id].present?
+      @inv_pro = InventoryProduct.find params[:inv_pro_id] if params[:inv_pro_id].present?
 
       case params[:select_action]
 
       when "select_serial_items"
-        @store = params[:store]
-        @inv_pro = InventoryProduct.find params[:inv_pro_id] if params[:inv_pro_id].present?
         # **************
-        @inventory_serial_items_co = @inv_pro.grn_serial_items.map { |g| g.inventory_serial_item }
+        @grn_serial_items = @inv_pro.grn_serial_items#.map { |g| g.inventory_serial_item }
         # **************
-        @inventory_serial_items = Kaminari.paginate_array(@inventory_serial_items_co).page(params[:page]).per(10)
+        @total_stock_cost = @grn_serial_items.to_a.sum{|g| (g.grn_item.current_unit_cost*g.grn_item.remaining_quantity + g.inventory_serial_item.inventory_serial_items_additional_costs.sum(:cost))}
 
-
-        tot_cost = 0
-        @ans = 0
-        @inv_pro.inventory_serial_items.each do |inventory_serial_item|
-          add_cost = inventory_serial_item.inventory_serial_items_additional_costs.sum(:cost)
-          inventory_serial_item.grn_items.each do |grn_item|
-            rem_q = grn_item.remaining_quantity
-            crnt_ucost = grn_item.current_unit_cost
-            tot_cost = add_cost+(rem_q*crnt_ucost)
-            @ans = @ans + tot_cost
-          end
-        end
+        @grn_serial_items = Kaminari.paginate_array(@grn_serial_items).page(params[:page]).per(10)
 
         render "admins/searches/inventory/select_serial_items"
 
       when "select_serial_item_more"
-        @store = params[:store]
-        @inventory_serial_item_id = InventorySerialItem.find params[:inventory_serial_item_id] if params[:inventory_serial_item_id].present?
-        @inventory_serial_parts = Kaminari.paginate_array(@inventory_serial_item_id.inventory_serial_parts).page(params[:page]).per(10)
-        @inventory_serial_item_add_cost = Kaminari.paginate_array(@inventory_serial_item_id.inventory_serial_items_additional_costs).page(params[:page]).per(10)
+        @inventory_serial_item = InventorySerialItem.find params[:inventory_serial_item_id] if params[:inventory_serial_item_id].present?
+        @inventory_serial_parts = @inventory_serial_item.inventory_serial_parts
+        @inventory_serial_item_add_cost = @inventory_serial_item.inventory_serial_items_additional_costs
         render "admins/searches/inventory/select_serial_item_more"
 
       when "select_inventory_serial_part_more"
@@ -86,16 +73,16 @@ module Admins
 
         @inventory_batches = Kaminari.paginate_array(@inventory_batches_co).page(params[:page]).per(10)
 
-        tot_cost = 0
-        @ans = 0
-        @inv_pro.inventory_batches.each do |inventory_batch|
-          inventory_batch.grn_batches.each do |grn_batch|
-            rem = grn_batch.remaining_quantity
-            cost = grn_batch.grn_item.current_unit_cost
-            tot_cost = rem*cost
-            @ans = @ans + tot_cost
-          end
-        end
+        # tot_cost = 0
+        # @ans = 0
+        # @inv_pro.inventory_batches.each do |inventory_batch|
+        #   inventory_batch.grn_batches.each do |grn_batch|
+        #     rem = grn_batch.remaining_quantity
+        #     cost = grn_batch.grn_item.current_unit_cost
+        #     tot_cost = rem*cost
+        #     @ans = @ans + tot_cost
+        #   end
+        # end
 
         render "admins/searches/inventory/select_batches"
 
