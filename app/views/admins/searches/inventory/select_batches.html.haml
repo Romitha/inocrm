@@ -1,40 +1,9 @@
-- pr = @inv_pro
-- inventories = Inventory.where(product_id: pr.id) if @store.present?
-.col-md-12
-  - if @store.present?
-    %h4.strong Store: #{inventories.find_by_store_id(@store.to_i).try(:name)}
-.col-md-4
-  %strong Item Code:
-  = pr.generated_item_code
-.col-md-8
-  %strong Item Description:
-  = pr.description
-%strong
-  .col-md-4
-    %strong Stock Quantity :
-    #{Inventory.find_by_product_id(pr.id).try(:stock_quantity)}
-    /#{Inventory.find_by_store_id(@store).stock_quantity}
-  .col-md-4
-    %strong Reserved Quantity :
-    #{Inventory.find_by_store_id(@store).try(:reserved_quantity)}
-  .col-md-4
-    %strong Max Quantity :
-    #{Inventory.find_by_store_id(@store).try(:max_quantity)}
-.col-md-4
-  %strong Unit:
-  #{pr.inventory_unit.unit}
-.col-md-4
-  %strong Currency :
-  #{pr.inventory_product_info.currency_type}
-%strong
-  .col-md-4
-    %strong Issue Type:
-    #{pr.fifo == true ? "FIFO" : "Not FIFO"}
+= render "admins/searches/inventory/serial_batch_non_header"
 
-= paginate @inventory_batches, remote: false, method: :get
+= paginate @grn_batches, remote: false, method: :get
 
-.row.margin-top2
-  .col-md-1{style: "text-align:center"}
+.row
+  .col-md-1
     %strong No
   .col-md-1
     %strong Batch No
@@ -58,73 +27,50 @@
     %strong Select
 %hr
 
-- @inventory_batches.each_with_index do |inventory_batch, index|
+- @grn_batches.each_with_index do |grn_batch, index|
   - content_for :grn_more, flush: true do
     %ul
-      - if inventory_batch.manufatured_date
+      - if grn_batch.inventory_batch.manufatured_date
         %li
           %strong Manufactured date:
-          #{inventory_batch.manufatured_date.to_date.strftime(INOCRM_CONFIG["short_date_format"])}
-      - if inventory_batch.expiry_date
+          #{grn_batch.inventory_batch.manufatured_date.to_date.strftime(INOCRM_CONFIG["short_date_format"])}
+      - if grn_batch.inventory_batch.expiry_date
         %li
           %strong Expiry date:
-          #{inventory_batch.expiry_date.to_date.strftime(INOCRM_CONFIG["short_date_format"])}
+          #{grn_batch.inventory_batch.expiry_date.to_date.strftime(INOCRM_CONFIG["short_date_format"])}
     %strong Remarks:
-    #{simple_format inventory_batch.remarks}
+    #{simple_format grn_batch.inventory_batch.remarks}
   .row
-    .col-md-1{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Batch No: #{inventory_batch.batch_no}", "data-content"=> yield(:grn_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "bottom" }
+    .col-md-1{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Batch No: #{grn_batch.inventory_batch.batch_no}", "data-content"=> yield(:grn_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "bottom" }
       - if params[:page]
         = (index+1) + 10*(params[:page].to_i-1)
       - else
         = (index+1)
     .col-md-1
-      = inventory_batch.batch_no
+      = grn_batch.inventory_batch.batch_no
     .col-md-1
-      = inventory_batch.lot_no
+      = grn_batch.inventory_batch.lot_no
     .col-md-1
-      - inventory_batch.grn_batches.each do |grn_batch|
-        = grn_batch.grn_item.grn.grn_no
-        %br/
+      = grn_batch.grn_item.grn.grn_no
     .col-md-1
-      - inventory_batch.grn_batches.each do |grn_batch|
-        = grn_batch.grn_item.grn.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
-        %br/
+      = grn_batch.grn_item.grn.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
     .col-md-1
-      - inventory_batch.grn_batches.each do |grn_batch|
-        = grn_batch.remaining_quantity
-        %br/
+      = grn_batch.remaining_quantity
     .col-md-1
-      - inventory_batch.grn_batches.each do |grn_batch|
-        = grn_batch.damage_quantity
-        %br/
+      = grn_batch.damage_quantity
     .col-md-2
-      - inventory_batch.grn_batches.each do |grn_batch|
-        = grn_batch.grn_item.currency.currency
-        %br/
+      = grn_batch.grn_item.currency.currency
     .col-md-1.text-right
-      - inventory_batch.grn_batches.each do |grn_batch|
-        = number_with_precision grn_batch.grn_item.current_unit_cost, precision: 2
-        %br/
+      = number_with_precision grn_batch.grn_item.current_unit_cost, precision: 2
     .col-md-1.text-right
-      - inventory_batch.grn_batches.each do |grn_batch|
-        - rem = grn_batch.remaining_quantity
-        - cost = grn_batch.grn_item.current_unit_cost
-        - ans = rem*cost
-        = number_with_precision ans, precision: 2
+      = number_with_precision (grn_batch.remaining_quantity * grn_batch.grn_item.current_unit_cost), precision: 2
     .col-md-1
-      = link_to "Select", inventories_admins_searches_path(select_action: "select_inventory_batch_more", inventory_batch_id: inventory_batch.id, store: @store ), class: "btn btn-default btn-sm"
+      = link_to "Select", inventories_admins_searches_path(select_action: "select_inventory_batch_more", inventory_batch_id: grn_batch.inventory_batch.id, store_id: @store.try(:id) )
       
   %hr
-= paginate @inventory_batches, remote: false, method: :get
 .row
-  .col-md-3.pull-right
-    /     - tot_cost = 0
-    /     - ans = 0
-    /     - @inventory_batches.each do |inventory_batch|
-    /       - inventory_batch.grn_batches.each do |grn_batch|
-    /         - rem = grn_batch.remaining_quantity
-    /         - cost = grn_batch.grn_item.current_unit_cost
-    /         - tot_cost = rem*cost
-    /         - ans = ans + tot_cost
+  .col-md-3.pull-right.text-right
 
-    %strong Total Cost : #{number_with_precision @ans, precision: 2}
+    %strong Total Cost : #{number_with_precision @grn_batches.inject(0){|i, grn_batch| grn_batch.remaining_quantity * grn_batch.grn_item.current_unit_cost}, precision: 2}
+
+= paginate @grn_batches, remote: false, method: :get

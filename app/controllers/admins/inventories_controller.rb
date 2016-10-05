@@ -1247,6 +1247,24 @@ module Admins
       end
     end
 
+    def create_additional_cost
+      @cost_parent = InventorySerialItem.find params[:id]
+      if @cost_parent.update inventory_serial_item_params
+        flash[:notice] = "Successfully saved."
+      else
+        flash[:alert] = "Unable to save. Please review."
+      end
+
+      case params[:type]
+      when "InventorySerialItem"
+        template = inventories_admins_searches_url(select_action: "select_serial_item_more", inventory_serial_item_id: @cost_parent.id, store_id: params[:store_id] )
+      when "InventorySerialPart"
+        template = inventories_admins_searches_url(select_action: "select_inventory_serial_part_more", inventory_serial_part_id: params[:serial_part_id], store_id: params[:store_id] )
+
+      end
+        redirect_to template
+    end
+
     private
 
       def product_category_params

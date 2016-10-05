@@ -86,7 +86,7 @@ class GrnItem < ActiveRecord::Base
   has_many :grn_serial_parts, foreign_key: :grn_item_id
   # has_many :inventory_serial_item_for_grn_serial_parts, through: :grn_serial_parts
   # has_many :inventory_serial_parts, through: :grn_serial_parts
-  scope :only_grn_items, -> { joins(:grn_serial_items, :grn_batches).where(inv_grn_batch: { grn_item_id: nil }, inv_grn_serial_item: { grn_item_id: nil })}
+  scope :only_grn_items, ->(id) { joins(:grn_serial_items, :grn_batches).where.not(inv_grn_batch: { grn_item_id: id }, inv_grn_serial_item: { grn_item_id: id })}
 
   has_many :damages
   accepts_nested_attributes_for :damages, allow_destroy: true
@@ -97,6 +97,10 @@ class GrnItem < ActiveRecord::Base
   accepts_nested_attributes_for :grn_item_current_unit_cost_histories, allow_destroy: true
 
   after_save :update_relation_index
+
+  def self.only_grn_items1
+    select{|grn_item| grn_item.grn_serial_items.blank? and grn_item.grn_batches.blank? and grn_item.grn_serial_parts.blank? }
+  end
 
   def update_relation_index
     [:inventory_serial_items].each do |children|
@@ -223,6 +227,10 @@ class GrnSerialItem < ActiveRecord::Base
   has_many :gin_sources#, foreign_key: :gin_item_id
   has_many :damages
 
+  def self.active_serial_items
+    where(remaining: true)
+  end
+
 end
 
 class GrnSerialPart < ActiveRecord::Base
@@ -234,6 +242,10 @@ class GrnSerialPart < ActiveRecord::Base
   belongs_to :inventory_serial_part, foreign_key: :inv_serial_part_id
 
   has_many :gin_sources, foreign_key: :grn_serial_part_id
+
+  def self.active_serial_parts
+    where(remaining: true)
+  end
 
 end
 

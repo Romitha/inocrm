@@ -1,263 +1,65 @@
--store = @store
--inventory_non_serial_non_batch_id = @inventory_non_serial_non_batch_id
--product = inventory_non_serial_non_batch_id.inventory_product
-- inventory_info = product.inventories.find_by_store_id(store)
-- inventories = Inventory.where(product_id: pr.id) if @store.present?
-- if @store.present?
-  %h4.strong Store: #{inventories.find_by_store_id(@store.to_i).try(:name)}
+- store = @store
+- inventory_non_serial_non_batch = @inventory_non_serial_non_batch
+- product = inventory_non_serial_non_batch.inventory_product
+- inventories = @store ? product.inventories.where(store_id: @store.id) : product.inventories
+
+%h4.strong
+  Store:
+  - if @store.present?
+    = @store.name
+  - else
+    All stores
+
 
 = collapse_wrapper collapse_id: "select_non_serial_non_batch_form_collapse", labelledby: "select_non_serial_non_batch_form_collapse_labelledby" do
-  = collapse collapse_type: "warning", labelledby: "select_non_serial_non_batch_form_collapse_search", header_content: "Product", collapse_link: "select_non_serial_non_batch_form_collapse_product", collapse_id: "select_non_serial_non_batch_form_collapse" do
-    .row
-      .col-md-8
-        .row
-          .col-md-3
-            %strong Brand:
-            #{product.category2_name}
-          .col-md-3
-            %strong Product:
-            #{product.category3_name}
-          .col-md-3
-            %strong Category:
-            #{product.category2_name}
-          .col-md-3
-            %strong Serial Code:
-            #{product.generated_serial_no}
-        .row
-          .col-md-6
-            %strong Item Code:
-            #{product.generated_item_code}
-          .col-md-6
-            %strong Item Description:
-            #{product.try(:description)}
-        .row
-          .col-md-6
-            %strong Unit:
-            #{product.inventory_unit.unit}
-          .col-md-6
-            %strong SKU:
-            #{product.try(:sku)}
-        .row
-          .col-md-12
-            %strong Legacy code:
-            #{product.try(:legacy_code)}
-        .row
-          .col-md-3
-            %strong Model no:
-            #{product.try(:model_no)}
-          .col-md-3
-            %strong Product no:
-            #{product.try(:product_no)}
-          .col-md-3
-            %strong FIFO:
-            #{product.fifo == true ? "Yes" : "No"}
-          .col-md-3
-            %strong Active:
-            #{product.active == true ? "Yes" : "No"}
-        .row
-          .col-md-3
-            %strong Non stock item:
-            #{product.non_stock_item == true ? "Yes" : "No"}
-          .col-md-3
-            %strong Spare part:
-            #{product.spare_part == true ? "Yes" : "No"}
-          .col-md-3
-            %strong Spare part no:
-            #{product.try(:spare_part_no)}
-        .row{style:"margin-top: 10px;"}
-          .col-md-4
-            %strong Secondary unit:
-            #{product.inventory_product_info.try(:secondary_unit_id)}
-          .col-md-4
-            %strong{title:"Secondery unit convertion"} Sec. u. conv:
-            #{product.inventory_product_info.try(:secondery_unit_convertion)}
-          .col-md-4
-            %strong{title:"Per secondery unit conversion"} Per sec u. conv.:
-            #{product.inventory_product_info.try(:per_secondery_unit_conversion) == true ? "Yes" : "No"}
-        .row
-          .col-md-4
-            %strong Country:
-            #{product.inventory_product_info.try(:product_sold_country).try(:Country)}
-          .col-md-4
-            %strong Manufacture:
-            #{product.inventory_product_info.try(:manufacture).try(:manufacture)}
-          .col-md-4
-            %strong abc class:
-            #{product.inventory_product_info.try(:abc_class)}
-        .row
-          .col-md-4
-            %strong{title:"Issue fractional allowed"} Issue f. allowed:
-            #{product.inventory_product_info.issue_fractional_allowed == true ? "Yes" : "No"}
-          .col-md-4
-            %strong Need serial:
-            #{product.inventory_product_info.need_serial == true ? "Yes" : "No"}
-          .col-md-4
-            %strong Need Batch:
-            #{product.inventory_product_info.need_batch == true ? "Yes" : "No"}
-        .row
-          .col-md-4
-            %strong Average cost:
-            #{number_with_precision product.inventory_product_info.try(:average_cost), precision: 2}
-            / = number_with_precision product.inventory_product_info.try(:average_cost), precision: 2
-          .col-md-4
-            %strong Standard cost:
-            #{product.inventory_product_info.try(:standard_cost)}
-          .col-md-4
-            %strong Currency:
-            #{product.inventory_product_info.try(:currency).currency}
-        .row
-          .col-md-4
-            %strong Remarks:
-            #{product.inventory_product_info.try(:remarks)}
-      .col-md-4
-        .row
-          %strong Created By:
-          #{User.find_by_id(product.created_by).try(:user_name)}
-        .row
-          %strong Created At:
-          #{product.created_at.try(:strftime, "%Y-%m-%d")}
-        .row
-          %strong Updated By:
-          #{User.find_by_id(product.try(:updated_by)).try(:user_name)}
-        .row
-          %strong Updated At:
-          #{product.try(:updated_at).try(:strftime, "%Y-%m-%d")}
-        .row
-          = link_to image_tag((product.inventory_product_info.try(:picture) || "no_image.jpg"), class: "img-responsive padding-top1 padding-bottom1 view_img_product"), "#"
+  = collapse collapse_type: "info", labelledby: "select_non_serial_non_batch_form_collapse_search", header_content: "Product", collapse_link: "select_non_serial_non_batch_form_collapse_product", collapse_id: "select_non_serial_non_batch_form_collapse" do
+    = render "admins/searches/inventory/product_info", product: product
 
-  = collapse collapse_type: "warning", labelledby: "select_non_serial_non_batch_form_collapse_search", header_content: "Inventory Infomation", collapse_link: "select_non_serial_non_batch_form_collapse_inv_info", collapse_id: "select_non_serial_non_batch_form_collapse" do
-    / = inventory_info.id
-    .row
-      .col-md-4
-        %strong Stock Quantity:
-        #{number_with_precision inventory_info.try(:stock_quantity), precision: 2}
-      .col-md-4
-        %strong Rack:
-        #{inventory_info.try(:inventory_bin).try(:inventory_shelf).try(:inventory_rack).try(:description)}
-      .col-md-4
-        %strong Created At:
-        #{inventory_info.try(:created_at).try(:strftime, "%Y-%m-%d")}
-    .row
-      .col-md-4
-        %strong Available Quantity:
-        #{inventory_info.try(:available_quantity)}
-      .col-md-4
-        %strong Shelf:
-        #{inventory_info.try(:inventory_bin).try(:inventory_shelf).try(:description)}
-      .col-md-4
-        %strong Created By:
-        #{User.find_by_id(inventory_info.try(:created_by)).try(:user_name)}
-    .row
-      .col-md-4
-        %strong Reserved Quantity:
-        #{number_with_precision inventory_info.try(:reserved_quantity), precision: 2}
-      .col-md-4
-        %strong Bin:
-        #{inventory_info.try(:inventory_bin).try(:description)}
-      .col-md-4
-        %strong Updated At:
-        #{inventory_info.try(:updatd_at).try(:strftime, "%Y-%m-%d")}
-    .row
-      .col-md-4
-        %strong Reorder Level:
-        #{number_with_precision inventory_info.try(:reorder_level), precision: 2}
-      .col-md-4
-        %strong Lead Time In Days:
-        #{inventory_info.try(:lead_time_in_days)}
-      .col-md-4
-        %strong Updated By:
-        #{User.find_by_id(inventory_info.try(:updated_by)).try(:user_name)}
-    .row
-      .col-md-4
-        %strong Reorder Quantity:
-        #{number_with_precision inventory_info.try(:reorder_quantity), precision: 2}
-      .col-md-4
-        %strong Reorder Period In Days:
-        #{inventory_info.try(:reorder_period_in_days)}
-      .col-md-4
-        %strong Safty Stock Quantity:
-        #{number_with_precision inventory_info.try(:safty_stock_quantity), precision: 2}
-    .row
-      .col-md-4
-        %strong Max Qquantity:
-        #{number_with_precision inventory_info.try(:max_quantity), precision: 2}
-      .col-md-8
-        %strong Remarks:
-        #{inventory_info.try(:remarks)}
+  = collapse collapse_type: "info", labelledby: "select_non_serial_non_batch_form_collapse_search", header_content: "Inventory Infomation", collapse_link: "select_non_serial_non_batch_form_collapse_inv_info", collapse_id: "select_non_serial_non_batch_form_collapse" do
 
-    / = collapse collapse_type: "warning", labelledby: "select_batch_form_collapse_search", header_content: "Cost", collapse_link: "select_batch_form_collapse_cost", collapse_id: "select_batch_form_collapse", collapse_in: "in" do
-    /   - inventory_batch_id.grn_items.each do |grn_item|
-    /     .row
-    /       .col-md-4
-    /         Currency: #{grn_item.currency.currency}
-    /       .col-md-4
-    /         Current GRN cost: #{number_with_precision grn_item.current_unit_cost, precision: 2}
-    /       .col-md-4
-    /         GRN No: #{grn_item.grn.grn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_grn_no_format"])}
-    /     .row
-    /       .col-md-4
-    /         GRN Date:#{grn_item.grn.created_at.try(:strftime, "%Y-%m-%d %H:%M")}
-    /       .col-md-4
-    /         GRN By:#{grn_item.grn.created_by_user.full_name}
-          
-    /     .row
-    /       .col-md-8
-    /         GRN Remarks: #{grn_item.grn.remarks}
-    /     .row{style: "margin-top:15px;"}
-    /       .col-md-12{style: "background-color: #98FB98; text-align:center"}
-    /         %strong GRN Cost Adgestments
-    /       .col-md-12
-    /         - grn_item.grn_item_current_unit_cost_histories.each_with_index do |hcost, index|
-    /           .row
-    /             .col-md-1
-    /             .col-md-2
-    /               =index+1
-    /             .col-md-3
-    /               Date: #{hcost.try(:created_at).try(:strftime, "%Y-%m-%d %H:%M")}
-    /             .col-md-3
-    /               Cost: #{number_with_precision hcost.current_unit_cost, precision: 2}
-    /             .col-md-3
-    /               Done by: #{hcost.created_by_user.full_name}
+    - inventories.each do |inventory|
+      = render "admins/searches/inventory/inventory_info", inventory: inventory
+      %hr
 
-  = collapse collapse_type: "warning", labelledby: "select_non_serial_non_batch_form_collapse_search", header_content: "Cost", collapse_link: "select_non_serial_non_batch_form_collapse_cost", collapse_id: "select_non_serial_non_batch_form_collapse", collapse_in: "in" do
+  = collapse collapse_type: "info", labelledby: "select_non_serial_non_batch_form_collapse_search", header_content: "Cost", collapse_link: "select_non_serial_non_batch_form_collapse_cost", collapse_id: "select_non_serial_non_batch_form_collapse", collapse_in: "in" do
     .row
       .col-md-4
         %strong Currency:
-        #{inventory_non_serial_non_batch_id.currency.currency}
+        = inventory_non_serial_non_batch.currency.currency
       .col-md-4
         %strong Current GRN cost:
-        #{number_with_precision inventory_non_serial_non_batch_id.current_unit_cost, precision: 2}
+        = number_with_precision inventory_non_serial_non_batch.current_unit_cost, precision: 2
       .col-md-4
         %strong GRN No:
-        #{inventory_non_serial_non_batch_id.grn.grn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_grn_no_format"])}
+        = inventory_non_serial_non_batch.grn.grn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_grn_no_format"])
     .row
       .col-md-4
         %strong GRN Date:
-        #{inventory_non_serial_non_batch_id.grn.created_at.try(:strftime, "%Y-%m-%d %H:%M")}
+        = inventory_non_serial_non_batch.grn.created_at.try(:strftime, "%Y-%m-%d %H:%M")
       .col-md-4
         %strong GRN By:
-        #{inventory_non_serial_non_batch_id.grn.created_by_user.full_name}
+        = inventory_non_serial_non_batch.grn.created_by_user.full_name
 
     .row
       .col-md-8
         %strong GRN Remarks:
-        #{inventory_non_serial_non_batch_id.grn.remarks}
-    - if inventory_non_serial_non_batch_id.grn_item_current_unit_cost_histories.any?
+        = inventory_non_serial_non_batch.grn.remarks
+    - if inventory_non_serial_non_batch.grn_item_current_unit_cost_histories.any?
       .row{style: "margin-top:15px;"}
         .col-md-12{style: "background-color: #98FB98; text-align:center"}
           %strong GRN Cost Adgestments
         .col-md-12
-          - inventory_non_serial_non_batch_id.grn_item_current_unit_cost_histories.each_with_index do |hcost, index|
+          - inventory_non_serial_non_batch.grn_item_current_unit_cost_histories.each_with_index do |hcost, index|
             .row
               .col-md-1
               .col-md-2
                 =index+1
               .col-md-3
                 %strong Date:
-                #{hcost.try(:created_at).try(:strftime, "%Y-%m-%d %H:%M")}
+                = hcost.try(:created_at).try(:strftime, "%Y-%m-%d %H:%M")
               .col-md-3
                 %strong Cost:
-                #{number_with_precision hcost.current_unit_cost, precision: 2}
+                = number_with_precision hcost.current_unit_cost, precision: 2
               .col-md-3
                 %strong Done by:
-                #{hcost.created_by_user.full_name}
+                = hcost.created_by_user.full_name

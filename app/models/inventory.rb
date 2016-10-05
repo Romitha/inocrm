@@ -625,6 +625,7 @@ class InventorySerialPartAdditionalCost < ActiveRecord::Base
   self.table_name = "inv_serial_part_additional_cost"
 
   belongs_to :inventory_serial_part, foreign_key: :serial_part_id
+  belongs_to :created_by_user, foreign_key: :created_by, class: User
   belongs_to :currency
 end
 

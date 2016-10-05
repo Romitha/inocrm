@@ -1,36 +1,6 @@
-- pr = @inv_pro
-- inventories = Inventory.where(product_id: pr.id) if @store.present?
-.col-md-12
-  - if @store.present?
-    %h4.strong Store: #{inventories.find_by_store_id(@store.to_i).try(:name)}
-.col-md-4
-  %strong Item Code:
-  = pr.generated_item_code
-.col-md-8
-  %strong Item Description:
-  = pr.description
-%strong
-  .col-md-4
-    %strong Stock Quantity :
-    #{Inventory.find_by_product_id(pr.id).try(:stock_quantity)}
-  .col-md-4
-    %strong Reserved Quantity :
-    #{Inventory.find_by_store_id(@store).try(:reserved_quantity)}
-  .col-md-4
-    %strong Max Quantity :
-    #{Inventory.find_by_store_id(@store).try(:max_quantity)}
-.col-md-4
-  %strong Unit:
-  #{pr.inventory_unit.unit}
-.col-md-4
-  %strong Currency:
-  #{pr.inventory_product_info.currency_type}
-%strong
-  .col-md-4
-    %strong Issue Type:
-    #{pr.fifo == true ? "FIFO" : "Not FIFO"}
+= render "admins/searches/inventory/serial_batch_non_header"
 
-= paginate @inventory_non_serial_non_batches, remote: false, method: :get
+= paginate @non_serial_or_batches, remote: false, method: :get
 
 .row.margin-top1
   .col-md-1{style: "text-align:center"}
@@ -53,47 +23,39 @@
     %strong Select
 %hr
 
-- @inventory_non_serial_non_batches.each_with_index do |inventory_non_serial_non_batch, index|
+- @non_serial_or_batches.each_with_index do |grn_item, index|
   - content_for :grn_more, flush: true do
     
     %strong Remarks:
-    #{simple_format inventory_non_serial_non_batch.remarks}
+    = simple_format grn_item.remarks
   .row
-    .col-md-1{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "GRN No: #{inventory_non_serial_non_batch.grn.grn_no}", "data-content"=> yield(:grn_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "bottom" }
+    .col-md-1{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "GRN No: #{grn_item.grn.grn_no}", "data-content"=> yield(:grn_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "bottom" }
       - if params[:page]
         = (index+1) + 10*(params[:page].to_i-1)
       - else
         = (index+1)
     .col-md-1
-      =inventory_non_serial_non_batch.grn.grn_no
+      =grn_item.grn.grn_no
     .col-md-1
-      =inventory_non_serial_non_batch.grn.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
+      =grn_item.grn.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
     .col-md-1
-      =inventory_non_serial_non_batch.remaining_quantity
+      =grn_item.remaining_quantity
     .col-md-1
-      =inventory_non_serial_non_batch.damage_quantity
+      =grn_item.damage_quantity
     .col-md-2
-      =inventory_non_serial_non_batch.currency.currency
+      =grn_item.currency.code
       
     .col-md-1
-      =inventory_non_serial_non_batch.current_unit_cost
+      =grn_item.current_unit_cost
     .col-md-1
-      - cost = inventory_non_serial_non_batch.current_unit_cost
-      - qnty = inventory_non_serial_non_batch.remaining_quantity
+      - cost = grn_item.current_unit_cost
+      - qnty = grn_item.remaining_quantity
       =cost*qnty
     .col-md-1
-      = link_to "Select", inventories_admins_searches_path(select_action: "select_non_serial_or_batch_more", inventory_non_serial_non_batch_id: inventory_non_serial_non_batch.id, store: @store ), class: "btn btn-default btn-sm"
+      = link_to "Select", inventories_admins_searches_path(select_action: "select_non_serial_or_batch_more", grn_item_id: grn_item.id, store_id: @store.try(:id) )
   %hr
-= paginate @inventory_non_serial_non_batches, remote: false, method: :get
+= paginate @non_serial_or_batches, remote: false, method: :get
 
 .row
-  .col-md-3.pull-right
-    /     - tot_cost = 0
-    /     - ans = 0
-    /     - @inventory_non_serial_non_batches.each do |inventory_non_serial_non_batch|
-    /       - cost = inventory_non_serial_non_batch.current_unit_cost
-    /       - qnty = inventory_non_serial_non_batch.remaining_quantity
-    /       - tot_cost = cost*qnty
-    /       - ans = ans + tot_cost
-
+  .col-md-3.pull-right.text-right
     %strong Total Cost: #{number_with_precision @ans, precision: 2}
