@@ -24,9 +24,12 @@ class RolesAndPermissionsController < ApplicationController
   def create
     new_role_name = params[:role][:name]
     rpermission_ids = params[:rpermissions]
+    @bpm_role = BpmModuleRole.find params[:bpm_role] if params[:bpm_role].present?
     @role = @organization.roles.build(name: new_role_name)
     if @role.save
       @role.rpermission_ids = rpermission_ids
+      @role.bpm_module_roles << @bpm_role if @bpm_role.present?
+
       flash[:notice] = "Roles and Permissions are successfully assigned"
       redirect_to new_organization_roles_and_permission_url(@organization)
     else

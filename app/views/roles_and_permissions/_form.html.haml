@@ -16,9 +16,12 @@
       = tab_content tabpointer: :toles_and_permission_form, active_class: "active" do
         = simple_form_for role, url: role_url do |f|
           .row
-            .col-md-6
+            .col-md-4
               = f.input :name, placeholder: "Provide role with any namespace. Ex: org_admin", input_html: {class: "input-sm"}
-            .col-md-6
+            .col-md-4
+              = label_tag "Assign BPM Role"
+              = select_tag "bpm_role", options_from_collection_for_select(BpmModuleRole.all, "id", "name"), include_blank: true, class: "chosen-select"
+            .col-md-4
               = label_tag "Inherit roles from"
               = select_tag "inherit_role", options_from_collection_for_select(Role.where(parent_role: true), "id", "name"), include_blank: true, class: "chosen-select", id: "load_permissions", data: {organization_id: organization.id}
           .row
