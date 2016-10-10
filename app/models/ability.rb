@@ -17,13 +17,13 @@ class Ability
         cannot :read, :all
         cannot :manage, :all
 
-        user.roles.find(user.current_user_role_id).rpermissions.where(controller_resource: "Organization").each do |rpermission|
-          can rpermission.controller_action.to_sym, rpermission.controller_resource.constantize, id: user.organization.try(:id)
-        end
+        # user.roles.find(user.current_user_role_id).rpermissions.where(controller_resource: "Organization").each do |rpermission|
+        #   can rpermission.controller_action.to_sym, rpermission.controller_resource.constantize, id: user.organization.try(:id)
+        # end
 
-        user.roles.find(user.current_user_role_id).rpermissions.where(controller_resource: "User").each do |rpermission|
-          can rpermission.controller_action.to_sym, rpermission.controller_resource.constantize, id: ((user.organization && user.organization.user_ids.present?) ? user.organization.user_ids : user.id)
-        end
+        # user.roles.find(user.current_user_role_id).rpermissions.where(controller_resource: "User").each do |rpermission|
+        #   can rpermission.controller_action.to_sym, rpermission.controller_resource.constantize, id: ((user.organization && user.organization.user_ids.present?) ? user.organization.user_ids : user.id)
+        # end
       else
         can [:update, :initiate_user_profile_edit, :upload_avatar], User, id: user.id
         can :index, Organization
