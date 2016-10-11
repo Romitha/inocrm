@@ -45,7 +45,7 @@
       .col-md-2= prn.store_name
       .col-md-1= prn.formated_prn_no
       .col-md-1= prn.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
-      .col-md-1= prn.required_at.to_date.try :strftime, INOCRM_CONFIG["short_date_format"]
+      .col-md-1= prn.required_at and prn.required_at.to_date.try :strftime, INOCRM_CONFIG["short_date_format"]
       .col-md-2= prn.remarks
       .col-md-2= prn.created_by_user_full_name
       .col-md-2= link_to "Select", po_admins_inventories_path(prn_id: prn.id)
