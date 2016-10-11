@@ -27,12 +27,12 @@
       = DateTime.now.strftime("%Y-%m-%d %H:%M")
   %hr
   .row
-    .col-md-6
+    .col-md-12
       .row
         .col-md-3
           = f.input :discount_amount, required: true, label: "Discount"
         .col-md-3
-          = f.association :currency, label_method: :currency, required: true
+          = f.association :currency, label_method: :currency, required: true, label: "PO Currency", include_blank: false
         .col-md-3
           = f.input :delivery_date, as: :string, input_html: {class: "datepicker"}, label: "Deliver date"
         .col-md-3
@@ -43,89 +43,123 @@
           = f.input :deliver_to
         .col-md-6
           = f.input :remarks
-
-        .col-md-12
-          %h4 Add Taxes
-          = f.simple_fields_for :inventory_po_taxes do |t|
-            %hr
-            .row
-              .col-md-1
-                = t.link_to_remove class: "remove_c_t_v_link", title: "Remove tax" do
-                  %span.glyphicon.glyphicon-remove-sign
-              .col-md-5
-                = t.input :tax, required: true
-              .col-md-5
-                = t.input :amount, required: true
-          .row
-            .col-md-12
-              = f.link_to_add :inventory_po_taxes do
-                %span.glyphicon.glyphicon-plus-sign
-                Add tax
-
-    .col-md-6
+    .col-md-12
+      .panel-group
+        .panel.panel-default
+          .panel-heading{style: "background-color: lightblue"}
+            %h4.panel-title
+              %a{"data-toggle" => "collapse", :href => "#collapse1"} PRN Information
+          #collapse1.panel-collapse.collapse.small_scale_padding-top1
+            .container
+              .col-md-4
+                %strong PRN No:
+              .col-md-4
+                %strong PRN Date:
+              .col-md-4
+                %strong Required Date:
+              .col-md-4.small_scale_padding-bottom1
+                %strong Remarks:
+              .col-md-4
+                %strong Created By:
+              .col-md-4
+                %strong Created At:
+    .col-md-12.main_issue
       %h4 PO Items
       = f.simple_fields_for :inventory_po_items do |i|
         - if i.object.inventory_prn_item and i.object.inventory_prn_item.inventory_product
           .row
-            .col-md-6
-              %h4 Product Information
-              %dl
-                %dt Item code:
-                %dd= i.object.inventory_prn_item.inventory_product.generated_item_code
-                %dt Item description:
-                %dd= i.object.inventory_prn_item.inventory_product.description
-                %dt Balance to be issued:
-                %dd= i.object.inventory_prn_item.quantity - i.object.inventory_prn_item.inventory_po_items.sum(:quantity)
-                %dt Order unit
-                %dd= i.object.inventory_prn_item.inventory_product.inventory_unit.unit
-                %dt Stock in hand
-                %dd= i.object.inventory_prn_item.inventory_product.inventories.map { |i| i.stock_quantity if i.store_id.to_i == @store.id }.compact.join(", ")
-                %dt Type
-                %dd= i.object.inventory_prn_item.inventory_product.inventory_product_info.need_serial ? "Serial" : i.object.inventory_prn_item.inventory_product.inventory_product_info.need_batch ? "Batch" : "Non of Serial or Batch"
-                %dt PRN remarks
-                %dd= i.object.inventory_prn_item.remarks
-            .col-md-6
+            .col-md-4
+              %strong Item code:
+              = i.object.inventory_prn_item.inventory_product.generated_item_code
+            .col-md-4
+              %strong Item description:
+              = i.object.inventory_prn_item.inventory_product.description
+            .col-md-4
+              %strong Balance to be issued:
+              = i.object.inventory_prn_item.quantity - i.object.inventory_prn_item.inventory_po_items.sum(:quantity)
+
+          = collapse_wrapper collapse_id: "issue_po_item_#{i.object.object_id}", labelledby: "issue_po_item_#{i.object.object_id}_labelledby" do
+            = collapse collapse_type: "info", labelledby: "issue_po_item_labelby", header_content: "Issue", collapse_link: "issue_po_item_#{i.object.object_id}_link", onClick: "Admins.onClick_hide_quantity(this); return false;", collapse_id: "issue_po_item_#{i.object.object_id}" do
+              .row
+                .col-md-4
+                  %strong Order unit:
+                  = i.object.inventory_prn_item.inventory_product.inventory_unit.unit
+                .col-md-4
+                  %strong Stock in hand:
+                  = i.object.inventory_prn_item.inventory_product.inventories.map { |i| i.stock_quantity if i.store_id.to_i == @store.id }.compact.join(", ")
+                .col-md-4
+                  %strong Type:
+                  = i.object.inventory_prn_item.inventory_product.inventory_product_info.need_serial ? "Serial" : i.object.inventory_prn_item.inventory_product.inventory_product_info.need_batch ? "Batch" : "Non of Serial or Batch"
+                .col-md-4
+                  %strong PRN remarks:
+                  = i.object.inventory_prn_item.remarks
+              .row
+                / .col-md-1
+                /   = i.link_to_remove class: "remove_c_t_v_link", title: "Remove item" do
+                /     %span.glyphicon.glyphicon-remove-sign
+                .col-md-3
+                  = i.input :quantity, required: true, as: :string, input_html: {value: i.object.inventory_prn_item.quantity - i.object.inventory_prn_item.inventory_po_items.sum(:quantity), class: "dynamic_quantity"}
+                .col-md-3
+                  = i.input :unit_cost, required: true, as: :string
+                .col-md-3
+                  = i.input :unit_cost_grn, required: true, as: :string
+                .col-md-3
+                  = i.association :inventory_unit, label_method: :unit, required: true, as: :hidden
+                .col-md-12
+                  = i.input :remarks
+
               - last_po_item = i.object.inventory_prn_item.inventory_product.last_po_item
               - if last_po_item.present?
-                %h4 Last PO Information
-                %dl
-                  %dt No:
-                  %dd= last_po_item.inventory_po.po_no
-                  %dt Supplier
-                  %dd= last_po_item.inventory_po.supplier.name
-                  %dt Item status
-                  %dd= boolean_in_word last_po_item.inventory_po.closed, "Closed", "Open"
-                  %dt Quantity
-                  %dd= last_po_item.quantity
-                  %dt Date
-                  %dd= last_po_item.inventory_po.created_at.strftime(INOCRM_CONFIG["short_date_format"])
-                  %dt Unit cost
-                  %dd= last_po_item.unit_cost
-                  %dt Total recieved quantity
-                  %dd= last_po_item.inventory_po.inventory_po_items.sum(:quantity)
-                  %dt Created by
-                  %dd= last_po_item.inventory_po.created_by_user.full_name
-                  %dt PO Unit
-                  %dd= last_po_item.inventory_unit.unit
-                  %dt Currency
-                  %dd= last_po_item.inventory_po.currency.code
-        = i.input :prn_item_id, as: :hidden
+                .row
+                  .col-md-4
+                    %strong No:
+                    = last_po_item.inventory_po.po_no
+                  .col-md-4
+                    %strong Supplier
+                    = last_po_item.inventory_po.supplier.name
+                  .col-md-4
+                    %strong Item status
+                    = boolean_in_word last_po_item.inventory_po.closed, "Closed", "Open"
+                  .col-md-4
+                    %strong Quantity
+                    = last_po_item.quantity
+                  .col-md-4
+                    %strong Date
+                    = last_po_item.inventory_po.created_at.strftime(INOCRM_CONFIG["short_date_format"])
+                  .col-md-4
+                    %strong Unit cost
+                    = last_po_item.unit_cost
+                  .col-md-4
+                    %strong Total recieved quantity
+                    = last_po_item.inventory_po.inventory_po_items.sum(:quantity)
+                  .col-md-4
+                    %strong Created by
+                    = last_po_item.inventory_po.created_by_user.full_name
+                  .col-md-4
+                    %strong PO Unit
+                    = last_po_item.inventory_unit.unit
+                  .col-md-4
+                    %strong Currency
+                    = last_po_item.inventory_po.currency.code
+
+        / = i.input :prn_item_id, as: :hidden
+    .col-md-12.small_scale_padding-bottom1
+      %h4 Add Taxes
+      = f.simple_fields_for :inventory_po_taxes do |t|
         %hr
         .row
-          / .col-md-1
-          /   = i.link_to_remove class: "remove_c_t_v_link", title: "Remove item" do
-          /     %span.glyphicon.glyphicon-remove-sign
-          .col-md-3
-            = i.input :quantity, required: true, as: :string, input_html: {value: i.object.inventory_prn_item.quantity - i.object.inventory_prn_item.inventory_po_items.sum(:quantity)}
-          .col-md-3
-            = i.association :inventory_unit, label_method: :unit, required: true
-          .col-md-3
-            = i.input :unit_cost, required: true, as: :string
-          .col-md-3
-            = i.input :unit_cost_grn, required: true, as: :string
-          .col-md-12
-            = i.input :remarks
-
+          .col-md-1
+            = t.link_to_remove class: "remove_c_t_v_link", title: "Remove tax" do
+              %span.glyphicon.glyphicon-remove-sign
+          .col-md-5
+            = t.input :tax, required: true
+          .col-md-5
+            = t.input :amount, required: true
+      .row
+        .col-md-12
+          = f.link_to_add :inventory_po_taxes do
+            %span.glyphicon.glyphicon-plus-sign
+            Add tax
     
     .col-md-12
       = f.submit "Save", class: "btn btn-sm btn-success"

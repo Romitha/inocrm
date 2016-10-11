@@ -6,6 +6,7 @@ window.Admins =
     @product_validate()
     @filter_child()
     @import_csv_upload()
+    @onClick_hide_quantity()
     return
 
   admin_menu_dropdown: ->
@@ -89,3 +90,11 @@ window.Admins =
             $("#ajax-loader").addClass("hide")
             # $(".profile_image_wrapper").empty();
 
+  onClick_hide_quantity: (elem) ->
+    this_elem = $(elem)
+
+    $(".dynamic_quantity").each ->
+      _this = this
+      $(_this).parents(".collapse").eq(0).on 'hidden.bs.collapse', ->
+        $(_this).val("")
+      return
