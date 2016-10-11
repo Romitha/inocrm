@@ -562,7 +562,7 @@ class InvoicesController < ApplicationController
       ticket_terminate_job.foc_approved = false
 
       if continue
-        if params[:approve_foc].to_bool #Approve FOC
+        if params[:approve_foc] and params[:approve_foc].to_bool #Approve FOC
           deducted_amount = 0
           ticket_terminate_job.foc_approved = cus_payment_completed
         end
