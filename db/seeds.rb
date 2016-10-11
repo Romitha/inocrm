@@ -20,8 +20,10 @@ organization = Organization.find_or_create_by name: "VS Information Systems", sh
 user = User.find_by_email("admin@inovacrm.com")
 unless(user)
   user = User.create(email: "admin@inovacrm.com", password: "123456789", organization_id: organization.id)
-  user.add_role :admin, organization
-  user.add_role :default_user, organization
+  # user.add_role :admin, organization
+  # user.add_role :default_user, organization
+
+  user.roles.push Role.create(name: "admin"), Role.create(name: "default_user")
 
   admin = user.roles.find_by_name("admin")
   default_user = user.roles.find_by_name("default_user")
