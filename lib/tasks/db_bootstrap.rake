@@ -67,7 +67,7 @@ namespace :tire do
   end
 
   task index_all_model: :environment do
-    [['Grn'], ['GrnItem', 'Grn'], ['InventoryProduct', 'Inventory'], ['InventorySerialItem', 'Inventory'], ['Product'], ['Ticket'], ['InventoryPrn', 'Inventory'], ['InventoryPo', 'Inventory'], ['Organization']].each do |models|
+    [['Grn'], ['GrnItem', 'Grn'], ['InventoryProduct', 'Inventory'], ['InventorySerialItem', 'Inventory'], ['Product'], ['Ticket'], ['InventoryPrn', 'Inventory'], ['InventoryPo', 'Inventory'], ["Gin"], ['Organization']].each do |models|
       system "rake environment tire:deep_import CLASS=#{models.first} PCLASS=#{models.last} FORCE=true"
     end
   end

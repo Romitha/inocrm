@@ -6,6 +6,7 @@ class Srr < ActiveRecord::Base
   belongs_to :user
 
   has_many :srr_items
+  accepts_nested_attributes_for :srr_items, allow_destroy: true
   has_many :ticket_spare_part_stores, foreign_key: :inv_srr_id
   has_many :ticket_on_loan_spare_parts, foreign_key: :inv_srr_id
 end
@@ -18,6 +19,7 @@ class SrrItem < ActiveRecord::Base
   belongs_to :product
 
   has_many :srr_item_sources
+  accepts_nested_attributes_for :srr_item_sources, allow_destroy: true
   has_many :gin_sources, through: :srr_item_sources
 
   has_many :ticket_spare_part_stores, foreign_key: :inv_srr_item_id

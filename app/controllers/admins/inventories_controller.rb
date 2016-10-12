@@ -1271,6 +1271,21 @@ module Admins
         redirect_to template
     end
 
+    def srr
+      if params[:gin_id].present?
+        Inventory
+        @gin = Gin.find params[:gin_id]
+
+        @srr = Srr.new store_id: @gin.store.id, created_by: current_user.id
+        @gin.gin_items.each do |gin_item|
+          @srr.srr_items.build product_id: gin_item.product_id, product_condition_id: gin_item.product_condition_id, spare_part: gin_item.spare_part
+        end
+      else
+        @remote = true
+
+      end
+    end
+
     private
 
       def product_category_params

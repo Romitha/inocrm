@@ -799,41 +799,56 @@ class InventoryPo < ActiveRecord::Base
 
   validates_presence_of [:supplier_id, :store_id, :po_no, :discount_amount]
 
-  # mapping do
-  #   indexes :products, type: "nested", include_in_parent: true
-  # end
+  mapping do
+    indexes :supplier, type: "nested", include_in_parent: true
+    indexes :store, type: "nested", include_in_parent: true
+  end
 
-  # def self.search(params)  
-  #   tire.search(page: (params[:page] || 1), per_page: 10) do
-  #     query do
-  #       boolean do
-  #         must { string params[:query] } if params[:query].present?
-  #         must { range :created_at, lte: params[:range_to].to_date } if params[:range_to].present?
-  #         must { range :created_at, gte: params[:range_from].to_date } if params[:range_from].present?
-  #         # must { term :author_id, params[:author_id] } if params[:author_id].present?
-  #       end
-  #     end
-  #     sort { by :created_at, "desc" }
-  #     highlight customer_name: {number_of_fragments: 0}, ticket_status_name: {number_of_fragments: 0}, :options => { :tag => '<strong class="highlight">' } if params[:query].present?
-  #     # filter :range, published_at: { lte: Time.zone.now}
-  #     # raise to_curl
-  #   end
-  # end
+  def self.search(params)  
+    tire.search(page: (params[:page] || 1), per_page: 10) do
+      query do
+        boolean do
+          must { string params[:query] } if params[:query].present?
+          must { range :created_at, lte: params[:po_date_to].to_date } if params[:po_date_to].present?
+          must { range :created_at, gte: params[:po_date_from].to_date } if params[:po_date_from].present?
+          # must { term :author_id, params[:author_id] } if params[:author_id].present?
+        end
+      end
+      sort { by :created_at, {order: "desc", ignore_unmapped: true} }
+      # highlight customer_name: {number_of_fragments: 0}, ticket_status_name: {number_of_fragments: 0}, :options => { :tag => '<strong class="highlight">' } if params[:query].present?
+      # filter :range, published_at: { lte: Time.zone.now}
+      # raise to_curl
+    end
+  end
 
-  # def to_indexed_json
-  #   Warranty
-  #   to_json(
-  #     only: [:created_at, :cus_chargeable, :id],
-  #     methods: [:customer_name, :ticket_status_name, :warranty_type_name, :support_ticket_no],
-  #     include: {
-  #       products: {
-  #         only: [:id, :serial_no, :model_no, :product_no, :created_at],
-  #         methods: [:category_name, :warranty_type_name, :brand_name],
-  #       }
-  #     }
-  #   )
+  def to_indexed_json
+    Warranty
+    to_json(
+      only: [:created_at, :id, :delivery_date, :closed],
+      methods: [:store_name, :formated_po_no, :created_by_user_full_name],
+      include: {
+        store: {
+          only: [:id, :name],
+        },
+        supplier: {
+          only: [:id, :name],
+        },
+      },
+    )
 
-  # end
+  end
+
+  def store_name
+    store.name
+  end
+
+  def formated_po_no
+    po_no.to_s.rjust(5, INOCRM_CONFIG["inventory_po_no_format"])
+  end
+
+  def created_by_user_full_name
+    created_by_user.full_name
+  end
 end
 
 class InventoryPoItem < ActiveRecord::Base

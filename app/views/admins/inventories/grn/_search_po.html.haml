@@ -4,11 +4,11 @@
       .form-group
         = label_tag "PO No", "Store", class: "col-md-2 control-label"
         .col-md-10
-          = select_tag "po[store_id]", options_from_collection_for_select(@stores, "id", "name"), class: "form-control"
+          = select_tag "po[store.id]", options_from_collection_for_select(@stores, "id", "name"), class: "form-control"
       .form-group
         = label_tag "PO No", "PO No", class: "col-md-2 control-label"
         .col-md-10
-          = text_field_tag "po[po_no]", nil, placeholder: "Po No", class: "form-control"
+          = text_field_tag "po[formated_po_no]", nil, placeholder: "Po No", class: "form-control"
       .form-group
         = label_tag "PO No", "PO date from", class: "col-md-2 control-label"
         .col-md-10
@@ -20,6 +20,6 @@
       .form-group
         = label_tag "PO No", "Supplier", class: "col-md-2 control-label"
         .col-md-10
-          = select_tag "po[supplier_id]", options_from_collection_for_select(@stores, "id", "name"), class: "form-control"
+          = select_tag "po[supplier.id]", options_from_collection_for_select(Organization.suppliers, "id", "name"), class: "form-control"
       .col-md-3
-        = submit_tag "Search", class: "btn btn-success btn-lg"
+        = submit_tag "Search", class: "btn btn-success btn-lg", name: "search"

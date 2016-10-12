@@ -108,6 +108,35 @@ module Admins
       render "admins/searches/customers_suppliers/select_customers_suppliers"
     end
 
+    def search_gins
+      @remote = params[:remote].to_bool if params[:remote].present?
+      @display_method = {}
+      @select_path = params[:select_path] if params[:select_path].present?
+      if params[:select_options].present?
+        @select_options = Hash[params[:select_options].strip.split("<>").map { |e| e.strip.split(":") }]
+        session[:select_options] = @select_options
+      end
+
+      if params[:modal_id].present?
+        @display_method.merge! modal: {modal_id: params[:modal_id]}
+      elsif params[:render_id].present?
+        @display_method.merge! inpage: {render_id: params[:render_id]}
+      end
+      @select_options = session[:select_options]
+      refined_search = ""
+      if params[:search].present?
+        refined_gins = params[:search_gins][:gin].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
+
+        refined_search = [refined_search, refined_gins].map{|v| v if v.present? }.compact.join(" AND ")
+
+      end
+      puts refined_search
+      params[:query] = refined_search
+      @gins = Gin.search(params)
+
+      render "admins/searches/gin/select_gin"
+    end
+
     private
 
       def update_grn_item_params
