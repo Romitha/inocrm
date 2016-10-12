@@ -556,11 +556,17 @@ module Admins
         @render_template = "grn_item"
         
       when "search_po"
-        @pos = InventoryPo.where(closed: false).where("po_no = :po_no or store_id = :store_id or supplier_id = :supplier_id", params[:po])
-        if params[:po_date_from].to_date and params[:po_date_to].to_date
-          @pos = @pos.where(created_at: (params[:po_date_from]..params[:po_date_to]))
+        refined_search = "closed:false"
+        if params[:search].present?
+          refined_inventory_po = params[:po].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
+
+          refined_search = [refined_inventory_po, refined_search].map{|v| v if v.present? }.compact.join(" AND ")
         end
-        session[:store_id] = params[:po][:store_id]
+        params[:query] = refined_search
+        @pos = InventoryPo.search(params)
+
+        session[:store_id] = params[:po]["store.id"]
+        puts session[:store_id]
 
         Rails.cache.delete([:inventory_product_ids])
         Rails.cache.delete([:po_item_ids])
@@ -1344,7 +1350,7 @@ module Admins
       end
 
       def grn_params
-        params.require(:grn).permit(:remarks, :po_id, :po_no, :supplier_id)
+        params.require(:grn).permit(:remarks, :po_id, :po_no, :supplier_id, :srn_id)
       end
 
       def srn_params
