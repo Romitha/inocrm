@@ -76,7 +76,7 @@
               - organization_customers.each do |org|
                 %tr
                   %td
-                    = link_to_if current_user.has_role?(:admin, Organization.first), org.name, edit_organization_path(org), target: "_blank"
+                    = link_to_if 9, org.name, edit_organization_path(org), target: "_blank"
 
                   - if org.primary_address.present?
                     %td

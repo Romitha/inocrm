@@ -1,25 +1,25 @@
 .row
   .col-md-12
-    = panels panel_type: "success", header_content: "Po no: #{@po.po_no}" do
+    = panels panel_type: "success", header_content: "Po no: #{@po.formated_po_no}" do
 
       %h4 Purchase Order Info
       %dl.dl-horizontal
         %dt Supplier
         %dd= @po.supplier.name
         %dt PO. No
-        %dd= @po.po_no
+        %dd= @po.formated_po_no
         %dt PO. Date
-        %dd= @po.created_at.try(:strftime, "%d %b, %Y")
+        %dd= @po.created_at.try(:strftime, INOCRM_CONFIG["short_date_format"])
         %dt Delivery date
-        %dd= @po.delivery_date.try(:strftime, "%d %b, %Y")
+        %dd= @po.delivery_date.try(:strftime, INOCRM_CONFIG["short_date_format"])
         %dt Remarks
         %dd= @po.remarks
         %dt Delivery to
         %dd= @po.deliver_to
         %dt Created at
-        %dd= @po.created_at.try(:strftime, "%d %b, %Y")
+        %dd= @po.created_at.try(:strftime, INOCRM_CONFIG["short_date_format"])
         %dt Created by
-        %dd= @po.created_by_user.email
+        %dd= @po.created_by_user_full_name
 
       %h4 Purchase Order items
       %table.table.table-bordered

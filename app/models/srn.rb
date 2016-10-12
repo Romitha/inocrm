@@ -14,6 +14,10 @@ class Srn < ActiveRecord::Base
   accepts_nested_attributes_for :gins, allow_destroy: true
   has_many :ticket_spare_part_stores, foreign_key: :inv_srn_id
   has_many :ticket_on_loan_spare_parts, foreign_key: :inv_srn_id
+
+  def formatted_srn_no
+    srn_no.to_s.rjust(6, INOCRM_CONFIG["inventory_srn_no_format"])
+  end
 end
 
 class SrnItem < ActiveRecord::Base

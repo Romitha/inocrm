@@ -302,6 +302,7 @@ Rails.application.routes.draw do
     resources :searches do
       collection do
         get "search_customers_suppliers"
+        get "search_gins"
 
         get "search_grn"
         get "inventories"
@@ -313,7 +314,6 @@ Rails.application.routes.draw do
       collection do
 
         get "grn"
-        get "srr"
         get "po"
         post "create_po"
         get "grn_main_part"
@@ -335,6 +335,9 @@ Rails.application.routes.draw do
         get "gin"
         get "batch_or_serial_for_gin"
         post "create_gin"
+
+        get 'srr'
+        post 'create_srr'
 
         delete "delete_product_category"
         delete "delete_admin_brands_and_category"
