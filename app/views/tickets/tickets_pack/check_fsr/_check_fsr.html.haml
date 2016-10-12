@@ -87,6 +87,7 @@
       .row.col-md-12.col-xs-12
         %p FSR Information
         = f.simple_fields_for :ticket_fsrs do |ff|
+          = ff.input :current_user_id, as: :hidden, input_html: {value: current_user.id}
           - fsr = ff.object
           %button.btn.btn-info{"data-target" => "##{fsr.id}", "data-toggle" => "collapse", :type => "button"} FSR #{fsr.ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])}
           .collapse{:id => "#{fsr.id}"}

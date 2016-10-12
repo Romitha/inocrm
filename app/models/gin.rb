@@ -2,12 +2,66 @@ class Gin < ActiveRecord::Base
   self.table_name = "inv_gin"
   belongs_to :store, class_name: "Organization"
   belongs_to :srn
-  belongs_to :user
+  belongs_to :created_by_user, class_name: "User", foreign_key: :created_by
 
   has_many :gin_items
   accepts_nested_attributes_for :gin_items, allow_destroy: true
   has_many :ticket_spare_part_stores, foreign_key: :inv_gin_id
   has_many :ticket_on_loan_spare_parts, foreign_key: :inv_gin_id
+
+  include Tire::Model::Search
+  include Tire::Model::Callbacks
+
+  mapping do
+    indexes :store, type: "nested", include_in_parent: true
+    indexes :srn, type: "nested", include_in_parent: true
+  end
+
+  def self.search(params)
+    tire.search(page: (params[:page] || 1), per_page: 10) do
+      query do
+        boolean do
+          must { string params[:query] } if params[:query].present?
+          must { range :created_at, lte: params[:gin_range_to].to_date } if params[:gin_range_to].present?
+          must { range :created_at, gte: params[:gin_range_from].to_date } if params[:gin_range_from].present?
+          must { range "srn.created_at", lte: params[:srn_range_to].to_date } if params[:srn_range_to].present?
+          must { range "srn.created_at", gte: params[:srn_range_from].to_date } if params[:srn_range_from].present?
+          # filter :range, published_at: { lte: Time.zone.now}
+          # raise to_curl
+        end
+      end
+      sort { by :grn_no, {order: "desc", ignore_unmapped: true} }
+    end
+  end
+
+  def to_indexed_json
+    to_json(
+      only: [:id, :remarks, :created_at],
+      methods: [:store_name, :formatted_gin_no, :created_by_user_full_name],
+      include: {
+        srn: {
+          only: [:id, :created_at],
+          methods: [:formatted_srn_no],
+        },
+        store: {
+          only: [:id, :name],
+        }
+      },
+    )
+
+  end
+
+  def store_name
+    store.name
+  end
+
+  def formatted_gin_no
+    gin_no.to_s.rjust(6, INOCRM_CONFIG["inventory_gin_no_format"])
+  end
+
+  def created_by_user_full_name
+    created_by_user.full_name
+  end
 
   before_save do |gin|
    if gin.persisted? and gin.remarks_changed? and gin.remarks.present?

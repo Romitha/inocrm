@@ -283,6 +283,10 @@ class CompanyConfig < ActiveRecord::Base
     inv_last_po_no.to_i+1
   end
 
+  def next_inv_last_srr_no
+    inv_last_srr_no.to_i+1
+  end
+
 end
 
 class Account < ActiveRecord::Base
