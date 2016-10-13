@@ -1,0 +1,34 @@
+<!--
+ 1. paper_size is A4, A5.... or CUSTOM
+ 2. paper_width and paper_height - In mili meters
+ 3. orientaion is portrait or landscape
+ 4. color is in RGB integer value 
+ 5. h_align is left or right
+ 6. v_align is top or bottom
+ 7. Left, Top, Right, Bottom should be in mili meters
+ -->
+
+<template name="print ticket Delivery Note" paper_size="Custom" paper_width="216" paper_height="140" orientaion="portrait" top_margin="15" left_margin="0" bottom_margin="10" no_page_eject="true"  >
+	<fonts>
+		<font code="F1" name="Arial" size="12" color="0" Bold="true" Underline="true" />
+		<font code="F2" name="Arial" size="10" color="0" Bold="true" />
+		<font code="F3" name="Arial" size="10" color="0"  />
+		<font code="F4" name="Arial" size="9" color="0"  />
+	</fonts>
+	<header>
+	    <label name="DUPLICATE_D" left="27.8" top="5" right="200" bottom="65" h_align="left" v_align="top" font_code="F2" />
+		
+	</header>
+	<tables top="15" >
+		<table>
+			<table_header height="0" >
+			</table_header>			   
+			<table_repeat height="5" >
+			   <label name="LEFT_LINE_TITLE" left="45" top="0" right="45" bottom="116" h_align="right" v_align="top" font_code="F2" />
+			   <label name="LEFT_LINE_DATA" left="50" top="0" right="50" bottom="116" h_align="left" v_align="top" font_code="F3" />
+			   <label name="RIGHT_LINE_TITLE" left="135" top="0" right="135" bottom="116" h_align="right" v_align="top" font_code="F2" />
+			   <label name="RIGHT_LINE_DATA" left="138" top="0" right="140" bottom="116" h_align="left" v_align="top" font_code="F3" />
+			</table_repeat>
+		</table>		
+	</tables>
+</template>

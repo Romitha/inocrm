@@ -1,0 +1,129 @@
+<!--
+ 1. paper_size is A4, A5.... or CUSTOM
+ 2. paper_width and paper_height - In mili meters
+ 3. orientaion is portrait or landscape
+ 4. color is in RGB integer value 
+ 5. h_align is left or right
+ 6. v_align is top or bottom
+ 7. Left, Top, Right, Bottom should be in mili meters
+ -->
+
+<template name="print quotation" paper_size="A4" paper_width="210" paper_height="297" orientaion="portrait" top_margin="15" left_margin="0" bottom_margin="10" >
+	<fonts>
+		<font code="F1" name="Arial" size="12" color="0" Bold="true" Underline="true" />
+		<font code="F2" name="Arial" size="10" color="0" Bold="true" />
+		<font code="F3" name="Arial" size="10" color="0"  />
+		<font code="F4" name="Arial" size="9" color="0"  />
+		<font code="F5" name="Arial" size="14" color="0" Bold="true" />
+	</fonts>
+	<header>
+	    <label name="DUPLICATE" left="15" top="0" right="200" bottom="65" h_align="left" v_align="top" font_code="F2" />
+					
+		<line  name="LINE3" start_x="76" start_y="0" end_x="135" end_y="0" penwidth="1" penstyle="SOLID" color="00000"  />
+	    <label name="LABEL_C" left="76" top="2" right="71" bottom="56" h_align="left" v_align="top" font_code="F5" >CUSTOMER QUOTATION</label>
+		<line  name="LINE3" start_x="76" start_y="9.3" end_x="135" end_y="9.3" penwidth="1" penstyle="SOLID" color="00000"  />
+		
+		<label name="LABEL_C"   left="15"  top="12.5" right="71" bottom="96" h_align="left" v_align="top" font_code="F2" >Customer Name:</label>
+		<label name="COMPANY_NAME" left="47"  top="12.5" right="61" bottom="56" h_align="left" v_align="top" font_code="F3" />
+		<label name="LABEL_C"   left="15"  top="16.5" right="71" bottom="96" h_align="left" v_align="top" font_code="F2" >Address             :</label>
+		<label name="ADDRESS1"     left="47"  top="16.5" right="61" bottom="96" h_align="left" v_align="top" font_code="F3" />
+		<label name="ADDRESS2"     left="47"  top="20.5" right="61" bottom="96" h_align="left" v_align="top" font_code="F3" />
+		<label name="ADDRESS3"     left="47"  top="24.5" right="61" bottom="96" h_align="left" v_align="top" font_code="F3" />
+		<label name="ADDRESS4"     left="47"  top="28.5" right="61" bottom="96" h_align="left" v_align="top" font_code="F3" />
+
+		<label name="LABEL_C"   left="122"  top="34" right="71" bottom="96" h_align="left" v_align="top" font_code="F2" >Quotation No    :</label>
+		<label name="QUOTATION_NO" left="150" top="34" right="81" bottom="96" h_align="left" v_align="top" font_code="F3" />
+		
+		<label name="LABEL_C"   left="122"  top="39" right="71" bottom="26" h_align="left" v_align="top" font_code="F2" >VAT REG No     : 114668095 - 7000</label>
+
+		<label name="LABEL_C"   left="122"  top="44" right="71" bottom="26" h_align="left" v_align="top" font_code="F2" >Created Date     :</label>
+		<label name="CREATED_DATE"   left="150"  top="44" right="81" bottom="96" h_align="left" v_align="top" font_code="F3" />
+		<label name="CREATED_TIME"   left="174"  top="44" right="81" bottom="96" h_align="left" v_align="top" font_code="F3" />
+
+		<label name="LABEL_C"   left="122"  top="49" right="71" bottom="26" h_align="left" v_align="top" font_code="F2" >Validity Period  :</label>
+		<label name="VALIDITY_PERIOD"   left="150"  top="49" right="81" bottom="116" h_align="left" v_align="top" font_code="F3" />
+		
+		<label name="LABEL_C"   left="122"  top="54" right="71" bottom="26" h_align="left" v_align="top" font_code="F2" >Delivery Period :</label>
+		<label name="DELIVERY_PERIOD"   left="150"  top="54" right="81" bottom="116" h_align="left" v_align="top" font_code="F3" />
+
+		<label name="LABEL_C"   left="15"  top="34" right="71" bottom="96" h_align="left" v_align="top" font_code="F2" >Ticket No        :</label>
+		<label name="TICKET_REF"   left="46"  top="34" right="81" bottom="96" h_align="left" v_align="top" font_code="F3" />
+
+		<label name="LABEL_C"   left="15"  top="39" right="71" bottom="26" h_align="left" v_align="top" font_code="F2" >Product Brand:</label>
+		<label name="PRODUCT_BRAND"     left="46"  top="39" right="61" bottom="26" h_align="left" v_align="top" font_code="F3" />
+
+		<label name="LABEL_C"   left="15"  top="44" right="71" bottom="26" h_align="left" v_align="top" font_code="F2" >Model No        :</label>
+		<label name="MODEL_NO"   left="46"  top="44" right="61" bottom="96" h_align="left" v_align="top" font_code="F3" /> 
+
+ 		<label name="LABEL_C"   left="15"  top="49" right="71" bottom="26" h_align="left" v_align="top" font_code="F2" >Serial No         :</label>
+		<label name="SERIAL_NO"     left="46"  top="49" right="61" bottom="96" h_align="left" v_align="top" font_code="F3" /> 
+
+		<label name="LABEL_C"   left="15"  top="54" right="71" bottom="26" h_align="left" v_align="top" font_code="F2" >Product No     :</label>
+		<label name="PRODUCT_NO"   left="46"  top="54" right="61" bottom="96" h_align="left" v_align="top" font_code="F3" /> 
+
+		
+		
+		
+		
+	</header>
+	<tables top="70" >
+		<table>
+			<table_header height="10" >
+			   <line  name="LINE1" start_x="5" start_y="0" end_x="204" end_y="0" penwidth="4" penstyle="SOLID" color="00000"  />
+			   <label name="LABEL_C" left="5" top="2" right="11" bottom="116" h_align="left" v_align="top" font_code="F2" >No</label>
+			   <label name="LABEL_C" left="13" top="2" right="21" bottom="116" h_align="left" v_align="top" font_code="F2" >Item Code</label>
+			   <label name="LABEL_C" left="46" top="2" right="56" bottom="116" h_align="left" v_align="top" font_code="F2" >Description</label>
+			   <label name="LABEL_C" left="130" top="2" right="138" bottom="116" h_align="right" v_align="top" font_code="F2" >Quantity</label>
+			   <label name="LABEL_C" left="172" top="2" right="166" bottom="116" h_align="right" v_align="top" font_code="F2" >Unit Price</label>
+			   <label name="LABEL_C" left="188" top="2" right="199" bottom="116" h_align="right" v_align="top" font_code="F2" >Total Price</label>
+			   <line  name="LINE1" start_x="5" start_y="7" end_x="204" end_y="7" penwidth="4" penstyle="SOLID" color="00000"  />
+			   
+			</table_header>	
+		
+			<table_repeat height="5.5" >
+			
+			   <label name="INDEX_NO" left="5" top="0" right="11" bottom="116" h_align="left" v_align="top" font_code="F3" />
+			   <label name="ITEM_CODE" left="14" top="0" right="21" bottom="116" h_align="left" v_align="top" font_code="F3" />
+            
+			   <label name="DESCRIPTION" left="44" top="0" right="56" bottom="116" h_align="left" v_align="top" font_code="F3" />
+
+			   <label name="QUANTITY" left="128" top="0" right="132" bottom="116" h_align="right" v_align="top" font_code="F3" />
+			   <label name="UNIT_PRICE" left="164" top="0" right="162" bottom="116" h_align="right" v_align="top" font_code="F3" />
+			   <label name="CURRENCY1" left="163" top="0" right="174" bottom="221" h_align="left" v_align="top" font_code="F3" />
+			   <label name="TOTAL_PRICE" left="185" top="0" right="195" bottom="116" h_align="right" v_align="top" font_code="F3" />
+	           <label name="CURRENCY2" left="196" top="0" right="75" bottom="221" h_align="left" v_align="top" font_code="F3" />
+               <line  name="LINE2" start_x="5" start_y="5" end_x="204" end_y="5" penwidth="2" penstyle="SOLID" color="00000"  />
+			</table_repeat >
+		</table>		
+	</tables>
+	
+	<footer>
+	   <label name="LABEL_C"   left="105"  top="2" right="71" bottom="50" h_align="left" v_align="top" font_code="F2" >Total Amount :</label>
+	   <label name="TOTAL_AMOUNT" left="185" top="2" right="195" bottom="50" h_align="right" v_align="top" font_code="F3" />
+	   <label name="CURRENCY3" left="196" top="2" right="75" bottom="50" h_align="left" v_align="top" font_code="F3" />
+	   
+	   
+	  <line  name="LINE3" start_x="176" start_y="6.5" end_x="204" end_y="6.5" penwidth="2" penstyle="SOLID" color="00000"  />
+	   <line  name="LINE4" start_x="176" start_y="7" end_x="204" end_y="7" penwidth="2" penstyle="SOLID" color="00000"  />
+	   	
+	   <label name="LABEL_C"   left="105"  top="8.5" right="71" bottom="40" h_align="left" v_align="top" font_code="F2" >Minimum Advance Required :</label>
+	   <label name="MINIMUM_ADVANCE_PAYMENT" left="185" top="8.5" right="195" bottom="40" h_align="right" v_align="top" font_code="F3" />
+	   <label name="CURRENCY4" left="196" top="8.5" right="75" bottom="40" h_align="left" v_align="top" font_code="F3" />
+	   
+
+	   <label name="LABEL_C"   left="105"  top="14.5" right="71" bottom="30" h_align="left" v_align="top" font_code="F2" >Payment Term :</label>
+	   <label name="PAYMENT_TERM" left="198" top="14.5" right="203" bottom="30" h_align="right" v_align="top" font_code="F3" />
+	   
+	   <label name="LABEL_C"   left="15"  top="26" right="71" bottom="15" h_align="left" v_align="top" font_code="F2" >Warranty    :</label>
+	   <label name="WARRANTY" left="46" top="26" right="60" bottom="15" h_align="left" v_align="top" font_code="F3" />
+		
+		
+	   <label name="LABEL_C"   left="15"  top="32" right="71" bottom="8" h_align="left" v_align="top" font_code="F2" >Note            :</label>
+	   <label name="NOTE" left="46" top="32" right="60" bottom="8" h_align="left" v_align="top" font_code="F3" />
+		
+		
+	   <label name="LABEL_C"   left="15"  top="38" right="71" bottom="5" h_align="left" v_align="top" font_code="F2" >Created By :</label>	   
+	   <label name="CREATED_BY" left="46" top="38" right="60" bottom="5" h_align="left" v_align="top" font_code="F3" />
+	   
+	</footer>
+</template>

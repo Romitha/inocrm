@@ -71,5 +71,12 @@ namespace :tire do
       system "rake environment tire:deep_import CLASS=#{models.first} PCLASS=#{models.last} FORCE=true"
     end
   end
-  
+end
+
+task upload_printer_template: :environment do
+  Ticket
+  ["fsr", "bundle_hp", "invoice", "quotation", "receipt", "ticket", "ticket_complete", "ticket_sticker"].each do |print|
+    file = File.open File.join(Rails.root, "printer_templates", "print_#{print}.xml"), "rb"
+    PrintTemplate.first.update_attribute print.to_sym, file.read
+  end
 end
