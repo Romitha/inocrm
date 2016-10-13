@@ -20,7 +20,7 @@ module TodosHelper
         end
 
       when args[:start_process]
-        response = response_hash["process_instance"].blank? ? {} : {status: response_hash["process_instance"]["status"], process_name: response_hash["process_instance"]["process_id"], process_id: response_hash["process_instance"]["id"]}
+        response = response_hash[versionized_bpm_wrapper[:start_process]].blank? ? {} : {status: response_hash["process_instance"]["status"], process_name: response_hash["process_instance"]["process_id"], process_id: response_hash["process_instance"]["id"]}
 
       when args[:start_task]
         response = response_hash["response"] ? {status: response_hash["response"]["status"]} : {}
@@ -34,7 +34,7 @@ module TodosHelper
     end
   end
 
-  # private
+  private
 
     def deployment_id
       # "lk.inova:INOCRM:0.0.3"
@@ -65,13 +65,26 @@ module TodosHelper
         
     end
 
+    def versionized_bpm_wrapper
+      case Rails.env
+      when "development"
+        {start_process: "process_instance"}
+      when "production"
+        {start_process: "process_instance"}
+      when "staging"
+        {start_process: "process_instance_response"}
+      else
+        {}
+      end
+    end
+
     def base_url
       if Rails.env == "staging"
         "http://192.168.50.157:8080/jbpm-console/rest"
       elsif Rails.env == "production"
         "http://192.168.1.232:8080/jbpm-console/rest"
       else
-        "http://192.168.1.202:8080/jbpm-console/rest"
+        "http://192.168.50.157:8080/jbpm-console/rest"
         # "http://192.168.1.232:8080/jbpm-console/rest"
       end
       # curl -X POST -H "Accept:application/xml" -H "Content-type:application/json" -H "Authorization: Basic a3Jpc3Y6a3Jpc3Y=" http://192.168.1.202:8080/jbpm-console/rest/runtime/org.Test1234:test1234:3.3/process/test1234.test1a/start\?map_name\=wanni\&map_age\=27\&map_user\=anu
