@@ -1,0 +1,25 @@
+<!--
+ 1. paper_size is A4, A5.... or CUSTOM
+ 2. paper_width and paper_height - In mili meters
+ 3. orientaion is portrait or landscape
+ 4. color is in RGB integer value 
+ 5. h_align is left or right
+ 6. v_align is top or bottom
+ 7. Left, Top, Right, Bottom should be in mili meters
+ -->
+
+<template name="print ticket sticker" paper_size="Custom" paper_width="50" paper_height="25" orientaion="portrait" top_margin="0" left_margin="0" bottom_margin="0" >
+	<fonts>
+		<font code="F1" name="Arial" size="12" color="0" Bold="true" />
+		<font code="F2" name="Arial" size="10" color="0" Bold="true" />
+		<font code="F3" name="Arial" size="10" color="0"  />
+		<font code="F4" name="Arial" size="9" color="0"  />
+		<font code="F5" name="Arial" size="16" color="0" Bold="true" />
+	</fonts>
+	<header>
+	    <label name="LABEL_C" left="2" top="2" right="2" bottom="2" h_align="left" v_align="top" font_code="F2" >VSIS Pvt Ltd.</label>
+	    <label name="LABEL_C" left="2" top="5" right="2" bottom="5" h_align="left" v_align="top" font_code="F2" >Ticket No.:</label>
+		<label name="TICKET_REF"   left="12"  top="5" right="12" bottom="5" h_align="left" v_align="top" font_code="F5" />
+		<image name="IMAGE_BARCODE" left="2" top="7" right="20" bottom="12" h_align="left" v_align="top" autosize="true" stretch="false" aspectratio="false" />
+	</header>
+</template>

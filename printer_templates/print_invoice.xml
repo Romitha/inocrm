@@ -1,0 +1,107 @@
+<!--
+ 1. paper_size is A4, A5.... or CUSTOM
+ 2. paper_width and paper_height - In mili meters
+ 3. orientaion is portrait or landscape
+ 4. color is in RGB integer value 
+ 5. h_align is left or right
+ 6. v_align is top or bottom
+ 7. Left, Top, Right, Bottom should be in mili meters
+ -->
+
+<template name="print voucher" paper_size="Custom" paper_width="218.5" paper_height="279" orientaion="portrait" top_margin="15" left_margin="0" bottom_margin="10" >
+	<fonts>
+		<font code="F1" name="Arial" size="12" color="0" Bold="true" Underline="true" />
+		<font code="F2" name="Arial" size="10" color="0" Bold="true" />
+		<font code="F3" name="Arial" size="10" color="0"  />
+		<font code="F4" name="Arial" size="9" color="0"  />
+		<font code="F5" name="Arial" size="14" color="0" Bold="true" />
+	</fonts>
+	<header>
+	    <label name="DUPLICATE" left="18" top="15" right="200" bottom="65" h_align="left" v_align="top" font_code="F2" />
+	    <label name="LABEL_C" left="156" top="20" right="71" bottom="56" h_align="left" v_align="top" font_code="F5" >TAX INVOICE</label>
+
+		<label name="INVOICE_NO" left="145" top="36.2" right="71" bottom="36" h_align="left" v_align="top" font_code="F2" />
+
+		<label name="LABEL_C"   left="13"  top="42" right="71" bottom="26" h_align="left" v_align="top" font_code="F2" >Ticket No         :</label>
+		<label name="TICKET_REF"   left="48"  top="42" right="81" bottom="96" h_align="left" v_align="top" font_code="F3" />
+
+		<label name="LABEL_C"   left="13"  top="46" right="71" bottom="26" h_align="left" v_align="top" font_code="F2" >Product Brand:</label>
+		<label name="PRODUCT_BRAND"     left="48"  top="46" right="61" bottom="56" h_align="left" v_align="top" font_code="F3" />
+
+		<label name="LABEL_C"   left="13"  top="50" right="71" bottom="26" h_align="left" v_align="top" font_code="F2" >Model No         :</label>
+		<label name="MODEL_NO"   left="48"  top="50" right="61" bottom="66" h_align="left" v_align="top" font_code="F3" />
+
+ 		<label name="LABEL_C"   left="13"  top="54" right="71" bottom="26" h_align="left" v_align="top" font_code="F2" >Serial No         :</label>
+		<label name="SERIAL_NO"     left="48"  top="54" right="61" bottom="76" h_align="left" v_align="top" font_code="F3" /> 
+
+		<label name="LABEL_C"   left="13"  top="58" right="71" bottom="26" h_align="left" v_align="top" font_code="F2" >Product No     :</label>
+		<label name="PRODUCT_NO"   left="48"  top="58" right="61" bottom="86" h_align="left" v_align="top" font_code="F3" /> 
+
+		<label name="COMPANY_NAME" left="13"  top="19" right="61" bottom="86" h_align="left" v_align="top" font_code="F3" /> 
+		<label name="ADDRESS1"     left="13"  top="23" right="61" bottom="96" h_align="left" v_align="top" font_code="F3" />
+		<label name="ADDRESS2"     left="13"  top="27" right="61" bottom="96" h_align="left" v_align="top" font_code="F3" />
+		<label name="ADDRESS3"     left="13"  top="31" right="61" bottom="96" h_align="left" v_align="top" font_code="F3" />
+		<label name="ADDRESS4"     left="13"  top="35" right="61" bottom="96" h_align="left" v_align="top" font_code="F3" />
+		
+		<label name="CREATED_DATE"   left="145"  top="41.2" right="81" bottom="96" h_align="left" v_align="top" font_code="F3" />
+		<label name="CREATED_TIME"   left="169"  top="41.2" right="81" bottom="96" h_align="left" v_align="top" font_code="F3" />
+
+		<label name="LABEL_C"   left="111.5"  top="50" right="73" bottom="26" h_align="left" v_align="top" font_code="F2" >VAT REG No   :        114668095 - 7000</label>
+
+		<label name="PAYMENT_TERM"   left="133"  top="76" right="83" bottom="116" h_align="left" v_align="top" font_code="F3" />
+	</header>
+	<tables top="97" >
+		<table>
+			<table_header height="0" >
+			</table_header>			   
+			<table_repeat height="4" >
+			   <label name="INDEX_NO" left="3" top="0" right="11" bottom="116" h_align="left" v_align="top" font_code="F3" />
+			   <label name="ITEM_CODE" left="7" top="0" right="21" bottom="116" h_align="left" v_align="top" font_code="F3" />
+
+			   <label name="DESCRIPTION" left="39" top="0" right="56" bottom="116" h_align="left" v_align="top" font_code="F3" />
+
+			   <label name="QUANTITY" left="108" top="0" right="135" bottom="116" h_align="right" v_align="top" font_code="F3" />
+			   <label name="UNIT_PRICE" left="145" top="0" right="160" bottom="116" h_align="right" v_align="top" font_code="F3" />
+			   <label name="CURRENCY1" left="160" top="0" right="175" bottom="221" h_align="left" v_align="top" font_code="F3" />
+			   <label name="TOTAL_PRICE" left="183" top="0" right="196" bottom="116" h_align="right" v_align="top" font_code="F3" />
+	           <label name="CURRENCY2" left="196" top="0" right="75" bottom="221" h_align="left" v_align="top" font_code="F3" />	
+			</table_repeat>
+		</table>		
+	</tables>
+	<footer>
+	   <label name="LABEL_C"   left="78"  top="5" right="71" bottom="50" h_align="left" v_align="top" font_code="F2" >Total Amount</label>
+	   
+	   <label name="TOTAL_AMOUNT" left="145" top="5" right="160" bottom="50" h_align="right" v_align="top" font_code="F3" />
+	   <label name="CURRENCY3" left="160" top="5" right="174" bottom="50" h_align="left" v_align="top" font_code="F3" />
+	   	
+	   <label name="LABEL_C"   left="78"  top="10" right="71" bottom="40" h_align="left" v_align="top" font_code="F2" >Total Advance Received</label>
+
+	   <label name="TOTAL_ADVANCE_RECEIVED" left="145" top="10" right="160" bottom="40" h_align="right" v_align="top" font_code="F3" />
+	   <label name="CURRENCY4" left="160" top="10" right="176" bottom="40" h_align="left" v_align="top" font_code="F3" />
+
+	   <label name="LABEL_C"   left="78"  top="15" right="71" bottom="30" h_align="left" v_align="top" font_code="F2" >Total Deduction</label>
+
+	   <label name="TOTAL_DEDUCTION" left="145" top="15" right="160" bottom="30" h_align="right" v_align="top" font_code="F3" />
+	   <label name="CURRENCY5" left="160" top="15" right="176" bottom="30" h_align="left" v_align="top" font_code="F3" />
+	   
+	   <line  name="LINE1" start_x="170" start_y="19" end_x="203" end_y="19" penwidth="1" penstyle="SOLID" color="00000"  />
+	   
+	   <label name="LABEL_C"   left="78"  top="20" right="71" bottom="30" h_align="left" v_align="top" font_code="F2" >Balance to be paid</label>
+
+	   <label name="BALANCE_TO_BE_PAID" left="183" top="20" right="196" bottom="30" h_align="right" v_align="top" font_code="F3" />
+	   <label name="CURRENCY6" left="196" top="20" right="75" bottom="30" h_align="left" v_align="top" font_code="F3" />
+	   <line  name="LINE1" start_x="170" start_y="25" end_x="203" end_y="25" penwidth="1" penstyle="SOLID" color="00000"  />
+		<line  name="LINE1" start_x="170" start_y="26" end_x="203" end_y="26" penwidth="1" penstyle="SOLID" color="00000"  />
+		
+	   <label name="LABEL_C"   left="3"  top="30" right="71" bottom="8" h_align="left" v_align="top" font_code="F2" >Note	:</label>
+	   <label name="NOTE" left="48" top="30" right="60" bottom="8" h_align="left" v_align="top" font_code="F3" />
+
+	   <label name="LABEL_C"   left="3"  top="40" right="71" bottom="5" h_align="left" v_align="top" font_code="F2" >Created By	:</label>	   
+	   <label name="CREATED_BY" left="48" top="40" right="60" bottom="5" h_align="left" v_align="top" font_code="F3" />
+
+	   <label name="LABEL_C"   left="3"  top="35" right="71" bottom="11" h_align="left" v_align="top" font_code="F2" >Resolution Summary	:</label>
+	   <label name="RESOLUTION_SUMMARY1" left="48" top="35" right="60" bottom="11" h_align="left" v_align="top" font_code="F3" />
+	   <label name="RESOLUTION_SUMMARY2" left="48" top="38" right="60" bottom="11" h_align="left" v_align="top" font_code="F3" />
+	   <label name="TOTAL_ERROR" left="15" top="118" right="60" bottom="5" h_align="left" v_align="top" font_code="F3" />
+	</footer>
+</template>
