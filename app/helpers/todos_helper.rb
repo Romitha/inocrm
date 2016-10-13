@@ -20,7 +20,7 @@ module TodosHelper
         end
 
       when args[:start_process]
-        response = response_hash[versionized_bpm_wrapper[:start_process]].blank? ? {} : {status: response_hash["process_instance"]["status"], process_name: response_hash["process_instance"]["process_id"], process_id: response_hash["process_instance"]["id"]}
+        response = response_hash[versionized_bpm_wrapper[:start_process]].blank? ? {} : {status: response_hash[versionized_bpm_wrapper[:start_process]]["status"], process_name: response_hash[versionized_bpm_wrapper[:start_process]]["process_id"], process_id: response_hash[versionized_bpm_wrapper[:start_process]]["id"]}
 
       when args[:start_task]
         response = response_hash["response"] ? {status: response_hash["response"]["status"]} : {}
@@ -34,7 +34,7 @@ module TodosHelper
     end
   end
 
-  private
+  # private
 
     def deployment_id
       # "lk.inova:INOCRM:0.0.3"
