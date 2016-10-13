@@ -29,12 +29,12 @@ module TodosHelper
         response = response_hash["response"] ? {status: response_hash["response"]["status"]} : {}
 
       when args[:task_list]
-        response = {status: "success", content: response_hash["task_summary_list"]}
+        response = {status: "success", content: response_hash[versionized_bpm_wrapper[:task_list]}
       end
     end
   end
 
-  # private
+  private
 
     def deployment_id
       # "lk.inova:INOCRM:0.0.3"
@@ -68,11 +68,11 @@ module TodosHelper
     def versionized_bpm_wrapper
       case Rails.env
       when "development"
-        {start_process: "process_instance"}
+        {start_process: "process_instance", task_list: "task_summary_list"}
       when "production"
-        {start_process: "process_instance"}
+        {start_process: "process_instance", task_list: "task_summary_list"}
       when "staging"
-        {start_process: "process_instance_response"}
+        {start_process: "process_instance_response", task_list: "task_summary_list_response"}
       else
         {}
       end
