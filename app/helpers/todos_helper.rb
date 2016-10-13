@@ -34,6 +34,84 @@ module TodosHelper
     end
   end
 
+  def initialize_bpm_variables
+    {
+      d1_pop_approval_pending: "N",
+      d2_recorrection: "N",
+      d3_regional_support_job: "N",
+      d4_job_complete: "N",
+      d5_re_assigned: "N",
+      d6_close_approval_required: "N",
+      d7_close_approval_requested: "N",
+      d8_job_finished: "N",
+      d9_qc_required: "N",
+      d10_job_estimate_required_final: "N",
+      d11_terminate_job: "N",
+      d12_need_to_invoice: "N",
+      d13_job_estimate_requested_external: "N",
+      d14_job_estimate_external_below_margin: "N",
+      d15_part_estimate_required: "N",
+      d16_request_manufacture_part: "N",
+      d17_request_store_part: "N", 
+      d18_approve_request_store_part: "N", 
+      d19_estimate_internal_below_margin: "N", 
+      d20_advance_payment_required: "N",
+      d21_edit_serial_no: "N",
+      d22_deliver_unit: "N", 
+      d23_delivery_items_pending: "N", 
+      d24_return_store_part: "N",
+      d25_terminate_order_part: "N",
+      d26_serial_no_change_warranty_extend_requested: "N",
+      d27_warranty_extend_requested: "N",
+      d28_request_store_part_2: "N",
+      d29_part_estimate_required_2: "N",
+      d30_parts_collection_pending: "N",
+      d31_more_parts_collection_pending: "N",
+      d32_return_manufacture_part: "N",
+      d33_return_part_reject: "N",
+      d34_event_closed: "N",
+      d35_parts_bundle_pending: "N",
+      d36_more_parts_bundle_pending: "N",
+      d37_qc_passed: "N",
+      d38_ticket_close_approved: "N",
+      d39_re_open: "N",
+      d40_ticket_approved_to_close: "N",
+      d41_re_open: "N",
+      part_estimation_id: "-",
+      request_spare_part_id: "-",
+      request_onloan_spare_part_id: "-",
+      onloan_request: "N",
+      advance_payment_estimation_id: "-",
+      deliver_unit_id: "-",
+      supp_engr_user: "-",
+      engineer_id: "-",
+    }
+  end
+
+  def bpm_check task_id, process_id, owner
+    # ticket_id, process_id, task_id should not be null
+    # http://0.0.0.0:3000/tickets/assign-ticket?ticket_id=2&process_id=212&owner=supp_mgr&task_id=191
+    if task_id and process_id and owner
+
+      availability_of_task = []
+
+      bpm_response = send_request_process_data process_history: true, process_instance_id: process_id, variable_id: "ticket_id"
+
+      if bpm_response[:status].upcase != "ERROR"
+
+        availability_of_task << send_request_process_data(task_list: true, status: "InProgress", process_instance_id: process_id)
+        availability_of_task << send_request_process_data(task_list: true, status: "Reserved", process_instance_id: process_id)
+
+        availability_of_task_content = availability_of_task.any? { |e| e[:content].present? and (e[:content]["task_summary"].is_a?(Array) ? e[:content]["task_summary"].map{|id| id["id"]}.include?(task_id.to_s) : e[:content]["task_summary"]["id"] == task_id.to_s) }
+      else
+        false
+      end
+
+    else
+      false
+    end    
+  end
+
   private
 
     def deployment_id
@@ -157,85 +235,6 @@ module TodosHelper
     def task_list_path
       "task/query"
     end
-
-  def initialize_bpm_variables
-    {
-      d1_pop_approval_pending: "N",
-      d2_recorrection: "N",
-      d3_regional_support_job: "N",
-      d4_job_complete: "N",
-      d5_re_assigned: "N",
-      d6_close_approval_required: "N",
-      d7_close_approval_requested: "N",
-      d8_job_finished: "N",
-      d9_qc_required: "N",
-      d10_job_estimate_required_final: "N",
-      d11_terminate_job: "N",
-      d12_need_to_invoice: "N",
-      d13_job_estimate_requested_external: "N",
-      d14_job_estimate_external_below_margin: "N",
-      d15_part_estimate_required: "N",
-      d16_request_manufacture_part: "N",
-      d17_request_store_part: "N", 
-      d18_approve_request_store_part: "N", 
-      d19_estimate_internal_below_margin: "N", 
-      d20_advance_payment_required: "N",
-      d21_edit_serial_no: "N",
-      d22_deliver_unit: "N", 
-      d23_delivery_items_pending: "N", 
-      d24_return_store_part: "N",
-      d25_terminate_order_part: "N",
-      d26_serial_no_change_warranty_extend_requested: "N",
-      d27_warranty_extend_requested: "N",
-      d28_request_store_part_2: "N",
-      d29_part_estimate_required_2: "N",
-      d30_parts_collection_pending: "N",
-      d31_more_parts_collection_pending: "N",
-      d32_return_manufacture_part: "N",
-      d33_return_part_reject: "N",
-      d34_event_closed: "N",
-      d35_parts_bundle_pending: "N",
-      d36_more_parts_bundle_pending: "N",
-      d37_qc_passed: "N",
-      d38_ticket_close_approved: "N",
-      d39_re_open: "N",
-      d40_ticket_approved_to_close: "N",
-      d41_re_open: "N",
-      part_estimation_id: "-",
-      request_spare_part_id: "-",
-      request_onloan_spare_part_id: "-",
-      onloan_request: "N",
-      advance_payment_estimation_id: "-",
-      deliver_unit_id: "-",
-      supp_engr_user: "-",
-      engineer_id: "-",
-    }
-  end
-
-  def bpm_check task_id, process_id, owner
-    # ticket_id, process_id, task_id should not be null
-    # http://0.0.0.0:3000/tickets/assign-ticket?ticket_id=2&process_id=212&owner=supp_mgr&task_id=191
-    if task_id and process_id and owner
-
-      availability_of_task = []
-
-      bpm_response = send_request_process_data process_history: true, process_instance_id: process_id, variable_id: "ticket_id"
-
-      if bpm_response[:status].upcase != "ERROR"
-
-        availability_of_task << send_request_process_data(task_list: true, status: "InProgress", process_instance_id: process_id)
-        availability_of_task << send_request_process_data(task_list: true, status: "Reserved", process_instance_id: process_id)
-
-        availability_of_task_content = availability_of_task.any? { |e| e[:content].present? and (e[:content]["task_summary"].is_a?(Array) ? e[:content]["task_summary"].map{|id| id["id"]}.include?(task_id.to_s) : e[:content]["task_summary"]["id"] == task_id.to_s) }
-      else
-        false
-      end
-
-    else
-      false
-    end    
-  end
-
 end
 
 
