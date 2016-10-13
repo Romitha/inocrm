@@ -29,7 +29,7 @@ module TodosHelper
         response = response_hash["response"] ? {status: response_hash["response"]["status"]} : {}
 
       when args[:task_list]
-        response = {status: "success", content: response_hash[versionized_bpm_wrapper[:task_list]}
+        response = {status: "success", content: response_hash[versionized_bpm_wrapper[:task_list]]}
       end
     end
   end
