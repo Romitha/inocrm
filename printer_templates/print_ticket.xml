@@ -1,0 +1,53 @@
+<!--
+ 1. paper_size is A4, A5.... or CUSTOM
+ 2. paper_width and paper_height - In mili meters
+ 3. orientaion is portrait or landscape
+ 4. color is in RGB integer value 
+ 5. h_align is left or right
+ 6. v_align is top or bottom
+ 7. Left, Top, Right, Bottom should be in mili meters
+  -->
+<template name="print ticket" paper_size="A4" paper_width="216" paper_height="279" orientaion="portrait" top_margin="0" left_margin="0" bottom_margin="0"  > 
+	<fonts>
+	  <font code="F1" name="San Serif" size="12" color="554822" Bold="true" Italic="true" Underline="true" StrikeOut="true"  />
+	  <font code="F2" name="San Serif" size="12" color="0" Bold="true" />
+	  <font code="F3" name="Arial" size="10" color="0" />
+	  <font code="F4" name="San Serif" size="10" color="0" Bold="true" />
+  </fonts>
+	<header>
+	  <label name="DUPLICATE" left="40" top="20" right="40" bottom="20" h_align="left" v_align="top" font_code="F4" />
+	  <label name="DATETIME" left="36" top="31" right="36" bottom="31" h_align="left" v_align="top" font_code="F3" />
+	  <label name="TICKET_REF" left="177" top="31" right="177" bottom="31" h_align="left" v_align="top" font_code="F3" />
+	  <label name="COMPANY_NAME" left="40" top="37" right="40" bottom="37" h_align="left" v_align="top" font_code="F3" />
+	  <label name="CONTACT_PERSON" left="40" top="43" right="40" bottom="43" h_align="left" v_align="top" font_code="F3" />
+	  <label name="ADDRESS" left="40" top="50" right="40" bottom="50" h_align="left" v_align="top" font_code="F3" />
+	  <label name="TELPHONE" left="29" top="55" right="29" bottom="55" h_align="left" v_align="top" font_code="F3" />
+	  <label name="MOBILE" left="94" top="55" right="94" bottom="55" h_align="left" v_align="top" font_code="F3" />
+	  <label name="FAX" left="178" top="55" right="178" bottom="55" h_align="left" v_align="top" font_code="F3" />
+	  <label name="EMAIL" left="47" top="61" right="47" bottom="61" h_align="left" v_align="top" font_code="F3" />
+	  <label name="PRODUCT_BRAND" left="32" top="67" right="32" bottom="67" h_align="left" v_align="top" font_code="F3" />
+	  <label name="PRODUCT_CATEGORY" left="104" top="67" right="104" bottom="67" h_align="left" v_align="top" font_code="F3" />
+	  <label name="MODEL_NO" left="33" top="79" right="33" bottom="79" h_align="left" v_align="top" font_code="F3" />
+	  <label name="SERIAL_NO" left="100" top="79" right="100" bottom="79" h_align="left" v_align="top" font_code="F3" />
+	  <label name="PRODUCT_NO" left="173" top="79" right="173" bottom="79" h_align="left" v_align="top" font_code="F3" />
+	  <label name="PROBLEM_DESC1" left="53" top="92" right="53" bottom="92" h_align="left" v_align="top" font_code="F3" />
+	  <label name="PROBLEM_DESC2" left="53" top="98" right="53" bottom="98" h_align="left" v_align="top" font_code="F3" />
+	  <label name="WARRANTY" left="71" top="105" right="71" bottom="105" h_align="left" v_align="top" font_code="F3" />
+	  <label name="CHARGEABLE" left="123" top="105" right="123" bottom="105" h_align="left" v_align="top" font_code="F3" />
+	  <label name="NEED_POP" left="175" top="105" right="175" bottom="105" h_align="left" v_align="top" font_code="F3" />
+	  <label name="EXTRA_REMARK1" left="50" top="118" right="50" bottom="118" h_align="left" v_align="top" font_code="F3" />
+	  <label name="EXTRA_REMARK2" left="107" top="118" right="107" bottom="118" h_align="left" v_align="top" font_code="F3" />
+	  <label name="EXTRA_REMARK3" left="165" top="118" right="165" bottom="118" h_align="left" v_align="top" font_code="F3" />
+	  <label name="EXTRA_REMARK4" left="50" top="125" right="50" bottom="125" h_align="left" v_align="top" font_code="F3" />
+	  <label name="EXTRA_REMARK5" left="107" top="125" right="107" bottom="125" h_align="left" v_align="top" font_code="F3" />
+	  <label name="EXTRA_REMARK6" left="165" top="125" right="165" bottom="125" h_align="left" v_align="top" font_code="F3" />
+	  <label name="REMARK" left="50" top="131" right="50" bottom="131" h_align="left" v_align="top" font_code="F3" />
+	  <label name="ACCESSORY1" left="18" top="168" right="18" bottom="168" h_align="left" v_align="top" font_code="F3" />
+	  <label name="ACCESSORY2" left="57" top="168" right="57" bottom="168" h_align="left" v_align="top" font_code="F3" />
+	  <label name="ACCESSORY3" left="97" top="168" right="97" bottom="168" h_align="left" v_align="top" font_code="F3" />
+	  <label name="ACCESSORY4" left="138" top="168" right="138" bottom="168" h_align="left" v_align="top" font_code="F3" />
+	  <label name="ACCESSORY5" left="175" top="168" right="175" bottom="168" h_align="left" v_align="top" font_code="F3" />
+	  <!--label name="ACCESSORY6" left="5" top="75" right="28" bottom="70" h_align="left" v_align="top" font_code="F3" /-->
+	  <label name="ACCESSORY_OTHER" left="18" top="175" right="18" bottom="175" h_align="left" v_align="top" font_code="F3" />	 
+  </header>
+</template>

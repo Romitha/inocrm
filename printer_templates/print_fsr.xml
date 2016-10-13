@@ -1,0 +1,35 @@
+<!--
+ 1. paper_size is A4, A5.... or CUSTOM
+ 2. paper_width and paper_height - In mili meters
+ 3. orientaion is portrait or landscape
+ 4. color is in RGB integer value 
+ 5. h_align is left or right
+ 6. v_align is top or bottom
+ 7. Left, Top, Right, Bottom should be in mili meters
+  -->
+<template name="print fsr" paper_size="A4" paper_width="216" paper_height="279" orientaion="portrait" top_margin="0" left_margin="0" bottom_margin="0"  > 
+	<fonts>
+	  <font code="F1" name="San Serif" size="12" color="554822" Bold="true" Italic="true" Underline="true" StrikeOut="true"  />
+	  <font code="F2" name="San Serif" size="12" color="0" Bold="true" />
+	  <font code="F3" name="Arial" size="10" color="0" />
+	  <font code="F4" name="San Serif" size="10" color="0" Bold="true" />
+  </fonts>
+	<header>
+	  <label name="DUPLICATE" left="195" top="32" right="195" bottom="32" h_align="left" v_align="top" font_code="F4" />
+	  <label name="FSR_NO" left="166" top="37" right="166" bottom="37" h_align="left" v_align="top" font_code="F3" />
+	  <label name="COMPANY_NAME" left="15" top="45" right="15" bottom="45" h_align="left" v_align="top" font_code="F3" />
+	  <label name="ADDRESS" left="115" top="45" right="115" bottom="45" h_align="left" v_align="top" font_code="F3" />
+	  <label name="TICKET_REF" left="15" top="54" right="15" bottom="54" h_align="left" v_align="top" font_code="F3" />
+	  <label name="ENGINEER" left="115" top="54" right="115" bottom="54" h_align="left" v_align="top" font_code="F3" />
+	  <label name="SERIAL_NO" left="15" top="63" right="15" bottom="63" h_align="left" v_align="top" font_code="F3" />
+	  <label name="PRODUCT_DETAILS" left="115" top="63" right="115" bottom="63" h_align="left" v_align="top" font_code="F3" />
+	  <!--label name="PRODUCT_BRAND" left="115" top="63" right="115" bottom="63" h_align="left" v_align="top" font_code="F3" />
+	  <label name="PRODUCT_CATEGORY" left="178" top="55" right="178" bottom="55" h_align="left" v_align="top" font_code="F3" />
+	  <label name="MODEL_NO" left="47" top="61" right="47" bottom="61" h_align="left" v_align="top" font_code="F3" />
+	  <label name="PRODUCT_NO" left="32" top="67" right="32" bottom="67" h_align="left" v_align="top" font_code="F3" /-->
+	  <label name="PROBLEM_DESC1" left="115" top="79" right="115" bottom="79" h_align="left" v_align="top" font_code="F3" />
+	  <label name="PROBLEM_DESC2" left="115" top="85" right="115" bottom="85" h_align="left" v_align="top" font_code="F3" />
+	  <label name="TICKET_CREATED_DATE" left="42" top="84" right="42" bottom="84" h_align="left" v_align="top" font_code="F3" />
+	  <label name="TICKET_CREATED_TIME" left="85" top="84" right="85" bottom="84" h_align="left" v_align="top" font_code="F3" />
+  </header>
+</template>
