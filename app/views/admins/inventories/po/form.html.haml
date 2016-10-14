@@ -13,12 +13,14 @@
     .col-md-6
       %strong PO No:
       = CompanyConfig.first.next_inv_last_po_no.to_s.rjust(5, INOCRM_CONFIG["inventory_po_no_format"])
+      .br
+      %strong Store:
+      = @store.name
       .customer_supplier
         = f.input :supplier_id, as: :hidden, input_html: {class: "dynamic_customer_supplier_id" }
         .customer_supplier_info
       = link_to "javascript:void(0)", id: "add_customer", onclick: "Users.search_customers(this); return false;", data: {modalId: "modal_for_main_part", remote: "true", selectpath: "", selectoptions: "onclick:Users.assign_customer(this, 'modal_for_main_part', 'add_customer');<>type:supplier"} do
-        Select supplier
-
+        Select Supplier
     .col-md-6.text-right
       %strong Created by:
       = current_user.full_name
@@ -27,12 +29,12 @@
       = DateTime.now.strftime("%Y-%m-%d %H:%M")
   %hr
   .row
-    .col-md-8
+    .col-md-12
       .row
         .col-md-3
           = f.input :discount_amount, required: true, label: "Discount"
         .col-md-3
-          = f.association :currency, label_method: :currency, required: true, label: "PO Currency", include_blank: false
+          = f.association :currency, label_method: :code, required: true, label: "PO Currency", include_blank: false, input_html: {id: "select_currency_unit"}
         .col-md-3
           = f.input :delivery_date, as: :string, input_html: {class: "datepicker"}, label: "Deliver date"
         .col-md-3
@@ -43,7 +45,7 @@
           = f.input :deliver_to
         .col-md-4
           = f.input :remarks
-    .col-md-4
+    .col-md-12
       = collapse_wrapper collapse_id: "prn_info", labelledby: "prn_info_labelledby" do
         = collapse collapse_type: "info", labelledby: "prn_info_labelby", header_content: "PRN Information", collapse_link: "prn_info_link", collapse_id: "prn_info" do
           %dl
@@ -72,7 +74,7 @@
               %strong Item description:
               = i.object.inventory_prn_item.inventory_product.description
             .col-md-4
-              %strong Balance to be issued:
+              %strong Balance Qty to be purchased:
               = i.object.inventory_prn_item.quantity - i.object.inventory_prn_item.inventory_po_items.sum(:quantity)
 
           = collapse_wrapper collapse_id: "issue_po_item_#{i.object.object_id}", labelledby: "issue_po_item_#{i.object.object_id}_labelledby" do
@@ -93,34 +95,39 @@
               %hr
               .row
                 .col-md-2
-                  = i.input :quantity, required: true, as: :string, input_html: {value: i.object.inventory_prn_item.quantity - i.object.inventory_prn_item.inventory_po_items.sum(:quantity), class: "dynamic_quantity"}
+                  = i.input :quantity, required: true, as: :string, input_html: {value: i.object.inventory_prn_item.quantity - i.object.inventory_prn_item.inventory_po_items.sum(:quantity), class: "dynamic_quantity"}, label: "Order Quantity"
                 .col-md-2
-                  = i.input :unit_cost, required: true, as: :string
+                  = label_tag "PO Unit Cost" do
+                    PO Unit Cost
+                    (<span class="dynamic_unit_cost"></span>)
+                  = i.input :unit_cost, required: true, as: :string, label: false
                 .col-md-2
-                  = i.input :unit_cost_grn, required: true, as: :string
+                  = i.input :unit_cost_grn, required: true, as: :string, label: "GRN Unit Cost (#{i.object.inventory_prn_item.inventory_product.inventory_product_info.currency.code})"
                 .col-md-6
                   = i.input :remarks
 
               - last_po_item = i.object.inventory_prn_item.inventory_product.last_po_item
               - if last_po_item.present?
                 .row
+                  .col-md-12
+                    %h4 Last PO Information
                   .col-md-4
-                    %strong No:
+                    %strong PO No:
                     = last_po_item.inventory_po.po_no
                   .col-md-4
                     %strong Supplier
                     = last_po_item.inventory_po.supplier.name
                   .col-md-4
-                    %strong Item status
+                    %strong PO Items Status
                     = boolean_in_word last_po_item.inventory_po.closed, "Closed", "Open"
                   .col-md-4
-                    %strong Quantity
+                    %strong PO Quantity
                     = last_po_item.quantity
                   .col-md-4
-                    %strong Date
+                    %strong PO Date
                     = last_po_item.inventory_po.created_at.strftime(INOCRM_CONFIG["short_date_format"])
                   .col-md-4
-                    %strong Unit cost
+                    %strong PO Unit Cost
                     = last_po_item.unit_cost
                   .col-md-4
                     %strong Total recieved quantity
@@ -134,7 +141,6 @@
                   .col-md-4
                     %strong Currency
                     = last_po_item.inventory_po.currency.code
-
         / = i.input :prn_item_id, as: :hidden
     .col-md-12.small_scale_padding-bottom1
       %h4 Add Taxes
