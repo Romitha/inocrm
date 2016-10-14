@@ -67,6 +67,8 @@ class Organization < ActiveRecord::Base
   has_many :requested_location_srns, class_name: "Srn", foreign_key: :requested_location_id
   has_many :inventory_racks, foreign_key: :location_id
 
+  has_many :ticket_contracts, foreign_key: :customer_id
+
   belongs_to :mst_title, foreign_key: :title_id
 
   TYPES = %w(SUP CUS INDSUP INDCUS)

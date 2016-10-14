@@ -2023,7 +2023,6 @@ class TicketsController < ApplicationController
     User
     Product
     Warranty
-
     # if params[:ticket_no].present? and params[:serial_no].present?
     #   @tickets = Ticket.joins(:products).where(ticket_no: params[:ticket_no], spt_product_serial: {serial_no: params[:serial_no]})
     # elsif params[:ticket_no].present?
@@ -2040,11 +2039,126 @@ class TicketsController < ApplicationController
     render "tickets/tickets_pack/customer_inquire/customer_inquire"
   end
 
+  def delete_add_edit_contract
+    Ticket
+    User
+    SlaTime
+    @contract = TicketContract.find params[:contract_id]
+    if @contract.present?
+      @contract.delete
+    end
+    respond_to do |format|
+      format.html { redirect_to add_edit_contract_tickets_path }
+    end
+  end
+
   def add_edit_contract
     Ticket
-    @contract = TicketContract.new
-    render "tickets/tickets_pack/add_edit_contract/add_edit_contract"
+    User
+    SlaTime
+    if params[:edit]
+
+      if params[:contract_id]
+        @contract = TicketContract.find params[:contract_id]
+        if @contract.update add_edit_contract_params
+          params[:edit] = nil
+          render json: @contract
+        else
+          render json: @contract.errors.full_messages.join
+        end
+      end
+
+    else
+
+      if params[:create]
+        @contract = TicketContract.new add_edit_contract_params
+        if @contract.save!
+          params[:create] = nil
+          @contract = TicketContract.new
+        else
+          flash[:error] = "Unable to save"
+        end
+      else
+        @contract = TicketContract.new
+      end
+    end
+    @contract_all = TicketContract.order(updated_at: :desc)
   end
+
+  # def brands_and_category
+  #   Product
+  #   SlaTime
+  #   Organization
+  #   Currency
+
+  #   if params[:edit]
+
+  #     if params[:brands_and_category_id]
+  #       @brands_and_category = ProductBrand.find params[:brands_and_category_id]
+  #       if @brands_and_category.update brands_and_category_params
+  #         params[:edit] = nil
+  #         render json: @brands_and_category
+  #       else
+  #         render json: @brands_and_category.errors.full_messages.join
+  #       end
+  #     elsif params[:product_category_id]
+  #       @product_category = ProductCategory.find params[:product_category_id]
+  #       if @product_category.update product_category_params
+  #         params[:edit] = nil
+  #         render json: @product_category
+  #       else
+  #         render json: @product_category.errors.full_messages.join
+  #       end
+  #     end
+
+  #   else
+  #     if params[:create]
+  #       @brands_and_category = ProductBrand.new brands_and_category_params
+  #       if @brands_and_category.save
+  #         params[:create] = nil
+  #         @brands_and_category = ProductBrand.new
+  #       else
+  #         flash[:error] = "Unable to save"
+  #       end
+
+  #     elsif params[:edit_more]
+  #       @brands_and_category = ProductBrand.find params[:brands_and_category_id]
+
+  #     elsif params[:update]
+  #       @brands_and_category = ProductBrand.find params[:brands_and_category_id]
+  #       if @brands_and_category.update brands_and_category_params
+  #         params[:update] = nil
+  #         @brands_and_category = ProductBrand.new
+  #       end
+
+
+  #     else
+  #       @brands_and_category = ProductBrand.new
+  #     end
+  #     @brands_and_category_all = ProductBrand.order(updated_at: :desc)
+  #   end
+  # end
+
+
+
+  # def save_add_edit_contract
+  #   Ticket
+  #   User
+  #   SlaTime
+  #   @contract = TicketContract.new add_edit_contract_params
+  #   if @contract.save
+  #     flash[:notice] = "Successfully saved"
+  #     respond_to do |format|
+  #       format.html{ redirect_to add_edit_contract_tickets_path }
+  #     end
+  #   else
+  #     flash[:alert] = "Unable to save. Please review."
+  #     respond_to do |format|
+  #       format.html{ redirect_to add_edit_contract_tickets_path }
+  #     end
+  #     # format.html{ render "admins/inventories/po/form"}
+  #   end
+  # end
 
   def alert
 
@@ -3993,7 +4107,7 @@ class TicketsController < ApplicationController
   def suggesstion_data
     TicketSparePart
     respond_to do |format|
-      format.json {render json: SparePartDescription.all.map { |s| s.description }}
+      format.json {render json: SparePartDescription.all.map { |s| s.description }} # ["DESC1", "desc2"]
     end
   end
 
@@ -4075,6 +4189,60 @@ class TicketsController < ApplicationController
       @flash_message = @flash_message
     end
     redirect_to @ticket, notice: @flash_message
+  end
+
+  def hp_po
+    Inventory
+    TicketSparePart
+    Product
+    @po = SoPo.new
+    if params[:product_brand_id].present?
+      @product_brand = ProductBrand.find params[:product_brand_id]
+      @products = @product_brand.products
+    else
+    end
+    respond_to do |format|
+      format.json
+      format.html
+    end
+    # @rpermissions = Rpermission.all.group_by{|g| g.controller_resource}.map{|k, v| {resource: k, value: v.map{|rpermission| {resource: rpermission.controller_resource, name: rpermission.name, id: rpermission.id, checked: "#{'checked' if @role.rpermissions.include?(rpermission)}"}}}}
+  end
+
+  def load_serialparts
+    @brand = ProductBrand.find params[:brand_id]
+    # @rpermissions = Rpermission.all.map { |rpermission| {resource: rpermission.controller_resource, name: rpermission.name, id: rpermission.id, checked: "#{'checked' if @role.rpermissions.include?(rpermission)}"} }
+    # @rserialparts = Rpermission.all.group_by{|g| g.controller_resource}.map{|k, v| {resource: k, value: v.map{|rpermission| {resource: rpermission.controller_resource, name: rpermission.name, id: rpermission.id, checked: "#{'checked' if @role.rpermissions.include?(rpermission)}"}}}}
+    respond_to do |format|
+      format.json
+      format.html
+    end
+  end
+
+  def create_po
+    Organization
+    Inventory
+    User
+
+    @po = SoPo.new po_params
+
+    if @po.save
+      # @prn.inventory_prn_items.each do |prn_item|
+      #   prn_item.update closed: true if prn_item.quantity <= prn_item.inventory_po_items.sum(:quantity)
+      # end
+      # @prn.update closed: true if @prn.inventory_prn_items.all?{ |e| e.closed }
+
+      flash[:notice] = "Successfully saved"
+      respond_to do |format|
+        format.html{ redirect_to hp_po_tickets_path }
+      end
+      
+    else
+      flash[:alert] = "Unable to save. Please review."
+      respond_to do |format|
+        format.html{ redirect_to hp_po_tickets_path }
+      end
+      # format.html{ render "admins/inventories/po/form"}
+    end
   end
 
   private
@@ -4169,4 +4337,11 @@ class TicketsController < ApplicationController
       params.require(:return_parts_bundle).permit(:id, :bundle_no, :note)
     end
 
+    def po_params
+      params.require(:so_po).permit(:id, :created_at, :created_by, :so_no, :po_no, :po_date, :amount, :invoiced, :currency_id, :note, so_po_items_attributes: [ :id, :_destroy, :spt_so_po_id, :item_no, :amount, :ticket_spare_part_id])
+    end
+
+    def add_edit_contract_params
+      params.require(:ticket_contract).permit(:id, :customer_id, :contract_no, :contract_b2b, :sla_id, :created_at, :created_by)
+    end
 end

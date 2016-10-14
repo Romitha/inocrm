@@ -200,7 +200,6 @@ class InventoryProduct < ActiveRecord::Base
   def last_po_item
     inventory_po_items.last
   end
-
   def created_by_from_user
     created_by_user.full_name
   end
