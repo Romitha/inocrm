@@ -162,7 +162,7 @@ module TodosHelper
       elsif Rails.env == "production"
         "http://192.168.1.232:8080/jbpm-console/rest"
       else
-        "http://192.168.50.157:8080/jbpm-console/rest"
+        "http://192.168.1.202:8080/jbpm-console/rest"
         # "http://192.168.1.232:8080/jbpm-console/rest"
       end
       # curl -X POST -H "Accept:application/xml" -H "Content-type:application/json" -H "Authorization: Basic a3Jpc3Y6a3Jpc3Y=" http://192.168.1.202:8080/jbpm-console/rest/runtime/org.Test1234:test1234:3.3/process/test1234.test1a/start\?map_name\=wanni\&map_age\=27\&map_user\=anu
@@ -171,27 +171,32 @@ module TodosHelper
     def send_request *args
       options = args.extract_options!
       request = initiate_request
-      response = nil
+      # response = nil
+      request_method = "post"
       case
       when options[:start_process]
         request.url = "#{base_url}/#{start_process_path(deployment_id, options[:process_name])}"
         request.query = options[:query].inject({}){|init, (key, value)| init.merge("map_#{key}"=> value)}
-        response = HTTPI.post request
+        # response = HTTPI.post request
+        # request_method = "post"
 
       when options[:start_task]
         request.url = "#{base_url}/#{start_task_path(options[:task_id])}"
         request.query = options[:query]
-        response = HTTPI.post request
+        # response = HTTPI.post request
+        # request_method = "post"
 
       when options[:complete_task]
         request.url = "#{base_url}/#{complete_task_path(options[:task_id])}"
         request.query = options[:query].inject({}){|init, (key, value)| init.merge("map_#{key}"=> value)}
-        response = HTTPI.post request
+        # response = HTTPI.post request
+        # request_method = "post"
 
       when options[:process_history]
         request.url = "#{base_url}/#{process_history_path(options[:process_instance_id], options[:variable_id])}"
         request.query = options[:query]
-        response = HTTPI.get request
+        # response = HTTPI.get request
+        request_method = "get"
 
       when options[:task_list]
         request.url = "#{base_url}/#{task_list_path}"
@@ -203,8 +208,10 @@ module TodosHelper
         compulsory_query.merge!(options[:query]) if options[:query]
 
         request.query = compulsory_query
-        response = HTTPI.get request
+        # response = HTTPI.get request
+        request_method = "get"
       end
+      response = HTTPI.send(request_method, request)
       Hash.from_xml response.body
       # sleep 5
       # request.url
