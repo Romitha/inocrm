@@ -30,6 +30,8 @@ window.Tickets =
     @first_resolution_visible()
     @enable_request_part_check()
     @enable_update_only()
+    @select_brand_create_po()
+    @load_serialparts()
     return
 
   initial_loaders: ->
@@ -567,4 +569,35 @@ window.Tickets =
         e.preventDefault()
         e.stopPropagation()
         alert "Net amount for final invoice #{net_amount} must be 0 for FOC. Please try again after reconciliation."
-      
+
+  load_serialparts: ->
+    $("#load_serialparts").change ->
+      brand_id = $(@).val()
+      $.post("/tickets/load_serialparts", {brand_id: brand_id}, (data)->
+        $('#load_serialparts_json_render').html Mustache.to_html($('#load_serialparts_output').html(), data)
+      )
+
+  select_brand_create_po: ->
+    $("#brand1").change ->
+      url = "/tickets/hp_po"
+      this_data = {product_brand_id: $(@).val()}
+      $.get url, this_data, (data)->
+        console.log data
+        $('#load_spareparts_json_render').html Mustache.to_html($('#load_spareparts_output').html(), data)
+  remove_spareparts: (elem)->
+
+  hp_po_remove: (elem)->
+    _this = elem
+    this_id = $(_this).data("insertedid")
+    $("#addclick_function_"+this_id).removeClass("hide")
+
+
+  hp_po_add: (ticket_currency_id, spare_part, elem)->
+    _this = elem
+    value = $(_this).data("value")
+    $("#addclick_function_"+value).addClass("hide")
+    $("#inventory_po_items").click() # add_link
+    $("#inventory_po_items").prev().find(".single_extra_info").html($(_this).parent().prev().html()) # insert infor to remove
+    $("#inventory_po_items").prev().find(".remove_nested_fields").data("insertedid", value)
+    $("#inventory_po_items").prev().find(".spare_part_class").val(spare_part)
+    $(".ticket_currency_class").val(ticket_currency_id)

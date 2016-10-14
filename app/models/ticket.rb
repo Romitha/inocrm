@@ -18,7 +18,7 @@ class Ticket < ActiveRecord::Base
           # must { term :author_id, params[:author_id] } if params[:author_id].present?
         end
       end
-      sort { by :created_at, {order: "desc", ignore_unmapped: true} }
+      sort { by :created_at, {order: "asc", ignore_unmapped: true} }
       highlight customer_name: {number_of_fragments: 0}, ticket_status_name: {number_of_fragments: 0}, :options => { :tag => '<strong class="highlight">' } if params[:query].present?
       # filter :range, published_at: { lte: Time.zone.now}
       # raise to_curl
@@ -276,10 +276,24 @@ class TicketContract < ActiveRecord::Base
   self.table_name = "spt_contract"
 
   has_many :tickets, foreign_key: :contract_id
+  has_many :contract_products, foreign_key: :contract_id
+  belongs_to :sla_time, foreign_key: :sla_id
+  belongs_to :organization, foreign_key: :customer_id
 
-  validates_presence_of [:customer_id, :sla, :active, :created_at, :created_by]
+  validates_presence_of [:customer_id, :sla_id, :created_by]
 
-  validates_numericality_of [:sla]
+  validates_numericality_of [:sla_id]
+
+  def is_used_anywhere?
+    contract_products.any?
+    tickets.any?
+  end
+
+end
+
+class ContractProduct < ActiveRecord::Base
+  self.table_name = "spt_contract_product"
+  belongs_to :ticket_contract, foreign_key: :contract_id
 end
 
 class TicketStatus < ActiveRecord::Base

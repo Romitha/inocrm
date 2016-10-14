@@ -4,6 +4,8 @@ class SlaTime < ActiveRecord::Base
   has_many :tickets, foreign_key: :sla_id
   has_many :product_brands, foreign_key: :sla_id
   has_many :product_categories, foreign_key: :sla_id
+  has_many :ticket_contracts, foreign_key: :sla_id
+  # belongs_to :ticket, foreign_key: :ticket_id
 
   validates_presence_of [:sla_time, :description]
   validates_numericality_of :sla_time

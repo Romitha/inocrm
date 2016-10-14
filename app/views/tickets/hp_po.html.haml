@@ -1,0 +1,68 @@
+.row
+  .col-md-6
+  .col-md-6
+    = label_tag InventoryCategoryCaption.first.caption
+    = select_tag "search_inventory[brand]", options_from_collection_for_select(ProductBrand.all, :id, :name, nil), include_blank: true, id: "brand1"
+.row
+  %strong{style: "margin-left:16px;"} Parts to be PO
+  #load_spareparts_json_render{style: "margin-left:30px;"}
+
+= simple_nested_form_for @po, url: create_po_tickets_path, html: {class: "validate_form"}, method: :post do |f|
+
+  .row
+    %strong Create PO
+    
+  .col-md-2
+    = f.input :created_at, as: :hidden, input_html: {value: DateTime.now.strftime("%Y-%m-%d %H:%M")}
+    = f.input :created_by, as: :hidden, input_html: {value: current_user.id}
+    
+    = f.input :so_no, label: "Sales Order No."
+  .col-md-2
+    = f.input :po_no, label: "PO no"
+  .col-md-2
+    = f.input :po_date, label: "PO date", as: :string, input_html: {class: "datepicker"}
+  .col-md-2
+    = f.input :amount, label: "Amount"
+    = f.input :currency_id, as: :hidden, input_html: {value: 1}# have to solve
+  .col-md-4
+    = f.input :note, label: "Note"
+  .col-md-12
+    = f.simple_fields_for :so_po_items , html: {class: "validate_form"} do |p|
+      = p.input :ticket_spare_part_id, as: :hidden, input_html: {class: "spare_part_class"}
+      = p.input :spt_so_po_id, as: :hidden, input_html: {value: 1}# have to solve
+      = p.input :item_no, as: :hidden, input_html: {value: 1}# have to solve
+      .row
+        .col-md-10
+          .row
+            .col-md-1
+              %strong No
+            .col-md-1
+              %strong Event No
+            .col-md-1
+              %strong Order No
+            .col-md-1
+              %strong Date Ordered
+            .col-md-1
+              %strong Part No
+            .col-md-2
+              %strong Description
+            .col-md-1
+              %strong Note
+            .col-md-1
+              %strong Ticket No
+            .col-md-1
+              %strong Serial No
+          .row
+            .single_extra_info
+        .gg
+          .col-md-1
+            = p.input :amount, required: true
+          .col-md-1
+            = p.link_to_remove "remove", onclick: "Tickets.hp_po_remove(this); return false;"
+    .col-md-12
+      = f.link_to_add "Add item", :so_po_items, id: "inventory_po_items", class: "hide"
+  .col-md-1.pull-right
+    = f.submit "Save", class: "btn btn-success btn-sm"
+
+%script{type: "text/html", id: "load_spareparts_output"}
+  = render 'load_spareparts'

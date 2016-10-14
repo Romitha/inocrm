@@ -82,7 +82,7 @@ Rails.application.routes.draw do
     collection do
 
       post "find_by_serial"
-
+      post "create_po"
       get "ticket_in_modal"
       get "new_product_brand"
       get "new_product_category"
@@ -133,9 +133,12 @@ Rails.application.routes.draw do
       get "create_invoice_for_hp"
       get "terminate_job_foc_approval"
       get "customer_inquire"
-      get "add_edit_contract", to: "tickets#add_edit_contract", via: [:get, :post, :put]
+      match "add_edit_contract", to: "tickets#add_edit_contract", via: [:get, :post, :put]
+      delete "delete_add_edit_contract"
       get "inform_customer_in_modal"
       get "master_data"
+      get "hp_po"
+      # post "save_add_edit_contract"
 
       get "alert"
 
@@ -397,6 +400,7 @@ Rails.application.routes.draw do
       get "toggle_add_update_return_part"
       post "product_info"
       get "hp_po"
+      post "load_serialparts"
       get "paginate_hp_po_sales_order"
       get "add_spare_parts_so_po_ajax"
       get "view_hp_po_sales_spare_parts_ajax"
