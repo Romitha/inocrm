@@ -33,7 +33,7 @@
             %td= link_to "Add", "#", onclick: "Inventories.load_mustache_bundle_return_part('add', #{manufacture_part.id}); return false;"
 .row.added_to_bundle_parts
   .title.hide{style: "margin-bottom: 15px;"}
-    %strong Addded To Bundle Parts
+    %strong Add To Existing bundle
   #bundle_return_part_remove_mustache
 .row{style: "margin-top: 30px;"}
   - unless @manufacture_parts.empty?
