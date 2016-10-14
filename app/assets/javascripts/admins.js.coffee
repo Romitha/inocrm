@@ -7,6 +7,7 @@ window.Admins =
     @filter_child()
     @import_csv_upload()
     @onClick_hide_quantity()
+    @currency_select()
     return
 
   admin_menu_dropdown: ->
@@ -98,3 +99,11 @@ window.Admins =
       $(_this).parents(".collapse").eq(0).on 'hidden.bs.collapse', ->
         $(_this).val("")
       return
+
+  currency_select:  ->
+    $(".dynamic_unit_cost").text($("#select_currency_unit :selected").text())
+    $("#select_currency_unit").change ->
+
+      this_elem = $(@)
+
+      $(".dynamic_unit_cost").text($(":selected",this_elem).text())

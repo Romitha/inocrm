@@ -29,7 +29,7 @@ Feature: Adding and viewing brands
 
     Scenarios: Duplicate brand entry:
       | brandName     | brandCode | message                         |
-      |  brand2       |  7        | has already been taken      |
+      |  brand2       |  7        | has already been taken          |
 
   # @javascript
   # Scenario: Empty brand name:
@@ -51,5 +51,5 @@ Feature: Adding and viewing brands
     And I able to see <name> in the hml dom class inline_edit
 
       Examples:    
-        | wrapper  |code | name    | 
+        | wrapper  |code | name    |
         | brand1   | 5   | brand1  |
