@@ -24,5 +24,4 @@ end
 #   table.hashes.each do |hash|
 #     FactoryGirl.create :organization, hash
 #   end
-
 # end
