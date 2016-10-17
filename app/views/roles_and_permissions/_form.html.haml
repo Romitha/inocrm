@@ -16,6 +16,12 @@
       = tab_content tabpointer: :toles_and_permission_form, active_class: "active" do
         = simple_form_for role, url: role_url do |f|
           .row
+            .col-md-12
+              - if f.object.errors.any?
+                .label.label-alert
+                %ul
+                  - f.object.errors.full_messages.each do |e|
+                    %li= e
             .col-md-4
               = f.input :name, placeholder: "Provide role with any namespace. Ex: org_admin", input_html: {class: "input-sm"}
             .col-md-4
