@@ -12,7 +12,6 @@
     .row
       .col-md-12
         %h5.strong Start at: #{DateTime.now.strftime('%Y-%m-%d %H:%M')}
-        = f.input :job_started_at, as: :hidden, input_html: {value: DateTime.now.strftime("%Y-%m-%d %H:%M")}
     .row
       = f.association :ticket_start_action, label_method: :action, value_method: :id, wrapper_html: {class: "col-md-5"}, required: true
       = f.input :job_start_note, wrapper_html: {class: "col-md-7"}, required: true

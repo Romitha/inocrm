@@ -3503,6 +3503,7 @@ class TicketsController < ApplicationController
 
     if continue
       if @ticket.update(ticket_params)
+        @ticket.update job_started_at: DateTime.now
         @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(5).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id)
 
         @ticket.ticket_status_resolve = TicketStatusResolve.find_by_code("NAP")
