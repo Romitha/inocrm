@@ -15,6 +15,8 @@
 
   Tickets.radio_for_sla();
 
+Tickets.autosave_form("new_ticket", "saveTicket");
+
 Tickets.filter_select();
 
 Organizations.enable_chosen();
@@ -25,6 +27,5 @@ Tickets.popnote_more();
 
 Tickets.remote_true_loader();
 
-$('#new_ticket').sisyphus();
 
 $(".validate_form").validate();
