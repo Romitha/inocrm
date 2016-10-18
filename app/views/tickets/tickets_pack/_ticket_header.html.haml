@@ -68,7 +68,7 @@
             #{ticket.created_at.try :strftime, "%Y-%m-%d %H:%M"}
             %br
             %strong Created by:
-            #{ticket.created_by and User.find(ticket.created_by).user_name}
+            #{ticket.created_by and User.find(ticket.created_by).full_name}
             %br
             %strong Type:
             #{ticket.ticket_type.name}
@@ -86,7 +86,7 @@
             %br
             %strong Logged by: 
             %span.has-tooltip{:title => "#{current_user.email}"}
-              =truncate("#{current_user.email}", length: 17)
+              =truncate("#{current_user.full_name}", length: 17)
             %br
             %strong Resolve status:
             = ticket.ticket_status_resolve.try(:name)
