@@ -30,6 +30,7 @@
 //= require bootstrap-wysihtml5
 //= require chosen-jquery
 //= require mustache
+//= require sisyphus.min
 //= require_tree .
 $.fn.editable.defaults.ajaxOptions = {type: "PUT", mode: "inline"};
 $.fn.editable.defaults.error = function(response, newValue){

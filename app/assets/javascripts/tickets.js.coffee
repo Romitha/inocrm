@@ -59,6 +59,9 @@ window.Tickets =
       theme: "rounded-dark"
       # themes are inset-2-dark, rounded-dots, rounded-dark
 
+  autosave_form: ->
+    $('.autosave_form').sisyphus();
+
   load_customer: ->
     __this = this
     $(".find_customer").click ->
