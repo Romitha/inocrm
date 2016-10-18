@@ -59,8 +59,18 @@ window.Tickets =
       theme: "rounded-dark"
       # themes are inset-2-dark, rounded-dots, rounded-dark
 
-  autosave_form: ->
-    $('.autosave_form').sisyphus();
+  autosave_form: (domId, storeKey)->
+    console.log $('#'+domId).length
+    # $('#'+domId).sisyphus
+    #   customKeySuffix: storeKey
+    #   onSave: ->
+    #     console.log "Saved"
+    #   onRestore: ->
+    #     console.log "Restored"
+    #   onRelease: ->
+    #     console.log "released"
+    $('#'+domId).phoenix('start')
+    return
 
   load_customer: ->
     __this = this
