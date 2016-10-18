@@ -3,13 +3,5 @@
 - elsif params[:status_param] == "create" or params[:status_param] == "back"
   $("#product_load").html("#{j render 'tickets/form', product: @product, ticket: @ticket}");
 
+Tickets.autosave_form("new_ticket", "saveTicket");
 Organizations.enable_chosen();
-
-
-/ Tickets.regional_support_job_active();
-
-/ Tickets.remove_serial_search();
-/ setTimeout(function(){
-/ alert("called");
-/ }, 200);
-$('#new_ticket').sisyphus();
