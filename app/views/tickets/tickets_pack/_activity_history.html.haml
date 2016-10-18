@@ -13,7 +13,8 @@
                   Date Time:
                   = action.action_at.getlocal.strftime "%Y-%m-%d %H:%M"
                 .col-md-3
-                  %p By: #{Rails.cache.fetch([:action_by, action.action_by]){User.find(action.action_by)}.user_name}
+                  %p By: #{Rails.cache.fetch([:action_by, action.action_by]){User.find(action.action_by)}.full_name}
+
                 .col-md-2
                   %p Re-Open: #{action.re_open_index > 0 ? 'Yes ('+action.re_open_index.to_s+')' : 'No'}
 

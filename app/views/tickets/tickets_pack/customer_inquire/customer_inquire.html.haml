@@ -8,9 +8,9 @@
     .col-md-5
       = text_field_tag "query", params[:query], class: "form-control", placeholder: "Type any. for target seach, type: laptop or name:laptop likewise."
     .col-md-3
-      = text_field_tag "range_from", params[:range_from], class: "form-control datepicker", placeholder: "Select From date"
+      = text_field_tag "range_from", params[:range_from], class: "form-control datepicker", placeholder: "Select Created From date"
     .col-md-3
-      = text_field_tag "range_to", params[:range_to], class: "form-control datepicker", placeholder: "Select To date"
+      = text_field_tag "range_to", params[:range_to], class: "form-control datepicker", placeholder: "Select Created To date"
     .col-md-1
       = submit_tag "Search", :name => nil, class: "btn btn-sm btn-success"
     .col-md-12
