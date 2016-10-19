@@ -100,6 +100,11 @@ window.Tickets =
         alert "There are some errors. please try again"
       )
 
+  save_cached_ticket: ->
+    ticket_params = $("#new_ticket").serialize()
+    $.post "/tickets/save_cache_ticket", ticket_params
+    return
+
   pop_url_doc_upload: ->
     $("#product_pop_doc_url").fileupload
       # url: '/users/profile/temp_save_user_profile_image'

@@ -569,10 +569,11 @@ class TicketsController < ApplicationController
     elsif params[:status_param] == "create"
       @new_problem_category = ProblemCategory.new problem_category_params
       @new_problem_category.save
-      @ticket = Ticket.new session[:ticket_initiated_attributes]
+
+      @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
       @product = Product.find(session[:product_id])
     elsif params[:status_param] == "back"
-      @ticket = Ticket.new session[:ticket_initiated_attributes]
+      @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
       @product = Product.find(session[:product_id])
     end
   end
@@ -584,10 +585,10 @@ class TicketsController < ApplicationController
     elsif params[:status_param] == "create"
       @new_product_country = ProductSoldCountry.new product_country_params
       @new_product_country.save
-      @ticket = Ticket.new session[:ticket_initiated_attributes]
+      @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
       render :new_product
     elsif params[:status_param] == "back"
-      @ticket = Ticket.new session[:ticket_initiated_attributes]
+      @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
       render :new_product
     end
   end
@@ -602,10 +603,12 @@ class TicketsController < ApplicationController
     elsif params[:status_param] == "create"
       @new_accessory = Accessory.new accessory_params
       @new_accessory.save
-      @ticket = Ticket.new session[:ticket_initiated_attributes]
+      @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
+      # @ticket = Ticket.new session[:ticket_initiated_attributes]
       @product = Product.find(session[:product_id])
     elsif params[:status_param] == "back"
-      @ticket = Ticket.new session[:ticket_initiated_attributes]
+      @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
+      # @ticket = Ticket.new session[:ticket_initiated_attributes]
       @product = Product.find(session[:product_id])
     end
   end
@@ -623,7 +626,7 @@ class TicketsController < ApplicationController
       @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
       render "remarks"
     elsif params[:status_param] == "back"
-      @ticket = Ticket.new session[:ticket_initiated_attributes]
+      ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
       @product = Product.find(session[:product_id])
     end
   end
@@ -632,6 +635,18 @@ class TicketsController < ApplicationController
     QAndA
     @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
     @product = Product.find session[:product_id]
+  end
+
+  def save_cache_ticket
+    session[:time_now] ||= Time.now.strftime("%H%M%S")
+    @new_ticket = (Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]]) || Ticket.new)
+    @new_ticket.ticket_accessories.clear
+    @new_ticket.attributes = ticket_params
+
+    Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @new_ticket)
+
+    Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
+    render plain: "OK"
   end
 
   def finalize_ticket_save
