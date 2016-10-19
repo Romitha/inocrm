@@ -26,7 +26,7 @@
           = f.link_to_add :ticket_extra_remarks, class: "accessory_links small_scale_padding-right2" do
             %span.glyphicon.glyphicon-plus-sign
             Add extra remarks
-          = link_to create_extra_remark_tickets_path(status_param: "initiate"), remote: true, method: :post, title: "Create Accessory", class: "accessory_links" do
+          = link_to create_extra_remark_tickets_path(status_param: "initiate"), remote: true, method: :post, title: "Create Accessory", class: "accessory_links", onclick: "Tickets.save_cached_ticket(); return false;" do
             %span.glyphicon.glyphicon-plus-sign
             Create extra remarks
     .row

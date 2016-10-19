@@ -82,6 +82,7 @@ Rails.application.routes.draw do
     collection do
 
       post "find_by_serial"
+      post "save_cache_ticket"
       post "create_po"
       get "ticket_in_modal"
       get "new_product_brand"
