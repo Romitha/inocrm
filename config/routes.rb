@@ -390,7 +390,11 @@ Rails.application.routes.draw do
     resources :dashboards
     resources :sales
 
-    resources :roles
+    resources :roles do
+      collection do
+        get "permissions"
+      end      
+    end
   end
 
   resources :inventories, except: [:index, :show, :create, :new, :update, :destroy, :edit] do

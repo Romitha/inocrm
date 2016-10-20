@@ -2088,17 +2088,6 @@ class TicketsController < ApplicationController
     User
     Product
     Warranty
-    # if params[:ticket_no].present? and params[:serial_no].present?
-    #   @tickets = Ticket.joins(:products).where(ticket_no: params[:ticket_no], spt_product_serial: {serial_no: params[:serial_no]})
-    # elsif params[:ticket_no].present?
-    #   @tickets = Ticket.where(ticket_no: params[:ticket_no])
-    # elsif params[:serial_no].present?
-    #   @tickets = Ticket.joins(:products).where(spt_product_serial: {serial_no: params[:serial_no]})
-    # else
-    # end
-    # @tickets = Ticket.search(params)
-    # @products = Kaminari.paginate_array(Product.search(params)).page(params[:page]).per(1)
-    # @products = Product.search(params)
     @tickets = Ticket.search(params)
 
     render "tickets/tickets_pack/customer_inquire/customer_inquire"
@@ -2149,81 +2138,6 @@ class TicketsController < ApplicationController
     end
     @contract_all = TicketContract.order(updated_at: :desc)
   end
-
-  # def brands_and_category
-  #   Product
-  #   SlaTime
-  #   Organization
-  #   Currency
-
-  #   if params[:edit]
-
-  #     if params[:brands_and_category_id]
-  #       @brands_and_category = ProductBrand.find params[:brands_and_category_id]
-  #       if @brands_and_category.update brands_and_category_params
-  #         params[:edit] = nil
-  #         render json: @brands_and_category
-  #       else
-  #         render json: @brands_and_category.errors.full_messages.join
-  #       end
-  #     elsif params[:product_category_id]
-  #       @product_category = ProductCategory.find params[:product_category_id]
-  #       if @product_category.update product_category_params
-  #         params[:edit] = nil
-  #         render json: @product_category
-  #       else
-  #         render json: @product_category.errors.full_messages.join
-  #       end
-  #     end
-
-  #   else
-  #     if params[:create]
-  #       @brands_and_category = ProductBrand.new brands_and_category_params
-  #       if @brands_and_category.save
-  #         params[:create] = nil
-  #         @brands_and_category = ProductBrand.new
-  #       else
-  #         flash[:error] = "Unable to save"
-  #       end
-
-  #     elsif params[:edit_more]
-  #       @brands_and_category = ProductBrand.find params[:brands_and_category_id]
-
-  #     elsif params[:update]
-  #       @brands_and_category = ProductBrand.find params[:brands_and_category_id]
-  #       if @brands_and_category.update brands_and_category_params
-  #         params[:update] = nil
-  #         @brands_and_category = ProductBrand.new
-  #       end
-
-
-  #     else
-  #       @brands_and_category = ProductBrand.new
-  #     end
-  #     @brands_and_category_all = ProductBrand.order(updated_at: :desc)
-  #   end
-  # end
-
-
-
-  # def save_add_edit_contract
-  #   Ticket
-  #   User
-  #   SlaTime
-  #   @contract = TicketContract.new add_edit_contract_params
-  #   if @contract.save
-  #     flash[:notice] = "Successfully saved"
-  #     respond_to do |format|
-  #       format.html{ redirect_to add_edit_contract_tickets_path }
-  #     end
-  #   else
-  #     flash[:alert] = "Unable to save. Please review."
-  #     respond_to do |format|
-  #       format.html{ redirect_to add_edit_contract_tickets_path }
-  #     end
-  #     # format.html{ render "admins/inventories/po/form"}
-  #   end
-  # end
 
   def alert
 
