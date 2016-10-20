@@ -298,8 +298,10 @@ dd{
 }
 
 @media (min-width: 1000px) {
-  .panel {
-    height: 350px;
+  #new_ticket {
+    .panel {
+      height: 350px;
+    }
   }
 }
 
