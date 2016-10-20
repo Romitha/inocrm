@@ -28,7 +28,7 @@ class User < ActiveRecord::Base
   #2014_11_11
   belongs_to :organization
 
-
+  has_many :so_pos, foreign_key: :created_by
   has_many :sbu_engineers, foreign_key: :engineer_id
   has_many :sbus, through: :sbu_engineers, source: :sbu
 

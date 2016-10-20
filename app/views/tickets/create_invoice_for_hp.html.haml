@@ -1,0 +1,8 @@
+.row
+  .col-md-4
+    %strong Sales Orders to be Invoice
+  .col-md-4
+    = label_tag InventoryCategoryCaption.first.caption
+    = select_tag "search_inventory[brand]", options_from_collection_for_select(ProductBrand.all, :id, :name, nil), include_blank: true, id: "brand_id_for_sales"
+.row
+  #render_id

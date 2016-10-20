@@ -85,6 +85,10 @@ end
 class SoPo < ActiveRecord::Base
   self.table_name = "spt_so_po"
 
+  belongs_to :currency, foreign_key: :currency_id
+  belongs_to :user, foreign_key: :created_by
+  belongs_to :product_brand, foreign_key: :product_brand_id
+
   has_many :so_po_items, foreign_key: :spt_so_po_id
   accepts_nested_attributes_for :so_po_items, allow_destroy: true
   validates :po_no, :po_date, :so_no, :amount, presence: true

@@ -84,6 +84,7 @@ class ProductBrand < ActiveRecord::Base
   self.table_name = "mst_spt_product_brand"
 
   has_many :products, foreign_key: :product_brand_id
+  has_many :so_pos, foreign_key: :product_brand_id
   has_many :product_categories, foreign_key: :product_brand_id
   accepts_nested_attributes_for :product_categories, allow_destroy: true
 
