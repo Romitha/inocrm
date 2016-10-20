@@ -42,28 +42,40 @@
               = f.input :status_id, as: :hidden
               = f.input :ticket_no, as: :hidden
               = f.input :base_currency_id, as: :hidden, input_html: {value: TicketCurrency.find_by(base_currency: true).try(:id)}
-              .row
-                .col-md-2{style: "width: 13%;"}
-                  %strong Priority
-                  = f.select :priority, INOCRM_CONFIG["priority"].collect{ |key,value| [ key, value ] }, {:selected => '3'}, class: "col-md-12 small_scale_margin-top3"
-                .col-md-3
-                  = f.association :problem_category, wrapper_html: {class: "col-md-11"}, label:"Problem category"
-                  .add_sign
-                    = link_to create_problem_category_tickets_path(status_param: "initiate"), remote: true, method: :post, title: "Add", onclick: "Tickets.save_cached_ticket(); return false;" do
-                      %span.glyphicon.glyphicon-plus-sign
+              .container
+                .panel.panel-default.col-md-3.small_scale_margin-right1
+                  .panel-body
+                    .col-md-12.small_scale_margin-bottom5
+                      %strong Priority
+                      = f.select :priority, INOCRM_CONFIG["priority"].collect{ |key,value| [ key, value ] }, {:selected => '3'}, class: "col-md-12 small_scale_margin-top3 form-control"
+                    .col-md-12
+                      .row
+                        = f.association :problem_category, wrapper_html: {class: "col-md-11"}, label:"Problem category"
+                        .add_sign
+                          = link_to create_problem_category_tickets_path(status_param: "initiate"), remote: true, method: :post, title: "Add", onclick: "Tickets.save_cached_ticket(); return false;" do
+                            %span.glyphicon.glyphicon-plus-sign
+                    .col-md-12
+                      %strong Informed method
+                      %br/
+                      = f.select :informed_method_id, options_from_collection_for_select(InformMethod.all, :id, :name), {},{class: "col-md-12 small_scale_margin-top2 small_scale_margin-bottom5 form-control"}
+                    .col-md-12
+                      %strong Job type
+                      %br/
+                      = f.select :job_type_id, options_from_collection_for_select(JobType.all, :id, :name), {},{class: "col-md-12 small_scale_margin-top3 small_scale_margin-bottom5 form-control"}
+                    .col-md-12
+                      = f.input :problem_description, label:"Problem description", input_html: {rows: 1}
 
-                .col-md-2{style: "width: 14%;"}
-                  %strong Informed method
-                  %br/
-                  = f.select :informed_method_id, options_from_collection_for_select(InformMethod.all, :id, :name), {},{class: "col-md-12 small_scale_margin-top3"}
-                .col-md-2{style: "width: 14%;"}
-                  %strong Job type
-                  %br/
-                  = f.select :job_type_id, options_from_collection_for_select(JobType.all, :id, :name), {},{class: "col-md-12 small_scale_margin-top3"}
-                .col-md-4
-                  = f.input :problem_description, label:"Problem description", input_html: {rows: 1}
-
-              .row 
+                .panel.panel-default.col-md-3.small_scale_margin-right1
+                  .panel-body
+                    = f.association :warranty_type, as: :radio_buttons, label: "Ticket warranty type", wrapper_html: {class: "col-md-12 radio_as_list"}, checked: (ticket.warranty_type_id or selected_warranty_id)
+                .panel.panel-default.col-md-3.small_scale_margin-right1
+                  .panel-body
+                    = f.association :ticket_type, as: :radio_buttons, wrapper_html: {class: "col-md-12 radio_as_list"}, input_html: {class: "ticket_type"}, checked: (ticket.ticket_type_id or 1)
+                    = f.input :regional_support_job, label: "Regional", wrapper_html: {class: "col-md-12"}, wrapper: :append
+                .panel.panel-default.col-md-2
+                  .panel-body
+                    = f.input :cus_chargeable, label: "Customer Chargeable", as: :radio_buttons, wrapper_html: {class: "radio_as_list"}, required: true
+              .container.small_scale_padding-top1
                 = f.input :other_accessories, wrapper_html: {class: "col-md-4"}, input_html: {rows: 1}
                 .col-md-8
                   = f.simple_fields_for :ticket_accessories do |fc|
@@ -81,15 +93,6 @@
                     %span.glyphicon.glyphicon-plus-sign
                     Create accessory
 
-              .row
-                .col-md-6
-                  = f.association :warranty_type, as: :radio_buttons, label: "Ticket warranty type", wrapper_html: {class: "col-md-12"}, wrapper: :append, checked: (ticket.warranty_type_id or selected_warranty_id)
-                .col-md-offset-2.col-md-4
-                  = f.association :ticket_type, as: :radio_buttons, wrapper_html: {class: "col-md-8"}, wrapper: :append, input_html: {class: "ticket_type"}, checked: (ticket.ticket_type_id or 1)
-                  = f.input :regional_support_job, label: "Regional", wrapper_html: {class: "col-md-1"}, wrapper: :append
-              .row
-                .col-md-12
-                  = f.input :cus_chargeable, label: "Customer chargeable", as: :radio_buttons, wrapper_html: {class: "col-md-2"}, wrapper: :append, required: true
               .row
               .row
               = link_to "Cancel", new_ticket_path, data: {disable_with: "Please wait..."}

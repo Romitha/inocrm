@@ -1,4 +1,4 @@
-= link_to "Change store", po_admins_inventories_path
+= link_to "Change Store", po_admins_inventories_path
 = simple_nested_form_for @po, url: create_po_admins_inventories_path, html: {class: "validate_form"} do |f|
   = hidden_field_tag :prn_id, @prn.id
   = f.input :created_by, as: :hidden, input_html: { value: current_user.id }
@@ -36,13 +36,13 @@
         .col-md-3
           = f.association :currency, label_method: :code, required: true, label: "PO Currency", include_blank: false, input_html: {id: "select_currency_unit"}
         .col-md-3
-          = f.input :delivery_date, as: :string, input_html: {class: "datepicker"}, label: "Deliver date"
+          = f.input :delivery_date, as: :string, input_html: {class: "datepicker"}, label: "Deliver Date"
         .col-md-3
-          = f.input :your_ref, label: "Your reference"
+          = f.input :your_ref, label: "Your Reference"
         .col-md-4
-          = f.input :payment_term
+          = f.input :payment_term, label: "Payment Term"
         .col-md-4
-          = f.input :deliver_to
+          = f.input :deliver_to, label: "Deliver To"
         .col-md-4
           = f.input :remarks
     .col-md-12
@@ -68,29 +68,29 @@
         - if i.object.inventory_prn_item and i.object.inventory_prn_item.inventory_product
           .row
             .col-md-4
-              %strong Item code:
+              %strong Item Code:
               = i.object.inventory_prn_item.inventory_product.generated_item_code
             .col-md-4
-              %strong Item description:
+              %strong Item Description:
               = i.object.inventory_prn_item.inventory_product.description
             .col-md-4
-              %strong Balance Qty to be purchased:
+              %strong Balance Qty to be Purchased:
               = i.object.inventory_prn_item.quantity - i.object.inventory_prn_item.inventory_po_items.sum(:quantity)
 
           = collapse_wrapper collapse_id: "issue_po_item_#{i.object.object_id}", labelledby: "issue_po_item_#{i.object.object_id}_labelledby" do
             = collapse collapse_type: "info", labelledby: "issue_po_item_labelby", header_content: "Issue", collapse_link: "issue_po_item_#{i.object.object_id}_link", onClick: "Admins.onClick_hide_quantity(this); return false;", collapse_id: "issue_po_item_#{i.object.object_id}", collapse_in: "in" do
               .row
                 .col-md-3
-                  %strong Order unit:
+                  %strong Order Unit:
                   = i.object.inventory_prn_item.inventory_product.inventory_unit.unit
                 .col-md-3
-                  %strong Stock in hand:
+                  %strong Stock in Hand:
                   = i.object.inventory_prn_item.inventory_product.inventories.map { |i| i.stock_quantity if i.store_id.to_i == @store.id }.compact.join(", ")
                 .col-md-3
                   %strong Type:
                   = i.object.inventory_prn_item.inventory_product.inventory_product_info.need_serial ? "Serial" : i.object.inventory_prn_item.inventory_product.inventory_product_info.need_batch ? "Batch" : "Non of Serial or Batch"
                 .col-md-3
-                  %strong PRN remarks:
+                  %strong PRN Remarks:
                   = i.object.inventory_prn_item.remarks
               %hr
               .row
@@ -130,10 +130,10 @@
                     %strong PO Unit Cost
                     = last_po_item.unit_cost
                   .col-md-4
-                    %strong Total recieved quantity
+                    %strong Total Recieved Quantity
                     = last_po_item.inventory_po.inventory_po_items.sum(:quantity)
                   .col-md-4
-                    %strong Created by
+                    %strong Created By
                     = last_po_item.inventory_po.created_by_user.full_name
                   .col-md-4
                     %strong PO Unit
