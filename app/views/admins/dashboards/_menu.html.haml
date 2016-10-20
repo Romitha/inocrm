@@ -13,6 +13,9 @@
       = link_to store_and_branch_admins_organizations_path, class: "list-group-item #{'active' if params[:action] == 'store_and_branch' }" do
         %i.fa.fa-clock-o
         Store & branch
+      = link_to permissions_admins_roles_path, class: "list-group-item #{'active' if params[:action] == 'permissions' }" do
+        %i.fa.fa-clock-o
+        Permissions
 
   = collapse collapse_type: "#{controller_name == 'employees' ? 'primary' : 'default'}", labelledby: "labelledby_employees", header_content: content_tag(:span, "", class: "icon-group")+"Employees", collapse_link: "collapse_link_employees" do
     .list-group.small_scale_margin0

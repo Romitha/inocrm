@@ -10,7 +10,7 @@
 
     .row
       .col-md-3
-        = f.association :reject_reason_id, label_method: :reason, value_method: :id, label: "Request reason", collection: Reason.where(warranty_extend: true), include_blank: false
+        = f.association :reject_reason, label_method: :reason, value_method: :id, label: "Request reason", collection: Reason.where(warranty_extend: true), include_blank: false
       .col-md-3
         = f.input :reject_note, required: true
       .col-md-6
