@@ -1,16 +1,16 @@
 = form_tag po_admins_inventories_path, method: :get do
   .row
     .col-md-3
-      = label_tag "Store"
+      %strong Store
       = select_tag "search_prn[store_id]", options_from_collection_for_select(Organization.stores, :id, :name), include_blank: false, class: "form-control"
     .col-md-3
-      = label_tag "PRN No"
+      %strong PRN No
       = text_field_tag "search_prn[prn_no]", nil, class: "form-control"
     .col-md-3
-      = label_tag "Required from"
+      %strong Required From
       = text_field_tag "range_from", nil, class: "form-control datepicker"
     .col-md-3
-      = label_tag "Required to"
+      %strong Required To
       = text_field_tag "range_to", nil, class: "form-control datepicker"
     .col-md-12.small_scale_margin-top1
       = submit_tag "Search", class: "btn btn-sm btn-success", name: "search"
@@ -27,11 +27,11 @@
     .col-md-1
       %strong PRN Date
     .col-md-1
-      %strong Required date
+      %strong Required Date
     .col-md-2
       %strong Remarks
     .col-md-2
-      %strong Created by
+      %strong Created By
     .col-md-2
       %strong Action
   %hr
