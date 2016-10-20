@@ -1,0 +1,30 @@
+.row
+  %table.table.col-md-12
+    %thead
+      %tr
+        %th No
+        %th PO No
+        %th PO Date
+        %th No of Events
+        %th Amount
+        %th Note
+        %th
+    %tbody
+      - product_brand_id.so_pos.each_with_index do |po, index|
+        %tr
+          %td
+            = (index+1)
+          %td
+            = po.try(:po_no)
+          %td
+            = po.try(:po_date).try(:strftime, "%Y-%m-%d")
+          %td
+            
+          %td
+            = po.try(:amount)
+          %td
+            = po.try(:note)
+          %td
+            = link_to "View", "#", onclick: "Tickets.view_so_po_items('#{po.id}'); false;"
+.row
+  #form_id_invoice_po      

@@ -5,7 +5,10 @@ class Invoice < ActiveRecord::Base
   has_many :tickets, through: :ticket_payment_receiveds
 
   has_many :invoice_items
+  accepts_nested_attributes_for :invoice_items, allow_destroy: true
   has_many :act_print_invoices
+
+  validates_presence_of [:created_by, :currency_id, :invoice_no, :created_at]
 end
 
 class TicketInvoice < ActiveRecord::Base

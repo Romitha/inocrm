@@ -1,0 +1,120 @@
+.row
+  %ul.nav.nav-tabs
+    %li.active
+      %a{"data-toggle" => "tab", :href => "#createInvoice"} Create Invoice for Sales Order
+    %li
+      %a{"data-toggle" => "tab", :href => "#viewInvoice"} View Invoices for Sales Orders
+  .tab-content
+    #createInvoice.tab-pane.fade.in.active
+      .row.small_scale_padding-top1
+        .container
+          .row
+            = simple_nested_form_for invoice, url: create_invoice_for_so_tickets_path, html: {class: "validate_form"}, method: :post do |f|
+              .row
+                .col-md-3
+                  = f.input :invoice_no
+                .col-md-3
+                  = f.input :created_at, label: "Invoice Date", as: :string, input_html: {class: "datepicker"}
+                  = f.input :created_by, as: :hidden, input_html: {value: current_user.id}
+                  = f.input :total_amount, as: :hidden, input_html: {value: so_po_id.amount}
+                  = f.input :currency_id, as: :hidden, input_html: {value: so_po_id.currency_id}
+                  / - so_po_id.so_po_items.each do |po_item|
+                  = f.simple_fields_for :invoice_items do |invoice_item|
+                    = invoice_item.input :item_no, as: :hidden
+                    = invoice_item.input :amount, as: :hidden
+              .row
+                .col-md-3
+                  %strong PO No:
+                  = so_po_id.po_no
+                .col-md-3
+                  %strong PO Date:
+                  = so_po_id.po_date.try(:strftime, "%Y-%m-%d")
+                .col-md-3
+                  %strong Sales Order No:
+                  = so_po_id.so_no
+                .col-md-3
+                  %strong Amount:
+                  = so_po_id.amount
+              .row
+                .col-md-6
+                  = f.input :note
+              .row
+                .col-md-10
+                  = f.submit "Save", class: "btn btn-success pull-right", id: "submit_invoice_for_so_id"
+                .col-md-2
+                  = link_to "#","role" => "button" ,onclick: "Tickets.reset_so_po(); return false;", class: "btn btn-danger" do
+                    Cancel
+          .row
+            .col-md-12
+              %table.table
+                %thead
+                  %tr
+                    %th No
+                    %th Event No
+                    %th Order No
+                    %th Date Ordered
+                    %th Part No
+                    %th Description
+                    %th Ticket No
+                    %th Serial No
+                    %th Expected Amount
+                    %th Amount($)
+                %tbody
+                  - so_po_id.so_po_items.each_with_index do |po_item, index|
+                    %tr
+                      %td
+                        = (index+1)
+                      %td
+                        = po_item.ticket_spare_part.ticket_spare_part_manufacture.event_no
+                      %td
+                        = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:order_no)
+                      %td
+                        = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:issued_at).try(:strftime, "%Y-%m-%d")
+                      %td
+                        = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:spare_part_id)
+                      %td
+                        = po_item.ticket_spare_part.try(:spare_part_description)
+                      %td
+                        = po_item.ticket_spare_part.ticket_id.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
+                      %td
+                        = po_item.ticket_spare_part.try(:spare_part_no)
+                      %td
+                        = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:payment_expected_manufacture)
+                      %td
+                        = po_item.try(:amount)
+          
+    #viewInvoice.tab-pane.fade
+      .row
+        .col-md-4.small_scale_padding-top1
+          %strong Invoices and Sales Orders
+      .row.small_scale_padding-top1.small_scale_padding-bottom1
+        %table.table
+          %thead
+            %tr
+              %th No
+              %th Invoice No
+              %th Invoice Date
+              %th Sales Order No
+              %th Sales Order Date
+              %th PO No
+              %th PO Date
+              %th No of Events
+              %th Amount ($)
+              %th Note
+          %tbody
+            - invoice_all.each_with_index do |invo, index|
+              %tr
+                %td
+                  = (index+1)
+                %td
+                  = invo.try(:invoice_no)
+                %td
+                  = invo.try(:created_at).try(:strftime, "%Y-%m-%d")
+                %td
+                %td
+                %td
+                %td
+                %td
+                %td
+                %td           
+              

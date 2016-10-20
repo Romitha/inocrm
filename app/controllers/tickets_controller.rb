@@ -1993,14 +1993,64 @@ class TicketsController < ApplicationController
     render "tickets/tickets_pack/customer_advance_payment/customer_advance_paymente"
   end
 
+  # def create_invoice_for_hp
+  #   Inventory
+  #   TicketSparePart
+  #   if params[:ticket_no].present?
+  #     ticket_id = params[:ticket_no]
+  #     @ticket = Ticket.where("id like ?", "%#{ticket_id}%")
+  #   end
+  #   render "tickets/tickets_pack/create_invoice_for_hp"
+  # end
+
   def create_invoice_for_hp
     Inventory
     TicketSparePart
-    if params[:ticket_no].present?
-      ticket_id = params[:ticket_no]
-      @ticket = Ticket.where("id like ?", "%#{ticket_id}%")
+    Product
+    # if params[:product_brand_id].present?
+    #   @product_brand_id = ProductBrand.find params[:product_brand_id]
+    # end
+  end
+
+  def js_call_invoice_for_hp
+    Inventory
+    TicketSparePart
+    Product
+    User
+    # Invoice
+    if params[:product_brand_id].present?
+      @product_brand_id = ProductBrand.find params[:product_brand_id]
     end
-    render "tickets/tickets_pack/create_invoice_for_hp"
+    # @all_invoices = Invoice.all
+  end
+
+  def js_call_invoice_item
+    Invoice
+    TicketSparePart
+    User
+    if params[:po_id].present?
+      @so_po_id = SoPo.find params[:po_id]
+      @invoice = Invoice.new
+      @invoice_all = Invoice.all
+      @so_po_id.so_po_items.each do |po_item|
+        @invoice.invoice_items.build item_no: po_item.item_no, amount: po_item.amount
+      end
+    end
+  end
+
+  def create_invoice_for_so
+    Invoice
+    TicketSparePart
+    User
+    @invoice = Invoice.new invoice_so_params
+    if @invoice.save
+      flash[:notice] = "Successfully saved."
+    else
+      flash[:alert] = "Unable to save. Please review..."
+    end
+    respond_to do |format|
+      format.html { redirect_to create_invoice_for_hp_tickets_path }
+    end
   end
 
   def invoice_advance_payment
@@ -4359,5 +4409,9 @@ class TicketsController < ApplicationController
 
     def add_edit_contract_params
       params.require(:ticket_contract).permit(:id, :customer_id, :contract_no, :contract_b2b, :sla_id, :created_at, :created_by)
+    end
+
+    def invoice_so_params
+      params.require(:invoice).permit(:id, :created_at, :created_by, :invoice_no, :total_amount, :note, :currency_id, :print_count, invoice_items_attributes: [ :id, :_destroy, :invoice_id, :item_no, :description, :amount])
     end
 end

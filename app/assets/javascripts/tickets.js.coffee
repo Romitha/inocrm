@@ -32,6 +32,7 @@ window.Tickets =
     @enable_update_only()
     @select_brand_create_po()
     @load_serialparts()
+    @select_brand_create_invoice_for_so()
     return
 
   initial_loaders: ->
@@ -604,6 +605,12 @@ window.Tickets =
         $('#load_spareparts_json_render').html Mustache.to_html($('#load_spareparts_output').html(), data)
   remove_spareparts: (elem)->
 
+  select_brand_create_invoice_for_so: ->
+    $("#brand_id_for_sales").change ->
+      product_brand_id = $(@).val()
+      $.post "js_call_invoice_for_hp", {product_brand_id: product_brand_id}
+
+
   hp_po_remove: (elem)->
     _this = elem
     this_id = $(_this).data("insertedid")
@@ -619,3 +626,12 @@ window.Tickets =
     $("#inventory_po_items").prev().find(".remove_nested_fields").data("insertedid", value)
     $("#inventory_po_items").prev().find(".spare_part_class").val(spare_part)
     $(".ticket_currency_class").val(ticket_currency_id)
+
+  view_so_po_items:(elem) ->
+    po_id = elem
+    $.post "js_call_invoice_item", {po_id: po_id}
+
+  reset_so_po: ->
+    $("#invoice_invoice_no").val("")
+    $("#invoice_created_at").val("")
+    $("#invoice_note").val("")
