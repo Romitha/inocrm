@@ -67,7 +67,7 @@
             %li= error
     %fieldset
       %legend New customer
-      = simple_nested_form_for customer, url: create_customer_tickets_path, method: :post, remote: true, html: {id: "validate_contact_type"} do |f|
+      = simple_nested_form_for customer, url: create_customer_tickets_path, method: :post, remote: true, html: {id: "validate_contact_type", class: "validate_form"} do |f|
         = f.input :organization_id, as: :hidden
         .row
           .col-md-2
@@ -97,9 +97,9 @@
                     %span.glyphicon.glyphicon-remove-sign
                 .col-md-5
                   =label_tag "Contact type"
-                  = fc.select :contact_type_id, ContactType.all.map {|c| [c.name, c.id]}, {}, class: "form-control"
+                  = fc.select :contact_type_id, ContactType.all.map {|c| [c.name, c.id]}, {}, class: "form-control", readonly: (fc.object.contact_type_id == 3)
                 .col-md-6
-                  = fc.input :value
+                  = fc.input :value, required: (fc.object.contact_type_id == 3)
 
             .add_sign{style: "width: 100%;"}
               = f.link_to_add :contact_type_values, style: "clear: both;display: block;" do

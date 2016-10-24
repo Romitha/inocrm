@@ -290,11 +290,13 @@ Rails.application.routes.draw do
         delete "delete_sbu_regional_engineer"
         delete "delete_admin_country"
         delete "delete_admin_sla"
+        delete "delete_admin_industry_type"
         [
           :regional_support_center,
           :country,
           :sla,
           :store_and_branch,
+          :industry_type,
         ].each do |action|
           match "#{action.to_s}", action: action, via: [:get, :post, :put] 
         end

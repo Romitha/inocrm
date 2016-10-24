@@ -100,30 +100,45 @@ module Admins
       Product
       if params[:edit]
         @mst_reason = Reason.find params[:mst_reason_id]
-        if @mst_reason.attributes = reason_params
-          if [:hold, :sla_pause, :re_assign_request, :terminate_job, :terminate_spare_part, :warranty_extend, :spare_part_unused, :reject_returned_part, :reject_close, :adjust_terminate_job_payment].any?{|c| @mst_reason.send(c) }
-            params[:edit] = nil
-            render json: @mst_reason
-          else
-            render json: @mst_reason.errors.full_messages.join
-          end
+        # if @mst_reason.attributes = reason_params
+        #   if [:hold, :sla_pause, :re_assign_request, :terminate_job, :terminate_spare_part, :warranty_extend, :spare_part_unused, :reject_returned_part, :reject_close, :adjust_terminate_job_payment].any?{|c| @mst_reason.send(c) }
+        #     params[:edit] = nil
+        #     render json: @mst_reason
+        #   else
+        #     render json: @mst_reason.errors.full_messages.join
+        #   end
+        # end
+        if @mst_reason.update reason_params
+          params[:edit] = nil
+          render json: @mst_reason
+        else
+          render json: @mst_reason.errors.full_messages.join
         end
       else
         if params[:create]
           @reason = Reason.new reason_params
-          if [:hold, :sla_pause, :re_assign_request, :terminate_job, :terminate_spare_part, :warranty_extend, :spare_part_unused, :reject_returned_part, :reject_close, :adjust_terminate_job_payment].any?{|c| @reason.send(c) }
-
-            if @reason.save
-              params[:create] = nil
-              @reason = Reason.new
-            end
-            flash[:notice] = "Successfully saved!."
-          else
-            flash[:error] = "Please select ateast on condition"
+          if @reason.save
+            params[:create] = nil
+            @reason = Reason.new
           end
         else
           @reason = Reason.new
         end
+        # if params[:create]
+        #   @reason = Reason.new reason_params
+        #   if [:hold, :sla_pause, :re_assign_request, :terminate_job, :terminate_spare_part, :warranty_extend, :spare_part_unused, :reject_returned_part, :reject_close, :adjust_terminate_job_payment].any?{|c| @reason.send(c) }
+
+        #     if @reason.save
+        #       params[:create] = nil
+        #       @reason = Reason.new
+        #     end
+        #     flash[:notice] = "Successfully saved!."
+        #   else
+        #     flash[:error] = "Please select ateast on condition"
+        #   end
+        # else
+        #   @reason = Reason.new
+        # end
         @reason_all = Reason.order(updated_at: :desc)
         render "admins/tickets/reason"
       end

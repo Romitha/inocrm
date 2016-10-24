@@ -153,6 +153,43 @@ module Admins
       end
     end
 
+    def industry_type
+      Organization
+      # Account
+      if params[:edit]
+        @industry_type = IndustryType.find params[:industry_type_id]
+        if @industry_type.update industry_type_params
+          params[:edit] = nil
+          render json: @industry_type
+        else
+          render json: @industry_type.errors.full_messages.join
+        end
+      else
+        if params[:create]
+          @industry_type = IndustryType.new industry_type_params
+          if @industry_type.save
+            params[:create] = nil
+            @industry_type = IndustryType.new
+          end
+        else
+          @industry_type = IndustryType.new
+        end
+        @industry_type_all = IndustryType.order(id: :desc)
+      end
+
+    end
+
+    def delete_admin_industry_type
+      Organization
+      @industry_type = IndustryType.find params[:industry_type_id]
+      if @industry_type.present?
+        @industry_type.delete
+      end
+      respond_to do |format|
+        format.html { redirect_to industry_type_admins_organizations_path}
+      end
+    end
+
     def sla
       SlaTime
       if params[:edit]
@@ -196,6 +233,10 @@ module Admins
 
     def organization_params
       params.require(:organization).permit(:title_id, :name, :department_org_id, :category, :description, :logo, :vat_number, :type_id, :web_site, :code, :short_name, addresses_attributes: [:id, :category, :address, :primary, :_destroy],  contact_numbers_attributes: [:id, :category, :value, :_destroy], account_attributes: [:id, :_destroy, :industry_types_id], customers_attributes: [:id, :_destroy, :organization_id, :title_id, :name, :address1, :address2, :address3, :address4, :district_id, contact_type_values_attributes: [:id, :contact_type_id, :value, :_destroy]])
+    end
+
+    def industry_type_params
+      params.require(:industry_type).permit(:name, :code)
     end
   end
 end

@@ -22,10 +22,11 @@
         = fsr.input :engineer_time_travel, input_html: {min: "0", class: "only_float"}, wrapper_html: {class: "col-md-3"}
         = fsr.input :engineer_time_on_site, input_html: {min: "0", class: "only_float"}, wrapper_html: {class: "col-md-3"}
       .row
-        = fsr.input :resolution, input_html: {value: nil}, wrapper_html: {class: "col-md-6"}
         .col-md-6
           = fsr.input :remarks, input_html: {value: nil}, label: "Remarks (FSR)"
           = simple_format fsr.object.remarks
+        .col-md-6
+          = fsr.input :resolution, input_html: {value: nil}
 
         
       .row

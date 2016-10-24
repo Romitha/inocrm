@@ -8,7 +8,7 @@
 .modal-body
   #search_frame
     = form_tag search_inventories_inventories_path, remote: true, method: :get do
-      = hidden_field_tag :issue_part, params[:issue_part] 
+      = hidden_field_tag :issue_part, params[:issue_part]
       = hidden_field_tag :select_frame, params[:select_frame] 
       = hidden_field_tag :checked_value, params[:checked_value] 
       .row

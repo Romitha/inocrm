@@ -310,6 +310,11 @@ class IndustryType < ActiveRecord::Base
 
   has_many :accounts, foreign_key: :industry_types_id
   has_many :organizations, through: :accounts
+
+  def is_used_anywhere?
+    accounts.any?
+    organizations.any?
+  end
 end
 
 class AccountsDealerType < ActiveRecord::Base
