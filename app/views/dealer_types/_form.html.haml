@@ -22,10 +22,3 @@
         = check_box_tag "dealer_type_ids[]", d.id, organization.accounts_dealer_types.pluck(:dealer_types_id).include?(d.id), disabled: (organization.accounts_dealer_types.pluck(:dealer_types_id).include?(d.id)? true : false), class: "dealer_type_check"
     .row
       = submit_tag "Save", class: "btn btn-success pull-left hide", id: "save_dealer_type"
-
-/ $(".dealer_type_check").each
-/   enable_save = false
-/   if !$(@).is(":checked")
-/     enable_save = true
-/   if enable_save
-/     $("#save_dealer_type").removeClass("hide")

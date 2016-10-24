@@ -61,6 +61,10 @@ Rails.application.routes.draw do
       post "dealer_types"
     end
     concerns :attachable
+
+    collection do
+      patch "temp_save_user_profile_image"
+    end
   end
 
   resources :users, only: [:new, :update, :create] do

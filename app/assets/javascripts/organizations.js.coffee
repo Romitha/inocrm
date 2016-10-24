@@ -71,8 +71,8 @@ window.Organizations =
 
   organization_logo_upload: ->
     $("#organization_logo").fileupload
-      # url: '/users/profile/temp_save_user_profile_image'
-      # type: "POST"
+      url: '/organizations/temp_save_user_profile_image'
+      type: "PATCH"
       maxFileSize: 1000000
       dataType: "json"
       autoUpload: false
@@ -81,21 +81,36 @@ window.Organizations =
         maxsize = 1024*1024
         file = data.files[0]
         if types.test(file.type) || types.test(file.name)
-          data.context = $(tmpl('organization_attachment_upload_tmpl', file))
-          $(".organization_attachment_wrapper").html(data.context)
-          data.submit()
-          jqXHR = data.submit().complete( (result, textStatus, jqXHR)->
-            setTimeout (->
-              $('#autoloadable_prepend').html Mustache.to_html($('#load_files').html(), result.responseJSON)
-              $(".organization_attachment_wrapper").empty()
-              return
-            ), 3000
-          )
+          if maxsize > file.size
+            data.context = $(tmpl('organization_attachment_upload_tmpl', file))
+            $(".organization_attachment_wrapper").html(data.context)
+            data.submit()
+            jqXHR = data.submit().complete( (result, textStatus, jqXHR)->
+              setTimeout (->
+                $('#autoloadable_prepend').html Mustache.to_html($('#load_files').html(), result.responseJSON)
+                $(".organization_attachment_wrapper").empty()
+                return
+              ), 3000
+            )
+
+          else
+            alert "Your image file is with #{file.size}KB is exceeding than limited size of #{maxsize}KB. Please select other image file not exceeding 1MB"
         else
           alert("#{file.name} is not a recommended file format")
       progress: (e, data) ->
+        $(".screener").addClass("fade")
         if data.context
           progress = parseInt(data.loaded/data.total*100, 10)
-          data.context.find(".progress-bar").css("width", progress+"%").html(progress+"%")
-          if progress==100
-            window.location.reload()
+          # data.context.find(".progress-bar").css("width", progress+"%").html(progress+"%")
+          data.context.find(".progress-bar").css("width", progress+"%").attr("aria-valuenow", "#{progress}").html(progress+"%")
+          # if progress==100
+          #   # window.location.reload()
+          #   console.log "uploaded"
+      done: (e, data) ->
+        $(".screener").removeClass("fade")
+        # console.log data#.responseJSON
+        $("#organization_upload_logo").html Mustache.to_html($('#load_logo').html(), data)
+
+      fail: (e, data) ->
+        if data.textStatus == 401
+          console.log data.textStatus
