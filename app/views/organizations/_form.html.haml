@@ -1,4 +1,4 @@
-- tapbar = [["Address", "#addresses#{organization.id}"], ["#{[Organization::TYPES[1], Organization::TYPES[3]].include?(organization.category) ? 'Contact Persons' : 'Employees'}", "#contact_persons#{organization.id}"], ["Documents & Attachements", "#documents#{organization.id}"], ["Designations", "#designations#{organization.id}"], ["Organization Relations", "#organization_relations#{organization.id}"], ["Roles and Permissions", "#roles_and_permissions#{organization.id}"], ["Dealer Types", "#dealer_types#{organization.id}"]]
+- tapbar = [["Contact Number", "#contact_numbers#{organization.id}"], ["Address", "#addresses#{organization.id}"], ["#{[Organization::TYPES[1], Organization::TYPES[3]].include?(organization.category) ? 'Contact Persons' : 'Employees'}", "#contact_persons#{organization.id}"], ["Documents & Attachements", "#documents#{organization.id}"], ["Designations", "#designations#{organization.id}"], ["Organization Relations", "#organization_relations#{organization.id}"], ["Roles and Permissions", "#roles_and_permissions#{organization.id}"], ["Dealer Types", "#dealer_types#{organization.id}"]]
 
 = simple_nested_form_for organization, url: url, html: {class: "validate_form"} do |f|
   - if organization.errors.present?
@@ -72,6 +72,15 @@
 
   .tab-content.small_scale_margin-top1
 
+    .tab-pane.limit-height{id: "contact_numbers#{organization.id}"}
+      / .row
+      /   - organization.customers.each do |customer|
+      /     .col-md-6
+      /       = render "contact", customer: customer if customer.persisted?
+      / = render "contact_form", organization: organization
+      = render "contact_numbers/form", contact_number: organization.contact_numbers.build
+      - organization.contact_numbers.order("created_at DESC").each do |contact_number|
+        = render "contact_numbers/contact_number", contact_number: contact_number if contact_number.persisted?
     .tab-pane.limit-height{id: "addresses#{organization.id}"}
       / .row
       /   - organization.customers.each do |customer|
