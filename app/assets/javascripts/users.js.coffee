@@ -33,7 +33,7 @@ window.Users =
           progress = parseInt(data.loaded/data.total*100, 10)
           data.context.find(".progress-bar").css("width", progress+"%").attr("aria-valuenow", "#{progress}").html(progress+"%")
           if progress==100
-            $("#ajax-loader").addClass("hide")
+            $(".screener").addClass("fade")
             # $(".profile_image_wrapper").empty();
 
   request_printer_application: (print_object, print_object_id, request_type, tag_value, action)->

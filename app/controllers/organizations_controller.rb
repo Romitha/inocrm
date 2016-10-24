@@ -14,10 +14,20 @@ class OrganizationsController < ApplicationController
   end
 
   def new
+    Rails.cache.delete(:upload_logo)
     @organization = Organization.new
   end
 
+  def temp_save_user_profile_image
+    @organization = params[:organization_id].present? ? Organization.find(params[:organization_id]) : Organization.new
+    @organization.attributes = organization_params
+    Rails.cache.write(:upload_logo, @organization)
+    sleep 1
+    render json: Rails.cache.fetch(:upload_logo)
+  end
+
   def edit
+    Rails.cache.delete(:upload_logo)
     ContactNumber
     Product
     respond_to do |format|
@@ -31,7 +41,9 @@ class OrganizationsController < ApplicationController
   end
 
   def create
-    @organization = Organization.new organization_params
+    @organization = Rails.cache.fetch(:upload_logo){Organization.new organization_params}
+    # @organization = Organization.new organization_params
+    @organization.attributes = organization_params
 
     respond_to do |format|
       if @organization.save
@@ -40,6 +52,7 @@ class OrganizationsController < ApplicationController
         account.update created_by: current_user.id, active: true
         account.dealer_types << DealerType.find_by_code(params[:category])
         Organization.find(@organization.id).update_index
+        Rails.cache.delete(:upload_logo)
 
         format.html {redirect_to @organization, notice: "#{@organization.category} is successfully created."}
       else
@@ -62,11 +75,16 @@ class OrganizationsController < ApplicationController
       format.html {redirect_to edit_organization_url(@organization)}
     end
   end
-
+ 
   def update
     ContactNumber
+    @organization = Rails.cache.fetch(:upload_logo){@organization}
+    # @organization = Organization.new organization_params
+    @organization.attributes = organization_params
+
     respond_to do |format|
       if @organization.update_attributes(organization_params)
+        Rails.cache.delete(:upload_logo)
         format.html {redirect_to organization_path(@organization), notice: "Organization #{@organization.name} has been updated successfully"}
         format.json { head :no_content } # 204 No Content
       else
