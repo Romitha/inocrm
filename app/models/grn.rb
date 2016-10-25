@@ -9,18 +9,18 @@ class Grn < ActiveRecord::Base
   # end
 
   def self.search(params)
-    tire.search(page: params[:page], per_page: 10) do
+    tire.search(page: (params[:page] || 1), per_page: 10) do
       query do
         boolean do
-          must { string params[:grn_no] } if params[:grn_no].present?
-          must { term :store_id, params[:store_id] } if params[:store_id].present?
+          must { string params[:query] } if params[:query].present?
+          # must { term :store_id, params[:store_id] } if params[:store_id].present?
           must { range :formated_created_at, lte: params[:range_to].to_date } if params[:range_to].present?
           must { range :formated_created_at, gte: params[:range_from].to_date } if params[:range_from].present?
           # filter :range, published_at: { lte: Time.zone.now}
           # raise to_curl
         end
       end
-      sort { by :grn_no, "asc" }
+      sort { by :grn_no, {order: "desc", ignore_unmapped: true} }
     end
   end
 

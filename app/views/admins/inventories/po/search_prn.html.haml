@@ -7,10 +7,10 @@
       %strong PRN No
       = text_field_tag "search_prn[prn_no]", nil, class: "form-control"
     .col-md-3
-      %strong Required From
+      %strong PRN Date From
       = text_field_tag "range_from", nil, class: "form-control datepicker"
     .col-md-3
-      %strong Required To
+      %strong PRN Date To
       = text_field_tag "range_to", nil, class: "form-control datepicker"
     .col-md-12.small_scale_margin-top1
       = submit_tag "Search", class: "btn btn-sm btn-success", name: "search"

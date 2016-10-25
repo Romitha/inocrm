@@ -6,6 +6,16 @@ module Admins
       Inventory
       User
       Grn
+      refined_search_grn = ""
+      if params[:search].present?
+        search_grn = params[:search_grn]
+        refined_search_grn = search_grn.map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
+        puts "********"
+        puts refined_search_grn
+        puts "********"
+      end
+
+      params[:query] = refined_search_grn
       @grns = Grn.search(params)
 
       case params[:grn_callback]

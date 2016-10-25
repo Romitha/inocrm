@@ -41,10 +41,10 @@
           Item Description:
           =grnitem.inventory_product.try(:description)
         .col-md-3
-          Requested Quantity:
+          Requested PO Quantity:
           =grnitem.try(:inventory_po_item).try(:quantity)
         .col-md-3
-          Requested Unit:
+          Requested PO Unit:
           =grnitem.try(:inventory_po_item).try(:inventory_unit).try(:unit)
       .row
         .col-md-3

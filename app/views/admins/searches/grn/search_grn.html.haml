@@ -8,10 +8,10 @@
             .row
               .col-md-12.brand
                 = label_tag "Store"
-                = select_tag :store_id, options_from_collection_for_select(Organization.stores, :id, :name, params[:store_id]), include_blank: true, class: "form-control"
+                = select_tag "search_grn[store_id]", options_from_collection_for_select(Organization.stores, :id, :name, params[:store_id]), include_blank: true, class: "form-control"
             .row.small_scale_margin-top1
               .col-md-4
-                = text_field_tag :grn_no, params[:grn_no], :placeholder => "GRN No", class: "form-control"
+                = text_field_tag "search_grn[grn_no_format]", nil, :placeholder => "GRN No", class: "form-control"
               .col-md-4
                 = text_field_tag "range_from", params[:range_from], class: "form-control datepicker", placeholder: "Select From date"
               .col-md-4
@@ -19,7 +19,7 @@
             .row.small_scale_margin-top1
               .col-md-1
                 .search
-                  = submit_tag "Search", class: "btn btn-sm btn-warning"
+                  = submit_tag "Search", name: "search", class: "btn btn-sm btn-warning"
               .col-md-1
                 .reset
                   / = link_to "Reset", "role" => "button", onclick: "Searches.reset_searchgrn(); return false;",class: "btn btn-warning" do
