@@ -41,11 +41,11 @@ class Ticket < ActiveRecord::Base
   end
 
   def created_at
-    super.getlocal
+    super.try(:getlocal)
   end
 
   def updated_at
-    super.getlocal
+    super.try(:getlocal)
   end
 
   def customer_name

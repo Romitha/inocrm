@@ -107,15 +107,15 @@ class UserTicketAction < ActiveRecord::Base
   end
 
   def created_at
-    super.getlocal
+    super.try(:getlocal)
   end
 
   def updated_at
-    super.getlocal
+    super.try(:getlocal)
   end
 
   def action_at
-    super.getlocal
+    super.try(:getlocal)
   end
 
 end
