@@ -19,7 +19,7 @@
     =grnitem.try(:inventory_product).try(:inventory_unit).try(:unit)
 .row{style: "margin-top:50px;"}
   .col-md-6
-    = simple_nested_form_for grnitem, url: update_grn_cost_admins_searches_path( grnitem_id: grnitem.id), method: :post, html: {class: "validate_form"} do |f|
+    = simple_nested_form_for grnitem, url: update_grn_cost_admins_inventories_path( grnitem_id: grnitem.id), method: :post, html: {class: "validate_form"} do |f|
       = f.input :current_user_id, as: :hidden, input_html: {value: current_user.id}
       .row
         = f.simple_fields_for "grn_item_current_unit_cost_histories_attributes[]", f.object.grn_item_current_unit_cost_histories.build do |c|

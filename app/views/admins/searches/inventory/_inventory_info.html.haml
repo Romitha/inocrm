@@ -1,6 +1,6 @@
 .row
   .col-md-4
-    %strong Stock Quantity:
+    %strong Stock Quantity: #{inventory.id}
     = number_with_precision inventory.stock_quantity, precision: 2
   .col-md-4
     %strong Rack:
@@ -50,7 +50,7 @@
     = number_with_precision inventory.safty_stock_quantity, precision: 2
 .row
   .col-md-4
-    %strong Max Qquantity:
+    %strong Max Quantity:
     = number_with_precision inventory.max_quantity, precision: 2
   .col-md-8
     %strong Remarks:

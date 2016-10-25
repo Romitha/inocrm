@@ -338,6 +338,7 @@ Rails.application.routes.draw do
         post "create_grn_for_i_product"
 
         post "create_additional_cost"
+        post "update_grn_cost"
 
         get "srn"
         post "create_srn"

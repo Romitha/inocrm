@@ -99,7 +99,7 @@
                 .col-md-1.small_scale_padding-top3
                   = g.link_to_remove "remove"
                 .col-md-3
-                  = g.input :cost, as: :string
+                  = g.input :cost, required: true
                 .col-md-3
                   = g.input :note
                 - if g.object.persisted?
