@@ -44,7 +44,11 @@
           %tbody
             - @grns.each_with_index do |grn, index|
               %tr
-                %td= index+1
+                %td
+                  - if params[:page]
+                    = (index+1)+ 10*(params[:page].to_i-1)
+                  - else
+                    = (index+1)
                 %td= grn.store_name
                 %td= grn.grn_no_format
                 %td= grn.created_at.to_date.try :strftime, INOCRM_CONFIG["short_date_format"]

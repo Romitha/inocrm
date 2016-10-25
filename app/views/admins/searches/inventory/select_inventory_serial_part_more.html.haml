@@ -91,11 +91,12 @@
               %strong Remarks:
               = b_warranty.inventory_warranty.remarks
 
-  = collapse collapse_type: "info", labelledby: "select_serial_part_form_collapse_search", header_content: "Cost", collapse_link: "select_serial_part_form_collapse_cost", collapse_id: "select_serial_part_form_collapse", collapse_in: "in" do
+  = collapse collapse_type: "info", labelledby: "select_serial_part_form_collapse_search", header_content: "Cost", collapse_link: "select_serial_part_form_collapse_cost", collapse_id: "select_serial_part_form_collapse" do
     - inventory_serial_part.grn_items.each do |grn_item|
       .row
         .col-md-3
           %strong Currency:
+          = grn_item.id
           = grn_item.currency.currency
         .col-md-3
           %strong Current GRN cost:
@@ -109,8 +110,10 @@
         .col-md-3
           %strong GRN By:
           = grn_item.grn.created_by_user.full_name
-        
-        .col-md-8
+        .col-md-3
+          %strong GRN remaining quantity:
+          = number_with_precision grn_item.remaining_quantity, precision: 2
+        .col-md-5
           %strong GRN Remarks:
           = grn_item.grn.remarks
 
