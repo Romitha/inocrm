@@ -102,8 +102,22 @@ class UserTicketAction < ActiveRecord::Base
   end
 
   def flush_cache
+    self.update action_at: DateTime.now
     Rails.cache.delete([self.ticket.id, :user_ticket_actions])
   end
+
+  def created_at
+    super.getlocal
+  end
+
+  def updated_at
+    super.getlocal
+  end
+
+  def action_at
+    super.getlocal
+  end
+
 end
 
 class ActTicketCloseApprove < ActiveRecord::Base

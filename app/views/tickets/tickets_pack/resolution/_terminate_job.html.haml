@@ -12,7 +12,6 @@
     .row
       = f.simple_fields_for "user_ticket_actions_attributes[]", @user_ticket_action do |uf|
         = uf.input :action_id, as: :hidden, input_html: {value: TaskAction.find_by_action_no(7).id}
-        = uf.input :action_at, as: :hidden, input_html: {value: DateTime.now.strftime("%d-%m-%Y %H:%M")}
         = uf.input :action_by, as: :hidden, input_html: {value: current_user.id}
         = uf.input :re_open_index, as: :hidden, input_html: {value: ticket.re_open_count}
         = uf.input :action_engineer_id, as: :hidden, input_html: {value: Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:bpm_input_variables].detect{ |e| e.first == "engineer_id" }.second }

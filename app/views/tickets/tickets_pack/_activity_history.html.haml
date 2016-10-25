@@ -11,7 +11,7 @@
                   = action.task_action.action_description
                 .col-md-3
                   Date Time:
-                  = action.action_at.getlocal.strftime "%Y-%m-%d %H:%M"
+                  = action.action_at.strftime "%Y-%m-%d %H:%M"
                 .col-md-3
                   %p By: #{Rails.cache.fetch([:action_by, action.action_by]){User.find(action.action_by)}.full_name}
 

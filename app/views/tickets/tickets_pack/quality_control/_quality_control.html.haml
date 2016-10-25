@@ -40,7 +40,6 @@
 
   .row  
     = f.simple_fields_for "user_ticket_actions_attributes[]", user_ticket_action do |uf|
-      = uf.input :action_at, as: :hidden, input_html: {value: DateTime.now.strftime("%Y-%m-%d %H:%M")}
       = uf.input :action_id, as: :hidden, input_html: {value: TaskAction.find_by_action_no(67).id, id: "dynamic_action_id"}
       = uf.input :action_by, as: :hidden, input_html: {value: current_user.id}
       = uf.input :re_open_index, as: :hidden, input_html: {value: ticket.re_open_count.to_i}

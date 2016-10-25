@@ -40,6 +40,14 @@ class Ticket < ActiveRecord::Base
 
   end
 
+  def created_at
+    super.getlocal
+  end
+
+  def updated_at
+    super.getlocal
+  end
+
   def customer_name
     customer.full_name
   end

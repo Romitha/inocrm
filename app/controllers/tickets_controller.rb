@@ -978,7 +978,7 @@ class TicketsController < ApplicationController
     if continue
 
       t_params = ticket_params
-      t_params["user_ticket_actions_attributes"].first.merge!("action_at" => DateTime.now.strftime("%Y-%m-%d %H:%M:%S"))
+      t_params["user_ticket_actions_attributes"].first.merge!("action_at" => DateTime.now )
       puts t_params
       @ticket.attributes = t_params
 
