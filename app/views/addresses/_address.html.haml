@@ -7,7 +7,7 @@
     = link_to content_tag(:span, glyph(:send, {:tag => :span})), polymorphic_path([:make_primary_address, address.addressable, address]), method: :post, rel: "tooltip", data: {toggle: "tooltip", placement: "right", confirm: "Are you sure? do you want to make this as primary address?"}, title: "Make Primary" unless address.primary
   .col-md-5
     = link_to "#", class: "inline_edit", data: {type: "select", source: MstTitle.all.collect{|title| {value: title.id, text: title.title}}, resource: "address", name: "contact_person_title_id", url: polymorphic_path([address.addressable, address]), "original-title" => "Update title"} do
-      = address.contact_person_title.title
+      = address.contact_person_title.try(:title)
 
     = link_to "#", class: "inline_edit", data: {type: "text", resource: "address", name: "contact_person_name", url: polymorphic_path([address.addressable, address]), "original-title" => "Update address"} do
       = address.contact_person_name

@@ -48,21 +48,21 @@
     .col-md-12
       = collapse_wrapper collapse_id: "prn_info", labelledby: "prn_info_labelledby" do
         = collapse collapse_type: "info", labelledby: "prn_info_labelby", header_content: "PRN Information", collapse_link: "prn_info_link", collapse_id: "prn_info" do
-          %dl
+          %dl.dl-horizontal
             %dt PRN No:
             %dd= @prn.formated_prn_no
-            %dt PRN Date:
-            %dd= @prn.created_at.strftime(INOCRM_CONFIG["short_date_format"])
             %dt Required Date:
             %dd= @prn.required_at.try(:strftime, INOCRM_CONFIG["short_date_format"])
             %dt Remarks:
             %dd= @prn.remarks
             %dt Created By:
             %dd= @prn.created_by_user_full_name
+            %dt Created at:
+            %dd= @prn.created_at.strftime(INOCRM_CONFIG["short_date_format"])
     .col-md-12.main_issue
       %h4 PO Items
       = f.simple_fields_for :inventory_po_items do |i|
-        = i.input :unit_id, as: :hidden, input_html: {value: i.object.inventory_prn_item.inventory_product.inventory_unit.id}
+        = i.input :unit_id, as: :hidden, input_html: {class: "dynamic_unit_id"}
         = i.input :prn_item_id, as: :hidden
 
         - if i.object.inventory_prn_item and i.object.inventory_prn_item.inventory_product

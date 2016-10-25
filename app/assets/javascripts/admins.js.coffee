@@ -101,9 +101,13 @@ window.Admins =
       return
 
   currency_select:  ->
-    $(".dynamic_unit_cost").text($("#select_currency_unit :selected").text())
-    $("#select_currency_unit").change ->
+    selected_currency_unit = $("#select_currency_unit")
+    $(".dynamic_unit_cost").text($(":selected", selected_currency_unit).text())
+    $(".dynamic_unit_id").val(selected_currency_unit.val())
+
+    selected_currency_unit.change ->
 
       this_elem = $(@)
 
       $(".dynamic_unit_cost").text($(":selected",this_elem).text())
+      $(".dynamic_unit_id").val(this_elem.val())

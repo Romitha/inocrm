@@ -1,5 +1,7 @@
 class ContactNumbersController < ApplicationController
   before_action :set_contact_number, only: [:update, :destroy, :make_primary_contact_number]
+  after_action :update_index_model, except: [:destroy_customer_contact_detail, :create]
+
   respond_to :html, :xml, :json
 
 	def create
@@ -18,6 +20,7 @@ class ContactNumbersController < ApplicationController
         end
       else
         if @contact_number.save
+          @contact_number.c_numberable.update_index
           format.html {redirect_to polymorphic_path([:edit, @contact_number.c_numberable]), notice: "contact_number is successfully created"}
           format.json {render json: @contact_number}
         else
@@ -49,6 +52,7 @@ class ContactNumbersController < ApplicationController
     @customer = Customer.find params[:customer_id]
     @customer.contact_types.delete_all
     @customer.destroy
+    @organization.update_index
     redirect_to organization_path(@organization), notice: "Successfully deleted!"
 
   end
@@ -64,9 +68,16 @@ class ContactNumbersController < ApplicationController
     end
   end
 
+
   private
     def set_contact_number
       @contact_number = ContactNumber.find(params[:id])
+    end
+
+    def update_index_model
+      if @contact_number.c_numberable_type == "Organization"
+        @contact_number.c_numberable.update_index
+      end
     end
 
     def contact_number_params
