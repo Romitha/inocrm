@@ -554,7 +554,7 @@ window.Tickets =
 
   assign_value_to_select: ->
     $(".request_part_request_from .radio-inline input").click ->
-      $("#request_from_select").attr("href", "/inventories/inventory_in_modal?select_frame=request_from&checked_value="+$(@).val())
+      $("#request_from_select").attr("href", "/inventories/inventory_in_modal?select_frame=request_from&modified=true&checked_value="+$(@).val())
 
   enable_request_part_check: ->
     $(".approve_radio_button").change ->

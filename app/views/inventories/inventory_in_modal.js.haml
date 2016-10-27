@@ -32,11 +32,15 @@
   - if session[:select_frame] == "request_from"
     $("#store_id, #ticket_on_loan_spare_part_store_id").val("#{session[:store_id]}");
     $("#inv_product_id, #ticket_on_loan_spare_part_inv_product_id").val("#{session[:inv_product_id]}");
+
   - elsif session[:select_frame] == "main_product"
     $("#mst_store_id").val("#{session[:mst_store_id]}");
     $("#mst_inv_product_id, #ticket_on_loan_spare_part_main_inv_product_id").val("#{session[:mst_inv_product_id]}");
 
+  $("#request_from_select").attr("href", "/inventories/inventory_in_modal?select_frame=request_from&checked_value="+$('.request_part_request_from .radio-inline input:checked').val())
+
 - else
+  - session[:store_id] = session[:mst_store_id] = nil if params[:modified]
   $("#inventory_modal").modal();
   $("#inventory_modal .modal-content").html("#{j render 'inventory_in_modal'}");
 

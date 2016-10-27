@@ -1,12 +1,15 @@
 - uri = URI(request.url)
-.row
-  = form_tag update_collect_parts_tickets_path, method: :post do
-    = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
-    = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
-    = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
-    - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
-      = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
+
+= form_tag update_collect_parts_tickets_path, method: :post do
+  = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
+  = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
+  = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
+  - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
+    = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+
+  #collect_parts
+    = text_field_tag "search", nil, class: "form-control search small_scale_margin-bottom1 col-md-3", autocomplete: "off", placeholder: "Search by Event No, Order No"
     %table.table.table-bordered
       %thead
         %tr
@@ -20,19 +23,18 @@
           %th Note
           %th Ticket No
           %th Collected
-      %tbody
+      %tbody.list
         - @manufacture_parts.each_with_index do |manufacture_part, i|
           %tr
             %th= i+1
-            %th #{manufacture_part.ticket_spare_part.engineer.try(:full_name)}
-            %td #{manufacture_part.created_at.strftime "%m-%d-%Y"}
-            %td #{manufacture_part.ticket_spare_part.spare_part_no}
-            %td #{manufacture_part.ticket_spare_part.spare_part_description}
-            %td= manufacture_part.order_no
-            %td #{manufacture_part.event_no}
+            %th= manufacture_part.ticket_spare_part.engineer.try(:full_name)
+            %td= manufacture_part.created_at.strftime "%m-%d-%Y"
+            %td= manufacture_part.ticket_spare_part.spare_part_no
+            %td= manufacture_part.ticket_spare_part.spare_part_description
+            %td.order_no= manufacture_part.order_no
+            %td.event_no= manufacture_part.event_no
             %td= simple_format manufacture_part.ticket_spare_part.note
-            %td #{manufacture_part.ticket_spare_part.ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])}
-            %td 
-              = check_box_tag("manufacture_part[]", manufacture_part.id, false, id: "manufacture_part_#{manufacture_part.id}")
-    = submit_tag "Save", class: "btn btn-success pull-right"
-    / = address.submit "Add new address", class: "btn btn-success pull-right", id: "submit_new_address"
+            %td.ticket_no= manufacture_part.ticket_spare_part.ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
+            %td= check_box_tag("manufacture_part[]", manufacture_part.id, false, id: "manufacture_part_#{manufacture_part.id}", onclick: "$('#search').val(''); console.log(collectParts.search());")
+  = submit_tag "Save", class: "btn btn-success pull-right"
+  / = address.submit "Add new address", class: "btn btn-success pull-right", id: "submit_new_address"

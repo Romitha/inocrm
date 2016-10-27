@@ -1,1 +1,9 @@
 $("#bundle_parts").html("#{j render @template, spare_part: @spare_part}");
+
+var options = {
+valueNames: ['order_no', 'event_no', 'ticket_no']
+};
+
+var collectParts = new List('collect_parts', options);
+
+console.log(collectParts.size());

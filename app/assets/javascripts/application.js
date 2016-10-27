@@ -31,6 +31,7 @@
 //= require chosen-jquery
 //= require mustache
 //= require phoenix
+//= require fuzzy_search
 //= require_tree .
 $.fn.editable.defaults.ajaxOptions = {type: "PUT", mode: "inline"};
 $.fn.editable.defaults.error = function(response, newValue){
