@@ -29,7 +29,7 @@ class Ticket < ActiveRecord::Base
     Warranty
     to_json(
       only: [:created_at, :cus_chargeable, :id],
-      methods: [:customer_name, :ticket_status_name, :warranty_type_name, :support_ticket_no],
+      methods: [:customer_name, :ticket_status_name, :warranty_type_name, :support_ticket_no, :ticket_type_name],
       include: {
         products: {
           only: [:id, :serial_no, :model_no, :product_no, :created_at],
@@ -39,6 +39,35 @@ class Ticket < ActiveRecord::Base
     )
 
   end
+
+  def ticket_type_name
+    ticket_type.name
+  end
+
+  def created_at
+    super.try(:getlocal)
+  end
+
+  def updated_at
+    super.try(:getlocal)
+  end
+
+  def customer_name
+    customer.full_name
+  end
+
+  def ticket_status_name
+    ticket_status.name
+  end
+
+  def warranty_type_name
+    warranty_type.name
+  end
+
+  def support_ticket_no
+    ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
+  end
+
 
   belongs_to :ticket_type, foreign_key: :ticket_type_id
   belongs_to :warranty_type, foreign_key: :warranty_type_id

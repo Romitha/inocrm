@@ -51,5 +51,5 @@
                 .col-md-1
                   %strong Engineer:
                 .col-md-9
-                  = link_to "#", class: "inline_edit", data: {type: "select", source: User.all.collect{|a| {value: a.id, text: a.email}}, resource: "sbu_engineer", name: "engineer_id", url: sbu_admins_employees_path(edit: true, engineer_id: engineer.id), "original-title" => "Update Admin Sbu"} do
+                  = link_to "#", class: "inline_edit", data: {type: "select", source: User.all.collect{|a| {value: a.id, text: a.email}}, resource: "sbu_engineer", name: "engineer_id", url: sbu_admins_employees_path(edit: true, engineer_id: engineer.id), "original-title" => "Update Admin SBU"} do
                     = engineer.try(:email)

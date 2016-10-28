@@ -1546,13 +1546,21 @@ class TicketsController < ApplicationController
     Tax
     Grn
     Organization
+    TicketSparePart
     ticket_id = params[:ticket_id]
     @ticket = Ticket.find ticket_id
     @product = @ticket.products.first
 
     if @ticket
       @estimation = TicketEstimation.find params[:part_estimation_id]
+      part_store_or_non_stock = (@estimation.ticket_estimation_parts.first.ticket_spare_part.ticket_spare_part_store or @estimation.ticket_estimation_parts.first.ticket_spare_part.ticket_spare_part_non_stock)
+      @paginate_array = part_store_or_non_stock.inventory_product.grn_items.order("grn_id DESC")
+      @paginate_grn_items = Kaminari.paginate_array(@paginate_array).page(params[:page]).per(10)
+      # part_store_or_non_stock = (@estimation.ticket_estimation_parts.try(:ticket_spare_part).try(:ticket_spare_part_store) or @estimation.ticket_estimation_parts.try(:ticket_spare_part).try(:ticket_spare_part_non_stock))
+      # @paginate_grn_items = part_store_or_non_stock.inventory_product.grn_items.order("grn_id DESC")
+
     end
+    @pass_this = "yes"
 
     Rails.cache.delete([:histories, @product.id])
     Rails.cache.delete([:join, @ticket.id])
@@ -2668,6 +2676,7 @@ class TicketsController < ApplicationController
     TicketSparePart
     Inventory
     Warranty
+
     @ticket = Ticket.find_by_id params[:ticket_id]
     if @ticket
       @product = @ticket.products.first

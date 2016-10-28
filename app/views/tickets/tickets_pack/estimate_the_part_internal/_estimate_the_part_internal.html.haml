@@ -24,6 +24,7 @@
             #{t.object.ticket_spare_part.try(:spare_part_status_action).try(:name)}
         %hr
         - part_store_or_non_stock = (t.object.ticket_spare_part.ticket_spare_part_store or t.object.ticket_spare_part.ticket_spare_part_non_stock)
+        / - paginate_grn_items = part_store_or_non_stock.inventory_product.grn_items.page(params[:page]).per(3)
         - if part_store_or_non_stock.present?
           .row
             .col-md-5
@@ -59,17 +60,22 @@
 
             .col-md-7
               #paginate_grns
+                = paginate @paginate_grn_items, remote: false, method: :get, params: {controller: "tickets", action: "estimate_the_part_internal", per_page: 10}
                 %table.table
                   %thead
                     %tr
                       %th No
-                      %th Grn no
+                      %th GRN No.
                       %th Date Purchased
                       %th Price
                   %tbody
-                    - part_store_or_non_stock.inventory_product.grn_items.each_with_index do |grn_item, index|
+                    - @paginate_grn_items.each_with_index do |grn_item, index|
                       %tr
-                        %td= index+1
+                        %td
+                          - if params[:page]
+                            = (index+1)+ 10**(params[:page].to_i-1)
+                          - else
+                            = (index+1)
                         %td= grn_item.grn.grn_no
                         %td= grn_item.grn.created_at.try(:strftime, "%d-%m-%Y")
                         %td
@@ -87,7 +93,7 @@
             .col-md-9.head_estimated_price_class
               .row
                 .col-md-2
-                  = t.association :supplier, collection: Organization.stores, input_html: {class: "est_internal_supplier"}
+                  = t.association :supplier, collection: Organization.suppliers, input_html: {class: "est_internal_supplier"}
                 .col-md-3
                   = t.input :cost_price, label: "Cost Price (#{ticket.ticket_currency.code})", as: :string, input_html: {class: "value_class only_float", oninput: "Inventories.calculate_cost_price(this);"}
                   .append_cost_price.hide

@@ -23,7 +23,7 @@
               .panel-body 
                 .row
                   .col-md-3
-                    Sbu: #{action.user_assign_ticket_action.try(:sbu).try(:sbu)}
+                    SBU: #{action.user_assign_ticket_action.try(:sbu).try(:sbu)}
                   .col-md-3
                     Assign to: #{User.find_by_id(action.user_assign_ticket_action.assign_to).try(:user_name)}
                   .col-md-3
@@ -553,7 +553,7 @@
                   .col-md-4
                     Spare Part No: #{action.request_spare_part.ticket_spare_part.spare_part_no}
                   .col-md-4
-                    Spare Part Description: #{action.request_spare_part.ticket_spare_part.spare_part_description}
+
 
                 .row
                   .col-md-4

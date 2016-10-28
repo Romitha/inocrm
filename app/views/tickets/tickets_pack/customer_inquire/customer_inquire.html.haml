@@ -40,8 +40,10 @@
     %strong Category
   .col-md-1
     %strong Created at
-  .col-md-2
+  .col-md-1
     %strong Status
+  .col-md-1
+    %strong Type
   .col-md-1
     %strong Chargeable
   .col-md-1
@@ -62,7 +64,8 @@
     .col-md-1= ticket.products.first.try(:brand_name)
     .col-md-1= ticket.products.first.try(:category_name)
     .col-md-1= ticket.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
-    .col-md-2= ticket.ticket_status_name
+    .col-md-1= ticket.ticket_status_name
+    .col-md-1= ticket.ticket_type_name
     .col-md-1= boolean_in_word ticket.cus_chargeable, "Yes", "No"
     .col-md-1= ticket.warranty_type_name.split(" ").first
   %hr
