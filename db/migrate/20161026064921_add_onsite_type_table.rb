@@ -12,7 +12,7 @@ class AddOnsiteTypeTable < ActiveRecord::Migration
     add_index :spt_ticket, :onsite_type_id, name: "fk_spt_ticket_mst_spt_onsite_type1_idx"
     add_foreign_key(:spt_ticket, :mst_spt_onsite_type, name: "fk_spt_ticket_mst_spt_onsite_type1", column: :onsite_type_id)
  
-    add_column :spt_ticket_spare_part_manufacture, :requested_quantity, :decimal, scale: 3, precision: 13, null: false
+    add_column :spt_ticket_spare_part_manufacture, :requested_quantity, :decimal, scale: 3, precision: 13, null: false, default: 1
 
     add_column :spt_ticket_spare_part_store, :requested_quantity, :decimal, scale: 3, precision: 13, default: 1, null: false
     add_column :spt_ticket_spare_part_store, :approved_quantity, :decimal, scale: 3, precision: 13
