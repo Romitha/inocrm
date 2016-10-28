@@ -97,13 +97,19 @@ class UserTicketAction < ActiveRecord::Base
 
   after_create :flush_cache
 
+  before_create :set_action_at
+
   def cached_task_action
     Rails.cache.fetch([self.id, :task_action]){ self.task_action }
   end
 
   def flush_cache
-    self.update action_at: DateTime.now
+    # self.update action_at: DateTime.now
     Rails.cache.delete([self.ticket.id, :user_ticket_actions])
+  end
+
+  def set_action_at
+    self.action_at = DateTime.now
   end
 
   def created_at

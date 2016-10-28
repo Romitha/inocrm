@@ -164,6 +164,7 @@ class TicketDeliverUnit < ActiveRecord::Base
   belongs_to :ticket
 
   belongs_to :organization, foreign_key: :deliver_to_id
+  belongs_to :collected_by_user, foreign_key: :collected_by
 
   has_many :deliver_units, foreign_key: :ticket_deliver_unit_id
   accepts_nested_attributes_for :deliver_units, allow_destroy: true

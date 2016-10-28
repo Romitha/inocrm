@@ -23,13 +23,13 @@
       .row
         .col-md-4
           %strong Organization:
-          = @recieve_unit.organization.name
+          = @recieve_unit.organization.try(:name)
         .col-md-4
           %strong Unit collected at:
           = @recieve_unit.collected_at.try :strftime, "%d-%m-%Y %H:%M"
         .col-md-4
           %strong Unit collected by:
-          = User.find_by_id(@recieve_unit.collected_by).try :first_name
+          = @recieve_unit.collected_by_user.full_name
       .row
         .col-md-6
           = du.input :note, input_html: {value: nil}

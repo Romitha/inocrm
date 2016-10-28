@@ -40,31 +40,6 @@ class Ticket < ActiveRecord::Base
 
   end
 
-  def created_at
-    super.try(:getlocal)
-  end
-
-  def updated_at
-    super.try(:getlocal)
-  end
-
-  def customer_name
-    customer.full_name
-  end
-
-  def ticket_status_name
-    ticket_status.name
-  end
-
-  def warranty_type_name
-    warranty_type.name
-  end
-
-  def support_ticket_no
-    ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
-  end
-
-
   belongs_to :ticket_type, foreign_key: :ticket_type_id
   belongs_to :warranty_type, foreign_key: :warranty_type_id
   belongs_to :job_type, foreign_key: :job_type_id
@@ -224,6 +199,38 @@ class Ticket < ActiveRecord::Base
 
   def ticket_closed?
     ["CLS", "TBC"].include? ticket_status.try(:code)
+  end
+
+  def created_at
+    super.try(:getlocal)
+  end
+
+  def updated_at
+    super.try(:getlocal)
+  end
+
+  def job_started_at
+    super.try(:getlocal)
+  end
+
+  def job_finished_at
+    super.try(:getlocal)
+  end
+
+  def customer_name
+    customer.full_name
+  end
+
+  def ticket_status_name
+    ticket_status.name
+  end
+
+  def warranty_type_name
+    warranty_type.name
+  end
+
+  def support_ticket_no
+    ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
   end
 
 end
