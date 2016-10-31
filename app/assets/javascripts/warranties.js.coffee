@@ -39,6 +39,20 @@ window.Warranties =
         $("#warranty_end_at").prop('disabled', true);
     return
 
+  control_datetime_fsr: ->
+    $("#ticket_fsr_work_started_at").data("DateTimePicker").maxDate(new Date())
+    $("#ticket_fsr_work_finished_at").prop("disabled", true)
+    $("#ticket_fsr_work_started_at").blur ->
+      _this = this
+      if $(this).val() != ''
+        $("#ticket_fsr_work_finished_at").prop('disabled', false)
+        console.log $(this).val()
+        $('#ticket_fsr_work_finished_at').data("DateTimePicker").maxDate(new Date()).minDate($(this).val())
+      else
+        $("#ticket_fsr_work_finished_at").prop('disabled', true).data("DateTimePicker").destroy();
+    return
+
+
   update_end_at: (e)->
     this_value = $(e).val()
     end_at = $(e).parents().eq(2).siblings().find(".updateable_end_at")

@@ -43,4 +43,7 @@ Tickets.remove_ajax_loader();
 
 Tickets.assign_value_to_select();
 
-Tickets.tax_calculation();
+Tickets.initial_loaders();
+
+- if params[:call_template]=="edit_fsr"
+	Warranties.control_datetime_fsr();

@@ -1,43 +1,61 @@
 %fieldset
   %legend Edit FSR
   / = select_tag "select_fsr", options_from_collection_for_select(@select_fsrs, "id", "id")
-  = select_tag "select_fsr", options_for_select(ticket.ticket_fsrs.where(approved: false).map { |fsr| [ fsr.ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"]) , fsr.id] }), {:prompt => "- Select FSR No -"}
+  = select_tag "select_fsr", options_for_select(ticket.ticket_fsrs.where(approved: false).map { |fsr| [ fsr.ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"]) , fsr.id] }, params[:select_fsr_id]), {:prompt => "- Select FSR No -", class: "form-control"}
   - if @display_form
     = simple_nested_form_for @ticket_fsr, url: update_edit_fsr_ticket_path(ticket), method: :post do |fsr|
       / = fsr.input :ticket_id, as: :hidden
       = hidden_field_tag :ticket_fsr_id, @ticket_fsr.id
 
       .row
-        .col-md-2.small_scale_margin-top2
-          %p FSR No: #{fsr.object.ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])}
-        = fsr.input :completion_level, as: :radio_buttons, label: false, wrapper_html: {class: "col-md-2 small_scale_margin-top2 small_scale_margin-left3"}, collection: {"Full" => "F","Partial" => "P"}, wrapper: :append
-        .col-md-4
-          = fsr.input :work_started_at, as: :string, input_html: {class: "datetimepicker", value: (@ticket_fsr.work_started_at and @ticket_fsr.work_started_at.strftime("%d %b, %Y"))}
         .col-md-3
-          = fsr.input :work_finished_at, as: :string, input_html: {class: "datetimepicker", value: (@ticket_fsr.work_finished_at and @ticket_fsr.work_finished_at.strftime("%d %b, %Y"))}
-      .row
-        = fsr.input :hours_worked, input_html: {min: "0", class: "only_float"}, wrapper_html: {class: "col-md-2"}
-        = fsr.input :down_time, input_html: {min: "0", class: "only_float"}, wrapper_html: {class: "col-md-2"}
-        = fsr.input :travel_hours, input_html: {min: "0", class: "only_float"}, wrapper_html: {class: "col-md-2"}
-        = fsr.input :engineer_time_travel, input_html: {min: "0", class: "only_float"}, wrapper_html: {class: "col-md-3"}
-        = fsr.input :engineer_time_on_site, input_html: {min: "0", class: "only_float"}, wrapper_html: {class: "col-md-3"}
-      .row
+          .row
+            .col-md-12
+              %strong FSR No:
+              = fsr.object.ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])
+            .col-md-12
+              = fsr.input :completion_level, as: :radio_buttons, label: false, collection: {"Full" => "F","Partial" => "P"}, wrapper: :append
+            .col-md-12
+              = fsr.input :work_started_at, as: :string, input_html: {class: "datetimepicker"}
+              %strong Started at:
+              = @ticket_fsr.work_started_at.strftime("%d %b, %Y %H:%M %p")
+              %hr
+            .col-md-12
+              = fsr.input :work_finished_at, as: :string, input_html: {class: "datetimepicker"}
+              %strong Finished at:
+              = @ticket_fsr.work_finished_at.strftime("%d %b, %Y %H:%M %p")
+              %hr
+
+        .col-md-3
+          .row
+            .col-md-12
+              = fsr.input :hours_worked, input_html: {min: "0", class: "only_float"}, label: "Hours worked (in hours)"
+            .col-md-12
+              = fsr.input :down_time, input_html: {min: "0", class: "only_float"}, label: "Down time (in hours)"
+            .col-md-12
+              = fsr.input :travel_hours, input_html: {min: "0", class: "only_float"}, label: "Travel hours (in hours)"
+            .col-md-12
+              = fsr.input :engineer_time_travel, input_html: {min: "0", class: "only_float"}, label: "Engineer time travel (in hours)"
+            .col-md-12
+              = fsr.input :engineer_time_on_site, input_html: {min: "0", class: "only_float"}, label: "Engineer time on site (in hours)"
+
         .col-md-6
-          = fsr.input :resolution, input_html: {value: nil}
-        .col-md-6
-          = fsr.input :remarks, input_html: {value: nil}, label: "Remarks (FSR)"
-          = simple_format fsr.object.remarks
+          .col-md-12
+            = fsr.input :resolution, input_html: {value: nil}
+            = simple_format @ticket_fsr.resolution
+          .col-md-12
+            = fsr.input :remarks, input_html: {value: nil}, label: "Remarks (FSR)"
+            = simple_format fsr.object.remarks
 
         
       .row
         = fsr.simple_fields_for :ticket do |t|
-          = t.input :remarks, as: :text, label: "Remarks (Ticket)", input_html: {value: nil}, wrapper_html: {class: "col-md-12"}
           .col-md-12
+            = t.input :remarks, as: :text, label: "Remarks (Ticket)", input_html: {value: nil}
             = simple_format t.object.remarks
 
       .row
-        .col-md-3
-          = simple_format @ticket_fsr.resolution
-      = fsr.submit "Save", class: "btn btn-success btn-sm"
-      = link_to "#", onclick: "Users.request_printer_application('fsr', '#{@ticket_fsr.id}', 'fsr_request_type', 'print_fsr_tag_value', 'print_fsr'); false;", id: "ticket_print", data: {disable_with: "Printing..."}, class: "btn btn-default" do
-        = @ticket_fsr.print_count.to_i > 0 ? "Re-Print" : "Print"
+        .col-md-12
+          = fsr.submit "Save", class: "btn btn-success btn-sm"
+          = link_to "#", onclick: "Users.request_printer_application('fsr', '#{@ticket_fsr.id}', 'fsr_request_type', 'print_fsr_tag_value', 'print_fsr'); false;", id: "ticket_print", data: {disable_with: "Printing..."}, class: "btn btn-default" do
+            = @ticket_fsr.print_count.to_i > 0 ? "Re-Print" : "Print"

@@ -4300,6 +4300,8 @@ class TicketsController < ApplicationController
     def ticket_fsr_params
       ticket_fsr_params = params.require(:ticket_fsr).permit(:travel_hours, :work_started_at, :work_finished_at, :hours_worked, :down_time, :engineer_time_travel, :engineer_time_on_site, :resolution, :completion_level, :remarks, :ticket_id, ticket_attributes: [:remarks, :id])
       ticket_fsr_params[:current_user_id] = current_user.id
+      ticket_fsr_params[:work_started_at] = Time.strptime(ticket_fsr_params[:work_started_at],'%m/%d/%Y %I:%M %p') if ticket_fsr_params[:work_started_at].present?
+      ticket_fsr_params[:work_finished_at] = Time.strptime(ticket_fsr_params[:work_finished_at],'%m/%d/%Y %I:%M %p') if ticket_fsr_params[:work_finished_at].present?
       ticket_fsr_params
     end
 
