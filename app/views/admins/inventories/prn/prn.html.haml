@@ -48,6 +48,7 @@
         .modal-footer
 - else
   .list-group#store-list
+    %h2.small_scale_padding-bottom1 Select Store
     - Organization.stores.each do |store|
       = link_to prn_admins_inventories_path(store_id: store.id), class: "list-group-item" do
         %h4.list-group-item-heading{id: "store_name_#{store.id}"}= store.name

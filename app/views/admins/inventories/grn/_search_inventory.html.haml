@@ -22,15 +22,18 @@
                   = label_tag InventoryCategoryCaption.third.caption
                   = select_tag "search_inventory[inventory_product][category3_id]", option_groups_from_collection_for_select(InventoryCategory2.all, :inventory_category3s, :id, :id, :name), include_blank: true, class: "form-control", id: "search_inventory_mst_inv_product_category3_id"
               .row.small_scale_margin-top1
-                .col-md-2.serial_code
-                  = text_field_tag "search_inventory[inventory_product][generated_item_code]", (params[:search_inventory] and params[:search_inventory][:inventory_product][:generated_item_code]), :placeholder => "Serial Code", class: "form-control"
-                .col-md-2.part_no
+                .col-md-4.serial_code
+                  = text_field_tag "search_inventory[inventory_product][generated_serial_no]", (params[:search_inventory] and params[:search_inventory][:inventory_product][:generated_serial_no]), :placeholder => "Serial Code", class: "form-control"
+                .col-md-4.item_code
+                  = text_field_tag "search_inventory[inventory_product][generated_item_code]", (params[:search_inventory] and params[:search_inventory][:inventory_product][:generated_item_code]), :placeholder => "Item Code", class: "form-control"
+                .col-md-4.part_no
                   = text_field_tag "search_inventory[inventory_product][spare_part_no]", (params[:search_inventory] and params[:search_inventory][:inventory_product][:spare_part_no]), :placeholder => "Part No", class: "form-control"
-                .col-md-2.model_no
+                .col-md-12.small_scale_padding-top1
+                .col-md-4.model_no
                   = text_field_tag "search_inventory[inventory_product][model_no]", (params[:search_inventory] and params[:search_inventory][:inventory_product][:model_no]), :placeholder => "Model No", class: "form-control"
-                .col-md-3.product_no
+                .col-md-4.product_no
                   = text_field_tag "search_inventory[inventory_product][product_no]", (params[:search_inventory] and params[:search_inventory][:inventory_product][:product_no]), :placeholder => "Product No", class: "form-control"
-                .col-md-3.description
+                .col-md-4.description
                   = text_field_tag "search_inventory[inventory_product][description]", (params[:search_inventory] and params[:search_inventory][:inventory_product][:description]), placeholder: "Description", class: "form-control"
 
               .row.small_scale_margin-top1
@@ -45,13 +48,13 @@
 
   = collapse collapse_type: "info", labelledby: "grn_form_collapse_frame", header_content: "GRN items", collapse_link: "grn_form_collapse_frame_link", collapse_id: "grn_form_collapse" do
     .row
-      .col-md-6
+      .col-md-4
         %strong GRN No:
         = CompanyConfig.first.next_sup_last_grn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_grn_no_format"])
-      .col-md-6
+      .col-md-4
         %strong Created by:
         = current_user.full_name
-        %br/
+      .col-md-4
         %strong Created at:
         = DateTime.now.strftime("%Y-%m-%d %H:%M")
     .row

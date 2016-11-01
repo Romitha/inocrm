@@ -72,6 +72,39 @@
       = g.link_to_add "Add", :grn_batches, class: "add_grn_items", onclick: "Inventories.add_warranty_click(this);"
 
   - if need_serial and !need_batch
+    .row.small_scale_padding-top1.small_scale_padding-bottom1
+      .col-md-4
+        %strong Item Code:
+        =inventory_product.generated_item_code
+      .col-md-4
+        %strong Item Description:
+        =inventory_product.description
+      .col-md-4
+        %strong Balance To Be Received:
+      .col-md-4
+        %strong Received Quantity:
+        =(need_serial and !need_batch ? 1 : 0 )
+      .col-md-4
+        %strong Received Unit:
+        / =inventory_product.inventory_unit
+      .col-md-4
+        %strong PO Remarks:
+        =inventory.remarks
+      .col-md-4
+        %strong Rack:
+        =inventory.inventory_bin.inventory_shelf.inventory_rack.description
+      .col-md-4
+        %strong Shelf:
+        =inventory.inventory_bin.inventory_shelf.description
+      .col-md-4
+        %strong BIN:
+        =inventory.inventory_bin.description
+      .col-md-4
+        %strong Stock In Hand:
+        =inventory.stock_quantity
+      .col-md-4
+        %strong Remarks:
+
     = tab_panel do
       = tab_nav_tab({class: "small_scale_margin-bottom1"}, single_serial_item: {content: "Item by item", active_class: "active"}, bulk_update: {content: "Bulk update"})
       .tab-content
@@ -124,7 +157,7 @@
                         = w.input :created_by, as: :hidden, input_html: {value: current_user.id }
                         .row
                           .col-md-4
-                            = w.association :inventory_warranty_type
+                            = w.association :inventory_warranty_type, label: "Warranty Type"
                           .col-md-4
                             = w.input :start_at, as: :string, input_html: {class: "datepicker", onblur: "Warranties.update_end_at(this); return false;"}
                           .col-md-4

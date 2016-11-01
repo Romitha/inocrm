@@ -3,13 +3,15 @@
 - if @inventory_products.any?
   %hr
   .row
-    .col-md-1.strong No
+    .col-md-1.strong.text-center No
     .col-md-2.strong Category
-    .col-md-2.strong Serial code
-    .col-md-2.strong Model no
-    .col-md-2.strong Product no
-    .col-md-2.strong Part no
-    .col-md-1.strong Action
+    .col-md-1.strong Serial Code
+    .col-md-2.strong Item Code
+    .col-md-1.strong Available Qty
+    .col-md-1.strong Model No
+    .col-md-1.strong Product No
+    .col-md-1.strong Part No
+    .col-md-2.strong Action
   %hr
 
 
@@ -42,10 +44,12 @@
     .row
       .col-md-1{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Serial No: #{pr.generated_item_code}", "data-content"=> yield(:inventory_p_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }= index+1
       .col-md-2= pr.category3_name
+      .col-md-1= pr.generated_serial_no
       .col-md-2= pr.generated_item_code
-      .col-md-2= pr.model_no
-      .col-md-2= pr.product_no
-      .col-md-2= pr.spare_part_no
-      .col-md-1= link_to "Select", grn_admins_inventories_path(purchase_order: "select_inventory", inventory_product_id: pr.id), remote: true, id: "#{@selected_grns_for_without_po ? 's_i_product_'+pr.id.to_s : 'i_product_'+pr.id.to_s }", class: "po_select_link"
+      .col-md-1= pr.inventories.sum{|i| i.available_quantity.to_f }
+      .col-md-1= pr.model_no
+      .col-md-1= pr.product_no
+      .col-md-1= pr.spare_part_no
+      .col-md-2= link_to "Select", grn_admins_inventories_path(purchase_order: "select_inventory", inventory_product_id: pr.id), remote: true, id: "#{@selected_grns_for_without_po ? 's_i_product_'+pr.id.to_s : 'i_product_'+pr.id.to_s }", class: "po_select_link"
     %hr
 = paginate @inventory_products, remote: false, method: :get
