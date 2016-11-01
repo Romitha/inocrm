@@ -1,6 +1,6 @@
 .col-md-8
   = simple_nested_form_for @contract, url: add_edit_contract_tickets_path(create: true), method: :post, html: {class: "validate_form"} do |f|
-    .panel.panel-primary{style: "border-radius: 4px;"}
+    .panel.panel-primary
       .panel-heading
         %h3.panel-title Add Edit Contract
       .panel-body
@@ -21,12 +21,12 @@
               = f.input :contract_no
           .row{style: "margin-top:20px;"}
             .col-md-11
-              = f.submit "Save", class: "btn btn-success pull-left", id: "submit_new_add_edit_contract", style: "border-radius: 7px;"
+              = f.submit "Save", class: "btn btn-success pull-left", id: "submit_new_add_edit_contract"
 .col-md-12
   #contract_list
     - if @contract_all.present?
       - @contract_all.each_with_index do |contract, index|
-        .panel.panel-info{style: "border-radius: 4px;"}
+        .panel.panel-info
           .panel-heading
             %h3.panel-title
               %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}", :style => "text-decoration: none;"}
@@ -35,7 +35,7 @@
                 - unless contract.is_used_anywhere?
                   = link_to delete_add_edit_contract_tickets_path(contract_id: contract.id), method: :delete,  :data => { :confirm => 'Are you sure?' } do
                     %span.glyphicon.glyphicon-trash
-          .panel-collapse.collapse.in{:id => "#{index}"}
+          .panel-collapse.collapse{:id => "#{index}"}
             .panel-body.padding_from
               .row.col-md-12
                 .col-md-3
