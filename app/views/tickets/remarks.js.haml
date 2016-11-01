@@ -4,3 +4,4 @@ $(".modal-backdrop").remove();
 $("#tab_panel").html("#{j render 'tickets/remarks_form', ticket: @ticket}");
 
 Tickets.first_resolution_visible();
+$(".validate_form").validate()

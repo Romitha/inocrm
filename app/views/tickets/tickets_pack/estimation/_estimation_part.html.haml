@@ -3,8 +3,19 @@
 - final_tot_tax = 0
 
 %strong Selected part estimation
-%center.strong.br Status : #{estimation.estimation_status.name}
-%center.strong Customer Approval : #{estimation.cust_approved ? 'Approved' : (estimation.cust_approved.nil? ? '' : 'Rejected') }
+.row
+  .col-md-4
+    %strong Quotation No:
+    - estimation.customer_quotations.where(canceled: false).each do |q|
+      = q.customer_quotation_no
+  .col-md-4
+    %strong Status : #{estimation.estimation_status.name}
+  .col-md-4
+    %strong Customer Approval : #{estimation.cust_approved ? 'Approved' : (estimation.cust_approved.nil? ? '' : 'Rejected') }
+  / %br
+  / %strong Quotation No:
+  / %center.strong.br Status : #{estimation.estimation_status.name}
+  / %center.strong Customer Approval : #{estimation.cust_approved ? 'Approved' : (estimation.cust_approved.nil? ? '' : 'Rejected') }
 
 - estimation.ticket_estimation_parts.each do |estimation_part|
   %fieldset

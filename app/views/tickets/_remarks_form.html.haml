@@ -1,6 +1,6 @@
 #remarks
 
-  = simple_nested_form_for ticket, url: finalize_ticket_save_tickets_path, method: :post, remote: true do |f|
+  = simple_nested_form_for ticket, url: finalize_ticket_save_tickets_path, method: :post, remote: true, html: {class: "validate_form"} do |f|
     .row
       .col-md-2
         %strong Contact By
@@ -33,7 +33,7 @@
       .col-md-12
         = check_box_tag "first_resolution", nil, false, class: "first_resolution"
         = label_tag "1st Level Resolution"
-        = f.input :resolution_summary, label: "Resolution", input_html: {class: "ticket_resolution_summary"}
+        = f.input :resolution_summary, required: true, label: "Resolution", input_html: {class: "ticket_resolution_summary"}
     .row
       .col-md-12
         = link_to "Back", new_warranty_path, remote: true, data: {disable_with: "Please wait..."}

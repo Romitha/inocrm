@@ -12,8 +12,8 @@
     .col-md-3
       = text_field_tag "range_to", params[:range_to], class: "form-control datepicker", placeholder: "Select Created To date"
     .col-md-1
-      = submit_tag "Search", :name => nil, class: "btn btn-sm btn-success"
-    .col-md-12
+      = submit_tag "Search", :name => nil, class: "btn btn-sm btn-success", style: "border-radius: 4px;"
+    .col-md-5
       = collapse_wrapper collapse_id: "t_hint" do
         = collapse collapse_type: "info", labelledby: "t_hint_labelby", header_content: "Useful search tips", collapse_link: "t_hint_link", collapse_id: "t_hint" do
           %blockquote
