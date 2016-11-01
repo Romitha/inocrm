@@ -1066,55 +1066,56 @@
                     - else
                       Customer approved: no   
 
-            -if action.action_id == 76
-              .panel-body
-                .row
-                  .col-md-4
-                    Note: #{action.act_job_estimation.try(:note)}
-                  .col-md-4
-                    Requested by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.requested_by).try(:email)}
-                  .col-md-4
-                    Estimated by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.estimated_by).try(:email)}
-                .row
-                  .col-md-4
-                    - if action.act_job_estimation.ticket_estimation.approved == true
-                      Ticket estimation approved: yes
-                    - else
-                      Ticket estimation approved: no
-                  .col-md-4
-                    Approved by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.approved_by).try(:email)}
-                    
-                  .col-md-4
-                    - if action.act_job_estimation.ticket_estimation.cust_approved == true
-                      Customer approved: yes
-                    - else
-                      Customer approved: no
+            - if action.act_job_estimation
+              -if action.action_id == 76
+                .panel-body
+                  .row
+                    .col-md-4
+                      Note: #{action.act_job_estimation.try(:note)}
+                    .col-md-4
+                      Requested by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.requested_by).try(:email)}
+                    .col-md-4
+                      Estimated by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.estimated_by).try(:email)}
+                  .row
+                    .col-md-4
+                      - if action.act_job_estimation.ticket_estimation.approved == true
+                        Ticket estimation approved: yes
+                      - else
+                        Ticket estimation approved: no
+                    .col-md-4
+                      Approved by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.approved_by).try(:email)}
+                      
+                    .col-md-4
+                      - if action.act_job_estimation.ticket_estimation.cust_approved == true
+                        Customer approved: yes
+                      - else
+                        Customer approved: no
 
-            -if action.action_id == 77
-              .panel-body
-                .row
-                  .col-md-4
-                    Note: #{action.act_job_estimation.try(:note)}
-                  .col-md-4
-                    Requested by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.requested_by).try(:email)}
-                  .col-md-4
-                    Estimated by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.estimated_by).try(:email)}
-                .row
-                  .col-md-4
-                    - if action.act_job_estimation.ticket_estimation.approved == true
-                      Ticket estimation approved: yes
-                    - else
-                      Ticket estimation approved: no
-                  .col-md-4
-                    Approved by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.approved_by).try(:email)}
-                    
-                  .col-md-4
-                    - if action.act_job_estimation.ticket_estimation.cust_approved == true
-                      Customer approved: yes
-                    - else
-                      Customer approved: no
+              -if action.action_id == 77
+                .panel-body
+                  .row
+                    .col-md-4
+                      Note: #{action.act_job_estimation.try(:note)}
+                    .col-md-4
+                      Requested by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.requested_by).try(:email)}
+                    .col-md-4
+                      Estimated by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.estimated_by).try(:email)}
+                  .row
+                    .col-md-4
+                      - if action.act_job_estimation.ticket_estimation.approved == true
+                        Ticket estimation approved: yes
+                      - else
+                        Ticket estimation approved: no
+                    .col-md-4
+                      Approved by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.approved_by).try(:email)}
+                      
+                    .col-md-4
+                      - if action.act_job_estimation.ticket_estimation.cust_approved == true
+                        Customer approved: yes
+                      - else
+                        Customer approved: no
 
-            -if action.action_id == 78
+            -if action.action_id == 78 and action.act_payment_received
               .panel-body
                 .row
                   .col-md-4
@@ -1197,7 +1198,7 @@
                   .col-md-4
                     Print Count: #{action.act_print_invoice.invoice.try.print_count}
 
-            -if action.action_id == 82
+            -if action.action_id == 82 and action.act_quotation
               .panel-body
                 .row
                   .col-md-4
