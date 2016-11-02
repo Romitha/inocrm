@@ -5,6 +5,8 @@ class TicketsController < ApplicationController
   before_action :set_organization_for_ticket, only: [:new, :edit, :create_customer]
   # layout :workflow_diagram, only: [:workflow_diagram]
 
+  after_action :update_bpm_header#, only: [:update_start_action, :]
+
   respond_to :html, :json
 
   def ticket_in_modal
@@ -674,23 +676,23 @@ class TicketsController < ApplicationController
     @ticket.q_and_answers.clear
     @ticket.ge_q_and_answers.clear
 
-    continue = false
+    @continue = false
     warranty_constraint = true
 
     if ["CW", "MW"].include?(@ticket.warranty_type.code)
       warranty_constraint = @product.warranties.select{|w| w.warranty_type_id == @ticket.warranty_type_id and (w.start_at.to_date..w.end_at.to_date).include?(Date.today)}.present?
     end
 
-    bpm_response = view_context.send_request_process_data process_history: true, process_instance_id: 1, variable_id: "ticket_id"
-    if !bpm_response[:status].present? or bpm_response[:status].upcase == "ERROR"
+    @bpm_response = view_context.send_request_process_data process_history: true, process_instance_id: 1, variable_id: "ticket_id"
+    if !@bpm_response[:status].present? or @bpm_response[:status].upcase == "ERROR"
       render js: "alert('BPM error. Please continue after rectify BPM.');"
     elsif not warranty_constraint
       render js: "alert('There are no present #{@ticket.warranty_type.name} for the product to initiate particular warranty related ticket.')"
     else
-      continue = true
+      @continue = true
     end
 
-    if continue
+    if @continue
       if @ticket.save
         @ticket.products << @product
         @product.update_attribute :last_ticket_id, @ticket.id
@@ -722,11 +724,10 @@ class TicketsController < ApplicationController
           di_pop_approval_pending = ["RCD", "RPN", "APN", "LPN", "APV"].include?(@ticket.products.first.product_pop_status.try(:code)) ? "Y" : "N"
           priority = @ticket.priority
 
-          bpm_response = view_context.send_request_process_data start_process: true, process_name: "SPPT", query: {ticket_id: ticket_id, d1_pop_approval_pending: di_pop_approval_pending, priority: priority}
+          @bpm_response = view_context.send_request_process_data start_process: true, process_name: "SPPT", query: {ticket_id: ticket_id, d1_pop_approval_pending: di_pop_approval_pending, priority: priority}
 
-          if bpm_response[:status].try(:upcase) == "SUCCESS"
-            @ticket.ticket_workflow_processes.create(process_id: bpm_response[:process_id], process_name: bpm_response[:process_name])
-            view_context.ticket_bpm_headers bpm_response[:process_id], @ticket.id, ""
+          if @bpm_response[:status].try(:upcase) == "SUCCESS"
+            @ticket.ticket_workflow_processes.create(process_id: @bpm_response[:process_id], process_name: @bpm_response[:process_name])
           else
             @bpm_process_error = true
           end
@@ -973,9 +974,9 @@ class TicketsController < ApplicationController
   def update_assign_ticket
     @ticket = Ticket.find(params[:ticket_id])
     TaskAction
-    continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
+    @continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
 
-    if continue
+    if @continue
 
       t_params = ticket_params
       t_params["user_ticket_actions_attributes"].first.merge!("action_at" => DateTime.now )
@@ -1012,10 +1013,11 @@ class TicketsController < ApplicationController
         engineer_id = @ticket_engineer ? @ticket_engineer.id : "-"
         supp_hd_user = @ticket.created_by
 
-        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: {d2_re_correction: d2_recorrection, d3_regional_support_job: d3_regional_support_job, supp_engr_user: supp_engr_user, supp_hd_user: supp_hd_user, engineer_id: engineer_id}
+        @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: {d2_re_correction: d2_recorrection, d3_regional_support_job: d3_regional_support_job, supp_engr_user: supp_engr_user, supp_hd_user: supp_hd_user, engineer_id: engineer_id}
 
-        if bpm_response[:status].upcase == "SUCCESS"
+        if @bpm_response[:status].upcase == "SUCCESS"
           flash[:notice] = "Successfully updated."
+
           WebsocketRails[:posts].trigger 'new', {task_name: "Assign ticket", task_id: @ticket.id, task_verb: "updated.", by: current_user.email, at: Time.now.strftime('%d/%m/%Y at %H:%M:%S')}
         else
           flash[:error] = "ticket is updated. but Bpm error"
@@ -1066,9 +1068,9 @@ class TicketsController < ApplicationController
     @product.pop_note = "#{@product.pop_note} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@product.pop_note_was}" if @product.pop_note_changed?
     warranty_constraint = true
 
-    continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
+    @continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
 
-    if continue
+    if @continue
 
       if ["CW", "MW"].include?(@ticket.warranty_type.code)
         warranty_constraint = @product.warranties.select{|w| w.warranty_type_id == @ticket.warranty_type_id and (w.start_at.to_date..w.end_at.to_date).include?(Date.today)}.present?
@@ -1083,9 +1085,9 @@ class TicketsController < ApplicationController
           user_ticket_action = @ticket.user_ticket_actions.create(action_id: TaskAction.find_by_action_no(62).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
 
           # calling bpm
-          bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: {}
+          @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: {}
 
-          if bpm_response[:status].upcase == "SUCCESS"
+          if @bpm_response[:status].upcase == "SUCCESS"
             flash[:notice] = "Successfully updated."
           else
             flash[:error] = "ticket is updated. but Bpm error"
@@ -1199,9 +1201,9 @@ class TicketsController < ApplicationController
 
   def update_approve_store_parts
 
-    continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
+    @continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
 
-    if continue
+    if @continue
 
       @onloan_request = true if params[:onloan_request] == "Y"
       if @onloan_request
@@ -1215,9 +1217,9 @@ class TicketsController < ApplicationController
       if @terminated
         bpm_variables = view_context.initialize_bpm_variables.merge(d18_approve_request_store_part: "N")
 
-        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+        @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
-        if bpm_response[:status].upcase == "SUCCESS"
+        if @bpm_response[:status].upcase == "SUCCESS"
           flash[:error] = "Request allready terminated."
         else
           flash[:error] = "Request allready terminated. but Bpm error"
@@ -1270,9 +1272,9 @@ class TicketsController < ApplicationController
 
           bpm_variables = view_context.initialize_bpm_variables.merge(d18_approve_request_store_part: d18_approve_request_store_part)
 
-          bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+          @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
-          if bpm_response[:status].upcase == "SUCCESS"
+          if @bpm_response[:status].upcase == "SUCCESS"
             flash[:notice] = "Successfully updated."
           else
             flash[:error] = "ticket is updated. but Bpm error"
@@ -1315,9 +1317,9 @@ class TicketsController < ApplicationController
 
           bpm_variables = view_context.initialize_bpm_variables.merge(d18_approve_request_store_part: d18_approve_request_store_part)
 
-          bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+          @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
-          if bpm_response[:status].upcase == "SUCCESS"
+          if @bpm_response[:status].upcase == "SUCCESS"
             flash[:notice] = "Successfully updated."
           else
             flash[:error] = "ticket is updated. but Bpm error"
@@ -1409,10 +1411,10 @@ class TicketsController < ApplicationController
 
     TaskAction
     TicketSparePart
-    continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
+    @continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
     engineer_id = params[:engineer_id]
 
-    if continue
+    if @continue
       if @ticket.job_finished and @ticket.ticket_close_approval_required
 
         @ticket.attributes = ticket_params
@@ -1424,9 +1426,9 @@ class TicketsController < ApplicationController
 
         if @ticket.save
 
-          bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+          @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
-          if bpm_response[:status].upcase == "SUCCESS"
+          if @bpm_response[:status].upcase == "SUCCESS"
             @flash_message = "Successfully updated."
           else
             @flash_message = "ticket is updated. but Bpm error"
@@ -1445,9 +1447,9 @@ class TicketsController < ApplicationController
 
   def update_collect_parts
     TicketSparePart
-    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    @continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
 
-    if continue
+    if @continue
 
       if params[:manufacture_part]
 
@@ -1467,9 +1469,9 @@ class TicketsController < ApplicationController
       d31_more_parts_collection_pending = TicketSparePart.any?{|sp| sp.ticket_spare_part_manufacture.try(:collect_pending_manufacture)} ? "Y" : "N"
       bpm_variables = view_context.initialize_bpm_variables.merge(d31_more_parts_collection_pending: d31_more_parts_collection_pending)
 
-      bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+      @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
-      unless bpm_response[:status].upcase == "SUCCESS"
+      unless @bpm_response[:status].upcase == "SUCCESS"
         flash[:error]= "Bpm error"
       end
 
@@ -1582,9 +1584,9 @@ class TicketsController < ApplicationController
     spt_ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
     @ticket = spt_ticket_spare_part.ticket
 
-    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    @continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
 
-    if continue
+    if @continue
 
       spt_ticket_spare_part.update ticket_spare_part_params(spt_ticket_spare_part)
 
@@ -1619,9 +1621,9 @@ class TicketsController < ApplicationController
 
         @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
 
-        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+        @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
-        if bpm_response[:status].upcase == "SUCCESS"
+        if @bpm_response[:status].upcase == "SUCCESS"
 
           WebsocketRails[:posts].trigger 'new', {task_name: "Spare part", task_id: spt_ticket_spare_part.id, task_verb: "received and issued.", by: current_user.email, at: Time.now.strftime('%d/%m/%Y at %H:%M:%S')}
 
@@ -1665,8 +1667,8 @@ class TicketsController < ApplicationController
     spt_ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
     @ticket = spt_ticket_spare_part.ticket
 
-    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
-    if continue
+    @continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    if @continue
 
       spt_ticket_spare_part.update ticket_spare_part_params(spt_ticket_spare_part)
 
@@ -1723,9 +1725,9 @@ class TicketsController < ApplicationController
       # bpm output variables
       bpm_variables = view_context.initialize_bpm_variables.merge(d33_return_part_reject: d33_return_part_reject, d34_event_closed: d34_event_closed, d35_parts_bundle_pending: d35_parts_bundle_pending)
 
-      bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+      @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
-      if bpm_response[:status].upcase == "SUCCESS"
+      if @bpm_response[:status].upcase == "SUCCESS"
 
         flash[:notice]= "Successfully updated"
       else
@@ -1841,8 +1843,8 @@ class TicketsController < ApplicationController
     @return_bundle.product_brand_id = session[:product_brand_id]
     @return_bundle.created_by = current_user.id
 
-    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
-    if continue   
+    @continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    if @continue
 
       if !@new_bundle and @return_bundle.delivered
         flash[:notice]= "Bundle is already delivered"
@@ -1870,9 +1872,9 @@ class TicketsController < ApplicationController
           d36_more_parts_bundle_pending = TicketSparePartManufacture.any?{ |ticket_spare_part_manufacture| ticket_spare_part_manufacture.ready_to_bundle and not ticket_spare_part_manufacture.bundled } ? "Y" : "N"
           bpm_variables = view_context.initialize_bpm_variables.merge(d36_more_parts_bundle_pending: d36_more_parts_bundle_pending, bundle_id: @return_bundle.id)
 
-          bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+          @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
-          if bpm_response[:status].upcase == "SUCCESS"
+          if @bpm_response[:status].upcase == "SUCCESS"
 
             flash[:notice]= "Successfully updated"
           else
@@ -1925,8 +1927,8 @@ class TicketsController < ApplicationController
 
     @return_bundle = ReturnPartsBundle.find return_bundle_params[:id]
 
-    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
-    if continue 
+    @continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    if @continue
 
       if !@return_bundle.delivered 
 
@@ -1951,9 +1953,9 @@ class TicketsController < ApplicationController
 
       # bpm output variables
       bpm_variables = view_context.initialize_bpm_variables
-      bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+      @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
-      if bpm_response[:status].upcase == "SUCCESS"
+      if @bpm_response[:status].upcase == "SUCCESS"
 
         flash[:notice]= "Successfully updated"
       else
@@ -2206,8 +2208,8 @@ class TicketsController < ApplicationController
     TaskAction
     ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
     @ticket = ticket_spare_part.ticket
-    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
-    if continue
+    @continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    if @continue
       if ticket_spare_part.update ticket_spare_part_params(ticket_spare_part)
 
         if ticket_spare_part.ticket_spare_part_manufacture.try(:event_closed)
@@ -2219,9 +2221,9 @@ class TicketsController < ApplicationController
 
           # bpm output variables
           bpm_variables = view_context.initialize_bpm_variables
-          bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+          @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
-          if bpm_response[:status].upcase == "SUCCESS"
+          if @bpm_response[:status].upcase == "SUCCESS"
 
             flash[:notice]= "Successfully updated"
           else
@@ -2267,8 +2269,8 @@ class TicketsController < ApplicationController
         render json: @ticket
       else
         if update_completed
-          continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
-          if continue
+          @continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
+          if @continue
             if @ticket.status_id == TicketStatus.find_by_code("CLS").id
               flash[:error] = "Ticket is closed."
             else
@@ -2278,9 +2280,9 @@ class TicketsController < ApplicationController
 
               bpm_variables = view_context.initialize_bpm_variables.merge(di_pop_approval_pending: di_pop_approval_pending, priority: priority)
 
-              bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+              @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
-              if bpm_response[:status].upcase == "SUCCESS"
+              if @bpm_response[:status].upcase == "SUCCESS"
                 view_context.ticket_bpm_headers params[:process_id], @ticket.id, ""
                 flash[:notice] = "Successfully updated."
               else
@@ -2329,8 +2331,8 @@ class TicketsController < ApplicationController
     @product = Product.find params[:product_id]
     @ticket = @product.tickets.first
 
-    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
-    if continue
+    @continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    if @continue
       if @product.update product_params
 
         # Set Action (35) "Edit Serial No".
@@ -2344,9 +2346,9 @@ class TicketsController < ApplicationController
 
           @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
 
-          bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+          @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
-          if bpm_response[:status].upcase == "SUCCESS"
+          if @bpm_response[:status].upcase == "SUCCESS"
             @flash_message = {notice: "Successfully updated"}
           end
         end
@@ -2538,9 +2540,9 @@ class TicketsController < ApplicationController
 
   def extend_warranty_update_reject_extend_warranty
     Ticket
-    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    @continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
     @ticket = Ticket.find params[:ticket_id]
-    if continue
+    if @continue
 
       # Set Action (40) "Reject Warranty Extend". DB.spt_act_warranty_extend
       user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(40).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
@@ -2552,9 +2554,9 @@ class TicketsController < ApplicationController
 
       @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
 
-      bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+      @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
-      if bpm_response[:status].upcase == "SUCCESS"
+      if @bpm_response[:status].upcase == "SUCCESS"
         @flash_message = {notice: "Successfully updated"}
       else
         @flash_message = {error: "reject warranty is updated. but Bpm error"}
@@ -2587,9 +2589,9 @@ class TicketsController < ApplicationController
     TaskAction
     @ticket.attributes = ticket_params
 
-    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    @continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
 
-    if continue
+    if @continue
       # bpm output variables
       bpm_variables = view_context.initialize_bpm_variables.merge supp_engr_user: params[:supp_engr_user]
       @ticket.save
@@ -2636,9 +2638,9 @@ class TicketsController < ApplicationController
       @ticket.ticket_fsrs.where(approved: true).update_all(approved_action_id: user_ticket_action.id)
       @ticket.ticket_fsrs.where(approved: false).update_all(approved_action_id: nil)
 
-      bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+      @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
-      if bpm_response[:status].upcase == "SUCCESS"
+      if @bpm_response[:status].upcase == "SUCCESS"
         flash[:notice] = "Successfully updated"
       else
         flash[:error] = "invoice is updated. but Bpm error"
@@ -2787,7 +2789,7 @@ class TicketsController < ApplicationController
 
     @onloan_request = params[:onloan_request] == "Y" ? true : false
 
-    continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
+    @continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
 
     if @onloan_request
       @onloan_request_part = TicketOnLoanSparePart.find params[:request_onloan_spare_part_id]
@@ -2811,7 +2813,7 @@ class TicketsController < ApplicationController
       @spare_part_note = params[:ticket_spare_part]["note"]    
     end
 
-    if continue
+    if @continue
 
       if @terminated or !@srn_item.present?
 
@@ -2820,9 +2822,10 @@ class TicketsController < ApplicationController
           @srn_item.update issue_terminated: true, issue_terminated_at: DateTime.now, issue_terminated_by: current_user.id   
 
           bpm_variables = view_context.initialize_bpm_variables
-          bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+          @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
-          if bpm_response[:status].upcase == "SUCCESS"
+          if @bpm_response[:status].upcase == "SUCCESS"
+
             flash[:error] = "Request allready terminated."
           else
             flash[:error] = "Request allready terminated. but Bpm error"
@@ -2999,9 +3002,9 @@ class TicketsController < ApplicationController
 
             bpm_variables = view_context.initialize_bpm_variables
 
-            bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+            @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
-            if bpm_response[:status].upcase == "SUCCESS"
+            if @bpm_response[:status].upcase == "SUCCESS"
               flash[:notice] = "Successfully updated."
             else
               flash[:error] = "ticket is updated. but Bpm error"
@@ -3027,9 +3030,9 @@ class TicketsController < ApplicationController
 
             bpm_variables = view_context.initialize_bpm_variables
 
-            bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+            @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
-            if bpm_response[:status].upcase == "SUCCESS"
+            if @bpm_response[:status].upcase == "SUCCESS"
               flash[:notice] = "Successfully updated."
             else
               flash[:error] = "ticket is updated. but Bpm error"
@@ -3290,9 +3293,9 @@ class TicketsController < ApplicationController
     @ticket = spt_ticket_spare_part.ticket
     spt_ticket_spare_part.attributes = ticket_spare_part_params(spt_ticket_spare_part)
 
-    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    @continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
 
-    if continue and (spt_ticket_spare_part.status_action_id != SparePartStatusAction.find_by_code("CLS").id) and spt_ticket_spare_part.save
+    if @continue and (spt_ticket_spare_part.status_action_id != SparePartStatusAction.find_by_code("CLS").id) and spt_ticket_spare_part.save
 
       spt_ticket_spare_part.update_attributes status_action_id: SparePartStatusAction.find_by_code("ORD").id
 
@@ -3312,9 +3315,9 @@ class TicketsController < ApplicationController
 
       @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
 
-      bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+      @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
-      if bpm_response[:status].upcase == "SUCCESS"
+      if @bpm_response[:status].upcase == "SUCCESS"
         @flash_message = {notice: "Successfully updated"}
       else
         @flash_message = {alert: "ticket is updated. but Bpm error"}
@@ -3332,9 +3335,9 @@ class TicketsController < ApplicationController
     spt_ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
     @ticket = spt_ticket_spare_part.ticket
 
-    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    @continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
 
-    if continue and (spt_ticket_spare_part.status_action_id != SparePartStatusAction.find_by_code("CLS").id)
+    if @continue and (spt_ticket_spare_part.status_action_id != SparePartStatusAction.find_by_code("CLS").id)
 
       # Set Action (32) Request To Warranty Extend, DB.spt_act_warranty_extend.
       user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(32).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
@@ -3347,9 +3350,9 @@ class TicketsController < ApplicationController
 
       @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
 
-      bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+      @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
-      if bpm_response[:status].upcase == "SUCCESS"
+      if @bpm_response[:status].upcase == "SUCCESS"
         @flash_message = {notice: "Successfully updated"}
       else
         @flash_message = {error: "ticket is updated. but Bpm error"}
@@ -3380,9 +3383,9 @@ class TicketsController < ApplicationController
     request_onloan_spare_part_id = "-"
     onloan_request = "N"
 
-    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    @continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
 
-    if continue and (spt_ticket_spare_part.status_action_id != SparePartStatusAction.find_by_code("CLS").id) and spt_ticket_spare_part.update(ticket_spare_part_params(spt_ticket_spare_part))
+    if @continue and (spt_ticket_spare_part.status_action_id != SparePartStatusAction.find_by_code("CLS").id) and spt_ticket_spare_part.update(ticket_spare_part_params(spt_ticket_spare_part))
 
       ticket_estimation_part = TicketEstimationPart.new
       if spt_ticket_spare_part.cus_chargeable_part
@@ -3421,7 +3424,7 @@ class TicketsController < ApplicationController
 
       @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
 
-      bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+      @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
       if @bpm_response1[:status].try(:upcase) == "SUCCESS"
         @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name])
@@ -3430,7 +3433,7 @@ class TicketsController < ApplicationController
         @bpm_process_error = true
       end
 
-      if bpm_response[:status].upcase == "SUCCESS"
+      if @bpm_response[:status].upcase == "SUCCESS"
         @flash_message = {notice: "Successfully updated."}
       else
         @flash_message = {notice: "ticket is updated. but Bpm error"}
@@ -3452,9 +3455,9 @@ class TicketsController < ApplicationController
     spt_ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
     @ticket = spt_ticket_spare_part.ticket
 
-    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    @continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
 
-    if continue
+    if @continue
 
       if (spt_ticket_spare_part.status_action_id != SparePartStatusAction.find_by_code("CLS").id) and spt_ticket_spare_part.update(ticket_spare_part_params(spt_ticket_spare_part))
 
@@ -3476,9 +3479,9 @@ class TicketsController < ApplicationController
 
       # bpm output variables
       bpm_variables = view_context.initialize_bpm_variables.merge(d25_terminate_order_part: "Y")
-      bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+      @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
-      if bpm_response[:status].upcase == "SUCCESS"
+      if @bpm_response[:status].upcase == "SUCCESS"
         @flash_message = {notice: "Successfully updated"}
       else
         @flash_message = {error: "ticket is updated. but Bpm error"}
@@ -3493,10 +3496,10 @@ class TicketsController < ApplicationController
   def update_start_action
 
     TaskAction
-    continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
+    @continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
     engineer_id = params[:engineer_id]
 
-    if continue
+    if @continue
       if @ticket.update(ticket_params)
         @ticket.update job_started_at: DateTime.now
         @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(5).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id)
@@ -3510,9 +3513,9 @@ class TicketsController < ApplicationController
 
         bpm_variables = view_context.initialize_bpm_variables.merge(supp_engr_user: current_user.id)
 
-        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+        @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
-        if bpm_response[:status].upcase == "SUCCESS"
+        if @bpm_response[:status].upcase == "SUCCESS"
           @flash_message = "Successfully updated."
         else
           @flash_message = "ticket is updated. but Bpm error"
@@ -3568,18 +3571,18 @@ class TicketsController < ApplicationController
   end
 
   def update_re_assign
-    continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
+    @continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
 
-    if continue
+    if @continue
       if @ticket.update ticket_params
 
         # bpm output variables
 
         bpm_variables = view_context.initialize_bpm_variables.merge(d4_job_complete: "Y", d5_re_assigned: "Y")
 
-        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+        @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
-        if bpm_response[:status].upcase == "SUCCESS"
+        if @bpm_response[:status].upcase == "SUCCESS"
           @flash_message = "Successfully updated."
         else
           @flash_message = "ticket is updated. but Bpm error"
@@ -3682,10 +3685,10 @@ class TicketsController < ApplicationController
 
   def update_terminate_job
     TaskAction
-    continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
+    @continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
     request_to_close = params[:request_to_close].present?
 
-    if continue
+    if @continue
       if @ticket.update ticket_params
 
         @ticket.job_finished = true
@@ -3716,9 +3719,9 @@ class TicketsController < ApplicationController
 
         bpm_variables = view_context.initialize_bpm_variables.merge(d4_job_complete: "Y", d8_job_finished: "Y", d11_terminate_job:  "Y", d9_qc_required:(@ticket.ticket_type.code == "IH" ? "Y" : "N"), d10_job_estimate_required_final: ((@ticket.cus_chargeable or @ticket.cus_payment_required) ? "Y" : "N"), d12_need_to_invoice: ((@ticket.cus_chargeable or @ticket.cus_payment_required) ? "Y" : "N"), d6_close_approval_required: ((@ticket.ticket_fsrs.any? or @ticket.ticket_spare_parts.any?) ? "Y" : "N"), d7_close_approval_requested: (@ticket.ticket_close_approval_requested ? "Y" : "N"))
 
-        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+        @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
-        if bpm_response[:status].upcase == "SUCCESS"
+        if @bpm_response[:status].upcase == "SUCCESS"
           @flash_message = "Successfully updated."
         else
           @flash_message = "ticket is updated. but Bpm error"
@@ -3736,10 +3739,10 @@ class TicketsController < ApplicationController
   def update_action_taken
 
     TaskAction
-    continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
+    @continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
     engineer_id = params[:engineer_id]
 
-    if continue
+    if @continue
       if @ticket.update ticket_params
 
         # bpm output variables
@@ -3750,9 +3753,9 @@ class TicketsController < ApplicationController
 
         @ticket.user_ticket_actions.create(action_id: TaskAction.find_by_action_no(55).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id) if @ticket.ticket_close_approval_requested
 
-        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+        @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
-        if bpm_response[:status].upcase == "SUCCESS"
+        if @bpm_response[:status].upcase == "SUCCESS"
           @flash_message = "Successfully updated."
         else
           @flash_message = "ticket is updated. but Bpm error"
@@ -3769,10 +3772,10 @@ class TicketsController < ApplicationController
   def update_resolved_job
     TaskAction
     TicketSparePart
-    continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
+    @continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
     engineer_id = params[:engineer_id]
 
-    if continue
+    if @continue
       if @ticket.update ticket_params
 
         @ticket.ticket_close_approval_required = (@ticket.ticket_fsrs.any? or @ticket.ticket_spare_parts.any?)
@@ -3796,9 +3799,9 @@ class TicketsController < ApplicationController
 
         @ticket.save
 
-        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+        @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
-        if bpm_response[:status].upcase == "SUCCESS"
+        if @bpm_response[:status].upcase == "SUCCESS"
           @flash_message = "Successfully updated."
         else
           @flash_message = "ticket is updated. but Bpm error"
@@ -3815,9 +3818,9 @@ class TicketsController < ApplicationController
   def update_hp_case_id
 
     TaskAction
-    continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
+    @continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
 
-    if continue
+    if @continue
       if @ticket.update ticket_params
 
         # bpm output variables
@@ -3826,9 +3829,9 @@ class TicketsController < ApplicationController
 
         @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
 
-        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+        @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
-        if bpm_response[:status].upcase == "SUCCESS"
+        if @bpm_response[:status].upcase == "SUCCESS"
           @flash_message = "Successfully updated."
         else
           @flash_message = "ticket is updated. but Bpm error"
@@ -3845,9 +3848,9 @@ class TicketsController < ApplicationController
   def update_edit_serial_no_request
 
     TaskAction
-    continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
+    @continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
 
-    if continue
+    if @continue
       if @ticket.update ticket_params
 
         # bpm output variables
@@ -3856,9 +3859,9 @@ class TicketsController < ApplicationController
 
         @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
 
-        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+        @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
-        if bpm_response[:status].upcase == "SUCCESS"
+        if @bpm_response[:status].upcase == "SUCCESS"
           @flash_message = "Successfully updated."
         else
           @flash_message = "ticket is updated. but Bpm error"
@@ -3875,9 +3878,9 @@ class TicketsController < ApplicationController
   def update_deliver_unit
     TaskAction
     TicketSparePart
-    continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
+    @continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
 
-    if continue
+    if @continue
 
       t_params = ticket_params
       @ticket.attributes = t_params
@@ -3897,11 +3900,11 @@ class TicketsController < ApplicationController
 
         @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
 
-        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+        @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
         view_context.ticket_bpm_headers params[:process_id], @ticket.id, ""
 
-        if bpm_response[:status].upcase == "SUCCESS"
+        if @bpm_response[:status].upcase == "SUCCESS"
           @flash_message = "Successfully updated."
         else
           @flash_message = "ticket is updated. but Bpm error"
@@ -3938,10 +3941,10 @@ class TicketsController < ApplicationController
 
   def update_job_estimation_request
     TaskAction
-    continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
+    @continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
     engineer_id = params[:engineer_id]
 
-    if continue
+    if @continue
 
       if @ticket.update ticket_params
 
@@ -3964,9 +3967,9 @@ class TicketsController < ApplicationController
         @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
         @ticket.update_attribute(:status_resolve_id, TicketStatusResolve.find_by_code("ERQ").id)
 
-        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+        @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
-        if bpm_response[:status].upcase == "SUCCESS"
+        if @bpm_response[:status].upcase == "SUCCESS"
           @flash_message = {notice: "Successfully updated."}
         else
           @flash_message = {alert: "ticket is updated. but Bpm error"}
@@ -3985,7 +3988,7 @@ class TicketsController < ApplicationController
 
     TaskAction
     WorkflowMapping
-    continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
+    @continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
     engineer_id = params[:engineer_id]
     query = {}
 
@@ -3997,7 +4000,7 @@ class TicketsController < ApplicationController
     onloan_request = "N"
     process_name = ""
 
-    if continue
+    if @continue
       @ticket_spare_part = TicketSparePart.new
       f_ticket_spare_part_params = ticket_spare_part_params(@ticket_spare_part)
 
@@ -4070,7 +4073,7 @@ class TicketsController < ApplicationController
 
         @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
 
-        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+        @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
         if process_name.present?
           @bpm_response1 = view_context.send_request_process_data start_process: true, process_name: process_name, query: query
@@ -4083,7 +4086,7 @@ class TicketsController < ApplicationController
           end
         end
 
-        if bpm_response[:status].upcase == "SUCCESS"
+        if @bpm_response[:status].upcase == "SUCCESS"
           @flash_message = {notice: "Successfully updated."}
         else
           @flash_message = {alert: "ticket is updated. but Bpm error"}
@@ -4111,10 +4114,10 @@ class TicketsController < ApplicationController
     
     TaskAction
     WorkflowMapping
-    continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
+    @continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
     engineer_id = params[:engineer_id]
 
-    if continue
+    if @continue
       f_ticket_on_loan_spare_part_params = ticket_on_loan_spare_part_params
       # f_ticket_on_loan_spare_part_params[:ticket_attributes][:remarks] = f_ticket_on_loan_spare_part_params[:ticket_attributes][:remarks].present? ? "#{f_ticket_on_loan_spare_part_params[:ticket_attributes][:remarks]} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
       @ticket_on_loan_spare_part = TicketOnLoanSparePart.new f_ticket_on_loan_spare_part_params
@@ -4144,7 +4147,7 @@ class TicketsController < ApplicationController
 
         @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
 
-        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+        @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
         # bpm output variables
         ticket_id = @ticket.id
@@ -4170,7 +4173,7 @@ class TicketsController < ApplicationController
           @bpm_process_error = true
         end
 
-        if bpm_response[:status].upcase == "SUCCESS"
+        if @bpm_response[:status].upcase == "SUCCESS"
           @flash_message = "Successfully updated."
         else
           @flash_message = "ticket is updated. but Bpm error"
@@ -4242,6 +4245,16 @@ class TicketsController < ApplicationController
   end
 
   private
+
+    def update_bpm_header
+      if @continue
+        process_id = (@bpm_response[:process_id] || params[:process_id])
+        view_context.ticket_bpm_headers process_id, @ticket.id, ""
+        Rails.cache.delete([:workflow_header, process_id])
+      end
+
+    end
+
     def set_ticket
       @ticket = Ticket.find(params[:id])
     end
@@ -4251,7 +4264,7 @@ class TicketsController < ApplicationController
     end
 
     def ticket_params
-      ticket_params = params.require(:ticket).permit(:ticket_no, :ticket_close_approved, :note, :current_user_id, :sla_id, :serial_no, :status_hold, :repair_type_id, :base_currency_id, :ticket_close_approval_required, :ticket_close_approval_requested, :regional_support_job, :job_started_action_id, :job_start_note, :job_started_at, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, :status_resolve_id, ticket_deliver_units_attributes: [:deliver_to_id, :note, :created_at, :created_by, :received, :id, :received_at, :received_by, :current_user_id], ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :ticket_action_id, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer], ticket_estimations_attributes: [:note, :currency_id, :status_id, :requested_at, :requested_by, :request_type], user_ticket_actions_attributes: [:id, :action_engineer_id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, user_assign_ticket_action_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy], ticket_re_assign_request_attributes: [:reason_id, :_destroy], ticket_action_taken_attributes: [:action, :_destroy], ticket_terminate_job_attributes: [:id, :reason_id, :foc_requested, :_destroy], act_hold_attributes: [:id, :reason_id, :_destroy, :un_hold_action_id], hp_case_attributes: [:id, :case_id, :case_note], ticket_finish_job_attributes: [:resolution, :_destroy], act_terminate_job_payments_attributes: [:id, :amount, :payment_item_id, :_destroy, :ticket_id, :currency_id], act_fsr_attributes: [:print_fsr], serial_request_attributes: [:reason], job_estimation_attributes: [:supplier_id]], ticket_extra_remarks_attributes: [:id, :note, :created_by, :extra_remark_id], products_attributes: [:id, :sold_country_id, :pop_note, :pop_doc_url, :pop_status_id], ticket_fsrs_attributes: [:id, :engineer_id, :work_started_at, :work_finished_at, :hours_worked, :down_time, :travel_hours, :engineer_time_travel, :engineer_time_on_site, :resolution, :completion_level, :created_by, :remarks, :approved, :current_user_id], ticket_on_loan_spare_parts_attributes: [:id, :approved_inv_product_id, :approved_store_id, :approved_main_inv_product_id, :approved, :return_part_damage, :return_part_damage_reason_id])
+      ticket_params = params.require(:ticket).permit(:ticket_no, :ticket_close_approved, :note, :current_user_id, :sla_id, :serial_no, :status_hold, :repair_type_id, :base_currency_id, :ticket_close_approval_required, :ticket_close_approval_requested, :regional_support_job, :job_started_action_id, :job_start_note, :job_started_at, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, :status_resolve_id, ticket_deliver_units_attributes: [:deliver_to_id, :note, :created_at, :created_by, :received, :id, :received_at, :received_by, :current_user_id], ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :ticket_action_id, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer, :ticket_action_id], ticket_estimations_attributes: [:note, :currency_id, :status_id, :requested_at, :requested_by, :request_type], user_ticket_actions_attributes: [:id, :action_engineer_id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, user_assign_ticket_action_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy], ticket_re_assign_request_attributes: [:reason_id, :_destroy], ticket_action_taken_attributes: [:action, :_destroy], ticket_terminate_job_attributes: [:id, :reason_id, :foc_requested, :_destroy], act_hold_attributes: [:id, :reason_id, :_destroy, :un_hold_action_id], hp_case_attributes: [:id, :case_id, :case_note], ticket_finish_job_attributes: [:resolution, :_destroy], act_terminate_job_payments_attributes: [:id, :amount, :payment_item_id, :_destroy, :ticket_id, :currency_id], act_fsr_attributes: [:print_fsr], serial_request_attributes: [:reason], job_estimation_attributes: [:supplier_id]], ticket_extra_remarks_attributes: [:id, :note, :created_by, :extra_remark_id], products_attributes: [:id, :sold_country_id, :pop_note, :pop_doc_url, :pop_status_id], ticket_fsrs_attributes: [:id, :engineer_id, :work_started_at, :work_finished_at, :hours_worked, :down_time, :travel_hours, :engineer_time_travel, :engineer_time_on_site, :resolution, :completion_level, :created_by, :remarks, :approved, :current_user_id], ticket_on_loan_spare_parts_attributes: [:id, :approved_inv_product_id, :approved_store_id, :approved_main_inv_product_id, :approved, :return_part_damage, :return_part_damage_reason_id])
       ticket_params[:current_user_id] = current_user.id
       ticket_params
     end

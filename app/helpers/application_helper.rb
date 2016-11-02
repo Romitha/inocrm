@@ -664,17 +664,26 @@ module ApplicationHelper
 
       delivery_stage = @ticket.ticket_deliver_units.any?{|d| !d.received} ? "[to-be collected]" : (@ticket.ticket_deliver_units.any?{|d| !d.delivered_to_sup} ? "[to-be delivered]" : "")
 
-      colour_code = "green"
+      custormer_approval_pending = "[Customer Approval Pending]" if @ticket.ticket_estimations.any?{ |estimation| estimation.customer_approvval_required and !estimation.customer_approved }
 
-      hold = "[Hold]"; color_code = "red" if @ticket.hold
+      parts_recieve_pending = "[Part Recieve Pending]" if @ticket.cached_ticket_spare_parts.any?{ |spare_part| spare_part.spare_part_status_action.code == "ISS" }
 
-      not_started = "[Not Started]"; clour_code = "brown" if @ticket.ticket_status.code == "ASN"
+      hold = "[Hold]" if @ticket.status_hold
 
-      parts_recieve_pending = "[Part Recieve Pending]"; color_code = "blue" if @ticket.cached_ticket_spare_parts.any?{ |spare_part| spare_part.spare_part_status_action.code == "ISS" }
+      not_started = "[Not Started]" if @ticket.ticket_status.code == "ASN"
 
-      custormer_approval_pending = "[Customer Approval Pending]"; color_code = "yellow" if @ticket.ticket_estimations.any?{ |estimation| estimation.customer_approvval_required and !estimation.customer_approved }
+      color_code = case
+      when @ticket.ticket_status.code == "ASN"
+        "red"
+      when @ticket.status_hold
+        "orange"
+      when @ticket.cached_ticket_spare_parts.any?{ |spare_part| spare_part.spare_part_status_action.code == "ISS" }
+        "blue"
+      when @ticket.ticket_estimations.any?{ |estimation| estimation.customer_approvval_required and !estimation.customer_approved }
+        "yellow"
+      end
 
-      @h1 = "#{colour_code}-#{ticket_no}#{customer_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}#{delivery_stage}#{hold}#{parts_recieve_pending}#{not_started}#{custormer_approval_pending}"
+      @h1 = "color:#{color_code}|#{ticket_no}#{customer_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}#{delivery_stage}#{hold}#{parts_recieve_pending}#{not_started}#{custormer_approval_pending}"
 
 
       if spare_part_id.present?

@@ -439,3 +439,9 @@ label {
     color: red;
   }
 }
+
+.btn-yellowish {
+  background-color: lighten(#ffff00, 30%);
+  border-color: lighten(#ffff00, 35%);
+  color: #ffffff;
+}
