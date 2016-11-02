@@ -643,14 +643,14 @@ module ApplicationHelper
     @ticket = Ticket.find_by_id(ticket_id)
 
     if process_id.present? and @ticket.present?
-      ticket_no = @ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
-      ticket_no  = "[#{ticket_no}]"
+
+      ticket_no  = "[#{@ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG['ticket_no_format'])}]"
 
       customer_name = "#{@ticket.customer.name}".truncate(23)
 
-      terminated = @ticket.ticket_terminated ? "[Terminated]" : ""
+      terminated = "[Terminated]" if @ticket.ticket_terminated
 
-      re_open = @ticket.re_open_count > 0 ? "[Re-Open]" : ""
+      re_open = "[Re-Open]" if @ticket.re_open_count > 0
 
       product_brand = "[#{@ticket.products.first.product_brand.name.truncate(13)}]"
 
@@ -658,13 +658,23 @@ module ApplicationHelper
 
       ticket_type = "[#{@ticket.ticket_type.name}]"
 
-      regional = @ticket.regional_support_job ? "[Regional]" : ""
+      regional = "[Regional]" if @ticket.regional_support_job
 
-      repair_type = @ticket.ticket_repair_type.code == "EX" ? "[#{@ticket.ticket_repair_type.name}]" : ""
+      repair_type = "[#{@ticket.ticket_repair_type.name}]" if @ticket.ticket_repair_type.code == "EX"
 
       delivery_stage = @ticket.ticket_deliver_units.any?{|d| !d.received} ? "[to-be collected]" : (@ticket.ticket_deliver_units.any?{|d| !d.delivered_to_sup} ? "[to-be delivered]" : "")
 
-      @h1 = "#{ticket_no}#{customer_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}#{delivery_stage}"
+      colour_code = "green"
+
+      hold = "[Hold]"; color_code = "red" if @ticket.hold
+
+      not_started = "[Not Started]"; clour_code = "brown" if @ticket.ticket_status.code == "ASN"
+
+      parts_recieve_pending = "[Part Recieve Pending]"; color_code = "blue" if @ticket.cached_ticket_spare_parts.any?{ |spare_part| spare_part.spare_part_status_action.code == "ISS" }
+
+      custormer_approval_pending = "[Customer Approval Pending]"; color_code = "yellow" if @ticket.ticket_estimations.any?{ |estimation| estimation.customer_approvval_required and !estimation.customer_approved }
+
+      @h1 = "#{colour_code}-#{ticket_no}#{customer_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}#{delivery_stage}#{hold}#{parts_recieve_pending}#{not_started}#{custormer_approval_pending}"
 
 
       if spare_part_id.present?
