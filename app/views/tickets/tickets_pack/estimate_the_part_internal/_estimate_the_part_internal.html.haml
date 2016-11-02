@@ -65,7 +65,7 @@
                   %thead
                     %tr
                       %th No
-                      %th GRN No.
+                      %th Supplier
                       %th Date Purchased
                       %th Price
                   %tbody
@@ -76,7 +76,7 @@
                             = (index+1)+ 10**(params[:page].to_i-1)
                           - else
                             = (index+1)
-                        %td= grn_item.grn.grn_no
+                        %td=grn_item.grn.supplier_name
                         %td= grn_item.grn.created_at.try(:strftime, "%d-%m-%Y")
                         %td
                           = number_with_precision grn_item.unit_cost, precision: 2

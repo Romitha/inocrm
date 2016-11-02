@@ -215,6 +215,9 @@ window.Inventories =
       else if request_from.val() == "S" and $("input[name='store_id']", submit_form).val() == ""
         alert "Please select store"
 
+      else if request_from.val() == "NS" and $("input[name='store_id']", submit_form).val() == ""
+        alert "Please select store"
+
       else if part_of_main_product.val() and $("input[name='mst_store_id']", submit_form).val() == ""
         alert "Please select main product store"
 
