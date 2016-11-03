@@ -78,4 +78,4 @@
 .row.small_scale_margin-bottom1
   .col-md-4
     %strong Contract Remarks ::
-    #{ticket.try(:ticket_contract).try(:remarks)}
+    #{simple_format ticket.try(:ticket_contract).try(:remarks)}

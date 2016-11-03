@@ -48,5 +48,5 @@
         %td= grn_serial_item.inventory_serial_item.ct_no
         %td= grn_serial_item.inventory_serial_item.manufatured_date.try(:strftime, "%Y-%m-%d %H:%M")
         %td= grn_serial_item.inventory_serial_item.expiry_date
-        %td= grn_serial_item.inventory_serial_item.remarks
+        %td= simple_format grn_serial_item.inventory_serial_item.remarks
         %td= link_to "select", "#", onclick: "Inventories.load_serial_and_part(this, #{grn_serial_item.inventory_serial_item.id}, 'serial_item', '#{session[:approved_inventory_product_id]}'); return false;"

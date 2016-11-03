@@ -13,7 +13,7 @@
         %dt Delivery date
         %dd= @po.delivery_date.try(:strftime, INOCRM_CONFIG["short_date_format"])
         %dt Remarks
-        %dd= @po.remarks
+        %dd= simple_format @po.remarks
         %dt Delivery to
         %dd= @po.deliver_to
         %dt Created at

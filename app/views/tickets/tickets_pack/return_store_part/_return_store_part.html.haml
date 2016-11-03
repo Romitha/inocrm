@@ -204,7 +204,7 @@
       = grn_batch.inventory_batch.expiry_date.try(:strftime, "%Y-%m-%d %H:%M")
     .col-md-6
       %strong Remarks:
-      = grn_batch.inventory_batch.remarks
+      = simple_format grn_batch.inventory_batch.remarks
   %hr
 
   - if grn_batch.inventory_batch.inventory_warranties.present?
@@ -227,7 +227,7 @@
             %td= inventory_warranty.period_labour
             %td= inventory_warranty.period_onsight
             %td= inventory_warranty.inventory_warranty_type.try(:name)
-            %td= inventory_warranty.remarks
+            %td= simple_format inventory_warranty.remarks
 
   =radio_button_tag "radio_part", "add_batch", ((onloan_request and active_spare_part.spare_part_status_use.code == "USD") or ( !onloan_request and active_spare_part.ticket_spare_part.spare_part_status_use.code == "USD")), data: {uri_path: uri.path, object_class: form_inv_batch.class.to_s, task_id: params[:task_id], owner: params[:owner], process_id: params[:process_id], currency_code: gin_source.grn_item.currency.code, currency_id: gin_source.grn_item.currency_id, grn_cost: gin_source.grn_item.unit_cost, active_spare_part: (onloan_request ? "#{onloan_spare_part.class.to_s}-#{onloan_spare_part.id}" : "#{spare_part.class.to_s}-#{spare_part.id}")}, class: "toggle_add_update"
   =label_tag :type_order, "Add Item"
@@ -259,7 +259,7 @@
       = grn_item.inventory_product.inventory_unit.unit
     .col-md-3
       %strong Remarks:
-      = grn_item.remarks
+      = simple_format grn_item.remarks
     .col-md-3
       %strong Grn No:
       = grn_item.grn.grn_no

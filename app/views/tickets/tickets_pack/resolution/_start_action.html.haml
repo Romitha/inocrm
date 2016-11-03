@@ -13,7 +13,7 @@
       .col-md-12
         %h5.strong Start at: #{DateTime.now.strftime('%Y-%m-%d %H:%M')}
     .row
-      = f.association :ticket_start_action, label_method: :action, value_method: :id, wrapper_html: {class: "col-md-5"}, required: true
+      = f.association :ticket_start_action, label_method: :action, value_method: :id, wrapper_html: {class: "col-md-5"}, required: true, include_blank: false
       = f.input :job_start_note, wrapper_html: {class: "col-md-7"}, required: true
     = f.input :remarks, input_html: {value: nil}
     = simple_format ticket.remarks

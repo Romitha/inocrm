@@ -161,6 +161,7 @@
 - else
 
   .list-group
+    %h3 Select Required Store
     - Organization.stores.each do |store|
       = link_to grn_main_part_admins_inventories_path(store_id: store.id), class: "list-group-item" do
         %h4.list-group-item-heading= store.name

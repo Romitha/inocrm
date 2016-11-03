@@ -48,7 +48,7 @@
             = serial_or_batch.expiry_date.try(:strftime, "%Y-%m-%d")
           .col-md-12
             %strong Remarks
-            = serial_or_batch.remarks
+            = simple_format serial_or_batch.remarks
         - serial_or_batch.inventory_warranties.each do |inventory_warranty|
           %fieldset
             %legend Warranty
@@ -73,4 +73,4 @@
                 = inventory_warranty.period_onsight
               .col-md-12
                 %strong Remarks:
-                = inventory_warranty.remarks
+                = simple_format inventory_warranty.remarks

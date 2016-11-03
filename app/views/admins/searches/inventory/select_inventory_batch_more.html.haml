@@ -36,7 +36,7 @@
     .row
       .col-md-3
         %strong Remarks :
-        = inventory_batch.remarks
+        = simple_format inventory_batch.remarks
     .row
     - inventory_batch.inventory_batch_warranties.each do |b_warranty|
       .col-md-12
@@ -61,7 +61,7 @@
               = b_warranty.inventory_warranty.period_onsight
             .col-md-4
               %strong Remarks:
-              = b_warranty.inventory_warranty.remarks
+              = simple_format b_warranty.inventory_warranty.remarks
 
   = collapse collapse_type: "info", labelledby: "select_batch_form_collapse_search", header_content: "Cost", collapse_link: "select_batch_form_collapse_cost", collapse_id: "select_batch_form_collapse", collapse_in: "in" do
     - inventory_batch.grn_items.each do |grn_item|
@@ -86,7 +86,7 @@
       .row
         .col-md-8
           %strong GRN Remarks:
-          #{grn_item.grn.remarks}
+          #{simple_format grn_item.grn.remarks}
       - if grn_item.grn_item_current_unit_cost_histories.any?
         .row{style: "margin-top:15px;"}
           .col-md-12{style: "background-color: #98FB98; text-align:center"}

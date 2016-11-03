@@ -20,7 +20,7 @@
     = @grn.supplier.try(:name)
   .col-md-6
     Remarks:
-    = @grn.try(:remarks)
+    = simple_format @grn.try(:remarks)
 .row
   .col-md-9
     %h4.strong GRN Items
@@ -55,10 +55,10 @@
           =grnitem.try(:inventory_product).try(:inventory_unit).try(:unit)
         .col-md-3
           PO Remarks:
-          =grnitem.try(:inventory_po_item).try(:remarks)
+          = simple_format grnitem.try(:inventory_po_item).try(:remarks)
         .col-md-3
           Remarks:
-          =grnitem.remarks
+          = simple_format grnitem.remarks
       .row
         .col-md-3
           %strong Remaining Quantity:
@@ -130,7 +130,7 @@
                 .row
                   .col-md-12
                     Remarks:
-                    =batch.inventory_batch.try(:remarks)
+                    = simple_format batch.inventory_batch.try(:remarks)
                 .row
                   .col-md-12
                     = collapse_wrapper collapse_id: "warranty_list", labelledby: "warranty_list_labelledby" do
@@ -159,7 +159,7 @@
                           .row
                             .col-md-12
                               Remarks:
-                              =warranty.inventory_warranty.try(:remarks)
+                              = simple_format warranty.inventory_warranty.try(:remarks)
 
       .row
         .col-md-12
@@ -232,7 +232,7 @@
                 .row
                   .col-md-12
                     Remarks:
-                    =serial_item.inventory_serial_item.try(:remarks)
+                    = simple_format serial_item.inventory_serial_item.try(:remarks)
                 .row
                   .col-md-12
                     = collapse_wrapper collapse_id: "s_warranty_list", labelledby: "s_warranty_list_labelledby" do
@@ -261,8 +261,8 @@
                           .row
                             .col-md-12
                               Remarks:
-                              =s_warranty.inventory_warranty.try(:remarks)
+                              = simple_format s_warranty.inventory_warranty.try(:remarks)
       .row
         .col-md-12
           Remarks:
-          =grnitem.try(:remarks)
+          = simple_format grnitem.try(:remarks)

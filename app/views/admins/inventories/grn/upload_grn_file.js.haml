@@ -26,7 +26,7 @@
         %dt Reserved:
         %dd= boolean_in_word serial_item.reserved, "Yes", "No"
         %dt Remarks
-        %dd= serial_item.try(:remarks)
+        %dd= simple_format serial_item.try(:remarks)
 
       - if serial_item.inventory_serial_warranties.present?
         - serial_item.inventory_serial_warranties.each do |wr|
@@ -44,7 +44,7 @@
             .col-md-3
               Period onsight: #{wr.inventory_warranty.try(:period_onsight)}
             .col-md-12
-              Remarks: #{wr.inventory_warranty.try(:remarks)}
+              Remarks: #{simple_format wr.inventory_warranty.try(:remarks)}
 
 
     = initiate_table table_type: "table-bordered" do

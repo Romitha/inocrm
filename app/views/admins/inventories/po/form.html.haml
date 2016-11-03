@@ -54,7 +54,7 @@
             %dt Required Date:
             %dd= @prn.required_at.try(:strftime, INOCRM_CONFIG["short_date_format"])
             %dt Remarks:
-            %dd= @prn.remarks
+            %dd= simple_format @prn.remarks
             %dt Created By:
             %dd= @prn.created_by_user_full_name
             %dt Created at:

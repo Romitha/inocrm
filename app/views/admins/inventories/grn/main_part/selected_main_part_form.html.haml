@@ -208,7 +208,7 @@
                     = warranty.period_onsight
                   .col-md-6
                     %strong Remarks:
-                    = warranty.remarks
+                    = simple_format warranty.remarks
                 %hr
 
 
@@ -243,9 +243,9 @@
                 .col-md-6
                   = p.input :expiry_date, as: :string, input_html: {class: "datepicker", value: p.object.expiry_date.try(:strftime, INOCRM_CONFIG["short_date_format"])}
                 .col-md-6
-                  = p.association :product_condition, label_method: :condition, required: true
+                  = p.association :product_condition, label_method: :condition, required: true, include_blank: false
                 .col-md-6
-                  = p.association :inventory_serial_item_status, label: "Status"
+                  / = p.association :inventory_serial_item_status, label: "Status"
                 
             .col-md-5
               .row

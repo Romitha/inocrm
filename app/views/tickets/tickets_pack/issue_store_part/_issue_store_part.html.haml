@@ -255,7 +255,7 @@
                       %td= grn_serial_item.inventory_serial_item.ct_no
                       %td= grn_serial_item.inventory_serial_item.manufatured_date.try(:strftime, "%Y-%m-%d %H:%M")
                       %td= grn_serial_item.inventory_serial_item.expiry_date
-                      %td= grn_serial_item.inventory_serial_item.remarks
+                      %td= simple_format grn_serial_item.inventory_serial_item.remarks
                       %td= radio_button_tag "grn_serial_item_id", grn_serial_item.id, false,{class: "seperate_product_ckeckbox"}
 
               = paginate @paginated_fifo_grn_serial_items, remote: false, method: :get
@@ -297,7 +297,7 @@
                         = grn_batch.inventory_batch.lot_no
                       %td
                         = sto.object.approved_inventory_product.inventory_product_info.issue_fractional_allowed ? (grn_batch.grn_item.remaining_quantity.to_f - grn_batch.grn_item.reserved_quantity.to_f) : (grn_batch.grn_item.remaining_quantity.to_d - grn_batch.grn_item.reserved_quantity.to_d)
-                      %td= grn_batch.grn_item.remarks
+                      %td= simple_format grn_batch.grn_item.remarks
                       %td
                         = radio_button_tag "grn_batch_id", grn_batch.id, false
 
@@ -332,7 +332,7 @@
                       %td
                         = sto.object.approved_inventory_product.inventory_product_info.issue_fractional_allowed ? (grn_item.remaining_quantity.to_f - grn_item.reserved_quantity.to_f) : (grn_item.remaining_quantity.to_d - grn_item.reserved_quantity.to_d)
                       %td
-                        = grn_item.grn.remarks
+                        = simple_format grn_item.grn.remarks
                       %td
                         = radio_button_tag "grn_item_id", grn_item.id, false
 
@@ -418,7 +418,7 @@
                       %td= grn_serial_item.inventory_serial_item.ct_no
                       %td= grn_serial_item.inventory_serial_item.manufatured_date.try(:strftime, "%Y-%m-%d %H:%M")
                       %td= grn_serial_item.inventory_serial_item.expiry_date
-                      %td= grn_serial_item.inventory_serial_item.remarks
+                      %td= simple_format grn_serial_item.inventory_serial_item.remarks
                       %td= link_to "select", "#", onclick: "Inventories.load_serial_and_part(this, #{grn_serial_item.inventory_serial_item.id}, 'serial_item', '#{request_part.approved_inv_product_id}'); return false;"
 
             #main_part_part

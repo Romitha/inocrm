@@ -43,7 +43,7 @@
     .row
       .col-md-8
         %strong GRN Remarks:
-        = inventory_non_serial_non_batch.grn.remarks
+        = simple_format inventory_non_serial_non_batch.grn.remarks
     - if inventory_non_serial_non_batch.grn_item_current_unit_cost_histories.any?
       .row{style: "margin-top:15px;"}
         .col-md-12{style: "background-color: #98FB98; text-align:center"}

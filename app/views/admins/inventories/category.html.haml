@@ -13,7 +13,7 @@
         %strong Brand:
         = c1.object.inventory_category2.inventory_category1.name
     .col-md-3.parent_inherit_point
-      = c1.input :category2_id, collection: InventoryCategory1.all, as: :grouped_select, group_method: :inventory_category2s, group_label_method: :id, input_html: {class: "category2_id parent_class", onchange: "Admins.filter_product(this); return false;", required: true, data: {"filter-params" => "inventory_category22_id", "render-dom" => "categories", child_select_class: "category3_id"}}, label: "Product"
+      = c1.input :category2_id, collection: InventoryCategory1.all, as: :grouped_select, group_method: :inventory_category2s, group_label_method: :id, include_blank: false, input_html: {class: "category2_id parent_class", onchange: "Admins.filter_product(this); return false;", required: true, data: {"filter-params" => "inventory_category22_id", "render-dom" => "categories", child_select_class: "category3_id"}}, label: "Product"
       - if c1.object.inventory_category2
         %strong Product:
         = c1.object.inventory_category2.name

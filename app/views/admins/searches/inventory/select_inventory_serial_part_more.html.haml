@@ -64,7 +64,7 @@
     .row
       .col-md-3
         %strong Remarks :
-        = inventory_serial_part.remarks
+        = simple_format inventory_serial_part.remarks
     .row
     - inventory_serial_part.inventory_serial_part_warranties.each do |b_warranty|
       .col-md-12
@@ -89,7 +89,7 @@
               = b_warranty.inventory_warranty.period_onsight
             .col-md-4
               %strong Remarks:
-              = b_warranty.inventory_warranty.remarks
+              = simple_format b_warranty.inventory_warranty.remarks
 
   = collapse collapse_type: "info", labelledby: "select_serial_part_form_collapse_search", header_content: "Cost", collapse_link: "select_serial_part_form_collapse_cost", collapse_id: "select_serial_part_form_collapse" do
     - inventory_serial_part.grn_items.each do |grn_item|
@@ -115,7 +115,7 @@
           = number_with_precision grn_item.remaining_quantity, precision: 2
         .col-md-5
           %strong GRN Remarks:
-          = grn_item.grn.remarks
+          = simple_format grn_item.grn.remarks
 
         = simple_nested_form_for main_item, url: create_additional_cost_admins_inventories_path(type: "InventorySerialPart", id: main_item.id, store_id: @store.try(:id), serial_part_id: inventory_serial_part.id), method: :post, html: {class: "validate_form"} do |i|
           = i.input :id, as: :hidden
