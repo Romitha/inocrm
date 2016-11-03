@@ -2084,7 +2084,7 @@ class TicketsController < ApplicationController
       @product = @ticket.products.first
       Rails.cache.delete([:histories, session[:product_id]])
       Rails.cache.delete([:join, @ticket.id])
-      @continue = true
+      @continue_info = true
       # @customer_quotation = @ticket.customer_quotations.find params[:advance_payment_estimation_id]
       @ticket_payment_received = @ticket.ticket_payment_receiveds.build
 
