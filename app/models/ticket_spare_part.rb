@@ -36,7 +36,6 @@ class TicketSparePart < ActiveRecord::Base
 
   has_many :so_po_items, foreign_key: :ticket_spare_part_id
 
-  after_save :flush_cache
 
   validates_presence_of :spare_part_description
 
@@ -50,6 +49,8 @@ class TicketSparePart < ActiveRecord::Base
     end
     ticket_spare_part.note = ticket_spare_part_note
   end
+
+  after_save :flush_cache
 
   def flush_cache
     Rails.cache.delete([self.ticket.id, :ticket_spare_parts])

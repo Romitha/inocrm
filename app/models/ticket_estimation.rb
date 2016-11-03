@@ -35,6 +35,12 @@ class TicketEstimation < ActiveRecord::Base
     ticket_estimation.note = ticket_estimation_note
   end
 
+  after_save :flush_cache
+
+  def flush_cache
+    Rails.cache.delete([self.ticket.id, :ticket_estimations])
+  end
+
   # has_many :invoices, foreign_key: "customer_id"
   has_many :dyna_columns, as: :resourceable, autosave: true
 

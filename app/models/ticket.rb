@@ -215,6 +215,10 @@ class Ticket < ActiveRecord::Base
     Rails.cache.fetch([self.id, :ticket_spare_parts]){ self.ticket_spare_parts.to_a }
   end
 
+  def cached_ticket_estimations
+    Rails.cache.fetch([self.id, :ticket_estimations]){ self.ticket_estimations.to_a }
+  end
+
   def flash_cache
     Rails.cache.delete([:join, self.id])
   end
