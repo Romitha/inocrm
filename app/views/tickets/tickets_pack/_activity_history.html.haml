@@ -120,6 +120,9 @@
                       Request From Store
                   .col-md-4
                     Payment Expected Manufacture : #{action.request_spare_part.ticket_spare_part.ticket_spare_part_manufacture.try(:payment_expected_manufacture)}
+                .row
+                  .col-md-4
+                    Reason: #{action.request_spare_part.try(:reject_return_part_reason).try(:reason)}
 
             -if action.action_id == 15 and action.request_spare_part
               .panel-body
@@ -151,6 +154,10 @@
                       Store Id: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.store_id}
                     .col-md-4
                       Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
+                .row
+                  .col-md-4
+                    Reason: #{action.request_spare_part.try(:reject_return_part_reason).try(:reason)}
+
 
             -if action.action_id == 16 and action.request_spare_part
               .panel-body
@@ -176,6 +183,9 @@
                       Store Id: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.store_id}
                     .col-md-4
                       Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
+                .row
+                  .col-md-4
+                    Reason: #{action.request_spare_part.try(:reject_return_part_reason).try(:reason)}
 
             -if action.action_id == 17 and action.request_spare_part
               .panel-body
@@ -201,6 +211,9 @@
                       Store Id: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.store_id}
                     .col-md-4
                       Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
+                .row
+                  .col-md-4
+                    Reason: #{action.request_spare_part.try(:reject_return_part_reason).try(:reason)}
 
             -if action.action_id == 18 and action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part
               .panel-body
