@@ -29,7 +29,7 @@ class Ticket < ActiveRecord::Base
   def to_indexed_json
     Warranty
     to_json(
-      only: [:created_at, :cus_chargeable, :id, :ticket_no, :ticket_logged_at],
+      only: [:created_at, :cus_chargeable, :id, :ticket_no, :logged_at],
       methods: [:customer_name, :ticket_status_name, :warranty_type_name, :support_ticket_no, :ticket_type_name],
       include: {
         products: {

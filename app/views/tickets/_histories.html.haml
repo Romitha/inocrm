@@ -26,7 +26,7 @@
         %td
           =link_to history.ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"]), history, target: "_blank"
         %td
-          = history.ticket_logged_at.try(:strftime, INOCRM_CONFIG["short_date_format"])
+          = history.logged_at.try(:strftime, INOCRM_CONFIG["short_date_format"])
         %td
           = history.ticket_status.name
         %td

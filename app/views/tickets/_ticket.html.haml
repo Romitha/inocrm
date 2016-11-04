@@ -6,7 +6,7 @@
       %dd
         = link_to ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"]), ticket
       %dt Date
-      %dd= ticket.ticket_logged_at.try(:strftime, "%m-%d-%Y")
+      %dd= ticket.logged_at.try(:strftime, "%m-%d-%Y")
       %dt By
       %dd= ticket.created_by
       %dt Status

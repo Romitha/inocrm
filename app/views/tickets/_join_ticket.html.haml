@@ -1,6 +1,6 @@
 - joint_tickets = ticket.joint_tickets.collect{|j| j.joint_ticket_id}
 
-- customer.tickets.where(ticket_logged_at: [(Time.now.beginning_of_day-7.days)..Time.now.end_of_day]).each do |t|
+- customer.tickets.where(logged_at: [(Time.now.beginning_of_day-7.days)..Time.now.end_of_day]).each do |t|
   - unless joint_tickets.include?(t.id)
     - ticket.joint_tickets.build joint_ticket_id: t.id
 - if ticket.joint_tickets.present?
@@ -29,7 +29,7 @@
             %td
               = ticket_detail.ticket_no
             %td
-              = ticket_detail.ticket_logged_at.to_date.strftime("%m-%d-%Y")
+              = ticket_detail.logged_at.to_date.strftime("%m-%d-%Y")
             %td
               = ticket_detail.products.first.product_category.name
             - if ticket_detail.products.first
