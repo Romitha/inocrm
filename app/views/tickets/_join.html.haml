@@ -8,7 +8,7 @@
         %dd
           = link_to jt.ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"]), jt
         %dt Date
-        %dd= jt.created_at.strftime("%Y-%m-%d")
+        %dd= jt.ticket_logged_at.strftime(INOCRM_CONFIG["short_date_format"])
         %dt By
         %dd= jt.created_by
         %br

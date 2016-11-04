@@ -31,6 +31,6 @@
           %td #{spare_part.try(:faulty_ct_no)}
           %td #{spare_part.ticket.ticket_no.to_s.rjust(5, INOCRM_CONFIG["ticket_no_format"])}
           %td #{spare_part.ticket.customer.try(:name)}
-          %td #{spare_part.ticket.created_at.to_date}
+          %td #{spare_part.ticket.ticket_logged_at.to_date}
           %td 
             = link_to "View", ticket_path(spare_part.ticket.id)

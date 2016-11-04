@@ -1,7 +1,6 @@
 
 - tickets = @tickets
 
-
 %h3 Customer Inquire
 .row.small_scale_margin-bottom1
   %form{:action => customer_inquire_tickets_path, :method => "get"}
@@ -30,7 +29,7 @@
     %strong No
   .col-md-1
     %strong Ticket No
-  .col-md-2
+  .col-md-1
     %strong Customer
   .col-md-1
     %strong Serial No
@@ -40,6 +39,8 @@
     %strong Category
   .col-md-1
     %strong Created at
+  .col-md-1
+    %strong Logged at
   .col-md-1
     %strong Status
   .col-md-1
@@ -59,11 +60,12 @@
 
     = link_to ticket, target: "_blank" do
       .col-md-1= ticket.support_ticket_no
-    .col-md-2= ticket.customer_name
+    .col-md-1.has-tooltip{title: ticket.customer_name, data: { toggle:"tooltip", placement: "top" } }= ticket.customer_name.truncate(12)
     .col-md-1= ticket.products.first.try(:serial_no)
     .col-md-1= ticket.products.first.try(:brand_name)
     .col-md-1= ticket.products.first.try(:category_name)
     .col-md-1= ticket.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
+    .col-md-1= ticket.ticket_logged_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
     .col-md-1= ticket.ticket_status_name
     .col-md-1= ticket.ticket_type_name
     .col-md-1= boolean_in_word ticket.cus_chargeable, "Yes", "No"

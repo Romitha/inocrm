@@ -46,7 +46,7 @@
       .col-md-2= pr.category3_name
       .col-md-1= pr.generated_serial_no
       .col-md-2= pr.generated_item_code
-      .col-md-1= pr.inventories.sum{|i| i.available_quantity.to_f }
+      .col-md-1= pr.inventories.sum(:available_quantity)
       .col-md-1= pr.model_no
       .col-md-1= pr.product_no
       .col-md-1= pr.spare_part_no

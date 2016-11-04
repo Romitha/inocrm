@@ -82,7 +82,7 @@
         .panel{style: "border: 1px solid #dddddd;"}
           .panel-body{style: "background-color: ##{ticket.ticket_status.colour};"}
             %strong Logged at:
-            #{ticket.created_at.try :strftime, "%Y-%m-%d %H:%M"}
+            #{ticket.ticket_logged_at.try :strftime, "%Y-%m-%d %H:%M"}
             %br
             %strong Logged by: 
             %span.has-tooltip{:title => "#{current_user.email}"}

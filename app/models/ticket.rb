@@ -29,13 +29,20 @@ class Ticket < ActiveRecord::Base
   def to_indexed_json
     Warranty
     to_json(
-      only: [:created_at, :cus_chargeable, :id, :ticket_no],
+      only: [:created_at, :cus_chargeable, :id, :ticket_no, :ticket_logged_at],
       methods: [:customer_name, :ticket_status_name, :warranty_type_name, :support_ticket_no, :ticket_type_name],
       include: {
         products: {
           only: [:id, :serial_no, :model_no, :product_no, :created_at],
           methods: [:category_name, :warranty_type_name, :brand_name],
-        }
+        },
+        customer: {
+          include: {
+            contact_type_values: {
+              only: [:value]
+            }
+          }
+        },
       }
     )
 
@@ -43,14 +50,6 @@ class Ticket < ActiveRecord::Base
 
   def ticket_type_name
     ticket_type.name
-  end
-
-  def created_at
-    super.try(:getlocal)
-  end
-
-  def updated_at
-    super.try(:getlocal)
   end
 
   def customer_name
@@ -233,22 +232,6 @@ class Ticket < ActiveRecord::Base
 
   def ticket_closed?
     ["CLS", "TBC"].include? ticket_status.try(:code)
-  end
-
-  def created_at
-    super.try(:getlocal)
-  end
-
-  def updated_at
-    super.try(:getlocal)
-  end
-
-  def job_started_at
-    super.try(:getlocal)
-  end
-
-  def job_finished_at
-    super.try(:getlocal)
   end
 
   def customer_name

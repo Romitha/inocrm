@@ -5,7 +5,7 @@
       %th
         Ticket no
       %th
-        Created at
+        Logged at
       %th
         Status
       %th
@@ -26,7 +26,7 @@
         %td
           =link_to history.ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"]), history, target: "_blank"
         %td
-          = history.created_at.try(:strftime, "%m-%d-%Y")
+          = history.ticket_logged_at.try(:strftime, INOCRM_CONFIG["short_date_format"])
         %td
           = history.ticket_status.name
         %td
@@ -40,4 +40,4 @@
         %td
           = history.remarks and simple_format(history.remarks.split("<br/>").first)
         %td
-          = User.find_by_id(history.created_by).try(:email)
+          = User.find_by_id(history.created_by).try(:full_name)

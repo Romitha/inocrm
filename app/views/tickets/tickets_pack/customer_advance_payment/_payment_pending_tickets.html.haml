@@ -20,7 +20,7 @@
           - index += 1
           %tr
             %td #{index}
-            %td #{ticket.created_at.to_date }
+            %td #{ticket.ticket_logged_at.try :strftime, "%Y-%m-%d %H:%M" }
             %td #{ticket.id}
             %td #{ticket.try(:customer).try(:name)}
             %td
