@@ -4255,7 +4255,7 @@ class TicketsController < ApplicationController
 
     def update_bpm_header
       if @continue
-        process_id = (@bpm_response[:process_id] || params[:process_id])
+        process_id = ((@bpm_response and @bpm_response[:process_id]) || params[:process_id])
         ticket_id = ( @ticket.try(:id) || params[:ticket_id] )
         view_context.ticket_bpm_headers process_id, ticket_id, ""
         Rails.cache.delete([:workflow_header, process_id])
