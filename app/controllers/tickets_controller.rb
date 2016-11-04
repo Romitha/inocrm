@@ -57,7 +57,7 @@ class TicketsController < ApplicationController
     @status = TicketStatus.find_by_code("OPN")
     @ticket_logged_at = DateTime.now
 
-    session[:ticket_initiated_attributes] = {ticket_no: @ticket_no, status_id: @status.id}
+    session[:ticket_initiated_attributes] = {ticket_no: @ticket_no, status_id: @status.id, logged_by: current_user.id, logged_at: DateTime.now}
     @ticket = Ticket.new(session[:ticket_initiated_attributes])
     session[:time_now] = Time.now.strftime("%H%M%S")
     Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @ticket)
@@ -4260,6 +4260,7 @@ class TicketsController < ApplicationController
         view_context.ticket_bpm_headers process_id, ticket_id, ""
         Rails.cache.delete([:workflow_header, process_id])
       end
+      @ticket.current_user_id = current_user.id if @ticket.present? and @ticket.is_a?(Ticket) and @ticket.persisted?
 
     end
 

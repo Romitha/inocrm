@@ -28,6 +28,7 @@ class Ticket < ActiveRecord::Base
 
   def to_indexed_json
     Warranty
+    ContactNumber
     to_json(
       only: [:created_at, :cus_chargeable, :id, :ticket_no, :logged_at],
       methods: [:customer_name, :ticket_status_name, :warranty_type_name, :support_ticket_no, :ticket_type_name],
@@ -215,6 +216,7 @@ class Ticket < ActiveRecord::Base
   end
 
   def cached_ticket_estimations
+    update_attribute :ticket_updated_by, current_user_id
     Rails.cache.fetch([self.id, :ticket_estimations]){ self.ticket_estimations.to_a }
   end
 

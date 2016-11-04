@@ -9,7 +9,7 @@
   .col-md-6.pull-right.text-right
     .ticket_logged_at
       Ticket logged at:
-      = link_to "#", id: "logged_at_new_ticket", data: {type: "combodate", resource: "ticket", name: "logged_at", url: ticket_update_tickets_path, value: DateTime.now.strftime("%d-%m-%Y %H:%M"), "original-title" => "Update Logged date"} do
+      = link_to "#", id: "logged_at_new_ticket", data: {type: "combodate", resource: "ticket", name: "logged_at", url: ticket_update_tickets_path, value: @ticket.logged_at.strftime("%d-%m-%Y %H:%M"), "original-title" => "Update Logged date"} do
         = DateTime.now.strftime("%d-%m-%Y %H:%M")
 
       <script>
@@ -29,7 +29,7 @@
       </script>
 
     .ticket_logged_by
-      Ticket logged by: #{current_user.email}
+      Ticket logged by: #{User.cached_find_by_id(@ticket.logged_by).full_name}
     .ticket_sla_time
       SLA Time (hrs) :
       %span.sla_time #{ticket.sla_time}
