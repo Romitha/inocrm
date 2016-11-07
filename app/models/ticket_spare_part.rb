@@ -123,6 +123,7 @@ class TicketFsr < ActiveRecord::Base
   self.table_name = "spt_ticket_fsr"
 
   belongs_to :ticket
+  belongs_to :engineer, class_name: "User", foreign_key: :engineer_id
   accepts_nested_attributes_for :ticket
   # validates_presence_of [:work_started_at, :work_finished_at, :hours_worked, :hours_worked, :down_time, :travel_hours, :engineer_time_travel, :engineer_time_on_site, :resolution, :completion_level]
 

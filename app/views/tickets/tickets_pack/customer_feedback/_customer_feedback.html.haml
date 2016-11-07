@@ -30,6 +30,11 @@
         = label_tag "Feedback description"
         %br
         = text_area_tag :feedback_description, nil, class: "form-control"
+    - if @ticket_payment_received.persisted?
+      .row
+        %strong Informed To Customer:
+        / = @ticket_payment_received.ticket.
+
     - if ticket.cus_payment_required
       %fieldset#ticket_payment_reciever_wrapper
         %legend Final Payment Required

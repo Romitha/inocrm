@@ -18,8 +18,6 @@
                 .col-md-2
                   %p Re-Open: #{action.re_open_index > 0 ? 'Yes ('+action.re_open_index.to_s+')' : 'No'}
 
-
-          
             -if action.action_id == 2
               .panel-body 
                 .row
@@ -91,8 +89,55 @@
             -if action.action_id == 12
               .panel-body 
                 .row
-                  .col-md-4
+                  .col-md-3
+                    FSR No :
+                    -if action.act_fsr.fsr_id
+                      = action.act_fsr.ticket_fsr.ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])
+                  .col-md-3
+                    Date:
+                    = action.act_fsr.ticket_fsr.created_at.try(:strftime, "%Y-%m-%d")
+                  .col-md-3
+                    User:
+                    = User.find_by_id(action.act_fsr.ticket_fsr.created_by).try(:full_name)
+                  .col-md-3
                     Remarks: #{simple_format action.act_fsr.ticket_fsr.remarks}
+                .row
+                  .col-md-3
+                    Work Started At: #{action.act_fsr.ticket_fsr.try(:work_started_at).try(:strftime, "%Y-%m-%d")}
+                  .col-md-3
+                    Work Finished At: #{action.act_fsr.ticket_fsr.try(:work_finished_at).try(:strftime, "%Y-%m-%d")}
+                  .col-md-3
+                    Hours Worked: #{action.act_fsr.ticket_fsr.try(:hours_worked)}
+                  .col-md-3
+                    Down Time: #{action.act_fsr.ticket_fsr.try(:down_time)}
+
+                .row
+                  .col-md-3
+                    Engineer Time Travel: #{action.act_fsr.ticket_fsr.try(:engineer_time_travel)}
+                  .col-md-3
+                    Engineer Time On Site: #{action.act_fsr.ticket_fsr.try(:engineer_time_on_site)}
+                  .col-md-3
+                    Resolution: #{simple_format action.act_fsr.ticket_fsr.try(:resolution)}
+                  .col-md-3
+                    Approved:
+                    - if action.act_fsr.ticket_fsr.approved == true
+                      Yes
+                    - else
+                      No
+                .row
+                  .col-md-3
+                    Completion Level: #{action.act_fsr.ticket_fsr.try(:completion_level)}
+                  .col-md-3
+                    Remarks: #{action.act_fsr.ticket_fsr.try(:completion_level)}
+                  .col-md-3
+                    Print Count #{action.act_fsr.ticket_fsr.try(:print_count)}
+                  .col-md-3
+                    Engineer #{User.find_by_id(action.act_fsr.ticket_fsr.engineer_id).try(:first_name)}
+                .row
+                  .col-md-3
+                    Other Repair: #{action.act_fsr.ticket_fsr.try(:other_repairs)}
+                  .col-md-3
+                    Travel Hours: #{action.act_fsr.ticket_fsr.try(:travel_hours)}
 
             -if action.action_id == 13
               .panel-body 
@@ -277,10 +322,20 @@
               .panel-body 
                 .row
                   .col-md-4
-                    Resolution: #{action.ticket_finish_job.try :resolution}
+                    Resolution: #{simple_format action.ticket_finish_job.try :resolution}
 
             -if action.action_id == 22
-              .panel-body 
+              .panel-body
+                .row
+                  .col-md-4
+                    -if action.deliver_unit.ticket_deliver_unit.collected == true
+                      Collect Unit From Supplier: Yes
+                    -else
+                      Collect Unit From Supplier: No
+                  .col-md-4
+                    Deliver To Supplier By: #{action.deliver_unit.ticket_deliver_unit.collected_by}
+                  .col-md-4
+                    Receive Note: #{action.deliver_unit.try(:receive_note)}
                 .row
                   .col-md-4
                     Deliver Note: #{action.deliver_unit.deliver_note}
@@ -289,38 +344,96 @@
               .panel-body
                 .row
                   .col-md-4
-                    Note: #{action.job_estimation.note}
+                    Note: #{action.act_job_estimation.try(:note)}
+                  .col-md-4
+                    Requested by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.requested_by).try(:email)}
+                  .col-md-4
+                    Estimated by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.estimated_by).try(:email)}
+                .row
+                  .col-md-4
+                    - if action.act_job_estimation.ticket_estimation.approved == true
+                      Ticket estimation approved: yes
+                    - else
+                      Ticket estimation approved: no
+                  .col-md-4
+                    Approved by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.approved_by).try(:email)}
+
+                  .col-md-4
+                    - if action.act_job_estimation.ticket_estimation.cust_approved == true
+                      Customer approved: yes
+                    - else
+                      Customer approved: no
 
             -if action.action_id == 24
               .panel-body
                 .row
                   .col-md-4
-                    Customer Approved By: #{TicketEstimation.find_by_id(action.job_estimation.ticket_estimation_id).try(:cust_approved_by)}
+                    Note: #{action.act_job_estimation.try(:note)}
                   .col-md-4
-                    -if TicketEstimation.find_by_id(action.job_estimation.ticket_estimation_id).cust_approved == true
-                      Customer Approved: Yes
-                    -else
-                      Customer Approved: No
+                    Requested by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.requested_by).try(:email)}
+                  .col-md-4
+                    Estimated by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.estimated_by).try(:email)}
+                .row
+                  .col-md-4
+                    - if action.act_job_estimation.ticket_estimation.approved == true
+                      Ticket estimation approved: yes
+                    - else
+                      Ticket estimation approved: no
+                  .col-md-4
+                    Approved by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.approved_by).try(:email)}
+
+                  .col-md-4
+                    - if action.act_job_estimation.ticket_estimation.cust_approved == true
+                      Customer approved: yes
+                    - else
+                      Customer approved: no
 
             -if action.action_id == 25
               .panel-body 
                 .row
                   .col-md-4
-                  Receive Note: #{action.deliver_unit.receive_note}
+                    -if action.deliver_unit.ticket_deliver_unit.collected == true
+                      Collect Unit From Supplier: Yes
+                    -else
+                      Collect Unit From Supplier: No
+                  .col-md-4
+                    Deliver To Supplier By: #{action.deliver_unit.ticket_deliver_unit.collected_by}
+                  .col-md-4
+                    Receive Note: #{action.deliver_unit.try(:receive_note)}
 
             -if action.action_id == 27
               .panel-body 
                 .row
                   .col-md-4
-                    Repaired by: #{Organization.find(action.job_estimation.supplier_id).name}
+                    Note: #{action.act_job_estimation.try(:note)}
                   .col-md-4
-                    Note: #{action.job_estimation.note}
-
-
-            -if action.action_id == 28
-              .panel-body 
+                    Requested by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.requested_by).try(:email)}
+                  .col-md-4
+                    Estimated by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.estimated_by).try(:email)}
                 .row
                   .col-md-4
+                    - if action.act_job_estimation.ticket_estimation.approved == true
+                      Ticket estimation approved: yes
+                    - else
+                      Ticket estimation approved: no
+                  .col-md-4
+                    Approved by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.approved_by).try(:email)}
+
+                  .col-md-4
+                    - if action.act_job_estimation.ticket_estimation.cust_approved == true
+                      Customer approved: yes
+                    - else
+                      Customer approved: no
+
+            -if action.action_id == 28 and action.act_payment_received
+              .panel-body
+                .row
+                  .col-md-4
+                    Payment received amount: #{action.act_payment_received.ticket_payment_received.try(:amount)}
+                  .col-md-4
+                    Invoice No: #{action.act_payment_received.ticket_payment_received.ticket_invoice.try.invoice_no.to_s.rjust(6, INOCRM_CONFIG['invoice_no_format'])}
+                  .col-md-4
+                    Receipt Description: #{action.act_payment_received.ticket_payment_received.try(:receipt_description)}
 
             -if action.action_id == 29
               .panel-body 
@@ -332,6 +445,8 @@
                       Deliver To Supplier: No
                   .col-md-4
                     Deliver To Supplier By: #{action.deliver_unit.ticket_deliver_unit.delivered_to_sup_by}
+                  .col-md-4
+                    Receive Note: #{action.deliver_unit.try(:receive_note)}
 
             -if action.action_id == 30
               .panel-body 
@@ -343,6 +458,8 @@
                       Collect Unit From Supplier: No
                   .col-md-4
                     Deliver To Supplier By: #{action.deliver_unit.ticket_deliver_unit.collected_by}
+                  .col-md-4
+                    Receive Note: #{action.deliver_unit.try(:receive_note)}
 
             -if action.action_id == 31 and action.request_spare_part
               .panel-body 
@@ -371,6 +488,19 @@
                     .col-md-4
                       Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
 
+            -if action.action_id == 32 and action.action_warranty_extend
+              .panel-body
+                .row
+                  .col-md-4
+                    - if action.action_warranty_extend.extended == true
+                      Extended: Yes
+                    - else
+                      Extended: No
+                  .col-md-4
+                    Reject Reason: #{action.action_warranty_extend.try(:reject_reason).try(:reason)}
+                  .col-md-4
+                    Reject Note: #{action.action_warranty_extend.try(:note)}
+
             -if action.action_id == 33 and action.request_spare_part
               .panel-body 
                 .row
@@ -383,17 +513,17 @@
                       Customer Chargeable: Yes
                     -else
                       Customer Chargeable: No
-                  .row
-                    .col-md-4
-                      -if action.request_spare_part.ticket_spare_part.request_from == 'M'
-                        Request From Manufacture
-                      -if action.request_spare_part.ticket_spare_part.request_from == 'S'
-                        Request From Store
+                .row
+                  .col-md-4
+                    -if action.request_spare_part.ticket_spare_part.request_from == 'M'
+                      Request From Manufacture
                     -if action.request_spare_part.ticket_spare_part.request_from == 'S'
-                      .col-md-4
-                        Store Id: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.store_id}
-                      .col-md-4
-                        Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
+                      Request From Store
+                  -if action.request_spare_part.ticket_spare_part.request_from == 'S'
+                    .col-md-4
+                      Store Id: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.store_id}
+                    .col-md-4
+                      Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
 
             -if action.action_id == 34 and action.request_spare_part
               .panel-body 
@@ -495,11 +625,32 @@
                     .col-md-4
                       Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
 
+            -if action.action_id == 39 and action.action_warranty_extend
+              .panel-body
+                .row
+                  .col-md-4
+                    - if action.action_warranty_extend.extended == true
+                      Extended: Yes
+                    - else
+                      Extended: No
+                  .col-md-4
+                    Reject Reason: #{action.action_warranty_extend.try(:reject_reason).try(:reason)}
+                  .col-md-4
+                    Reject Note: #{action.action_warranty_extend.try(:note)}
+
             -if action.action_id == 40 and action.action_warranty_extend
               .panel-body 
                 .row
                   .col-md-4
-                    Reject Reason: #{action.action_warranty_extend.reject_reason.reason}
+                    - if action.action_warranty_extend.extended == true
+                      Extended: Yes
+                    - else
+                      Extended: No
+
+                  .col-md-4
+                    Reject Reason: #{action.action_warranty_extend.try(:reject_reason).try(:reason)}
+                  .col-md-4
+                    Reject Note: #{action.action_warranty_extend.try(:note)}
 
             -if action.action_id == 41
               .panel-body 
@@ -509,6 +660,11 @@
                       Approved
                     -else
                       Not Approved
+                  .col-md-4
+                    Supplier #{action.act_job_estimation.organization.name}
+                  .col-md-4
+                    Note #{action.act_job_estimation.try(:note)}
+
 
             -if action.action_id == 42 and action.request_spare_part
               .panel-body
@@ -881,8 +1037,8 @@
                     - else
                       Approved: no
                   .col-md-4
-                    / Reject Reason: #{action.act_quality_control.reason.try(:reason)}
-                    
+                    Reject Reason: #{action.act_quality_control.try(:reject_reason)}
+
             -if action.action_id == 58
               .panel-body
                 .row
@@ -899,23 +1055,7 @@
                   .col-md-4
                     Feedback: #{action.customer_feedback.try(:feedback_description)}
 
-            -if action.action_id == 60
-              .panel-body
-                .row
-                  .col-md-4
-                    - if action.customer_feedback.re_opened == true
-                      Re-open: yes
-                    - else
-                      Re-open: no
-                  .col-md-4
-                    - if action.customer_feedback.payment_completed == true
-                      Payment completed: yes
-                    - else
-                      Payment completed: no
-                  .col-md-4
-                    Feedback: #{action.customer_feedback.try(:feedback_description)}
-
-            -if action.action_id == 61 and action.customer_feedback.present?
+            -if action.action_id == 60 and action.customer_feedback.present?
               .panel-body
                 .row
                   .col-md-4
@@ -931,7 +1071,7 @@
                   .col-md-4
                     Feedback: #{action.customer_feedback.try(:feedback_description)}
 
-            -if action.action_id == 62 and action.inform_customer
+            -if action.action_id == 61 and action.inform_customer
               .panel-body
                 .row
                   .col-md-4
@@ -939,7 +1079,7 @@
                   .col-md-4
                     Note: #{action.inform_customer.try(:note)}
 
-            -if action.action_id == 65 and action.request_spare_part
+            -if action.action_id == 64 and action.request_spare_part
               .panel-body
                 .row
                   .col-md-4
@@ -960,7 +1100,7 @@
                   .col-md-4
                     Payment Expected Manufacture : #{action.request_spare_part.ticket_spare_part.ticket_spare_part_manufacture.try(:payment_expected_manufacture)}
 
-            -if action.action_id == 66 and action.request_on_loan_spare_part.present?
+            -if action.action_id == 65 and action.request_on_loan_spare_part.present?
               .panel-body
                 .row
                   .col-md-4
@@ -983,7 +1123,8 @@
                       .col-md-4
                         Product Item Code: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:inventory_product).try(:generated_item_code)}
 
-            -if action.action_id == 67 and action.act_ticket_close_approve
+            -if action.action_id == 66 and action.act_ticket_close_approve
+              /ActQualityControl
               .panel-body
                 .row
                   .col-md-4
@@ -994,7 +1135,7 @@
                   .col-md-4
                     Reject Reason: #{action.act_ticket_close_approve.reason.try(:reason)}
 
-            -if action.action_id == 68 and action.act_quality_control
+            -if action.action_id == 67 and action.act_quality_control
               .panel-body
                 .row
                   .col-md-4
@@ -1005,7 +1146,7 @@
                   .col-md-4
                     Reject Reason: #{action.act_quality_control.reason.try(:reason)}
 
-            -if action.action_id == 71 and action.act_fsr
+            -if action.action_id == 70 and action.act_fsr
               .panel-body 
                 .row
                   .col-md-4
@@ -1019,7 +1160,7 @@
                       Print FSR : No
 
 
-            -if action.action_id == 72 and action.act_print_invoice.present?
+            -if action.action_id == 71 and action.act_print_invoice.present?
               .panel-body
                 .row
                   .col-md-4
@@ -1029,7 +1170,7 @@
                   .col-md-4
                     Print Count: #{action.act_print_invoice.invoice.try.print_count}
 
-            -if action.action_id == 73
+            -if action.action_id == 72
               .panel-body
                 .row
                   .col-md-4
@@ -1043,7 +1184,7 @@
                       customer chargeable: no
 
 
-            -if action.action_id == 74 and action.action_warranty_repair_type.present?
+            -if action.action_id == 73 and action.action_warranty_repair_type.present?
               .panel-body
                 .row
                   .col-md-4
@@ -1056,7 +1197,7 @@
                     - else
                       customer chargeable: no
 
-            -if action.action_id == 75
+            -if action.action_id == 74
               .panel-body
                 .row
                   .col-md-4
@@ -1081,6 +1222,30 @@
                       Customer approved: no   
 
             - if action.act_job_estimation
+              -if action.action_id == 75
+                .panel-body
+                  .row
+                    .col-md-4
+                      Note: #{action.act_job_estimation.try(:note)}
+                    .col-md-4
+                      Requested by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.requested_by).try(:email)}
+                    .col-md-4
+                      Estimated by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.estimated_by).try(:email)}
+                  .row
+                    .col-md-4
+                      - if action.act_job_estimation.ticket_estimation.approved == true
+                        Ticket estimation approved: yes
+                      - else
+                        Ticket estimation approved: no
+                    .col-md-4
+                      Approved by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.approved_by).try(:email)}
+                      
+                    .col-md-4
+                      - if action.act_job_estimation.ticket_estimation.cust_approved == true
+                        Customer approved: yes
+                      - else
+                        Customer approved: no
+
               -if action.action_id == 76
                 .panel-body
                   .row
@@ -1105,31 +1270,7 @@
                       - else
                         Customer approved: no
 
-              -if action.action_id == 77
-                .panel-body
-                  .row
-                    .col-md-4
-                      Note: #{action.act_job_estimation.try(:note)}
-                    .col-md-4
-                      Requested by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.requested_by).try(:email)}
-                    .col-md-4
-                      Estimated by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.estimated_by).try(:email)}
-                  .row
-                    .col-md-4
-                      - if action.act_job_estimation.ticket_estimation.approved == true
-                        Ticket estimation approved: yes
-                      - else
-                        Ticket estimation approved: no
-                    .col-md-4
-                      Approved by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.approved_by).try(:email)}
-                      
-                    .col-md-4
-                      - if action.act_job_estimation.ticket_estimation.cust_approved == true
-                        Customer approved: yes
-                      - else
-                        Customer approved: no
-
-            -if action.action_id == 78 and action.act_payment_received
+            -if action.action_id == 77 and action.act_payment_received
               .panel-body
                 .row
                   .col-md-4
@@ -1139,6 +1280,37 @@
                   .col-md-4
                     Receipt Description: #{action.act_payment_received.ticket_payment_received.try(:receipt_description)}
 
+
+            -if action.action_id == 78 and action.request_spare_part
+              .panel-body
+                .row
+                  .col-md-4
+                    Spare Part No: #{action.request_spare_part.ticket_spare_part.spare_part_no}
+                  .col-md-4
+                    Spare Part Description: #{action.request_spare_part.ticket_spare_part.spare_part_description}
+                  .col-md-4
+                    -if action.request_spare_part.ticket_spare_part.cus_chargeable_part == true
+                      Customer Chargeable: Yes
+                    -else
+                      Customer Chargeable: No
+                .row
+                  .col-md-4
+                    Store Requested By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_requested_by)).try(:user_name)}
+                  .col-md-4
+                    Store Request Approved By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_request_approved_by)).try(:user_name)}
+                  .col-md-4
+                    Store Issued By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:issued_by)).try(:user_name)}
+                .row
+                  .col-md-4
+                    -if action.request_spare_part.ticket_spare_part.request_from == 'M'
+                      Request From Manufacture
+                    -if action.request_spare_part.ticket_spare_part.request_from == 'S'
+                      Request From Store
+                  -if action.request_spare_part.ticket_spare_part.request_from == 'S'
+                    .col-md-4
+                      Store Id: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.store_id}
+                    .col-md-4
+                      Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
 
             -if action.action_id == 79 and action.request_spare_part
               .panel-body
@@ -1171,38 +1343,7 @@
                     .col-md-4
                       Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
 
-            -if action.action_id == 80 and action.request_spare_part
-              .panel-body
-                .row
-                  .col-md-4
-                    Spare Part No: #{action.request_spare_part.ticket_spare_part.spare_part_no}
-                  .col-md-4
-                    Spare Part Description: #{action.request_spare_part.ticket_spare_part.spare_part_description}
-                  .col-md-4
-                    -if action.request_spare_part.ticket_spare_part.cus_chargeable_part == true
-                      Customer Chargeable: Yes
-                    -else
-                      Customer Chargeable: No
-                .row
-                  .col-md-4
-                    Store Requested By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_requested_by)).try(:user_name)}
-                  .col-md-4
-                    Store Request Approved By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_request_approved_by)).try(:user_name)}
-                  .col-md-4
-                    Store Issued By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:issued_by)).try(:user_name)}
-                .row
-                  .col-md-4
-                    -if action.request_spare_part.ticket_spare_part.request_from == 'M'
-                      Request From Manufacture
-                    -if action.request_spare_part.ticket_spare_part.request_from == 'S'
-                      Request From Store
-                  -if action.request_spare_part.ticket_spare_part.request_from == 'S'
-                    .col-md-4
-                      Store Id: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.store_id}
-                    .col-md-4
-                      Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
-
-            -if action.action_id == 81 and action.act_print_invoice.present?
+            -if action.action_id == 80 and action.act_print_invoice.present?
               .panel-body
                 .row
                   .col-md-4
@@ -1212,7 +1353,7 @@
                   .col-md-4
                     Print Count: #{action.act_print_invoice.invoice.try.print_count}
 
-            -if action.action_id == 82 and action.act_quotation
+            -if action.action_id == 81 and action.act_quotation
               .panel-body
                 .row
                   .col-md-4
@@ -1229,7 +1370,7 @@
                   .col-md-4
                     Note: #{action.act_quotation.customer_quotation.try(:note)}
 
-            -if action.action_id == 83 and action.act_quotation.present?
+            -if action.action_id == 82 and action.act_quotation.present?
               .panel-body
                 .row
                   .col-md-4
@@ -1246,7 +1387,7 @@
                   .col-md-4
                     Note: #{action.act_quotation.customer_quotation.try(:note)}
 
-            -if action.action_id == 84 and action.act_print_invoice
+            -if action.action_id == 83 and action.act_print_invoice
               .panel-body
                 .row
                   .col-md-4
@@ -1256,7 +1397,7 @@
                   .col-md-4
                     Print Count: #{action.act_print_invoice.invoice.print_count}
 
-            -if action.action_id == 85 and action.act_quotation
+            -if action.action_id == 84 and action.act_quotation
               .panel-body
                 .row
                   .col-md-4
