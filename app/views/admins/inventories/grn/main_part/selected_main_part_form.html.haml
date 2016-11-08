@@ -165,12 +165,12 @@
                 %hr
                 .help-block <span class='label label-success'>Green</span> background means active. Ex: part is damaged. <span class='label label-default'>Grey</span> brackground means inactive, Ex: part is not damaged
             %fieldset
-              %legend Grn
+              %legend GRN
               - p.object.grn_serial_parts.each do |gs|
                 .row
                   .col-md-3
                     %strong Unit cost:
-                    = gs.grn_item.unit_cost
+                    #{gs.grn_item.unit_cost} #{gs.grn_item.currency.symbol}
                   .col-md-3
                     %strong Currency:
                     = gs.grn_item.currency.currency
@@ -297,7 +297,7 @@
                     = iw.link_to_remove  class: "remove_c_t_v_link", title: "Remove item additional cost" do
                       %span.glyphicon.glyphicon-remove-sign
                   .col-md-2
-                    = iw.association :inventory_warranty_type
+                    = iw.association :inventory_warranty_type, include_blank: false, label: "Warranty Type"
                   .col-md-2
                     = iw.input :start_at, as: :string, input_html: {class: "datepicker", value: iw.object.start_at.try(:strftime, INOCRM_CONFIG["short_date_format"])}
                   .col-md-2

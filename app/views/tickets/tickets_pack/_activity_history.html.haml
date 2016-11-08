@@ -100,7 +100,7 @@
                     User:
                     = User.find_by_id(action.act_fsr.ticket_fsr.created_by).try(:full_name)
                   .col-md-3
-                    Remarks: #{simple_format action.act_fsr.ticket_fsr.remarks}
+                    / Remarks: #{simple_format action.act_fsr.ticket_fsr.remarks}
                 .row
                   .col-md-3
                     Work Started At: #{action.act_fsr.ticket_fsr.try(:work_started_at).try(:strftime, "%Y-%m-%d")}
@@ -127,8 +127,8 @@
                 .row
                   .col-md-3
                     Completion Level: #{action.act_fsr.ticket_fsr.try(:completion_level)}
-                  .col-md-3
-                    Remarks: #{action.act_fsr.ticket_fsr.try(:completion_level)}
+                  / .col-md-3
+                  /   Remarks: #{action.act_fsr.ticket_fsr.try(:completion_level)}
                   .col-md-3
                     Print Count #{action.act_fsr.ticket_fsr.try(:print_count)}
                   .col-md-3

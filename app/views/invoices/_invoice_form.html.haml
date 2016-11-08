@@ -1,6 +1,6 @@
 #new_cus_quo
   %h3 Invoice
-  = simple_nested_form_for invoice, url: update_invoice_invoices_path(action_type: @action_type), method: :post, remote: true do |f|
+  = simple_nested_form_for invoice, url: update_invoice_invoices_path(action_type: @action_type), method: :post, html: {class: "validate_form"}, remote: true do |f|
     = hidden_field_tag :invoice_id, f.object.try(:id)
     = hidden_field_tag :ticket_id, params[:ticket_id] 
     = hidden_field_tag :task_id, params[:task_id] 
@@ -18,7 +18,7 @@
       %br/
       = f.input :deducted_amount, input_html: {id: "deducted_amount" }
       = label_tag "Payment term"
-      = f.association :payment_term, label: false
+      = f.association :payment_term, label: false, required: true
       = f.input :note
       = f.input :customer_sent, wrapper: :append
       = f.input :canceled, wrapper: :append if f.object.persisted? and !ticket.ticket_invoices.where.not(id: f.object.id).any? { |i| !i.canceled }

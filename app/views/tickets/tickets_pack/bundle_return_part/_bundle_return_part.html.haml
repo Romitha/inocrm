@@ -40,6 +40,7 @@
     %hr
     .col-md-6.col-xs-6
       %strong Manufacture name:
+      = @manufacture.try(:supplier).try(:name)
     .col-md-1.col-xs-1
       %strong Bundle to:
     .col-md-5.col-xs-5

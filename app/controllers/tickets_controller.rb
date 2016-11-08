@@ -1400,11 +1400,13 @@ class TicketsController < ApplicationController
       when "collect_parts"
         # @manufacture_parts = TicketSparePartManufacture.includes(:return_parts_bundle).where(spt_return_parts_bundle: {product_brand_id: params[:product_brand_id]})
         @manufacture_parts = TicketSparePartManufacture.joins(ticket_spare_part: {ticket: {products: :product_brand}}).where(mst_spt_product_brand: {id: params[:product_brand_id]}, collect_pending_manufacture: true, collected_manufacture: false)
+        @manufacture = ProductBrand.find(params[:product_brand_id]) if params[:product_brand_id].present?
         @template = 'tickets/tickets_pack/collect_parts/collect_parts'
       when "deliver_bundle"
       when "bundle_return_part"
         session[:manufacture_ids] = []
         @manufacture_parts = TicketSparePartManufacture.joins(ticket_spare_part: {ticket: {products: :product_brand}}).where(mst_spt_product_brand: {id: params[:product_brand_id]}, ready_to_bundle: true, bundled: false)
+        @manufacture = ProductBrand.find(params[:product_brand_id]) if params[:product_brand_id].present?
         session[:manufacture_ids] = @manufacture_parts.ids
         session[:manufacture_rest_ids] = []
         @template = 'tickets/tickets_pack/bundle_return_part/bundle_return_part'
