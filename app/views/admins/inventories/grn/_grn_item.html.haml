@@ -20,6 +20,39 @@
 
 = simple_nested_form_for @grn_item, url: url, method: :post, remote: true, html: {class: "validate_form"} do |g|
 
+  .row.small_scale_padding-top1.small_scale_padding-bottom1
+    .col-md-4
+      %strong Item Code:
+      =inventory_product.generated_item_code
+    .col-md-4
+      %strong Item Description:
+      =inventory_product.description
+    .col-md-4
+      %strong Balance Qty To Be Received:
+    .col-md-4
+      %strong Received Quantity:
+      / =(need_serial and !need_batch ? 1 : 0 )
+    .col-md-4
+      %strong Received Unit:
+      / =inventory_product.inventory_unit
+    .col-md-4
+      %strong PO Remarks:
+      =inventory.remarks
+    .col-md-4
+      %strong Rack:
+      =inventory.inventory_bin.inventory_shelf.inventory_rack.description
+    .col-md-4
+      %strong Shelf:
+      =inventory.inventory_bin.inventory_shelf.description
+    .col-md-4
+      %strong BIN:
+      =inventory.inventory_bin.description
+    .col-md-4
+      %strong Stock In Hand:
+      =inventory.stock_quantity
+    .col-md-4
+      %strong Remarks:
+
   - if !need_serial and need_batch
     %fieldset
       %legend GRN Batches
@@ -72,38 +105,6 @@
       = g.link_to_add "Add", :grn_batches, class: "add_grn_items", onclick: "Inventories.add_warranty_click(this);"
 
   - if need_serial and !need_batch
-    .row.small_scale_padding-top1.small_scale_padding-bottom1
-      .col-md-4
-        %strong Item Code:
-        =inventory_product.generated_item_code
-      .col-md-4
-        %strong Item Description:
-        =inventory_product.description
-      .col-md-4
-        %strong Balance To Be Received:
-      .col-md-4
-        %strong Received Quantity:
-        =(need_serial and !need_batch ? 1 : 0 )
-      .col-md-4
-        %strong Received Unit:
-        / =inventory_product.inventory_unit
-      .col-md-4
-        %strong PO Remarks:
-        =inventory.remarks
-      .col-md-4
-        %strong Rack:
-        =inventory.inventory_bin.inventory_shelf.inventory_rack.description
-      .col-md-4
-        %strong Shelf:
-        =inventory.inventory_bin.inventory_shelf.description
-      .col-md-4
-        %strong BIN:
-        =inventory.inventory_bin.description
-      .col-md-4
-        %strong Stock In Hand:
-        =inventory.stock_quantity
-      .col-md-4
-        %strong Remarks:
 
     = tab_panel do
       = tab_nav_tab({class: "small_scale_margin-bottom1"}, single_serial_item: {content: "Item by item", active_class: "active"}, bulk_update: {content: "Bulk update"})

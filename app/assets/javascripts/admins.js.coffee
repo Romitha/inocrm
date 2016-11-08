@@ -8,6 +8,7 @@ window.Admins =
     @import_csv_upload()
     @onClick_hide_quantity()
     @currency_select()
+    @grn_main_part_hover()
     return
 
   admin_menu_dropdown: ->
@@ -111,3 +112,7 @@ window.Admins =
 
       $(".dynamic_unit_cost").text($(":selected",this_elem).text())
       $(".dynamic_unit_id").val(this_elem.val())
+
+  grn_main_part_hover: ->
+    $('[data-toggle="popover"]').popover()
+    return
