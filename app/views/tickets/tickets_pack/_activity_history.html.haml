@@ -1144,7 +1144,7 @@
                     - else
                       Approved: no
                   .col-md-4
-                    Reject Reason: #{action.act_quality_control.reason.try(:reason)}
+                    Reject Reason: #{action.try(:act_quality_control).try(:reason).try(:reason)}
 
             -if action.action_id == 70 and action.act_fsr
               .panel-body 
