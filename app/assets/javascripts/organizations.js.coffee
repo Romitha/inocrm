@@ -6,6 +6,7 @@ window.Organizations =
     @organization_logo_upload()
     @chosen_select_disable_search()
     @dealer_type_check()
+    @live_search_organization()
     return
 
   show_more_less: ->
@@ -114,3 +115,11 @@ window.Organizations =
       fail: (e, data) ->
         if data.textStatus == 401
           console.log data.textStatus
+
+  live_search_organization: ->
+    options = {
+      valueNames: [ 'organization_name', 'short_name', 'vat_number', 'industry_type' ]
+      listClass: "organization_list"
+      searchClass: "search"
+    }
+    organizationList = new List('organizations_search_initialization', options)

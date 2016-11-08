@@ -12,13 +12,16 @@
       .col-md-12
         %span
           = link_to edit_organization_path(organization), class: "has-tooltip", data: {toggle: "tooltip", placement: "right"}, title: "Edit #{organization.name}" do
-            = glyph(:pencil, {tag: :span})
+            Edit
+        |
         %span
           - if organization.parent_organization.present?
-            = link_to pin_relation_organization_path(organization, parent_organization: organization.parent_organization.id, pin_direction: "opened"), class: "has-tooltip", data: {confirm: "Do you want to modify the relationship? Please consider of the vat number with high priority",toggle: "tooltip", placement: "right"}, title: "Modify relation of #{organization.name}", remote: true do
-              = glyph("resize-full", {tag: :span})
-          - else
+            - if organization.parent_organization.id == parent_organization.id
+              = link_to pin_relation_organization_path(organization, parent_organization: organization.parent_organization.id, pin_direction: "opened"), class: "has-tooltip", data: {confirm: "Do you want to modify the relationship? Please consider of the vat number with high priority",toggle: "tooltip", placement: "right"}, title: "Modify relation of #{organization.name}", remote: true do
+                Remove from member
+            - else
+              Already member of #{link_to organization.parent_organization.name, organization.parent_organization, target: "_blank"}
+          - elsif params[:parent_organization].present?
             = link_to pin_relation_organization_path(organization, parent_organization: params[:parent_organization], pin_direction: "closed"), class: "has-tooltip", data: {confirm: "Do you want to modify the relationship? Please consider of the vat number with high priority",toggle: "tooltip", placement: "right"}, title: "Modify relation of #{organization.name}", remote: true do
-              = glyph("resize-small", {tag: :span})
-              = organization.parent_organization
+              Set as member
 %hr

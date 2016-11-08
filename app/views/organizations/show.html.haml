@@ -39,15 +39,14 @@
       - unless Organization::TYPES[2,3].include?(organization.category)
         .tab-pane.limit-height{id: "organization_relations#{organization.id}"}
           .fixed-height
-            .row
-              .col-md-2.col-xs-12.col-sm-2{style: "padding-left:0;"}
-                = tab_nav_tab({class: "tabs-left", id: "secondary_tab"}, parent_org: {content: "Parent", active_class: "active job_c"}, child_org: {content: "Members"})
-              .col-md-10.col-xs-12.col-sm-10
-                .tab-content
-                  = tab_content tabpointer: :parent_org, active_class: "active" do
-                    = render "organizations/member",organization: organization.parent_organization, relation: "Parent", relation_organization: organization if organization.parent_organization.present?
-                  = tab_content tabpointer: :child_org do
-                    = render "organizations/members", organizations: organization.members
+            .col-md-2.col-xs-12.col-sm-2
+              = tab_nav_tab({class: "tabs-left", id: "secondary_tab"}, parent_org: {content: "Parent", active_class: "active"}, child_org: {content: "Members"})
+            .col-md-10.col-xs-12.col-sm-10
+              .tab-content
+                = tab_content tabpointer: :parent_org, active_class: "active" do
+                  = render "organizations/member",organization: organization.parent_organization, relation: "Parent", relation_organization: organization if organization.parent_organization.present?
+                = tab_content tabpointer: :child_org do
+                  = render "organizations/members", organizations: organization.members, by: "origin", parent_organization: organization
 
       / .tab-pane.limit-height{id: "organization_departments#{organization.id}"}
       /   .fixed-height

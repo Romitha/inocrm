@@ -1,7 +1,8 @@
 - if params[:pin_direction]
-	$("#organization_wrapper_#{@organization.id}").html("#{j render 'member', organization: @organization}");
-	$("#org_members").html("#{j render 'members', organizations: @relation_organization.members}");
-- else
-	$("#search_members").html("#{j render 'members', organizations: @organizations}");
+  $("#organization_wrapper_#{@organization.id}").html("#{j render 'member', organization: @organization}");
+  $("#org_members").html("#{j render 'members', organizations: @parent_organization.members, by: 'pin', parent_organization: @parent_organization}");
+
+- elsif params[:search_members]
+  $("#search_members").html("#{j render 'members', organizations: @organizations, by: '', parent_organization: @parent_organization}");
 
 Tickets.remove_ajax_loader();

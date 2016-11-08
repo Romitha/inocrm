@@ -1,3 +1,10 @@
 - accounts = @accounts
-- accounts.each do |account|
-  = render "organization", organization: account.organization if account.organization.present?
+
+#organizations_search_initialization
+  .row
+    .col-md-11= text_field_tag "search", nil, placeholder: "Search", class: "form-control search"
+    .col-md-1= submit_tag "Search", class: "btn btn-success btn-sm pull-right"
+  %br
+  .organization_list
+    - accounts.each do |account|
+      = render "organization", organization: account.organization if account.organization.present?

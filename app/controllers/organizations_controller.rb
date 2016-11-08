@@ -6,7 +6,14 @@ class OrganizationsController < ApplicationController
   def index
     ContactNumber
     if params[:search_members]
-      @organizations = Organization.joins(:organization_type).where("mst_organization_types.id = ? and organizations.name like ? and short_name like ?", params[:type_id], "%#{params[:name]}%", "%#{params[:short_name]}%").references(:mst_organization_types)
+      @parent_organization = Organization.find params[:parent_organization] if params[:parent_organization].present?
+      @organizations = Organization.joins(:organization_type).where("mst_organization_types.id = ? and organizations.name like ? and short_name like ? and organizations.id != ?", params[:type_id], "%#{params[:name]}%", "%#{params[:short_name]}%", params[:parent_organization]).references(:mst_organization_types)
+
+      @organizations = if @parent_organization == Organization.owner
+        @organizations.select{|o| !o.account.present? }
+      else
+        @organizations.select{|o| o.account.present? }
+      end
     else
       @dealer_type = DealerType.find_by_code params[:category]
       @accounts = @dealer_type.accounts
@@ -166,10 +173,10 @@ class OrganizationsController < ApplicationController
   end
 
   def pin_relation
-    @relation_organization = Organization.find_by_id params[:parent_organization]
+    @parent_organization = Organization.find_by_id params[:parent_organization]
     case params[:pin_direction]
     when "closed"
-      @relation_organization.members << @organization
+      @parent_organization.members << @organization
     when "opened"
       @organization.update parent_organization_id: nil
     else

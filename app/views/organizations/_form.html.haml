@@ -1,4 +1,4 @@
-- tapbar = [["Contact Number", "#contact_numbers#{organization.id}"], ["Address", "#addresses#{organization.id}"], ["#{[Organization::TYPES[1], Organization::TYPES[3]].include?(organization.category) ? 'Contact Persons' : 'Employees'}", "#contact_persons#{organization.id}"], ["Documents & Attachements", "#documents#{organization.id}"], ["Designations", "#designations#{organization.id}"], ["Organization Relations", "#organization_relations#{organization.id}"], ["Roles and Permissions", "#roles_and_permissions#{organization.id}"], ["Dealer Types", "#dealer_types#{organization.id}"]]
+- tapbar = [["Contact Number", "#contact_numbers#{organization.id}"], ["Address", "#addresses#{organization.id}"], ["Employees", "#contact_persons#{organization.id}"], ["Documents & Attachements", "#documents#{organization.id}"], ["Designations", "#designations#{organization.id}"], ["Organization Relations", "#organization_relations#{organization.id}"], ["Roles and Permissions", "#roles_and_permissions#{organization.id}"], ["Dealer Types", "#dealer_types#{organization.id}"]]
 
 = simple_nested_form_for organization, url: url, html: {class: "validate_form"} do |f|
   = hidden_field_tag :organization_id, f.object.id
@@ -64,12 +64,16 @@
     .col-md-12
       %ul.nav.nav-tabs{role: "tablist"}
         - tapbar.each do |link_info|
-          - if tapbar[5]==link_info or tapbar[7] == link_info
-            %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"} unless(Organization::TYPES[2,3].include?(organization.category))
-          - elsif tapbar[7]==link_info
-            %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"} if organization.refers=="VSIS"
+          - if organization.id == Organization.owner.id
+            - if tapbar[5]==link_info or tapbar[7] == link_info
+              %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"} unless(Organization::TYPES[2,3].include?(organization.category))
+            - elsif tapbar[7]==link_info
+              %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"} if organization.refers=="VSIS"
+            - else
+              %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"}
           - else
-            %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"}
+            - if ["Contact Number", "Address", "Documents & Attachements", "Organization Relations", "Dealer Types"].include? link_info[0]
+              %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"}
 
   .tab-content.small_scale_margin-top1
 
@@ -110,7 +114,7 @@
     - unless Organization::TYPES[2,3].include?(organization.category)
       .tab-pane.limit-height{id: "organization_relations#{organization.id}"}
         #org_members
-          = render "organizations/members", organizations: organization.members
+          = render "organizations/members", organizations: organization.members, by: "origin", parent_organization: organization
         = render "organizations/parent_member", parent_member: organization
 
     - if organization.refers == "VSIS"
