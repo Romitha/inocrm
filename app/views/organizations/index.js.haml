@@ -1,5 +1,5 @@
 - if params[:pin_direction]
-  $("#organization_wrapper_#{@organization.id}").html("#{j render 'member', organization: @organization}");
+  $("#organization_wrapper_#{@organization.id}").html("#{j render 'member', organization: @organization, parent_organization: @parent_organization}");
   $("#org_members").html("#{j render 'members', organizations: @parent_organization.members, by: 'pin', parent_organization: @parent_organization}");
 
 - elsif params[:search_members]
