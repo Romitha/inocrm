@@ -38,9 +38,12 @@
                   = ua.input :recorrection, wrapper: :append, input_html: {id: "pass_to_re_correction"}
                 .col-md-3.small_scale_padding-top2.pass_to_recorrection_hiddible
                   = f.input :regional_support_job, label: "Regional Support Job", wrapper: :append
-                .col-md-3
+                .col-md-2
                   = f.association :ticket_type, as: :radio_buttons, wrapper: :append, input_html: {class: "ticket_type"}
-                .col-md-3
+                .col-md-2
+                  = f.association :onsite_type, include_blank: false
+
+                .col-md-2
                   .strong Job type
                   = f.select :job_type_id, options_from_collection_for_select(JobType.all, :id, :name), {}, {class: "form-control"}
 

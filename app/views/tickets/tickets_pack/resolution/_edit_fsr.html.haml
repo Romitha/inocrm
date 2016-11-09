@@ -16,7 +16,7 @@
             .col-md-12
               = fsr.input :completion_level, as: :radio_buttons, label: false, collection: {"Full" => "F","Partial" => "P"}, wrapper: :append
             .col-md-12
-              = fsr.input :work_started_at, as: :string, input_html: {class: "datetimepicker"}
+              = fsr.input :work_started_at, as: :string, input_html: {class: "datetimepicker", data: {mindate: @ticket.logged_at.strftime("%b %d, %Y %H:%M")}}
               %strong Started at:
               = @ticket_fsr.work_started_at.try :strftime, "%d %b, %Y %H:%M %p"
               %hr

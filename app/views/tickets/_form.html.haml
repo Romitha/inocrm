@@ -76,6 +76,7 @@
                     .panel-body
                       = f.association :ticket_type, as: :radio_buttons, wrapper_html: {class: "radio_as_list"}, input_html: {class: "ticket_type"}, checked: (ticket.ticket_type_id or 1)
                       = f.input :regional_support_job, label: "Regional", wrapper: :append
+                      = f.association :onsite_type, include_blank: false
                 .col-md-3
                   .panel.panel-default
                     .panel-body

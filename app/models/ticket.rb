@@ -170,6 +170,9 @@ class Ticket < ActiveRecord::Base
 
   belongs_to :owner_engineer, class_name: "TicketEngineer"
 
+  belongs_to :onsite_type
+  accepts_nested_attributes_for :onsite_type, allow_destroy: true
+
   validates_presence_of [:ticket_no, :priority, :status_id, :problem_description, :informed_method_id, :job_type_id, :ticket_type_id, :warranty_type_id, :base_currency_id, :problem_category_id]
 
   validates_numericality_of [:ticket_no, :priority]
@@ -251,6 +254,12 @@ class Ticket < ActiveRecord::Base
   def support_ticket_no
     ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
   end
+
+end
+
+class OnsiteType < ActiveRecord::Base
+  self.table_name = "mst_spt_onsite_type"
+  has_many :ticket#, foreign_key: :onsite_type_id
 
 end
 

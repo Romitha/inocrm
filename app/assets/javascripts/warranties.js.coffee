@@ -40,14 +40,15 @@ window.Warranties =
     return
 
   control_datetime_fsr: ->
-    $("#ticket_fsr_work_started_at").data("DateTimePicker").maxDate(new Date())
+    start_date = $("#ticket_fsr_work_started_at")
+    start_date.data("DateTimePicker").minDate(new Date(start_date.data("mindate")))
     $("#ticket_fsr_work_finished_at").prop("disabled", true)
     $("#ticket_fsr_work_started_at").blur ->
       _this = this
       if $(this).val() != ''
         $("#ticket_fsr_work_finished_at").prop('disabled', false)
         console.log $(this).val()
-        $('#ticket_fsr_work_finished_at').data("DateTimePicker").maxDate(new Date()).minDate($(this).val())
+        $('#ticket_fsr_work_finished_at').data("DateTimePicker").minDate($(this).val())#.maxDate(new Date())
       else
         $("#ticket_fsr_work_finished_at").prop('disabled', true).data("DateTimePicker").destroy();
     return

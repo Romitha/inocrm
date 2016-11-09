@@ -1,11 +1,3 @@
-
-# This file should contain all the record creation needed to seed the database with its default values.
-# The data can then be loaded with the rake db:seed (or created alongside the db with db:setup).
-#
-# Examples:
-#
-#   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
-#   Mayor.create(name: 'Emanuel', city: cities.first)
 rpermissions = [
   ["Update user profile", "User", "edit_update"],
   ["View list of organizations", "Organization", "index"],
@@ -470,4 +462,14 @@ end
 ].each do |t|
   IndustryType.create_with(name: t[0]).find_or_create_by(name: t[0])
 end
+
 CompanyConfig.create sup_last_fsr_no: 0, inv_last_srn_no: 0, inv_last_srr_no: 0, inv_last_sbn_no: 0, inv_last_prn_no: 0, inv_last_grn_no: 0, inv_last_gin_no: 0, sup_last_quotation_no: 0, sup_last_bundle_no: 0 unless CompanyConfig.any? #, sup_sla_id: 0 is foreign key constraint
+
+[
+  ["PSG", "Onsite PSG"],
+  ["ESG", "Onsite ESG"],
+  ["NTW", "Onsite NTW"],
+  ["OTR", "Onsite OTR"]
+].each do |t|
+  OnsiteType.create_with(name: t[1]).find_or_create_by(code: t[0])
+end
