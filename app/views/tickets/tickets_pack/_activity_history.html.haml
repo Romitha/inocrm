@@ -431,7 +431,7 @@
                   .col-md-4
                     Payment received amount: #{action.act_payment_received.ticket_payment_received.try(:amount)}
                   .col-md-4
-                    Invoice No: #{action.act_payment_received.ticket_payment_received.ticket_invoice.try.invoice_no.to_s.rjust(6, INOCRM_CONFIG['invoice_no_format'])}
+                    Invoice No: #{action.act_payment_received.ticket_payment_received.ticket_invoice.try(:invoice_no).to_s.rjust(6, INOCRM_CONFIG['invoice_no_format'])}
                   .col-md-4
                     Receipt Description: #{action.act_payment_received.ticket_payment_received.try(:receipt_description)}
 
@@ -1164,11 +1164,11 @@
               .panel-body
                 .row
                   .col-md-4
-                    Invoice no: #{action.act_print_invoice.invoice.try.invoice_no.to_s.rjust(6, INOCRM_CONFIG['invoice_no_format']) }
+                    Invoice no: #{action.act_print_invoice.invoice.try(:invoice_no).to_s.rjust(6, INOCRM_CONFIG['invoice_no_format']) }
                   .col-md-4
-                    Note: #{action.act_print_invoice.invoice.try.note }
+                    Note: #{action.act_print_invoice.invoice.try(:note) }
                   .col-md-4
-                    Print Count: #{action.act_print_invoice.invoice.try.print_count}
+                    Print Count: #{action.act_print_invoice.invoice.try(:print_count)}
 
             -if action.action_id == 72
               .panel-body
@@ -1276,7 +1276,7 @@
                   .col-md-4
                     Payment received amount: #{action.act_payment_received.ticket_payment_received.try(:amount)}
                   .col-md-4
-                    Invoice No: #{action.act_payment_received.ticket_payment_received.ticket_invoice.try.invoice_no.to_s.rjust(6, INOCRM_CONFIG['invoice_no_format'])}
+                    Invoice No: #{action.act_payment_received.ticket_payment_received.ticket_invoice.try(:invoice_no).to_s.rjust(6, INOCRM_CONFIG['invoice_no_format'])}
                   .col-md-4
                     Receipt Description: #{action.act_payment_received.ticket_payment_received.try(:receipt_description)}
 
@@ -1347,11 +1347,11 @@
               .panel-body
                 .row
                   .col-md-4
-                    Invoice no: #{action.act_print_invoice.invoice.try.invoice_no.to_s.rjust(6, INOCRM_CONFIG['invoice_no_format']) }
+                    Invoice no: #{action.act_print_invoice.invoice.try(:invoice_no).to_s.rjust(6, INOCRM_CONFIG['invoice_no_format']) }
                   .col-md-4
-                    Note: #{action.act_print_invoice.invoice.try.note }
+                    Note: #{action.act_print_invoice.invoice.try(:note) }
                   .col-md-4
-                    Print Count: #{action.act_print_invoice.invoice.try.print_count}
+                    Print Count: #{action.act_print_invoice.invoice.try(:print_count)}
 
             -if action.action_id == 81 and action.act_quotation
               .panel-body
