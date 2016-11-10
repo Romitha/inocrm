@@ -112,18 +112,6 @@ class UserTicketAction < ActiveRecord::Base
     self.action_at = DateTime.now
   end
 
-  def created_at
-    super.try(:getlocal)
-  end
-
-  def updated_at
-    super.try(:getlocal)
-  end
-
-  def action_at
-    super.try(:getlocal)
-  end
-
 end
 
 class ActTicketCloseApprove < ActiveRecord::Base
