@@ -33,6 +33,7 @@ window.Tickets =
     @select_brand_create_po()
     @load_serialparts()
     @select_brand_create_invoice_for_so()
+    @onsite_click()
     return
 
   initial_loaders: ->
@@ -635,3 +636,18 @@ window.Tickets =
     $("#invoice_invoice_no").val("")
     $("#invoice_created_at").val("")
     $("#invoice_note").val("")
+
+  onsite_click: ->
+    activateOnSite = (elem)->
+      if elem.val() is "2"
+        $(".ticket_onsite_type").removeClass("hide")
+        $(".ticket_onsite_type select").prop("disabled", false)
+      else
+        $(".ticket_onsite_type").addClass("hide")
+        $(".ticket_onsite_type select").prop("disabled", true)
+
+    ticket_type = $(".ticket_type")
+
+    activateOnSite(ticket_type)
+
+    ticket_type.click -> activateOnSite($(@))
