@@ -23,8 +23,9 @@
                 .row
                   .col-md-3
                     SBU: #{action.user_assign_ticket_action.try(:sbu).try(:sbu)}
-                  .col-md-3
-                    Assign to: #{User.find_by_id(action.user_assign_ticket_action.assign_to).try(:user_name)}
+                  - if action.user_assign_ticket_action.assign_to
+                    .col-md-3
+                      Assign to: #{User.find_by_id(action.user_assign_ticket_action.try(:assign_to)).try(:user_name)}
                   .col-md-3
                     -if action.user_assign_ticket_action.recorrection == true
                       Recorrection: Yes
