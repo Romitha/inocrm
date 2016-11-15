@@ -1,6 +1,6 @@
 = render "admins/searches/inventory/serial_batch_non_header"
 
-= paginate @grn_batches, remote: false, method: :get
+= paginate @inventory_batches, remote: false, method: :get
 
 .row
   .col-md-1
@@ -27,50 +27,61 @@
     %strong Select
 %hr
 
-- @grn_batches.each_with_index do |grn_batch, index|
+- @inventory_batches.each_with_index do |grn_batch, index|
   - content_for :grn_more, flush: true do
-    %ul
-      - if grn_batch.inventory_batch.manufatured_date
-        %li
-          %strong Manufactured date:
-          #{grn_batch.inventory_batch.manufatured_date.to_date.strftime(INOCRM_CONFIG["short_date_format"])}
-      - if grn_batch.inventory_batch.expiry_date
-        %li
-          %strong Expiry date:
-          #{grn_batch.inventory_batch.expiry_date.to_date.strftime(INOCRM_CONFIG["short_date_format"])}
-    %strong Remarks:
-    #{simple_format grn_batch.inventory_batch.remarks}
+    - if grn_batch.inventory_batch
+      %ul
+        - if grn_batch.inventory_batch.manufatured_date
+          %li
+            %strong Manufactured date:
+            #{grn_batch.inventory_batch.manufatured_date.to_date.strftime(INOCRM_CONFIG["short_date_format"])}
+        - if grn_batch.inventory_batch.expiry_date
+          %li
+            %strong Expiry date:
+            #{grn_batch.inventory_batch.expiry_date.to_date.strftime(INOCRM_CONFIG["short_date_format"])}
+      %strong Remarks:
+      #{simple_format grn_batch.inventory_batch.remarks}
   .row
-    .col-md-1{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Batch No: #{grn_batch.inventory_batch.batch_no}", "data-content"=> yield(:grn_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "bottom" }
+    .col-md-1{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Batch No: #{grn_batch.try(:inventory_batch).try(:batch_no)}", "data-content"=> yield(:grn_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "bottom" }
       - if params[:page]
         = (index+1) + 10*(params[:page].to_i-1)
       - else
         = (index+1)
     .col-md-1
-      = grn_batch.inventory_batch.batch_no
+      = grn_batch.try(:inventory_batch).try(:batch_no)
     .col-md-1
-      = grn_batch.inventory_batch.lot_no
+      = grn_batch.try(:inventory_batch).try(:lot_no)
     .col-md-1
-      = grn_batch.grn_item.grn.grn_no
+      = grn_batch.try(:grn_item).try(:grn).try(:grn_no)
     .col-md-1
-      = grn_batch.grn_item.grn.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
+      - if grn_batch.grn_item
+        - if grn_batch.grn_item.grn
+          -if grn_batch.grn_item.grn.
+            = grn_batch.grn_item.grn.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
     .col-md-1
       = grn_batch.remaining_quantity
     .col-md-1
       = grn_batch.damage_quantity
     .col-md-2
-      = grn_batch.grn_item.currency.currency
+      = grn_batch.try(:grn_item).try(:currency).try(:currency)
     .col-md-1.text-right
-      = number_with_precision grn_batch.grn_item.current_unit_cost, precision: 2
+      = number_with_precision grn_batch.try(:grn_item).try(:current_unit_cost), precision: 2
     .col-md-1.text-right
-      = number_with_precision (grn_batch.remaining_quantity * grn_batch.grn_item.current_unit_cost), precision: 2
+      - if grn_batch.grn_item
+        = number_with_precision (grn_batch.remaining_quantity * grn_batch.grn_item.current_unit_cost), precision: 2
+      - else
+        = number_with_precision (0), precision: 2
     .col-md-1
-      = link_to "Select", inventories_admins_searches_path(select_action: "select_inventory_batch_more", inventory_batch_id: grn_batch.inventory_batch.id, store_id: @store.try(:id) )
+      - if grn_batch.inventory_batch
+        = link_to "Select", inventories_admins_searches_path(select_action: "select_inventory_batch_more", inventory_batch_id: grn_batch.inventory_batch.id, store_id: @store.try(:id) )
       
   %hr
+/ .row
+/   .col-md-3.pull-right.text-right
+
+/     %strong Total Cost : #{number_with_precision @inventory_batches.inject(0){|i, grn_batch| grn_batch.remaining_quantity * grn_batch.grn_item.current_unit_cost}, precision: 2}
+
 .row
   .col-md-3.pull-right.text-right
-
-    %strong Total Cost : #{number_with_precision @grn_batches.inject(0){|i, grn_batch| grn_batch.remaining_quantity * grn_batch.grn_item.current_unit_cost}, precision: 2}
-
-= paginate @grn_batches, remote: false, method: :get
+    %strong Total Cost: #{number_with_precision @total_stock_cost, precision: 2}
+= paginate @inventory_batches, remote: false, method: :get

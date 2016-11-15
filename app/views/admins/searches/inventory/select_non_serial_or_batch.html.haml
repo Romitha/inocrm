@@ -25,7 +25,9 @@
 
 - @non_serial_or_batches.each_with_index do |grn_item, index|
   - content_for :grn_more, flush: true do
-    
+
+    %strong Store:
+    = @store
     %strong Remarks:
     = simple_format grn_item.remarks
   .row

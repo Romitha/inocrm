@@ -102,6 +102,10 @@ class GrnItem < ActiveRecord::Base
     select{|grn_item| grn_item.grn_serial_items.blank? and grn_item.grn_batches.blank? and grn_item.grn_serial_parts.blank? }
   end
 
+  def any_remaining_serial_item
+    grn_serial_items.any? { |s| s.remaining }
+  end
+
   def update_relation_index
     [:inventory_serial_items].each do |children|
       self.send(children).each do |child|
@@ -174,7 +178,7 @@ class GrnItem < ActiveRecord::Base
       only: [:serial_no, :ct_no, :created_at],
       include: {
         inventory_product: {
-          only: [:description, :model_no, :product_no, :spare_part_no, :created_at],
+          only: [:id, :description, :model_no, :product_no, :spare_part_no, :created_at],
           methods: [:category3_id, :category2_id, :category1_id, :generated_item_code],
         },
         inventory_serial_items: {
@@ -213,6 +217,10 @@ class GrnBatch < ActiveRecord::Base
   has_many :damages
 
   validates_presence_of :recieved_quantity
+
+  def grn_current_unit_cost
+    grn_item.current_unit_cost
+  end
 
 end
 

@@ -38,18 +38,50 @@ module Admins
       @inv_searched_by = true
       @store = Organization.find params[:store_id] if params[:store_id].present?
       @inv_pro = InventoryProduct.find params[:inv_pro_id] if params[:inv_pro_id].present?
+      # @inv_pro = InventoryProduct.search query: "id:#{params[:inv_pro_id]} AND stores.id:#{params[:store_id]}" if params[:inv_pro_id].present?
 
       case params[:select_action]
 
       when "select_serial_items"
         # **************
-        @grn_serial_items = @inv_pro.grn_serial_items#.map { |g| g.inventory_serial_item }
+        # @grn_serial_items = @inv_pro.grn_serial_items#.map { |g| g.inventory_serial_item }
+        if @store.present?
+          @inventory_serial_items = InventorySerialItem.search(query: "inventory.store_id:#{@store.id} AND inventory_product.id:#{@inv_pro.id}")
+        else
+          @inventory_serial_items = InventorySerialItem.search(query: "inventory_product.id:#{@inv_pro.id}")
+        end
         # **************
-        @total_stock_cost = @grn_serial_items.to_a.sum{|g| (g.grn_item.current_unit_cost*g.grn_item.remaining_quantity + g.inventory_serial_item.inventory_serial_items_additional_costs.sum(:cost))}
+        # @total_stock_cost = @grn_serial_items.to_a.sum{|g| (g.grn_item.current_unit_cost*g.grn_item.remaining_quantity + g.inventory_serial_item.inventory_serial_items_additional_costs.sum(:cost))}
 
-        @grn_serial_items = Kaminari.paginate_array(@grn_serial_items).page(params[:page]).per(10)
+        @total_stock_cost = @inventory_serial_items.sum{|i| i.grn_items.sum{ |g| g.any_remaining_serial_item ? g.current_unit_cost.to_f*g.remaining_quantity.to_f : 0 } + i.inventory_serial_items_additional_costs.sum{|c| c.cost.to_f }}
+
+        # @grn_serial_items = Kaminari.paginate_array(@grn_serial_items).page(params[:page]).per(10)
 
         render "admins/searches/inventory/select_serial_items"
+
+      when "select_batches"
+        # @grn_batches = @inv_pro.grn_batches
+        # @grn_batches = Kaminari.paginate_array(@grn_batches).page(params[:page]).per(10)
+        if @store.present?
+          @inventory_batches = InventoryBatch.search(query: "inventory.store_id:#{@store.id} AND inventory_product.id:#{@inv_pro.id}")
+        else
+          @inventory_batches = InventoryBatch.search(query: "inventory_product.id:#{@inv_pro.id}")
+        end
+
+        @total_stock_cost = @inventory_batches.sum{|i| i.grn_current_unit_cost.to_f*i.remaining_quantity.to_f}
+
+        render "admins/searches/inventory/select_batches"
+
+      when "select_non_serial_or_batch"
+        # **************
+        @non_serial_or_batches = @inv_pro.grn_items.only_grn_items1
+        @ans = @non_serial_or_batches.inject(0){|i, k| i + k.remaining_quantity*k.current_unit_cost}
+
+        @non_serial_or_batches = Kaminari.paginate_array(@non_serial_or_batches).page(params[:page]).per(10)
+
+        # @total_stock_cost = @grn_items.sum{|i| i.grn_items.sum{ |g| g.any_remaining_serial_item ? g.current_unit_cost.to_f*g.remaining_quantity.to_f : 0 }}
+
+        render "admins/searches/inventory/select_non_serial_or_batch"
 
       when "select_serial_item_more"
         @inventory_serial_item = InventorySerialItem.find params[:inventory_serial_item_id] if params[:inventory_serial_item_id].present?
@@ -61,20 +93,6 @@ module Admins
         @inventory_serial_part = InventorySerialPart.find params[:inventory_serial_part_id] if params[:inventory_serial_part_id].present?
         render "admins/searches/inventory/select_inventory_serial_part_more"
 
-      when "select_batches"
-        @grn_batches = @inv_pro.grn_batches
-        @grn_batches = Kaminari.paginate_array(@grn_batches).page(params[:page]).per(10)
-
-        render "admins/searches/inventory/select_batches"
-
-      when "select_non_serial_or_batch"
-        # **************
-        @non_serial_or_batches = @inv_pro.grn_items.only_grn_items1
-        @ans = @non_serial_or_batches.inject(0){|i, k| i + k.remaining_quantity*k.current_unit_cost}
-
-        @non_serial_or_batches = Kaminari.paginate_array(@non_serial_or_batches).page(params[:page]).per(10)
-
-        render "admins/searches/inventory/select_non_serial_or_batch"
 
       when "select_inventory_batch_more"
         @inventory_batch = InventoryBatch.find params[:inventory_batch_id] if params[:inventory_batch_id].present?

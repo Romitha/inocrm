@@ -432,6 +432,7 @@ class InventoryBatch < ActiveRecord::Base
     indexes :inventory_product, type: "nested", include_in_parent: true
     indexes :grn_items, type: "nested", include_in_parent: true
     indexes :inventory, type: "nested", include_in_parent: true
+    indexes :grn_batches, type: "nested", include_in_parent: true
   end
 
   def self.search(params)
@@ -464,6 +465,10 @@ class InventoryBatch < ActiveRecord::Base
             },
           },
         },
+        grn_batches: {
+          only: [:remaining_quantity],
+          methods: [:grn_current_unit_cost],
+          },
       },
     )
 
@@ -513,6 +518,7 @@ class InventorySerialItem < ActiveRecord::Base
     indexes :grn_items, type: "nested", include_in_parent: true
     indexes :inventory_serial_item_status, type: "nested", include_in_parent: true
     indexes :inventory, type: "nested", include_in_parent: true
+    indexes :inventory_serial_items_additional_costs, type: "nested", include_in_parent: true
   end
 
   def self.search(params)
@@ -548,14 +554,22 @@ class InventorySerialItem < ActiveRecord::Base
         },
         inventory: {
           only: [:store_id],
+          methods: [:store_name],
+        },
+        inventory_serial_items_additional_costs: {
+          only: [:cost],
         },
         grn_items: {
+          only: [:current_unit_cost, :remaining_quantity, :created_at],
+          methods: [:any_remaining_serial_item],
           include: {
             grn: {
-              
               methods: [:grn_no_format],
               only: [:grn_no, :created_at, :store_id],
             },
+            currency: {
+              only: [:code, :symbol, :currency]
+            }
           },
         },
       },

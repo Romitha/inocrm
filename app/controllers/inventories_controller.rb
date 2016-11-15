@@ -140,7 +140,7 @@ class InventoriesController < ApplicationController
     end
     @inventory_products = InventoryProduct.search(params)
 
-    @total_sum_of_stock_cost = @inventory_products.sum{|pr| pr.inventory_product_info.need_serial ? (pr.grn_serial_items.sum{|g| g.grn_item.current_unit_cost.to_f + g.inventory_serial_item.inventory_serial_items_additional_costs.sum{|c| c.cost.to_f }}) : pr.inventory_product_info.need_batch ? pr.grn_batches.sum{|g| g.grn_item.current_unit_cost.to_f * g.remaining_quantity.to_f } : pr.grn_items.sum{|g| g.remaining_quantity.to_f * g.current_unit_cost.to_f } }
+    @total_sum_of_stock_cost = @inventory_products.sum{|pr| pr.inventory_product_info.need_serial ? (pr.grn_serial_items.sum{|g| g.grn_item.current_unit_cost.to_f*g.grn_item.remaining_quantity.to_f + g.inventory_serial_item.inventory_serial_items_additional_costs.sum{|c| c.cost.to_f }}) : pr.inventory_product_info.need_batch ? pr.grn_batches.sum{|g| g.grn_item.current_unit_cost.to_f * g.remaining_quantity.to_f } : pr.grn_items.sum{|g| g.remaining_quantity.to_f * g.current_unit_cost.to_f } }
 
     if @store
       @total_stock_quantity = @inventory_products.sum{|pr| pr.inventories.sum { |i| i.stock_quantity.to_f } }

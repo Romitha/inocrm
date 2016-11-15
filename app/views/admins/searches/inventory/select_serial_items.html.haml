@@ -27,75 +27,96 @@
     %strong Action
 %hr
 
-- @grn_serial_items.each_with_index do |grn_serial_item, index|
+- @inventory_serial_items.each_with_index do |inventory_serial_item, index|
   - content_for :grn_more, flush: true do
     %ul
+      / - unless @store.present?
+      %strong Store:
+      = inventory_serial_item.inventory.store_name
+      / = Organization.find_by_id(inventory_serial_item.inventory_id).name
       %li
         %strong Repaired:
-        = boolean_in_word grn_serial_item.inventory_serial_item.repaired, "Yes", "No"
+        = boolean_in_word inventory_serial_item.repaired, "Yes", "No"
       %li
         %strong Reserved:
-        = boolean_in_word grn_serial_item.inventory_serial_item.reserved, "Yes", "No"
-      - if grn_serial_item.inventory_serial_item.manufatured_date
+        = boolean_in_word inventory_serial_item.reserved, "Yes", "No"
+      - if inventory_serial_item.manufatured_date
         %li
           %strong Manufactured date:
-          = grn_serial_item.inventory_serial_item.manufatured_date.to_date.strftime(INOCRM_CONFIG["short_date_format"])
-      - if grn_serial_item.inventory_serial_item.expiry_date
+          = inventory_serial_item.manufatured_date.to_date.strftime(INOCRM_CONFIG["short_date_format"])
+      - if inventory_serial_item.expiry_date
         %li
           %strong Expiry date:
-          = grn_serial_item.inventory_serial_item.expiry_date.to_date.strftime(INOCRM_CONFIG["short_date_format"])
+          = inventory_serial_item.expiry_date.to_date.strftime(INOCRM_CONFIG["short_date_format"])
       %li
         %strong Status
-        = grn_serial_item.inventory_serial_item.inventory_serial_item_status.try(:name)
+        = inventory_serial_item.inventory_serial_item_status.try(:name)
       %li
         %strong{title: "Parts Not Completed"} P.N.Compl.
-        = boolean_in_word grn_serial_item.inventory_serial_item.parts_not_completed, "Yes", "No"
+        = boolean_in_word inventory_serial_item.parts_not_completed, "Yes", "No"
       %li
         %strong Scavenge
-        = boolean_in_word grn_serial_item.inventory_serial_item.scavenge, "Yes", "No"
+        = boolean_in_word inventory_serial_item.scavenge, "Yes", "No"
       %li
         %strong Used
-        = boolean_in_word grn_serial_item.inventory_serial_item.used, "Yes", "No"
+        = boolean_in_word inventory_serial_item.used, "Yes", "No"
       %li
         %strong Damaged
-        = boolean_in_word grn_serial_item.inventory_serial_item.damage, "Yes", "No"
+        = boolean_in_word inventory_serial_item.damage, "Yes", "No"
 
     %strong Remarks:
-    #{simple_format grn_serial_item.inventory_serial_item.remarks}
+    #{simple_format inventory_serial_item.remarks}
   .row
-    .col-md-1{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Serial No: #{grn_serial_item.inventory_serial_item.serial_no}", "data-content"=> yield(:grn_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "bottom" }
+    .col-md-1{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Serial No: #{inventory_serial_item.serial_no}", "data-content"=> yield(:grn_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "bottom" }
       - if params[:page]
         = (index+1) + 10*(params[:page].to_i-1)
       - else
         = (index+1)
 
+    - inventory_serial_item.grn_items.each do |grn_item|
+      - if grn_item.any_remaining_serial_item
+        .col-md-1
+          = grn_item.grn.grn_no
+        .col-md-1
+          = grn_item.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
+      - else
+        .col-md-1
+        .col-md-1
     .col-md-1
-      = grn_serial_item.grn_item.grn.grn_no
+      = inventory_serial_item.serial_no
     .col-md-1
-      = grn_serial_item.grn_item.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
+      = inventory_serial_item.ct_no
     .col-md-1
-      = grn_serial_item.inventory_serial_item.serial_no
-    .col-md-1
-      = grn_serial_item.inventory_serial_item.ct_no
-    .col-md-1
-      = grn_serial_item.inventory_serial_item.product_condition.try :condition
-    .col-md-1
-      = grn_serial_item.grn_item.currency.code
-    .col-md-1.text-right
-      = number_with_precision grn_serial_item.grn_item.current_unit_cost, precision: 2
-    .col-md-1.text-right
-      = number_with_precision grn_serial_item.inventory_serial_item.inventory_serial_items_additional_costs.sum(:cost), precision: 2
+      = inventory_serial_item.product_condition.try :condition
 
+    - inventory_serial_item.grn_items.each do |grn_item|
+      - if grn_item.any_remaining_serial_item
+        .col-md-1
+          = grn_item.currency.code
+        .col-md-1.text-right
+          = number_with_precision grn_item.current_unit_cost, precision: 2
+      - else
+        .col-md-1
+        .col-md-1
     .col-md-1.text-right
-      = number_with_precision (grn_serial_item.inventory_serial_item.inventory_serial_items_additional_costs.sum(:cost) + (grn_serial_item.grn_item.remaining_quantity * grn_serial_item.grn_item.current_unit_cost)), precision: 2
-    .col-md-1
-      = boolean_in_word grn_serial_item.grn_item.remaining_quantity, "Yes", "No"
+      = number_with_precision inventory_serial_item.inventory_serial_items_additional_costs.sum(&:cost), precision: 2
+
+    - inventory_serial_item.grn_items.each do |grn_item|
+      - if grn_item.any_remaining_serial_item
+
+        .col-md-1.text-right
+          = number_with_precision inventory_serial_item.inventory_serial_items_additional_costs.sum(&:cost) + (grn_item.remaining_quantity.to_f * grn_item.current_unit_cost.to_f), precision: 2
+        .col-md-1
+          = boolean_in_word grn_item.remaining_quantity, "Yes", "No"
+      - else
+        .col-md-1
+        .col-md-1
 
     .col-md-1
-      = link_to "Select", inventories_admins_searches_path(select_action: "select_serial_item_more", inventory_serial_item_id: grn_serial_item.inventory_serial_item.id, store_id: @store.try(:id) )
+      = link_to "Select", inventories_admins_searches_path(select_action: "select_serial_item_more", inventory_serial_item_id: inventory_serial_item.id, store_id: @store.try(:id) )
   %hr
 .row
   .col-md-3.pull-right.text-right
     %strong Total Stock Cost : #{number_with_precision @total_stock_cost, precision: 2}
 
-= paginate @grn_serial_items, remote: false, method: :get
+= paginate @inventory_serial_items, remote: false, method: :get
