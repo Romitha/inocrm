@@ -3918,7 +3918,7 @@ class TicketsController < ApplicationController
 
         @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
-        view_context.ticket_bpm_headers params[:process_id], @ticket.id, ""
+        # view_context.ticket_bpm_headers params[:process_id], @ticket.id, ""
 
         if @bpm_response[:status].upcase == "SUCCESS"
           @flash_message = "Successfully updated."
@@ -4098,7 +4098,7 @@ class TicketsController < ApplicationController
             @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name])
             view_context.ticket_bpm_headers @bpm_response1[:process_id], @ticket.id, request_spare_part_id
           else
-              @bpm_process_error = true
+            @bpm_process_error = true
           end
         end
 
