@@ -656,7 +656,7 @@ module ApplicationHelper
 
       job_type = "[#{@ticket.job_type.name}]"
 
-      ticket_type = "[#{@ticket.ticket_type.name}]"
+      ticket_type = "[#{@ticket.ticket_type.name} #{@ticket.onsite_type.try(:name)}]"
 
       regional = "[Regional]" if @ticket.regional_support_job
 

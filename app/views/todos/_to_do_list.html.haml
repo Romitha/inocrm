@@ -9,7 +9,7 @@
 
 = link_to to_do_call_todos_path(url: formatted_workflow_mapping[:url], input_variables: formatted_workflow_mapping[:input_variables], task_id: formatted_workflow_mapping[:task_content]["id"], process_instance_id: formatted_workflow_mapping[:task_content]["process_instance_id"], owner: formatted_workflow_mapping[:task_content]["actual_owner"]), target: "_blank", class: "to_do_list_link" do
 
-  .col-md-12.small_scale_padding1{class: "text-#{level[assigned_color]} bg-#{level[assigned_color]}", :style => "margin-top: 5px;", data: {toggle: "tooltip", placement: "right"}, title: "#{INOCRM_CONFIG["priority"].key formatted_workflow_mapping[:task_content]["priority"].to_i}"}
+  .col-md-12.small_scale_padding-top1.small_scale_padding-bottom1.small_scale_padding-left0.small_scale_padding-right0{class: "text-#{level[assigned_color]} bg-#{level[assigned_color]}", :style => "margin-top: 5px;", data: {toggle: "tooltip", placement: "right"}, title: "#{INOCRM_CONFIG["priority"].key formatted_workflow_mapping[:task_content]["priority"].to_i}"}
 
     / .col-md-1.position_relative{style: "background: transparent url(#{image_path (INOCRM_CONFIG['priority'].key(formatted_workflow_mapping[:task_content]['priority'].to_i) || 'calendar-256')+'.png'}) no-repeat scroll center top / contain; height: 70px; text-align: center;"}
 
@@ -21,9 +21,9 @@
       /   .col-md-12
       /     .label{class: "label-#{level[INOCRM_CONFIG["priority"].key(formatted_workflow_mapping[:task_content]["priority"].to_i)]}"}
       /       = formatted_workflow_mapping[:first_header_title].split("-").first.strip
-    .col-md-10.text_header.strong
-      .row
-        .col-md-12
-          %strong
-            = formatted_workflow_mapping[:first_header_title]
-          = splitted_header ? splitted_header.last : formatted_workflow_mapping[:second_header_title]
+    .col-md-9.text_header.strong
+      %strong
+        = formatted_workflow_mapping[:first_header_title]
+      = splitted_header ? splitted_header.last : formatted_workflow_mapping[:second_header_title]
+    .col-md-1.text-right
+      %span.badge= INOCRM_CONFIG["priority"].key formatted_workflow_mapping[:task_content]["priority"].to_i

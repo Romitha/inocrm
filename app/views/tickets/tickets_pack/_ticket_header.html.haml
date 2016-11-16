@@ -39,7 +39,7 @@
             = ticket.cus_chargeable ? "Yes" : "No"
             %br
             %strong Type:
-            #{ticket.ticket_type.name}
+            #{ticket.ticket_type.name} #{ticket.onsite_type.try(:name)}
           .panel-heading{style: "text-align: center"}
             Engineer
     .col-md-3.small_scale_padding-top1

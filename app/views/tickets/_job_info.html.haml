@@ -56,7 +56,7 @@
           = ticket.job_type.name #ticket.job_type.name
 
       %dt Ticket type
-      %dd #{ticket.ticket_type.name} #{"(Regional support job)" if ticket.regional_support_job}
+      %dd #{ticket.ticket_type.name} #{"(Regional support job)" if ticket.regional_support_job} #{ticket.onsite_type.try(:name)}
       %dt Type of warranty
       %dd
         = link_to_if params[:edit_ticket],"#{ticket.warranty_type.name}","#",class: "inline_edit", data: {type: "select", source: WarrantyType.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "warranty_type_id", url: update_edit_ticket_tickets_path(ticket_id: ticket.id, edit_ticket: true), "original-title" => "Update warranty_type"} do
