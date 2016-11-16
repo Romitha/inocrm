@@ -257,7 +257,7 @@
                     .col-md-6
                       = p.input :serial_no, required: true
                     .col-md-6
-                      = p.input :ct_no
+                      = p.input :ct_no, label: "CT No"
                     .col-md-6
                       = p.input :manufatured_date, as: :string, input_html: {class: "datepicker", value: p.object.manufatured_date.try(:strftime, INOCRM_CONFIG["short_date_format"])}
                     .col-md-6
@@ -300,7 +300,7 @@
                     .col-md-8
                       .row
                         .col-md-6
-                          = iw.association :inventory_warranty_type, label: "Type"
+                          = iw.association :inventory_warranty_type, include_blank: false, label: "Warranty Type"
                         .col-md-6
                           = iw.input :period_part, label: "Period Part"
                         .col-md-6
