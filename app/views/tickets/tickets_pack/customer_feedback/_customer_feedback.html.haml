@@ -40,38 +40,32 @@
             %strong Final Amount to be Paid (#{ticket.ticket_currency.code}):
             = number_with_precision ticket.final_amount_to_be_paid.to_f, precision: 2
             #final_amount_to_be_paids.hide= ticket.final_amount_to_be_paid.to_f
-          .col-md-4
+          .col-md-3
             = f.input :amount, input_html: {value: 0}, label: "Received amount"
-          .col-md-4
+          .col-md-3
             = f.input :receipt_description
-          .col-md-2
+          .col-md-3
             = label_tag "Payment type"
             = f.select :payment_type, TicketPaymentReceivedType::TYPES
-          .col-md-4
-            = f.input :payment_note, label: "Payment note (Ex: credit card no, cheque no, bank, etc...)"
-          .col-md-5
-            = f.input :note, input_html: {value: nil}
         .row
           .col-md-4
             = label_tag "Payment completed"
             = check_box_tag :payment_completed
-    = f.submit "Save", class: "btn btn-success"
+          .col-md-4
+            = f.input :payment_note, label: "Payment note (Ex: credit card no, cheque no, bank, etc...)"
+          .col-md-4
+            = f.input :note, input_html: {value: nil}
+        .row
+          .col-md-4.pull-right
+            = f.submit "Save", class: "btn btn-success"
 
 - else
-  .col-md-4
-    - if @ticket_payment_received.persisted?
-      / .row
-      /   / %strong Informed To Customer:
-      /   / = InformCustomer.find_by_jj(@ticket_payment_received.ticket.)
-      /   / %strong Informed by:
-      /   / %strong Informed at:
-      /   / %strong Informed Note:
-      .row
-        = link_to "Print reciept", "#", class: "btn btn-sm btn-success", onclick: "Users.request_printer_application('receipt', '#{@ticket_payment_received.id}', 'receipt_request_type', 'print_receipt_tag_value', 'print_receipt'); false;"
+  - if @ticket_payment_received.persisted?
+    .row
+      = link_to "Print reciept", "#", class: "btn btn-sm btn-success", onclick: "Users.request_printer_application('receipt', '#{@ticket_payment_received.id}', 'receipt_request_type', 'print_receipt_tag_value', 'print_receipt'); false;"
 
-      .row
-        = link_to "Print delivery", "#", class: "btn btn-sm btn-success", onclick: "Users.request_printer_application('ticket_complete', '#{@ticket_payment_received.ticket.id}', 'ticket_complete_request_type', 'print_ticket_delivery_note_tag_value', 'print_ticket_delivery_note'); false;" if not params[:re_opened].present?
-
+    .row
+      = link_to "Print delivery", "#", class: "btn btn-sm btn-success", onclick: "Users.request_printer_application('ticket_complete', '#{@ticket_payment_received.ticket.id}', 'ticket_complete_request_type', 'print_ticket_delivery_note_tag_value', 'print_ticket_delivery_note'); false;" if not params[:re_opened].present?
 
 - InformCustomer.where(ticket_action_id: @ticket.user_ticket_action_ids).each do |i|
   .row
