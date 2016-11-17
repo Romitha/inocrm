@@ -758,7 +758,9 @@ module Admins
         # Rails.cache.delete([ :serial_item, :i_product, @inventory_product.id ])
       end
 
-      @inventory_products = Kaminari.paginate_array(InventoryProduct.where(id: Rails.cache.fetch([:inventory_product_ids]).to_a)).page(params[:page]).per(10)
+      # @inventory_products = Kaminari.paginate_array(InventoryProduct.where(id: Rails.cache.fetch([:inventory_product_ids]).to_a)).page(params[:page]).per(10)
+      search_inventory_products = Tire.search 'inventory_products', query: {constant_score: {filter: {terms: {id: Rails.cache.fetch([:inventory_product_ids]).to_a}}}}
+      @inventory_products = Kaminari.paginate_array(search_inventory_products.results.to_a).page(params[:page]).per(10)
 
       render "admins/inventories/grn/grn"
     end
