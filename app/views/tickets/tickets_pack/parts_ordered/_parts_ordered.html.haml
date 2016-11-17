@@ -129,16 +129,16 @@
                 = ticket_spare_part.ticket_spare_part_non_stock.inventory_product.generated_item_code
               .col-md-3
                 %strong
+                  Model No:
+                = ticket_spare_part.ticket_spare_part_non_stock.inventory_product.try(:model_no)
+              .col-md-3
+                %strong
                   Item Description:
                 = ticket_spare_part.ticket_spare_part_non_stock.inventory_product.description
               .col-md-3
                 %strong
                   Manufacture:
                 = ticket_spare_part.ticket_spare_part_non_stock.inventory_product.inventory_product_info and ticket_spare_part.ticket_spare_part_non_stock.inventory_product.inventory_product_info.manufacture.try(:manufacture)
-              .col-md-3
-                %strong
-                  Model No:
-                = ticket_spare_part.ticket_spare_part_non_stock.inventory_product.try(:model_no)
               %hr
 
               .col-md-3
@@ -153,7 +153,7 @@
           - if ticket_spare_part.ticket_spare_part_store
             %hr          
             - if ticket_spare_part.ticket_spare_part_store.inventory_product
-              .col-md-3
+              .col-md-2
                 %strong
                   Item Code:
                 = ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code
@@ -165,10 +165,14 @@
                 %strong
                   Manufacture:
                 = ticket_spare_part.ticket_spare_part_store.inventory_product.inventory_product_info and ticket_spare_part.ticket_spare_part_store.inventory_product.inventory_product_info.manufacture.try(:manufacture)
-              .col-md-3
+              .col-md-2
                 %strong
                   Model No:
                 = ticket_spare_part.ticket_spare_part_store.inventory_product.try(:model_no)
+              .col-md-2
+                %strong
+                  Requested Qty:
+                = ticket_spare_part.ticket_spare_part_store.requested_quantity
               %hr
 
               .col-md-3
@@ -342,8 +346,8 @@
               = ticket_spare_part.ticket_spare_part_manufacture.event_no
             .col-md-3
               %strong
-                Part Event No:
-              = ticket_spare_part.ticket_spare_part_manufacture.event_no
+                Requested Qty:
+              = ticket_spare_part.ticket_spare_part_manufacture.requested_quantity
             .col-md-3
               %strong
                 Part Event Closed:
@@ -388,7 +392,11 @@
           = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
         = hidden_field_tag :ticket_spare_part_id, ticket_spare_part.id
-
+        .row
+          .col-md-5
+            %strong
+              Returned quantity:
+            = ticket_spare_part.ticket_spare_part_store ? ticket_spare_part.ticket_spare_part_store.returned_quantity : (ticket_spare_part.ticket_spare_part_manufacture ? ticket_spare_part.ticket_spare_part_manufacture.returned_quantity : '')
 
         - if (rqt and non_stock_warranty) or (cea and non_stock_chargeable)
           .row
@@ -552,7 +560,7 @@
             = "On-Loan Store"
           %hr
 
-          .col-md-3
+          .col-md-2
             %strong
               Item Code:
             = ticket_on_loan_spare_part.inventory_product.generated_item_code
@@ -564,10 +572,14 @@
             %strong
               Manufacture:
             = ticket_on_loan_spare_part.inventory_product.inventory_product_info and ticket_on_loan_spare_part.inventory_product.inventory_product_info.manufacture.try(:manufacture)
-          .col-md-3
+          .col-md-2
             %strong
               Model No:
-            = ticket_on_loan_spare_part.inventory_product.try(:model_no)            
+            = ticket_on_loan_spare_part.inventory_product.try(:model_no)
+          .col-md-2
+            %strong
+              Requested Qty:
+            = ticket_on_loan_spare_part.requested_quantity
           %hr
 
           .col-md-3

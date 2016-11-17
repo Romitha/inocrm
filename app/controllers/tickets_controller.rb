@@ -4006,6 +4006,7 @@ class TicketsController < ApplicationController
     WorkflowMapping
     @continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
     engineer_id = params[:engineer_id]
+    requested_quantity = params[:requested_quantity]
     query = {}
 
     # bpm output variables
@@ -4033,7 +4034,7 @@ class TicketsController < ApplicationController
         if @ticket_spare_part.request_from == "M"
           @ticket_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code("MPR").id unless @ticket_spare_part.cus_chargeable_part
           action_id = TaskAction.find_by_action_no(14).id
-          @ticket_spare_part.create_ticket_spare_part_manufacture(payment_expected_manufacture: 0, manufacture_currency_id: @ticket_spare_part.ticket.manufacture_currency_id)
+          @ticket_spare_part.create_ticket_spare_part_manufacture(payment_expected_manufacture: 0, manufacture_currency_id: @ticket_spare_part.ticket.manufacture_currency_id, requested_quantity: requested_quantity)
 
           process_name = "SPPT_MFR_PART_REQUEST"
           query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, supp_engr_user: supp_engr_user, priority: priority}
@@ -4043,7 +4044,7 @@ class TicketsController < ApplicationController
           @ticket_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code("STR").id unless @ticket_spare_part.cus_chargeable_part
           action_id = TaskAction.find_by_action_no(15).id
 
-          @ticket_spare_part_store = @ticket_spare_part.create_ticket_spare_part_store(store_id: params[:store_id], inv_product_id: params[:inv_product_id], mst_inv_product_id: params[:mst_inv_product_id], part_of_main_product: (params[:part_of_main_product] || 0), store_requested: !@ticket_spare_part.cus_chargeable_part, store_requested_at: ( !@ticket_spare_part.cus_chargeable_part ? DateTime.now : nil), store_requested_by: ( !@ticket_spare_part.cus_chargeable_part ? current_user.id : nil))
+          @ticket_spare_part_store = @ticket_spare_part.create_ticket_spare_part_store(store_id: params[:store_id], inv_product_id: params[:inv_product_id], mst_inv_product_id: params[:mst_inv_product_id], part_of_main_product: (params[:part_of_main_product] || 0), store_requested: !@ticket_spare_part.cus_chargeable_part, store_requested_at: ( !@ticket_spare_part.cus_chargeable_part ? DateTime.now : nil), store_requested_by: ( !@ticket_spare_part.cus_chargeable_part ? current_user.id : nil), requested_quantity: requested_quantity)
 
           process_name = "SPPT_STORE_PART_REQUEST"
           query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, request_onloan_spare_part_id: request_onloan_spare_part_id, onloan_request: onloan_request, supp_engr_user: supp_engr_user, priority: priority}
@@ -4132,6 +4133,7 @@ class TicketsController < ApplicationController
     WorkflowMapping
     @continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
     engineer_id = params[:engineer_id]
+    requested_quantity = params[:requested_quantity]
 
     if @continue
       f_ticket_on_loan_spare_part_params = ticket_on_loan_spare_part_params
@@ -4142,6 +4144,7 @@ class TicketsController < ApplicationController
       @ticket_on_loan_spare_part.requested_at = DateTime.now
       @ticket_on_loan_spare_part.requested_by = current_user.id
       @ticket_on_loan_spare_part.engineer_id = engineer_id
+      @ticket_on_loan_spare_part.requested_quantity = requested_quantity
 
       if @ticket_on_loan_spare_part.save
 

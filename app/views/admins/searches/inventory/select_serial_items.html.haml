@@ -99,13 +99,13 @@
         .col-md-1
         .col-md-1
     .col-md-1.text-right
-      = number_with_precision inventory_serial_item.inventory_serial_items_additional_costs.sum(&:cost), precision: 2
+      = number_with_precision inventory_serial_item.inventory_serial_items_additional_costs.sum(&:cost).to_f, precision: 2
 
     - inventory_serial_item.grn_items.each do |grn_item|
       - if grn_item.any_remaining_serial_item
 
         .col-md-1.text-right
-          = number_with_precision inventory_serial_item.inventory_serial_items_additional_costs.sum(&:cost) + (grn_item.remaining_quantity.to_f * grn_item.current_unit_cost.to_f), precision: 2
+          = number_with_precision (inventory_serial_item.inventory_serial_items_additional_costs.sum(&:cost).to_f + (grn_item.remaining_quantity.to_f * grn_item.current_unit_cost.to_f)), precision: 2
         .col-md-1
           = boolean_in_word grn_item.remaining_quantity, "Yes", "No"
       - else
