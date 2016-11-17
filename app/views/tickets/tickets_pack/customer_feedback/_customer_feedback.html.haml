@@ -40,45 +40,61 @@
             %strong Final Amount to be Paid (#{ticket.ticket_currency.code}):
             = number_with_precision ticket.final_amount_to_be_paid.to_f, precision: 2
             #final_amount_to_be_paids.hide= ticket.final_amount_to_be_paid.to_f
-          .col-md-3
+          .col-md-4
             = f.input :amount, input_html: {value: 0}, label: "Received amount"
-          .col-md-3
+          .col-md-4
             = f.input :receipt_description
-          .col-md-3
+          .col-md-2
             = label_tag "Payment type"
             = f.select :payment_type, TicketPaymentReceivedType::TYPES
+
+          .col-md-4
+            = f.input :payment_note, label: "Payment note (Ex: credit card no, cheque no, bank, etc...)"
+          .col-md-5
+            = f.input :note, input_html: {value: nil}
         .row
           .col-md-4
             = label_tag "Payment completed"
             = check_box_tag :payment_completed
-          .col-md-4
-            = f.input :payment_note, label: "Payment note (Ex: credit card no, cheque no, bank, etc...)"
-          .col-md-4
-            = f.input :note, input_html: {value: nil}
-        .row
-          .col-md-4.pull-right
-            = f.submit "Save", class: "btn btn-success"
+        .row{style: "margin-top: 10px; margin-bottom: 10px;"}
+          - InformCustomer.where(ticket_action_id: @ticket.user_ticket_action_ids).each do |i|
+            .row
+              .col-md-3
+                %strong Informed to customer:
+                = i.ticket_contact_type.name
+                / = i.contact_address
+              .col-md-3
+                %strong Informed at:
+                = i.user_ticket_action.action_at.try(:strftime, "%Y-%m-%d %H:%M")
+              .col-md-3
+                %strong Informed by:
+                = User.cached_find_by_id(i.user_ticket_action.action_by).full_name
+              .col-md-3
+                %strong Informed Note:
+                = i.note
+  = f.submit "Save", class: "btn btn-success"
 
 - else
-  - if @ticket_payment_received.persisted?
-    .row
-      = link_to "Print reciept", "#", class: "btn btn-sm btn-success", onclick: "Users.request_printer_application('receipt', '#{@ticket_payment_received.id}', 'receipt_request_type', 'print_receipt_tag_value', 'print_receipt'); false;"
+  .col-md-4
+    - if @ticket_payment_received.persisted?
+      .row
+        = link_to "Print reciept", "#", class: "btn btn-sm btn-success", onclick: "Users.request_printer_application('receipt', '#{@ticket_payment_received.id}', 'receipt_request_type', 'print_receipt_tag_value', 'print_receipt'); false;"
 
-    .row
-      = link_to "Print delivery", "#", class: "btn btn-sm btn-success", onclick: "Users.request_printer_application('ticket_complete', '#{@ticket_payment_received.ticket.id}', 'ticket_complete_request_type', 'print_ticket_delivery_note_tag_value', 'print_ticket_delivery_note'); false;" if not params[:re_opened].present?
+      .row
+        = link_to "Print delivery", "#", class: "btn btn-sm btn-success", onclick: "Users.request_printer_application('ticket_complete', '#{@ticket_payment_received.ticket.id}', 'ticket_complete_request_type', 'print_ticket_delivery_note_tag_value', 'print_ticket_delivery_note'); false;" if not params[:re_opened].present?
 
-- InformCustomer.where(ticket_action_id: @ticket.user_ticket_action_ids).each do |i|
-  .row
-    .col-md-3
-      %strong Informed to customer:
-      = i.ticket_contact_type.name
-      / = i.contact_address
-    .col-md-3
-      %strong Informed at:
-      = i.user_ticket_action.action_at.try(:strftime, "%Y-%m-%d %H:%M")
-    .col-md-3
-      %strong Informed by:
-      = User.cached_find_by_id(i.user_ticket_action.action_by).full_name
-    .col-md-3
-      %strong Informed Note:
-      = i.note
+/ - InformCustomer.where(ticket_action_id: @ticket.user_ticket_action_ids).each do |i|
+/   .row
+/     .col-md-3
+/       %strong Informed to customer:
+/       = i.ticket_contact_type.name
+/       / = i.contact_address
+/     .col-md-3
+/       %strong Informed at:
+/       = i.user_ticket_action.action_at.try(:strftime, "%Y-%m-%d %H:%M")
+/     .col-md-3
+/       %strong Informed by:
+/       = User.cached_find_by_id(i.user_ticket_action.action_by).full_name
+/     .col-md-3
+/       %strong Informed Note:
+/       = i.note
