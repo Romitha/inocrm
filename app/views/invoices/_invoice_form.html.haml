@@ -1,6 +1,6 @@
 #new_cus_quo
   %h3 Invoice
-  = simple_nested_form_for invoice, url: update_invoice_invoices_path(action_type: @action_type), method: :post, html: {class: "validate_form"}, remote: true do |f|
+  = simple_nested_form_for invoice, url: update_invoice_invoices_path(action_type: @action_type), method: :post, html: {class: "validate_form_i"}, remote: true do |f|
     = hidden_field_tag :invoice_id, f.object.try(:id)
     = hidden_field_tag :ticket_id, params[:ticket_id] 
     = hidden_field_tag :task_id, params[:task_id] 

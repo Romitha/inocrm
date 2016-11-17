@@ -1,7 +1,7 @@
 - if @estimations.present?
   #new_cus_quo
     %h3 Customer Quotation
-    = simple_nested_form_for quotation, url: update_quotation_invoices_path(action_type: @action_type), method: :post do |f|
+    = simple_nested_form_for quotation, url: update_quotation_invoices_path(action_type: @action_type), method: :post, html: {class: "validate_form_q"} do |f|
       = hidden_field_tag :quotation_id, f.object.id
 
       = hidden_field_tag :process_id, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:process_id]
