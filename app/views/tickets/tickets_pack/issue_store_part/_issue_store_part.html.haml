@@ -155,6 +155,9 @@
         %dd
           = request_part.approved_inventory_product.inventories.where(store_id: request_part.approved_store_id).try(:sum, :available_quantity)
 
+        %dt Requested Qnty
+        %dd= request_part.requested_quantity
+
     .col-md-6
       - if request_part.approved_main_inventory_product
         %h4 Part of main product

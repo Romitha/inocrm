@@ -26,6 +26,11 @@
         .col-md-3
           %strong Warranty Period :
           #{t.object.try(:warranty_period)}
+
+        - unless t.object.ticket_spare_part.ticket_spare_part_non_stock.present?
+          .col-md-3
+            %strong Requested Qnty:
+            = t.object.ticket_spare_part.ticket_spare_part_store.present? ? t.object.ticket_spare_part.ticket_spare_part_store.requested_quantity : t.object.ticket_spare_part.ticket_spare_part_manufacture.present? ? t.object.ticket_spare_part.ticket_spare_part_manufacture.requested_quantity : ""
       %hr
       .row
         - part_store_or_non_stock = t.object.ticket_spare_part.ticket_spare_part_store or t.object.ticket_spare_part.ticket_spare_part_non_stock

@@ -40,6 +40,7 @@
               %th Request Type
               %th Status
               %th Part Returned
+              %th Quantity
               %th Return Accepted
               %th Event No
               %th Event Closed
@@ -56,6 +57,7 @@
                 %td= tsp.request_from == "M" ? "Manufacture" : tsp.request_from == "S" ? "Store" : "Non stock"
                 %td #{tsp.spare_part_status_action.name}
                 %td= tsp.part_returned ? 'Yes' : 'No'
+                %td= (tsp.ticket_spare_part_store or tsp.ticket_spare_part_manufacture).requested_quantity
                 %td= tsp.returned_part_accepted ? 'Yes' : 'No'
                 %td= tsp.request_from == 'M' ? tsp.ticket_spare_part_manufacture.try(:event_no) : "-"
                 %td= tsp.ticket_spare_part_manufacture.try(:event_closed) ? "Yes" : "No"

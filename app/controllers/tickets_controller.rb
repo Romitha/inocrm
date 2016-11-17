@@ -3387,6 +3387,7 @@ class TicketsController < ApplicationController
     request_spare_part_id = spt_ticket_spare_part.id
     supp_engr_user = params[:supp_engr_user]
     priority = @ticket.priority
+    requested_quantity = params[:requested_quantity]
 
     # part_estimation_id = @ticket_estimation.try(:id)
 
@@ -3418,7 +3419,7 @@ class TicketsController < ApplicationController
       end
 
       #create record spt_ticket_spare_part_store
-      spt_ticket_spare_part.ticket_spare_part_store.update(store_id: params[:store_id], inv_product_id: params[:inv_product_id], mst_inv_product_id: params[:mst_inv_product_id], store_requested: !spt_ticket_spare_part.cus_chargeable_part, store_requested_at: ( !spt_ticket_spare_part.cus_chargeable_part ? DateTime.now : nil), store_requested_by: ( !spt_ticket_spare_part.cus_chargeable_part ? current_user.id : nil))
+      spt_ticket_spare_part.ticket_spare_part_store.update(store_id: params[:store_id], inv_product_id: params[:inv_product_id], mst_inv_product_id: params[:mst_inv_product_id], store_requested: !spt_ticket_spare_part.cus_chargeable_part, store_requested_at: ( !spt_ticket_spare_part.cus_chargeable_part ? DateTime.now : nil), store_requested_by: ( !spt_ticket_spare_part.cus_chargeable_part ? current_user.id : nil), requested_quantity: requested_quantity)
 
       #delete record spt_ticket_spare_part_manufacture
       spt_ticket_spare_part.ticket_spare_part_manufacture.delete

@@ -22,6 +22,12 @@
           .col-md-3
             %strong Part status:
             #{t.object.ticket_spare_part.try(:spare_part_status_action).try(:name)}
+
+          - unless t.object.ticket_spare_part.ticket_spare_part_non_stock.present?
+            .col-md-3
+              %strong Requested Qnty:
+              = t.object.ticket_spare_part.ticket_spare_part_store.present? ? t.object.ticket_spare_part.ticket_spare_part_store.requested_quantity : t.object.ticket_spare_part.ticket_spare_part_manufacture.present? ? t.object.ticket_spare_part.ticket_spare_part_manufacture.requested_quantity : ""
+
         %hr
         - part_store_or_non_stock = (t.object.ticket_spare_part.ticket_spare_part_store or t.object.ticket_spare_part.ticket_spare_part_non_stock)
         / - paginate_grn_items = part_store_or_non_stock.inventory_product.grn_items.page(params[:page]).per(3)
