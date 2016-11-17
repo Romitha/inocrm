@@ -276,7 +276,7 @@ module ApplicationHelper
       if ticket_estimation.ticket_estimation_externals.present?
         estimation_external = ticket_estimation.ticket_estimation_externals.first
         item_index += 1
-        description = "#{estimation_external.description}" + "#{' (Warr: ' + estimation_external.warranty_period + ' M)' if estimation_external.warranty_period.present? }"
+        description = "#{estimation_external.description}" + "#{' (Warr: ' + estimation_external.warranty_period.to_s + ' M)' if estimation_external.warranty_period.present? }"
 
         unit_price = ticket_estimation.approval_required ? estimation_external.approved_estimated_price.to_f : estimation_external.estimated_price.to_f
 
@@ -303,7 +303,7 @@ module ApplicationHelper
       if ticket_estimation.ticket_estimation_parts.present?
         estimation_part = ticket_estimation.ticket_estimation_parts.first
         item_index += 1
-        description = "Part No: #{estimation_part.ticket_spare_part.spare_part_no} #{estimation_part.ticket_spare_part.spare_part_description}" + "#{' (Warr: ' + estimation_part.warranty_period + ' M)' if estimation_part.warranty_period.present? }"
+        description = "Part No: #{estimation_part.ticket_spare_part.spare_part_no} #{estimation_part.ticket_spare_part.spare_part_description}" + "#{' (Warr: ' + estimation_part.warranty_period.to_s + ' M)' if estimation_part.warranty_period.present? }"
         item_code = estimation_part.ticket_spare_part.ticket_spare_part_store.present? ? estimation_part.ticket_spare_part.ticket_spare_part_store.approved_inventory_product.try(:generated_item_code) : ""
 
         unit_price = ticket_estimation.approval_required ? estimation_part.approved_estimated_price.to_f : estimation_part.estimated_price.to_f
