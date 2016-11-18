@@ -251,7 +251,7 @@ class InvoicesController < ApplicationController
 
       elsif params[:reject] #Reject QC
 
-        bpm_variables.merge! d38_ticket_close_approved: (@ticket.ticket_close_approved or !@ticket.ticket_close_approval_required) ? "N" : "Y"
+        bpm_variables.merge! d38_ticket_close_approved: ( !@ticket.ticket_close_approval_required or @ticket.ticket_close_approval_requested or @ticket.ticket_close_approved) ? "N" : "Y"
 
         @ticket.update qc_passed: false, status_id: TicketStatus.find_by_code("ROP").id, re_open_count: (@ticket.re_open_count.to_i+1), job_finished: false, job_finished_at: nil, ticket_close_approval_required: true, ticket_close_approval_requested: false, ticket_close_approved: false
 
@@ -295,7 +295,7 @@ class InvoicesController < ApplicationController
       if re_open
         d39_re_open = "Y"
 
-        if (@ticket.ticket_close_approved or !@ticket.ticket_close_approval_required)
+        if !@ticket.ticket_close_approval_required or @ticket.ticket_close_approval_requested or @ticket.ticket_close_approved
           d38_ticket_close_approved = "N" #Create Engineer task
           editable_ticket_params.merge! ticket_close_approval_requested: false, ticket_close_approved: false
         end

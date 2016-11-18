@@ -2636,6 +2636,8 @@ class TicketsController < ApplicationController
         user_ticket_action.build_act_ticket_close_approve(approved: false, reject_reason_id: params[:reject_reason_id])
         user_ticket_action.save
 
+        @ticket.update ticket_close_approval_requested: false
+
       end
 
       @ticket.ticket_spare_parts.each do |s|
