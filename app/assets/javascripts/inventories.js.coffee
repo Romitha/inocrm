@@ -94,6 +94,9 @@ window.Inventories =
       $("#store_id", "#mst_store_id", "#inv_product_id", "#mst_inv_product_id").val("")
       $(".not_non_stock").addClass("hide")
 
+      $(".requested_quantity_manufacture_wrapper").addClass("hide")
+      $(".requested_quantity_manufacture_wrapper input").prop("disabled", true)
+
     $("#ticket_spare_part_request_from_s").click ->
       $(".request_from").empty()
       $("#store_id", "#mst_store_id", "#inv_product_id", "#mst_inv_product_id").val("")
@@ -102,10 +105,42 @@ window.Inventories =
       if $("#ticket_spare_part_request_from_s").is(":checked")
         $(".part").removeClass("hide")
         $("#request_from_select").removeClass("hide")
-
       else
         $(".part").addClass("hide")
         $("#request_from_select").addClass("hide")
+
+      $(".requested_quantity_manufacture_wrapper").addClass("hide")
+      $(".requested_quantity_manufacture_wrapper input").prop("disabled", true)
+
+  disable_upon_manufacture: ->
+    if $("#ticket_spare_part_request_from_m").is(":checked")
+      $("#request_from_select").addClass("hide")
+      $(".request_from").empty()
+      $(".main_product").empty()
+      $("#store_id").val("")
+      $("#mst_store_id").val("")
+      $("#inv_product_id").val("")
+      $("#mst_inv_product_id").val("")
+      $(".part").addClass("hide")
+      $("#part_of_main_product").attr('checked', false)
+      $("#part_of_main_product_select").addClass("hide")
+      $(".not_non_stock").removeClass("hide")
+
+      $(".requested_quantity_manufacture_wrapper").removeClass("hide")
+      $(".requested_quantity_manufacture_wrapper input").prop("disabled", false)
+
+    else
+      $("#request_from_select").removeClass("hide")
+      $(".part").removeClass("hide")
+      $("#part_of_main_product_select").removeClass("hide")
+
+      $(".requested_quantity_manufacture_wrapper").addClass("hide")
+      $(".requested_quantity_manufacture_wrapper input").prop("disabled", true)
+
+  disable_manufacture: ->
+    _this = this
+    $("#ticket_spare_part_request_from_m").click ->
+      _this.disable_upon_manufacture()
 
   disable_final_payment: ->
     $("#ticket_ticket_terminate_job_foc_requested_true").click ->
@@ -156,28 +191,6 @@ window.Inventories =
         $("#change_value_submit").val("Reject")
         $("#reject_reason").prop({"disabled": false, "required": true})
         $("#change_value_submit").attr("name", "reject")
-
-  disable_upon_manufacture: ->
-    if $("#ticket_spare_part_request_from_m").is(":checked")
-      $("#request_from_select").addClass("hide")
-      $(".request_from").empty()
-      $(".main_product").empty()
-      $("#store_id").val("")
-      $("#mst_store_id").val("")
-      $("#inv_product_id").val("")
-      $("#mst_inv_product_id").val("")
-      $(".part").addClass("hide")
-      $("#part_of_main_product").attr('checked', false)
-      $("#part_of_main_product_select").addClass("hide")
-    else
-      $("#request_from_select").removeClass("hide")
-      $(".part").removeClass("hide")
-      $("#part_of_main_product_select").removeClass("hide")
-
-  disable_manufacture: ->
-    _this = this
-    $("#ticket_spare_part_request_from_m").click ->
-      _this.disable_upon_manufacture()
 
   disable_upon_check: ->
     part_of_main_product = $("#part_of_main_product, #ticket_on_loan_spare_part_part_of_main_product, #order_man_rqst_frm_str_part_of_main_product")

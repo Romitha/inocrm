@@ -1,5 +1,5 @@
 - uri = URI(request.url)
-= simple_nested_form_for estimation, url: update_estimate_the_part_internal_inventories_path, method: :post do |f|
+= simple_nested_form_for estimation, url: update_estimate_the_part_internal_inventories_path, method: :post, html: {class: "validate_form"} do |f|
 
   = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
   = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
@@ -155,7 +155,7 @@
                 .col-md-3
                   = label_tag "Additional charge"
                   %br/
-                  = ta.select :additional_charge_id, AdditionalCharge.all.map{|p| [p.additional_charge, p.id, {"data-default-amount" => p.default_cost_price.to_f, "data-estimation-amount" => p.default_estimated_price.to_f}]}, {include_blank: true}, {class: "payment_item_select", onchange: "Inventories.payment_amount_select(this); return false;"}
+                  = ta.select :additional_charge_id, AdditionalCharge.all.map{|p| [p.additional_charge, p.id, {"data-default-amount" => p.default_cost_price.to_f, "data-estimation-amount" => p.default_estimated_price.to_f}]}, {include_blank: true, required: true}, {class: "payment_item_select form-control", onchange: "Inventories.payment_amount_select(this); return false;", required: true}
                 .col-md-3
                   = ta.input :cost_price, label: "Cost Price (#{ticket.ticket_currency.code})", as: :string, input_html: { min: 0, class: "value_class payment_item_value only_float", oninput: "Inventories.calculate_cost_price(this);"}
                   .append_cost_price.hide

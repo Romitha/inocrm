@@ -396,7 +396,7 @@
           .col-md-5
             %strong
               Returned quantity:
-            = ticket_spare_part.ticket_spare_part_store ? ticket_spare_part.ticket_spare_part_store.returned_quantity : (ticket_spare_part.ticket_spare_part_manufacture ? ticket_spare_part.ticket_spare_part_manufacture.returned_quantity : '')
+            = ticket_spare_part.ticket_spare_part_store ? ticket_spare_part.ticket_spare_part_store.returned_quantity : ''
 
         - if (rqt and non_stock_warranty) or (cea and non_stock_chargeable)
           .row

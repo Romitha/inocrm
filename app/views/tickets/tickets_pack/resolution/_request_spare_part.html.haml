@@ -52,6 +52,10 @@
           = link_to "select", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true, class: "hide"
 
         .request_from
+        - unless ["NW", "UW"].include?(@ticket_spare_part.ticket.warranty_type.code)
+          .requested_quantity_manufacture_wrapper.col-md-4.hide
+            = label_tag "Requested quantity"
+            = text_field_tag "requested_quantity", 0, class: "form-control"
 
       .col-md-4.not_non_stock
         .part.hide

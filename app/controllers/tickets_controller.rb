@@ -1210,16 +1210,25 @@ class TicketsController < ApplicationController
   def update_approve_store_parts
 
     @continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
+    requested_quantity = params[:requested_quantity]
 
     if @continue
 
       @onloan_request = true if params[:onloan_request] == "Y"
       if @onloan_request
         @onloan_request_part = TicketOnLoanSparePart.find params[:request_onloan_spare_part_id]
+        @onloan_request_part.requested_quantity = requested_quantity
         @terminated = (@onloan_request_part.status_action_id == SparePartStatusAction.find_by_code("CLS").id)
       else
         @ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
         @terminated = (@ticket_spare_part.status_action_id == SparePartStatusAction.find_by_code("CLS").id)
+
+        if @ticket_spare_part.ticket_spare_part_manufacture
+          @ticket_spare_part.ticket_spare_part_manufacture.requested_quantity = requested_quantity
+        elsif @ticket_spare_part.ticket_spare_part_store
+          @ticket_spare_part.ticket_spare_part_store.requested_quantity = requested_quantity
+        end
+
       end
 
       if @terminated
