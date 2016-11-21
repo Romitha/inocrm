@@ -24,7 +24,7 @@
           %strong Part Description :
           #{t.object.ticket_spare_part.try(:spare_part_description)}
         .col-md-3
-          %strong Warranty Period :
+          %strong Warranty Period (months) :
           #{t.object.try(:warranty_period)}
 
         - unless t.object.ticket_spare_part.ticket_spare_part_non_stock.present?
@@ -32,6 +32,7 @@
             %strong Requested Qnty:
             = t.object.ticket_spare_part.ticket_spare_part_store.present? ? t.object.ticket_spare_part.ticket_spare_part_store.requested_quantity : t.object.ticket_spare_part.ticket_spare_part_manufacture.present? ? t.object.ticket_spare_part.ticket_spare_part_manufacture.requested_quantity : ""
       %hr
+
       .row
         - part_store_or_non_stock = t.object.ticket_spare_part.ticket_spare_part_store or t.object.ticket_spare_part.ticket_spare_part_non_stock
         - if part_store_or_non_stock.present?
@@ -62,6 +63,13 @@
                   %dt Available Qnty
                   %dd
                     = part_store_or_non_stock.try(:inventory_product).try(:inventories).find_by_store_id(t.object.ticket_spare_part.ticket_spare_part_store.store_id).try(:available_quantity)
+                %dt Required Qnty
+                %dd
+                  #{t.object.ticket_spare_part.ticket_spare_part_store ? t.object.ticket_spare_part.ticket_spare_part_store.requested_quantity : t.object.ticket_spare_part.ticket_spare_part_manufacture.present? ? t.object.ticket_spare_part.ticket_spare_part_manufacture.requested_quantity : ''}
+                %dt Unit
+                %dd
+            .col-md-12
+              = f.input :note, input_html: {value: nil}
 
           .col-md-6
             #paginate_grns
@@ -71,6 +79,7 @@
                     %th No
                     %th Grn no
                     %th Date Purchased
+                    %th Supplier
                     %th Price
                 %tbody
                   - if part_store_or_non_stock.inventory_product
@@ -79,6 +88,7 @@
                         %td= index+1
                         %td= grn_item.grn.grn_no
                         %td= grn_item.grn.created_at.try(:strftime, "%d-%m-%Y")
+                        %td= grn_item.grn.supplier.name
                         %td
                           = number_with_precision grn_item.unit_cost, precision: 2
 
@@ -193,6 +203,7 @@
                       = ta.link_to_add :ticket_estimation_additional_taxes, class: "small_scale_padding-right2" do
                         %span.glyphicon.glyphicon-plus-sign
                         Add tax
+
   .row
     .col-md-3
       = f.input :approved_adv_pmnt_amount, as: :string, input_html: {class: "only_float", oninput: "Inventories.limit_payment_required(this); return false;", value: f.object.advance_payment_amount}, label: "Approved advance payment amount (Estimated: #{estimate_currency} #{f.object.advance_payment_amount})"

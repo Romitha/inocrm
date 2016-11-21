@@ -95,8 +95,10 @@
         .row
           .col-md-6
             %strong GRN Current Cost:
+            = @grn_item.current_unit_cost
           .col-md-6
             %strong Currency:
+            = @grn_item.currency
         %hr
         = simple_nested_form_for @inventory_serial_item, url: create_grn_for_main_part_admins_inventories_path(inventory_serial_item_id: @inventory_serial_item.id ), html: {class: "validate_form"} do |f|
           = hidden_field_tag :store_id, @store.id, id: "store1_id"
@@ -228,7 +230,7 @@
                   = additional_cost.cost
                 .col-md-10
                   %strong Note:
-                  = additional_cost.note                  
+                  = additional_cost.note
 
       - else
         .row
