@@ -25,6 +25,7 @@ unless(user)
   user.update_attribute :current_user_role_name, admin.name
 
   # Rpermission.find_or_create_by!(rpermissions.map { |rp| {name: rp[0], controller_resource: rp[1], controller_action: rp[2]} })
+  Rpermission
   SubjectBase.create [{name: "Model"}, {name: "Controller"}]
   SubjectClass.create [{name: "User", subject_base_id: 1}, {name: "Organization", subject_base_id: 1}]
   SubjectAttribute.create [{name: "id"}, {name: "task_id"}]
