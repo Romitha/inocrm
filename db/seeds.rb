@@ -1,11 +1,11 @@
 rpermissions = [
-  ["Update user profile", "User", "edit_update"],
-  ["View list of organizations", "Organization", "index"],
-  ["Create new organization", "Organization", "new_create"],
-  ["View own user profile", "User", "profile"],
-  ["View own Organization", "Organization", "show"],
-  ["Edit organization details", "Organization", "edit_update"],
-  ["Create new user for Organization", "User", "new_create"]
+  ["Update user profile", 1, 1],
+  ["View list of organizations", 2, 2],
+  ["Create new organization", 2, 3],
+  ["View own user profile", 1, 4],
+  ["View own Organization", 2, 5],
+  ["Edit organization details", 2, 6],
+  ["Create new user for Organization", 1, 7]
 ]
 
 organization = Organization.find_or_create_by name: "VS Information Systems", short_name: "VS Information Sys", code: "123456", web_site: "http://www.vsis.com", vat_number: "34358-90", refers: "VSIS", description: "VSIS is product owner of this application", type_id: 1
@@ -25,7 +25,12 @@ unless(user)
   user.update_attribute :current_user_role_name, admin.name
 
   # Rpermission.find_or_create_by!(rpermissions.map { |rp| {name: rp[0], controller_resource: rp[1], controller_action: rp[2]} })
-  rpermissions.each { |rp| Rpermission.create_with(controller_resource: rp[1], controller_action: rp[2]).find_or_create_by(name: rp[0]) }
+  SubjectBase.create [{name: "Model"}, {name: "Controller"}]
+  SubjectClass.create [{name: "User", subject_base_id: 1}, {name: "Organization", subject_base_id: 1}]
+  SubjectAttribute.create [{name: "id"}, {name: "task_id"}]
+  SubjectAction.create [{name: "update_user"}, {name: "index"}, {name: "create_organization"}, {name: "profile"}, {name: "show"}, {name: "update_organization"}, {name: "create_user"}]
+
+  rpermissions.each { |rp| Rpermission.create_with( subject_attribute_id: 1, subject_action_id: rp[2], subject_class_id: rp[1] ).find_or_create_by(name: rp[0]) }
   admin.rpermission_ids = [1,2,3,4,5,6,7]
   default_user.rpermission_ids = [2, 4, 5]
 
