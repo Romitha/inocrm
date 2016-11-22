@@ -455,6 +455,7 @@
 
         = f.input :note, input_html: {value: nil} if !(ord or clt or rcs or rtn or rpa or bnd or cls or aps or (str and store_chargeable) or rjs or rbn )
         = simple_format ticket_spare_part.note
+        = f.submit "Save", class: "btn btn-sm btn-success"
         - if store_chargeable and cea
           .store_request_wrapper
             = f.submit "Store request", name: "store_request", class: "btn btn-sm btn-success"
