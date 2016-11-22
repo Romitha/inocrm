@@ -9,6 +9,8 @@
 - else
   - request_part = spare_part.ticket_spare_part_store
 
+- srn_item = request_part.srn_item
+
 - if spare_part and request_part.is_a? TicketSparePartStore
   .row
     .col-md-3
@@ -127,7 +129,7 @@
         = request_part.ticket_spare_part.part_terminated_reason.try(:reason)
   %hr
 
-- if request_part
+- if request_part and srn_item
   - session[:approved_inventory_product_id] = request_part.approved_inventory_product.id
   .row
     .col-md-6
@@ -155,8 +157,8 @@
         %dd
           = request_part.approved_inventory_product.inventories.where(store_id: request_part.approved_store_id).try(:sum, :available_quantity)
 
-        %dt Requested Qnty
-        %dd= request_part.requested_quantity
+        %dt Required Qnty
+        %dd= request_part.approved_quantity
 
     .col-md-6
       - if request_part.approved_main_inventory_product
@@ -259,7 +261,7 @@
                       %td= grn_serial_item.inventory_serial_item.manufatured_date.try(:strftime, "%Y-%m-%d")
                       %td= grn_serial_item.inventory_serial_item.expiry_date.try(:strftime, "%Y-%m-%d")
                       %td= simple_format grn_serial_item.inventory_serial_item.remarks
-                      %td= radio_button_tag "grn_serial_item_id", grn_serial_item.id, false,{class: "seperate_product_ckeckbox"}
+                      %td= radio_button_tag "grn_serial_item_id", grn_serial_item.id, false,{class: "seperate_product_ckeckbox"} if srn_item.quantity == 1
 
               = paginate @paginated_fifo_grn_serial_items, remote: false, method: :get
 
@@ -302,7 +304,7 @@
                         = sto.object.approved_inventory_product.inventory_product_info.issue_fractional_allowed ? (grn_batch.grn_item.remaining_quantity.to_f - grn_batch.grn_item.reserved_quantity.to_f) : (grn_batch.grn_item.remaining_quantity.to_d - grn_batch.grn_item.reserved_quantity.to_d)
                       %td= simple_format grn_batch.grn_item.remarks
                       %td
-                        = radio_button_tag "grn_batch_id", grn_batch.id, false
+                        = radio_button_tag "grn_batch_id", grn_batch.id, false if srn_item.quantity <= grn_batch.grn_item.remaining_quantity
 
               = paginate @grn_batches, remote: false, method: :get
             - else
@@ -337,7 +339,8 @@
                       %td
                         = simple_format grn_item.grn.remarks
                       %td
-                        = radio_button_tag "grn_item_id", grn_item.id, false
+                        = radio_button_tag "grn_item_id", grn_item.id, false if srn_item.quantity <= grn_item.remaining_quantity
+
 
               = paginate @grns, remote: false, method: :get
 

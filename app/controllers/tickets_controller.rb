@@ -1210,23 +1210,21 @@ class TicketsController < ApplicationController
   def update_approve_store_parts
 
     @continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
-    requested_quantity = params[:requested_quantity]
+    approved_quantity = params[:requested_quantity]
 
     if @continue
 
       @onloan_request = true if params[:onloan_request] == "Y"
       if @onloan_request
         @onloan_request_part = TicketOnLoanSparePart.find params[:request_onloan_spare_part_id]
-        @onloan_request_part.requested_quantity = requested_quantity
+        @onloan_request_part.approved_quantity = approved_quantity
         @terminated = (@onloan_request_part.status_action_id == SparePartStatusAction.find_by_code("CLS").id)
       else
         @ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
         @terminated = (@ticket_spare_part.status_action_id == SparePartStatusAction.find_by_code("CLS").id)
 
-        if @ticket_spare_part.ticket_spare_part_manufacture
-          @ticket_spare_part.ticket_spare_part_manufacture.requested_quantity = requested_quantity
-        elsif @ticket_spare_part.ticket_spare_part_store
-          @ticket_spare_part.ticket_spare_part_store.requested_quantity = requested_quantity
+        if @ticket_spare_part.ticket_spare_part_store
+          @ticket_spare_part.ticket_spare_part_store.approved_quantity = approved_quantity
         end
 
       end
@@ -1268,7 +1266,7 @@ class TicketsController < ApplicationController
 
             srn = @onloan_request_part.approved_store.srns.create(created_by: current_user.id, created_at: DateTime.now, requested_module_id: BpmModule.find_by_code("SPT").id, srn_no: CompanyConfig.first.increase_inv_last_srn_no)#inv_srn
 
-            srn_item = srn.srn_items.create(product_id: @onloan_request_part.approved_inventory_product.try(:id), quantity: 1, returnable: true, spare_part: true)#inv_srn_item
+            srn_item = srn.srn_items.create(product_id: @onloan_request_part.approved_inventory_product.try(:id), quantity: approved_quantity, returnable: true, spare_part: true)#inv_srn_item
 
             @onloan_request_part.update inv_srn_id: srn.id, inv_srn_item_id: srn_item.id
 
@@ -1314,7 +1312,7 @@ class TicketsController < ApplicationController
 
             srn = @ticket_spare_part.ticket_spare_part_store.approved_store.srns.create(created_by: current_user.id, created_at: DateTime.now, requested_module_id: BpmModule.find_by_code("SPT").id, srn_no: CompanyConfig.first.increase_inv_last_srn_no)#inv_srn
 
-            srn_item = srn.srn_items.create(product_id: @ticket_spare_part.ticket_spare_part_store.approved_inventory_product.try(:id), quantity: 1, returnable: false, spare_part: true)#inv_srn_item
+            srn_item = srn.srn_items.create(product_id: @ticket_spare_part.ticket_spare_part_store.approved_inventory_product.try(:id), quantity: approved_quantity, returnable: false, spare_part: true)#inv_srn_item
 
             @ticket_spare_part.ticket_spare_part_store.update inv_srn_id: srn.id, inv_srn_item_id: srn_item.id
 
@@ -2907,7 +2905,7 @@ class TicketsController < ApplicationController
             @grn_serial_item = GrnSerialItem.find(grn_serial_item_id)
 
             @iss_from_inventory_not_updated = @grn_serial_item.grn_item.inventory_not_updated
-            if @grn_serial_item.remaining and (@grn_serial_item.inventory_serial_item.inv_status_id == InventorySerialItemStatus.find_by_code("AV").id) and not @iss_from_inventory_not_updated 
+            if srn_item.quantity == 1 and @grn_serial_item.remaining and (@grn_serial_item.inventory_serial_item.inv_status_id == InventorySerialItemStatus.find_by_code("AV").id) and not @iss_from_inventory_not_updated
 
               @product_id = @grn_serial_item.inventory_serial_item.inventory_product.id
               @product_condition_id  = @grn_serial_item.inventory_serial_item.product_condition_id
@@ -2933,7 +2931,7 @@ class TicketsController < ApplicationController
             @grn_batch = GrnBatch.find(grn_batch_id)
 
             @iss_from_inventory_not_updated = @grn_batch.grn_item.inventory_not_updated
-            if @grn_batch.remaining_quantity > 0  and not @iss_from_inventory_not_updated 
+            if @grn_batch.remaining_quantity >= srn_item.quantity  and not @iss_from_inventory_not_updated
 
               @product_id = @grn_batch.grn_item.inventory_product.id
               @product_condition_id  = product_condition_id
@@ -2946,13 +2944,13 @@ class TicketsController < ApplicationController
               # @iss_serial_part_id  = nil
 
 
-              @grn_batch.update remaining_quantity: (@grn_batch.remaining_quantity-1)
+              @grn_batch.update remaining_quantity: (@grn_batch.remaining_quantity-srn_item.quantity)
 
-              @grn_batch.grn_item.update remaining_quantity: (@grn_batch.grn_item.remaining_quantity-1)
+              @grn_batch.grn_item.update remaining_quantity: (@grn_batch.grn_item.remaining_quantity-srn_item.quantity)
 
               @inventory = Inventory.where(store_id: @grn_batch.grn_item.grn.store_id, product_id: @grn_batch.grn_item.product_id).order("created_at asc").first
 
-              @inventory.update stock_quantity: (@inventory.stock_quantity - 1), available_quantity: (@inventory.available_quantity - 1)
+              @inventory.update stock_quantity: (@inventory.stock_quantity - srn_item.quantity), available_quantity: (@inventory.available_quantity - srn_item.quantity)
               @issued = true
             end
 
@@ -2960,7 +2958,7 @@ class TicketsController < ApplicationController
             @grn_item = GrnItem.find(grn_item_id)
 
             @iss_from_inventory_not_updated = @grn_item.inventory_not_updated
-            if @grn_item.remaining_quantity > 0  and !@iss_from_inventory_not_updated 
+            if @grn_item.remaining_quantity >= srn_item.quantity  and !@iss_from_inventory_not_updated
 
               @product_id = @grn_item.inventory_product.id
               @product_condition_id  = product_condition_id
@@ -2972,11 +2970,11 @@ class TicketsController < ApplicationController
               # @iss_grn_batch_id  = nil
               # @iss_serial_part_id  = nil
 
-              @grn_item.update remaining_quantity: (@grn_item.remaining_quantity-1)
+              @grn_item.update remaining_quantity: (@grn_item.remaining_quantity-srn_item.quantity)
 
               @inventory = Inventory.where(store_id: @grn_item.grn.store_id, product_id: @grn_item.product_id).order("created_at asc").first
 
-              @inventory.update stock_quantity: (@inventory.stock_quantity - 1), available_quantity: (@inventory.available_quantity - 1)
+              @inventory.update stock_quantity: (@inventory.stock_quantity - srn_item.quantity), available_quantity: (@inventory.available_quantity - srn_item.quantity)
               @issued = true
             end
 
@@ -2988,7 +2986,7 @@ class TicketsController < ApplicationController
 
           gin_item = gin.gin_items.create(
           product_id: @product_id,
-          issued_quantity: 1,
+          issued_quantity: srn_item.quantity,
           srn_item_id: @srn_item.id,
           product_condition_id: @product_condition_id,
           currency_id: @currency_id,
@@ -3000,7 +2998,7 @@ class TicketsController < ApplicationController
           inventory_not_updated: @inventory_not_updated
           )#inv_gin_item
 
-          gin_source = gin_item.gin_sources.create(grn_item_id: @iss_grn_item_id, grn_batch_id: @iss_grn_batch_id,grn_serial_item_id: @iss_grn_serial_item_id, serial_part_id: @iss_serial_part_id, issued_quantity: 1, unit_cost: @part_cost_price, returned_quantity: 0)#inv_gin_source
+          gin_source = gin_item.gin_sources.create(grn_item_id: @iss_grn_item_id, grn_batch_id: @iss_grn_batch_id,grn_serial_item_id: @iss_grn_serial_item_id, serial_part_id: @iss_serial_part_id, issued_quantity: srn_item.quantity, unit_cost: @part_cost_price, returned_quantity: 0)#inv_gin_source
 
           if @onloan_request
             if @onloan_request_part.ticket_spare_part
@@ -4065,7 +4063,7 @@ class TicketsController < ApplicationController
           #@ticket_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code("RQT").id
           action_id = TaskAction.find_by_action_no(78).id
 
-          @ticket_spare_part_non_stock = @ticket_spare_part.create_ticket_spare_part_non_stock(inv_product_id: params[:inv_product_id])
+          @ticket_spare_part_non_stock = @ticket_spare_part.create_ticket_spare_part_non_stock(inv_product_id: params[:inv_product_id], requested_quantity: requested_quantity)
         end
 
         @ticket_spare_part.ticket_spare_part_status_actions.create(status_id: @ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)

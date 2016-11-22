@@ -2,7 +2,8 @@
 
 - active_spare_part = onloan_request ? onloan_spare_part : spare_part.ticket_spare_part_store
 
-- gin_source = active_spare_part.try(:srr_item).try(:gin_sources).try(:first)
+- srr_item = active_spare_part.try(:srr_item)
+- gin_source = srr_item.try(:gin_sources).try(:first)
 - serial_part = gin_source.try(:grn_serial_part).try(:inventory_serial_part)
 - grn_serial_item = gin_source.try(:grn_serial_item)
 - grn_batch = gin_source.try(:grn_batch)
@@ -54,6 +55,9 @@
   .col-md-3
     %strong Part Description:
     #{spare_part.try(:spare_part_description)}
+  .col-md-3
+    %strong Returned Qnty:
+    #{srr_item.try(:quantity)}
 
 - if serial_or_item
   %hr

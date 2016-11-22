@@ -47,15 +47,14 @@
 
       .col-md-6
         .request_part_request_from
-          = f.input :request_from, as: :radio_buttons, collection: {"Manufacture" => "M", "Store" => "S", "Non Stock" => "NS"}, disabled: ("M" if ["NW", "UW"].include?(@ticket_spare_part.ticket.warranty_type.code)), checked: ("S" if @ticket_spare_part.ticket.cus_chargeable or ["NW", "UW"].include?(@ticket_spare_part.ticket.warranty_type.code))
+          = f.input :request_from, as: :radio_buttons, collection: {"Manufacture" => "M", "Store" => "S", "Non Stock" => "NS"}, disabled: ("M" if ["NW", "UW"].include?(@ticket_spare_part.ticket.warranty_type.code)), checked: ("S" if @ticket_spare_part.ticket.cus_chargeable or ["NW", "UW"].include?(@ticket_spare_part.ticket.warranty_type.code)), input_html: {class: "request_from_radio_buttons"}
         .spare_part_select
           = link_to "select", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true, class: "hide"
 
         .request_from
-        - unless ["NW", "UW"].include?(@ticket_spare_part.ticket.warranty_type.code)
-          .requested_quantity_manufacture_wrapper.col-md-4.hide
-            = label_tag "Requested quantity"
-            = text_field_tag "requested_quantity", 0, class: "form-control"
+        .requested_quantity_manufacture_wrapper.col-md-4.hide
+          = label_tag "Requested quantity"
+          = text_field_tag "requested_quantity", 1, class: "form-control", disabled: true, readonly: true
 
       .col-md-4.not_non_stock
         .part.hide

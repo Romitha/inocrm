@@ -27,10 +27,9 @@
           %strong Warranty Period (months) :
           #{t.object.try(:warranty_period)}
 
-        - unless t.object.ticket_spare_part.ticket_spare_part_non_stock.present?
           .col-md-3
-            %strong Requested Qnty:
-            = t.object.ticket_spare_part.ticket_spare_part_store.present? ? t.object.ticket_spare_part.ticket_spare_part_store.requested_quantity : t.object.ticket_spare_part.ticket_spare_part_manufacture.present? ? t.object.ticket_spare_part.ticket_spare_part_manufacture.requested_quantity : ""
+            %strong Required Qnty:
+            = (t.object.ticket_spare_part.ticket_spare_part_store or t.object.ticket_spare_part.ticket_spare_part_manufacture or t.object.ticket_spare_part.ticket_spare_part_non_stock).requested_quantity
       %hr
 
       .row
@@ -63,10 +62,8 @@
                   %dt Available Qnty
                   %dd
                     = part_store_or_non_stock.try(:inventory_product).try(:inventories).find_by_store_id(t.object.ticket_spare_part.ticket_spare_part_store.store_id).try(:available_quantity)
-                %dt Required Qnty
-                %dd
-                  #{t.object.ticket_spare_part.ticket_spare_part_store ? t.object.ticket_spare_part.ticket_spare_part_store.requested_quantity : t.object.ticket_spare_part.ticket_spare_part_manufacture.present? ? t.object.ticket_spare_part.ticket_spare_part_manufacture.requested_quantity : ''}
-                %dt Unit
+ 
+                 %dt Unit
                 %dd
             .col-md-12
               = f.input :note, input_html: {value: nil}
@@ -80,7 +77,7 @@
                     %th Grn no
                     %th Date Purchased
                     %th Supplier
-                    %th Price
+                    %th Unit Price
                 %tbody
                   - if part_store_or_non_stock.inventory_product
                     - part_store_or_non_stock.inventory_product.try(:grn_items).each_with_index do |grn_item, index|
@@ -90,7 +87,7 @@
                         %td= grn_item.grn.created_at.try(:strftime, "%d-%m-%Y")
                         %td= grn_item.grn.supplier.name
                         %td
-                          = number_with_precision grn_item.unit_cost, precision: 2
+                          = number_with_precision grn_item.current_unit_cost, precision: 2
 
       - unless t.object.ticket_spare_part.ticket_spare_part_manufacture.present?
         %hr

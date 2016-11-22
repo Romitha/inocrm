@@ -25,7 +25,7 @@
 
           - unless t.object.ticket_spare_part.ticket_spare_part_non_stock.present?
             .col-md-3
-              %strong Requested Qnty:
+              %strong Required Qnty:
               = t.object.ticket_spare_part.ticket_spare_part_store.present? ? t.object.ticket_spare_part.ticket_spare_part_store.requested_quantity : t.object.ticket_spare_part.ticket_spare_part_manufacture.present? ? t.object.ticket_spare_part.ticket_spare_part_manufacture.requested_quantity : ""
 
         %hr
@@ -73,7 +73,7 @@
                       %th No
                       %th Supplier
                       %th Date Purchased
-                      %th Price
+                      %th Unit Price
                   %tbody
                     - @paginate_grn_items.each_with_index do |grn_item, index|
                       %tr
@@ -85,7 +85,7 @@
                         %td=grn_item.grn.supplier_name
                         %td= grn_item.grn.created_at.try(:strftime, "%d-%m-%Y")
                         %td
-                          = number_with_precision grn_item.unit_cost, precision: 2
+                          = number_with_precision grn_item.current_unit_cost, precision: 2
                           (#{grn_item.currency.code})
 
         .row

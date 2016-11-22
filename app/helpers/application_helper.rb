@@ -288,7 +288,6 @@ module ApplicationHelper
         estimation_external.ticket_estimation_external_taxes.each do |ticket_estimation_external_tax|
           item_index += 1
           description = "#{ticket_estimation_external_tax.tax.tax} (#{ticket_estimation_external_tax.tax_rate})"
-          quantity = 1
           unit_price = ticket_estimation.approval_required ? ticket_estimation_external_tax.approved_tax_amount.to_f : ticket_estimation_external_tax.estimated_tax_amount.to_f
 
           totalprice = unit_price
@@ -307,6 +306,8 @@ module ApplicationHelper
         item_code = estimation_part.ticket_spare_part.ticket_spare_part_store.present? ? estimation_part.ticket_spare_part.ticket_spare_part_store.approved_inventory_product.try(:generated_item_code) : ""
 
         unit_price = ticket_estimation.approval_required ? estimation_part.approved_estimated_price.to_f : estimation_part.estimated_price.to_f
+
+        quantity = ( ( estimation_part.ticket_spare_part.ticket_spare_part_store or estimation_part.ticket_spare_part.ticket_spare_part_non_stock ).try(:approved_quantity) or 1 )
 
         totalprice = unit_price
         total_amount += totalprice
@@ -488,7 +489,6 @@ module ApplicationHelper
         estimation_external.ticket_estimation_external_taxes.each do |ticket_estimation_external_tax|
           item_index += 1
           description = "#{ticket_estimation_external_tax.tax.tax} (#{ticket_estimation_external_tax.tax_rate})"
-          quantity = 1
           unit_price = ticket_invoice_estimation.ticket_estimation.approval_required ? ticket_estimation_external_tax.approved_tax_amount.to_f : ticket_estimation_external_tax.estimated_tax_amount.to_f
 
           totalprice = unit_price
@@ -507,6 +507,8 @@ module ApplicationHelper
         item_code = estimation_part.ticket_spare_part.ticket_spare_part_store.present? ? estimation_part.ticket_spare_part.ticket_spare_part_store.approved_inventory_product.generated_item_code : ""
 
         unit_price = ticket_invoice_estimation.ticket_estimation.approval_required ? estimation_part.approved_estimated_price.to_f : estimation_part.estimated_price.to_f
+
+        quantity = ( ( estimation_part.ticket_spare_part.ticket_spare_part_store or estimation_part.ticket_spare_part.ticket_spare_part_non_stock).try(:approved_quantity ) or 1 )
 
         totalprice = unit_price
         total_amount += totalprice
@@ -695,13 +697,13 @@ module ApplicationHelper
         # store_part_name = (store_part && store_part.inventory_product) ? store_part.inventory_product.try(:description))
 
         if store_part and store_part.inventory_product
-          spare_part_name = "[#{store_part.inventory_product.description.try :truncate, 18}]"
+          spare_part_name = "[S: #{store_part.inventory_product.description.try :truncate, 18}]"
 
         elsif manufacture_part
-          spare_part_name = "[#{spare_part.spare_part_description.truncate(18)}]"
+          spare_part_name = "[M: #{spare_part.spare_part_description.truncate(18)}]"
 
         elsif non_stock_part
-          spare_part_name = "[#{non_stock_part.inventory_product.description.try :truncate, 18}]"
+          spare_part_name = "[NS: #{non_stock_part.inventory_product.description.try :truncate, 18}]"
         end
 
         if spare_part_name

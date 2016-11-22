@@ -131,6 +131,10 @@
                 %strong
                   Model No:
                 = ticket_spare_part.ticket_spare_part_non_stock.inventory_product.try(:model_no)
+              .col-md-2
+                %strong
+                  Required Qty:
+                = ticket_spare_part.ticket_spare_part_non_stock.approval_required and ticket_spare_part.ticket_spare_part_non_stock.approved ? ticket_spare_part.ticket_spare_part_non_stock.approved_quantity : ticket_spare_part.ticket_spare_part_non_stock.requested_quantity
               .col-md-3
                 %strong
                   Item Description:
@@ -171,8 +175,8 @@
                 = ticket_spare_part.ticket_spare_part_store.inventory_product.try(:model_no)
               .col-md-2
                 %strong
-                  Requested Qty:
-                = ticket_spare_part.ticket_spare_part_store.requested_quantity
+                  Required Qty:
+                = ticket_spare_part.ticket_spare_part_store.store_request_approved ? ticket_spare_part.ticket_spare_part_store.approved_quantity : ticket_spare_part.ticket_spare_part_store.requested_quantity
               %hr
 
               .col-md-3
@@ -396,7 +400,7 @@
           .col-md-5
             %strong
               Returned quantity:
-            = ticket_spare_part.ticket_spare_part_store ? ticket_spare_part.ticket_spare_part_store.returned_quantity : ''
+            = ticket_spare_part.ticket_spare_part_store ? ticket_spare_part.ticket_spare_part_store.approved_quantity : ''
 
         - if (rqt and non_stock_warranty) or (cea and non_stock_chargeable)
           .row

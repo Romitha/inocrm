@@ -89,13 +89,26 @@ window.Inventories =
       category_list.html("<option></option>"+filtered_option).trigger('chosen:updated')
 
   disable_store: ->
+    disable_loaded_requested_quantity = (elem)->
+      $(".requested_quantity_manufacture_wrapper").removeClass("hide")
+      $(".requested_quantity_manufacture_wrapper input").prop
+        disabled: false
+        readonly: false
+
+      switch elem.val()
+        when "S"
+          $(".requested_quantity_manufacture_wrapper").addClass("hide")
+          $(".requested_quantity_manufacture_wrapper input").prop("disabled", true)
+        when "M"
+          $(".requested_quantity_manufacture_wrapper input").prop("readonly", true)
+
+    $(".request_from_radio_buttons").click -> disable_loaded_requested_quantity($(@))
+
     $("#ticket_spare_part_request_from_ns").click ->
       $(".request_from").empty()
       $("#store_id", "#mst_store_id", "#inv_product_id", "#mst_inv_product_id").val("")
       $(".not_non_stock").addClass("hide")
 
-      $(".requested_quantity_manufacture_wrapper").addClass("hide")
-      $(".requested_quantity_manufacture_wrapper input").prop("disabled", true)
 
     $("#ticket_spare_part_request_from_s").click ->
       $(".request_from").empty()
@@ -105,12 +118,10 @@ window.Inventories =
       if $("#ticket_spare_part_request_from_s").is(":checked")
         $(".part").removeClass("hide")
         $("#request_from_select").removeClass("hide")
+
       else
         $(".part").addClass("hide")
         $("#request_from_select").addClass("hide")
-
-      $(".requested_quantity_manufacture_wrapper").addClass("hide")
-      $(".requested_quantity_manufacture_wrapper input").prop("disabled", true)
 
   disable_upon_manufacture: ->
     if $("#ticket_spare_part_request_from_m").is(":checked")
@@ -126,16 +137,9 @@ window.Inventories =
       $("#part_of_main_product_select").addClass("hide")
       $(".not_non_stock").removeClass("hide")
 
-      $(".requested_quantity_manufacture_wrapper").removeClass("hide")
-      $(".requested_quantity_manufacture_wrapper input").prop("disabled", false)
-
     else
       $("#request_from_select").removeClass("hide")
       $(".part").removeClass("hide")
-      $("#part_of_main_product_select").removeClass("hide")
-
-      $(".requested_quantity_manufacture_wrapper").addClass("hide")
-      $(".requested_quantity_manufacture_wrapper input").prop("disabled", true)
 
   disable_manufacture: ->
     _this = this

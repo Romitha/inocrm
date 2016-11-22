@@ -275,7 +275,8 @@ class InventoriesController < ApplicationController
             
             ticket_spare_part.ticket_spare_part_store.update_attributes(
               inv_srr_id: srr.id,
-              inv_srr_item_id: srr_item.id
+              inv_srr_item_id: srr_item.id,
+              returned_quantity: ticket_spare_part.ticket_spare_part_store.approved_quantity
             )
 
             save_ticket_spare_part["RTN", 17] #Return Part (Spare/Faulty)
@@ -1365,7 +1366,7 @@ class InventoriesController < ApplicationController
 
           @inv_gin_source =  @inv_srr_item.gin_sources.first 
 
-          if @inventory_serial_part.present? # Inventory Serial Part Returned
+          if @inventory_serial_part.present? and @inv_srr_item.quantity == 1 # Inventory Serial Part Returned
 
             @inventory_serial_part_attributes = inventory_serial_part_params
             @inv_grn_item_attributes = {}
@@ -1682,10 +1683,10 @@ class InventoriesController < ApplicationController
             @inv_grn_item = @inv_grn.grn_items.build(@grn_item_attributes)
             @grn_item_attributes.merge!({
               product_id:  @inventory_batch.product_id,
-              recieved_quantity: 1,
-              remaining_quantity: 1,
+              recieved_quantity: @inv_srr_item.quantity,
+              remaining_quantity: @inv_srr_item.quantity,
               reserved_quantity: 0,
-              damage_quantity: (params[:damage_reason_check].present? ? 1 : 0),
+              damage_quantity: (params[:damage_reason_check].present? ? @inv_srr_item.quantity : 0),
               current_unit_cost: @inv_grn_item.unit_cost,
               srr_item_id: @inv_srr_item.id,
               inventory_not_updated: false,
@@ -1696,24 +1697,22 @@ class InventoriesController < ApplicationController
             # inv_grn_batch
             @inv_grn_batch = @inv_grn_item.grn_batches.build
             @inv_grn_batch.inventory_batch_id = @inventory_batch.id
-            @inv_grn_batch.recieved_quantity = 1
-            @inv_grn_batch.remaining_quantity = 1
-            @inv_grn_batch.damage_quantity = params[:damage_reason_check].present? ? 1 : 0
+            @inv_grn_batch.recieved_quantity = @inv_srr_item.quantity
+            @inv_grn_batch.remaining_quantity = @inv_srr_item.quantity
+            @inv_grn_batch.damage_quantity = params[:damage_reason_check].present? ? @inv_srr_item.quantity : 0
             @inv_grn.save
 
             @inv_grn_item.grn_item_current_unit_cost_histories.create created_by: current_user.id, current_unit_cost: @inv_grn_item.current_unit_cost
 
             #inv_inventory Edit
+            @inventory_batch.inventory.increment! :stock_quantity, @inv_srr_item.quantity
+
             if params[:damage_reason_check].present?
-              @inventory_batch.inventory.update({
-                stock_quantity: (@inventory_batch.inventory.stock_quantity.to_f + 1), 
-                damage_quantity: (@inventory_batch.inventory.damage_quantity.to_f + 1)
-              })
+              @inventory_batch.inventory.increment! :damage_quantity, @inv_srr_item.quantity
+
             else
-              @inventory_batch.inventory.update({
-                stock_quantity: (@inventory_batch.inventory.stock_quantity.to_f + 1), 
-                available_quantity: (@inventory_batch.inventory.available_quantity.to_f + 1)
-              })
+              @inventory_batch.inventory.increment! :available_quantity, @inv_srr_item.quantity
+
             end
 
             # inv_damage - Add
@@ -1726,7 +1725,7 @@ class InventoriesController < ApplicationController
                 grn_serial_item_id: nil,
                 grn_serial_part_id: nil,
                 spare_part: @inventory_batch.inventory_product.spare_part,
-                quantity: 1,
+                quantity: @inv_srr_item.quantity,
                 unit_cost: @inv_grn_item.unit_cost,
                 currency_id: @inv_grn_item.currency_id,
                 srr_item_id: @inv_srr_item.id,
@@ -1742,10 +1741,10 @@ class InventoriesController < ApplicationController
             end
 
             # inv_gin_item - edit
-            @inv_gin_source.gin_item.update returned_quantity: (@inv_gin_source.gin_item.returned_quantity.to_i + 1), return_completed: (@inv_gin_source.gin_item.returnable && (@inv_gin_source.gin_item.issued_quantity.to_i == (@inv_gin_source.gin_item.returned_quantity.to_i + 1)))
+            @inv_gin_source.gin_item.update returned_quantity: (@inv_gin_source.gin_item.returned_quantity.to_i + @inv_srr_item.quantity), return_completed: (@inv_gin_source.gin_item.returnable && (@inv_gin_source.gin_item.issued_quantity.to_i == (@inv_gin_source.gin_item.returned_quantity.to_i + @inv_srr_item.quantity)))
 
             # inv_gin_source - edit
-            @inv_gin_source.update returned_quantity: (@inv_gin_source.returned_quantity.to_i + 1)
+            @inv_gin_source.update returned_quantity: (@inv_gin_source.returned_quantity.to_i + @inv_srr_item.quantity)
 
             # inv_srn_item - edit
             @inv_srn_item.update closed: true, return_completed: (@inv_srn_item.returnable)
@@ -1770,10 +1769,10 @@ class InventoriesController < ApplicationController
               if !@grn_item.product_id
                 @grn_item.product_id = @inv_gin_source.grn_item.product_id  
               end
-              @grn_item.recieved_quantity = 1
-              @grn_item.remaining_quantity = 1
+              @grn_item.recieved_quantity = @inv_srr_item.quantity
+              @grn_item.remaining_quantity = @inv_srr_item.quantity
               @grn_item.reserved_quantity = 0
-              @grn_item.damage_quantity = params[:damage_reason_check].present? ? 1 : 0  
+              @grn_item.damage_quantity = params[:damage_reason_check].present? ? @inv_srr_item.quantity : 0
               #@grn_item.unit_cost - binded
               #@grn_item.currency_id - binded
               @grn_item.current_unit_cost = @grn_item.unit_cost 
@@ -1786,16 +1785,13 @@ class InventoriesController < ApplicationController
 
               #inv_inventory Edit
               @inv_inventory = Inventory.where(product_id: @grn_item.product_id, store_id: @inv_srr.store.id).first
+
+              @inv_inventory.increment! :stock_quantity, @inv_srr_item.quantity
+
               if params[:damage_reason_check].present?
-                @inv_inventory.update({ 
-                  stock_quantity: (@inv_inventory.stock_quantity.to_f + 1), 
-                  damage_quantity: (@inv_inventory.damage_quantity.to_f + 1)
-                }) if @inv_inventory.present?
+                @inv_inventory.increment! :damage_quantity, @inv_srr_item.quantity if @inv_inventory.present?
               else
-                @inv_inventory.update({ 
-                  stock_quantity: (@inv_inventory.stock_quantity.to_f + 1), 
-                  available_quantity: (@inv_inventory.available_quantity.to_f + 1)
-                }) if @inv_inventory.present?
+                @inv_inventory.increment! :available_quantity, @inv_srr_item.quantity if @inv_inventory.present?
               end
 
               # inv_damage - Add
@@ -1808,7 +1804,7 @@ class InventoriesController < ApplicationController
                   grn_serial_item_id: nil,
                   grn_serial_part_id: nil,
                   spare_part: @grn_item.inventory_product.spare_part,
-                  quantity: 1,
+                  quantity: @inv_srr_item.quantity,
                   unit_cost: @grn_item.unit_cost,
                   currency_id: @grn_item.currency_id,
                   srr_item_id: @inv_srr_item.id,
@@ -1824,10 +1820,10 @@ class InventoriesController < ApplicationController
               end
 
               # inv_gin_item - edit
-              @inv_gin_source.gin_item.update returned_quantity: (@inv_gin_source.gin_item.returned_quantity.to_i + 1), return_completed: (@inv_gin_source.gin_item.returnable && (@inv_gin_source.gin_item.issued_quantity.to_i == (@inv_gin_source.gin_item.returned_quantity.to_i + 1)))
+              @inv_gin_source.gin_item.update returned_quantity: (@inv_gin_source.gin_item.returned_quantity.to_i + @inv_srr_item.quantity), return_completed: (@inv_gin_source.gin_item.returnable && (@inv_gin_source.gin_item.issued_quantity.to_i == (@inv_gin_source.gin_item.returned_quantity.to_i + @inv_srr_item.quantity)))
 
               # inv_gin_source - edit
-              @inv_gin_source.update returned_quantity: (@inv_gin_source.returned_quantity.to_i + 1)
+              @inv_gin_source.update returned_quantity: (@inv_gin_source.returned_quantity.to_i + @inv_srr_item.quantity)
 
               # inv_srn_item - edit
               @inv_srn_item.update closed: true, return_completed: (@inv_srn_item.returnable)

@@ -238,8 +238,8 @@
                 %dd
                   = sto.object.inventory_product.inventories.where(store_id: sto.object.store_id).try(:sum, :available_quantity)
 
-                = label_tag "Requested quantity"
-                = text_field_tag "requested_quantity", (sto.object.inventory_product.inventory_product_info.need_serial ? 1 : 0 ), class: "form-control", readonly: (sto.object.inventory_product.inventory_product_info.need_serial)
+                = label_tag "Required quantity"
+                = text_field_tag "requested_quantity", (request_part.present? ? request_part.requested_quantity : 1 ), class: "form-control", readonly: (sto.object.inventory_product.inventory_product_info.need_serial)
 
         .col-md-6.main_product_with_link
           = link_to "Change", inventory_in_modal_inventories_path(select_frame: "main_product"), id: "part_of_main_product_select", remote: true
