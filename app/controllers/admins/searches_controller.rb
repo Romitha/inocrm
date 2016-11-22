@@ -46,16 +46,16 @@ module Admins
         # **************
         # @grn_serial_items = @inv_pro.grn_serial_items#.map { |g| g.inventory_serial_item }
         if @store.present?
-          @inventory_serial_items = InventorySerialItem.search(query: "inventory.store_id:#{@store.id} AND inventory_product.id:#{@inv_pro.id}")
+          @inventory_serial_items = Kaminari.paginate_array(InventorySerialItem.search(query: "inventory.store_id:#{@store.id} AND inventory_product.id:#{@inv_pro.id}")).page(params[:page]).per(10)
         else
-          @inventory_serial_items = InventorySerialItem.search(query: "inventory_product.id:#{@inv_pro.id}")
+          @inventory_serial_items = Kaminari.paginate_array(InventorySerialItem.search(query: "inventory_product.id:#{@inv_pro.id}")).page(params[:page]).per(10)
         end
         # **************
         # @total_stock_cost = @grn_serial_items.to_a.sum{|g| (g.grn_item.current_unit_cost*g.grn_item.remaining_quantity + g.inventory_serial_item.inventory_serial_items_additional_costs.sum(:cost))}
 
         @total_stock_cost = @inventory_serial_items.sum{|i| i.grn_items.sum{ |g| g.any_remaining_serial_item ? g.current_unit_cost.to_f*g.remaining_quantity.to_f : 0 } + i.inventory_serial_items_additional_costs.sum{|c| c.cost.to_f }}
 
-        # @grn_serial_items = Kaminari.paginate_array(@grn_serial_items).page(params[:page]).per(10)
+        # @inventory_serial_items = Kaminari.paginate_array(@inventory_serial_items).page(params[:page]).per(10)
 
         render "admins/searches/inventory/select_serial_items"
 

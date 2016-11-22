@@ -8,10 +8,12 @@
     .col-md-2.strong Item code
     .col-md-2.strong Description
     .col-md-1.strong Unit
-    / .col-md-1.strong.text-right Stock Qty ff
-    .col-md-2.strong.text-center Currency
-    / .col-md-1.strong.text-right Available Qty
-    .col-md-2.strong.text-center Stock cost
+    - if params[:from_where] == "inventories"
+      .col-md-1.strong.text-right Stock Qty
+    .col-md-1.strong.text-center Currency
+    - if params[:from_where] == "inventories"
+      .col-md-1.strong.text-right Available Qty
+    .col-md-1.strong.text-center Stock cost
     .col-md-1.strong Action
   %hr
 
@@ -97,17 +99,28 @@
       .col-md-2= pr.generated_item_code
       .col-md-2= simple_format pr.description
       .col-md-1= pr.inventory_unit.try(:unit)
-      / .col-md-1.text-right
-      /   = number_with_precision inventories.sum{|i| i.stock_quantity.to_f }, precision: 2
-      /   / = inventories.sum{|i| i.stock_quantity.to_f }
+      - if params[:from_where] == "inventories"
+        .col-md-1.text-right
+          = number_with_precision inventories.sum{|i| i.stock_quantity.to_f }, precision: 2
+          / = inventories.sum{|i| i.stock_quantity.to_f }
 
-      .col-md-2.text-center= pr.inventory_product_info.currency_type
-
-      / .col-md-1.text-right
-      /   = inventories.sum{|i| i.available_quantity.to_f }
-      .col-md-2.text-center
+      .col-md-1.text-center= pr.inventory_product_info.currency_type
+      - if params[:from_where] == "inventories"
+        .col-md-1.text-right
+          = inventories.sum{|i| i.available_quantity.to_f }
+      .col-md-1.text-center
         - if pr.inventory_product_info.need_serial
           = pr.grn_serial_items.sum{|g| g.grn_item.current_unit_cost.to_f + g.inventory_serial_item.inventory_serial_items_additional_costs.sum{|c| c.cost.to_f }}
+
+          / - if @store
+          /   - product_inv = pr.inventories.find_by_store_id(@store.id)
+          /   - cost = product_inv.inventory_serial_items.sum{|i| i.grn_items.sum{ |g| g.any_remaining_serial_item ? g.current_unit_cost.to_f*g.remaining_quantity.to_f : 0 } + i.inventory_serial_items_additional_costs.sum{|c| c.cost.to_f }}
+          / - else
+          /   - cost = pr.inventory_serial_items.sum{|i| i.grn_items.sum{ |g| g.any_remaining_serial_item ? g.current_unit_cost.to_f*g.remaining_quantity.to_f : 0 } + i.inventory_serial_items_additional_costs.sum{|c| c.cost.to_f }}
+
+          / = pr.id
+          / - cost = pr.inventory_serial_items.sum{|i| i.grn_items.sum{ |g| g.any_remaining_serial_item ? g.current_unit_cost.to_f*g.remaining_quantity.to_f : 0 } + i.inventory_serial_items_additional_costs.sum{|c| c.cost.to_f }}
+          / = number_with_precision cost, precision: 2
 
         - elsif pr.inventory_product_info.need_batch
           = pr.grn_batches.sum{|g| g.grn_item.current_unit_cost.to_f * g.remaining_quantity.to_f }
