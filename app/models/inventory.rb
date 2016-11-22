@@ -262,18 +262,18 @@ class InventoryProduct < ActiveRecord::Base
         inventories: {
           only: [:store_id, :product_id, :stock_quantity, :available_quantity]
         },
-        # inventory_serial_items: {
-        #   only: [:id, :product_id],
-        #   include: {
-        #     grn_items: {
-        #       only: [:id, :current_unit_cost, :remaining_quantity],
-        #       methods: [:any_remaining_serial_item],
-        #     },
-        #     inventory_serial_items_additional_costs: {
-        #       only: [:id, :cost],
-        #     },
-        #   },
-        # },
+        inventory_serial_items: {
+          only: [:id, :product_id],
+          include: {
+            grn_items: {
+              only: [:id, :current_unit_cost, :remaining_quantity],
+              methods: [:any_remaining_serial_item],
+            },
+            inventory_serial_items_additional_costs: {
+              only: [:id, :cost],
+            },
+          },
+        },
         grn_batches: {
           only: [:id, :remaining_quantity],
           include: {

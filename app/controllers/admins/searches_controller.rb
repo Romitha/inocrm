@@ -10,9 +10,6 @@ module Admins
       if params[:search].present?
         search_grn = params[:search_grn]
         refined_search_grn = search_grn.map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
-        puts "********"
-        puts refined_search_grn
-        puts "********"
       end
 
       params[:query] = refined_search_grn
@@ -46,9 +43,9 @@ module Admins
         # **************
         # @grn_serial_items = @inv_pro.grn_serial_items#.map { |g| g.inventory_serial_item }
         if @store.present?
-          @inventory_serial_items = Kaminari.paginate_array(InventorySerialItem.search(query: "inventory.store_id:#{@store.id} AND inventory_product.id:#{@inv_pro.id}")).page(params[:page]).per(10)
+          @inventory_serial_items = InventorySerialItem.search(query: "inventory.store_id:#{@store.id} AND inventory_product.id:#{@inv_pro.id}"))
         else
-          @inventory_serial_items = Kaminari.paginate_array(InventorySerialItem.search(query: "inventory_product.id:#{@inv_pro.id}")).page(params[:page]).per(10)
+          @inventory_serial_items = InventorySerialItem.search(query: "inventory_product.id:#{@inv_pro.id}"))
         end
         # **************
         # @total_stock_cost = @grn_serial_items.to_a.sum{|g| (g.grn_item.current_unit_cost*g.grn_item.remaining_quantity + g.inventory_serial_item.inventory_serial_items_additional_costs.sum(:cost))}
