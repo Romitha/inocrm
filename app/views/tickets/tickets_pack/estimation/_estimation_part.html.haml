@@ -77,7 +77,7 @@
               = part_store_or_non_stock.inventory_product.try(:spare_part_no)
             - if part_store_or_non_stock.is_a? TicketSparePartStore
               %dt Available Qnty
-              %dd= part_store_or_non_stock.try(:inventory_product).try(:inventories).find_by_store_id(t.object.ticket_spare_part.ticket_spare_part_store.store_id).try(:available_quantity)
+              %dd= part_store_or_non_stock.inventory_product and part_store_or_non_stock.inventory_product.inventories.find_by_store_id(estimation_part.ticket_spare_part.ticket_spare_part_store.store_id).try(:available_quantity)
 
             %dt Unit
             %dd
