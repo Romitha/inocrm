@@ -123,6 +123,8 @@ gem "factory_girl_rails"
 
 gem 'angularjs-rails'
 
+gem 'wicked_pdf'
+
 
 # gem "em-http-request"
 
