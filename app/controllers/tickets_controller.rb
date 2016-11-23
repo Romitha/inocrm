@@ -859,6 +859,7 @@ class TicketsController < ApplicationController
     Inventory
     TaskAction
     Tax
+    TicketEstimation
     @ticket = Ticket.find params[:ticket_id]
     # @edit_ticket = session[:edit_ticket]
 
@@ -2013,14 +2014,24 @@ class TicketsController < ApplicationController
   def customer_advance_payment
     User
 
+    # customer_checker = Customer.tickets.map { |c| c.cus_payment_required == true and c.cus_payment_completed == false and c.status_id != 9 }
     if params[:customer_name].present?
       search_customer_name = params[:customer_name]
       # @grn_items = GrnItem.all.page(params[:page]).per(3)
-      @search_customers = Customer.where("name like ?", "%#{search_customer_name}%").page(params[:page]).per(3)
-      # @search_customers = Kaminari.paginate_array(@search_customers).page(params[:page]).per(3)
+      # @search_customers = Customer.where("name like ?", "%#{search_customer_name}%").page(params[:page]).per(3)
+
+      # @search_customers = Kaminari.paginate_array(Customer.where("name like ?", "%#{search_customer_name}%")).page(params[:page]).per(10)
+
+      # ticket.status <> CLS and
+      # ticket.cus_payment_required == true and
+      # ticket.cus_payment_completed == false and
+
+      ####
+      @search_customers = Kaminari.paginate_array(Customer.where("name like ?", "%#{search_customer_name}%")).page(params[:page]).per(10)
+
     else
-      @search_customers = Customer.all.page(params[:page]).per(3)
-      # @search_customers = Kaminari.paginate_array(@search_customers).page(params[:page]).per(3)
+      # @search_customers = Customer.all.page(params[:page]).per(3)
+      @search_customers = Kaminari.paginate_array(Customer.all).page(params[:page]).per(10)
     end
 
     # @search_customers = Customer.all
