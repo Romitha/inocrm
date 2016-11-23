@@ -238,7 +238,7 @@
                 %dd
                   = sto.object.inventory_product.inventories.where(store_id: sto.object.store_id).try(:sum, :available_quantity)
 
-                = label_tag "Required quantity"
+                = label_tag "Required Quantity"
                 = text_field_tag "requested_quantity", (request_part.present? ? request_part.requested_quantity : 1 ), class: "form-control", readonly: (sto.object.inventory_product.inventory_product_info.need_serial)
 
         .col-md-6.main_product_with_link

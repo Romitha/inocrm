@@ -9,7 +9,7 @@
           = @inventory ? @inventory.organization.name : Organization.find(session[:requested_store_id]).name
       %dt Item Code
       %dd
-        = @inventory ? (@inventory_product or @inventory.inventory_product).serial_no : @inventory_product.serial_no
+        = @inventory ? (@inventory_product or @inventory.inventory_product).generated_item_code : @inventory_product.generated_item_code
       %dt Item Description
 
       %dd
@@ -30,7 +30,7 @@
 
     - if session[:select_frame] == "request_from"
       .requested_quantity_wrapper.col-md-4
-        = label_tag "Required quantity"
+        = label_tag "Required Quantity"
         = text_field_tag "requested_quantity", 1, class: "form-control", readonly: ((@inventory_product or @inventory.inventory_product) and (@inventory_product or @inventory.inventory_product).inventory_product_info.need_serial)
 
   $(".#{session[:select_frame]}").html('#{j content_for :content_for}');
