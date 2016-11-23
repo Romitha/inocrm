@@ -27,7 +27,12 @@
         %td
           = link_to "#", onclick: "Users.request_printer_application('receipt', '#{payment.id}', 'receipt_request_type', 'print_receipt_tag_value', 'print_receipt'); false;", id: "receipt_print", data: {disable_with: "Printing..."}, class: "btn btn-default" do
             = ticket.ticket_print_count.to_i > 0 ? "Re-Print Receipt" : "Print Receipt"
-
+.row
+  .col-md-9
+  .col-md-3
+    - if ticket.cus_payment_required and ticket.cus_payment_completed and ticket.status_id != 9
+      = link_to invoice_advance_payment_tickets_path(ticket_id: ticket, check_payment: true), class: "btn btn-success" do
+        Create Adavance Payment
 -if ticket.final_invoice.present?
   %table.table.table-responsive.table-condensed.table-bordered.small_scale_margin-top1
     %thead
@@ -44,6 +49,7 @@
         %th Cost
         %th Esti. Amount
         %th Tax
+        %th Total Amount
         %th Deduction
         %th Advance received
         %th Net payment
@@ -59,6 +65,8 @@
         %td= number_to_currency ticket.final_invoice.total_cost, delimiter: ",", unit: ticket.ticket_currency.code, format: "%u %n"
         %td= number_to_currency ticket.final_invoice.total_amount, delimiter: ",", unit: ticket.ticket_currency.code, format: "%u %n"
         %td= number_to_currency ticket.final_invoice.ticket_invoice_total_taxes.sum(:amount), delimiter: ",", unit: ticket.ticket_currency.code, format: "%u %n"
+        - tot_amount = ticket.final_invoice.total_cost + ticket.final_invoice.total_amount + ticket.final_invoice.ticket_invoice_total_taxes.sum(:amount)
+        %td= number_to_currency tot_amount, delimiter: ",", unit: ticket.ticket_currency.code, format: "%u %n"
         %td= number_to_currency ticket.final_invoice.total_deduction, delimiter: ",", unit: ticket.ticket_currency.code, format: "%u %n"
         %td= number_to_currency ticket.final_invoice.total_advance_recieved, delimiter: ",", unit: ticket.ticket_currency.code, format: "%u %n"
         %td= number_to_currency ticket.final_invoice.net_total_amount, delimiter: ",", unit: ticket.ticket_currency.code, format: "%u %n"

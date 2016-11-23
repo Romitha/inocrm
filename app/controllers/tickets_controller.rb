@@ -860,6 +860,7 @@ class TicketsController < ApplicationController
     TaskAction
     Tax
     TicketEstimation
+    Invoice
     @ticket = Ticket.find params[:ticket_id]
     # @edit_ticket = session[:edit_ticket]
 
@@ -932,7 +933,7 @@ class TicketsController < ApplicationController
 
       # product = @ticket.products.first
       # @user_ticket_actions = @ticket.cached_user_ticket_actions
-
+      # @new_payment_receive = TicketPaymentReceived.new
       @render_template = "tickets/tickets_pack/payment_recieved"
       @variables = {ticket: @ticket}
 
@@ -2013,40 +2014,14 @@ class TicketsController < ApplicationController
 
   def customer_advance_payment
     User
-
-    # customer_checker = Customer.tickets.map { |c| c.cus_payment_required == true and c.cus_payment_completed == false and c.status_id != 9 }
     if params[:customer_name].present?
       search_customer_name = params[:customer_name]
-      # @grn_items = GrnItem.all.page(params[:page]).per(3)
-      # @search_customers = Customer.where("name like ?", "%#{search_customer_name}%").page(params[:page]).per(3)
-
-      # @search_customers = Kaminari.paginate_array(Customer.where("name like ?", "%#{search_customer_name}%")).page(params[:page]).per(10)
-
-      # ticket.status <> CLS and
-      # ticket.cus_payment_required == true and
-      # ticket.cus_payment_completed == false and
-
-      ####
-      @search_customers = Kaminari.paginate_array(Customer.where("name like ?", "%#{search_customer_name}%")).page(params[:page]).per(10)
-
+      @tickets = Kaminari.paginate_array(Ticket.joins(:customer).where(" spt_ticket.status_id != ? and spt_ticket.cus_payment_required = ? and spt_ticket.cus_payment_completed = ?", 9, true, false ).where("spt_customer.name like ?", "%#{search_customer_name}%")).page(params[:page]).per(3)
     else
-      # @search_customers = Customer.all.page(params[:page]).per(3)
-      @search_customers = Kaminari.paginate_array(Customer.all).page(params[:page]).per(10)
+      @tickets = Kaminari.paginate_array(Ticket.where("spt_ticket.status_id != ? and spt_ticket.cus_payment_required = ? and spt_ticket.cus_payment_completed = ?", 9, true, false )).page(params[:page]).per(3)
     end
-
-    # @search_customers = Customer.all
     render "tickets/tickets_pack/customer_advance_payment/customer_advance_paymente"
   end
-
-  # def create_invoice_for_hp
-  #   Inventory
-  #   TicketSparePart
-  #   if params[:ticket_no].present?
-  #     ticket_id = params[:ticket_no]
-  #     @ticket = Ticket.where("id like ?", "%#{ticket_id}%")
-  #   end
-  #   render "tickets/tickets_pack/create_invoice_for_hp"
-  # end
 
   def create_invoice_for_hp
     Inventory
