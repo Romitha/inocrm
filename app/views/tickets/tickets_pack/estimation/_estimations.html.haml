@@ -67,10 +67,10 @@
 
         %td
           - total_tax = if estimation.approval_required
-            - estimation.ticket_estimation_externals.to_a.sum{|e| e.estimation_external_taxes.sum(:approved_tax_amount) } + estimation.ticket_estimation_parts.to_a.sum{|e| e.ticket_estimation_part_taxes.sum(:approved_tax_amount) } + estimation.ticket_estimation_additionals.to_a.sum{|e| e.estimation_additional_taxes.sum(:approved_tax_amount) }
+            - estimation.ticket_estimation_externals.to_a.sum{|e| e.estimation_external_taxes.sum(:approved_tax_amount) } + estimation.ticket_estimation_parts.to_a.sum{|e| e.ticket_estimation_part_taxes.sum(:approved_tax_amount) } + estimation.ticket_estimation_additionals.to_a.sum{|e| e.ticket_estimation_additional_taxes.sum(:approved_tax_amount) }
 
           - else
-            - estimation.ticket_estimation_externals.to_a.sum{|e| e.estimation_external_taxes.sum(:estimated_tax_amount) } + estimation.ticket_estimation_parts.to_a.sum{|e| e.ticket_estimation_part_taxes.sum(:estimated_tax_amount) } + estimation.ticket_estimation_additionals.to_a.sum{|e| e.estimation_additional_taxes.sum(:estimated_tax_amount) }
+            - estimation.ticket_estimation_externals.to_a.sum{|e| e.estimation_external_taxes.sum(:estimated_tax_amount) } + estimation.ticket_estimation_parts.to_a.sum{|e| e.ticket_estimation_part_taxes.sum(:estimated_tax_amount) } + estimation.ticket_estimation_additionals.to_a.sum{|e| e.ticket_estimation_additional_taxes.sum(:estimated_tax_amount) }
 
           = number_with_precision(total_tax, precision: 2)
 
