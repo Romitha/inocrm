@@ -63,7 +63,7 @@
                   %dd
                     = part_store_or_non_stock.try(:inventory_product).try(:inventories).find_by_store_id(t.object.ticket_spare_part.ticket_spare_part_store.store_id).try(:available_quantity)
  
-                 %dt Unit
+                %dt Unit
                 %dd
             .col-md-12
               = f.input :note, input_html: {value: nil}

@@ -280,6 +280,7 @@ module ApplicationHelper
 
         unit_price = ticket_estimation.approval_required ? estimation_external.approved_estimated_price.to_f : estimation_external.estimated_price.to_f
 
+        quantity = 1
         totalprice = unit_price
         total_amount += totalprice
 
@@ -305,11 +306,11 @@ module ApplicationHelper
         description = "Part No: #{estimation_part.ticket_spare_part.spare_part_no} #{estimation_part.ticket_spare_part.spare_part_description}" + "#{' (Warr: ' + estimation_part.warranty_period.to_s + ' M)' if estimation_part.warranty_period.present? }"
         item_code = estimation_part.ticket_spare_part.ticket_spare_part_store.present? ? estimation_part.ticket_spare_part.ticket_spare_part_store.approved_inventory_product.try(:generated_item_code) : ""
 
-        unit_price = ticket_estimation.approval_required ? estimation_part.approved_estimated_price.to_f : estimation_part.estimated_price.to_f
+        totalprice = ticket_estimation.approval_required ? estimation_part.approved_estimated_price.to_f : estimation_part.estimated_price.to_f
 
         quantity = ( ( estimation_part.ticket_spare_part.ticket_spare_part_store or estimation_part.ticket_spare_part.ticket_spare_part_non_stock ).try(:approved_quantity) or 1 )
 
-        totalprice = unit_price
+        unit_price = totalprice / quantity 
         total_amount += totalprice
         net_total_amount += totalprice
 
@@ -480,6 +481,7 @@ module ApplicationHelper
 
         unit_price = ticket_invoice_estimation.ticket_estimation.approval_required ? estimation_external.approved_estimated_price.to_f : estimation_external.estimated_price.to_f
 
+        quantity = 1
         totalprice = unit_price
         total_amount += totalprice
         net_total_amount += totalprice
@@ -506,11 +508,11 @@ module ApplicationHelper
         description = "Part No: #{estimation_part.ticket_spare_part.spare_part_no} #{estimation_part.ticket_spare_part.spare_part_description}"
         item_code = estimation_part.ticket_spare_part.ticket_spare_part_store.present? ? estimation_part.ticket_spare_part.ticket_spare_part_store.approved_inventory_product.generated_item_code : ""
 
-        unit_price = ticket_invoice_estimation.ticket_estimation.approval_required ? estimation_part.approved_estimated_price.to_f : estimation_part.estimated_price.to_f
+        totalprice = ticket_invoice_estimation.ticket_estimation.approval_required ? estimation_part.approved_estimated_price.to_f : estimation_part.estimated_price.to_f
 
         quantity = ( ( estimation_part.ticket_spare_part.ticket_spare_part_store or estimation_part.ticket_spare_part.ticket_spare_part_non_stock).try(:approved_quantity ) or 1 )
 
-        totalprice = unit_price
+        unit_price = totalprice / quantity
         total_amount += totalprice
         net_total_amount += totalprice
 

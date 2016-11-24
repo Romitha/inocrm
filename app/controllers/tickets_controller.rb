@@ -1124,6 +1124,10 @@ class TicketsController < ApplicationController
     Inventory
     TicketSparePart
     Invoice
+    Tax
+
+    params[:from_where] = "resolution"
+
     ticket_id = (params[:ticket_id] or session[:ticket_id])
     @ticket = Ticket.find_by_id ticket_id
     session[:ticket_id] = @ticket.id

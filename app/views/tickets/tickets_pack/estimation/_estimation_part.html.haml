@@ -62,7 +62,7 @@
                 = part_store_or_non_stock.store.try(:name)
             %dt Item Code
             %dd
-              = part_store_or_non_stock.inventory_product.try(:serial_no)
+              = part_store_or_non_stock.inventory_product.try(:generated_item_code)
             %dt Item Description
             %dd
               = part_store_or_non_stock.inventory_product.try(:description)
@@ -172,6 +172,12 @@
   .col-md-12
     %strong Total Estimated Price (#{estimation.ticket.ticket_currency.code}) :
     #{number_with_precision total_estimation, precision: 2}
+  .col-md-12
+    %strong Total Tax (#{estimation.ticket.ticket_currency.code}) :
+    #{number_with_precision final_tot_tax, precision: 2}
+  .col-md-12
+    %strong Total Amount (#{estimation.ticket.ticket_currency.code}) :
+    #{number_with_precision (total_estimation + final_tot_tax), precision: 2}
 .row
   .col-md-4
     - if estimation.approval_required
@@ -183,9 +189,6 @@
   .col-md-4
     %strong Advanced Payment Received (#{estimation.ticket.ticket_currency.code}) :
     #{number_with_precision estimation.ticket.ticket_payment_receiveds.where(type_id: TicketPaymentReceivedType.find_by_code("AD").id).sum(:amount).to_i, precision: 2}
-  .col-md-4
-    %strong Total Tax (#{estimation.ticket.ticket_currency.code}) :
-    #{number_with_precision final_tot_tax, precision: 2}
 
 .row
   .col-md-12

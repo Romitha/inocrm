@@ -219,7 +219,6 @@ class Ticket < ActiveRecord::Base
   end
 
   def cached_ticket_estimations
-    update_attribute :ticket_updated_by, current_user_id
     Rails.cache.fetch([self.id, :ticket_estimations]){ self.ticket_estimations.to_a }
   end
 
