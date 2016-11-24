@@ -26,7 +26,7 @@
           - unless t.object.ticket_spare_part.ticket_spare_part_non_stock.present?
             .col-md-3
               %strong Required Qnty:
-              = t.object.ticket_spare_part.ticket_spare_part_store.present? ? t.object.ticket_spare_part.ticket_spare_part_store.requested_quantity : t.object.ticket_spare_part.ticket_spare_part_manufacture.present? ? t.object.ticket_spare_part.ticket_spare_part_manufacture.requested_quantity : ""
+              %span#qny_val= t.object.ticket_spare_part.ticket_spare_part_store.present? ? t.object.ticket_spare_part.ticket_spare_part_store.requested_quantity : t.object.ticket_spare_part.ticket_spare_part_manufacture.present? ? t.object.ticket_spare_part.ticket_spare_part_manufacture.requested_quantity : ""
 
         %hr
         - part_store_or_non_stock = (t.object.ticket_spare_part.ticket_spare_part_store or t.object.ticket_spare_part.ticket_spare_part_non_stock)
@@ -101,11 +101,11 @@
                 .col-md-2
                   = t.association :supplier, collection: Organization.suppliers, input_html: {class: "est_internal_supplier"}
                 .col-md-3
-                  = t.input :cost_price, label: "Cost Price (#{ticket.ticket_currency.code})", as: :string, input_html: {min: 0, class: "value_class only_float", oninput: "Inventories.calculate_cost_price(this);"}
+                  = t.input :cost_price, label: "Cost Price (#{ticket.ticket_currency.code})", as: :string, input_html: {min: 0, class: "value_class only_float", id: "cost_price_id",oninput: "Inventories.calculate_cost_price(this);Inventories.unit_calculation(this);"}
                   .append_cost_price.hide
                     = number_with_precision (t.object.cost_price.to_f or 0), precision: 2
                 .col-md-3
-                  = t.input :estimated_price, label: "Est. Price (#{ticket.ticket_currency.code})", as: :string, input_html: {min: 0, class: "estimation_value only_float", oninput: "Inventories.calculate_cost_price(this);"}, label: "Est. price"
+                  = t.input :estimated_price, label: "Est. Price (#{ticket.ticket_currency.code})", as: :string, input_html: {min: 0, class: "estimation_value only_float", id: "est_price_id",oninput: "Inventories.calculate_cost_price(this); Inventories.unit_calculation(this);"}, label: "Est. price"
                   .append_estimated_price.hide
                     = number_with_precision (t.object.estimated_price or 0), precision: 2
                 .col-md-2
@@ -113,6 +113,14 @@
                 .col-md-2
                   %strong Profit (%):
                   .append_profit_margin{style: "font-weight:bold;font-size:125%;"}
+              .row
+                .col-md-2
+                .col-md-3
+                  %strong Unit Cost Price (LKR):
+                  %span#unit_cost_price
+                .col-md-3
+                  %strong Unit Est. price:
+                  %span#unit_est_price
 
               .panel-group
                 .panel.panel-success
@@ -168,6 +176,13 @@
                 .col-md-2
                   %strong Profit(%):
                   .append_profit_margin{style: "font-weight:bold;font-size:125%;"}
+                / .col-md-12
+                /   .col-md-4
+                /   .col-md-3
+                /     %strong Unit Cost Price (LKR):
+                /   .col-md-3
+                /     %strong Unit Est. price:
+
                 .col-md-12
                   .panel-group
                     .panel.panel-success

@@ -27,6 +27,8 @@ window.Inventories =
     @remove_warranty_click()
     @add_warranty_click()
     @need_serial_or_batch()
+    @unit_calculation()
+
     return
 
   need_serial_or_batch: ->
@@ -282,6 +284,18 @@ window.Inventories =
 
       else
         submit_form.submit()
+
+  unit_calculation: (e)->
+    qty = parseFloat($("#qny_val").text())
+    if isNaN(qty)
+      qty = parseFloat(0)
+    $("#unit_cost_price").text(parseFloat($("#cost_price_id").val())/qty)
+    $("#unit_est_price").text(parseFloat($("#est_price_id").val())/qty)
+
+    if $(e).is("#cost_price_id")
+      $("#unit_cost_price").text(parseFloat($(e).val())/qty)
+    if $(e).is("#est_price_id")
+      $("#unit_est_price").text(parseFloat($(e).val())/qty)
 
   calculate_cost_price: (e)->
     this_margin = 0
