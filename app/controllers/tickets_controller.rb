@@ -950,7 +950,7 @@ class TicketsController < ApplicationController
       # product = @ticket.products.first
       @user_ticket_actions = @ticket.cached_user_ticket_actions
 
-      @render_template = "tickets/tickets_pack/parts_odered"
+      @render_template = "tickets/tickets_pack/parts_ordered/parts_ordered"
       @variables = {ticket: @ticket}
 
     else

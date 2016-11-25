@@ -1,0 +1,101 @@
+= simple_form_for ticket_spare_part, url: update_part_order_inventories_path, method: :put, html: {class: "validate_form"} do |f| # update_part_order_inventories_path
+
+  = hidden_field_tag :process_id, Rails.cache.fetch([@uri.path, params[:task_id]])[:process_id]
+  = hidden_field_tag :task_id, Rails.cache.fetch([@uri.path, params[:task_id]])[:task_id]
+  = hidden_field_tag :owner, Rails.cache.fetch([@uri.path, params[:task_id]])[:owner]
+  - Rails.cache.fetch([@uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
+    = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+
+  = hidden_field_tag :ticket_spare_part_id, ticket_spare_part.id
+  .row
+    .col-md-5
+      %strong
+        Returned quantity:
+      = ticket_spare_part.ticket_spare_part_store ? ticket_spare_part.ticket_spare_part_store.approved_quantity : ''
+
+  - if (@rqt and @non_stock_warranty) or (@cea and @non_stock_chargeable)
+    .row
+      = f.input :repare_start, as: :string,label: "Repair start", input_html: {class: "datetimepicker", value: f.object.repare_start.try(:localtime).try(:strftime, "%m/%d/%Y %I:%M %p")}, wrapper_html: {class: "position_relative col-md-6"}, required: true
+
+      = f.input :repare_end, as: :string,label: "Repair end", input_html: {class: "datetimepicker", value: f.object.repare_end.try(:localtime).try(:strftime, "%m/%d/%Y %I:%M %p")}, wrapper_html: {class: "position_relative col-md-6"}, required: true
+
+    .row
+      = f.association :spare_part_status_use, collection: SparePartStatusUse.offset(1).map{|s| [s.name, s.id]}, include_blank: false, required: true, selected: 2, wrapper_html: {class: "col-md-6"}, label: "Received part status", input_html: {class: "received_part_status chosen-select_disable_search"}
+      = f.association :unused_reason, label_method: :reason, value_method: :id, required: true, include_blank: false, wrapper_html: {class: "col-md-6"}, input_html: {class: "unused_reason chosen-select_disable_search"}, disabled: true
+
+  - if (@rce and (@manufacture_warranty or @manufacture_chargeable or @store_warranty or @store_chargeable)) or ((@manufacture_warranty or @manufacture_chargeable) and @rpr) or ((@store_chargeable or @store_warranty) and @rpr)
+    .row
+      = f.input :received_spare_part_no, wrapper_html: {class: "col-md-12"}, required: true, input_html: {value: (f.object.received_spare_part_no || f.object.spare_part_no)}
+      = f.input :faulty_serial_no, wrapper_html: {class: "col-md-6"}, required: true, input_html: {class: "faulty_serial_no_input", autocomplete: "off"}
+      = f.input :faulty_ct_no, wrapper_html: {class: "col-md-6"}, required: true, input_html: {class: "faulty_ct_no_input", autocomplete: "off"}
+
+      = f.input :received_part_serial_no, wrapper_html: {class: "col-md-6"}, required: true, input_html: {class: "received_part_serial_no_input", autocomplete: "off"}
+      = f.input :received_part_ct_no, wrapper_html: {class: "col-md-6"}, required: true, input_html: {class: "received_part_ct_no_input", autocomplete: "off"}
+
+    - if (@rce and (@manufacture_warranty or @manufacture_chargeable or @store_warranty or @store_chargeable))
+      .row
+        = f.input :repare_start, as: :string, label: "Repair start", input_html: {class: "datetimepicker", value: f.object.repare_start.try(:localtime).try(:strftime, "%m/%d/%Y %I:%M %p")}, wrapper_html: {class: "position_relative col-md-6"}, required: true
+
+        = f.input :repare_end, as: :string, label: "Repair end", input_html: {class: "datetimepicker", value: f.object.repare_end.try(:localtime).try(:strftime, "%m/%d/%Y %I:%M %p")}, wrapper_html: {class: "position_relative col-md-6"}, required: true
+
+    .row
+      = f.association :spare_part_status_use, collection: SparePartStatusUse.offset(1).map{|s| [s.name, s.id]}, required: true, include_blank: false, selected: 2, wrapper_html: {class: "col-md-6"}, label: "Received part status", input_html: {class: "received_part_status chosen-select_disable_search"}
+      = f.association :unused_reason, label_method: :reason, value_method: :id, required: true, include_blank: false, wrapper_html: {class: "col-md-6"}, input_html: {class: "unused_reason chosen-select_disable_search"}, disabled: true
+
+    - if f.object.ticket_spare_part_store.present?
+      .row
+        = f.simple_fields_for :ticket_spare_part_store do |s|
+          .col-md-6
+            = s.check_box :return_part_damage, {class: "damage_reason_check"}, 1,0
+            = s.label :return_part_damage
+            = s.select :return_part_damage_reason_id, InventoryReason.where(damage: true).map{|r| [r.reason, r.id]}, {}, class: "damage_reason"
+
+
+  - if (@rce and (@manufacture_warranty or @manufacture_chargeable or @store_warranty or @store_chargeable)) or ((@manufacture_warranty or @manufacture_chargeable) and @rpr) or ((@store_chargeable or @store_warranty) and @rpr)
+    .row
+      .col-md-6
+        %strong Return part serial no:
+        %span.return_part_serial_no_text= f.object.return_part_serial_no
+
+      .col-md-6
+        %strong Return part ct no:
+        %span.return_part_ct_no_text= f.object.return_part_ct_no
+      = f.input :return_part_serial_no, as: :hidden, wrapper_html: {class: "col-md-6"}, required: true, input_html: {class: "return_part_serial_no"}
+      = f.input :return_part_ct_no, as: :hidden, wrapper_html: {class: "col-md-6"}, required: true, input_html: {class: "return_part_ct_no"}
+
+
+  = f.input :note, input_html: {value: nil} if !(@ord or @clt or @rcs or @rtn or @rpa or @bnd or @cls or @aps or (@str and @store_chargeable) or @rjs or @rbn )
+  = simple_format ticket_spare_part.note
+  = f.submit "Save", class: "btn btn-sm btn-success"
+  - if @store_chargeable and @cea
+    .store_request_wrapper
+      = f.submit "Store request", name: "store_request", class: "btn btn-sm btn-success"
+
+  - if @manufacture_chargeable and @cea
+    = hidden_field_tag :manufacture_request, "manufacture_request"
+    = f.submit "Manufacture request", name: "manufacture_request", class: "btn btn-sm btn-success"
+
+  - if @iss and (@manufacture_warranty or @manufacture_chargeable or @store_warranty or @store_chargeable)
+    = hidden_field_tag :recieved, "recieved"
+    = f.submit "received", name: "recieved", class: "btn btn-sm btn-success"
+
+  - if (@non_stock_chargeable and @cea) or (@non_stock_warranty and @rqt)
+    = hidden_field_tag :non_stock_complete, "non_stock_complete"
+    = f.submit "Complete", name: "non_stock_complete", class: "btn btn-sm btn-success"
+      
+  - if (@rce or @rpr) #manufacture_warranty and (rce or rpr)
+    %label{:for => "Update without return"} Update without return
+    = check_box_tag "update_without_return", false, false, class: "small_scale_margin-right1"
+    = hidden_field_tag :return, "return"
+
+    = f.submit "Return", name: "return", class: "btn btn-sm btn-success"#, onclick: "Tickets.presence_validater(this, {presence: ['#ticket_spare_part_received_spare_part_no', '#ticket_spare_part_faulty_serial_no', '#ticket_spare_part_faulty_ct_no', '#ticket_spare_part_received_part_serial_no', '#ticket_spare_part_received_part_ct_no', '#ticket_spare_part_repare_start', '#ticket_spare_part_repare_end'], checked: ['b']}); return false;"
+
+  - if (@mpr and @manufacture_warranty) or (@store_warranty and @str) or (@store_chargeable and (@rqt or @ecm or @cea)) or (@manufacture_chargeable and (@rqt or @ecm or @cea)) or (@non_stock_chargeable and (@rqt or @ecm or @cea)) or (@non_stock_warranty and @rqt)
+    = f.input :part_terminated, wrapper: :append, input_html:{class: "part_terminated_reason_check"}
+
+    .part_terminated_reason.hide
+
+      = f.label "Part terminate reason"
+      = f.select :part_terminated_reason_id, Reason.where(terminate_spare_part: true).map{|r| [r.reason, r.id]}, {include_blank: false}, {class: "part_terminated_select"} # showing part_terminated is cheched through javascript
+      / = hidden_field_tag :terminate, "terminate"
+      = f.submit "terminate", name: "terminate", class: "btn btn-sm btn-success"
