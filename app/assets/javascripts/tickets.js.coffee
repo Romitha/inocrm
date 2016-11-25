@@ -304,7 +304,13 @@ window.Tickets =
       #   return false
       # $(@).regexMask(/^((1?[0-9])|([12][0-4]))(\.[05]?)?$/)
       $(@).regexMask('float-enus')
-      return
+
+    $('.after_two_decimal').keydown (e) ->
+      # if String.fromCharCode(e.keyCode).match(/[^0-9\.\b]/g)
+      #   return false
+      # $(@).regexMask(/^((1?[0-9])|([12][0-4]))(\.[05]?)?$/)
+      $(@).regexMask('after_two_decimal')
+    return
 
   pass_to_re_correction: ->
     if $("#ticket_regional_support_job").is(":checked")
