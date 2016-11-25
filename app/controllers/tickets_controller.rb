@@ -1583,7 +1583,8 @@ class TicketsController < ApplicationController
       if @estimation.ticket_estimation_parts.present?
         part_store_or_non_stock = (@estimation.ticket_estimation_parts.first.ticket_spare_part.ticket_spare_part_store or @estimation.ticket_estimation_parts.first.ticket_spare_part.ticket_spare_part_manufacture or @estimation.ticket_estimation_parts.first.ticket_spare_part.ticket_spare_part_non_stock)
         # part_store_or_non_stock = @estimation.ticket_estimation_parts.first.ticket_spare_part.ticket_spare_part_store
-        @paginate_array = part_store_or_non_stock.inventory_product.grn_items.order("grn_id DESC") if [TicketSparePartStore].include?(part_store_or_non_stock.class)
+        # @paginate_array = part_store_or_non_stock.inventory_product.grn_items.order("grn_id DESC") if [TicketSparePartStore].include?(part_store_or_non_stock.class)
+        @paginate_array = GrnItem.search(query: "inventory_product.id:#{part_store_or_non_stock.inventory_product.id}") if [TicketSparePartStore].include?(part_store_or_non_stock.class)
 
       end
 

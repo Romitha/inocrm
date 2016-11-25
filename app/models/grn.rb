@@ -106,6 +106,10 @@ class GrnItem < ActiveRecord::Base
     grn_serial_items.any? { |s| s.remaining }
   end
 
+  def grn_supplier_name
+    grn.supplier.try(:name)
+  end
+
   def update_relation_index
     [:inventory_serial_items].each do |children|
       self.send(children).each do |child|
@@ -175,11 +179,15 @@ class GrnItem < ActiveRecord::Base
   def to_indexed_json
     Inventory
     to_json(
-      only: [:serial_no, :ct_no, :created_at],
+      only: [:serial_no, :ct_no, :created_at, :current_unit_cost],
+      methods: [:grn_supplier_name],
       include: {
         inventory_product: {
           only: [:id, :description, :model_no, :product_no, :spare_part_no, :created_at],
           methods: [:category3_id, :category2_id, :category1_id, :generated_item_code],
+        },
+        currency: {
+          only: [:code],
         },
         inventory_serial_items: {
           only: [:serial_no, :ct_no, :damaged, :used, :scavenge, :repaired, :reserved, :parts_not_completed, :manufatured_date, :expiry_date, :remarks],

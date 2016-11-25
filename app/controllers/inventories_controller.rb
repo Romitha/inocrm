@@ -1900,10 +1900,12 @@ class InventoriesController < ApplicationController
   end
 
   def update_estimate_the_part_internal
+
     TaskAction
     Tax
     estimation = TicketEstimation.find params[:part_estimation_id]
     @ticket = Ticket.find params[:ticket_id]
+    requested_quantity = params[:requested_quantity]
 
     continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
 
@@ -1918,6 +1920,18 @@ class InventoriesController < ApplicationController
           flash[:notice]= "Requested Part is terminated."
         else
           estimation.update estimation_params
+
+          #If Part has chabged by chargeable eng
+          if params[:store_id].present?
+            estimation.ticket_estimation_parts.each do |p|
+              if p.ticket_spare_part.ticket_spare_part_store.present?
+                p.ticket_spare_part.ticket_spare_part_store.update(store_id: params[:store_id], inv_product_id: params[:inv_product_id], requested_quantity: requested_quantity)
+              end
+              if p.ticket_spare_part.ticket_spare_part_non_stock.present?
+                p.ticket_spare_part.ticket_spare_part_non_stock.update(store_id: params[:store_id], inv_product_id: params[:inv_product_id], requested_quantity: requested_quantity)
+              end
+            end
+          end
 
           t_cost_price = estimation.ticket_estimation_parts.sum(:cost_price).to_f + estimation.ticket_estimation_additionals.sum(:cost_price).to_f
 

@@ -29,9 +29,10 @@
           = @inventory.available_quantity if @inventory
 
     - if session[:select_frame] == "request_from"
-      .requested_quantity_wrapper.col-md-4
-        = label_tag "Required Quantity"
-        = text_field_tag "requested_quantity", 1, class: "form-control", readonly: ((@inventory_product or @inventory.inventory_product) and (@inventory_product or @inventory.inventory_product).inventory_product_info.need_serial)
+      .row.small_scale_margin0
+        .requested_quantity_wrapper.col-md-6
+          = label_tag "Required Quantity"
+          = text_field_tag "requested_quantity", 1, class: "form-control", readonly: ((@inventory_product or @inventory.inventory_product) and (@inventory_product or @inventory.inventory_product).inventory_product_info.need_serial), required: true, min: 1, number: true
 
   $(".#{session[:select_frame]}").html('#{j content_for :content_for}');
   - if session[:select_frame] == "request_from"
