@@ -36,7 +36,7 @@
             = estimation_external_or_part.try(:organization).try(:name)
           - else
 
-            = ticket_spare_part.ticket_spare_part_manufacture.required_quantity if ticket_spare_part.ticket_spare_part_manufacture.present?
+            = ticket_spare_part.ticket_spare_part_manufacture.requested_quantity if ticket_spare_part.ticket_spare_part_manufacture.present?
 
             - if ticket_spare_part.ticket_spare_part_store.present?
               - if ticket_spare_part.ticket_spare_part_store.store_request_approved
