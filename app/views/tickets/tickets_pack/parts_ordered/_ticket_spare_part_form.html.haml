@@ -7,11 +7,6 @@
     = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
   = hidden_field_tag :ticket_spare_part_id, ticket_spare_part.id
-  .row
-    .col-md-5
-      %strong
-        Returned quantity:
-      = ticket_spare_part.ticket_spare_part_store ? ticket_spare_part.ticket_spare_part_store.approved_quantity : ''
 
   - if (@rqt and @non_stock_warranty) or (@cea and @non_stock_chargeable)
     .row
@@ -66,7 +61,7 @@
 
   = f.input :note, input_html: {value: nil} if !(@ord or @clt or @rcs or @rtn or @rpa or @bnd or @cls or @aps or (@str and @store_chargeable) or @rjs or @rbn )
   = simple_format ticket_spare_part.note
-  = f.submit "Save", class: "btn btn-sm btn-success"
+  / = f.submit "Save", class: "btn btn-sm btn-success"
   - if @store_chargeable and @cea
     .store_request_wrapper
       = f.submit "Store request", name: "store_request", class: "btn btn-sm btn-success"

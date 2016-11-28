@@ -35,7 +35,7 @@
 
       .alert.alert-warning
         .row
-          .col-md-3
+          .col-md-2
             %strong
               Spare Part No:
             = ticket_spare_part.spare_part_no
@@ -44,12 +44,17 @@
               Description:
             = ticket_spare_part.spare_part_description
 
-          .col-md-3
+          .col-md-2
             %strong
               Requested:
 
             - if ticket_spare_part.requested_at
-              #{ticket_spare_part.requested_at.try(:strftime, "%Y-%m-%d %H:%M")} by #{User.cached_find_by_id(ticket_spare_part.requested_by).try(:email)}                
+              #{ticket_spare_part.requested_at.try(:strftime, "%Y-%m-%d %H:%M")} by #{User.cached_find_by_id(ticket_spare_part.requested_by).try(:email)}  
+
+          .col-md-2
+            %strong
+              Returned quantity:
+            = ticket_spare_part.ticket_spare_part_store.try(:approved_quantity)              
 
           .col-md-3
             %strong
