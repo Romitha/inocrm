@@ -1267,7 +1267,7 @@ class TicketsController < ApplicationController
             action_id = TaskAction.find_by_action_no(49).id
             d18_approve_request_store_part = "Y"
 
-            @onloan_request_part.update status_action_id: SparePartStatusAction.find_by_code("APS").id
+            @onloan_request_part.update status_action_id: SparePartStatusAction.find_by_code("APS").id, approved_inv_product_id: params[:approved_inv_product_id], approved_main_inv_product_id: params[:approved_main_inv_product_id], approved_store_id: params[:approved_store_id]
             @onloan_request_part.ticket_on_loan_spare_part_status_actions.create(status_id: @onloan_request_part.status_action_id, done_by: current_user.id, done_at: DateTime.now) 
 
             srn = @onloan_request_part.approved_store.srns.create(created_by: current_user.id, created_at: DateTime.now, requested_module_id: BpmModule.find_by_code("SPT").id, srn_no: CompanyConfig.first.increase_inv_last_srn_no)#inv_srn
@@ -1280,7 +1280,7 @@ class TicketsController < ApplicationController
             #Reject On-Loan Part for Store
             action_id = TaskAction.find_by_action_no(65).id
 
-            @onloan_request_part.update approved_inv_product_id: nil, approved_main_inv_product_id: nil, approved_store_id: nil,status_action_id: SparePartStatusAction.find_by_code("CLS").id
+            @onloan_request_part.update approved_inv_product_id: nil, approved_main_inv_product_id: nil, approved_store_id: nil, status_action_id: SparePartStatusAction.find_by_code("CLS").id
 
             # @onloan_request_part.update status_action_id: SparePartStatusAction.find_by_code("CLS").id
 
