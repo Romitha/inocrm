@@ -51,16 +51,19 @@
 
       %hr
       .row
-        .col-md-4
+        .col-md-3
           %strong Advance payment amount:
           = tsp.ticket_estimation.advance_payment_amount
-        .col-md-4
+        .col-md-3
           %strong Customer approved by:
           #{User.cached_find_by_id(tsp.ticket_estimation.cust_approved_by).try(:full_name)}
 
-        .col-md-4
+        .col-md-3
           %strong Customer approved at:
           #{tsp.ticket_estimation.cust_approved_at.try(:strftime, "%Y-%m-%d %H:%M")}
+        .col-md-3
+          %strong Warranty Period (months):
+          = request_part.ticket_spare_part.ticket_estimation_parts.first.warranty_period
       %hr
 
   - if request_part.store_requested
