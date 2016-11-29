@@ -63,7 +63,7 @@
           #{tsp.ticket_estimation.cust_approved_at.try(:strftime, "%Y-%m-%d %H:%M")}
         .col-md-3
           %strong Warranty Period (months):
-          = request_part.ticket_spare_part.ticket_estimation_parts.first.warranty_period
+          = tsp.warranty_period
       %hr
 
   - if request_part.store_requested
