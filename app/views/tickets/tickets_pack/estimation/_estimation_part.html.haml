@@ -49,11 +49,11 @@
         %dt Required Qnty
         %dd= (estimation_part.ticket_spare_part.ticket_spare_part_store or estimation_part.ticket_spare_part.ticket_spare_part_manufacture or estimation_part.ticket_spare_part.ticket_spare_part_non_stock).requested_quantity
   %hr
-  .row
-    .col-md-2
-      %h4 Requested part
-    - if part_store_or_non_stock.present?
-      .col-md-6
+  - if part_store_or_non_stock.present?
+    .row
+      .col-md-2
+        %h4 Store item
+      .col-md-4
         .request_from
           %dl.dl-horizontal
             - if part_store_or_non_stock.is_a? TicketSparePartStore
@@ -81,6 +81,39 @@
 
             %dt Unit
             %dd= part_store_or_non_stock.inventory_product and part_store_or_non_stock.inventory_product.inventory_unit.unit
+
+      - if part_store_or_non_stock.approved_inventory_product
+        .col-md-2
+          %h4 Part or main product
+        .col-md-4
+          .request_from
+            %dl.dl-horizontal
+              - if part_store_or_non_stock.is_a? TicketSparePartStore
+                %dt Store
+                %dd
+                  = part_store_or_non_stock.store.try(:name)
+              %dt Item Code
+              %dd
+                = part_store_or_non_stock.approved_inventory_product.try(:generated_item_code)
+              %dt Item Description
+              %dd
+                = part_store_or_non_stock.approved_inventory_product.try(:description)
+              %dt Model No
+              %dd
+                = part_store_or_non_stock.approved_inventory_product.try(:model_no)
+              %dt Product No
+              %dd
+                = part_store_or_non_stock.approved_inventory_product.try(:product_no)
+              %dt Part No
+              %dd
+                = part_store_or_non_stock.approved_inventory_product.try(:spare_part_no)
+              - if part_store_or_non_stock.is_a? TicketSparePartStore
+                %dt Available Qnty
+                %dd= part_store_or_non_stock.approved_inventory_product and part_store_or_non_stock.approved_inventory_product.inventories.find_by_store_id(estimation_part.ticket_spare_part.ticket_spare_part_store.store_id).try(:available_quantity)
+
+              %dt Unit
+              %dd= part_store_or_non_stock.approved_inventory_product and part_store_or_non_stock.approved_inventory_product.inventory_unit.unit
+
 
   - if estimation_part.ticket_estimation_part_taxes.present?
     .row
@@ -162,29 +195,29 @@
 
       %tbody
         %tr
-          %td Total part cost
+          %td Total part estimated cost
           %td= standard_currency_format total_part_cost
         %tr
-          %td Total additional cost
+          %td Total additional estimated cost
           %td= standard_currency_format total_additional_cost
         %tr
           %td Total tax
           %td= standard_currency_format final_tot_tax
         %tr
-          %td Total part estimated cost (+ #{standard_currency_format(total_part_tax)})
+          %td Total part estimated cost with tax (+ #{standard_currency_format(total_part_tax)})
           %td= standard_currency_format(total_part_cost + total_part_tax)
         %tr
-          %td Total additional estimated cost (+ #{standard_currency_format(total_additional_tax)})
+          %td Total additional estimated cost with tax (+ #{standard_currency_format(total_additional_tax)})
           %td= standard_currency_format(total_additional_cost + total_additional_tax)
+        %tr
+          %th{class: "text-right"} Total amount
+          %th{class: "text-right"}= standard_currency_format(total_estimation + final_tot_tax)
         %tr
           %td Min.advance payment
           %td= standard_currency_format estimation.advance_payment_amount
         %tr
           %td Advance payment recieved
           %td= standard_currency_format estimation.ticket.ticket_payment_receiveds.where(type_id: TicketPaymentReceivedType.find_by_code("AD").id).sum(:amount).to_i
-        %tr
-          %td Total amount
-          %td= standard_currency_format(total_estimation + final_tot_tax)
 
 .row
   .col-md-12

@@ -2079,6 +2079,7 @@ class TicketsController < ApplicationController
   end
 
   def invoice_advance_payment
+
     Inventory
     Warranty
     ContactNumber
@@ -2093,10 +2094,29 @@ class TicketsController < ApplicationController
       Rails.cache.delete([:histories, session[:product_id]])
       Rails.cache.delete([:join, @ticket.id])
       @continue_info = true
-      # @customer_quotation = @ticket.customer_quotations.find params[:advance_payment_estimation_id]
+
+      ticket_estimations = @ticket.ticket_estimations.where(foc_approved: false, cust_approved: true)
+      total_part_cost = total_part_tax = total_additional_cost = total_additional_tax = 0
+
+      ticket_estimations.each do |estimation|
+        ticket_estimation_parts = estimation.ticket_estimation_parts
+
+        ticket_estimation_additionals = estimation.ticket_estimation_additionals
+
+        total_additional_cost += ticket_estimation_additionals.to_a.sum{|e| estimation.approval_required ? e.approved_estimated_price : e.estimated_price }
+
+        total_additional_tax += ticket_estimation_additionals.to_a.sum{|e| estimation.approval_required ? e.ticket_estimation_additional_taxes.sum(:approved_tax_amount) : e.ticket_estimation_additional_taxes.sum(:estimated_tax_amount) }
+
+        total_part_cost += ticket_estimation_parts.to_a.sum{|e| estimation.approval_required ? e.approved_estimated_price : e.estimated_price }
+
+        total_part_tax += ticket_estimation_parts.to_a.sum{|e| estimation.approval_required ? e.ticket_estimation_part_taxes.sum(:approved_tax_amount) : e.ticket_estimation_part_taxes.sum(:estimated_tax_amount) }
+      end
+
+      final_tot_tax = total_part_tax + total_additional_tax
+      @total_estimation_amount = total_part_cost + total_additional_cost + final_tot_tax
+
       @ticket_payment_received = @ticket.ticket_payment_receiveds.build
 
-      @total_estimation_amount = @ticket.ticket_estimations.where(foc_approved: false, cust_approved: true).map { |estimation| estimation.approval_required ? (estimation.ticket_estimation_externals.sum(:approved_estimated_price)+estimation.ticket_estimation_parts.sum(:approved_estimated_price)+estimation.ticket_estimation_additionals.sum(:approved_estimated_price)) : (estimation.ticket_estimation_externals.sum(:estimated_price)+estimation.ticket_estimation_parts.sum(:estimated_price)+estimation.ticket_estimation_additionals.sum(:estimated_price)) }.compact.sum
 
       @total_minimum_amount = @ticket.ticket_estimations.where(foc_approved: false, cust_approved: true).inject(0){|i, k| k.approval_required ? i+k.approved_adv_pmnt_amount.to_i : i+k.advance_payment_amount.to_i }
 
