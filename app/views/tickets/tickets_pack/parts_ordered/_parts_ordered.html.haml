@@ -272,7 +272,7 @@
         .col-md-10
           .row
             - ticket_spare_part.ticket_estimation_parts.each do |tsp|
-              .col-md-4
+              .col-md-6
                 %dl.dl-horizontal
                   - if ticket_spare_part.cus_chargeable_part
                     %dt Estimated price (#{tsp.ticket_estimation.currency.code})

@@ -67,35 +67,35 @@
               .spare_part_select.pull-left
                 = link_to "Change part", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true
 
-            .col-md-2
-              .row.padding-right1
-                - content_for :part_of_main_product, flush: true do
-                  %dl.dl-horizontal
-                    - if part_store_or_non_stock.is_a? TicketSparePartStore
+            - if part_store_or_non_stock.is_a? TicketSparePartStore
+              .col-md-2
+                .row.padding-right1
+                  - content_for :part_of_main_product, flush: true do
+                    %dl.dl-horizontal
                       %dt Store
                       %dd
                         = part_store_or_non_stock.store.try(:name)
-                    %dt Item Code
-                    %dd
-                      = part_store_or_non_stock.main_inventory_product.try(:generated_item_code)
-                    %dt Item Description
-                    %dd
-                      = part_store_or_non_stock.main_inventory_product.try(:description)
-                    %dt Model No
-                    %dd
-                      = part_store_or_non_stock.main_inventory_product.try(:model_no)
-                    %dt Product No
-                    %dd
-                      = part_store_or_non_stock.main_inventory_product.try(:product_no)
-                    %dt Part No
-                    %dd
-                      = part_store_or_non_stock.main_inventory_product.try(:spare_part_no)
-                    - if part_store_or_non_stock.is_a? TicketSparePartStore
-                      %dt Available Qnty
+                      %dt Item Code
                       %dd
-                        = part_store_or_non_stock.main_inventory_product and part_store_or_non_stock.main_inventory_product.inventories.find_by_store_id(part_store_or_non_stock.store_id).try(:available_quantity)
+                        = part_store_or_non_stock.main_inventory_product.try(:generated_item_code)
+                      %dt Item Description
+                      %dd
+                        = part_store_or_non_stock.main_inventory_product.try(:description)
+                      %dt Model No
+                      %dd
+                        = part_store_or_non_stock.main_inventory_product.try(:model_no)
+                      %dt Product No
+                      %dd
+                        = part_store_or_non_stock.main_inventory_product.try(:product_no)
+                      %dt Part No
+                      %dd
+                        = part_store_or_non_stock.main_inventory_product.try(:spare_part_no)
+                      - if part_store_or_non_stock.is_a? TicketSparePartStore
+                        %dt Available Qnty
+                        %dd
+                          = part_store_or_non_stock.main_inventory_product and part_store_or_non_stock.main_inventory_product.inventories.find_by_store_id(part_store_or_non_stock.store_id).try(:available_quantity)
 
-              .col-md-10{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Part of main method", "data-content"=> yield(:part_of_main_product), "data-html" => "true", "data-trigger" => "click", "data-placement" => "right" } Part of main product
+                .col-md-10{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Part of main method", "data-content"=> yield(:part_of_main_product), "data-html" => "true", "data-trigger" => "click", "data-placement" => "right" } Part of main product
 
             .col-md-6
               #paginate_grns

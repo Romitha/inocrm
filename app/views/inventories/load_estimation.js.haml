@@ -1,3 +1,3 @@
-$("#estimation_ajax_frame").html("#{j render 'tickets/tickets_pack/estimation/estimation_'+@estimation_type, estimation: @estimation}");
+$("#estimation_ajax_frame_#{params[:template_action]}").html("#{j render 'tickets/tickets_pack/estimation/estimation_'+@estimation_type, estimation: @estimation}");
 Tickets.enable_request_part_check();
 Tickets.remove_ajax_loader();

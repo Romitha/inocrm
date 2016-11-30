@@ -115,25 +115,26 @@
       %strong Estimation note:
       = simple_format estimation.note
 
-%hr
-- if (estimation.estimation_status.code == "EST") and estimation.cust_approval_required and estimation.cust_approved.nil?
-  %fieldset
-    %legend Estimation customer approval
-    = simple_form_for estimation, url: update_estimation_external_customer_approval_inventories_path do |f|
+- if params[:template_action] != "ajax_show"
+  %hr
+  - if (estimation.estimation_status.code == "EST") and estimation.cust_approval_required and estimation.cust_approved.nil?
+    %fieldset
+      %legend Estimation customer approval
+      = simple_form_for estimation, url: update_estimation_external_customer_approval_inventories_path do |f|
 
-      = hidden_field_tag :process_id, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:process_id]
-      = hidden_field_tag :task_id, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:task_id]
-      = hidden_field_tag :owner, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:owner]
-      - Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
-        = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+        = hidden_field_tag :process_id, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:process_id]
+        = hidden_field_tag :task_id, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:task_id]
+        = hidden_field_tag :owner, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:owner]
+        - Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
+          = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
-      = f.input :id, as: :hidden
+        = f.input :id, as: :hidden
 
-      = f.input :cust_approved, as: :radio_buttons, collection: {approved: true, rejected: false}, wrapper: :append, label: false, input_html: {class: "approve_radio_button"}
-      = f.input :note, input_html: {value: nil}
-      = simple_format f.object.note
-      - if estimation.ticket_estimation_externals.present?
-        .request_part_check
-          = label_tag "Request to deliver unit"
-          = check_box_tag :request_deliver_unit, true, (estimation.advance_payment_amount.to_f == 0)
-      = f.submit "Save", class: "btn btn-success btn-sm"
+        = f.input :cust_approved, as: :radio_buttons, collection: {approved: true, rejected: false}, wrapper: :append, label: false, input_html: {class: "approve_radio_button"}
+        = f.input :note, input_html: {value: nil}
+        = simple_format f.object.note
+        - if estimation.ticket_estimation_externals.present?
+          .request_part_check
+            = label_tag "Request to deliver unit"
+            = check_box_tag :request_deliver_unit, true, (estimation.advance_payment_amount.to_f == 0)
+        = f.submit "Save", class: "btn btn-success btn-sm"

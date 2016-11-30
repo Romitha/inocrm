@@ -26,7 +26,7 @@
       - ticket_spare_part = estimation_external_or_part.ticket_spare_part unless estimation_external_present
       %tr
         %td
-          = link_to_if params[:from_where] == "resolution", index+1, load_estimation_inventories_path(estimation_id: estimation.id, estimation_type: "#{estimation_external_present ? 'external' : 'part' }", task_id: params[:task_id]), remote: true
+          = link_to index+1, load_estimation_inventories_path(estimation_id: estimation.id, estimation_type: "#{estimation_external_present ? 'external' : 'part' }", task_id: params[:task_id], template_action: params[:action]), remote: true
 
         %td= estimation.requested_at.getlocal.try(:strftime, "%b %d, %Y %H:%M")
         %td
@@ -88,4 +88,4 @@
 
         %td= estimation.estimation_status.name
 
-#estimation_ajax_frame
+%div{id: "estimation_ajax_frame_#{params[:action]}"}
