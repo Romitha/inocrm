@@ -604,12 +604,14 @@ window.Tickets =
       )
 
   select_brand_create_po: ->
+    # _this = this
     $("#brand1").change ->
       url = "/tickets/hp_po"
       this_data = {product_brand_id: $(@).val()}
       $.get url, this_data, (data)->
         console.log data
         $('#load_spareparts_json_render').html Mustache.to_html($('#load_spareparts_output').html(), data)
+        # _this.initial_loaders()
   remove_spareparts: (elem)->
 
   select_brand_create_invoice_for_so: ->
@@ -623,16 +625,15 @@ window.Tickets =
     this_id = $(_this).data("insertedid")
     $("#addclick_function_"+this_id).removeClass("hide")
 
-
   hp_po_add: (ticket_currency_id, spare_part, elem)->
     _this = elem
     value = $(_this).data("value")
-    $("#addclick_function_"+value).addClass("hide")
     $("#inventory_po_items").click() # add_link
     $("#inventory_po_items").prev().find(".single_extra_info").html($(_this).parent().prev().html()) # insert infor to remove
     $("#inventory_po_items").prev().find(".remove_nested_fields").data("insertedid", value)
     $("#inventory_po_items").prev().find(".spare_part_class").val(spare_part)
     $(".ticket_currency_class").val(ticket_currency_id)
+    $("#inventory_po_items").prev().find(".po_description_class").val($(_this).parent().prev().find(".now_class").html())
 
   view_so_po_items:(elem) ->
     po_id = elem

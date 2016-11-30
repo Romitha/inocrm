@@ -199,6 +199,8 @@ mst_spt_action = [
   ["83", "Edit Invoice", "33", false],
   ["84", "Edit Quotation", "3", false],
   ["85", "Estimate Job Final Update", "3", false],
+  ["86", "Create PO for Part", "", false],
+  ["87", "Close the ticket", "", false],
 ].each{ |t| TaskAction.create_with(action_description: t[1], task_id: t[2], hide: t[3]).find_or_create_by(action_no: t[0]) }
 
 mst_organizations_types = [

@@ -231,6 +231,10 @@ class Ticket < ActiveRecord::Base
 
     if job_closed and (cus_payment_completed or !cus_payment_required) and (ticket_close_approved or !ticket_close_approval_required) and manufacture_parts_po_completed
       update status_id: TicketStatus.find_by_code("CLS").id, ticket_closed_at: DateTime.now # Ticket Closed
+
+      # 87 - Close Ticket
+      user_ticket_action = user_ticket_actions.build(action_id: TaskAction.find_by_action_no(87).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: re_open_count)
+      user_ticket_action.save
     end
   end
 

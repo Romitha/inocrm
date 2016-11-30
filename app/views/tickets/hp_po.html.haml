@@ -21,45 +21,52 @@
     = f.input :po_no, label: "PO no"
   .col-md-2
     = f.input :po_date, label: "PO date", as: :string, input_html: {class: "datepicker"}
-  .col-md-2
-    = f.input :amount, label: "Amount"
+    = f.input :amount, as: :hidden, input_html: {value: 0}, label: "Amount"
     = f.input :currency_id, as: :hidden, input_html: {value: 1}# have to solve
-  .col-md-4
+  / .col-md-2
+  .col-md-6
     = f.input :note, label: "Note"
-  .col-md-12
+  .col-md-11
+    .row
+      .col-md-13
+        .col-md-1
+          %strong No
+        .col-md-1
+          %strong Event No
+        .col-md-1
+          %strong Order No
+        .col-md-1
+          %strong Date Ordered
+        .col-md-1
+          %strong Part No
+        .col-md-2
+          %strong Description
+        .col-md-1
+          %strong Note
+        .col-md-1
+          %strong Ticket No
+        .col-md-1
+          %strong Serial No
+    %hr
     = f.simple_fields_for :so_po_items , html: {class: "validate_form"} do |p|
       = p.input :ticket_spare_part_id, as: :hidden, input_html: {class: "spare_part_class"}
       = p.input :spt_so_po_id, as: :hidden, input_html: {value: 1}# have to solve
       = p.input :item_no, as: :hidden, input_html: {value: 1}# have to solve
+
       .row
-        .col-md-10
-          .row
-            .col-md-1
-              %strong No
-            .col-md-1
-              %strong Event No
-            .col-md-1
-              %strong Order No
-            .col-md-1
-              %strong Date Ordered
-            .col-md-1
-              %strong Part No
-            .col-md-2
-              %strong Description
-            .col-md-1
-              %strong Note
-            .col-md-1
-              %strong Ticket No
-            .col-md-1
-              %strong Serial No
-          .row
-            .single_extra_info
+        .single_extra_info
+      .row
         .gg
-          .col-md-1
+          .col-md-3
             = p.input :amount, required: true
-          .col-md-1
+          .col-md-2
+            = p.input :item_no
+          .col-md-5
+            = p.input :description, id: "po_description", input_html: {class: "po_description_class"}, label: "PO description"
+          .col-md-2
             = p.link_to_remove "remove", onclick: "Tickets.hp_po_remove(this); return false;"
-    .col-md-12
+      %hr
+    .col-md-13
       = f.link_to_add "Add item", :so_po_items, id: "inventory_po_items", class: "hide"
   .col-md-1.pull-right
     = f.submit "Save", class: "btn btn-success btn-sm"

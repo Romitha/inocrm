@@ -4238,19 +4238,9 @@ class TicketsController < ApplicationController
     if params[:product_brand_id].present?
       @product_brand = ProductBrand.find params[:product_brand_id]
       @products = @product_brand.products
+
     else
     end
-    respond_to do |format|
-      format.json
-      format.html
-    end
-    # @rpermissions = Rpermission.all.group_by{|g| g.controller_resource}.map{|k, v| {resource: k, value: v.map{|rpermission| {resource: rpermission.controller_resource, name: rpermission.name, id: rpermission.id, checked: "#{'checked' if @role.rpermissions.include?(rpermission)}"}}}}
-  end
-
-  def load_serialparts
-    @brand = ProductBrand.find params[:brand_id]
-    # @rpermissions = Rpermission.all.map { |rpermission| {resource: rpermission.controller_resource, name: rpermission.name, id: rpermission.id, checked: "#{'checked' if @role.rpermissions.include?(rpermission)}"} }
-    # @rserialparts = Rpermission.all.group_by{|g| g.controller_resource}.map{|k, v| {resource: k, value: v.map{|rpermission| {resource: rpermission.controller_resource, name: rpermission.name, id: rpermission.id, checked: "#{'checked' if @role.rpermissions.include?(rpermission)}"}}}}
     respond_to do |format|
       format.json
       format.html
@@ -4265,11 +4255,25 @@ class TicketsController < ApplicationController
     @po = SoPo.new po_params
 
     if @po.save
+      @po.so_po_items.each do |item|
+        update item.ticket_spare_part.ticket_spare_part_manufacture.po_completed = true
+
+        # Action #86 PO Added
+        user_ticket_action = item.ticket_spare_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket_spare_part.ticket.re_open_count, action_id: 86)
+        user_ticket_action.build_request_spare_part(ticket_spare_part_id: item.ticket_spare_part.id)
+        user_ticket_action.save
+
+        item.ticket_spare_part.ticket.set_ticket_close
+      end
+
+
       # @prn.inventory_prn_items.each do |prn_item|
       #   prn_item.update closed: true if prn_item.quantity <= prn_item.inventory_po_items.sum(:quantity)
       # end
       # @prn.update closed: true if @prn.inventory_prn_items.all?{ |e| e.closed }
-
+      # if params[:spare_part].present?
+      #   @spare_part_id = TicketSparePart.find params[:spare_part]
+      # end
       flash[:notice] = "Successfully saved"
       respond_to do |format|
         format.html{ redirect_to hp_po_tickets_path }
@@ -4283,6 +4287,18 @@ class TicketsController < ApplicationController
       # format.html{ render "admins/inventories/po/form"}
     end
   end
+
+  def load_serialparts
+    @brand = ProductBrand.find params[:brand_id]
+    # @rpermissions = Rpermission.all.map { |rpermission| {resource: rpermission.controller_resource, name: rpermission.name, id: rpermission.id, checked: "#{'checked' if @role.rpermissions.include?(rpermission)}"} }
+    # @rserialparts = Rpermission.all.group_by{|g| g.controller_resource}.map{|k, v| {resource: k, value: v.map{|rpermission| {resource: rpermission.controller_resource, name: rpermission.name, id: rpermission.id, checked: "#{'checked' if @role.rpermissions.include?(rpermission)}"}}}}
+    respond_to do |format|
+      format.json
+      format.html
+    end
+  end
+
+
 
   private
 
