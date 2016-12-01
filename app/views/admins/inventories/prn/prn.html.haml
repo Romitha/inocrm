@@ -7,13 +7,16 @@
       .col-md-6
         %strong PRN No:
         = CompanyConfig.first.next_sup_last_prn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_prn_no_format"])
+        %br/
+        %strong Store Name:
+        = @store.name
       .col-md-6.text-right
         %strong Created by:
         = current_user.full_name
         %br/
         %strong Created at:
         = DateTime.now.strftime("%Y-%m-%d %H:%M")
-      .col-md-12
+      .col-md-12.small_scale_padding-top1
         = link_to "Change store", prn_admins_inventories_path
       .col-md-3.small_scale_padding-top1
         = f.input :required_at, as: :string, input_html: {class: "datepicker"}, label: "Required date"

@@ -535,7 +535,7 @@
         - if ticket_on_loan_spare_part.approved_main_inventory_product or ticket_on_loan_spare_part.main_inventory_product
           - onloan_main_inventory_product = (ticket_on_loan_spare_part.approved_main_inventory_product or ticket_on_loan_spare_part.main_inventory_product)
           .col-md-2
-            %h4= spare_part_store.approved_main_inventory_product ? "Approved main part" : "Main part"
+            %h4= ticket_on_loan_spare_part.approved_main_inventory_product ? "Approved main part" : "Main part"
           .col-md-4
             %dl.dl-horizontal
               %dt Item Code
