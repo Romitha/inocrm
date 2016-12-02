@@ -67,14 +67,15 @@
               .spare_part_select.pull-left
                 = link_to "Change part", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true
 
-            - if part_store_or_non_stock.is_a? TicketSparePartStore and part_store_or_non_stock.approved_store
+            - if part_store_or_non_stock.is_a? TicketSparePartStore and part_store_or_non_stock.main_inventory_product
               .col-md-2
                 .row.padding-right1
                   - content_for :part_of_main_product, flush: true do
+                    %h4 Part of main unit
                     %dl.dl-horizontal
                       %dt Store
                       %dd
-                        = part_store_or_non_stock.approved_store.try(:name)
+                        = part_store_or_non_stock.store.try(:name)
                       %dt Item Code
                       %dd
                         = part_store_or_non_stock.main_inventory_product.try(:generated_item_code)
