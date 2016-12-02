@@ -106,6 +106,8 @@ class InvoicesController < ApplicationController
 
         if @ticket_payment_received.save
 
+          @ticket.decrement! :final_amount_to_be_paid, @ticket_payment_received.amount if @ticket.final_amount_to_be_paid.to_f > 0
+
           # 28 - Invoice Advance Payment
           user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(28).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
           user_ticket_action.build_act_payment_received(ticket_payment_received_id: @ticket_payment_received.id, invoice_completed: complete_payment_received)
@@ -319,6 +321,8 @@ class InvoicesController < ApplicationController
               @ticket_payment_received.attributes = @ticket_payment_received.attributes.merge ticket_id: @ticket.id, received_at: DateTime.now, received_by: current_user.id, currency_id: @ticket.ticket_currency.id, receipt_no: CompanyConfig.first.increase_sup_last_receipt_no, receipt_print_count: 0, invoice_id: @final_invoice.try(:id)
 
               @ticket_payment_received.save
+
+              @ticket.decrement! :final_amount_to_be_paid, @ticket_payment_received.amount if @ticket.final_amount_to_be_paid.to_f > 0
 
               # 28 - Receive Payment
               user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(28).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)

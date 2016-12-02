@@ -30,7 +30,7 @@
 .row
   .col-md-9
   .col-md-3
-    - if ticket.cus_payment_required and ticket.cus_payment_completed and ticket.status_id != 9
+    - if (ticket.cus_payment_required or ticket.cus_chargeable) and not ticket.cus_payment_completed and ticket.status_id != 9
       = link_to invoice_advance_payment_tickets_path(ticket_id: ticket, check_payment: true), class: "btn btn-success" do
         Create Adavance Payment
 -if ticket.final_invoice.present?

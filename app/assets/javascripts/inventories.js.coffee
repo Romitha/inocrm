@@ -92,17 +92,20 @@ window.Inventories =
 
   disable_store: ->
     disable_loaded_requested_quantity = (elem)->
-      $(".requested_quantity_manufacture_wrapper").removeClass("hide")
+      # $(".requested_quantity_manufacture_wrapper").removeClass("hide")
+      $(".requested_quantity_manufacture_wrapper").addClass("hide")
       $(".requested_quantity_manufacture_wrapper input").prop
-        disabled: false
-        readonly: false
+        disabled: true
+        readonly: true
 
       switch elem.val()
         when "S"
-          $(".requested_quantity_manufacture_wrapper").addClass("hide")
-          $(".requested_quantity_manufacture_wrapper input").prop("disabled", true)
+          console.log "s"
         when "M"
-          $(".requested_quantity_manufacture_wrapper input").prop("readonly", true)
+          $(".requested_quantity_manufacture_wrapper").removeClass("hide")
+          $(".requested_quantity_manufacture_wrapper input").prop("disabled", false)
+        when "NS"
+          console.log "ns"
 
     $(".request_from_radio_buttons").click -> disable_loaded_requested_quantity($(@))
 
@@ -310,12 +313,14 @@ window.Inventories =
     total_estimation = parseFloat($("#total_estimated_price").text())
     total_cost = parseFloat($("#total_cost_price").text())
 
+    total_tax = parseFloat($("#total_tax_price").text())
+
     if !isNaN(next_val)
       if $(e).is(".estimation_value")
         this_margin = (next_val - prev_cost_price)*100/prev_cost_price
         relatives.find(".append_estimated_price").text(next_val) #updating prev with current
 
-        updated_total_estimation = total_estimation + next_val - prev_estimated_price
+        updated_total_estimation = total_estimation + next_val - prev_estimated_price + total_tax
 
         $("#total_estimated_price").text(updated_total_estimation)
 
@@ -345,6 +350,30 @@ window.Inventories =
         $("#total_margin_price").removeClass("red")
         $("#estimate_low_margin").val("")
 
+    @calculate_total_amount()
+
+  add_tax_value: (e)->
+    _this = $(e)
+    initValue = parseFloat(_this.data("initvalue"))
+    currentValue = parseFloat(_this.val())
+    targetValue = parseFloat($("#total_tax_price").text())
+
+    if !isNaN(targetValue) and !isNaN(initValue) and !isNaN(currentValue)
+      finalValue = targetValue - initValue + currentValue
+      console.log targetValue
+      console.log initValue
+      console.log currentValue
+
+      $("#total_tax_price").text(finalValue)
+      _this.data("initvalue", currentValue)
+
+      @calculate_total_amount()
+
+  calculate_total_amount: ->
+    total_estimation = parseFloat($("#total_estimated_price").text())
+    total_tax = parseFloat($("#total_tax_price").text())
+    $("#total_amount_with_tax").text(total_estimation+total_tax) if !isNaN(total_estimation) and !isNaN(total_tax)
+
   payment_amount_select: (e)->
     default_amount = parseFloat($(":checked", e).data("default-amount"))
     estimated_amount = parseFloat($(":checked", e).data("estimation-amount"))
@@ -354,10 +383,14 @@ window.Inventories =
 
     if $(e).is(".tax_rate_calculation")
 
-      estimated_value = $(e).parents(".estimate_extend_with_tax").eq(0).find(".append_estimated_price").text()
-      if !isNaN(parseFloat(estimated_value)) and !isNaN(default_amount)
+      # $(e).parents(".parent_class_set").eq(0).find(".estimated_tax_amount_class").val(default_amount).data("initValue", default_amount)
+      estimated_value = parseFloat($(e).parents(".estimate_extend_with_tax").eq(0).find(".append_estimated_price").text())
+      # estimated_value = $(e).parents(".estimate_extend_with_tax").eq(0).find(".append_estimated_price").text()
+      if !isNaN(estimated_value) and !isNaN(default_amount)
         calculated_tax = default_amount * estimated_value/100
-        $(e).parents(".parent_class_set").eq(0).find(".estimated_tax_amount_class").val(calculated_tax)
+        $(e).parents(".parent_class_set").eq(0).find(".estimated_tax_amount_class").val(calculated_tax)#.data("initValue", calculated_tax)
+
+        @add_tax_value($(e).parents(".parent_class_set").eq(0).find(".estimated_tax_amount_class")[0])
 
     if $(e).parent().siblings().find(".estimated_value").length > 0
       $(e).parent().siblings().find(".estimated_value").val(estimated_amount)
@@ -388,10 +421,24 @@ window.Inventories =
         $("#total_margin_price").removeClass("red")
         $("#estimate_low_margin").val("")
 
+      @calculate_total_amount()
+      # @add_tax_value($(e).parent().siblings().find(".estimated_value")[0])
+
+  remove_tax_from_estimation: (e)->
+    _this = $(e)
+    removed_tax = parseFloat(_this.parents(".parent_class_set").eq(0).find(".estimated_tax_amount_class").val())
+    total_tax = $("#total_tax_price").text()
+
+    if !isNaN(removed_tax)
+      total_tax -= removed_tax
+      $("#total_tax_price").text(total_tax)
+      @calculate_total_amount()
+
   remove_cost_estimation: (e)->
     this_e = $(e)
     r_estimation_price = parseFloat(this_e.parents(".estimate_extend_with_tax").eq(0).find(".append_estimated_price").text())
     r_cost_price = parseFloat(this_e.parents(".estimate_extend_with_tax").eq(0).find(".append_cost_price").text())
+
 
     total_cost_price = $("#total_cost_price").text()
     total_estimation_price = $("#total_estimated_price").text()
@@ -399,8 +446,16 @@ window.Inventories =
     total_cost_price -= r_cost_price
     total_estimation_price -= r_estimation_price
 
+
     $("#total_cost_price").text(total_cost_price)
     $("#total_estimated_price").text(total_estimation_price)
+
+    taxes = 0
+    this_e.parents(".estimate_extend_with_tax").eq(0).find(".estimated_tax_amount_class").each ->
+      taxes += parseFloat($(this).val()) if !isNaN($(this).val())
+    total_tax_price = $("#total_tax_price").text()
+    total_amount_with_tax = total_tax_price - taxes
+    $("#total_tax_price").text(total_amount_with_tax)
 
     updated_margin = (total_estimation_price - total_cost_price)*100/total_cost_price
     $("#total_margin_price").text(Math.round(updated_margin * 100)/100)
@@ -412,6 +467,8 @@ window.Inventories =
     else
       $("#total_margin_price").removeClass("red")
       $("#estimate_low_margin").val("")
+
+    @calculate_total_amount()
 
 
   approved_amount_calculation: (e)->
