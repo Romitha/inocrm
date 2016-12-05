@@ -16,7 +16,11 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :reports
+  resources :reports do
+    collection do
+      get "excel_output"
+    end
+  end
 
 
   devise_for :users, skip: [:registrations, :passwords, :confirmations], :controllers => {:sessions => 'sessions'}
