@@ -54,6 +54,7 @@
           - if estimation.approval_required
             - if estimation_external_present
               = number_with_precision estimation.ticket_estimation_externals.sum(:approved_estimated_price), precision: 2
+              = estimation.currency.try(:code)
             - else
               = number_with_precision estimation.ticket_estimation_parts.sum(:approved_estimated_price), precision: 2
           - else
