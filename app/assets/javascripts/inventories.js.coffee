@@ -113,7 +113,7 @@ window.Inventories =
       $(".request_from").empty()
       $("#store_id", "#mst_store_id", "#inv_product_id", "#mst_inv_product_id").val("")
       $(".not_non_stock").addClass("hide")
-
+      $("#request_from_select").removeClass("hide")
 
     $("#ticket_spare_part_request_from_s").click ->
       $(".request_from").empty()
