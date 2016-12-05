@@ -4247,6 +4247,20 @@ class TicketsController < ApplicationController
     end
   end
 
+  def view_po
+    TicketSparePart
+    Product
+    Currency
+    refined_search_po = ""
+    if params[:search].present?
+      search_po = params[:search_po]
+      refined_search_po = search_po.map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
+    end
+    params[:query] = refined_search_po
+    @po = SoPo.search(params)
+    render "tickets/view_po"
+  end
+
   def create_po
     Organization
     Inventory

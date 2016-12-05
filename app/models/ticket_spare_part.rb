@@ -85,6 +85,45 @@ end
 
 class SoPo < ActiveRecord::Base
   self.table_name = "spt_so_po"
+  Product
+
+  include Tire::Model::Search
+  include Tire::Model::Callbacks
+
+  def self.search(params)
+    tire.search(page: (params[:page] || 1), per_page: 10) do
+      query do
+        boolean do
+          must { string params[:query] } if params[:query].present?
+          # must { term :store_id, params[:store_id] } if params[:store_id].present?
+          must { range :formated_created_at, lte: params[:range_to].to_date } if params[:range_to].present?
+          must { range :formated_created_at, gte: params[:range_from].to_date } if params[:range_from].present?
+          # filter :range, published_at: { lte: Time.zone.now}
+          # raise to_curl
+        end
+      end
+      sort { by :po_no, {order: "asc", ignore_unmapped: true} }
+    end
+  end
+
+  def to_indexed_json
+    to_json(
+      only: [:id, :product_brand_id, :po_no, :created_by, :created_at, :so_no, :note, :amount, :currency_id],
+      methods: [:po_no_format, :currency_type, :brand_of_product_name],
+    )
+  end
+
+  def po_no_format
+    po_no.to_s.rjust(5, INOCRM_CONFIG["inventory_po_no_format"])
+  end
+
+  def currency_type
+    currency.code
+  end
+
+  def brand_of_product_name
+    product_brand.name
+  end
 
   belongs_to :currency, foreign_key: :currency_id
   belongs_to :user, foreign_key: :created_by
@@ -93,6 +132,7 @@ class SoPo < ActiveRecord::Base
   has_many :so_po_items, foreign_key: :spt_so_po_id
   accepts_nested_attributes_for :so_po_items, allow_destroy: true
   validates :po_no, :po_date, :so_no, :amount, presence: true
+
 end
 
 class TicketSparePartStore < ActiveRecord::Base

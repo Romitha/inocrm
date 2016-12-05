@@ -143,6 +143,7 @@ Rails.application.routes.draw do
       get "inform_customer_in_modal"
       get "master_data"
       get "hp_po"
+      get "view_po"
       # post "save_add_edit_contract"
 
       get "alert"

@@ -658,3 +658,8 @@ window.Tickets =
     activateOnSite(ticket_type)
 
     ticket_type.click -> activateOnSite($(@))
+
+  reset_searchpo:->
+    $("#po_no_id").val("")
+    $("#po_range_from_id").val("")
+    $("#po_range_to_id").val("")
