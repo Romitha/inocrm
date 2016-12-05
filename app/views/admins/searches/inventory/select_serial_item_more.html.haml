@@ -24,7 +24,7 @@
         #{inventory_serial_item.serial_no}
       .col-md-3
         %strong Manufatured Date:
-        #{inventory_serial_item.try(:manufatured_date)}
+        #{inventory_serial_item.try(:manufatured_date).try(:strftime, "%Y-%m-%d")}
       .col-md-3
         %strong CT No:
         #{inventory_serial_item.try(:ct_no)}
