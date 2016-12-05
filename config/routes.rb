@@ -16,6 +16,8 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :reports
+
 
   devise_for :users, skip: [:registrations, :passwords, :confirmations], :controllers => {:sessions => 'sessions'}
 

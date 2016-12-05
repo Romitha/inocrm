@@ -124,6 +124,7 @@ gem "factory_girl_rails"
 gem 'angularjs-rails'
 
 gem 'wicked_pdf'
+gem 'wkhtmltopdf-binary'
 
 
 # gem "em-http-request"

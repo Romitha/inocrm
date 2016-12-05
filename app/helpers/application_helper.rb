@@ -304,7 +304,7 @@ module ApplicationHelper
         estimation_part = ticket_estimation.ticket_estimation_parts.first
         item_index += 1
         description = "Part No: #{estimation_part.ticket_spare_part.spare_part_no} #{estimation_part.ticket_spare_part.spare_part_description}" + "#{' (Warr: ' + estimation_part.warranty_period.to_s + ' M)' if estimation_part.warranty_period.present? }"
-        item_code = estimation_part.ticket_spare_part.ticket_spare_part_store.present? ? estimation_part.ticket_spare_part.ticket_spare_part_store.approved_inventory_product.try(:generated_item_code) : ""
+        item_code = estimation_part.ticket_spare_part.ticket_spare_part_store.present? ? (estimation_part.ticket_spare_part.ticket_spare_part_store.approved_inventory_product.try(:generated_item_code) or estimation_part.ticket_spare_part.ticket_spare_part_store.inventory_product.try(:generated_item_code)) : ""
 
         totalprice = ticket_estimation.approval_required ? estimation_part.approved_estimated_price.to_f : estimation_part.estimated_price.to_f
 
@@ -336,6 +336,7 @@ module ApplicationHelper
 
         totalprice = unit_price
         total_amount += totalprice
+        quantity = 1
 
         repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => quantity, "UNIT_PRICE" => standard_currency_format(unit_price), "CURRENCY1" => currency_1, "TOTAL_PRICE" => standard_currency_format(totalprice), "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
 

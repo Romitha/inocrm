@@ -1,0 +1,12 @@
+!!!
+%html
+  %head
+    %meta{:content => "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}
+    %meta{:charset => "utf-8"}
+    = stylesheet_link_tag wicked_pdf_asset_base64("reports")
+    / = javascript_include_tag wicked_pdf_asset_base64("number_pages")
+  %body{:onload => "number_pages"}
+    #header
+      / = image_tag wicked_pdf_asset_base64('mysite.jpg')
+    #content
+      = yield
