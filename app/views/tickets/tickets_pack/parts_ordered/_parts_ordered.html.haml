@@ -387,7 +387,7 @@
                   = SparePartStatusAction.find_by_non_stock_ch_type_index(next_index).try(:name_next) unless (next_index > 4) or (ticket_spare_part_ref.spare_part_status_action.non_stock_ch_type_index == 0)
 
               %dt Faulty Serial No
-              %dd#ticket_spare_part_faulty_serial_no.faulty_serial_no= ticket_spare_part.faulty_serial_no
+              %dd#ticket_spare_part_faulty_serial_no.faulty_serial_no= ticket_spare_part_ref.faulty_serial_no
               %dt Faulty CT No
               %dd#ticket_spare_part_faulty_ct_no.faulty_ct_no= ticket_spare_part_ref.faulty_ct_no
               %dt Request type
