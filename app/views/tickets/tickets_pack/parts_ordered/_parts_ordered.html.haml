@@ -93,7 +93,7 @@
                 = SparePartStatusAction.find_by_non_stock_ch_type_index(next_index).try(:name_next) unless (next_index > 4) or (ticket_spare_part.spare_part_status_action.non_stock_ch_type_index == 0)
 
             %dt Faulty Serial No
-            %dd#ticket_spare_part_faulty_serial_no.faulty_serial_no= ticket_spare_part.ticket_fsr and ticket_spare_part.ticket_fsr.ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])
+            %dd#ticket_spare_part_faulty_serial_no.faulty_serial_no= ticket_spare_part.faulty_serial_no
             %dt Faulty CT No
             %dd#ticket_spare_part_faulty_ct_no.faulty_ct_no= ticket_spare_part.faulty_ct_no
             %dt Request type
@@ -112,7 +112,9 @@
         .col-md-4
           %dl.dl-horizontal
             %dt Received
-            %dd= ticket_spare_part.received_spare_part_no
+            %dd 
+              - if ticket_spare_part.received_eng
+                Yes
             %dt Repair Time
             %dd= distance_of_time_in_words ticket_spare_part.repare_start, ticket_spare_part.repare_end if ticket_spare_part.repare_start and ticket_spare_part.repare_end
             %dt Received Spare Part  No
@@ -385,7 +387,7 @@
                   = SparePartStatusAction.find_by_non_stock_ch_type_index(next_index).try(:name_next) unless (next_index > 4) or (ticket_spare_part_ref.spare_part_status_action.non_stock_ch_type_index == 0)
 
               %dt Faulty Serial No
-              %dd#ticket_spare_part_faulty_serial_no.faulty_serial_no= ticket_spare_part_ref.ticket_fsr and ticket_spare_part_ref.ticket_fsr.ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])
+              %dd#ticket_spare_part_faulty_serial_no.faulty_serial_no= ticket_spare_part.faulty_serial_no
               %dt Faulty CT No
               %dd#ticket_spare_part_faulty_ct_no.faulty_ct_no= ticket_spare_part_ref.faulty_ct_no
               %dt Request type

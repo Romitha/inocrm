@@ -342,7 +342,7 @@ class InvoicesController < ApplicationController
 
       end
       @ticket.update editable_ticket_params if editable_ticket_params.present?
-      @ticket.set_ticket_close unless re_open
+      @ticket.set_ticket_close(current_user.id) unless re_open
 
       if @ticket.ticket_terminated
         # Action:(60)Terminate Job Customer Feedback, DB.spt_act_customer_feedback.

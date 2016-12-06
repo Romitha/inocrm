@@ -106,7 +106,7 @@ class TicketsController < ApplicationController
     end
   end
 
-  def update
+  def update_attribute
     t_params = ticket_params
     t_params[:user_ticket_actions_attributes].first[:action_at] = Time.now if t_params[:user_ticket_actions_attributes].present?
     respond_to do |format|
@@ -2634,7 +2634,7 @@ class TicketsController < ApplicationController
 
         @ticket.update owner_engineer_id: params[:owner_engineer_id], ticket_close_approved: true
 
-        @ticket.set_ticket_close
+        @ticket.set_ticket_close(current_user.id)
 
       else # Rejected (Not Checked)
 
@@ -4262,22 +4262,27 @@ class TicketsController < ApplicationController
   end
 
   def create_po
+    TicketSparePart
     Organization
     Inventory
     User
+    TaskAction
+    Ticket
 
     @po = SoPo.new po_params
 
     if @po.save
       @po.so_po_items.each do |item|
-        update item.ticket_spare_part.ticket_spare_part_manufacture.po_completed = true
+        ticket_spare_part = item.ticket_spare_part
+
+        ticket_spare_part.ticket_spare_part_manufacture.update po_completed: true
 
         # Action #86 PO Added
-        user_ticket_action = item.ticket_spare_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket_spare_part.ticket.re_open_count, action_id: 86)
-        user_ticket_action.build_request_spare_part(ticket_spare_part_id: item.ticket_spare_part.id)
+        user_ticket_action = ticket_spare_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: ticket_spare_part.ticket.re_open_count, action_id: 86)
+        user_ticket_action.build_request_spare_part(ticket_spare_part_id: ticket_spare_part.id)
         user_ticket_action.save
 
-        item.ticket_spare_part.ticket.set_ticket_close
+        ticket_spare_part.ticket.set_ticket_close(current_user.id)
       end
 
 

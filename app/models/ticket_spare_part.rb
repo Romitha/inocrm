@@ -122,7 +122,11 @@ class SoPo < ActiveRecord::Base
   end
 
   def brand_of_product_name
-    product_brand.name
+    product_brand.try(:name)
+  end
+
+  def formated_created_at
+    created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
   end
 
   belongs_to :currency, foreign_key: :currency_id
