@@ -161,7 +161,8 @@ class GrnItem < ActiveRecord::Base
     indexes :grn_item_current_unit_cost_histories, type: "nested", include_in_parent: true
   end
 
-  def self.search(params)  
+  def self.search(params)
+    # https://www.elastic.co/guide/en/elasticsearch/reference/2.3/query-dsl-query-string-query.html
     tire.search(page: (params[:page] || 1), per_page: 10) do
       query do
         boolean do
@@ -179,7 +180,7 @@ class GrnItem < ActiveRecord::Base
   def to_indexed_json
     Inventory
     to_json(
-      only: [:serial_no, :ct_no, :created_at, :current_unit_cost],
+      only: [:serial_no, :ct_no, :created_at, :current_unit_cost, :inventory_not_updated, :remaining_quantity],
       methods: [:grn_supplier_name],
       include: {
         inventory_product: {

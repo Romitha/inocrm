@@ -150,6 +150,8 @@ Rails.application.routes.draw do
       get "master_data"
       get "hp_po"
       get "view_po"
+      post "update_issue_store_parts"
+
       # post "save_add_edit_contract"
 
       get "alert"
@@ -437,7 +439,6 @@ Rails.application.routes.draw do
       put "update_delivery_unit"
       put "update_edit_serial"
 
-      post "update_issue_store_parts"
       post "update_return_store_part"
       post "update_estimate_the_part_internal"
       post "update_low_margin_estimate_parts_approval"

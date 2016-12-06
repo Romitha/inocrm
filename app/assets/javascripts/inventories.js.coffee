@@ -107,6 +107,8 @@ window.Inventories =
         when "NS"
           console.log "ns"
 
+    disable_loaded_requested_quantity($(".request_from_radio_buttons"))
+
     $(".request_from_radio_buttons").click -> disable_loaded_requested_quantity($(@))
 
     $("#ticket_spare_part_request_from_ns").click ->

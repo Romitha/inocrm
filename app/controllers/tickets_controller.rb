@@ -2745,9 +2745,12 @@ class TicketsController < ApplicationController
     TicketSparePart
     TicketEstimation
     Grn
+    Srn
     ticket_id = (params[:ticket_id] or session[:ticket_id])
     @ticket = Ticket.find_by_id ticket_id
     session[:ticket_id] = @ticket.id
+
+    @main_part_serial = []
 
     request_spare_part_id = params[:request_spare_part_id]
     @onloan_request = true if params[:onloan_request] == 'Y'
@@ -2760,36 +2763,44 @@ class TicketsController < ApplicationController
 
     @onloan_or_store = @onloan_request ? @onloan_spare_part : @spare_part.ticket_spare_part_store
 
-    if @onloan_or_store.approved_inventory_product.inventory_product_info.need_serial
-      @fifo_grn_serial_items = []
+    @fifo_grn_serial_items = []
 
-      grn_item_ids = @onloan_or_store.approved_inventory_product.grn_items.select{|grn_item| grn_item.grn.store_id == @onloan_or_store.approved_store_id}.map{|grn_item| grn_item.id}
+    if @onloan_or_store.approved_inventory_product.inventory_product_info
+      grn_item_ids = @onloan_or_store.approved_inventory_product.grn_items.search(query: "grn.store_id:#{@onloan_or_store.approved_store_id} AND inventory_not_updated:false").map{|grn_item| grn_item.id}
 
-      if @onloan_or_store.approved_inventory_product.fifo
-        @fifo_grn_serial_items = GrnSerialItem.includes(:inventory_serial_item).where(grn_item_id: grn_item_ids, remaining: 1).sort{|p, n| p.grn_item.grn.created_at <=> n.grn_item.grn.created_at}
+      if @onloan_or_store.approved_inventory_product.inventory_product_info.need_serial
+        @fifo_grn_serial_items = if @onloan_or_store.approved_inventory_product.fifo
+          GrnSerialItem.includes(:inventory_serial_item).where(grn_item_id: grn_item_ids, remaining: 1).sort{|p, n| p.grn_item.grn.created_at <=> n.grn_item.grn.created_at}
+        else
+          GrnSerialItem.includes(:inventory_serial_item).where(grn_item_id: grn_item_ids, remaining: 1).sort{|p, n| n.grn_item.grn.created_at <=> p.grn_item.grn.created_at}
+
+        end
 
         @paginated_fifo_grn_serial_items = Kaminari.paginate_array(@fifo_grn_serial_items).page(params[:page]).per(10)
+
+      elsif @onloan_or_store.approved_inventory_product.inventory_product_info.need_batch
+        @grn_batches = GrnBatch.where(grn_item_id: grn_item_ids).where("remaining_quantity > 0").page(params[:page]).per(10)
+        puts "***********************"
+        puts grn_item_ids
+        puts "***********************"
       else
-        @fifo_grn_serial_items = GrnSerialItem.includes(:inventory_serial_item).where(grn_item_id: grn_item_ids, remaining: 1).sort{|p, n| n.grn_item.grn.created_at <=> p.grn_item.grn.created_at}
 
-        @paginated_fifo_grn_serial_items = Kaminari.paginate_array(@fifo_grn_serial_items).page(params[:page]).per(10)
+        grn_items = @onloan_or_store.approved_inventory_product.grn_items.search(query: "grn.store_id:#{@onloan_or_store.approved_store_id} AND inventory_not_updated:false AND remaining_quantity:>0")
+
+        @grns = Kaminari.paginate_array(grn_items).page(params[:page]).per(10)
       end
-    elsif @onloan_or_store.approved_inventory_product.inventory_product_info.need_batch
-      @grn_batches = GrnBatch.where(grn_item_id: grn_item_ids).where("remaining_quantity > 0").page(params[:page]).per(10)
-    else
-      grn_items = @onloan_or_store.approved_inventory_product.grn_items.where(inventory_not_updated: false).where("remaining_quantity > 0").select{|grn_item| grn_item.grn.store_id == @onloan_or_store.approved_store_id}
-
-      @grns = Kaminari.paginate_array(grn_items).page(params[:page]).per(10)
     end
 
-    if @onloan_or_store.approved_inventory_product.fifo
-        # gsi = GrnSerialItem.includes(:inventory_serial_item).where(grn_item_id: @onloan_or_store.approved_inventory_product.grn_items.select{|grn_item| grn_item.grn.store_id == @onloan_or_store.approved_store_id}.map{|grn_item| grn_item.id}, remaining: 1)
-        # .sort{|p, n| p.grn_item.grn.created_at <=> n.grn_item.grn.created_at }
+    if @onloan_or_store.approved_main_inventory_product.present?
+      approved_grn_item_ids = @onloan_or_store.approved_main_inventory_product.grn_items.search(query: "grn.store_id:#{@onloan_or_store.approved_store_id} AND inventory_not_updated:false").map{|grn_item| grn_item.id}
 
-      @main_part_serial = @onloan_or_store.approved_main_inventory_product ? (isi = GrnSerialItem.includes(:inventory_serial_item).where(grn_item_id: @onloan_or_store.approved_main_inventory_product.grn_items.select{|grn_item| grn_item.grn.store_id == @onloan_or_store.approved_store_id}.map{|grn_item| grn_item.id}, remaining: 1); isi.sort{|p, n| p.grn_item.grn.created_at <=> n.grn_item.grn.created_at } ) : []
-      # @onloan_or_store.approved_main_inventory_product.inventory_serial_items.includes(:inventory).where(inv_inventory: {store_id: @onloan_or_store.approved_store_id}, inv_status_id: InventorySerialItemStatus.find_by_code("AV").id)
-    else
-      @main_part_serial = @onloan_or_store.approved_main_inventory_product ? (isi = GrnSerialItem.includes(:inventory_serial_item).where(grn_item_id: @onloan_or_store.approved_main_inventory_product.grn_items.select{|grn_item| grn_item.grn.store_id == @onloan_or_store.approved_store_id}.map{|grn_item| grn_item.id}, remaining: 1); isi.sort{|p, n| p.grn_item.grn.created_at <=> n.grn_item.grn.created_at } ) : []
+      gen_serial_items = GrnSerialItem.includes(:inventory_serial_item).where(grn_item_id: approved_grn_item_ids, remaining: 1)
+
+      @main_part_serial = if @onloan_or_store.approved_main_inventory_product.fifo
+        gen_serial_items.sort{|p, n| p.grn_item.grn.created_at <=> n.grn_item.grn.created_at }
+      else
+        gen_serial_items.sort{|p, n| n.grn_item.grn.created_at <=> p.grn_item.grn.created_at }
+      end
     end
 
     if @ticket
@@ -2803,8 +2814,6 @@ class TicketsController < ApplicationController
       format.html {render "tickets/tickets_pack/issue_store_part"}
     end
   end
-
-
 
   def update_issue_store_parts
     Grn
@@ -2916,7 +2925,7 @@ class TicketsController < ApplicationController
             @grn_serial_item = GrnSerialItem.find(grn_serial_item_id)
 
             @iss_from_inventory_not_updated = @grn_serial_item.grn_item.inventory_not_updated
-            if srn_item.quantity == 1 and @grn_serial_item.remaining and (@grn_serial_item.inventory_serial_item.inv_status_id == InventorySerialItemStatus.find_by_code("AV").id) and not @iss_from_inventory_not_updated
+            if @srn_item.quantity == 1 and @grn_serial_item.remaining and (@grn_serial_item.inventory_serial_item.inv_status_id == InventorySerialItemStatus.find_by_code("AV").id) and not @iss_from_inventory_not_updated
 
               @product_id = @grn_serial_item.inventory_serial_item.inventory_product.id
               @product_condition_id  = @grn_serial_item.inventory_serial_item.product_condition_id
@@ -2942,7 +2951,7 @@ class TicketsController < ApplicationController
             @grn_batch = GrnBatch.find(grn_batch_id)
 
             @iss_from_inventory_not_updated = @grn_batch.grn_item.inventory_not_updated
-            if @grn_batch.remaining_quantity >= srn_item.quantity  and not @iss_from_inventory_not_updated
+            if @grn_batch.remaining_quantity >= @srn_item.quantity  and not @iss_from_inventory_not_updated
 
               @product_id = @grn_batch.grn_item.inventory_product.id
               @product_condition_id  = product_condition_id
@@ -2954,14 +2963,13 @@ class TicketsController < ApplicationController
               @iss_grn_batch_id  = @grn_batch.id
               # @iss_serial_part_id  = nil
 
+              @grn_batch.decrement! :remaining_quantity, @srn_item.quantity
 
-              @grn_batch.update remaining_quantity: (@grn_batch.remaining_quantity-srn_item.quantity)
-
-              @grn_batch.grn_item.update remaining_quantity: (@grn_batch.grn_item.remaining_quantity-srn_item.quantity)
+              @grn_batch.grn_item.decrement! :remaining_quantity, @srn_item.quantity
 
               @inventory = Inventory.where(store_id: @grn_batch.grn_item.grn.store_id, product_id: @grn_batch.grn_item.product_id).order("created_at asc").first
 
-              @inventory.update stock_quantity: (@inventory.stock_quantity - srn_item.quantity), available_quantity: (@inventory.available_quantity - srn_item.quantity)
+              @inventory.update stock_quantity: (@inventory.stock_quantity - @srn_item.quantity), available_quantity: (@inventory.available_quantity - @srn_item.quantity)
               @issued = true
             end
 
@@ -2969,7 +2977,7 @@ class TicketsController < ApplicationController
             @grn_item = GrnItem.find(grn_item_id)
 
             @iss_from_inventory_not_updated = @grn_item.inventory_not_updated
-            if @grn_item.remaining_quantity >= srn_item.quantity  and !@iss_from_inventory_not_updated
+            if @grn_item.remaining_quantity >= @srn_item.quantity  and !@iss_from_inventory_not_updated
 
               @product_id = @grn_item.inventory_product.id
               @product_condition_id  = product_condition_id
@@ -2981,11 +2989,11 @@ class TicketsController < ApplicationController
               # @iss_grn_batch_id  = nil
               # @iss_serial_part_id  = nil
 
-              @grn_item.update remaining_quantity: (@grn_item.remaining_quantity-srn_item.quantity)
+              @grn_item.decrement! :remaining_quantity, @srn_item.quantity
 
               @inventory = Inventory.where(store_id: @grn_item.grn.store_id, product_id: @grn_item.product_id).order("created_at asc").first
 
-              @inventory.update stock_quantity: (@inventory.stock_quantity - srn_item.quantity), available_quantity: (@inventory.available_quantity - srn_item.quantity)
+              @inventory.update stock_quantity: (@inventory.stock_quantity - @srn_item.quantity), available_quantity: (@inventory.available_quantity - @srn_item.quantity)
               @issued = true
             end
 
@@ -2997,7 +3005,7 @@ class TicketsController < ApplicationController
 
           gin_item = gin.gin_items.create(
           product_id: @product_id,
-          issued_quantity: srn_item.quantity,
+          issued_quantity: @srn_item.quantity,
           srn_item_id: @srn_item.id,
           product_condition_id: @product_condition_id,
           currency_id: @currency_id,
@@ -3009,7 +3017,7 @@ class TicketsController < ApplicationController
           inventory_not_updated: @inventory_not_updated
           )#inv_gin_item
 
-          gin_source = gin_item.gin_sources.create(grn_item_id: @iss_grn_item_id, grn_batch_id: @iss_grn_batch_id,grn_serial_item_id: @iss_grn_serial_item_id, serial_part_id: @iss_serial_part_id, issued_quantity: srn_item.quantity, unit_cost: @part_cost_price, returned_quantity: 0)#inv_gin_source
+          gin_source = gin_item.gin_sources.create(grn_item_id: @iss_grn_item_id, grn_batch_id: @iss_grn_batch_id,grn_serial_item_id: @iss_grn_serial_item_id, issued_quantity: @srn_item.quantity, unit_cost: @part_cost_price, returned_quantity: 0)#inv_gin_source
 
           if @onloan_request
             if @onloan_request_part.ticket_spare_part
@@ -3018,7 +3026,7 @@ class TicketsController < ApplicationController
               @onloan_request_part.ticket.update ticket_params
             end
 
-            @onloan_request_part.update inv_gin_id: gin.id, inv_gin_item_id: gin_item.id, cost_price: @part_cost_price, issued: true , isssued_at: DateTime.now, issued_by: current_user.id
+            @onloan_request_part.update inv_gin_id: gin.id, inv_gin_item_id: gin_item.id, cost_price: @part_cost_price, issued: true , issued_at: DateTime.now, issued_by: current_user.id
 
             #Issue store On-Loan Part
             action_id = TaskAction.find_by_action_no(50).id
@@ -3082,8 +3090,6 @@ class TicketsController < ApplicationController
     end
     redirect_to todos_url
   end
-
-
 
   def after_printer
     TaskAction
