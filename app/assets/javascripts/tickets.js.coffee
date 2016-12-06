@@ -622,8 +622,13 @@ window.Tickets =
 
   hp_po_remove: (elem)->
     _this = elem
+    part_no = $(_this).data("value")
+
     this_id = $(_this).data("insertedid")
     $("#addclick_function_"+this_id).removeClass("hide")
+
+    add_link = $("#add_#{part_no}")
+    add_link.css("pointer-events", "auto")
 
   hp_po_add: (ticket_currency_id, spare_part, elem)->
     _this = elem
@@ -634,7 +639,11 @@ window.Tickets =
     $("#inventory_po_items").prev().find(".spare_part_class").val(spare_part)
     $(".ticket_currency_class").val(ticket_currency_id)
     $("#inventory_po_items").prev().find(".po_description_class").val($(_this).parent().prev().find(".now_class").html())
+    $("#inventory_po_items").prev().find(".item_no_class").val($(_this).parent().prev().find(".now_item_default").html())
+    $("#inventory_po_items").prev().find(".po_amount_class").val($(_this).parent().prev().find(".now_amount_default").html())
+    $("#inventory_po_items").prev().find(".remove").data("value", value)
 
+    $(_this).css("pointer-events", "none")
   view_so_po_items:(elem) ->
     po_id = elem
     $.post "js_call_invoice_item", {po_id: po_id}

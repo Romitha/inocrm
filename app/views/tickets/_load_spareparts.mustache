@@ -9,7 +9,9 @@
     %strong Date Ordered
   .col-md-1
     %strong Part No
-  .col-md-2
+  .col-md-1
+    %strong Amount
+  .col-md-1
     %strong Description
   .col-md-1
     %strong Note
@@ -26,17 +28,18 @@
 
     .row
       .extra_info_above
-        .col-md-1 {{index}}
+        .col-md-1.now_item_default {{index}}
         .col-md-1 {{event_no}}
         .col-md-1 {{order_no}}
         .col-md-1 {{event_closed_date}}
         .col-md-1 {{part_no}}
-        .col-md-2.now_class {{spare_part_description}}
+        .col-md-1.now_amount_default {{amount}}
+        .col-md-1.now_class {{spare_part_description}}
         .col-md-1 Note
         .col-md-1 {{ticket_no}}
         .col-md-1 {{serial_no}}
       .col-md-2
-        <a href="#" onclick="Tickets.hp_po_add('{{ticket_id}}','{{part_id}}', this); return false;" data-value="{{part_no}}">add</a>
+        <a href="#" onclick="Tickets.hp_po_add('{{ticket_id}}','{{part_id}}', this); return false;" data-value="{{part_no}}" id="add_{{part_no}}">add</a>
     %hr
 
   {{/spare_parts}}

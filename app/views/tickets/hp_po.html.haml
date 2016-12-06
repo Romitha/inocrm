@@ -13,14 +13,13 @@
     %strong Create PO
     
   .col-md-2
-    = f.input :created_at, as: :hidden, input_html: {value: DateTime.now.strftime("%Y-%m-%d %H:%M")}
     = f.input :created_by, as: :hidden, input_html: {value: current_user.id}
     
-    = f.input :so_no, label: "Sales Order No."
+    = f.input :so_no, label: "Sales Order No.", input_html: {min: "0", class: "only_float"}
   .col-md-2
-    = f.input :po_no, label: "PO no"
+    = f.input :po_no, label: "PO no", input_html: {min: "0", class: "only_float"}
   .col-md-2
-    = f.input :po_date, label: "PO date", as: :string, input_html: {class: "datepicker"}
+    = f.input :po_date, label: "PO date", as: :string, input_html: {value: Date.today, class: "datepicker"}
     = f.input :amount, as: :hidden, input_html: {value: 0}, label: "Amount"
     = f.input :currency_id, as: :hidden, input_html: {value: 1}# have to solve
   / .col-md-2
@@ -39,7 +38,9 @@
           %strong Date Ordered
         .col-md-1
           %strong Part No
-        .col-md-2
+        .col-md-1
+          %strong Amount
+        .col-md-1
           %strong Description
         .col-md-1
           %strong Note
@@ -58,13 +59,13 @@
       .row
         .gg
           .col-md-3
-            = p.input :amount, required: true
+            = p.input :amount, required: true, input_html: {min: "0", class: "po_amount_class only_float"}
           .col-md-2
-            = p.input :item_no, required: true
+            = p.input :item_no, required: true, input_html: {min: "0", class: "item_no_class only_float"}
           .col-md-5
             = p.input :description, id: "po_description", input_html: {class: "po_description_class"}, label: "PO description"
           .col-md-2
-            = p.link_to_remove "remove", onclick: "Tickets.hp_po_remove(this); return false;"
+            = p.link_to_remove "remove", onclick: "Tickets.hp_po_remove(this); return false;", class: "remove"
       %hr
     .col-md-13
       = f.link_to_add "Add item", :so_po_items, id: "inventory_po_items", class: "hide"
