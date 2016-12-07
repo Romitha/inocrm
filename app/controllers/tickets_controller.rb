@@ -2716,7 +2716,7 @@ class TicketsController < ApplicationController
     Inventory
     Warranty
 
-    @ticket = Ticket.find_by_id params[:ticket_id]
+    @ticket = Ticket.find params[:ticket_id]
     if @ticket
       @product = @ticket.products.first
       Rails.cache.delete([:histories, @product.id])
@@ -2780,9 +2780,6 @@ class TicketsController < ApplicationController
 
       elsif @onloan_or_store.approved_inventory_product.inventory_product_info.need_batch
         @grn_batches = GrnBatch.where(grn_item_id: grn_item_ids).where("remaining_quantity > 0").page(params[:page]).per(10)
-        puts "***********************"
-        puts grn_item_ids
-        puts "***********************"
       else
 
         grn_items = @onloan_or_store.approved_inventory_product.grn_items.search(query: "grn.store_id:#{@onloan_or_store.approved_store_id} AND inventory_not_updated:false AND remaining_quantity:>0")

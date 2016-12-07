@@ -8,81 +8,75 @@ window.Invoices =
     return
 
   quotation_change: ->
-    total_tax = 0
-    sub_amount = 0
-    min_adv_payment = 0
-    total_payment = 0
-    prev_deduction = 0
-    prev_amount_to_be_paid = 0
 
-    total_deduction = if !$("#deducted_amount").val() or isNaN(parseFloat($("#deducted_amount").val())) then 0 else parseFloat($("#deducted_amount").val())
+    calculateTotal = (sub_amount, total_tax, min_adv_payment, total_payment, total_deduction)->
+      final_total_amount = sub_amount - total_deduction
+      amount_to_be_paid = final_total_amount - total_payment
 
-    $("#total_deduction").text(total_deduction)
-    $("#total_deduction_value").val(total_deduction)
+      $("#sub_amount").text(parseFloat(sub_amount).toFixed(2))
+      $("#sub_amount_value").val(sub_amount)
 
-    $(".total_payment").each ->
-      total_payment += if isNaN(parseFloat($(@).text())) then 0 else parseFloat($(@).text())
+      $("#total_tax").text(parseFloat(total_tax).toFixed(2))
+      $("#total_tax_value").val(total_tax)
 
-    $(".action").each ->
-      if $(@).is(":checked")
-        sub_amount += if isNaN(parseFloat($(@).parent().siblings(".sub_amount").text())) then 0.0 else parseFloat($(@).parent().siblings(".sub_amount").text())
-        total_tax += if isNaN(parseFloat($(@).parent().siblings(".tax").text())) then 0 else parseFloat($(@).parent().siblings(".tax").text())
-        min_adv_payment += if isNaN(parseFloat($(@).parent().siblings(".min_adv_payment").text())) then 0 else parseFloat($(@).parent().siblings(".min_adv_payment").text())
+      $("#min_adv_payment").text(parseFloat(min_adv_payment).toFixed(2))
 
-    final_total_amount = sub_amount + total_tax
-    amount_to_be_paid = final_total_amount - total_payment - total_deduction
+      $("#total_payment").text(parseFloat(total_payment).toFixed(2))
+      $("#total_payment_value").val(total_payment)
 
-    $("#deducted_amount").keyup ->
-      _this = this
-      setTimeout ( ->
-        total_deduction = if !$(_this).val() or isNaN(parseFloat($(_this).val())) then 0 else parseFloat($(_this).val())
-        $("#total_deduction").text(total_deduction)
-        $("#total_deduction_value").val(total_deduction)
-
-        amount_to_be_paid = final_total_amount - total_payment - parseFloat(total_deduction)
-        $("#amount_to_be_paid").text(Math.round(amount_to_be_paid * 100)/100)
-        $("#amount_to_be_paid_value").val(Math.round(amount_to_be_paid * 100)/100)
-        $("#total_amount_value").val(total_deduction)
-      ), 200
-
-    $("#amount_to_be_paid").text(Math.round(amount_to_be_paid * 100)/100)
-    $("#amount_to_be_paid_value").val(Math.round(amount_to_be_paid * 100)/100)
-    $("#total_amount_value").val(total_deduction)
-
-    $("#total_tax").text(parseFloat(total_tax).toFixed(2))
-    $("#total_tax_value").val(total_tax)
-
-    $("#sub_amount").text(parseFloat(sub_amount).toFixed(2))
-    $("#sub_amount_value").val(sub_amount)
-    $("#final_total_amount").text(parseFloat(final_total_amount).toFixed(2))
-    $("#min_adv_payment").text(parseFloat(min_adv_payment).toFixed(2))
-    $("#total_payment").text(parseFloat(total_payment).toFixed(2))
-    $("#total_payment_value").val(total_payment)
-
-    $(".action").click ->
-      # total_tax = 0
-      # sub_amount = 0
-      if $(@).is(":checked")
-        sub_amount += if isNaN(parseFloat($(@).parent().siblings(".sub_amount").text())) then 0 else parseFloat($(@).parent().siblings(".sub_amount").text())
-        total_tax += if isNaN(parseFloat($(@).parent().siblings(".tax").text())) then 0 else parseFloat($(@).parent().siblings(".tax").text())
-        min_adv_payment += if isNaN(parseFloat($(@).parent().siblings(".min_adv_payment").text())) then 0 else parseFloat($(@).parent().siblings(".min_adv_payment").text())
-      else
-        sub_amount -= if isNaN(parseFloat($(@).parent().siblings(".sub_amount").text())) then 0 else parseFloat($(@).parent().siblings(".sub_amount").text())
-        total_tax -= if isNaN(parseFloat($(@).parent().siblings(".tax").text())) then 0 else parseFloat($(@).parent().siblings(".tax").text())
-        min_adv_payment -= if isNaN(parseFloat($(@).parent().siblings(".min_adv_payment").text())) then 0 else parseFloat($(@).parent().siblings(".min_adv_payment").text())
-
-      final_total_amount = sub_amount + total_tax
-      amount_to_be_paid = final_total_amount - total_payment - total_deduction
+      $("#final_total_amount").text(parseFloat(final_total_amount).toFixed(2))
 
       $("#amount_to_be_paid").text(Math.round(amount_to_be_paid * 100)/100)
       $("#amount_to_be_paid_value").val(Math.round(amount_to_be_paid * 100)/100)
-      $("#total_tax").text(parseFloat(total_tax).toFixed(2))
-      $("#sub_amount").text(parseFloat(sub_amount).toFixed(2))
-      $("#sub_amount_value").val(sub_amount)
-      $("#final_total_amount").text(parseFloat(final_total_amount).toFixed(2))
-      $("#min_adv_payment").text(parseFloat(min_adv_payment).toFixed(2))
-      $("#total_payment").text(parseFloat(total_payment).toFixed(2))
-      $("#total_payment_value").val(total_payment)
+
+      $("#total_deduction").text(total_deduction)
+      $("#total_deduction_value").val(total_deduction)
+
+    calculateTax = (elem)->
+      if elem.is(":checked")
+        if isNaN(parseFloat(elem.parent().siblings(".tax").text())) then 0 else parseFloat(elem.parent().siblings(".tax").text())
+      else
+        0
+
+    calculateSubAmount = (elem)->
+      if elem.is(":checked")
+        if isNaN(parseFloat(elem.parent().siblings(".sub_amount").text())) then 0 else parseFloat(elem.parent().siblings(".sub_amount").text())
+      else
+        0
+
+    calculateMinAdvPayment = (elem)->
+      if elem.is(":checked")
+        if isNaN(parseFloat(elem.parent().siblings(".min_adv_payment").text())) then 0 else parseFloat(elem.parent().siblings(".min_adv_payment").text())
+      else
+        0
+
+    calculateTotalPayment = ->
+      totalPayment = 0
+      $(".total_payment").each ->
+        totalPayment += if isNaN(parseFloat($(@).text())) then 0 else parseFloat($(@).text())
+
+      totalPayment
+
+    deductedAmount = ->
+      if !$("#deducted_amount").val() or isNaN(parseFloat($("#deducted_amount").val())) then 0 else parseFloat($("#deducted_amount").val())
+
+    calculate = ->
+      totalSubAmount = totalTax = MinAdvPayment = totalPayment = totalDeduction = 0
+
+      $(".action").each ->
+        totalSubAmount += calculateSubAmount($(@))
+        totalTax += calculateTax($(@))
+        MinAdvPayment += calculateMinAdvPayment($(@))
+
+      totalDeduction = deductedAmount()
+
+      totalPayment = calculateTotalPayment()
+
+      calculateTotal(totalSubAmount, totalTax, MinAdvPayment, totalPayment, totalDeduction)
+
+    calculate()
+    $(".action").change -> calculate()
+    $("#deducted_amount").keyup -> calculate()
 
   check_fsr_dynamic_check_behavour: ->
 

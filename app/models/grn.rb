@@ -180,7 +180,7 @@ class GrnItem < ActiveRecord::Base
   def to_indexed_json
     Inventory
     to_json(
-      only: [:serial_no, :ct_no, :created_at, :current_unit_cost, :inventory_not_updated, :remaining_quantity],
+      only: [:id, :serial_no, :ct_no, :created_at, :current_unit_cost, :inventory_not_updated, :remaining_quantity, :recieved_quantity, :reserved_quantity],
       methods: [:grn_supplier_name],
       include: {
         inventory_product: {
@@ -202,7 +202,7 @@ class GrnItem < ActiveRecord::Base
           }
         },
         grn: {
-          only: [:grn_no, :created_at, :store_id],
+          only: [:grn_no, :created_at, :store_id, :remarks],
           methods: [:grn_no_format]
         },
         grn_item_current_unit_cost_histories: {

@@ -27,7 +27,7 @@
       #{spare_part.spare_part_status_action.try(:name)}
       %br/
       %strong Requested by:
-      #{User.cached_find_by_id(spare_part.requested_by).try(:email)}
+      #{User.cached_find_by_id(spare_part.requested_by).try(:full_name)}
     .col-md-3
       - if spare_part.cus_chargeable_part
         %strong Customer chargeable
@@ -46,7 +46,7 @@
           %strong Estimated price (#{ticket.ticket_currency.code}): #{number_with_precision tsp.ticket_estimation.advance_payment_amount, precision: 2}
 
         .col-md-3
-          %strong Estimated by: #{User.cached_find_by_id(tsp.ticket_estimation.estimated_by).try(:email)}
+          %strong Estimated by: #{User.cached_find_by_id(tsp.ticket_estimation.estimated_by).try(:full_name)}
 
         .col-md-3
           %strong Estimated at: #{tsp.ticket_estimation.estimated_at.try(:strftime, "%Y-%m-%d")}
@@ -61,7 +61,7 @@
           = tsp.ticket_estimation.advance_payment_amount
         .col-md-3
           %strong Customer approved by:
-          #{User.cached_find_by_id(tsp.ticket_estimation.cust_approved_by).try(:email)}
+          #{User.cached_find_by_id(tsp.ticket_estimation.cust_approved_by).try(:full_name)}
 
         .col-md-3
           %strong Customer approved at:
@@ -73,7 +73,7 @@
       .col-md-3
       .col-md-3
         %strong Store requested by:
-        #{User.cached_find_by_id(request_part.store_requested_by).try(:email)}
+        #{User.cached_find_by_id(request_part.store_requested_by).try(:full_name)}
 
       .col-md-3
         %strong Store requested at:
@@ -99,7 +99,7 @@
       = request_part.spare_part_status_action.name
     .col-md-3
       %strong Requested by:
-      #{User.cached_find_by_id(request_part.requested_by).try(:email)}
+      #{User.cached_find_by_id(request_part.requested_by).try(:full_name)}
 
     .col-md-3
       %strong Requested at:
@@ -139,7 +139,7 @@
           = request_part.approved_store.try(:name)
         %dt Item Code
         %dd
-          = request_part.approved_inventory_product.try(:serial_no)
+          = request_part.approved_inventory_product.try(:generated_serial_no)
         %dt Item Description
         %dd
           = request_part.approved_inventory_product.try(:description)
@@ -168,7 +168,7 @@
             = request_part.approved_store.name
           %dt Item Code
           %dd
-            = request_part.approved_main_inventory_product.serial_no
+            = request_part.approved_main_inventory_product.generated_serial_no
           %dt Item Description
           %dd
             = request_part.approved_main_inventory_product.description
@@ -330,7 +330,7 @@
                         - else
                           = (index+1)
                       %td= grn_item.grn.grn_no
-                      %td= grn_item.grn.created_at.try(:strftime, "%Y-%m-%d")
+                      %td= grn_item.grn.created_at.to_date.try(:strftime, "%Y-%m-%d")
                       %td= grn_item.recieved_quantity
                       %td= grn_item.remaining_quantity
                       %td
