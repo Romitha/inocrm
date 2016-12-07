@@ -59,7 +59,7 @@
       .row
         .gg
           .col-md-3
-            = p.input :amount, required: true, input_html: {min: "0", class: "po_amount_class only_float"}
+            = p.input :amount,label: "payment expected amount", required: true, input_html: {min: "0", class: "po_amount_class only_float"}
           .col-md-2
             = p.input :item_no, required: true, input_html: {min: "0", class: "item_no_class only_float"}
           .col-md-5

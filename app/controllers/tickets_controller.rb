@@ -4264,7 +4264,15 @@ class TicketsController < ApplicationController
     end
     params[:query] = refined_search_po
     @po = SoPo.search(params)
-    render "tickets/view_po"
+    # render "tickets/view_po"
+
+    case params[:po_callback]
+    when "select_po"
+      @po = SoPo.find params[:po_no]
+      render "tickets/view_selected_po"
+    else
+      render "tickets/view_po"
+    end
   end
 
   def create_po

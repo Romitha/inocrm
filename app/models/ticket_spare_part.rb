@@ -109,7 +109,7 @@ class SoPo < ActiveRecord::Base
   def to_indexed_json
     to_json(
       only: [:id, :product_brand_id, :po_no, :created_by, :created_at, :so_no, :note, :amount, :currency_id],
-      methods: [:po_no_format, :currency_type, :brand_of_product_name],
+      methods: [:po_no_format, :currency_type, :brand_of_product_name, :formated_created_at],
     )
   end
 
