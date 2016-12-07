@@ -1,8 +1,7 @@
 class ReportsController < ApplicationController
   layout "report_pdf"
 
-  def show
-    # https://github.com/mileszs/wicked_pdf
+	def quotation
     respond_to do |format|
       format.html
       format.pdf do
