@@ -68,8 +68,8 @@
         %th Canceled
         %th Currency
         %th Cost
-        %th Esti. Amount
         %th Tax
+        %th Esti. Amount
         %th Deduction
         %th Advance received
         %th Net payment
@@ -82,8 +82,8 @@
         %td= boolean_in_word ticket.final_invoice.canceled, "Yes", "No"
         %td= ticket.final_invoice.currency.code
         %td= number_with_precision ticket.final_invoice.total_cost, precision: 2
-        %td= ticket.final_invoice.total_amount
         %td= ticket.final_invoice.ticket_invoice_total_taxes.sum(:amount)
+        %td= ticket.final_invoice.total_amount
         %td= ticket.final_invoice.total_deduction
         %td= ticket.final_invoice.total_advance_recieved
         %td= ticket.final_invoice.net_total_amount

@@ -16,7 +16,7 @@
         %strong Currency
         = ticket.ticket_currency.code
         %br/
-        = f.input :deducted_amount, input_html: {id: "deducted_amount" }
+        = f.input :deducted_amount, as: :string, input_html: {id: "deducted_amount" }
         = label_tag "Payment term"
         = f.association :payment_term, label: false, required: true
         = f.input :note
@@ -184,13 +184,13 @@
           %tr
             %td{colspan: 2} (#{ticket.ticket_currency.code})
           %tr
-            %td Sub.Total
-            %td#sub_amount
-          %tr
             %td Total tax
             %td#total_tax
           %tr
-            %td Total payment
+            %td Total amount
+            %td#sub_amount
+          %tr
+            %td Total payment received
             %td#total_payment.red
           %tr
             %td Total deduction

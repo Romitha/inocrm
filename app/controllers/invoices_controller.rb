@@ -88,6 +88,8 @@ class InvoicesController < ApplicationController
     Invoice
     TaskAction
 
+    out_from_bpm = params[:check_payment].present?
+
     @ticket = Ticket.find params[:ticket_id]
     @customer_quotation = @ticket.customer_quotations.find params[:advance_payment_estimation_id] if params[:advance_payment_estimation_id].to_i > 0
 

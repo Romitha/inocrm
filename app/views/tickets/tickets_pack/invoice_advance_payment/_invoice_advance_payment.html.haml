@@ -24,6 +24,9 @@
         = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
         - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
           = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+      - else
+        = hidden_field_tag :ticket_id, params[:ticket_id]
+
       .row
         .col-md-2
           = f.input :amount, as: :string, input_html: {class: "only_float", oninput: "Inventories.limit_payment_required(this); return false;", min: "0"} ,label: "Received amount (#{ticket.ticket_currency.code})"

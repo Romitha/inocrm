@@ -19,8 +19,8 @@
         %th Canceled
         %th Currency
         %th Cost
-        %th Esti. Amount
         %th Tax
+        %th Esti. Amount
         %th Deduction
         %th Advance received
         %th Net payment
@@ -35,8 +35,8 @@
           %td= boolean_in_word i.canceled, "Yes", "No"
           %td= i.currency.code
           %td= number_to_currency i.total_cost, delimiter: ",", unit: ticket.ticket_currency.code, format: "%u %n"
-          %td= number_to_currency i.total_amount, delimiter: ",", unit: ticket.ticket_currency.code, format: "%u %n"
           %td= number_to_currency i.ticket_invoice_total_taxes.sum(:amount), delimiter: ",", unit: ticket.ticket_currency.code, format: "%u %n"
+          %td= number_to_currency i.total_amount, delimiter: ",", unit: ticket.ticket_currency.code, format: "%u %n"
           %td= number_to_currency i.total_deduction, delimiter: ",", unit: ticket.ticket_currency.code, format: "%u %n"
           %td= number_to_currency i.total_advance_recieved, delimiter: ",", unit: ticket.ticket_currency.code, format: "%u %n"
           %td= number_to_currency i.net_total_amount, delimiter: ",", unit: ticket.ticket_currency.code, format: "%u %n"
