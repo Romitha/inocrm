@@ -52,11 +52,12 @@
   .col-md-4{style: "text-align: right"}
     = number_to_currency invoice.total_deduction, delimiter: ",", unit: invoice.ticket.ticket_currency.code, format: "%u %n"
   %br/
-  .col-md-8
-    %strong.red Total cost:
-  .col-md-4{style: "text-align: right"}
-    = number_to_currency invoice.total_cost, delimiter: ",", unit: invoice.ticket.ticket_currency.code, format: "%u %n"
-  %br/
+  .hide
+    .col-md-8
+      %strong.red Total cost:
+    .col-md-4{style: "text-align: right"}
+      = number_to_currency invoice.total_cost, delimiter: ",", unit: invoice.ticket.ticket_currency.code, format: "%u %n"
+    %br/
   .col-md-8
     %strong Net total amount:
   .col-md-4{style: "text-align: right"}

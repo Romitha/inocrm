@@ -100,7 +100,11 @@ class InvoicesController < ApplicationController
 
     complete_payment_received = params[:invoicing_completed].present?
 
-    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    continue = if out_from_bpm
+      true
+    else
+      view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    end
 
     if continue
 
@@ -134,7 +138,7 @@ class InvoicesController < ApplicationController
         @render_to_page = {js: "window.location.href = '#{todos_url}'"}
       end
 
-      if complete_payment_received
+      if complete_payment_received and not out_from_bpm
         # bpm output variables
         bpm_variables = view_context.initialize_bpm_variables
         bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
