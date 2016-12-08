@@ -1,0 +1,59 @@
+/ %h4 View PO
+#po_search_wrapper
+  .row
+    .col-md-12
+      %fieldset
+        %legend Search PO
+        #search_frame
+          = form_tag view_po_tickets_path, method: :get, class: "form-horizontal" do
+            .row.small_scale_margin-top1
+              .col-md-4.small_scale_margin-top2
+                = text_field_tag "search_po[po_no_format]", nil, :placeholder => "PO No", class: "form-control", id: "po_no_id"
+              .col-md-4
+                = label_tag "Brand"
+                = select_tag "search_po[product_brand_id]", options_from_collection_for_select(ProductBrand.all, :id, :name, params[:product_brand_id]), include_blank: true, class: "form-control"
+            .row.small_scale_margin-top1
+              .col-md-4
+                = text_field_tag "range_from", params[:range_from], class: "form-control datepicker", placeholder: "Select From date", id: "po_range_from_id"
+              .col-md-4
+                = text_field_tag "range_to", params[:range_to], class: "form-control datepicker", placeholder: "Select To date", id: "po_range_to_id"
+            .row.small_scale_margin-top1
+              .col-md-1
+                .search
+                  = submit_tag "Search", name: "search", class: "btn btn-sm btn-warning"
+              .col-md-1
+                .reset
+                  = link_to "Reset", "#", onclick: "Tickets.reset_searchpo(); return false;", class: "resetpo"
+  - if @po.any?
+    .row
+      .col-md-12
+        %table.table.table-hover
+          %thead
+            %tr
+              %th No
+              %th PO No
+              %th SO No
+              %th Brand
+              %th Amount
+              %th Currency
+              %th Note
+              / %th date
+          %tbody
+            - @po.each_with_index do |po, index|
+              %tr
+                %td
+                  - if params[:page]
+                    / = (index+1)+ 10*(params[:page].to_i-1)
+                    = link_to (index+1)+ 10*(params[:page].to_i-1), view_po_tickets_path(po_callback: "select_po",po_no: po.po_no)
+                  - else
+                    / = (index+1)
+                    = link_to (index+1), view_po_tickets_path(po_callback: "select_po",po_no: po.po_no)
+                %td= po.po_no_format
+                %td= po.so_no
+                %td= po.brand_of_product_name
+                %th= po.amount
+                %td= po.currency_type
+                %td= po.note
+                / %td= po.created_at
+          = paginate @po, remote: false, method: :get
+          %hr
