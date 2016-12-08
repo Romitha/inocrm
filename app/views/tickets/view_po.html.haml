@@ -47,7 +47,7 @@
                     = link_to (index+1)+ 10*(params[:page].to_i-1), view_po_tickets_path(po_callback: "select_po",po_no: po.po_no)
                   - else
                     / = (index+1)
-                    = link_to (index+1), view_po_tickets_path(po_callback: "select_po",po_no: po.po_no)
+                    = link_to (index+1), view_po_tickets_path(po_callback: "select_po",po_id: po.id)
                 %td= po.po_no_format
                 %td= po.so_no
                 %td= po.brand_of_product_name

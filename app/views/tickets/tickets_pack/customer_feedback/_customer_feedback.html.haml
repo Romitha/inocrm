@@ -76,7 +76,7 @@
 
 - else
   .col-md-4
-    - if @ticket_payment_received.persisted?
+    - if @ticket_payment_received and @ticket_payment_received.persisted?
       .row
         = link_to "Print reciept", "#", class: "btn btn-sm btn-success", onclick: "Users.request_printer_application('receipt', '#{@ticket_payment_received.id}', 'receipt_request_type', 'print_receipt_tag_value', 'print_receipt'); false;"
 

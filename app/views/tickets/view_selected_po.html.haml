@@ -1,12 +1,12 @@
-%h4 PO No #{SoPo.find_by_po_no(@po).po_no.to_s.rjust(5, INOCRM_CONFIG["inventory_po_no_format"])}
+%h4 PO No #{SoPo.find_by_id(@po).po_no.to_s.rjust(5, INOCRM_CONFIG["inventory_po_no_format"])}
 .panel.panel-success
   .panel-heading.col-md-12
     .col-md-4
-      %strong Sales Order No. #{SoPo.find_by_po_no(@po).so_no}
+      %strong Sales Order No. #{SoPo.find_by_id(@po).so_no}
     .col-md-4
-      %strong PO No. #{SoPo.find_by_po_no(@po).po_no.to_s.rjust(5, INOCRM_CONFIG["inventory_po_no_format"])}
+      %strong PO No. #{SoPo.find_by_id(@po).po_no.to_s.rjust(5, INOCRM_CONFIG["inventory_po_no_format"])}
     .col-md-4
-      %strong PO Date #{SoPo.find_by_po_no(@po).try(:po_date).try(:strftime, "%Y-%m-%d")}
+      %strong PO Date #{SoPo.find_by_id(@po).try(:po_date).try(:strftime, "%Y-%m-%d")}
   %table.table
     %thead
       %tr
@@ -29,7 +29,7 @@
         %th
           Note
     %tbody
-      - SoPo.find_by_po_no(@po).so_po_items.each do |po_item|
+      - SoPo.find_by_id(@po).so_po_items.each do |po_item|
         %tr
           %td
             = po_item.ticket_spare_part_manufacture.try(:event_no)
