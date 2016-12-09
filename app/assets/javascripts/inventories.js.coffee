@@ -92,67 +92,41 @@ window.Inventories =
 
   disable_store: ->
     disable_loaded_requested_quantity = (elem)->
-      # $(".requested_quantity_manufacture_wrapper").removeClass("hide")
       $(".requested_quantity_manufacture_wrapper").addClass("hide")
+
       $(".requested_quantity_manufacture_wrapper input").prop
         disabled: true
         readonly: true
 
+      $(".request_from").empty()
+      $("#store_id", "#mst_store_id", "#inv_product_id", "#mst_inv_product_id").val("")
+      $(".part").addClass("hide")
+      $(".not_non_stock").removeClass("hide")
+      $(".not_non_stock input").prop("disabled", false)
+      $("#request_from_select").removeClass("hide")
+      $(".main_product").empty()
+      $("#part_of_main_product").attr('checked', false)
+
       switch elem.val()
         when "S"
           console.log "s"
+          $(".not_non_stock").removeClass("hide")
+          $(".part").removeClass("hide")
         when "M"
           $(".requested_quantity_manufacture_wrapper").removeClass("hide")
           $(".requested_quantity_manufacture_wrapper input").prop("disabled", false)
+
+          $("#request_from_select").addClass("hide")
         when "NS"
           console.log "ns"
+          $(".not_non_stock").addClass("hide")
+          $(".not_non_stock input").prop("disabled", true)
 
-    $(".request_from_radio_buttons").each ->
-      disable_loaded_requested_quantity($(@))
 
-      $(@).click -> disable_loaded_requested_quantity($(@))
 
-    $("#ticket_spare_part_request_from_ns").click ->
-      $(".request_from").empty()
-      $("#store_id", "#mst_store_id", "#inv_product_id", "#mst_inv_product_id").val("")
-      $(".not_non_stock").addClass("hide")
-      $("#request_from_select").removeClass("hide")
+    disable_loaded_requested_quantity($(".request_from_radio_buttons:checked"))
 
-    $("#ticket_spare_part_request_from_s").click ->
-      $(".request_from").empty()
-      $("#store_id", "#mst_store_id", "#inv_product_id", "#mst_inv_product_id").val("")
-      $(".not_non_stock").removeClass("hide")
-
-      if $("#ticket_spare_part_request_from_s").is(":checked")
-        $(".part").removeClass("hide")
-        $("#request_from_select").removeClass("hide")
-
-      else
-        $(".part").addClass("hide")
-        $("#request_from_select").addClass("hide")
-
-  disable_upon_manufacture: ->
-    if $("#ticket_spare_part_request_from_m").is(":checked")
-      $("#request_from_select").addClass("hide")
-      $(".request_from").empty()
-      $(".main_product").empty()
-      $("#store_id").val("")
-      $("#mst_store_id").val("")
-      $("#inv_product_id").val("")
-      $("#mst_inv_product_id").val("")
-      $(".part").addClass("hide")
-      $("#part_of_main_product").attr('checked', false)
-      $("#part_of_main_product_select").addClass("hide")
-      $(".not_non_stock").removeClass("hide")
-
-    else
-      $("#request_from_select").removeClass("hide")
-      $(".part").removeClass("hide")
-
-  disable_manufacture: ->
-    _this = this
-    $("#ticket_spare_part_request_from_m").click ->
-      _this.disable_upon_manufacture()
+    $(".request_from_radio_buttons").click -> disable_loaded_requested_quantity($(@))
 
   disable_final_payment: ->
     $("#ticket_ticket_terminate_job_foc_requested_true").click ->
