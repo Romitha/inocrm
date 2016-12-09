@@ -1,10 +1,10 @@
-%h4 PO No #{SoPo.find_by_id(@po).po_no.to_s.rjust(5, INOCRM_CONFIG["inventory_po_no_format"])}
+%h4 PO No #{SoPo.find_by_id(@po).try(:po_no).to_s.rjust(5, INOCRM_CONFIG["inventory_po_no_format"])}
 .panel.panel-success
   .panel-heading.col-md-12
     .col-md-4
-      %strong Sales Order No. #{SoPo.find_by_id(@po).so_no}
+      %strong Sales Order No. #{SoPo.find_by_id(@po).try(:so_no)}
     .col-md-4
-      %strong PO No. #{SoPo.find_by_id(@po).po_no.to_s.rjust(5, INOCRM_CONFIG["inventory_po_no_format"])}
+      %strong PO No. #{SoPo.find_by_id(@po).try(:po_no).to_s.rjust(5, INOCRM_CONFIG["inventory_po_no_format"])}
     .col-md-4
       %strong PO Date #{SoPo.find_by_id(@po).try(:po_date).try(:strftime, "%Y-%m-%d")}
   %table.table
@@ -29,24 +29,24 @@
         %th
           Note
     %tbody
-      - SoPo.find_by_id(@po).so_po_items.each do |po_item|
-        %tr
-          %td
-            = po_item.ticket_spare_part_manufacture.try(:event_no)
-          %td
-            = po_item.ticket_spare_part_manufacture.try(:order_no)
-          %td
-            = po_item.ticket_spare_part_manufacture.try(:issued_at).try(:strftime, "%Y-%m-%d")
-          %td
-            = po_item.ticket_spare_part_manufacture.try(:spare_part_id)
-          %td
-            = po_item.item_no
-          %td
-            = po_item.ticket_spare_part.try(:spare_part_no)
-          %td
-            = po_item.ticket_spare_part_manufacture.try(:payment_expected_manufacture)
-          %td
-            = po_item.ticket_spare_part.try(:spare_part_description)
-          %td
-            = simple_format po_item.ticket_spare_part.try(:note)
-    
+      - if SoPo.find_by_id(@po).try(:so_po_items)
+        - SoPo.find_by_id(@po).try(:so_po_items).each do |po_item|
+          %tr
+            %td
+              = po_item.ticket_spare_part_manufacture.try(:event_no)
+            %td
+              = po_item.ticket_spare_part_manufacture.try(:order_no)
+            %td
+              = po_item.ticket_spare_part_manufacture.try(:issued_at).try(:strftime, "%Y-%m-%d")
+            %td
+              = po_item.ticket_spare_part_manufacture.try(:spare_part_id)
+            %td
+              = po_item.item_no
+            %td
+              = po_item.ticket_spare_part.try(:spare_part_no)
+            %td
+              = po_item.ticket_spare_part_manufacture.try(:payment_expected_manufacture)
+            %td
+              = po_item.ticket_spare_part.try(:spare_part_description)
+            %td
+              = simple_format po_item.ticket_spare_part.try(:note)

@@ -110,6 +110,22 @@ class SoPo < ActiveRecord::Base
     to_json(
       only: [:id, :product_brand_id, :po_no, :created_by, :created_at, :so_no, :note, :amount, :currency_id],
       methods: [:po_no_format, :currency_type, :brand_of_product_name, :formated_created_at],
+      include: {
+        so_po_items: {
+          only: [:id, :ticket_spare_part_id],
+          include: {
+            ticket_spare_part: {
+              only: [:id, :ticket_id],
+              include: {
+                ticket: {
+                  only: [:id, :ticket_no],
+                  methods: [:support_ticket_no],
+                },
+              },
+            },
+          },
+        },
+      },
     )
   end
 

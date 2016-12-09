@@ -672,3 +672,4 @@ window.Tickets =
     $("#po_no_id").val("")
     $("#po_range_from_id").val("")
     $("#po_range_to_id").val("")
+    $("#ticket_no_id").val("")

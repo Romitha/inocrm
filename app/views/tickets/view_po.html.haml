@@ -8,15 +8,18 @@
           = form_tag view_po_tickets_path, method: :get, class: "form-horizontal" do
             .row.small_scale_margin-top1
               .col-md-4.small_scale_margin-top2
-                = text_field_tag "search_po[po_no_format]", nil, :placeholder => "PO No", class: "form-control", id: "po_no_id"
+                = text_field_tag "po_no_format", nil, :placeholder => "PO No", class: "form-control", id: "po_no_id"
               .col-md-4
                 = label_tag "Brand"
-                = select_tag "search_po[product_brand_id]", options_from_collection_for_select(ProductBrand.all, :id, :name, params[:product_brand_id]), include_blank: true, class: "form-control"
+                = select_tag "product_brand_id", options_from_collection_for_select(ProductBrand.all, :id, :name, params[:product_brand_id]), include_blank: true, class: "form-control"
             .row.small_scale_margin-top1
               .col-md-4
                 = text_field_tag "range_from", params[:range_from], class: "form-control datepicker", placeholder: "Select From date", id: "po_range_from_id"
               .col-md-4
                 = text_field_tag "range_to", params[:range_to], class: "form-control datepicker", placeholder: "Select To date", id: "po_range_to_id"
+            .row.small_scale_margin-top1
+              .col-md-4
+                = text_field_tag "support_ticket_no", nil, :placeholder => "Ticket No", class: "form-control", id: "ticket_no_id"
             .row.small_scale_margin-top1
               .col-md-1
                 .search
@@ -37,7 +40,7 @@
               %th Amount
               %th Currency
               %th Note
-              / %th date
+              %th ticket
           %tbody
             - @po.each_with_index do |po, index|
               %tr
@@ -54,6 +57,9 @@
                 %th= po.amount
                 %td= po.currency_type
                 %td= po.note
-                / %td= po.created_at
+                %td
+                  - po.so_po_items.each do |so|
+                    = so.ticket_spare_part.ticket.support_ticket_no#try(:ticket_spare_part).try(:ticket).try(:ticket_id)
+                    / = so.support_ticket_no
           = paginate @po, remote: false, method: :get
           %hr

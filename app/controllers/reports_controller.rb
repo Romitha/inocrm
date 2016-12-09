@@ -223,6 +223,13 @@ class ReportsController < ApplicationController
   end
 
   def excel_output
+    Ticket
+    User
+    Organization
+    Address
+    ContactNumber
+    Product
+    @ticket = Ticket.all
     respond_to do |format|
       format.html
       format.xls

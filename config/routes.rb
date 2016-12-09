@@ -19,6 +19,7 @@ Rails.application.routes.draw do
   resources :reports do
     collection do
       get "quotation"
+      get "excel_output"
     end
   end
 

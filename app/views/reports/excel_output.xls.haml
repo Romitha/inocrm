@@ -1,0 +1,67 @@
+%table{:border => "1"}
+  %thead
+    %tr
+      %th Company Name
+      %th Customer Type (Corporate/Walking)
+      %th Customer Address
+      %th District
+      %th Customer Contact No
+      %th Customer Email
+      %th Product Brand
+      %th Model Number
+      %th Product Number
+      %th Product Serial No
+      %th Category
+      %th SLA
+      %th Job Number (Partner)
+      %th CASE ID / HP Advisory
+      %th Log Date & Time
+      %th Engrs Assign Date & Time
+      %th Start Date & Time
+      %th Start Action
+      %th Problem Description
+      %th Support Group (SBU)
+      %th 1st Part NumberIn Use
+      %th 1st Part Description
+      %th 1st event No.
+      %th 1st Item Code
+      %th 10 Part Number In Use
+      %th 10 event No.
+      %th 10 Item Code
+      %th Engrs Finished Date & Time
+      %th Call Status
+      %th Hold
+      %th Hold Reason
+      %th Re-Open Count
+      %th Chargeable
+      %th Total Amount
+      %th Final Resolution
+  %tbody
+    <!-- 0.0.0.0:3000/reports/excel_output.xls -->
+    - @ticket.each do |ticket|
+      %tr
+        %td= ticket.customer.try(:organization).try(:name)
+        %td
+          - if ticket.customer.organization
+            Corparate
+          - else
+            Walking
+        %td
+          #{ticket.customer.address1},#{ticket.customer.try(:address2)},#{ticket.customer.try(:address3)},#{ticket.customer.try(:address4)}
+        %td
+          = ticket.customer.try(:district).try(:name)
+        %td
+          - if ticket.customer.try(:district).try(:contact_numbers)
+            - ticket.customer.try(:district).try(:contact_numbers).each do |c_num|
+              #{c_num.value}, 
+        %td
+          - ticket.users.each do |u|
+            #{u.email},
+        %td
+          - ticket.products.each do |p|
+            = p.product_brand.name
+        %td
+          - ticket.products.each do |p|
+            = p.model_no
+            
+

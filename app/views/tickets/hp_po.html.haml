@@ -2,7 +2,7 @@
   .col-md-6
   .col-md-6
     = label_tag InventoryCategoryCaption.first.caption
-    = select_tag "search_inventory[brand]", options_from_collection_for_select(ProductBrand.all, :id, :name, nil), include_blank: true, id: "brand1"
+    = select_tag "search_inventory[brand]", options_from_collection_for_select(ProductBrand.all, :id, :name, nil), include_blank: false, id: "brand1"
 .row
   %strong{style: "margin-left:16px;"} Parts to be PO
   #load_spareparts_json_render{style: "margin-left:30px;"}

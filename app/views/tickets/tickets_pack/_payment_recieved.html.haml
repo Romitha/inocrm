@@ -1,3 +1,5 @@
+/ = render "tickets/tickets_pack/estimate_job_final/invoice", ticket: ticket
+
 %strong Payment Received
 
 %table.table.table-hover
@@ -15,15 +17,15 @@
   %tbody
     - ticket.ticket_payment_receiveds.each_with_index do |payment, index|
       %tr
-        %th{:scope => "row"} #{index+1}
+        %td{:scope => "row"} #{index+1}
         %td= payment.try(:received_at).try(:strftime, "%d %b, %Y")
         %td= User.find_by_id(payment.try(:received_by)).try(:full_name)
         %td= payment.try(:note)
         %td= payment.ticket_payment_received_type.try(:name)
         %td= number_to_currency payment.try(:amount), delimiter: ",", unit: payment.currency.code, format: "%u %n"
         %td
-        -if payment.ticket_invoice.present?
-          = payment.ticket_invoice.try(:invoice_no).to_s.rjust(6, INOCRM_CONFIG['invoice_no_format'])
+          -if payment.ticket_invoice.present?
+            = payment.ticket_invoice.try(:invoice_no).to_s.rjust(6, INOCRM_CONFIG['invoice_no_format'])
         %td
           = link_to "#", onclick: "Users.request_printer_application('receipt', '#{payment.id}', 'receipt_request_type', 'print_receipt_tag_value', 'print_receipt'); false;", id: "receipt_print", data: {disable_with: "Printing..."}, class: "btn btn-default" do
             = ticket.ticket_print_count.to_i > 0 ? "Re-Print Receipt" : "Print Receipt"

@@ -2716,7 +2716,7 @@ class TicketsController < ApplicationController
     Inventory
     Warranty
 
-    @ticket = Ticket.find params[:ticket_id]
+    @ticket = Ticket.find_by_id params[:ticket_id]
     if @ticket
       @product = @ticket.products.first
       Rails.cache.delete([:histories, @product.id])
@@ -2780,6 +2780,9 @@ class TicketsController < ApplicationController
 
       elsif @onloan_or_store.approved_inventory_product.inventory_product_info.need_batch
         @grn_batches = GrnBatch.where(grn_item_id: grn_item_ids).where("remaining_quantity > 0").page(params[:page]).per(10)
+        puts "***********************"
+        puts grn_item_ids
+        puts "***********************"
       else
 
         grn_items = @onloan_or_store.approved_inventory_product.grn_items.search(query: "grn.store_id:#{@onloan_or_store.approved_store_id} AND inventory_not_updated:false AND remaining_quantity:>0")
@@ -4254,19 +4257,26 @@ class TicketsController < ApplicationController
     TicketSparePart
     Product
     Currency
-    refined_search_po = ""
+
+    refined_query = ""
     if params[:search].present?
-      search_po = params[:search_po]
-      refined_search_po = search_po.map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
+      support_ticket_no = "so_po_items.ticket_spare_part.ticket.support_ticket_no:#{params[:support_ticket_no]}" if params[:support_ticket_no].present?
+      po_no_format = "po_no_format:#{params[:po_no_format]}" if params[:po_no_format].present?
+      product_brand_id = "product_brand_id:#{params[:product_brand_id]}" if params[:product_brand_id].present?
+
+      refined_query = [support_ticket_no, po_no_format, product_brand_id].compact.join(" AND ")
+
     end
-    params[:query] = refined_search_po
+    params[:query] = refined_query
     @po = SoPo.search(params)
     # render "tickets/view_po"
 
     case params[:po_callback]
     when "select_po"
-      @po = SoPo.find params[:po_no]
-      render "tickets/view_selected_po"
+      @po = SoPo.find_by_id params[:po_id]
+      if SoPo.find_by_id params[:po_id]
+        render "tickets/view_selected_po"  
+      end
     else
       render "tickets/view_po"
     end
