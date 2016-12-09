@@ -303,7 +303,7 @@
                         = sto.object.approved_inventory_product.inventory_product_info.issue_fractional_allowed ? (grn_batch.grn_item.remaining_quantity.to_f - grn_batch.grn_item.reserved_quantity.to_f) : (grn_batch.grn_item.remaining_quantity.to_d - grn_batch.grn_item.reserved_quantity.to_d)
                       %td= simple_format grn_batch.grn_item.remarks
                       %td
-                        = radio_button_tag "grn_batch_id", grn_batch.id, false if srn_item.quantity <= grn_batch.grn_item.remaining_quantity
+                        = radio_button_tag "grn_batch_id", grn_batch.id, false if srn_item.quantity.to_f <= grn_batch.grn_item.remaining_quantity.to_f
 
               = paginate @grn_batches, remote: false, method: :get
             - else
@@ -338,7 +338,7 @@
                       %td
                         = simple_format grn_item.grn.remarks
                       %td
-                        = radio_button_tag "grn_item_id", grn_item.id, false if srn_item.quantity <= grn_item.remaining_quantity
+                        = radio_button_tag "grn_item_id", grn_item.id, false if srn_item.quantity.to_f <= grn_item.remaining_quantity.to_f
 
 
               = paginate @grns, remote: false, method: :get
