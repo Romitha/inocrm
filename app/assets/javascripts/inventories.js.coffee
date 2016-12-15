@@ -349,7 +349,7 @@ window.Inventories =
   calculate_total_amount: ->
     total_estimation = parseFloat($("#total_estimated_price").text())
     total_tax = parseFloat($("#total_tax_price").text())
-    $("#total_amount_with_tax").text(total_estimation+total_tax) if !isNaN(total_estimation) and !isNaN(total_tax)
+    $("#total_amount_with_tax").text(Math.round((total_estimation+total_tax) * 100)/100) if !isNaN(total_estimation) and !isNaN(total_tax)
 
   payment_amount_select: (e)->
     default_amount = parseFloat($(":checked", e).data("default-amount"))
@@ -432,7 +432,7 @@ window.Inventories =
       taxes += parseFloat($(this).val()) if !isNaN($(this).val())
     total_tax_price = $("#total_tax_price").text()
     total_amount_with_tax = total_tax_price - taxes
-    $("#total_tax_price").text(total_amount_with_tax)
+    $("#total_tax_price").text(Math.round(total_amount_with_tax * 100)/100)
 
     updated_margin = (total_estimation_price - total_cost_price)*100/total_cost_price
     $("#total_margin_price").text(Math.round(updated_margin * 100)/100)

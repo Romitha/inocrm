@@ -768,12 +768,21 @@ class TicketsController < ApplicationController
         format.json {render json: @ticket}
       else
         if params[:ticket][:logged_at].present?
-          @ticket.errors.clear
-          Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @ticket)
-          puts "logged at saved"
+          if @ticket.logged_at >= Time.now
+            @ticket.errors[:logged_at] << "Date and time cannot be future than current (Now) time"
+            puts "logged at error"
+          else
+            @ticket.errors.clear
+            Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @ticket)
+            # puts "logged at saved"
+          end
+
+          format.json {render json: @ticket.errors[:logged_at].join}
+          
+        else
+          format.html {redirect_to @ticket, error: "Unable to update ticket. Please validate your inputs."}
+          format.json {render json: @ticket.errors.full_messages.join}
         end
-        format.html {redirect_to @ticket, error: "Unable to update ticket. Please validate your inputs."}
-        format.json {render json: @ticket.errors}
       end
     end
   end

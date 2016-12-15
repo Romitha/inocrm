@@ -256,10 +256,10 @@
             %td#total_cost_price= number_with_precision [f.object.ticket_estimation_parts.sum(:cost_price), f.object.ticket_estimation_additionals.sum(:cost_price)].sum, precision: 2
           %tr
             %td Total estimation
-            %td#total_estimated_price.for_payment_limit= number_with_precision [f.object.ticket_estimation_parts.sum(:estimated_price), f.object.ticket_estimation_parts.to_a.sum{ |p| p.ticket_estimation_part_taxes.sum(:estimated_tax_amount)}, f.object.ticket_estimation_additionals.sum(:estimated_price), f.object.ticket_estimation_additionals.to_a.sum{ |p| p.ticket_estimation_additional_taxes.sum(:estimated_tax_amount)}].sum, precision: 2
+            %td#total_estimated_price.for_payment_limit= number_with_precision [f.object.ticket_estimation_parts.sum(:estimated_price), f.object.ticket_estimation_additionals.sum(:estimated_price)].sum, precision: 2
           %tr
             %td Total tax
-            %td#total_tax_price.for_payment_limit{ data: { initValue: 0 } } 0
+            %td#total_tax_price.for_payment_limit{ data: { initValue: "#{[ f.object.ticket_estimation_parts.to_a.sum{ |p| p.ticket_estimation_part_taxes.sum(:estimated_tax_amount)}, f.object.ticket_estimation_additionals.to_a.sum{ |p| p.ticket_estimation_additional_taxes.sum(:estimated_tax_amount)}].sum}" } }= number_with_precision [ f.object.ticket_estimation_parts.to_a.sum{ |p| p.ticket_estimation_part_taxes.sum(:estimated_tax_amount)}, f.object.ticket_estimation_additionals.to_a.sum{ |p| p.ticket_estimation_additional_taxes.sum(:estimated_tax_amount)}].sum, precision: 2
           %tr
             %td Total amount with tax
             %td#total_amount_with_tax
