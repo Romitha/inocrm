@@ -1,0 +1,177 @@
+= wicked_pdf_stylesheet_link_tag "reports"
+
+- print_object = @print_object
+
+.report_pdf.container
+  .row
+    .col-xs-3
+      = image_tag wicked_pdf_asset_base64("vsis.png")
+    .col-xs-7
+      %h2.col-xs-offset-1{:style => "text-decoration: underline;"} CUSTOMER QUOTATION
+
+  .row
+    .col-xs-5
+      %table.table-default
+        %tr
+          %th Customer Name:
+          %td
+            .col-xs-offset-1
+              =print_object[:company_name]
+        %tr
+          %th Address:
+          %td
+            .col-xs-offset-1
+              =print_object[:address1]
+              %br/
+              =print_object[:address2]
+              %br/
+              =print_object[:address3]
+              %br/
+              =print_object[:address4]
+        %tr
+          %th Ticket No:
+          %td
+            .col-xs-offset-1
+              =print_object[:ticket_ref]
+        %tr
+          %th Product Brand:
+          %td
+            .col-xs-offset-1
+              =print_object[:product_brand]
+        %tr
+          %th Model No:
+          %td
+            .col-xs-offset-1
+              =print_object[:model_no]
+        %tr
+          %th Serial No:
+          %td
+            .col-xs-offset-1
+              =print_object[:serial_no]
+        %tr
+          %th Product No:
+          %td
+            .col-xs-offset-1
+              =print_object[:product_no]
+
+    .col-xs-4.col-xs-offset-2
+      %table.table-default
+        %tr
+          %th Quotation No:
+          %td
+            = print_object[:quotation_no]
+        %tr
+          %th VAT REG No:
+          %td
+        %tr
+          %th Created Date:
+          %td
+            = print_object[:created_at]
+        %tr
+          %th Validity Period:
+          %td
+            = print_object[:validity_period]
+        %tr
+          %th Delivery Period:
+          %td
+            = print_object[:delivery_period]
+
+  .row
+    .col-xs-11
+      %table.table.table-stripped
+        %thead
+          %tr
+            %th No
+            %th Item Code
+            %th Description
+            %th Quantity
+            %th Unit Price
+            %th Total Price
+        %tbody
+          - @print_object[:repeat_data].each_with_index do |ob, index|
+            %tr
+              %td
+                =(index+1)
+              %td
+                = ob[:item_index]
+              %td
+                = ob[:description]
+              %td
+                = ob[:quantity]
+              %td
+                = ob[:unit_price]
+              %td.text-right
+                = ob[:totalprice]
+
+      %table.table.table-striped
+        %tbody
+          %tr
+            %th Warranty:
+            %td{colspan: 3}= print_object[:warranty]
+            %th.text-right Total Amount:
+            %td.text-right{colspan: 2}= number_with_precision print_object[:total_amount], precision: 2
+
+          %tr
+            %th Note:
+            %td{colspan: 3}= print_object[:quotation_note]
+            %th.text-right Minimum Advanced Required:
+            %td.text-right{colspan: 2}= number_with_precision print_object[:total_advance_amount], precision: 2
+
+          %tr
+            %th Created By:
+            %td{colspan: 3}= print_object[:created_by]
+            %th.text-right Payment Term:
+            %td.text-right{colspan: 2}= print_object[:payment_term]
+    / .col-xs-6
+    /   %table.table-default
+    /     %tr
+    /       %th Warranty:
+    /       %td
+    /         = print_object[:warranty]
+    /     %tr
+    /       %th Note:
+    /       %td
+    /         = print_object[:quotation_note]
+    /     %tr
+    /       %th Created By:
+    /       %td
+    /         = print_object[:created_by]
+
+    / .col-xs-5
+    /   %table.table-default
+    /     %tbody
+    /       %tr
+    /         %th Total Amount:
+    /         %td.text-right= number_with_precision print_object[:total_amount], precision: 2
+    /       %tr
+    /         %th Minimum Advanced Required:
+    /         %td.text-right= number_with_precision print_object[:total_advance_amount], precision: 2
+    /       %tr
+    /         %th Payment Term:
+    /         %td
+    /           .text-right
+    /             = print_object[:payment_term]
+
+    .col-xs-11
+      %h4 TERMS AND CONDITIONS
+      %strong
+        %ul.list-group
+          %li.list-group-item
+            1. Payment Terms: Full payment with the Purchase Order/Acknowledgement,
+          %li.list-group-item
+            2. Taxes, Duty, Shipping and Freight Cost: This quotation inclusive of Duty, Shipping and Freight Cost.
+          %li.list-group-item
+            3. Options and Accessories: Value of optional items and accessories (if any) not included in above total.
+          %li.list-group-item
+            4. Warranty: Six month warranty
+          %li.list-group-item
+            5. Cheques to be drawn in favor of "V S Information Systems (Pvt)Ltd" and crossed :A/C Payee Only
+          %br/
+          %li.list-group-item
+            Should you have any changes/issues or require any clarifications to above terms and conditions and details, please inform above mentioned person within 24 hours of the recipt of this acknowledgement.
+            %br/
+            VSIS is pleased to accept this order in accordance with our standard terms and conditions.
+            %br/
+            %br/
+            _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+            I hereby confirm that I am an authorized signatory and that I accept this quotation with given terms and conditions and confirm an order on these items on behalf of the purchaser/investor (pl. put your official company stamp here)

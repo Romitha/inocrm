@@ -83,6 +83,9 @@
         .col-md-4
           %strong GRN remaining quantity:
           = number_with_precision grn_serial_item.grn_item.remaining_quantity, precision: 2 #{grn_serial_item.grn_item.grn_items.sum(:remaining_quantity)}
+        .col-md-4
+          %strong GRN Received Quantity:
+          = number_with_precision grn_serial_item.grn_item.recieved_quantity, precision: 2
         
       .row
         .col-md-12

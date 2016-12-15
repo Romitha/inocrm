@@ -31,6 +31,7 @@ module Admins
       Grn
       Inventory
       User
+      Product
       @remote = true
       @inv_searched_by = true
       @store = Organization.find params[:store_id] if params[:store_id].present?
