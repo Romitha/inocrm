@@ -217,7 +217,14 @@ class ReportsController < ApplicationController
     respond_to do |format|
       format.html
       format.pdf do
-        render pdf: "file_name"
+        render pdf: "#{quotation_no} - #{company_name}",
+          margin:  {
+            top:               10,                     # default 10 (mm)
+            bottom:            10,
+            left:              15,
+            right:             10
+          },
+          disable_javascript: false
       end
     end
   end
