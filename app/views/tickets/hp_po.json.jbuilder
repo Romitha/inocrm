@@ -13,7 +13,7 @@ json.products @products do |product|
         json.part_no spare_part.ticket_spare_part_manufacture.try(:spare_part_id)
         json.spare_part_description spare_part.try(:spare_part_description)
         json.amount spare_part.ticket_spare_part_manufacture.try(:payment_expected_manufacture)
-        json.note simple_format(spare_part.try(:note))
+        json.note simple_format spare_part.try(:note)
         json.ticket_no spare_part.ticket_id.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
         json.serial_no spare_part.try(:spare_part_no)
         json.part_id spare_part.id
@@ -22,4 +22,3 @@ json.products @products do |product|
     end
   end
 end
-

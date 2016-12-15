@@ -1,0 +1,25 @@
+.panel.panel-default
+  .panel-heading Delivered Bundles
+  %table.table
+    %thead
+      %tr
+        %th No
+        %th Bundle no
+        %th Brand
+        %th Delivered By
+        %th Note
+    %tbody
+      - @delivered_bundles.each_with_index do |db, index|
+        %tr
+          %td
+            - if params[:page]
+              = (index+1) + 10*(params[:page].to_i-1)
+            - else
+              = (index+1)
+          %td
+            = db.bundle_no
+          %td
+            = ProductBrand.find_by_id(db.product_brand_id).name
+          %td
+            = User.find_by_id(db.delivered_by).full_name
+          %td{title: db.try(:note)}= simple_format db.try(:note).try :truncate, 30

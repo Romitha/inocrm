@@ -151,6 +151,7 @@ Rails.application.routes.draw do
       get "master_data"
       get "hp_po"
       get "view_po"
+      get "view_delivered_bundle"
       post "update_issue_store_parts"
 
       # post "save_add_edit_contract"

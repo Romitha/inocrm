@@ -4282,6 +4282,14 @@ class TicketsController < ApplicationController
     end
   end
 
+  def view_delivered_bundle
+    TicketSparePart
+    ReturnPartsBundle
+    Product
+    User
+    @delivered_bundles = ReturnPartsBundle.where(delivered: true)
+  end
+
   def create_po
     TicketSparePart
     Organization
