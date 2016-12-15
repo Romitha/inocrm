@@ -122,16 +122,20 @@
 
                     %td= check_box_tag 'estimation_ids[]', estimation.id, (quotation.persisted? ? quotation.ticket_estimation_ids.include?(estimation.id) : true), class: "action"
 
-        .col-md-4.pull-left{style: "margin-bottom: 20px;"}
-          .col-md-2
+      .row
+        .col-md-3
+          .col-md-3
             = link_to "Cancel","#", onclick: "$('#quotation_wrapper').empty(); return false;"
+          .col-md-3
+            = f.submit "Save", class: "btn btn-success"
+
           - if quotation.persisted?
-            .col-md-2
+            .col-md-3
               = link_to "#", class: "btn btn-sm btn-success", onclick: "Users.request_printer_application('quotation', '#{quotation.id}', 'quotation_request_type', 'print_customer_quotation_tag_value', 'print_customer_quotation'); false;", data: {disable_with: "Printing..."}, class: "btn btn-default" do
                 Print
 
-          .col-md-2
-            = f.submit "Save", class: "btn btn-success"
+            .col-md-3
+              = link_to "Print PDF", quotation_reports_path(quotation_id: quotation.id, format: :pdf), target: "_blank", class: "btn btn-sm btn-info"
 
       .row
         .col-md-6.pull-right
