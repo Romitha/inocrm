@@ -129,7 +129,7 @@ class ReportsController < ApplicationController
 
           repeat_data_hash[:item_index] = row_count + 1
           # repeat_data_hash[:item_code] = index
-          repeat_data_hash[:description] = "Part No: #{estimation_part.ticket_spare_part.spare_part_no} #{estimation_part.ticket_spare_part.spare_part_description}" + "#{' (Warr: ' + estimation_part.warranty_period.to_s + ' M)' if estimation_part.warranty_period.present? }"
+          repeat_data_hash[:description] = "#{ticket_estimation_part_tax.tax.tax} (#{ticket_estimation_part_tax.tax_rate})"
 
           # repeat_data_hash[:quantity] = quantity
           # repeat_data_hash[:unit_price] = view_context.standard_currency_format(unit_price)

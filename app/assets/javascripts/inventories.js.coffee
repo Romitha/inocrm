@@ -3,7 +3,7 @@ window.Inventories =
     @filter_product()
     @filter_category()
     @filter_store()
-    @calculate_cost_price()
+    # @calculate_cost_price()
     @terminate_func()
     @accept_returned_part()
     @accept_returned_part_func()
@@ -278,56 +278,73 @@ window.Inventories =
       $("#unit_est_price").text(parseFloat($(e).val())/qty)
 
   calculate_cost_price: (e)->
-    this_margin = 0
-    profit = parseFloat($("#db_margin").text())
-    updated_total_estimation = parseFloat($("#total_estimated_price").text())
-    updated_total_cost = parseFloat($("#total_cost_price").text())
-    relatives = $(e).parents().eq(3)#.siblings()
-    prev_estimated_price = parseFloat(relatives.find(".append_estimated_price").text())
-    prev_cost_price = parseFloat(relatives.find(".append_cost_price").text())
-    next_val = parseFloat($(e).val())
+    elem = $(e)
 
+    currentValue = parseFloat(elem.val())
+
+    if !isNaN(currentValue)
+      if elem.is(".estimation_value")
+        @calculate_marginal_cost(elem, "estimation")
+        @calculate_total_cost_estimated_price(elem, "estimation")
+
+      else
+        @calculate_marginal_cost(elem)
+        @calculate_total_cost_estimated_price(elem)
+
+      @calculate_total_amount()
+
+  calculate_total_cost_estimated_price: (elem, cost_or_estimation)->
+    pre = parseFloat(elem.data("initvalue"))
+    current = parseFloat(elem.val())
+    if cost_or_estimation is "estimation"
+      total = parseFloat($("#total_estimated_price").text())
+    else
+      total = parseFloat($("#total_cost_price").text())
+
+    if !isNaN(total) and !isNaN(pre) and !isNaN(current)
+      newVal = total + current - pre
+
+      if cost_or_estimation is "estimation"
+        $("#total_estimated_price").text((Math.round(newVal * 100)/100).toFixed(2))
+      else
+        $("#total_cost_price").text((Math.round(newVal * 100)/100).toFixed(2))
+
+      elem.data("initvalue", current)
+
+  calculate_marginal_cost: (elem, cost_or_estimation)->
+    relatives = elem.parents().eq(3).find(".append_profit_margin")
+    cost = parseFloat(relatives.data("cost"))
+    estimation = parseFloat(relatives.data("estimate"))
+    margin = parseFloat($("#db_margin").text())
+    currentValue = parseFloat(elem.val())
+
+    if !isNaN(cost) and !isNaN(estimation) and !isNaN(currentValue)
+      if cost_or_estimation is "estimation"
+        profit = (currentValue-cost)*100/cost
+        relatives.data("estimate", currentValue)
+      else
+        profit = (estimation-currentValue)*100/currentValue
+        relatives.data("cost", currentValue)
+
+      relatives.text((Math.round(profit * 100)/100).toFixed(2))
+
+  calculate_total_amount: ->
     total_estimation = parseFloat($("#total_estimated_price").text())
-    total_cost = parseFloat($("#total_cost_price").text())
-
     total_tax = parseFloat($("#total_tax_price").text())
+    total_cost = parseFloat($("#total_cost_price").text())
+    margin = parseFloat($("#db_margin").text())
 
-    if !isNaN(next_val)
-      if $(e).is(".estimation_value")
-        this_margin = (next_val - prev_cost_price)*100/prev_cost_price
-        relatives.find(".append_estimated_price").text(next_val) #updating prev with current
+    $("#total_amount_with_tax").text((Math.round((total_estimation+total_tax) * 100)/100).toFixed(2)) if !isNaN(total_estimation) and !isNaN(total_tax)
 
-        updated_total_estimation = total_estimation + next_val - prev_estimated_price + total_tax
+    profit = (total_estimation - total_cost)*100/total_cost
+    $("#total_margin_price").text((Math.round(profit * 100)/100).toFixed(2))
 
-        $("#total_estimated_price").text(updated_total_estimation)
-
-      else
-        this_margin = (prev_estimated_price - next_val)*100/next_val
-        relatives.find(".append_cost_price").text(next_val) #updating prev with current
-
-        updated_total_cost = total_cost + next_val - prev_cost_price
-
-        $("#total_cost_price").text(updated_total_cost)
-
-      relatives.find(".append_profit_margin").text(Math.round(this_margin * 100)/100)
-      if profit >= this_margin
-        relatives.find(".append_profit_margin").addClass("red")
-        $("#estimate_low_margin").val("true")
-      else
-        relatives.find(".append_profit_margin").removeClass("red")
-        $("#estimate_low_margin").val("")
-
-      updated_margin = (updated_total_estimation - updated_total_cost)*100/updated_total_cost
-      $("#total_margin_price").text(Math.round(updated_margin * 100)/100)
-
-      if profit >= updated_margin
-        $("#total_margin_price").addClass("red")
-        $("#estimate_low_margin").val("true")
-      else
-        $("#total_margin_price").removeClass("red")
-        $("#estimate_low_margin").val("")
-
-    @calculate_total_amount()
+    if isNaN(margin) or margin >= profit
+      $("#total_margin_price").addClass("red")
+      $("#estimate_low_margin").val("true")
+    else
+      $("#total_margin_price").removeClass("red")
+      $("#estimate_low_margin").val("")
 
   add_tax_value: (e)->
     _this = $(e)
@@ -337,68 +354,44 @@ window.Inventories =
 
     if !isNaN(targetValue) and !isNaN(initValue) and !isNaN(currentValue)
       finalValue = targetValue - initValue + currentValue
-      console.log targetValue
-      console.log initValue
-      console.log currentValue
 
-      $("#total_tax_price").text(finalValue)
+      $("#total_tax_price").text((Math.round(finalValue * 100)/100).toFixed(2))
       _this.data("initvalue", currentValue)
 
       @calculate_total_amount()
 
-  calculate_total_amount: ->
-    total_estimation = parseFloat($("#total_estimated_price").text())
-    total_tax = parseFloat($("#total_tax_price").text())
-    $("#total_amount_with_tax").text(Math.round((total_estimation+total_tax) * 100)/100) if !isNaN(total_estimation) and !isNaN(total_tax)
-
   payment_amount_select: (e)->
     default_amount = parseFloat($(":checked", e).data("default-amount"))
     estimated_amount = parseFloat($(":checked", e).data("estimation-amount"))
-    profit = parseFloat($("#db_margin").text())
 
-    $(e).parent().siblings().find(".payment_item_value").val(default_amount)
+    profit = parseFloat($("#db_margin").text())
+    profit_margin = $(e).parent().siblings().find(".append_profit_margin")
+    payment_item = $(e).parent().siblings().find(".payment_item_value")
+
+    payment_item.val(default_amount).data("initvalue", 0)
+
+    if profit_margin.length > 0
+      profit_margin.data( {"cost": default_amount, "estimate": estimated_amount} )
+
+      cost_price = payment_item
+      elem = $(e).parent().siblings().find(".estimation_value")
+
+      @calculate_cost_price cost_price
+
+      elem.val(estimated_amount).data("initvalue", 0)
+
+      @calculate_cost_price(elem)
 
     if $(e).is(".tax_rate_calculation")
+      estimated_value = parseFloat($(e).parents(".estimate_extend_with_tax").eq(0).find(".estimation_value").data("initvalue"))
 
-      # $(e).parents(".parent_class_set").eq(0).find(".estimated_tax_amount_class").val(default_amount).data("initValue", default_amount)
-      estimated_value = parseFloat($(e).parents(".estimate_extend_with_tax").eq(0).find(".append_estimated_price").text())
-      # estimated_value = $(e).parents(".estimate_extend_with_tax").eq(0).find(".append_estimated_price").text()
       if !isNaN(estimated_value) and !isNaN(default_amount)
         calculated_tax = default_amount * estimated_value/100
-        $(e).parents(".parent_class_set").eq(0).find(".estimated_tax_amount_class").val(calculated_tax)#.data("initValue", calculated_tax)
+        $(e).parents(".parent_class_set").eq(0).find(".estimated_tax_amount_class").val(calculated_tax).data("initValue", 0)
 
         @add_tax_value($(e).parents(".parent_class_set").eq(0).find(".estimated_tax_amount_class")[0])
 
-    if $(e).parent().siblings().find(".estimated_value").length > 0
-      $(e).parent().siblings().find(".estimated_value").val(estimated_amount)
-      prev_estimation = parseFloat($(e).parent().siblings().find(".append_estimated_price").text())
-      prev_cost = parseFloat($(e).parent().siblings().find(".append_cost_price").text())
-      updated_total_estimation = parseFloat($("#total_estimated_price").text()) + estimated_amount - prev_estimation
-      updated_total_cost = parseFloat($("#total_cost_price").text()) + default_amount - prev_cost
-      $("#total_estimated_price").text(updated_total_estimation)
-      $("#total_cost_price").text(updated_total_cost)
-
-      updated_margin = (updated_total_estimation - updated_total_cost)*100/updated_total_cost
-      $("#total_margin_price").text(Math.round(updated_margin * 100)/100)
-
-      $(e).parent().siblings().find(".append_estimated_price").text(estimated_amount)
-      $(e).parent().siblings().find(".append_cost_price").text(default_amount)
-
-      this_margin = (estimated_amount - default_amount)*100/default_amount
-      $(e).parent().siblings().find(".append_profit_margin").text(Math.round(this_margin * 100)/100)
-      if parseFloat($("#db_margin").text()) >= this_margin
-        $(e).parents().eq(3).find(".append_profit_margin").addClass("red")
-      else
-        $(e).parents().eq(3).find(".append_profit_margin").removeClass("red")
-
-      if profit >= updated_margin
-        $("#total_margin_price").addClass("red")
-        $("#estimate_low_margin").val("true")
-      else
-        $("#total_margin_price").removeClass("red")
-        $("#estimate_low_margin").val("")
-
-      @calculate_total_amount()
+    @calculate_total_amount()
       # @add_tax_value($(e).parent().siblings().find(".estimated_value")[0])
 
   remove_tax_from_estimation: (e)->
@@ -413,9 +406,8 @@ window.Inventories =
 
   remove_cost_estimation: (e)->
     this_e = $(e)
-    r_estimation_price = parseFloat(this_e.parents(".estimate_extend_with_tax").eq(0).find(".append_estimated_price").text())
-    r_cost_price = parseFloat(this_e.parents(".estimate_extend_with_tax").eq(0).find(".append_cost_price").text())
-
+    r_estimation_price = parseFloat(this_e.parents(".estimate_extend_with_tax").eq(0).find(".append_profit_margin").data("estimate"))
+    r_cost_price = parseFloat(this_e.parents(".estimate_extend_with_tax").eq(0).find(".append_profit_margin").data("cost"))
 
     total_cost_price = $("#total_cost_price").text()
     total_estimation_price = $("#total_estimated_price").text()
@@ -423,16 +415,16 @@ window.Inventories =
     total_cost_price -= r_cost_price
     total_estimation_price -= r_estimation_price
 
-
     $("#total_cost_price").text(total_cost_price)
     $("#total_estimated_price").text(total_estimation_price)
 
     taxes = 0
     this_e.parents(".estimate_extend_with_tax").eq(0).find(".estimated_tax_amount_class").each ->
       taxes += parseFloat($(this).val()) if !isNaN($(this).val())
-    total_tax_price = $("#total_tax_price").text()
-    total_amount_with_tax = total_tax_price - taxes
-    $("#total_tax_price").text(Math.round(total_amount_with_tax * 100)/100)
+
+    total_amount_with_tax = parseFloat($("#total_tax_price").text()) - taxes
+
+    $("#total_tax_price").text((Math.round(total_amount_with_tax * 100)/100).toFixed(2))
 
     updated_margin = (total_estimation_price - total_cost_price)*100/total_cost_price
     $("#total_margin_price").text(Math.round(updated_margin * 100)/100)
