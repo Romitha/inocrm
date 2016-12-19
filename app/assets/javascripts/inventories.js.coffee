@@ -328,6 +328,11 @@ window.Inventories =
 
       relatives.text((Math.round(profit * 100)/100).toFixed(2))
 
+    if margin >= profit
+      relatives.addClass("red")
+    else
+      relatives.removeClass("red")
+
   calculate_total_amount: ->
     total_estimation = parseFloat($("#total_estimated_price").text())
     total_tax = parseFloat($("#total_tax_price").text())
