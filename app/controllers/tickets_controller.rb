@@ -2775,7 +2775,8 @@ class TicketsController < ApplicationController
     @fifo_grn_serial_items = []
 
     if @onloan_or_store.approved_inventory_product.inventory_product_info
-      grn_item_ids = @onloan_or_store.approved_inventory_product.grn_items.search(query: "grn.store_id:#{@onloan_or_store.approved_store_id} AND inventory_not_updated:false").map{|grn_item| grn_item.id}
+      # grn_item_ids = @onloan_or_store.approved_inventory_product.grn_items.search(query: "grn.store_id:#{@onloan_or_store.approved_store_id} AND inventory_not_updated:false").map{|grn_item| grn_item.id}
+      grn_item_ids = GrnItem.search(query: "grn.store_id:#{@onloan_or_store.approved_store_id} AND inventory_not_updated:false AND inventory_product.id:#{@onloan_or_store.approved_inventory_product.id}").map{|grn_item| grn_item.id}
 
       if @onloan_or_store.approved_inventory_product.inventory_product_info.need_serial
         @fifo_grn_serial_items = if @onloan_or_store.approved_inventory_product.fifo
@@ -2794,7 +2795,9 @@ class TicketsController < ApplicationController
         puts "***********************"
       else
 
-        grn_items = @onloan_or_store.approved_inventory_product.grn_items.search(query: "grn.store_id:#{@onloan_or_store.approved_store_id} AND inventory_not_updated:false AND remaining_quantity:>0")
+        # grn_items = @onloan_or_store.approved_inventory_product.grn_items.search(query: "grn.store_id:#{@onloan_or_store.approved_store_id} AND inventory_not_updated:false AND remaining_quantity:>0")
+        grn_items = GrnItem.search(query: "grn.store_id:#{@onloan_or_store.approved_store_id} AND inventory_not_updated:false AND remaining_quantity:>0 AND inventory_product.id:#{@onloan_or_store.approved_inventory_product.id}")
+
 
         @grns = Kaminari.paginate_array(grn_items).page(params[:page]).per(10)
       end
