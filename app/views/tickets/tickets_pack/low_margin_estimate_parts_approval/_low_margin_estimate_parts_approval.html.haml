@@ -112,7 +112,7 @@
                         %td= index+1
                         %td= grn_item.grn.grn_no
                         %td= grn_item.grn.created_at.try(:strftime, "%d-%m-%Y")
-                        %td= grn_item.grn.supplier.name
+                        %td= grn_item.grn.supplier_name
                         %td
                           = number_with_precision grn_item.current_unit_cost, precision: 2
 
