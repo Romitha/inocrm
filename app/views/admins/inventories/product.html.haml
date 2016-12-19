@@ -211,6 +211,7 @@
           - if inv_product.inventory_product_info.present?
             .row
               .col-md-12
+                = image_tag inv_product.inventory_product_info.picture.url
                 = simple_form_for inv_product.inventory_product_info, url: product_admins_inventories_path(edit: true, product_info_id: inv_product.inventory_product_info.product_id), :html => {class: "form-horizontal fixed margin-bottom0" }, remote: true do |document_attachment|
                   #document_attachment_upload.btn.btn-info.btn-mini.fileinput-button{style: "min-height: 10px;"}
                     %span Upload documents

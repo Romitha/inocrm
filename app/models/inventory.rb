@@ -316,6 +316,8 @@ end
 class InventoryProductInfo < ActiveRecord::Base
   self.table_name = "mst_inv_product_info"
 
+  mount_uploader :picture, ProductInfoUploader
+
   belongs_to :inventory_product, foreign_key: :product_id
 
   belongs_to :manufacture, foreign_key: :manufacture_id

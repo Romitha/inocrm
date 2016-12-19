@@ -26,6 +26,7 @@
           = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
       - else
         = hidden_field_tag :ticket_id, params[:ticket_id]
+        = hidden_field_tag :check_payment, true
 
       .row
         .col-md-2

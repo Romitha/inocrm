@@ -93,9 +93,9 @@
                 %dd
                   = part_store_or_non_stock.main_inventory_product and part_store_or_non_stock.main_inventory_product.inventories.find_by_store_id(part_store_or_non_stock.store_id).try(:available_quantity)
 
-          .col-md-1{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Part of main method", "data-content"=> yield(:part_of_main_product), "data-html" => "true", "data-trigger" => "click", "data-placement" => "right" } Part of main product
+          .col-md-2{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Part of main method", "data-content"=> yield(:part_of_main_product), "data-html" => "true", "data-trigger" => "click", "data-placement" => "top" } Part of main product
 
-          .col-md-6
+          .col-md-5
             #paginate_grns
               %table.table
                 %thead
@@ -126,7 +126,6 @@
           .col-md-3
             %strong Requested Est. Price (#{t.object.ticket.ticket_currency.code}):
             %span= number_with_precision t.object.estimated_price, precision: 2
-            .append_estimated_price.hide= number_with_precision t.object.estimated_price, precision: 2
           .col-md-2
             %span{style: "font-weight:bold;"} Profit :
             %span.append_profit_margin{style: "font-weight:bold;font-size:125%;"}
@@ -135,7 +134,7 @@
             %span )
             %span %
           .col-md-5
-            = t.input :approved_estimated_price, label: "Approved estimation price (#{ticket.ticket_currency.code})", input_html: {min: "0", class: "estimation_value only_float", oninput: "Inventories.calculate_cost_price(this);", value: t.object.estimated_price}, wrapper_html: {class: "inline-input"}
+            = t.input :approved_estimated_price, label: "Approved Estimated Price (#{ticket.ticket_currency.code})", as: :string, input_html: {min: 0, class: "estimation_value estimated_value est_add_estimated_price only_float", oninput: "Inventories.calculate_cost_price(this);", value: t.object.estimated_price.to_f, data: {initvalue: t.object.estimated_price.to_f }}, wrapper_html: {class: "inline-input"}
 
           .col-md-12
             %hr
@@ -195,9 +194,7 @@
                   .panel-body.small_scale_padding2
                     .est_estimated_amount= number_with_precision ta.object.estimated_price, precision: 2
               .col-md-3.col-xs-3.col-sm-3
-                = ta.input :approved_estimated_price, as: :string, input_html: {class: "estimation_value only_float", oninput: "Inventories.calculate_cost_price(this);", value: ta.object.estimated_price }, label: "Approved estimated price (#{estimate_currency})"
-                .append_estimated_price.hide
-                  = number_with_precision (ta.object.estimated_price.to_f or 0), precision: 2
+                = ta.input :approved_estimated_price, as: :string, input_html: { data: {initvalue: ta.object.estimated_price.to_f }, class: "estimation_value only_float", oninput: "Inventories.calculate_cost_price(this);", value: ta.object.estimated_price }, label: "Approved estimated price (#{estimate_currency})"
 
               .col-md-12
                 .panel-group
@@ -232,20 +229,51 @@
     .col-md-3
       = f.input :approved_adv_pmnt_amount, as: :string, input_html: {class: "only_float", oninput: "Inventories.limit_payment_required(this); return false;", value: f.object.advance_payment_amount}, label: "Approved advance payment amount (Estimated: #{estimate_currency} #{f.object.advance_payment_amount})"
 
-    .col-md-3.col-md-offset-6
-      %strong Total cost price (#{estimate_currency}):
-      %span#total_cost_price
-        = number_with_precision f.object.ticket_estimation_additionals.sum(:cost_price), precision: 2
-      %br
-      %strong Total appr. estimated price (#{number_with_precision estimate_currency, precision: 2}):
-      %span#total_estimated_price.for_payment_limit
-        = number_with_precision estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2
-      %br
-      %strong Total profit (%):
-      %span#total_margin_price{style: "font-weight:bold;"}
-      %span (
-      %span#db_margin{style: "font-weight:bold;"}= CompanyConfig.first.try(:sup_external_job_profit_margin).to_f
-      %span )
+    / .col-md-3.col-md-offset-6
+    /   %strong Total cost price (#{estimate_currency}):
+    /   %span#total_cost_price
+    /     = number_with_precision f.object.ticket_estimation_additionals.sum(:cost_price), precision: 2
+    /   %br
+    /   %strong Total appr. estimated price (#{number_with_precision estimate_currency, precision: 2}):
+    /   %span#total_estimated_price.for_payment_limit
+    /     = number_with_precision estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2
+    /   %br
+    /   %strong Total profit (%):
+    /   %span#total_margin_price{style: "font-weight:bold;"}
+    /   %span (
+    /   %span#db_margin{style: "font-weight:bold;"}= CompanyConfig.first.try(:sup_external_job_profit_margin).to_f
+    /   %span )
+
+    - total_cost = [estimation.ticket_estimation_parts.sum(:cost_price), estimation.ticket_estimation_additionals.sum(:cost_price)].sum
+
+    - total_estimation = [estimation.ticket_estimation_parts.sum(:estimated_price), estimation.ticket_estimation_additionals.sum(:estimated_price)].sum
+
+    - total_tax = [ estimation.ticket_estimation_parts.to_a.sum{ |p| p.ticket_estimation_part_taxes.sum(:estimated_tax_amount)}, estimation.ticket_estimation_additionals.to_a.sum{ |p| p.ticket_estimation_additional_taxes.sum(:estimated_tax_amount)}].sum
+
+    .col-md-3.pull-right
+      %table.table.table-striped
+        %tbody{class: "text-right"}
+          %tr
+            %td Total cost
+            %td#total_cost_price= number_with_precision total_cost, precision: 2
+          %tr
+            %td Total estimation
+            %td#total_estimated_price.for_payment_limit= number_with_precision total_estimation, precision: 2
+          %tr
+            %td Total tax
+            %td#total_tax_price.for_payment_limit{ data: { initValue: "#{total_tax}" } }= number_with_precision total_tax, precision: 2
+          %tr
+            %td Total amount with tax
+            %td#total_amount_with_tax= number_with_precision (total_estimation+total_tax), precision: 2
+          %tr
+            %th{class: "text-right"}
+              Total profit
+              %span (
+              %span#db_margin{style: "font-weight:bold;"}= CompanyConfig.first.try(:sup_external_job_profit_margin).to_f
+              %span %)
+            %th{class: "text-right"}
+              %span#total_margin_price{class: "#{'red' if CompanyConfig.first.try(:sup_external_job_profit_margin).to_f > (total_estimation / total_cost - 1)*100 }"}= (total_estimation / total_cost - 1)*100
+              %span %
 
   .row
     .col-md-6
