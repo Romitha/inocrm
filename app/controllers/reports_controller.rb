@@ -103,7 +103,7 @@ class ReportsController < ApplicationController
 
         quantity = ( ( estimation_part.ticket_spare_part.ticket_spare_part_store or estimation_part.ticket_spare_part.ticket_spare_part_non_stock ).try(:approved_quantity) or ( estimation_part.ticket_spare_part.ticket_spare_part_store or estimation_part.ticket_spare_part.ticket_spare_part_non_stock ).try(:requested_quantity) )
 
-        unit_price = total_price/quantity.to_f
+        unit_price = (quantity and quantity.to_f != 0) ? total_price/quantity.to_f : 0
 
         repeat_data_hash = {}
 
