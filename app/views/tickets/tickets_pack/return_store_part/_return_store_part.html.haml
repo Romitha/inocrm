@@ -38,17 +38,17 @@
     #{active_spare_part.try(:issued_at).try(:strftime, "%Y-%m-%d")}
   .col-md-3
     %strong Issued By:
-    #{User.cached_find_by_id(active_spare_part.try(:issued_by)).try(:user_name)}
+    #{User.cached_find_by_id(active_spare_part.try(:issued_by)).try(:full_name)}
   .col-md-3
     %strong Date Returned:
     #{(onloan_request ? onloan_spare_part : spare_part).try(:part_returned_at).try(:strftime, "%Y-%m-%d")}
   .col-md-3
     %strong Returned By:
-    #{User.cached_find_by_id((onloan_request ? onloan_spare_part : spare_part).try(:part_returned_by)).try(:user_name)}
+    #{User.cached_find_by_id((onloan_request ? onloan_spare_part : spare_part).try(:part_returned_by)).try(:full_name)}
 %hr
 .row
-  .col-md-3
-    %strong Issued Part
+  .col-md-12
+    %h4 Issued Part
   .col-md-3
     %strong Part No:
     #{spare_part.try(:spare_part_no)}
