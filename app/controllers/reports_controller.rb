@@ -1,5 +1,5 @@
 class ReportsController < ApplicationController
-  layout "report_pdf"
+  # layout "report_pdf"
 
   def quotation
     # https://github.com/mileszs/wicked_pdf
@@ -103,7 +103,7 @@ class ReportsController < ApplicationController
 
         quantity = ( ( estimation_part.ticket_spare_part.ticket_spare_part_store or estimation_part.ticket_spare_part.ticket_spare_part_non_stock ).try(:approved_quantity) or ( estimation_part.ticket_spare_part.ticket_spare_part_store or estimation_part.ticket_spare_part.ticket_spare_part_non_stock ).try(:requested_quantity) )
 
-        unit_price = total_price/quantity
+        unit_price = total_price/quantity.to_f
 
         repeat_data_hash = {}
 
@@ -224,7 +224,8 @@ class ReportsController < ApplicationController
             left:              15,
             right:             10
           },
-          disable_javascript: false
+          disable_javascript: false,
+          layout: "report_pdf"
       end
     end
   end
