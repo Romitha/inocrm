@@ -1,11 +1,11 @@
 #main_image
   %h4{align: "center", style: "margin-bottom: 0;"}= @ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
 
-  - manufacture_parts_po_completed = !@ticket.ticket_spare_parts.any? { |t| t.ticket_spare_part_manufacture.try(:po_required) and not t.ticket_spare_part_manufacture.try(:po_completed) }
+  - manufacture_parts_po_pending = @ticket.ticket_spare_parts.any? { |t| t.ticket_spare_part_manufacture.try(:po_required) and not t.ticket_spare_part_manufacture.try(:po_completed) and t.ticket_spare_part_manufacture.try(:bundled)}
 
   - payment_pending  = !(@ticket.cus_payment_completed or !@ticket.cus_payment_required)
 
-  - if !manufacture_parts_po_completed
+  - if manufacture_parts_po_pending
     %span{style: "float: right; margin: 0; color: red;"} PO Pending
 
   - if payment_pending
