@@ -46,8 +46,6 @@
             %dd
               - if ticket_spare_part.requested_at
                 #{ticket_spare_part.requested_at.try(:strftime, "%Y-%m-%d %H:%M")} by #{User.cached_find_by_id(ticket_spare_part.requested_by).try(:full_name)}
-            %dt Required quantity
-            %dd= ticket_spare_part.ticket_spare_part_store.try(:approved_quantity)
             %dt Action Status
             %dd
               = ticket_spare_part.spare_part_status_action.name
@@ -166,7 +164,7 @@
               %dt Model No
               %dd= non_stock_inventory.try(:model_no)
               %dt Required Qty
-              %dd= ticket_spare_part.ticket_spare_part_non_stock.approval_required and ticket_spare_part.ticket_spare_part_non_stock.approved ? ticket_spare_part.ticket_spare_part_non_stock.approved_quantity : ticket_spare_part.ticket_spare_part_non_stock.requested_quantity
+              %dd= ticket_spare_part.ticket_spare_part_non_stock.requested_quantity
 
               %dt Item Description
               %dd= non_stock_inventory.description
@@ -177,6 +175,31 @@
               %dt Part No
               %dd= non_stock_inventory.try(:spare_part_no)
         %hr
+
+        - if ticket_spare_part.ticket_spare_part_non_stock.approval_required and ticket_spare_part.ticket_spare_part_non_stock.approved_inventory_product
+          - approved_non_stock_inventory = ticket_spare_part.ticket_spare_part_non_stock.approved_inventory_product
+          .row
+            .col-md-2
+              %h4 Approved Non stock
+            .col-md-6
+              %dl.dl-horizontal
+                %dt Item Code
+                %dd= approved_non_stock_inventory.generated_item_code
+                %dt Model No
+                %dd= approved_non_stock_inventory.try(:model_no)
+                %dt Required Qty
+                %dd= ticket_spare_part.ticket_spare_part_non_stock.approved_quantity
+
+                %dt Item Description
+                %dd= approved_non_stock_inventory.description
+                %dt Manufacture
+                %dd= approved_non_stock_inventory.inventory_product_info and approved_non_stock_inventory.inventory_product_info.manufacture.try(:manufacture)
+                %dt Product No
+                %dd= approved_non_stock_inventory.try(:product_no)
+                %dt Part No
+                %dd= approved_non_stock_inventory.try(:spare_part_no)
+          %hr
+
 
       - if ticket_spare_part.ticket_spare_part_store
         - spare_part_store = ticket_spare_part.ticket_spare_part_store
@@ -189,12 +212,15 @@
               %dd= User.cached_find_by_id(spare_part_store.try(:store_requested_by)).try(:full_name)
               %dt Store requested at
               %dd= spare_part_store.try(:store_requested_at).try(:strftime, "%Y-%m-%d %H:%M")
-              %dt Request approved
-              %dd= spare_part_store.store_request_approved ? "Yes" : "No"
-              %dt Request approved by
-              %dd= User.cached_find_by_id(spare_part_store.store_request_approved_by).try(:full_name)
-              %dt Request approved at
-              %dd= spare_part_store.store_request_approved_at.try(:strftime, "%Y-%m-%d %H:%M")
+              - if spare_part_store.store_request_approved
+                %dt Request approved
+                %dd= spare_part_store.store_request_approved ? "Yes" : "No"
+                %dt Request approved by
+                %dd= User.cached_find_by_id(spare_part_store.store_request_approved_by).try(:full_name)
+                %dt Request approved at
+                %dd= spare_part_store.store_request_approved_at.try(:strftime, "%Y-%m-%d %H:%M")
+              %dt Required quantity
+              %dd= spare_part_store.store_request_approved ? spare_part_store.try(:approved_quantity) : spare_part_store.try(:requested_quantity)
               %dt Store
               %dd= spare_part_store.store.try(:name)
               %dt Issued by
@@ -207,7 +233,7 @@
           - if spare_part_store.approved_inventory_product or spare_part_store.inventory_product
             - store_inventory_product = (spare_part_store.approved_inventory_product or spare_part_store.inventory_product)
             .col-md-2
-              %h4= spare_part_store.approved_inventory_product ? "Approved part" : "Store part"
+              %h4= spare_part_store.approved_inventory_product ? "Approved inventory product" : "Store inventory product"
             .col-md-4
               %dl.dl-horizontal
                 %dt Item Code
@@ -218,8 +244,6 @@
                 %dd= store_inventory_product.inventory_product_info and store_inventory_product.inventory_product_info.manufacture.try(:manufacture)
                 %dt Model No
                 %dd= store_inventory_product.try(:model_no)
-                %dt Required Qty
-                %dd= spare_part_store.store_request_approved ? spare_part_store.approved_quantity : spare_part_store.requested_quantity
                 %dt Product No
                 %dd= store_inventory_product.try(:product_no)
                 %dt Part No
@@ -260,7 +284,7 @@
               %dd= spare_part_manufacture.order_no
               %dt Part Event No
               %dd= spare_part_manufacture.event_no
-              %dt Requested Qty
+              %dt Required Qty
               %dd= spare_part_manufacture.requested_quantity
               %dt Part Event Closed
               %dd= spare_part_manufacture.event_closed ? "Yes" : "No"

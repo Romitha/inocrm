@@ -1,4 +1,15 @@
 #main_image
-  %h2{align: "center"}= @ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
+  %h4{align: "center", style: "margin-bottom: 0;"}= @ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
+
+  - manufacture_parts_po_completed = !@ticket.ticket_spare_parts.any? { |t| t.ticket_spare_part_manufacture.try(:po_required) and not t.ticket_spare_part_manufacture.try(:po_completed) }
+
+  - payment_pending  = !(@ticket.cus_payment_completed or !@ticket.cus_payment_required)
+
+  - if !manufacture_parts_po_completed
+    %span{style: "float: right; margin: 0; color: red;"} PO Pending
+
+  - if payment_pending
+    %h5{style: "float: right; margin: 0; color: red;"} Payment Pending
+
 - @task_content.compact.flatten.each do |task_content|
   %div{id: task_content.to_a.flatten[0], title: "#{task_content.to_a.flatten[1].to_time.strftime('%Y-%b-%d %H:%M')} (#{(Date.today - task_content.to_a.flatten[1].to_date).to_i} #{'day'.pluralize((Date.today - task_content.to_a.flatten[1].to_date).to_i)})"}

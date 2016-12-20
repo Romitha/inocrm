@@ -1196,6 +1196,8 @@ class TicketsController < ApplicationController
     TaskAction
     TicketSparePart
     TicketEstimation
+    Tax
+
     ticket_id = params[:ticket_id]
     @ticket = Ticket.find_by_id ticket_id
     session[:ticket_id] = @ticket.id

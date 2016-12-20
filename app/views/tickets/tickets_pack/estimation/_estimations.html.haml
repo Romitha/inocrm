@@ -89,4 +89,6 @@
 
         %td= estimation.estimation_status.name
 
+= render "invoices/ticket_quotations", ticket: ticket
+
 %div{id: "estimation_ajax_frame_#{params[:action]}"}

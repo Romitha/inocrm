@@ -1,3 +1,7 @@
-$("#estimation_ajax_frame_#{params[:template_action]}").html("#{j render 'tickets/tickets_pack/estimation/estimation_'+@estimation_type, estimation: @estimation}");
+- if params[:estimation_id].present?
+  $("#estimation_ajax_frame_#{params[:template_action]}").html("#{j render 'tickets/tickets_pack/estimation/estimation_'+@estimation_type, estimation: @estimation}");
+- elsif params[:quotation_id].present?
+  $("#estimation_ajax_frame_#{params[:template_action]}").html("#{j render 'invoices/ticket_quotation_more', quotation: @quotation}");
+
 Tickets.enable_request_part_check();
 Tickets.remove_ajax_loader();

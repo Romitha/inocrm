@@ -1,0 +1,23 @@
+.row
+  .col-md-11
+    %strong Available customer quotation
+.row
+  .col-md-12
+    %table.table.table-responsive.table-condensed.table-bordered
+      %thead
+        %tr
+          %th No
+          %th Validity period
+          %th Warranty
+          %th Customer contacted
+          %th Canceled
+
+      %tbody
+        - ticket.customer_quotations.each_with_index do |quotation, index|
+          %tr
+            %td= link_to index+1, load_estimation_inventories_path(quotation_id: quotation.id, template_action: params[:action]), remote: true
+
+            %td.validity_period= quotation.try(:validity_period)
+            %td= quotation.try(:warranty)
+            %td= quotation.customer_contacted ? "Yes" : "No"
+            %td= quotation.canceled ? "Yes" : "No"

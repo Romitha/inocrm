@@ -12,6 +12,8 @@
 
 .row
   .col-md-4
+    %strong Estimation
+    %br/
     %strong Quotation No:
     - estimation.customer_quotations.where(canceled: false).each do |q|
       = q.customer_quotation_no

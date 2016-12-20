@@ -300,6 +300,8 @@ class InventoriesController < ApplicationController
       if continue
         if store_chargeable and cea
 
+          ticket_spare_part.ticket_spare_part_store.update store_requested: true, store_requested_at: DateTime.now, store_requested_by: current_user.id
+
           save_ticket_spare_part["STR", 15] #Request Spare Part from Store 
 
           # bpm output variables
@@ -510,8 +512,16 @@ class InventoriesController < ApplicationController
 
   def load_estimation
     Tax
-    @estimation_type = params[:estimation_type]
-    @estimation = TicketEstimation.find params[:estimation_id]
+    Invoice
+
+    if params[:estimation_id].present?
+      @estimation_type = params[:estimation_type]
+      @estimation = TicketEstimation.find params[:estimation_id]
+
+    elsif params[:quotation_id].present?
+      @quotation = CustomerQuotation.find params[:quotation_id]
+
+    end
   end
 
   def load_estimation_ticket_info
@@ -618,6 +628,8 @@ class InventoriesController < ApplicationController
           end
 
           if ticket_estimation_part.ticket_spare_part.ticket_spare_part_store.present?
+            ticket_estimation_part.ticket_spare_part.ticket_spare_part_store.update store_requested: true, store_requested_at: DateTime.now, store_requested_by: current_user.id
+
             #save_ticket_spare_part["STR", 15] #Request Spare Part from Store 
             status_action_id = SparePartStatusAction.find_by_code("STR").id
             action_id = TaskAction.find_by_action_no(15).id
