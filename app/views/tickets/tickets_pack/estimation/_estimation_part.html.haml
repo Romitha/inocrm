@@ -217,7 +217,7 @@
           %td= standard_currency_format estimation.advance_payment_amount
         %tr
           %td Advance payment recieved
-          %td= standard_currency_format estimation.ticket.ticket_payment_receiveds.where(type_id: TicketPaymentReceivedType.find_by_code("AD").id).sum(:amount).to_i
+          %td= standard_currency_format estimation.ticket.ticket_payment_receiveds.where(type_id: TicketPaymentReceivedType.find_by_code("AD").id).sum(:amount).to_f
 
 .row
   .col-md-12

@@ -3,17 +3,17 @@
   .row
     .col-md-3
       %strong Total Estimated Amount (#{ticket.ticket_currency.code}):
-      = @total_estimation_amount
+      = number_with_precision @total_estimation_amount, precision: 2
     .col-md-3
       %strong All Payments Received  (#{ticket.ticket_currency.code}):
-      = @all_payment_received
+      = number_with_precision @all_payment_received, precision: 2
     .col-md-3
       %strong Balance Amount to be Paid (#{ticket.ticket_currency.code}):
 
-      .for_payment_limit= (@total_estimation_amount - @all_payment_received >= 0 ? @total_estimation_amount - @all_payment_received : 0)
+      .for_payment_limit= number_with_precision (@total_estimation_amount - @all_payment_received >= 0 ? @total_estimation_amount - @all_payment_received : 0), precision: 2
     .col-md-3
       %strong Total Minimum Amount (#{ticket.ticket_currency.code}):
-      = @total_minimum_amount
+      = number_with_precision @total_minimum_amount, precision: 2
   %hr
   %fieldset
     %legend Advance Payment Invoice
