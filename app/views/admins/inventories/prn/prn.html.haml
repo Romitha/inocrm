@@ -1,4 +1,6 @@
 - if @store
+  %h4 Create PRN
+
   = simple_nested_form_for @prn, url: create_prn_admins_inventories_url, html: {class: "validate_form"} do |f|
     = f.input :created_by, as: :hidden, input_html: { value: current_user.id }
     = f.input :prn_no, as: :hidden, input_html: {value: CompanyConfig.first.next_sup_last_prn_no}

@@ -1,51 +1,58 @@
 - uri = URI(request.url)
 - if @continue_info
+
   .row
-    .col-md-3
-      %strong Total Estimated Amount (#{ticket.ticket_currency.code}):
-      = number_with_precision @total_estimation_amount, precision: 2
-    .col-md-3
-      %strong All Payments Received  (#{ticket.ticket_currency.code}):
-      = number_with_precision @all_payment_received, precision: 2
-    .col-md-3
-      %strong Balance Amount to be Paid (#{ticket.ticket_currency.code}):
+    .col-md-6
+      %fieldset
+        %legend Advance Payment Invoice
+        = simple_nested_form_for ticket_payment_received, url: update_invoice_advance_payment_invoices_path, method: :post, remote: true do |f|
+          - unless params[:check_payment]
+            = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
+            = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
+            = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
+            - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
+              = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+          - else
+            = hidden_field_tag :ticket_id, params[:ticket_id]
+            = hidden_field_tag :check_payment, true
 
-      .for_payment_limit= number_with_precision (@total_estimation_amount - @all_payment_received >= 0 ? @total_estimation_amount - @all_payment_received : 0), precision: 2
-    .col-md-3
-      %strong Total Minimum Amount (#{ticket.ticket_currency.code}):
-      = number_with_precision @total_minimum_amount, precision: 2
-  %hr
-  %fieldset
-    %legend Advance Payment Invoice
-    = simple_nested_form_for ticket_payment_received, url: update_invoice_advance_payment_invoices_path, method: :post, remote: true do |f|
-      - unless params[:check_payment]
-        = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
-        = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
-        = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
-        - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
-          = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
-      - else
-        = hidden_field_tag :ticket_id, params[:ticket_id]
-        = hidden_field_tag :check_payment, true
+          .row
+            .col-md-12
+              = f.input :amount, as: :string, input_html: {class: "only_float", oninput: "Inventories.limit_payment_required(this); return false;", min: "0"} ,label: "Received amount (#{ticket.ticket_currency.code})"
+            .col-md-12
+              = f.input :receipt_description
+            .col-md-12
+              = label_tag "Payment type"
+              = f.select :payment_type, TicketPaymentReceivedType::TYPES
+            .col-md-12
+              = f.input :payment_note, label: "Payment note (Ex: credit card no, cheque no, bank, etc...)"
+            .col-md-12
+              = f.input :note, input_html: {value: nil}
 
-      .row
-        .col-md-2
-          = f.input :amount, as: :string, input_html: {class: "only_float", oninput: "Inventories.limit_payment_required(this); return false;", min: "0"} ,label: "Received amount (#{ticket.ticket_currency.code})"
-        .col-md-4
-          = f.input :receipt_description
-        .col-md-2
-          = label_tag "Payment type"
-          = f.select :payment_type, TicketPaymentReceivedType::TYPES
-        .col-md-4
-          = f.input :payment_note, label: "Payment note (Ex: credit card no, cheque no, bank, etc...)"
-        .col-md-8
-          = f.input :note, input_html: {value: nil}
+          .row
+            .col-md-12
+              = label_tag "Payment Completed"
+              = check_box_tag :invoicing_completed, true, true
+              = f.submit "Save", class: "btn btn-success btn-sm", data: {disable_with: "Processing..."}
 
-      .row
-        .col-md-12
-          = label_tag "Payment Completed"
-          = check_box_tag :invoicing_completed, true, true
-          = f.submit "Save", class: "btn btn-success btn-sm", data: {disable_with: "Processing..."}
+    .col-md-6
+      %table.table.table_stripped
+        %tbody.text-right
+          %tr
+            %th.text-right Total Estimated Amount (#{ticket.ticket_currency.code}):
+            %td= number_with_precision @total_estimation_amount, precision: 2
+          %tr
+            %th.text-right All Payments Received  (#{ticket.ticket_currency.code}):
+            %td= number_with_precision @all_payment_received, precision: 2
+          %tr
+            %th.text-right Total deduction (#{ticket.ticket_currency.code}): 
+            %td= number_with_precision @deducted_amount, precision: 2
+          %tr
+            %th.text-right Balance Amount to be Paid (#{ticket.ticket_currency.code}):
+            %td.for_payment_limit= number_with_precision (@total_estimation_amount - @all_payment_received - @deducted_amount >= 0 ? @total_estimation_amount - @all_payment_received - @deducted_amount : 0), precision: 2
+          %tr
+            %th.text-right Total Minimum Amount (#{ticket.ticket_currency.code}):
+            %td= number_with_precision @total_minimum_amount, precision: 2
 - else
   .row
     .col-md-3

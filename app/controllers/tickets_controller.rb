@@ -2097,6 +2097,9 @@ class TicketsController < ApplicationController
     QAndA
     TaskAction
     TicketEstimation
+    Tax
+    Invoice
+
     ticket_id = params[:ticket_id]
     @ticket = Ticket.find_by_id ticket_id
     session[:ticket_id] = @ticket.id
@@ -2123,6 +2126,8 @@ class TicketsController < ApplicationController
         total_part_tax += ticket_estimation_parts.to_a.sum{|e| estimation.approval_required ? e.ticket_estimation_part_taxes.sum(:approved_tax_amount) : e.ticket_estimation_part_taxes.sum(:estimated_tax_amount) }
       end
 
+      @deducted_amount = @ticket.final_invoice.try(:total_deduction).to_f
+
       final_tot_tax = total_part_tax + total_additional_tax
       @total_estimation_amount = total_part_cost + total_additional_cost + final_tot_tax
 
@@ -2132,6 +2137,7 @@ class TicketsController < ApplicationController
       @total_minimum_amount = @ticket.ticket_estimations.where(foc_approved: false, cust_approved: true).inject(0){|i, k| k.approval_required ? i+k.approved_adv_pmnt_amount.to_i : i+k.advance_payment_amount.to_i }
 
       @all_payment_received = @ticket.ticket_payment_receiveds.sum(:amount)
+
 
     end
     respond_to do |format|

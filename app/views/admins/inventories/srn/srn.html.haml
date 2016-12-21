@@ -1,3 +1,4 @@
+%h4 Create SRN
 = simple_nested_form_for @srn, url: create_srn_admins_inventories_path, html: {class: "validate_form"} do |f|
   = f.input :created_by, as: :hidden, input_html: {value: current_user.id}
   = f.input :srn_no, as: :hidden, input_html: {value: CompanyConfig.first.next_sup_last_srn_no}
@@ -57,7 +58,7 @@
     .row
       .col-md-12
         / = f.link_to_add "Add", :srn_items, id: "storeIdPass", class: "applyStoreId", data: {producttype: "product_id"}, onclick: "Inventories.search_product(this); return false;"
-        = f.link_to_add "Add", :srn_items, id: "storeIdPass", class: "applyStoreId", onclick: "Inventories.search_product_for_part(this); return false;", data: {id: "store_id", modalId: "search_product", remote: "true", selectpath: "", mainpartavailable: true, selectoptions: "onclick:Inventories.assign_i_product(this, 'search_product', 'storeIdPass');"}
+        = f.link_to_add "Add Item", :srn_items, id: "storeIdPass", class: "applyStoreId", onclick: "Inventories.search_product_for_part(this); return false;", data: {id: "store_id", modalId: "search_product", remote: "true", selectpath: "", mainpartavailable: true, selectoptions: "onclick:Inventories.assign_i_product(this, 'search_product', 'storeIdPass');"}
       .col-md-12
         = f.submit "Save", class: "btn btn-success btn-sm"
 

@@ -40,7 +40,7 @@
     %thead
       %tr
         %th{colspan: 6} Invoice
-        %th{colspan: 6} Total
+        %th{colspan: 5} Total
       %tr
         %th No
         %th Created by
@@ -49,7 +49,7 @@
         %th Canceled
         %th Currency
         %th Cost
-        %th Esti. Amount
+        / %th Esti. Amount
         %th Tax
         %th Total Amount
         %th Deduction
@@ -59,19 +59,39 @@
     %tbody
       %tr
         %td= ticket.final_invoice.invoice_no.to_s.rjust(6, INOCRM_CONFIG["invoice_no_format"])
-        %td= ticket.final_invoice.created_by_ch_eng.try(:email)
+        %td= ticket.final_invoice.created_by_ch_eng.try(:full_name)
+
         %td= ticket.final_invoice.created_at.try(:strftime, "%Y-%m-%d %H:%M")
+
         %td= boolean_in_word ticket.final_invoice.customer_sent, "Yes", "No"
+
         %td= boolean_in_word ticket.final_invoice.canceled, "Yes", "No"
+
         %td= ticket.final_invoice.currency.code
+
+        //Cost
         %td= number_to_currency ticket.final_invoice.total_cost, delimiter: ",", unit: ticket.ticket_currency.code, format: "%u %n"
-        %td= number_to_currency ticket.final_invoice.total_amount, delimiter: ",", unit: ticket.ticket_currency.code, format: "%u %n"
+
+        //sti. Amount
+        / %td= number_to_currency ticket.final_invoice.total_amount, delimiter: ",", unit: ticket.ticket_currency.code, format: "%u %n"
+
+        //Tax
         %td= number_to_currency ticket.final_invoice.ticket_invoice_total_taxes.sum(:amount), delimiter: ",", unit: ticket.ticket_currency.code, format: "%u %n"
-        - tot_amount = ticket.final_invoice.total_cost + ticket.final_invoice.total_amount + ticket.final_invoice.ticket_invoice_total_taxes.sum(:amount)
-        %td= number_to_currency tot_amount, delimiter: ",", unit: ticket.ticket_currency.code, format: "%u %n"
+
+        / - tot_amount = ticket.final_invoice.total_cost + ticket.final_invoice.total_amount + ticket.final_invoice.ticket_invoice_total_taxes.sum(:amount)
+
+        //Total Amount
+        %td= number_to_currency ticket.final_invoice.total_amount, delimiter: ",", unit: ticket.ticket_currency.code, format: "%u %n"
+
+        //Deduction
         %td= number_to_currency ticket.final_invoice.total_deduction, delimiter: ",", unit: ticket.ticket_currency.code, format: "%u %n"
+
+        //Advance Payment Recieved
         %td= number_to_currency ticket.final_invoice.total_advance_recieved, delimiter: ",", unit: ticket.ticket_currency.code, format: "%u %n"
+
+        //Net Payment
         %td= number_to_currency ticket.final_invoice.net_total_amount, delimiter: ",", unit: ticket.ticket_currency.code, format: "%u %n"
+
         %td
           = link_to "#", onclick: "Users.request_printer_application('invoice', '#{ticket.final_invoice.id}', 'invoice_request_type', 'print_ticket_invoice_tag_value', 'print_ticket_invoice'); false;", id: "ticket_print", data: {disable_with: "Printing..."}, class: "btn btn-default" do
             Print

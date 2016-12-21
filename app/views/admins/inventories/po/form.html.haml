@@ -1,3 +1,5 @@
+%h4 Create PO
+
 = link_to "Change Store", po_admins_inventories_path
 = simple_nested_form_for @po, url: create_po_admins_inventories_path, html: {class: "validate_form"} do |f|
   = hidden_field_tag :prn_id, @prn.id
@@ -78,10 +80,10 @@
               = i.object.inventory_prn_item.quantity - i.object.inventory_prn_item.inventory_po_items.sum(:quantity)
 
           = collapse_wrapper collapse_id: "issue_po_item_#{i.object.object_id}", labelledby: "issue_po_item_#{i.object.object_id}_labelledby" do
-            = collapse collapse_type: "info", labelledby: "issue_po_item_labelby", header_content: "Issue", collapse_link: "issue_po_item_#{i.object.object_id}_link", onClick: "Admins.onClick_hide_quantity(this); return false;", collapse_id: "issue_po_item_#{i.object.object_id}", collapse_in: "in" do
+            = collapse collapse_type: "info", labelledby: "issue_po_item_labelby", header_content: "Select the item", collapse_link: "issue_po_item_#{i.object.object_id}_link", onClick: "Admins.onClick_hide_quantity(this); return false;", collapse_id: "issue_po_item_#{i.object.object_id}", collapse_in: "in" do
               .row
                 .col-md-3
-                  %strong Order Unit:
+                  %strong Unit:
                   = i.object.inventory_prn_item.inventory_product.inventory_unit.unit
                 .col-md-3
                   %strong Stock in Hand:

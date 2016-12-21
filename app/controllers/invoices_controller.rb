@@ -112,7 +112,9 @@ class InvoicesController < ApplicationController
 
         if @ticket_payment_received.save
 
-          @ticket.decrement! :final_amount_to_be_paid, @ticket_payment_received.amount if @ticket.final_amount_to_be_paid.to_f > 0
+          if @ticket.final_amount_to_be_paid.to_f > 0
+            @ticket.decrement! :final_amount_to_be_paid, @ticket_payment_received.amount 
+            @ticket.update cus_payment_completed: true if @ticket.final_amount_to_be_paid.to_f <= 0
 
           # 28 - Invoice Advance Payment
           user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(28).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
@@ -475,7 +477,7 @@ class InvoicesController < ApplicationController
         end
 
         if @ticket.final_invoice_id == @invoice.id
-          @ticket.update final_invoice_id: nil
+          @ticket.update final_invoice_id: nil, final_amount_to_be_paid: nil, cus_payment_completed: false
         end
 
       else
@@ -532,7 +534,7 @@ class InvoicesController < ApplicationController
     @invoice.ticket_invoice_total_taxes.build template_total_tax
 
     @invoice.save
-    @ticket.update final_amount_to_be_paid: (canceled ? 0 : ([@invoice.net_total_amount.to_f] << 0).max)
+    @ticket.update final_amount_to_be_paid: (canceled ? nil : ([@invoice.net_total_amount.to_f] << 0).max), cus_payment_completed: !(canceled or (([@invoice.net_total_amount.to_f] << 0).max > 0))
 
     @ticket.update final_invoice_id: @invoice.id if !@invoice.canceled
     #Action 80/83
