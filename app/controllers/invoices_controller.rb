@@ -115,6 +115,7 @@ class InvoicesController < ApplicationController
           if @ticket.final_amount_to_be_paid.to_f > 0
             @ticket.decrement! :final_amount_to_be_paid, @ticket_payment_received.amount 
             @ticket.update cus_payment_completed: true if @ticket.final_amount_to_be_paid.to_f <= 0
+          end
 
           # 28 - Invoice Advance Payment
           user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(28).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
