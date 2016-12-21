@@ -5,6 +5,9 @@
   .row
     .col-md-12
       %strong ON-LOAN Part Request
+      %br/
+      %strong SRN No:
+      #{request_part.srn.srn_no}
 - else
   - request_part = spare_part.ticket_spare_part_store
 
@@ -15,6 +18,9 @@
     .col-md-3
       %strong Part No:
       #{spare_part.spare_part_no}
+      %br
+      %strong SRN No:
+      #{srn_item.srn.srn_no}
     .col-md-3
       %strong Part Description:
       #{spare_part.spare_part_description}
@@ -139,7 +145,7 @@
           = request_part.approved_store.try(:name)
         %dt Item Code
         %dd
-          = request_part.approved_inventory_product.try(:generated_serial_no)
+          = request_part.approved_inventory_product.try(:generated_item_code)
         %dt Item Description
         %dd
           = request_part.approved_inventory_product.try(:description)
@@ -168,7 +174,7 @@
             = request_part.approved_store.name
           %dt Item Code
           %dd
-            = request_part.approved_main_inventory_product.generated_serial_no
+            = request_part.approved_main_inventory_product.generated_item_code
           %dt Item Description
           %dd
             = request_part.approved_main_inventory_product.description
