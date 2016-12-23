@@ -7,8 +7,24 @@
     .col-xs-3
       = image_tag wicked_pdf_asset_base64("vsis.png")
     .col-xs-7
-      %h2.col-xs-offset-1{:style => "text-decoration: underline;"} CUSTOMER QUOTATION
+      %span12
+        %h3{:style => "text-decoration: underline;"} CUSTOMER QUOTATION
+      %span12
+        %strong V S Information Systems (Pvt) Ltd
+      %br/
+      %span12
+        %strong NO: 07 , Suleimen Terrace ,
+      %br/
+      %span12
+        %strong Colombo - 05 . Sri Lanka.
+      %br/
+      %span12
+        %strong Tel : 011 2 599 499 , 011 2 555 803
+      %br/
+      %span12
+        %strong Fax : 011 2 555 805
 
+  %br/
   .row
     .col-xs-5
       %table.table-default
@@ -75,6 +91,10 @@
           %th Delivery Period:
           %td
             = print_object[:delivery_period]
+        %tr
+          %th Contact Person:
+          %td
+            = print_object[:created_by]
 
   .row
     .col-xs-11
@@ -106,68 +126,51 @@
       %table.table.table-striped
         %tbody
           %tr
-            %th Warranty:
-            %td{colspan: 3}= print_object[:warranty]
+            %th
+            %td{colspan: 3}
             %th.text-right Total Amount:
             %td.text-right{colspan: 2}= number_with_precision print_object[:total_amount], precision: 2
 
           %tr
-            %th Note:
-            %td{colspan: 3}= print_object[:quotation_note]
+            %th
+            %td{colspan: 3}
             %th.text-right Minimum Advanced Required:
             %td.text-right{colspan: 2}= number_with_precision print_object[:total_advance_amount], precision: 2
 
           %tr
-            %th Created By:
-            %td{colspan: 3}= print_object[:created_by]
+            %th
+            %td{colspan: 3}
             %th.text-right Payment Term:
             %td.text-right{colspan: 2}= print_object[:payment_term]
-    / .col-xs-6
-    /   %table.table-default
-    /     %tr
-    /       %th Warranty:
-    /       %td
-    /         = print_object[:warranty]
-    /     %tr
-    /       %th Note:
-    /       %td
-    /         = print_object[:quotation_note]
-    /     %tr
-    /       %th Created By:
-    /       %td
-    /         = print_object[:created_by]
 
-    / .col-xs-5
-    /   %table.table-default
-    /     %tbody
-    /       %tr
-    /         %th Total Amount:
-    /         %td.text-right= number_with_precision print_object[:total_amount], precision: 2
-    /       %tr
-    /         %th Minimum Advanced Required:
-    /         %td.text-right= number_with_precision print_object[:total_advance_amount], precision: 2
-    /       %tr
-    /         %th Payment Term:
-    /         %td
-    /           .text-right
-    /             = print_object[:payment_term]
+    .col-md-6
+      %table.table-default
+        %tr
+          %th Warranty:
+          %td
+            = print_object[:warranty]
+        %tr
+          %th Note:
+          %td
+            = print_object[:quotation_note]
+    %br/
 
     .col-xs-11
-      %h4 TERMS AND CONDITIONS
+      %strong TERMS AND CONDITIONS
       %strong
         %ul.list-group
-          %li.list-group-item
+          %li.list
             1. Payment Terms: Full payment with the Purchase Order/Acknowledgement,
-          %li.list-group-item
+          %li.list
             2. Taxes, Duty, Shipping and Freight Cost: This quotation inclusive of Duty, Shipping and Freight Cost.
-          %li.list-group-item
+          %li.list
             3. Options and Accessories: Value of optional items and accessories (if any) not included in above total.
-          %li.list-group-item
+          %li.list
             4. Warranty: Six month warranty
-          %li.list-group-item
+          %li.list
             5. Cheques to be drawn in favor of "V S Information Systems (Pvt)Ltd" and crossed :A/C Payee Only
           %br/
-          %li.list-group-item
+          %li.list
             Should you have any changes/issues or require any clarifications to above terms and conditions and details, please inform above mentioned person within 24 hours of the recipt of this acknowledgement.
             %br/
             VSIS is pleased to accept this order in accordance with our standard terms and conditions.

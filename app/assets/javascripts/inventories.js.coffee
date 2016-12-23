@@ -868,3 +868,9 @@ window.Inventories =
     else
       $(".for_store_and_branch").addClass("hide")
     return
+
+  hide_last_purchase_prices: () ->
+    $(".paginate_grn_select").click ->
+      $('#paginate_grns').hide()
+      return
+    return

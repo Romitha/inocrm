@@ -202,15 +202,14 @@ class ReportsController < ApplicationController
       validity_period: validity_period,
       delivery_period: delivery_period,
       repeat_data: repeat_data,
-      total_amount: total_amount,
       currency: currency,
       payment_term: payment_term,
       warranty: warranty,
       note: quotation_note,
       created_by: created_by,
       row_count: row_count,
-      total_amount: total_amount,
-      total_advance_amount: total_advance_amount,
+      total_amount: view_context.standard_currency_format(total_amount),
+      total_advance_amount: view_context.standard_currency_format(total_advance_amount),
 
     }
 
