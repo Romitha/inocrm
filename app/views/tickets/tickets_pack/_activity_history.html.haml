@@ -341,15 +341,15 @@
                   .col-md-4
                     Deliver Note: #{action.deliver_unit.deliver_note}
 
-            -if action.action_id == 23
+            -if action.action_id == 23 and action.act_job_estimation.ticket_estimation
               .panel-body
                 .row
                   .col-md-4
                     Note: #{action.act_job_estimation.try(:note)}
                   .col-md-4
-                    Requested by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.requested_by).try(:email)}
+                    Requested by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.requested_by).try(:full_name)}
                   .col-md-4
-                    Estimated by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.estimated_by).try(:email)}
+                    Estimated by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.estimated_by).try(:full_name)}
                 .row
                   .col-md-4
                     - if action.act_job_estimation.ticket_estimation.approved == true
@@ -357,7 +357,7 @@
                     - else
                       Ticket estimation approved: no
                   .col-md-4
-                    Approved by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.approved_by).try(:email)}
+                    Approved by: #{User.cached_find_by_id(action.act_job_estimation.ticket_estimation.approved_by).try(:full_name)}
 
                   .col-md-4
                     - if action.act_job_estimation.ticket_estimation.cust_approved == true

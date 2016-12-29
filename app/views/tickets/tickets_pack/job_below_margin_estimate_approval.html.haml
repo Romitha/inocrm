@@ -49,17 +49,16 @@
                         %strong Cost price (#{estimate_currency}):
                         .panel.panel-default
                           .panel-body.small_scale_padding2
-                            = number_with_precision te.object.cost_price, precision: 2
+                            .label.label-info= number_with_precision te.object.cost_price, precision: 2
                       .col-md-3
                         %strong Estimated price (#{estimate_currency}):
                         .panel.panel-default
                           .panel-body.small_scale_padding2
-                            .est_estimated_amount= number_with_precision te.object.estimated_price, precision: 2
+                            .est_estimated_amount.label.label-warning= number_with_precision te.object.estimated_price, precision: 2
                       .col-md-3
                         %strong Approved amount (#{estimate_currency}):
-                        = te.input :approved_estimated_price, as: :string, label: false, input_html: {class: "estimation_value only_float", oninput: "Inventories.calculate_cost_price(this);"}
-                        .append_estimated_price.hide
-                          = number_with_precision te.object.estimated_price, precision: 2
+                        = te.input :approved_estimated_price, as: :string, label: false, input_html: {value: te.object.estimated_price, class: "estimation_value only_float", oninput: "Inventories.calculate_cost_price(this);", data: { initValue: te.object.estimated_price.to_f }}
+
                       .col-md-12
                         .panel-group
                           .panel.panel-success
@@ -69,7 +68,7 @@
 
                                 .row.parent_class_set
                                   .add_sign.col-md-3{style: "padding-top:2.5%;"}
-                                    = ee.link_to_remove class: "remove_c_t_v_link" do
+                                    = ee.link_to_remove class: "remove_c_t_v_link", onclick: "Inventories.remove_tax_from_estimation(this)" do
                                       %span.glyphicon.glyphicon-remove-sign
 
                                   .col-md-3
@@ -81,10 +80,10 @@
                                     %strong{style: "margin-bottom: 5px; display: inline-block;"} Estimated tax amount (#{estimate_currency}):
                                     .panel.panel-default
                                       .panel-body.small_scale_padding2
-                                        = ee.object.estimated_tax_amount
+                                        .label.label-info= ee.object.estimated_tax_amount
 
                                   .col-md-4
-                                    = ee.input :approved_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class", value: ee.object.estimated_tax_amount }, label: "Approved tax amount (#{estimate_currency})"
+                                    = ee.input :approved_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class", value: ee.object.estimated_tax_amount, oninput: "Inventories.add_tax_value(this)", data: {initvalue: ee.object.estimated_tax_amount.to_f } }, label: "Approved tax amount (#{estimate_currency})"
                                   .col-md-4
                                     = ee.input :tax_rate,  as: :hidden, input_html: {id: "tax_rate_hidden_field_id", class: "payment_item_value"}
 
@@ -111,16 +110,14 @@
                                 %strong{style: "margin-bottom: 5px; display: inline-block;"} Cost price (#{number_with_precision estimate_currency, precision: 2}):
                                 .panel.panel-success
                                   .panel-body.small_scale_padding2
-                                    = ta.object.cost_price
+                                    .label.label-info= ta.object.cost_price
                               .col-md-3.col-xs-3.col-sm-3
                                 %strong{style: "margin-bottom: 5px; display: inline-block;"} Estimated price (#{number_with_precision estimate_currency, precision: 2}):
                                 .panel.panel-success
                                   .panel-body.small_scale_padding2
-                                    .est_estimated_amount= number_with_precision ta.object.estimated_price, precision: 2
+                                    .est_estimated_amount.label.label-warning= number_with_precision ta.object.estimated_price, precision: 2
                               .col-md-3.col-xs-3.col-sm-3
-                                = ta.input :approved_estimated_price, as: :string, input_html: {class: "estimation_value only_float", oninput: "Inventories.calculate_cost_price(this);"}, label: "Approved estimated price (#{estimate_currency})"
-                                .append_estimated_price.hide
-                                  = number_with_precision ta.object.approved_estimated_price, precision: 2
+                                = ta.input :approved_estimated_price, as: :string, input_html: {value: ta.object.estimated_price, class: "estimation_value only_float", oninput: "Inventories.calculate_cost_price(this);", data: {initvalue: ta.object.estimated_price.to_f }}, label: "Approved estimated price (#{estimate_currency})"
 
                               .col-md-12
                                 .panel-group
@@ -130,7 +127,7 @@
                                       = ta.simple_fields_for :ticket_estimation_additional_taxes do |e|
                                         .row.parent_class_set
                                           .add_sign.col-md-3{style: "padding-top:2.5%;"}
-                                            = e.link_to_remove class: "remove_c_t_v_link" do
+                                            = e.link_to_remove class: "remove_c_t_v_link", onclick: "Inventories.remove_tax_from_estimation(this)" do
                                               %span.glyphicon.glyphicon-remove-sign
 
                                           .col-md-3
@@ -141,30 +138,16 @@
                                             %strong{style: "margin-bottom: 5px; display: inline-block;"} Estimated tax amount:
                                             .panel.panel-success
                                               .panel-body.small_scale_padding2
-                                                = e.object.estimated_tax_amount
+                                                .label.label-info= e.object.estimated_tax_amount
                                           .col-md-3
-                                            = e.input :approved_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class", value: e.object.estimated_tax_amount }, label: "Approved tax amount (#{estimate_currency})"
+                                            = e.input :approved_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class", value: e.object.estimated_tax_amount, oninput: "Inventories.add_tax_value(this)", data: {initvalue: e.object.estimated_tax_amount.to_f} }, label: "Approved tax amount (#{estimate_currency})"
                                           .col-md-3
                                             = e.input :tax_rate,  as: :hidden, input_html: { class: "payment_item_value"}
 
                                       = ta.link_to_add :ticket_estimation_additional_taxes, class: "small_scale_padding-right2" do
                                         %span.glyphicon.glyphicon-plus-sign
                                         Add tax
-                        .row
-                          .col-md-3.col-md-offset-6
-                            %strong Total cost price (#{number_with_precision estimate_currency, precision: 2}):
-                            %span#total_cost_price
-                            = number_with_precision t.object.ticket_estimation_additionals.sum(:cost_price), precision: 2
-                            %br
-                            %strong Total approved stimated price (#{number_with_precision estimate_currency, precision: 2}):
-                            %span#total_estimated_price.for_payment_limit
-                              = number_with_precision t.object.ticket_estimation_additionals.sum(:estimated_price), precision: 2
-                            %br
-                            %strong Total profit (%):
-                            %span#total_margin_price{style: "font-weight:bold;"}
-                            %span (
-                            %span#db_margin{style: "font-weight:bold;"}= CompanyConfig.first.try(:sup_external_job_profit_margin).to_f
-                            %span )
+
                   .row
                     .col-md-12
                       = t.input :note, input_html: {value: nil}
@@ -175,6 +158,52 @@
                       = t.object.advance_payment_amount
                     .col-md-6
                       = t.input :approved_adv_pmnt_amount, as: :string, label: "Approved adv. payment amount (#{estimate_currency} #{estimate_currency})", input_html: {data: {prev: t.object.approved_adv_pmnt_amount.to_f}, oninput: "Inventories.approved_amount_calculation(this) return false;", value: t.object.advance_payment_amount }
+
+                .row
+
+                  - total_cost = [t.object.ticket_estimation_parts.sum(:cost_price), t.object.ticket_estimation_additionals.sum(:cost_price), t.object.ticket_estimation_externals.sum(:cost_price)].sum
+
+                  - total_estimation = [t.object.ticket_estimation_parts.sum(:estimated_price), t.object.ticket_estimation_additionals.sum(:estimated_price), t.object.ticket_estimation_externals.sum(:estimated_price)].sum
+
+                  - total_tax = [ t.object.ticket_estimation_parts.to_a.sum{ |p| p.ticket_estimation_part_taxes.sum(:estimated_tax_amount)}, t.object.ticket_estimation_additionals.to_a.sum{ |p| p.ticket_estimation_additional_taxes.sum(:estimated_tax_amount)}, t.object.ticket_estimation_externals.to_a.sum{ |p| p.ticket_estimation_external_taxes.sum(:estimated_tax_amount)}].sum
+
+                  .col-md-5.pull-right
+                    %table.table.table-striped
+                      %thead
+                        %tr
+                          %th
+                          %th{class: "text-right"} Estimated
+                          %th{class: "text-right"} Approved
+
+                      %tbody{class: "text-right"}
+                        %tr
+                          %td Total cost
+                          %td= number_with_precision total_cost, precision: 2
+                          %td#total_cost_price= number_with_precision total_cost, precision: 2
+                        %tr
+                          %td Total estimation
+                          %td= number_with_precision total_estimation, precision: 2
+                          %td#total_estimated_price.for_payment_limit= number_with_precision total_estimation, precision: 2
+                        %tr
+                          %td Total tax
+                          %td= number_with_precision total_tax, precision: 2
+                          %td#total_tax_price.for_payment_limit{ data: { initValue: total_tax }}= number_with_precision total_tax, precision: 2
+                        %tr
+                          %td Total amount with tax
+                          %td= number_with_precision (total_estimation+total_tax), precision: 2
+                          %td#total_amount_with_tax= number_with_precision (total_estimation+total_tax), precision: 2
+                        %tr
+                          %th{class: "text-right"}
+                            Total profit
+                            %span (
+                            %span#db_margin{style: "font-weight:bold;"}= CompanyConfig.first.try(:sup_external_job_profit_margin).to_f
+                            %span %)
+                          %th{class: "text-right"}
+                            %span{class: "#{'red' if CompanyConfig.first.try(:sup_external_job_profit_margin).to_f > (total_estimation / total_cost - 1)*100 }"}= number_with_precision (total_estimation / total_cost - 1)*100, precision: 2
+                            %span %
+                          %th{class: "text-right"}
+                            %span#total_margin_price{class: "#{'red' if CompanyConfig.first.try(:sup_external_job_profit_margin).to_f > (total_estimation / total_cost - 1)*100 }"}= number_with_precision (total_estimation / total_cost - 1)*100, precision: 2
+                            %span %
 
                 = label_tag "Estimation complete"
                 = check_box_tag :estimation_completed

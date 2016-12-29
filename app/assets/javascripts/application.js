@@ -76,3 +76,5 @@ $.fn.regexMask = function (mask) {
     }
   ); 
 };
+
+// https://developer.mozilla.org/en/docs/Web/JavaScript/Guide/Regular_Expressions
