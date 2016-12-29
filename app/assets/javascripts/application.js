@@ -58,7 +58,7 @@ $.fn.regexMask = function (mask) {
     mask = /^\d+$/;
   }
   else if (mask == 'after_two_decimal')
-    mask = /^\d+(\.\d{1,2})?$/;
+    mask = /^\d+\.?(\d{1,2})?$/;
   else { 
     try { 
       mask.test("");

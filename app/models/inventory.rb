@@ -117,7 +117,7 @@ class InventoryProduct < ActiveRecord::Base
   has_many :grn_items, foreign_key: :product_id
   has_many :grn_serial_items, through: :grn_items
   has_many :grn_batches, through: :grn_items
-  has_many :only_grn_items, -> { only_grn_items }, class_name: "GrnItem", foreign_key: :product_id
+  has_many :only_grn_items, -> { joins(:grn_serial_items, :grn_batches).where("inv_grn_batch.grn_item_id = :id AND inv_grn_serial_item.grn_item_id = :id", {id: nil} ) }, class_name: "GrnItem", foreign_key: :product_id
 
   has_many :ticket_spare_part_non_stocks, foreign_key: :inv_product_id
   has_many :approved_ticket_spare_part_non_stocks, class_name: "TicketSparePartNonStock", foreign_key: :approved_inv_product_id
@@ -208,6 +208,41 @@ class InventoryProduct < ActiveRecord::Base
     updated_by_user.full_name
   end
 
+  def manufacture
+    inventory_product_info and inventory_product_info.manufacture.try(:manufacture)
+  end
+
+  def stock_cost
+    if inventory_product_info.need_serial
+      grn_serial_items.to_a.sum{|g| g.grn_item.current_unit_cost.to_f + g.inventory_serial_item.inventory_serial_items_additional_costs.to_a.sum{|c| c.cost.to_f }}
+
+    elsif inventory_product_info.need_batch
+      grn_batches.to_a.sum{|g| g.grn_item.current_unit_cost.to_f * g.remaining_quantity.to_f }
+
+    else
+      grn_items.only_grn_items1.sum{|g| g.remaining_quantity.to_f * g.current_unit_cost.to_f }
+    end
+
+  end
+
+  def product_type
+    label = if non_stock_item
+      "Non stock item"
+    end
+
+    label_type = case
+    when inventory_product_info.need_serial
+      "Serial"
+    when inventory_product_info.need_batch
+      "Batch"
+    else
+      "Non serial Non batch"
+    end
+
+    label.to_s + " " + label_type.to_s
+
+  end
+
   mapping do
     indexes :inventory_product_info, type: "nested", include_in_parent: true
     indexes :inventory_unit, type: "nested", include_in_parent: true
@@ -241,7 +276,7 @@ class InventoryProduct < ActiveRecord::Base
     Inventory
     to_json(
       only: [:id, :description, :model_no, :product_no, :spare_part_no, :fifo, :created_at, :serial_no, :remarks, :created_by_user, :updated_by_user],
-      methods: [:category3_id, :category2_id, :category1_id, :category3_name, :category2_name, :category1_name, :generated_serial_no, :generated_item_code, :created_by_from_user, :updated_by_from_user],
+      methods: [:category3_id, :category2_id, :category1_id, :category3_name, :category2_name, :category1_name, :generated_serial_no, :generated_item_code, :created_by_from_user, :updated_by_from_user, :manufacture, :stock_cost, :product_type],
       include: {
         inventory_unit: {
           only: [:unit],

@@ -15,7 +15,7 @@
         = check_box_tag :approve_foc, true, true, id: "approve_foc_check"
       .col-md-9
         = label_tag "Deducted amount"
-        = text_field_tag :deducted_amount, ( f.object.final_invoice and f.object.final_invoice.total_amount.to_f ), id: "deducted_amount_text"
+        = text_field_tag :deducted_amount, ( f.object.final_invoice and f.object.final_invoice.net_total_amount.to_f ), id: "deducted_amount_text"
       .col-md-12
         = f.input :remarks, input_html: {value: nil}
         = simple_format ticket.remarks

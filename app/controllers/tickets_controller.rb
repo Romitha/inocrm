@@ -2134,7 +2134,7 @@ class TicketsController < ApplicationController
       @ticket_payment_received = @ticket.ticket_payment_receiveds.build
 
 
-      @total_minimum_amount = @ticket.ticket_estimations.where(foc_approved: false, cust_approved: true).inject(0){|i, k| k.approval_required ? i+k.approved_adv_pmnt_amount.to_i : i+k.advance_payment_amount.to_i }
+      @total_minimum_amount = @ticket.ticket_estimations.where(foc_approved: false, cust_approved: true).inject(0){|i, k| k.approval_required ? i+k.approved_adv_pmnt_amount.to_f : i+k.advance_payment_amount.to_f }
 
       @all_payment_received = @ticket.ticket_payment_receiveds.sum(:amount)
 
@@ -3757,7 +3757,7 @@ class TicketsController < ApplicationController
         @ticket.job_finished_at = DateTime.now
         @ticket.cus_payment_required = true
         @ticket.ticket_terminated = true
-        @ticket.ticket_close_approval_required = (@ticket.ticket_spare_parts.any? or @ticket.ticket_fsrs.any?)
+        @ticket.ticket_close_approval_required = (@ticket.ticket_spare_parts.any? or @ticket.ticket_fsrs.any? or @ticket.ticket_on_loan_spare_parts.any?)
 
         if not @ticket.ticket_close_approval_required
           @ticket.ticket_close_approval_requested = true 
@@ -3840,7 +3840,7 @@ class TicketsController < ApplicationController
     if @continue
       if @ticket.update ticket_params
 
-        @ticket.ticket_close_approval_required = (@ticket.ticket_fsrs.any? or @ticket.ticket_spare_parts.any?)
+        @ticket.ticket_close_approval_required = (@ticket.ticket_fsrs.any? or @ticket.ticket_spare_parts.any? or @ticket.ticket_on_loan_spare_parts.any?)
         @ticket.ticket_status_resolve = TicketStatusResolve.find_by_code("RSV")
         @ticket.job_finished = true
         @ticket.job_finished_at = DateTime.now

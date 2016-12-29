@@ -1,9 +1,9 @@
 #search_frame_inventory
   = form_tag search_inventory_product_inventories_path, method: :get, class: "form-horizontal", remote: @remote do
     .row
-      = hidden_field_tag "store_id", params[:store_id], id: "store1_id"
-      = hidden_field_tag "from_where", params[:action]
-      / .col-md-3.store
+      = hidden_field_tag "store_id", params[:store_id], id: "store_id"
+      = hidden_field_tag "from_where", (@select_options["from_where"] or params[:action])
+
       .col-md-12.store
         %strong Store:
         - if params[:all].present?

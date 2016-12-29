@@ -2,150 +2,61 @@
 
 - if @inventory_products.any?
   %hr
-  .row
-    .col-md-1.strong{style: "text-align: center;"} No
-    .col-md-1.strong Store
-    .col-md-2.strong Item code
-    .col-md-2.strong Description
-    .col-md-1.strong Unit
-    - if params[:from_where] == "inventories"
-      .col-md-1.strong.text-right Stock Qty
-    .col-md-1.strong.text-center Currency
-    - if params[:from_where] == "inventories"
-      .col-md-1.strong.text-right Available Qty
-    .col-md-1.strong.text-center Stock cost
-    .col-md-1.strong Action
-  %hr
+  %table.table.table-striped
+    %thead
+      %th No
+      - inventory_search_types(params[:from_where]).keys.each do |key|
+        %th= key.to_s.humanize
+      %th Action
 
-  - @inventory_products.each_with_index do |pr, index|
-    - inventories = pr.inventories#.map { |i| i if i.store_id.to_i == @store.id }.compact
+    %tbody
+      - @inventory_products.each_with_index do |inventory_product, index|
+        - if @select_options and @select_options["clicked_area"] == "prn"
+          - last_prn_item = InventoryProduct.find(inventory_product.id).last_prn_item
 
-    - if @select_options and @select_options["clicked_area"] == "prn"
-      - last_prn_item = InventoryProduct.find(pr.id).last_prn_item
-      - if last_prn_item.present?
-        - content_for :last_prn_item_info, flush: true do
-          %h4 Last PRN Information
+          - if last_prn_item.present?
+            - content_for :last_prn_item_info, flush: true do
+
+              %h4 Last PRN Information
+              %dl.dl-horizontal
+                %dt No:
+                %dd= last_prn_item.inventory_prn.formated_prn_no
+                %dt Quantity
+                %dd= last_prn_item.quantity
+                %dt Date
+                %dd= last_prn_item.inventory_prn.created_at.strftime(INOCRM_CONFIG["short_date_format"])
+                %dt Total PO quantity
+                %dd= last_prn_item.inventory_po_items.sum(:quantity)
+                %dt Created by
+                %dd= last_prn_item.inventory_prn.created_by_user_full_name
+
+
+        - content_for :select_result, flush: true do
           %dl.dl-horizontal
-            %dt No:
-            %dd= last_prn_item.inventory_prn.formated_prn_no
-            %dt Quantity
-            %dd= last_prn_item.quantity
-            %dt Date
-            %dd= last_prn_item.inventory_prn.created_at.strftime(INOCRM_CONFIG["short_date_format"])
-            %dt Total PO quantity
-            %dd= last_prn_item.inventory_po_items.sum(:quantity)
-            %dt Created by
-            %dd= last_prn_item.inventory_prn.created_by_user_full_name
+            %dt Brand:
+            %dd= inventory_product.category1_name
+            %dt Item code:
+            %dd= inventory_search_types(params[:from_where], inventory_product)[:item_code]
+            %dt Item description:
+            %dd= inventory_product.description
+            %dt Order unit
+            %dd= inventory_product.inventory_unit.unit
 
-    - content_for :inventory_p_more, flush: true do
-      %ul
-        %li
-          %strong Brand:
-          = pr.category1_name
-        %li
-          %strong Product:
-          = pr.category2_name
-        %li
-          %strong Category:
-          #{pr.category3_name}
-        %li
-          %strong Manufacture:
-          #{pr.inventory_product_info and pr.inventory_product_info.manufacture.try(:manufacture)}
-        %li
-          %strong Type:
-          = pr.inventory_product_info.need_serial ? "Serial" : pr.inventory_product_info.need_batch ? "Batch" : "Non of Serial or Batch"
-        %li
-          %strong Serial code:
-          #{pr.generated_serial_no}
+            - if @store
+              %dt Stock in hand
+              %dd= inventory_search_types(params[:from_where], inventory_product, store_id: @store.id ){|more_info| more_info[:stock_quantity]}
 
-        %li
-          %strong Model No:
-          = pr.model_no
-        %li
-          %strong Product No:
-          = pr.product_no
-        %li
-          %strong Part No:
-          = pr.spare_part_no
+            - if @select_options["from_where"] == "prn"
+              %dt Item type
+              %dd= inventory_product.product_type
 
-          / %strong Description:
-          / #{simple_format pr.description}
-      %strong Remarks:
-      #{simple_format pr.try(:remarks)}
+        %tr
+          %td= index+1
 
-    - content_for :select_result, flush: true do
-      %dl.dl-horizontal
-        %dt Brand:
-        %dd= pr.category1_name
-        %dt Item description:
-        %dd= pr.description
-        %dt Order unit
-        %dd= pr.inventory_unit.unit
+          - inventory_search_types(params[:from_where], inventory_product).values.each do |value|
+            %td= value
 
-        - if @store
-          %dt Stock in hand
-          %dd= pr.inventories.map { |i| i.stock_quantity }.compact.join(", ")
-
-    .row
-      .col-md-1{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Item code: #{pr.generated_item_code}", "data-content"=> yield(:inventory_p_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }= index+1
-      .col-md-1
-        - if @store
-          = @store.name
-        - else
-          %ul.padding0
-            - pr.stores.each do |store|
-              %li= store.name
-
-      .col-md-2= pr.generated_item_code
-      .col-md-2= simple_format pr.description
-      .col-md-1= pr.inventory_unit.try(:unit)
-      - if params[:from_where] == "inventories"
-        .col-md-1.text-right
-          = number_with_precision inventories.sum{|i| i.stock_quantity.to_f }, precision: 2
-          / = inventories.sum{|i| i.stock_quantity.to_f }
-
-      .col-md-1.text-center= pr.inventory_product_info.currency_type
-      - if params[:from_where] == "inventories"
-        .col-md-1.text-right
-          = inventories.sum{|i| i.available_quantity.to_f }
-      .col-md-1.text-center
-        - if pr.inventory_product_info.need_serial
-          = pr.grn_serial_items.sum{|g| g.grn_item.current_unit_cost.to_f + g.inventory_serial_item.inventory_serial_items_additional_costs.sum{|c| c.cost.to_f }}
-
-          / - if @store
-          /   - product_inv = pr.inventories.find_by_store_id(@store.id)
-          /   - cost = product_inv.inventory_serial_items.sum{|i| i.grn_items.sum{ |g| g.any_remaining_serial_item ? g.current_unit_cost.to_f*g.remaining_quantity.to_f : 0 } + i.inventory_serial_items_additional_costs.sum{|c| c.cost.to_f }}
-          / - else
-          /   - cost = pr.inventory_serial_items.sum{|i| i.grn_items.sum{ |g| g.any_remaining_serial_item ? g.current_unit_cost.to_f*g.remaining_quantity.to_f : 0 } + i.inventory_serial_items_additional_costs.sum{|c| c.cost.to_f }}
-
-          / = pr.id
-          / - cost = pr.inventory_serial_items.sum{|i| i.grn_items.sum{ |g| g.any_remaining_serial_item ? g.current_unit_cost.to_f*g.remaining_quantity.to_f : 0 } + i.inventory_serial_items_additional_costs.sum{|c| c.cost.to_f }}
-          / = number_with_precision cost, precision: 2
-
-        - elsif pr.inventory_product_info.need_batch
-          = pr.grn_batches.sum{|g| g.grn_item.current_unit_cost.to_f * g.remaining_quantity.to_f }
-
-        - else
-          = pr.grn_items.sum{|g| g.remaining_quantity.to_f * g.current_unit_cost.to_f }
-      - if params[:from_where] == "inventories"
-        .col-md-1
-          - if pr.inventory_product_info.need_serial
-            - if InventoryProduct.find_by_id(pr.id).inventory_serial_items.count > 0
-              = link_to "Select", inventories_admins_searches_path(select_action: "select_serial_items", inv_pro_id: pr.id, store_id: params[:store_id] ), class: "btn-link"
-          - if pr.inventory_product_info.need_batch
-            - if InventoryProduct.find_by_id(pr.id).inventory_batches.count > 0
-              = link_to "Select", inventories_admins_searches_path(select_action: "select_batches", inv_pro_id: pr.id, store_id: params[:store_id] ), class: "btn-link"
-          - if !(pr.inventory_product_info.need_serial or pr.inventory_product_info.need_batch)
-            - if InventoryProduct.find_by_id(pr.id).grn_items.count > 0
-              = link_to "Select", inventories_admins_searches_path(select_action: "select_non_serial_or_batch", inv_pro_id: pr.id, store_id: params[:store_id] ), class: "btn-link"
-      - else
-        .col-md-1= link_to "Select", (@select_path || "#"), (@select_options || {}).merge({data: {content: (yield :select_result ), productid: pr.id, prncontent: (yield :last_prn_item_info)}})
-
-    %hr
-  .row.strong
-    .col-md-10.text-right Totals
-    / .col-md-3.text-right= @total_stock_quantity
-    / .col-md-2.text-right= @total_available_quantity
-    .col-md-1.text-right= @total_sum_of_stock_cost
+          %td= link_to "Select", (@select_path || "#"), (@select_options || {}).merge({data: {content: (yield :select_result ), productid: inventory_product.id, prncontent: (yield :last_prn_item_info)}})
+  %hr
 
 = paginate @inventory_products, remote: true, method: :get

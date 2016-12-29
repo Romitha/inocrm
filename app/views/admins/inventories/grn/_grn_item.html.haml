@@ -213,7 +213,7 @@
     = g.input :recieved_quantity, as: :decimal, input_html: {value: (g.object.recieved_quantity || 0), required: true }, label: "Received quantity"
   - else
     = g.input :recieved_quantity, as: :hidden, input_html: {value: (need_serial and !need_batch ? 1 : 0 )}
-  = g.input :unit_cost, as: :float, label: "Unit cost (#{inventory_product.inventory_product_info.currency.code})", input_html: { required: true, class: "after_two_decimal" } if @inventory_product.present?
+  = g.input :unit_cost, required: true, as: :float, label: "Unit cost (#{inventory_product.inventory_product_info.currency.code})", input_html: { class: "after_two_decimal" } if @inventory_product.present?
   = g.input :remarks, label: "GRN Item remarks"
 
   = g.submit "Remove", class: "btn btn-link", name: "cancel", data: {disable_with: "Please wait..."}

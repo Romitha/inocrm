@@ -2,54 +2,51 @@
 
 - if @inventory_products.any?
   %hr
-  .row
-    .col-md-1.strong.text-center No
-    .col-md-2.strong Category
-    .col-md-1.strong Serial Code
-    .col-md-2.strong Item Code
-    .col-md-1.strong Available Qty
-    .col-md-1.strong Model No
-    .col-md-1.strong Product No
-    .col-md-1.strong Part No
-    .col-md-2.strong Action
-  %hr
+  %table.table.table_stripped
+    %thead
+      %tr
+        %th No
+        %th Description
+        %th Category
+        %th Serial Code
+        %th Item Code
+        %th Available Qty
+        %th Model No
+        %th Product No
+        %th Part No
+        %th Action
+    %tody
+      - @inventory_products.each_with_index do |pr, index|
+        - content_for :inventory_p_more, flush: true do
+          %ul
+            %li
+              %strong Unit:
+              #{pr.inventory_unit.unit}
+            %li
+              %strong Manufacture:
+              #{pr.inventory_product_info and pr.inventory_product_info.manufacture.try(:manufacture)}
+            %li
+              %strong Brand:
+              #{pr.category1_name}
+            %li
+              %strong Product:
+              #{pr.category2_name}
+            
 
+          %strong Description:
+          #{simple_format pr.description}
 
-  - @inventory_products.each_with_index do |pr, index|
-    - content_for :inventory_p_more, flush: true do
-      %ul
-        %li
-          %strong Unit:
-          #{pr.inventory_unit.unit}
-        %li
-          %strong Manufacture:
-          #{pr.inventory_product_info and pr.inventory_product_info.manufacture.try(:manufacture)}
-        %li
-          %strong Brand:
-          #{pr.category1_name}
-        %li
-          %strong Product:
-          #{pr.category2_name}
-        
+        %tr
+          %td{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Serial No: #{pr.generated_item_code}", "data-content"=> yield(:inventory_p_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }= index+1
+          %td= pr.description
+          %td= pr.category3_name
+          %td= pr.generated_serial_no
+          %td= pr.generated_item_code
+          %td= pr.inventories.sum{|i| i.available_quantity.to_f}
+          %td= pr.model_no
+          %td= pr.product_no
+          %td= pr.spare_part_no
+          %td= link_to "Select", grn_admins_inventories_path(purchase_order: "select_inventory", inventory_product_id: pr.id), remote: true, id: "#{@selected_grns_for_without_po ? 's_i_product_'+pr.id.to_s : 'i_product_'+pr.id.to_s }", class: "po_select_link"
 
-      %strong Description:
-      #{simple_format pr.description}
-
-    - content_for :select_result, flush: true do
-      %dl.dl-horizontal
-        %dt Item code:
-        %dd= pr.generated_item_code
-        %dt Item description:
-        %dd= pr.description
-    .row
-      .col-md-1{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Serial No: #{pr.generated_item_code}", "data-content"=> yield(:inventory_p_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }= index+1
-      .col-md-2= pr.category3_name
-      .col-md-1= pr.generated_serial_no
-      .col-md-2= pr.generated_item_code
-      .col-md-1= pr.inventories.sum{|i| i.available_quantity.to_f}
-      .col-md-1= pr.model_no
-      .col-md-1= pr.product_no
-      .col-md-1= pr.spare_part_no
-      .col-md-2= link_to "Select", grn_admins_inventories_path(purchase_order: "select_inventory", inventory_product_id: pr.id), remote: true, id: "#{@selected_grns_for_without_po ? 's_i_product_'+pr.id.to_s : 'i_product_'+pr.id.to_s }", class: "po_select_link"
     %hr
 = paginate @inventory_products, remote: false, method: :get

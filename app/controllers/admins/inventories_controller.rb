@@ -951,7 +951,9 @@ module Admins
 
         @store = Organization.find params[:store_id]
         session[:store_id] = @store.id
+
         updated_hash = inventory_product_hash["mst_inv_product"].to_hash.map { |k, v| "#{k} like '%#{v}%'" if v.present? }.compact.join(" and ")
+
         store_product_ids = @store.inventory_product_ids.uniq
         if category3_id.present?
           @inventory_products = InventoryProduct.where.not(id: store_product_ids).where(updated_hash)
@@ -960,10 +962,11 @@ module Admins
         elsif category1_id.present?
           @inventory_products = InventoryCategory1.find(category1_id).inventory_category3s.map { |c| c.inventory_products.where(updated_hash) }.flatten.uniq.keep_if{|p| !store_product_ids.uniq.include?(p.id) }
         else
-          @inventory_products = InventoryProduct.where.not(id: store_product_ids).where(updated_hash)
+          @inventory_products = InventoryProduct.where.not(id: store_product_ids, non_stock_item: true ).where(updated_hash)
         end
         @render_template = "admins/inventories/inventory/select_inventory"
         render "admins/inventories/inventory/inventory"
+
 
       elsif params[:store_id]
         @render_template = "admins/inventories/inventory/search_products"
@@ -1031,8 +1034,11 @@ module Admins
       case params[:gin_callback]
       when "search_srn"
         search_srn = params[:search_srn].except("srn_date_from", "srn_date_to").map{|k, v| "#{k} like '%#{v}%'"}.join(" and ")
-        @srns = Srn.where(search_srn)
-        @srns = @srns.where("created_at >= :start_date AND created_at <= :end_date", {start_date: params[:search_srn][:srn_date_from], end_date: params[:search_srn][:srn_date_to]}) if params[:search_srn][:srn_date_from].present? and params[:search_srn][:srn_date_to].present?
+
+        @srns = Srn.where(search_srn).where(closed: false)
+
+        @srns = @srns.where("created_at >= :start_date AND created_at <= :end_date AND closed = :closed", { start_date: params[:search_srn][:srn_date_from], end_date: params[:search_srn][:srn_date_to] }) if params[:search_srn][:srn_date_from].present? and params[:search_srn][:srn_date_to].present?
+
       when "select_srn"
         Inventory
         Organization
@@ -1113,7 +1119,54 @@ module Admins
         gin_item.issued_quantity = store_requested_quantities - already_issued_quantities if gin_item.issued_quantity > (store_requested_quantities - already_issued_quantities)
 
         if gin_item.issued_quantity > 0
-          unless gin_item.srn_item.main_product_id.present?
+          if gin_item.srn_item.main_product_id.present?
+            main_inventory_serial_part = InventorySerialPart.find(main_inventory_serial_part_id)
+
+            if [main_inventory_serial_part.inv_status_id, main_inventory_serial_part.inventory_serial_item.inv_status_id].all? { |id| id == InventorySerialItemStatus.find_by_code("AV").id }
+
+              @product_id = main_inventory_serial_part.inventory_product.id
+
+              main_product_id = main_inventory_serial_part.inventory_serial_item.product_id
+
+              part_cost_price  = main_inventory_serial_part.inventory_serial_part_additional_costs.last.try(:cost)
+
+              currency_id  = main_inventory_serial_part.inventory_serial_part_additional_costs.last.try(:currency_id)
+
+              product_condition_id  = main_inventory_serial_part.product_condition_id
+
+              @iss_grn_serial_item = if main_inventory_serial_part.inventory_serial_item.inventory_product.fifo 
+                main_inventory_serial_part.inventory_serial_item.grn_serial_items.joins(grn_item: :grn).where(inv_grn_item: {inventory_not_updated: false}, remaining: true).order("inv_grn.created_at asc, inv_grn_item.id asc, inv_grn_serial_item.id asc").references(:inv_grn).first
+              else
+                main_inventory_serial_part.inventory_serial_item.grn_serial_items.joins(grn_item: :grn).where(inv_grn_item: {inventory_not_updated: false}, remaining: true).order("inv_grn.created_at asc, inv_grn_item.id asc, inv_grn_serial_item.id asc").references(:inv_grn).last
+              end
+
+              @iss_grn_serial_item_id  = @iss_grn_serial_item.try(:id)
+              @iss_grn_item_id  = @iss_grn_serial_item.try(:grn_item).try(:id)
+              # @iss_grn_batch_id  = nil
+              @iss_serial_part_id  = main_inventory_serial_part_id
+
+              main_inventory_serial_part.update inv_status_id: InventorySerialItemStatus.find_by_code("NA").id, updated_by: current_user.id
+
+              main_inventory_serial_part.inventory_serial_item.update parts_not_completed: true, updated_by: current_user.id
+
+
+              gin_item.update({
+              issued_quantity: 1,
+              product_condition_id: product_condition_id,
+              currency_id: currency_id,
+              main_product_id: main_product_id,
+              returned_quantity: 0,
+              returnable: gin_item.srn_item.returnable,
+              return_completed: false,
+              spare_part: gin_item.srn_item.spare_part,
+              inventory_not_updated: true
+              })#inv_gin_item
+
+              gin_source = gin_item.gin_sources.build(grn_item_id: @iss_grn_item_id, grn_batch_id: @iss_grn_batch_id,grn_serial_item_id: @iss_grn_serial_item_id, issued_quantity: gin_item.srn_item.quantity, unit_cost: part_cost_price, returned_quantity: 0)#inv_gin_source
+
+            end
+
+          else  
             store = @gin.store
             product = gin_item.inventory_product
             @inventory = product.inventories.find_by_store_id store.id
@@ -1138,6 +1191,8 @@ module Admins
               end
 
               gin_item.gin_sources.build(grn_item_id: grn_serial_item.grn_item_id, grn_serial_item_id: grn_serial_item.id, issued_quantity: 1, unit_cost: tot_cost_price, returned_quantity: 0)#inv_gin_source
+
+              gin_item.inventory_not_updated = false
 
               # issued = true
               # iss_quantity += 1
@@ -1166,6 +1221,8 @@ module Admins
                   @inventory.decrement! attrib, grn_batch_issued_qty if @inventory.present?
                 end
 
+                gin_item.inventory_not_updated = false
+
                 gin_source.attributes = gin_source.attributes.merge(grn_item_id: iss_grn_item_id, unit_cost: tot_cost_price, returned_quantity: 0)#inv_gin_source                    
                 gin_source.gin_item = gin_item
 
@@ -1190,6 +1247,8 @@ module Admins
                     @inventory.decrement! attrib, grn_item_issued_qty if @inventory.present?
                   end
 
+                  gin_item.inventory_not_updated = false
+
                   gin_item.gin_sources.build(grn_item_id: grn_item.id, issued_quantity: grn_item_issued_qty, unit_cost: tot_cost_price, returned_quantity: 0)#inv_gin_source
 
                   iss_quantity1 += grn_item_issued_qty
@@ -1203,7 +1262,7 @@ module Admins
 
         gin_item.returned_quantity = 0
 
-        gin_item.srn_item.update closed: (gin_item.srn_item.quantity <= gin_item.srn_item.gin_items.sum(:issued_quantity))
+        gin_item.srn_item.update closed: (gin_item.srn_item.quantity <= gin_item.srn_item.gin_items.sum(:issued_quantity) + gin_item.issued_quantity)
 
       end
 
