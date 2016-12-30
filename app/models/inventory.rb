@@ -227,7 +227,7 @@ class InventoryProduct < ActiveRecord::Base
 
   def product_type
     label = if non_stock_item
-      "Non stock item"
+      "Non Stock Item"
     end
 
     label_type = case
@@ -236,7 +236,7 @@ class InventoryProduct < ActiveRecord::Base
     when inventory_product_info.need_batch
       "Batch"
     else
-      "Non serial Non batch"
+      "Non Serial Non Batch"
     end
 
     label.to_s + " " + label_type.to_s

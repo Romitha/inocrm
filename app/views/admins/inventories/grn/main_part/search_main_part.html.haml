@@ -8,7 +8,7 @@
             #search_frame
               = form_tag grn_main_part_admins_inventories_path, method: :get, class: "form-horizontal" do
                 .row
-                  = hidden_field_tag "store_id", @store.id, id: "sampler"
+                  = hidden_field_tag "store_id", @store.id
                   / .col-md-3.store
                   .col-md-12.brand
                     = label_tag InventoryCategoryCaption.first.caption

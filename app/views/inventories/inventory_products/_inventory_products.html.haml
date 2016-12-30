@@ -11,6 +11,10 @@
 
     %tbody
       - @inventory_products.each_with_index do |inventory_product, index|
+
+        - if @select_options and @select_options["compulsory_single_path"].present?
+          - @select_path = [ @select_options["compulsory_single_path"], { product_id: inventory_product.id, type: inventory_product.product_type.squish }.to_query ].join("?")
+
         - if @select_options and @select_options["clicked_area"] == "prn"
           - last_prn_item = InventoryProduct.find(inventory_product.id).last_prn_item
 

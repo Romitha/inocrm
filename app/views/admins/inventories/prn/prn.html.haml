@@ -38,7 +38,7 @@
             = i.input :remarks
 
       .col-md-12
-        = f.link_to_add :inventory_prn_items, id: "add_serial_part", onclick: "Inventories.search_product_for_part(this); return false;", data: {storeId: @store.id, id: "store_id", modalId: "modal_for_main_part", remote: "true", selectpath: "prn", selectoptions: "onclick:Inventories.assign_i_product(this, 'modal_for_main_part', 'add_serial_part');<>clicked_area:prn<>from_where:prn"} do
+        = f.link_to_add :inventory_prn_items, id: "add_serial_part", onclick: "Inventories.search_product_for_part(this); return false;", data: {storeId: @store.id, id: "store_id", modalId: "modal_for_main_part", remote: "true", selectpath: "", selectoptions: "onclick:Inventories.assign_i_product(this, 'modal_for_main_part', 'add_serial_part');<>clicked_area:prn<>from_where:prn"} do
           %span.glyphicon.glyphicon-plus-sign
           Add Item
       .col-md-12

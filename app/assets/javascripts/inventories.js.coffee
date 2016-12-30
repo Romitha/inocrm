@@ -783,19 +783,24 @@ window.Inventories =
     select_path = unless $(elem).data("selectpath") is "undefined" then $(elem).data("selectpath") else ""
     select_options = unless $(elem).data("selectoptions") is "undefined" then $(elem).data("selectoptions") else ""
 
-    $.get("/inventories/search_inventory_product?store_id=#{store_id}&render_id=#{render_id}&modal_id=#{modal_id}&remote=#{remote}&select_path=#{select_path}&select_options=#{select_options}").fail(-> alert "Something went wrong in search engine. Please rectify with system administrator.")
+    $.get("/inventories/search_inventory_product?store_id=#{store_id}&render_id=#{render_id}&modal_id=#{modal_id}&remote=#{remote}&select_path=#{select_path}&select_options=#{select_options}")
+    .done( ->
+      setTimeout (->
+        $('.datepicker').datepicker
+          format: "yyyy-mm-dd"
+          todayBtn: true
+          todayHighlight: true
+        ), 100
 
-    setTimeout (->
-      $('.datepicker').datepicker
-        format: "yyyy-mm-dd"
-        todayBtn: true
-        todayHighlight: true
-      ), 100
+      if $(elem).data("mainpartavailable")
+        setTimeout ( ->
+          $(elem).prev().find(".applyStoreId").data({"storeId": store_id, "storeid": store_id})
+        ), 200
 
-    if $(elem).data("mainpartavailable")
-      setTimeout ( ->
-        $(elem).prev().find(".applyStoreId").data({"storeId": store_id, "storeid": store_id})
-      ), 200
+      return
+      
+    ).fail(-> alert "Something went wrong in search engine. Please rectify with system administrator.")
+
 
   assign_product: (product_id, store_id, product_type)->
     applyable_dom = $("#new_srn .fields").last()
