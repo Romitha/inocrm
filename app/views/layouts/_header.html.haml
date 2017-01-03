@@ -69,6 +69,9 @@
             %li{role: "presentation"}= link_to "Customer Inquire", customer_inquire_tickets_path
             %li{role: "presentation"}= link_to "Add Edit Contract",add_edit_contract_tickets_path
             %li{role: "presentation"}= link_to "New Support Ticket", new_ticket_path
+            %li.divider
+            %li.dropdown-header Reports
+            %li{role: "presentation"}= link_to "ERP Report", excel_output_reports_path
 
         - if user_signed_in?
           %li.dropdown.profile_image_dropdown

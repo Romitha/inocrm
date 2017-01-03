@@ -20,6 +20,8 @@ Rails.application.routes.draw do
     collection do
       get "quotation"
       get "excel_output"
+      get "erp_report"
+
     end
   end
 
@@ -265,6 +267,7 @@ Rails.application.routes.draw do
         delete "delete_dispatch_method"
         delete "delete_admin_payment_item"
         delete "delete_payment_term"
+        delete "delete_tax"
         delete "delete_admin_brands_and_category"
         [
           :reason,
@@ -278,6 +281,7 @@ Rails.application.routes.draw do
           :dispatch_method,
           :payment_item,
           :payment_term,
+          :tax,
           :brands_and_category
         ].each do |action|
           match "#{action.to_s}", action: action, via: [:get, :post, :put]

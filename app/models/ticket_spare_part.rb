@@ -56,6 +56,14 @@ class TicketSparePart < ActiveRecord::Base
     Rails.cache.delete([self.ticket.id, :ticket_spare_parts])
   end
 
+  def inventory_product
+    (ticket_spare_part_store or ticket_spare_part_non_stock).try(:inventory_product)
+  end
+
+  def inventory_product_generated_serial_item
+    inventory_product.try(:generated_item_code)
+  end
+
   has_many :dyna_columns, as: :resourceable, autosave: true
 
   # has_many :invoices, foreign_key: "customer_id"

@@ -72,6 +72,9 @@
       = link_to payment_term_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'payment_term' }" do
         %i.fa.fa-bullseye
         Payment term
+      = link_to tax_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'payment_term' }" do
+        %i.fa.fa-link
+        Tax
 
     .panel-footer
       = link_to "Tickets", admins_tickets_path

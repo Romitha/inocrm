@@ -10,6 +10,10 @@ class Tax < ActiveRecord::Base
   accepts_nested_attributes_for :ticket_invoice_total_taxes, allow_destroy: true
   has_many :ticket_invoices, through: :ticket_invoice_total_taxes
 
+  def is_used_anywhere?
+    ticket_estimation_additional_taxes.any? or ticket_estimation_external_taxes.any? or ticket_estimation_part_taxes.any? or tax_rates.any? or ticket_invoice_total_taxes.any?
+  end
+
 end
 
 class TaxRate < ActiveRecord::Base

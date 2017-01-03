@@ -41,5 +41,5 @@
         .col-md-2
           %strong Description:
         .col-md-3
-          = link_to "#", class: "inline_edit load_style only_float", data: {type: "text", resource: "payment_term", name: "description", url: payment_term_admins_tickets_path(edit: true, payment_term_id: payment_term.id), "original-title" => "Update Payment Term", value: payment_term.description}, style: "line-height: 6px;" do
+          = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "payment_term", name: "description", url: payment_term_admins_tickets_path(edit: true, payment_term_id: payment_term.id), "original-title" => "Update Payment Term", value: payment_term.description}, style: "line-height: 6px;" do
             = payment_term.description

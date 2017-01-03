@@ -273,6 +273,7 @@ class InventoryProduct < ActiveRecord::Base
   end
 
   def to_indexed_json
+    Product
     Inventory
     to_json(
       only: [:id, :description, :model_no, :product_no, :spare_part_no, :fifo, :created_at, :serial_no, :remarks, :created_by_user, :updated_by_user],
@@ -288,6 +289,9 @@ class InventoryProduct < ActiveRecord::Base
             manufacture: {
               only: [:manufacture, :need_serial, :need_batch, :remarks, :currency_id],
               methods: [:currency_type],
+            },
+            product_sold_country: {
+              only: [:Country],
             },
           },
         },
@@ -497,6 +501,7 @@ class InventoryBatch < ActiveRecord::Base
 
   def to_indexed_json
     Inventory
+    Grn
     to_json(
       only: [:id, :lot_no, :batch_no, :product_id, :remarks, :manufatured_date, :expiry_date, :created_at, :remarks],
       include: {
@@ -508,6 +513,7 @@ class InventoryBatch < ActiveRecord::Base
           only: [:store_id,:damage_quantity, :available_quantity, :grn_item_id],
         },
         grn_items: {
+          only: [:current_unit_cost],
           include: {
             grn: {
               only: [:grn_no, :currency_id, :created_at, :store_id],
@@ -515,9 +521,19 @@ class InventoryBatch < ActiveRecord::Base
           },
         },
         grn_batches: {
-          only: [:remaining_quantity],
+          only: [:remaining_quantity, :damage_quantity],
           methods: [:grn_current_unit_cost],
+          include: {
+            grn_item: {
+              only: [:current_unit_cost, :remaining_quantity],
+              include: {
+                currency: {
+                  only: [:currency],
+                },
+              },
+            },
           },
+        },
       },
     )
 
@@ -547,6 +563,8 @@ class InventorySerialItem < ActiveRecord::Base
   has_many :grn_serial_items, foreign_key: :serial_item_id
   accepts_nested_attributes_for :grn_serial_items, allow_destroy: true
   has_many :grn_items, through: :grn_serial_items
+
+  has_many :remaining_grn_items, -> { where("inv_grn_serial_item.remaining= ?", true)}, through: :grn_serial_items, source: :grn_item
 
   has_many :inventory_serial_items_additional_costs, foreign_key: :serial_item_id
   accepts_nested_attributes_for :inventory_serial_items_additional_costs, allow_destroy: true
@@ -587,6 +605,7 @@ class InventorySerialItem < ActiveRecord::Base
 
   def to_indexed_json
     Inventory
+    Grn
     to_json(
       only: [:serial_no, :ct_no, :damaged, :used, :scavenge, :repaired, :reserved, :parts_not_completed, :manufatured_date, :expiry_date, :remarks, :created_at],
       methods: [:generated_serial_no],
@@ -606,9 +625,18 @@ class InventorySerialItem < ActiveRecord::Base
           methods: [:store_name],
         },
         inventory_serial_items_additional_costs: {
-          only: [:cost],
+          only: [:id, :serial_item_id, :cost],
         },
-        grn_items: {
+        # grn_items: {
+        #   only: [:id],
+        #   include: {
+        #     grn: {
+        #       methods: [:grn_no_format],
+        #       only: [:grn_no, :created_at, :store_id],
+        #     },
+        #   },
+        # },
+        remaining_grn_items: {
           only: [:current_unit_cost, :remaining_quantity, :created_at],
           methods: [:any_remaining_serial_item],
           include: {
@@ -1009,4 +1037,6 @@ class InventoryPrnItem < ActiveRecord::Base
   belongs_to :inventory_product, foreign_key: :product_id
 
   has_many :inventory_po_items, foreign_key: :prn_item_id
+
+  validates_presence_of :product_id
 end

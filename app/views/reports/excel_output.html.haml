@@ -1,0 +1,57 @@
+/ = link_to excel_output_reports_path, "role" => "button",class: "btn btn-default btn-lg btn-block grid_button" do
+/   %i.fa.fa-sitemap
+/   Report
+.row
+  .col-md-12
+    %fieldset
+      %legend Search Ticket
+      #search_frame
+        = form_tag excel_output_reports_path, method: :get, class: "form-horizontal" do
+          / .row
+          /   .col-md-4.brand
+          /     = label_tag "Store"
+          /     = select_tag :store_id, options_from_collection_for_select(Organization.stores, :id, :name, params[:store_id]), include_blank: true, class: "form-control"
+          .row.small_scale_margin-top1
+            .col-md-4
+              = text_field_tag "range_from", params[:range_from], class: "form-control datepicker", placeholder: "Select From date"
+            .col-md-4
+              = text_field_tag "range_to", params[:range_to], class: "form-control datepicker", placeholder: "Select To date"
+          .row.small_scale_margin-top1
+            .col-md-4
+              = text_field_tag "l_range_from", params[:l_range_from], class: "form-control datepicker", placeholder: "Select From logged date"
+            .col-md-4
+              = text_field_tag "l_range_to", params[:l_range_to], class: "form-control datepicker", placeholder: "Select To logged date"
+          .row.small_scale_margin-top1
+            .col-md-4
+              / = label_tag InventoryCategoryCaption.first.caption
+              / = select_tag "search_inventory[inventory_product][category1_id]", options_from_collection_for_select(InventoryCategory1.all, :id, :name, (params[:search_inventory] and params[:search_inventory][:category1_id])), include_blank: true, class: "form-control", id: "search_inventory_brand"
+              = label_tag "Brand"
+              = select_tag "search_ticket[products.brand_name]", options_from_collection_for_select(InventoryCategory1.all, :name, :name, (params[:search_ticket] and params[:search_inventory]["products.serial_no"])), include_blank: true, class: "form-control", id: "search_inventory_brand"
+            .col-md-4.small_scale_margin-top2
+              = text_field_tag "search_ticket[products.model_no]", nil, :placeholder => "Model No", class: "form-control"
+            .col-md-4.small_scale_margin-top2
+              = label_tag "Chargeable"
+              / = check_box_tag "search_ticket[cus_chargeable]", class: "form-control"
+              = check_box_tag 'search_ticket[cus_chargeable]', 'search_ticket[cus_chargeable]', false
+          .row.small_scale_margin-top1
+            .col-md-4.small_scale_margin-top1
+              = text_field_tag "search_ticket[products.serial_no]", nil, :placeholder => "Serial No", class: "form-control"
+              / = text_field_tag "model_no", :id, :name, (params[:search_ticket] and params[:search_inventory]["products.model_no"]), class: "form-control datepicker", placeholder: "Model No"
+            .col-md-4.small_scale_margin-top1
+              = text_field_tag "search_ticket[ticket_spare_parts.spare_part_no]", nil, :placeholder => "Spare Part No", class: "form-control"
+            .col-md-4.small_scale_margin-top1
+              = text_field_tag "search_ticket[customer.name]", nil, :placeholder => "Customer Name", class: "form-control"
+              
+          .row.small_scale_margin-top1
+            .col-md-4
+              = text_field_tag "search_ticket[customer.district.name]", nil, :placeholder => "District", class: "form-control"
+            .col-md-4
+              = text_field_tag "search_ticket[owner_engineer.user.last_name]", nil, :placeholder => "Engineer(Last name)", class: "form-control"
+            .col-md-4
+              = text_field_tag "search_ticket[owner_engineer.sbu_name]", nil, :placeholder => "Support Group(SBU)", class: "form-control"
+              
+
+          .row.small_scale_margin-top1
+            .col-md-1
+              .search
+                = submit_tag "Search", class: "btn btn-sm btn-warning", name: "search"

@@ -2,7 +2,7 @@
   = form_tag search_inventory_product_inventories_path, method: :get, class: "form-horizontal", remote: @remote do
     .row
       = hidden_field_tag "store_id", params[:store_id], id: "store_id"
-      = hidden_field_tag "from_where", (@select_options["from_where"] or params[:action])
+      = hidden_field_tag "from_where", ((@select_options and @select_options["from_where"]) or params[:action])
 
       .col-md-12.store
         %strong Store:

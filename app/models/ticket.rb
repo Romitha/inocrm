@@ -8,8 +8,15 @@ class Ticket < ActiveRecord::Base
     indexes :products, type: "nested", include_in_parent: true
   end
 
-  def self.search(params)  
-    tire.search(page: (params[:page] || 1), per_page: 10) do
+  def self.search(params)
+    all_page = {page: (params[:page] || 1)}
+    if params[:from_where] != "excel_output"
+      all_page.merge!({per_page: 10})
+    else
+      all_page.merge!({per_page: (params[:per_page] || 10)})
+    end
+
+    tire.search(all_page) do
       query do
         boolean do
           must { string params[:query] } if params[:query].present?
@@ -29,8 +36,11 @@ class Ticket < ActiveRecord::Base
   def to_indexed_json
     Warranty
     ContactNumber
+    TaskAction
+    User
+    Invoice
     to_json(
-      only: [:created_at, :cus_chargeable, :id, :ticket_no, :logged_at],
+      only: [:created_at, :cus_chargeable, :id, :ticket_no, :logged_at, :slatime, :job_started_at, :job_started_action_id, :problem_description, :job_finished_at, :status_hold, :re_open_count, :final_invoice_id, :resolution_summary],
       methods: [:customer_name, :ticket_status_name, :warranty_type_name, :support_ticket_no, :ticket_type_name],
       include: {
         products: {
@@ -38,11 +48,57 @@ class Ticket < ActiveRecord::Base
           methods: [:category_name, :warranty_type_name, :brand_name],
         },
         customer: {
+          only: [:id, :name, :address1, :address2, :address3, :address4],
           include: {
             contact_type_values: {
-              only: [:value]
-            }
+              only: [:id, :value, :contact_type_id],
+            },
+            organization: {
+              only: [:id, :address1, :address2, :address3, :address4],
+            },
+            district: {
+              only: [:id, :name],
+            },
           }
+        },
+        ticket_spare_parts: {
+          only: [:id, :spare_part_no, :spare_part_description, :request_from],
+          methods: [:inventory_product_generated_serial_item],
+          include: {
+            ticket_spare_part_manufacture: {
+              only: [:id, :event_no],
+            },
+          }
+        },
+        # user_ticket_actions: {
+        #   only: [:id, :action_id],
+        #   include: {
+        #     hp_case: {
+        #       only: [:ticket_action_id, :case_id],
+        #     },
+        #   }
+        # },
+        hp_cases: {
+          only: [:ticket_action_id, :case_id],
+        },
+        ticket_start_action: {
+          only: [:id, :action]
+        },
+        owner_engineer: {
+          only: [:id, :created_at, :created_action_id],
+          methods: [:sbu_name],
+          include: {
+            user: {
+              only: [:id, :last_name],
+              methods: [:full_name]
+            },
+          }
+        },
+        reason: {
+          only: [:id, :reason],
+        },
+        final_invoice: {
+          only: [:id, :total_amount, :total_deduction],
         },
       }
     )
@@ -172,6 +228,8 @@ class Ticket < ActiveRecord::Base
 
   belongs_to :onsite_type
   accepts_nested_attributes_for :onsite_type, allow_destroy: true
+
+  has_many :hp_cases, through: :user_ticket_actions
 
   validates_presence_of [:ticket_no, :priority, :status_id, :problem_description, :informed_method_id, :job_type_id, :ticket_type_id, :warranty_type_id, :base_currency_id, :problem_category_id]
 

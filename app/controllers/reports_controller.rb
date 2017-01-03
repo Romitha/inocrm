@@ -236,6 +236,8 @@ class ReportsController < ApplicationController
     end
   end
 
+  # before_filter :change_format
+
   def excel_output
     Ticket
     User
@@ -243,10 +245,49 @@ class ReportsController < ApplicationController
     Address
     ContactNumber
     Product
-    @ticket = Ticket.all
+    SlaTime
+    TaskAction
+    Invoice
+    Inventory
+    TicketSparePart
+
+
+    refined_search_ticket = nil
+    if params[:search].present?
+      params[:from_where] = "excel_output"
+      # refined_search_ticket = "logged_at:[#{params[:l_range_from].present? ? params[:l_range_from] : (Date.today - 3.months) } TO #{params[:l_range_to].present? ? params[:l_range_to] : Date.today }]"
+
+      search_ticket = params[:search_ticket]
+      refined_search_ticket = ([refined_search_ticket] + search_ticket.map { |k, v| "#{k}:#{v}" if v.present? }).compact.join(" AND ")
+
+      # refined_search_ticket = [refined_search_ticket, "logged_at:[#{params[:l_range_from].present? ? params[:l_range_from] : (Date.today - 3.months) } TO #{params[:l_range_to].present? ? params[:l_range_to] : Date.today }]"]
+      # refined_search_ticket << " AND logged_at:[* TO #{Date.today}]"
+
+      # puts "*************"
+      # puts refined_search_ticket
+      # puts "*************"
+
+
+      request.format = "xls"
+    end
+    params[:per_page] = 100
+    params[:query] = refined_search_ticket
+    @ticket = Ticket.search(params)
+
+    # @ticket = Ticket.all
+    # @ticket = Ticket.search()
     respond_to do |format|
-      format.html
-      format.xls
+      if params[:search].present?
+        format.xls
+      else
+        format.html
+      end
     end
   end
+
+  # private
+  #   def change_format
+  #     request.format = "xls"
+  #   end
+
 end

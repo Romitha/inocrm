@@ -85,6 +85,17 @@ module Admins
       end
     end
 
+    def delete_tax
+      TaskAction
+      @tax = Tax.find params[:tax_id]
+      if @tax.present?
+        @tax.delete
+      end
+      respond_to do |format|
+        format.html { redirect_to tax_admins_tickets_path }
+      end
+    end
+
     def delete_admin_payment_item
       TaskAction
       @payment_item = PaymentItem.find params[:payment_item_id]
@@ -193,6 +204,31 @@ module Admins
           @payment_term = PaymentTerm.new
         end
         @payment_term_all = PaymentTerm.order(updated_at: :desc)
+      end
+    end
+
+    def tax
+      Tax
+      if params[:edit]
+        @tax = Tax.find params[:tax_id]
+        if @tax.update tax_params
+          params[:edit] = nil
+          render json: @tax
+        else
+          render json: @tax.errors.full_messages.join
+        end
+
+      else
+        if params[:create]
+          @tax = Tax.new tax_params
+          if @tax.save
+            params[:create] = nil
+            @tax = Tax.new
+          end
+        else
+          @tax = Tax.new
+        end
+        @tax_all = Tax.order(updated_at: :desc)
       end
     end
 
@@ -528,6 +564,9 @@ module Admins
       end
     end
 
+    def erp_report
+    end
+
     private
 
       def admin_payment_item_params
@@ -579,6 +618,10 @@ module Admins
 
       def payment_term_params
         params.require(:payment_term).permit(:name, :description)
+      end
+
+      def tax_params
+        params.require(:tax).permit(:tax, :description)
       end
 
       def brands_and_category_params

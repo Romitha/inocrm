@@ -324,6 +324,11 @@ class TicketEngineer < ActiveRecord::Base
 
   belongs_to :ticket
   belongs_to :user
+  belongs_to :user_ticket_action, foreign_key: :created_action_id
 
   has_many :ticket_owners, class_name: "Ticket", foreign_key: :owner_engineer_id
+
+  def sbu_name
+    user_ticket_action.user_assign_ticket_action.sbu.sbu
+  end
 end

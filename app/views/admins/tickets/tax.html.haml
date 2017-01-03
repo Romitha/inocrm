@@ -1,0 +1,45 @@
+%h3 Tax
+= simple_form_for @tax, url: tax_admins_tickets_path(create: true), html: {class: "validate_form"},method: :post do |f|
+  .row{style: "margin-top:15px;"}
+    .col-md-6
+      = f.input :tax
+  .row{style: "margin-top:15px;"}
+    .col-md-6
+      = f.input :description
+  .row{style: "margin-top:20px;margin-bottom:20px;"}
+    .col-md-6
+      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_payment_term"
+
+/ #accordion.panel-group
+/   - @payment_term_all.each_with_index do |payment_term, index|
+/     .panel.panel-info
+/       .panel-heading
+/         %h3.panel-title
+/           %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
+/             #{index+1} Payment Term : #{payment_term.name}
+/           - unless payment_term.is_used_anywhere?
+/             = link_to delete_payment_term_admins_tickets_path(payment_term_id: payment_term.id), method: :delete, :data => { :confirm => 'Are you sure?' } do
+/               %span.glyphicon.glyphicon-trash
+
+/       .panel-collapse.collapse.in{:id => "#{index}"}
+/         .panel-body
+
+= collapse_wrapper collapse_id: "ticket_tax_list", labelledby: "tax_labelledby" do
+  - @tax_all.each_with_index do |tax, index|
+    = collapse collapse_type: "info", labelledby: "labelledby_#{tax.id}", header_content: "#{index+1} Tax : #{tax.tax}", collapse_link: "ticpayment_termlink_#{tax.id}", collapse_id: "ticket_tax_list" do
+      .pull-right
+        - unless tax.is_used_anywhere?
+          = link_to delete_tax_admins_tickets_path(tax_id: tax.id), method: :delete, rel: "tooltip", :data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Delete" do
+            %span.glyphicon.glyphicon-trash
+
+      .row.col-md-12
+        .col-md-1
+          %strong Name:
+        .col-md-3
+          = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "tax", name: "tax", url: tax_admins_tickets_path(edit: true, tax_id: tax.id), "original-title" => "Update Tax", value: tax.tax}, style: "line-height: 6px;" do
+            = tax.tax
+        .col-md-2
+          %strong Description:
+        .col-md-3
+          = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "tax", name: "description", url: tax_admins_tickets_path(edit: true, tax_id: tax.id), "original-title" => "Update Tax", value: tax.description}, style: "line-height: 6px;" do
+            = tax.description

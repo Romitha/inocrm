@@ -13,7 +13,7 @@
       - @inventory_products.each_with_index do |inventory_product, index|
 
         - if @select_options and @select_options["compulsory_single_path"].present?
-          - @select_path = [ @select_options["compulsory_single_path"], { product_id: inventory_product.id, type: inventory_product.product_type.squish }.to_query ].join("?")
+          - @select_path = [ @select_options["compulsory_single_path"], { product_id: inventory_product.id, store_id: @store.try(:id), type: inventory_product.product_type.squish }.to_query ].join("?")
 
         - if @select_options and @select_options["clicked_area"] == "prn"
           - last_prn_item = InventoryProduct.find(inventory_product.id).last_prn_item
@@ -50,7 +50,7 @@
               %dt Stock in hand
               %dd= inventory_search_types(params[:from_where], inventory_product, store_id: @store.id ){|more_info| more_info[:stock_quantity]}
 
-            - if @select_options["from_where"] == "prn"
+            - if @select_options and @select_options["from_where"] == "prn"
               %dt Item type
               %dd= inventory_product.product_type
 

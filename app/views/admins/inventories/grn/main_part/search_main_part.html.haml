@@ -79,6 +79,8 @@
           %strong GRN No
         .col-md-1
           %strong GRN Date
+        .col-md-2
+          %strong Item code
         .col-md-1
           %strong Serial No
         .col-md-1
@@ -89,10 +91,10 @@
           %strong Status
         .col-md-1
           %strong{title: "Parts Not Completed"} P.N. Completed
-        .col-md-1
-          %strong Scavenge
-        .col-md-1
-          %strong Damaged
+        / .col-md-1
+        /   %strong Scavenge
+        / .col-md-1
+        /   %strong Damaged
         .col-md-1
           %strong Used
         .col-md-1
@@ -111,9 +113,19 @@
                 %strong Expiry date:
                 #{inventory_serial_item.expiry_date.to_date.strftime(INOCRM_CONFIG["short_date_format"])}
             - if inventory_serial_item.inventory_product
+              / %li
+              /   %strong Item code:
+              /   = inventory_serial_item.inventory_product.generated_item_code
+              
+
               %li
-                %strong Item code:
-                = inventory_serial_item.inventory_product.generated_item_code
+                %strong Scavenge
+                = boolean_in_word inventory_serial_item.scavenge, "Yes", "No"
+              %li
+                %strong Damaged
+                = boolean_in_word inventory_serial_item.damaged, "Yes", "No"
+
+
               %li
                 %strong Model No:
                 = inventory_serial_item.inventory_product.model_no
@@ -132,11 +144,17 @@
             - else
               = (index+1)
 
-          - inventory_serial_item.grn_items.each do |item|
-            .col-md-1
+          
+          .col-md-1
+            - inventory_serial_item.remaining_grn_items.each do |item|
               = item.grn.grn_no_format
-            .col-md-1
+          .col-md-1
+            - inventory_serial_item.remaining_grn_items.each do |item|
               = item.grn.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
+          .col-md-2
+            = inventory_serial_item.inventory_product.generated_item_code
+          / .col-md-1
+          /   #{inventory_serial_item.inventory_product.description}
           .col-md-1
             = inventory_serial_item.serial_no
           .col-md-1
@@ -147,10 +165,10 @@
             = inventory_serial_item.inventory_serial_item_status.try(:name)
           .col-md-1
             = boolean_in_word inventory_serial_item.parts_not_completed, "Yes", "No"
-          .col-md-1
-            = boolean_in_word inventory_serial_item.scavenge, "Yes", "No"
-          .col-md-1
-            = boolean_in_word inventory_serial_item.damaged, "Yes", "No"
+          / .col-md-1
+          /   = boolean_in_word inventory_serial_item.scavenge, "Yes", "No"
+          / .col-md-1
+          /   = boolean_in_word inventory_serial_item.damaged, "Yes", "No"
           .col-md-1
             = boolean_in_word inventory_serial_item.used, "Yes", "No"
           .col-md-1
