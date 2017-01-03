@@ -5,7 +5,7 @@
   %table.table.table-striped
     %thead
       %th No
-      - inventory_search_types(params[:from_where]).keys.each do |key|
+      - inventory_search_types(params[:from_where]).except(:tooltip).keys.each do |key|
         %th= key.to_s.humanize
       %th Action
 
@@ -54,10 +54,16 @@
               %dt Item type
               %dd= inventory_product.product_type
 
-        %tr
-          %td= index+1
+        - content_for :inventory_p_more, flush: true do
+          %dl.dl-horizontal
+            - inventory_search_types(params[:from_where], inventory_product).slice(:tooltip)[:tooltip].each do |key, value|
+              %dt= key.to_s.humanize
+              %dd= value
 
-          - inventory_search_types(params[:from_where], inventory_product).values.each do |value|
+        %tr
+          %td{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Item code: #{inventory_search_types(params[:from_where], inventory_product)[:item_code]}", "data-content"=> yield(:inventory_p_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }= index+1
+
+          - inventory_search_types(params[:from_where], inventory_product).except(:tooltip).values.each do |value|
             %td= value
 
           %td= link_to "Select", (@select_path || "#"), (@select_options || {}).merge({data: {content: (yield :select_result ), productid: inventory_product.id, prncontent: (yield :last_prn_item_info)}})

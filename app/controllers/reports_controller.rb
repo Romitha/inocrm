@@ -60,10 +60,10 @@ class ReportsController < ApplicationController
       ticket_estimation.ticket_estimation_externals.each do |estimation_external|
         unit_price = ticket_estimation.approval_required ? estimation_external.approved_estimated_price.to_f : estimation_external.estimated_price.to_f
 
-
         repeat_data_hash = {}
 
-        repeat_data_hash[:item_index] = row_count + 1
+        row_count += 1
+        repeat_data_hash[:item_index] = row_count
         # repeat_data_hash[:item_code] = index
         repeat_data_hash[:description] = "#{estimation_external.description}" + "#{' (Warr: ' + estimation_external.warranty_period.to_s + ' M)' if estimation_external.warranty_period.present? }"
         repeat_data_hash[:quantity] = 1
@@ -81,7 +81,8 @@ class ReportsController < ApplicationController
 
           unit_price = ticket_estimation.approval_required ? ticket_estimation_external_tax.approved_tax_amount.to_f : ticket_estimation_external_tax.estimated_tax_amount.to_f
 
-          repeat_data_hash[:item_index] = row_count + 1
+          row_count += 1
+          repeat_data_hash[:item_index] = row_count
           # repeat_data_hash[:item_code] = index
           repeat_data_hash[:description] = "#{ticket_estimation_external_tax.tax.tax} (#{ticket_estimation_external_tax.tax_rate})"
           # repeat_data_hash[:quantity] = 1
@@ -107,8 +108,11 @@ class ReportsController < ApplicationController
 
         repeat_data_hash = {}
 
-        repeat_data_hash[:item_index] = row_count + 1
+        row_count += 1
+        repeat_data_hash[:item_index] = row_count
         # repeat_data_hash[:item_code] = index
+        repeat_data_hash[:item_code] = estimation_part.ticket_spare_part.ticket_spare_part_store.present? ? (estimation_part.ticket_spare_part.ticket_spare_part_store.approved_inventory_product.try(:generated_item_code) or estimation_part.ticket_spare_part.ticket_spare_part_store.inventory_product.try(:generated_item_code)) : ""
+
         repeat_data_hash[:description] = "Part No: #{estimation_part.ticket_spare_part.spare_part_no} #{estimation_part.ticket_spare_part.spare_part_description}" + "#{' (Warr: ' + estimation_part.warranty_period.to_s + ' M)' if estimation_part.warranty_period.present? }"
 
         repeat_data_hash[:quantity] = quantity
@@ -127,7 +131,8 @@ class ReportsController < ApplicationController
 
           repeat_data_hash = {}
 
-          repeat_data_hash[:item_index] = row_count + 1
+          row_count += 1
+          repeat_data_hash[:item_index] = row_count
           # repeat_data_hash[:item_code] = index
           repeat_data_hash[:description] = "#{ticket_estimation_part_tax.tax.tax} (#{ticket_estimation_part_tax.tax_rate})"
 
@@ -150,7 +155,8 @@ class ReportsController < ApplicationController
 
         unit_price = ticket_estimation.approval_required ? ticket_estimation_additional.approved_estimated_price.to_f : ticket_estimation_additional.estimated_price.to_f
 
-        repeat_data_hash[:item_index] = row_count + 1
+        row_count += 1
+        repeat_data_hash[:item_index] = row_count
 
         repeat_data_hash[:description] = ticket_estimation_additional.additional_charge.additional_charge
         repeat_data_hash[:quantity] = 1
@@ -168,7 +174,8 @@ class ReportsController < ApplicationController
 
           unit_price = ticket_estimation.approval_required ? ticket_estimation_additional_tax.approved_tax_amount.to_f : ticket_estimation_additional_tax.estimated_tax_amount.to_f
 
-          repeat_data_hash[:item_index] = row_count + 1
+          row_count += 1
+          repeat_data_hash[:item_index] = row_count
 
           repeat_data_hash[:description] = "#{ticket_estimation_additional_tax.tax.tax} (#{ticket_estimation_additional_tax.tax_rate})"
 

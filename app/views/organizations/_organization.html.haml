@@ -27,7 +27,7 @@
           %td= organization.account and organization.account.created_at.strftime(INOCRM_CONFIG["short_date_format"])
         %tr
           %th.text-right Created by : &nbsp;
-          %td= organization.account and organization.account.created_user.full_name
+          %td= organization.account and organization.account.created_user.try(:full_name)
         %tr
           %th.text-right Industry type : &nbsp;
           %td.industry_type= organization.industry_type.try(:name)

@@ -110,9 +110,9 @@
           - @print_object[:repeat_data].each_with_index do |ob, index|
             %tr
               %td
-                =(index+1)
-              %td
                 = ob[:item_index]
+              %td
+                = ob[:item_code]
               %td
                 = ob[:description]
               %td
