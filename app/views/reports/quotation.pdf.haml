@@ -4,9 +4,9 @@
 
 .report_pdf.container
   .row
-    .col-xs-3
+    .col-xs-2
       = image_tag wicked_pdf_asset_base64("vsis.png")
-    .col-xs-7
+    .col-xs-7.text-center
       %span12
         %h3{:style => "text-decoration: underline;"} CUSTOMER QUOTATION
       %span12
@@ -29,12 +29,11 @@
     .col-xs-5
       %table.table-default
         %tr
-          %th Customer Name:
+          %th.pull-right Customer Name:
           %td
-            .col-xs-offset-1
-              =print_object[:company_name]
+            =print_object[:company_name]
         %tr
-          %th Address:
+          %th.pull-right Address:
           %td
             .col-xs-offset-1
               =print_object[:address1]
@@ -45,27 +44,27 @@
               %br/
               =print_object[:address4]
         %tr
-          %th Ticket No:
+          %th.pull-right Ticket No:
           %td
             .col-xs-offset-1
               =print_object[:ticket_ref]
         %tr
-          %th Product Brand:
+          %th.pull-right Product Brand:
           %td
             .col-xs-offset-1
               =print_object[:product_brand]
         %tr
-          %th Model No:
+          %th.pull-right Model No:
           %td
             .col-xs-offset-1
               =print_object[:model_no]
         %tr
-          %th Serial No:
+          %th.pull-right Serial No:
           %td
             .col-xs-offset-1
               =print_object[:serial_no]
         %tr
-          %th Product No:
+          %th.pull-right Product No:
           %td
             .col-xs-offset-1
               =print_object[:product_no]
@@ -73,26 +72,26 @@
     .col-xs-4.col-xs-offset-2
       %table.table-default
         %tr
-          %th Quotation No:
+          %th.pull-right Quotation No:
           %td
             = print_object[:quotation_no]
         %tr
-          %th VAT REG No:
+          %th.pull-right VAT REG No:
           %td
         %tr
-          %th Created Date:
+          %th.pull-right Created Date:
           %td
             = print_object[:created_at]
         %tr
-          %th Validity Period:
+          %th.text-right Validity Period:
           %td
             = print_object[:validity_period]
         %tr
-          %th Delivery Period:
+          %th.text-right Delivery Period:
           %td
             = print_object[:delivery_period]
         %tr
-          %th Contact Person:
+          %th.pull-right Contact Person:
           %td
             = print_object[:created_by]
 
@@ -157,24 +156,23 @@
 
     .col-xs-11
       %strong TERMS AND CONDITIONS
-      %strong
-        %ul.list-group
-          %li.list
-            1. Payment Terms: Full payment with the Purchase Order/Acknowledgement,
-          %li.list
-            2. Taxes, Duty, Shipping and Freight Cost: This quotation inclusive of Duty, Shipping and Freight Cost.
-          %li.list
-            3. Options and Accessories: Value of optional items and accessories (if any) not included in above total.
-          %li.list
-            4. Warranty: Six month warranty
-          %li.list
-            5. Cheques to be drawn in favor of "V S Information Systems (Pvt)Ltd" and crossed :A/C Payee Only
+      %ul.list-group
+        %li.list
+          1. Payment Terms: Full payment with the Purchase Order/Acknowledgement,
+        %li.list
+          2. Taxes, Duty, Shipping and Freight Cost: This quotation inclusive of Duty, Shipping and Freight Cost.
+        %li.list
+          3. Options and Accessories: Value of optional items and accessories (if any) not included in above total.
+        %li.list
+          %strong 4. Warranty: Six month warranty
+        %li.list
+          5. Cheques to be drawn in favor of "V S Information Systems (Pvt)Ltd" and crossed :A/C Payee Only
+        %br/
+        %li.list
+          Should you have any changes/issues or require any clarifications to above terms and conditions and details, please inform above mentioned person within 24 hours of the recipt of this acknowledgement.
           %br/
-          %li.list
-            Should you have any changes/issues or require any clarifications to above terms and conditions and details, please inform above mentioned person within 24 hours of the recipt of this acknowledgement.
-            %br/
-            VSIS is pleased to accept this order in accordance with our standard terms and conditions.
-            %br/
-            %br/
-            _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-            I hereby confirm that I am an authorized signatory and that I accept this quotation with given terms and conditions and confirm an order on these items on behalf of the purchaser/investor (pl. put your official company stamp here)
+          VSIS is pleased to accept this order in accordance with our standard terms and conditions.
+          %br/
+          %br/
+          _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+          I hereby confirm that I am an authorized signatory and that I accept this quotation with given terms and conditions and confirm an order on these items on behalf of the purchaser/investor (pl. put your official company stamp here)

@@ -25,7 +25,7 @@
                     SBU: #{action.user_assign_ticket_action.try(:sbu).try(:sbu)}
                   - if action.user_assign_ticket_action.assign_to
                     .col-md-3
-                      Assign to: #{User.find_by_id(action.user_assign_ticket_action.try(:assign_to)).try(:user_name)}
+                      Assign to: #{User.find_by_id(action.user_assign_ticket_action.try(:assign_to)).try(:full_name)}
                   .col-md-3
                     -if action.user_assign_ticket_action.recorrection == true
                       Recorrection: Yes
@@ -1348,7 +1348,8 @@
               .panel-body
                 .row
                   .col-md-4
-                    Invoice no: #{action.act_print_invoice.invoice.try(:invoice_no).to_s.rjust(6, INOCRM_CONFIG['invoice_no_format']) }
+                    / Invoice no: #{action.act_print_invoice.invoice.try(:invoice_no).to_s.rjust(6, INOCRM_CONFIG['invoice_no_format']) }
+                    Invoice No: #{ticket.final_invoice.try(:invoice_no).to_s.rjust(6, INOCRM_CONFIG["invoice_no_format"])}
                   .col-md-4
                     Note: #{action.act_print_invoice.invoice.try(:note) }
                   .col-md-4

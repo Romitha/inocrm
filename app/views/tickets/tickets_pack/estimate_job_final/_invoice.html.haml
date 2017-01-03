@@ -29,7 +29,7 @@
       - ticket.ticket_invoices.each do |i|
         %tr
           %td= i.invoice_no.to_s.rjust(6, INOCRM_CONFIG["invoice_no_format"])
-          %td= i.created_by_ch_eng.try(:email)
+          %td= i.created_by_ch_eng.try(:full_name)
           %td= i.created_at.try(:strftime, "%Y-%m-%d %H:%M")
           %td= boolean_in_word i.customer_sent, "Yes", "No"
           %td= boolean_in_word i.canceled, "Yes", "No"
