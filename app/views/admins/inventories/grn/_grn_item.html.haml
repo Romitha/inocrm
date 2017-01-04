@@ -187,14 +187,14 @@
                 #data_carrier{data: {"referenceId" => resource_reference_id, "referenceClass" => resource_reference_class, inventoryid: inventory.id, inventoryproductid: inventory_product.id, grnobjectid: g.object.object_id }}
               .import_csv_wrapper.small_scale_margin-bottom1
               .control-buttons
-                - if Rails.cache.fetch([ :serial_item, :i_product, inventory_product.id ]).present?
+                - if Rails.cache.fetch([ :serial_item, resource_reference_class.to_s.to_sym, resource_reference_id, session[:grn_arrived_time].to_i ]).present?
                   = link_to "Clear", upload_grn_file_admins_inventories_path(clear_import: true, inventory_product_id: inventory_product.id), remote: true, class: "clear_import"
-                - else
-                = initiate_table table_type: "table-bordered" do
-                  = table_header ["No", "Serial No", "CT No"]
-                  = multi_table_body do
-                    - Rails.cache.fetch([ :serial_item, :i_product, inventory_product.id ]).to_a.each_with_index do |is, index|
-                      = multi_table_row [index+1]+[is.serial_no, is.ct_no]
+
+                  = initiate_table table_type: "table-bordered" do
+                    = table_header ["No", "Serial No", "CT No"]
+                    = multi_table_body do
+                      - Rails.cache.fetch([ :serial_item, resource_reference_class.to_s.to_sym, resource_reference_id, session[:grn_arrived_time].to_i ]).to_a.each_with_index do |is, index|
+                        = multi_table_row [index+1]+[is.serial_no, is.ct_no]
             .col-md-4
               = panels panel_type: "warning", header_content: "Instruction" do
                 %ul

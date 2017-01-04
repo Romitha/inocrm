@@ -30,7 +30,7 @@ class Product < ActiveRecord::Base
     Warranty
     to_json(
       only: [:id, :serial_no, :model_no, :product_no, :created_at],
-      methods: [:category_name, :warranty_type_name, :brand_name],
+      methods: [:category_name, :brand_name],
       include: {
         tickets: {
           only: [:created_at, :cus_chargeable, :id],
@@ -48,10 +48,6 @@ class Product < ActiveRecord::Base
     product_category.try(:name)
   end
 
-  def warranty_type_name
-    warranty_type.try(:name)
-  end
-
   def brand_name
     product_brand.try(:name)
   end
@@ -66,7 +62,7 @@ class Product < ActiveRecord::Base
   has_many :ref_product_serials, class_name: "TicketProductSerial", foreign_key: :ref_product_serial_id
   accepts_nested_attributes_for :ref_product_serials, allow_destroy: true
 
-  belongs_to :warranty_type, foreign_key: :product_brand_id
+  # belongs_to :warranty_type, foreign_key: :product_brand_id
   belongs_to :product_brand, foreign_key: :product_brand_id
   belongs_to :product_category, foreign_key: :product_category_id
   belongs_to :product_pop_status, foreign_key: :pop_status_id

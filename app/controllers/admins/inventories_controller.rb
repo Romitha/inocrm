@@ -517,17 +517,17 @@ module Admins
         @stores = Organization.stores
         @render_template = "search_po"
       when "no"
-        puts Rails.cache.fetch([:inventory_product_ids])
         @render_template = "search_inventory"
 
       when "search_inventory"
         @store = Organization.find params[:store_id]
         session[:store_id] = @store.id
 
-        Rails.cache.fetch([:po_item_ids]).to_a.each do |poid|
-          Rails.cache.delete([:grn_item, poid] )
+        Rails.cache.fetch([:po_item_ids, session[:pre_grn_arrived_time].to_i]).to_a.each do |poid|
+          Rails.cache.delete([:grn_item, poid, session[:pre_grn_arrived_time].to_i] )
         end
-        Rails.cache.delete([:po_item_ids])
+
+        Rails.cache.delete([:po_item_ids, session[:pre_grn_arrived_time].to_i])
 
         if params[:search].present?
 
@@ -542,31 +542,33 @@ module Admins
         @inventory_products = InventoryProduct.search(params)
 
         @inventory_products.to_a.each do |ipid|
-          Rails.cache.delete([:grn_item, :i_product, ipid.id ])
-          Rails.cache.delete([:serial_item, :i_product, ipid.id ])
+          Rails.cache.delete([:grn_item, :i_product, ipid.id, session[:pre_grn_arrived_time].to_i ])
+          Rails.cache.delete([:serial_item, :i_product, ipid.id, session[:pre_grn_arrived_time].to_i ])
         end
-        Rails.cache.delete([:inventory_product_ids])
+        Rails.cache.delete([:inventory_product_ids, session[:pre_grn_arrived_time].to_i ])
 
         @render_template = "select_inventory"
 
       when "select_inventory"
         @inventory_product = InventoryProduct.find params[:inventory_product_id]
 
-        @grn_item = Rails.cache.fetch([:grn_item, :i_product, @inventory_product.id ]) { GrnItem.new }
+        @grn_item = Rails.cache.fetch([:grn_item, :i_product, @inventory_product.id, session[:grn_arrived_time].to_i ]) { GrnItem.new }
+
         @render_template = "grn_item"
         
       when "search_po"
         refined_search = "closed:false"
+
         if params[:search].present?
           refined_inventory_po = params[:po].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
 
           refined_search = [refined_inventory_po, refined_search].map{|v| v if v.present? }.compact.join(" AND ")
         end
+
         params[:query] = refined_search
         @pos = InventoryPo.search(params)
 
         session[:store_id] = params[:po]["store.id"]
-        puts session[:store_id]
 
         Rails.cache.delete([:inventory_product_ids])
         Rails.cache.delete([:po_item_ids])
@@ -582,11 +584,270 @@ module Admins
       when "select_po_item"
         @po_item = InventoryPoItem.find params[:po_item_id]
 
-        @grn_item = Rails.cache.fetch([:grn_item, params[:po_item_id].to_i ]) { GrnItem.new }
+        @grn_item = Rails.cache.fetch([:grn_item, params[:po_item_id].to_i, session[:grn_arrived_time].to_i ]) { GrnItem.new }
 
-        @render_template = "grn_item"        
+        @render_template = "grn_item"
+      else
+        session[:pre_grn_arrived_time] = (session[:grn_arrived_time] or Time.now.strftime("%H%M%S"))
+
+        session[:grn_arrived_time] = Time.now.strftime("%H%M%S")
       end
       render "admins/inventories/grn/grn"
+    end
+
+    def upload_grn_file
+      Inventory
+      if params[:new_bulk_upload_serial].present?
+        accessible_inventory_serial_item_params = inventory_serial_item_params
+        # params[:inventory_product_id].to_i is used to connect to grn.
+        # Rails.cache.write([ :serial_item, :i_product, params[:inventory_product_id].to_i, session[:grn_arrived_time].to_i ], Rails.cache.fetch([:bulk_serial, params[:timestamp].to_i ]).map { |s| InventorySerialItem.new(accessible_inventory_serial_item_params.merge(serial_no: s[0], ct_no: s[1])) })
+
+        Rails.cache.write([ :serial_item, params[:refer_resource_class].to_sym, params[:refer_resource_id].to_i, session[:grn_arrived_time].to_i ], Rails.cache.fetch([:bulk_serial, params[:timestamp].to_i ]).map { |s| InventorySerialItem.new(accessible_inventory_serial_item_params.merge(serial_no: s[0], ct_no: s[1])) })
+
+        Rails.cache.delete( [:bulk_serial, params[:timestamp].to_i ] )
+
+      elsif params[:clear_import].present?
+        Rails.cache.delete([ :serial_item, :i_product, params[:inventory_product_id].to_i, session[:grn_arrived_time].to_i ])
+
+      else
+        uploaded_io = params[:import_csv]
+        reference_resource = params[:refer_resource_class].classify.constantize.find params[:refer_resource_id]
+
+        Dir.mkdir(File.join(Rails.root, "public", "uploads"), 755) unless Dir.exist?(File.join(Rails.root, "public", "uploads"))
+
+        File.open(Rails.root.join('public', 'uploads', uploaded_io.original_filename), 'wb') do |file|
+          file.write(uploaded_io.read)
+
+        end
+
+        @inventory_serial_item = InventorySerialItem.new inventory_id: params[:inventory_id], product_id: params[:inventory_product_id], created_by: current_user.id
+
+        @sheet = Roo::Spreadsheet.open(File.join(Rails.root, "public", "uploads", uploaded_io.original_filename))
+
+        @time_store = Time.now.strftime("%H%M%S")
+        session[:time_store_for_buck_upload] = @timestore.to_i
+
+        Rails.cache.fetch([:bulk_serial, @time_store.to_i ]) { (@sheet.last_row - 1).times.map{|m| @sheet.row(m+2)} }
+
+        File.delete(File.join(Rails.root, "public", "uploads", uploaded_io.original_filename))
+
+      end
+      render "admins/inventories/grn/upload_grn_file"
+
+    end
+
+    def initiate_grn_for_i_product
+      Inventory
+      Grn
+      @inventory_product = InventoryProduct.find params[:inventory_product_id]
+      @grn_item = GrnItem.new grn_item_params
+
+      # Rails.cache.fetch([ :serial_item, :i_product, params[:inventory_product_id].to_i, session[:grn_arrived_time].to_i ]).each do |serial_item|
+      #   @grn_item.inventory_serial_items << serial_item
+
+      # end
+
+      if params[:next].present?
+        if @grn_item.valid?
+          if not Rails.cache.fetch([:inventory_product_ids, session[:grn_arrived_time].to_i]).to_a.include? params[:inventory_product_id].to_i
+            a = Rails.cache.fetch([:inventory_product_ids, session[:grn_arrived_time].to_i]).to_a
+            a << params[:inventory_product_id].to_i
+            Rails.cache.write([:inventory_product_ids, session[:grn_arrived_time].to_i], a)
+          end
+          Rails.cache.write([:grn_item, :i_product, @inventory_product.id, session[:grn_arrived_time].to_i ], @grn_item)
+
+          if Rails.cache.fetch([:inventory_product_ids, session[:grn_arrived_time].to_i]).to_a.count > 0
+            @grn = Grn.new
+
+          end
+        else
+          a = Rails.cache.fetch([:inventory_product_ids, session[:grn_arrived_time].to_i]).to_a
+          a.delete(params[:inventory_product_id].to_i)
+          Rails.cache.write([:inventory_product_ids, session[:grn_arrived_time].to_i], a)
+        end
+      elsif params[:cancel]
+        a = Rails.cache.fetch([:inventory_product_ids], session[:grn_arrived_time].to_i).to_a
+        a.delete(params[:inventory_product_id].to_i)
+        Rails.cache.write([:inventory_product_ids, session[:grn_arrived_time].to_i], a)
+        if Rails.cache.fetch([:inventory_product_ids, session[:grn_arrived_time].to_i]).to_a.count > 0
+          @grn = Grn.new
+
+        end
+
+        # Rails.cache.delete([:grn_item, :i_product, @inventory_product.id ] )
+        # Rails.cache.delete([ :serial_item, :i_product, @inventory_product.id ])
+      end
+
+      # @inventory_products = Kaminari.paginate_array(InventoryProduct.where(id: Rails.cache.fetch([:inventory_product_ids]).to_a)).page(params[:page]).per(10)
+      search_inventory_products = Tire.search 'inventory_products', query: {constant_score: {filter: {terms: {id: Rails.cache.fetch([:inventory_product_ids, session[:grn_arrived_time].to_i]).to_a}}}}
+      @inventory_products = Kaminari.paginate_array(search_inventory_products.results.to_a).page(params[:page]).per(10)
+
+      render "admins/inventories/grn/grn"
+    end
+
+    def initialize_grn
+      Inventory
+      Grn
+      @po_item = InventoryPoItem.find params[:po_item_id]
+
+      @grn_item = GrnItem.new grn_item_params
+
+      if params[:next].present?
+        if @grn_item.valid?
+
+          if not Rails.cache.fetch([:po_item_ids, session[:grn_arrived_time].to_i]).to_a.include? params[:po_item_id].to_i
+            a = Rails.cache.fetch([:po_item_ids, session[:grn_arrived_time].to_i]).to_a
+            a << params[:po_item_id].to_i
+            Rails.cache.write([:po_item_ids, session[:grn_arrived_time].to_i], a)
+
+          end
+
+          Rails.cache.write([:grn_item, @po_item.id, session[:grn_arrived_time].to_i], @grn_item )
+
+          if Rails.cache.fetch([:po_item_ids, session[:grn_arrived_time].to_i]).to_a.count > 0 #@po_item.inventory_po.inventory_po_items.count
+            @grn = Grn.new po_id: session[:po_id]
+
+          end
+
+        else
+          a = Rails.cache.fetch([:po_item_ids, session[:grn_arrived_time].to_i]).to_a
+          a.delete(params[:po_item_id].to_i)
+          Rails.cache.write([:po_item_ids, session[:grn_arrived_time].to_i], a)
+
+        end
+      elsif params[:cancel]
+
+        a = Rails.cache.fetch([:po_item_ids, session[:grn_arrived_time].to_i]).to_a
+        a.delete(params[:po_item_id].to_i)
+        Rails.cache.write([:po_item_ids, session[:grn_arrived_time].to_i], a)
+
+        Rails.cache.delete([:grn_item, @po_item.id, session[:grn_arrived_time].to_i] )
+
+      end
+
+      render "admins/inventories/grn/grn"
+    end
+
+    def create_grn
+      Inventory
+      Organization
+      @grn = Grn.new grn_params
+      if @grn.inventory_po.present? # With PO Items
+        @grn.store_id = @grn.inventory_po.store_id
+        @grn.po_id = @grn.inventory_po.id
+      else                          # Without PO Items
+        @grn.store_id = session[:store_id]
+      end
+      @grn.created_at = DateTime.now
+      @grn.created_by = current_user.id
+      @grn.grn_no = CompanyConfig.first.increase_inv_last_grn_no
+      @grn.save!
+
+      # With PO Items
+      Rails.cache.fetch([:po_item_ids, session[:grn_arrived_time].to_i]).to_a.each do | po_item_id |
+        po_item = InventoryPoItem.find po_item_id
+        grn_item = Rails.cache.fetch([ :grn_item, po_item_id, session[:grn_arrived_time].to_i ] )
+        grn_item.grn = @grn
+
+        tot_recieved_qty = 0
+
+        bulk_serial_items = Rails.cache.fetch([ :serial_item, po_item.class.to_s.to_sym, po_item.id, session[:grn_arrived_time].to_i ]).to_a
+
+        bulk_serial_items.each do |serial_item|
+          grn_item.inventory_serial_items << serial_item
+
+        end
+
+        grn_item.grn_batches.each do |gb| 
+          gb.remaining_quantity = gb.recieved_quantity 
+          tot_recieved_qty += gb.recieved_quantity
+        end
+        grn_item.grn_serial_items.each do |s|
+          tot_recieved_qty += 1
+        end
+        tot_recieved_qty = grn_item.recieved_quantity if tot_recieved_qty == 0
+
+        grn_item.grn_id = @grn.id
+        grn_item.po_item_id = po_item.id
+        grn_item.product_id = po_item.inventory_prn_item.product_id
+        grn_item.recieved_quantity = grn_item.remaining_quantity = tot_recieved_qty
+        grn_item.unit_cost = grn_item.current_unit_cost = po_item.unit_cost_grn
+        grn_item.currency_id = grn_item.inventory_product.inventory_product_info.currency_id
+        grn_item.inventory_not_updated = false
+        grn_item.save!
+
+        inventory = grn_item.inventory_product.inventories.find_by_store_id(@grn.store_id)
+        inventory.update stock_quantity: (inventory.stock_quantity + tot_recieved_qty), available_quantity: (inventory.available_quantity + tot_recieved_qty)
+
+        grn_item.grn_item_current_unit_cost_histories.create created_by: current_user.id, current_unit_cost: grn_item.current_unit_cost
+
+        Rails.cache.delete([:grn_item, po_item_id, session[:grn_arrived_time].to_i] )
+        Rails.cache.delete([ :serial_item, po_item.class.to_s.to_sym, po_item.id, session[:grn_arrived_time].to_i ])
+
+        po_item.update closed: (po_item.quantity.to_f <= po_item.grn_items.sum(:recieved_quantity).to_f )
+      end
+
+      if @grn.inventory_po.present?
+        @grn.inventory_po.update closed: @grn.inventory_po.inventory_po_items.all?{ |i| i.closed }
+      end
+
+      # Without PO Items
+      Rails.cache.fetch([:inventory_product_ids, session[:grn_arrived_time].to_i]).to_a.each do | inventory_product_id |
+        inventory_product = InventoryProduct.find inventory_product_id
+        grn_item = Rails.cache.fetch( [:grn_item, :i_product, inventory_product.id, session[:grn_arrived_time].to_i ] )
+        grn_item.grn = @grn
+
+        bulk_serial_items = Rails.cache.fetch([ :serial_item, inventory_product.class.to_s.to_sym, inventory_product.id, session[:grn_arrived_time].to_i ]).to_a
+
+        bulk_serial_items.each do |serial_item|
+          grn_item.inventory_serial_items << serial_item
+
+        end
+
+        # grn_item.inventory_serial_items << bulk_serial_items if bulk_serial_items.present?
+        tot_recieved_qty = 0
+
+        grn_item.grn_batches.each do |gb|
+          gb.remaining_quantity = gb.recieved_quantity
+          tot_recieved_qty += gb.recieved_quantity
+        end
+        grn_item.grn_serial_items.each do |s|
+          s.remaining = true
+          tot_recieved_qty += 1
+        end
+        tot_recieved_qty = grn_item.recieved_quantity if tot_recieved_qty == 0
+
+        grn_item.grn_id = @grn.id
+        grn_item.product_id = inventory_product.id
+        grn_item.recieved_quantity = tot_recieved_qty
+        grn_item.remaining_quantity = tot_recieved_qty
+        grn_item.current_unit_cost = grn_item.unit_cost
+        grn_item.currency_id = inventory_product.inventory_product_info.currency_id
+        grn_item.inventory_not_updated = false
+        grn_item.save!
+
+        inventory = grn_item.inventory_product.inventories.find_by_store_id(@grn.store_id)
+        inventory.update stock_quantity: (inventory.stock_quantity + tot_recieved_qty), available_quantity: (inventory.available_quantity + tot_recieved_qty)
+
+        grn_item.grn_item_current_unit_cost_histories.create created_by: current_user.id, current_unit_cost: grn_item.current_unit_cost
+
+        Rails.cache.delete([:grn_item, :i_product, inventory_product.id, session[:grn_arrived_time].to_i ] )
+        Rails.cache.delete([ :serial_item, inventory_product.class.to_s.to_sym, inventory_product.id, session[:grn_arrived_time].to_i ])
+
+        # InventorySerialItem.where(id: grn_item.inventory_serial_item_ids).each do |item|
+        #   item.update_index
+        # end
+
+      end
+
+      flash[:notice] = "Successfully saved."
+
+      Rails.cache.delete([:po_item_ids, session[:grn_arrived_time].to_i])
+      session[:po_id] = nil
+      session[:store_id] = nil
+
+      redirect_to grn_admins_inventories_url
+
     end
 
     def po
@@ -685,190 +946,6 @@ module Admins
 
     end
 
-    def initialize_grn
-      Inventory
-      Grn
-      @po_item = InventoryPoItem.find params[:po_item_id]
-
-      @grn_item = GrnItem.new grn_item_params
-
-      if params[:next].present?
-        if @grn_item.valid?
-          if not Rails.cache.fetch([:po_item_ids]).to_a.include? params[:po_item_id].to_i
-            a = Rails.cache.fetch([:po_item_ids]).to_a
-            a << params[:po_item_id].to_i
-            Rails.cache.write([:po_item_ids], a)
-          end
-          Rails.cache.write([:grn_item, @po_item.id], @grn_item )
-
-          if Rails.cache.fetch([:po_item_ids]).to_a.count > 0 #@po_item.inventory_po.inventory_po_items.count
-            @grn = Grn.new po_id: session[:po_id]
-
-          end
-        else
-          a = Rails.cache.fetch([:po_item_ids]).to_a
-          a.delete(params[:po_item_id].to_i)
-          Rails.cache.write([:po_item_ids], a)
-        end
-      elsif params[:cancel]
-        a = Rails.cache.fetch([:po_item_ids]).to_a
-        a.delete(params[:po_item_id].to_i)
-        Rails.cache.write([:po_item_ids], a)
-
-        Rails.cache.delete([:grn_item, @po_item.id] )
-      end
-
-      render "admins/inventories/grn/grn"
-    end
-
-    def initiate_grn_for_i_product
-      Inventory
-      Grn
-      @inventory_product = InventoryProduct.find params[:inventory_product_id]
-      @grn_item = GrnItem.new grn_item_params
-
-      if params[:next].present?
-        if @grn_item.valid?
-          if not Rails.cache.fetch([:inventory_product_ids]).to_a.include? params[:inventory_product_id].to_i
-            a = Rails.cache.fetch([:inventory_product_ids]).to_a
-            a << params[:inventory_product_id].to_i
-            Rails.cache.write([:inventory_product_ids], a)
-          end
-          Rails.cache.write([:grn_item, :i_product, @inventory_product.id ], @grn_item)
-
-          if Rails.cache.fetch([:inventory_product_ids]).to_a.count > 0
-            @grn = Grn.new
-
-          end
-        else
-          a = Rails.cache.fetch([:inventory_product_ids]).to_a
-          a.delete(params[:inventory_product_id].to_i)
-          Rails.cache.write([:inventory_product_ids], a)
-        end
-      elsif params[:cancel]
-        a = Rails.cache.fetch([:inventory_product_ids]).to_a
-        a.delete(params[:inventory_product_id].to_i)
-        Rails.cache.write([:inventory_product_ids], a)
-        if Rails.cache.fetch([:inventory_product_ids]).to_a.count > 0
-          @grn = Grn.new
-
-        end
-
-        # Rails.cache.delete([:grn_item, :i_product, @inventory_product.id ] )
-        # Rails.cache.delete([ :serial_item, :i_product, @inventory_product.id ])
-      end
-
-      # @inventory_products = Kaminari.paginate_array(InventoryProduct.where(id: Rails.cache.fetch([:inventory_product_ids]).to_a)).page(params[:page]).per(10)
-      search_inventory_products = Tire.search 'inventory_products', query: {constant_score: {filter: {terms: {id: Rails.cache.fetch([:inventory_product_ids]).to_a}}}}
-      @inventory_products = Kaminari.paginate_array(search_inventory_products.results.to_a).page(params[:page]).per(10)
-
-      render "admins/inventories/grn/grn"
-    end
-
-    def create_grn
-      Inventory
-      Organization
-      @grn = Grn.new grn_params
-      if @grn.inventory_po.present? # With PO Items
-        @grn.store_id = @grn.inventory_po.store_id
-        @grn.po_id = @grn.inventory_po.id
-      else                          # Without PO Items
-        @grn.store_id = session[:store_id]
-      end
-      @grn.created_at = DateTime.now
-      @grn.created_by = current_user.id
-      @grn.grn_no = CompanyConfig.first.increase_inv_last_grn_no
-      @grn.save!
-
-      # With PO Items
-      Rails.cache.fetch([:po_item_ids]).to_a.each do | po_item_id |
-        po_item = InventoryPoItem.find po_item_id
-        grn_item = Rails.cache.fetch([:grn_item, po_item_id ] )
-        tot_recieved_qty = 0
-
-        grn_item.grn_batches.each do |gb| 
-          gb.remaining_quantity = gb.recieved_quantity 
-          tot_recieved_qty += gb.recieved_quantity
-        end
-        grn_item.grn_serial_items.each do |s|
-          tot_recieved_qty += 1
-        end
-        tot_recieved_qty = grn_item.recieved_quantity if tot_recieved_qty == 0
-
-        grn_item.grn_id = @grn.id
-        grn_item.po_item_id = po_item.id
-        grn_item.product_id = po_item.inventory_prn_item.product_id
-        grn_item.recieved_quantity = grn_item.remaining_quantity = tot_recieved_qty
-        grn_item.unit_cost = grn_item.current_unit_cost = po_item.unit_cost_grn
-        grn_item.currency_id = grn_item.inventory_product.inventory_product_info.currency_id
-        grn_item.inventory_not_updated = false
-        grn_item.save!
-
-        inventory = grn_item.inventory_product.inventories.find_by_store_id(@grn.store_id)
-        inventory.update stock_quantity: (inventory.stock_quantity + tot_recieved_qty), available_quantity: (inventory.available_quantity + tot_recieved_qty)
-
-        grn_item.grn_item_current_unit_cost_histories.create created_by: current_user.id, current_unit_cost: grn_item.current_unit_cost
-
-        Rails.cache.delete([:grn_item, po_item_id] )
-
-        po_item.update closed: (po_item.quantity.to_f <= po_item.grn_items.sum(:recieved_quantity).to_f )
-      end
-
-      if @grn.inventory_po.present?
-        @grn.inventory_po.update closed: @grn.inventory_po.inventory_po_items.all?{ |i| i.closed }
-      end
-
-      # Without PO Items
-      Rails.cache.fetch([:inventory_product_ids]).to_a.each do | inventory_product_id |
-        inventory_product = InventoryProduct.find inventory_product_id
-        grn_item = Rails.cache.fetch( [:grn_item, :i_product, inventory_product.id ] )
-        bulk_serial_items = Rails.cache.fetch([:serial_item, :i_product, inventory_product.id ] )
-        grn_item.inventory_serial_items << bulk_serial_items if bulk_serial_items.present?
-        tot_recieved_qty = 0
-
-        grn_item.grn_batches.each do |gb|
-          gb.remaining_quantity = gb.recieved_quantity
-          tot_recieved_qty += gb.recieved_quantity
-        end
-        grn_item.grn_serial_items.each do |s|
-          s.remaining = true
-          tot_recieved_qty += 1
-        end
-        tot_recieved_qty = grn_item.recieved_quantity if tot_recieved_qty == 0
-
-        grn_item.grn_id = @grn.id
-        grn_item.product_id = inventory_product.id
-        grn_item.recieved_quantity = tot_recieved_qty
-        grn_item.remaining_quantity = tot_recieved_qty
-        grn_item.current_unit_cost = grn_item.unit_cost
-        grn_item.currency_id = inventory_product.inventory_product_info.currency_id
-        grn_item.inventory_not_updated = false
-        grn_item.save!
-
-        inventory = grn_item.inventory_product.inventories.find_by_store_id(@grn.store_id)
-        inventory.update stock_quantity: (inventory.stock_quantity + tot_recieved_qty), available_quantity: (inventory.available_quantity + tot_recieved_qty)
-
-        grn_item.grn_item_current_unit_cost_histories.create created_by: current_user.id, current_unit_cost: grn_item.current_unit_cost
-
-        Rails.cache.delete([:grn_item, :i_product, inventory_product.id ] )
-        Rails.cache.delete([:serial_item, :i_product, inventory_product.id ] )
-
-        # InventorySerialItem.where(id: grn_item.inventory_serial_item_ids).each do |item|
-        #   item.update_index
-        # end
-
-      end
-
-      flash[:notice] = "Successfully saved."
-
-      Rails.cache.delete([:po_item_ids])
-      session[:po_id] = nil
-      session[:store_id] = nil
-
-      redirect_to grn_admins_inventories_url
-
-    end
-
     def create_grn_for_main_part
       Organization
       Inventory
@@ -895,39 +972,6 @@ module Admins
         flash[:alert] = "Unable to save. Please review submission again. #{@inventory_serial_item.errors.full_messages.join(', ')}"
       end
       redirect_to grn_main_part_admins_inventories_url
-    end
-
-    def upload_grn_file
-      Inventory
-      if params[:new_bulk_upload_serial].present?
-        accessible_inventory_serial_item_params = inventory_serial_item_params
-        # params[:inventory_product_id].to_i is used to connect to grn.
-        Rails.cache.write([ :serial_item, :i_product, params[:inventory_product_id].to_i ], Rails.cache.fetch([:bulk_serial, params[:timestamp].to_i ]).map { |s| InventorySerialItem.new(accessible_inventory_serial_item_params.merge(serial_no: s[0], ct_no: s[1])) })
-
-        Rails.cache.delete( [:bulk_serial, params[:timestamp].to_i ] )
-
-      elsif params[:clear_import].present?
-        Rails.cache.delete([ :serial_item, :i_product, params[:inventory_product_id].to_i ])
-
-      else
-        uploaded_io = params[:import_csv]
-        reference_resource = params[:refer_resource_class].classify.constantize.find params[:refer_resource_id]
-
-        Dir.mkdir(File.join(Rails.root, "public", "uploads"), 755) unless Dir.exist?(File.join(Rails.root, "public", "uploads"))
-
-        File.open(Rails.root.join('public', 'uploads', uploaded_io.original_filename), 'wb') do |file|
-          file.write(uploaded_io.read)
-        end
-        @inventory_serial_item = InventorySerialItem.new inventory_id: params[:inventory_id], product_id: params[:inventory_product_id], created_by: current_user.id
-
-        @sheet = Roo::Spreadsheet.open(File.join(Rails.root, "public", "uploads", uploaded_io.original_filename))
-        @time_store = Time.now.strftime("%H%M%S")
-        Rails.cache.fetch([:bulk_serial, @time_store.to_i ]) { (@sheet.last_row - 1).times.map{|m| @sheet.row(m+2)} }
-        File.delete(File.join(Rails.root, "public", "uploads", uploaded_io.original_filename))
-
-      end
-      render "admins/inventories/grn/upload_grn_file"
-
     end
 
     def inventory

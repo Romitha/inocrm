@@ -42,9 +42,9 @@
       .row
         .col-md-4
           - if tsp.ticket_estimation.approval_required
-            %strong Estimated price (#{tsp.ticket_estimation.currency.code}): #{number_with_precision (tsp.approved_estimated_price + tsp.ticket_estimation_part_taxes.sum(:approved_estimated_tax_amount)), precision: 2}
+            %strong Estimated price (#{tsp.ticket_estimation.currency.code}): #{number_with_precision (tsp.approved_estimated_price + tsp.ticket_estimation_part_taxes.sum(:approved_tax_amount)), precision: 2}
             %br/
-            %strong Estimated Additional price (#{tsp.ticket_estimation.currency.code}): #{number_with_precision (tsp.ticket_estimation.ticket_estimation_additionals.sum(:approved_estimated_price) + tsp.ticket_estimation.ticket_estimation_additionals.to_a.sum{|a| a.ticket_estimation_additional_taxes.sum(:approved_estimated_tax_amount)} ), precision: 2}
+            %strong Estimated Additional price (#{tsp.ticket_estimation.currency.code}): #{number_with_precision (tsp.ticket_estimation.ticket_estimation_additionals.sum(:approved_estimated_price) + tsp.ticket_estimation.ticket_estimation_additionals.to_a.sum{|a| a.ticket_estimation_additional_taxes.sum(:approved_tax_amount)} ), precision: 2}
           - else
             %strong Estimated price (#{tsp.ticket_estimation.currency.code}): #{number_with_precision (tsp.estimated_price + tsp.ticket_estimation_part_taxes.sum(:estimated_tax_amount)), precision: 2}
             %br/

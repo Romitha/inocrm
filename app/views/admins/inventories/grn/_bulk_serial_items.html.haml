@@ -1,6 +1,8 @@
 = simple_nested_form_for @inventory_serial_item, url: upload_grn_file_admins_inventories_path, remote: true, html: {id: "bulk_serial_validate_form" } do |ib|
   = hidden_field_tag :timestamp, @time_store
   = hidden_field_tag :inventory_product_id, ib.object.product_id
+  = hidden_field_tag :refer_resource_class, params[:refer_resource_class]
+  = hidden_field_tag :refer_resource_id, params[:refer_resource_id]
   = ib.input :inventory_id, as: :hidden
   = ib.input :product_id, as: :hidden
   = ib.input :created_by, as: :hidden

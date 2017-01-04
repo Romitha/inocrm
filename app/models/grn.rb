@@ -248,6 +248,12 @@ class GrnSerialItem < ActiveRecord::Base
     where(remaining: true)
   end
 
+  before_create :set_remaining
+
+  def set_remaining
+    self.remaining = true
+  end
+
 end
 
 class GrnSerialPart < ActiveRecord::Base

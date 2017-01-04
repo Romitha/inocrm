@@ -45,7 +45,7 @@ class Ticket < ActiveRecord::Base
       include: {
         products: {
           only: [:id, :serial_no, :model_no, :product_no, :created_at],
-          methods: [:category_name, :warranty_type_name, :brand_name],
+          methods: [:category_name, :brand_name],
         },
         customer: {
           only: [:id, :name, :address1, :address2, :address3, :address4],
@@ -123,6 +123,43 @@ class Ticket < ActiveRecord::Base
 
   def support_ticket_no
     ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
+  end
+
+  def update_ticket_no
+    self.ticket_no = (self.class.any? ? (self.class.order("created_at ASC").map{|t| t.ticket_no.to_i}.max + 1) : 1)
+  end
+
+
+  def cached_user_ticket_actions
+    Rails.cache.fetch([self.id, :user_ticket_actions]){ self.user_ticket_actions.to_a }
+  end
+
+  def cached_ticket_spare_parts
+    Rails.cache.fetch([self.id, :ticket_spare_parts]){ self.ticket_spare_parts.to_a }
+  end
+
+  def cached_ticket_estimations
+    Rails.cache.fetch([self.id, :ticket_estimations]){ self.ticket_estimations.to_a }
+  end
+
+  def flash_cache
+    Rails.cache.delete([:join, self.id])
+  end
+
+  def set_ticket_close(user_id)
+    manufacture_parts_po_completed = !ticket_spare_parts.any? { |t| t.ticket_spare_part_manufacture.try(:po_required) and not t.ticket_spare_part_manufacture.try(:po_completed) }
+
+    if job_closed and (cus_payment_completed or !cus_payment_required) and (ticket_close_approved or !ticket_close_approval_required) and manufacture_parts_po_completed
+      update status_id: TicketStatus.find_by_code("CLS").id, ticket_closed_at: DateTime.now # Ticket Closed
+
+      # 87 - Close Ticket
+      user_ticket_action = user_ticket_actions.build(action_id: TaskAction.find_by_action_no(87).id, action_at: DateTime.now, action_by: user_id, re_open_index: re_open_count)
+      user_ticket_action.save
+    end
+  end
+
+  def ticket_closed?
+    ["CLS", "TBC"].include? ticket_status.try(:code)
   end
 
 
@@ -261,60 +298,6 @@ class Ticket < ActiveRecord::Base
 
   before_create :update_ticket_no
   after_update :flash_cache
-
-
-  def update_ticket_no
-    self.ticket_no = (self.class.any? ? (self.class.order("created_at ASC").map{|t| t.ticket_no.to_i}.max + 1) : 1)
-  end
-
-
-  def cached_user_ticket_actions
-    Rails.cache.fetch([self.id, :user_ticket_actions]){ self.user_ticket_actions.to_a }
-  end
-
-  def cached_ticket_spare_parts
-    Rails.cache.fetch([self.id, :ticket_spare_parts]){ self.ticket_spare_parts.to_a }
-  end
-
-  def cached_ticket_estimations
-    Rails.cache.fetch([self.id, :ticket_estimations]){ self.ticket_estimations.to_a }
-  end
-
-  def flash_cache
-    Rails.cache.delete([:join, self.id])
-  end
-
-  def set_ticket_close(user_id)
-    manufacture_parts_po_completed = !ticket_spare_parts.any? { |t| t.ticket_spare_part_manufacture.try(:po_required) and not t.ticket_spare_part_manufacture.try(:po_completed) }
-
-    if job_closed and (cus_payment_completed or !cus_payment_required) and (ticket_close_approved or !ticket_close_approval_required) and manufacture_parts_po_completed
-      update status_id: TicketStatus.find_by_code("CLS").id, ticket_closed_at: DateTime.now # Ticket Closed
-
-      # 87 - Close Ticket
-      user_ticket_action = user_ticket_actions.build(action_id: TaskAction.find_by_action_no(87).id, action_at: DateTime.now, action_by: user_id, re_open_index: re_open_count)
-      user_ticket_action.save
-    end
-  end
-
-  def ticket_closed?
-    ["CLS", "TBC"].include? ticket_status.try(:code)
-  end
-
-  def customer_name
-    customer.full_name
-  end
-
-  def ticket_status_name
-    ticket_status.name
-  end
-
-  def warranty_type_name
-    warranty_type.name
-  end
-
-  def support_ticket_no
-    ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
-  end
 
 end
 

@@ -627,15 +627,6 @@ class InventorySerialItem < ActiveRecord::Base
         inventory_serial_items_additional_costs: {
           only: [:id, :serial_item_id, :cost],
         },
-        # grn_items: {
-        #   only: [:id],
-        #   include: {
-        #     grn: {
-        #       methods: [:grn_no_format],
-        #       only: [:grn_no, :created_at, :store_id],
-        #     },
-        #   },
-        # },
         remaining_grn_items: {
           only: [:current_unit_cost, :remaining_quantity, :created_at],
           methods: [:any_remaining_serial_item],
