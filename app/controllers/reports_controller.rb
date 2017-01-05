@@ -258,6 +258,7 @@ class ReportsController < ApplicationController
       # refined_search_ticket = "logged_at:[#{params[:l_range_from].present? ? params[:l_range_from] : (Date.today - 3.months) } TO #{params[:l_range_to].present? ? params[:l_range_to] : Date.today }]"
 
       search_ticket = params[:search_ticket]
+      search_ticket["cus_chargeable"] = search_ticket["cus_chargeable"].present?.to_s
       refined_search_ticket = ([refined_search_ticket] + search_ticket.map { |k, v| "#{k}:#{v}" if v.present? }).compact.join(" AND ")
 
       # refined_search_ticket = [refined_search_ticket, "logged_at:[#{params[:l_range_from].present? ? params[:l_range_from] : (Date.today - 3.months) } TO #{params[:l_range_to].present? ? params[:l_range_to] : Date.today }]"]

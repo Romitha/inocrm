@@ -61,9 +61,9 @@ module Admins
         # @grn_batches = @inv_pro.grn_batches
         # @grn_batches = Kaminari.paginate_array(@grn_batches).page(params[:page]).per(10)
         if @store.present?
-          @inventory_batches = InventoryBatch.search(query: "inventory.store_id:#{@store.id} AND inventory_product.id:#{@inv_pro.id}")
+          @inventory_batches = InventoryBatch.search(query: "inventory.store_id:#{@store.id} AND inventory_product.id:#{@inv_pro.id} AND grn_batches.remaining_quantity:>0")
         else
-          @inventory_batches = InventoryBatch.search(query: "inventory_product.id:#{@inv_pro.id}")
+          @inventory_batches = InventoryBatch.search(query: "inventory_product.id:#{@inv_pro.id} AND grn_batches.remaining_quantity:>0")
         end
 
         @total_stock_cost = @inventory_batches.sum{|b| b.grn_batches.sum{|i| i.grn_current_unit_cost.to_f*i.remaining_quantity.to_i}} 

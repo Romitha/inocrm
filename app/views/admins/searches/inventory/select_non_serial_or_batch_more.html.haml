@@ -21,7 +21,7 @@
       = render "admins/searches/inventory/inventory_info", inventory: inventory
       %hr
 
-  = collapse collapse_type: "info", labelledby: "select_non_serial_non_batch_form_collapse_search", header_content: "Cost", collapse_link: "select_non_serial_non_batch_form_collapse_cost", collapse_id: "select_non_serial_non_batch_form_collapse", collapse_in: "in" do
+  = collapse collapse_type: "info", labelledby: "select_non_serial_non_batch_form_collapse_search", header_content: "GRN Cost", collapse_link: "select_non_serial_non_batch_form_collapse_cost", collapse_id: "select_non_serial_non_batch_form_collapse", collapse_in: "in" do
     .row
       .col-md-4
         %strong Currency:
@@ -39,7 +39,14 @@
       .col-md-4
         %strong GRN By:
         = inventory_non_serial_non_batch.grn.created_by_user.full_name
+    .row
+      .col-md-4
+        %strong GRN Remaining Quantity:
+        = number_with_precision inventory_non_serial_non_batch.remaining_quantity, precision: 2
 
+      .col-md-4
+        %strong GRN Received Quantity:
+        = number_with_precision inventory_non_serial_non_batch.recieved_quantity, precision: 2
     .row
       .col-md-8
         %strong GRN Remarks:

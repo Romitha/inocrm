@@ -25,6 +25,9 @@
       .col-md-3
         %strong Manufatured Date:
         = inventory_batch.manufatured_date.try(:strftime, "%Y-%m-%d")
+      .col-md-3
+        %strong Quantity Available:
+        = inventory_batch.grn_batches.sum(:remaining_quantity)
     .row
       .col-md-3
         %strong Batch No:
@@ -63,7 +66,7 @@
               %strong Remarks:
               = simple_format b_warranty.inventory_warranty.remarks
 
-  = collapse collapse_type: "info", labelledby: "select_batch_form_collapse_search", header_content: "Cost", collapse_link: "select_batch_form_collapse_cost", collapse_id: "select_batch_form_collapse", collapse_in: "in" do
+  = collapse collapse_type: "info", labelledby: "select_batch_form_collapse_search", header_content: "GRN Cost", collapse_link: "select_batch_form_collapse_cost", collapse_id: "select_batch_form_collapse", collapse_in: "in" do
     - inventory_batch.grn_items.each do |grn_item|
       .row
         .col-md-4
@@ -82,7 +85,14 @@
         .col-md-4
           %strong GRN By:
           = grn_item.grn.created_by_user.full_name
-        
+      .row
+        .col-md-4
+          %strong GRN Remaining Quantity:
+          = number_with_precision grn_item.remaining_quantity, precision: 2
+        .col-md-4
+          %strong GRN Received Quantity:
+          = number_with_precision grn_item.recieved_quantity, precision: 2
+
       .row
         .col-md-8
           %strong GRN Remarks:

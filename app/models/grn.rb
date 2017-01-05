@@ -99,7 +99,7 @@ class GrnItem < ActiveRecord::Base
   after_save :update_relation_index
 
   def self.only_grn_items1
-    select{|grn_item| grn_item.grn_serial_items.blank? and grn_item.grn_batches.blank? and grn_item.grn_serial_parts.blank? }
+    select{|grn_item| grn_item.grn_serial_items.blank? and grn_item.grn_batches.blank? and grn_item.grn_serial_parts.blank? and grn_item.remaining_quantity >0}
   end
 
   def any_remaining_serial_item
