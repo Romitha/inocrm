@@ -18,7 +18,10 @@ module Admins
       resource_id = params[:resource_id]
       resource_column = params[:resource_column]
       resource_column_value = params[:resource_column_value]
-      resource_hash = {resource_column.to_sym => resource_column_value }
+
+      more_attr = params[:more_attr]
+
+      resource_hash = {resource_column.to_sym => resource_column_value }.merge(more_attr || {})
 
       if resource_id.present?
         @resource = resource_name.find resource_id
@@ -30,7 +33,7 @@ module Admins
       if @resource.valid?
         response = true
       else
-        response = false
+        response = @resource.errors.messages[resource_column.to_sym].blank?
       end
 
       render json: response

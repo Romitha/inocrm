@@ -26,16 +26,16 @@
 
   %br/
   .row
-    .col-xs-5
-      %table.table-default
-        %tr
-          %th.pull-right Customer Name:
-          %td
-            =print_object[:company_name]
-        %tr
-          %th.pull-right Address:
-          %td
-            .col-xs-offset-1
+    .col-xs-6
+      %table.table-condensed
+        %tbody{style: "vertical-align: top;"}
+          %tr
+            %th{class: "text-right"} Customer Name:
+            %td
+              =print_object[:company_name]
+          %tr
+            %th{class: "text-right"} Address:
+            %td
               =print_object[:address1]
               %br/
               =print_object[:address2]
@@ -43,58 +43,49 @@
               =print_object[:address3]
               %br/
               =print_object[:address4]
-        %tr
-          %th.pull-right Ticket No:
-          %td
-            .col-xs-offset-1
-              =print_object[:ticket_ref]
-        %tr
-          %th.pull-right Product Brand:
-          %td
-            .col-xs-offset-1
-              =print_object[:product_brand]
-        %tr
-          %th.pull-right Model No:
-          %td
-            .col-xs-offset-1
-              =print_object[:model_no]
-        %tr
-          %th.pull-right Serial No:
-          %td
-            .col-xs-offset-1
-              =print_object[:serial_no]
-        %tr
-          %th.pull-right Product No:
-          %td
-            .col-xs-offset-1
-              =print_object[:product_no]
+          %tr
+            %th{class: "text-right"} Ticket No:
+            %td=print_object[:ticket_ref]
+          %tr
+            %th{class: "text-right"} Product Brand:
+            %td=print_object[:product_brand]
+          %tr
+            %th{class: "text-right"} Model No:
+            %td=print_object[:model_no]
+          %tr
+            %th{class: "text-right"} Serial No:
+            %td=print_object[:serial_no]
+          %tr
+            %th{class: "text-right"} Product No:
+            %td=print_object[:product_no]
 
-    .col-xs-4.col-xs-offset-2
-      %table.table-default
-        %tr
-          %th.pull-right Quotation No:
-          %td
-            = print_object[:quotation_no]
-        %tr
-          %th.pull-right VAT REG No:
-          %td
-        %tr
-          %th.pull-right Created Date:
-          %td
-            = print_object[:created_at]
-        %tr
-          %th.text-right Validity Period:
-          %td
-            = print_object[:validity_period]
-        %tr
-          %th.text-right Delivery Period:
-          %td
-            = print_object[:delivery_period]
-        %tr
-          %th.pull-right Contact Person:
-          %td
-            = print_object[:created_by]
-
+    .col-xs-5.pull-right
+      %table.table-condensed.pull-right
+        %tbody{style: "vertical-align: top;"}
+          %tr
+            %th.text-right Quotation No:
+            %td
+              = print_object[:quotation_no]
+          %tr
+            %th.text-right VAT REG No:
+            %td
+          %tr
+            %th.text-right Created Date:
+            %td
+              = print_object[:created_at]
+          %tr
+            %th.text-right Validity Period:
+            %td
+              = print_object[:validity_period]
+          %tr
+            %th.text-right Delivery Period:
+            %td
+              = print_object[:delivery_period]
+          %tr
+            %th.text-right Contact Person:
+            %td
+              = print_object[:created_by]
+  %hr
   .row
     .col-xs-11
       %table.table.table-stripped
@@ -116,7 +107,7 @@
               %td
                 = ob[:description]
               %td
-                = ob[:quantity]
+                = (ob[:quantity] and ob[:quantity].to_f)
               %td
                 = ob[:unit_price]
               %td.text-right
@@ -151,7 +142,7 @@
         %tr
           %th Note:
           %td
-            = print_object[:quotation_note]
+            = print_object[:note]
     %br/
 
     .col-xs-11

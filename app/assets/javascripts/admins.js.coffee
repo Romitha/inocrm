@@ -36,8 +36,34 @@ window.Admins =
     $("#validate_inventory_product").validate
       rules:
         "inventory_product[serial_no]":
-          required: true,
+          required: true
           digits: true
+
+          remote:
+            # url: "/validate_resource?category3_id=#{$('input[name=inventory_product[category3_id] ]').val()}"
+            url: "/validate_resource"
+            type: "post"
+            data:
+              resource_name: "InventoryProduct"
+              resource_column: "serial_no"
+              more_attr:
+                category3_id: ->
+                  $("select[name='inventory_product[category3_id]']").val()
+
+              resource_column_value: ->
+                $( "input[name = 'inventory_product[serial_no]']" ).val()
+
+      messages:
+        "inventory_product[serial_no]":
+          required: "Required input"
+          digits: "Must be digits"
+          remote: "Serial No is already used."
+
+    # $('#inventory_product_generated_serial_no').on 'blur keyup', ->
+    #   if $('#validate_inventory_product').valid()
+    #     $('#submit_new_inventory_product').prop('disabled', false)
+    #   else
+    #     $('#submit_new_inventory_product').prop('disabled', true)
 
   filter_child: ->
     parent_node = $(".parent_class")

@@ -7,6 +7,7 @@ class ReportsController < ApplicationController
     Invoice
     ContactNumber
     Tax
+    Inventory
 
     quotation = CustomerQuotation.find params[:quotation_id]
 
