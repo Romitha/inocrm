@@ -9,6 +9,7 @@
         %th SRN No
         %th SRN Date
         %th Required date
+        %th Module
         %th Remarks
         %th Created by
         %th Action
@@ -20,7 +21,11 @@
           %td= srn.srn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_srn_no_format"])
           %td= srn.created_at.try(:strftime, "%Y-%m-%d")
           %td= srn.required_at.try(:strftime, "%Y-%m-%d")
+          %td= srn.requested_module.name
           %td{title: srn.remarks}= srn.remarks.try :truncate, 50
           %td= srn.created_by_user.full_name
-          %td= link_to "Select", gin_admins_inventories_path(gin_callback: "select_srn", srn_id: srn.id), remote: true
+          - if srn.requested_module.name == "SPT"
+            %td
+          - else
+            %td= link_to "Select", gin_admins_inventories_path(gin_callback: "select_srn", srn_id: srn.id), remote: true
   %hr

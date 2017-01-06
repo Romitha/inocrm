@@ -6,14 +6,17 @@
     = f.input :available_quantity, as: :hidden, input_html: {value: 0}
 
     .row
-      .col-md-6
+      .col-md-4
         %strong Store:
         = @store.name
         = f.input :store_id, as: :hidden, input_html: {value: @store.id }
-      .col-md-6
+      .col-md-4
         %strong Product:
         = @inventory_product.generated_item_code
         = f.input :product_id, as: :hidden, input_html: {value: @inventory_product.id }
+      .col-md-4
+        %strong Item Description:
+        = @inventory_product.description
     %hr
     .row
       .col-md-2
