@@ -133,22 +133,13 @@ class InventoriesController < ApplicationController
       refined_inventory_product = params[:search_inventory][:inventory_product].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
       # refined_inventory_serial_items = params[:search_inventory].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
 
-      refined_search = [refined_inventory_product, (store_id.present? ? "stores.id:#{store_id}" : "_exists_:stores")].map{|v| v if v.present? }.compact.join(" AND ")
+      # refined_search = [refined_inventory_product, (store_id.present? ? "stores.id:#{store_id}" : "_exists_:stores")].map{|v| v if v.present? }.compact.join(" AND ")
+      refined_search = [refined_inventory_product, ("product_type:Serial" if params[:from_where] == "part_of_main_unit")].map{|v| v if v.present? }.compact.join(" AND ")
+
       params[:query] = refined_search
-    else
-      params[:query] = (store_id.present? ? "stores.id:#{store_id}" : "_exists_:stores")
     end
     @inventory_products = InventoryProduct.search(params)
 
-    @total_sum_of_stock_cost = @inventory_products.sum{|pr| pr.inventory_product_info.need_serial ? (pr.grn_serial_items.sum{|g| g.grn_item.current_unit_cost.to_f*g.grn_item.remaining_quantity.to_f + g.inventory_serial_item.inventory_serial_items_additional_costs.sum{|c| c.cost.to_f }}) : pr.inventory_product_info.need_batch ? pr.grn_batches.sum{|g| g.grn_item.current_unit_cost.to_f * g.remaining_quantity.to_f } : pr.grn_items.sum{|g| g.remaining_quantity.to_f * g.current_unit_cost.to_f } }
-
-    if @store
-      @total_stock_quantity = @inventory_products.sum{|pr| pr.inventories.sum { |i| i.stock_quantity.to_f } }
-      @total_available_quantity = @inventory_products.sum{|pr| pr.inventories.sum { |i| i.available_quantity.to_f } }
-    else
-      @total_stock_quantity = Inventory.sum(:stock_quantity)
-      @total_available_quantity = Inventory.sum(:available_quantity)
-    end
     render "inventories/inventory_products/select_product"
   end
 

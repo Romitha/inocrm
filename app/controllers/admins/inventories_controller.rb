@@ -934,7 +934,7 @@ module Admins
       elsif params[:inventory_serial_item_id].present?
         @store = Organization.find params[:store_id]
         @inventory_serial_item = InventorySerialItem.find params[:inventory_serial_item_id]
-        @grn_item = GrnItem.new
+        @grn_item = @inventory_serial_item.grn_items.first
         render "admins/inventories/grn/main_part/selected_main_part_form" and return
 
       elsif @store

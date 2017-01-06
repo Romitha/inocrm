@@ -239,7 +239,7 @@ class InventoryProduct < ActiveRecord::Base
       "Non Serial Non Batch"
     end
 
-    label.to_s + " " + label_type.to_s
+    [label, label_type].compact.join(" ")
 
   end
 
@@ -253,6 +253,8 @@ class InventoryProduct < ActiveRecord::Base
     indexes :grn_serial_items, type: "nested", include_in_parent: true
     indexes :inventory_batches, type: "nested", include_in_parent: true
     indexes :inventories, type: "nested", include_in_parent: true
+
+    indexes :product_type, type: "string", analyzer: "keyword"
 
   end
 

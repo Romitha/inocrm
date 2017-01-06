@@ -74,6 +74,9 @@ def inventory_search_types( from_where, inventory_product = nil, *args )
       inventory_product_attr.merge({
         available_quantity: available_quantities
       })
+
+    when "part_of_main_unit"
+      inventory_product_attr
     end
   end
 
