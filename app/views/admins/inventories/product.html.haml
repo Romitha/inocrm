@@ -139,9 +139,9 @@
               = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "inventory_product", name: "spare_part", url: product_admins_inventories_path(edit: true, product_id: inv_product.id), "original-title" => "Update spare part"} do
                 = inv_product.spare_part && "Yes" || "No"
             .col-md-6
-              Unit:
-              = link_to "#", class: "inline_edit", data: {type: "select", source: InventoryUnit.all.collect{|invunit| {value: invunit.id, text: invunit.unit}}, resource: "inventory_product", name: "unit_id", url: product_admins_inventories_path(edit: true, product_id: inv_product.id), "original-title" => "Update rack name"} do
-                = inv_product.inventory_unit.try(:unit)
+              Non Stock Item:
+              = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "inventory_product", name: "non_stock_item", url: product_admins_inventories_path(edit: true, product_id: inv_product.id), "original-title" => "Update non stock item"} do
+                = inv_product.non_stock_item && "Yes" || "No"
 
           .row.col-md-12
             .col-md-6
@@ -207,6 +207,10 @@
               .row.col-md-12
                 .col-md-6
                   Catergory: #{inv_product.inventory_category3.name}
+                .col-md-6
+                  Unit:
+                  = link_to "#", class: "inline_edit", data: {type: "select", source: InventoryUnit.all.collect{|invunit| {value: invunit.id, text: invunit.unit}}, resource: "inventory_product", name: "unit_id", url: product_admins_inventories_path(edit: true, product_id: inv_product.id), "original-title" => "Update rack name"} do
+                    = inv_product.inventory_unit.try(:unit)
         .col-md-3
           - if inv_product.inventory_product_info.present?
             .row
