@@ -17,7 +17,7 @@
           = check_box_tag :re_opened
 
       .col-md-3#unit_dispatch_wrapper
-        = label_tag "Unit return customer"
+        = label_tag "Unit Returned to Customer"
         = check_box_tag :unit_return_customer, true, (ticket.ticket_type.code == 'IH'), disabled: (ticket.ticket_type.code != 'IH')
         %br/
         = label_tag "Dispatch method"

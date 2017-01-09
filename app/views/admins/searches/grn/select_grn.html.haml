@@ -94,13 +94,13 @@
         .row{class: "#{cost_count == (index+1) ? 'text-danger' : ''}"}
           .col-md-3
             Date:
-            =cost.try(:created_at).try(:strftime, "%Y-%m-%d")
+            =cost.try(:created_at).try(:strftime, "%Y-%m-%d %H:%M")
           .col-md-3
             Cost:
             =cost.try(:current_unit_cost)
           .col-md-3
             Done By:
-            =cost.try(:created_by_user).try(:email)
+            =cost.try(:created_by_user).try(:full_name)
       .row
         .col-md-12
           / - if grnitem.inventory_product.inventory_product_info.try(:need_serial) == false && grnitem.inventory_product.inventory_product_info.try(:need_batch) == true

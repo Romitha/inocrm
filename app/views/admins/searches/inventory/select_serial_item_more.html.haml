@@ -156,7 +156,7 @@
           .col-md-12
             = f.link_to_add :inventory_serial_items_additional_costs, title: "Add new Additional Cost" do
               %span.glyphicon.glyphicon-plus
-              Add
+              Add Additional Cost
           .col-md-12
             = f.submit "Save", class: "btn btn-sm btn-success"
 
@@ -181,7 +181,7 @@
       /             %strong Done by:
       /             #{hcost.created_by_user.full_name}
 
-  = collapse collapse_type: "info", labelledby: "select_serial_item_form_collapse_search", header_content: "GRN Cost Adgestments", collapse_link: "select_serial_item_form_collapse_adgestment", collapse_id: "select_serial_item_form_collapse" do
+  = collapse collapse_type: "info", labelledby: "select_serial_item_form_collapse_search", header_content: "GRN Cost Adjustments", collapse_link: "select_serial_item_form_collapse_adgestment", collapse_id: "select_serial_item_form_collapse" do
     - inventory_serial_item.grn_serial_items.active_serial_items.each do |grn_serial_item|
       - if grn_serial_item.grn_item.grn_item_current_unit_cost_histories.any?
         .row

@@ -432,7 +432,10 @@
                   .col-md-4
                     Payment received amount: #{action.act_payment_received.ticket_payment_received.try(:amount)}
                   .col-md-4
-                    Invoice No: #{action.act_payment_received.ticket_payment_received.ticket_invoice.try(:invoice_no).to_s.rjust(6, INOCRM_CONFIG['invoice_no_format'])}
+                    / Invoice No: #{action.act_payment_received.ticket_payment_received.ticket_invoice.try(:invoice_no).to_s.rjust(6, INOCRM_CONFIG['invoice_no_format'])}
+                    Invoice No:
+                    - if action.act_payment_received.ticket_payment_received.ticket_invoice
+                      = action.act_payment_received.ticket_payment_received.ticket_invoice.try(:invoice_no).to_s.rjust(6, INOCRM_CONFIG['invoice_no_format'])
                   .col-md-4
                     Receipt Description: #{action.act_payment_received.ticket_payment_received.try(:receipt_description)}
 
@@ -1277,7 +1280,9 @@
                   .col-md-4
                     Payment received amount: #{action.act_payment_received.ticket_payment_received.try(:amount)}
                   .col-md-4
-                    Invoice No: #{action.act_payment_received.ticket_payment_received.ticket_invoice.try(:invoice_no).to_s.rjust(6, INOCRM_CONFIG['invoice_no_format'])}
+                    Invoice No:
+                    - if action.act_payment_received.ticket_payment_received.ticket_invoice
+                      = action.act_payment_received.ticket_payment_received.ticket_invoice.try(:invoice_no).to_s.rjust(6, INOCRM_CONFIG['invoice_no_format'])
                   .col-md-4
                     Receipt Description: #{action.act_payment_received.ticket_payment_received.try(:receipt_description)}
 

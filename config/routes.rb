@@ -20,8 +20,7 @@ Rails.application.routes.draw do
     collection do
       get "quotation"
       get "excel_output"
-      get "erp_report"
-
+      get "po_output"
     end
   end
 

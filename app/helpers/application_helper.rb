@@ -48,7 +48,8 @@ module ApplicationHelper
       "ACCESSORY4=#{ticket.accessories.fourth.try(:accessory)}",
       "ACCESSORY5=#{ticket.accessories.fifth.try(:accessory)}",
       "ACCESSORY6=",
-      "ACCESSORY_OTHER=#{ticket.other_accessories}"
+      "ACCESSORY_OTHER=#{ticket.other_accessories}",
+      "LOGGED_BY=#{User.cached_find_by_id(ticket.logged_by).try(:full_name)}"
     ]
 
   end

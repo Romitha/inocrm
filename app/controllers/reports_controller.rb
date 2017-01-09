@@ -287,9 +287,22 @@ class ReportsController < ApplicationController
     end
   end
 
-  # private
-  #   def change_format
-  #     request.format = "xls"
-  #   end
+  def po_output
+    # https://github.com/mileszs/wicked_pdf
 
+    respond_to do |format|
+      format.html
+      format.pdf do
+        render pdf: "file_name",
+          margin:  {
+            top:               10,                     # default 10 (mm)
+            bottom:            10,
+            left:              15,
+            right:             10
+          },
+          disable_javascript: false,
+          layout: "report_pdf"
+      end
+    end
+  end
 end

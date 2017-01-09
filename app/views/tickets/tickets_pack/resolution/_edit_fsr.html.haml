@@ -40,6 +40,10 @@
               = fsr.input :engineer_time_on_site, input_html: {min: "0", class: "only_float"}, label: "Engineer time on site (in hours)"
 
         .col-md-6
+          .col-md-6
+            = fsr.input :other_mileage, input_html: {min: "0", class: "only_float"}, label: "Other Charges Mileage"
+          .col-md-6
+            = fsr.input :other_repairs, input_html: {min: "0", class: "only_float"}, label: "Other Charges Repaires"
           .col-md-12
             = fsr.input :resolution, input_html: {value: nil}
             = simple_format @ticket_fsr.resolution
