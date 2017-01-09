@@ -529,15 +529,15 @@ module Admins
 
         Rails.cache.delete([:po_item_ids, session[:pre_grn_arrived_time].to_i])
 
+        refined_search = "stores.id:#{@store.id}"
         if params[:search].present?
-
           refined_inventory_product = params[:search_inventory][:inventory_product].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
 
-          refined_search = [refined_inventory_product, "stores.id:#{@store.id}"].map{|v| v if v.present? }.compact.join(" AND ")
-          params[:query] = refined_search
-        else
-          params[:query] = "stores.id:#{@store.id}"
+          refined_search = [refined_inventory_product, refined_search].map{|v| v if v.present? }.compact.join(" AND ")
+
         end
+
+        params[:query] = refined_search
 
         @inventory_products = InventoryProduct.search(params)
 
@@ -1101,7 +1101,7 @@ module Admins
       else
         render "admins/inventories/gin/gin"
       end
-      
+
     end
 
     def batch_or_serial_for_gin

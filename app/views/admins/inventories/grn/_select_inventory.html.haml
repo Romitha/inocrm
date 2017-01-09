@@ -42,7 +42,7 @@
           %td= pr.category3_name
           %td= pr.generated_serial_no
           %td= pr.generated_item_code
-          %td= pr.inventories.sum{|i| i.available_quantity.to_f}
+          %td= pr.inventories.to_a.select{|i| params[:store_id].present? ? (i if params[:store_id].to_i == i.store_id.to_i) : i }.compact.sum{|i| i.available_quantity.to_f}
           %td= pr.model_no
           %td= pr.product_no
           %td= pr.spare_part_no

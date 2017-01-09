@@ -13,7 +13,8 @@ def inventory_search_types( from_where, inventory_product = nil, *args )
   options = args.extract_options!
 
   if inventory_product.present?
-    inventories = inventory_product.inventories.to_a{|i| options[:store_id].present? ? (i if options[:store_id].to_i == i.store_id.to_i ) : i }.compact
+    inventories = inventory_product.inventories.to_a.select{|i| options[:store_id].present? ? (i if options[:store_id].to_i == i.store_id.to_i) : i }.compact
+
     available_quantities = inventories.sum{|i| i.available_quantity.to_f }
 
     if options[:store_id].present?

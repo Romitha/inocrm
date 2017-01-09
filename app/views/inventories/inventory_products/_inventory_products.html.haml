@@ -63,7 +63,7 @@
         %tr
           %td{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Item code: #{inventory_search_types(params[:from_where], inventory_product)[:item_code]}", "data-content"=> yield(:inventory_p_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }= index+1
 
-          - inventory_search_types(params[:from_where], inventory_product).except(:tooltip).values.each do |value|
+          - inventory_search_types(params[:from_where], inventory_product, store_id: @store.try(:id)).except(:tooltip).values.each do |value|
             %td= value
 
           %td= link_to "Select", (@select_path || "#"), (@select_options || {}).merge({data: {content: (yield :select_result ), productid: inventory_product.id, prncontent: (yield :last_prn_item_info)}})

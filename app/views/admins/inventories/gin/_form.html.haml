@@ -1,37 +1,38 @@
 = link_to "Re-search", gin_admins_inventories_path
 - stock_quantity = 0
 .row
-  .col-md-6
-    %strong GIN No:
-    = CompanyConfig.first.next_sup_last_gin_no.to_s.rjust(5, INOCRM_CONFIG["inventory_gin_no_format"])
-  .col-md-6
-    %strong Created by:
-    = current_user.full_name
-  .col-md-6
-    %strong Store:
-    = @srn.store.name
-  .col-md-6
-    %strong Created at:
-    = DateTime.now.try(:strftime, "%Y-%m-%d %H:%M")
+  .col-md-2
+    %h4 GIN
+  .col-md-10
+    %dl.dl-horizontal
+      %dt GIN No:
+      %dd
+        = CompanyConfig.first.next_sup_last_gin_no.to_s.rjust(5, INOCRM_CONFIG["inventory_gin_no_format"])
+      %dt Store:
+      %dd
+        = @srn.store.name
+      %dt Created by:
+      %dd
+        = current_user.full_name
+      %dt Created at:
+      %dd
+        = DateTime.now.try(:strftime, "%Y-%m-%d %H:%M")
+%hr
+.row
+  .col-md-2
+    %h4 SRN
+  .col-md-10
+    %dl.dl-horizontal
+      %dt SRN No:
+      %dd= @srn.srn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_srn_no_format"])
+      %dt Required Date:
+      %dd= @srn.required_at.try(:strftime, "%Y-%m-%d")
+      %dt Created at:
+      %dd= @srn.created_at.try(:strftime, "%Y-%m-%d")
 
-%fieldset
-  %legend SRN
-  .row
-    .col-md-6
-      %strong SRN No:
-      = @srn.srn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_srn_no_format"])
-      %br/
-      %strong Required Date:
-      = @srn.required_at.try(:strftime, "%Y-%m-%d")
-      %br/
-    .col-md-6
-      %strong Created by:
-      = @srn.created_by_user.full_name
-      %br/
-      %strong Created at:
-      = @srn.created_at.try(:strftime, "%Y-%m-%d")
+%hr
+%h4 GIN Items
 
-%H4 GIN Items
 = simple_nested_form_for @gin, url: create_gin_admins_inventories_path, html: {class: "validate_form"} do |f|
   = f.input :store_id, as: :hidden
   = f.input :srn_id, as: :hidden
@@ -41,6 +42,7 @@
       - index += 1
       = collapse collapse_type: "info", labelledby: "gin_form_collapse_search", header_content: "No: #{index} #{i.object.inventory_product.generated_item_code} #{i.object.inventory_product.description}", collapse_link: "gin_form_collapse_search_inv_#{i.object_id}", collapse_id: "gin_form_collapse" do
         - product = i.object.inventory_product
+
         - need_serial = product.inventory_product_info.need_serial.present?
         - need_batch = product.inventory_product_info.need_batch.present?
         - inventory = product.inventories.find_by_store_id(f.object.store_id)
