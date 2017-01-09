@@ -107,7 +107,7 @@ class InventoryProduct < ActiveRecord::Base
   has_many :inventory_serial_items, foreign_key: :product_id
   has_many :inventory_serial_parts, foreign_key: :product_id
   has_many :inventory_batches, foreign_key: :product_id
-  has_many :grn_batches, through: :inventory_batches
+  has_many :inventory_grn_batches, through: :inventory_batches, source: :grn_batches
 
   has_one :inventory_product_info, foreign_key: :product_id
   accepts_nested_attributes_for :inventory_product_info, allow_destroy: true
@@ -212,12 +212,12 @@ class InventoryProduct < ActiveRecord::Base
     inventory_product_info and inventory_product_info.manufacture.try(:manufacture)
   end
 
-  def stock_cost
+  def stock_cost(inventory_id = nil)
     if inventory_product_info.need_serial
-      grn_serial_items.to_a.sum{|g| g.grn_item.current_unit_cost.to_f + g.inventory_serial_item.inventory_serial_items_additional_costs.to_a.sum{|c| c.cost.to_f }}
+      grn_serial_items.active_serial_items.to_a.sum{|g| g.inventory_serial_item.inventory_id == inventory_id ? (g.grn_item.current_unit_cost.to_f + g.inventory_serial_item.inventory_serial_items_additional_costs.to_a.sum{|c| c.cost.to_f }) : 0 }
 
     elsif inventory_product_info.need_batch
-      grn_batches.to_a.sum{|g| g.grn_item.current_unit_cost.to_f * g.remaining_quantity.to_f }
+      grn_batches.to_a.sum{|g| inventory_batch.inventory_id == inventory_id ? (g.grn_item.current_unit_cost.to_f * g.remaining_quantity.to_f) : 0 }
 
     else
       grn_items.only_grn_items1.sum{|g| g.remaining_quantity.to_f * g.current_unit_cost.to_f }
@@ -279,7 +279,7 @@ class InventoryProduct < ActiveRecord::Base
     Inventory
     to_json(
       only: [:id, :description, :model_no, :product_no, :spare_part_no, :fifo, :created_at, :serial_no, :remarks, :created_by_user, :updated_by_user],
-      methods: [:category3_id, :category2_id, :category1_id, :category3_name, :category2_name, :category1_name, :generated_serial_no, :generated_item_code, :created_by_from_user, :updated_by_from_user, :manufacture, :stock_cost, :product_type],
+      methods: [:category3_id, :category2_id, :category1_id, :category3_name, :category2_name, :category1_name, :generated_serial_no, :generated_item_code, :created_by_from_user, :updated_by_from_user, :manufacture, :product_type],
       include: {
         inventory_unit: {
           only: [:unit],
@@ -584,10 +584,15 @@ class InventorySerialItem < ActiveRecord::Base
     Grn
     indexes :inventory_product, type: "nested", include_in_parent: true
     indexes :product_condition, type: "nested", include_in_parent: true
-    indexes :grn_items, type: "nested", include_in_parent: true
+    # indexes :grn_items, type: "nested", include_in_parent: true
     indexes :inventory_serial_item_status, type: "nested", include_in_parent: true
     indexes :inventory, type: "nested", include_in_parent: true
     indexes :inventory_serial_items_additional_costs, type: "nested", include_in_parent: true
+    indexes :remaining_grn_items, type: "nested", include_in_parent: true do
+      indexes :current_unit_cost, type: "double"
+    end
+
+    # indexes "remaining_grn_items.current_unit_cost", type: "double"
   end
 
   def self.search(params)
@@ -601,6 +606,14 @@ class InventorySerialItem < ActiveRecord::Base
       end
       sort { by :created_at, {order: "desc", ignore_unmapped: true} }
       # filter :range, published_at: { lte: Time.zone.now}
+
+      # aggs do
+      #   intraday_return do
+      #     sum { field "remaining_grn_items.current_unit_cost"}
+      #   end
+      # end
+      # sum { field "remaining_grn_items.current_unit_cost"}
+
       # raise to_curl
     end
   end
@@ -631,7 +644,6 @@ class InventorySerialItem < ActiveRecord::Base
         },
         remaining_grn_items: {
           only: [:current_unit_cost, :remaining_quantity, :created_at],
-          methods: [:any_remaining_serial_item],
           include: {
             grn: {
               methods: [:grn_no_format],

@@ -4,7 +4,7 @@
 - else
 
   .list-group
-    = link_to inventories_admins_searches_path(all: true), class: "list-group-item" do
+    = link_to "javascript:void(0);", onclick: "Inventories.search_product_for_part(this); return false;", data: {storeId: "", id: "store_id", modalId: "modal_for_main_part", remote: "true", selectpath: "", selectoptions: "from_where:prn<>compulsory_single_path:#{inventories_admins_searches_path}<>backdrop:true"}, class: "list-group-item", remote: true do
       %h4.list-group-item-heading All Stores
       .list-group-item-text All Stores
     - Organization.stores.each do |store|
