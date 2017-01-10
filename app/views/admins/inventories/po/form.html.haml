@@ -99,10 +99,10 @@
                 .col-md-2
                   = i.input :quantity, required: true, as: :string, input_html: {value: i.object.inventory_prn_item.quantity - i.object.inventory_prn_item.inventory_po_items.sum(:quantity), class: "dynamic_quantity"}, label: "Order Quantity"
                 .col-md-2
-                  = label_tag "PO Unit Cost" do
-                    PO Unit Cost
-                    (<span class="dynamic_unit_cost"></span>)
-                  = i.input :unit_cost, required: true, as: :string, label: false
+                  / = label_tag "PO Unit Cost" do
+                  /   PO Unit Cost
+                  /   (<span class="dynamic_unit_cost"></span>)
+                  = i.input :unit_cost, required: true, as: :string, label: "PO Unit Cost"
                 .col-md-2
                   = i.input :unit_cost_grn, required: true, as: :string, label: "GRN Unit Cost (#{i.object.inventory_prn_item.inventory_product.inventory_product_info.currency.code})"
                 .col-md-6

@@ -39,7 +39,9 @@ module Admins
       @inv_searched_by = true
       @store = Organization.find params[:store_id] if params[:store_id].present?
       @inv_pro = InventoryProduct.find params[:product_id] if params[:product_id].present?
-      @inventory = @inv_pro.inventories.find_by_store_id(@store.id) if @store.present?
+      if @inv_pro.present?
+        @inventory = @inv_pro.inventories.find_by_store_id(@store.id) if @store.present?
+      end
 
       @total_stock_cost = @inv_pro.stock_cost(@inventory.try(:id)) if @inv_pro.present?
 
@@ -111,7 +113,7 @@ module Admins
           render "admins/searches/inventory/inventories"
         end
       end
-
+        
     end
 
     def search_customers_suppliers

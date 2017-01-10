@@ -132,6 +132,13 @@
           %strong GRN Remarks:
           = simple_format grn_serial_item.grn_item.grn.remarks
         .col-md-12
+          / = number_with_precision inventory_serial_item.inventory_serial_items_additional_costs.sum{|c| c.cost.to_f }, precision: 2
+          - totf = 0
+          - inventory_serial_item.inventory_serial_items_additional_costs.each do |c|
+            - totf += c.cost.to_f
+          %strong Total Additional Cost:
+          = number_with_precision totf, precision: 2
+        .col-md-12
           %strong Additional Costs
         = simple_nested_form_for inventory_serial_item, url: create_additional_cost_admins_inventories_path(type: "InventorySerialItem", id: inventory_serial_item.id), method: :post, html: {class: "validate_form"} do |f|
           = f.input :id, as: :hidden
