@@ -85,33 +85,33 @@ module Admins
 
         render "admins/searches/inventory/select_non_serial_or_batch"
         
-
-      end
-        
-      case params[:select_action]
-
-      when "select_serial_item_more"
-        @inventory_serial_item = InventorySerialItem.find params[:inventory_serial_item_id] if params[:inventory_serial_item_id].present?
-        @inventory_serial_parts = @inventory_serial_item.inventory_serial_parts
-        # @inventory_serial_item_add_cost = @inventory_serial_item.inventory_serial_items_additional_costs
-        render "admins/searches/inventory/select_serial_item_more"
-
-      when "select_inventory_serial_part_more"
-        @inventory_serial_part = InventorySerialPart.find params[:inventory_serial_part_id] if params[:inventory_serial_part_id].present?
-        render "admins/searches/inventory/select_inventory_serial_part_more"
-
-
-      when "select_inventory_batch_more"
-        @inventory_batch = InventoryBatch.find params[:inventory_batch_id] if params[:inventory_batch_id].present?
-
-        render "admins/searches/inventory/select_inventory_batch_more"
-
-      when "select_non_serial_or_batch_more"
-        @inventory_non_serial_non_batch = GrnItem.find(params[:grn_item_id]) if params[:grn_item_id].present?
-        render "admins/searches/inventory/select_non_serial_or_batch_more"
       else
-        render "admins/searches/inventory/inventories"
+        case params[:select_action]
+
+        when "select_serial_item_more"
+          @inventory_serial_item = InventorySerialItem.find params[:inventory_serial_item_id] if params[:inventory_serial_item_id].present?
+          @inventory_serial_parts = @inventory_serial_item.inventory_serial_parts
+          # @inventory_serial_item_add_cost = @inventory_serial_item.inventory_serial_items_additional_costs
+          render "admins/searches/inventory/select_serial_item_more"
+
+        when "select_inventory_serial_part_more"
+          @inventory_serial_part = InventorySerialPart.find params[:inventory_serial_part_id] if params[:inventory_serial_part_id].present?
+          render "admins/searches/inventory/select_inventory_serial_part_more"
+
+
+        when "select_inventory_batch_more"
+          @inventory_batch = InventoryBatch.find params[:inventory_batch_id] if params[:inventory_batch_id].present?
+
+          render "admins/searches/inventory/select_inventory_batch_more"
+
+        when "select_non_serial_or_batch_more"
+          @inventory_non_serial_non_batch = GrnItem.find(params[:grn_item_id]) if params[:grn_item_id].present?
+          render "admins/searches/inventory/select_non_serial_or_batch_more"
+        else
+          render "admins/searches/inventory/inventories"
+        end
       end
+
     end
 
     def search_customers_suppliers
