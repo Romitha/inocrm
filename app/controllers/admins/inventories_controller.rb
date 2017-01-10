@@ -953,17 +953,27 @@ module Admins
       @inventory_serial_item = InventorySerialItem.find params[:inventory_serial_item_id]
       @inventory_serial_item.attributes = inventory_serial_item_params
 
+
       @inventory_serial_item.inventory_serial_parts.each do |p|
         if p.new_record?
-          p.grn_serial_parts.each do |gp|
-            gp.grn_item.current_unit_cost = gp.grn_item.unit_cost
-            gp.grn_item.grn_item_current_unit_cost_histories.build current_unit_cost: gp.grn_item.current_unit_cost, created_by: current_user.id
-            gp.grn_item.grn = @grn
-            gp.grn_item.inventory_not_updated = true
-          end
 
+          p.grn_serial_parts.each do |gp|
+            # gp.grn_item.current_unit_cost = gp.grn_item.unit_cost
+            gp.grn_item.inventory_not_updated = true
+            gp.grn_item.currency_id = @inventory_serial_item.inventory_product.inventory_product_info.currency_id
+            gp.grn_item.product_id = @inventory_serial_item.inventory_product.id
+            gp.grn_item.unit_cost = gp.grn_item.current_unit_cost
+            gp.grn_item.recieved_quantity = 1
+            gp.grn_item.remaining_quantity = 1
+            gp.grn_item.grn = @grn
+
+            gp.serial_item_id = @inventory_serial_item.id
+
+            gp.grn_item.grn_item_current_unit_cost_histories.build current_unit_cost: gp.grn_item.current_unit_cost, created_by: current_user.id
+          end
         end
       end
+
       @grn.save
       if @inventory_serial_item.save
         flash[:notice] = "Successfully saved."

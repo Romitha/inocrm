@@ -137,16 +137,8 @@
           .col-md-5
             = c.input :note
 
-      = f.link_to_add :inventory_serial_items_additional_costs, class: "col-md-12" do
+      = f.link_to_add :inventory_serial_items_additional_costs, class: "col-md-12 small_scale_padding-bottom2" do
         %button.btn.btn-success Add
-
-    %hr
-    .row
-      .col-md-3
-        %h4 Remarks
-      .col-md-9
-        = f.input :remarks, input_html: {value: nil}
-        = simple_format f.object.remarks
 
 
     - if inventory_product.inventory_product_info.need_serial and !inventory_product.inventory_product_info.need_batch
@@ -199,12 +191,21 @@
                   .col-md-3
                     %h4 More
                   .col-md-9
-                    .row
-                      - [:damage, :scavenge, :used, :repaired, :reserved, :added, :parts_not_completed].each do |flag|
-                        .col-md-3
-                          %span.label{class: "label-#{p.object.send(flag) ? 'success' : 'default' }"}= flag.to_s
-                    %hr
-                    .help-block <span class='label label-success'>Green</span> background means active. Ex: part is damaged. <span class='label label-default'>Grey</span> brackground means inactive, Ex: part is not damaged
+                    %dl.dl-horizontal
+                      %dt Damaged:
+                      %dd= boolean_in_word p.object.damage, "Yes", "No"
+                      %dt Scavenged: 
+                      %dd= boolean_in_word p.object.scavenge, "Yes", "No"
+                      %dt Used: 
+                      %dd= boolean_in_word p.object.used, "Yes", "No"
+                      %dt Repaired: 
+                      %dd= boolean_in_word p.object.repaired, "Yes", "No"
+                      %dt Reserved: 
+                      %dd= boolean_in_word p.object.reserved, "Yes", "No"
+                      %dt Added: 
+                      %dd= boolean_in_word p.object.added, "Yes", "No"
+                      %dt Parts not completed: 
+                      %dd= boolean_in_word p.object.parts_not_completed, "Yes", "No"
 
                 %hr
                 .row
@@ -220,10 +221,20 @@
                             %dt Note:
                             %dd= additional_cost.note
                 %hr
+                .row
+                  .col-md-3
+                    %h4 GRN Cost
+                  .col-md-9
+                    %dl.dl-horizontal
+                      - p.object.grn_serial_parts.active_serial_parts.each do |grn_serial_part|
+                        %dt Cost (#{grn_serial_part.grn_item.currency.code}):
+                        %dd= grn_serial_part.grn_item.current_unit_cost
+
 
             - else
               = p.input :product_id, as: :hidden, input_html: {class: "dynamic_main_product_id"}
               = p.input :created_by, as: :hidden, input_html: {value: current_user.id}
+              = p.input :inv_status_id, as: :hidden, input_html: {value: 1}
               .col-md-12
                 .row
                   .col-md-3
@@ -231,9 +242,20 @@
                   .col-md-9
                     .product_info
 
+                    .small_scale_padding-bottom2
+                      %strong Status:
+                      = InventorySerialItemStatus.first.name
+
                     .row
                       .col-md-7
                         .row
+                          .col-md-6
+                            - p.object.grn_serial_parts.build
+                            = p.simple_fields_for :grn_serial_parts do |gs|
+                              - gs.object.build_grn_item
+                              = gs.simple_fields_for :grn_item do |g|
+                                = g.input :current_unit_cost, as: :string, label: "GRN Unit Cost #{inventory_product.inventory_product_info.currency.code}", required: true, input_html: {class: "after_two_decimal"}
+
                           .col-md-6
                             = p.input :serial_no, required: true
                           .col-md-6
@@ -244,8 +266,6 @@
                             = p.input :expiry_date, as: :string, input_html: {class: "datepicker", value: p.object.expiry_date.try(:strftime, INOCRM_CONFIG["short_date_format"])}
                           .col-md-6
                             = p.association :product_condition, label_method: :condition, required: true
-                          .col-md-6
-                            = p.association :inventory_serial_item_status, label: "Status"
                       .col-md-5
                         .row
                           .col-md-12
@@ -259,7 +279,7 @@
                           .col-md-12
                             = p.input :reserved, wrapper: :append
                           .col-md-12
-                            = p.input :added, wrapper: :append, label: "Add as upgrade"
+                            = p.input :added, wrapper: :append, label: "Add as upgrade", input_html: {readonly: true, checked: true}
                           .col-md-12
                             = p.input :parts_not_completed, wrapper: :append
                 %hr
@@ -331,10 +351,10 @@
 
     .row.small_scale_padding-top1
       .col-md-12
-        = f.input :remarks, input_html: {value: nil}
+        = f.input :remarks, label: "Main Unit Remarks", input_html: {value: nil}
         = simple_format f.object.remarks
     .row
-      .col-md-12.text-right.small_scale_margin-bottom1
+      .col-md-12.small_scale_margin-bottom1
         = f.submit "Save", class: "btn btn-sm btn-success"
 
 #modal_for_main_part.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "modal_for_main_part", "aria-hidden" => true}
