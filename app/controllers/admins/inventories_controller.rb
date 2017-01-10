@@ -960,8 +960,8 @@ module Admins
           p.grn_serial_parts.each do |gp|
             # gp.grn_item.current_unit_cost = gp.grn_item.unit_cost
             gp.grn_item.inventory_not_updated = true
-            gp.grn_item.currency_id = @inventory_serial_item.inventory_product.inventory_product_info.currency_id
-            gp.grn_item.product_id = @inventory_serial_item.inventory_product.id
+            gp.grn_item.currency_id = p.inventory_product.inventory_product_info.currency_id
+            gp.grn_item.product_id = p.product_id
             gp.grn_item.unit_cost = gp.grn_item.current_unit_cost
             gp.grn_item.recieved_quantity = 1
             gp.grn_item.remaining_quantity = 1

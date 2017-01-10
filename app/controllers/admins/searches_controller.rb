@@ -43,35 +43,33 @@ module Admins
 
       @total_stock_cost = @inv_pro.stock_cost(@inventory.try(:id)) if @inv_pro.present?
 
+      query = "inventory_product.id:#{@inv_pro.try(:id)}"
+
       case params[:type]
       when "Serial"
-        query = "inventory_product.id:#{@inv_pro.id}"
 
         if @store.present?
           # p = Tire.search 'inventory_serial_items', {"query":{"bool":{"must":[{"query_string":{"query":"inventory.store_id:18 AND inventory_product.id:13"}}]}},"sort":[{"created_at":{"order":"desc","ignore_unmapped":true}}], "aggs": {"stock_cost": {"sum": {"field": "remaining_grn_items.current_unit_cost"}}}}
 
-          @inventory_serial_items = InventorySerialItem.search(query: "inventory.store_id:#{@store.id} AND inventory_product.id:#{@inv_pro.id}")
           query = [query, "inventory.store_id:#{@store.id}"].join(" AND ")
+
         end
 
         params[:query] = query
 
         @inventory_serial_items = InventorySerialItem.search(params)
 
-        # @total_stock_cost = @inventory_serial_items.sum{|i| i.remaining_grn_items.sum{ |g| g.current_unit_cost.to_f } + i.inventory_serial_items_additional_costs.sum{|c| c.cost.to_f }}
-
         render "admins/searches/inventory/select_serial_items"
 
       when "Batch"
         if @store.present?
-          @inventory_batches = InventoryBatch.search(query: "inventory.store_id:#{@store.id} AND inventory_product.id:#{@inv_pro.id} AND grn_batches.remaining_quantity:>0")
-
-        else
-          @inventory_batches = InventoryBatch.search(query: "inventory_product.id:#{@inv_pro.id} AND grn_batches.remaining_quantity:>0")
+          query = [query, "inventory.store_id:#{@store.id}", "grn_batches.remaining_quantity:>0"].join(" AND ")
 
         end
 
-        @total_stock_cost = @inventory_batches.sum{|b| b.grn_batches.sum{|i| i.grn_current_unit_cost.to_f*i.remaining_quantity.to_i}}
+        params[:query] = query
+
+        @inventory_serial_items = InventoryBatch.search(params)
 
         render "admins/searches/inventory/select_batches"
         

@@ -134,6 +134,21 @@ class GrnItem < ActiveRecord::Base
       grn_item_remarks = grn_item.remarks_was
     end
     grn_item.remarks = grn_item_remarks
+
+    if grn_item.current_unit_cost_changed? or grn_item.remaining_quantity_changed?
+      Rails.cache.delete([:stock_cost, self.product_id.to_f, nil ])
+
+      grn_item.inventory_serial_items.pluck(:inventory_id, :product_id).uniq{|i| i[0] and i[1]}.each do |a|
+        Rails.cache.delete([:stock_cost, a[0], a[1] ])
+
+      end
+
+      grn_item.inventory_batches.pluck(:inventory_id, :product_id).uniq{|i| i[0] and i[1]}.each do |a|
+        Rails.cache.delete([:stock_cost, a[0], a[1] ])
+
+      end
+    end
+
   end
 
   has_many :dyna_columns, as: :resourceable, autosave: true
@@ -227,8 +242,12 @@ class GrnBatch < ActiveRecord::Base
 
   validates_presence_of :recieved_quantity
 
-  def grn_current_unit_cost
-    grn_item.current_unit_cost
+  before_save do |grn_batch|
+    if grn_batch.remaining_quantity_changed?
+      Rails.cache.delete([:stock_cost, grn_batch.inventory_batch.product_id, grn_batch.inventory_batch.inventory_id ])
+
+    end
+
   end
 
 end

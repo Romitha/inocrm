@@ -213,14 +213,19 @@ class InventoryProduct < ActiveRecord::Base
   end
 
   def stock_cost(inventory_id = nil)
-    if inventory_product_info.need_serial
-      grn_serial_items.active_serial_items.to_a.sum{|g| g.inventory_serial_item.inventory_id == inventory_id ? (g.grn_item.current_unit_cost.to_f + g.inventory_serial_item.inventory_serial_items_additional_costs.to_a.sum{|c| c.cost.to_f }) : 0 }
+    Rails.cache.fetch([:stock_cost, self.id, inventory_id.to_i ]) do
+      stock_cost = if inventory_product_info.need_serial
+        grn_serial_items.active_serial_items.to_a.sum{|g| g.inventory_serial_item.inventory_id == inventory_id ? (g.grn_item.current_unit_cost.to_f + g.inventory_serial_item.inventory_serial_items_additional_costs.to_a.sum{|c| c.cost.to_f }) : 0 }
 
-    elsif inventory_product_info.need_batch
-      grn_batches.to_a.sum{|g| inventory_batch.inventory_id == inventory_id ? (g.grn_item.current_unit_cost.to_f * g.remaining_quantity.to_f) : 0 }
+      elsif inventory_product_info.need_batch
+        grn_batches.to_a.sum{|g| inventory_batch.inventory_id == inventory_id ? (g.grn_item.current_unit_cost.to_f * g.remaining_quantity.to_f) : 0 }
 
-    else
-      grn_items.only_grn_items1.sum{|g| g.remaining_quantity.to_f * g.current_unit_cost.to_f }
+      else
+        grn_items.only_grn_items1.sum{|g| g.remaining_quantity.to_f * g.current_unit_cost.to_f }
+
+      end
+
+      stock_cost
     end
 
   end
@@ -301,7 +306,7 @@ class InventoryProduct < ActiveRecord::Base
           only: [:name, :id]
         },
         inventories: {
-          only: [:store_id, :product_id, :stock_quantity, :available_quantity]
+          only: [:id, :store_id, :product_id, :stock_quantity, :available_quantity]
         },
         inventory_serial_items: {
           only: [:id, :product_id],
@@ -720,7 +725,7 @@ class InventorySerialPartAdditionalCost < ActiveRecord::Base
   self.table_name = "inv_serial_part_additional_cost"
 
   belongs_to :inventory_serial_part, foreign_key: :serial_part_id
-  belongs_to :created_by_user, foreign_key: :created_by, class: User
+  belongs_to :created_by_user, foreign_key: :created_by, class_name: "User"
   belongs_to :currency
 end
 
@@ -728,8 +733,16 @@ class InventorySerialItemsAdditionalCost < ActiveRecord::Base
   self.table_name = "inv_serial_additional_cost"
 
   belongs_to :inventory_serial_item, foreign_key: :serial_item_id
-  belongs_to :created_by_user, foreign_key: :created_by, class: User
+  belongs_to :created_by_user, foreign_key: :created_by, class_name: "User"
   belongs_to :currency, foreign_key: :currency_id
+
+  before_save do |additional_cost|
+    if additional_cost.cost_changed?
+      Rails.cache.delete([:stock_cost, additional_cost.inventory_serial_item.product_id, additional_cost.inventory_serial_item.inventory_id ])
+
+    end
+
+  end
 
 end
 

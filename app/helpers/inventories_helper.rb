@@ -26,6 +26,10 @@ def inventory_search_types( from_where, inventory_product = nil, *args )
         store: inventory_product.stores.select{|s| s.name if s.id.to_f == options[:store_id].to_f }.join(", ")
       }
 
+      i_pro = InventoryProduct.find inventory_product.id
+
+      stock_cost = inventories.sum{ |i| i_pro.stock_cost(i.id.to_i)}
+
     end
 
 
@@ -68,7 +72,7 @@ def inventory_search_types( from_where, inventory_product = nil, *args )
     when "inventories"
       inventory_product_attr.merge({
         available_quantity: available_quantities,
-        stock_cost: inventory_product.try(:stock_cost)
+        stock_cost: stock_cost
       })
 
     when "prn"
