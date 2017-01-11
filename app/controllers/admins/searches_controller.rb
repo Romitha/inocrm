@@ -69,7 +69,7 @@ module Admins
 
         params[:query] = query
 
-        @inventory_serial_items = InventoryBatch.search(params)
+        @inventory_batches = InventoryBatch.search(params)
 
         render "admins/searches/inventory/select_batches"
         

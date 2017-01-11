@@ -288,10 +288,58 @@ class ReportsController < ApplicationController
   end
 
   def po_output
+    Inventory
     # https://github.com/mileszs/wicked_pdf
 
+    po = InventoryPo.find params[:po_id]
+
+    customer = {
+      contactPerson: po.supplier.addresses.primary_address.first.contact_person,
+      name: po.supplier.name,
+      address: po.supplier.addresses.primary_address.first.full_address,
+    }
+
+    po_item_tax = po.inventory_po_taxes.sum(:amount)
+
+    poItems = po.inventory_po_items.map do |po_item|
+      {
+        itemCode: po_item.inventory_prn_item.inventory_product.generated_item_code,
+        description: po_item.remarks,
+        quantity: po_item.quantity,
+        unitPrice: po_item.unit_cost,
+        total: (po_item.unit_cost * po_item.quantity),
+      }
+
+    end
+
+    sub_total = poItems.inject(0){|i, k| i+k[:total].to_f }
+
+    owner = Organization.owner
 
     @print_object = {
+      owner: {
+        name: owner.name,
+        logo: owner.logo.url,
+        address: owner.addresses.primary_address.first.full_address,
+        website: owner.web_site,
+        contactDetails: owner.contact_numbers.map { |c| {category: c.category, value: c.value } },
+      },
+
+      customer: customer,
+      poNo: po.formated_po_no,
+      date: po.delivery_date.try(:strftime, "%Y-%m-%d"),
+      ourRef: po.your_ref,
+      quotation: "",
+      dateRequired: "",
+      paymentTerm: po.payment_term,
+      deliveryMode: "",
+
+      poItems: poItems,
+
+      subTotal: sub_total,
+      poItemTax: po_item_tax,
+      discount: po.discount_amount,
+      total: ( sub_total + po_item_tax + po.discount_amount ),
 
     }
 
