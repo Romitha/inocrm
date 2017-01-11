@@ -57,35 +57,36 @@
       .pull-right
         = f.submit "Save", class: "btn btn-success"
 
-  .row.small_scale_padding-top1
-    .col-md-12
-      %table.table.table-hover
-        %thead
-          %tr
-            %th No
-            %th Name
-            %th Short Name
-            %th Organization Type
-            %th Description
-            %th VAT Number
-            %th Website
-        %tbody
-          - Organization.owner.members.each_with_index do |organization, index|
+  -if params[:action] == "store_and_branch"
+    .row.small_scale_padding-top1
+      .col-md-12
+        %table.table.table-hover
+          %thead
             %tr
-              %td
-                =(index+1)
-              %td
-                = link_to organization.name, organization_path(organization), target: "_blank"
-              %td
-                =organization.short_name
-              %td
-                =organization.organization_type.name
-              %td
-                =organization.description
-              %td
-                =organization.vat_number
-              %td
-                =organization.web_site
+              %th No
+              %th Name
+              %th Short Name
+              %th Organization Type
+              %th Description
+              %th VAT Number
+              %th Website
+          %tbody
+            - Organization.owner.members.each_with_index do |organization, index|
+              %tr
+                %td
+                  =(index+1)
+                %td
+                  = link_to organization.name, organization_path(organization), target: "_blank"
+                %td
+                  =organization.short_name
+                %td
+                  =organization.organization_type.name
+                %td
+                  =organization.description
+                %td
+                  =organization.vat_number
+                %td
+                  =organization.web_site
 
   %br
 
