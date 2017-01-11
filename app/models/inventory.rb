@@ -546,10 +546,6 @@ class InventoryBatch < ActiveRecord::Base
 
   end
 
-  # def grn_item_currency
-  #   grn_item.currency.currency
-  # end
-
 end
 
 class InventorySerialItem < ActiveRecord::Base
