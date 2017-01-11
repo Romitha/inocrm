@@ -290,6 +290,12 @@ class ReportsController < ApplicationController
   def po_output
     # https://github.com/mileszs/wicked_pdf
 
+
+    @print_object = {
+
+    }
+
+
     respond_to do |format|
       format.html
       format.pdf do
