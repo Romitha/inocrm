@@ -192,7 +192,17 @@ class ReportsController < ApplicationController
 
     end
 
+    owner = Organization.owner
+
     @print_object = {
+      owner: {
+        name: owner.name,
+        logo: owner.logo.url,
+        address: (owner.addresses.primary_address.first and owner.addresses.primary_address.first.full_address),
+        website: owner.web_site,
+        contactDetails: owner.contact_numbers.map { |c| {category: c.category, value: c.value } },
+      },
+
       duplicate_d: "#{'D' if ticket.ticket_complete_print_count > 0}",
       quotation_no: quotation_no,
       product_brand: product_brand,
@@ -220,6 +230,8 @@ class ReportsController < ApplicationController
       total_advance_amount: view_context.standard_currency_format(total_advance_amount),
 
     }
+
+    @print_hash_to_object = HashToObject.new @print_object
 
     respond_to do |format|
       format.html
@@ -294,9 +306,9 @@ class ReportsController < ApplicationController
     po = InventoryPo.find params[:po_id]
 
     customer = {
-      contactPerson: po.supplier.addresses.primary_address.first.contact_person,
+      contactPerson: (po.supplier.addresses.primary_address.first and po.supplier.addresses.primary_address.first.contact_person),
       name: po.supplier.name,
-      address: po.supplier.addresses.primary_address.first.full_address,
+      address: (po.supplier.addresses.primary_address.first and po.supplier.addresses.primary_address.first.full_address),
     }
 
     po_item_tax = po.inventory_po_taxes.sum(:amount)
@@ -306,8 +318,8 @@ class ReportsController < ApplicationController
         itemCode: po_item.inventory_prn_item.inventory_product.generated_item_code,
         description: po_item.remarks,
         quantity: po_item.quantity,
-        unitPrice: po_item.unit_cost,
-        total: (po_item.unit_cost * po_item.quantity),
+        unitPrice: view_context.standard_currency_format(po_item.unit_cost),
+        total: view_context.standard_currency_format(po_item.unit_cost * po_item.quantity),
       }
 
     end
@@ -320,7 +332,7 @@ class ReportsController < ApplicationController
       owner: {
         name: owner.name,
         logo: owner.logo.url,
-        address: owner.addresses.primary_address.first.full_address,
+        address: (owner.addresses.primary_address.first and owner.addresses.primary_address.first.full_address),
         website: owner.web_site,
         contactDetails: owner.contact_numbers.map { |c| {category: c.category, value: c.value } },
       },
@@ -342,6 +354,8 @@ class ReportsController < ApplicationController
       total: ( sub_total + po_item_tax + po.discount_amount ),
 
     }
+
+    @print_hash_to_object = HashToObject.new @print_object
 
 
     respond_to do |format|

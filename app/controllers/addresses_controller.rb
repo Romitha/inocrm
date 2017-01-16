@@ -61,7 +61,9 @@ class AddressesController < ApplicationController
   end
 
   def make_primary_address
-    Address.where(primary: true).each do |address|
+    @organization = Organization.find params[:organization_id]
+
+    @organization.addresses.where(primary: true).each do |address|
       address.update_attribute(:primary, false)
     end
     @address.update_attribute(:primary, true)
