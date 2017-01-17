@@ -142,3 +142,56 @@ window.Admins =
   grn_main_part_hover: ->
     $('[data-toggle="popover"]').popover()
     return
+
+
+  inline_product_pic_upload: (elem)->
+    this_elem = $(elem)
+    tmpl = this_elem.data("tmpl")
+    url = this_elem.data("url")
+    attachwrapper = this_elem.data("attachwrapper")
+    elem_result = this_elem.data("result")
+
+    this_elem.fileupload
+      url: url
+      type: "PATCH"
+      maxFileSize: 1000000
+      dataType: "json"
+      autoUpload: false
+      add: (e, data) ->
+        types = /(\.|\/)(gif|jpe?g|png)$/i
+        maxsize = 1024*1024
+        file = data.files[0]
+        if types.test(file.type) || types.test(file.name)
+          if maxsize > file.size
+            data.context = $(tmpl(tmpl, file))
+            $("."+attachwrapper).html(data.context)
+            data.submit()
+            jqXHR = data.submit().complete( (result, textStatus, jqXHR)->
+              setTimeout (->
+                $('#'+elem_result).html Mustache.to_html($('#load_product_pic').html(), result.responseJSON)
+                $("."+attachwrapper).empty()
+                return
+              ), 3000
+            )
+
+          else
+            alert "Your image file is with #{file.size}KB is exceeding than limited size of #{maxsize}KB. Please select other image file not exceeding 1MB"
+        else
+          alert("#{file.name} is not a recommended file format")
+      progress: (e, data) ->
+        $(".screener").addClass("fade")
+        if data.context
+          progress = parseInt(data.loaded/data.total*100, 10)
+          # data.context.find(".progress-bar").css("width", progress+"%").html(progress+"%")
+          data.context.find(".progress-bar").css("width", progress+"%").attr("aria-valuenow", "#{progress}").html(progress+"%")
+          # if progress==100
+          #   # window.location.reload()
+          #   console.log "uploaded"
+      done: (e, data) ->
+        $(".screener").removeClass("fade")
+        # console.log data#.responseJSON
+        $('#'+elem_result).html Mustache.to_html($('#load_logo').html(), data)
+
+      fail: (e, data) ->
+        if data.textStatus == 401
+          console.log data.textStatus
