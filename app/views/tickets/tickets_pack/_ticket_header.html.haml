@@ -17,7 +17,8 @@
       .col-md-2.pull-right.text-right.small_scale_padding-top1
         %strong Priority: #{INOCRM_CONFIG["priority"].key ticket.priority}
       .col-md-3.pull-right.text-right.small_scale_padding-top1
-        %strong Resolve status: #{ticket.ticket_status_resolve.try(:name)}
+        / %strong Resolve status: #{ticket.ticket_status_resolve.try(:name)}
+        %strong Status: #{ticket.ticket_status.name}
 
 .view_ticket_body
   .row
