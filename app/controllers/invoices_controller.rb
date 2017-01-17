@@ -174,7 +174,7 @@ class InvoicesController < ApplicationController
     @ticket.attributes = ticket_params
     payment_completed = params[:payment_completed].present?
 
-    foc_payment_required = params[:foc_payment_required].present? and params[:foc_payment_required].to_bool
+    foc_payment_required = (params[:foc_payment_required].present? and params[:foc_payment_required].to_bool)
     act_terminate_job = @ticket.user_ticket_actions.map{|u| u.ticket_terminate_job if u.ticket_terminate_job.present? }.compact.first
 
     act_terminate_job.try(:update, {foc_requested: foc_payment_required})

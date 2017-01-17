@@ -20,7 +20,7 @@
           .col-md-6
             = rf.association :reason, required: true, include_blank: false, collection: Reason.where(terminate_job: true), label_method: :reason, value_method: :id, label: "Terminate reason"
           .col-md-6
-            = rf.input :foc_requested, as: :radio_buttons, collection: {"FOC" => false, "Payment required" => true}, wrapper: :append
+            = rf.input :foc_requested, as: :radio_buttons, collection: {"FOC" => true, "Payment required" => false}, wrapper: :append
 
         = uf.simple_fields_for :act_terminate_job_payments do |tjp|
           = tjp.input :ticket_id, as: :hidden, input_html: {value: ticket.id }
