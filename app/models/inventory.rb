@@ -304,34 +304,34 @@ class InventoryProduct < ActiveRecord::Base
     query = params[:query]
 
     options = {
-      "query": {
-        "bool":{
-          "must":[
+      "query" =>  {
+        "bool" => {
+          "must" => [
             {
-              "query_string":{
-                "query": query
+              "query_string" => {
+                "query" =>  query
               }
             }
           ]
         }
       },
-      "sort":[
+      "sort" => [
         {
-          "generated_item_code":{
-            "order":"asc",
-            "ignore_unmapped":true
+          "generated_item_code" => {
+            "order" => "asc",
+            "ignore_unmapped" => true
           }
         }
       ],
-      "aggs": {
-        "stock_cost": {
-          "sum": {
-            "field": "inventories.product_stock_cost"
+      "aggs" =>  {
+        "stock_cost" =>  {
+          "sum" =>  {
+            "field" =>  "inventories.product_stock_cost"
           }
         }
       },
-      "size":10,
-      "from":0
+      "size" => 10,
+      "from" => 0
     }
 
     r = Tire.search('inventory_products', options)
