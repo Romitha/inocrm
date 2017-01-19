@@ -3,9 +3,6 @@ module Admins
     layout "admins"
 
     def search_grn
-      # params = {search: ...., search_grn: ...., range_to: ...., range_from: ....}
-      # params[:query] = ....
-      # params = {search: ...., search_grn: ...., range_to: ...., range_from: ...., query: ...}
       Inventory
       User
       Grn

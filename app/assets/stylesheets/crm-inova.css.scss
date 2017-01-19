@@ -445,3 +445,7 @@ label {
   border-color: lighten(#ffff00, 35%);
   color: #ffffff;
 }
+
+a.disabled {
+  pointer-events: none;
+}

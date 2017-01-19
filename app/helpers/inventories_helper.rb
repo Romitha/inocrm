@@ -72,6 +72,7 @@ def inventory_search_types( from_where, inventory_product = nil, *args )
     when "inventories"
       inventory_product_attr.merge({
         available_quantity: available_quantities,
+        currency: inventory_product.try(:inventory_product_info).try(:currency_type),
         stock_cost: stock_cost
       })
 

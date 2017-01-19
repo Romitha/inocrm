@@ -139,6 +139,10 @@ class InventoriesController < ApplicationController
 
       params[:query] = refined_search
 
+      ag = InventoryProduct.advance_search(params)
+
+      # @total_stock_cost = ag.aggregations.stock_cost.value
+      @total_stock_cost = ag.hits.hits.map{|h| h["_source"]["inventories"].sum{|i| i["store_id"] == store_id.to_i ? i["product_stock_cost"] : 0}}.sum
     end
     @inventory_products = InventoryProduct.search(params)
 

@@ -68,5 +68,8 @@
 
           %td= link_to "Select", (@select_path || "#"), (@select_options || {}).merge({data: {content: (yield :select_result ), productid: inventory_product.id, prncontent: (yield :last_prn_item_info)}})
   %hr
+- if @store.present?
+  %h4 Total cost:
+  = @total_stock_cost
 
 = paginate @inventory_products, remote: true, method: :get

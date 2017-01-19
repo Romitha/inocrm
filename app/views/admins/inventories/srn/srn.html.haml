@@ -33,34 +33,37 @@
         = s.input :product_id, as: :hidden, input_html: {class: "dynamic_main_product_id"}
 
         .row
-          .col-md-6
+          .col-md-12
             %h3 Part
             .product_info
-          .col-md-6
+          .col-md-12.select_main_part
             %h3 Main part
             / = link_to "Select main part", "#", class: "mainStoreIdPass applyStoreId", data: {producttype: "main_product_id"}, onclick: "Inventories.search_product(this); return false;"
             %div
               .product_info
               = s.input :main_product_id, as: :hidden, input_html: {class: "dynamic_main_product_id"}
 
-            / = link_to "Select main part", "#", id: "main_product_id_output_#{s.object.object_id}", class: "mainStoreIdPass applyStoreId", onclick: "Inventories.search_product_for_part(this); return false;", data: {storeId: "undefined", modalId: "search_product", remote: "true", selectpath: "", selectoptions: "onclick:Inventories.assign_i_product(this, 'search_product', 'main_product_id_output_#{s.object.object_id}');<>from_where:prn"}
-            = link_to "Select main part", "#", id: "main_product_id_output_#{s.object.object_id}", onclick: "Inventories.search_product_for_part(this); return false;", data: {storeId: "undefined", modalId: "search_product", remote: "true", selectpath: "", selectoptions: "onclick:Inventories.assign_i_product(this, 'search_product', 'main_product_id_output_#{s.object.object_id}');<>from_where:part_of_main_unit"}
+            = link_to "Select main part", "#", id: "main_product_id_output_#{s.object.object_id}", class: "mainStoreIdPass applyStoreId", onclick: "Inventories.search_product_for_part(this); return false;", data: {storeId: "undefined", modalId: "search_product", remote: "true", selectpath: "", selectoptions: "onclick:Inventories.assign_i_product(this, 'search_product', 'main_product_id_output_#{s.object.object_id}');<>from_where:prn"}
+            / = link_to "Select main part", "#", id: "main_product_id_output_#{s.object.object_id}", class: "main_part_link applyStoreId", onclick: "Inventories.search_product_for_part(this); return false;", data: {storeId: "undefined", modalId: "search_product", remote: "true", selectpath: "", selectoptions: "onclick:Inventories.assign_i_product(this, 'search_product', 'main_product_id_output_#{s.object.object_id}');<>from_where:part_of_main_unit"}
 
         .row
-          .col-md-1
-            = s.link_to_remove "Remove", class: "srn_item_remove"
-          .col-md-2
+          .col-md-12
             = s.input :returnable, wrapper: :append
-          .col-md-2
+          .col-md-12
             = s.input :spare_part, wrapper: :append
-          .col-md-3
+          .col-md-12
             = s.input :quantity, input_html: {value: s.object.quantity}, placeholder: "can't be 0", required: true
-          .col-md-4
+          .col-md-12
             = s.input :remarks
+          .col-md-12
+            = s.link_to_remove "Remove", class: "srn_item_remove"
     .row
-      .col-md-12
+      .col-md-6
         / = f.link_to_add "Add", :srn_items, id: "storeIdPass", class: "applyStoreId", data: {producttype: "product_id"}, onclick: "Inventories.search_product(this); return false;"
-        = f.link_to_add "Add Item", :srn_items, id: "storeIdPass", class: "applyStoreId", onclick: "Inventories.search_product_for_part(this); return false;", data: {id: "store_id", modalId: "search_product", remote: "true", selectpath: "", mainpartavailable: true, selectoptions: "onclick:Inventories.assign_i_product(this, 'search_product', 'storeIdPass');<>from_where:prn"}
+        = f.link_to_add "Add Item", :srn_items, id: "storeIdPass", class: "applyStoreId", onclick: "Inventories.search_product_for_part(this); return false;", data: {id: "store_id", modalId: "search_product", remote: "true", selectpath: "", selectoptions: "onclick:Inventories.assign_i_product(this, 'search_product', 'storeIdPass');<>from_where:prn"}
+
+      .col-md-6
+        = f.link_to_add "Add part of main unit", :srn_items, id: "storeIdPassMainPart", onclick: "Inventories.search_product_for_part(this); return false;", data: {storeId: "undefined", id: "store_id", modalId: "search_product", remote: "true", selectpath: "", selectoptions: "onclick:Inventories.assign_i_product(this, 'search_product', 'storeIdPassMainPart');<>from_where:prn"}
       .col-md-12
         = f.submit "Save", class: "btn btn-success btn-sm"
 

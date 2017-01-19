@@ -60,13 +60,9 @@ class Inventory < ActiveRecord::Base
     organization.name
   end
 
-  # def supplier_name
-  #   supplier.try(:name)
-  # end
-
-  # def formated_created_at
-  #   created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
-  # end
+  def product_stock_cost
+    inventory_product.stock_cost(id)
+  end
 
   belongs_to :organization, -> { where(type_id: 4) }, foreign_key: :store_id
   belongs_to :inventory_product, foreign_key: :product_id
@@ -134,11 +130,12 @@ class InventoryProduct < ActiveRecord::Base
   has_many :dyna_columns, as: :resourceable, autosave: true
 
 
-  after_save do |inventory|
-    inventory.generated_code = inventory.generated_item_code
+  after_save do |inventory_product|
+    inventory_product.generated_code = inventory_product.generated_item_code
+
   end
 
-  [:generated_code].each do |dyna_method|
+  [:generated_code, :type_count].each do |dyna_method|
     define_method(dyna_method) do
       dyna_columns.find_by_data_key(dyna_method).try(:data_value)
     end
@@ -146,7 +143,6 @@ class InventoryProduct < ActiveRecord::Base
     define_method("#{dyna_method}=") do |value|
       data = dyna_columns.find_or_initialize_by(data_key: dyna_method)
       data.data_value = (value.class==Fixnum ? value : value.strip)
-      @is_customer = data.data_value if dyna_method==:is_customer
       data.save if data.persisted?
     end
   end
@@ -213,6 +209,27 @@ class InventoryProduct < ActiveRecord::Base
   end
 
   def stock_cost(inventory_id = nil)
+    product_type_count = if inventory_product_info.need_serial
+      grn_serial_items.active_serial_items.to_a.count
+
+    elsif inventory_product_info.need_batch
+      grn_batches.to_a.count
+
+    else
+      grn_items.only_grn_items1.count
+
+    end
+
+    if product_type_count.to_i != self.type_count.to_i
+
+      Rails.cache.delete([:stock_cost, self.id, inventory_id.to_i ])
+
+      self.type_count = product_type_count
+
+      self.save if self.type_count.nil?
+
+    end
+
     Rails.cache.fetch([:stock_cost, self.id, inventory_id.to_i ]) do
       stock_cost = if inventory_product_info.need_serial
         grn_serial_items.active_serial_items.to_a.sum{|g| g.inventory_serial_item.inventory_id == inventory_id ? (g.grn_item.current_unit_cost.to_f + g.inventory_serial_item.inventory_serial_items_additional_costs.to_a.sum{|c| c.cost.to_f }) : 0 }
@@ -257,9 +274,13 @@ class InventoryProduct < ActiveRecord::Base
     indexes :grn_batches, type: "nested", include_in_parent: true
     indexes :grn_serial_items, type: "nested", include_in_parent: true
     indexes :inventory_batches, type: "nested", include_in_parent: true
-    indexes :inventories, type: "nested", include_in_parent: true
+    # indexes :inventories, type: "nested", include_in_parent: true
+    indexes :inventories, type: "nested", include_in_parent: true do
+      indexes :product_stock_cost, type: "double"
+    end
 
     indexes :product_type, type: "string", analyzer: "keyword"
+
 
   end
 
@@ -274,9 +295,48 @@ class InventoryProduct < ActiveRecord::Base
       end
       sort { by :generated_item_code, {order: "asc", ignore_unmapped: true} }
       # filter :range, published_at: { lte: Time.zone.now}
-      # raise to_curl
       highlight :description => { :number_of_fragments => 3 }, :options => { :tag => "<strong class='highlight'>" }
+      # raise to_curl
     end
+  end
+
+  def self.advance_search(params)
+    query = params[:query]
+
+    options = {
+      "query": {
+        "bool":{
+          "must":[
+            {
+              "query_string":{
+                "query": query
+              }
+            }
+          ]
+        }
+      },
+      "sort":[
+        {
+          "generated_item_code":{
+            "order":"asc",
+            "ignore_unmapped":true
+          }
+        }
+      ],
+      "aggs": {
+        "stock_cost": {
+          "sum": {
+            "field": "inventories.product_stock_cost"
+          }
+        }
+      },
+      "size":10,
+      "from":0
+    }
+
+    r = Tire.search('inventory_products', options)
+    HashToObject.new r.json
+    
   end
 
   def to_indexed_json
@@ -306,7 +366,8 @@ class InventoryProduct < ActiveRecord::Base
           only: [:name, :id]
         },
         inventories: {
-          only: [:id, :store_id, :product_id, :stock_quantity, :available_quantity]
+          only: [:id, :store_id, :product_id, :stock_quantity, :available_quantity],
+          methods: [:product_stock_cost]
         },
         inventory_serial_items: {
           only: [:id, :product_id],

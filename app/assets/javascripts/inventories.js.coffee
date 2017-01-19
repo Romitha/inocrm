@@ -767,6 +767,8 @@ window.Inventories =
     this_val = $(elem).val()
     $("#store_controller").removeClass("hide")
     $(".applyStoreId").data({"storeId": this_val, "storeid": this_val})
+    $("#storeIdPassMainPart").data({"mainpartstoreid": this_val})
+
     $(".srn_store").addClass("hide")
     $("#store_name").text($(":selected", elem).text())
 
@@ -790,12 +792,21 @@ window.Inventories =
           format: "yyyy-mm-dd"
           todayBtn: true
           todayHighlight: true
-        ), 100
 
-      if $(elem).data("mainpartavailable")
-        setTimeout ( ->
-          $(elem).prev().find(".applyStoreId").data({"storeId": store_id, "storeid": store_id})
-        ), 200
+        if store_id isnt ""
+          $(elem).prev().find(".select_main_part").remove()#.addClass("hide")
+
+          if $(elem).is(".mainStoreIdPass")
+            # used in SRN
+            # Math.floor(Math.random() * (max - min + 1)) + min
+            random_id = (Math.floor(Math.random() * (100 - 1 + 1)) + 1)
+            $(elem).attr("id", random_id)
+            window.localStorage.setItem("mainStoreIdPass", random_id)
+
+        else if $(elem).is("#storeIdPassMainPart")
+          $(elem).prev().find(".mainStoreIdPass").data({"storeId": $("#storeIdPassMainPart").data("mainpartstoreid"), "storeid": $("#storeIdPassMainPart").data("mainpartstoreid")})
+
+        ), 100
 
       return
       
@@ -817,10 +828,12 @@ window.Inventories =
   assign_i_product: (elem, dom1, ref_dom)->
     _this = $(elem)
     $("##{dom1}").modal("hide");
-    console.log $("##{ref_dom}").prev().attr("id")#find(".product_info:eq(0)").length
     $("##{ref_dom}").prev().find(".product_info:eq(0)").html _this.data("content")
-
     $("##{ref_dom}").prev().find(".dynamic_main_product_id:eq(0)").val(_this.data("productid"))
+
+    $("#"+window.localStorage.getItem("mainStoreIdPass")).prev().find(".product_info:eq(0)").html _this.data("content")
+    $("#"+window.localStorage.getItem("mainStoreIdPass")).prev().find(".dynamic_main_product_id:eq(0)").val(_this.data("productid"))
+
     $(".applicable_product_id").val(_this.data("productid"))
 
   selected_quantity: (e)->
