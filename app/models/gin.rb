@@ -94,6 +94,7 @@ class GinItem < ActiveRecord::Base
 
   belongs_to :gin
   belongs_to :inventory_product, foreign_key: :product_id
+  belongs_to :main_inventory_product, class_name: "InventoryProduct", foreign_key: :main_product_id
   belongs_to :srn_item, foreign_key: :srn_item_id
   belongs_to :currency
   belongs_to :product_condition

@@ -41,12 +41,25 @@
     = f.simple_fields_for :gin_items do |i|
       - index += 1
       = collapse collapse_type: "info", labelledby: "gin_form_collapse_search", header_content: "No: #{index} #{i.object.inventory_product.generated_item_code} #{i.object.inventory_product.description}", collapse_link: "gin_form_collapse_search_inv_#{i.object_id}", collapse_id: "gin_form_collapse" do
+
         - product = i.object.inventory_product
+        - main_product = i.object.main_inventory_product
 
         - need_serial = product.inventory_product_info.need_serial.present?
         - need_batch = product.inventory_product_info.need_batch.present?
+
         - inventory = product.inventories.find_by_store_id(f.object.store_id)
-        - stock_quantity = product.inventories.find_by_store_id(f.object.store_id).try(:stock_quantity)
+
+        - stock_quantity = inventory.try(:product_stock_cost)
+
+        - if main_product.present?
+          - main_inventory = main_product.inventories.find_by_store_id(f.object.store_id)
+
+          - main_stock_quantity = main_inventory.try(:product_stock_cost)
+
+          - main_inventory_bin = main_inventory.inventory_bin.description
+          - main_inventory_shelf = main_inventory.inventory_bin.inventory_shelf.description
+          - main_inventory_rack = main_inventory.inventory_bin.inventory_shelf.inventory_rack.description
 
         - if inventory.try(:inventory_bin)
           - inventory_bin = inventory.inventory_bin.description
@@ -54,30 +67,52 @@
           - inventory_rack = inventory.inventory_bin.inventory_shelf.inventory_rack.description
 
         = i.input :product_id, as: :hidden
+        = i.input :main_product_id, as: :hidden
         = i.input :srn_item_id, as: :hidden
         = i.input :returnable, as: :hidden
         = i.input :spare_part, as: :hidden
 
-        %dl.dl-horizontal.css_expand_dt
-          %dt Item code:
-          %dd= product.generated_item_code
-          %dt Item description:
-          %dd= product.description
-          %dt Unit:
-          %dd= product.inventory_unit.unit
-          %dt Requested Qty:
-          %dd= i.object.srn_item.quantity.to_f
-          %dt Balanced Qty to be issued:
-          %dd= i.object.srn_item.quantity.to_f - i.object.srn_item.gin_items.sum(:issued_quantity)
-          %dt Stock in hand:
-          %dd
-            %span{class: "label label-#{stock_quantity <= 0 ? 'danger' : 'default'}"}= stock_quantity
-          %dt Rack:
-          %dd= inventory_rack
-          %dt Shelf:
-          %dd= inventory_shelf
-          %dt Bin:
-          %dd= inventory_bin
+        .row
+          .col-md-6
+            %dl.dl-horizontal.css_expand_dt
+              %dt Item code:
+              %dd= product.generated_item_code
+              %dt Item description:
+              %dd= product.description
+              %dt Unit:
+              %dd= product.inventory_unit.unit
+              %dt Requested Qty:
+              %dd= i.object.srn_item.quantity.to_f
+              %dt Balanced Qty to be issued:
+              %dd= i.object.srn_item.quantity.to_f - i.object.srn_item.gin_items.sum(:issued_quantity)
+              %dt Stock in hand:
+              %dd
+                %span{class: "label label-#{stock_quantity.to_f <= 0 ? 'danger' : 'default'}"}= stock_quantity.to_f
+              %dt Rack:
+              %dd= inventory_rack
+              %dt Shelf:
+              %dd= inventory_shelf
+              %dt Bin:
+              %dd= inventory_bin
+
+          - if main_product.present?
+            .col-md-6
+              %dl.dl-horizontal.css_expand_dt
+                %dt Item code:
+                %dd= main_product.generated_item_code
+                %dt Item description:
+                %dd= main_product.description
+                %dt Unit:
+                %dd= main_product.inventory_unit.unit
+                %dt Stock in hand:
+                %dd
+                  %span{class: "label label-#{main_stock_quantity.to_f <= 0 ? 'danger' : 'default'}"}= main_stock_quantity.to_f
+                %dt Rack:
+                %dd= main_inventory_rack
+                %dt Shelf:
+                %dd= main_inventory_shelf
+                %dt Bin:
+                %dd= main_inventory_bin
 
         .row
           .col-md-12
@@ -85,6 +120,10 @@
               = link_to "Add serial item", batch_or_serial_for_gin_admins_inventories_path(store_id: f.object.store_id, product_id: i.object.product_id, srn_item_id: i.object.srn_item_id, batch_or_serial: "serial"), remote: true
             - elsif need_batch and !need_serial
               = link_to "Add batch", batch_or_serial_for_gin_admins_inventories_path(store_id: f.object.store_id, product_id: i.object.product_id, srn_item_id: i.object.srn_item_id, batch_or_serial: "batch"), remote: true
+
+            - if i.object.main_product_id.present?
+              = link_to "Part of main product", "javascript:void(0)", onclick: "Admins.select_serial_part_in_srn(); return false;"
+
           - if !need_serial and !need_batch
             .col-md-2
               = i.input :issued_quantity
@@ -101,7 +140,7 @@
           .col-md-12
             %div{id: "batch_or_serial_frame#{i.object.srn_item_id}"}
 
-  - if stock_quantity > 0
+  - if stock_quantity.to_f > 0
     .row
       .col-md-12
         = f.input :remarks, input_html: {value: nil}
@@ -110,3 +149,32 @@
         = f.submit "Save", class: "btn btn-sm btn-success"
 
 #batch_or_serial_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "batch_or_serial_modal", "aria-hidden" => true}
+
+%script{type: "text/html", id: "srn_serial_item"}
+  %table
+    %thead
+      %tr
+        %th No
+        %th Serial No
+        %th CT No
+        %th Parts not completed
+        %th Damage
+        %th Scavenge
+        %th Used
+        %th Repaired
+        %th Status
+        %th Action
+    %tbody
+      {{#each items}}
+      %tr
+        %td {{index}}
+        %td {{serialNo}}
+        %td {{ctNo}}
+        %td {{partsNotCompleted}}
+        %td {{damage}}
+        %td {{scavenge}}
+        %td {{used}}
+        %td {{repaired}}
+        %td {{status}}
+        %td {{index}}
+      {{/each}}

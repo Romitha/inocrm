@@ -195,3 +195,7 @@ window.Admins =
       fail: (e, data) ->
         if data.textStatus == 401
           console.log data.textStatus
+
+
+  select_serial_part_in_srn: ->
+    console.log "clicked"
