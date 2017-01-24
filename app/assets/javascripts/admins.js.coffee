@@ -9,6 +9,8 @@ window.Admins =
     @onClick_hide_quantity()
     @currency_select()
     @grn_main_part_hover()
+    @popup_button_enable()
+    @generate_serial_no()
     return
 
   admin_menu_dropdown: ->
@@ -196,6 +198,31 @@ window.Admins =
         if data.textStatus == 401
           console.log data.textStatus
 
+  popup_button_enable: ->
+    $("#inventory_product_category3_id").change ->
 
-  select_serial_part_in_srn: ->
-    console.log "clicked"
+      if $(@).val() != ""
+        category_value = $(@).val()
+        $("#serial_no_find").removeClass("hide")
+        $("#find_serial_id").data("categoryid", category_value)
+      else
+        $("#serial_no_find").addClass("hide")
+        $("#find_serial_id").data("categoryid", null)
+
+      # console.log $("#find_serial_id").data("categoryid")
+
+    $("#find_serial_id").click ->
+      category_value = $(@).data("categoryid")
+      $.get "/inventories/generate_serial_no?category3_id="+category_value, (response) ->
+        $("#modal_for_main_part").modal()
+        $("#modal_for_main_part .modal-body").html(Mustache.to_html($('#load_product_pic').html(), {"products": response}))
+
+  generate_serial_no: ->
+    generated_serial_no = parseInt($("#available_serial_no tbody > tr").data("serialno"))
+    if !isNaN(generated_serial_no)
+      generated_serial_no = generated_serial_no + 1
+      str = "" + generated_serial_no
+      pad = "00000"
+      ans = pad.substring(0,pad.length - str.length) + str
+      $("#inventory_product_serial_no").val(ans)
+      $("#modal_for_main_part").modal("hide")

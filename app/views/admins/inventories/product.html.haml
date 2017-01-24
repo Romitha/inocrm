@@ -5,19 +5,21 @@
     .col-md-4.brand
       = label_tag InventoryCategoryCaption.first.caption
       = select_tag "search_inventory[brand]", options_from_collection_for_select(InventoryCategory1.all, :id, :name, (params[:search_inventory] and params[:search_inventory][:brand])), include_blank: false, class: "form-control", required: true
+
     .col-md-4.product
       = label_tag InventoryCategoryCaption.second.caption
       = select_tag "search_inventory[product]", option_groups_from_collection_for_select(InventoryCategory1.all, :inventory_category2s, :id, :id, :name, (params[:search_inventory] and params[:search_inventory][:product])), include_blank: false, class: "form-control", required: true
+
     .col-md-4.category{style: "color: #900303;"}
       = label_tag InventoryCategoryCaption.third.caption
       = f.association :inventory_category3, collection: InventoryCategory2.all, as: :grouped_select, group_method: :inventory_category3s, group_label_method: :id, label_method: :name, value_method: :id, label: false, required:  true, include_blank: false
-      / = select_tag "search_inventory[product]", option_groups_from_collection_for_select(InventoryCategory1.all, :inventory_category2s, :id, :id, :name, (params[:search_inventory] and params[:search_inventory][:category])), include_blank: false, class: "form-control", required: true
 
   .row
     .col-md-4
       = f.input :serial_no, required: true, as: :string, input_html: {maxlength: 6, minlength: 6, class: "only_float"}, label: "Serial No"
-      / value: InventorySerialItem.last.serial_no, or value: InventoryProduct.last.serial_no + 1,reomve from above
-      = f.input :serial_no_order, as: :hidden, input_html: {value: InventoryProduct.all.count + 1}
+      #serial_no_find.hide
+        = link_to "#", "role" => "button",class: "btn btn-warning pull-right", id: "find_serial_id", data: {categoryid: nil} do
+          Generate Serial No
     .col-md-4
       = f.input :sku
     .col-md-4
@@ -253,4 +255,29 @@
   = paginate @inventory_product_all, remote: false, method: :get
 
 %script{type: "text/html", id: "load_product_pic"}
-  <img src="{{{result.picture.url}}}" alt= "Product picture" class="img-responsive" />
+  .row
+    .col-md-3.pull-right
+      = link_to "Generate New Serial No", "#", class: "btn btn-success btn-sm", onclick: "Admins.generate_serial_no(); return false;"
+  .row
+    .col-md-1
+    .col-md-10
+      %table.table#available_serial_no
+        %thead
+          %tr
+            %th Serial No
+            %th Description
+        %tbody
+          {{#products}}
+          %tr{data: {serialno: "{{serialNo}}"}}
+            %td {{serialNo}}
+            %td {{description}}
+          {{/products}}
+    .col-md-1
+
+#modal_for_main_part.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "modal_for_main_part", "aria-hidden" => true}
+  .modal-dialog.modal-lg
+    .modal-content
+      .modal-header
+        %h4.modal-title Sereial No List
+      .modal-body
+      .modal-footer

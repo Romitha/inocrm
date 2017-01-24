@@ -1875,6 +1875,12 @@ class InventoriesController < ApplicationController
 
   end
 
+  def generate_serial_no
+    Inventory
+    products = InventoryProduct.order("serial_no DESC").where(category3_id: params[:category3_id]).map{|p| {serialNo: p.generated_serial_no, description: p.description}}
+    render json: products
+  end
+
   private
 
     def find_ticket
