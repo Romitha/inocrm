@@ -1,5 +1,5 @@
 = link_to "Re-search", gin_admins_inventories_path
-- stock_quantity = 0
+- total_stock_quantity = 0
 .row
   .col-md-2
     %h4 GIN
@@ -51,6 +51,7 @@
         - inventory = product.inventories.find_by_store_id(f.object.store_id)
 
         - stock_quantity = inventory.try(:product_stock_cost)
+        - total_stock_quantity += stock_quantity.to_f
 
         - if main_product.present?
           - main_inventory = main_product.inventories.find_by_store_id(f.object.store_id)
@@ -122,7 +123,9 @@
               = link_to "Add batch", batch_or_serial_for_gin_admins_inventories_path(store_id: f.object.store_id, product_id: i.object.product_id, srn_item_id: i.object.srn_item_id, batch_or_serial: "batch"), remote: true
 
             - if i.object.main_product_id.present?
-              = link_to "Part of main product", "javascript:void(0)", onclick: "Admins.select_serial_part_in_srn(); return false;"
+              = hidden_field_tag :main_inventory_serial_part_id
+
+              = link_to "Part of main product", "javascript:void(0)", onclick: "Admins.select_serial_item_or_part_in_srn(this, 'serial_item', '#{i.object.main_product_id}', 'true'); return false;"
 
           - if !need_serial and !need_batch
             .col-md-2
@@ -140,7 +143,7 @@
           .col-md-12
             %div{id: "batch_or_serial_frame#{i.object.srn_item_id}"}
 
-  - if stock_quantity.to_f > 0
+  - if total_stock_quantity.to_f > 0
     .row
       .col-md-12
         = f.input :remarks, input_html: {value: nil}
@@ -151,30 +154,70 @@
 #batch_or_serial_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "batch_or_serial_modal", "aria-hidden" => true}
 
 %script{type: "text/html", id: "srn_serial_item"}
-  %table
-    %thead
-      %tr
-        %th No
-        %th Serial No
-        %th CT No
-        %th Parts not completed
-        %th Damage
-        %th Scavenge
-        %th Used
-        %th Repaired
-        %th Status
-        %th Action
-    %tbody
-      {{#each items}}
-      %tr
-        %td {{index}}
-        %td {{serialNo}}
-        %td {{ctNo}}
-        %td {{partsNotCompleted}}
-        %td {{damage}}
-        %td {{scavenge}}
-        %td {{used}}
-        %td {{repaired}}
-        %td {{status}}
-        %td {{index}}
-      {{/each}}
+  .modal-dialog.modal-lg
+    .modal-content
+      .modal-header
+        %h4.modal-title Select item
+      .modal-body
+        %table.table.table-striped
+          %thead
+            %tr
+              %th No
+              %th Serial No
+              %th CT No
+              %th Parts not completed
+              %th Damage
+              %th Scavenge
+              %th Used
+              %th Repaired
+              %th Status
+              %th Action
+          %tbody
+            {{#items}}
+            %tr
+              %td {{index}}
+              %td {{serialNo}}
+              %td {{ctNo}}
+              %td {{partsNotCompleted}}
+              %td {{damage}}
+              %td {{scavenge}}
+              %td {{used}}
+              %td {{repaired}}
+              %td {{status}}
+              %td {{{action}}}
+            {{/items}}
+
+%script{type: "text/html", id: "srn_serial_part"}
+  .modal-dialog.modal-lg
+    .modal-content
+      .modal-header
+        %h4.modal-title Select part
+      .modal-body
+        {{{back}}}
+        %table.table.table-striped
+          %thead
+            %tr
+              %th No
+              %th Serial No
+              %th CT No
+              %th Parts not completed
+              %th Damage
+              %th Scavenge
+              %th Used
+              %th Repaired
+              %th Status
+              %th Action
+          %tbody
+            {{#items}}
+            %tr
+              %td {{index}}
+              %td {{serialNo}}
+              %td {{ctNo}}
+              %td {{partsNotCompleted}}
+              %td {{damage}}
+              %td {{scavenge}}
+              %td {{used}}
+              %td {{repaired}}
+              %td {{status}}
+              %td {{{action}}}
+            {{/items}}

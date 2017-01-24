@@ -836,6 +836,8 @@ window.Inventories =
 
     $(".applicable_product_id").val(_this.data("productid"))
 
+    window.localStorage.clear("mainStoreIdPass")
+
   selected_quantity: (e)->
     selected_quantity = parseInt($("#selected_quantity").text())
     balance_quantity = parseInt($("#balance_to_be_issued").data("fixed"))

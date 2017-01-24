@@ -405,6 +405,7 @@ Rails.application.routes.draw do
         end
 
         get "filter_brand_product"
+        get "serial_item_or_part"
 
       end
     end

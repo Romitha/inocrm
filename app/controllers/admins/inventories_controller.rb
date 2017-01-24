@@ -1141,6 +1141,11 @@ module Admins
 
         if gin_item.issued_quantity > 0
           if gin_item.srn_item.main_product_id.present?
+            puts "*****************"
+            puts "entered into main part"
+            puts "*****************"
+            main_inventory_serial_part_id = params[:main_inventory_serial_part_id]
+
             main_inventory_serial_part = InventorySerialPart.find(main_inventory_serial_part_id)
 
             if [main_inventory_serial_part.inv_status_id, main_inventory_serial_part.inventory_serial_item.inv_status_id].all? { |id| id == InventorySerialItemStatus.find_by_code("AV").id }
@@ -1307,6 +1312,27 @@ module Admins
       redirect_to gin_admins_inventories_url
     end
 
+    def serial_item_or_part
+      Inventory
+
+      items = {}
+
+      case params[:item_type]
+      when "serial_item"
+        product = InventoryProduct.find params[:item_id]
+
+        items.merge! items: product.inventory_serial_items.where(inv_status_id: 1).map.with_index { |i, index| {index: (index+1), serialNo: i.generated_serial_no, ctNo: i.ct_no, partsNotCompleted: i.parts_not_completed, damage: i.damage, scavenge: i.scavenge, used: i.used, repaired: i.repaired, status: i.inventory_serial_item_status.name, action: view_context.link_to("select", "javascript:void(0)", onclick: "Admins.select_serial_item_or_part_in_srn(this, 'serial_part', '#{i.id}'); return false;") } }
+
+      when "serial_part"
+        serial_item = InventorySerialItem.find params[:item_id]
+
+        items.merge! items: serial_item.inventory_serial_parts.where(inv_status_id: 1).map.with_index { |i, index| {index: (index+1), serialNo: i.serial_no, ctNo: i.ct_no, partsNotCompleted: i.parts_not_completed, damage: i.damage, scavenge: i.scavenge, used: i.used, repaired: i.repaired, status: i.inventory_serial_item_status.name, action: view_context.link_to("select", "javascript:void(0)", onclick: "Admins.select_serial_item_or_part_in_srn(this, 'serial_part_selected', '#{i.id}'); return false;") } }, back: view_context.link_to("Back", "javasctipt.void(0)", onclick: "Admins.select_serial_item_or_part_in_srn(this, 'serial_item', '#{serial_item.product_id}'); return false;")
+
+      end
+      render json: items
+
+    end
+
     def batch_or_serial_for_gin
       Inventory
       Grn
@@ -1339,6 +1365,8 @@ module Admins
       @inventory = @product.inventories.find_by_store_id params[:store_id]
       @srn_item = SrnItem.find params[:srn_item_id]
       @grn_items = @product.grn_items.joins(:grn).where("inventory_not_updated = false and remaining_quantity > 0 and inv_grn.store_id = #{@store.id}").order("inv_grn.created_at #{@product.fifo ? 'ASC' : 'DESC' }")
+
+      # @grn_items = GrnItem.search(query: "inventory_not_updated:false AND remaining_quantity:>0 AND grn.store_id:#{@store.id}")
       render "admins/inventories/gin/batch_or_serial_for_gin"
 
     end
