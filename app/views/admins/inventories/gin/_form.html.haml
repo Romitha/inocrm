@@ -50,13 +50,13 @@
 
         - inventory = product.inventories.find_by_store_id(f.object.store_id)
 
-        - stock_quantity = inventory.try(:product_stock_cost)
+        - stock_quantity = inventory.try(:inventory_stock_quantity)
         - total_stock_quantity += stock_quantity.to_f
 
         - if main_product.present?
           - main_inventory = main_product.inventories.find_by_store_id(f.object.store_id)
 
-          - main_stock_quantity = main_inventory.try(:product_stock_cost)
+          - main_stock_quantity = main_inventory.try(:inventory_stock_quantity)
 
           - main_inventory_bin = main_inventory.inventory_bin.description
           - main_inventory_shelf = main_inventory.inventory_bin.inventory_shelf.description

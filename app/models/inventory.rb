@@ -64,6 +64,10 @@ class Inventory < ActiveRecord::Base
     inventory_product.stock_cost(id)
   end
 
+  def inventory_stock_quantity
+    inventory_product.product_stock_quantity(id)
+  end
+
   belongs_to :organization, -> { where(type_id: 4) }, foreign_key: :store_id
   belongs_to :inventory_product, foreign_key: :product_id
 
@@ -245,6 +249,10 @@ class InventoryProduct < ActiveRecord::Base
       stock_cost
     end
 
+  end
+
+  def product_stock_quantity(inventory_id = nil)
+    inventories.find_by_id(inventory_id).try(:stock_quantity).to_f
   end
 
   def product_type

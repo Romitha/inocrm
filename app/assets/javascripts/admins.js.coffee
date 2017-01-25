@@ -222,7 +222,7 @@ window.Admins =
     if !isNaN(generated_serial_no)
       generated_serial_no = generated_serial_no + 1
       str = "" + generated_serial_no
-      pad = "00000"
+      pad = "000000"
       ans = pad.substring(0,pad.length - str.length) + str
       $("#inventory_product_serial_no").val(ans)
       $("#modal_for_main_part").modal("hide")

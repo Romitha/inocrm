@@ -17,6 +17,7 @@
   .row
     .col-md-4
       = f.input :serial_no, required: true, as: :string, input_html: {maxlength: 6, minlength: 6, class: "only_float"}, label: "Serial No"
+      = f.input :serial_no_order, as: :hidden, input_html: {value: InventoryProduct.all.count + 1}
       #serial_no_find.hide
         = link_to "#", "role" => "button",class: "btn btn-warning pull-right", id: "find_serial_id", data: {categoryid: nil} do
           Generate Serial No
@@ -87,6 +88,7 @@
 
   .row
     .col-md-12
+      = hidden_field_tag ("#{params[:edit_more] ? 'update' : 'create'}"), ("#{params[:edit_more] ? 'update' : 'create'}")
       = f.submit "Save", class: "btn btn-success", id: "submit_new_inventory_product", name: "#{params[:edit_more] ? 'update' : 'create'}"
   %hr
 
