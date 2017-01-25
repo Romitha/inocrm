@@ -301,7 +301,7 @@ class InventoryProduct < ActiveRecord::Base
           # puts params[:store_id]
         end
       end
-      sort { by :generated_item_code, {order: "asc", ignore_unmapped: true} }
+      sort { by (params[:order_by_field] || :generated_item_code), {order: "#{params[:order] or 'asc'}", ignore_unmapped: true} }
       # filter :range, published_at: { lte: Time.zone.now}
       highlight :description => { :number_of_fragments => 3 }, :options => { :tag => "<strong class='highlight'>" }
       # raise to_curl
