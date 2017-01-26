@@ -167,6 +167,28 @@ module Admins
       render "admins/searches/gin/select_gin"
     end
 
+    # def search_pos
+    #   Inventory
+    #   User
+    #   PO
+    #   refined_search_grn = ""
+    #   if params[:search_po].present?
+    #     search_po = params[:search_po]
+    #     refined_search_po = search_po.map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
+    #   end
+
+    #   params[:query] = refined_search_grn
+    #   @po = Po.search(params)
+
+    #   case params[:po_callback]
+    #   when "view_po"
+    #     @po = Po.find params[:po_id]
+    #     render "admins/searches/grn/view_po"
+    #   else
+    #     render "admins/inventories/search_po"
+    #   end
+    # end
+
     private
 
       def update_grn_item_params

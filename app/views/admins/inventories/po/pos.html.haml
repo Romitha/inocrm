@@ -1,0 +1,57 @@
+.row
+  .col-md-12
+    = form_tag pos_admins_inventories_path(purchase_order: "search_po"), method: :get, class: "form-horizontal" do
+      %h2.small_scale_padding-bottom1 PO Search
+      .form-group
+        = label_tag "PO No", "Store", class: "col-md-2 control-label"
+        .col-md-10
+          / = select_tag "po[store.id]", options_from_collection_for_select(@stores, "id", "name"), class: "form-control"
+          = select_tag "po[store.id]", options_from_collection_for_select(Organization.stores, "id", "name"), class: "form-control"
+          / = select_tag "po[store.id]", class: "form-control"
+      .form-group
+        = label_tag "PO No", "PO No", class: "col-md-2 control-label"
+        .col-md-10
+          = text_field_tag "po[formated_po_no]", nil, placeholder: "Po No", class: "form-control"
+      .form-group
+        = label_tag "PO No", "PO date from", class: "col-md-2 control-label"
+        .col-md-10
+          = text_field_tag "po_date_from", nil, placeholder: "Po Date from", class: "form-control datepicker"
+      .form-group
+        = label_tag "PO No", "PO date to", class: "col-md-2 control-label"
+        .col-md-10
+          = text_field_tag "po_date_to", nil, placeholder: "Po Date to", class: "form-control datepicker"
+      .form-group
+        = label_tag "PO No", "Supplier", class: "col-md-2 control-label"
+        .col-md-10
+          = select_tag "po[supplier.id]", options_from_collection_for_select(Organization.suppliers, "id", "name"), class: "form-control", include_blank: true
+      .btn-group
+        = submit_tag "Search", class: "btn btn-success", name: "search"
+        / %input{:onclick => "window.location.reload()", :type => "button", class: "btn btn-lg", :value => "Back"}
+
+
+%h2.small_scale_padding-top1 PO List
+/ = form_tag view_po_admins_inventories_path(purchase_order: "view_po"), remote: true, method: :get, class: "form-horizontal" do
+%table.table.table-hover
+  %thead
+    %tr
+      %th No
+      %th Store
+      %th Supplier Name
+      %th PO. No
+      %th PO. Date
+      %th Delivery date
+      %th Remarks
+      %th Created by
+      %th Action
+  %tbody
+    - @pos.each_with_index do |po, index|
+      %tr
+        %td= index+1
+        %td= po.store_name
+        %td= po.supplier.name
+        %td= po.formated_po_no
+        %td= po.created_at.to_date.try(:strftime, "%Y-%m-%d")
+        %td= po.delivery_date and po.delivery_date.to_date.try(:strftime, "%Y-%m-%d")
+        %td= simple_format po.remarks
+        %td= po.created_by_user_full_name
+        %td= link_to "Select", pos_admins_inventories_path(po_id: po.id), target: "_blank"

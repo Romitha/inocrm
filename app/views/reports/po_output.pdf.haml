@@ -8,7 +8,7 @@
       = wicked_pdf_image_tag (print_object.owner.logo || "organization_image.png"), class: "img-responsive"
     .col-xs-7.text-center
       %span12
-        %h3{:style => "text-decoration: underline;"} CUSTOMER QUOTATION
+        %h3{:style => "text-decoration: underline;"} PURCHASE ORDER
       %span12
         %strong=print_object.owner.name
       %br/
@@ -38,9 +38,6 @@
       %strong=print_object.customer.name
       %p=print_object.customer.address
     .col-xs-4.col-xs-offset-2
-      .container.col-xs-8
-        %h4 PURCHASE ORDER
-      %br/
       %table.table-condensed
         %tr
           %th.text-right Number:

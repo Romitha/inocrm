@@ -507,6 +507,27 @@ module Admins
 
     end
 
+    def pos
+      # refined_search = "closed:false"
+      Inventory
+      if params[:po_id].present?
+        @po = InventoryPo.find params[:po_id]
+
+        render "admins/inventories/po/po"
+      else
+        if params[:search].present?
+          refined_inventory_po = params[:po].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
+
+          refined_search = [refined_inventory_po, refined_search].map{|v| v if v.present? }.compact.join(" AND ")
+        end
+
+        params[:query] = refined_search
+        @pos = InventoryPo.search(params)
+
+        render "admins/inventories/po/pos"
+      end
+    end
+
     def grn
       Inventory
       Grn

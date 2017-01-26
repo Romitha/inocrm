@@ -340,6 +340,7 @@ Rails.application.routes.draw do
 
       collection do
 
+        get "pos"
         get "grn"
         get "po"
         post "create_po"
