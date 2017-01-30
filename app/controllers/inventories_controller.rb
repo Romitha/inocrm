@@ -1880,10 +1880,10 @@ class InventoriesController < ApplicationController
     # products = InventoryProduct.order("serial_no DESC").where(category3_id: params[:category3_id]).map{|p| {serialNo: p.generated_serial_no, description: p.description}}
 
     params[:query] = params[:category].map { |k, v| "#{k}:#{v}" if v.present? and v != "undefined"  }.compact.join(" AND ")
-    params[:order] = "desc"
-    params[:order_by_field] = :serial_no
-
+    # params[:order] = "desc"
+    # params[:order_by_field] = :serial_no
     products = InventoryProduct.search(params).map { |p| {serialNo: p.serial_no, generatedItemCode: p.generated_item_code, description: p.description}}
+    # products = InventoryProduct.advance_search(params).hits.hits.map{|h| h["_source"]}.map { |p| {serialNo: p["serial_no"], generatedItemCode: p["generated_item_code"], description: p["description"]}}
     render json: products
   end
 

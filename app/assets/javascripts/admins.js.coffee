@@ -10,7 +10,6 @@ window.Admins =
     @currency_select()
     @grn_main_part_hover()
     @popup_button_enable()
-    @generate_serial_no()
     return
 
   admin_menu_dropdown: ->
@@ -229,7 +228,9 @@ window.Admins =
 
 
   generate_serial_no: ->
-    generated_serial_no = parseInt($("#available_serial_no tbody > tr").data("serialno"))
+    # generated_serial_no = parseInt($("#available_serial_no tbody > tr").data("serialno"))
+    generated_serial_no = parseInt($("#available_serial_no tbody tr").last().data("serialno"))
+    # console.log generated_serial_no
     if !isNaN(generated_serial_no)
       generated_serial_no = generated_serial_no + 1
       str = "" + generated_serial_no
