@@ -1,5 +1,6 @@
 - uri = URI(request.url)
 
+
 = simple_nested_form_for ticket, url: update_terminate_invoice_invoices_path, method: :post do |f|
 
   = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
@@ -7,14 +8,88 @@
   = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
   - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
     = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+  .row
+    .col-md-12
+      %strong Terminated Reason:
+      = f.object.reason
+    .col-md-12.panel.panel-default
+      = f.simple_fields_for :act_terminate_job_payments do |t|
+        .col-md-4
+          %strong Payment Type:
+          = t.object.payment_item.name
+        .col-md-4
+          %strong Payment Amount:
+          = number_with_precision t.object.payment_item.default_amount, precision: 2
+        .row
+          .col-md-12
+            / = label_tag "Adjust"
+            / = check_box_tag :adjust_checked
+            = content_tag :div, "", id: 'content_tag1', data: {source: ticket.cus_payment_required}
+            = label_tag "Adjust"
+            %input{:id => "adjust_checked", :class => "adjust_checkbox", :checked => "true", :name => "vehicle", :type => "checkbox", :value => "Car", onchange: "Invoices.on_click_adjust_check_visibility(this);"}
+          .col-md-12
+            .col-md-6
+              = t.input :amount, label: "Adjust amount", input_html: {:class => "adjust_container", :id => "amount_field"}
+            .col-md-6
+              = t.association :reason, label: "Adjust reason", input_html: {:class => "adjust_container", :id => "reason_field"}
+  .row
+    .col-md-12
+      Final amount to be paid:
+      = f.object.final_amount_to_be_paid
 
-  = f.simple_fields_for :act_terminate_job_payments do |t|
-    = t.object.payment_item.name
-    = t.object.payment_item.default_amount
-    = label_tag "Adjust"
-    = check_box_tag :adjust_checked
-    = t.input :amount, label: "Adjust amount"
-    = t.association :reason, label: "Adjust reason"
+    - if ticket.cus_payment_required
+      .col-md-12.panel.panel-default
+        = f.simple_fields_for :ticket_invoice_advance_payments do |p|
+          .panel-body
+            .col-md-12
+              .col-md-12
+                %strong Payment Type:
+                = p.object
+              .col-md-6
+                = p.input :ticket_payment_received, label: "Recieved Amount", required: false
+              .col-md-6
+                = p.input :note, label: "Payment Note", required: false
 
-  Final amount to be paid:
-  = f.object.final_amount_to_be_paid
+            .col-md-12
+              .col-md-3
+                = label_tag "Payment Completed"
+                = check_box_tag :cus_payment_completed
+              .col-md-3
+                = label_tag "Invoicing Completed"
+                = check_box_tag :invoicing_completed
+              .col-md-3
+                .btn.btn-default
+                  %span View Invoice
+                .btn.btn-info
+                  %span Print Invoice
+  .row
+    .col-md-12
+      .col-md-4
+        - InformCustomer.where(ticket_action_id: @ticket.user_ticket_action_ids).each do |i|
+          .col-md-12
+            %strong Informed to Customer:
+            yes
+          .col-md-12
+            %strong Informed by:
+            = i.user_ticket_action.action_by
+          .col-md-12
+            %strong Informed at:
+            = i.user_ticket_action.action_at.try(:strftime, "%Y-%m-%d")
+          .col-md-12
+            %strong Informed Note:
+            = i.note
+      .col-md-4
+        = content_tag :div, "", id: 'content_tag2', data: {source: ticket.ticket_type.id}
+        = check_box_tag :unit_return_customer
+        = label_tag "Unit Returned to Customer"
+    .col-md-12.small_scale_padding-top1
+      .btn.btn-default
+        %span Inform Customer
+      .btn.btn-info
+        %span Print Delivery Note
+    .col-md-12.small_scale_padding-top1.small_scale_padding-bottom1
+      .col-md-6
+      .col-md-6
+        .col-md-4.pull-right
+          = f.submit "Save", class: "btn btn-sm btn-success"
+          = link_to "Cancel","#", class: "btn btn-sm btn-default"

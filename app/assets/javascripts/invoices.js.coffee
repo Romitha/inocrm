@@ -5,6 +5,9 @@ window.Invoices =
     @customer_feedback_re_opened()
     @readonly_checkbox_in_customer_feedback()
     @activate_deducted_amount_terminate_foc()
+    @on_click_adjust_check_visibility()
+    @unit_returned_checkbox()
+    @adjust_checked_visibility()
     return
 
   quotation_change: ->
@@ -170,3 +173,33 @@ window.Invoices =
       else
         $("#deducted_amount_text").prop("readonly", false)
         $("#deducted_amount_text").val("0")
+
+  on_click_adjust_check_visibility: (elem) ->
+    this_elem = $(elem)
+    $('.adjust_checkbox').change ->
+      if @checked
+        $(".adjust_container").prop("disabled", false)
+      else
+        $('.adjust_container').prop("disabled", true)
+      return
+    return
+
+  unit_returned_checkbox: ->
+    $('#content_tag2').data('source')
+
+    if $('#content_tag2').data('source') == 1
+      $("#unit_return_customer").prop("disabled", false)
+      $("#unit_return_customer").prop("checked", true)
+    else if $('#content_tag2').data('source') == 2
+      $("#unit_return_customer").prop("disabled", true)
+    return
+
+  adjust_checked_visibility: ->
+    $('#content_tag1').data('source')
+
+    if $('#content_tag1').data('source') == true
+      $(".adjust_checkbox").prop("disabled", false)
+    else if $('#content_tag1').data('source') == false
+      $(".adjust_checkbox").prop("disabled", true)
+      $(".adjust_container").prop("disabled", true)
+    return
