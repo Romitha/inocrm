@@ -219,6 +219,8 @@
       .col-md-1
         %strong Serial No
       .col-md-1
+        %strong Item Code
+      .col-md-1
         %strong CT NO
       .col-md-1
         %strong Available
@@ -268,6 +270,9 @@
           %li
             %strong Damaged
             = boolean_in_word inventory_serial_part.damage, "Yes", "No"
+          %li
+            %strong Description
+            = inventory_serial_part.try(:inventory_product).try(:description)
 
         %strong Remarks:
         #{simple_format inventory_serial_part.remarks}
@@ -285,6 +290,8 @@
             = grn_serial_part.grn_item.grn.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
         .col-md-1
           = inventory_serial_part.serial_no
+        .col-md-1
+          = inventory_serial_part.try(:inventory_product).try(:generated_item_code)
         .col-md-1
           = inventory_serial_part.ct_no
         .col-md-1
