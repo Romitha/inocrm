@@ -76,10 +76,11 @@
           %tr
             %th.text-right VAT REG No:
             %td
+              = print_object1.owner.vat_num
           %tr
             %th.text-right Created Date:
             %td
-              = print_object[:created_at]
+              = print_object[:created_date]
           %tr
             %th.text-right Validity Period:
             %td
@@ -140,15 +141,15 @@
             %th.text-right Payment Term:
             %td.text-right{colspan: 2}= print_object[:payment_term]
 
-    .col-xs-6
-      %table.table-default
+    .col-xs-10
+      %table.table-condensed
         %tr
           %th Warranty:
           %td
             = print_object[:warranty]
         %tr
           %th Note:
-          %td
+          %td.col-xs-11
             = print_object[:note]
       %br/
 
