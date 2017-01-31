@@ -240,14 +240,14 @@ window.Admins =
       $("#modal_for_main_part").modal("hide")
 
   select_serial_item_or_part_in_srn: (elem, item_type, item_id, randomId)->
-
-
     $.get "/admins/inventories/serial_item_or_part?item_type=#{item_type}&item_id=#{item_id}", (response)->
       elem = $(elem)
 
       if randomId is "true"
+        $("[id^='main_part_']").remove()
         random_id = (Math.floor(Math.random() * (100 - 1 + 1)) + 1)
         elem.prev().attr("id", random_id)
+        elem.after("<div id='main_part_#{random_id}'></div>")
 
         window.localStorage.setItem("mainStoreIdPass", random_id)
 
@@ -264,5 +264,10 @@ window.Admins =
         $("#batch_or_serial_modal").modal('hide')
 
         $("#"+window.localStorage.getItem("mainStoreIdPass")).val(item_id)
+
+        serialPartInfo = elem.data("info")
+        console.log serialPartInfo
+
+        $("#main_part_"+window.localStorage.getItem("mainStoreIdPass")).html Mustache.to_html($("#selected_serial_part").html(), serialPartInfo)
 
         window.localStorage.clear("mainStoreIdPass")

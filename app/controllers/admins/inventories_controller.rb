@@ -1141,8 +1141,9 @@ module Admins
       Organization
       Inventory
       @gin = Gin.new gin_params
+      main_inventory_serial_part_id = params[:main_inventory_serial_part_id]
 
-      @gin.gin_items.each{|gin_item| @gin.gin_items.delete(gin_item) if gin_item.new_record? and gin_item.issued_quantity.to_f <= 0 }
+      @gin.gin_items.each{|gin_item| @gin.gin_items.delete(gin_item) if gin_item.new_record? and main_inventory_serial_part_id.blank? and gin_item.issued_quantity.to_f <= 0 }
 
       @gin.gin_items.each do |gin_item|
         if gin_item.srn_item.issue_terminated
@@ -1152,24 +1153,22 @@ module Admins
 
         end
 
+        gin_item.issued_quantity ||= 0
+
         # gin_item.issued_quantity = gin_item.srn_item.gin_items.sum(:issued_quantity) if gin_item.issued_quantity > gin_item.srn_item.gin_items.sum(:issued_quantity)
         already_issued_quantities = gin_item.srn_item.gin_items.sum(:issued_quantity)
         store_requested_quantities = gin_item.srn_item.quantity
 
         still_to_issue = store_requested_quantities - already_issued_quantities
 
-        gin_item.issued_quantity = still_to_issue if gin_item.issued_quantity > still_to_issue
+        gin_item.issued_quantity = still_to_issue if gin_item.issued_quantity.to_f > still_to_issue
 
-        if gin_item.issued_quantity > 0
+        if main_inventory_serial_part_id.present? or gin_item.issued_quantity.to_f > 0
           if gin_item.srn_item.main_product_id.present?
-            puts "*****************"
-            puts "entered into main part"
-            puts "*****************"
-            main_inventory_serial_part_id = params[:main_inventory_serial_part_id]
 
-            main_inventory_serial_part = InventorySerialPart.find(main_inventory_serial_part_id)
+            main_inventory_serial_part = InventorySerialPart.find_by_id(main_inventory_serial_part_id)
 
-            if [main_inventory_serial_part.inv_status_id, main_inventory_serial_part.inventory_serial_item.inv_status_id].all? { |id| id == InventorySerialItemStatus.find_by_code("AV").id }
+            if main_inventory_serial_part and [main_inventory_serial_part.inv_status_id, main_inventory_serial_part.inventory_serial_item.inv_status_id].all? { |id| id == InventorySerialItemStatus.find_by_code("AV").id }
 
               @product_id = main_inventory_serial_part.inventory_product.id
 
@@ -1197,7 +1196,7 @@ module Admins
               main_inventory_serial_part.inventory_serial_item.update parts_not_completed: true, updated_by: current_user.id
 
 
-              gin_item.update({
+              gin_item.attributes = {
               issued_quantity: 1,
               product_condition_id: product_condition_id,
               currency_id: currency_id,
@@ -1207,7 +1206,7 @@ module Admins
               return_completed: false,
               spare_part: gin_item.srn_item.spare_part,
               inventory_not_updated: true
-              })#inv_gin_item
+              }
 
               gin_source = gin_item.gin_sources.build(grn_item_id: @iss_grn_item_id, grn_batch_id: @iss_grn_batch_id,grn_serial_item_id: @iss_grn_serial_item_id, issued_quantity: gin_item.srn_item.quantity, unit_cost: part_cost_price, returned_quantity: 0)#inv_gin_source
 
@@ -1249,7 +1248,7 @@ module Admins
             # elsif product.inventory_product_info.need_batch #Issue Batch Item
             Rails.cache.fetch([ :gin, :grn_batches, gin_item.srn_item_id.to_i ]).to_a.each do |grn_batch|
               gin_source = grn_batch.gin_sources.select{|g| g.new_record? }.first
-              grn_batch_issued_qty = gin_source.issued_quantity
+              grn_batch_issued_qty = gin_source.issued_quantity.to_f
 
               if grn_batch.remaining_quantity > 0 and grn_batch.remaining_quantity.to_f >= grn_batch_issued_qty.to_f# and grn_batch.grn_item.grn.store_id == gin.store_id
                 product_id = grn_batch.grn_item.product_id
@@ -1281,9 +1280,9 @@ module Admins
 
               iss_quantity1 = 0
               @grn_items.each do |grn_item|
-                grn_item_issued_qty = grn_item.remaining_quantity >= (gin_item.issued_quantity - iss_quantity1) ? (gin_item.issued_quantity - iss_quantity1) : grn_item.remaining_quantity
+                grn_item_issued_qty = grn_item.remaining_quantity >= (gin_item.issued_quantity.to_f - iss_quantity1) ? (gin_item.issued_quantity.to_f - iss_quantity1) : grn_item.remaining_quantity
 
-                if grn_item.remaining_quantity >= grn_item_issued_qty and (gin_item.issued_quantity > iss_quantity1)# and grn_item.grn.store_id == gin.store_id
+                if grn_item.remaining_quantity >= grn_item_issued_qty and (gin_item.issued_quantity.to_f > iss_quantity1)# and grn_item.grn.store_id == gin.store_id
                   # product_id = grn_item.product_id
 
                   tot_cost_price  = grn_item.current_unit_cost
@@ -1309,7 +1308,7 @@ module Admins
 
         gin_item.returned_quantity = 0
 
-        gin_item.srn_item.update closed: (gin_item.srn_item.quantity <= gin_item.srn_item.gin_items.sum(:issued_quantity) + gin_item.issued_quantity)
+        gin_item.srn_item.update closed: (gin_item.srn_item.quantity <= gin_item.srn_item.gin_items.sum(:issued_quantity) + gin_item.issued_quantity.to_f)
 
       end
 
@@ -1342,12 +1341,14 @@ module Admins
       when "serial_item"
         product = InventoryProduct.find params[:item_id]
 
-        items.merge! items: product.inventory_serial_items.where(inv_status_id: 1).map.with_index { |i, index| {index: (index+1), serialNo: i.generated_serial_no, ctNo: i.ct_no, partsNotCompleted: i.parts_not_completed, damage: i.damage, scavenge: i.scavenge, used: i.used, repaired: i.repaired, status: i.inventory_serial_item_status.name, action: view_context.link_to("select", "javascript:void(0)", onclick: "Admins.select_serial_item_or_part_in_srn(this, 'serial_part', '#{i.id}'); return false;") } }
+        items.merge! items: product.inventory_serial_items.where(inv_status_id: 1).map.with_index { |i, index| {index: (index+1), serialNo: i.generated_serial_no, ctNo: i.ct_no, partsNotCompleted: i.parts_not_completed, damage: i.damage, scavenge: i.scavenge, used: i.used, repaired: i.repaired, status: i.inventory_serial_item_status.name, action: view_context.link_to("select", "javascript:void(0)", onclick: "Admins.select_serial_item_or_part_in_srn(this, 'serial_part', '#{i.id}'); return false;") } if i.inventory_serial_parts.present? }.compact
 
       when "serial_part"
         serial_item = InventorySerialItem.find params[:item_id]
 
-        items.merge! items: serial_item.inventory_serial_parts.where(inv_status_id: 1).map.with_index { |i, index| {index: (index+1), serialNo: i.serial_no, ctNo: i.ct_no, partsNotCompleted: i.parts_not_completed, damage: i.damage, scavenge: i.scavenge, used: i.used, repaired: i.repaired, status: i.inventory_serial_item_status.name, action: view_context.link_to("select", "javascript:void(0)", onclick: "Admins.select_serial_item_or_part_in_srn(this, 'serial_part_selected', '#{i.id}'); return false;") } }, back: view_context.link_to("Back", "javasctipt.void(0)", onclick: "Admins.select_serial_item_or_part_in_srn(this, 'serial_item', '#{serial_item.product_id}'); return false;")
+        item_info = {productDescription: serial_item.inventory_product.description, productSerialNo: serial_item.inventory_product.generated_serial_no, inventoryName: serial_item.inventory.store_name, serialNo: serial_item.serial_no}
+
+        items.merge! items: serial_item.inventory_serial_parts.where(inv_status_id: 1).map.with_index { |i, index| {index: (index+1), serialNo: i.serial_no, ctNo: i.ct_no, partsNotCompleted: i.parts_not_completed, damage: i.damage, scavenge: i.scavenge, used: i.used, repaired: i.repaired, status: i.inventory_serial_item_status.name, action: view_context.link_to("select", "javascript:void(0)", onclick: "Admins.select_serial_item_or_part_in_srn(this, 'serial_part_selected', '#{i.id}'); return false;", data: {info: {item: item_info, part: {productDescription: i.inventory_product.description, serialNo: i.serial_no, ct_no: i.ct_no}}} ) } }, back: view_context.link_to("Back", "javasctipt.void(0)", onclick: "Admins.select_serial_item_or_part_in_srn(this, 'serial_item', '#{serial_item.product_id}'); return false;")
 
       end
       render json: items

@@ -50,13 +50,13 @@
 
         - inventory = product.inventories.find_by_store_id(f.object.store_id)
 
-        - stock_quantity = inventory.try(:inventory_stock_quantity)
+        - stock_quantity = inventory.try(:stock_quantity)
         - total_stock_quantity += stock_quantity.to_f
 
         - if main_product.present?
           - main_inventory = main_product.inventories.find_by_store_id(f.object.store_id)
 
-          - main_stock_quantity = main_inventory.try(:inventory_stock_quantity)
+          - main_stock_quantity = main_inventory.try(:stock_quantity)
 
           - main_inventory_bin = main_inventory.inventory_bin.description
           - main_inventory_shelf = main_inventory.inventory_bin.inventory_shelf.description
@@ -75,73 +75,80 @@
 
         .row
           .col-md-6
-            %dl.dl-horizontal.css_expand_dt
-              %dt Item code:
-              %dd= product.generated_item_code
-              %dt Item description:
-              %dd= product.description
-              %dt Unit:
-              %dd= product.inventory_unit.unit
-              %dt Requested Qty:
-              %dd= i.object.srn_item.quantity.to_f
-              %dt Balanced Qty to be issued:
-              %dd= i.object.srn_item.quantity.to_f - i.object.srn_item.gin_items.sum(:issued_quantity)
-              %dt Stock in hand:
-              %dd
-                %span{class: "label label-#{stock_quantity.to_f <= 0 ? 'danger' : 'default'}"}= stock_quantity.to_f
-              %dt Rack:
-              %dd= inventory_rack
-              %dt Shelf:
-              %dd= inventory_shelf
-              %dt Bin:
-              %dd= inventory_bin
+            .row
+              .col-md-12
+                %h4 Product info
+                %dl.dl-horizontal.css_expand_dt
+                  %dt Item code:
+                  %dd= product.generated_item_code
+                  %dt Item description:
+                  %dd= product.description
+                  %dt Unit:
+                  %dd= product.inventory_unit.unit
+                  %dt Requested Qty:
+                  %dd= i.object.srn_item.quantity.to_f
+                  %dt Balanced Qty to be issued:
+                  %dd= i.object.srn_item.quantity.to_f - i.object.srn_item.gin_items.sum(:issued_quantity)
+                  %dt Stock in hand:
+                  %dd
+                    %span{class: "label label-#{stock_quantity.to_f <= 0 ? 'danger' : 'default'}"}= stock_quantity.to_f
+                  %dt Rack:
+                  %dd= inventory_rack
+                  %dt Shelf:
+                  %dd= inventory_shelf
+                  %dt Bin:
+                  %dd= inventory_bin
 
-          - if main_product.present?
-            .col-md-6
-              %dl.dl-horizontal.css_expand_dt
-                %dt Item code:
-                %dd= main_product.generated_item_code
-                %dt Item description:
-                %dd= main_product.description
-                %dt Unit:
-                %dd= main_product.inventory_unit.unit
-                %dt Stock in hand:
-                %dd
-                  %span{class: "label label-#{main_stock_quantity.to_f <= 0 ? 'danger' : 'default'}"}= main_stock_quantity.to_f
-                %dt Rack:
-                %dd= main_inventory_rack
-                %dt Shelf:
-                %dd= main_inventory_shelf
-                %dt Bin:
-                %dd= main_inventory_bin
+              - if main_product.present?
+                .col-md-12
+                  %h4 Main Product info
+                  %dl.dl-horizontal.css_expand_dt
+                    %dt Item code:
+                    %dd= main_product.generated_item_code
+                    %dt Item description:
+                    %dd= main_product.description
+                    %dt Unit:
+                    %dd= main_product.inventory_unit.unit
+                    %dt Stock in hand:
+                    %dd
+                      %span{class: "label label-#{main_stock_quantity.to_f <= 0 ? 'danger' : 'default'}"}= main_stock_quantity.to_f
+                    %dt Rack:
+                    %dd= main_inventory_rack
+                    %dt Shelf:
+                    %dd= main_inventory_shelf
+                    %dt Bin:
+                    %dd= main_inventory_bin
 
-        .row
-          .col-md-12
-            - if need_serial and !need_batch
-              = link_to "Add serial item", batch_or_serial_for_gin_admins_inventories_path(store_id: f.object.store_id, product_id: i.object.product_id, srn_item_id: i.object.srn_item_id, batch_or_serial: "serial"), remote: true
-            - elsif need_batch and !need_serial
-              = link_to "Add batch", batch_or_serial_for_gin_admins_inventories_path(store_id: f.object.store_id, product_id: i.object.product_id, srn_item_id: i.object.srn_item_id, batch_or_serial: "batch"), remote: true
+              .col-md-12
+                - if i.object.main_product_id.present?
 
-            - if i.object.main_product_id.present?
-              = hidden_field_tag :main_inventory_serial_part_id
+                  = hidden_field_tag :main_inventory_serial_part_id
 
-              = link_to "Part of main product", "javascript:void(0)", onclick: "Admins.select_serial_item_or_part_in_srn(this, 'serial_item', '#{i.object.main_product_id}', 'true'); return false;"
+                  = link_to "Part of main product", "javascript:void(0)", onclick: "Admins.select_serial_item_or_part_in_srn(this, 'serial_item', '#{i.object.main_product_id}', 'true'); return false;"
 
-          - if !need_serial and !need_batch
-            .col-md-2
-              = i.input :issued_quantity
-          - else
-            = i.input :issued_quantity, as: :hidden, input_html: {id: "issued_quantity_input#{i.object.srn_item_id}"}
-            .col-md-2
-              %strong Issued quantity
-              %div{id: "issued_quantity_text#{i.object.srn_item_id}"}
+              .col-md-12
+                - if need_serial and !need_batch
+                  = link_to "Add serial item", batch_or_serial_for_gin_admins_inventories_path(store_id: f.object.store_id, product_id: i.object.product_id, srn_item_id: i.object.srn_item_id, batch_or_serial: "serial"), remote: true
+                - elsif need_batch and !need_serial
+                  = link_to "Add batch", batch_or_serial_for_gin_admins_inventories_path(store_id: f.object.store_id, product_id: i.object.product_id, srn_item_id: i.object.srn_item_id, batch_or_serial: "batch"), remote: true
+              .col-md-12
+                %div{id: "batch_or_serial_frame#{i.object.srn_item_id}"}
 
-          .col-md-3
-            = i.association :product_condition, include_blank: false, label_method: :condition, required: true
-          .col-md-7
-            = i.input :remarks
-          .col-md-12
-            %div{id: "batch_or_serial_frame#{i.object.srn_item_id}"}
+          .col-md-6
+            .row
+              - if !need_serial and !need_batch
+                .col-md-12
+                  = i.input :issued_quantity
+              - else
+                = i.input :issued_quantity, as: :hidden, input_html: {id: "issued_quantity_input#{i.object.srn_item_id}"}
+                .col-md-12
+                  %strong Issued quantity
+                  %div{id: "issued_quantity_text#{i.object.srn_item_id}"}
+
+              .col-md-12
+                = i.association :product_condition, include_blank: false, label_method: :condition, required: true
+              .col-md-12
+                = i.input :remarks
 
   - if total_stock_quantity.to_f > 0
     .row
@@ -221,3 +228,35 @@
               %td {{status}}
               %td {{{action}}}
             {{/items}}
+
+%script{type: "text/html", id: "selected_serial_part"}
+  .panel.panel-default
+    %h4.panel-heading Part of main product info
+    .panel-body
+      .row
+        .col-md-12
+          %h4 Part info
+          %dl.dl-horizontal
+            {{#part}}
+            %dt Product Serial No
+            %dd {{productSerialNo}}
+            %dt Product Description
+            %dd {{productDescription}}
+            %dt Inventory Name
+            %dd {{inventoryName}}
+            %dt Serial No
+            %dd {{serialNo}}
+            {{/part}}
+        .col-md-12
+          %h4 Item info
+          %dl.dl-horizontal
+            {{#item}}
+            %dt Inventory Name
+            %dd {{inventoryName}}
+            %dt Product Description
+            %dd {{productDescription}}
+            %dt Product Serial No
+            %dd {{productSerialNo}}
+            %dt Serial No
+            %dd {{serialNo}}
+            {{/item}}

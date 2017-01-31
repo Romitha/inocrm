@@ -760,7 +760,6 @@ class TicketsController < ApplicationController
     t_attributes = @ticket.attributes
     t_attributes.merge! ticket_params
     @ticket.attributes = t_attributes
-    puts @ticket.attributes
     respond_to do |format|
       if @ticket.valid?
         format.html {redirect_to @ticket, notice: "Successfully updated."}
