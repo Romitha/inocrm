@@ -1878,13 +1878,27 @@ class InventoriesController < ApplicationController
   def generate_serial_no
     Inventory
     # products = InventoryProduct.order("serial_no DESC").where(category3_id: params[:category3_id]).map{|p| {serialNo: p.generated_serial_no, description: p.description}}
+    @show_generate_serial_button = (params[:category]["category3_id"].present? and params[:category]["category3_id"] != "undefined")
+
+    # puts params[:category]["category3_id"].present? and params[:category]["category3_id"] != "undefined"
 
     params[:query] = params[:category].map { |k, v| "#{k}:#{v}" if v.present? and v != "undefined"  }.compact.join(" AND ")
-    # params[:order] = "desc"
-    # params[:order_by_field] = :serial_no
-    products = InventoryProduct.search(params).map { |p| {serialNo: p.serial_no, generatedItemCode: p.generated_item_code, description: p.description}}
+
+    #((((((((()))))))))
+    params[:order] = "desc"
+    params[:order_by_field] = :serial_no
+    #((((((((()))))))))
+
+    # @products = InventoryProduct.search(params).map { |p| {serialNo: p.serial_no, generatedItemCode: p.generated_item_code, description: p.description}}
+
+    # @products = Kaminari.paginate_array(InventoryProduct.search(params)).page(params[:page]).per(10)
+    @products = InventoryProduct.search(params)
+
+
+
+
     # products = InventoryProduct.advance_search(params).hits.hits.map{|h| h["_source"]}.map { |p| {serialNo: p["serial_no"], generatedItemCode: p["generated_item_code"], description: p["description"]}}
-    render json: products
+    # render json: @products
   end
 
   private

@@ -220,16 +220,18 @@ window.Admins =
       category1_value = $(@).data("category1id")
       category2_value = $(@).data("category2id")
       category3_value = $(@).data("category3id")
-      $.get "/inventories/generate_serial_no?category[category3_id]="+category3_value+"&category[category2_id]="+category2_value+"&category[category1_id]="+category1_value, (response) ->
-        $("#modal_for_main_part").modal()
-        $("#modal_for_main_part .modal-body").html(Mustache.to_html($('#load_product_pic').html(), {"products": response}))
-        if typeof category3_value isnt "undefined" and category3_value isnt ""
-          $("#generated_button").removeClass("hide")
 
+      $.get "/inventories/generate_serial_no?category[category3_id]="+category3_value+"&category[category2_id]="+category2_value+"&category[category1_id]="+category1_value
 
   generate_serial_no: ->
-    # generated_serial_no = parseInt($("#available_serial_no tbody > tr").data("serialno"))
-    generated_serial_no = parseInt($("#available_serial_no tbody tr").last().data("serialno"))
+    #((((((((()))))))))
+    generated_serial_no = parseInt($("#available_serial_no tbody > tr").data("serialno"))
+    #((((((((()))))))))
+
+    # #***************************************************************************
+    # generated_serial_no = parseInt($("#available_serial_no tbody tr").last().data("serialno"))
+    # #***************************************************************************
+
     # console.log generated_serial_no
     if !isNaN(generated_serial_no)
       generated_serial_no = generated_serial_no + 1

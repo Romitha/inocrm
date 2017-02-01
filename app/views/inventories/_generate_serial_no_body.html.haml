@@ -1,0 +1,28 @@
+.row
+  .col-md-3.pull-right
+    - if show_generate_serial_button
+      = link_to "Generate New Serial No", "#", class: "btn btn-success btn-sm", onclick: "Admins.generate_serial_no(); return false;", id: "generated_button"
+.row
+  .col-md-1
+  .col-md-10
+    = paginate products, remote: true, method: :get
+    %table.table#available_serial_no
+      %thead
+        %tr
+          %th Item Code
+          %th Description
+      %tbody
+        - products.each do |product|
+          %tr{data: {serialno: product.serial_no}}
+            %td 
+              = product.generated_item_code
+            %td 
+              = product.description
+          - if !products
+            %tr{data: {serialno: 0}}
+              %td
+              %td
+
+    = paginate products, remote: true, method: :get
+
+  .col-md-1

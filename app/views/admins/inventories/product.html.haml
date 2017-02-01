@@ -254,33 +254,32 @@
 
         /     %script{type: "text/html", id: "load_files"}
         /       = render "document_attachments/autoload"
-  = paginate @inventory_product_all, remote: false, method: :get
 
 %script{type: "text/html", id: "load_product_pic"}
-  .row
-    .col-md-3.pull-right
-      = link_to "Generate New Serial No", "#", class: "btn btn-success btn-sm hide", onclick: "Admins.generate_serial_no(); return false;", id: "generated_button"
-  .row
-    .col-md-1
-    .col-md-10
-      %table.table#available_serial_no
-        %thead
-          %tr
-            %th Item Code
-            %th Description
-        %tbody
-          {{#products}}
-          %tr{data: {serialno: "{{serialNo}}"}}
-            %td {{generatedItemCode}}
-            %td {{description}}
-          {{/products}}
-          {{^products}}
-          %tr{data: {serialno: 0}}
-            %td {{generatedItemCode}}
-            %td {{description}}
-          {{/products}}
+  / .row
+  /   .col-md-3.pull-right
+  /     = link_to "Generate New Serial No", "#", class: "btn btn-success btn-sm hide", onclick: "Admins.generate_serial_no(); return false;", id: "generated_button"
+  / .row#generate_serial_no_body_id
+  /   / .col-md-1
+  /   / .col-md-10
+  /   /   %table.table#available_serial_no
+  /   /     %thead
+  /   /       %tr
+  /   /         %th Item Code
+  /   /         %th Description
+  /   /     %tbody
+  /   /       {{#products}}
+  /   /       %tr{data: {serialno: "{{serialNo}}"}}
+  /   /         %td {{generatedItemCode}}
+  /   /         %td {{description}}
+  /   /       {{/products}}
+  /   /       {{^products}}
+  /   /       %tr{data: {serialno: 0}}
+  /   /         %td {{generatedItemCode}}
+  /   /         %td {{description}}
+  /   /       {{/products}}
 
-    .col-md-1
+  /   / .col-md-1
 
 #modal_for_main_part.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "modal_for_main_part", "aria-hidden" => true}
   .modal-dialog.modal-lg
