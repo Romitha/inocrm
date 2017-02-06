@@ -1,0 +1,13 @@
+default: &default
+  adapter: mysql2
+  pool: 5
+  username: root
+  password: mysql
+  timeout: 5000
+
+development:
+  <<: *default
+  database: inocrm_dev
+test:
+  <<: *default
+  database: inocrm_testzz
