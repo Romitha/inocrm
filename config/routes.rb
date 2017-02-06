@@ -160,7 +160,7 @@ Rails.application.routes.draw do
       get "alert"
 
       get "ajax_show"
-
+      post "edit_po_note"
       post "create_product_brand"
       post "create_new_category"
       post "create_new_product"
@@ -192,6 +192,7 @@ Rails.application.routes.draw do
       post "call_resolution_template"
       post "js_call_invoice_for_hp"
       post "js_call_invoice_item"
+      post "js_call_view_more_inv_so"
       post "create_invoice_for_so"
       post "call_mf_order_template"
       post "call_alert_template"

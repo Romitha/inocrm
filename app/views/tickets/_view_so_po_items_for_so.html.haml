@@ -1,0 +1,66 @@
+.row
+  .col-md-3
+    %strong Invoice No:
+    = inv_id.try(:invoice_no)
+  .col-md-3
+    %strong Invoice Date:
+    = inv_id.try(:created_at).try(:strftime, "%Y-%m-%d")
+.row
+  .col-md-3
+    %strong PO No:
+    = so_po_id.po_no
+  .col-md-3
+    %strong PO Date:
+    = so_po_id.po_date.try(:strftime, "%Y-%m-%d")
+  .col-md-3
+    %strong Sales Order No:
+    = so_po_id.so_no
+  .col-md-3
+    %strong Amount:
+    = so_po_id.amount
+  
+.row
+  .col-md-12
+    %table.table
+      %thead
+        %tr
+          %th No
+          %th Event No
+          %th Order No
+          %th Date Ordered
+          %th Part No
+          %th Description
+          %th Ticket No
+          %th Serial No
+          %th Expected Amount
+          %th Amount($)
+      %tbody
+        - so_po_id.so_po_items.each_with_index do |po_item, index|
+          %tr
+            %td
+              = (index+1)
+            %td
+              = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:event_no)
+            %td
+              = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:order_no)
+            %td
+              = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:issued_at).try(:strftime, "%Y-%m-%d")
+            %td
+              = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:spare_part_id)
+            %td
+              = po_item.ticket_spare_part.try(:spare_part_description)
+            %td
+              = po_item.ticket_spare_part.ticket_id.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
+            %td
+              = po_item.ticket_spare_part.try(:spare_part_no)
+            %td
+              = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:payment_expected_manufacture)
+            %td
+              = po_item.try(:amount)
+.row
+  .col-md-6
+    %strong Invoice Note
+    = inv_id.try(:note)
+  .col-md-6
+    %strong Note
+    = so_po_id.try(:note)

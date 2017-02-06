@@ -648,6 +648,10 @@ window.Tickets =
     po_id = elem
     $.post "js_call_invoice_item", {po_id: po_id}
 
+  view_inv_so_po:(elem, inv_id) ->
+    po_id = elem
+    $.post "js_call_view_more_inv_so", {po_id: po_id, inv_id: inv_id}
+
   reset_so_po: ->
     $("#invoice_invoice_no").val("")
     $("#invoice_created_at").val("")

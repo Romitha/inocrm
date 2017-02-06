@@ -1,7 +1,7 @@
 class TicketsController < ApplicationController
   before_action :set_ticket, only: [:show, :edit, :update, :destroy, :update_change_ticket_cus_warranty, :update_change_ticket_repair_type, 
     :update_start_action, :update_re_assign, :update_request_close_approval, :update_hold, :update_create_fsr, :update_edit_serial_no_request, :update_edit_fsr, 
-    :update_terminate_job, :update_action_taken, :update_request_spare_part, :update_request_on_loan_spare_part, :update_hp_case_id, :update_resolved_job, :update_deliver_unit, :update_job_estimation_request, :update_recieve_unit, :update_un_hold, :update_check_fsr]
+    :update_terminate_job, :update_action_taken, :update_request_spare_part, :update_request_on_loan_spare_part, :update_hp_case_id, :update_resolved_job, :update_deliver_unit, :update_job_estimation_request, :update_recieve_unit, :update_un_hold, :update_check_fsr, :edit_po_note]
   before_action :set_organization_for_ticket, only: [:new, :edit, :create_customer]
   # layout :workflow_diagram, only: [:workflow_diagram]
 
@@ -2057,6 +2057,37 @@ class TicketsController < ApplicationController
       @product_brand_id = ProductBrand.find params[:product_brand_id]
     end
     # @all_invoices = Invoice.all
+  end
+
+  def js_call_view_more_inv_so
+    Invoice
+    TicketSparePart
+    User
+    if params[:po_id].present?
+      @so_po_id = SoPo.find params[:po_id]
+      # @invoice = Invoice.new
+      # @invoice_all = Invoice.all
+      # @so_po_id.so_po_items.each do |po_item|
+      #   @invoice.invoice_items.build item_no: po_item.item_no, amount: po_item.amount
+      # end
+    end
+
+    if params[:inv_id].present?
+      @inv_id = Invoice.find params[:inv_id]
+    end
+  end
+
+  def edit_po_note
+    TicketSparePart
+    if params[:edit]
+      @soponote = SoPo.find params[:so_po_id]
+      if @soponote.update po_params
+        params[:edit] = nil
+        render json: @soponote
+      else
+        render json: @soponote.errors.full_messages.join
+      end
+    end
   end
 
   def js_call_invoice_item
