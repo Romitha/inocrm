@@ -114,4 +114,4 @@
     %strong Updated At:
     = product.try(:updated_at).try(:strftime, "%Y-%m-%d")
   .col-md-4
-    = image_tag (product.inventory_product_info.picture.url || "no_image.jpg"), class: "img-responsive padding-top1 padding-bottom1 view_img_product"
+    = image_tag (product.inventory_product_info.picture.url || "no_image1.png"), class: "img-responsive padding-top1 padding-bottom1 view_img_product"
