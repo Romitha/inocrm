@@ -160,7 +160,7 @@ Rails.application.routes.draw do
       get "alert"
 
       get "ajax_show"
-      post "edit_po_note"
+      put "edit_po_note"
       post "create_product_brand"
       post "create_new_category"
       post "create_new_product"
