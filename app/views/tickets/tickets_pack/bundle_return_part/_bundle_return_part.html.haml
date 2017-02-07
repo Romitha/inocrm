@@ -10,6 +10,8 @@
           %th
             %strong No
           %th
+            %strong Date Returned
+          %th
             %strong Event No
           %th
             %strong Ticket No
@@ -18,6 +20,8 @@
           %th
             %strong Description
           %th
+            %strong Serial No
+          %th
             %strong Part Status
           %th
             %strong Action
@@ -25,10 +29,12 @@
         - @manufacture_parts.each_with_index do |manufacture_part, index|
           %tr
             %th= index+1
+            %td=manufacture_part.return_parts_bundle.try(:created_at).try(:strftime, "%m-%d-%Y")
             %td= manufacture_part.event_no
             %td= manufacture_part.ticket_spare_part.ticket_id.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
             %td= manufacture_part.ticket_spare_part.spare_part_no
             %td= manufacture_part.ticket_spare_part.spare_part_description
+            %td= manufacture_part.ticket_spare_part.return_part_serial_no
             %td= manufacture_part.ticket_spare_part.spare_part_status_action.name
             %td= link_to "Add", "#", onclick: "Inventories.load_mustache_bundle_return_part('add', #{manufacture_part.id}); return false;"
 .row.added_to_bundle_parts

@@ -3,10 +3,12 @@
 <thead>
 <tr>
 <th>No</th>
+<th>Date Returned</th>
 <th>Event No</th>
 <th>Ticket No</th>
 <th>Part No</th>
 <th>Description</th>
+<th>Serial No</th>
 <th>Part Status</th>
 <th>Action</th>
 </tr>
@@ -16,6 +18,8 @@
 %tr
   %td
     {{indexer}}
+  %th
+    {{date_returned}}
   %td
     {{event_no}}
   %td
@@ -24,6 +28,8 @@
     {{spare_part_no}}
   %td
     {{spare_part_description}}
+  %td
+    {{serial_no}}
   %td
     {{part_status}}
   %td

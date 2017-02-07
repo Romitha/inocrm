@@ -1807,7 +1807,7 @@ class TicketsController < ApplicationController
         manufactures_count = manufacture_ids.count
         manufactures_count += session[:manufacture_rest_ids].count
 
-        @bundle_manufactures = TicketSparePartManufacture.where(id: manufacture_ids).map.with_index { |m, index| {id: m.id, indexer: (index+1), event_no: m.event_no, ticket_no:  m.ticket_spare_part.ticket_id.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"]), spare_part_no: m.ticket_spare_part.spare_part_no, spare_part_description: m.ticket_spare_part.spare_part_description, part_status: m.ticket_spare_part.spare_part_status_action.name, task_action: "remove_from_bundle", task_action_name: "remove from bundle"} }
+        @bundle_manufactures = TicketSparePartManufacture.where(id: manufacture_ids).map.with_index { |m, index| {id: m.id, indexer: (index+1), date_returned: m.return_parts_bundle.try(:created_at).try(:strftime, "%m-%d-%Y"), event_no: m.event_no, ticket_no:  m.ticket_spare_part.ticket_id.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"]), spare_part_no: m.ticket_spare_part.spare_part_no, spare_part_description: m.ticket_spare_part.spare_part_description, serial_no: m.ticket_spare_part.return_part_serial_no, part_status: m.ticket_spare_part.spare_part_status_action.name, task_action: "remove_from_bundle", task_action_name: "remove from bundle"} }
 
         @bundle = {bundle_id: @bundle.id, bundle_note: @bundle.note, bundle_no: @bundle.bundle_no, bundled_by: User.cached_find_by_id(@bundle.created_by).try(:email), manufacture_count: manufactures_count, readonly: "readonly", task_id: session[:task_id], process_id: session[:process_id], owner: session[:owner]}
 
