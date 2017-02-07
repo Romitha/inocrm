@@ -167,7 +167,7 @@
             = request_part.store.name
           %dt Item Code
           %dd
-            = request_part.main_inventory_product.serial_no
+            = request_part.main_inventory_product.generated_item_code
           %dt Item Description
           %dd
             = request_part.main_inventory_product.description
@@ -261,7 +261,7 @@
                 = sto.object.store.name
               %dt Item Code
               %dd
-                = sto.object.main_inventory_product.try(:serial_no)
+                = sto.object.main_inventory_product.try(:generated_item_code)
               %dt Item Description
               %dd
                 = sto.object.main_inventory_product.try(:description)
