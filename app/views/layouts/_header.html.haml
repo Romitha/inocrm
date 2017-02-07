@@ -1,11 +1,13 @@
-%nav.navbar.navbar-default.navbar-static-top.navbar-inverse
+%nav.navbar.navbar-default.navbar-static-top
   .container
     %button.navbar-toggle{type: "button", data: {toggle: "collapse", target: "#header-nav"}}
       %span.sr-only Toggle Navigation
       %span.icon-bar
       %span.icon-bar
       %span.icon-bar
-    .logo= link_to image_tag("logo.png", class: "small_scale_margin-top1"),root_url
+    / .logo= link_to image_tag("logo.png", class: "small_scale_margin-top1"),root_url
+    = link_to root_url, class: "navbar-brand" do
+      INOCRM
     .navbar-collapse.collapse.navbar-responsive-collapse.navbar-right.fixed#header-nav
       %ul.nav.navbar-nav
         %li

@@ -1,0 +1,17 @@
+- if params[:search]
+  $("#result_gins").html("#{j render 'admins/searches/gin/gins'}");
+
+- else
+  - if @display_method[:modal]
+    $("##{@display_method[:modal][:modal_id]}").modal({backdrop: "static", keyboard: false});
+    $("##{@display_method[:modal][:modal_id]} .modal-body").html("#{j render 'admins/searches/customers_suppliers/search_customers_suppliers', remote: @remote}");
+
+  - elsif @display_method[:inpage]
+    $("##{@display_method[:inpage][:render_id]}").html("#{j render 'admins/searches/customers_suppliers/search_customers_suppliers', remote: @remote}");
+
+  - else
+    alert("no render mechanism");
+
+$("a[rel~=popover], .has-popover").popover()
+
+Tickets.remove_ajax_loader();

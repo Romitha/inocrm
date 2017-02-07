@@ -2,9 +2,77 @@
 
 $border-color: #aeaeae;
 
+// @font-face {
+//   font-family: 'open_sansbold';
+//   src: font-url('opensans-bold-webfont.woff2') format('woff2'),
+//        font-url('opensans-bold-webfont.woff') format('woff');
+//   font-weight: normal;
+//   font-style: normal;
+
+// }
+
+// @font-face {
+//   font-family: 'open_sansbold_italic';
+//   src: font-url('opensans-bolditalic-webfont.woff2') format('woff2'),
+//        font-url('opensans-bolditalic-webfont.woff') format('woff');
+//   font-weight: normal;
+//   font-style: normal;
+
+// }
+
+// @font-face {
+//   font-family: 'open_sansitalic';
+//   src: font-url('opensans-italic-webfont.woff2') format('woff2'),
+//        font-url('opensans-italic-webfont.woff') format('woff');
+//   font-weight: normal;
+//   font-style: normal;
+
+// }
+
+// @font-face {
+//   font-family: 'open_sanslight';
+//   src: font-url('opensans-light-webfont.woff2') format('woff2'),
+//        font-url('opensans-light-webfont.woff') format('woff');
+//   font-weight: normal;
+//   font-style: normal;
+
+// }
+
+// @font-face {
+//   font-family: 'open_sanslight_italic';
+//   src: font-url('opensans-lightitalic-webfont.woff2') format('woff2'),
+//        font-url('opensans-lightitalic-webfont.woff') format('woff');
+//   font-weight: normal;
+//   font-style: normal;
+
+// }
+
+// @font-face {
+//   font-family: 'open_sansregular';
+//   src: font-url('opensans-regular-webfont.woff2') format('woff2'),
+//        font-url('opensans-regular-webfont.woff') format('woff');
+//   font-weight: normal;
+//   font-style: normal;
+
+// }
+
 body, html {
   height: 100%;
+  // font-family: 'open_sansregular', Arial, sans-serif;
+  background-color: #fafafa;
 }
+
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  text-indent: 1px;
+  text-overflow: '';
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAANCAYAAACpUE5eAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3QsGCAcIf0aE0QAAADFJREFUOMtjYBgFgw4wQun/ZOghKPmfUsOwKfhPiWG4FP0n1zB8Cv+TYxgh8H94pkMAEc4GBW/dMm0AAAAASUVORK5CYII=) !important;
+  background-repeat: no-repeat;
+  background-position: right 5px;
+  padding-right: 10px;
+}
+
 .main-content {
   min-height: 91.15%;
   margin: 0 auto -65px;
@@ -344,7 +412,7 @@ abbr{
   position: relative;
 }
 .form-control{
-  height: 28px;
+  // height: 28px;
   padding-top: 4px;
 }
 

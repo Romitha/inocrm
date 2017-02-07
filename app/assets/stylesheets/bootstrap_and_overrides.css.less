@@ -33,7 +33,23 @@
 //
 // Example:
 // @link-color: #ff0000;
+
+@font-face {
+  font-family: 'open_sansregular';
+  src: font-url('opensans-regular-webfont.woff2') format('woff2'),
+       font-url('opensans-regular-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+
+}
+
+@font-family-sans-serif: 'open_sansregular', Arial, sans-serif;
 @font-size-base: 13px;
+
+@navbar-default-bg: #5677fc;
+@navbar-default-color: #ffffff;
+@navbar-default-link-color: #ffffff;
+
 @text-color: #393939;
 @input-border-radius: 0;
 @border-radius-base: 0;
