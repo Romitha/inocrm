@@ -241,8 +241,8 @@ window.Admins =
       $("#inventory_product_serial_no").val(ans)
       $("#modal_for_main_part").modal("hide")
 
-  select_serial_item_or_part_in_srn: (elem, item_type, item_id, randomId)->
-    $.get "/admins/inventories/serial_item_or_part?item_type=#{item_type}&item_id=#{item_id}", (response)->
+  select_serial_item_or_part_in_srn: (elem, item_type, item_id, randomId, item_product_id)->
+    $.get "/admins/inventories/serial_item_or_part?item_type=#{item_type}&item_id=#{item_id}&item_product_id=#{item_product_id}", (response)->
       elem = $(elem)
 
       if randomId is "true"

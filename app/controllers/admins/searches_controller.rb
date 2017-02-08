@@ -40,7 +40,7 @@ module Admins
 
       @total_stock_cost = @inv_pro.stock_cost(@inventory.try(:id)) if @inv_pro.present?
 
-      query = "inventory_product.id:#{@inv_pro.try(:id)} AND NOT inventory_serial_item_status.name: Not Available"
+      query = "inventory_product.id:#{@inv_pro.try(:id)}"
 
       case params[:type]
       when "Serial"
@@ -48,7 +48,7 @@ module Admins
         if @store.present?
           # p = Tire.search 'inventory_serial_items', {"query":{"bool":{"must":[{"query_string":{"query":"inventory.store_id:18 AND inventory_product.id:13"}}]}},"sort":[{"created_at":{"order":"desc","ignore_unmapped":true}}], "aggs": {"stock_cost": {"sum": {"field": "remaining_grn_items.current_unit_cost"}}}}
 
-          query = [query, "inventory.store_id:#{@store.id}"].join(" AND ")
+          query = [query, "inventory.store_id:#{@store.id}", "NOT inventory_serial_item_status.name: Not Available"].join(" AND ")
         end
 
         params[:query] = query

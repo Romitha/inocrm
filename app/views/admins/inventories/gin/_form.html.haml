@@ -124,7 +124,7 @@
 
                   = hidden_field_tag :main_inventory_serial_part_id
 
-                  = link_to "Part of main product", "javascript:void(0)", onclick: "Admins.select_serial_item_or_part_in_srn(this, 'serial_item', '#{i.object.main_product_id}', 'true'); return false;"
+                  = link_to "Part of main product", "javascript:void(0)", onclick: "Admins.select_serial_item_or_part_in_srn(this, 'serial_item', '#{i.object.main_product_id}', 'true', #{product.id}); return false;"
 
               .col-md-12
                 - if need_serial and !need_batch

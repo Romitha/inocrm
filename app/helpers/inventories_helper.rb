@@ -29,7 +29,8 @@ def inventory_search_types( from_where, inventory_product = nil, *args )
 
       i_pro = InventoryProduct.find inventory_product.id
 
-      stock_cost = inventories.sum{ |i| i_pro.stock_cost(i.id.to_i)}
+      # stock_cost = inventories.sum{ |i| i_pro.stock_cost(i.id.to_i)}
+      stock_cost = inventories.sum{ |i| i.product_stock_cost}
 
     end
 
