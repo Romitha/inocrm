@@ -1373,7 +1373,7 @@ module Admins
           end
 
           Rails.cache.write([ :gin, :grn_batches, params[:srn_item_id].to_i ], grn_batches)
-          @count = params[:recieved_quantity].values.sum
+          @count = params[:recieved_quantity].values.sum{|i| i.to_f }
         else
           Rails.cache.delete([ :gin, :grn_serial_items, params[:srn_item_id].to_i ])
           Rails.cache.delete([ :gin, :grn_batches, params[:srn_item_id].to_i ])
