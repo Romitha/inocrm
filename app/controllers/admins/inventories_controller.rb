@@ -687,7 +687,7 @@ module Admins
           Rails.cache.write([:inventory_product_ids, session[:grn_arrived_time].to_i], a)
         end
       elsif params[:cancel]
-        a = Rails.cache.fetch([:inventory_product_ids], session[:grn_arrived_time].to_i).to_a
+        a = Rails.cache.fetch([:inventory_product_ids, session[:grn_arrived_time].to_i]).to_a
         a.delete(params[:inventory_product_id].to_i)
         Rails.cache.write([:inventory_product_ids, session[:grn_arrived_time].to_i], a)
         if Rails.cache.fetch([:inventory_product_ids, session[:grn_arrived_time].to_i]).to_a.count > 0
@@ -1174,26 +1174,26 @@ module Admins
 
               main_product_id = main_inventory_serial_part.inventory_serial_item.product_id
 
-              part_cost_price  = main_inventory_serial_part.inventory_serial_part_additional_costs.last.try(:cost)
 
-              currency_id  = main_inventory_serial_part.inventory_serial_part_additional_costs.last.try(:currency_id)
+              part_cost_price = main_inventory_serial_part.grn_serial_parts.active_serial_parts.first.grn_item.current_unit_cost.to_d + main_inventory_serial_part.inventory_serial_part_additional_costs.sum(:cost).to_d
+
+              currency_id = main_inventory_serial_part.grn_serial_parts.active_serial_parts.first.grn_item.currency_id
 
               product_condition_id  = main_inventory_serial_part.product_condition_id
 
-              @iss_grn_serial_item = if main_inventory_serial_part.inventory_serial_item.inventory_product.fifo 
-                main_inventory_serial_part.inventory_serial_item.grn_serial_items.joins(grn_item: :grn).where(inv_grn_item: {inventory_not_updated: false}, remaining: true).order("inv_grn.created_at asc, inv_grn_item.id asc, inv_grn_serial_item.id asc").references(:inv_grn).first
-              else
-                main_inventory_serial_part.inventory_serial_item.grn_serial_items.joins(grn_item: :grn).where(inv_grn_item: {inventory_not_updated: false}, remaining: true).order("inv_grn.created_at asc, inv_grn_item.id asc, inv_grn_serial_item.id asc").references(:inv_grn).last
-              end
 
-              @iss_grn_serial_item_id  = @iss_grn_serial_item.try(:id)
-              @iss_grn_item_id  = @iss_grn_serial_item.try(:grn_item).try(:id)
-              # @iss_grn_batch_id  = nil
-              @iss_serial_part_id  = main_inventory_serial_part_id
+              @main_grn_serial_item_id = main_inventory_serial_part.inventory_serial_item.grn_serial_items.active_serial_parts.first.try(:id)
 
               main_inventory_serial_part.update inv_status_id: InventorySerialItemStatus.find_by_code("NA").id, updated_by: current_user.id
 
               main_inventory_serial_part.inventory_serial_item.update parts_not_completed: true, updated_by: current_user.id
+
+
+              @grn_serial_part =  main_inventory_serial_part.grn_serial_parts.active_serial_parts.first
+
+              @grn_serial_part_id =  grn_serial_part.try(:id)
+
+              @grn_item_id  = @grn_serial_part.try(:grn_item).try(:id)
 
 
               gin_item.attributes = {
@@ -1208,7 +1208,7 @@ module Admins
               inventory_not_updated: true
               }
 
-              gin_source = gin_item.gin_sources.build(grn_item_id: @iss_grn_item_id, grn_batch_id: @iss_grn_batch_id,grn_serial_item_id: @iss_grn_serial_item_id, issued_quantity: gin_item.srn_item.quantity, unit_cost: part_cost_price, returned_quantity: 0)#inv_gin_source
+              gin_source = gin_item.gin_sources.build(grn_item_id: @grn_item_id, issued_quantity: 1, unit_cost: part_cost_price, returned_quantity: 0, grn_serial_part_id: @grn_serial_part_id, main_part_grn_serial_item_id: @main_grn_serial_item_id )#inv_gin_source
 
             end
 
@@ -1242,12 +1242,13 @@ module Admins
 
               # issued = true
               # iss_quantity += 1
-
             end
 
             # elsif product.inventory_product_info.need_batch #Issue Batch Item
             Rails.cache.fetch([ :gin, :grn_batches, gin_item.srn_item_id.to_i ]).to_a.each do |grn_batch|
               gin_source = grn_batch.gin_sources.select{|g| g.new_record? }.first
+              # gin_source = grn_batch.gin_sources.build
+
               grn_batch_issued_qty = gin_source.issued_quantity.to_f
 
               if grn_batch.remaining_quantity > 0 and grn_batch.remaining_quantity.to_f >= grn_batch_issued_qty.to_f# and grn_batch.grn_item.grn.store_id == gin.store_id
@@ -1336,19 +1337,21 @@ module Admins
       Inventory
 
       items = {}
+      item_product_id = params[:item_product_id]
 
       case params[:item_type]
       when "serial_item"
         product = InventoryProduct.find params[:item_id]
 
-        items.merge! items: product.inventory_serial_items.where(inv_status_id: 1).map.with_index { |i, index| {index: (index+1), serialNo: i.generated_serial_no, ctNo: i.ct_no, partsNotCompleted: i.parts_not_completed, damage: i.damage, scavenge: i.scavenge, used: i.used, repaired: i.repaired, status: i.inventory_serial_item_status.name, action: view_context.link_to("select", "javascript:void(0)", onclick: "Admins.select_serial_item_or_part_in_srn(this, 'serial_part', '#{i.id}'); return false;") } if i.inventory_serial_parts.present? }.compact
+        items.merge! items: product.inventory_serial_items.joins(:inventory_serial_parts).where(inv_inventory_serial_part: {inv_status_id: 1, product_id: item_product_id}, inv_status_id: 1).map.with_index { |i, index| {index: (index+1), serialNo: i.generated_serial_no, ctNo: i.ct_no, partsNotCompleted: i.parts_not_completed, damage: i.damage, scavenge: i.scavenge, used: i.used, repaired: i.repaired, status: i.inventory_serial_item_status.name, action: view_context.link_to("select", "javascript:void(0)", onclick: "Admins.select_serial_item_or_part_in_srn(this, 'serial_part', '#{i.id}', 'false', '#{item_product_id}'); return false;") }}# if i.inventory_serial_parts.where(inv_status_id: 1, product_id: item_product_id).present? }.compact
 
       when "serial_part"
+
         serial_item = InventorySerialItem.find params[:item_id]
 
         item_info = {productDescription: serial_item.inventory_product.description, productSerialNo: serial_item.inventory_product.generated_serial_no, inventoryName: serial_item.inventory.store_name, serialNo: serial_item.serial_no}
 
-        items.merge! items: serial_item.inventory_serial_parts.where(inv_status_id: 1).map.with_index { |i, index| {index: (index+1), serialNo: i.serial_no, ctNo: i.ct_no, partsNotCompleted: i.parts_not_completed, damage: i.damage, scavenge: i.scavenge, used: i.used, repaired: i.repaired, status: i.inventory_serial_item_status.name, action: view_context.link_to("select", "javascript:void(0)", onclick: "Admins.select_serial_item_or_part_in_srn(this, 'serial_part_selected', '#{i.id}'); return false;", data: {info: {item: item_info, part: {productDescription: i.inventory_product.description, serialNo: i.serial_no, ct_no: i.ct_no}}} ) } }, back: view_context.link_to("Back", "javasctipt.void(0)", onclick: "Admins.select_serial_item_or_part_in_srn(this, 'serial_item', '#{serial_item.product_id}'); return false;")
+        items.merge! items: serial_item.inventory_serial_parts.where(inv_status_id: 1, product_id: item_product_id).map.with_index { |i, index| {index: (index+1), serialNo: i.serial_no, ctNo: i.ct_no, partsNotCompleted: i.parts_not_completed, damage: i.damage, scavenge: i.scavenge, used: i.used, repaired: i.repaired, status: i.inventory_serial_item_status.name, action: view_context.link_to("select", "javascript:void(0)", onclick: "Admins.select_serial_item_or_part_in_srn(this, 'serial_part_selected', '#{i.id}'); return false;", data: {info: {item: item_info, part: {productDescription: i.inventory_product.description, serialNo: i.serial_no, ct_no: i.ct_no}}} ) } }, back: view_context.link_to("Back", "javasctipt.void(0)", onclick: "Admins.select_serial_item_or_part_in_srn(this, 'serial_item', '#{serial_item.product_id}', 'false', '#{item_product_id}'); return false;")
 
       end
       render json: items

@@ -768,8 +768,7 @@ class TicketsController < ApplicationController
       else
         if params[:ticket][:logged_at].present?
           if @ticket.logged_at >= Time.now
-            @ticket.errors[:logged_at] << "Date and time cannot be future than current (Now) time"
-            puts "logged at error"
+            @ticket.errors[:logged_at] << "Date and time cannot be future than current date time"
           else
             @ticket.errors.clear
             Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @ticket)
@@ -2935,29 +2934,40 @@ class TicketsController < ApplicationController
         @iss_grn_item_id  = nil
         @iss_grn_batch_id  = nil
         @iss_grn_serial_item_id  = nil
-        @iss_serial_part_id  = nil
+        @iss_grn_serial_part_id  = nil
+        @iss_main_part_grn_serial_item_id = nil
 
         if main_inventory_serial_part_id.present? #Issue Part Of Main Product
 
           @main_inventory_serial_part = InventorySerialPart.find(main_inventory_serial_part_id)
           if @main_inventory_serial_part.inv_status_id == InventorySerialItemStatus.find_by_code("AV").id
 
+
             @inventory_not_updated = true
+
             @product_id = @main_inventory_serial_part.inventory_product.id
+
             @main_product_id = @main_inventory_serial_part.inventory_serial_item.product_id
-            @part_cost_price  = @main_inventory_serial_part.inventory_serial_part_additional_costs.last.try(:cost)
-            @currency_id  = @main_inventory_serial_part.inventory_serial_part_additional_costs.last.try(:currency_id)
+
+
+            @part_cost_price = @main_inventory_serial_part.grn_serial_parts.where(remaining: true).first.grn_item.current_unit_cost.to_d + @main_inventory_serial_part.inventory_serial_part_additional_costs.sum(:cost).to_d
+
+            @currency_id = @main_inventory_serial_part.grn_serial_parts.where(remaining: true).first.grn_item.currency_id
+
+
             @product_condition_id  = @main_inventory_serial_part.product_condition_id
 
-            if @main_inventory_serial_part.inventory_serial_item.inventory_product.fifo 
-              @iss_grn_serial_item = @main_inventory_serial_part.inventory_serial_item.grn_serial_items.joins(grn_item: :grn).where(inv_grn_item: {inventory_not_updated: false}, remaining: true).order("inv_grn.created_at asc, inv_grn_item.id asc, inv_grn_serial_item.id asc").references(:inv_grn).first
-            else
-              @iss_grn_serial_item = @main_inventory_serial_part.inventory_serial_item.grn_serial_items.joins(grn_item: :grn).where(inv_grn_item: {inventory_not_updated: false}, remaining: true).order("inv_grn.created_at asc, inv_grn_item.id asc, inv_grn_serial_item.id asc").references(:inv_grn).last
-            end
-            @iss_grn_serial_item_id  = @iss_grn_serial_item.id
-            @iss_grn_item_id  = @iss_grn_serial_item.grn_item.id
+
+            @iss_main_part_grn_serial_item_id = @main_inventory_serial_part.inventory_serial_item.grn_serial_items.where(remaining: true).first.try(:id)
+
+            @grn_serial_part =  @main_inventory_serial_part.grn_serial_parts.where(remaining: true).first
+
+            @iss_grn_serial_part_id =  grn_serial_part.try(:id)
+
+            @iss_grn_item_id  = @grn_serial_part.try(:grn_item).try(:id)
+
+            # @iss_grn_serial_item_id  = nil
             # @iss_grn_batch_id  = nil
-            @iss_serial_part_id  = main_inventory_serial_part_id
 
             @main_inventory_serial_part.update inv_status_id: InventorySerialItemStatus.find_by_code("NA").id, updated_by: current_user.id
 
@@ -2978,13 +2988,15 @@ class TicketsController < ApplicationController
 
               @product_id = @grn_serial_item.inventory_serial_item.inventory_product.id
               @product_condition_id  = @grn_serial_item.inventory_serial_item.product_condition_id
-              @part_cost_price  = @grn_serial_item.grn_item.current_unit_cost
+              @part_cost_price = @grn_serial_item.grn_item.current_unit_cost.to_d + @grn_serial_item.inventory_serial_item.inventory_serial_items_additional_costs.sum(:cost).to_d #inventory_serial_items_additional_costs
+
+
               @currency_id  = @grn_serial_item.grn_item.currency_id
 
               @iss_grn_serial_item_id  = grn_serial_item_id
               @iss_grn_item_id  = @grn_serial_item.grn_item.id
               # @iss_grn_batch_id  = nil
-              # @iss_serial_part_id  = nil
+              # @iss_grn_serial_part_id  = nil
 
               @grn_serial_item.inventory_serial_item.update inv_status_id: InventorySerialItemStatus.find_by_code("NA").id, updated_by: current_user.id
 
@@ -3010,7 +3022,7 @@ class TicketsController < ApplicationController
               # @iss_grn_serial_item_id  = nil
               @iss_grn_item_id  = @grn_batch.grn_item.id
               @iss_grn_batch_id  = @grn_batch.id
-              # @iss_serial_part_id  = nil
+              # @iss_grn_serial_part_id  = nil
 
               @grn_batch.decrement! :remaining_quantity, @srn_item.quantity
 
@@ -3036,7 +3048,7 @@ class TicketsController < ApplicationController
               # @iss_grn_serial_item_id  = nil
               @iss_grn_item_id  = @grn_item.id
               # @iss_grn_batch_id  = nil
-              # @iss_serial_part_id  = nil
+              # @iss_grn_serial_part_id  = nil
 
               @grn_item.decrement! :remaining_quantity, @srn_item.quantity
 
@@ -3066,7 +3078,7 @@ class TicketsController < ApplicationController
           inventory_not_updated: @inventory_not_updated
           )#inv_gin_item
 
-          gin_source = gin_item.gin_sources.create(grn_item_id: @iss_grn_item_id, grn_batch_id: @iss_grn_batch_id,grn_serial_item_id: @iss_grn_serial_item_id, issued_quantity: @srn_item.quantity, unit_cost: @part_cost_price, returned_quantity: 0)#inv_gin_source
+          gin_source = gin_item.gin_sources.create(grn_item_id: @iss_grn_item_id, grn_batch_id: @iss_grn_batch_id, grn_serial_item_id: @iss_grn_serial_item_id, grn_serial_part_id: @iss_grn_serial_part_id, main_part_grn_serial_item_id: @iss_main_part_grn_serial_item_id, issued_quantity: @srn_item.quantity, unit_cost: @part_cost_price, returned_quantity: 0)#inv_gin_source
 
           if @onloan_request
             if @onloan_request_part.ticket_spare_part

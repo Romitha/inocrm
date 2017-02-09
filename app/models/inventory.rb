@@ -242,8 +242,7 @@ class InventoryProduct < ActiveRecord::Base
         grn_batches.to_a.sum{|g| g.inventory_batch.inventory_id == inventory_id ? (g.grn_item.current_unit_cost.to_f * g.remaining_quantity.to_f) : 0 }
 
       else
-        grn_items.only_grn_items1.sum{|g| g.remaining_quantity.to_f * g.current_unit_cost.to_f }
-
+        grn_items.only_grn_items1.to_a.sum{|g| g.remaining_quantity.to_f * g.current_unit_cost.to_f }
       end
 
       stock_cost

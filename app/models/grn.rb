@@ -99,7 +99,9 @@ class GrnItem < ActiveRecord::Base
   after_save :update_relation_index
 
   def self.only_grn_items1
-    select{|grn_item| grn_item.grn_serial_items.blank? and grn_item.grn_batches.blank? and grn_item.grn_serial_parts.blank? and grn_item.remaining_quantity >0}
+    # select{|grn_item| grn_item.grn_serial_items.blank? and grn_item.grn_batches.blank? and grn_item.grn_serial_parts.blank? and grn_item.remaining_quantity >0}
+
+    joins(inventory_product: :inventory_product_info).where.not(mst_inv_product: {non_stock_item: true}, "mst_inv_product_info.need_serial" => true, "mst_inv_product_info.need_batch" => true).references(:mst_inv_product, :mst_inv_product_info).where("remaining_quantity > 0")
   end
 
   def any_remaining_serial_item
