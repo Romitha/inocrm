@@ -72,11 +72,14 @@
         - current_unit_cost = number_with_precision grn_batch.try(:grn_item).try(:current_unit_cost), precision: 2
         = current_unit_cost
     .col-md-1.text-right
-      - inventory_batch.grn_batches.each do |grn_batch|
-        - if grn_batch.grn_item
-          = number_with_precision inventory_batch.grn_batches.sum{|grn_batch| grn_batch.grn_item.current_unit_cost.to_i * grn_batch.grn_item.remaining_quantity.to_i }, precision: 2
-        - else
-          = number_with_precision (0), precision: 2
+      / - inventory_batch.grn_batches.each do |grn_batch|
+      /   - if grn_batch.grn_item
+      /     = number_with_precision inventory_batch.grn_batches.sum{|grn_batch| grn_batch.grn_item.current_unit_cost.to_i * grn_batch.grn_item.remaining_quantity.to_i }, precision: 2
+      /   - else
+      /     = number_with_precision (0), precision: 2
+
+      = number_with_precision inventory_batch.batch_stock_cost, precision: 2
+
     .col-md-1
       = link_to "Select", inventories_admins_searches_path(select_action: "select_inventory_batch_more", inventory_batch_id: inventory_batch.id, store_id: @store.try(:id) )
       

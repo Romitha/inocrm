@@ -242,7 +242,9 @@ class InventoryProduct < ActiveRecord::Base
         grn_batches.to_a.sum{|g| g.inventory_batch.inventory_id == inventory_id ? (g.grn_item.current_unit_cost.to_f * g.remaining_quantity.to_f) : 0 }
 
       else
-        grn_items.only_grn_items1.to_a.sum{|g| g.remaining_quantity.to_f * g.current_unit_cost.to_f }
+        store_id = inventories.where(id: inventory_id).first.try(:store_id)
+
+        grn_items.only_grn_items1.to_a.sum{|g| g.grn.store_id == store_id ? g.remaining_quantity.to_f * g.current_unit_cost.to_f : 0 }
       end
 
       stock_cost
@@ -588,13 +590,14 @@ class InventoryBatch < ActiveRecord::Base
     Grn
     to_json(
       only: [:id, :lot_no, :batch_no, :product_id, :remarks, :manufatured_date, :expiry_date, :created_at, :remarks],
+      methods: [:batch_stock_cost],
       include: {
         inventory_product: {
           only: [:id, :description, :model_no, :product_no, :spare_part_no, :created_at],
           methods: [:category3_id, :category2_id, :category1_id, :generated_item_code],
         },
         inventory: {
-          only: [:store_id,:damage_quantity, :available_quantity, :grn_item_id],
+          only: [:store_id, :damage_quantity, :available_quantity, :grn_item_id]
         },
         grn_items: {
           only: [:current_unit_cost],
@@ -621,6 +624,10 @@ class InventoryBatch < ActiveRecord::Base
       },
     )
 
+  end
+
+  def batch_stock_cost
+    grn_batches.to_a.sum{|b| b.remaining_quantity * b.grn_item.current_unit_cost }
   end
 
 end
