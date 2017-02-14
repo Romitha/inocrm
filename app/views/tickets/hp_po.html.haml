@@ -1,75 +1,83 @@
 .row
   .col-md-12
     = label_tag InventoryCategoryCaption.first.caption
-    = select_tag "search_inventory[brand]", options_from_collection_for_select(ProductBrand.all, :id, :name, nil), include_blank: false, id: "brand1", class: "form-control"
-.row
-  %strong{style: "margin-left:16px;"} Parts to be PO
-  #load_spareparts_json_render{style: "margin-left:30px;"}
+    / = select_tag "search_inventory[brand]", options_from_collection_for_select(ProductBrand.all, :id, :name, nil), include_blank: true, id: "brand1"
 
-= simple_nested_form_for @po, url: create_po_tickets_path, html: {class: "validate_form"}, method: :post do |f|
-
-  %strong Create PO
+    = select "search_inventory", "brand", ProductBrand.all.map{|p| [p.name, p.id, {data: {currencyId: p.currency_id, currencyCode: p.currency.code}}]}, {}, {include_blank: true, class: "form-control", id: "brand1"}
+#hp_po_page.hide
   .row
-    
-    .col-md-2
-      = f.input :created_by, as: :hidden, input_html: {value: current_user.id}
-      
-      = f.input :so_no, label: "Sales Order No.", input_html: {min: "0", class: "only_float"}
-    .col-md-2
-      = f.input :po_no, label: "PO no", input_html: {min: "0", class: "only_float"}
-    .col-md-2
-      = f.input :po_date, label: "PO date", as: :string, input_html: {value: Date.today, class: "datepicker"}
-      = f.input :amount, as: :hidden, input_html: {value: 0}, label: "Amount"
-      = f.input :currency_id, as: :hidden, input_html: {value: 1}# have to solve
-    / .col-md-2
-    .col-md-6
-      = f.input :note, label: "Note"
-    .col-md-12
+    %strong{style: "margin-left:16px;"} Parts to be PO
+    #load_spareparts_json_render{style: "margin-left:30px;"}
+  / #create_hp_po_form
+  #ss
+    %strong Create PO
+    = simple_nested_form_for @po, url: create_po_tickets_path, html: {class: "validate_form"}, method: :post do |f|
+      = f.input :currency_id, as: :hidden, id: "po_currency_id"
       .row
-        .col-md-13
-          .col-md-1
-            %strong No
-          .col-md-1
-            %strong Event No
-          .col-md-1
-            %strong Order No
-          .col-md-1
-            %strong Date Ordered
-          .col-md-1
-            %strong Part No
-          .col-md-1
-            %strong Amount
-          .col-md-1
-            %strong Description
-          .col-md-1
-            %strong Note
-          .col-md-1
-            %strong Ticket No
-          .col-md-1
-            %strong Serial No
-      %hr
-      = f.simple_fields_for :so_po_items , html: {class: "validate_form"} do |p|
-        = p.input :ticket_spare_part_id, as: :hidden, input_html: {class: "spare_part_class"}
-        = p.input :spt_so_po_id, as: :hidden, input_html: {value: 1}# have to solve
-        = p.input :item_no, as: :hidden, input_html: {value: 1}# have to solve
+        .col-md-2
+          = f.input :created_by, as: :hidden, input_html: {value: current_user.id}
 
-        .row
-          .single_extra_info
-        .row
-          .gg
-            .col-md-3
-              = p.input :amount,label: "payment expected amount", required: true, input_html: {min: "0", class: "po_amount_class only_float"}
-            .col-md-2
-              = p.input :item_no, required: true, input_html: {min: "0", class: "item_no_class only_float"}
-            .col-md-5
-              = p.input :description, id: "po_description", input_html: {class: "po_description_class"}, label: "PO description"
-            .col-md-2
-              = p.link_to_remove "remove", onclick: "Tickets.hp_po_remove(this); return false;", class: "remove"
-        %hr
-      .col-md-12
-        = f.link_to_add "Add item", :so_po_items, id: "inventory_po_items", class: "hide"
-    .col-md-1
-      = f.submit "Save", class: "btn btn-success btn-sm"
+          = f.input :so_no, label: "Sales Order No.", input_html: {min: "0", class: "only_float"}
+        .col-md-2
+          = f.input :po_no, label: "PO no", input_html: {min: "0", class: "only_float"}
+        .col-md-2
+          = f.input :po_date, label: "PO date", as: :string, input_html: {value: Date.today, class: "datepicker"}
+        .col-md-6
+          = f.input :note, label: "Note"
+        .col-md-2
+          = label_tag "amount" do
+            Amount
+            %span#dynamic_currency_code
+          = f.input :amount, label: false
+        .col-md-2
+
+        .col-md-8
+        .col-md-12
+          .row
+            .col-md-13
+              .col-md-1
+                %strong No
+              .col-md-1
+                %strong Event No
+              .col-md-1
+                %strong Order No
+              .col-md-1
+                %strong Date Ordered
+              .col-md-1
+                %strong Part No
+              .col-md-1
+                %strong Amount
+              .col-md-1
+                %strong Description
+              .col-md-1
+                %strong Note
+              .col-md-1
+                %strong Ticket No
+              .col-md-1
+                %strong Serial No
+          %hr
+          = f.simple_fields_for :so_po_items , html: {class: "validate_form"} do |p|
+            = p.input :ticket_spare_part_id, as: :hidden, input_html: {class: "spare_part_class"}
+            = p.input :spt_so_po_id, as: :hidden, input_html: {value: 1}# have to solve
+            = p.input :item_no, as: :hidden, input_html: {value: 1}# have to solve
+
+            .row
+              .single_extra_info
+            .row
+              .gg
+                .col-md-3
+                  = p.input :amount,label: "payment expected amount", required: true, input_html: {min: "0", class: "po_amount_class only_float"}
+                .col-md-2
+                  = p.input :item_no, required: true, input_html: {min: "0", class: "item_no_class only_float"}
+                .col-md-5
+                  = p.input :description, id: "po_description", input_html: {class: "po_description_class"}, label: "PO description"
+                .col-md-2
+                  = p.link_to_remove "remove", onclick: "Tickets.hp_po_remove(this); return false;", class: "remove"
+            %hr
+          .col-md-12
+            = f.link_to_add "Add item", :so_po_items, id: "inventory_po_items", class: "hide"
+        .col-md-1
+          = f.submit "Save", class: "btn btn-success btn-sm"
 
 %script{type: "text/html", id: "load_spareparts_output"}
   = render 'load_spareparts'

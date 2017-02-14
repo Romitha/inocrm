@@ -606,11 +606,21 @@ window.Tickets =
   select_brand_create_po: ->
     # _this = this
     $("#brand1").change ->
+      _this = this
+      if $("#brand1").val()
+        $("#hp_po_page").removeClass("hide")
+      else
+        $("#hp_po_page").addClass("hide")
+
       url = "/tickets/hp_po"
+
       this_data = {product_brand_id: $(@).val()}
       $.get url, this_data, (data)->
-        console.log data
         $('#load_spareparts_json_render').html Mustache.to_html($('#load_spareparts_output').html(), data)
+        # console.log $(":selected", _this).data("currencycode")
+        $("#po_currency_id").val($(":selected", _this).data("currencyid"))
+        $("#dynamic_currency_code").text($(":selected", _this).data("currencycode"))
+        # $('#create_hp_po_form').html ($('#create_ho_po_load').html(), data)
         # _this.initial_loaders()
   remove_spareparts: (elem)->
 

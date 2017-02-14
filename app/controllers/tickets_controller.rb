@@ -4301,11 +4301,12 @@ class TicketsController < ApplicationController
     Inventory
     TicketSparePart
     Product
+    Currency
+
     @po = SoPo.new
     if params[:product_brand_id].present?
       @product_brand = ProductBrand.find params[:product_brand_id]
       @products = @product_brand.products
-
     else
     end
     respond_to do |format|
