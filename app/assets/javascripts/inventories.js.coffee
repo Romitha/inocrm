@@ -876,9 +876,12 @@ window.Inventories =
 
         $("#selected_quantity_batch").text(selected_quantity_batch)
         # $("#balance_quantity_batch").text(balance_quantity_batch - selected_quantity_batch)
+
       else
         this_elem.val("0")
         $("#balance_quantity_batch").text(balance_quantity_batch - selected_quantity_batch)
+
+      $("#issue_button").prop("disabled", (balance_quantity_batch < selected_quantity_batch))
 
   limit_visible_vat_web: (elem) ->
     this_elem = $(elem)
