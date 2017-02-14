@@ -39,7 +39,7 @@
           %tr
             %th{class: "text-right"} Customer Name:
             %td
-              =print_object[:company_name]
+              .col-xs-11=print_object[:company_name]
           %tr
             %th{class: "text-right"} Address:
             %td
@@ -116,10 +116,13 @@
                 = ob[:description]
               %td
                 = (ob[:quantity] and ob[:quantity].to_f)
-              %td
+              %td.col-xs-2.text-right
                 = ob[:unit_price]
-              %td.text-right
+                - if ob[:unit_price].present?
+                  =ob[:currency]
+              %td.col-xs-2.text-right
                 = ob[:totalprice]
+                = ob[:currency]
 
       %table.table.table-striped
         %tbody
@@ -127,13 +130,17 @@
             %th
             %td{colspan: 3}
             %th.text-right Total Amount:
-            %td.text-right{colspan: 2}= number_with_precision print_object[:total_amount], precision: 2
+            %td.text-right{colspan: 2}
+              = number_with_precision print_object[:total_amount], precision: 2
+              = print_object[:currency]
 
           %tr
             %th
             %td{colspan: 3}
             %th.text-right Minimum Advanced Required:
-            %td.text-right{colspan: 2}= number_with_precision print_object[:total_advance_amount], precision: 2
+            %td.text-right{colspan: 2}
+              = number_with_precision print_object[:total_advance_amount], precision: 2
+              = print_object[:currency]
 
           %tr
             %th

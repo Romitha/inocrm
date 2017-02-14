@@ -6,7 +6,7 @@
         = label_tag "PO No", "Store", class: "col-md-2 control-label"
         .col-md-10
           / = select_tag "po[store.id]", options_from_collection_for_select(@stores, "id", "name"), class: "form-control"
-          = select_tag "po[store.id]", options_from_collection_for_select(Organization.stores, "id", "name"), class: "form-control"
+          = select_tag "po[store.id]", options_from_collection_for_select(Organization.stores, "id", "name"), class: "form-control", include_blank: true
           / = select_tag "po[store.id]", class: "form-control"
       .form-group
         = label_tag "PO No", "PO No", class: "col-md-2 control-label"

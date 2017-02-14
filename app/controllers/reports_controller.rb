@@ -305,6 +305,7 @@ class ReportsController < ApplicationController
     # https://github.com/mileszs/wicked_pdf
 
     po = InventoryPo.find params[:po_id]
+    prn = InventoryPrn.find params[:po_id]
 
     customer = {
       contactPerson: (po.supplier.addresses.primary_address.first and po.supplier.addresses.primary_address.first.contact_person),
@@ -312,7 +313,15 @@ class ReportsController < ApplicationController
       address: (po.supplier.addresses.primary_address.first and po.supplier.addresses.primary_address.first.full_address),
     }
 
-    po_item_tax = po.inventory_po_taxes.sum(:amount)
+    po_item_tax_total = po.inventory_po_taxes.sum(:amount)
+    required_date = prn.required_at.to_date.try :strftime, INOCRM_CONFIG["short_date_format"]
+
+    po_taxes = po.inventory_po_taxes.map do |po_tax|
+      {
+        amount: po_tax.amount.to_f,
+        tax_type: po_tax.tax,
+      }
+    end
 
     poItems = po.inventory_po_items.map do |po_item|
       {
@@ -320,7 +329,7 @@ class ReportsController < ApplicationController
         description: po_item.remarks,
         quantity: po_item.quantity,
         unitPrice: view_context.standard_currency_format(po_item.unit_cost),
-        total: view_context.standard_currency_format(po_item.unit_cost * po_item.quantity),
+        total: (po_item.unit_cost * po_item.quantity),
       }
 
     end
@@ -343,17 +352,16 @@ class ReportsController < ApplicationController
       date: po.delivery_date.try(:strftime, "%Y-%m-%d"),
       ourRef: po.your_ref,
       quotation: "",
-      dateRequired: "",
+      dateRequired: required_date,
       paymentTerm: po.payment_term,
       deliveryMode: "",
 
       poItems: poItems,
 
       subTotal: sub_total,
-      poItemTax: po_item_tax,
       discount: po.discount_amount,
-      total: ( sub_total + po_item_tax + po.discount_amount ),
-
+      total: ( sub_total + po_item_tax_total - po.discount_amount ),
+      poTaxes: po_taxes,
     }
 
     @print_hash_to_object = HashToObject.new @print_object

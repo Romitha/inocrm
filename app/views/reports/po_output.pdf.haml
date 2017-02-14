@@ -47,10 +47,6 @@
           %th.text-right Date:
           %td
             =print_object.date
-        %tr
-          %th.pull-right Page No:
-          %td
-
   %br/
   .row
     .col-xs-11
@@ -86,8 +82,8 @@
               %td=po_item[:itemCode]
               %td{class: "ellipses"}=po_item[:description]
               %td=po_item[:quantity]
-              %td=po_item[:unitPrice]
-              %td.text-right= po_item[:total]
+              %td= number_with_precision po_item[:unitPrice], precision: 2
+              %td.text-right= number_with_precision po_item[:total], precision: 2
 
       %br/
 
@@ -105,11 +101,12 @@
             %th.text-right Discount:
             %td.text-right{colspan: 2}= number_with_precision print_object.discount, precision: 2
 
-          %tr
-            %th
-            %td{colspan: 3}
-            %th.text-right VAT(11%):
-            %td.text-right{colspan: 2}= number_with_precision print_object.poItemTax, precision: 2
+          - print_object.poTaxes.each do |poTax|
+            %tr
+              %th
+              %td{colspan: 3}
+              %th.text-right=poTax[:tax_type]
+              %td.text-right{colspan: 2}= number_with_precision poTax[:amount], precision: 2
 
           %tr
             %th
