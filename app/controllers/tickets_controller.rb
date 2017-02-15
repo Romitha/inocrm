@@ -52,14 +52,20 @@ class TicketsController < ApplicationController
     session[:customer_id] = nil
     session[:serial_no] = nil
     session[:warranty_id] = nil
-    session[:ticket_initiated_attributes] = {}
+    # session[:ticket_initiated_attributes] = {}
     @ticket_no = (Ticket.any? ? (Ticket.order("created_at ASC").map{|t| t.ticket_no.to_i}.max + 1) : 1)
     @status = TicketStatus.find_by_code("OPN")
     @ticket_logged_at = DateTime.now
 
-    session[:ticket_initiated_attributes] = {ticket_no: @ticket_no, status_id: @status.id, logged_by: current_user.id, logged_at: DateTime.now}
-    @ticket = Ticket.new(session[:ticket_initiated_attributes])
+    Rails.cache.delete([:ticket_initiated_attributes, session[:time_now]])
+
     session[:time_now] = Time.now.strftime("%H%M%S")
+    Rails.cache.write([:ticket_initiated_attributes, session[:time_now]], {ticket_no: @ticket_no, status_id: @status.id, logged_by: current_user.id, logged_at: DateTime.now})
+
+    # session[:ticket_initiated_attributes] = {ticket_no: @ticket_no, status_id: @status.id, logged_by: current_user.id, logged_at: DateTime.now}
+    # @ticket = Ticket.new(session[:ticket_initiated_attributes])
+    @ticket = Ticket.new Rails.cache.fetch([:ticket_initiated_attributes, session[:time_now]])
+
     Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @ticket)
     respond_with(@ticket)
   end
@@ -84,7 +90,9 @@ class TicketsController < ApplicationController
     respond_to do |format|
 
       if @new_ticket.valid?
-        session[:ticket_initiated_attributes] = {}
+        # session[:ticket_initiated_attributes] = {}
+        Rails.cache.write([:ticket_initiated_attributes, session[:time_now]], {})
+
 
         @notice = "Great! new ticket is initiated."
         Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @new_ticket)
@@ -146,10 +154,16 @@ class TicketsController < ApplicationController
       if @product.persisted?
         @product_brand = @product.product_brand
         @product_category = @product.product_category
-        session[:ticket_initiated_attributes].merge!({sla_id: (@product_category.sla_id || @product_brand.sla_id)})
+
+        ticket_attr = Rails.cache.fetch([:ticket_initiated_attributes, session[:time_now]])
+        Rails.cache.write([:ticket_initiated_attributes, session[:time_now]], ticket_attr.merge({sla_id: (@product_category.sla_id || @product_brand.sla_id)}))
+
+        # session[:ticket_initiated_attributes].merge!({sla_id: (@product_category.sla_id || @product_brand.sla_id)})
+
         session[:product_id] = @product.id
 
-        @ticket = (Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]]) || Ticket.new(session[:ticket_initiated_attributes]))
+        # @ticket = (Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]]) || Ticket.new(session[:ticket_initiated_attributes]))
+        @ticket = (Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]]) || Ticket.new(Rails.cache.fetch([:ticket_initiated_attributes, session[:time_now]])))
 
         # @ticket.ticket_accessories.uniq!{|ac| ac.id}
         @customer = @product.tickets.last.try(:customer)
@@ -245,10 +259,14 @@ class TicketsController < ApplicationController
           @notice = "Great! #{@new_product.serial_no} is saved."
           @product_brand = @new_product.product_brand
           @product_category = @new_product.product_category
-          session[:ticket_initiated_attributes].merge!({sla_id: (@product_category.sla_id || @product_brand.sla_id)})
+          # session[:ticket_initiated_attributes].merge!({sla_id: (@product_category.sla_id || @product_brand.sla_id)})
+
+          ticket_attr = Rails.cache.fetch([:ticket_initiated_attributes, session[:time_now]])
+          Rails.cache.write([:ticket_initiated_attributes, session[:time_now]], ticket_attr.merge({sla_id: (@product_category.sla_id || @product_brand.sla_id)}))
 
           @product = @new_product
-          @ticket = @product.tickets.build session[:ticket_initiated_attributes]
+          # @ticket = @product.tickets.build session[:ticket_initiated_attributes]
+          @ticket = @product.tickets.build Rails.cache.fetch([:ticket_initiated_attributes, session[:time_now]])
 
           @histories = Kaminari.paginate_array(@product.tickets)
           Rails.cache.write([:histories, session[:product_id]], Kaminari.paginate_array(@product.tickets))
@@ -717,7 +735,9 @@ class TicketsController < ApplicationController
         session[:customer_id] = nil
         session[:serial_no] = nil
         session[:warranty_id] = nil
-        session[:ticket_initiated_attributes] = {}
+        # session[:ticket_initiated_attributes] = {}
+        Rails.cache.delete([:ticket_initiated_attributes, session[:time_now]])
+
         session[:time_now]= nil
 
         unless @ticket.status_id == @status_close_id
