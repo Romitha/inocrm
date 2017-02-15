@@ -5,6 +5,7 @@ class Tax < ActiveRecord::Base
   has_many :ticket_estimation_external_taxes
   has_many :ticket_estimation_part_taxes
   has_many :tax_rates
+  accepts_nested_attributes_for :tax_rates, allow_destroy: true
 
   has_many :ticket_invoice_total_taxes, foreign_key: :tax_id
   accepts_nested_attributes_for :ticket_invoice_total_taxes, allow_destroy: true
@@ -18,7 +19,7 @@ end
 
 class TaxRate < ActiveRecord::Base
   self.table_name = "mst_tax_rate"
-  belongs_to :tax, foreign_key: :tax_id
+  belongs_to :tax
 
   # has_many :ticket_estimation_additional_taxes
   # has_many :ticket_estimation_external_taxes

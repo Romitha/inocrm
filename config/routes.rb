@@ -268,6 +268,7 @@ Rails.application.routes.draw do
         delete "delete_admin_payment_item"
         delete "delete_payment_term"
         delete "delete_tax"
+        delete "delete_tax_rate"
         delete "delete_admin_brands_and_category"
         [
           :reason,

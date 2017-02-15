@@ -1,11 +1,24 @@
 %h3 Tax
-= simple_form_for @tax, url: tax_admins_tickets_path(create: true), html: {class: "validate_form"},method: :post do |f|
+= simple_nested_form_for @tax, url: tax_admins_tickets_path(create: true), html: {class: "validate_form"},method: :post do |f|
   .row{style: "margin-top:15px;"}
     .col-md-6
       = f.input :tax
   .row{style: "margin-top:15px;"}
     .col-md-6
       = f.input :description
+  .row{style: "margin-top:15px;"}
+    = f.simple_fields_for :tax_rates do |r|
+      .col-md-6
+        = r.input :rate
+        = r.input :created_by,  as: :hidden, input_html: {value: current_user.id}
+      .col-md-6
+        .add_sign
+          = r.link_to_remove do
+            %span.glyphicon.glyphicon-remove-sign
+    .row.col-md-12
+      .col-md-12
+        = f.link_to_add :tax_rates do
+          %span.glyphicon.glyphicon-plus-sign Add a Rate
   .row{style: "margin-top:20px;margin-bottom:20px;"}
     .col-md-6
       = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_payment_term"
@@ -43,3 +56,29 @@
         .col-md-3
           = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "tax", name: "description", url: tax_admins_tickets_path(edit: true, tax_id: tax.id), "original-title" => "Update Tax", value: tax.description}, style: "line-height: 6px;" do
             = tax.description
+      .row.col-md-12
+        - tax.tax_rates.each do |rate|
+          .row.col-md-12
+            .col-md-2
+              %strong Tax Rate:
+            .col-md-9
+              = link_to "#", class: "inline_edit", data: {type: "text", resource: "tax_rate", name: "rate", url: tax_admins_tickets_path(edit: true, rate_id: rate.id), "original-title" => "Update Tax Rate", value: ""}, style: "line-height: 6px;" do
+                = rate.rate
+            .col-md-1.pull-right
+              = link_to delete_tax_rate_admins_tickets_path(rate_id: rate.id), method: :delete, rel: "tooltip", :data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Delete" do
+                %span.glyphicon.glyphicon-trash
+
+                / = collapse_wrapper collapse_id: "tax_rate_list", labelledby: "tax_rate_labelledby" do
+                /   - tax.tax_rates.each do |rate|
+                /     = collapse collapse_type: "info", labelledby: "labelledby_#{rate.id}", header_content: "Rate: #{rate.rate}", collapse_link: "tax_ratelink_#{rate.id}", collapse_id: "tax_rate_list" do
+                /       .pull-right
+                /         = link_to delete_tax_rate_admins_tickets_path(rate_id: rate.id), method: :delete, rel: "tooltip", :data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Delete" do
+                /           %span.glyphicon.glyphicon-trash
+
+                /       .row.col-md-12
+                /         .col-md-3
+                /           %strong Tax Rate:
+
+                /         .col-md-9
+                /           = link_to "#", class: "inline_edit", data: {type: "text", resource: "tax_rate", name: "rate", url: tax_admins_tickets_path(edit: true, rate_id: rate.id), "original-title" => "Update Tax Rate", value: ""}, style: "line-height: 6px;" do
+                /             = rate.rate

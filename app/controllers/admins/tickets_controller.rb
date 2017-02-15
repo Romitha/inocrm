@@ -87,9 +87,20 @@ module Admins
 
     def delete_tax
       TaskAction
+      Tax
       @tax = Tax.find params[:tax_id]
       if @tax.present?
         @tax.delete
+      end
+      respond_to do |format|
+        format.html { redirect_to tax_admins_tickets_path }
+      end
+    end
+
+    def delete_tax_rate
+      @rate = TaxRate.find params[:rate_id]
+      if @rate.present?
+        @rate.delete
       end
       respond_to do |format|
         format.html { redirect_to tax_admins_tickets_path }
@@ -210,13 +221,24 @@ module Admins
     def tax
       Tax
       if params[:edit]
-        @tax = Tax.find params[:tax_id]
-        if @tax.update tax_params
-          params[:edit] = nil
-          render json: @tax
-        else
-          render json: @tax.errors.full_messages.join
+        if params[:tax_id]
+          @tax = Tax.find params[:tax_id]
+          if @tax.update tax_params
+            params[:edit] = nil
+            render json: @tax
+          else
+            render json: @tax.errors.full_messages.join
+          end
+        elsif params[:rate_id]
+          @tax_rate = TaxRate.find params[:rate_id]
+          if @tax_rate.update tax_rate_params
+            params[:edit] = nil
+            render json: @tax_rate
+          else
+            render json: @tax_rate.errors.full_messages.join
+          end
         end
+
 
       else
         if params[:create]
@@ -621,7 +643,11 @@ module Admins
       end
 
       def tax_params
-        params.require(:tax).permit(:tax, :description)
+        params.require(:tax).permit(:id, :tax, :description, tax_rates_attributes: [:_destroy, :id, :tax_id, :rate, :created_by])
+      end
+
+      def tax_rate_params
+        params.require(:tax_rate).permit(:rate)
       end
 
       def brands_and_category_params
