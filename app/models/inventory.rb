@@ -127,6 +127,20 @@ class InventoryProduct < ActiveRecord::Base
   has_many :inventory_prns, through: :inventory_prn_items
   has_many :inventory_po_items, through: :inventory_prn_items
 
+  has_many :srn_items, foreign_key: :product_id do
+    def by_store(store_id)
+      joins(:srn).where("inv_srn.store_id = ?", store_id)
+    end
+  end
+
+  has_many :gin_items, foreign_key: :product_id do
+    def by_store(store_id)
+      joins(:gin).where("inv_gin.store_id = ?", store_id)
+    end
+  end
+
+
+
   validates_presence_of [:unit_id, :category3_id, :serial_no]
   validates_uniqueness_of :serial_no, scope: :category3_id
   validates :serial_no, :length => { :maximum => 6 }

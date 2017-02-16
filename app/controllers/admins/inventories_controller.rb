@@ -1191,7 +1191,7 @@ module Admins
 
               @grn_serial_part =  main_inventory_serial_part.grn_serial_parts.active_serial_parts.first
 
-              @grn_serial_part_id =  grn_serial_part.try(:id)
+              @grn_serial_part_id =  @grn_serial_part.try(:id)
 
               @grn_item_id  = @grn_serial_part.try(:grn_item).try(:id)
 
@@ -1457,10 +1457,13 @@ module Admins
         Inventory
         @gin = Gin.find params[:gin_id]
 
-        @srr = Srr.new store_id: @gin.store.id, created_by: current_user.id
+        @srr = Srr.new store_id: @gin.store.id, created_by: current_user.id, requested_module_id: @gin.srn.try(:requested_module_id)
+
         @gin.gin_items.each do |gin_item|
           @srr.srr_items.build product_id: gin_item.product_id, product_condition_id: gin_item.product_condition_id, spare_part: gin_item.spare_part
+
         end
+
       else
         @remote = true
 

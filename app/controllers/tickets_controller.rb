@@ -2982,7 +2982,7 @@ class TicketsController < ApplicationController
 
             @grn_serial_part =  @main_inventory_serial_part.grn_serial_parts.where(remaining: true).first
 
-            @iss_grn_serial_part_id =  grn_serial_part.try(:id)
+            @iss_grn_serial_part_id =  @grn_serial_part.try(:id)
 
             @iss_grn_item_id  = @grn_serial_part.try(:grn_item).try(:id)
 

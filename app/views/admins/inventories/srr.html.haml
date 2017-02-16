@@ -3,6 +3,8 @@
     = f.input :created_by, as: :hidden
     = f.input :srr_no, as: :hidden, input_html: {value: CompanyConfig.first.next_inv_last_srr_no}
     = f.input :store_id, as: :hidden
+    = f.input :requested_module_id, as: :hidden
+
     .row
       .col-md-12
         - if @srr.errors.any?
@@ -25,67 +27,76 @@
     %hr
 
     .row
-      .col-md-6
-        = f.simple_fields_for :srr_items do |g|
-          = g.input :product_id, as: :hidden
-          %div{class: "col-md-#{@gin.gin_items.count < 4 ? 12/@gin.gin_items.count : 6}"}
-            .row
-              .col-md-12
-                %h4 Product Information
-                %dl.dl-horizontal
-                  %dt Item code:
-                  %dd= g.object.inventory_product.generated_item_code
-                  %dt Item description:
-                  %dd= g.object.inventory_product.description
-                  %dt Balance to be issued:
-                  %dd= g.object.inventory_product.inventory_prn_items.sum(:quantity) - g.object.inventory_product.inventory_po_items.sum(:quantity)
-                  %dt Order unit
-                  %dd= g.object.inventory_product.inventory_unit.unit
-                  %dt Stock in hand
-                  %dd= g.object.inventory_product.inventories.map { |i| i.stock_quantity if i.store_id.to_i == f.object.store_id }.compact.join(", ")
-                  %dt Type
-                  %dd= g.object.inventory_product.inventory_product_info.need_serial ? "Serial" : g.object.inventory_product.inventory_product_info.need_batch ? "Batch" : "Non of Serial or Batch"
-              .col-md-4
-                - if not (g.object.inventory_product.need_serial or g.object.inventory_product.need_batch)
-                  = g.input :quantity
-                - elsif !g.object.inventory_product.need_serial and g.object.inventory_product.need_batch
-                  = g.input :quantity, as: :hidden, input_html: {value: 0 }
-                  %strong Return quantity:
-                  0
-              .col-md-8
-                = g.input :remarks
-              - if !g.object.inventory_product.need_serial and g.object.inventory_product.need_batch
-                - g.object.inventory_product.inventory_batches.each { |b| g.object.srr_item_sources.build }
-                / = g.simple_fields_for :srr_item_sources do |s|
-                /   = s.
+      .col-md-3
+        %h4 SRN
+      .col-md-9
+        %dl.dl-horizontal
+          %dt SRN No:
+          %dd= @gin.srn.formatted_srn_no
+          %dt Required date:
+          %dd= @gin.srn.created_at.try(:strftime, INOCRM_CONFIG["short_date_format"])
+          %dt Created by:
+          %dd= @gin.srn.created_by_user.full_name
+          %dt Created at:
+          %dd= @gin.srn.created_at.strftime(INOCRM_CONFIG["short_date_format"])
+          %dt Remarks:
+          %dd= simple_format @gin.srn.remarks
 
-      .col-md-6
-        = collapse_wrapper collapse_id: "srr_form_wrapper", labelledby: "srr_form_labelledby" do
-          = collapse collapse_type: "info", labelledby: "srr_form_search", header_content: "SRN Info: #{@gin.srn.formatted_srn_no}", collapse_link: "srr_form_link", collapse_id: "srr_form_wrapper" do
-            %dl.dl-horizontal
-              %dt SRN No:
-              %dd= @gin.srn.formatted_srn_no
-              %dt Required date:
-              %dd= @gin.srn.created_at.try(:strftime, INOCRM_CONFIG["short_date_format"])
-              %dt Created by:
-              %dd= @gin.srn.created_by_user.full_name
-              %dt Created at:
-              %dd= @gin.srn.created_at.strftime(INOCRM_CONFIG["short_date_format"])
-              %dt Remarks:
-              %dd= simple_format @gin.srn.remarks
+    %hr
+    .row
+      .col-md-3
+        %h4 GIN
 
-          = collapse collapse_type: "info", labelledby: "gin_info_search", header_content: "GIN Info: #{@gin.formatted_gin_no}", collapse_link: "gin_info_link", collapse_id: "srr_form_wrapper" do
-            %dl.dl-horizontal
-              %dt GIN No:
-              %dd= @gin.formatted_gin_no
-              %dt GIN date:
-              %dd= @gin.created_at.try(:strftime, INOCRM_CONFIG["short_date_format"])
-              %dt Created by:
-              %dd= @gin.created_by_user_full_name
-              %dt Created at:
-              %dd= @gin.created_at.strftime(INOCRM_CONFIG["short_date_format"])
-              %dt Remarks:
-              %dd= simple_format @gin.remarks
+      .col-md-9
+        %dl.dl-horizontal
+          %dt GIN No:
+          %dd= @gin.formatted_gin_no
+          %dt GIN date:
+          %dd= @gin.created_at.try(:strftime, INOCRM_CONFIG["short_date_format"])
+          %dt Created by:
+          %dd= @gin.created_by_user_full_name
+          %dt Created at:
+          %dd= @gin.created_at.strftime(INOCRM_CONFIG["short_date_format"])
+          %dt Remarks:
+          %dd= simple_format @gin.remarks
+    %hr
+
+    = f.simple_fields_for :srr_items do |g|
+      = g.input :product_id, as: :hidden
+      .row
+        .col-md-3
+          %h4 Product Information
+        .col-md-9
+          %dl.dl-horizontal
+            %dt Item code:
+            %dd= g.object.inventory_product.generated_item_code
+            %dt Item description:
+            %dd= g.object.inventory_product.description
+            %dt Requested quantity
+            %dd= g.object.inventory_product.srn_items.by_store(f.object.store.id).sum(:quantity)
+            %dt Issued quantity
+            %dd= g.object.inventory_product.gin_items.by_store(f.object.store.id).sum(:issued_quantity)
+            %dt Balance to be issued:
+            %dd= g.object.inventory_product.srn_items.by_store(f.object.store.id).sum(:quantity) - g.object.inventory_product.gin_items.by_store(f.object.store.id).sum(:issued_quantity)
+            %dt Order unit
+            %dd= g.object.inventory_product.inventory_unit.unit
+            %dt Stock in hand
+            %dd= g.object.inventory_product.inventories.where(store_id: f.object.store.id).to_a.sum{|i| i.inventory_stock_quantity}
+            %dt Type
+            %dd= g.object.inventory_product.product_type
+
+          .col-md-4
+            - if not ["Serial", "Batch"].include?(g.object.inventory_product.product_type)
+              = g.input :quantity
+            - elsif g.object.inventory_product.product_type == "Batch"
+              = g.input :quantity, as: :hidden, input_html: {value: 0 }
+              %strong Return quantity:
+              0
+          .col-md-8
+            = g.input :remarks
+          - if g.object.inventory_product.product_type == "Batch"
+            - g.object.inventory_product.inventory_batches.each { |b| g.object.srr_item_sources.build }
+
 
 
 - else
