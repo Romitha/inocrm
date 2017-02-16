@@ -108,6 +108,7 @@ module Admins
           if @organization.save
             params[:create] = nil
             @organization = Organization.new
+            flash[:notice] = "Successfully Saved"
           end
         else
           @organization = Organization.new

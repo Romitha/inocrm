@@ -26,7 +26,7 @@
             / = check_box_tag :adjust_checked
             = content_tag :div, "", id: 'content_tag1', data: {source: ticket.cus_payment_required}
             = label_tag "Adjust"
-            %input{:id => "adjust_checked", :class => "adjust_checkbox", :checked => "true", :name => "vehicle", :type => "checkbox", :value => "Car", onchange: "Invoices.on_click_adjust_check_visibility(this);"}
+            %input{:id => "adjust_checked", :class => "adjust_checkbox", :checked => "true", :type => "checkbox", :value => "Car", onchange: "Invoices.on_click_adjust_check_visibility(this);"}
           .col-md-12
             .col-md-6
               = t.input :amount, label: "Adjust amount", input_html: {:class => "adjust_container", :id => "amount_field"}

@@ -305,7 +305,6 @@ class ReportsController < ApplicationController
     # https://github.com/mileszs/wicked_pdf
 
     po = InventoryPo.find params[:po_id]
-    prn = InventoryPrn.find params[:po_id]
 
     customer = {
       contactPerson: (po.supplier.addresses.primary_address.first and po.supplier.addresses.primary_address.first.contact_person),
@@ -314,7 +313,7 @@ class ReportsController < ApplicationController
     }
 
     po_item_tax_total = po.inventory_po_taxes.sum(:amount)
-    required_date = prn.required_at.to_date.try :strftime, INOCRM_CONFIG["short_date_format"]
+    # required_date = prn.required_at.to_date.try :strftime, INOCRM_CONFIG["short_date_format"]
 
     po_taxes = po.inventory_po_taxes.map do |po_tax|
       {
@@ -352,7 +351,8 @@ class ReportsController < ApplicationController
       date: po.delivery_date.try(:strftime, "%Y-%m-%d"),
       ourRef: po.your_ref,
       quotation: "",
-      dateRequired: required_date,
+      # dateRequired: required_date,
+      dateRequired: "",
       paymentTerm: po.payment_term,
       deliveryMode: "",
 
