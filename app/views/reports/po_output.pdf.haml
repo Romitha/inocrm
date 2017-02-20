@@ -8,8 +8,6 @@
       = wicked_pdf_image_tag (print_object.owner.logo || "organization_image.png"), class: "img-responsive"
     .col-xs-7.text-center
       %span12
-        %h3{:style => "text-decoration: underline;"} PURCHASE ORDER
-      %span12
         %strong=print_object.owner.name
       %br/
       %span12
@@ -30,29 +28,34 @@
                   .col-xs-offset-1
                     = contact_detail[:value]
 
-  %hr/
+  %p{style: "border: 1px solid black"}
 
   .row
-    .col-xs-5
-      %p=print_object.customer.contactPerson
-      %strong=print_object.customer.name
-      %p=print_object.customer.address
-    .col-xs-4.col-xs-offset-2
-      %table.table-condensed
-        %tr
-          %th.text-right Number:
-          %td
-            = print_object.poNo
-        %tr
-          %th.text-right Date:
-          %td
-            =print_object.date
+    .container
+      .col-xs-5.rounded{style: "border: 1px solid black; border-radius: 10px; background: #E0E0E0;"}
+        %p=print_object.customer.contactPerson
+        %strong=print_object.customer.name
+        %p=print_object.customer.address
+      .col-xs-4.col-xs-offset-2
+        .col-xs-11
+          .container
+            %h3{style: "border: 1px solid black; border-radius: 8px; background: #E0E0E0;"} PURCHASE ORDER
+        %table.table-condensed.rounded
+          %tr
+            %th.text-right Number:
+            %td
+              = print_object.poNo
+          %tr
+            %th.text-right Date:
+            %td
+              =print_object.date
   %br/
   .row
     .col-xs-11
-      %table.table.table-default
+      %span.d-block.bg-success
+      %table.table.table-default{style: "border: 1px solid black"}
         %thead
-          %tr
+          %tr.success
             %th Our Ref.
             %th Quotation
             %th Date Required
@@ -68,9 +71,9 @@
 
   .row
     .col-xs-11
-      %table.table.table-stripped
+      %table.table.table-stripped{style: "border: 1px solid black"}
         %thead
-          %tr
+          %tr.success
             %th Item Code
             %th Article number/ Description
             %th Quantity
