@@ -19,7 +19,7 @@ def inventory_search_types( from_where, inventory_product = nil, *args )
       inventories = inventory_product.inventories.to_a.select{|i| options[:store_id].to_i == i.store_id.to_i }
       # store = inventory_product.inventories.find_by_store_id(options[:store_id])
 
-      available_quantities = inventories.sum{|i| i.available_quantity.to_f }
+      available_quantities = number_with_precision inventories.sum{|i| i.available_quantity.to_f }, precision: 2
 
       stock_quantity = inventories.sum{ |i| i.stock_quantity.to_f }
 
