@@ -93,7 +93,7 @@ class GrnItem < ActiveRecord::Base
 
   has_many :gin_sources
   has_many :gin_serial_parts
-  has_many :grn_item_current_unit_cost_histories
+  has_many :grn_item_current_unit_cost_histories, -> { order("created_at desc")}
   accepts_nested_attributes_for :grn_item_current_unit_cost_histories, allow_destroy: true
 
   after_save :update_relation_index
@@ -121,6 +121,7 @@ class GrnItem < ActiveRecord::Base
 
       end
     end
+
 
     # [:grn].each do |parent|
     #   self.send(parent).update_index
@@ -298,4 +299,13 @@ class GrnItemCurrentUnitCostHistory < ActiveRecord::Base
 
   belongs_to :grn_item
   belongs_to :created_by_user, class_name: "User", foreign_key: :created_by
+
+  before_save do |history|
+    if history.current_unit_cost_changed?
+      history.grn_item.current_unit_cost = history.current_unit_cost
+
+      history.grn_item.save
+
+    end
+  end
 end

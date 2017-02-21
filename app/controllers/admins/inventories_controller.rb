@@ -1430,7 +1430,7 @@ module Admins
       Grn
       @grnitem = GrnItem.find params[:grnitem_id]
       @grnitem.update grn_item_params
-      @grnitem.update current_unit_cost: @grnitem.grn_item_current_unit_cost_histories.order(created_at: :desc).first.current_unit_cost
+      # @grnitem.update current_unit_cost: @grnitem.grn_item_current_unit_cost_histories.order(created_at: :desc).first.current_unit_cost
       render "admins/searches/grn/change_cost"
     end
 
