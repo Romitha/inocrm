@@ -121,7 +121,7 @@ module Admins
       Ticket
       Product
       if params[:edit]
-        @store_and_branch = Organization.find params[:country_id]
+        @store_and_branch = ProductSoldCountry.find params[:country_id]
         if @store_and_branch.update admin_country_params
           params[:edit] = nil
           render json: @store_and_branch

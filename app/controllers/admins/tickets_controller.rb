@@ -247,6 +247,17 @@ module Admins
             params[:create] = nil
             @tax = Tax.new
           end
+
+        elsif params[:edit_more]
+          @tax = Tax.find params[:tax_id]
+
+        elsif params[:update]
+          @tax = Tax.find params[:tax_id]
+          if @tax.update tax_params
+            params[:update] = nil
+            @tax = Tax.new
+          end
+
         else
           @tax = Tax.new
         end
