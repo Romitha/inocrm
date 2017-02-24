@@ -1,117 +1,74 @@
 .row
-  .col-md-3
-    %strong Brand:
-    = product.category1_name
-  .col-md-3
-    %strong Product:
-    = product.category2_name
-  .col-md-3
-    %strong Category:
-    = product.category3_name
-  .col-md-3
-    %strong Serial Code:
-    = product.generated_serial_no
-  .col-md-12
-    %hr
-  .col-md-3
-    %strong Item Code:
-    = product.generated_item_code
-  .col-md-3
-    %strong Item Description:
-    = product.try(:description)
-  .col-md-3
-    %strong Unit:
-    = product.inventory_unit.unit
-  .col-md-3
-    %strong SKU:
-    = product.sku
-  .col-md-12
-    %hr
-  .col-md-3
-    %strong Legacy code:
-    = product.legacy_code
-  .col-md-3
-    %strong Model no:
-    = product.model_no
-  .col-md-3
-    %strong Product no:
-    = product.product_no
-  .col-md-3
-    %strong Spare part no:
-    = product.spare_part_no
-  .col-md-12
-    %hr
-  .col-md-3
-    %strong FIFO:
-    = boolean_in_word product.fifo, "Yes", "No"
-  .col-md-3
-    %strong Active:
-    = boolean_in_word product.active, "Yes", "No"
-  .col-md-3
-    %strong Non stock item:
-    = boolean_in_word product.non_stock_item,"Yes", "No"
-  .col-md-3
-    %strong Spare part:
-    = boolean_in_word product.spare_part,"Yes", "No"
-  .col-md-12
-    %hr
-  .col-md-3
-    %strong Secondary unit:
-    = product.inventory_product_info.secondary_unit_id
-  .col-md-3
-    %strong{title: "Secondery unit convertion"} S. u. conv.:
-    = product.inventory_product_info.secondery_unit_convertion
-  .col-md-3
-    %strong{title: "Per secondery unit conversion"} P. s. u. conv.:
-    = boolean_in_word product.inventory_product_info.per_secondery_unit_conversion, "Yes", "No"
-  .col-md-3
-    %strong Country:
-    = product.inventory_product_info.try(:product_sold_country).try(:Country)
-  .col-md-12
-    %hr
-  .col-md-3
-    %strong Manufacture:
-    = product.inventory_product_info.try(:manufacture).try(:manufacture)
-  .col-md-3
-    %strong abc class:
-    = product.inventory_product_info.try(:abc_class)
   .col-md-2
-    %strong{title: "Issue fractional allowed"} Issue f. allowed:
-    = boolean_in_word product.inventory_product_info.issue_fractional_allowed, "Yes", "No"
-  .col-md-2
-    %strong Need serial:
-    = boolean_in_word product.inventory_product_info.need_serial, "Yes", "No"
-  .col-md-2
-    %strong Need Batch:
-    = boolean_in_word product.inventory_product_info.need_batch, "Yes", "No"
-  .col-md-12
-    %hr
-  .col-md-3
-    %strong Average cost:
-    = number_with_precision product.inventory_product_info.average_cost, precision: 2
-  .col-md-3
-    %strong Standard cost:
-    = product.inventory_product_info.standard_cost
-  .col-md-3
-    %strong Currency:
-    = product.inventory_product_info.currency.currency
-  .col-md-3
-    %strong Remarks:
-    = simple_format product.inventory_product_info.remarks
-  .col-md-12
-    %hr
-  .col-md-2
-    %strong Created By:
-    = product.created_by_from_user
-  .col-md-2
-    %strong Created At:
-    = product.created_at.try(:strftime, "%Y-%m-%d")
-  .col-md-2
-    %strong Updated By:
-    / = User.find_by_id(product.try(:updated_by)).try(:user_name)}
-    = product.updated_by_from_user
-  .col-md-2
-    %strong Updated At:
-    = product.try(:updated_at).try(:strftime, "%Y-%m-%d")
-  .col-md-4
-    = image_tag (product.inventory_product_info.picture.url || "no_product.png"), class: "img-responsive padding-top1 padding-bottom1 view_img_product"
+    %h4 Info
+  .col-md-10
+    %dl.dl-horizontal
+      %dt Brand:
+      %dd= product.category1_name
+      %dt Product:
+      %dd= product.category2_name
+      %dt Category:
+      %dd= product.category3_name
+      %dt Serial Code:
+      %dd= product.generated_serial_no
+      %dt Item Code:
+      %dd= product.generated_item_code
+      %dt Item Description:
+      %dd= product.try(:description)
+      %dt Unit:
+      %dd= product.inventory_unit.unit
+      %dt SKU:
+      %dd= product.sku
+      %dt Legacy code:
+      %dd= product.legacy_code
+      %dt Model no:
+      %dd= product.model_no
+      %dt Product no:
+      %dd= product.product_no
+      %dt Spare part no:
+      %dd= product.spare_part_no
+      %dt FIFO:
+      %dd= boolean_in_word product.fifo, "Yes", "No"
+      %dt Active:
+      %dd= boolean_in_word product.active, "Yes", "No"
+      %dt Non stock item:
+      %dd= boolean_in_word product.non_stock_item,"Yes", "No"
+      %dt Spare part:
+      %dd= boolean_in_word product.spare_part,"Yes", "No"
+      %dt Secondary unit:
+      %dd= product.inventory_product_info.secondary_unit_id
+      %dt{title: "Secondery unit convertion"} S. u. conv.:
+      %dd= product.inventory_product_info.secondery_unit_convertion
+      %dt{title: "Per secondery unit conversion"} P. s. u. conv.:
+      %dd= boolean_in_word product.inventory_product_info.per_secondery_unit_conversion, "Yes", "No"
+      %dt Country:
+      %dd= product.inventory_product_info.try(:product_sold_country).try(:Country)
+      %dt Manufacture:
+      %dd= product.inventory_product_info.try(:manufacture).try(:manufacture)
+      %dt abc class:
+      %dd= product.inventory_product_info.try(:abc_class)
+      %dt{title: "Issue fractional allowed"} Issue f. allowed:
+      %dd= boolean_in_word product.inventory_product_info.issue_fractional_allowed, "Yes", "No"
+      %dt Need serial:
+      %dd= boolean_in_word product.inventory_product_info.need_serial, "Yes", "No"
+      %dt Need Batch:
+      %dd= boolean_in_word product.inventory_product_info.need_batch, "Yes", "No"
+      %dt Average cost:
+      %dd= number_with_precision product.inventory_product_info.average_cost, precision: 2
+      %dt Standard cost:
+      %dd= product.inventory_product_info.standard_cost
+      %dt Currency:
+      %dd= product.inventory_product_info.currency.currency
+      %dt Remarks:
+      %dd= simple_format product.inventory_product_info.remarks
+      %dt Created By:
+      %dd= product.created_by_from_user
+      %dt Created At:
+      %dd= product.created_at.try(:strftime, "%Y-%m-%d")
+      %dt Updated By:
+      / = User.find_by_id(product.try(:updated_by)).try(:user_name)}
+      %dd= product.updated_by_from_user
+      %dt Updated At:
+      %dd= product.try(:updated_at).try(:strftime, "%Y-%m-%d")
+    .col-md-4
+      = image_tag (product.inventory_product_info.picture.url || "no_product.png"), class: "img-responsive padding-top1 padding-bottom1 view_img_product"

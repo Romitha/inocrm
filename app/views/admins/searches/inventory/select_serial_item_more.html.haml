@@ -21,151 +21,124 @@
       / .col-md-3
       /   %strong Inventory No:
       /   #{inventory_serial_item.inventory_id}
-      .col-md-3
-        %strong Product No
-        #{inventory_serial_item.inventory_product.try(:product_no)}
-      .col-md-3
-        %strong Batch No
-        #{inventory_serial_item.try(:inventory_batch).try(:batch_no)}
-      .col-md-3
-        %strong Product Condition
-        #{inventory_serial_item.product_condition.condition}
-    .row
-      .col-md-3
-        %strong Serial No:
-        #{inventory_serial_item.serial_no}
-      .col-md-3
-        %strong Manufatured Date:
-        #{inventory_serial_item.try(:manufatured_date).try(:strftime, "%Y-%m-%d")}
-      .col-md-3
-        %strong CT No:
-        #{inventory_serial_item.try(:ct_no)}
-      .col-md-3
-        %strong Expiry Date:
-        #{inventory_serial_item.try(:expiry_date).try(:strftime, "%Y-%m-%d")}
-    .row
-      .col-md-3
-        %strong Scavenge
-        = boolean_in_word inventory_serial_item.scavenge, "Yes", "No"
-      .col-md-3
-        %strong Parts Not Completed
-        = boolean_in_word inventory_serial_item.parts_not_completed, "Yes", "No"
-      .col-md-3
-        %strong Damage
-        = boolean_in_word inventory_serial_item.damage, "Yes", "No"
-      .col-md-3
-        %strong Used
-        = boolean_in_word inventory_serial_item.used, "Yes", "No"
-    .row
-      .col-md-3
-        %strong Repaired
-        = boolean_in_word inventory_serial_item.repaired, "Yes", "No"
-      .col-md-3
-        %strong Reserved
-        = boolean_in_word inventory_serial_item.reserved, "Yes", "No"
-      .col-md-3
-        %strong Disposed
-        = boolean_in_word inventory_serial_item.disposed, "Yes", "No"
-      .col-md-3
-        %strong Status
-        #{inventory_serial_item.inventory_serial_item_status.try(:name)}
-    .row
-      .col-md-3
-        %strong Remarks:
-        #{simple_format inventory_serial_item.try(:remarks)}
+      .col-md-2
+        %h4 Info :
+      .col-md-10
+        %dl.dl-horizontal
+          %dt Product No
+          %dd #{inventory_serial_item.inventory_product.try(:product_no)}
+          %dt Batch No
+          %dd #{inventory_serial_item.try(:inventory_batch).try(:batch_no)}
+          %dt Product Condition
+          %dd #{inventory_serial_item.product_condition.condition}
+          %dt Serial No:
+          %dd #{inventory_serial_item.serial_no}
+          %dt Manufatured Date:
+          %dd #{inventory_serial_item.try(:manufatured_date).try(:strftime, "%Y-%m-%d")}
+          %dt CT No:
+          %dd #{inventory_serial_item.try(:ct_no)}
+          %dt Expiry Date:
+          %dd #{inventory_serial_item.try(:expiry_date).try(:strftime, "%Y-%m-%d")}
+          %dt Scavenge
+          %dd= boolean_in_word inventory_serial_item.scavenge, "Yes", "No"
+          %dt Parts Not Completed
+          %dd= boolean_in_word inventory_serial_item.parts_not_completed, "Yes", "No"
+          %dt Damage
+          %dd= boolean_in_word inventory_serial_item.damage, "Yes", "No"
+          %dt Used
+          %dd= boolean_in_word inventory_serial_item.used, "Yes", "No"
+          %dt Repaired
+          %dd= boolean_in_word inventory_serial_item.repaired, "Yes", "No"
+          %dt Reserved
+          %dd= boolean_in_word inventory_serial_item.reserved, "Yes", "No"
+          %dt Disposed
+          %dd= boolean_in_word inventory_serial_item.disposed, "Yes", "No"
+          %dt Status
+          %dd #{inventory_serial_item.inventory_serial_item_status.try(:name)}
+          %dt Remarks:
+          %dd #{simple_format inventory_serial_item.try(:remarks)}
+      %hr
     .row
     - inventory_serial_item.inventory_serial_warranties.each do |b_warranty|
       .col-md-12
         %fieldset{style:"background-color: #FFE4C4;"}
-          %legend.h4 #{b_warranty.inventory_warranty.inventory_warranty_type.name}
           .row
-            .col-md-4
-              %strong Start At:
-              #{b_warranty.inventory_warranty.try(:start_at).try(:strftime, "%Y-%m-%d")}
-            .col-md-4
-              %strong End At:
-              #{b_warranty.inventory_warranty.try(:end_at).try(:strftime, "%Y-%m-%d")}
-            .col-md-4
-              %strong Period Part:
-              #{b_warranty.inventory_warranty.try(:period_part)}
-          .row
-            .col-md-4
-              %strong Period Labour:
-              #{b_warranty.inventory_warranty.try(:period_labour)}
-            .col-md-4
-              %strong Period On-Sight:
-              #{b_warranty.inventory_warranty.try(:period_onsight)}
-            .col-md-4
-              %strong Remarks:
-              #{simple_format b_warranty.inventory_warranty.try(:remarks)}
+            .col-md-2
+              %h4 #{b_warranty.inventory_warranty.inventory_warranty_type.name}
+            .col-md-10
+              %dl.dl-horizontal
+                %dt Start At:
+                %dd #{b_warranty.inventory_warranty.try(:start_at).try(:strftime, "%Y-%m-%d")}
+                %dt End At:
+                %dd #{b_warranty.inventory_warranty.try(:end_at).try(:strftime, "%Y-%m-%d")}
+                %dt Period Part:
+                %dd #{b_warranty.inventory_warranty.try(:period_part)}
+                %dt Period Labour:
+                %dd #{b_warranty.inventory_warranty.try(:period_labour)}
+                %dt Period On-Sight:
+                %dd #{b_warranty.inventory_warranty.try(:period_onsight)}
+                %dt Remarks:
+                %dd #{simple_format b_warranty.inventory_warranty.try(:remarks)}
 
   = collapse collapse_type: "info", labelledby: "select_serial_item_form_collapse_search", header_content: "GRN and Additional Costs", collapse_link: "select_serial_item_form_collapse_cost", collapse_id: "select_serial_item_form_collapse" do
     - inventory_serial_item.grn_serial_items.active_serial_items.each do |grn_serial_item|
       .row
-        %strong GRN
-      .row
-        .col-md-4
-          %strong Currency:
-          = grn_serial_item.grn_item.currency.currency
-        .col-md-4
-          %strong Current GRN cost:
-          = number_with_precision grn_serial_item.grn_item.current_unit_cost, precision: 2
-        .col-md-4
-          %strong GRN No:
-          = grn_serial_item.grn_item.grn.grn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_grn_no_format"])
-      .row
-        .col-md-4
-          %strong GRN Date:
-          = grn_serial_item.grn_item.grn.created_at.try(:strftime, "%Y-%m-%d %H:%M")
-        .col-md-4
-          %strong GRN By:
-          = grn_serial_item.grn_item.grn.created_by_from_user
-        .col-md-4
-          %strong GRN remaining quantity:
-          = number_with_precision grn_serial_item.grn_item.remaining_quantity, precision: 2 #{grn_serial_item.grn_item.grn_items.sum(:remaining_quantity)}
-        .col-md-4
-          %strong GRN Received Quantity:
-          = number_with_precision grn_serial_item.grn_item.recieved_quantity, precision: 2
-        
-      .row
-        .col-md-12
-          %strong GRN Remarks:
-          = simple_format grn_serial_item.grn_item.grn.remarks
-        .col-md-12
-          / = number_with_precision inventory_serial_item.inventory_serial_items_additional_costs.sum{|c| c.cost.to_f }, precision: 2
-          - totf = 0
-          - inventory_serial_item.inventory_serial_items_additional_costs.each do |c|
-            - totf += c.cost.to_f
-          %strong Total Additional Cost:
-          = number_with_precision totf, precision: 2
-        .col-md-12
-          %strong Additional Costs
-        = simple_nested_form_for inventory_serial_item, url: create_additional_cost_admins_inventories_path(type: "InventorySerialItem", id: inventory_serial_item.id), method: :post, html: {class: "validate_form"} do |f|
-          = f.input :id, as: :hidden
-          .col-md-12
-            = f.simple_fields_for :inventory_serial_items_additional_costs do |g|
-              = g.input :currency_id, as: :hidden, input_html: {value: grn_serial_item.grn_item.currency.id}
-              .row
-                = g.input :created_by, as: :hidden, input_html: {value: current_user.id}
-                .col-md-1.small_scale_padding-top3
-                  = g.link_to_remove "remove"
-                .col-md-3
-                  = g.input :cost, required: true
-                .col-md-3
-                  = g.input :note
-                - if g.object.persisted?
+        .col-md-2
+          %h4 GRN
+        .col-md-10
+          %dl.dl-horizontal
+            %dt Currency:
+            %dd= grn_serial_item.grn_item.currency.currency
+            %dt Current GRN cost:
+            %dd= number_with_precision grn_serial_item.grn_item.current_unit_cost, precision: 2
+            %dt GRN No:
+            %dd= grn_serial_item.grn_item.grn.grn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_grn_no_format"])
+            %dt GRN Date:
+            %dd= grn_serial_item.grn_item.grn.created_at.try(:strftime, "%Y-%m-%d %H:%M")
+            %dt GRN By:
+            %dd= grn_serial_item.grn_item.grn.created_by_from_user
+            %dt GRN remaining quantity:
+            %dd= number_with_precision grn_serial_item.grn_item.remaining_quantity, precision: 2#{grn_serial_item.grn_item.grn_items.sum(:remaining_quantity)}
+            %dt GRN Received Quantity:
+            %dd= number_with_precision grn_serial_item.grn_item.recieved_quantity, precision: 2
+            %dt GRN Remarks:
+            %dd= simple_format grn_serial_item.grn_item.grn.remarks
+            / = number_with_precision inventory_serial_item.inventory_serial_items_additional_costs.sum{|c| c.cost.to_f }, precision: 2
+            - totf = 0
+            - inventory_serial_item.inventory_serial_items_additional_costs.each do |c|
+              - totf += c.cost.to_f
+            %dt Total Additional Cost:
+            %dd= number_with_precision totf, precision: 2
+        %hr
+        .col-md-2
+          %h4 Additional Costs
+        .col-md-10
+          = simple_nested_form_for inventory_serial_item, url:create_additional_cost_admins_inventories_path(type: "InventorySerialItem", id:inventory_serial_item.id), method: :post, html: {class: "validate_form"} do |f|
+            = f.input :id, as: :hidden
+            .col-md-12
+              = f.simple_fields_for :inventory_serial_items_additional_costs do |g|
+                = g.input :currency_id, as: :hidden, input_html: {value: grn_serial_item.grn_item.currency.id}
+                .row
+                  = g.input :created_by, as: :hidden, input_html: {value: current_user.id}
+                  .col-md-1.small_scale_padding-top3
+                    = g.link_to_remove "remove"
                   .col-md-3
-                    .strong Created by
-                    = g.object.created_by_user.try(:full_name)
-                  .col-md-2
-                    .strong Date
-                    = g.object.created_at.try(:strftime, "%Y-%m-%d")
-          .col-md-12
-            = f.link_to_add :inventory_serial_items_additional_costs, title: "Add new Additional Cost" do
-              %span.glyphicon.glyphicon-plus
-              Add Additional Cost
-          .col-md-12
-            = f.submit "Save", class: "btn btn-sm btn-success"
+                    = g.input :cost, required: true
+                  .col-md-3
+                    = g.input :note
+                  - if g.object.persisted?
+                    .col-md-3
+                      .strong Created by
+                      = g.object.created_by_user.try(:full_name)
+                    .col-md-2
+                      .strong Date
+                      = g.object.created_at.try(:strftime, "%Y-%m-%d")
+            .col-md-12
+              = f.link_to_add :inventory_serial_items_additional_costs, title: "Add new Additional Cost" do
+                %span.glyphicon.glyphicon-plus
+                Add Additional Cost
+            .col-md-12
+              = f.submit "Save", class: "btn btn-sm btn-success"
 
       / - if grn_serial_item.grn_item.grn_item_current_unit_cost_histories.any?
 
