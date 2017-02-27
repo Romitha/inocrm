@@ -81,10 +81,22 @@ class Inventory < ActiveRecord::Base
 
   after_save :update_relation_index
 
+  before_save :reset_values
+
   def update_relation_index
+
     [:inventory_product].each do |parent|
-      parent.to_s.classify.constantize.find(self.send(parent).id).update_index
-      
+      send(parent).update_index
+
+      # parent.to_s.classify.constantize.find(self.send(parent).id).grn_items.each{ |grn_item| grn_item.update_relation_index }
+
+    end
+  end
+
+  def reset_values
+    if (["stock_quantity", "available_quantity"] & changed).present?
+      Rails.cache.delete([:stock_cost, product_id, id ])
+
     end
   end
 end
@@ -139,14 +151,11 @@ class InventoryProduct < ActiveRecord::Base
     end
   end
 
-
-
   validates_presence_of [:unit_id, :category3_id, :serial_no]
   validates_uniqueness_of :serial_no, scope: :category3_id
   validates :serial_no, :length => { :maximum => 6 }
 
   has_many :dyna_columns, as: :resourceable, autosave: true
-
 
   after_save do |inventory_product|
     inventory_product.generated_code = inventory_product.generated_item_code
@@ -227,28 +236,28 @@ class InventoryProduct < ActiveRecord::Base
   end
 
   def stock_cost(inventory_id = nil)
-    product_type_count = if inventory_product_info.need_serial
-      grn_serial_items.active_serial_items.to_a.count
+    # product_type_count = if inventory_product_info.need_serial
+    #   grn_serial_items.active_serial_items.to_a.count
 
-    elsif inventory_product_info.need_batch
-      grn_batches.to_a.count
+    # elsif inventory_product_info.need_batch
+    #   grn_batches.to_a.count
 
-    else
-      grn_items.only_grn_items1.count
+    # else
+    #   grn_items.only_grn_items1.count
 
-    end
+    # end
 
-    if product_type_count.to_i != self.type_count.to_i
+    # if product_type_count.to_i != self.type_count.to_i
 
-      Rails.cache.delete([:stock_cost, self.id, inventory_id.to_i ])
+    #   Rails.cache.delete([:stock_cost, self.id, inventory_id.to_i ])
 
-      self.type_count = product_type_count
+    #   self.type_count = product_type_count
 
-      self.save if self.type_count.nil?
+    #   self.save if self.type_count.nil?
 
-    end
+    # end
 
-    Rails.cache.fetch([:stock_cost, self.id, inventory_id.to_i ]) do
+    Rails.cache.fetch([:stock_cost, id, inventory_id.to_i ]) do
       stock_cost = if inventory_product_info.need_serial
         grn_serial_items.active_serial_items.to_a.sum{|g| g.inventory_serial_item.inventory_id == inventory_id ? (g.grn_item.current_unit_cost.to_f + g.inventory_serial_item.inventory_serial_items_additional_costs.to_a.sum{|c| c.cost.to_f }) : 0 }
 
@@ -259,6 +268,7 @@ class InventoryProduct < ActiveRecord::Base
         store_id = inventories.where(id: inventory_id).first.try(:store_id)
 
         grn_items.only_grn_items1.to_a.sum{|g| g.grn.store_id == store_id ? g.remaining_quantity.to_f * g.current_unit_cost.to_f : 0 }
+
       end
 
       stock_cost
@@ -377,6 +387,7 @@ class InventoryProduct < ActiveRecord::Base
     to_json(
       only: [:id, :description, :model_no, :product_no, :spare_part_no, :fifo, :created_at, :serial_no, :remarks, :created_by_user, :updated_by_user],
       methods: [:category3_id, :category2_id, :category1_id, :category3_name, :category2_name, :category1_name, :generated_serial_no, :generated_item_code, :created_by_from_user, :updated_by_from_user, :manufacture, :product_type],
+
       include: {
         inventory_unit: {
           only: [:unit],
@@ -583,7 +594,6 @@ class InventoryBatch < ActiveRecord::Base
   mapping do
     Grn
     indexes :inventory_product, type: "nested", include_in_parent: true
-    indexes :grn_items, type: "nested", include_in_parent: true
     indexes :inventory, type: "nested", include_in_parent: true
     indexes :grn_batches, type: "nested", include_in_parent: true
   end
@@ -613,23 +623,18 @@ class InventoryBatch < ActiveRecord::Base
         inventory: {
           only: [:store_id, :damage_quantity, :available_quantity, :grn_item_id]
         },
-        grn_items: {
-          only: [:current_unit_cost],
-          include: {
-            grn: {
-              only: [:grn_no, :currency_id, :created_at, :store_id],
-            },
-          },
-        },
         grn_batches: {
           only: [:remaining_quantity, :damage_quantity],
-          methods: [:grn_current_unit_cost],
           include: {
             grn_item: {
               only: [:current_unit_cost, :remaining_quantity],
               include: {
                 currency: {
                   only: [:currency],
+                },
+                grn: {
+                  only: [:created_at, :store_id],
+                  methods: [:grn_no_format],
                 },
               },
             },
@@ -642,6 +647,17 @@ class InventoryBatch < ActiveRecord::Base
 
   def batch_stock_cost
     grn_batches.to_a.sum{|b| b.remaining_quantity * b.grn_item.current_unit_cost }
+  end
+
+  after_save do |inventory_batch|
+    [:inventory_product].each do |parent|
+      puts "***********888"
+      puts "indexing product"
+      puts "***********888"
+      inventory_batch.send(parent).update_index
+
+    end
+
   end
 
 end
@@ -758,13 +774,18 @@ class InventorySerialItem < ActiveRecord::Base
 
   end
 
+  after_save do |inventory_serial_item|
+    inventory_serial_item.update_index
+
+    [:inventory_product].each do |parent|
+      parent.to_s.classify.constantize.find(inventory_serial_item.send(parent).id).update_index
+    end
+
+  end
+
   def generated_serial_no
     serial_no.to_s.rjust(5, INOCRM_CONFIG["inventory_serial_no_format"])
   end
-
-  # def store_id
-
-  # end
 
 end
 
@@ -832,6 +853,9 @@ class InventorySerialItemsAdditionalCost < ActiveRecord::Base
 
   before_save do |additional_cost|
     if additional_cost.cost_changed?
+      puts "***************8"
+      puts "cost changed"
+      puts "***************8"
       Rails.cache.delete([:stock_cost, additional_cost.inventory_serial_item.product_id, additional_cost.inventory_serial_item.inventory_id ])
 
     end

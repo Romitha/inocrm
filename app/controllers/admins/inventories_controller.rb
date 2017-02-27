@@ -726,7 +726,7 @@ module Admins
           Rails.cache.write([:grn_item, @po_item.id, session[:grn_arrived_time].to_i], @grn_item )
 
           if Rails.cache.fetch([:po_item_ids, session[:grn_arrived_time].to_i]).to_a.count > 0 #@po_item.inventory_po.inventory_po_items.count
-            @grn = Grn.new po_id: session[:po_id]
+            @grn = Grn.new po_id: session[:po_id], supplier_id: @po_item.inventory_po.supplier_id
 
           end
 
@@ -1265,7 +1265,8 @@ module Admins
                 grn_batch.grn_item.decrement! :remaining_quantity, grn_batch_issued_qty
 
                 [:stock_quantity, :available_quantity].each do |attrib|
-                  @inventory.decrement! attrib, grn_batch_issued_qty if @inventory.present?
+                  # @inventory.decrement! attrib, grn_batch_issued_qty if @inventory.present?
+                  grn_batch.inventory_batch.inventory.decrement! attrib, grn_batch_issued_qty# if @inventory.present?
                 end
 
                 gin_item.inventory_not_updated = false
@@ -1292,6 +1293,7 @@ module Admins
 
                   [:stock_quantity, :available_quantity].each do |attrib|
                     @inventory.decrement! attrib, grn_item_issued_qty if @inventory.present?
+
                   end
 
                   gin_item.inventory_not_updated = false
@@ -1319,6 +1321,8 @@ module Admins
         @gin.gin_items.each do |gin_item|
           Rails.cache.fetch([ :gin, :grn_batches, gin_item.srn_item_id.to_i ]).to_a.each do |grn_batch|
             grn_batch.save
+            grn_batch.inventory_batch.inventory_product.update_index
+
           end
 
         end
@@ -1435,6 +1439,7 @@ module Admins
     end
 
     def create_additional_cost
+      Inventory
       @cost_parent = InventorySerialItem.find params[:id]
       if @cost_parent.update inventory_serial_item_params
         flash[:notice] = "Successfully saved."
@@ -1460,7 +1465,16 @@ module Admins
         @srr = Srr.new store_id: @gin.store.id, created_by: current_user.id, requested_module_id: @gin.srn.try(:requested_module_id)
 
         @gin.gin_items.each do |gin_item|
-          @srr.srr_items.build product_id: gin_item.product_id, product_condition_id: gin_item.product_condition_id, spare_part: gin_item.spare_part
+          srr_item = @srr.srr_items.build product_id: gin_item.product_id, product_condition_id: gin_item.product_condition_id, spare_part: gin_item.spare_part
+
+          puts "*************"
+          puts gin_item.gin_sources.inspect
+          puts "*************"
+
+          gin_item.gin_sources.each do |gin_source|
+            srr_item.srr_item_sources.build returned_quantity: gin_source.returned_quantity, gin_source_id: gin_source.id, unit_cost: gin_source.grn_item.unit_cost, currency_id: gin_source.grn_item.currency_id
+
+          end
 
         end
 
@@ -1468,6 +1482,9 @@ module Admins
         @remote = true
 
       end
+
+      render "admins/inventories/srr/srr"
+
     end
 
     private

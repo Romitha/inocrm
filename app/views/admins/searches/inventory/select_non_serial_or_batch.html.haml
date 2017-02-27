@@ -37,7 +37,7 @@
       - else
         = (index+1)
     .col-md-1
-      =grn_item.grn.grn_no
+      =grn_item.grn.grn_no_format
     .col-md-1
       =grn_item.grn.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
     .col-md-1
@@ -48,11 +48,9 @@
       =grn_item.currency.code
       
     .col-md-1
-      =grn_item.current_unit_cost
+      = grn_item.current_unit_cost
     .col-md-1
-      - cost = grn_item.current_unit_cost
-      - qnty = grn_item.remaining_quantity
-      =cost*qnty
+      = grn_item.inventory_product.inventories.sum{|i| i.store_id.to_i == grn_item.grn.store_id.to_i ? i.product_stock_cost : 0}
     .col-md-1
       = link_to "Select", inventories_admins_searches_path(select_action: "select_non_serial_or_batch_more", grn_item_id: grn_item.id, store_id: @store.try(:id) )
   %hr
@@ -60,4 +58,4 @@
 
 .row
   .col-md-3.pull-right.text-right
-    %strong Total Cost: #{number_with_precision @ans, precision: 2}
+    %strong Total Cost: #{number_with_precision @total_stock_cost, precision: 2}

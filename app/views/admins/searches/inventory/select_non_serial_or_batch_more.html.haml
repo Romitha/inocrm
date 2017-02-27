@@ -51,25 +51,7 @@
       .col-md-8
         %strong GRN Remarks:
         = simple_format inventory_non_serial_non_batch.grn.remarks
-        / - if inventory_non_serial_non_batch.grn_item_current_unit_cost_histories.any?
-        /   .row{style: "margin-top:15px;"}
-        /     .col-md-12{style: "background-color: #98FB98; text-align:center"}
-        /       %strong GRN Cost Adgestments
-        /     .col-md-12
-        /       - inventory_non_serial_non_batch.grn_item_current_unit_cost_histories.each_with_index do |hcost, index|
-        /         .row
-        /           .col-md-1
-        /           .col-md-2
-        /             =index+1
-        /           .col-md-3
-        /             %strong Date:
-        /             = hcost.try(:created_at).try(:strftime, "%Y-%m-%d %H:%M")
-        /           .col-md-3
-        /             %strong Cost:
-        /             = number_with_precision hcost.current_unit_cost, precision: 2
-        /           .col-md-3
-        /             %strong Done by:
-        /             = hcost.created_by_user.full_name
+
   = collapse collapse_type: "info", labelledby: "select_serial_item_form_collapse_search", header_content: "GRN Cost Adgestments", collapse_link: "select_serial_item_form_collapse_adgestment", collapse_id: "select_serial_item_form_collapse" do
     - if inventory_non_serial_non_batch.grn_item_current_unit_cost_histories.any?
       .row

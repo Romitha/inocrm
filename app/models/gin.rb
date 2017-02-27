@@ -102,6 +102,16 @@ class GinItem < ActiveRecord::Base
   has_many :gin_sources#, foreign_key: :gin_item_id
   has_many :ticket_spare_part_stores, foreign_key: :inv_gin_item_id
   has_many :ticket_on_loan_spare_parts, foreign_key: :inv_gin_item_id
+
+  after_save do |gin_item|
+    [:inventory_product].each do |parent|
+      gin_item.send(parent).update_index
+      # parent.to_s.classify.constantize.find(self.send(parent).id).update_index
+
+    end
+
+  end
+
 end
 
 class GinSource < ActiveRecord::Base

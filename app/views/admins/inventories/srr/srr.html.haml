@@ -74,28 +74,36 @@
             %dd= g.object.inventory_product.description
             %dt Requested quantity
             %dd= g.object.inventory_product.srn_items.by_store(f.object.store.id).sum(:quantity)
-            %dt Issued quantity
-            %dd= g.object.inventory_product.gin_items.by_store(f.object.store.id).sum(:issued_quantity)
-            %dt Balance to be issued:
-            %dd= g.object.inventory_product.srn_items.by_store(f.object.store.id).sum(:quantity) - g.object.inventory_product.gin_items.by_store(f.object.store.id).sum(:issued_quantity)
-            %dt Order unit
-            %dd= g.object.inventory_product.inventory_unit.unit
             %dt Stock in hand
             %dd= g.object.inventory_product.inventories.where(store_id: f.object.store.id).to_a.sum{|i| i.inventory_stock_quantity}
+            %dt Order unit
+            %dd= g.object.inventory_product.inventory_unit.unit
             %dt Type
             %dd= g.object.inventory_product.product_type
 
-          .col-md-4
-            - if not ["Serial", "Batch"].include?(g.object.inventory_product.product_type)
-              = g.input :quantity
-            - elsif g.object.inventory_product.product_type == "Batch"
-              = g.input :quantity, as: :hidden, input_html: {value: 0 }
-              %strong Return quantity:
-              0
-          .col-md-8
+            %dt Issued quantity
+            %dd= g.object.srr_item_sources.to_a.sum{|s| s.gin_source.issued_quantity}
+            %dt Balance to be issued:
+            %dd= g.object.inventory_product.srn_items.by_store(f.object.store.id).sum(:quantity) - g.object.srr_item_sources.to_a.sum{|s| s.gin_source.issued_quantity} + g.object.srr_item_sources.to_a.sum{|s| s.gin_source.returned_quantity}
+            %dt Returned quantity
+            %dd= g.object.srr_item_sources.to_a.sum{|s| s.gin_source.returned_quantity}
+
+            = g.simple_fields_for :srr_item_sources do |s|
+
+              - if not ["Serial", "Batch"].include?(g.object.inventory_product.product_type)
+                %dt Required quantity
+                %dd= s.input :returned_quantity, label: false
+              - else
+                = s.input :returned_quantity, as: :hidden
+
+              %hr
+          .col-md-12
             = g.input :remarks
-          - if g.object.inventory_product.product_type == "Batch"
-            - g.object.inventory_product.inventory_batches.each { |b| g.object.srr_item_sources.build }
+
+    %hr
+    .row
+      .col-md-12
+        = f.input :remarks
 
 
 

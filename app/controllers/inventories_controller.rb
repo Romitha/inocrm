@@ -254,7 +254,8 @@ class InventoriesController < ApplicationController
               #product_condition_id
               #return_reason_id
               returnable_srn_item_id: ticket_spare_part.ticket_spare_part_store.srn_item.id,
-              spare_part: ticket_spare_part.ticket_spare_part_store.srn_item.spare_part
+              spare_part: ticket_spare_part.ticket_spare_part_store.srn_item.spare_part,
+              currency_id: ticket_spare_part.ticket_spare_part_store.gin_item.currency_id
             )
 
             srr_item_source = srr_item.srr_item_sources.create(

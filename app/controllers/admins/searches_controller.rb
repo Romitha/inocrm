@@ -70,10 +70,18 @@ module Admins
         render "admins/searches/inventory/select_batches"
         
       when "Non Serial Non Batch"
-        @non_serial_or_batches = @inv_pro.grn_items.only_grn_items1.select{|g| @store.present? ? (g if @store.id == g.grn.store_id) : g }.compact
-        @ans = @non_serial_or_batches.inject(0){|i, k| i + k.remaining_quantity*k.current_unit_cost}
+        if @store.present?
+          # p = Tire.search 'inventory_serial_items', {"query":{"bool":{"must":[{"query_string":{"query":"inventory.store_id:18 AND inventory_product.id:13"}}]}},"sort":[{"created_at":{"order":"desc","ignore_unmapped":true}}], "aggs": {"stock_cost": {"sum": {"field": "remaining_grn_items.current_unit_cost"}}}}
 
-        @non_serial_or_batches = Kaminari.paginate_array(@non_serial_or_batches).page(params[:page]).per(10)
+          query = [query, "grn.store_id:#{@store.id}"].join(" AND ")
+        end
+
+        params[:query] = query
+        # @non_serial_or_batches = @inv_pro.grn_items.only_grn_items1.select{|g| @store.present? ? (g if @store.id == g.grn.store_id) : g }.compact
+        @non_serial_or_batches = GrnItem.search(params)
+        # @ans = @non_serial_or_batches.inject(0){|i, k| i + k.remaining_quantity*k.current_unit_cost}
+
+        # @non_serial_or_batches = Kaminari.paginate_array(@non_serial_or_batches).page(params[:page]).per(10)
 
         # @total_stock_cost = @grn_items.sum{|i| i.grn_items.sum{ |g| g.any_remaining_serial_item ? g.current_unit_cost.to_f*g.remaining_quantity.to_f : 0 }}
 

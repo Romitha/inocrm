@@ -47,47 +47,33 @@
         = (index+1) + 10*(params[:page].to_i-1)
       - else
         = (index+1)
+    - inventory_batch.grn_batches.each do |grn_batch|
+      .col-md-1
+        = grn_batch.grn_item.grn.grn_no_format
+      .col-md-1
+        = grn_batch.grn_item.grn.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
     .col-md-1
-      - inventory_batch.grn_items.each do |grn_item|
-        = grn_item.grn.try(:grn_no)
+      = inventory_batch.batch_no
     .col-md-1
-      - inventory_batch.grn_items.each do |grn_item|
-        = grn_item.grn.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
-    .col-md-1
-      = inventory_batch.try(:batch_no)
-    .col-md-1
-      = inventory_batch.try(:lot_no)
+      = inventory_batch.lot_no
     
-    .col-md-1
-      - inventory_batch.grn_batches.each do |grn_batch|
+    - inventory_batch.grn_batches.each do |grn_batch|
+      .col-md-1
         = grn_batch.remaining_quantity
-    .col-md-1
-      - inventory_batch.grn_batches.each do |grn_batch|
+      .col-md-1
         = grn_batch.damage_quantity
-    .col-md-2
-      - inventory_batch.grn_batches.each do |grn_batch|
-        = grn_batch.try(:grn_item).try(:currency).try(:currency)
-    .col-md-1.text-right
-      - inventory_batch.grn_batches.each do |grn_batch|
-        - current_unit_cost = number_with_precision grn_batch.try(:grn_item).try(:current_unit_cost), precision: 2
-        = current_unit_cost
-    .col-md-1.text-right
-      / - inventory_batch.grn_batches.each do |grn_batch|
-      /   - if grn_batch.grn_item
-      /     = number_with_precision inventory_batch.grn_batches.sum{|grn_batch| grn_batch.grn_item.current_unit_cost.to_i * grn_batch.grn_item.remaining_quantity.to_i }, precision: 2
-      /   - else
-      /     = number_with_precision (0), precision: 2
+      .col-md-2
+        = grn_batch.grn_item.currency.currency
 
+      .col-md-1.text-right
+        = number_with_precision grn_batch.grn_item.current_unit_cost, precision: 2
+    .col-md-1.text-right
       = number_with_precision inventory_batch.batch_stock_cost, precision: 2
 
     .col-md-1
       = link_to "Select", inventories_admins_searches_path(select_action: "select_inventory_batch_more", inventory_batch_id: inventory_batch.id, store_id: @store.try(:id) )
       
   %hr
-/ .row
-/   .col-md-3.pull-right.text-right
-
-/     %strong Total Cost : #{number_with_precision @inventory_batches.inject(0){|i, grn_batch| grn_batch.remaining_quantity * grn_batch.grn_item.current_unit_cost}, precision: 2}
 
 .row
   .col-md-3.pull-right.text-right

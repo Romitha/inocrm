@@ -4,10 +4,6 @@ class Grn < ActiveRecord::Base
   include Tire::Model::Search
   include Tire::Model::Callbacks
 
-  # mapping do
-  #   indexes :tickets, type: "nested", include_in_parent: true
-  # end
-
   def self.search(params)
     tire.search(page: (params[:page] || 1), per_page: 10) do
       query do
@@ -113,8 +109,8 @@ class GrnItem < ActiveRecord::Base
   end
 
   def update_relation_index
-    [:inventory_serial_items, :inventory_batches].each do |children|
-      self.send(children).each do |child|
+    [:inventory_serial_items].each do |children|
+      send(children).each do |child|
         # child.update_index
         # parent.to_s.classify.constantize.find(self.send(parent).id).update_index
         children.to_s.classify.constantize.find(child.id).update_index
@@ -122,10 +118,11 @@ class GrnItem < ActiveRecord::Base
       end
     end
 
+    [:inventory_product].each do |parent|
+      send(parent).update_index
+      # parent.to_s.classify.constantize.find(self.send(parent).id).update_index
 
-    # [:grn].each do |parent|
-    #   self.send(parent).update_index
-    # end
+    end
   end
 
   before_save do |grn_item|
@@ -139,14 +136,17 @@ class GrnItem < ActiveRecord::Base
     grn_item.remarks = grn_item_remarks
 
     if grn_item.current_unit_cost_changed? or grn_item.remaining_quantity_changed?
-      Rails.cache.delete([:stock_cost, self.product_id.to_f, nil ])
+      Inventory.where(product_id: grn_item.product_id, store_id: grn_item.grn.store_id).pluck(:id).uniq{|i| i }.each do |id|
+        Rails.cache.delete([:stock_cost, grn_item.product_id, id ])
 
-      grn_item.inventory_serial_items.pluck(:inventory_id, :product_id).uniq{|i| i[0] and i[1]}.each do |a|
+      end
+
+      grn_item.inventory_serial_items.pluck(:product_id, :inventory_id).uniq{|i| i[0] and i[1]}.each do |a|
         Rails.cache.delete([:stock_cost, a[0], a[1] ])
 
       end
 
-      grn_item.inventory_batches.pluck(:inventory_id, :product_id).uniq{|i| i[0] and i[1]}.each do |a|
+      grn_item.inventory_batches.pluck(:product_id, :inventory_id).uniq{|i| i[0] and i[1]}.each do |a|
         Rails.cache.delete([:stock_cost, a[0], a[1] ])
 
       end
@@ -204,6 +204,13 @@ class GrnItem < ActiveRecord::Base
         inventory_product: {
           only: [:id, :description, :model_no, :product_no, :spare_part_no, :created_at],
           methods: [:category3_id, :category2_id, :category1_id, :generated_item_code],
+
+          include: {
+            inventories: {
+              only: [:id, :store_id, :product_id],
+              methods: [:inventory_stock_quantity, :product_stock_cost]
+            }
+          }
         },
         currency: {
           only: [:code],
@@ -249,6 +256,13 @@ class GrnBatch < ActiveRecord::Base
     if grn_batch.remaining_quantity_changed?
       Rails.cache.delete([:stock_cost, grn_batch.inventory_batch.product_id, grn_batch.inventory_batch.inventory_id ])
 
+    end
+
+  end
+
+  after_save do |grn_batch|
+    [:inventory_batch].each do |parent|
+      grn_batch.send(parent).update_index
     end
 
   end
@@ -300,12 +314,8 @@ class GrnItemCurrentUnitCostHistory < ActiveRecord::Base
   belongs_to :grn_item
   belongs_to :created_by_user, class_name: "User", foreign_key: :created_by
 
-  before_save do |history|
-    if history.current_unit_cost_changed?
-      history.grn_item.current_unit_cost = history.current_unit_cost
+  after_save do |history|
+    history.grn_item.update current_unit_cost: history.current_unit_cost
 
-      history.grn_item.save
-
-    end
   end
 end
