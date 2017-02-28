@@ -312,6 +312,7 @@ class ReportsController < ApplicationController
       address: (po.supplier.addresses.primary_address.first and po.supplier.addresses.primary_address.first.full_address),
     }
 
+    created_date = po.created_at.strftime(INOCRM_CONFIG['long_date_format'])
     po_item_tax_total = po.inventory_po_taxes.sum(:amount)
     # required_date = prn.required_at.to_date.try :strftime, INOCRM_CONFIG["short_date_format"]
 
@@ -362,6 +363,7 @@ class ReportsController < ApplicationController
       discount: po.discount_amount,
       total: ( sub_total + po_item_tax_total - po.discount_amount ),
       poTaxes: po_taxes,
+      createdDate: created_date,
     }
 
     @print_hash_to_object = HashToObject.new @print_object

@@ -1020,9 +1020,6 @@ class InventoryPo < ActiveRecord::Base
   has_many :inventory_po_items, foreign_key: :po_id
   accepts_nested_attributes_for :inventory_po_items, allow_destroy: true
 
-  has_many :inventory_po_taxes, foreign_key: :po_id
-  accepts_nested_attributes_for :inventory_po_taxes, allow_destroy: true
-
   validates_presence_of [:supplier_id, :store_id, :po_no, :discount_amount]
 
   mapping do
@@ -1088,6 +1085,9 @@ class InventoryPoItem < ActiveRecord::Base
   belongs_to :inventory_prn_item, foreign_key: :prn_item_id
   belongs_to :inventory_unit, foreign_key: :unit_id
 
+  has_many :inventory_po_item_taxes, foreign_key: :po_item_id
+  accepts_nested_attributes_for :inventory_po_item_taxes, allow_destroy: true
+
   has_many :grn_items, foreign_key: :po_item_id
   accepts_nested_attributes_for :grn_items, allow_destroy: true
   has_many :grns, through: :grn_items
@@ -1107,10 +1107,11 @@ class InventoryPoItem < ActiveRecord::Base
   end
 end
 
-class InventoryPoTax < ActiveRecord::Base
-  self.table_name = "inv_po_tax"
+class InventoryPoItemTax < ActiveRecord::Base
+  self.table_name = "inv_po_item_tax"
 
-  belongs_to :inventory_po, foreign_key: :po_id
+  belongs_to :inventory_po_item, foreign_key: :po_item_id
+  belongs_to :tax, foreign_key: :tax_id
 end
 
 class InventoryPrn < ActiveRecord::Base
