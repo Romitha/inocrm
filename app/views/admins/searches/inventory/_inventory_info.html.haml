@@ -1,7 +1,7 @@
 .row
   .col-md-2
     %h4 Info :
-  .col-md-10
+  .col-md-5
     %dl.dl-horizontal
       %dt Stock Quantity:
       %dd= number_with_precision inventory.stock_quantity, precision: 2
@@ -23,6 +23,8 @@
       %dd= inventory.updatd_at.try(:strftime, "%Y-%m-%d")
       %dt Reorder Level:
       %dd= number_with_precision inventory.reorder_level, precision: 2
+  .col-md-5
+    %dl.dl-horizontal
       %dt Lead Time In Days:
       %dd= inventory.lead_time_in_days
       %dt Updated By:

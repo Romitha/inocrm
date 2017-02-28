@@ -23,7 +23,7 @@
       /   #{inventory_serial_item.inventory_id}
       .col-md-2
         %h4 Info :
-      .col-md-10
+      .col-md-5
         %dl.dl-horizontal
           %dt Product No
           %dd #{inventory_serial_item.inventory_product.try(:product_no)}
@@ -41,6 +41,8 @@
           %dd #{inventory_serial_item.try(:expiry_date).try(:strftime, "%Y-%m-%d")}
           %dt Scavenge
           %dd= boolean_in_word inventory_serial_item.scavenge, "Yes", "No"
+      .col-md-5
+        %dl.dl-horizontal
           %dt Parts Not Completed
           %dd= boolean_in_word inventory_serial_item.parts_not_completed, "Yes", "No"
           %dt Damage
