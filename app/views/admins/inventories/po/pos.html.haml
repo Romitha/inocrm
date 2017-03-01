@@ -1,3 +1,5 @@
+- pos = @pos
+
 .row
   .col-md-12
     = form_tag pos_admins_inventories_path(purchase_order: "search_po"), method: :get, class: "form-horizontal" do
@@ -31,6 +33,8 @@
 
 %h2.small_scale_padding-top1 PO List
 / = form_tag view_po_admins_inventories_path(purchase_order: "view_po"), remote: true, method: :get, class: "form-horizontal" do
+= paginate pos, remote: false, method: :get
+
 %table.table.table-hover
   %thead
     %tr
@@ -44,9 +48,13 @@
       %th Created by
       %th Action
   %tbody
-    - @pos.each_with_index do |po, index|
+    - pos.each_with_index do |po, index|
       %tr
-        %td= index+1
+        %td
+          - if params[:page]
+            = (index+1)+ 10*(params[:page].to_i-1)
+          - else
+            = (index+1)
         %td= po.store_name
         %td= po.supplier.name
         %td= po.formated_po_no
@@ -55,3 +63,5 @@
         %td= simple_format po.remarks
         %td= po.created_by_user_full_name
         %td= link_to "Select", pos_admins_inventories_path(po_id: po.id), target: "_blank"
+
+= paginate pos, remote: false, method: :get
