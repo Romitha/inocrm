@@ -19,7 +19,7 @@
           %td
             = po.try(:po_date).try(:strftime, "%Y-%m-%d")
           %td
-            
+
           %td
             = po.try(:amount)
           %td
@@ -27,4 +27,4 @@
           %td
             = link_to "View", "#", onclick: "Tickets.view_so_po_items('#{po.id}'); false;"
 .row
-  #form_id_invoice_po      
+  #form_id_invoice_po

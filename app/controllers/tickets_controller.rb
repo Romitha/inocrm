@@ -2061,9 +2061,6 @@ class TicketsController < ApplicationController
     Inventory
     TicketSparePart
     Product
-    # if params[:product_brand_id].present?
-    #   @product_brand_id = ProductBrand.find params[:product_brand_id]
-    # end
   end
 
   def js_call_invoice_for_hp
@@ -2071,11 +2068,23 @@ class TicketsController < ApplicationController
     TicketSparePart
     Product
     User
-    # Invoice
     if params[:product_brand_id].present?
       @product_brand_id = ProductBrand.find params[:product_brand_id]
     end
-    # @all_invoices = Invoice.all
+  end
+
+  def js_call_invoice_item
+    Invoice
+    TicketSparePart
+    User
+    if params[:po_id].present?
+      @so_po_id = SoPo.find params[:po_id]
+      @invoice = Invoice.new
+      @invoice_all = Invoice.all
+      @so_po_id.so_po_items.each do |po_item|
+        @invoice.invoice_items.build item_no: po_item.item_no, amount: po_item.amount
+      end
+    end
   end
 
   def js_call_view_more_inv_so
@@ -2084,11 +2093,6 @@ class TicketsController < ApplicationController
     User
     if params[:po_id].present?
       @so_po_id = SoPo.find params[:po_id]
-      # @invoice = Invoice.new
-      # @invoice_all = Invoice.all
-      # @so_po_id.so_po_items.each do |po_item|
-      #   @invoice.invoice_items.build item_no: po_item.item_no, amount: po_item.amount
-      # end
     end
 
     if params[:inv_id].present?
@@ -2105,20 +2109,6 @@ class TicketsController < ApplicationController
         render json: @soponote
       else
         render json: @soponote.errors.full_messages.join
-      end
-    end
-  end
-
-  def js_call_invoice_item
-    Invoice
-    TicketSparePart
-    User
-    if params[:po_id].present?
-      @so_po_id = SoPo.find params[:po_id]
-      @invoice = Invoice.new
-      @invoice_all = Invoice.all
-      @so_po_id.so_po_items.each do |po_item|
-        @invoice.invoice_items.build item_no: po_item.item_no, amount: po_item.amount
       end
     end
   end
