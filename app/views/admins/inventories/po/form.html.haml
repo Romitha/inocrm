@@ -40,7 +40,13 @@
         .col-md-3
           = f.input :delivery_date, as: :string, input_html: {class: "datepicker"}, label: "Deliver Date"
         .col-md-3
+          = f.input :delivery_date_text, label: "Delivery Date Text"
+        .col-md-3
           = f.input :your_ref, label: "Your Reference"
+        .col-md-3
+          = f.input :quotation_no, label: "Qutoation No"
+        .col-md-3
+          = f.input :delivery_mode, label: "Delivery Mode"
         .col-md-4
           = f.input :payment_term, label: "Payment Term"
         .col-md-4

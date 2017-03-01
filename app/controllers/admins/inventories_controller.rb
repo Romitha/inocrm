@@ -1582,7 +1582,7 @@ module Admins
       end
 
       def po_params
-        params.require(:inventory_po).permit(:id, :created_by, :store_id, :supplier_id, :po_no, :delivery_date, :your_ref, :payment_term, :discount_amount, :currency_id, :remarks, :deliver_to, inventory_po_items_attributes: [ :id, :_destroy, :prn_item_id, :quantity, :unit_cost, :unit_id, :unit_cost_grn, :remarks, inventory_po_item_taxes_attributes: [ :id, :_destroy, :po_item_id, :tax_id, :tax_rate, :amount ] ] )
+        params.require(:inventory_po).permit(:id, :created_by, :store_id, :supplier_id, :po_no, :delivery_date, :your_ref, :payment_term, :discount_amount, :currency_id, :remarks, :deliver_to, :delivery_date_text, :quotation_no, :delivery_mode, inventory_po_items_attributes: [ :id, :_destroy, :prn_item_id, :quantity, :unit_cost, :unit_id, :unit_cost_grn, :remarks, inventory_po_item_taxes_attributes: [ :id, :_destroy, :po_item_id, :tax_id, :tax_rate, :amount ] ] )
       end
 
   end

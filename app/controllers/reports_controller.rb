@@ -313,13 +313,24 @@ class ReportsController < ApplicationController
     }
 
     created_date = po.created_at.strftime(INOCRM_CONFIG['long_date_format'])
-    po_item_tax_total = po.inventory_po_taxes.sum(:amount)
+    quotation_no = po.quotation_no
+    delivery_mode = po.delivery_mode
+    required_date = po.delivery_date_text
+
+    po_item_tax_total = po.inventory_po_items.to_a.sum{|e| e.inventory_po_item_taxes.sum(:amount)}
     # required_date = prn.required_at.to_date.try :strftime, INOCRM_CONFIG["short_date_format"]
 
-    po_taxes = po.inventory_po_taxes.map do |po_tax|
+    # po_taxes = po.inventory_po_taxes.map do |po_tax|
+    #   {
+    #     amount: po_tax.amount.to_f,
+    #     tax_type: po_tax.tax,
+    #   }
+    # end
+
+    po_taxes = po.inventory_po_items.to_a.sum{|e| e.inventory_po_item_taxes}.map do |po_tax|
       {
         amount: po_tax.amount.to_f,
-        tax_type: po_tax.tax,
+        tax_type: po_tax.tax.tax,
       }
     end
 
@@ -351,11 +362,11 @@ class ReportsController < ApplicationController
       poNo: po.formated_po_no,
       date: po.delivery_date.try(:strftime, "%Y-%m-%d"),
       ourRef: po.your_ref,
-      quotation: "",
+      quotation: quotation_no,
       # dateRequired: required_date,
-      dateRequired: "",
+      dateRequired: required_date,
       paymentTerm: po.payment_term,
-      deliveryMode: "",
+      deliveryMode: delivery_mode,
 
       poItems: poItems,
 
