@@ -71,6 +71,6 @@
 - if @store.present?
   %h4
     Total cost:
-    = number_with_precision @total_stock_cost, precision: 2
+    = number_to_currency @total_stock_cost, unit: ""
 
 = paginate @inventory_products, remote: true, method: :get
