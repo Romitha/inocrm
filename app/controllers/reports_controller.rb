@@ -318,14 +318,6 @@ class ReportsController < ApplicationController
     required_date = po.delivery_date_text
 
     po_item_tax_total = po.inventory_po_items.to_a.sum{|e| e.inventory_po_item_taxes.sum(:amount)}
-    # required_date = prn.required_at.to_date.try :strftime, INOCRM_CONFIG["short_date_format"]
-
-    # po_taxes = po.inventory_po_taxes.map do |po_tax|
-    #   {
-    #     amount: po_tax.amount.to_f,
-    #     tax_type: po_tax.tax,
-    #   }
-    # end
 
     po_taxes = po.inventory_po_items.to_a.sum{|e| e.inventory_po_item_taxes}.map do |po_tax|
       {
@@ -360,10 +352,9 @@ class ReportsController < ApplicationController
 
       customer: customer,
       poNo: po.formated_po_no,
-      date: po.delivery_date.try(:strftime, "%Y-%m-%d"),
+      deliveryDate: po.delivery_date.try(:strftime, "%Y-%m-%d"),
       ourRef: po.your_ref,
       quotation: quotation_no,
-      # dateRequired: required_date,
       dateRequired: required_date,
       paymentTerm: po.payment_term,
       deliveryMode: delivery_mode,

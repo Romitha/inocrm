@@ -65,7 +65,11 @@
           %tr
             %td=print_object.ourRef
             %td=print_object.quotation
-            %td=print_object.dateRequired
+            %td
+              =print_object.dateRequired
+              %br
+              #delivery_date{style: "color: #787878"}
+                =print_object.deliveryDate
             %td=print_object.paymentTerm
             %td=print_object.deliveryMode
 

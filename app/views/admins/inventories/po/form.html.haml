@@ -38,9 +38,9 @@
         .col-md-3
           = f.association :currency, label_method: :code, required: true, label: "PO Currency", include_blank: false, input_html: {id: "select_currency_unit"}
         .col-md-3
-          = f.input :delivery_date, as: :string, input_html: {class: "datepicker"}, label: "Deliver Date"
+          = f.input :delivery_date, as: :string, input_html: {class: "datepicker"}, label: "Delivery Date"
         .col-md-3
-          = f.input :delivery_date_text, label: "Delivery Date Text"
+          = f.input :delivery_date_text, label: "Required Date"
         .col-md-3
           = f.input :your_ref, label: "Your Reference"
         .col-md-3
