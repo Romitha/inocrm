@@ -88,6 +88,17 @@
             %dt Returned quantity
             %dd= g.object.srr_item_sources.to_a.sum{|s| s.gin_source.returned_quantity}
 
+            - if g.object.inventory_product.product_type == "Serial"
+              - g.object.inventory_product.inventory_serial_items.each do |serial_item|
+                = render "admins/inventories/srr/serial_part_info", serial_item: serial_item
+
+            - elsif g.object.inventory_product.product_type == "Batch"
+              - g.object.inventory_product.inventory_batches.each do |batch|
+                = render "admins/inventories/srr/batch_info", batch: batch
+            - else
+              - g.object.inventory_product.grn_items.only_grn_items1.each do |grn_item|
+                = render "admins/inventories/srr/non_serial_non_batch_info", grn_item: grn_item
+
             = g.simple_fields_for :srr_item_sources do |s|
 
               - if not ["Serial", "Batch"].include?(g.object.inventory_product.product_type)
