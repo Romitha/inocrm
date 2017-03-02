@@ -128,13 +128,18 @@
             %span= number_with_precision t.object.estimated_price, precision: 2
           .col-md-2
             %span{style: "font-weight:bold;"} Profit :
-            %span.append_profit_margin{style: "font-weight:bold;font-size:125%;"}
+            %span{style: "font-weight:bold;font-size:125%;"}
             %span (
             %span#db_margin{style: "font-weight:bold;"}= CompanyConfig.first.try(:sup_internal_part_profit_margin).to_f
             %span )
             %span %
           .col-md-5
-            = t.input :approved_estimated_price, label: "Approved Estimated Price (#{ticket.ticket_currency.code})", as: :string, input_html: {min: 0, class: "estimation_value estimated_value est_add_estimated_price only_float", oninput: "Inventories.calculate_cost_price(this);", value: t.object.estimated_price.to_f, data: {initvalue: t.object.estimated_price.to_f }}, wrapper_html: {class: "inline-input"}
+            = t.input :approved_estimated_price, label: "Approved Estimated Price (#{ticket.ticket_currency.code})", as: :string, input_html: {min: 0, class: "estimation_value only_float", oninput: "Inventories.calculate_cost_price(this);", value: t.object.estimated_price.to_f, data: {initvalue: t.object.estimated_price.to_f }}, wrapper_html: {class: "inline-input"}
+
+          .col-md-2
+            %strong
+              Profit (%):
+              .append_profit_margin{ data: {estimate: t.object.estimated_price.to_f, cost: t.object.cost_price.to_f}}= (t.object.estimated_price.to_f/t.object.cost_price.to_f - 1)*100 if t.object.cost_price.to_f > 0
 
           .col-md-12
             %hr
@@ -188,13 +193,18 @@
                 .panel.panel-success
                   .panel-body.small_scale_padding2
                     = number_with_precision (ta.object.cost_price.to_f or 0), precision: 2
-              .col-md-3.col-xs-3.col-sm-3
+              .col-md-2.col-xs-2.col-sm-2
                 %strong{style: "margin-bottom: 5px; display: inline-block;"} Estimated price (#{number_with_precision estimate_currency, precision: 2}):
                 .panel.panel-success
                   .panel-body.small_scale_padding2
                     .est_estimated_amount= number_with_precision ta.object.estimated_price, precision: 2
-              .col-md-3.col-xs-3.col-sm-3
+              .col-md-2.col-xs-2.col-sm-2
                 = ta.input :approved_estimated_price, as: :string, input_html: { data: {initvalue: ta.object.estimated_price.to_f }, class: "estimation_value only_float", oninput: "Inventories.calculate_cost_price(this);", value: ta.object.estimated_price }, label: "Approved estimated price (#{estimate_currency})"
+              .col-md-2.col-xs-2.col-sm-2
+                %strong
+                  Profit(%):dd
+                  .append_profit_margin{ data: {estimate: ta.object.estimated_price.to_f, cost: ta.object.cost_price.to_f}}= number_with_precision (ta.object.estimated_price.to_f/ta.object.cost_price.to_f - 1)*100, precision: 2 if ta.object.cost_price.to_f > 0
+
 
               .col-md-12
                 .panel-group

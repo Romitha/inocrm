@@ -3,7 +3,6 @@ window.Inventories =
     @filter_product()
     @filter_category()
     @filter_store()
-    # @calculate_cost_price()
     @terminate_func()
     @accept_returned_part()
     @accept_returned_part_func()
