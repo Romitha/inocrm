@@ -54,7 +54,7 @@
                 %td= po.po_no_format
                 %td= po.so_no
                 %td= po.brand_of_product_name
-                %th= po.amount
+                %th= number_with_precision po.amount, precision: 2
                 %td= po.currency_type
                 %td= po.note
                 %td
