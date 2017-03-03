@@ -617,8 +617,9 @@ window.Tickets =
       this_data = {product_brand_id: $(@).val()}
       $.get url, this_data, (data)->
         $('#load_spareparts_json_render').html Mustache.to_html($('#load_spareparts_output').html(), data)
-        # console.log $(":selected", _this).data("currencyid")
+        # console.log $("#brand1").val()
         $("#so_po_currency_id").val($(":selected", _this).data("currencyid"))
+        $("#so_po_product_brand_id").val($("#brand1").val())
         $("#dynamic_currency_code").text($(":selected", _this).data("currencycode"))
         # $('#create_hp_po_form').html ($('#create_ho_po_load').html(), data)
         # _this.initial_loaders()

@@ -13,6 +13,7 @@
     %strong Create PO
     = simple_nested_form_for @po, url: create_po_tickets_path, html: {class: "validate_form"}, method: :post do |f|
       = f.input :currency_id, as: :hidden
+      = f.input :product_brand_id, as: :hidden
       .row
         .col-md-2
           = f.input :created_by, as: :hidden, input_html: {value: current_user.id}
