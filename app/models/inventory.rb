@@ -1016,6 +1016,7 @@ class InventoryPo < ActiveRecord::Base
   belongs_to :created_by_user, class_name: "User", foreign_key: :created_by
   belongs_to :approved_by_user, class_name: "User", foreign_key: :approved_by
   belongs_to :currency
+  belongs_to :payment_term, foreign_key: :payment_term_id
 
   has_many :inventory_po_items, foreign_key: :po_id
   accepts_nested_attributes_for :inventory_po_items, allow_destroy: true

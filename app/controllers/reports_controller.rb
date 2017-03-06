@@ -356,7 +356,7 @@ class ReportsController < ApplicationController
       ourRef: po.your_ref,
       quotation: quotation_no,
       dateRequired: required_date,
-      paymentTerm: po.payment_term,
+      paymentTerm: po.payment_term_id,
       deliveryMode: delivery_mode,
 
       poItems: poItems,

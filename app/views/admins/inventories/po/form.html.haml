@@ -48,7 +48,7 @@
         .col-md-3
           = f.input :delivery_mode, label: "Delivery Mode"
         .col-md-4
-          = f.input :payment_term, label: "Payment Term"
+          = f.association :payment_term, required: true, input_html: {class: "chosen-select"}
         .col-md-4
           = f.input :deliver_to, label: "Deliver To", input_html: {value: Organization.owner.primary_address.try(:full_address)}
         .col-md-4
@@ -111,6 +111,8 @@
                   = i.input :unit_cost, required: true, as: :string, label: "PO Unit Cost"
                 .col-md-2
                   = i.input :unit_cost_grn, required: true, as: :string, label: "GRN Unit Cost (#{i.object.inventory_prn_item.inventory_product.inventory_product_info.currency.code})"
+                .col-md-3
+                  = i.input :description, as: :string, label: "Warranty"
                 .col-md-6
                   = i.input :remarks
 
