@@ -1,0 +1,19 @@
+.row
+  .col-md-9
+  = collapse_wrapper collapse_id: "warranty_list", labelledby: "warranty_list_labelledby" do
+    = collapse collapse_type: "success", labelledby: "warranty_list_labelledby_#{inventory_warranty.id}", header_content: "Warranty" , collapse_link: "warrantylink_#{inventory_warranty.id}", collapse_id: "warranty_list" do
+      %dl.dl-horizontal
+        %dt Type:
+        %dd= inventory_warranty.inventory_warranty_type.name
+        %dt Start At:
+        %dd= inventory_warranty.start_at.try(:strftime, "%Y-%m-%d")
+        %dt End At:
+        %dd= inventory_warranty.end_at.try(:strftime, "%Y-%m-%d")
+        %dt Period Part:
+        %dd= inventory_warranty.period_part
+        %dt Period Labour:
+        %dd= inventory_warranty.period_labour
+        %dt Period On-sight:
+        %dd= inventory_warranty.period_onsight
+        %dt Remarks:
+        %dd= simple_format inventory_warranty.remarks

@@ -1,0 +1,33 @@
+%hr
+.row
+  .col-md-9
+  = collapse_wrapper collapse_id: "serial_info", labelledby: "serial_list_labelledby" do
+    = collapse collapse_type: "info", labelledby: "serial_list_labelledby_#{serial_item.id}", header_content: "Serial Item #{serial_item.serial_no}" , collapse_link: "seriallink_#{serial_item.id}", collapse_id: "serial_info" do
+      %dl.dl-horizontal
+        %dt Serial No:
+        %dd= serial_item.serial_no
+        %dt Manufatured Date:
+        %dd= serial_item.manufatured_date.try(:strftime, "%Y-%m-%d")
+        %dt CT No:
+        %dd= serial_item.ct_no
+        %dt Expiary Date:
+        %dd= serial_item.expiry_date.try(:strftime, "%Y-%m-%d")
+        %dt Condition:
+        %dd= serial_item.product_condition.condition
+        %dt Remarks:
+        %dd= simple_format serial_item.remarks
+        %dt Scavenge:
+        %dd= boolean_in_word serial_item.scavenge, "Yes", "No"
+        %dt Part not completed:
+        %dd= boolean_in_word serial_item.parts_not_completed, "Yes", "No"
+        %dt Damaged:
+        %dd= boolean_in_word serial_item.damage, "Yes", "No"
+        %dt Used:
+        %dd= boolean_in_word serial_item.used, "Yes", "No"
+        %dt Repaired:
+        %dd= boolean_in_word serial_item.repaired, "Yes", "No"
+        %dt Reserved:
+        %dd= boolean_in_word serial_item.reserved, "Yes", "No"
+        .col-md-12
+          - serial_item.inventory_warranties.each do |inventory_warranty|
+            = render "admins/inventories/srr/warranty", inventory_warranty: inventory_warranty

@@ -1,0 +1,19 @@
+%hr
+.row
+  .col-md-9
+  = collapse_wrapper collapse_id: "serial_info", labelledby: "serial_list_labelledby" do
+    = collapse collapse_type: "info", labelledby: "serial_list_labelledby_#{batch.id}", header_content: "Batch #{batch.batch_no}" , collapse_link: "seriallink_#{batch.id}", collapse_id: "serial_info" do
+      %dl.dl-horizontal
+        %dt Lot No:
+        %dd= batch.lot_no
+        %dt Manufatured Date:
+        %dd= batch.manufatured_date.try(:strftime, "%Y-%m-%d")
+        %dt Batch No:
+        %dd= batch.batch_no
+        %dt Expiary Date:
+        %dd= batch.expiry_date.try(:strftime, "%Y-%m-%d")
+        %dt Issued Quantity:
+        %dd= batch.grn_batches.to_a.sum{ |b| b.gin_sources.sum(:issued_quantity)}
+        .col-md-12
+          - batch.inventory_warranties.each do |inventory_warranty|
+            = render "admins/inventories/srr/warranty", inventory_warranty: inventory_warranty

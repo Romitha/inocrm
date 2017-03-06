@@ -50,7 +50,7 @@
         .col-md-4
           = f.input :payment_term, label: "Payment Term"
         .col-md-4
-          = f.input :deliver_to, label: "Deliver To"
+          = f.input :deliver_to, label: "Deliver To", input_html: {value: Organization.owner.primary_address.try(:full_address)}
         .col-md-4
           = f.input :remarks
     .col-md-12
