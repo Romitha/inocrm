@@ -777,7 +777,7 @@
                     .col-md-4
                       Store: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store).try(:name)}
                     .col-md-4
-                      Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
+                      Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.approved_inventory_product.generated_item_code}
 
                 -if action.request_spare_part.ticket_spare_part.request_from == 'S'
                   .row
@@ -810,7 +810,7 @@
                     .col-md-4
                       Store: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store).try(:name)}
                     .col-md-4
-                      Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
+                      Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.approved_inventory_product.generated_item_code}
 
                 -if action.request_spare_part.ticket_spare_part.request_from == 'S'
                   .row
@@ -843,7 +843,7 @@
                     .col-md-4
                       Store: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store).try(:name)}
                     .col-md-4
-                      Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
+                      Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.approved_inventory_product.generated_item_code}
 
                 -if action.request_spare_part.ticket_spare_part.request_from == 'S'
                   .row
@@ -876,7 +876,7 @@
                     .col-md-4
                       Store: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store).try(:name)}
                     .col-md-4
-                      Product Item Code: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
+                      Product Item Code: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.approved_inventory_product.generated_item_code}
 
                 -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'S'
                   .row
@@ -909,7 +909,7 @@
                     .col-md-4
                       Store: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store).try(:name)}
                     .col-md-4
-                      Product Item Code: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
+                      Product Item Code: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.approved_inventory_product.generated_item_code}
 
                 - if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'S'
                   .row
@@ -942,7 +942,7 @@
                     .col-md-4
                       Store: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store).try(:name)}
                     .col-md-4
-                      Product Item Code: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
+                      Product Item Code: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.approved_inventory_product.generated_item_code}
 
                 -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'S'
                   .row
@@ -975,7 +975,7 @@
                     .col-md-4
                       Store: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store).try(:name)}
                     .col-md-4
-                      Product Item Code: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
+                      Product Item Code: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.approved_inventory_product.generated_item_code}
 
                 -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'S'
                   .row
@@ -1008,7 +1008,7 @@
                     .col-md-4
                       Store: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store).try(:name)}
                     .col-md-4
-                      Product Item Code: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
+                      Product Item Code: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.approved_inventory_product.generated_item_code}
 
                 -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'S'
                   .row
@@ -1125,7 +1125,7 @@
                       .col-md-4
                         Store: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store).try(:name)}
                       .col-md-4
-                        Product Item Code: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:inventory_product).try(:generated_item_code)}
+                        Product Item Code: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:approved_inventory_product).try(:generated_item_code)}
 
             -if action.action_id == 66 and action.act_ticket_close_approve
               /ActQualityControl
@@ -1316,7 +1316,7 @@
                     .col-md-4
                       Store: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store).try(:name)}
                     .col-md-4
-                      Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
+                      Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.approved_inventory_product.generated_item_code}
 
             -if action.action_id == 79 and action.request_spare_part
               .panel-body
@@ -1347,7 +1347,7 @@
                     .col-md-4
                       Store: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store).try(:name)}
                     .col-md-4
-                      Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
+                      Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.approved_inventory_product.generated_item_code}
 
             -if action.action_id == 80 and action.act_print_invoice.present?
               .panel-body
