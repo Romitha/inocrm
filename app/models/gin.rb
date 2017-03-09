@@ -30,7 +30,7 @@ class Gin < ActiveRecord::Base
           # raise to_curl
         end
       end
-      sort { by :grn_no, {order: "desc", ignore_unmapped: true} }
+      sort { by :formatted_gin_no, {order: "desc", ignore_unmapped: true} }
     end
   end
 

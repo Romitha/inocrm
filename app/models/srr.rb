@@ -7,6 +7,8 @@ class Srr < ActiveRecord::Base
 
   has_many :srr_items
   accepts_nested_attributes_for :srr_items, allow_destroy: true
+  has_many :srr_item_sources, through: :srr_items
+
   has_many :ticket_spare_part_stores, foreign_key: :inv_srr_id
   has_many :ticket_on_loan_spare_parts, foreign_key: :inv_srr_id
 end
@@ -17,6 +19,7 @@ class SrrItem < ActiveRecord::Base
   belongs_to :srr
   belongs_to :inventory_product, foreign_key: :product_id
   belongs_to :product
+  belongs_to :return_reason, -> { where(srr: true) }, class_name: "InventoryReason"
 
   has_many :srr_item_sources
   accepts_nested_attributes_for :srr_item_sources, allow_destroy: true

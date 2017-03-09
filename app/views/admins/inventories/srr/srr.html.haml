@@ -63,11 +63,15 @@
 
     = f.simple_fields_for :srr_items do |g|
       = g.input :product_id, as: :hidden
+      = g.input :product_condition_id, as: :hidden
+      = g.input :spare_part, as: :hidden
+      = g.input :currency_id, as: :hidden
+
       .row
         .col-md-3
           %h4 Product Information
         .col-md-9
-          %dl.dl-horizontal
+          %dl.dl-horizontal.accumulated_wrapper
             %dt Item code:
             %dd= g.object.inventory_product.generated_item_code
             %dt Item description:
@@ -83,41 +87,51 @@
 
             %dt Issued quantity
             %dd= g.object.srr_item_sources.to_a.sum{|s| s.gin_source.issued_quantity}
+
             %dt Balance to be issued:
             %dd= g.object.inventory_product.srn_items.by_store(f.object.store.id).sum(:quantity) - g.object.srr_item_sources.to_a.sum{|s| s.gin_source.issued_quantity} + g.object.srr_item_sources.to_a.sum{|s| s.gin_source.returned_quantity}
+
             %dt Returned quantity
             %dd= g.object.srr_item_sources.to_a.sum{|s| s.gin_source.returned_quantity}
+            %dt Return Reason
+            %dd= g.association :return_reason, label_method: :reason, label: false, required: true
+            %dt Remarks
+            %dd= g.input :remarks, label: false
 
+            = g.input :quantity, as: :hidden, input_html: {class: "accumulated_required_qty_input", data: {preVal: 0, maxQty: g.object.srr_item_sources.to_a.sum{ |s| s.gin_source.issued_quantity.to_f-s.gin_source.returned_quantity.to_f } } }
+
+            %strong Return quantity:
+            %span.accumulated_required_qty_text
 
             = g.simple_fields_for :srr_item_sources do |s|
+              = s.input :unit_cost, as: :hidden
+              = s.input :currency_id, as: :hidden
+              = s.input :gin_source_id, as: :hidden
 
-              - if not ["Serial", "Batch"].include?(g.object.inventory_product.product_type)
-                %dt Required quantity
-                %dd= s.input :returned_quantity, label: false
-              - else
-                = s.input :returned_quantity, as: :hidden
+              - if g.object.inventory_product.product_type == "Serial"
+                = s.input :returned_quantity, as: :hidden, input_html: { class: "serial_return_qty", data: {preVal: 0} }
 
-            %dd= g.input :remarks
+                = label_tag "Return", "Return"
+                = check_box_tag "serial_return[]", s.object.gin_source.grn_serial_item.inventory_serial_item.id, false, oninput: "Admins.accumulated_qnty(this); return false;", class: "serial_return_checkbox"
 
+                = render "admins/inventories/srr/serial_part_info", serial_item: s.object.gin_source.grn_serial_item.inventory_serial_item
 
-        .col-md-12
-          - if g.object.inventory_product.product_type == "Serial"
-            - g.object.inventory_product.inventory_serial_items.each do |serial_item|
-              = render "admins/inventories/srr/serial_part_info", serial_item: serial_item
+              - elsif g.object.inventory_product.product_type == "Batch"
+                %fieldset
+                  %legend Batch No: #{s.object.gin_source.grn_batch.inventory_batch.batch_no}
+                  = s.input :returned_quantity, as: :string, input_html: {oninput: "Admins.accumulated_qnty(this); return false;", data: {preVal: 0 } }
 
-          - elsif g.object.inventory_product.product_type == "Batch"
-            - g.object.inventory_product.inventory_batches.each do |batch|
-              = render "admins/inventories/srr/batch_info", batch: batch
+                  = render "admins/inventories/srr/batch_info", batch: s.object.gin_source.grn_batch.inventory_batch
+
+              - elsif g.object.inventory_product.product_type == "Non Serial Non Batch"
+                = s.input :returned_quantity, as: :string, input_html: {oninput: "Admins.accumulated_qnty(this); return false;", data: {preVal: 0} }
+
     %hr
     .row
       .col-md-12
         = f.input :remarks
-    .row
       .col-md-12
-        = f.submit "Save", class: "btn btn-success btn-sm", id: "submit_new_srr"
-
-
-
+        = f.submit "Save", class: "btn btn-sm btn-success"
 
 - else
   = render "admins/searches/gin/search_gin"

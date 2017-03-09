@@ -651,9 +651,6 @@ class InventoryBatch < ActiveRecord::Base
 
   after_save do |inventory_batch|
     [:inventory_product].each do |parent|
-      puts "***********888"
-      puts "indexing product"
-      puts "***********888"
       inventory_batch.send(parent).update_index
 
     end
@@ -853,9 +850,6 @@ class InventorySerialItemsAdditionalCost < ActiveRecord::Base
 
   before_save do |additional_cost|
     if additional_cost.cost_changed?
-      puts "***************8"
-      puts "cost changed"
-      puts "***************8"
       Rails.cache.delete([:stock_cost, additional_cost.inventory_serial_item.product_id, additional_cost.inventory_serial_item.inventory_id ])
 
     end

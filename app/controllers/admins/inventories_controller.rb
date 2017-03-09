@@ -1467,14 +1467,10 @@ module Admins
         @srr = Srr.new store_id: @gin.store.id, created_by: current_user.id, requested_module_id: @gin.srn.try(:requested_module_id)
 
         @gin.gin_items.each do |gin_item|
-          srr_item = @srr.srr_items.build product_id: gin_item.product_id, product_condition_id: gin_item.product_condition_id, spare_part: gin_item.spare_part
-
-          puts "*************"
-          puts gin_item.gin_sources.inspect
-          puts "*************"
+          srr_item = @srr.srr_items.build product_id: gin_item.product_id, product_condition_id: gin_item.product_condition_id, spare_part: gin_item.spare_part, currency_id: gin_item.currency_id
 
           gin_item.gin_sources.each do |gin_source|
-            srr_item.srr_item_sources.build returned_quantity: gin_source.returned_quantity, gin_source_id: gin_source.id, unit_cost: gin_source.grn_item.unit_cost, currency_id: gin_source.grn_item.currency_id
+            srr_item.srr_item_sources.build gin_source_id: gin_source.id, unit_cost: gin_source.grn_item.unit_cost, currency_id: gin_source.grn_item.currency_id#, returned_quantity: gin_source.returned_quantity, 
 
           end
 
@@ -1487,6 +1483,32 @@ module Admins
 
       render "admins/inventories/srr/srr"
 
+    end
+
+    def create_srr
+      @srr = Srr.new srr_params
+
+      @srr.srr_items.each do |srr_item|
+        @srr.srr_items.delete(srr_item) if srr_item.new_record? and srr_item.quantity <= 0
+
+      end
+
+      if @srr.save
+        # @srr.srr_items.each do |srr_item|
+        #   srr_item.update closed: (srr_item.quantity.to_f <= srr_item.srr_item_sources.sum(:returned_quantity))
+
+        # end
+
+        @srr.srr_item_sources.each do |srr_item_source|
+          srr_item_source.gin_source.update returned_quantity: srr_item_source.gin_source.srr_items.sum(:quantity)
+        end
+
+        flash[:success] = "Successfully saved."
+      else
+        flash[:alert] = "Unable to save. Please try again"
+      end
+
+      redirect_to srr_admins_inventories_url
     end
 
     private
@@ -1585,6 +1607,10 @@ module Admins
 
       def po_params
         params.require(:inventory_po).permit(:id, :created_by, :store_id, :supplier_id, :po_no, :delivery_date, :your_ref, :payment_term_id, :discount_amount, :currency_id, :remarks, :deliver_to, :delivery_date_text, :quotation_no, :delivery_mode, inventory_po_items_attributes: [ :id, :_destroy, :prn_item_id, :quantity, :unit_cost, :unit_id, :unit_cost_grn, :remarks, :description, inventory_po_item_taxes_attributes: [ :id, :_destroy, :po_item_id, :tax_id, :tax_rate, :amount ] ] )
+      end
+
+      def srr_params
+        params.require(:srr).permit(:created_by, :srr_no, :store_id, :requested_module_id, :remarks, srr_items_attributes: [ :id, :product_id, :product_condition_id, :spare_part, :currency_id, :return_reason_id, :remarks, :quantity, :_destroy, srr_item_sources_attributes: [ :id, :_destroy, :unit_cost, :currency_id, :returned_quantity, :gin_source_id] ])
       end
 
   end

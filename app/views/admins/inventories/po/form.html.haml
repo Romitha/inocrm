@@ -21,7 +21,7 @@
       .customer_supplier
         = f.input :supplier_id, as: :hidden, input_html: {class: "dynamic_customer_supplier_id" }
         .customer_supplier_info
-      = link_to "javascript:void(0)", id: "add_customer", class: "btn btn-alert btn-sm", onclick: "Users.search_customers(this); return false;", data: {modalId: "modal_for_main_part", remote: "true", selectpath: "", selectoptions: "onclick:Users.assign_customer(this, 'modal_for_main_part', 'add_customer');<>type:supplier"} do
+      = link_to "javascript:void(0)", id: "add_customer", class: "btn btn-danger btn-sm", onclick: "Users.search_customers(this); return false;", data: {modalId: "modal_for_main_part", remote: "true", selectpath: "", selectoptions: "onclick:Users.assign_customer(this, 'modal_for_main_part', 'add_customer');<>type:supplier"} do
         Select Supplier
     .col-md-6.text-right
       %strong Created by:
@@ -40,7 +40,7 @@
         .col-md-3
           = f.input :delivery_date, as: :string, input_html: {class: "datepicker"}, label: "Delivery Date"
         .col-md-3
-          = f.input :delivery_date_text, label: "Required Date"
+          = f.input :delivery_date_text, label: "Required Date info", as: :text, placeholder: "Ex: Immedietly"
         .col-md-3
           = f.input :your_ref, label: "Your Reference"
         .col-md-3

@@ -10,6 +10,7 @@ window.Admins =
     @currency_select()
     @grn_main_part_hover()
     @popup_button_enable()
+    @serial_return_checkbox()
     return
 
   admin_menu_dropdown: ->
@@ -273,3 +274,48 @@ window.Admins =
         $("#main_part_"+window.localStorage.getItem("mainStoreIdPass")).html Mustache.to_html($("#selected_serial_part").html(), serialPartInfo)
 
         window.localStorage.clear("mainStoreIdPass")
+
+  accumulated_qnty: (elem)->
+    elem = $(elem)
+    currentValue = parseFloat(elem.val())
+    affecting_area_by_text = elem.parents(".accumulated_wrapper").eq(0).find(".accumulated_required_qty_text")
+    affecting_area_by_val = elem.parents(".accumulated_wrapper").eq(0).find(".accumulated_required_qty_input")
+
+    if elem.is("[type='text']")
+      unless isNaN(currentValue)
+        finalResult = affecting_area_by_val.data("preval") + currentValue - elem.data("preval")
+
+      else
+        finalResult = 0
+        currentValue = 0
+
+        elem.val(currentValue)
+
+    else if elem.is("[type='checkbox']")
+      if elem.is(":checked")
+        currentValue = 1
+
+        finalResult = affecting_area_by_val.data("preval") + currentValue
+
+      else
+        currentValue = 0
+
+        finalResult = affecting_area_by_val.data("preval") - currentValue
+
+      elem.parents(".accumulated_wrapper").eq(0).find(".serial_return_qty").val(currentValue)
+
+    if finalResult > parseFloat(affecting_area_by_val.data("maxqty"))
+      finalResult = parseFloat(affecting_area_by_val.data("maxqty"))
+      currentValue = finalResult
+      elem.val(currentValue)
+
+
+    affecting_area_by_text.text(finalResult)
+    affecting_area_by_val.val(finalResult)
+    elem.data("preval", currentValue)
+
+    affecting_area_by_val.data("preval", finalResult)
+
+  serial_return_checkbox: ->
+    $(".serial_return_checkbox").each ->
+      $(@).prop("checked", false)
