@@ -7,6 +7,7 @@
 - join_tickets = @join_tickets
 - pr_q_and_answers = @q_and_answers
 - ge_q_and_as = @ge_q_and_answers
+
 = render "tickets/tickets_pack/ticket_header", ticket: ticket, product: product
 
 = tab_panel do
@@ -36,8 +37,14 @@
 
                 .estimate_extend_with_tax
                   = t.simple_fields_for :ticket_estimation_externals do |te|
-                    %strong Description:
-                    = te.object.description
+                    .col-md-4
+                      %strong Description:
+                      = te.object.description
+                    - ticket.cached_user_ticket_actions.select{|a| a.action_id == 22}.each do |ticket_action|
+                      .col-md-4
+                        %strong Delivered Date
+                        = ticket_action.action_at.strftime INOCRM_CONFIG["short_date_format"]
+
                     %hr/
                     .row.head_estimated_price_class
                       = hidden_field_tag :ticket_estimation_external_id, te.object.id

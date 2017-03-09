@@ -24,7 +24,7 @@
           %td= srn.requested_module.name
           %td{title: srn.remarks}= srn.remarks.try :truncate, 50
           %td= srn.created_by_user.full_name
-          - if srn.requested_module.name == "SPT"
+          - if srn.requested_module.name == "Support"
             %td
           - else
             %td= link_to "Select", gin_admins_inventories_path(gin_callback: "select_srn", srn_id: srn.id), remote: true
