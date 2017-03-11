@@ -537,6 +537,7 @@ module Admins
       when "yes"
         @stores = Organization.stores
         @render_template = "search_po"
+
       when "no"
         @render_template = "search_inventory"
 
@@ -584,6 +585,7 @@ module Admins
           refined_inventory_po = params[:po].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
 
           refined_search = [refined_inventory_po, refined_search].map{|v| v if v.present? }.compact.join(" AND ")
+
         end
 
         params[:query] = refined_search
@@ -595,6 +597,9 @@ module Admins
         Rails.cache.delete([:po_item_ids])
         session[:po_id] = nil
         @render_template = "select_po"
+
+      when "search_srr"
+        
 
       when "select_po"
         @po = InventoryPo.find params[:po_id]

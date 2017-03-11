@@ -147,7 +147,7 @@ class InvNewTablesFromDevage < ActiveRecord::Migration
       t.text :remarks
       t.decimal :average_cost, precision: 13, scale: 2
       t.decimal :standard_cost, precision: 13, scale: 2
-      t.column :currency_id, "int(10) UNSIGNED"
+      t.column :currency_id, "int(10) UNSIGNED NOT NULL"
       t.decimal :returned_quantity, null: false, precision: 13, scale: 3
       t.boolean :returnable, null: false, default: false
       t.boolean :return_completed, null: false, default: false
