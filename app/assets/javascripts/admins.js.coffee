@@ -291,6 +291,7 @@ window.Admins =
 
         elem.val(currentValue)
 
+
     else if elem.is("[type='checkbox']")
       if elem.is(":checked")
         currentValue = 1
@@ -300,17 +301,17 @@ window.Admins =
       else
         currentValue = 0
 
-        finalResult = affecting_area_by_val.data("preval") - currentValue
+        finalResult = affecting_area_by_val.data("preval") - 1
 
       elem.parents(".accumulated_wrapper").eq(0).find(".serial_return_qty").val(currentValue)
 
+    console.log "final result is: #{finalResult} and current value is: #{currentValue}"
 
     if finalResult > parseFloat(affecting_area_by_val.data("maxqty"))
+      console.log "maxed"
       finalResult = parseFloat(affecting_area_by_val.data("maxqty"))
       currentValue = finalResult
       elem.val(currentValue)
-
-    console.log "final result is: #{finalResult} and current value is: #{currentValue}"
 
     affecting_area_by_text.text(finalResult)
     affecting_area_by_val.val(finalResult)
