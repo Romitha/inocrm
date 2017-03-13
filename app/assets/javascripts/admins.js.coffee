@@ -304,11 +304,13 @@ window.Admins =
 
       elem.parents(".accumulated_wrapper").eq(0).find(".serial_return_qty").val(currentValue)
 
+
     if finalResult > parseFloat(affecting_area_by_val.data("maxqty"))
       finalResult = parseFloat(affecting_area_by_val.data("maxqty"))
       currentValue = finalResult
       elem.val(currentValue)
 
+    console.log "final result is: #{finalResult} and current value is: #{currentValue}"
 
     affecting_area_by_text.text(finalResult)
     affecting_area_by_val.val(finalResult)
