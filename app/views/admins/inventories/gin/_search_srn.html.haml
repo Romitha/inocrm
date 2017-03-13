@@ -5,9 +5,12 @@
       #search_frame
         = form_tag gin_admins_inventories_path(gin_callback: "search_srn"), remote: true, method: :get, class: "form-horizontal" do
           .row
-            .col-md-12.brand
+            .col-md-6.brand
               = label_tag "Store"
               = select_tag "search_srn[store_id]", options_from_collection_for_select(Organization.stores, :id, :name, (params[:search_inventory] and params[:search_inventory][:product])), include_blank: true, class: "form-control"
+            .col-md-6
+              = label_tag "Module"
+              = select_tag "search_srn[requested_module_id]", options_from_collection_for_select(BpmModule.all, :id, :name), include_blank: true, class: "form-control"
           .row.small_scale_margin-top1
             .col-md-4.serial_code
               = text_field_tag "search_srn[srn_no]", (params[:search_srn] and params[:search_srn][:srn_no]), :placeholder => "SRN No", class: "form-control"
