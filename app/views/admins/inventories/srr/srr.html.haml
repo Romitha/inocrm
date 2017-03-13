@@ -112,7 +112,7 @@
                 = s.input :returned_quantity, as: :hidden, input_html: { class: "serial_return_qty", data: {preVal: 0} }
 
                 = label_tag "Return", "Return"
-                = check_box_tag "serial_return[]", s.object.gin_source.grn_serial_item.inventory_serial_item.id, false, oninput: "Admins.accumulated_qnty(this); return false;", class: "serial_return_checkbox"
+                = check_box_tag "serial_return[]", s.object.gin_source.grn_serial_item.inventory_serial_item.id, false, onchange: "Admins.accumulated_qnty(this); return false;", class: "serial_return_checkbox"
 
                 = render "admins/inventories/srr/serial_part_info", serial_item: s.object.gin_source.grn_serial_item.inventory_serial_item
 
