@@ -174,6 +174,32 @@ module Admins
       render "admins/searches/gin/select_gin"
     end
 
+    def inventory_serial_item_history
+      Inventory
+      @inventory_serial_item = InventorySerialItem.find(params[:serial_item_id])
+
+      @history = []
+
+      @inventory_serial_item.grn_items.each do |grn_item|
+        @history << { name: "PRN", element: grn_item.inventory_po_item.inventory_prn_item.inventory_prn, created_at: grn_item.inventory_po_item.inventory_prn_item.inventory_prn.created_at.strftime("%Y-%m-%d") } if grn_item.inventory_po_item.present?
+        @history << { name: "PO", element: grn_item.inventory_po_item.inventory_po, created_at: grn_item.inventory_po_item.inventory_po.created_at.strftime("%Y-%m-%d") } if grn_item.inventory_po_item.present?
+        @history << { name: "GRN", element: grn_item, created_at: grn_item.created_at.strftime("%Y-%m-%d") }
+
+        if grn_item.srn_item.present?
+          grn_item.srn_item.gin_items.each do |gin_item|
+            @history << { name: "GIN", element: gin_item.gin, created_at: gin_item.gin.created_at.strftime("%Y-%m-%d") }
+          end
+        end
+
+        @history << { name: "SRN", element: grn_item.srn_item.srn, created_at: grn_item.srn_item.srn.created_at.strftime("%Y-%m-%d") } if grn_item.srn_item.present?
+        @history << { name: "SRR", element: grn_item.srr_item.srr, created_at: grn_item.srr_item.srr.created_at.strftime("%Y-%m-%d") } if grn_item.srr_item.present?
+
+      end
+
+      render json: @history.sort{|p, n| n["created_at"] <=> p["created_at"] }
+
+    end
+
     private
 
       def update_grn_item_params

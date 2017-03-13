@@ -153,6 +153,7 @@ Rails.application.routes.draw do
       get "hp_po"
       get "view_po"
       get "view_delivered_bundle"
+
       post "update_issue_store_parts"
 
       # post "save_add_edit_contract"
@@ -335,6 +336,7 @@ Rails.application.routes.draw do
 
         get "search_grn"
         get "inventories"
+        get "inventory_serial_item_history"
 
       end
     end

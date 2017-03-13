@@ -68,6 +68,7 @@ class GrnItem < ActiveRecord::Base
   belongs_to :grn
   belongs_to :inventory_product, foreign_key: :product_id
   belongs_to :inventory_po_item, foreign_key: :po_item_id
+  belongs_to :srr_item
   belongs_to :currency
 
   has_many :grn_batches
