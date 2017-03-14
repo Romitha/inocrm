@@ -200,6 +200,38 @@ module Admins
 
     end
 
+    def search_gin_srr_grn
+      if params[:search].present?
+        @history = case params[:type]
+        when "gin"
+          query = { formatted_gin_no: params[:type_no], gin_range_from: params[:from_date], gin_range_to: params[:to_date] }.map { |k, v| "#{k}:#{v}" if v.present? }
+
+          refined_query = query.join(" AND ")
+
+          Gin.search( query: refined_query ).map { |k| { no: k.formatted_gin_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name } }
+
+        when "srr"
+          query = { formatted_srr_no: params[:type_no], range_from: params[:from_date], range_to: params[:to_date] }.map { |k, v| "#{k}:#{v}" if v.present? }
+
+          refined_query = query.join(" AND ")
+
+          Srr.search( query: refined_query ).map { |k| { no: k.formatted_srr_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name } }
+
+        when "grn"
+          query = { grn_no_format: params[:type_no], range_from: params[:from_date], range_to: params[:to_date] }.map { |k, v| "#{k}:#{v}" if v.present? }
+
+          refined_query = query.join(" AND ")
+
+          Grn.search( query: refined_query ).map { |k| { no: k.formatted_grn_no, created_at: k.formated_created_at, created_by: k.created_by_user } }
+
+        end
+
+      end
+
+      render "admins/searches/gin_srr_grn/gin_srr_grn"
+
+    end
+
     private
 
       def update_grn_item_params

@@ -22,8 +22,8 @@ class Gin < ActiveRecord::Base
       query do
         boolean do
           must { string params[:query] } if params[:query].present?
-          must { range :created_at, lte: params[:gin_range_to].to_date } if params[:gin_range_to].present?
-          must { range :created_at, gte: params[:gin_range_from].to_date } if params[:gin_range_from].present?
+          must { range :formated_created_at, lte: params[:gin_range_to].to_date } if params[:gin_range_to].present?
+          must { range :formated_created_at, gte: params[:gin_range_from].to_date } if params[:gin_range_from].present?
           must { range "srn.created_at", lte: params[:srn_range_to].to_date } if params[:srn_range_to].present?
           must { range "srn.created_at", gte: params[:srn_range_from].to_date } if params[:srn_range_from].present?
           # filter :range, published_at: { lte: Time.zone.now}
@@ -37,7 +37,7 @@ class Gin < ActiveRecord::Base
   def to_indexed_json
     to_json(
       only: [:id, :remarks, :created_at],
-      methods: [:store_name, :formatted_gin_no, :created_by_user_full_name],
+      methods: [:store_name, :formatted_gin_no, :created_by_user_full_name, :formated_created_at],
       include: {
         srn: {
           only: [:id, :created_at],
@@ -61,6 +61,10 @@ class Gin < ActiveRecord::Base
 
   def created_by_user_full_name
     created_by_user.full_name
+  end
+
+  def formated_created_at
+    created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
   end
 
   before_save do |gin|

@@ -22,7 +22,7 @@ class Grn < ActiveRecord::Base
 
   def to_indexed_json
     to_json(
-      only: [:id, :store_id, :grn_no, :created_by, :remarks, :po_no, :supplier_id, :created_at, :created_by_user],
+      only: [:id, :store_id, :grn_no, :created_by, :remarks, :po_no, :supplier_id, :created_at],
       methods: [:store_name, :supplier_name, :grn_no_format, :formated_created_at, :created_by_from_user],
     )
 
