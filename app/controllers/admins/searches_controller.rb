@@ -341,6 +341,20 @@ module Admins
 
           Grn.search( query: refined_query ).map { |k| { no: k.formatted_grn_no, created_at: k.formated_created_at, created_by: k.created_by_user } }
 
+        when "prn"
+          query = { formated_prn_no: params[:type_no], range_from: params[:from_date], range_to: params[:to_date] }.map { |k, v| "#{k}:#{v}" if v.present? }
+
+          refined_query = query.join(" AND ")
+
+          InventoryPrn.search( query: refined_query ).map { |k| { no: k.formated_prn_no, created_at: k.created_by_user_full_name, created_by: k.created_by_user_full_name } }
+
+        when "po"
+          query = { formated_po_no: params[:type_no], po_date_from: params[:from_date], po_date_from: params[:to_date] }.map { |k, v| "#{k}:#{v}" if v.present? }
+
+          refined_query = query.join(" AND ")
+
+          InventoryPo.search( query: refined_query ).map { |k| { no: k.formated_po_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name } }
+
         end
 
       end
