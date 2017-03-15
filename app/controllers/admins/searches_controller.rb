@@ -27,6 +27,122 @@ module Admins
       end
     end
 
+    def search_recieves
+      render "admins/searches/inventory/search_recieves"
+      # Inventory
+      # if params[:po_id].present?
+      #   @po = InventoryPo.find params[:po_id]
+
+      #   render "admins/inventories/po/po"
+      # else
+      #   if params[:search].present?
+      #     refined_inventory_po = params[:po].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
+
+      #     refined_search = [refined_inventory_po, refined_search].map{|v| v if v.present? }.compact.join(" AND ")
+      #   end
+
+      #   params[:query] = refined_search
+      #   @pos = InventoryPo.search(params)
+
+      #   render "admins/inventories/inventory/search_recieves"
+      # end
+    end
+
+    def search_returns
+
+      if params[:search].present?
+        @history = case params[:type]
+        when "gin"
+          query = { formatted_gin_no: params[:type_no], gin_range_from: params[:from_date], gin_range_to: params[:to_date] }.map { |k, v| "#{k}:#{v}" if v.present? }
+
+          refined_query = query.join(" AND ")
+
+          Gin.search( query: refined_query ).map { |k| { no: k.formatted_gin_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name } }
+
+        when "srr"
+          query = { formatted_srr_no: params[:type_no], range_from: params[:from_date], range_to: params[:to_date] }.map { |k, v| "#{k}:#{v}" if v.present? }
+
+          refined_query = query.join(" AND ")
+
+          Srr.search( query: refined_query ).map { |k| { no: k.formatted_srr_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name } }
+
+        when "grn"
+          query = { grn_no_format: params[:type_no], range_from: params[:from_date], range_to: params[:to_date] }.map { |k, v| "#{k}:#{v}" if v.present? }
+
+          refined_query = query.join(" AND ")
+
+          Grn.search( query: refined_query ).map { |k| { no: k.formatted_grn_no, created_at: k.formated_created_at, created_by: k.created_by_user } }
+
+        end
+
+      end
+
+      # render "admins/searches/gin_srr_grn/gin_srr_grn"
+      render "admins/searches/inventory/search_returns"
+    end
+
+    def search_issues
+      render "admins/searches/inventory/search_issues"
+    end
+
+    def search_inventory_serial_item
+
+      Inventory
+      Srr
+      if params[:serial_item_id].present?
+
+        @serial_item = InventorySerialItem.find params[:serial_item_id]
+        @store = params[:store]
+        @inventory_serial_item = @serial_item
+        @history = []
+
+        @inventory_serial_item.grn_items.each do |grn_item|
+          @history << { name: "PRN", element: grn_item.inventory_po_item.inventory_prn_item.inventory_prn, created_at: grn_item.inventory_po_item.inventory_prn_item.inventory_prn.created_at.strftime("%Y-%m-%d") } if grn_item.inventory_po_item.present?
+          @history << { name: "PO", element: grn_item.inventory_po_item.inventory_po, created_at: grn_item.inventory_po_item.inventory_po.created_at.strftime("%Y-%m-%d") } if grn_item.inventory_po_item.present?
+          @history << { name: "GRN", element: grn_item, created_at: grn_item.created_at.strftime("%Y-%m-%d") }
+
+          if grn_item.srn_item.present?
+            grn_item.srn_item.gin_items.each do |gin_item|
+              @history << { name: "GIN", element: gin_item.gin, created_at: gin_item.gin.created_at.strftime("%Y-%m-%d") }
+            end
+          end
+
+          @history << { name: "SRN", element: grn_item.srn_item.srn, created_at: grn_item.srn_item.srn.created_at.strftime("%Y-%m-%d") } if grn_item.srn_item.present?
+          @history << { name: "SRR", element: grn_item.srr_item.srr, created_at: grn_item.srr_item.srr.created_at.strftime("%Y-%m-%d") } if grn_item.srr_item.present?
+
+        end
+        render "admins/searches/view_inventory_serial_item"
+
+      else
+
+        @store = "All Stores"
+        refined_search = ""
+
+        if params[:search].present?
+          refined_inventory_serial_item = params[:search_inventory].except("inventory_product", "remaining_grn_items").map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
+
+          refined_inventory_product = params[:search_inventory]["inventory_product"].map { |k, v| "inventory_product.#{k}:#{v}" if v.present? }.compact.join(" AND ")
+
+          refined_remaining_grn_items = ( params[:search_inventory]["remaining_grn_items"] and params[:search_inventory]["remaining_grn_items"]["grn"].map { |k, v| "remaining_grn_items.grn.#{k}:#{v}" if v.present? }.compact.join(" AND "))
+
+          refined_search = [refined_inventory_serial_item, refined_inventory_product, refined_remaining_grn_items, refined_search].map{|v| v if v.present? }.compact.join(" AND ")
+          # params[:search_inventory]["remaining_grn_items"] and params[:search_inventory]["remaining_grn_items"]["grn"] and 
+          if params[:search_inventory]["remaining_grn_items"]["grn"]["store_id"].present?
+            @store_id = Organization.find params[:search_inventory]["remaining_grn_items"]["grn"]["store_id"]
+            @store = @store_id.name
+
+          else
+            @store = "All Stores"
+          end
+        end
+        params[:query] = refined_search
+        @serial_items = InventorySerialItem.search(params)
+
+        render "admins/searches/search_inventory_serial_item"
+      end
+
+    end
+
     def inventories
       Grn
       Inventory
@@ -176,6 +292,7 @@ module Admins
 
     def inventory_serial_item_history
       Inventory
+      Srr
       @inventory_serial_item = InventorySerialItem.find(params[:serial_item_id])
 
       @history = []

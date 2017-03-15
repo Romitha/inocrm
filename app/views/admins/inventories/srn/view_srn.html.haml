@@ -1,0 +1,161 @@
+%fieldset
+  %legend SRN
+  .row
+    .col-md-3
+      %strong SRN No
+    .col-md-3
+      %strong SRN Date
+    .col-md-3
+      %strong Required  Date
+    .col-md-3
+      %strong Created By
+  .row
+    .col-md-3
+      %strong Created At
+    .col-md-9
+      %strong Remarks
+
+%h4.strong SRN Items
+/ each loop goes here
+
+/ if batch
+%fieldset
+  %legend No
+  .row
+    .col-md-3
+      %strong Item Code
+    .col-md-3
+      %strong Item Description
+    .col-md-3
+      %strong Requested Quantity
+    .col-md-3
+      %strong Total Issued Quantity
+  .row
+    .col-md-3
+      %strong Unit
+    .col-md-3
+      %strong Balance Qty To Be Issued
+    .col-md-6
+      %strong Remarks
+  .row
+    .col-md-12
+      / each loop goes here
+      
+      %fieldset
+        %legend Batch
+        .row
+          .col-md-3
+            %strong Lot No
+          .col-md-3
+            %strong Manufatured Date
+          .col-md-3
+            %strong Issue Quantity
+          .col-md-3
+            %strong Batch No
+        .row
+          .col-md-3
+            %strong Expiry Date
+          .col-md-9
+            %strong Remarks
+        .row
+          .col-md-12
+            / each loop goes here
+            %fieldset
+              %legend Warranty
+              .row
+                .col-md-3
+                  %strong Type
+                .col-md-3
+                  %strong Start At
+                .col-md-3
+                  %strong End At
+                .col-md-3
+                  %strong Period Part
+              .row
+                .col-md-3
+                  %strong Period Labour
+                .col-md-3
+                  %strong Period On-Sight
+                .col-md-6
+                  %strong Remarks
+/ if serial item
+%fieldset
+  %legend No
+  .row
+    .col-md-3
+      %strong Item Code
+    .col-md-3
+      %strong Item Description
+    .col-md-3
+      %strong Requested Quantity
+    .col-md-3
+      %strong Total Issued Quantity
+  .row
+    .col-md-3
+      %strong Recieved Unit
+    .col-md-3
+      %strong Balance Qty To Be Issued
+    .col-md-3
+      %strong Stock In Hand
+    .col-md-3
+      %strong Rack
+  .row
+    .col-md-3
+      %strong Shelf
+    .col-md-3
+      %strong Bin
+  .row
+    .col-md-12
+      / each loop goes here serial item
+      
+      %fieldset
+        %legend Serial Item
+        .row
+          .col-md-3
+            %strong Serial No
+          .col-md-3
+            %strong Manufatured Date
+          .col-md-3
+            %strong CT No
+          .col-md-3
+            %strong Expiry Date
+        .row
+          .col-md-3
+            %strong Condition
+          .col-md-3
+            %strong Scavange
+          .col-md-3
+            %strong Parts Not Completed
+          .col-md-3
+            %strong Damage
+        .row
+          .col-md-3
+            %strong Used
+          .col-md-3
+            %strong Repaired
+          .col-md-3
+            %strong Reserved
+          .col-md-3
+            %strong Remarks
+
+        .row
+          .col-md-12
+            / each loop goes here
+            %fieldset
+              %legend Warranty
+              .row
+                .col-md-3
+                  %strong Type
+                .col-md-3
+                  %strong Start At
+                .col-md-3
+                  %strong End At
+                .col-md-3
+                  %strong Period Part
+              .row
+                .col-md-3
+                  %strong Period Labour
+                .col-md-3
+                  %strong Period On-Sight
+                .col-md-6
+                  %strong Remarks

@@ -1,0 +1,42 @@
+%fieldset
+  %legend PRN
+  .row
+    .col-md-3
+      %strong PRN No
+
+    .col-md-3
+      %strong PRN Date
+
+    .col-md-3
+      %strong Required  Date 
+
+    .col-md-3
+      %strong Created At
+  .row
+    .col-md-6
+      %strong Created By
+
+    .col-md-6
+      %strong Remarks 
+
+%h4.strong PRN Items
+/ each loop goes here
+%fieldset
+  %legend.h6.strong No 
+  .row
+    .col-md-3
+      %strong Item Code
+
+    .col-md-3
+      %strong Item Description
+
+    .col-md-3
+      %strong Requested Quantity
+
+    .col-md-3
+      %strong Unit
+  .row
+    .col-md-6
+      %strong Remarks
+.pull-right
+  = link_to "Close", "#", class: "btn btn-sm btn-danger"

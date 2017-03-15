@@ -1,0 +1,170 @@
+%strong Store: #{@store}
+%fieldset
+  %legend Product
+  .row
+    .col-md-3
+      %strong Brand 
+      #{@serial_item.inventory_product.category1_name}
+    .col-md-3
+      %strong Product
+      #{@serial_item.inventory_product.category2_name}
+    .col-md-3
+      %strong Category
+      #{@serial_item.inventory_product.category3_name}
+    .col-md-3
+      %strong Serial Code
+      #{@serial_item.inventory_product.generated_serial_no}
+  .row
+    .col-md-3
+      %strong Item Code
+      #{@serial_item.inventory_product.generated_item_code}
+    .col-md-9
+      %strong Item Description
+      #{@serial_item.inventory_product.try(:description)}
+      
+
+  .row
+    .col-md-3
+      %strong Model no
+      #{@serial_item.inventory_product.try(:model_no)}
+    .col-md-3
+      %strong Product no
+      #{@serial_item.inventory_product.try(:product_no)}
+    .col-md-3
+      %strong FIFO
+      #{@serial_item.inventory_product.fifo}
+    .col-md-3
+      %strong Active
+      #{@serial_item.inventory_product.active}
+  .row
+    .col-md-3
+      %strong Unit
+      #{@serial_item.inventory_product.inventory_unit.try(:unit)}
+      
+    .col-md-9
+      %strong Remarks
+      #{@serial_item.try(:remarks)}
+
+
+%fieldset
+  %legend Inventory Infomation
+  .row
+    .col-md-4
+      %strong Stock Quantity
+      #{@serial_item.inventory.stock_quantity}
+    .col-md-4
+      %strong Available Quantity
+      #{@serial_item.inventory.available_quantity}
+    .col-md-4
+      %strong Reserved Quantity
+      #{@serial_item.inventory.reserved_quantity}
+  .row
+    .col-md-4
+      %strong Rack
+      #{@serial_item.inventory.inventory_bin.inventory_shelf.inventory_rack.description}
+    .col-md-4
+      %strong Shelf
+      #{@serial_item.inventory.inventory_bin.inventory_shelf.description}
+    .col-md-4
+      %strong Bin
+      #{@serial_item.inventory.inventory_bin.description}
+  .row
+    .col-md-4
+      %strong Max Quantity
+      #{@serial_item.inventory.try(:max_quantity)}
+    .col-md-8
+      %strong Remarks
+      #{@serial_item.inventory.try(:remarks)}
+
+
+%fieldset
+  %legend Serial Item
+  .row
+    .col-md-4
+      %strong Serial No
+      #{@serial_item.try(:generated_serial_no)}
+    .col-md-4
+      %strong Manufatured Date
+      #{@serial_item.try(:manufatured_date).try(:strftime, "%Y-%m-%d")}
+    .col-md-4
+      %strong Expiry Date
+      #{@serial_item.try(:expiry_date).try(:strftime, "%Y-%m-%d")}
+  .row
+    .col-md-4
+      %strong CT No
+      #{@serial_item.try(:ct_no)}
+    .col-md-4
+      %strong Condition
+      #{@serial_item.product_condition.condition}
+    .col-md-4
+      %strong Parts Not Completed
+      = boolean_in_word @serial_item.parts_not_completed, "Yes", "No"
+
+  .row
+    .col-md-2
+      %strong Scavange
+      = boolean_in_word @serial_item.scavenge, "Yes", "No"
+    .col-md-2
+      %strong Damage
+      = boolean_in_word @serial_item.damage, "Yes", "No"
+    .col-md-2
+      %strong Used
+      = boolean_in_word @serial_item.used, "Yes", "No"
+    .col-md-2
+      %strong Repaired
+      = boolean_in_word @serial_item.repaired, "Yes", "No"
+    .col-md-2
+      %strong Reserved
+      = boolean_in_word @serial_item.reserved, "Yes", "No"
+  .row
+    .col-md-12
+      %strong Remarks
+      #{@serial_item.try(:remarks)}
+.row
+  .col-md-12
+    = link_to inventories_admins_searches_path, "role" => "button",class: "btn btn-info pull-right" do
+      More Info
+
+/ - @history.each do |h|
+/   = h
+
+- @history.each_with_index do |h, index|
+  %fieldset
+    %legend
+    .row
+      .col-md-2
+        %strong #{h[:name]}
+      .col-md-2
+        %strong No:
+        = index+1
+      .col-md-3
+        %strong Created At:
+        = h[:created_at]
+      .col-md-3
+        %strong Created By:
+        = User.find_by_id(h[:element][:created_by]).try(:full_name)
+      .col-md-2
+        - if h[:name] == "PRN"
+          = link_to prns_admins_inventories_path(prn_id: h[:element][:id]), "role" => "button",class: "btn btn-success" do
+            View
+        - elsif h[:name] == "PO"
+          = link_to pos_admins_inventories_path(po_id: h[:element][:id]), "role" => "button",class: "btn btn-success" do
+            View
+        - elsif h[:name] == "GRN"
+          = link_to search_grn_admins_searches_path(grn_callback: "select_grn",grn_id: h[:element][:id]), "role" => "button",class: "btn btn-success" do
+            View
+        - elsif h[:name] == "GIN"
+          = link_to gins_admins_inventories_path(gin_id: h[:element][:id]), "role" => "button",class: "btn btn-success" do
+            View
+        - elsif h[:name] == "SRN"
+          = link_to srns_admins_inventories_path(srn_id: h[:element][:id]), "role" => "button",class: "btn btn-success" do
+            View
+        - elsif h[:name] == "SRR"
+          = link_to srrs_admins_inventories_path(srr_id: h[:element][:id]), "role" => "button",class: "btn btn-success" do
+            View
+
+
+
+
+
+      

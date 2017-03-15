@@ -333,10 +333,14 @@ Rails.application.routes.draw do
       collection do
         get "search_customers_suppliers"
         get "search_gins"
-
+        get "search_recieves"
+        get "search_returns"
+        get "search_issues"
         get "search_grn"
         get "inventories"
         get "inventory_serial_item_history"
+        get "search_inventory_serial_item"
+        get "view_inventory_serial_item"
 
       end
     end
@@ -349,6 +353,9 @@ Rails.application.routes.draw do
         get "srns"
         get "prns"
         get "pos"
+        get "view_srn"
+        get "view_prn"
+        get "view_gin"
         get "grn"
         get "po"
         post "create_po"

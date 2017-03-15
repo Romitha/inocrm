@@ -528,6 +528,18 @@ module Admins
       end
     end
 
+    def view_prn
+
+    end
+
+    def view_srn
+      render "admins/inventories/srn/view_srn"
+    end
+
+    def view_gin
+      render "admins/inventories/gin/view_gin"
+    end
+
     def grn
       Inventory
       Grn

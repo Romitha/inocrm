@@ -1,0 +1,253 @@
+- serial_items = @serial_items
+%strong Store: #{@store}
+.row
+  .col-md-12
+    = form_tag search_inventory_serial_item_admins_searches_path, method: :get, class: "form-horizontal" do
+      %h2.small_scale_padding-bottom1 Search By
+      .form-group
+        = label_tag "Store", "Store", class: "col-md-2 control-label"
+        .col-md-10
+          = select_tag "search_inventory[remaining_grn_items][grn][store_id]", options_from_collection_for_select(Organization.stores, :id, :name, params[:store_id]), include_blank: true, class: "form-control"
+      .form-group
+        .col-md-2.control-label
+          = label_tag InventoryCategoryCaption.first.caption
+        .col-md-10
+          = select_tag "search_inventory[inventory_product][category1_id]", options_from_collection_for_select(InventoryCategory1.all, :id, :name, (params[:search_inventory] and params[:search_inventory][:category1_id])), include_blank: true, class: "form-control", id: "search_inventory_brand"
+      .form-group
+        .col-md-2.control-label
+          = label_tag InventoryCategoryCaption.second.caption
+        .col-md-10
+          = select_tag "search_inventory[inventory_product][category2_id]", option_groups_from_collection_for_select(InventoryCategory1.all, :inventory_category2s, :id, :id, :name, (params[:search_inventory] and params[:search_inventory][:category2_id])), include_blank: true, class: "form-control", id: "search_inventory_product"
+      .form-group
+        .col-md-2.control-label
+          = label_tag InventoryCategoryCaption.third.caption
+        .col-md-10
+          = select_tag "search_inventory[inventory_product][category3_id]", option_groups_from_collection_for_select(InventoryCategory2.all, :inventory_category3s, :id, :id, :name), include_blank: true, class: "form-control", id: "search_inventory_mst_inv_product_category3_id"  
+      .form-group
+        .col-md-2.control-label
+          = label_tag "Serial Code", "Serial Code"
+        .col-md-4
+          = text_field_tag "search_inventory[inventory_product][generated_serial_no]", (params[:search_inventory] and params[:search_inventory][:inventory_product][:generated_serial_no]), :placeholder => "Serial Code", class: "form-control"
+        .col-md-2.control-label
+          = label_tag "Item Code", "Item Code"
+        .col-md-4
+          = text_field_tag "search_inventory[inventory_product][generated_item_code]", nil, :placeholder => "Item Code", class: "form-control"
+
+      .form-group
+        .col-md-2.control-label
+          = label_tag "Part No", "Part No"
+        .col-md-4
+          = text_field_tag "search_inventory[inventory_product][spare_part_no]", (params[:search_inventory] and params[:search_inventory][:inventory_product][:spare_part_no]), :placeholder => "Part No", class: "form-control"
+        .col-md-2.control-label
+          = label_tag "Model No", "Model No"
+        .col-md-4
+          = text_field_tag "search_inventory[inventory_product][model_no]", (params[:search_inventory] and params[:search_inventory][:inventory_product][:model_no]), :placeholder => "Model No", class: "form-control"
+
+      .form-group
+        .col-md-2.control-label
+          = label_tag "Description", "Description"
+        .col-md-4
+          = text_field_tag "search_inventory[inventory_product][description]", nil, placeholder: "Description", class: "form-control"
+        .col-md-2.control-label
+          = label_tag "Product No", "Product No"
+        .col-md-4
+          = text_field_tag "search_inventory[inventory_product][product_no]", (params[:search_inventory] and params[:search_inventory][:inventory_product][:product_no]), :placeholder => "Product No", class: "form-control"
+
+      .form-group
+        .col-md-2.control-label
+          = label_tag "Serial No", "Serial No"
+        .col-md-4
+          = text_field_tag "search_inventory[serial_no]", nil, :placeholder => "Serial No", class: "form-control"
+        .col-md-2.control-label
+          = label_tag "CT No", "CT No"
+        .col-md-4
+          = text_field_tag "search_inventory[ct_no]", nil, :placeholder => "CT No", class: "form-control"
+      .btn-group.pull-right
+        = submit_tag "Search", class: "btn btn-success", name: "search"
+
+%h2.small_scale_padding-top1 All Items
+= paginate serial_items, remote: false, method: :get
+
+%table.table
+  %thead
+    %tr
+      %th No
+      %th Item code
+      %th Serial No
+      %th CT No
+      / %th Condition
+      %th Status
+      %th{title: "Parts Not Completed"} P.N. Completed
+      %th Currency
+      %th Current GRN Cost
+      %th Addition Cost
+      %th Total Cost
+      %th Action
+  %tbody
+    - serial_items.each_with_index do |serial_item, index|
+      - content_for :serial_item_more, flush: true do
+        %ul
+          %li
+            %strong Scavenge:
+            = boolean_in_word serial_item.scavenge, "Yes", "No"
+          %li
+            %strong Damaged
+            = boolean_in_word serial_item.damaged, "Yes", "No"
+          %li
+            %strong Repaired
+            = boolean_in_word serial_item.repaired, "Yes", "No"
+          %li
+            %strong Reserved
+            = boolean_in_word serial_item.reserved, "Yes", "No"
+          %li
+            %strong EXP date
+            = serial_item.try(:expiry_date).try(:to_date).try(:strftime, "%Y-%m-%d")
+          %li
+            %strong MF Date
+            = serial_item.try(:manufatured_date).try(:to_date).try(:strftime, "%Y-%m-%d")
+          %li
+            %strong Used
+            = boolean_in_word serial_item.used, "Yes", "No"
+          %li
+            %strong Condition
+            = serial_item.try(:product_condition).try(:condition)
+
+            
+        %strong Description:
+        = serial_item.inventory_product.try(:description)
+        %br/
+        %strong Remarks:
+        %span{title: serial_item.try(:remarks)}
+          = serial_item.try(:remarks).try :truncate, 50
+
+      %tr
+        %td{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Serial No: #{serial_item.generated_serial_no}", "data-content"=> yield(:serial_item_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "top" }
+          - if params[:page]
+            = (index+1) + 10*(params[:page].to_i-1)
+          - else
+            = (index+1)
+        %td
+          = serial_item.inventory_product.try(:generated_item_code)
+        %td
+          = serial_item.try(:generated_serial_no)
+        %td
+          = serial_item.try(:ct_no)
+        / %td
+        /   = serial_item.try(:product_condition).try(:condition)
+        %td
+          = serial_item.try(:inventory_serial_item_status).try(:name)
+        %td
+          = boolean_in_word serial_item.parts_not_completed, "Yes", "No"
+        %td
+          = serial_item.remaining_grn_items.map{|g| g.currency.code}.join(", ")
+        %td
+          / = serial_item.remaining_grn_items.map{|g| g.current_unit_cost}.join(", ")
+          = number_with_precision serial_item.remaining_grn_items.map{|g| g.current_unit_cost}.join(", "), precision: 2
+        %td
+          = number_with_precision serial_item.inventory_serial_items_additional_costs.map{|g| g.cost}.join(", "), precision: 2
+        %td
+          - a = (serial_item.inventory_serial_items_additional_costs.map{|g| g.cost}.join(", ").to_i + serial_item.remaining_grn_items.map{|g| g.current_unit_cost}.join(", ").to_i)
+          = number_with_precision a, precision: 2
+        %td
+          = link_to "Select", search_inventory_serial_item_admins_searches_path(serial_item_id: serial_item.id, store: @store), target: "_blank"
+
+
+
+
+
+
+/ .row
+/   .col-md-1
+/     %strong No
+/   .col-md-1
+/     %strong Item code
+/   .col-md-1
+/     %strong Serial No
+/   .col-md-1
+/     %strong CT No
+/   .col-md-1
+/     %strong Condition
+/   .col-md-1
+/     %strong Status
+/   .col-md-1
+/     %strong{title: "Parts Not Completed"} P.N. Completed
+/   .col-md-1
+/     %strong Currency
+/   .col-md-1
+/     %strong Current GRN Cost
+/   .col-md-1
+/     %strong Addition Cost
+/   .col-md-1
+/     %strong Total Cost
+/   .col-md-1
+/     %strong Action
+/ %hr
+
+/ - serial_items.each_with_index do |serial_item, index|
+/   - content_for :serial_item_more, flush: true do
+/     %ul
+/       %li
+/         %strong Scavenge:
+/         = boolean_in_word serial_item.scavenge, "Yes", "No"
+/       %li
+/         %strong Damaged
+/         = boolean_in_word serial_item.damaged, "Yes", "No"
+/       %li
+/         %strong Repaired
+/         = boolean_in_word serial_item.repaired, "Yes", "No"
+/       %li
+/         %strong Reserved
+/         = boolean_in_word serial_item.reserved, "Yes", "No"
+/       %li
+/         %strong EXP date
+/         = serial_item.try(:expiry_date).try(:to_date).try(:strftime, "%Y-%m-%d")
+/       %li
+/         %strong MF Date
+/         = serial_item.try(:manufatured_date).try(:to_date).try(:strftime, "%Y-%m-%d")
+/       %li
+/         %strong Used
+/         = boolean_in_word serial_item.used, "Yes", "No"
+/       %li
+/         %strong Currency
+/         = serial_item.remaining_grn_items.map{|g| g.currency.code}.join(", ")
+
+        
+/     %strong Description:
+/     = serial_item.inventory_product.try(:description)
+/     %br/
+/     %strong Remarks:
+/     %span{title: serial_item.try(:remarks)}
+/       = serial_item.try(:remarks).try :truncate, 50
+/   .row
+/     .col-md-1{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Serial No: #{serial_item.generated_serial_no}", "data-content"=> yield(:serial_item_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "top" }
+/       - if params[:page]
+/         = (index+1) + 10*(params[:page].to_i-1)
+/       - else
+/         = (index+1)
+
+    
+/     .col-md-1
+/       = serial_item.inventory_product.try(:generated_item_code)
+/     .col-md-1
+/       = serial_item.try(:generated_serial_no)
+/     .col-md-1
+/       = serial_item.try(:ct_no)
+/     .col-md-1
+/       = serial_item.try(:product_condition).try(:condition)
+/     .col-md-1
+/       = serial_item.try(:inventory_serial_item_status).try(:name)
+/     .col-md-1
+/       = boolean_in_word serial_item.parts_not_completed, "Yes", "No"
+/     .col-md-1
+/       = serial_item.remaining_grn_items.map{|g| g.currency.code}.join(", ")
+/     .col-md-1
+/       = serial_item.remaining_grn_items.map{|g| g.current_unit_cost}.join(", ")
+/     .col-md-1
+/       = serial_item.inventory_serial_items_additional_costs.map{|g| g.cost}.join(", ")
+/     .col-md-1
+/       tot
+/     .col-md-1
+/       = link_to "Select", search_inventory_serial_item_admins_inventories_path(serial_item_id: serial_item.id), target: "_blank"
+/       / = link_to "Select", grn_main_part_admins_inventories_path(inventory_serial_item_id: inventory_serial_item.id, store_id: @store.id )
+/   %hr
+= paginate serial_items, remote: false, method: :get

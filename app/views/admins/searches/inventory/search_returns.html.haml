@@ -1,0 +1,67 @@
+/ - pos = @pos
+
+.row
+  .col-md-12
+    = form_tag search_returns_admins_searches_path, method: :get, class: "form-horizontal" do
+      %h2.small_scale_padding-bottom1 Search By
+      .form-group
+        = label_tag "Store", "Store", class: "col-md-2 control-label"
+        .col-md-10
+          = select_tag :store_id, options_from_collection_for_select(Organization.stores, :id, :name, params[:store_id]), include_blank: true, class: "form-control"
+      .form-group
+        = label_tag "Type", "Type", class: "col-md-2 control-label"
+        .col-md-10
+          = select_tag "type", options_for_select([ ["", 0], ["GIN", 1], ["SRR",2], ["GRN", 3] ], ""), class: "form-control"
+      .form-group
+        = label_tag "No", "No", class: "col-md-2 control-label"
+        .col-md-10
+          = text_field_tag "No", nil, placeholder: "No", class: "form-control"
+      .form-group
+        = label_tag "Date From", "Date From", class: "col-md-2 control-label"
+        .col-md-10
+          = text_field_tag "Date From", nil, placeholder: "Date From", class: "form-control datepicker"
+      .form-group
+        = label_tag "Date To", "Date To", class: "col-md-2 control-label"
+        .col-md-10
+          = text_field_tag "Date To", nil, placeholder: "Date To", class: "form-control datepicker"
+      .btn-group
+        = submit_tag "Search", class: "btn btn-success", name: "search"
+
+
+%h2.small_scale_padding-top1 Searched Results
+%fieldset
+  .row
+
+/ / = form_tag view_po_admins_inventories_path(purchase_order: "view_po"), remote: true, method: :get, class: "form-horizontal" do
+/ = paginate pos, remote: false, method: :get
+
+/ %table.table.table-hover
+/   %thead
+/     %tr
+/       %th No
+/       %th Store
+/       %th Supplier Name
+/       %th PO. No
+/       %th PO. Date
+/       %th Delivery date
+/       %th Remarks
+/       %th Created by
+/       %th Action
+/   %tbody
+/     - pos.each_with_index do |po, index|
+/       %tr
+/         %td
+/           - if params[:page]
+/             = (index+1)+ 10*(params[:page].to_i-1)
+/           - else
+/             = (index+1)
+/         %td= po.store_name
+/         %td= po.supplier.name
+/         %td= po.formated_po_no
+/         %td= po.created_at.to_date.try(:strftime, "%Y-%m-%d")
+/         %td= po.delivery_date and po.delivery_date.to_date.try(:strftime, "%Y-%m-%d")
+/         %td= simple_format po.remarks
+/         %td= po.created_by_user_full_name
+/         %td= link_to "Select", pos_admins_inventories_path(po_id: po.id), target: "_blank"
+
+/ = paginate pos, remote: false, method: :get
