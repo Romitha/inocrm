@@ -550,6 +550,10 @@ module Admins
         @stores = Organization.stores
         @render_template = "search_po"
 
+      when "srr"
+        @stores = Organization.stores
+        @render_template = "search_srr"
+
       when "no"
         @render_template = "search_inventory"
 
@@ -611,7 +615,25 @@ module Admins
         @render_template = "select_po"
 
       when "search_srr"
-        
+        refined_search = "closed:false"
+
+        if params[:search].present?
+          refined_inventory_srr = params[:srr].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
+
+          refined_search = [refined_inventory_srr, refined_search].map{|v| v if v.present? }.compact.join(" AND ")
+
+        end
+
+        params[:query] = refined_search
+        @pos = InventoryPo.search(params)
+
+        session[:store_id] = params[:po]["store.id"]
+
+        Rails.cache.delete([:inventory_product_ids])
+        Rails.cache.delete([:po_item_ids])
+        Rails.cache.delete([:srr_item_ids])
+        session[:po_id] = nil
+        @render_template = "select_po"
 
       when "select_po"
         @po = InventoryPo.find params[:po_id]
@@ -1567,6 +1589,8 @@ module Admins
         @srr.srr_item_sources.each do |srr_item_source|
           srr_item_source.gin_source.update returned_quantity: srr_item_source.gin_source.srr_items.sum(:quantity)
         end
+        CompanyConfig.first.increase_inv_last_gin_no
+
 
         flash[:success] = "Successfully saved."
       else
