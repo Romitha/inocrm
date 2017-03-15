@@ -908,6 +908,20 @@ module Admins
       end
     end
 
+    def prns
+      Inventory
+      Invoice
+
+      if params[:prn_id].present?
+        @prn = InventoryPrn.find params[:prn_id]
+        @prn.inventory_prn_items.where(closed: false).each do |prn_item|
+          @po.inventory_po_items.build quantity: prn_item.quantity, prn_item_id: prn_item.id
+        end
+        @store = @prn.store
+        render "admins/inventories/prn/prns"
+      end
+    end
+
     def create_po
       Organization
       Inventory
@@ -1100,6 +1114,18 @@ module Admins
       end
     end
 
+    def srns
+      Inventory
+      Invoice
+      Role
+
+      if params[:srn_id].present?
+        @srn = Srn.find params[:srn_id]
+
+        render "admins/inventories/srn/srns"
+      end
+    end
+
     def create_srn
       @srn = Srn.new srn_params
       if @srn.save
@@ -1141,6 +1167,17 @@ module Admins
         render "admins/inventories/gin/gin"
       end
 
+    end
+
+    def gins
+      Inventory
+      Invoice
+      Role
+      if params[:gin_id].present?
+        @gin = Gin.find params[:gin_id]
+
+        render "admins/inventories/gin/gins"
+      end
     end
 
     def create_gin
@@ -1488,6 +1525,17 @@ module Admins
 
       render "admins/inventories/srr/srr"
 
+    end
+
+    def srrs
+      Inventory
+      Invoice
+      Role
+      if params[:srr_id].present?
+        @srr = Srr.find params[:srr_id]
+
+        render "admins/inventories/srr/srrs"
+      end
     end
 
     def create_srr

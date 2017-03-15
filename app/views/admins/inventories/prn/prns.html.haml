@@ -1,0 +1,43 @@
+- prn = @prn
+.row
+  .col-md-12
+    = panels panel_type: "success", header_content: "PRN No: #{prn.formated_prn_no}" do
+
+      %h4 PRN Info
+      %dl.dl-horizontal
+        %dt PRN No
+        %dd= prn.formated_prn_no
+        %dt PO. Date
+        %dd= prn.created_at.try(:strftime, INOCRM_CONFIG["short_date_format"])
+        %dt Remarks
+        %dd= simple_format prn.remarks
+        %dt Created at
+        %dd= prn.created_at.try(:strftime, INOCRM_CONFIG["short_date_format"])
+        %dt Created by
+        %dd= prn.created_by_user_full_name
+
+      %h4.small_scale_padding-top1 PRN Items
+      %table.table.table-bordered
+        %thead
+          %tr
+            %th{colspan: 2} PRN item
+            %th{colspan: 1}
+            %th{colspan: 5} Product
+          %tr
+            %th Quantity
+            %th Remarks
+            %th
+            %th product no
+            %th model no
+            %th Serial no
+            %th Description
+        %tbody
+          - prn.inventory_prn_items.each do |prn_item|
+            %tr
+              %td= prn_item.quantity
+              %td= prn_item.remarks
+              %td
+              %td= prn_item.inventory_product.product_no
+              %td= prn_item.inventory_product.model_no
+              %td= prn_item.inventory_product.serial_no
+              %td= prn_item.inventory_product.description

@@ -1,0 +1,47 @@
+- srn = @srn
+.row
+  .col-md-12
+    = panels panel_type: "success", header_content: "SRN No: #{srn.srn_no}" do
+
+      %h4 SRN Info
+      %dl.dl-horizontal
+        %dt SRN No
+        %dd= srn.formatted_srn_no
+        %dt Sales Order No
+        %dd= srn.so_no
+        %dt Requested Module
+        %dd= srn.requested_module.name
+        %dt SRN Date
+        %dd= srn.created_at.try(:strftime, INOCRM_CONFIG["short_date_format"])
+        %dt Remarks
+        %dd= simple_format srn.remarks
+        %dt Created at
+        %dd= srn.created_at.try(:strftime, INOCRM_CONFIG["short_date_format"])
+        %dt Created by
+        %dd= srn.created_by
+
+      %h4.small_scale_padding-top1 SRN Items
+      %table.table.table-bordered
+        %thead
+          %tr
+            %th{colspan: 2} SRN item
+            %th{colspan: 1}
+            %th{colspan: 5} Product
+          %tr
+            %th Quantity
+            %th Remarks
+            %th
+            %th product no
+            %th model no
+            %th Serial no
+            %th Description
+        %tbody
+          - srn.srn_items.each do |srn_item|
+            %tr
+              %td= srn_item.quantity
+              %td= srn_item.remarks
+              %td
+              %td= srn_item.inventory_product.product_no
+              %td= srn_item.inventory_product.model_no
+              %td= srn_item.inventory_product.serial_no
+              %td= srn_item.inventory_product.description

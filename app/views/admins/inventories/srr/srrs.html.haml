@@ -1,0 +1,45 @@
+- srr = @srr
+.row
+  .col-md-12
+    = panels panel_type: "success", header_content: "SRR No: #{srr.srr_no}" do
+
+      %h4 SRR Info
+      %dl.dl-horizontal
+        %dt SRR No
+        %dd= srr.srr_no
+        %dt SRR Date
+        %dd= srr.created_at.try(:strftime, INOCRM_CONFIG["short_date_format"])
+        %dt Remarks
+        %dd= simple_format srr.remarks
+        %dt Created at
+        %dd= srr.created_at.try(:strftime, INOCRM_CONFIG["short_date_format"])
+        %dt Created by
+        %dd= srr.created_by
+
+      %h4.small_scale_padding-top1 SRR Items
+      %table.table.table-bordered
+        %thead
+          %tr
+            %th{colspan: 3} SRR item
+            %th{colspan: 1}
+            %th{colspan: 5} Product
+          %tr
+            %th Quantity
+            %th Remarks
+            %th Total Cost
+            %th
+            %th product no
+            %th model no
+            %th Serial no
+            %th Description
+        %tbody
+          - srr.srr_items.each do |srr_item|
+            %tr
+              %td= srr_item.quantity
+              %td= srr_item.remarks
+              %td= srr_item.total_cost
+              %td
+              %td= srr_item.inventory_product.product_no
+              %td= srr_item.inventory_product.model_no
+              %td= srr_item.inventory_product.serial_no
+              %td= srr_item.inventory_product.description

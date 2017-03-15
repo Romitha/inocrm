@@ -344,6 +344,10 @@ Rails.application.routes.draw do
 
       collection do
 
+        get "gins"
+        get "srrs"
+        get "srns"
+        get "prns"
         get "pos"
         get "grn"
         get "po"
