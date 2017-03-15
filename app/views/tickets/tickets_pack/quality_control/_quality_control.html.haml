@@ -53,7 +53,7 @@
             - ticket.user_ticket_actions.where(action_id: 21).each do |action|
               %li= action.ticket_finish_job.resolution
           %strong Resolution Summary
-          / = link_to "#", class: "inline_edit", data: {type: "textarea", resource: "ticket", name: "resolution_summary", url: ticket_path(f.object.id), "original-title" => "Update quality_control"} do
+          = link_to "#", class: "inline_edit", data: {type: "textarea", resource: "ticket", name: "resolution_summary", url: ticket_path(f.object.id), "original-title" => "Update quality_control"} do
           = f.object.resolution_summary
         #reject_reason_sec_hide.col-md-6.col-xs-6
           = aqc.input :reject_reason, input_html: {id: "reject_reason"}, required: true

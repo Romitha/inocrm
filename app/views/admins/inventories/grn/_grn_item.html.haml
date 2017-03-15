@@ -2,12 +2,23 @@
   - need_serial = @po_item.inventory_prn_item.inventory_product.inventory_product_info.need_serial.present?
   - need_batch = @po_item.inventory_prn_item.inventory_product.inventory_product_info.need_batch.present?
   - inventory_product = @po_item.inventory_prn_item.inventory_product
+  - balance_to_be_inserted = @po_item.quantity
+
+  - already_recieved = case inventory_product.product_type
+  - when "Serial", "Non Serial Non Batch"
+    - inventory_product.grn_items.by_store(session[:store_id]).sum(:recieved_quantity)
+  - when "Batch"
+    - inventory_product.grn_batches.sum(:recieved_quantity)
+
   - inventory = inventory_product.inventories.find_by_store_id session[:store_id]
   - url = initialize_grn_admins_inventories_path(po_item_id: @po_item.try(:id), inventory_product_id: @inventory_product.try(:id))
 - elsif @inventory_product
   - need_serial = @inventory_product.inventory_product_info.need_serial.present?
   - need_batch = @inventory_product.inventory_product_info.need_batch.present?
   - inventory_product = @inventory_product
+  - balance_to_be_inserted = 0
+  - already_recieved = 0
+
   - inventory = inventory_product.inventories.find_by_store_id session[:store_id]
   - url = initiate_grn_for_i_product_admins_inventories_path(inventory_product_id: @inventory_product.try(:id))
 
@@ -23,14 +34,17 @@
   .row.small_scale_padding-top1.small_scale_padding-bottom1
     .col-md-4
       %strong Item Code:
-      =inventory_product.generated_item_code
+      = inventory_product.generated_item_code
     .col-md-4
       %strong Item Description:
-      =inventory_product.description
+      = inventory_product.description
     .col-md-4
       %strong Balance Qty To Be Received:
+      / = @grn_item.srn_item.quantity.to_f - @grn_item.gin_sources.sum(:issued_quantity) + @grn_item.gin_sources.sum(:returned_quantity)
+      = balance_to_be_inserted - already_recieved
     .col-md-4
       %strong Received Quantity:
+      =@grn_item.reserved_quantity
       / =(need_serial and !need_batch ? 1 : 0 )
     .col-md-4
       %strong Received Unit:

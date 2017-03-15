@@ -126,7 +126,12 @@ class InventoryProduct < ActiveRecord::Base
 
   has_many :ticket_spare_part_stores, foreign_key: :inv_product_id
 
-  has_many :grn_items, foreign_key: :product_id
+  has_many :grn_items, foreign_key: :product_id do
+    def by_store(store_id)
+      joins(:grn).where("inv_grn.store_id = ?", store_id)
+    end
+  end
+
   has_many :grn_serial_items, through: :grn_items
   has_many :grn_batches, through: :grn_items
   has_many :only_grn_items, -> { joins(:grn_serial_items, :grn_batches).where("inv_grn_batch.grn_item_id = :id AND inv_grn_serial_item.grn_item_id = :id", {id: nil} ) }, class_name: "GrnItem", foreign_key: :product_id
@@ -137,7 +142,11 @@ class InventoryProduct < ActiveRecord::Base
   has_many :inventory_prn_items, foreign_key: :product_id
   accepts_nested_attributes_for :inventory_prn_items, allow_destroy: true
   has_many :inventory_prns, through: :inventory_prn_items
-  has_many :inventory_po_items, through: :inventory_prn_items
+  has_many :inventory_po_items, through: :inventory_prn_items do
+    def by_store(store_id)
+      joins(inventory_prn_item: :inventory_prn).where("inv_prn.store_id = ?", store_id)
+    end
+  end
 
   has_many :srn_items, foreign_key: :product_id do
     def by_store(store_id)
