@@ -4,6 +4,10 @@ class Srr < ActiveRecord::Base
   include Tire::Model::Search
   include Tire::Model::Callbacks
 
+  mapping do
+    indexes :store, type: "nested", include_in_parent: true
+  end
+
   belongs_to :store, class_name: "Organization"
   belongs_to :requested_location, class_name: "Organization"
   belongs_to :created_by_user, class_name: "User", foreign_key: :created_by
@@ -33,7 +37,12 @@ class Srr < ActiveRecord::Base
   def to_indexed_json
     to_json(
       only: [:id, :remarks, :created_at],
-      methods: [:store_name, :formatted_srr_no, :created_by_user_full_name, :formated_created_at]
+      methods: [:store_name, :formatted_srr_no, :created_by_user_full_name, :formated_created_at],
+      include: {
+        store: {
+          only: [:id, :name],
+        }
+      },
     )
 
   end

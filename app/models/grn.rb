@@ -4,6 +4,10 @@ class Grn < ActiveRecord::Base
   include Tire::Model::Search
   include Tire::Model::Callbacks
 
+  mapping do
+    indexes :store, type: "nested", include_in_parent: true
+  end
+
   def self.search(params)
     tire.search(page: (params[:page] || 1), per_page: 10) do
       query do
@@ -24,6 +28,11 @@ class Grn < ActiveRecord::Base
     to_json(
       only: [:id, :store_id, :grn_no, :created_by, :remarks, :po_no, :supplier_id, :created_at],
       methods: [:store_name, :supplier_name, :grn_no_format, :formated_created_at, :created_by_from_user],
+      include: {
+        store: {
+          only: [:id, :name],
+        }
+      },
     )
 
   end

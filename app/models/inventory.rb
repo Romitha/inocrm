@@ -1124,6 +1124,10 @@ class InventoryPrn < ActiveRecord::Base
   include Tire::Model::Search
   include Tire::Model::Callbacks
 
+  mapping do
+    indexes :store, type: "nested", include_in_parent: true
+  end
+
   belongs_to :store, class_name: "Organization", foreign_key: :store_id
   belongs_to :created_by_user, class_name: "User", foreign_key: :created_by
 
@@ -1158,6 +1162,11 @@ class InventoryPrn < ActiveRecord::Base
     to_json(
       only: [:created_at, :prn_no, :store_id, :required_at, :remarks, :closed],
       methods: [:store_name, :formated_prn_no, :created_by_user_full_name],
+      include: {
+        store: {
+          only: [:id, :name],
+        }
+      },
     )
 
   end
