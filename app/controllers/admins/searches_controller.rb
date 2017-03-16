@@ -27,8 +27,8 @@ module Admins
       end
     end
 
-    def search_recieves
-      render "admins/searches/inventory/search_recieves"
+    def search_receives
+      render "admins/searches/inventory/search_receives"
       # Inventory
       # if params[:po_id].present?
       #   @po = InventoryPo.find params[:po_id]
@@ -48,7 +48,7 @@ module Admins
       # end
     end
 
-    def search_returns
+    def search_results
       Gin
       Srr
       Grn
@@ -58,7 +58,6 @@ module Admins
 
         when "gin"
           query = { formatted_gin_no: params[:type_no], gin_range_from: params[:from_date], gin_range_to: params[:to_date] }.map { |k, v| "#{k}:#{v}" if v.present? }.compact.compact
-
           # refined_query = query.join(" AND ")
           refined_query = (query << "store.id:#{params[:store_id]}").join(" AND ")
 
@@ -66,7 +65,6 @@ module Admins
 
         when "srr"
           query = { formatted_srr_no: params[:type_no], range_from: params[:from_date], range_to: params[:to_date] }.map { |k, v| "#{k}:#{v}" if v.present? }.compact.compact
-          # refined_query = query.join(" AND ")
           refined_query = (query << "store.id:#{params[:store_id]}").join(" AND ")
 
           Srr.search( query: refined_query ).map { |k| { id: k.id, no: k.formatted_srr_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name } }
@@ -75,14 +73,35 @@ module Admins
           query = { grn_no_format: params[:type_no], range_from: params[:from_date], range_to: params[:to_date] }.map { |k, v| "#{k}:#{v}" if v.present? }.compact
 
           refined_query = (query << "store.id:#{params[:store_id]}").join(" AND ")
-          # refined_query = query.join(" AND ")
           Grn.search( query: refined_query ).map { |k| { id: k.id, no: k.grn_no_format, created_at: k.formated_created_at, created_by: k.created_by_from_user } }
 
+        when "prn"
+          query = { formated_prn_no: params[:type_no], range_from: params[:from_date], range_to: params[:to_date] }.map { |k, v| "#{k}:#{v}" if v.present? }.compact
+
+          refined_query = (query << "store.id:#{params[:store_id]}").join(" AND ")
+
+          InventoryPrn.search( query: refined_query ).map { |k| { no: k.formated_prn_no, created_at: k.created_by_user_full_name, created_by: k.created_by_user_full_name } }
+
+        when "po"
+          query = { formated_po_no: params[:type_no], po_date_from: params[:from_date], po_date_from: params[:to_date] }.map { |k, v| "#{k}:#{v}" if v.present? }.compact
+
+          refined_query = (query << "store.id:#{params[:store_id]}").join(" AND ")
+
+          InventoryPo.search( query: refined_query ).map { |k| { no: k.formated_po_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name } }
         end
 
       end
 
-      # render "admins/searches/gin_srr_grn/gin_srr_grn"
+      if params[:request] == "search_returns"
+        render "admins/searches/inventory/search_returns"
+      elsif params[:request] == "search_recieves"
+        render "admins/searches/inventory/search_receives"
+      elsif params[:request] == "search_issues"
+        render "admins/searches/inventory/search_issues"
+      end
+    end
+
+    def search_returns
       render "admins/searches/inventory/search_returns"
     end
 
@@ -130,8 +149,7 @@ module Admins
 
           refined_remaining_grn_items = ( params[:search_inventory]["remaining_grn_items"] and params[:search_inventory]["remaining_grn_items"]["grn"].map { |k, v| "remaining_grn_items.grn.#{k}:#{v}" if v.present? }.compact.join(" AND "))
 
-          refined_search = [refined_inventory_serial_item, refined_inventory_product, refined_remaining_grn_items, refined_search].map{|v| v if v.present? }.compact.join(" AND ")
-          # params[:search_inventory]["remaining_grn_items"] and params[:search_inventory]["remaining_grn_items"]["grn"] and 
+          refined_search = [refined_inventory_serial_item, refined_inventory_product, refined_remaining_grn_items, refined_search].map{|v| v if v.present? }.compact.join(" AND ") 
           if params[:search_inventory]["remaining_grn_items"]["grn"]["store_id"].present?
             @store_id = Organization.find params[:search_inventory]["remaining_grn_items"]["grn"]["store_id"]
             @store = @store_id.name
@@ -322,51 +340,51 @@ module Admins
 
     end
 
-    def search_gin_srr_grn
-      if params[:search].present?
-        @history = case params[:type]
-        when "gin"
-          query = { formatted_gin_no: params[:type_no], gin_range_from: params[:from_date], gin_range_to: params[:to_date] }.map { |k, v| "#{k}:#{v}" if v.present? }.compact
+    # def search_gin_srr_grn
+    #   if params[:search].present?
+    #     @history = case params[:type]
+    #     when "gin"
+    #       query = { formatted_gin_no: params[:type_no], gin_range_from: params[:from_date], gin_range_to: params[:to_date] }.map { |k, v| "#{k}:#{v}" if v.present? }.compact
 
-          refined_query = (query << "store.id:#{params[:store_id]}").join(" AND ")
+    #       refined_query = (query << "store.id:#{params[:store_id]}").join(" AND ")
 
-          Gin.search( query: refined_query ).map { |k| { no: k.formatted_gin_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name } }
+    #       Gin.search( query: refined_query ).map { |k| { no: k.formatted_gin_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name } }
 
-        when "srr"
-          query = { formatted_srr_no: params[:type_no], range_from: params[:from_date], range_to: params[:to_date] }.map { |k, v| "#{k}:#{v}" if v.present? }.compact
+    #     when "srr"
+    #       query = { formatted_srr_no: params[:type_no], range_from: params[:from_date], range_to: params[:to_date] }.map { |k, v| "#{k}:#{v}" if v.present? }.compact
 
-          refined_query = (query << "store.id:#{params[:store_id]}").join(" AND ")
+    #       refined_query = (query << "store.id:#{params[:store_id]}").join(" AND ")
 
-          Srr.search( query: refined_query ).map { |k| { no: k.formatted_srr_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name } }
+    #       Srr.search( query: refined_query ).map { |k| { no: k.formatted_srr_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name } }
 
-        when "grn"
-          query = { grn_no_format: params[:type_no], range_from: params[:from_date], range_to: params[:to_date] }.map { |k, v| "#{k}:#{v}" if v.present? }.compact
+    #     when "grn"
+    #       query = { grn_no_format: params[:type_no], range_from: params[:from_date], range_to: params[:to_date] }.map { |k, v| "#{k}:#{v}" if v.present? }.compact
 
-          refined_query = (query << "store.id:#{params[:store_id]}").join(" AND ")
+    #       refined_query = (query << "store.id:#{params[:store_id]}").join(" AND ")
 
-          Grn.search( query: refined_query ).map { |k| { no: k.formatted_grn_no, created_at: k.formated_created_at, created_by: k.created_by_user } }
+    #       Grn.search( query: refined_query ).map { |k| { no: k.formatted_grn_no, created_at: k.formated_created_at, created_by: k.created_by_user } }
 
-        when "prn"
-          query = { formated_prn_no: params[:type_no], range_from: params[:from_date], range_to: params[:to_date] }.map { |k, v| "#{k}:#{v}" if v.present? }.compact
+    #     when "prn"
+    #       query = { formated_prn_no: params[:type_no], range_from: params[:from_date], range_to: params[:to_date] }.map { |k, v| "#{k}:#{v}" if v.present? }.compact
 
-          refined_query = (query << "store.id:#{params[:store_id]}").join(" AND ")
+    #       refined_query = (query << "store.id:#{params[:store_id]}").join(" AND ")
 
-          InventoryPrn.search( query: refined_query ).map { |k| { no: k.formated_prn_no, created_at: k.created_by_user_full_name, created_by: k.created_by_user_full_name } }
+    #       InventoryPrn.search( query: refined_query ).map { |k| { no: k.formated_prn_no, created_at: k.created_by_user_full_name, created_by: k.created_by_user_full_name } }
 
-        when "po"
-          query = { formated_po_no: params[:type_no], po_date_from: params[:from_date], po_date_from: params[:to_date] }.map { |k, v| "#{k}:#{v}" if v.present? }.compact
+    #     when "po"
+    #       query = { formated_po_no: params[:type_no], po_date_from: params[:from_date], po_date_from: params[:to_date] }.map { |k, v| "#{k}:#{v}" if v.present? }.compact
 
-          refined_query = (query << "store.id:#{params[:store_id]}").join(" AND ")
+    #       refined_query = (query << "store.id:#{params[:store_id]}").join(" AND ")
 
-          InventoryPo.search( query: refined_query ).map { |k| { no: k.formated_po_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name } }
+    #       InventoryPo.search( query: refined_query ).map { |k| { no: k.formated_po_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name } }
 
-        end
+    #     end
 
-      end
+    #   end
 
-      render "admins/searches/gin_srr_grn/gin_srr_grn"
+    #   render "admins/searches/gin_srr_grn/gin_srr_grn"
 
-    end
+    # end
 
     private
 
