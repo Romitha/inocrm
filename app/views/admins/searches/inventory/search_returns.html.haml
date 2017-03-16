@@ -1,5 +1,3 @@
-/ - pos = @pos
-
 .row
   .col-md-12
     = form_tag search_returns_admins_searches_path, method: :get, class: "form-horizontal" do
@@ -7,30 +5,53 @@
       .form-group
         = label_tag "Store", "Store", class: "col-md-2 control-label"
         .col-md-10
-          = select_tag :store_id, options_from_collection_for_select(Organization.stores, :id, :name, params[:store_id]), include_blank: true, class: "form-control"
+          = select_tag :store_id, options_from_collection_for_select(Organization.stores, :id, :name, params[:store_id]), include_blank: false, class: "form-control"
       .form-group
         = label_tag "Type", "Type", class: "col-md-2 control-label"
         .col-md-10
-          = select_tag "type", options_for_select([ ["", 0], ["GIN", 1], ["SRR",2], ["GRN", 3] ], ""), class: "form-control"
+          = select_tag "type", options_for_select([["GIN", "gin"], ["SRR", "srr"], ["GRN", "grn"] ], params[:type]), class: "form-control"
       .form-group
         = label_tag "No", "No", class: "col-md-2 control-label"
         .col-md-10
-          = text_field_tag "No", nil, placeholder: "No", class: "form-control"
+          = text_field_tag "type_no", params[:type_no], :placeholder => "No", class: "form-control"
       .form-group
         = label_tag "Date From", "Date From", class: "col-md-2 control-label"
         .col-md-10
-          = text_field_tag "Date From", nil, placeholder: "Date From", class: "form-control datepicker"
+          = text_field_tag "from_date", params[:from_date], placeholder: "Date From", class: "form-control datepicker"
       .form-group
         = label_tag "Date To", "Date To", class: "col-md-2 control-label"
         .col-md-10
-          = text_field_tag "Date To", nil, placeholder: "Date To", class: "form-control datepicker"
+          = text_field_tag "to_date", params[:to_date], placeholder: "Date To", class: "form-control datepicker"
       .btn-group
         = submit_tag "Search", class: "btn btn-success", name: "search"
 
 
-%h2.small_scale_padding-top1 Searched Results
-%fieldset
-  .row
+- if @history
+  %h2.small_scale_padding-top1 Searched Results #{params[:type].upcase}
+  - @history.each_with_index do |h, index|
+    %fieldset
+      %legend
+      .row 
+        .col-md-3
+          %strong No:
+          = h[:no]
+        .col-md-3
+          %strong Created At:
+          = h[:created_at]
+        .col-md-3
+          %strong Created By:
+          = h[:created_by]
+        .col-md-3
+          - if params[:type].upcase == "GIN"
+            = link_to gins_admins_inventories_path(gin_id: h[:id]), "role" => "button",class: "btn btn-success" do
+              View
+          - elsif params[:type].upcase == "SRR"
+            = link_to srrs_admins_inventories_path(srr_id: h[:id]), "role" => "button",class: "btn btn-success" do
+              View
+          - elsif params[:type].upcase == "GRN"
+            = link_to search_grn_admins_searches_path(grn_callback: "select_grn",grn_id: h[:id]), "role" => "button",class: "btn btn-success" do
+              View
+
 
 / / = form_tag view_po_admins_inventories_path(purchase_order: "view_po"), remote: true, method: :get, class: "form-horizontal" do
 / = paginate pos, remote: false, method: :get
