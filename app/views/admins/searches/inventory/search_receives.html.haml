@@ -3,14 +3,14 @@
     = form_tag search_results_admins_searches_path, method: :get, class: "form-horizontal" do
       %h2.small_scale_padding-bottom1 Search By
       .form-group
-        = hidden_field_tag :request, params[:request] = "search_issues"
+        = hidden_field_tag :request, params[:request] = "search_recieves"
         = label_tag "Store", "Store", class: "col-md-2 control-label"
         .col-md-10
           = select_tag :store_id, options_from_collection_for_select(Organization.stores, :id, :name, params[:store_id]), include_blank: false, class: "form-control"
       .form-group
         = label_tag "Type", "Type", class: "col-md-2 control-label"
         .col-md-10
-          = select_tag "type", options_for_select([ ["SRN", "srn"], ["GIN", "gin"] ], params[:type]), class: "form-control"
+          = select_tag "type", options_for_select([ ["PRN", "prn"], ["PO", "po"], ["GRN", "grn"] ], params[:type]), class: "form-control"
       .form-group
         = label_tag "No", "No", class: "col-md-2 control-label"
         .col-md-10
@@ -41,9 +41,12 @@
           %strong Created By:
           = h[:created_by]
         .col-md-3
-          - if params[:type].upcase == "SRN"
-            = link_to srns_admins_inventories_path(srn_id: h[:id]), "role" => "button",class: "btn btn-success" do
+          - if params[:type].upcase == "PRN"
+            = link_to prns_admins_inventories_path(prn_id: h[:id]), "role" => "button",class: "btn btn-success" do
               View
-          - elsif params[:type].upcase == "GIN"
-            = link_to gins_admins_inventories_path(gin_id: h[:id]), "role" => "button",class: "btn btn-success" do
+          - elsif params[:type].upcase == "PO"
+            = link_to pos_admins_inventories_path(po_id: h[:id]), "role" => "button",class: "btn btn-success" do
+              View
+          - elsif params[:type].upcase == "GRN"
+            = link_to search_grn_admins_searches_path(grn_callback: "select_grn",grn_id: h[:id]), "role" => "button",class: "btn btn-success" do
               View

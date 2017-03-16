@@ -333,8 +333,9 @@ Rails.application.routes.draw do
       collection do
         get "search_customers_suppliers"
         get "search_gins"
-        get "search_recieves"
+        get "search_receives"
         get "search_returns"
+        get "search_results"
         get "search_issues"
         get "search_grn"
         get "inventories"
