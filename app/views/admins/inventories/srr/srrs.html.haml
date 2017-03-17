@@ -14,7 +14,7 @@
         %dt Created at
         %dd= srr.created_at.try(:strftime, INOCRM_CONFIG["short_date_format"])
         %dt Created by
-        %dd= srr.created_by
+        %dd= srr.created_by_user.full_name
 
       %h4.small_scale_padding-top1 SRR Items
       %table.table.table-bordered
