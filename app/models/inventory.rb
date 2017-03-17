@@ -1036,8 +1036,8 @@ class InventoryPo < ActiveRecord::Base
       query do
         boolean do
           must { string params[:query] } if params[:query].present?
-          must { range :formated_created_at, lte: params[:po_date_to].to_date } if params[:po_date_to].present?
-          must { range :formated_created_at, gte: params[:po_date_from].to_date } if params[:po_date_from].present?
+          must { range :formated_created_at, lte: params[:po_date_to] } if params[:po_date_to].present?
+          must { range :formated_created_at, gte: params[:po_date_from] } if params[:po_date_from].present?
           # must { term :author_id, params[:author_id] } if params[:author_id].present?
         end
       end
@@ -1145,8 +1145,8 @@ class InventoryPrn < ActiveRecord::Base
       query do
         boolean do
           must { string params[:query] } if params[:query].present?
-          must { range :required_at, lte: params[:range_to].to_date } if params[:range_to].present?
-          must { range :required_at, gte: params[:range_from].to_date } if params[:range_from].present?
+          must { range :formated_created_at, lte: params[:range_to].to_date } if params[:range_to].present?
+          must { range :formated_created_at, gte: params[:range_from].to_date } if params[:range_from].present?
           # must { term :author_id, params[:author_id] } if params[:author_id].present?
         end
       end
@@ -1161,7 +1161,7 @@ class InventoryPrn < ActiveRecord::Base
     Warranty
     to_json(
       only: [:created_at, :prn_no, :store_id, :required_at, :remarks, :closed],
-      methods: [:store_name, :formated_prn_no, :created_by_user_full_name],
+      methods: [:store_name, :formated_prn_no, :created_by_user_full_name, :formated_created_at],
       include: {
         store: {
           only: [:id, :name],
@@ -1182,6 +1182,11 @@ class InventoryPrn < ActiveRecord::Base
   def created_by_user_full_name
     created_by_user.full_name
   end
+
+  def formated_created_at
+    created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
+  end
+
 end
 
 class InventoryPrnItem < ActiveRecord::Base
