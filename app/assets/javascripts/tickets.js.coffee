@@ -34,6 +34,8 @@ window.Tickets =
     @load_serialparts()
     @select_brand_create_invoice_for_so()
     @onsite_click()
+    @numbersonly()
+
     return
 
   initial_loaders: ->
@@ -310,6 +312,12 @@ window.Tickets =
       #   return false
       # $(@).regexMask(/^((1?[0-9])|([12][0-4]))(\.[05]?)?$/)
       $(@).regexMask('after_two_decimal')
+
+    $('.integer').keydown (e) ->
+      # if String.fromCharCode(e.keyCode).match(/[^0-9\.\b]/g)
+      #   return false
+      # $(@).regexMask(/^((1?[0-9])|([12][0-4]))(\.[05]?)?$/)
+      $(@).regexMask('integer')
     return
 
   pass_to_re_correction: ->

@@ -14,7 +14,10 @@
 .row
   .col-md-3
     PO No:
-    = @grn.try(:po_no)
+    - if @grn.po_id.present?
+      = @grn.inventory_po.try(:po_no)
+    - else
+      = @grn.try(:po_no)
   .col-md-3
     Supplier Name:
     = @grn.supplier.try(:name)

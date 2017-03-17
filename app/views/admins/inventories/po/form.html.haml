@@ -103,7 +103,7 @@
               %hr
               .row
                 .col-md-2
-                  = i.input :quantity, required: true, as: :string, input_html: {value: i.object.inventory_prn_item.quantity - i.object.inventory_prn_item.inventory_po_items.sum(:quantity), class: "dynamic_quantity"}, label: "Order Quantity"
+                  = i.input :quantity, required: true, as: :string, input_html: {value: i.object.inventory_prn_item.quantity - i.object.inventory_prn_item.inventory_po_items.sum(:quantity), class: "dynamic_quantity"}, label: "Order Quantity", input_html: {class: "integer"}
                 .col-md-2
                   / = label_tag "PO Unit Cost" do
                   /   PO Unit Cost
