@@ -23,7 +23,9 @@
         = label_tag "Date To", "Date To", class: "col-md-2 control-label"
         .col-md-10
           = text_field_tag "to_date", params[:to_date], placeholder: "Date To", class: "form-control datepicker"
-      .btn-group
+      .col-md-1.pull-right
+        = link_to "Reset", "#", onclick: "Searches.reset_searchreceives(this);", class: "btn btn-warning"
+      .col-md-1.pull-right
         = submit_tag "Search", class: "btn btn-success", name: "search"
 - if @history
   %h2.small_scale_padding-top1 Searched Results #{params[:type].upcase}
@@ -42,11 +44,11 @@
           = h[:created_by]
         .col-md-3
           - if params[:type].upcase == "PRN"
-            = link_to prns_admins_inventories_path(prn_id: h[:id]), "role" => "button",class: "btn btn-success" do
+            = link_to prns_admins_inventories_path(prn_id: h[:id]), "role" => "button",class: "btn btn-info" do
               View
           - elsif params[:type].upcase == "PO"
-            = link_to pos_admins_inventories_path(po_id: h[:id]), "role" => "button",class: "btn btn-success" do
+            = link_to pos_admins_inventories_path(po_id: h[:id]), "role" => "button",class: "btn btn-info" do
               View
           - elsif params[:type].upcase == "GRN"
-            = link_to search_grn_admins_searches_path(grn_callback: "select_grn",grn_id: h[:id]), "role" => "button",class: "btn btn-success" do
+            = link_to search_grn_admins_searches_path(grn_callback: "select_grn",grn_id: h[:id]), "role" => "button",class: "btn btn-info" do
               View
