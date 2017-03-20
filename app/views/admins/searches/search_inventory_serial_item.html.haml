@@ -63,7 +63,7 @@
         .col-md-4
           = text_field_tag "search_inventory[ct_no]", (params[:search_inventory] and params[:search_inventory][:ct_no]), :placeholder => "CT No", class: "form-control"
       .col-md-1.pull-right
-        = link_to "Reset", "#", onclick: "Searches.reset_searchinventoryserialitem(this);", class: "btn btn-warning"
+        = link_to "Reset", search_inventory_serial_item_admins_searches_path, class: "btn btn-warning"
       .col-md-1.pull-right
         = submit_tag "Search", class: "btn btn-success", name: "search"
 

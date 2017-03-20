@@ -24,11 +24,12 @@
         .col-md-10
           = text_field_tag "to_date", params[:to_date], placeholder: "Date To", class: "form-control datepicker"
       .col-md-1.pull-right
-        = link_to "Reset", "#", onclick: "Searches.reset_searchissues(this);", class: "btn btn-warning"
+        = link_to "Reset", search_issues_admins_searches_path, class: "btn btn-warning"
       .col-md-1.pull-right
         = submit_tag "Search", class: "btn btn-success", name: "search"
 - if @history
   %h2.small_scale_padding-top1 Searched Results #{params[:type].upcase}
+  = paginate @history, remote: false, method: :get
   - @history.each_with_index do |h, index|
     %fieldset
       %legend

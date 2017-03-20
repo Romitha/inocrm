@@ -20,41 +20,6 @@ window.Searches =
     $("#search_inventory_inventory_product_serial_no").val("")
     $("#search_inventory_inventory_product_description").val("")
 
-  reset_searchinventoryserialitem:->
-    $("#search_inventory_remaining_grn_items_grn_store_id").val("")
-    $("#search_inventory_brand").val("")
-    $("#search_inventory_product").val("")
-    $("#search_inventory_mst_inv_product_category3_id").val("")
-    $("#search_inventory_inventory_product_generated_serial_no").val("")
-    $("#search_inventory_inventory_product_generated_item_code").val("")
-    $("#search_inventory_inventory_product_spare_part_no").val("")
-    $("#search_inventory_inventory_product_model_no").val("")
-    $("#search_inventory_inventory_product_description").val("")
-    $("#search_inventory_inventory_product_product_no").val("")
-    $("#search_inventory_generated_serial_no").val("")
-    $("#search_inventory_ct_no").val("")
-
-  reset_searchreceives:->
-    $("#store_id").val("")
-    $("#type").val("")
-    $("#type_no").val("")
-    $("#from_date").val("")
-    $("#to_date").val("")
-
-  reset_searchreturns:->
-    $("#store_id").val("")
-    $("#type").val("")
-    $("#type_no").val("")
-    $("#from_date").val("")
-    $("#to_date").val("")
-
-  reset_searchissues:->
-    $("#store_id").val("")
-    $("#type").val("")
-    $("#type_no").val("")
-    $("#from_date").val("")
-    $("#to_date").val("")
-
 
 
 

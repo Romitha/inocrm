@@ -65,7 +65,7 @@ module Admins
           refined_query = (query << "store.id:#{params[:store_id]}").join(" AND ")
           params[:query] = refined_query
 
-          Gin.search( params ).map { |k| { id: k.id, no: k.formatted_gin_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name } }
+          Kaminari.paginate_array(Gin.search( params ).map { |k| { id: k.id, no: k.formatted_gin_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name } }).page(params[:page]).per(10)
 
         when "srr"
           # query = { formatted_srr_no: params[:type_no], range_from: params[:from_date], range_to: params[:to_date] }.map { |k, v| "#{k}:#{v}" if v.present? }.compact.compact
@@ -81,7 +81,7 @@ module Admins
           refined_query = (query << "store.id:#{params[:store_id]}").join(" AND ")
           params[:query] = refined_query
 
-          Srr.search( params ).map { |k| { id: k.id, no: k.formatted_srr_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name } }
+          Kaminari.paginate_array(Srr.search( params ).map { |k| { id: k.id, no: k.formatted_srr_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name } }).page(params[:page]).per(10)
 
         when "grn"
           # query = { grn_no_format: params[:type_no], range_from: params[:from_date], range_to: params[:to_date] }.map { |k, v| "#{k}:#{v}" if v.present? }.compact
@@ -97,7 +97,8 @@ module Admins
           refined_query = (query << "store.id:#{params[:store_id]}").join(" AND ")
           params[:query] = refined_query
 
-          Grn.search( params ).map { |k| { id: k.id, no: k.grn_no_format, created_at: k.formated_created_at, created_by: k.created_by_from_user } }
+          # Kaminari.paginate_array(Inventory.order( store_id: :asc)).page(params[:page]).per(10)
+          Kaminari.paginate_array(Grn.search( params ).map { |k| { id: k.id, no: k.grn_no_format, created_at: k.formated_created_at, created_by: k.created_by_from_user } }).page(params[:page]).per(10)
 
         when "prn"
           query = { formated_prn_no: params[:type_no] }.map { |k, v| "#{k}:#{v}" if v.present? }.compact
@@ -108,7 +109,7 @@ module Admins
           refined_query = (query << "store.id:#{params[:store_id]}").join(" AND ")
           params[:query] = refined_query
 
-          InventoryPrn.search( params ).map { |k| { no: k.formated_prn_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name } }
+          Kaminari.paginate_array(InventoryPrn.search( params ).map { |k| { id:k.id, no: k.formated_prn_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name } }).page(params[:page]).per(10)
 
         when "po"
           query = { formated_po_no: params[:type_no] }.map { |k, v| "#{k}:#{v}" if v.present? }.compact
@@ -119,7 +120,8 @@ module Admins
           refined_query = (query << "store.id:#{params[:store_id]}").join(" AND ")
           params[:query] = refined_query
 
-          InventoryPo.search( params ).map { |k| { no: k.formated_po_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name } }
+          Kaminari.paginate_array(InventoryPo.search( params ).map { |k| { id:k.id, no: k.formated_po_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name } }).page(params[:page]).per(10)
+
         end
 
       end
