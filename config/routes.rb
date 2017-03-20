@@ -1,6 +1,20 @@
+require "api_constraint"
+
 Rails.application.routes.draw do
 
   root "todos#index"
+
+  namespace :api, defaults: {format: :json} do
+    # namespace :v1 do
+    #   resources :systems
+    # end
+
+    scope module: :v1, constraints: ApiConstraint.new(default: true, version: "v1") do
+      resources :systems
+
+    end
+
+  end
 
   resources :warranties do
     collection do

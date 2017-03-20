@@ -172,6 +172,7 @@ GEM
     faye-websocket (0.10.0)
       eventmachine (>= 0.12.0)
       websocket-driver (>= 0.5.1)
+    ffaker (2.4.0)
     ffi (1.9.14)
     fssm (0.2.10)
     gherkin (4.0.0)
@@ -354,6 +355,8 @@ GEM
       rubyzip (~> 1.0)
       websocket (~> 1.0)
     sexp_processor (4.5.1)
+    shoulda-matchers (3.1.1)
+      activesupport (>= 4.0.0)
     simple_form (3.1.0)
       actionpack (~> 4.0)
       activemodel (~> 4.0)
@@ -446,6 +449,7 @@ DEPENDENCIES
   database_cleaner
   devise
   factory_girl_rails
+  ffaker
   haml-rails
   httpi
   jbuilder (~> 2.0)
@@ -474,6 +478,7 @@ DEPENDENCIES
   sass-rails (~> 4.0.3)
   sdoc (~> 0.4.0)
   selenium-webdriver (~> 3.0.0.beta3)
+  shoulda-matchers
   simple_form
   spring
   therubyracer
@@ -485,3 +490,6 @@ DEPENDENCIES
   whenever
   wicked_pdf
   wkhtmltopdf-binary
+
+BUNDLED WITH
+   1.11.2

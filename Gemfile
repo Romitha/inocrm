@@ -107,6 +107,9 @@ group :test do
   gem 'selenium-webdriver', '~> 3.0.0.beta3'
   gem "capybara-webkit" # sudo apt-get install libqt4-dev libqtwebkit-dev
   gem 'rspec-rails'
+  gem "factory_girl_rails"
+  gem 'ffaker'
+  gem "shoulda-matchers"
 end
 
 gem 'httpi'
