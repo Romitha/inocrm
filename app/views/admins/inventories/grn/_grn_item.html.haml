@@ -114,7 +114,7 @@
                 = iw.link_to_remove "remove warranty", class: "remove_warranty", onclick: "Inventories.remove_warranty_click(this);"
               = ib.link_to_add "Add warranty", :inventory_batch_warranties, class: "add_warranty add_grn_items #{'hide' if ib.object.inventory_batch_warranties.any? { |w| w.new_record? }}", onclick: "Inventories.add_warranty_click(this);"
 
-          = b.input :recieved_quantity, as: :float, input_html: {value: 0, required: true }, label: "Received quantity"
+          = b.input :recieved_quantity, as: :float, input_html: {value: 0, required: true, onclick: "Tickets.numbersonly()", class: "integer"}, label: "Received quantity"
         = b.link_to_remove "Remove"
       = g.link_to_add "Add", :grn_batches, class: "add_grn_items", onclick: "Inventories.add_warranty_click(this);"
 
@@ -224,7 +224,7 @@
                 .progress-bar.progress-bar-success.progress-bar-striped{role: "progressbar", "aria-valuemax" => 100, "aria-valuemin" => 0, "aria-valuenow" => 0}
 
   - if !(need_serial or need_batch)
-    = g.input :recieved_quantity, as: :decimal, input_html: {value: (g.object.recieved_quantity || 0), required: true }, label: "Received quantity"
+    = g.input :recieved_quantity, as: :decimal, input_html: {value: (g.object.recieved_quantity || 0), class: "integer", required: true }, label: "Received quantity"
   - else
     = g.input :recieved_quantity, as: :hidden, input_html: {value: (need_serial and !need_batch ? 1 : 0 )}
   = g.input :unit_cost, required: true, as: :float, label: "Unit cost (#{inventory_product.inventory_product_info.currency.code})", input_html: { class: "after_two_decimal" } if @inventory_product.present?

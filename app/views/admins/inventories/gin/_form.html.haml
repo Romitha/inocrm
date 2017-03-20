@@ -138,9 +138,9 @@
             .row
               - if !need_serial and !need_batch
                 .col-md-12
-                  = i.input :issued_quantity
+                  = i.input :issued_quantity, input_html: {onclick: "Tickets.numbersonly()", class: "integer"}
               - else
-                = i.input :issued_quantity, as: :hidden, input_html: {id: "issued_quantity_input#{i.object.srn_item_id}"}
+                = i.input :issued_quantity, as: :hidden, input_html: {id: "issued_quantity_input#{i.object.srn_item_id}", onclick: "Tickets.numbersonly()", class: "integer"}
                 .col-md-12
                   %strong Issued quantity
                   %div{id: "issued_quantity_text#{i.object.srn_item_id}"}

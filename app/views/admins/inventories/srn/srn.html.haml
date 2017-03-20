@@ -52,7 +52,7 @@
           .col-md-12
             = s.input :spare_part, wrapper: :append
           .col-md-12
-            = s.input :quantity, input_html: {value: s.object.quantity}, placeholder: "can't be 0", required: true
+            = s.input :quantity, input_html: {value: s.object.quantity, onclick: "Tickets.numbersonly()", class: "integer"}, placeholder: "can't be 0", required: true
           .col-md-12
             = s.input :remarks
           .col-md-12
