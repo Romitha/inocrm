@@ -654,11 +654,11 @@ module Admins
       end
 
       def tax_params
-        params.require(:tax).permit(:id, :tax, :description, tax_rates_attributes: [:_destroy, :id, :tax_id, :rate, :created_by])
+        params.require(:tax).permit(:id, :tax, :description, tax_rates_attributes: [:_destroy, :id, :tax_id, :rate, :created_by, :active])
       end
 
       def tax_rate_params
-        params.require(:tax_rate).permit(:rate)
+        params.require(:tax_rate).permit(:rate, :created_by, :active)
       end
 
       def brands_and_category_params

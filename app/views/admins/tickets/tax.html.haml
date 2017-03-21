@@ -12,6 +12,7 @@
       .col-md-6
         = r.input :rate
         = r.input :created_by,  as: :hidden, input_html: {value: current_user.id}
+        = r.input :active,  as: :hidden, input_html: {value: true}
       .col-md-6
         .add_sign
           = r.link_to_remove do
