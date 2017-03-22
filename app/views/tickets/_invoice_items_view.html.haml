@@ -126,9 +126,9 @@
                   = so_po_id.po_date.try(:strftime, "%Y-%m-%d")
                 %td
                 %td
-                  = so_po_id.amount
+                  = invo.total_amount
                 %td
-                  = so_po_id.try(:note)
+                  = invo.try(:note)
                 %td
                   = link_to "View", "#", onclick: "Tickets.view_inv_so_po('#{so_po_id.id}', '#{invo.id}'); false;"
       .row

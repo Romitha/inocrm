@@ -29,6 +29,8 @@
       %dd= @srn.required_at.try(:strftime, "%Y-%m-%d")
       %dt Created at:
       %dd= @srn.created_at.try(:strftime, "%Y-%m-%d")
+      %dt Remarks
+      %dd= @srn.remarks
 
 %hr
 %h4 GIN Items
