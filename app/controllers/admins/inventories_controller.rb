@@ -1554,7 +1554,7 @@ module Admins
       @srr = Srr.new srr_params
 
       @srr.srr_items.each do |srr_item|
-        @srr.srr_items.delete(srr_item) if srr_item.new_record? and srr_item.quantity <= 0
+        @srr.srr_items.delete(srr_item) if srr_item.new_record? and srr_item.quantity.to_f <= 0
 
       end
 
