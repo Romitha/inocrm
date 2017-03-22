@@ -13,7 +13,7 @@
     %strong Amount
   .col-md-1
     %strong Description
-  .col-md-1
+  .col-md-2
     %strong Note
   .col-md-1
     %strong Ticket No
@@ -35,10 +35,13 @@
         .col-md-1 {{part_no}}
         .col-md-1.now_amount_default {{amount}}
         .col-md-1.now_class {{spare_part_description}}
-        .col-md-1 {{{note}}}
+        .col-md-2
+          %button.btn.btn-link{"data-target" => "#demo", "data-toggle" => "collapse", :type => "button"} View Note
+          #demo.collapse
+            {{{note}}}
         .col-md-1 {{ticket_no}}
         .col-md-1 {{serial_no}}
-      .col-md-2
+      .col-md-1
         <a href="#" onclick="Tickets.hp_po_add('{{ticket_id}}','{{part_id}}', this); return false;" data-value="{{part_no}}" id="add_{{part_no}}">add</a>
     %hr
 

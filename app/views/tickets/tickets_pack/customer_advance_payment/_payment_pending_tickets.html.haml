@@ -29,7 +29,7 @@
             /   = (index+1)
           %td #{ticket.logged_at.try :strftime, "%Y-%m-%d %H:%M" }
           %td= ticket.status_id
-          %td #{ticket.id}
+          %td #{ticket.ticket_no}
           %td #{ticket.try(:customer).try(:name)}
           %td
             - ticket.try(:products).each do |product|
