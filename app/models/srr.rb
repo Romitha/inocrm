@@ -6,6 +6,7 @@ class Srr < ActiveRecord::Base
 
   mapping do
     indexes :store, type: "nested", include_in_parent: true
+    indexes :srr_items, type: "nested", include_in_parent: true
   end
 
   belongs_to :store, class_name: "Organization"
@@ -29,19 +30,29 @@ class Srr < ActiveRecord::Base
 
         end
       end
-      sort { by :formatted_srr_no, {order: "desc", ignore_unmapped: true} }
+
+      sort { by :formated_created_at, {order: "desc", ignore_unmapped: true} }
 
     end
   end
 
   def to_indexed_json
     to_json(
-      only: [:id, :remarks, :created_at],
+      only: [:id, :remarks, :created_at, :closed ],
       methods: [:store_name, :formatted_srr_no, :created_by_user_full_name, :formated_created_at],
       include: {
         store: {
           only: [:id, :name],
-        }
+        },
+        srr_items: {
+          only: [:id, :closed, :quantity, :total_cost, :spare_part ],
+          methods: [:currency_code],
+          include: {
+            inventory_product: {
+              only: [:product_no, :model_no, :serial_no, :description],
+            },
+          },
+        },
       },
     )
 
@@ -70,15 +81,24 @@ class SrrItem < ActiveRecord::Base
 
   belongs_to :srr
   belongs_to :inventory_product, foreign_key: :product_id
-  belongs_to :product
+  belongs_to :currency
   belongs_to :return_reason, -> { where(srr: true) }, class_name: "InventoryReason"
 
   has_many :srr_item_sources
   accepts_nested_attributes_for :srr_item_sources, allow_destroy: true
+
+  has_many :grn_items
+  accepts_nested_attributes_for :grn_items, allow_destroy: true
+
   has_many :gin_sources, through: :srr_item_sources
 
   has_many :ticket_spare_part_stores, foreign_key: :inv_srr_item_id
   has_many :ticket_on_loan_spare_parts, foreign_key: :inv_srr_item_id
+
+  def currency_code
+    currency.code
+  end
+
 end
 
 class SrrItemSource < ActiveRecord::Base

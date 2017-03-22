@@ -93,7 +93,7 @@
 
             %dt Returned quantity
             %dd= g.object.srr_item_sources.to_a.sum{|s| s.gin_source.returned_quantity}
-            %dt Return Reason
+            %dt.red Return Reason
             %dd= g.association :return_reason, label_method: :reason, label: false, required: true
             %dt Remarks
             %dd= g.input :remarks, label: false
@@ -108,6 +108,7 @@
               = s.input :currency_id, as: :hidden
               = s.input :gin_source_id, as: :hidden
 
+              / - if s.object.gin_source.returned_quantity.to_f < s.object.gin_source.issued_quantity.to_f
               - if g.object.inventory_product.product_type == "Serial"
                 = s.input :returned_quantity, as: :hidden, input_html: { class: "serial_return_qty", data: {preVal: 0} }
 
@@ -130,8 +131,9 @@
     .row
       .col-md-12
         = f.input :remarks
-      .col-md-12
-        = f.submit "Save", class: "btn btn-sm btn-success"
+      - if @saveable
+        .col-md-12
+          = f.submit "Save", class: "btn btn-sm btn-success"
 
 - else
   = render "admins/searches/gin/search_gin"

@@ -1,0 +1,23 @@
+.row
+  .col-md-12
+    = form_tag grn_admins_inventories_path(purchase_order: "search_srr"), remote: true, method: :get, class: "form-horizontal" do
+      %h2.small_scale_padding-bottom1 SRR Search
+      .form-group
+        = label_tag "Store", "Store", class: "col-md-2 control-label"
+        .col-md-10
+          = select_tag "srr[store.id]", options_from_collection_for_select(@stores, "id", "name"), class: "form-control"
+      .form-group
+        = label_tag "SRR No", "SRR No", class: "col-md-2 control-label"
+        .col-md-10
+          = text_field_tag "srr[formated_srr_no]", nil, placeholder: "SRR No", class: "form-control"
+      .form-group
+        = label_tag "SRR No", "SRR date from", class: "col-md-2 control-label"
+        .col-md-10
+          = text_field_tag "srr[range_from]", nil, placeholder: "SRR Date from", class: "form-control datepicker"
+      .form-group
+        = label_tag "SRR No", "SRR date to", class: "col-md-2 control-label"
+        .col-md-10
+          = text_field_tag "srr[range_to]", nil, placeholder: "SRR Date to", class: "form-control datepicker"
+      .btn-group
+        = submit_tag "Search", class: "btn btn-success btn-lg", name: "search"
+        %input{:onclick => "window.location.reload()", :type => "button", class: "btn btn-lg", :value => "Back"}

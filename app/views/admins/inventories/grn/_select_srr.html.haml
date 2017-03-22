@@ -1,0 +1,23 @@
+%h2 Searched SRR's
+%table.table.table-hover
+  %thead
+    %tr
+      %th No
+      %th Store
+      %th SRR No
+      %th SRR Date
+      %th Remarks
+      %th Returned by
+      %th Action
+  %tbody
+    - @srrs.each_with_index do |srr, index|
+      %tr
+        %td= index+1
+        %td= srr.store_name
+        %td= srr.formatted_srr_no
+        %td= srr.formated_created_at
+        %td= simple_format srr.remarks
+        %td= srr.created_by_user_full_name
+        %td= link_to "Select", grn_admins_inventories_path(purchase_order: "select_srr", srr_id: srr.id), remote: true, id: "srr_#{srr.id}", class: "srr_select_link"
+
+#srr_frame

@@ -1041,7 +1041,7 @@ class InventoryPo < ActiveRecord::Base
           # must { term :author_id, params[:author_id] } if params[:author_id].present?
         end
       end
-      sort { by :created_at, {order: "desc", ignore_unmapped: true} }
+      sort { by :formated_created_at, {order: "desc", ignore_unmapped: true} }
       # highlight customer_name: {number_of_fragments: 0}, ticket_status_name: {number_of_fragments: 0}, :options => { :tag => '<strong class="highlight">' } if params[:query].present?
       # filter :range, published_at: { lte: Time.zone.now}
       # raise to_curl

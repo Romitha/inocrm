@@ -1,0 +1,93 @@
+- if @srr_item
+  - need_serial = @srr_item.inventory_product.inventory_product_info.need_serial.present?
+  - need_batch = @srr_item.inventory_product.inventory_product_info.need_batch.present?
+  - inventory_product = @srr_item.inventory_product
+  - balance_to_be_inserted = @srr_item.quantity
+
+  - already_recieved = case inventory_product.product_type
+  - when "Serial", "Non Serial Non Batch"
+    - inventory_product.grn_items.by_store(session[:store_id]).sum(:recieved_quantity)
+  - when "Batch"
+    - inventory_product.grn_batches.sum(:recieved_quantity)
+
+  - inventory = inventory_product.inventories.find_by_store_id session[:store_id]
+  - url = initialize_grn_admins_inventories_path(srr_item_id: @srr_item.try(:id), inventory_product_id: @inventory_product.try(:id))
+
+.row
+  .col-md-2
+    %h4 GRN Info
+  .col-md-10
+    %dl.dl-horizontal
+      %dt GRN No:
+      %dd= CompanyConfig.first.next_sup_last_grn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_grn_no_format"])
+      %dt Created at:
+      %dd= DateTime.now.strftime(INOCRM_CONFIG["short_date_format"])
+      %dt Created by:
+      %dd= current_user.full_name
+
+%hr
+.row
+  .col-md-2
+    %h4 SRR Info
+  .col-md-10
+    %dl.dl-horizontal
+      %dt SRR No:
+      %dd= @srr_item.srr.formatted_srr_no
+      %dt Created at:
+      %dd= @srr_item.srr.formated_created_at
+      %dt Created By:
+      %dd= @srr_item.srr.created_by_user_full_name
+      %dt Store:
+      %dd= @srr_item.srr.store_name
+      %dt Returned quantity:
+      %dd= @srr_item.quantity
+      %dt Unit:
+      %dd= @srr_item.currency.code
+      %dt Total cost:
+      %dd= @srr_item.total_cost
+%hr
+
+= simple_nested_form_for @srr_item, url: url, method: :post, remote: true, html: {class: "validate_form"} do |g|
+  = g.input :product_id, as: :hidden
+
+  .row
+    .col-md-2
+      %h4 Product Info
+
+    .col-md-10
+      %dl.dl-horizontal
+        %dt Item Code:
+        %dd= inventory_product.generated_item_code
+        %dt Item Description:
+        %dd= inventory_product.description
+        %dt PO Remarks:
+        %dd= inventory.remarks
+        %dt Rack:
+        %dd=inventory.inventory_bin.inventory_shelf.inventory_rack.description
+        %dt Shelf:
+        %dd=inventory.inventory_bin.inventory_shelf.description
+        %dt BIN:
+        %dd=inventory.inventory_bin.description
+        %dt Stock In Hand:
+        %dd=inventory.stock_quantity
+        %dt Remarks:
+        %dd= inventory_product.inventory_product_info.remarks
+  %hr
+
+  .row
+    .col-md-2
+      %h4 GIN Info
+    .col-md-10
+      .row
+        - @srr_item.gin_sources.each do |gin_source|
+          .col-md-6
+            %dl.dl-horizontal
+              %dt GIN No:
+              %dd= gin_source.gin_item.gin.formatted_gin_no
+              %dt Created at:
+              %dd= gin_source.gin_item.gin.formated_created_at
+              %dt Created By:
+              %dd= gin_source.gin_item.gin.created_by_user_full_name
+              %dt Store:
+              %dd= gin_source.gin_item.gin.store_name
+  %hr

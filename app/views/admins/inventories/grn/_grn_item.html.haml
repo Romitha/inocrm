@@ -43,13 +43,6 @@
       / = @grn_item.srn_item.quantity.to_f - @grn_item.gin_sources.sum(:issued_quantity) + @grn_item.gin_sources.sum(:returned_quantity)
       = balance_to_be_inserted - already_recieved
     .col-md-4
-      %strong Received Quantity:
-      =@grn_item.reserved_quantity
-      / =(need_serial and !need_batch ? 1 : 0 )
-    .col-md-4
-      %strong Received Unit:
-      / =inventory_product.inventory_unit
-    .col-md-4
       %strong PO Remarks:
       =inventory.remarks
     .col-md-4

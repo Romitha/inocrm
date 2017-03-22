@@ -583,6 +583,7 @@ module Admins
           Rails.cache.delete([:grn_item, :i_product, ipid.id, session[:pre_grn_arrived_time].to_i ])
           Rails.cache.delete([:serial_item, :i_product, ipid.id, session[:pre_grn_arrived_time].to_i ])
         end
+
         Rails.cache.delete([:inventory_product_ids, session[:pre_grn_arrived_time].to_i ])
 
         @render_template = "select_inventory"
@@ -614,27 +615,6 @@ module Admins
         session[:po_id] = nil
         @render_template = "select_po"
 
-      when "search_srr"
-        refined_search = "closed:false"
-
-        if params[:search].present?
-          refined_inventory_srr = params[:srr].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
-
-          refined_search = [refined_inventory_srr, refined_search].map{|v| v if v.present? }.compact.join(" AND ")
-
-        end
-
-        params[:query] = refined_search
-        @pos = InventoryPo.search(params)
-
-        session[:store_id] = params[:po]["store.id"]
-
-        Rails.cache.delete([:inventory_product_ids])
-        Rails.cache.delete([:po_item_ids])
-        Rails.cache.delete([:srr_item_ids])
-        session[:po_id] = nil
-        @render_template = "select_po"
-
       when "select_po"
         @po = InventoryPo.find params[:po_id]
         session[:po_id] = @po.id
@@ -647,10 +627,58 @@ module Admins
         @grn_item = Rails.cache.fetch([:grn_item, params[:po_item_id].to_i, session[:grn_arrived_time].to_i ]) { GrnItem.new }
 
         @render_template = "grn_item"
+
+      when "search_srr"
+        refined_search = "closed:false"
+
+        if params[:search].present?
+          refined_inventory_srr = params[:srr].map{ |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
+
+          refined_search = [refined_inventory_srr, refined_search].map{|v| v if v.present? }.compact.join(" AND ")
+
+        end
+
+        params[:query] = refined_search
+        @srrs = Srr.search(params)
+
+        session[:store_id] = params[:srr]["store.id"]
+
+        Rails.cache.delete([:inventory_product_ids])
+        Rails.cache.delete([:po_item_ids])
+        Rails.cache.delete([:srr_item_ids])
+        session[:po_id] = nil
+        session[:srr_id] = nil
+        @render_template = "select_srr"
+
+      when "select_srr"
+        @srr = Srr.find params[:srr_id]
+
+        session[:srr_id] = @srr.id
+
+        @render_template = "new_grn_with_srr"
+
+      when "select_srr_item"
+        Srr
+        Gin
+
+        @srr_item = SrrItem.find params[:srr_item_id]
+
+        # @grn_item = Rails.cache.fetch([:grn_item, params[:srr_item_id].to_i, session[:grn_arrived_time].to_i ]) do
+
+        # end
+
+        # @srr_item.grn_items.build product_id: @srr_item.product_id, recieved_quantity: 1, remaining_quantity: 1, unit_cost: 
+        @srr_item.srr_item_sources.each do |srr_item_source|
+          srr_item_source.gin_source.grn_item.attributes
+        end
+
+        @render_template = "grn_item_srr"
+
       else
         session[:pre_grn_arrived_time] = (session[:grn_arrived_time] or Time.now.strftime("%H%M%S"))
 
         session[:grn_arrived_time] = Time.now.strftime("%H%M%S")
+
       end
       render "admins/inventories/grn/grn"
     end
@@ -659,8 +687,6 @@ module Admins
       Inventory
       if params[:new_bulk_upload_serial].present?
         accessible_inventory_serial_item_params = inventory_serial_item_params
-        # params[:inventory_product_id].to_i is used to connect to grn.
-        # Rails.cache.write([ :serial_item, :i_product, params[:inventory_product_id].to_i, session[:grn_arrived_time].to_i ], Rails.cache.fetch([:bulk_serial, params[:timestamp].to_i ]).map { |s| InventorySerialItem.new(accessible_inventory_serial_item_params.merge(serial_no: s[0], ct_no: s[1])) })
 
         Rails.cache.write([ :serial_item, params[:refer_resource_class].to_sym, params[:refer_resource_id].to_i, session[:grn_arrived_time].to_i ], Rails.cache.fetch([:bulk_serial, params[:timestamp].to_i ]).map { |s| InventorySerialItem.new(accessible_inventory_serial_item_params.merge(serial_no: s[0], ct_no: s[1])) })
 
@@ -1542,15 +1568,24 @@ module Admins
 
         @srr = Srr.new store_id: @gin.store.id, created_by: current_user.id, requested_module_id: @gin.srn.try(:requested_module_id)
 
+        @saveable = false
+        srr_item_sources_availability = []
+
         @gin.gin_items.each do |gin_item|
           srr_item = @srr.srr_items.build product_id: gin_item.product_id, product_condition_id: gin_item.product_condition_id, spare_part: gin_item.spare_part, currency_id: gin_item.currency_id
 
           gin_item.gin_sources.each do |gin_source|
-            srr_item.srr_item_sources.build gin_source_id: gin_source.id, unit_cost: gin_source.grn_item.unit_cost, currency_id: gin_source.grn_item.currency_id#, returned_quantity: gin_source.returned_quantity, 
+            if gin_source.returned_quantity.to_f < gin_source.issued_quantity.to_f
+              srr_item.srr_item_sources.build gin_source_id: gin_source.id, unit_cost: gin_source.grn_item.unit_cost, currency_id: gin_source.grn_item.currency_id#, returned_quantity: gin_source.returned_quantity, 
+            end
 
           end
 
+          srr_item_sources_availability << srr_item.srr_item_sources.present?
+
         end
+
+        @saveable = srr_item_sources_availability.include?(true)
 
       else
         @remote = true
@@ -1579,6 +1614,7 @@ module Admins
         @srr.srr_items.delete(srr_item) if srr_item.new_record? and srr_item.quantity.to_f <= 0
 
       end
+      @srr.attributes = {}
 
       if @srr.save
         # @srr.srr_items.each do |srr_item|
@@ -1589,7 +1625,8 @@ module Admins
         @srr.srr_item_sources.each do |srr_item_source|
           srr_item_source.gin_source.update returned_quantity: srr_item_source.gin_source.srr_items.sum(:quantity)
         end
-        CompanyConfig.first.increase_inv_last_gin_no
+
+        CompanyConfig.first.increase_inv_last_srr_no
 
 
         flash[:success] = "Successfully saved."

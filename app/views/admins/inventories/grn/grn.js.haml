@@ -19,7 +19,6 @@
     - if Rails.cache.fetch([:po_item_ids, session[:grn_arrived_time].to_i]).to_a.count > 0 or Rails.cache.fetch([:inventory_product_ids, session[:grn_arrived_time].to_i]).to_a.count > 0
       $("##{render_frame}").html("#{j render 'admins/inventories/grn/grn_form' }");
 
-
     - else
       $("##{render_frame}").html("");
 

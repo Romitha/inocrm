@@ -1,0 +1,41 @@
+.row
+  .col-md-12
+    = panels panel_type: "success", header_content: "SRR no: #{@srr.formatted_srr_no}" do
+
+      %h4 Purchase Order Info
+      %dl.dl-horizontal
+        %dt SRR. No
+        %dd= @srr.formatted_srr_no
+        %dt Remarks
+        %dd= simple_format @srr.remarks
+        %dt Created at
+        %dd= @srr.formated_created_at
+        %dt Created by
+        %dd= @srr.created_by_user_full_name
+
+      %h4 Stock Return Requisition items
+      %table.table.table-bordered
+        %thead
+          %tr
+            %th{colspan: 3} SRR item
+            %th{colspan: 5} Product
+          %tr
+            %th Quantity
+            %th Total cost
+            %th product no
+            %th model no
+            %th Serial no
+            %th Description
+            %th Action
+        %tbody
+          - @srr.srr_items.where(closed: false).each do |srr_item|
+            %tr
+              %td= srr_item.quantity
+              %td #{ srr_item.currency_code } #{number_with_precision srr_item.total_cost, precision: 2}
+              %td= srr_item.inventory_product.product_no
+              %td= srr_item.inventory_product.model_no
+              %td= srr_item.inventory_product.serial_no
+              %td= srr_item.inventory_product.description
+              %td= link_to "Select", grn_admins_inventories_path(purchase_order: "select_srr_item", srr_item_id: srr_item.id), remote: true, class: "srr_item_select_link", id: "srr_item_#{srr_item.id}"
+
+      #srr_item_frame
