@@ -82,11 +82,14 @@
                   = link_to "#", class: "inline_edit", data: {type: "textarea", resource: "so_po", name: "note", url: edit_po_note_tickets_path(edit: true, so_po_id: so_po_id.id), "original-title" => "Update PO Note", value: ""}, style: "line-height: 6px;" do
                     = so_po_id.try(:note)
               .row
-                .col-md-10
-                  = f.submit "Save", class: "btn btn-success pull-right", id: "submit_invoice_for_so_id"
-                .col-md-2
-                  = link_to "#","role" => "button" ,onclick: "Tickets.reset_so_po(); return false;", class: "btn btn-danger" do
-                    Cancel
+                .col-md-7
+                = link_to "#","role" => "button", class: "col-md-1 btn btn-info", style: "margin-right:4px;" do
+                  View Invoice
+                = link_to "#","role" => "button" , class: "col-md-1 btn btn-warning", style: "margin-right:4px;" do
+                  Print Invoice
+                = f.submit "Save", class: "col-md-1 btn btn-success", style: "margin-right:4px;", id: "submit_invoice_for_so_id"
+                = link_to "#","role" => "button" ,onclick: "Tickets.reset_so_po(); return false;", class: "col-md-1 btn btn-danger" do
+                  Cancel
           
     #viewInvoice.tab-pane.fade
       .row
