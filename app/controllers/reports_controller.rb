@@ -302,6 +302,7 @@ class ReportsController < ApplicationController
 
   def po_output
     Inventory
+    Invoice
     # https://github.com/mileszs/wicked_pdf
 
     po = InventoryPo.find params[:po_id]
@@ -329,7 +330,8 @@ class ReportsController < ApplicationController
     poItems = po.inventory_po_items.map do |po_item|
       {
         itemCode: po_item.inventory_prn_item.inventory_product.generated_item_code,
-        description: po_item.remarks,
+        remarks: po_item.remarks,
+        description: po_item.description,
         quantity: po_item.quantity,
         unitPrice: view_context.standard_currency_format(po_item.unit_cost),
         total: (po_item.unit_cost * po_item.quantity),
@@ -356,7 +358,7 @@ class ReportsController < ApplicationController
       ourRef: po.your_ref,
       quotation: quotation_no,
       dateRequired: required_date,
-      paymentTerm: po.payment_term_id,
+      paymentTerm: po.payment_term.name,
       deliveryMode: delivery_mode,
 
       poItems: poItems,

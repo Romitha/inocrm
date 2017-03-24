@@ -87,7 +87,10 @@
           - print_object.poItems.each do |po_item|
             %tr
               %td=po_item[:itemCode]
-              %td{class: "ellipses"}=po_item[:description]
+              %td{class: "ellipses"}
+                =po_item[:description]
+                %br
+                =po_item[:remarks]
               %td=po_item[:quantity]
               %td= number_with_precision po_item[:unitPrice], precision: 2
               %td.text-right= number_with_precision po_item[:total], precision: 2
@@ -127,6 +130,8 @@
       .col-xs-7
       .col-xs-4
         %strong V S Information Systems (pvt) Ltd
+        %br/
+        %br/
         %br/
         %br/
         %strong ....................................................

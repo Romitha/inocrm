@@ -49,8 +49,20 @@
         %hr
         - @grn_items.each do |grn_item|
           - grn_item.grn_batches.where("remaining_quantity > 0").each_with_index do |grn_batch, index1|
+            - content_for :batches_more, flush: true do
+              %ul
+                %li
+                  %strong Manufactured Date:
+                  #{grn_batch.inventory_batch.manufatured_date.to_date.strftime(INOCRM_CONFIG["short_date_format"])}
+                %li
+                  %strong Expiry Date:
+                  #{grn_batch.inventory_batch.expiry_date.to_date.strftime(INOCRM_CONFIG["short_date_format"])}
+                %li
+                  %strong Remarks
+                  #{grn_batch.inventory_batch.remarks}
+
             .row
-              .col-md-2
+              .col-md-2{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Item code:", "data-content"=> yield(:batches_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }
                 = counter += 1
               .col-md-2
                 = grn_item.grn.grn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_grn_no_format"])

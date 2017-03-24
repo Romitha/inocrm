@@ -11,3 +11,4 @@ $("#batch_or_serial_modal").modal({backdrop: "static"});
   $("#batch_or_serial_frame#{params[:srn_item_id]}").html("#{j render 'admins/inventories/gin/gin_items'}");
 
 Inventories.apply_for_batch();
+$("a[rel~=popover], .has-popover").popover()
