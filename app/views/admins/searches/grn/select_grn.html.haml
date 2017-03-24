@@ -1,35 +1,32 @@
 .row
-  .col-md-3
-    %strong  GRN No:
-    = @grn.grn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_grn_no_format"])
-  .col-md-3
-    %strong Store:
-    = @grn.store.name
-  .col-md-3
-    Created At:
-    = @grn.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
-  .col-md-3
-    Created By:
-    = @grn.created_by_user.try(:full_name)
+  .col-md-2
+    %h4 GIN:
+    = link_to search_grn_admins_searches_path, "role" => "button",class: "btn btn-info", data: {disable_with: "Please wait..."} do
+      Search GRN Again
+  .col-md-10
+    %dl.dl-horizontal
+      %dt GRN No:
+      %dd= @grn.grn_no_format
+      %dt Store:
+      %dd= @grn.store_name
+      %dt Created At:
+      %dd= @grn.formated_created_at
+      %dt Created By:
+      %dd= @grn.created_by_from_user
+      %dt Supplier Name:
+      %dd= @grn.supplier_name
+      %dt Remarks:
+      %dd= simple_format @grn.try(:remarks)
+%hr
+
 .row
-  .col-md-3
-    PO No:
-    - if @grn.po_id.present?
-      = @grn.inventory_po.try(:po_no)
-    - else
-      = @grn.try(:po_no)
-  .col-md-3
-    Supplier Name:
-    = @grn.supplier.try(:name)
-  .col-md-6
-    Remarks:
-    = simple_format @grn.try(:remarks)
-.row
-  .col-md-9
-    %h4.strong GRN Items
-  .col-md-3
-    = link_to search_grn_admins_searches_path, "role" => "button",class: "btn btn-info" do
-      Search GRN
+  .col-md-2
+    %h4 PO:
+  .col-md-10
+    %dl.dl-horizontal
+      %dt PO No:
+      %dd= (@grn.inventory_po.try(:formated_po_no) || @grn.po_no )
+%hr
 
 = collapse_wrapper collapse_id: "grn_item_list", labelledby: "grn_item_list_labelledby" do
   - @grn.grn_items.each_with_index do |grnitem, index|

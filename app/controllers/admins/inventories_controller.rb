@@ -681,9 +681,9 @@ module Admins
         # end
 
         # @srr_item.grn_items.build product_id: @srr_item.product_id, recieved_quantity: 1, remaining_quantity: 1, unit_cost: 
-        @srr_item.srr_item_sources.each do |srr_item_source|
-          srr_item_source.gin_source.grn_item.attributes
-        end
+        # @srr_item.srr_item_sources.each do |srr_item_source|
+        #   srr_item_source.gin_source.grn_item.attributes
+        # end
 
         @render_template = "grn_item_srr"
 

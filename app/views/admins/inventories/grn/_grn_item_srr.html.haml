@@ -1,3 +1,4 @@
+%h3 New GRN
 - if @srr_item
   - need_serial = @srr_item.inventory_product.inventory_product_info.need_serial.present?
   - need_batch = @srr_item.inventory_product.inventory_product_info.need_batch.present?
@@ -48,7 +49,7 @@
 %hr
 
 = simple_nested_form_for @srr_item, url: url, method: :post, remote: true, html: {class: "validate_form"} do |g|
-  = g.input :product_id, as: :hidden
+  / = g.input :product_id, as: :hidden
 
   .row
     .col-md-2
@@ -73,21 +74,99 @@
         %dt Remarks:
         %dd= inventory_product.inventory_product_info.remarks
   %hr
-
   .row
     .col-md-2
-      %h4 GIN Info
+      %h4 Remarks
     .col-md-10
-      .row
-        - @srr_item.gin_sources.each do |gin_source|
+      = g.input :remarks, label: false
+  %hr
+
+  - @srr_item.srr_item_sources.each do |srr_item_source|
+    .row
+      .col-md-2
+        %h4 GIN Info
+        = label_tag "accept", "Accept"
+        = check_box_tag "srr_item_source[#{srr_item_source.id}][accept]"
+      .col-md-10
+        .row
           .col-md-6
             %dl.dl-horizontal
               %dt GIN No:
-              %dd= gin_source.gin_item.gin.formatted_gin_no
+              %dd= srr_item_source.gin_source.gin_item.gin.formatted_gin_no
               %dt Created at:
-              %dd= gin_source.gin_item.gin.formated_created_at
+              %dd= srr_item_source.gin_source.gin_item.gin.formated_created_at
               %dt Created By:
-              %dd= gin_source.gin_item.gin.created_by_user_full_name
+              %dd= srr_item_source.gin_source.gin_item.gin.created_by_user_full_name
               %dt Store:
-              %dd= gin_source.gin_item.gin.store_name
-  %hr
+              %dd= srr_item_source.gin_source.gin_item.gin.store_name
+              %dt Remarks
+              %dd= text_area_tag "grn_item[#{srr_item_source.id}][remarks]"
+
+    %hr
+    - if srr_item_source.gin_source.grn_serial_item.present?
+      .row
+        .col-md-2
+          %h4 Serial Item: #{srr_item_source.gin_source.grn_serial_item.inventory_serial_item.generated_serial_no}
+        .col-md-10
+          %dl.dl-horizontal
+            %dt Serial No:
+            %dd= srr_item_source.gin_source.grn_serial_item.inventory_serial_item.generated_serial_no
+            %dt Unit cost
+            %dd= text_field_tag "grn_item[#{srr_item_source.id}][unit_cost]"
+            %dt Scavenge
+            %dd= check_box_tag "inventory_serial_item[#{srr_item_source.id}][scavenge]"
+            %dt Part not completed
+            %dd= check_box_tag "inventory_serial_item[#{srr_item_source.id}][part_not_completed]"
+            %dt Damage
+            %dd= check_box_tag "inventory_serial_item[#{srr_item_source.id}][damage]"
+            .damage_reason.hide
+              %dt Damage Reason
+              %dd= select_tag "damage_request[#{srr_item_source.id}][damage_reason_id]", options_for_select([ "VISA", "MasterCard" ], "MasterCard")
+            %dt Used
+            %dd= check_box_tag "inventory_serial_item[#{srr_item_source.id}][used]"
+            %dt Repaired
+            %dd= check_box_tag "inventory_serial_item[#{srr_item_source.id}][repaired]"
+            %dt Reserved
+            %dd= check_box_tag "inventory_serial_item[#{srr_item_source.id}][reserved]"
+
+        .col-md-2
+          %h4 Warranty
+        .col-md-10
+          .row
+            - srr_item_source.gin_source.grn_serial_item.inventory_serial_item.inventory_warranties.each do |warranty|
+              .col-md-6
+                %dl.dl-horizontal
+                  %dt Type:
+                  %dd= warranty.inventory_warranty_type.name
+
+    - elsif srr_item_source.gin_source.grn_batch.present?
+      .row
+        .col-md-2
+          %h4 Serial Batch - batch no:#{srr_item_source.gin_source.grn_batch.inventory_batch.batch_no}
+        .col-md-10
+          %dl.dl-horizontal
+            %dt Lot No
+            %dd
+            %dt Lot No
+            %dd
+            %dt Lot No
+            %dd
+            %dt Lot No
+            %dd
+            %dt Lot No
+            %dd
+            %dt Lot No
+            %dd
+            %dt Lot No
+            %dd
+            %dt Damage quantity:
+            %dd= text_field_tag "damage_request[#{srr_item_source.id}][request_quantity]"
+            .damage_reason.hide
+              %dt Damage Reason
+              %dd= select_tag "damage_request[#{srr_item_source.id}][damage_reason_id]", options_for_select([ "VISA", "MasterCard" ], "MasterCard")
+
+            %dt Unit cost
+            %dd= text_field_tag "grn_item[#{srr_item_source.id}][unit_cost]"
+
+    - else
+      asdf
