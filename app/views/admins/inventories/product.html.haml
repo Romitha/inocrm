@@ -101,6 +101,7 @@
         - unless inv_product.is_used_anywhere?
           = link_to delete_inventory_product_form_admins_inventories_path(product_id: inv_product.id), method: :delete, rel: "tooltip", :data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Delete" do
             %span.glyphicon.glyphicon-trash
+            Delete
       .row
         .col-md-9
           .row.col-md-12

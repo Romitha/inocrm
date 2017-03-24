@@ -31,6 +31,19 @@ module Admins
       @renderDom = params[:render_dom]
     end
 
+    def delete_inventory_product_form
+      Product
+      Inventory
+      @inv_product = InventoryProduct.find params[:product_id]
+      if @inv_product.present?
+        @inv_product.inventory_product_info.delete
+        @inv_product.delete
+      end
+      respond_to do |format|
+        format.html { redirect_to product_admins_inventories_path }
+      end
+    end
+
     def delete_admin_brands_and_category
       Product
       @brands_and_category = ProductBrand.find params[:brands_and_category_id]

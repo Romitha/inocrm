@@ -184,7 +184,8 @@ class InventoryProduct < ActiveRecord::Base
   end
 
   def is_used_anywhere?
-    inventory_category3.present? or inventories.any? or inventory_unit.present? or inventory_serial_items.any? or inventory_product_info.present? or ticket_spare_part_stores.any? or grn_items.any? or inventory_serial_parts.any? or inventory_serial_items.any? or ticket_spare_part_non_stocks.any? or approved_ticket_spare_part_non_stocks.any?
+    TicketSparePart
+    inventories.any? or inventory_serial_items.any? or ticket_spare_part_stores.any? or grn_items.any? or inventory_serial_parts.any? or inventory_serial_items.any? or ticket_spare_part_non_stocks.any? or approved_ticket_spare_part_non_stocks.any?
   end
 
   def generated_item_code
