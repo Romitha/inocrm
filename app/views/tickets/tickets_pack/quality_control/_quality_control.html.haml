@@ -54,7 +54,7 @@
               %li= action.ticket_finish_job.resolution
           %strong Resolution Summary
           = link_to "#", class: "inline_edit", data: {type: "textarea", resource: "ticket", name: "resolution_summary", url: ticket_path(f.object.id), "original-title" => "Update quality_control"} do
-          = f.object.resolution_summary
+            = f.object.resolution_summary
         #reject_reason_sec_hide.col-md-6.col-xs-6
           = aqc.input :reject_reason, input_html: {id: "reject_reason"}, required: true
   .row
@@ -86,7 +86,7 @@
         .col-md-6
           .strong= qa.object.q_and_a.question
           - if qa.object.q_and_a.answer_type == "YN"
-            = qa.input :answer, as: :radio_buttons, collection: ["Yes", "No"], include_blank: false, wrapper: :for_radio_button, required: qa.object.q_and_a.compulsory, input_html: {rows: 1}, input_html: {name: "ticket[q_and_answers_attributes][#{index}][answer]"}
+            = qa.input :answer, as: :radio_buttons, collection: ["Yes", "No"], include_blank: false, wrapper: :for_radio_button, required: qa.object.q_and_a.compulsory, input_html: {rows: 1, name: "ticket[q_and_answers_attributes][#{index}][answer]"}
           - elsif qa.object.q_and_a.answer_type == "TX"
             = qa.input :answer, required: qa.object.q_and_a.compulsory, input_html: {rows: 1}
 
