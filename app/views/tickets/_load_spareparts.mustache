@@ -36,9 +36,8 @@
         .col-md-1.now_amount_default {{amount}}
         .col-md-1.now_class {{spare_part_description}}
         .col-md-2
-          %button.btn.btn-link{"data-target" => "#demo", "data-toggle" => "collapse", :type => "button"} View Note
-          #demo.collapse
-            {{{note}}}
+          <a href="#" class="btn btn-default has-popover" data-content="{{{note}}}" data-placement="bottom" data-toggle="popover" data-html="true" "title"="this is sample text">View Note</a>
+
         .col-md-1 {{ticket_no}}
         .col-md-1 {{serial_no}}
       .col-md-1
