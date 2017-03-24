@@ -14,7 +14,7 @@ when "production"
   sftp_folder = "/home/dev/inovacrm/#{Rails.env}"
 
 when "staging"
-  stfp_server = "192.168.50.155"
+  stfp_server = "192.168.100.155"
   user = 'root'
   password = 'redhat'
   sftp_folder = "/var/www/inovacrm_assets/#{Rails.env}"
