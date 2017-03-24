@@ -631,6 +631,8 @@ window.Tickets =
         $("#dynamic_currency_code").text($(":selected", _this).data("currencycode"))
         # $('#create_hp_po_form').html ($('#create_ho_po_load').html(), data)
         # _this.initial_loaders()
+        $("a[rel~=popover], .has-popover").popover()
+
   remove_spareparts: (elem)->
 
   select_brand_create_invoice_for_so: ->
@@ -650,6 +652,7 @@ window.Tickets =
     add_link.css("pointer-events", "auto")
 
   hp_po_add: (ticket_currency_id, spare_part, elem)->
+    $("a[rel~=popover], .has-popover").popover("destroy")
     _this = elem
     value = $(_this).data("value")
     $("#inventory_po_items").click() # add_link
@@ -663,6 +666,9 @@ window.Tickets =
     $("#inventory_po_items").prev().find(".remove").data("value", value)
 
     $(_this).css("pointer-events", "none")
+    $("a[rel~=popover], .has-popover").popover()
+
+
   view_so_po_items:(elem) ->
     po_id = elem
     $.post "js_call_invoice_item", {po_id: po_id}
