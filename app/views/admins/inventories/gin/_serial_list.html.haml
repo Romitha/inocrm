@@ -51,8 +51,42 @@
         - @grn_items.each do |grn_item|
           - grn_item.grn_serial_items.where(remaining: true).each_with_index do |grn_serial_item, index1|
             - if grn_serial_item.inventory_serial_item.inv_status_id == InventorySerialItemStatus.find_by_code("AV").id
+
+              - content_for :serial_more, flush: true do
+                %ul
+                  %li
+                    %strong Status:
+                    #{grn_serial_item.inventory_serial_item.inventory_serial_item_status.name}
+                  %li
+                    %strong Parts to be completed:
+                    #{boolean_in_word grn_serial_item.inventory_serial_item.parts_not_completed, "Yes", "No"}
+                  %li
+                    %strong Scavenge:
+                    #{boolean_in_word grn_serial_item.inventory_serial_item.scavenge, "Yes", "No"}
+                    / = grn_serial_item.inventory_serial_item.scavenge
+                  %li
+                    %strong Damaged:
+                    #{boolean_in_word grn_serial_item.inventory_serial_item.damage, "Yes", "No"}
+                  %li
+                    %strong Used:
+                    #{boolean_in_word grn_serial_item.inventory_serial_item.used, "Yes", "No"}
+                  %li
+                    %strong Repaired:
+                    #{boolean_in_word grn_serial_item.inventory_serial_item.repaired, "Yes", "No"}
+                  %li
+                    %strong Reserved:
+                    #{boolean_in_word grn_serial_item.inventory_serial_item.reserved, "Yes", "No"}
+                  %li
+                    %strong Manufactured Date:
+                    #{grn_serial_item.inventory_serial_item.manufatured_date.to_date.strftime(INOCRM_CONFIG["short_date_format"])}
+                  %li
+                    %strong Expiry Date:
+                    #{grn_serial_item.inventory_serial_item.expiry_date.to_date.strftime(INOCRM_CONFIG["short_date_format"])}
+                  %li
+                    %strong Remarks:
+                    #{grn_serial_item.inventory_serial_item.remarks}
               .row
-                .col-md-2
+                .col-md-2{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Item code:", "data-content"=> yield(:serial_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }
                   = counter += 1
                 .col-md-2
                   = grn_item.grn.grn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_grn_no_format"])
