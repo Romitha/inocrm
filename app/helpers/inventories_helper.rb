@@ -28,7 +28,7 @@ module InventoriesHelper
         # i_pro = InventoryProduct.find inventory_product.id
 
         # stock_cost = inventories.sum{ |i| i_pro.stock_cost(i.id)}
-        stock_cost = inventories.sum{ |i| i.product_stock_cost }
+        stock_cost = number_with_precision inventories.sum{ |i| i.product_stock_cost },precision: 2
         # stock_cost = inventories.map{|i| [i.id, i.product_id, i.store_id, i.product_stock_cost]}#.sum{ |i| i.product_stock_cost}
 
       end
@@ -72,9 +72,9 @@ module InventoriesHelper
         inventory_product_attr
       when "inventories"
         inventory_product_attr.merge({
-          available_quantity: available_quantities,
-          currency: inventory_product.try(:inventory_product_info).try(:currency_type),
-          stock_cost: stock_cost
+          available_quantity: {value: stock_cost, html: {class_attr: "text-right"}},
+          currency: {value: inventory_product.try(:inventory_product_info).try(:currency_type), html: {class_attr: "text-right"}},
+          stock_cost: {value: stock_cost, html: {class_attr: "text-right"}}
         })
 
       when "prn"

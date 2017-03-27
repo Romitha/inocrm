@@ -17,7 +17,10 @@
   - @gins.each_with_index do |gin, index|
     .row
       .col-md-1{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Name: #{gin.name}", "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }
-        = index+1
+        - if params[:page]
+          = (index+1)+ 10*(params[:page].to_i-1)
+        - else
+          = (index+1)
       .col-md-2
         = gin.store_name
       .col-md-1
