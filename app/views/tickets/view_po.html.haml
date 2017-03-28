@@ -8,7 +8,7 @@
           = form_tag view_po_tickets_path, method: :get, class: "form-horizontal" do
             .row.small_scale_margin-top1
               .col-md-4.small_scale_margin-top2
-                = text_field_tag "po_no_format", nil, :placeholder => "PO No", class: "form-control", id: "po_no_id"
+                = text_field_tag "po_no_format", params[:po_no_format], :placeholder => "PO No", class: "form-control", id: "po_no_id"
               .col-md-4
                 = label_tag "Brand"
                 = select_tag "product_brand_id", options_from_collection_for_select(ProductBrand.all, :id, :name, params[:product_brand_id]), include_blank: true, class: "form-control"
