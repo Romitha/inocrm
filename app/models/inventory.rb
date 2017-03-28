@@ -982,13 +982,35 @@ class InventoryBin < ActiveRecord::Base
 
 end
 
+class InventoryDamage < ActiveRecord::Base
+  self.table_name = "inv_damage"
+  belongs_to :inventory_disposal_method
+end
+
+class InventoryDisposalRequest < ActiveRecord::Base
+  self.table_name = "inv_disposal_request"
+
+  belongs_to :inventory_disposal_method
+  belongs_to :inventory_product
+  belongs_to :store, class_name: "Organization"
+  belongs_to :disposal_reason, -> { where(disposal: true) }, class_name: "InventoryReason"
+
+end
+
+class InventoryDisposal < ActiveRecord::Base
+  self.table_name = "inv_disposal"
+
+  belongs_to :inventory_disposal_method
+
+end
+
 class InventoryDisposalMethod < ActiveRecord::Base
   self.table_name = "mst_inv_disposal_method"
 
   belongs_to :user, foreign_key: :created_by
   belongs_to :user, foreign_key: :updated_by
   has_many :inventory_damages, foreign_key: :disposal_method_id
-  has_many :inventory_requests, foreign_key: :disposal_method_id
+  has_many :inventory_disposal_requests, foreign_key: :disposal_method_id
 
   validates :disposal_method, presence: true, uniqueness: true
 
@@ -997,16 +1019,6 @@ class InventoryDisposalMethod < ActiveRecord::Base
     inventory_damages.any?
   end
 
-end
-
-class InventoryDamage < ActiveRecord::Base
-  self.table_name = "inv_damage"
-  belongs_to :inventory_disposal_method
-end
-
-class InventoryRequest < ActiveRecord::Base
-  self.table_name = "inv_disposal_request"
-  belongs_to :inventory_disposal_method
 end
 
 class InventoryPo < ActiveRecord::Base

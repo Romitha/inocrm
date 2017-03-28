@@ -99,6 +99,27 @@ class SrrItem < ActiveRecord::Base
     currency.code
   end
 
+  before_save do |srr_item|
+   srr_item_remarks = if srr_item.persisted? and srr_item.remarks_changed? and srr_item.remarks.present?
+      "#{srr_item.remarks} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(srr_item.current_user_id).email}</span><br/>#{srr_item.remarks_was}"
+    else
+      srr_item.remarks_was
+    end
+    srr_item.remarks = srr_item_remarks
+  end
+
+  [:current_user_id].each do |dyna_method|
+    define_method(dyna_method) do
+      dyna_columns.find_by_data_key(dyna_method).try(:data_value)
+    end
+
+    define_method("#{dyna_method}=") do |value|
+      data = dyna_columns.find_or_initialize_by(data_key: dyna_method)
+      data.data_value = (value.class==Fixnum ? value : value.strip)
+      data.save
+    end
+  end
+
 end
 
 class SrrItemSource < ActiveRecord::Base

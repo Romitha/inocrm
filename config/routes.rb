@@ -359,6 +359,7 @@ Rails.application.routes.draw do
 
       end
     end
+
     resources :inventories do
 
       collection do
@@ -380,6 +381,7 @@ Rails.application.routes.draw do
         post "create_grn"
         patch "create_grn_for_main_part"
         post "initiate_grn_for_i_product"
+        post "initiate_grn_for_srr"
         post "create_grn_for_i_product"
 
         post "create_additional_cost"

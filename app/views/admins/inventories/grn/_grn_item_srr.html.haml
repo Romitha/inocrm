@@ -1,18 +1,8 @@
 %h3 New GRN
 - if @srr_item
-  - need_serial = @srr_item.inventory_product.inventory_product_info.need_serial.present?
-  - need_batch = @srr_item.inventory_product.inventory_product_info.need_batch.present?
   - inventory_product = @srr_item.inventory_product
-  - balance_to_be_inserted = @srr_item.quantity
-
-  - already_recieved = case inventory_product.product_type
-  - when "Serial", "Non Serial Non Batch"
-    - inventory_product.grn_items.by_store(session[:store_id]).sum(:recieved_quantity)
-  - when "Batch"
-    - inventory_product.grn_batches.sum(:recieved_quantity)
-
   - inventory = inventory_product.inventories.find_by_store_id session[:store_id]
-  - url = initialize_grn_admins_inventories_path(srr_item_id: @srr_item.try(:id), inventory_product_id: @inventory_product.try(:id))
+  - url = initiate_grn_for_srr_admins_inventories_path( srr_item_id: @srr_item.try(:id) )
 
 .row
   .col-md-2
@@ -49,7 +39,7 @@
 %hr
 
 = simple_nested_form_for @srr_item, url: url, method: :post, remote: true, html: {class: "validate_form"} do |g|
-  / = g.input :product_id, as: :hidden
+  = g.input :current_user_id, as: :hidden, input_html: {value: current_user.id }
 
   .row
     .col-md-2
@@ -106,8 +96,10 @@
     - if srr_item_source.gin_source.grn_serial_item.present?
       .row
         .col-md-2
-          %h4 Serial Item: #{srr_item_source.gin_source.grn_serial_item.inventory_serial_item.generated_serial_no}
+          %h4 Serial Item: #{ srr_item_source.gin_source.grn_serial_item.inventory_serial_item.generated_serial_no }
         .col-md-10
+          = hidden_field_tag "damage_request[#{srr_item_source.id}][request_quantity]", 1
+
           %dl.dl-horizontal
             %dt Serial No:
             %dd= srr_item_source.gin_source.grn_serial_item.inventory_serial_item.generated_serial_no
@@ -121,7 +113,7 @@
             %dd= check_box_tag "inventory_serial_item[#{srr_item_source.id}][damage]"
             .damage_reason.hide
               %dt Damage Reason
-              %dd= select_tag "damage_request[#{srr_item_source.id}][damage_reason_id]", options_for_select([ "VISA", "MasterCard" ], "MasterCard")
+              %dd= select_tag "damage_request[#{srr_item_source.id}][damage_reason_id]", options_from_collection_for_select(InventoryReason.where(damage: true), 'id', 'reason')
             %dt Used
             %dd= check_box_tag "inventory_serial_item[#{srr_item_source.id}][used]"
             %dt Repaired
@@ -163,10 +155,27 @@
             %dd= text_field_tag "damage_request[#{srr_item_source.id}][request_quantity]"
             .damage_reason.hide
               %dt Damage Reason
-              %dd= select_tag "damage_request[#{srr_item_source.id}][damage_reason_id]", options_for_select([ "VISA", "MasterCard" ], "MasterCard")
+              %dd= select_tag "damage_request[#{srr_item_source.id}][damage_reason_id]", options_from_collection_for_select(InventoryReason.where(damage: true), 'id', 'reason')
 
             %dt Unit cost
             %dd= text_field_tag "grn_item[#{srr_item_source.id}][unit_cost]"
 
     - else
-      asdf
+      .row
+        .col-md-2
+          %h4 GRN No: #{srr_item_source.gin_source.grn_item.grn.grn_no_format }
+        .col-md-10
+          %dl.dl-horizontal
+            %dt Damage quantity:
+            %dd= text_field_tag "damage_request[#{srr_item_source.id}][request_quantity]"
+            .damage_reason.hide
+              %dt Damage Reason
+              %dd= select_tag "damage_request[#{srr_item_source.id}][damage_reason_id]", options_from_collection_for_select(InventoryReason.where(damage: true), 'id', 'reason')
+
+            %dt Unit cost
+            %dd= text_field_tag "grn_item[#{srr_item_source.id}][unit_cost]"
+    %hr
+
+  .row
+    .col-md-12
+      = g.submit "Save", class: "btn btn-sm btn-success", data: {disable_with: "Please wait..."}
