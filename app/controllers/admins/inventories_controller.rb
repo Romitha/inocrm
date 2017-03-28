@@ -830,6 +830,7 @@ module Admins
     def initiate_grn_for_srr
       Srr
       Damage
+      Organization
 
       @srr_item = SrrItem.find params[:srr_item_id]
 
@@ -839,14 +840,14 @@ module Admins
         srr_item_source_ids.each do |srr_item_source_id|
           srr_item_source = SrrItemSource.find srr_item_source_id
 
-          grn = Grn.new store_id: @srr_item.srr.store_id, created_by: current_user.id, srr_id: @srr_item.srr.id
+          grn = Grn.new store_id: @srr_item.srr.store_id, created_by: current_user.id, srr_id: @srr_item.srr.id, grn_no: CompanyConfig.first.increase_inv_last_grn_no
 
           grn_item = grn.grn_items.build params[:grn_item][srr_item_source_id].permit(:remarks, :unit_cost)
 
           grn_item.attributes = {
             product_id: @srr_item.product_id,
-            recieved_quantity: @srr_item.returned_quantity,
-            remaining_quantity: @srr_item.returned_quantity,
+            recieved_quantity: srr_item_source.returned_quantity,
+            remaining_quantity: srr_item_source.returned_quantity,
             current_unit_cost: grn_item.unit_cost,
             currency_id: @srr_item.currency_id,
           }
@@ -890,7 +891,8 @@ module Admins
         render js: "alert('Successfully saved.'); window.location.href='#{grn_admins_inventories_url}';"
 
       else
-        render js: "alert('There must be atleast one item to be selected.. Please try again..'); "
+        render js: "alert('There must be atleast one item to be selected.. Please try again..'); Tickets.remove_ajax_loader();"
+
       end
 
     end
