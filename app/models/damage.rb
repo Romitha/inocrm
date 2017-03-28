@@ -18,6 +18,9 @@ class DamageRequest < ActiveRecord::Base
 
   belongs_to :created_by_user, class_name: "User", foreign_key: :created_by
 
+  has_many :damage_request_sources
+  accepts_nested_attributes_for :damage_request_sources, allow_destroy: true
+
 end
 
 class DamageRequestSource < ActiveRecord::Base
