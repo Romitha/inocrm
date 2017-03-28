@@ -98,7 +98,7 @@
         .col-md-2
           %h4 Serial Item: #{ srr_item_source.gin_source.grn_serial_item.inventory_serial_item.generated_serial_no }
         .col-md-10
-          = hidden_field_tag "damage_request[#{srr_item_source.id}][request_quantity]", 1
+          = hidden_field_tag "damage_request_source[#{srr_item_source.id}][request_quantity]", 1
 
           %dl.dl-horizontal
             %dt Serial No:
@@ -152,7 +152,7 @@
             %dt Lot No
             %dd
             %dt Damage quantity:
-            %dd= text_field_tag "damage_request[#{srr_item_source.id}][request_quantity]"
+            %dd= text_field_tag "damage_request_source[#{srr_item_source.id}][request_quantity]"
             .damage_reason.hide
               %dt Damage Reason
               %dd= select_tag "damage_request[#{srr_item_source.id}][damage_reason_id]", options_from_collection_for_select(InventoryReason.where(damage: true), 'id', 'reason')
@@ -167,7 +167,7 @@
         .col-md-10
           %dl.dl-horizontal
             %dt Damage quantity:
-            %dd= text_field_tag "damage_request[#{srr_item_source.id}][request_quantity]"
+            %dd= text_field_tag "damage_request_source[#{srr_item_source.id}][request_quantity]"
             .damage_reason.hide
               %dt Damage Reason
               %dd= select_tag "damage_request[#{srr_item_source.id}][damage_reason_id]", options_from_collection_for_select(InventoryReason.where(damage: true), 'id', 'reason')
@@ -178,4 +178,4 @@
 
   .row
     .col-md-12
-      = g.submit "Save", class: "btn btn-sm btn-success", data: {disable_with: "Please wait..."}
+      = g.submit "Save", class: "btn btn-sm btn-success"#, data: {disable_with: "Please wait..."}

@@ -827,6 +827,74 @@ module Admins
       render "admins/inventories/grn/grn"
     end
 
+    def initiate_grn_for_srr
+      Srr
+      Damage
+
+      @srr_item = SrrItem.find params[:srr_item_id]
+
+      if params[:srr_item_source].present?
+        srr_item_source_ids = params[:srr_item_source].keep_if{|key, value| value["accept"] == "1" }.keys
+
+        srr_item_source_ids.each do |srr_item_source_id|
+          srr_item_source = SrrItemSource.find srr_item_source_id
+
+          grn = Grn.new store_id: @srr_item.srr.store_id, created_by: current_user.id, srr_id: @srr_item.srr.id
+
+          grn_item = grn.grn_items.build params[:grn_item][srr_item_source_id].permit(:remarks, :unit_cost)
+
+          grn_item.attributes = {
+            product_id: @srr_item.product_id,
+            recieved_quantity: @srr_item.returned_quantity,
+            remaining_quantity: @srr_item.returned_quantity,
+            current_unit_cost: grn_item.unit_cost,
+            currency_id: @srr_item.currency_id,
+          }
+
+          grn.save
+
+          if params[:inventory_serial_item].present?
+            grn_serial_item = srr_item_source.gin_source.grn_serial_item
+
+            grn_serial_item.update remaining: false
+
+            grn_serial_item.inventory_serial_item.update params[:inventory_serial_item][srr_item_source_id]
+
+            grn_item.inventory_serial_items << grn_serial_item.inventory_serial_item
+
+          end
+
+          if params[:damage_request].present?
+            damage_request = DamageRequest.new params[:damage_request][srr_item_source_id].permit(:damage_reason_id)
+
+            damage_request.attributes = {
+              store_id: @srr_item.srr.store_id,
+              product_id: @srr_item.product_id,
+              created_by: current_user.id,
+            }
+
+            damage_request_source = damage_request.damage_request_sources.build params[:damage_request_source][srr_item_source_id].permit(:request_quantity)
+
+            damage_request_source.attributes = {
+              grn_item_id: grn_item.id,
+              unit_cost: grn_item.unit_cost,
+              currency_id: grn_item.currency_id,
+            }
+
+            damage_request.save
+
+          end
+
+        end
+
+        render js: "alert('Successfully saved.'); window.location.href='#{grn_admins_inventories_url}';"
+
+      else
+        render js: "alert('There must be atleast one item to be selected.. Please try again..'); "
+      end
+
+    end
+
     def create_grn
       Inventory
       Organization
@@ -1531,14 +1599,15 @@ module Admins
 
     def create_prn
       Organization
+      Inventory
       @prn = InventoryPrn.new prn_params
 
       respond_to do |format|
-        if @prn.save
+        if @prn.inventory_prn_items.any? and @prn.save
           CompanyConfig.first.increase_inv_last_prn_no
           flash[:notice] = "Successfully saved"
         else
-          flash[:alert] = "Unable to save. Please review."
+          flash[:alert] = "Unable to save. Please check whether items are validated. There must be atleast one item."
         end
 
         format.html{ redirect_to prn_admins_inventories_url }
@@ -1749,7 +1818,7 @@ module Admins
       end
 
       def srr_params
-        params.require(:srr).permit(:created_by, :srr_no, :store_id, :requested_module_id, :remarks, srr_items_attributes: [ :id, :product_id, :product_condition_id, :spare_part, :currency_id, :return_reason_id, :remarks, :quantity, :_destroy, srr_item_sources_attributes: [ :id, :_destroy, :unit_cost, :currency_id, :returned_quantity, :gin_source_id] ])
+        params.require(:srr).permit(:created_by, :srr_no, :store_id, :requested_module_id, :remarks, srr_items_attributes: [ :id, :product_id, :product_condition_id, :spare_part, :currency_id, :return_reason_id, :remarks, :quantity, :current_user_id, :_destroy, srr_item_sources_attributes: [ :id, :_destroy, :unit_cost, :currency_id, :returned_quantity, :gin_source_id] ])
       end
 
   end
