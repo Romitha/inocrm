@@ -155,10 +155,8 @@
             .damage_reason.hide
               %dt Damage Reason
               %dd= select_tag "damage_request[#{srr_item_source.id}][damage_reason_id]", options_from_collection_for_select(InventoryReason.where(damage: true), 'id', 'reason')
-
             %dt Unit cost
             %dd= text_field_tag "grn_item[#{srr_item_source.id}][unit_cost]"
-
             %br/
             .col-md-8
               = collapse_wrapper collapse_id: "warranty_info", labelledby: "warranty_info_labelledby" do
