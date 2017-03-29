@@ -89,7 +89,7 @@
               %dd= srr_item_source.gin_source.gin_item.gin.store_name
               %dt Remarks
               %dd= text_area_tag "grn_item[#{srr_item_source.id}][remarks]", nil, class: "form-control"
-
+    %hr
     - if srr_item_source.gin_source.grn_serial_item.present?
       .row
         .col-md-2
