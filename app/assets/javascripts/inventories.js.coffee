@@ -896,3 +896,22 @@ window.Inventories =
       $('#paginate_grns').hide()
       return
     return
+
+  hide_damaged_reason: (elem, srr_id)->
+    _this = $(elem)
+    if _this.is(":checked")
+      $(".damage_reason").removeClass("hide")
+      $("#damage_request_source_"+srr_id+"_request_quantity").val("1")
+    else
+      $(".damage_reason").addClass("hide")
+      $("#damage_request_source_"+srr_id+"_request_quantity").val("0")
+
+  show_serial_info: (elem, srr_id)->
+    _this = $(elem)
+    $(".valid_accept_#{srr_id}").prop("disabled", _this.is(":checked"));
+    $("#inventory_serial_item_"+srr_id+"_scavenge").prop("disabled", _this.is(":checked"))
+    $("#inventory_serial_item_"+srr_id+"_part_not_completed").prop("disabled", _this.is(":checked"))
+    $("#inventory_serial_item_"+srr_id+"_damage").prop("disabled", _this.is(":checked"))
+    $("#inventory_serial_item_"+srr_id+"_used").prop("disabled", _this.is(":checked"))
+    $("#inventory_serial_item_"+srr_id+"_repaired").prop("disabled", _this.is(":checked"))
+    $("#inventory_serial_item_"+srr_id+"_reserved").prop("disabled", _this.is(":checked"))

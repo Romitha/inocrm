@@ -76,7 +76,7 @@
       .col-md-2
         %h4 GIN Info
         = label_tag "accept", "Accept"
-        = check_box_tag "srr_item_source[#{srr_item_source.id}][accept]"
+        = check_box_tag "srr_item_source[#{srr_item_source.id}][accept]", 1, false, onchange: "Inventories.show_serial_info(this, '#{srr_item_source.id}');"
       .col-md-10
         .row
           .col-md-6
@@ -91,27 +91,25 @@
               %dd= srr_item_source.gin_source.gin_item.gin.store_name
               %dt Remarks
               %dd= text_area_tag "grn_item[#{srr_item_source.id}][remarks]"
-
     %hr
     - if srr_item_source.gin_source.grn_serial_item.present?
       .row
         .col-md-2
           %h4 Serial Item: #{ srr_item_source.gin_source.grn_serial_item.inventory_serial_item.generated_serial_no }
         .col-md-10
-          = hidden_field_tag "damage_request[#{srr_item_source.id}][request_quantity]", 1
-
           %dl.dl-horizontal
             %dt Serial No:
             %dd= srr_item_source.gin_source.grn_serial_item.inventory_serial_item.generated_serial_no
             %dt Unit cost
-            %dd= text_field_tag "grn_item[#{srr_item_source.id}][unit_cost]"
+            %dd= text_field_tag "grn_item[#{srr_item_source.id}][unit_cost]", nil, class: "valid_accept_#{srr_item_source.id}"
             %dt Scavenge
             %dd= check_box_tag "inventory_serial_item[#{srr_item_source.id}][scavenge]"
             %dt Part not completed
             %dd= check_box_tag "inventory_serial_item[#{srr_item_source.id}][part_not_completed]"
             %dt Damage
-            %dd= check_box_tag "inventory_serial_item[#{srr_item_source.id}][damage]"
+            %dd= check_box_tag "inventory_serial_item[#{srr_item_source.id}][damage]", 1, false, onchange: "Inventories.hide_damaged_reason(this, '#{srr_item_source.id}');"
             .damage_reason.hide
+              = hidden_field_tag "damage_request_source[#{srr_item_source.id}][request_quantity]", 1
               %dt Damage Reason
               %dd= select_tag "damage_request[#{srr_item_source.id}][damage_reason_id]", options_from_collection_for_select(InventoryReason.where(damage: true), 'id', 'reason')
             %dt Used
@@ -151,12 +149,11 @@
             %dd
             %dt Lot No
             %dd
-            %dt Damage quantity:
-            %dd= text_field_tag "damage_request[#{srr_item_source.id}][request_quantity]"
             .damage_reason.hide
               %dt Damage Reason
               %dd= select_tag "damage_request[#{srr_item_source.id}][damage_reason_id]", options_from_collection_for_select(InventoryReason.where(damage: true), 'id', 'reason')
-
+              %dt Damage quantity:
+              %dd= text_field_tag "damage_request[#{srr_item_source.id}][request_quantity]"
             %dt Unit cost
             %dd= text_field_tag "grn_item[#{srr_item_source.id}][unit_cost]"
 
@@ -166,12 +163,11 @@
           %h4 GRN No: #{srr_item_source.gin_source.grn_item.grn.grn_no_format }
         .col-md-10
           %dl.dl-horizontal
-            %dt Damage quantity:
-            %dd= text_field_tag "damage_request[#{srr_item_source.id}][request_quantity]"
             .damage_reason.hide
               %dt Damage Reason
               %dd= select_tag "damage_request[#{srr_item_source.id}][damage_reason_id]", options_from_collection_for_select(InventoryReason.where(damage: true), 'id', 'reason')
-
+              %dt Damage quantity:
+              %dd= text_field_tag "damage_request[#{srr_item_source.id}][request_quantity]"
             %dt Unit cost
             %dd= text_field_tag "grn_item[#{srr_item_source.id}][unit_cost]"
     %hr
