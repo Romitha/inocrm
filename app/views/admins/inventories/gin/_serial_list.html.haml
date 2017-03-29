@@ -78,10 +78,10 @@
                     #{boolean_in_word grn_serial_item.inventory_serial_item.reserved, "Yes", "No"}
                   %li
                     %strong Manufactured Date:
-                    #{grn_serial_item.inventory_serial_item.manufatured_date.to_date.strftime(INOCRM_CONFIG["short_date_format"])}
+                    #{grn_serial_item.inventory_serial_item.manufatured_date.try :strftime, INOCRM_CONFIG["short_date_format"]}
                   %li
                     %strong Expiry Date:
-                    #{grn_serial_item.inventory_serial_item.expiry_date.to_date.strftime(INOCRM_CONFIG["short_date_format"])}
+                    #{grn_serial_item.inventory_serial_item.expiry_date.try :strftime, INOCRM_CONFIG["short_date_format"]}
                   %li
                     %strong Remarks:
                     #{grn_serial_item.inventory_serial_item.remarks}

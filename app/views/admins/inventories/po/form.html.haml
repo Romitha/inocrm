@@ -97,26 +97,29 @@
                 .col-md-3
                   %strong Type:
                   = i.object.inventory_prn_item.inventory_product.inventory_product_info.need_serial ? "Serial" : i.object.inventory_prn_item.inventory_product.inventory_product_info.need_batch ? "Batch" : "Non of Serial or Batch"
+
                 .col-md-3
                   %strong PRN Remarks:
                   = i.object.inventory_prn_item.remarks
+
               %hr
               .row
                 .col-md-2
                   = i.input :quantity, required: true, as: :string, input_html: {value: i.object.inventory_prn_item.quantity - i.object.inventory_prn_item.inventory_po_items.sum(:quantity), class: "dynamic_quantity"}, label: "Order Quantity", input_html: {class: "integer"}
                 .col-md-2
-                  / = label_tag "PO Unit Cost" do
-                  /   PO Unit Cost
-                  /   (<span class="dynamic_unit_cost"></span>)
                   = i.input :unit_cost, required: true, as: :string, label: "PO Unit Cost"
+
                 .col-md-2
                   = i.input :unit_cost_grn, required: true, as: :string, label: "GRN Unit Cost (#{i.object.inventory_prn_item.inventory_product.inventory_product_info.currency.code})"
+
                 .col-md-3
                   = i.input :description, as: :string, label: "Description"
+
                 .col-md-6
                   = i.input :remarks
 
               - last_po_item = i.object.inventory_prn_item.inventory_product.last_po_item
+
               - if last_po_item.present?
                 .row
                   .col-md-12

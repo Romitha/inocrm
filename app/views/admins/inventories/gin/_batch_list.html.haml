@@ -53,13 +53,13 @@
               %ul
                 %li
                   %strong GRN Date:
-                  #{grn_batch.grn_item.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])}
+                  #{grn_batch.grn_item.created_at.try :strftime, INOCRM_CONFIG["short_date_format"]}
                 %li
                   %strong Manufactured Date:
-                  #{grn_batch.inventory_batch.manufatured_date.to_date.strftime(INOCRM_CONFIG["short_date_format"])}
+                  #{grn_batch.inventory_batch.manufatured_date.try :strftime, INOCRM_CONFIG["short_date_format"]}
                 %li
                   %strong Expiry Date:
-                  #{grn_batch.inventory_batch.expiry_date.to_date.strftime(INOCRM_CONFIG["short_date_format"])}
+                  #{grn_batch.inventory_batch.expiry_date.try :strftime, INOCRM_CONFIG["short_date_format"]}
                 %li
                   %strong Remarks
                   #{grn_batch.inventory_batch.remarks}

@@ -2,6 +2,7 @@
   - need_serial = @po_item.inventory_prn_item.inventory_product.inventory_product_info.need_serial.present?
   - need_batch = @po_item.inventory_prn_item.inventory_product.inventory_product_info.need_batch.present?
   - inventory_product = @po_item.inventory_prn_item.inventory_product
+
   - balance_to_be_inserted = @po_item.quantity
 
   - already_recieved = case inventory_product.product_type

@@ -16,7 +16,7 @@
         = current_user.full_name
       %dt Created at:
       %dd
-        = DateTime.now.try(:strftime, "%Y-%m-%d %H:%M")
+        = DateTime.now.strftime INOCRM_CONFIG["short_date_format"]
 %hr
 .row
   .col-md-2

@@ -34,9 +34,9 @@
               %dt Batch No:
               %dd= serial_or_batch.batch_no
               %dt Manufactured date:
-              %dd= serial_or_batch.manufatured_date.try(:strftime, "%Y-%m-%d")
+              %dd= serial_or_batch.manufatured_date.try :strftime, INOCRM_CONFIG["short_date_format"]
               %dt Expiry date:
-              %dd= serial_or_batch.expiry_date.try(:strftime, "%Y-%m-%d")
+              %dd= serial_or_batch.expiry_date.try :strftime, INOCRM_CONFIG["short_date_format"]
               %dt Remarks
               %dd= simple_format serial_or_batch.remarks
         - serial_or_batch.inventory_warranties.each do |inventory_warranty|
@@ -47,9 +47,9 @@
                 %dt Type:
                 %dd=inventory_warranty.inventory_warranty_type.name
                 %dt Start at:
-                %dd=inventory_warranty.start_at.try(:strftime, "%Y-%m-%d")
+                %dd=inventory_warranty.start_at.try :strftime, INOCRM_CONFIG["short_date_format"]
                 %dt End at:
-                %dd=inventory_warranty.end_at.try(:strftime, "%Y-%m-%d")
+                %dd=inventory_warranty.end_at.try :strftime, INOCRM_CONFIG["short_date_format"]
                 %dt Period part:
                 %dd=inventory_warranty.period_part
                 %dt Period labour:
