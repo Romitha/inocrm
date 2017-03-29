@@ -72,7 +72,7 @@ module InventoriesHelper
         inventory_product_attr
       when "inventories"
         inventory_product_attr.merge({
-          available_quantity: {value: stock_cost, html: {class_attr: "text-right"}},
+          available_quantity: {value: available_quantities, html: {class_attr: "text-right"}},
           currency: {value: inventory_product.try(:inventory_product_info).try(:currency_type), html: {class_attr: "text-right"}},
           stock_cost: {value: stock_cost, html: {class_attr: "text-right"}}
         })
