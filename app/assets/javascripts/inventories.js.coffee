@@ -276,6 +276,28 @@ window.Inventories =
     if $(e).is("#est_price_id")
       $("#unit_est_price").text(parseFloat($(e).val())/qty)
 
+  remove_function: (e)->
+    elem = $(e)
+    remove_app_est_amount =  parseFloat(elem.parents().find("#ddd").last().children().find(".estimated_tax_amount_class").val())
+    total = parseFloat($("#total_tax_price").text())
+    newVal = total - remove_app_est_amount
+    $("#total_tax_price").text((Math.round(newVal * 100)/100).toFixed(2))
+
+  calculate_tax_price: (e)->
+    elem = $(e)
+    currentValue = parseFloat(elem.val())
+    if !isNaN(currentValue)
+      if elem.is(".estimated_tax_amount_class")
+
+        pre = parseFloat(elem.data("initvalue"))
+        current = parseFloat(elem.val())
+        total = parseFloat($("#total_tax_price").text())
+
+        if !isNaN(total) and !isNaN(pre) and !isNaN(current)
+          newVal = total + current - pre
+          $("#total_tax_price").text((Math.round(newVal * 100)/100).toFixed(2))
+          elem.data("initvalue", current)
+
   calculate_cost_price: (e)->
     elem = $(e)
 
