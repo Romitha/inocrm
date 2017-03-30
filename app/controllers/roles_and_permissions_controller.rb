@@ -24,11 +24,10 @@ class RolesAndPermissionsController < ApplicationController
   def create
     new_role_name = params[:role][:name]
     rpermission_ids = params[:rpermissions]
-    @bpm_role = BpmModuleRole.find params[:bpm_role] if params[:bpm_role].present?
     @role = @organization.roles.build(name: new_role_name)
     if @role.save
       @role.rpermission_ids = rpermission_ids
-      @role.bpm_module_roles << @bpm_role if @bpm_role.present?
+      @role.bpm_module_role_ids = params[:bpm_role]
 
       flash[:notice] = "Roles and Permissions are successfully assigned"
       redirect_to new_organization_roles_and_permission_url(@organization)
@@ -49,8 +48,11 @@ class RolesAndPermissionsController < ApplicationController
   def update
     @role = Role.find params[:id]
     rpermission_ids = params[:rpermissions]
+
     if @role.update_attribute(:name, params[:role][:name])
       @role.rpermission_ids = rpermission_ids
+      @role.bpm_module_role_ids = params[:bpm_role]
+
       redirect_to edit_organization_roles_and_permission_url(@organization, @role), notice: "Roles and Permissions are successfully updated."
     else
       redirect_to edit_organization_roles_and_permission_url(@organization, @role), error: "Roles and Permissions are unsuccessfully updated. Please try again."

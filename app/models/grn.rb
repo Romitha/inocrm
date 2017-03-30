@@ -119,7 +119,7 @@ class GrnItem < ActiveRecord::Base
   end
 
   def update_relation_index
-    [:inventory_serial_items].each do |children|
+    [:inventory_serial_items, :inventory_batches].each do |children|
       send(children).each do |child|
         # child.update_index
         # parent.to_s.classify.constantize.find(self.send(parent).id).update_index

@@ -6,7 +6,7 @@
 .row
   .col-xs-12.col-sm-6.col-md-8
     #todo_list 
-      %p To Do list (#{@formatted_workflow_mapping_for_user.try(:count).to_i+@formatted_workflow_mapping_for_role.try(:count).to_i})
+      %p To Do list (#{@formatted_workflow_mapping_for_user.try(:count).to_i+formatted_workflow_mapping_for_role.try(:count).to_i})
       %a{:href => todos_path} 
         %i.fa.fa-repeat
 
@@ -17,7 +17,7 @@
 
 #table
   = tab_panel do
-    = tab_nav_tab({}, user_details: {active_class: "active", content: "User (#{@formatted_workflow_mapping_for_user.try(:count).to_i})"}, role: {content: "#{current_user.current_user_role_name} (#{@formatted_workflow_mapping_for_role.try(:count).to_i})"})
+    = tab_nav_tab({}, user_details: {active_class: "active", content: "User (#{@formatted_workflow_mapping_for_user.try(:count).to_i})"}, role: {content: "#{current_user.current_user_role_name} (#{formatted_workflow_mapping_for_role.try(:count).to_i})"})
     .tab-content
       = tab_content active_class: "active", tabpointer: "user_details" do
         .product
