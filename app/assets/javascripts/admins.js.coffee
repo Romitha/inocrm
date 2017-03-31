@@ -303,14 +303,14 @@ window.Admins =
 
         finalResult = affecting_area_by_val.data("preval") - 1
 
-      elem.parents(".accumulated_wrapper").eq(0).find(".serial_return_qty").val(currentValue)
+      elem.parents(".individual_qnty").eq(0).find(".serial_return_qty").val(currentValue)
 
     console.log "final result is: #{finalResult} and current value is: #{currentValue}"
 
     if finalResult > parseFloat(affecting_area_by_val.data("maxqty"))
-      console.log "maxed"
-      finalResult = parseFloat(affecting_area_by_val.data("maxqty"))
-      currentValue = finalResult
+      console.log "maxed #{finalResult}"
+      currentValue = elem.data("preval")
+      finalResult = affecting_area_by_val.data("preval") + currentValue - elem.data("preval")
       elem.val(currentValue)
 
     affecting_area_by_text.text(finalResult)

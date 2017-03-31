@@ -1282,6 +1282,7 @@ module Admins
     end
 
     def gin
+      Role
       case params[:gin_callback]
       when "search_srn"
         search_srn = params[:search_srn].except("srn_date_from", "srn_date_to").map{|k, v| "#{k} like '%#{v}%'"}.join(" and ")
@@ -1657,6 +1658,8 @@ module Admins
 
         @gin.gin_items.each do |gin_item|
           srr_item = @srr.srr_items.build product_id: gin_item.product_id, product_condition_id: gin_item.product_condition_id, spare_part: gin_item.spare_part, currency_id: gin_item.currency_id
+          srr_item.returned_quantity = gin_item.gin_sources.sum(:returned_quantity)
+          srr_item.issued_quantity = gin_item.gin_sources.sum(:issued_quantity)
 
           gin_item.gin_sources.each do |gin_source|
             if gin_source.returned_quantity.to_f < gin_source.issued_quantity.to_f
@@ -1680,25 +1683,22 @@ module Admins
 
     end
 
-    def srrs
-      Inventory
-      Invoice
-      Role
-      if params[:srr_id].present?
-        @srr = Srr.find params[:srr_id]
-
-        render "admins/inventories/srr/srrs"
-      end
-    end
-
     def create_srr
       @srr = Srr.new srr_params
 
       @srr.srr_items.each do |srr_item|
-        @srr.srr_items.delete(srr_item) if srr_item.new_record? and srr_item.quantity.to_f <= 0
+        if srr_item.new_record? and srr_item.quantity.to_f <= 0
+          @srr.srr_items.delete(srr_item)
+
+        else
+          srr_item.srr_item_sources.each do |srr_item_source|
+            srr_item.srr_item_sources.delete(srr_item_source) if srr_item_source.new_record? and srr_item_source.returned_quantity.to_f <= 0
+          end
+
+        end
 
       end
-      @srr.attributes = {}
+      # @srr.attributes = {}
 
       if @srr.save
         # @srr.srr_items.each do |srr_item|
@@ -1707,7 +1707,7 @@ module Admins
         # end
 
         @srr.srr_item_sources.each do |srr_item_source|
-          srr_item_source.gin_source.update returned_quantity: srr_item_source.gin_source.srr_items.sum(:quantity)
+          srr_item_source.gin_source.increment! :returned_quantity, srr_item_source.returned_quantity.to_f
         end
 
         CompanyConfig.first.increase_inv_last_srr_no
@@ -1719,6 +1719,17 @@ module Admins
       end
 
       redirect_to srr_admins_inventories_url
+    end
+
+    def srrs
+      Inventory
+      Invoice
+      Role
+      if params[:srr_id].present?
+        @srr = Srr.find params[:srr_id]
+
+        render "admins/inventories/srr/srrs"
+      end
     end
 
     private

@@ -45,7 +45,7 @@
                 %td= number_with_precision po_item.unit_cost_grn, precision: 2
                 %td= po_item.inventory_prn_item.inventory_product.product_no
                 %td= po_item.inventory_prn_item.inventory_product.model_no
-                %td= po_item.inventory_prn_item.inventory_product.serial_no
+                %td= po_item.inventory_prn_item.inventory_product.generated_serial_no
                 %td= po_item.inventory_prn_item.inventory_product.description
                 %td
                   - if po_item.inventory_prn_item.inventory_product.inventories.any?

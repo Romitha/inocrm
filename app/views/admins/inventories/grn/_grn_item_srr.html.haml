@@ -75,8 +75,6 @@
     .row
       .col-md-2
         %h4 GIN Info
-        = label_tag "accept", "Accept"
-        = check_box_tag "srr_item_source[#{srr_item_source.id}][accept]", 1, false, onchange: "Inventories.show_serial_info(this, '#{srr_item_source.id}');"
       .col-md-10
         .row
           .col-md-6
@@ -91,17 +89,19 @@
               %dd= srr_item_source.gin_source.gin_item.gin.store_name
               %dt Remarks
               %dd= text_area_tag "grn_item[#{srr_item_source.id}][remarks]", nil, class: "form-control"
-    %hr
+
     - if srr_item_source.gin_source.grn_serial_item.present?
       .row
         .col-md-2
-          %h4 Serial Item: #{ srr_item_source.gin_source.grn_serial_item.inventory_serial_item.generated_serial_no }
+          %strong Serial Item: #{ srr_item_source.gin_source.grn_serial_item.inventory_serial_item.generated_serial_no }
+          = label_tag "accept", "Accept"
+          = check_box_tag "srr_item_source[#{srr_item_source.id}][accept]", 1, false, onchange: "Inventories.show_serial_info(this, '#{srr_item_source.id}');"
         .col-md-10
           %dl.dl-horizontal
             %dt Serial No:
             %dd= srr_item_source.gin_source.grn_serial_item.inventory_serial_item.generated_serial_no
             %dt Unit cost
-            %dd= text_field_tag "grn_item[#{srr_item_source.id}][unit_cost]", nil, class: "valid_accept_#{srr_item_source.id}"
+            %dd= text_field_tag "grn_item[#{srr_item_source.id}][unit_cost]", nil, class: "valid_accept_#{srr_item_source.id} form-control"
             %dt Scavenge
             %dd= check_box_tag "inventory_serial_item[#{srr_item_source.id}][scavenge]"
             %dt Part not completed
@@ -151,12 +151,12 @@
             %dt Returned Quantity:
             %dd= srr_item_source.gin_source.returned_quantity
             %dt Damage Quantity:
-            %dd= text_field_tag "damage_request_source[#{srr_item_source.id}][request_quantity]"
+            %dd= text_field_tag "damage_request_source[#{srr_item_source.id}][request_quantity]", nil, class: "form-control"
             .damage_reason.hide
               %dt Damage Reason
               %dd= select_tag "damage_request[#{srr_item_source.id}][damage_reason_id]", options_from_collection_for_select(InventoryReason.where(damage: true), 'id', 'reason')
             %dt Unit cost
-            %dd= text_field_tag "grn_item[#{srr_item_source.id}][unit_cost]"
+            %dd= text_field_tag "grn_item[#{srr_item_source.id}][unit_cost]", nil, class: "form-control"
             %br/
             .col-md-8
               = collapse_wrapper collapse_id: "warranty_info", labelledby: "warranty_info_labelledby" do
@@ -185,14 +185,14 @@
         .col-md-10
           %dl.dl-horizontal
             %dt Damage quantity:
-            %dd= text_field_tag "damage_request_source[#{srr_item_source.id}][request_quantity]"
+            %dd= text_field_tag "damage_request_source[#{srr_item_source.id}][request_quantity]", nil, class: "form-control"
             .damage_reason.hide
               %dt Damage Reason
               %dd= select_tag "damage_request[#{srr_item_source.id}][damage_reason_id]", options_from_collection_for_select(InventoryReason.where(damage: true), 'id', 'reason')
               %dt Damage quantity:
-              %dd= text_field_tag "damage_request[#{srr_item_source.id}][request_quantity]"
+              %dd= text_field_tag "damage_request[#{srr_item_source.id}][request_quantity]", nil, class: "form-control"
             %dt Unit cost
-            %dd= text_field_tag "grn_item[#{srr_item_source.id}][unit_cost]"
+            %dd= text_field_tag "grn_item[#{srr_item_source.id}][unit_cost]", nil, class: "form-control"
     %hr
 
   .row

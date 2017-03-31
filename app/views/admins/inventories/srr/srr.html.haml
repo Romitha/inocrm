@@ -86,19 +86,19 @@
             %dd= g.object.inventory_product.product_type
 
             %dt Issued quantity
-            %dd= g.object.srr_item_sources.to_a.sum{|s| s.gin_source.issued_quantity}
+            %dd= g.object.issued_quantity
 
             %dt Balance to be issued:
-            %dd= g.object.inventory_product.srn_items.by_store(f.object.store.id).sum(:quantity) - g.object.srr_item_sources.to_a.sum{|s| s.gin_source.issued_quantity} + g.object.srr_item_sources.to_a.sum{|s| s.gin_source.returned_quantity}
+            %dd= g.object.inventory_product.srn_items.by_store(f.object.store.id).sum(:quantity) -g.object.issued_quantity
 
             %dt Returned quantity
-            %dd= g.object.srr_item_sources.to_a.sum{|s| s.gin_source.returned_quantity}
+            %dd= g.object.returned_quantity
             %dt.red Return Reason
             %dd= g.association :return_reason, label_method: :reason, label: false, required: true
             %dt Remarks
             %dd= g.input :remarks, label: false
 
-            = g.input :quantity, as: :hidden, input_html: {class: "accumulated_required_qty_input", data: {preVal: 0, maxQty: g.object.srr_item_sources.to_a.sum{ |s| s.gin_source.issued_quantity.to_f-s.gin_source.returned_quantity.to_f } } }
+            = g.input :quantity, as: :hidden, input_html: {class: "accumulated_required_qty_input", data: {preVal: 0, maxQty: g.object.issued_quantity - g.object.returned_quantity } }
 
             %strong Return quantity:
             %span.accumulated_required_qty_text
@@ -109,25 +109,26 @@
               = s.input :gin_source_id, as: :hidden
 
               / - if s.object.gin_source.returned_quantity.to_f < s.object.gin_source.issued_quantity.to_f
-              - if g.object.inventory_product.product_type == "Serial"
-                = s.input :returned_quantity, as: :hidden, input_html: { class: "serial_return_qty", data: {preVal: 0} }
+              .individual_qnty
+                - if g.object.inventory_product.product_type == "Serial"
+                  = s.input :returned_quantity, as: :hidden, input_html: { class: "serial_return_qty", data: {preVal: 0, returned: s.object.gin_source.returned_quantity} }
 
-                = label_tag "Return", "Return"
-                = check_box_tag "serial_return[]", s.object.gin_source.grn_serial_item.inventory_serial_item.id, false, onchange: "Admins.accumulated_qnty(this); return false;", class: "serial_return_checkbox"
+                  = label_tag "Return", "Return"
+                  = check_box_tag "serial_return[]", s.object.gin_source.grn_serial_item.inventory_serial_item.id, false, onchange: "Admins.accumulated_qnty(this); return false;", class: "serial_return_checkbox"
 
-                = render "admins/inventories/srr/serial_part_info", serial_item: s.object.gin_source.grn_serial_item.inventory_serial_item
+                  = render "admins/inventories/srr/serial_part_info", serial_item: s.object.gin_source.grn_serial_item.inventory_serial_item
 
-              - elsif g.object.inventory_product.product_type == "Batch"
-                %fieldset
-                  %legend Batch No: #{s.object.gin_source.grn_batch.inventory_batch.batch_no}
-                  = s.input :returned_quantity, as: :string, input_html: {oninput: "Admins.accumulated_qnty(this); return false;", data: {preVal: 0 } }
+                - elsif g.object.inventory_product.product_type == "Batch"
+                  %fieldset
+                    %legend Batch No: #{s.object.gin_source.grn_batch.inventory_batch.batch_no}
+                    = s.input :returned_quantity, as: :string, input_html: {oninput: "Admins.accumulated_qnty(this); return false;", data: {preVal: 0 } }
 
-                  = render "admins/inventories/srr/batch_info", batch: s.object.gin_source.grn_batch.inventory_batch
+                    = render "admins/inventories/srr/batch_info", batch: s.object.gin_source.grn_batch.inventory_batch
 
-              - elsif g.object.inventory_product.product_type == "Non Serial Non Batch"
-                = s.input :returned_quantity, as: :string, input_html: {oninput: "Admins.accumulated_qnty(this); return false;", data: {preVal: 0} }
+                - elsif g.object.inventory_product.product_type == "Non Serial Non Batch"
+                  = s.input :returned_quantity, as: :string, input_html: {oninput: "Admins.accumulated_qnty(this); return false;", data: {preVal: 0} }
 
-    %hr
+      %hr
     .row
       .col-md-12
         = f.input :remarks
