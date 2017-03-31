@@ -2,7 +2,7 @@
   .col-md-3
     %strong PO No: #{sopo.po_no}
   .col-md-3
-    %strong PO Date: #{sopo.po_date.try(:strftime, "%Y-%m-%d")}
+    %strong PO Date: #{sopo.po_date.try(:strftime, INOCRM_CONFIG['short_date_format'])}
   .col-md-3
     %strong Sales Order No: #{sopo.so_no}
   .col-md-3

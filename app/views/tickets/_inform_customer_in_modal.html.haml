@@ -19,7 +19,7 @@
       .col-md-3
         =label_tag "Informed at:"
       .col-md-6
-        = Date.today.try(:strftime, "%Y-%m-%d")
+        = Date.today.try(:strftime, INOCRM_CONFIG['short_date_format'])
     .row
       .col-md-1
       .col-md-3

@@ -65,7 +65,7 @@
                 / = i.contact_address
               .col-md-3
                 %strong Informed at:
-                = i.user_ticket_action.action_at.try(:strftime, "%Y-%m-%d %H:%M")
+                = i.user_ticket_action.action_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
               .col-md-3
                 %strong Informed by:
                 = User.cached_find_by_id(i.user_ticket_action.action_by).full_name

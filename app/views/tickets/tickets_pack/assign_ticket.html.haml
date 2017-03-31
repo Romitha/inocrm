@@ -26,7 +26,7 @@
 
         = f.simple_fields_for "user_ticket_actions_attributes[]", @user_ticket_action do |u|
 
-          / = u.input :action_at, as: :hidden#, input_html: {value: DateTime.now.strftime("%Y-%m-%d %H:%M")}
+          / = u.input :action_at, as: :hidden#, input_html: {value: DateTime.now.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")}
           = u.input :action_id, as: :hidden
           = u.input :action_by, as: :hidden, input_html: {value: current_user.id}
           = u.input :re_open_index, as: :hidden, input_html: {value: ticket.re_open_count}

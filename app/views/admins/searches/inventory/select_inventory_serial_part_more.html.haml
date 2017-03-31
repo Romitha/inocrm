@@ -106,7 +106,7 @@
           = grn_item.grn.grn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_grn_no_format"])
         .col-md-3
           %strong GRN Date:
-          = grn_item.grn.created_at.try(:strftime, "%Y-%m-%d %H:%M")
+          = grn_item.grn.created_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
         .col-md-3
           %strong GRN By:
           = grn_item.grn.created_by_user.full_name
@@ -138,7 +138,7 @@
                       = g.object.created_by_user.full_name
                     .col-md-2
                       .strong Date
-                      = g.object.created_at.try(:strftime, "%Y-%m-%d")
+                      = g.object.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
             .col-md-12
               = f.link_to_add :inventory_serial_part_additional_costs, title: "Add new Additional Cost" do
                 %span.glyphicon.glyphicon-plus
@@ -203,7 +203,7 @@
                 .col-md-2
                   =index+1
                 .col-md-3
-                  Date: #{hcost.try(:created_at).try(:strftime, "%Y-%m-%d %H:%M")}
+                  Date: #{hcost.try(:created_at).try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")}
                 .col-md-3
                   Cost: #{number_with_precision hcost.current_unit_cost, precision: 2}
                 .col-md-3

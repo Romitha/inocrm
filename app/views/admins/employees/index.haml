@@ -24,7 +24,7 @@
                     %em= user.epf_no
                     %br/
                     %strong Date Joined :
-                    %em= user.date_joined_at.try(:strftime, "%Y-%m-%d")
+                    %em= user.date_joined_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
                     %br/
                     %strong Email:
                     %em.has-tooltip{title: user.email, data: {toggle: "tooltip",

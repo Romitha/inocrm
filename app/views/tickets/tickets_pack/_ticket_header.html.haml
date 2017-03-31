@@ -31,10 +31,10 @@
               =truncate("#{ticket.owner_engineer_id and ticket.owner_engineer.user.full_name}", length: 17, title: 'View Agent Data', 'data-toggle' => 'tooltip')
             %br
             %strong Job started at:
-            #{ticket.job_started_at.try :strftime, "%Y-%m-%d %H:%M"}
+            #{ticket.job_started_at.try :strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}"}
             %br
             %strong Job finished at:
-            #{ticket.job_finished_at.try :strftime, "%Y-%m-%d %H:%M"}
+            #{ticket.job_finished_at.try :strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}"}
             %br
             %strong Customer chargeable:
             = ticket.cus_chargeable ? "Yes" : "No"
@@ -53,7 +53,7 @@
             %strong Started at: 
             %br
             %strong Finished at:
-            #{ticket.sla_finished_at.try :strftime, "%Y-%m-%d %H:%M"}
+            #{ticket.sla_finished_at.try :strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}"}
             %br
             %strong Remaining:
             %br
@@ -71,13 +71,13 @@
         .panel{style: "border: 1px solid #dddddd;"}
           .panel-body{style: "background-color: ##{ticket.ticket_status.colour};"}
             %strong Created at:
-            #{ticket.created_at.try :strftime, "%Y-%m-%d %H:%M"}
+            #{ticket.created_at.try :strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}"}
             %br
             %strong Created by:
             #{ticket.created_by and User.find(ticket.created_by).full_name}
             %br
             %strong Updated at:
-            #{ticket.updated_at.try :strftime, "%Y-%m-%d %H:%M"}
+            #{ticket.updated_at.try :strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}"}
             %br
             %strong Updated by:
             %span.has-tooltip{:title => "#{User.cached_find_by_id(ticket.ticket_updated_by).try(:full_name)}"}
@@ -91,7 +91,7 @@
         .panel{style: "border: 1px solid #dddddd;"}
           .panel-body{style: "background-color: ##{ticket.ticket_status.colour};"}
             %strong Logged at:
-            #{ticket.logged_at.try :strftime, "%Y-%m-%d %H:%M"}
+            #{ticket.logged_at.try :strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}"}
             %br
             %strong Logged by: 
             %span.has-tooltip{:title => "#{User.cached_find_by_id(ticket.logged_by).try(:full_name)}"}

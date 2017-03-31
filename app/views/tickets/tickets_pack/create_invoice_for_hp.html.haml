@@ -24,7 +24,7 @@
           %td
             = so_po.po_no
           %td
-            = so_po.po_date.try(:strftime, "%Y-%m-%d")
+            = so_po.po_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
           %td
 
           %td

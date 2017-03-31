@@ -17,7 +17,7 @@
         = current_user.full_name
         %br/
         %strong Created at:
-        = DateTime.now.strftime("%Y-%m-%d %H:%M")
+        = DateTime.now.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
       .col-md-12.small_scale_padding-top1
         = link_to "Change store", prn_admins_inventories_path
       .col-md-3.small_scale_padding-top1

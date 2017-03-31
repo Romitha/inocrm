@@ -10,9 +10,9 @@
         %dt Product Condition
         %dd= serial_item.product_condition.condition
         %dt Manufatured Date
-        %dd= serial_item.manufatured_date.try(:strftime, "%Y-%m-%d")
+        %dd= serial_item.manufatured_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
         %dt Expiry Date
-        %dd= serial_item.expiry_date.try(:strftime, "%Y-%m-%d")
+        %dd= serial_item.expiry_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
         %dt Scavenge:
         %dd= boolean_in_word serial_item.scavenge, "Yes", "No"
         %dt Parts not completed:
@@ -34,9 +34,9 @@
             .col-md-6
               Warranty type: #{wr.inventory_warranty.inventory_warranty_type.name}
             .col-md-3
-              Start at: #{wr.inventory_warranty.start_at.try(:strftime, "%Y-%m-%d")}
+              Start at: #{wr.inventory_warranty.start_at.try(:strftime, INOCRM_CONFIG['short_date_format'])}
             .col-md-3
-              End at: #{wr.inventory_warranty.end_at.try(:strftime, "%Y-%m-%d")}
+              End at: #{wr.inventory_warranty.end_at.try(:strftime, INOCRM_CONFIG['short_date_format'])}
             .col-md-3
               Period part: #{wr.inventory_warranty.try(:period_part)}
             .col-md-3

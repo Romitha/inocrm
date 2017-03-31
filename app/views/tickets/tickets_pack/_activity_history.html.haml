@@ -11,7 +11,7 @@
                   = action.task_action.action_description
                 .col-md-3
                   Date Time:
-                  = action.action_at.strftime "%Y-%m-%d %H:%M"
+                  = action.action_at.strftime "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}"
                 .col-md-3
                   %p By: #{Rails.cache.fetch([:action_by, action.action_by]){User.find(action.action_by)}.full_name}
 
@@ -96,7 +96,7 @@
                       = action.act_fsr.ticket_fsr.ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])
                   .col-md-3
                     Date:
-                    = action.act_fsr.ticket_fsr.created_at.try(:strftime, "%Y-%m-%d")
+                    = action.act_fsr.ticket_fsr.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
                   .col-md-3
                     User:
                     = User.find_by_id(action.act_fsr.ticket_fsr.created_by).try(:full_name)
@@ -104,9 +104,9 @@
                     / Remarks: #{simple_format action.act_fsr.ticket_fsr.remarks}
                 .row
                   .col-md-3
-                    Work Started At: #{action.act_fsr.ticket_fsr.try(:work_started_at).try(:strftime, "%Y-%m-%d")}
+                    Work Started At: #{action.act_fsr.ticket_fsr.try(:work_started_at).try(:strftime, INOCRM_CONFIG['short_date_format'])}
                   .col-md-3
-                    Work Finished At: #{action.act_fsr.ticket_fsr.try(:work_finished_at).try(:strftime, "%Y-%m-%d")}
+                    Work Finished At: #{action.act_fsr.ticket_fsr.try(:work_finished_at).try(:strftime, INOCRM_CONFIG['short_date_format'])}
                   .col-md-3
                     Hours Worked: #{action.act_fsr.ticket_fsr.try(:hours_worked)}
                   .col-md-3

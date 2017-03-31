@@ -56,7 +56,7 @@
         = current_user.full_name
       .col-md-4
         %strong Created at:
-        = DateTime.now.strftime("%Y-%m-%d %H:%M")
+        = DateTime.now.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
     .row
       .col-md-12
         #added_grns

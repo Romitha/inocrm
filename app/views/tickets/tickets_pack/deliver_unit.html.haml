@@ -38,13 +38,13 @@
                   = te.object.organization.try(:name)
                 .col-md-2
                   %strong Created at:
-                  = te.object.created_at.try(:strftime, "%Y-%m-%d")
+                  = te.object.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
                 .col-md-3
                   %strong Created by:
                   = User.find_by_id(te.object.created_by).try(:email)
                 .col-md-2
                   %strong Delivered at:
-                  = te.object.delivered_to_sup_at.try(:strftime, "%Y-%m-%d")
+                  = te.object.delivered_to_sup_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
                 .col-md-3
                   %strong Delivered by:
                   = User.find_by_id(te.object.delivered_to_sup_by).try(:email)

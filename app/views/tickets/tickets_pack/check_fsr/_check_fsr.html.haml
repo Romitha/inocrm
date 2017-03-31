@@ -101,10 +101,10 @@
                   FSR #{fsr.ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])}
                 .col-md-3
                   %strong Work Started:
-                  = fsr.work_started_at.try(:strftime, "%Y-%m-%d %H:%M")
+                  = fsr.work_started_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
                 .col-md-3
                   %strong Work Finished:
-                  = fsr.work_finished_at.try(:strftime, "%Y-%m-%d %H:%M")
+                  = fsr.work_finished_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
                 .col-md-3
                   %strong FSR No:
                   = fsr.ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])

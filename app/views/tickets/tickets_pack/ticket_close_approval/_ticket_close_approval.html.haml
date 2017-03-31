@@ -78,9 +78,9 @@
                   FSR #{fsr.object.id.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])}
                 .col-md-12
                 .col-md-4
-                  %p Work Started : #{fsr.object.work_started_at.try(:strftime, "%Y-%m-%d %H:%M")}
+                  %p Work Started : #{fsr.object.work_started_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")}
                 .col-md-4
-                  %p Work Finished : #{fsr.object.work_finished_at.try(:strftime, "%Y-%m-%d %H:%M")}
+                  %p Work Finished : #{fsr.object.work_finished_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")}
                 .col-md-4
                   %p FSR No : #{fsr.object.id.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])}
                 .col-md-4

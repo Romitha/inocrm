@@ -41,7 +41,7 @@
         %strong Not customer chargeable
       %br/
       %strong Requested at:
-      #{spare_part.requested_at.try(:strftime, "%Y-%m-%d")}
+      #{spare_part.requested_at.try(:strftime, INOCRM_CONFIG['short_date_format'])}
 
 - if request_part.is_a? TicketSparePartStore
   - if request_part.ticket_spare_part.ticket_estimation_parts.present?
@@ -55,7 +55,7 @@
           %strong Estimated by: #{User.cached_find_by_id(tsp.ticket_estimation.estimated_by).try(:full_name)}
 
         .col-md-3
-          %strong Estimated at: #{tsp.ticket_estimation.estimated_at.try(:strftime, "%Y-%m-%d")}
+          %strong Estimated at: #{tsp.ticket_estimation.estimated_at.try(:strftime, INOCRM_CONFIG['short_date_format'])}
 
     %hr
   - if request_part.ticket_spare_part.ticket_estimation_parts.present?
@@ -71,7 +71,7 @@
 
         .col-md-3
           %strong Customer approved at:
-          #{tsp.ticket_estimation.cust_approved_at.try(:strftime, "%Y-%m-%d")}
+          #{tsp.ticket_estimation.cust_approved_at.try(:strftime, INOCRM_CONFIG['short_date_format'])}
     %hr
   - if request_part.store_requested
     .row
@@ -83,7 +83,7 @@
 
       .col-md-3
         %strong Store requested at:
-        #{request_part.store_requested_at.try(:strftime, "%Y-%m-%d")}
+        #{request_part.store_requested_at.try(:strftime, INOCRM_CONFIG['short_date_format'])}
 
   - if request_part.ticket_spare_part.part_terminated    
     %hr
@@ -109,7 +109,7 @@
 
     .col-md-3
       %strong Requested at:
-      #{request_part.requested_at.try(:strftime, "%Y-%m-%d")}
+      #{request_part.requested_at.try(:strftime, INOCRM_CONFIG['short_date_format'])}
 
   %hr
   - if request_part.ticket_spare_part
@@ -248,7 +248,7 @@
                         - else
                           = (index+1)
                       %td= grn_serial_item.grn_item.grn.grn_no
-                      %td= grn_serial_item.grn_item.grn.created_at.try(:strftime, "%Y-%m-%d")
+                      %td= grn_serial_item.grn_item.grn.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
                       %td= grn_serial_item.grn_item.recieved_quantity
                       %td= grn_serial_item.grn_item.remaining_quantity
                       %td= grn_serial_item.inventory_serial_item.inventory_batch.try(:batch_no)
@@ -263,8 +263,8 @@
                       %td= grn_serial_item.inventory_serial_item.repaired ? "Repaired" : ""
                       %td= grn_serial_item.inventory_serial_item.reserved ? "Reserved" : ""
                       %td= grn_serial_item.inventory_serial_item.ct_no
-                      %td= grn_serial_item.inventory_serial_item.manufatured_date.try(:strftime, "%Y-%m-%d")
-                      %td= grn_serial_item.inventory_serial_item.expiry_date.try(:strftime, "%Y-%m-%d")
+                      %td= grn_serial_item.inventory_serial_item.manufatured_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
+                      %td= grn_serial_item.inventory_serial_item.expiry_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
                       %td= simple_format grn_serial_item.inventory_serial_item.remarks
                       %td= radio_button_tag "grn_serial_item_id", grn_serial_item.id, false,{class: "seperate_product_ckeckbox"} if srn_item.quantity == 1
 
@@ -298,7 +298,7 @@
                         - else
                           = (index+1)
                       %td= grn_batch.grn_item.grn.grn_no
-                      %td= grn_batch.grn_item.grn.created_at.try(:strftime, "%Y-%m-%d")
+                      %td= grn_batch.grn_item.grn.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
                       %td= grn_batch.grn_item.recieved_quantity
                       %td= grn_batch.grn_item.remaining_quantity
                       %td
@@ -336,7 +336,7 @@
                         - else
                           = (index+1)
                       %td= grn_item.grn.grn_no
-                      %td= grn_item.grn.created_at.to_date.try(:strftime, "%Y-%m-%d")
+                      %td= grn_item.grn.created_at.to_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
                       %td= grn_item.recieved_quantity
                       %td= grn_item.remaining_quantity
                       %td
@@ -412,7 +412,7 @@
                         - else
                           = (index+1)
                       %td= grn_serial_item.grn_item.grn.grn_no
-                      %td= grn_serial_item.grn_item.grn.created_at.try(:strftime, "%Y-%m-%d")
+                      %td= grn_serial_item.grn_item.grn.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
                       %td= grn_serial_item.grn_item.recieved_quantity
                       %td= grn_serial_item.grn_item.remaining_quantity
                       %td= grn_serial_item.inventory_serial_item.inventory_batch.try(:batch_no)
@@ -427,7 +427,7 @@
                       %td= grn_serial_item.inventory_serial_item.repaired ? "Repaired" : ""
                       %td= grn_serial_item.inventory_serial_item.reserved ? "Reserved" : ""
                       %td= grn_serial_item.inventory_serial_item.ct_no
-                      %td= grn_serial_item.inventory_serial_item.manufatured_date.try(:strftime, "%Y-%m-%d")
+                      %td= grn_serial_item.inventory_serial_item.manufatured_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
                       %td= grn_serial_item.inventory_serial_item.expiry_date
                       %td= simple_format grn_serial_item.inventory_serial_item.remarks
                       %td= link_to "select", "#", onclick: "Inventories.load_serial_and_part(this, #{grn_serial_item.inventory_serial_item.id}, 'serial_item', '#{request_part.approved_inv_product_id}'); return false;"

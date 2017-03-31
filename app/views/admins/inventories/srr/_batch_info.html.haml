@@ -6,11 +6,11 @@
           %dt Lot No:
           %dd= batch.lot_no
           %dt Manufatured Date:
-          %dd= batch.manufatured_date.try(:strftime, "%Y-%m-%d")
+          %dd= batch.manufatured_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
           %dt Batch No:
           %dd= batch.batch_no
           %dt Expiary Date:
-          %dd= batch.expiry_date.try(:strftime, "%Y-%m-%d")
+          %dd= batch.expiry_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
           %dt Issued Quantity:
           %dd= batch.grn_batches.to_a.sum{ |b| b.gin_sources.sum(:issued_quantity)}
           .col-md-12

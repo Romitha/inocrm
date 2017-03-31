@@ -103,10 +103,10 @@
             = boolean_in_word serial_item.reserved, "Yes", "No"
           %li
             %strong EXP date
-            = serial_item.try(:expiry_date).try(:to_date).try(:strftime, "%Y-%m-%d")
+            = serial_item.try(:expiry_date).try(:to_date).try(:strftime, INOCRM_CONFIG['short_date_format'])
           %li
             %strong MF Date
-            = serial_item.try(:manufatured_date).try(:to_date).try(:strftime, "%Y-%m-%d")
+            = serial_item.try(:manufatured_date).try(:to_date).try(:strftime, INOCRM_CONFIG['short_date_format'])
           %li
             %strong Used
             = boolean_in_word serial_item.used, "Yes", "No"

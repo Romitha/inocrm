@@ -15,7 +15,7 @@
 
     .col-md-2
       .fixed.small_scale_padding-top2{style: "font-size: 10px;"}
-        .strong.col-md-6= formatted_workflow_mapping[:task_content]["created_on"].to_time.strftime("%Y-%m-%d")
+        .strong.col-md-6= formatted_workflow_mapping[:task_content]["created_on"].to_time.strftime(INOCRM_CONFIG['short_date_format'])
         %em.col-md-6= formatted_workflow_mapping[:task_content]["created_on"].to_time.strftime("%H:%M %p")
       / .row
       /   .col-md-12

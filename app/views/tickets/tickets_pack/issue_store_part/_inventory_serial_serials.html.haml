@@ -31,7 +31,7 @@
           - else
             = (index+1)
         %td= grn_serial_item.grn_item.grn.grn_no
-        %td= grn_serial_item.grn_item.grn.created_at.try(:strftime, "%Y-%m-%d %H:%M")
+        %td= grn_serial_item.grn_item.grn.created_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
         %td= grn_serial_item.grn_item.recieved_quantity
         %td= grn_serial_item.grn_item.remaining_quantity
         %td= grn_serial_item.inventory_serial_item.inventory_batch.try(:batch_no)
@@ -46,7 +46,7 @@
         %td= grn_serial_item.inventory_serial_item.repaired ? "Repaired" : ""
         %td= grn_serial_item.inventory_serial_item.reserved ? "Reserved" : ""
         %td= grn_serial_item.inventory_serial_item.ct_no
-        %td= grn_serial_item.inventory_serial_item.manufatured_date.try(:strftime, "%Y-%m-%d %H:%M")
+        %td= grn_serial_item.inventory_serial_item.manufatured_date.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
         %td= grn_serial_item.inventory_serial_item.expiry_date
         %td= simple_format grn_serial_item.inventory_serial_item.remarks
         %td= link_to "select", "#", onclick: "Inventories.load_serial_and_part(this, #{grn_serial_item.inventory_serial_item.id}, 'serial_item', '#{session[:approved_inventory_product_id]}'); return false;"

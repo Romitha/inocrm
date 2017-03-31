@@ -27,7 +27,7 @@
             /   = (index+1)+ 10**(params[:page].to_i-1)
             / - else
             /   = (index+1)
-          %td #{ticket.logged_at.try :strftime, "%Y-%m-%d %H:%M" }
+          %td #{ticket.logged_at.try :strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}" }
           %td= ticket.status_id
           %td #{ticket.ticket_no}
           %td #{ticket.try(:customer).try(:name)}

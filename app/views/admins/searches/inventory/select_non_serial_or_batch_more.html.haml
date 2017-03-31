@@ -35,7 +35,7 @@
     .row
       .col-md-4
         %strong GRN Date:
-        = inventory_non_serial_non_batch.grn.created_at.try(:strftime, "%Y-%m-%d %H:%M")
+        = inventory_non_serial_non_batch.grn.created_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
       .col-md-4
         %strong GRN By:
         = inventory_non_serial_non_batch.grn.created_by_user.full_name
@@ -62,7 +62,7 @@
                 =index+1
               .col-md-3
                 %strong Date:
-                = hcost.try(:created_at).try(:strftime, "%Y-%m-%d %H:%M")
+                = hcost.try(:created_at).try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
               .col-md-3
                 %strong Cost:
                 = number_with_precision hcost.current_unit_cost, precision: 2

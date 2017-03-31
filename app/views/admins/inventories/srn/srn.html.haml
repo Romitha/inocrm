@@ -11,7 +11,7 @@
       = current_user.full_name
       %br/
       %strong Created at:
-      = DateTime.now.strftime("%Y-%m-%d %H:%M")
+      = DateTime.now.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
   = f.association :store, input_html: {onchange: "Inventories.call_from_store(this); return false;"}
   #store_controller.hide
     .row

@@ -17,7 +17,7 @@
         %tr
           %th{:scope => "row"} #{index+1}
           %td= po.try(:po_no)
-          %td= po.try(:po_date).try(:strftime, "%Y-%m-%d")
+          %td= po.try(:po_date).try(:strftime, INOCRM_CONFIG['short_date_format'])
           %td 
           %td= po.try(:amount)
           %td= po.try(:note)

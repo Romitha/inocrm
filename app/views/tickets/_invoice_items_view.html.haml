@@ -28,7 +28,7 @@
                   = so_po_id.po_no
                 .col-md-3
                   %strong PO Date:
-                  = so_po_id.po_date.try(:strftime, "%Y-%m-%d")
+                  = so_po_id.po_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
                 .col-md-3
                   %strong Sales Order No:
                   = so_po_id.so_no
@@ -60,7 +60,7 @@
                           %td
                             = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:order_no)
                           %td
-                            = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:issued_at).try(:strftime, "%Y-%m-%d")
+                            = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:issued_at).try(:strftime, INOCRM_CONFIG['short_date_format'])
                           %td
                             = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:spare_part_id)
                           %td
@@ -118,15 +118,15 @@
                 %td
                   = invo.try(:invoice_no)
                 %td
-                  = invo.try(:created_at).try(:strftime, "%Y-%m-%d")
+                  = invo.try(:created_at).try(:strftime, INOCRM_CONFIG['short_date_format'])
                 %td
                   = so_po_id.so_no
                 %td
-                  = so_po_id.created_at.try(:strftime, "%Y-%m-%d")
+                  = so_po_id.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
                 %td
                   = so_po_id.po_no
                 %td
-                  = so_po_id.po_date.try(:strftime, "%Y-%m-%d")
+                  = so_po_id.po_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
                 %td
                 %td
                   = invo.total_amount

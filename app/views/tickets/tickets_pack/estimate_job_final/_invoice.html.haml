@@ -30,7 +30,7 @@
         %tr
           %td= i.invoice_no.to_s.rjust(6, INOCRM_CONFIG["invoice_no_format"])
           %td= i.created_by_ch_eng.try(:full_name)
-          %td= i.created_at.try(:strftime, "%Y-%m-%d %H:%M")
+          %td= i.created_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
           %td= boolean_in_word i.customer_sent, "Yes", "No"
           %td= boolean_in_word i.canceled, "Yes", "No"
           %td= i.currency.code

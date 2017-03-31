@@ -6,7 +6,7 @@
     .col-md-4
       %strong PO No. #{SoPo.find_by_id(@po).try(:po_no).to_s.rjust(5, INOCRM_CONFIG["inventory_po_no_format"])}
     .col-md-4
-      %strong PO Date #{SoPo.find_by_id(@po).try(:po_date).try(:strftime, "%Y-%m-%d")}
+      %strong PO Date #{SoPo.find_by_id(@po).try(:po_date).try(:strftime, INOCRM_CONFIG['short_date_format'])}
   %table.table
     %thead
       %tr
@@ -33,19 +33,19 @@
         - SoPo.find_by_id(@po).try(:so_po_items).each do |po_item|
           %tr
             %td
-              = po_item.ticket_spare_part_manufacture.try(:event_no)
+              = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:event_no)
             %td
-              = po_item.ticket_spare_part_manufacture.try(:order_no)
+              = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:order_no)
             %td
-              = po_item.ticket_spare_part_manufacture.try(:issued_at).try(:strftime, "%Y-%m-%d")
+              = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:issued_at).try(:strftime, INOCRM_CONFIG['short_date_format'])
             %td
-              = po_item.ticket_spare_part_manufacture.try(:spare_part_id)
+              = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:spare_part_id)
             %td
               = po_item.item_no
             %td
               = po_item.ticket_spare_part.try(:spare_part_no)
             %td
-              = po_item.ticket_spare_part_manufacture.try(:payment_expected_manufacture)
+              = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:payment_expected_manufacture)
             %td
               = po_item.ticket_spare_part.try(:spare_part_description)
             %td

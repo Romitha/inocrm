@@ -6,11 +6,11 @@
           %dt Serial No:
           %dd= serial_item.serial_no
           %dt Manufatured Date:
-          %dd= serial_item.manufatured_date.try(:strftime, "%Y-%m-%d")
+          %dd= serial_item.manufatured_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
           %dt CT No:
           %dd= serial_item.ct_no
           %dt Expiary Date:
-          %dd= serial_item.expiry_date.try(:strftime, "%Y-%m-%d")
+          %dd= serial_item.expiry_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
           %dt Condition:
           %dd= serial_item.product_condition.condition
           %dt Remarks:

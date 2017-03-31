@@ -26,9 +26,9 @@
       %dt SRN No:
       %dd= @srn.srn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_srn_no_format"])
       %dt Required Date:
-      %dd= @srn.required_at.try(:strftime, "%Y-%m-%d")
+      %dd= @srn.required_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
       %dt Created at:
-      %dd= @srn.created_at.try(:strftime, "%Y-%m-%d")
+      %dd= @srn.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
       %dt Remarks
       %dd= @srn.remarks
 

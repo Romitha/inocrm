@@ -46,7 +46,7 @@
           %td
             = inventory_serial_part.ct_no
           %td
-            = inventory_serial_part.manufatured_date.try(:strftime, "%Y-%m-%d %H:%M")
+            = inventory_serial_part.manufatured_date.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
           %td
             = inventory_serial_part.expiry_date
           %td

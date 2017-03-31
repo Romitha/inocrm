@@ -74,7 +74,7 @@
             = i.user_ticket_action.action_by
           .col-md-12
             %strong Informed at:
-            = i.user_ticket_action.action_at.try(:strftime, "%Y-%m-%d")
+            = i.user_ticket_action.action_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
           .col-md-12
             %strong Informed Note:
             = i.note

@@ -45,11 +45,11 @@
             %dt Requested
             %dd
               - if ticket_spare_part.requested_at
-                #{ticket_spare_part.requested_at.try(:strftime, "%Y-%m-%d %H:%M")} by #{User.cached_find_by_id(ticket_spare_part.requested_by).try(:full_name)}
+                #{ticket_spare_part.requested_at.try(:strftime, "INOCRM_CONFIG["short_date_format"] %H:%M")} by #{User.cached_find_by_id(ticket_spare_part.requested_by).try(:full_name)}
             %dt Action Status
             %dd
               = ticket_spare_part.spare_part_status_action.name
-              = link_to "history", "#", tabindex: "0", rel: "popover", title: "Action History", data: {toggle: "popover", trigger: "click", content: ticket_spare_part.ticket_spare_part_status_actions.map { |tsp| "#{tsp.spare_part_status_action.name} <span class='text-muted text3'>#{User.cached_find_by_id(tsp.done_by).email}-#{tsp.done_at.strftime('%Y-%m-%d %H:%M %P')}</span>" }.join("<br/>"), placement: "bottom", html: true}
+              = link_to "history", "#", tabindex: "0", rel: "popover", title: "Action History", data: {toggle: "popover", trigger: "click", content: ticket_spare_part.ticket_spare_part_status_actions.map { |tsp| "#{tsp.spare_part_status_action.name} <span class='text-muted text3'>#{User.cached_find_by_id(tsp.done_by).email}-#{tsp.done_at.strftime('INOCRM_CONFIG["short_date_format"] %H:%M %P')}</span>" }.join("<br/>"), placement: "bottom", html: true}
 
 
             %dt Pending
@@ -211,14 +211,14 @@
               %dt Store requested by
               %dd= User.cached_find_by_id(spare_part_store.try(:store_requested_by)).try(:full_name)
               %dt Store requested at
-              %dd= spare_part_store.try(:store_requested_at).try(:strftime, "%Y-%m-%d %H:%M")
+              %dd= spare_part_store.try(:store_requested_at).try(:strftime, "INOCRM_CONFIG["short_date_format"] %H:%M")
               - if spare_part_store.store_request_approved
                 %dt Request approved
                 %dd= spare_part_store.store_request_approved ? "Yes" : "No"
                 %dt Request approved by
                 %dd= User.cached_find_by_id(spare_part_store.store_request_approved_by).try(:full_name)
                 %dt Request approved at
-                %dd= spare_part_store.store_request_approved_at.try(:strftime, "%Y-%m-%d %H:%M")
+                %dd= spare_part_store.store_request_approved_at.try(:strftime, "INOCRM_CONFIG["short_date_format"] %H:%M")
               %dt Required quantity
               %dd= spare_part_store.store_request_approved ? spare_part_store.try(:approved_quantity) : spare_part_store.try(:requested_quantity)
               %dt Store
@@ -226,7 +226,7 @@
               %dt Issued by
               %dd= User.find_by_id(spare_part_store.try(:issued_by)).try(:full_name)
               %dt Issued at
-              %dd= spare_part_store.issued_at.try(:strftime, "%Y-%m-%d %H:%M")
+              %dd= spare_part_store.issued_at.try(:strftime, "INOCRM_CONFIG["short_date_format"] %H:%M")
         %hr
 
         .row
@@ -306,7 +306,7 @@
                   %dt Estimated by
                   %dd= User.cached_find_by_id(tsp.ticket_estimation.estimated_by).try(:full_name)
                   %dt Estimated at
-                  %dd= tsp.ticket_estimation.estimated_at.try(:strftime, "%Y-%m-%d %H:%M")
+                  %dd= tsp.ticket_estimation.estimated_at.try(:strftime, "INOCRM_CONFIG["short_date_format"] %H:%M")
                   %dt{title: "Advance payment amount"} Advance payment amount (#{tsp.ticket_estimation.currency.code})
                   %dd= tsp.ticket_estimation.advance_payment_amount
                   %dt{title: "Est. additional amount"} Est. additional amount (#{tsp.ticket_estimation.currency.code})
@@ -319,7 +319,7 @@
                     %dt Customer approved by
                     %dd= User.cached_find_by_id(tsp.ticket_estimation.cust_approved_by).try(:full_name)
                     %dt Customer approved at
-                    %dd= tsp.ticket_estimation.cust_approved_at.try(:strftime, "%Y-%m-%d %H:%M")
+                    %dd= tsp.ticket_estimation.cust_approved_at.try(:strftime, "INOCRM_CONFIG["short_date_format"] %H:%M")
 
       %hr
 
@@ -363,13 +363,13 @@
               %dt Requested
               %dd
                 - if ticket_spare_part_ref.requested_at
-                  #{ticket_spare_part_ref.requested_at.try(:strftime, "%Y-%m-%d %H:%M")} by #{User.cached_find_by_id(ticket_spare_part_ref.requested_by).try(:full_name)}
+                  #{ticket_spare_part_ref.requested_at.try(:strftime, "INOCRM_CONFIG["short_date_format"] %H:%M")} by #{User.cached_find_by_id(ticket_spare_part_ref.requested_by).try(:full_name)}
               %dt Required quantity
               %dd= ticket_spare_part_ref.ticket_spare_part_store.try(:approved_quantity)
               %dt Action Status
               %dd
                 = ticket_spare_part_ref.spare_part_status_action.name
-                = link_to "history", "#", tabindex: "0", rel: "popover", title: "Action History", data: {toggle: "popover", trigger: "click", content: ticket_spare_part_ref.ticket_spare_part_status_actions.map { |tsp| "#{tsp.spare_part_status_action.name} <span class='text-muted text3'>#{User.cached_find_by_id(tsp.done_by).email}-#{tsp.done_at.strftime('%Y-%m-%d %H:%M %P')}</span>" }.join("<br/>"), placement: "bottom", html: true}
+                = link_to "history", "#", tabindex: "0", rel: "popover", title: "Action History", data: {toggle: "popover", trigger: "click", content: ticket_spare_part_ref.ticket_spare_part_status_actions.map { |tsp| "#{tsp.spare_part_status_action.name} <span class='text-muted text3'>#{User.cached_find_by_id(tsp.done_by).email}-#{tsp.done_at.strftime('INOCRM_CONFIG["short_date_format"] %H:%M %P')}</span>" }.join("<br/>"), placement: "bottom", html: true}
 
 
               %dt Pending
@@ -480,11 +480,11 @@
             %dt Requested
             %dd
               - if ticket_on_loan_spare_part.requested_at
-                #{ticket_on_loan_spare_part.requested_at.try(:strftime, "%Y-%m-%d %H:%M")} by #{User.cached_find_by_id(ticket_on_loan_spare_part.requested_by).try(:full_name)}
+                #{ticket_on_loan_spare_part.requested_at.try(:strftime, "INOCRM_CONFIG["short_date_format"] %H:%M")} by #{User.cached_find_by_id(ticket_on_loan_spare_part.requested_by).try(:full_name)}
             %dt Action Status
             %dd
               = ticket_on_loan_spare_part.spare_part_status_action.name
-              = link_to "history", "#", tabindex: "0", rel: "popover", title: "Action History", data: {toggle: "popover", trigger: "click", content: ticket_on_loan_spare_part.ticket_on_loan_spare_part_status_actions.map { |tsp| "#{tsp.spare_part_status_action.name} <span class='text-muted text3'>#{User.cached_find_by_id(tsp.done_by).email}-#{tsp.done_at.strftime('%Y-%m-%d %H:%M %P')}</span>" }.join("<br/>"), placement: "bottom", html: true}
+              = link_to "history", "#", tabindex: "0", rel: "popover", title: "Action History", data: {toggle: "popover", trigger: "click", content: ticket_on_loan_spare_part.ticket_on_loan_spare_part_status_actions.map { |tsp| "#{tsp.spare_part_status_action.name} <span class='text-muted text3'>#{User.cached_find_by_id(tsp.done_by).email}-#{tsp.done_at.strftime('INOCRM_CONFIG["short_date_format"] %H:%M %P')}</span>" }.join("<br/>"), placement: "bottom", html: true}
             %dt Pending
             %dd
               - if ticket_on_loan_spare_part.spare_part_status_action.code == "RPR"
@@ -501,13 +501,13 @@
             %dd= User.cached_find_by_id(ticket_on_loan_spare_part.approved_by).try(:full_name)
 
             %dt Request approved at:
-            %dd= ticket_on_loan_spare_part.approved_at.try(:strftime, "%Y-%m-%d %H:%M")
+            %dd= ticket_on_loan_spare_part.approved_at.try(:strftime, "INOCRM_CONFIG["short_date_format"] %H:%M")
 
             %dt Issued by:
             %dd= User.cached_find_by_id(ticket_on_loan_spare_part.try(:issued_by)).try(:full_name)
 
             %dt Issued at:
-            %dd= ticket_on_loan_spare_part.issued_at.try(:strftime, "%Y-%m-%d %H:%M")
+            %dd= ticket_on_loan_spare_part.issued_at.try(:strftime, "INOCRM_CONFIG["short_date_format"] %H:%M")
 
             %dt Repair start:
             %dd= distance_of_time_in_words ticket_on_loan_spare_part.repare_start, ticket_on_loan_spare_part.repare_end if ticket_on_loan_spare_part.repare_start and ticket_on_loan_spare_part.repare_end

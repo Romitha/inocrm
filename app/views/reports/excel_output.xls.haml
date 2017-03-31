@@ -110,13 +110,13 @@
 
         %td
           // Log Date & Time
-          = ticket.logged_at.try(:strftime, "%Y-%m-%d %H:%M")
+          = ticket.logged_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
         %td
           // Engrs Assign Date & Time
-          = ticket.try(:owner_engineer).try(:create_at).try(:strftime, "%Y-%m-%d %H:%M")
+          = ticket.try(:owner_engineer).try(:create_at).try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
         %td
           // Start Date & Time
-          = ticket.try(:job_started_at).try(:strftime, "%Y-%m-%d %H:%M")
+          = ticket.try(:job_started_at).try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
         %td
           // Start Action
           = ticket.try(:ticket_start_action).try(:action)
@@ -153,7 +153,7 @@
 
         %td
           // Engrs Finished Date & Time
-          = ticket.try(:job_finished_at).try(:strftime, "%Y-%m-%d %H:%M")
+          = ticket.try(:job_finished_at).try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
         %td
           // Call Status
           = ticket.ticket_status_name

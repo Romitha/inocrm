@@ -5,7 +5,7 @@
     #{return_bundle.bundle_no}
   .col-md-3
     %strong Bundled Date:
-    #{return_bundle.created_at.try(:strftime, "%Y-%m-%d")}
+    #{return_bundle.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])}
   .col-md-3
     %strong Brand Name:
     #{return_bundle.try(:product_brand).try(:name)}
@@ -28,13 +28,13 @@
         %th Description
         %th Serial No
         %th Part Status
-        %th Eventl No
+        %th Event No
         %th Ticket No
     %tbody
       - return_bundle_manufactures.each_with_index do |bundle_part, index|
         %tr
           %th=index+1
-          %td=bundle_part.return_parts_bundle.try(:created_at).try(:strftime, "%m-%d-%Y")
+          %td=bundle_part.return_parts_bundle.try(:created_at).try(:strftime, "%d-%m-%Y")
           %td=bundle_part.ticket_spare_part.spare_part_no
           %td=bundle_part.ticket_spare_part.spare_part_description
           %td= bundle_part.ticket_spare_part.return_part_serial_no

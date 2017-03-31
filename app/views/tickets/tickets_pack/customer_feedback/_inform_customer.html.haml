@@ -6,7 +6,7 @@
     #{current_user.email}
   .col-md-4
     %strong Informed at:
-    #{DateTime.now.strftime("%Y-%m-%d %H:%M")}
+    #{DateTime.now.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")}
   %hr
   .row
     .col-md-6

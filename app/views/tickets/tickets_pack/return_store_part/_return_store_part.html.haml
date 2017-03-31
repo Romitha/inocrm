@@ -35,13 +35,13 @@
 .row
   .col-md-3
     %strong Date Issued:
-    #{active_spare_part.try(:issued_at).try(:strftime, "%Y-%m-%d")}
+    #{active_spare_part.try(:issued_at).try(:strftime, INOCRM_CONFIG['short_date_format'])}
   .col-md-3
     %strong Issued By:
     #{User.cached_find_by_id(active_spare_part.try(:issued_by)).try(:full_name)}
   .col-md-3
     %strong Date Returned:
-    #{(onloan_request ? onloan_spare_part : spare_part).try(:part_returned_at).try(:strftime, "%Y-%m-%d")}
+    #{(onloan_request ? onloan_spare_part : spare_part).try(:part_returned_at).try(:strftime, INOCRM_CONFIG['short_date_format'])}
   .col-md-3
     %strong Returned By:
     #{User.cached_find_by_id((onloan_request ? onloan_spare_part : spare_part).try(:part_returned_by)).try(:full_name)}
@@ -123,7 +123,7 @@
             = serial_part.inventory_serial_item.try(:inventory_product).try(:inventory_unit).try(:unit)
           .col-md-6
             %strong GRN Date:
-            = gin_source.main_part_grn_serial_item.grn_item.grn.created_at.try(:strftime, "%Y-%m-%d %H:%M")
+            = gin_source.main_part_grn_serial_item.grn_item.grn.created_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
           .col-md-6
             %strong GRN No:
             = gin_source.main_part_grn_serial_item.grn_item.grn.grn_no
@@ -202,10 +202,10 @@
       = grn_batch.inventory_batch.batch_no
     .col-md-6
       %strong Manufacture Date:
-      = grn_batch.inventory_batch.manufatured_date.try(:strftime, "%Y-%m-%d %H:%M")
+      = grn_batch.inventory_batch.manufatured_date.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
     .col-md-6
       %strong Expiry Date:
-      = grn_batch.inventory_batch.expiry_date.try(:strftime, "%Y-%m-%d %H:%M")
+      = grn_batch.inventory_batch.expiry_date.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
     .col-md-6
       %strong Remarks:
       = simple_format grn_batch.inventory_batch.remarks
@@ -270,7 +270,7 @@
 
     .col-md-3
       %strong Grn Date:
-      = grn_item.grn.created_at.try(:strftime, "%Y-%m-%d %H:%M")
+      = grn_item.grn.created_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
 
     .col-md-3
       %strong Grn Cost (#{grn_item.currency.code}):

@@ -68,8 +68,8 @@
       %dt Created By:
       %dd= product.created_by_from_user
       %dt Created At:
-      %dd= product.created_at.try(:strftime, "%Y-%m-%d")
+      %dd= product.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
       %dt Updated By:
       %dd= product.updated_by_from_user
       %dt Updated At:
-      %dd= product.try(:updated_at).try(:strftime, "%Y-%m-%d")
+      %dd= product.try(:updated_at).try(:strftime, INOCRM_CONFIG['short_date_format'])

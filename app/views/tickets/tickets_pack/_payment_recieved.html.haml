@@ -61,7 +61,7 @@
         %td= ticket.final_invoice.invoice_no.to_s.rjust(6, INOCRM_CONFIG["invoice_no_format"])
         %td= ticket.final_invoice.created_by_ch_eng.try(:full_name)
 
-        %td= ticket.final_invoice.created_at.try(:strftime, "%Y-%m-%d %H:%M")
+        %td= ticket.final_invoice.created_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
 
         %td= boolean_in_word ticket.final_invoice.customer_sent, "Yes", "No"
 

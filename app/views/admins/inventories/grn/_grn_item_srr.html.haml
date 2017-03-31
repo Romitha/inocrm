@@ -141,9 +141,9 @@
             %dd= srr_item_source.gin_source.grn_batch.inventory_batch.batch_no
             %dt Manufactured Date:
             / %dd= srr_item_source.gin_source.grn_batch.inventory_batch.manufatured_date.to_date.strftime(INOCRM_CONFIG["short_date_format"])
-            %dd= srr_item_source.gin_source.grn_batch.inventory_batch.manufatured_date.try(:strftime, "%Y-%m-%d")
+            %dd= srr_item_source.gin_source.grn_batch.inventory_batch.manufatured_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
             %dt Expiry Date:
-            %dd= srr_item_source.gin_source.grn_batch.inventory_batch.expiry_date.try(:strftime, "%Y-%m-%d")
+            %dd= srr_item_source.gin_source.grn_batch.inventory_batch.expiry_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
             %dt GIN Quantity:
             %dd= srr_item_source.gin_source.gin_item.issued_quantity
             %dt GIN Cost:
@@ -166,9 +166,9 @@
                       %dt Type:
                       %dd= batch_warranty.inventory_warranty.inventory_warranty_type.name
                       %dt Start At:
-                      %dd= batch_warranty.inventory_warranty.start_at.try(:strftime, "%Y-%m-%d")
+                      %dd= batch_warranty.inventory_warranty.start_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
                       %dt End At:
-                      %dd= batch_warranty.inventory_warranty.end_at.try(:strftime, "%Y-%m-%d")
+                      %dd= batch_warranty.inventory_warranty.end_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
                       %dt Period Part (In months):
                       %dd= batch_warranty.inventory_warranty.period_part
                       %dt Period Labour (In months):

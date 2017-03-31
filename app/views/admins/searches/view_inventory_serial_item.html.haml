@@ -85,10 +85,10 @@
       #{@serial_item.try(:generated_serial_no)}
     .col-md-4
       %strong Manufatured Date
-      #{@serial_item.try(:manufatured_date).try(:strftime, "%Y-%m-%d")}
+      #{@serial_item.try(:manufatured_date).try(:strftime, INOCRM_CONFIG['short_date_format'])}
     .col-md-4
       %strong Expiry Date
-      #{@serial_item.try(:expiry_date).try(:strftime, "%Y-%m-%d")}
+      #{@serial_item.try(:expiry_date).try(:strftime, INOCRM_CONFIG['short_date_format'])}
   .row
     .col-md-4
       %strong CT No

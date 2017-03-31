@@ -33,7 +33,7 @@
         %strong Not customer chargeable
       %br/
       %strong Requested at:
-      #{spare_part.requested_at.try(:strftime, "%Y-%m-%d %H:%M")}
+      #{spare_part.requested_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")}
   %hr
 
 - if request_part.is_a? TicketSparePartStore
@@ -54,7 +54,7 @@
           %strong Estimated by: #{User.cached_find_by_id(tsp.ticket_estimation.estimated_by).try(:full_name)}
 
         .col-md-4
-          %strong Estimated at: #{tsp.ticket_estimation.estimated_at.try(:strftime, "%Y-%m-%d %H:%M")}
+          %strong Estimated at: #{tsp.ticket_estimation.estimated_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")}
 
       %hr
       .row
@@ -67,7 +67,7 @@
 
         .col-md-3
           %strong Customer approved at:
-          #{tsp.ticket_estimation.cust_approved_at.try(:strftime, "%Y-%m-%d %H:%M")}
+          #{tsp.ticket_estimation.cust_approved_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")}
         .col-md-3
           %strong Warranty Period (months):
           = tsp.warranty_period
@@ -81,7 +81,7 @@
 
       .col-md-6
         %strong Store requested at:
-        #{request_part.store_requested_at.try(:strftime, "%Y-%m-%d %H:%M")}
+        #{request_part.store_requested_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")}
     %hr
 
   - if request_part.ticket_spare_part.part_terminated
@@ -105,7 +105,7 @@
 
     .col-md-4
       %strong Requested at:
-      #{request_part.requested_at.try(:strftime, "%Y-%m-%d %H:%M")}
+      #{request_part.requested_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")}
 
   %hr
   - if request_part.ticket_spare_part

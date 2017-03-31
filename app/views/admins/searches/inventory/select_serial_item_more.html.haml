@@ -34,11 +34,11 @@
           %dt Serial No:
           %dd #{inventory_serial_item.serial_no}
           %dt Manufatured Date:
-          %dd #{inventory_serial_item.try(:manufatured_date).try(:strftime, "%Y-%m-%d")}
+          %dd #{inventory_serial_item.try(:manufatured_date).try(:strftime, INOCRM_CONFIG['short_date_format'])}
           %dt CT No:
           %dd #{inventory_serial_item.try(:ct_no)}
           %dt Expiry Date:
-          %dd #{inventory_serial_item.try(:expiry_date).try(:strftime, "%Y-%m-%d")}
+          %dd #{inventory_serial_item.try(:expiry_date).try(:strftime, INOCRM_CONFIG['short_date_format'])}
           %dt Scavenge
           %dd= boolean_in_word inventory_serial_item.scavenge, "Yes", "No"
       .col-md-5
@@ -70,9 +70,9 @@
             .col-md-10
               %dl.dl-horizontal
                 %dt Start At:
-                %dd #{b_warranty.inventory_warranty.try(:start_at).try(:strftime, "%Y-%m-%d")}
+                %dd #{b_warranty.inventory_warranty.try(:start_at).try(:strftime, INOCRM_CONFIG['short_date_format'])}
                 %dt End At:
-                %dd #{b_warranty.inventory_warranty.try(:end_at).try(:strftime, "%Y-%m-%d")}
+                %dd #{b_warranty.inventory_warranty.try(:end_at).try(:strftime, INOCRM_CONFIG['short_date_format'])}
                 %dt Period Part:
                 %dd #{b_warranty.inventory_warranty.try(:period_part)}
                 %dt Period Labour:
@@ -96,7 +96,7 @@
             %dt GRN No:
             %dd= grn_serial_item.grn_item.grn.grn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_grn_no_format"])
             %dt GRN Date:
-            %dd= grn_serial_item.grn_item.grn.created_at.try(:strftime, "%Y-%m-%d %H:%M")
+            %dd= grn_serial_item.grn_item.grn.created_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
             %dt GRN By:
             %dd= grn_serial_item.grn_item.grn.created_by_from_user
             %dt GRN remaining quantity:
@@ -134,7 +134,7 @@
                       = g.object.created_by_user.try(:full_name)
                     .col-md-2
                       .strong Date
-                      = g.object.created_at.try(:strftime, "%Y-%m-%d")
+                      = g.object.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
             .col-md-12
               = f.link_to_add :inventory_serial_items_additional_costs, title: "Add new Additional Cost" do
                 %span.glyphicon.glyphicon-plus
@@ -155,7 +155,7 @@
       /             =index+1
       /           .col-md-3
       /             %strong Date:
-      /             #{hcost.try(:created_at).try(:strftime, "%Y-%m-%d %H:%M")}
+      /             #{hcost.try(:created_at).try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")}
       /           .col-md-3
       /             %strong Cost:
       /             #{number_with_precision hcost.current_unit_cost, precision: 2}
@@ -174,7 +174,7 @@
                   =index+1
                 .col-md-3
                   %strong Date:
-                  #{hcost.try(:created_at).try(:strftime, "%Y-%m-%d %H:%M")}
+                  #{hcost.try(:created_at).try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")}
                 .col-md-3
                   %strong Cost:
                   #{number_with_precision hcost.current_unit_cost, precision: 2}

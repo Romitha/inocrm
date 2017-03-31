@@ -85,7 +85,7 @@
           .col-md-5
             %dl.dl-horizontal
               %dt Date:
-              %dd=cost.try(:created_at).try(:strftime, "%Y-%m-%d %H:%M")
+              %dd=cost.try(:created_at).try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
               %dt Cost:
               %dd=cost.try(:current_unit_cost)
               %dt Done By:
@@ -102,7 +102,7 @@
                     =batch.inventory_batch.try(:lot_no)
                   .col-md-4
                     Manufacture Date:
-                    =batch.inventory_batch.try(:manufatured_date).try(:strftime, "%Y-%m-%d")
+                    =batch.inventory_batch.try(:manufatured_date).try(:strftime, INOCRM_CONFIG['short_date_format'])
                   .col-md-4
                     %strong Received Quantity:
                     =batch.recieved_quantity
@@ -112,7 +112,7 @@
                     =batch.inventory_batch.try(:batch_no)
                   .col-md-4
                     Expiry Date:
-                    =batch.inventory_batch.try(:expiry_date).try(:strftime, "%Y-%m-%d")
+                    =batch.inventory_batch.try(:expiry_date).try(:strftime, INOCRM_CONFIG['short_date_format'])
                   .col-md-4
                     %strong Remaining Quantity:
                     =batch.remaining_quantity
@@ -131,10 +131,10 @@
                               =warranty.inventory_warranty.inventory_warranty_type.name
                             .col-md-4
                               Start At:
-                              =warranty.inventory_warranty.try(:start_at).try(:strftime, "%Y-%m-%d")
+                              =warranty.inventory_warranty.try(:start_at).try(:strftime, INOCRM_CONFIG['short_date_format'])
                             .col-md-4
                               End At:
-                              =warranty.inventory_warranty.try(:end_at).try(:strftime, "%Y-%m-%d")
+                              =warranty.inventory_warranty.try(:end_at).try(:strftime, INOCRM_CONFIG['short_date_format'])
                           .row
                             .col-md-4
                               Period Part:
@@ -162,7 +162,7 @@
                     =serial_item.inventory_serial_item.try(:serial_no)
                   .col-md-4
                     Manufacture Date:
-                    =serial_item.inventory_serial_item.try(:manufatured_date).try(:strftime, "%Y-%m-%d")
+                    =serial_item.inventory_serial_item.try(:manufatured_date).try(:strftime, INOCRM_CONFIG['short_date_format'])
                   .col-md-4
                     %strong Available:
                     -if serial_item.remaining == true
@@ -176,7 +176,7 @@
                     =serial_item.inventory_serial_item.try(:ct_no)
                   .col-md-4
                     Expiry Date:
-                    =serial_item.inventory_serial_item.try(:expiry_date).try(:strftime, "%Y-%m-%d")
+                    =serial_item.inventory_serial_item.try(:expiry_date).try(:strftime, INOCRM_CONFIG['short_date_format'])
                   .col-md-4
                     Condition:
                     =serial_item.inventory_serial_item.product_condition.condition
@@ -233,10 +233,10 @@
                               =s_warranty.inventory_warranty.inventory_warranty_type.name
                             .col-md-4
                               Start At:
-                              =s_warranty.inventory_warranty.try(:start_at).try(:strftime, "%Y-%m-%d")
+                              =s_warranty.inventory_warranty.try(:start_at).try(:strftime, INOCRM_CONFIG['short_date_format'])
                             .col-md-4
                               End At:
-                              =s_warranty.inventory_warranty.try(:end_at).try(:strftime, "%Y-%m-%d")
+                              =s_warranty.inventory_warranty.try(:end_at).try(:strftime, INOCRM_CONFIG['short_date_format'])
                           .row
                             .col-md-4
                               Period Part:

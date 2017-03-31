@@ -52,6 +52,6 @@
           - if cost.persisted?
             %tr
               %td= index+1
-              %td=cost.try(:created_at).try(:strftime, "%Y-%m-%d")
+              %td=cost.try(:created_at).try(:strftime, INOCRM_CONFIG['short_date_format'])
               %td=cost.try(:current_unit_cost)
               %td=cost.try(:created_by_user).try(:email)

@@ -18,8 +18,8 @@
         %td= po.store_name
         %td= po.supplier.name
         %td= po.formated_po_no
-        %td= po.created_at.to_date.try(:strftime, "%Y-%m-%d")
-        %td= po.delivery_date and po.delivery_date.to_date.try(:strftime, "%Y-%m-%d")
+        %td= po.created_at.to_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
+        %td= po.delivery_date and po.delivery_date.to_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
         %td= simple_format po.remarks
         %td= po.created_by_user_full_name
         %td= link_to "Select", grn_admins_inventories_path(purchase_order: "select_po", po_id: po.id), remote: true, id: "po_#{po.id}", class: "po_select_link"

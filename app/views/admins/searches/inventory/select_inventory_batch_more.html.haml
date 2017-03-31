@@ -24,7 +24,7 @@
         = inventory_batch.lot_no
       .col-md-3
         %strong Manufatured Date:
-        = inventory_batch.manufatured_date.try(:strftime, "%Y-%m-%d")
+        = inventory_batch.manufatured_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
       .col-md-3
         %strong Quantity Available:
         = inventory_batch.grn_batches.sum(:remaining_quantity)
@@ -35,7 +35,7 @@
 
       .col-md-3
         %strong Expiry Date:
-        = inventory_batch.expiry_date.try(:strftime, "%Y-%m-%d")
+        = inventory_batch.expiry_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
     .row
       .col-md-3
         %strong Remarks :
@@ -48,10 +48,10 @@
           .row
             .col-md-4
               %strong Start At:
-              = b_warranty.inventory_warranty.start_at.try(:strftime, "%Y-%m-%d")
+              = b_warranty.inventory_warranty.start_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
             .col-md-4
               %strong End At:
-              = b_warranty.inventory_warranty.end_at.try(:strftime, "%Y-%m-%d")
+              = b_warranty.inventory_warranty.end_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
             .col-md-4
               %strong Period Part:
               = b_warranty.inventory_warranty.period_part
@@ -81,7 +81,7 @@
       .row
         .col-md-4
           %strong GRN Date:
-          = grn_item.grn.created_at.try(:strftime, "%Y-%m-%d %H:%M")
+          = grn_item.grn.created_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
         .col-md-4
           %strong GRN By:
           = grn_item.grn.created_by_user.full_name
@@ -108,7 +108,7 @@
                   = index+1
                 .col-md-3
                   %strong Date:
-                  = hcost.created_at.try(:strftime, "%Y-%m-%d %H:%M")
+                  = hcost.created_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
                 .col-md-3
                   %strong Cost:
                   = number_with_precision hcost.current_unit_cost, precision: 2

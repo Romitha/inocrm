@@ -7,9 +7,9 @@ json.products @products do |product|
         count += 1
         json.index count
         json.event_no spare_part.ticket_spare_part_manufacture.try(:event_no)
-        json.event_closed_date spare_part.ticket_spare_part_manufacture.try(:issued_at).try(:strftime, "%Y-%m-%d")
+        json.event_closed_date spare_part.ticket_spare_part_manufacture.try(:issued_at).try(:strftime, INOCRM_CONFIG['short_date_format'])
         json.order_no spare_part.ticket_spare_part_manufacture.try(:order_no)
-        json.issued_at spare_part.ticket_spare_part_manufacture.try(:issued_at).try(:strftime, "%Y-%m-%d")
+        json.issued_at spare_part.ticket_spare_part_manufacture.try(:issued_at).try(:strftime, INOCRM_CONFIG['short_date_format'])
         json.part_no spare_part.ticket_spare_part_manufacture.try(:spare_part_id)
         json.spare_part_description spare_part.try(:spare_part_description)
         json.amount spare_part.ticket_spare_part_manufacture.try(:payment_expected_manufacture)

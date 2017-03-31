@@ -8,7 +8,7 @@
       %dt Rack:
       %dd= inventory.inventory_bin.try(:inventory_shelf).try(:inventory_rack).try(:description)
       %dt Created At:
-      %dd= inventory.created_at.try(:strftime, "%Y-%m-%d")
+      %dd= inventory.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
       %dt Available Quantity:
       %dd= inventory.available_quantity
       %dt Shelf:
@@ -20,7 +20,7 @@
       %dt Bin:
       %dd= inventory.inventory_bin.try(:description)
       %dt Updated At:
-      %dd= inventory.updatd_at.try(:strftime, "%Y-%m-%d")
+      %dd= inventory.updatd_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
       %dt Reorder Level:
       %dd= number_with_precision inventory.reorder_level, precision: 2
   .col-md-5
