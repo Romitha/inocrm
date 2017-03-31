@@ -937,3 +937,8 @@ window.Inventories =
     $("#inventory_serial_item_"+srr_id+"_used").prop("disabled", _this.is(":checked"))
     $("#inventory_serial_item_"+srr_id+"_repaired").prop("disabled", _this.is(":checked"))
     $("#inventory_serial_item_"+srr_id+"_reserved").prop("disabled", _this.is(":checked"))
+
+    if _this.is(":checked")
+      $(".damage_reason").addClass("hide")
+      $("#damage_request_source_"+srr_id+"_request_quantity").val("0")
+      $("#inventory_serial_item_"+srr_id+"_damage").attr('checked', false)
