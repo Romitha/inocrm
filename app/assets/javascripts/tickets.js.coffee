@@ -42,7 +42,7 @@ window.Tickets =
     $('.inline_edit').editable()
 
     $('.datepicker').datepicker
-      format: "yyyy-mm-dd"
+      format: "dd-mm-yyyy"
       todayBtn: true
       todayHighlight: true
 

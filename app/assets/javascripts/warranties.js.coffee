@@ -60,7 +60,7 @@ window.Warranties =
     end_at.val("")
     end_at.datepicker 'remove'
     end_at.datepicker
-      format: "yyyy-mm-dd"
+      format: "dd-mm-yyyy"
       todayBtn: true
       todayHighlight: true
       startDate: this_value
