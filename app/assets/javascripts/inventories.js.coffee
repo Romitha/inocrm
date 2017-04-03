@@ -942,3 +942,7 @@ window.Inventories =
       $(".damage_reason").addClass("hide")
       $("#damage_request_source_"+srr_id+"_request_quantity").val("0")
       $("#inventory_serial_item_"+srr_id+"_damage").attr('checked', false)
+
+  fractional_disable: (elem)->
+    _this = $(elem)
+    $("#inventory_product_inventory_product_info_attributes_issue_fractional_allowed").prop("disabled", _this.is(":checked"));
