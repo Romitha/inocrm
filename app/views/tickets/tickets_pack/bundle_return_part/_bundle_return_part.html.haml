@@ -29,7 +29,7 @@
         - @manufacture_parts.each_with_index do |manufacture_part, index|
           %tr
             %th= index+1
-            %td=manufacture_part.return_parts_bundle.try(:created_at).try(:strftime, "%m-%d-%Y")
+            %td= manufacture_part.ticket_spare_part.try(:part_returned_at).try(:strftime, "%m-%d-%Y")
             %td= manufacture_part.event_no
             %td= manufacture_part.ticket_spare_part.ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
             %td= manufacture_part.ticket_spare_part.spare_part_no
@@ -67,7 +67,7 @@
 
           = f.input :id, as: :hidden
           %strong Bundle no:
-          = CompanyConfig.first.sup_last_bundle_no.to_i
+          = CompanyConfig.first.sup_last_bundle_no + 1.to_i
           %br
           = f.input :note
           = f.submit "Save", class: "btn btn-sm btn-success"
