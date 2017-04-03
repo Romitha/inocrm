@@ -157,6 +157,8 @@ class SoPo < ActiveRecord::Base
   belongs_to :user, foreign_key: :created_by
   belongs_to :product_brand, foreign_key: :product_brand_id
 
+  belongs_to :invoice
+
   has_many :so_po_items, foreign_key: :spt_so_po_id
   accepts_nested_attributes_for :so_po_items, allow_destroy: true
   validates :po_no, :po_date, :so_no, :amount, presence: true

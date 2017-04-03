@@ -126,13 +126,13 @@
                 %td
                   = invo.try(:created_at).try(:strftime, INOCRM_CONFIG['short_date_format'])
                 %td
-                  = so_po_id.so_no
+                  = invo.so_po.try(:so_no)
                 %td
-                  = so_po_id.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
+                  = invo.so_po.try(:created_at).try(:strftime, INOCRM_CONFIG['short_date_format'])
                 %td
-                  = so_po_id.po_no
+                  = invo.so_po.try(:po_no)
                 %td
-                  = so_po_id.po_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
+                  = invo.so_po.try(:po_date).try(:strftime, INOCRM_CONFIG['short_date_format'])
                 %td
                 %td
                   = invo.total_amount

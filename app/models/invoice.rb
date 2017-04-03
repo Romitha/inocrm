@@ -8,6 +8,8 @@ class Invoice < ActiveRecord::Base
   accepts_nested_attributes_for :invoice_items, allow_destroy: true
   has_many :act_print_invoices
 
+  has_one :so_po
+
   validates_presence_of [:created_by, :currency_id, :invoice_no, :created_at]
 end
 
@@ -31,6 +33,8 @@ class TicketInvoice < ActiveRecord::Base
   has_many :ticket_invoice_total_taxes, foreign_key: :invoice_id
   accepts_nested_attributes_for :ticket_invoice_total_taxes, allow_destroy: true
   has_many :taxes, through: :ticket_invoice_total_taxes
+
+
 end
 
 class TicketInvoiceAdvancePayment < ActiveRecord::Base
