@@ -2117,8 +2117,12 @@ class TicketsController < ApplicationController
     Invoice
     TicketSparePart
     User
+    so_po = SoPo.find params[:so_po_id]
+
     @invoice = Invoice.new invoice_so_params
     if @invoice.save
+      so_po.update invoice_id: @invoice.id
+
       flash[:notice] = "Successfully saved."
     else
       flash[:alert] = "Unable to save. Please review..."

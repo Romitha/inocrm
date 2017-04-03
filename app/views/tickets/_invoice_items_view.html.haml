@@ -6,90 +6,96 @@
       %a{"data-toggle" => "tab", :href => "#viewInvoice"} View Invoices for Sales Orders
   .tab-content
     #createInvoice.tab-pane.fade.in.active
-      .row.small_scale_padding-top1
-        .container
-          .row
-            = simple_nested_form_for invoice, url: create_invoice_for_so_tickets_path, html: {class: "validate_form"}, method: :post do |f|
-              .row
-                .col-md-3
-                  = f.input :invoice_no
-                .col-md-3
-                  = f.input :created_at, label: "Invoice Date", as: :string, input_html: {class: "datepicker"}
-                  = f.input :created_by, as: :hidden, input_html: {value: current_user.id}
-                  = f.input :total_amount, as: :hidden, input_html: {value: so_po_id.amount}
-                  = f.input :currency_id, as: :hidden, input_html: {value: so_po_id.currency_id}
-                  / - so_po_id.so_po_items.each do |po_item|
-                  = f.simple_fields_for :invoice_items do |invoice_item|
-                    = invoice_item.input :item_no, as: :hidden
-                    = invoice_item.input :amount, as: :hidden
-              .row
-                .col-md-3
-                  %strong PO No:
-                  = so_po_id.po_no
-                .col-md-3
-                  %strong PO Date:
-                  = so_po_id.po_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
-                .col-md-3
-                  %strong Sales Order No:
-                  = so_po_id.so_no
-                .col-md-3
-                  %strong Amount:
-                  = so_po_id.amount
-              .row
-                .col-md-12
-                  %table.table
-                    %thead
-                      %tr
-                        %th No
-                        %th Event No
-                        %th Order No
-                        %th Date Ordered
-                        %th Part No
-                        %th Description
-                        %th Ticket No
-                        %th Serial No
-                        %th Expected Amount
-                        %th Amount($)
-                    %tbody
-                      - so_po_id.so_po_items.each_with_index do |po_item, index|
-                        %tr
-                          %td
-                            = (index+1)
-                          %td
-                            = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:event_no)
-                          %td
-                            = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:order_no)
-                          %td
-                            = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:issued_at).try(:strftime, INOCRM_CONFIG['short_date_format'])
-                          %td
-                            = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:spare_part_id)
-                          %td
-                            = po_item.ticket_spare_part.try(:spare_part_description)
-                          %td
-                            = po_item.ticket_spare_part.ticket.support_ticket_no
-                          %td
-                            = po_item.ticket_spare_part.try(:spare_part_no)
-                          %td
-                            = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:payment_expected_manufacture)
-                          %td
-                            = po_item.try(:amount)
+      - if so_po_id.invoice_id.nil?
+        .row.small_scale_padding-top1
+          .container
+            .row
+              = simple_nested_form_for invoice, url: create_invoice_for_so_tickets_path, html: {class: "validate_form"}, method: :post do |f|
+                = hidden_field_tag "so_po_id", nil, id: "so_po_id"
 
-              .row
-                .col-md-6
-                  = f.input :note, label: "Invoice Note"
-                .col-md-6
-                  %strong Note
-                  = link_to "#", class: "inline_edit", data: {type: "textarea", resource: "so_po", name: "note", url: edit_po_note_tickets_path(edit: true, so_po_id: so_po_id.id), "original-title" => "Update PO Note", value: ""}, style: "line-height: 6px;" do
-                    = so_po_id.try(:note)
-              .row
-                .col-md-7
-                = link_to "#","role" => "button", class: "col-md-1 btn btn-info", style: "margin-right:4px;" do
-                  View Invoice
-                = link_to "#","role" => "button" , class: "col-md-1 btn btn-warning", style: "margin-right:4px;" do
-                  Print Invoice
-                = f.submit "Save", class: "col-md-1 btn btn-success", style: "margin-right:4px;", id: "submit_invoice_for_so_id"
-                = link_to "#","role" => "button" ,onclick: "Tickets.reset_so_po(); return false;", class: "col-md-1 btn btn-danger" do
-                  Cancel
+                .row
+                  .col-md-3
+                    = f.input :invoice_no
+                  .col-md-3
+                    = f.input :created_at, label: "Invoice Date", as: :string, input_html: {class: "datepicker"}
+                    = f.input :created_by, as: :hidden, input_html: {value: current_user.id}
+                    = f.input :total_amount, as: :hidden, input_html: {value: so_po_id.amount}
+                    = f.input :currency_id, as: :hidden, input_html: {value: so_po_id.currency_id}
+                    / - so_po_id.so_po_items.each do |po_item|
+                    = f.simple_fields_for :invoice_items do |invoice_item|
+                      = invoice_item.input :item_no, as: :hidden
+                      = invoice_item.input :amount, as: :hidden
+                .row
+                  .col-md-3
+                    %strong PO No:
+                    = so_po_id.po_no
+                  .col-md-3
+                    %strong PO Date:
+                    = so_po_id.po_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
+                  .col-md-3
+                    %strong Sales Order No:
+                    = so_po_id.so_no
+                  .col-md-3
+                    %strong Amount:
+                    = so_po_id.amount
+                .row
+                  .col-md-12
+                    %table.table
+                      %thead
+                        %tr
+                          %th No
+                          %th Event No
+                          %th Order No
+                          %th Date Ordered
+                          %th Part No
+                          %th Description
+                          %th Ticket No
+                          %th Serial No
+                          %th Expected Amount
+                          %th Amount($)
+                      %tbody
+                        - so_po_id.so_po_items.each_with_index do |po_item, index|
+                          %tr
+                            %td
+                              = (index+1)
+                            %td
+                              = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:event_no)
+                            %td
+                              = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:order_no)
+                            %td
+                              = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:issued_at).try(:strftime, INOCRM_CONFIG['short_date_format'])
+                            %td
+                              = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:spare_part_id)
+                            %td
+                              = po_item.ticket_spare_part.try(:spare_part_description)
+                            %td
+                              = po_item.ticket_spare_part.ticket.support_ticket_no
+                            %td
+                              = po_item.ticket_spare_part.try(:spare_part_no)
+                            %td
+                              = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:payment_expected_manufacture)
+                            %td
+                              = po_item.try(:amount)
+
+                .row
+                  .col-md-6
+                    = f.input :note, label: "Invoice Note"
+                  .col-md-6
+                    %strong Note
+                    = link_to "#", class: "inline_edit", data: {type: "textarea", resource: "so_po", name: "note", url: edit_po_note_tickets_path(edit: true, so_po_id: so_po_id.id), "original-title" => "Update PO Note", value: ""}, style: "line-height: 6px;" do
+                      = so_po_id.try(:note)
+                .row
+                  .col-md-7
+                  = link_to "#","role" => "button", class: "col-md-1 btn btn-info", style: "margin-right:4px;" do
+                    View Invoice
+                  = link_to "#","role" => "button" , class: "col-md-1 btn btn-warning", style: "margin-right:4px;" do
+                    Print Invoice
+                  = f.submit "Save", class: "col-md-1 btn btn-success", style: "margin-right:4px;", id: "submit_invoice_for_so_id"
+                  = link_to "#","role" => "button" ,onclick: "Tickets.reset_so_po(); return false;", class: "col-md-1 btn btn-danger" do
+                    Cancel
+      - else
+        .col-md-12
+          %strong Invoice Already Exist
           
     #viewInvoice.tab-pane.fade
       .row
