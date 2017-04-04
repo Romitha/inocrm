@@ -1237,59 +1237,109 @@ module Admins
       end
     end
 
-    def srn
-      Organization
-      Role
-      Inventory
-      @store = Organization.find params[:store_id] if params[:store_id].present?
-      case params[:srn_callback]
-      when "call_search"
+    def srr
+      if params[:gin_id].present?
         Inventory
-        @modal_active = true
+        @gin = Gin.find params[:gin_id]
+
+        @srr = Srr.new store_id: @gin.store.id, created_by: current_user.id, requested_module_id: @gin.srn.try(:requested_module_id)
+
+        @saveable = false
+        srr_item_sources_availability = []
+
+        @gin.gin_items.each do |gin_item|
+          srr_item = @srr.srr_items.build product_id: gin_item.product_id, product_condition_id: gin_item.product_condition_id, spare_part: gin_item.spare_part, currency_id: gin_item.currency_id
+
+          gin_item.gin_sources.each do |gin_source|
+            if gin_source.returned_quantity.to_f < gin_source.issued_quantity.to_f
+              srr_item.srr_item_sources.build gin_source_id: gin_source.id, unit_cost: gin_source.grn_item.unit_cost, currency_id: gin_source.grn_item.currency_id#, returned_quantity: gin_source.returned_quantity, 
+            end
+
+          end
+
+          srr_item_sources_availability << srr_item.srr_item_sources.present?
+
+        end
+
+        @saveable = srr_item_sources_availability.include?(true)
+
       else
-        @srn = Srn.new
-        @srn_all = Srn.order(updated_at: :desc).page(params[:page]).per(10)
+        @remote = true
+
       end
-      if request.xhr?
-        render "admins/inventories/srn/srn.js"
-      else
-        render "admins/inventories/srn/srn"
-      end
+
+      render "admins/inventories/srr/srr"
+
     end
 
-    def srns
+    def srrs
       Inventory
       Invoice
       Role
+      if params[:srr_id].present?
+        @srr = Srr.find params[:srr_id]
 
-      if params[:srn_id].present?
-        @srn = Srn.find params[:srn_id]
-
-        render "admins/inventories/srn/srns"
+        render "admins/inventories/srr/srrs"
       end
     end
 
-    def create_srn
-      @srn = Srn.new srn_params
-      if @srn.save
-        Organization
-        CompanyConfig.first.increase_inv_last_srn_no
-        flash[:notice] = "Successfully created."
-      else
-        flash[:error] = "Unable to save. Please verify any validations"
+    def create_srr
+      @srr = Srr.new srr_params
+
+      @srr.srr_items.each do |srr_item|
+        @srr.srr_items.delete(srr_item) if srr_item.new_record? and srr_item.quantity.to_f <= 0
+
       end
-      redirect_to srn_admins_inventories_url
+      @srr.attributes = {}
+
+      if @srr.save
+        # @srr.srr_items.each do |srr_item|
+        #   srr_item.update closed: (srr_item.quantity.to_f <= srr_item.srr_item_sources.sum(:returned_quantity))
+
+        # end
+
+        @srr.srr_item_sources.each do |srr_item_source|
+          srr_item_source.gin_source.update returned_quantity: srr_item_source.gin_source.srr_items.sum(:quantity)
+        end
+
+        CompanyConfig.first.increase_inv_last_srr_no
+
+
+        flash[:success] = "Successfully saved."
+      else
+        flash[:alert] = "Unable to save. Please try again"
+      end
+
+      redirect_to srr_admins_inventories_url
     end
 
     def gin
       Role
+      Srn
+      Inventory
+      Grn
+      Organization
       case params[:gin_callback]
+
       when "search_srn"
-        search_srn = params[:search_srn].except("srn_date_from", "srn_date_to").map{|k, v| "#{k} like '%#{v}%'"}.join(" and ")
 
-        @srns = Srn.where(search_srn).where(closed: false)
+        # refined_search = "closed:false"
+        refined_search = ""
 
-        @srns = @srns.where("created_at >= :start_date AND created_at <= :end_date AND closed = :closed", { start_date: params[:search_srn][:srn_date_from], end_date: params[:search_srn][:srn_date_to] }) if params[:search_srn][:srn_date_from].present? and params[:search_srn][:srn_date_to].present?
+        if params[:search].present?
+          refined_inventory_srn = params[:search_srn].map{ |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
+
+          refined_search = [refined_inventory_srn, refined_search].map{|v| v if v.present? }.compact.join(" AND ")
+
+        end
+        params[:query] = refined_search
+        @srns = Srn.search(params)
+
+        # search_srn = params[:search_srn].except("srn_date_from", "srn_date_to").map{|k, v| "#{k} like '%#{v}%'"}.join(" and ")
+
+        # @srns = Srn.where(search_srn).where(closed: false)
+
+        # @srns = @srns.where("created_at >= :start_date AND created_at <= :end_date AND closed = :closed", { start_date: params[:search_srn][:srn_date_from], end_date: params[:search_srn][:srn_date_to] }) if params[:search_srn][:srn_date_from].present? and params[:search_srn][:srn_date_to].present?
 
       when "select_srn"
         Inventory
@@ -1719,6 +1769,27 @@ module Admins
       end
 
       redirect_to srr_admins_inventories_url
+    end
+
+
+    def srn
+      Organization
+      Role
+      Inventory
+      @store = Organization.find params[:store_id] if params[:store_id].present?
+      case params[:srn_callback]
+      when "call_search"
+        Inventory
+        @modal_active = true
+      else
+        @srn = Srn.new
+        @srn_all = Srn.order(updated_at: :desc).page(params[:page]).per(10)
+      end
+      if request.xhr?
+        render "admins/inventories/srn/srn.js"
+      else
+        render "admins/inventories/srn/srn"
+      end
     end
 
     def srrs

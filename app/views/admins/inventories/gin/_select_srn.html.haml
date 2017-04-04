@@ -1,11 +1,13 @@
 = link_to "Re-search", gin_admins_inventories_path
-- if @srns.any?
+- if srns.any?
   %hr
+  = paginate srns, remote: true, method: :get
   %table.table.table-hover
     %thead
       %tr
         %th No
         %th Store
+        / %th Serial No
         %th SRN No
         %th SRN Date
         %th Required date
@@ -14,16 +16,23 @@
         %th Created by
         %th Action
     %tbody
-      - @srns.each_with_index do |srn, index|
+      - srns.each_with_index do |srn, index|
         %tr
-          %td= index+1
+          %td
+            - if params[:page]
+              = (index+1)+ 10*(params[:page].to_i-1)
+            - else
+              = (index+1)
           %td= srn.store.name
+          / %td
+          /   - srn.srn_items.each do |s|
+          /     = s.inventory_product.generated_serial_no
           %td= srn.srn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_srn_no_format"])
           %td= srn.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
           %td= srn.required_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
           %td= srn.requested_module.name
           %td{title: srn.remarks}= srn.remarks.try :truncate, 50
-          %td= srn.created_by_user.full_name
+          %td= srn.created_by_user_full_name
           - if srn.requested_module.name == "Support"
             %td
           - else

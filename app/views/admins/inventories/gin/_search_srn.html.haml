@@ -12,14 +12,16 @@
               = label_tag "Module"
               = select_tag "search_srn[requested_module_id]", options_from_collection_for_select(BpmModule.all, :id, :name), include_blank: true, class: "form-control"
           .row.small_scale_margin-top1
-            .col-md-4.serial_code
+            .col-md-3.serial_no
+              = text_field_tag "search_srn[srn_items.inventory_product.generated_serial_no]", (params[:search_srn] and params[:search_srn]["srn_items.inventory_product.generated_serial_no"]), :placeholder => "Serial No", class: "form-control"
+            .col-md-3.serial_code
               = text_field_tag "search_srn[srn_no]", (params[:search_srn] and params[:search_srn][:srn_no]), :placeholder => "SRN No", class: "form-control"
-            .col-md-4.part_no
+            .col-md-3.part_no
               = text_field_tag "search_srn[srn_date_from]", (params[:search_srn] and params[:search_srn][:srn_date_from]), :placeholder => "SRN Date from", class: "form-control datepicker"
-            .col-md-4.model_no
+            .col-md-3.model_no
               = text_field_tag "search_srn[srn_date_to]", (params[:search_srn] and params[:search_srn][:srn_date_to]), :placeholder => "SRN Date to", class: "form-control datepicker"
 
           .row.small_scale_margin-top1
             .col-md-1
               .search
-                = submit_tag "Search", class: "btn btn-sm btn-warning"
+                = submit_tag "Search", class: "btn btn-sm btn-warning", name: "search"
