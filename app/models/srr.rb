@@ -31,7 +31,7 @@ class Srr < ActiveRecord::Base
         end
       end
 
-      sort { by :formated_created_at, {order: "desc", ignore_unmapped: true} }
+      sort { by :created_at, {order: "desc", ignore_unmapped: true} }
 
     end
   end
