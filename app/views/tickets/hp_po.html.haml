@@ -1,3 +1,4 @@
+.h2 Create PO
 .row
   .col-md-12
     = label_tag InventoryCategoryCaption.first.caption
@@ -10,7 +11,6 @@
     #load_spareparts_json_render{style: "margin-left:30px;"}
   / #create_hp_po_form
   #ss
-    %strong Create PO
     = simple_nested_form_for @po, url: create_po_tickets_path, html: {class: "validate_form"}, method: :post do |f|
       = f.input :currency_id, as: :hidden
       = f.input :product_brand_id, as: :hidden

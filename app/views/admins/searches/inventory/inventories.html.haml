@@ -2,7 +2,8 @@
   = render "inventories/inventory_products/search_inventory"
 
 - else
-
+  .h3 Search Inventory
+  .h4 Select Required Store
   .list-group
     = link_to "javascript:void(0);", onclick: "Inventories.search_product_for_part(this); return false;", data: {storeId: "", id: "store_id", modalId: "modal_for_main_part", remote: "true", selectpath: "", selectoptions: "from_where:prn<>compulsory_single_path:#{inventories_admins_searches_path}<>backdrop:true"}, class: "list-group-item", remote: true do
       %h4.list-group-item-heading All Stores

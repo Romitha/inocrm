@@ -1,7 +1,7 @@
 .row
   .col-md-12
     = form_tag search_results_admins_searches_path, method: :get, class: "form-horizontal" do
-      %h2.small_scale_padding-bottom1 Search By
+      %h2.small_scale_padding-bottom1 Search Issues
       .form-group
         = hidden_field_tag :request, params[:request] = "search_issues"
         = label_tag "Store", "Store", class: "col-md-2 control-label"
