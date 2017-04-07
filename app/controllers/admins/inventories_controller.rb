@@ -1237,6 +1237,25 @@ module Admins
       end
     end
 
+    # def srn
+    #   Organization
+    #   Role
+    #   Inventory
+    #   @store = Organization.find params[:store_id] if params[:store_id].present?
+    #   case params[:srn_callback]
+    #   when "call_search"
+    #     @modal_active = true
+    #   else
+    #     @srn = Srn.new
+    #     @srn_all = Srn.order(updated_at: :desc).page(params[:page]).per(10)
+    #   end
+    #   if request.xhr?
+    #     render "admins/inventories/srn/srn.js"
+    #   else
+    #     render "admins/inventories/srn/srn"
+    #   end
+    # end
+
     def srr
       if params[:gin_id].present?
         Inventory
@@ -1272,6 +1291,14 @@ module Admins
 
     end
 
+    def srns
+      if params[:srn_id].present?
+        @srn = Srn.find params[:srn_id]
+
+        render "admins/inventories/srn/srns"
+      end
+    end
+
     def srrs
       Inventory
       Invoice
@@ -1281,6 +1308,19 @@ module Admins
 
         render "admins/inventories/srr/srrs"
       end
+    end
+
+    def create_srn
+      @srn = Srn.new srn_params
+      if @srn.save
+        Organization
+        CompanyConfig.first.increase_inv_last_srn_no
+        flash[:notice] = "Successfully created."
+      else
+        flash[:error] = "Unable to save. Please verify any validations"
+      end
+
+      redirect_to srn_admins_inventories_url
     end
 
     def create_srr
