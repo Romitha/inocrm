@@ -6,6 +6,7 @@ class Grn < ActiveRecord::Base
 
   mapping do
     indexes :store, type: "nested", include_in_parent: true
+    indexes :srn, type: "nested", include_in_parent: true
   end
 
   def self.search(params)
@@ -26,12 +27,20 @@ class Grn < ActiveRecord::Base
 
   def to_indexed_json
     to_json(
-      only: [:id, :store_id, :grn_no, :created_by, :remarks, :po_no, :supplier_id, :created_at],
+      only: [:id, :store_id, :grn_no, :created_by, :remarks, :po_no, :supplier_id, :created_at, :srr_id],
       methods: [:store_name, :supplier_name, :grn_no_format, :formated_created_at, :created_by_from_user],
       include: {
         store: {
           only: [:id, :name],
-        }
+        },
+        srn: {
+          only: [:id],
+          include: {
+            gins: {
+              only: [:id],
+            },
+          },
+        },
       },
     )
 
@@ -59,6 +68,7 @@ class Grn < ActiveRecord::Base
 
   belongs_to :store, class_name: "Organization"
   belongs_to :srn
+  belongs_to :srr
   belongs_to :inventory_po, foreign_key: :po_id
   belongs_to :created_by_user, class_name: "User", foreign_key: :created_by
   belongs_to :supplier, class_name: "Organization" #, -> { where(id: 2) }#, foreign_key: :po_id

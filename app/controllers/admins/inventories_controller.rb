@@ -1057,9 +1057,9 @@ module Admins
 
       if params[:prn_id].present?
         @prn = InventoryPrn.find params[:prn_id]
-        @prn.inventory_prn_items.where(closed: false).each do |prn_item|
-          @po.inventory_po_items.build quantity: prn_item.quantity, prn_item_id: prn_item.id
-        end
+        # @prn.inventory_prn_items.where(closed: false).each do |prn_item|
+        #   @po.inventory_po_items.build quantity: prn_item.quantity, prn_item_id: prn_item.id
+        # end
         @store = @prn.store
         render "admins/inventories/prn/prns"
       end

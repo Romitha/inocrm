@@ -41,7 +41,7 @@ class Srn < ActiveRecord::Base
 
   def to_indexed_json
     to_json(
-      only: [:id, :remarks, :created_at, :closed, :store_id, :requested_module_id, :srn_no],
+      only: [:id, :remarks, :created_at, :created_by, :closed, :store_id, :requested_module_id, :srn_no],
       methods: [:store_name, :formatted_srn_no, :created_by_user_full_name, :formated_created_at],
       include: {
         store: {

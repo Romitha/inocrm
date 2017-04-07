@@ -5,6 +5,7 @@ class Gin < ActiveRecord::Base
   belongs_to :created_by_user, class_name: "User", foreign_key: :created_by
 
   has_many :gin_items
+  has_many :gin_sources, through: :gin_items
   accepts_nested_attributes_for :gin_items, allow_destroy: true
   has_many :ticket_spare_part_stores, foreign_key: :inv_gin_id
   has_many :ticket_on_loan_spare_parts, foreign_key: :inv_gin_id
@@ -15,6 +16,7 @@ class Gin < ActiveRecord::Base
   mapping do
     indexes :store, type: "nested", include_in_parent: true
     indexes :srn, type: "nested", include_in_parent: true
+    indexes :gin_sources, type: "nested", include_in_parent: true
   end
 
   def self.search(params)
@@ -35,6 +37,7 @@ class Gin < ActiveRecord::Base
   end
 
   def to_indexed_json
+    Srr
     to_json(
       only: [:id, :remarks, :created_at],
       methods: [:store_name, :formatted_gin_no, :created_by_user_full_name, :formated_created_at],
@@ -45,7 +48,18 @@ class Gin < ActiveRecord::Base
         },
         store: {
           only: [:id, :name],
-        }
+        },
+        gin_sources: {
+          only: [:id, :name],
+          include: {
+            srr_items: {
+              only: [:id, :srr_id],
+            },
+            grn_item: {
+              only: [:id, :grn_id],
+            },
+          },
+        },
       },
     )
 
@@ -127,6 +141,7 @@ class GinSource < ActiveRecord::Base
   belongs_to :grn_serial_item#, foreign_key: :gin_item_id
   belongs_to :inventory_serial_part, foreign_key: :serial_part_id
   belongs_to :main_part_grn_serial_item, class_name: "GrnSerialItem", foreign_key: :main_part_grn_serial_item_id
+
 
   has_many :srr_item_sources
   has_many :srr_items, through: :srr_item_sources

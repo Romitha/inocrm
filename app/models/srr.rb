@@ -7,6 +7,8 @@ class Srr < ActiveRecord::Base
   mapping do
     indexes :store, type: "nested", include_in_parent: true
     indexes :srr_items, type: "nested", include_in_parent: true
+    indexes :grns, type: "nested", include_in_parent: true
+    indexes :srr_item_sources, type: "nested", include_in_parent: true
   end
 
   belongs_to :store, class_name: "Organization"
@@ -14,6 +16,8 @@ class Srr < ActiveRecord::Base
   belongs_to :created_by_user, class_name: "User", foreign_key: :created_by
 
   has_many :srr_items
+  has_many :grns
+
   accepts_nested_attributes_for :srr_items, allow_destroy: true
   has_many :srr_item_sources, through: :srr_items
 
@@ -21,7 +25,7 @@ class Srr < ActiveRecord::Base
   has_many :ticket_on_loan_spare_parts, foreign_key: :inv_srr_id
 
   def self.search(params)
-    tire.search(page: (params[:page] || 1), per_page: 10) do
+    tire.search(page: (params[:page] || 1), per_page: (params[:per_page] || 10)) do
       query do
         boolean do
           must { string params[:query] } if params[:query].present?
@@ -37,6 +41,8 @@ class Srr < ActiveRecord::Base
   end
 
   def to_indexed_json
+
+    Gin
     to_json(
       only: [:id, :remarks, :created_at, :closed ],
       methods: [:store_name, :formatted_srr_no, :created_by_user_full_name, :formated_created_at],
@@ -44,13 +50,28 @@ class Srr < ActiveRecord::Base
         store: {
           only: [:id, :name],
         },
+        grns: {
+          only: [:id],
+        },
         srr_items: {
           only: [:id, :closed, :quantity, :total_cost, :spare_part ],
           methods: [:currency_code],
           include: {
             inventory_product: {
               only: [:product_no, :model_no, :serial_no, :description],
-            },
+            }
+          },
+        },
+        srr_item_sources: {
+          only: [:id ],
+          include: {
+            gin_source: {
+              include: {
+                gin_item: {
+                  only: [:id, :gin_id],
+                },
+              },
+            }
           },
         },
       },
@@ -99,7 +120,7 @@ class SrrItem < ActiveRecord::Base
   attr_accessor :issued_quantity
 
   def currency_code
-    currency.code
+    currency.try(:code)
   end
 
   before_save do |srr_item|
@@ -127,6 +148,8 @@ end
 
 class SrrItemSource < ActiveRecord::Base
   self.table_name = "inv_srr_item_source"
+
+  Gin
 
   belongs_to :gin_source#, foreign_key: :grn_item_id
   belongs_to :srr_item#, foreign_key: :gin_item_id

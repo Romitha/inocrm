@@ -1,5 +1,6 @@
 .h4 Create SRR
 #search_frame_gin
+  %h4 Select SRN - GIN
   = form_tag search_gins_admins_searches_path, method: :get, class: "form-horizontal", remote: @remote do
     = hidden_field_tag "from_where", params[:action]
     = hidden_field_tag "select_path", ((@select_options and @select_options['select_path']))

@@ -65,7 +65,27 @@ module Admins
           refined_query = (query << "store.id:#{params[:store_id]}").join(" AND ")
           params[:query] = refined_query
 
-          Kaminari.paginate_array(Gin.search( params ).map { |k| { id: k.id, no: k.formatted_gin_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name } }).page(params[:page]).per(10)
+          if params[:request] == "search_returns"
+            raw_gins = Gin.search( params )
+            gins = raw_gins.map do |k|
+              { id: k.id, no: k.formatted_gin_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name, type: "GIN",
+                extra_objects: (Grn.search( query: "grn_items.gin_sources.gin_item.gin_id:#{k.id}" ).map { |k| { id: k.id, no: k.grn_no_format, created_at: k.formated_created_at, created_by: k.created_by_from_user, type: "GRN" } } + Srr.search( query: "srr_item_sources.gin_source.gin_item.gin_id:#{k.id}" ).map { |k| { id: k.id, no: k.grn_no_format, created_at: k.formated_created_at, created_by: k.created_by_from_user, type: "SRR" } }),
+              }
+
+            end
+          elsif params[:request] == "search_issues"
+            raw_gins = Gin.search( params )
+            gins = raw_gins.map do |k|
+              { id: k.id, no: k.formatted_gin_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name, type: "GIN",
+                extra_objects: (Srn.search( query: "gins.id:#{k.id}" ).map { |k| { id: k.id, no: k.formatted_srn_no, created_at: k.formated_created_at, created_by: k.created_by_from_user, type: "SRN" } }),
+              }
+
+            end
+          end
+
+          # Kaminari.paginate_array(raw_gins).page(params[:page]).per(10)
+          @raw_history = raw_gins
+          gins
 
         when "srr"
           # query = { formatted_srr_no: params[:type_no], range_from: params[:from_date], range_to: params[:to_date] }.map { |k, v| "#{k}:#{v}" if v.present? }.compact.compact
@@ -81,7 +101,27 @@ module Admins
           refined_query = (query << "store.id:#{params[:store_id]}").join(" AND ")
           params[:query] = refined_query
 
-          Kaminari.paginate_array(Srr.search( params ).map { |k| { id: k.id, no: k.formatted_srr_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name } }).page(params[:page]).per(10)
+          # Kaminari.paginate_array(Srr.search( params ).map { |k| { id: k.id, no: k.formatted_srr_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name } }).page(params[:page]).per(10)
+
+          # history_srr = Srr.search( params ).map { |k| { id: k.id, no: k.formatted_srr_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name, type_id: "srr_id" } }
+
+          # history_grn = Grn.search( params ).map { |k| { id: k.id, no: k.grn_no_format, created_at: k.formated_created_at, created_by: k.created_by_from_user, type_id: "grn_id" } }
+
+          # history_srr + history_grn
+
+
+          # "******************"
+          raw_srrs = Srr.search( params )
+          srrs = raw_srrs.map do |k|
+            { id: k.id, no: k.formatted_srr_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name, type: "SRR",
+              extra_objects: (Grn.search( query: "srr_id:#{k.id}" ).map { |k| { id: k.id, no: k.grn_no_format, created_at: k.formated_created_at, created_by: k.created_by_from_user, type: "GRN" } } + Gin.search( query: "gin_item_sources.srr_items.srr_id:#{k.id}" ).map { |k| { id: k.id, no: k.formatted_gin_no, created_at: k.formated_created_at, created_by: k.created_by_from_user, type: "GIN" } }),
+            }
+
+        end
+          # Kaminari.paginate_array(srrs).page(params[:page]).per(10)
+          # "******************"
+          @raw_history = raw_srrs
+          srrs
 
         when "grn"
           # query = { grn_no_format: params[:type_no], range_from: params[:from_date], range_to: params[:to_date] }.map { |k, v| "#{k}:#{v}" if v.present? }.compact
@@ -97,8 +137,24 @@ module Admins
           refined_query = (query << "store.id:#{params[:store_id]}").join(" AND ")
           params[:query] = refined_query
 
-          # Kaminari.paginate_array(Inventory.order( store_id: :asc)).page(params[:page]).per(10)
-          Kaminari.paginate_array(Grn.search( params ).map { |k| { id: k.id, no: k.grn_no_format, created_at: k.formated_created_at, created_by: k.created_by_from_user } }).page(params[:page]).per(10)
+          if params[:request] == "search_returns"
+            raw_grns = Grn.search( params )
+            grns = raw_grns.map do |k|
+              { id: k.id, no: k.grn_no_format, created_at: k.formated_created_at, created_by: k.created_by_user_full_name, type: "GRN",
+                extra_objects: (Srr.search( query: "grns.id:#{k.id}" ).map { |k| { id: k.id, no: k.formatted_srr_no, created_at: k.formated_created_at, created_by: k.created_by_from_user, type: "SRR" } } + Gin.search( query: "gin_sources.grn_item.grn_id:#{k.id}" ).map { |k| { id: k.id, no: k.formatted_gin_no, created_at: k.formated_created_at, created_by: k.created_by_from_user, type: "GIN" } }),
+              }
+            end
+          elsif params[:request] == "search_recieves"
+            raw_grns = Grn.search( params )
+            grns = raw_grns.map do |k|
+              { id: k.id, no: k.grn_no_format, created_at: k.formated_created_at, created_by: k.created_by_user_full_name, type: "GRN",
+                extra_objects: (InventoryPo.search( query: "inventory_po_items.grn_items.grn_id:#{k.id}" ).map { |k| { id: k.id, no: k.formated_po_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name, type: "PO" } } + InventoryPrn.search( query: "inventory_prn_items.inventory_po_items.grn_items.grn_id:#{k.id}" ).map { |k| { id: k.id, no: k.formated_prn_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name, type: "PRN" } }),
+              }
+            end
+          end
+          # Kaminari.paginate_array(grns).page(params[:page]).per(10)
+          @raw_history = raw_grns
+          grns
 
         when "prn"
           query = { formated_prn_no: params[:type_no] }.map { |k, v| "#{k}:#{v}" if v.present? }.compact
@@ -109,7 +165,39 @@ module Admins
           refined_query = (query << "store.id:#{params[:store_id]}").join(" AND ")
           params[:query] = refined_query
 
-          Kaminari.paginate_array(InventoryPrn.search( params ).map { |k| { id:k.id, no: k.formated_prn_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name } }).page(params[:page]).per(10)
+          raw_prns = InventoryPrn.search( params )
+          prns = raw_prns.map do |k|
+            { id: k.id, no: k.formated_prn_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name, type: "PRN",
+              extra_objects: (InventoryPo.search( query: "inventory_po_items.inventory_prn_item.prn_id:#{k.id}" ).map { |k| { id: k.id, no: k.formated_po_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name, type: "PO" } } + Grn.search( query: "grn_items.inventory_po_items.inventory_prn_item.prn_id:#{k.id}" ).map { |k| { id: k.id, no: k.grn_no_format, created_at: k.formated_created_at, created_by: k.created_by_from_user, type: "GRN" } }),
+            }
+            end
+          # Kaminari.paginate_array(prns).page(params[:page]).per(10)
+          @raw_history = raw_prns
+          prns
+
+          # Kaminari.paginate_array(InventoryPrn.search( params ).map { |k| { id:k.id, no: k.formated_prn_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name } }).page(params[:page]).per(10)
+
+        when "srn"
+          query = { formatted_srn_no: params[:type_no] }.map { |k, v| "#{k}:#{v}" if v.present? }.compact
+
+          params[:range_from] = params[:from_date]
+          params[:range_to] = params[:to_date]
+
+          refined_query = (query << "store.id:#{params[:store_id]}").join(" AND ")
+          params[:query] = refined_query
+
+          raw_srns = Srn.search( params )
+            srns = raw_srns.map do |k|
+              { id: k.id, no: k.formatted_srn_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name, type: "SRN",
+                extra_objects: (Gin.search( query: "srn_id:#{k.id}" ).map { |k| { id: k.id, no: k.formatted_gin_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name, type: "GIN" } }),
+              }
+            end
+
+          # Kaminari.paginate_array(srns).page(params[:page]).per(10)
+          @raw_history = raw_srns
+          srns
+
+          # Kaminari.paginate_array(Srn.search( params ).map { |k| { id:k.id, no: k.formatted_srn_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name } }).page(params[:page]).per(10)
 
         when "po"
           query = { formated_po_no: params[:type_no] }.map { |k, v| "#{k}:#{v}" if v.present? }.compact
@@ -120,10 +208,18 @@ module Admins
           refined_query = (query << "store.id:#{params[:store_id]}").join(" AND ")
           params[:query] = refined_query
 
-          Kaminari.paginate_array(InventoryPo.search( params ).map { |k| { id:k.id, no: k.formated_po_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name } }).page(params[:page]).per(10)
+          raw_pos = InventoryPo.search( params )
+          pos = raw_pos.map do |k|
+            { id: k.id, no: k.formated_po_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name, type: "PO",
+              extra_objects: (InventoryPrn.search( query: "inventory_prn_items.inventory_po_items.po_id:#{k.id}" ).map { |k| { id: k.id, no: k.formated_prn_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name, type: "PRN" } } + Grn.search( query: "po_id:#{k.id}" ).map { |k| { id: k.id, no: k.grn_no_format, created_at: k.formated_created_at, created_by: k.created_by_from_user, type: "GRN" } }),
+            }
+          end
+          # Kaminari.paginate_array(pos).page(params[:page]).per(10)
+          @raw_history = raw_pos
+          pos
 
+          # Kaminari.paginate_array(InventoryPo.search( params ).map { |k| { id:k.id, no: k.formated_po_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name } }).page(params[:page]).per(10)
         end
-
       end
 
       if params[:request] == "search_returns"
