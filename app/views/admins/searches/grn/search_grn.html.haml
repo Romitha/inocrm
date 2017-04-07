@@ -24,7 +24,8 @@
                 .reset
                   / = link_to "Reset", "role" => "button", onclick: "Searches.reset_searchgrn(); return false;",class: "btn btn-warning" do
                   / Reset
-                  = link_to "Reset", "#", onclick: "Searches.reset_searchgrn(); return false;", class: "resetgrn"
+                  / = link_to "Reset", "#", onclick: "Searches.reset_searchgrn(); return false;", class: "resetgrn"
+                  = link_to "Reset", search_grn_admins_searches_path, class: "btn btn-warning"
 
   - if @grns.any?
     .row
