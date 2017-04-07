@@ -54,7 +54,7 @@
             = link_to srrs_admins_inventories_path(srr_id: h[:id]), "role" => "button",class: "btn btn-info" do
               View
           - elsif h[:type] == "GRN"
-            = link_to search_grn_admins_searches_path(grn_callback: "select_grn",grn_id: h[:id]), "role" => "button",class: "btn btn-info" do
+            = link_to search_grn_admins_searches_path(grn_callback: "select_grn",grn_id: h[:id], cost_change: true), "role" => "button",class: "btn btn-info" do
               View
         .col-md-12
           - h[:extra_objects].each_with_index do |e, index|

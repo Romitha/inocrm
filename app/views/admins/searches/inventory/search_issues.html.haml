@@ -29,7 +29,7 @@
         = submit_tag "Search", class: "btn btn-success", name: "search"
 - if @history
   %h2.small_scale_padding-top1 Searched Results #{params[:type].upcase}
-   = paginate @raw_history, remote: false, method: :get
+  = paginate @raw_history, remote: false, method: :get
   - @history.each_with_index do |h, index|
     %fieldset
       %legend
