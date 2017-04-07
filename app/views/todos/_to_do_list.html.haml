@@ -13,7 +13,7 @@
 
     / .col-md-1.position_relative{style: "background: transparent url(#{image_path (INOCRM_CONFIG['priority'].key(formatted_workflow_mapping[:task_content]['priority'].to_i) || 'calendar-256')+'.png'}) no-repeat scroll center top / contain; height: 70px; text-align: center;"}
 
-    .col-md-2
+    .col-md-3
       .fixed.small_scale_padding-top2{style: "font-size: 10px;"}
         .strong.col-md-6= formatted_workflow_mapping[:task_content]["created_on"].to_time.strftime(INOCRM_CONFIG['short_date_format'])
         %em.col-md-6= formatted_workflow_mapping[:task_content]["created_on"].to_time.strftime("%H:%M %p")
@@ -21,7 +21,7 @@
       /   .col-md-12
       /     .label{class: "label-#{level[INOCRM_CONFIG["priority"].key(formatted_workflow_mapping[:task_content]["priority"].to_i)]}"}
       /       = formatted_workflow_mapping[:first_header_title].split("-").first.strip
-    .col-md-9.text_header.strong
+    .col-md-8.text_header.strong
       %strong
         = formatted_workflow_mapping[:first_header_title]
       = splitted_header ? splitted_header.last : formatted_workflow_mapping[:second_header_title]

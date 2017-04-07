@@ -21,36 +21,30 @@
 
 - if @prns.present?
   = paginate prns, remote: false, method: :get
-  .row
-    .col-md-1
-      %strong No
-    .col-md-2
-      %strong Store
-    .col-md-1
-      %strong PRN No
-    .col-md-1
-      %strong PRN Date
-    .col-md-1
-      %strong Required Date
-    .col-md-2
-      %strong Remarks
-    .col-md-2
-      %strong Created By
-    .col-md-2
-      %strong Action
-  %hr
-  - @prns.each_with_index do |prn, index|
-    .row
-      .col-md-1
-        - if params[:page]
-          = (index+1)+ 10**(params[:page].to_i-1)
-        - else
-          = (index+1)
-      .col-md-2= prn.store_name
-      .col-md-1= prn.formated_prn_no
-      .col-md-1= prn.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
-      .col-md-1= prn.required_at and prn.required_at.to_date.try :strftime, INOCRM_CONFIG["short_date_format"]
-      .col-md-2= simple_format prn.remarks
-      .col-md-2= prn.created_by_user_full_name
-      .col-md-2= link_to "Select", po_admins_inventories_path(prn_id: prn.id)
+  %table.table.table-hover
+    %thead
+      %tr
+        %th No
+        %th Store
+        %th PRN No
+        %th PRN Date
+        %th Required Date
+        %th Remarks
+        %th Created By
+        %th Action
+    %tbody
+      - @prns.each_with_index do |prn, index|
+        %tr
+          %td
+            - if params[:page]
+              = (index+1)+ 10*(params[:page].to_i-1)
+            - else
+              = (index+1)
+          %td= prn.store_name
+          %td= prn.formated_prn_no
+          %td= prn.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
+          %td= prn.required_at and prn.required_at.to_date.try :strftime, INOCRM_CONFIG["short_date_format"]
+          %td= simple_format prn.remarks
+          %td= prn.created_by_user_full_name
+          %td= link_to "Select", po_admins_inventories_path(prn_id: prn.id)
   = paginate prns, remote: false, method: :get

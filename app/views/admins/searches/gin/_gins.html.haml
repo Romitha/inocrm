@@ -2,43 +2,33 @@
 
 - if @gins.any?
   %hr
-  .row
-    .col-md-1.strong{style: "text-align: center;"} No
-    .col-md-2.strong Store
-    .col-md-1.strong GIN No
-    .col-md-1.strong GIN Date
-    .col-md-1.strong SRN No
-    .col-md-1.strong SRN Date
-    .col-md-3.strong Remarks
-    .col-md-1.strong GIN Issued by
-    .col-md-1.strong Action
-  %hr
-
-  - @gins.each_with_index do |gin, index|
-    .row
-      .col-md-1{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Name: #{gin.name}", "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }
-        - if params[:page]
-          = (index+1)+ 10*(params[:page].to_i-1)
-        - else
-          = (index+1)
-      .col-md-2
-        = gin.store_name
-      .col-md-1
-        = gin.formatted_gin_no
-      .col-md-1
-        = gin.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
-      .col-md-1
-        = gin.srn.formatted_srn_no
-      .col-md-1
-        = gin.srn.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
-      .col-md-3
-        = gin.remarks
-      .col-md-1
-        = gin.created_by_user_full_name
-
-      / .col-md-1= link_to "Select", (@select_path || "#"), (@select_options || {}).merge({data: {content: (yield :select_result ), ginid: gin.id }})
-      .col-md-1= link_to "Select", srr_admins_inventories_path(gin_id: gin.id)
-
-    %hr
+  %table.table.table-hover
+    %thead
+      %tr
+        %th No
+        %th Store
+        %th GIN No
+        %th GIN Date
+        %th SRN No
+        %th SRN Date
+        %th Remarks
+        %th GIN Issued by
+        %th Action
+    %tbody
+      - @gins.each_with_index do |gin, index|
+        %tr
+          %td
+            - if params[:page]
+              = (index+1)+ 10*(params[:page].to_i-1)
+            - else
+              = (index+1)
+          %td= gin.store_name
+          %td= gin.formatted_gin_no
+          %td= gin.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
+          %td= gin.srn.formatted_srn_no
+          %td= gin.srn.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
+          %td= gin.remarks
+          %td= gin.created_by_user_full_name
+          %td= link_to "Select", srr_admins_inventories_path(gin_id: gin.id)
 
 = paginate @gins, remote: true, method: :get
