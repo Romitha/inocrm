@@ -76,6 +76,7 @@ module Admins
 
               }
               # and srr.srr_item_sources.gin_source.gin_item.gin_id:#{k.id}
+              # gin_sources.srr_items.srr_id:#{k.id}
 
             end
           elsif params[:request] == "search_issues"
@@ -175,6 +176,7 @@ module Admins
             { id: k.id, no: k.formated_prn_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name, type: "PRN",
               extra_objects: (InventoryPo.search( query: "inventory_po_items.inventory_prn_item.prn_id:#{k.id}" ).map { |k| { id: k.id, no: k.formated_po_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name, type: "PO" } } + Grn.search( query: "grn_items.inventory_po_items.inventory_prn_item.prn_id:#{k.id}" ).map { |k| { id: k.id, no: k.grn_no_format, created_at: k.formated_created_at, created_by: k.created_by_from_user, type: "GRN" } }),
             }
+
             end
           # Kaminari.paginate_array(prns).page(params[:page]).per(10)
           @raw_history = raw_prns
