@@ -612,13 +612,13 @@ window.Tickets =
       )
 
   select_brand_create_po: ->
-    # _this = this
+    _this = this
     $("#brand1").change ->
       _this = this
-      # if $("#brand1").val()
-      #   $("#hp_po_page").removeClass("hide")
-      # else
-      #   $("#hp_po_page").addClass("hide")
+      if $("#brand1").val()
+        $("#hp_po_page").removeClass("hide")
+      else
+        $("#hp_po_page").addClass("hide")
 
       url = "/tickets/hp_po"
 
