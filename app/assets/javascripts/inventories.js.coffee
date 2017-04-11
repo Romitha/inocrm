@@ -930,13 +930,6 @@ window.Inventories =
 
   show_serial_info: (elem, srr_id)->
     _this = $(elem)
-    $(".valid_accept_#{srr_id}").prop("disabled", _this.is(":checked"));
-    $("#inventory_serial_item_"+srr_id+"_scavenge").prop("disabled", _this.is(":checked"))
-    $("#inventory_serial_item_"+srr_id+"_part_not_completed").prop("disabled", _this.is(":checked"))
-    $("#inventory_serial_item_"+srr_id+"_damage").prop("disabled", _this.is(":checked"))
-    $("#inventory_serial_item_"+srr_id+"_used").prop("disabled", _this.is(":checked"))
-    $("#inventory_serial_item_"+srr_id+"_repaired").prop("disabled", _this.is(":checked"))
-    $("#inventory_serial_item_"+srr_id+"_reserved").prop("disabled", _this.is(":checked"))
 
     if _this.is(":checked")
       $(".damage_reason").addClass("hide")

@@ -26,4 +26,6 @@ end
 class DamageRequestSource < ActiveRecord::Base
   self.table_name = "inv_damage_request_source"
 
+  belongs_to :grn_item, foreign_key: :grn_item_id
+
 end

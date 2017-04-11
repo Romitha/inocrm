@@ -88,36 +88,37 @@
               %dt Store:
               %dd= srr_item_source.gin_source.gin_item.gin.store_name
               %dt Remarks
-              %dd= text_area_tag "grn_item[#{srr_item_source.id}][remarks]", nil, class: "form-control"
-    %hr
+              %dd= text_area_tag "grn_item[#{srr_item_source.id}][remarks]", Rails.cache.fetch([:grn_item, srr_item_source.id, session[:grn_arrived_time].to_i] ).try(:remarks), class: "form-control"
+
     - if srr_item_source.gin_source.grn_serial_item.present?
-      .row
+      .row.controlled_inputs
         .col-md-2
           %strong Serial Item: #{ srr_item_source.gin_source.grn_serial_item.inventory_serial_item.generated_serial_no }
           = label_tag "accept", "Accept"
-          = check_box_tag "srr_item_source[#{srr_item_source.id}][accept]", 1, false, onchange: "Inventories.show_serial_info(this, '#{srr_item_source.id}');"
+          = check_box_tag "srr_item_source[#{srr_item_source.id}][accept]", 1, true, onchange: "Inventories.show_serial_info(this, '#{srr_item_source.id}');"
+
         .col-md-10
           %dl.dl-horizontal
             %dt Serial No:
             %dd= srr_item_source.gin_source.grn_serial_item.inventory_serial_item.generated_serial_no
             %dt Unit cost
-            %dd= text_field_tag "grn_item[#{srr_item_source.id}][unit_cost]", nil, class: "valid_accept_#{srr_item_source.id} form-control"
+            %dd= text_field_tag "grn_item[#{srr_item_source.id}][unit_cost]", Rails.cache.fetch([:grn_item, srr_item_source.id, session[:grn_arrived_time].to_i] ).try(:unit_cost), class: "valid_accept_#{srr_item_source.id} form-control"
             %dt Scavenge
-            %dd= check_box_tag "inventory_serial_item[#{srr_item_source.id}][scavenge]"
+            %dd= check_box_tag "inventory_serial_item[#{srr_item_source.id}][scavenge]", 1, (Rails.cache.fetch([:extra_objects, srr_item_source.id, session[:grn_arrived_time].to_i] ) and Rails.cache.fetch([:extra_objects, srr_item_source.id, session[:grn_arrived_time].to_i] )[:inventory_serial_item].scavenge )
             %dt Part not completed
-            %dd= check_box_tag "inventory_serial_item[#{srr_item_source.id}][part_not_completed]"
+            %dd= check_box_tag "inventory_serial_item[#{srr_item_source.id}][parts_not_completed]", 1, (Rails.cache.fetch([:extra_objects, srr_item_source.id, session[:grn_arrived_time].to_i] ) and Rails.cache.fetch([:extra_objects, srr_item_source.id, session[:grn_arrived_time].to_i] )[:inventory_serial_item].parts_not_completed )
             %dt Damage
             %dd= check_box_tag "inventory_serial_item[#{srr_item_source.id}][damage]", 1, false, onchange: "Inventories.hide_damaged_reason(this, '#{srr_item_source.id}');"
             .damage_reason.hide
-              = hidden_field_tag "damage_request_source[#{srr_item_source.id}][request_quantity]", 1
+              = hidden_field_tag "damage_request_source[#{srr_item_source.id}][requested_quantity]", 1
               %dt Damage Reason
               %dd= select_tag "damage_request[#{srr_item_source.id}][damage_reason_id]", options_from_collection_for_select(InventoryReason.where(damage: true), 'id', 'reason')
             %dt Used
-            %dd= check_box_tag "inventory_serial_item[#{srr_item_source.id}][used]"
+            %dd= check_box_tag "inventory_serial_item[#{srr_item_source.id}][used]", 1, (Rails.cache.fetch([:extra_objects, srr_item_source.id, session[:grn_arrived_time].to_i] ) and Rails.cache.fetch([:extra_objects, srr_item_source.id, session[:grn_arrived_time].to_i] )[:inventory_serial_item].used )
             %dt Repaired
-            %dd= check_box_tag "inventory_serial_item[#{srr_item_source.id}][repaired]"
+            %dd= check_box_tag "inventory_serial_item[#{srr_item_source.id}][repaired]", 1, (Rails.cache.fetch([:extra_objects, srr_item_source.id, session[:grn_arrived_time].to_i] ) and Rails.cache.fetch([:extra_objects, srr_item_source.id, session[:grn_arrived_time].to_i] )[:inventory_serial_item].repaired )
             %dt Reserved
-            %dd= check_box_tag "inventory_serial_item[#{srr_item_source.id}][reserved]"
+            %dd= check_box_tag "inventory_serial_item[#{srr_item_source.id}][reserved]", 1, (Rails.cache.fetch([:extra_objects, srr_item_source.id, session[:grn_arrived_time].to_i] ) and Rails.cache.fetch([:extra_objects, srr_item_source.id, session[:grn_arrived_time].to_i] )[:inventory_serial_item].reserved )
 
         .col-md-2
           %h4 Warranty
@@ -130,9 +131,12 @@
                   %dd= warranty.inventory_warranty_type.name
 
     - elsif srr_item_source.gin_source.grn_batch.present?
-      .row
+      .row.controlled_inputs
         .col-md-2
           %h4 Serial Batch - batch no:#{srr_item_source.gin_source.grn_batch.inventory_batch.batch_no}
+          = label_tag "accept", "Accept"
+          = check_box_tag "srr_item_source[#{srr_item_source.id}][accept]", 1, true, onchange: "Inventories.show_serial_info(this, '#{srr_item_source.id}');"
+
         .col-md-10
           %dl.dl-horizontal
             %dt Lot No:
@@ -140,61 +144,64 @@
             %dt Batch No:
             %dd= srr_item_source.gin_source.grn_batch.inventory_batch.batch_no
             %dt Manufactured Date:
-            / %dd= srr_item_source.gin_source.grn_batch.inventory_batch.manufatured_date.to_date.strftime(INOCRM_CONFIG["short_date_format"])
             %dd= srr_item_source.gin_source.grn_batch.inventory_batch.manufatured_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
             %dt Expiry Date:
             %dd= srr_item_source.gin_source.grn_batch.inventory_batch.expiry_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
             %dt GIN Quantity:
             %dd= srr_item_source.gin_source.gin_item.issued_quantity
             %dt GIN Cost:
-            %dd= srr_item_source.gin_source.gin_item.standard_cost
+            %dd= srr_item_source.unit_cost
             %dt Returned Quantity:
-            %dd= srr_item_source.gin_source.returned_quantity
+            %dd= srr_item_source.returned_quantity
             %dt Damage Quantity:
-            %dd= text_field_tag "damage_request_source[#{srr_item_source.id}][request_quantity]", nil, class: "form-control"
+            %dd= text_field_tag "damage_request_source[#{srr_item_source.id}][requested_quantity]", nil, class: "form-control"
+
             .damage_reason.hide
               %dt Damage Reason
               %dd= select_tag "damage_request[#{srr_item_source.id}][damage_reason_id]", options_from_collection_for_select(InventoryReason.where(damage: true), 'id', 'reason')
             %dt Unit cost
-            %dd= text_field_tag "grn_item[#{srr_item_source.id}][unit_cost]", nil, class: "form-control"
+            %dd= text_field_tag "grn_item[#{srr_item_source.id}][unit_cost]", Rails.cache.fetch([:grn_item, srr_item_source.id, session[:grn_arrived_time].to_i] ).try(:unit_cost), class: "form-control"
             %br/
             .col-md-8
-              = collapse_wrapper collapse_id: "warranty_info", labelledby: "warranty_info_labelledby" do
-                = collapse collapse_type: "info", labelledby: "warranty_info_labelledby", header_content: "Warranty Information", collapse_link: "warranty_info_link", collapse_id: "warranty_info" do
-                  %dl.dl-horizontal
-                    - srr_item_source.gin_source.grn_batch.inventory_batch.inventory_batch_warranties.each do |batch_warranty|
-                      %dt Type:
-                      %dd= batch_warranty.inventory_warranty.inventory_warranty_type.name
-                      %dt Start At:
-                      %dd= batch_warranty.inventory_warranty.start_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
-                      %dt End At:
-                      %dd= batch_warranty.inventory_warranty.end_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
-                      %dt Period Part (In months):
-                      %dd= batch_warranty.inventory_warranty.period_part
-                      %dt Period Labour (In months):
-                      %dd= batch_warranty.inventory_warranty.period_labour
-                      %dt Period On-sight (In months):
-                      %dd= batch_warranty.inventory_warranty.period_onsight
-                      %dt Remarks:
-                      %dd= batch_warranty.inventory_warranty.remarks
+              - if srr_item_source.gin_source.grn_batch.inventory_batch.inventory_batch_warranties.present?
+                = collapse_wrapper collapse_id: "warranty_info", labelledby: "warranty_info_labelledby" do
+                  = collapse collapse_type: "info", labelledby: "warranty_info_labelledby", header_content: "Warranty Information", collapse_link: "warranty_info_link", collapse_id: "warranty_info" do
+                    %dl.dl-horizontal
+                      - srr_item_source.gin_source.grn_batch.inventory_batch.inventory_batch_warranties.each do |batch_warranty|
+                        %dt Type:
+                        %dd= batch_warranty.inventory_warranty.inventory_warranty_type.name
+                        %dt Start At:
+                        %dd= batch_warranty.inventory_warranty.start_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
+                        %dt End At:
+                        %dd= batch_warranty.inventory_warranty.end_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
+                        %dt Period Part (In months):
+                        %dd= batch_warranty.inventory_warranty.period_part
+                        %dt Period Labour (In months):
+                        %dd= batch_warranty.inventory_warranty.period_labour
+                        %dt Period On-sight (In months):
+                        %dd= batch_warranty.inventory_warranty.period_onsight
+                        %dt Remarks:
+                        %dd= batch_warranty.inventory_warranty.remarks
 
     - else
-      .row
+      .row.controlled_inputs
         .col-md-2
           %h4 GRN No: #{srr_item_source.gin_source.grn_item.grn.grn_no_format }
+          = label_tag "accept", "Accept"
+          = check_box_tag "srr_item_source[#{srr_item_source.id}][accept]", 1, true, onchange: "Inventories.show_serial_info(this, '#{srr_item_source.id}');"
+
         .col-md-10
           %dl.dl-horizontal
             %dt Damage quantity:
-            %dd= text_field_tag "damage_request_source[#{srr_item_source.id}][request_quantity]", nil, class: "form-control"
+            %dd= text_field_tag "damage_request_source[#{srr_item_source.id}][requested_quantity]", (Rails.cache.fetch([:extra_objects, srr_item_source.id, session[:grn_arrived_time].to_i] ) and Rails.cache.fetch([:extra_objects, srr_item_source.id, session[:grn_arrived_time].to_i] )[:damage_request].try(:damage_request_sources).try(:first).try(:request_quantity) ), class: "form-control"
             .damage_reason.hide
               %dt Damage Reason
               %dd= select_tag "damage_request[#{srr_item_source.id}][damage_reason_id]", options_from_collection_for_select(InventoryReason.where(damage: true), 'id', 'reason')
-              %dt Damage quantity:
-              %dd= text_field_tag "damage_request[#{srr_item_source.id}][request_quantity]", nil, class: "form-control"
             %dt Unit cost
-            %dd= text_field_tag "grn_item[#{srr_item_source.id}][unit_cost]", nil, class: "form-control"
+            %dd= text_field_tag "grn_item[#{srr_item_source.id}][unit_cost]", Rails.cache.fetch([:grn_item, srr_item_source.id, session[:grn_arrived_time].to_i] ).try(:unit_cost), class: "form-control"
     %hr
 
   .row
     .col-md-12
-      = g.submit "Save", class: "btn btn-sm btn-success"#, data: {disable_with: "Please wait..."}
+      = g.submit "Remove", class: "btn btn-link", name: "cancel", data: {disable_with: "Please wait..."}
+      = g.submit "Add", class: "btn btn-success btn-sm", name: "next", data: {disable_with: "Please wait..."}
