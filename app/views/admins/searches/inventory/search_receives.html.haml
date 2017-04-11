@@ -48,13 +48,13 @@
           = h[:created_by]
         .col-md-2
           - if h[:type] == "PRN"
-            = link_to prns_admins_inventories_path(prn_id: h[:id]), "role" => "button",class: "btn btn-info" do
+            = link_to prns_admins_inventories_path(prn_id: h[:id]) do
               View
           - elsif h[:type] == "PO"
-            = link_to pos_admins_inventories_path(po_id: h[:id]), "role" => "button",class: "btn btn-info" do
+            = link_to pos_admins_inventories_path(po_id: h[:id]) do
               View
           - elsif h[:type] == "GRN"
-            = link_to search_grn_admins_searches_path(grn_callback: "select_grn",grn_id: h[:id], cost_change: true), "role" => "button",class: "btn btn-info" do
+            = link_to search_grn_admins_searches_path(grn_callback: "select_grn",grn_id: h[:id], cost_change: true) do
               View
         .col-md-12
           - h[:extra_objects].each_with_index do |e, index|
@@ -75,11 +75,11 @@
                   = e[:created_by]
                 .col-md-2
                   - if e[:type] == "PRN"
-                    = link_to prns_admins_inventories_path(prn_id: e[:id]), "role" => "button",class: "btn btn-info" do
+                    = link_to prns_admins_inventories_path(prn_id: e[:id]) do
                       View
                   - elsif e[:type] == "PO"
-                    = link_to pos_admins_inventories_path(po_id: e[:id]), "role" => "button",class: "btn btn-info" do
+                    = link_to pos_admins_inventories_path(po_id: e[:id]) do
                       View
                   - elsif e[:type] == "GRN"
-                    = link_to search_grn_admins_searches_path(grn_callback: "select_grn",grn_id: e[:id]), "role" => "button",class: "btn btn-info" do
+                    = link_to search_grn_admins_searches_path(grn_callback: "select_grn",grn_id: e[:id]) do
                       View

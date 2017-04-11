@@ -7,6 +7,9 @@ class Grn < ActiveRecord::Base
   mapping do
     indexes :store, type: "nested", include_in_parent: true
     indexes :srn, type: "nested", include_in_parent: true
+    indexes :srr, type: "nested", include_in_parent: true
+    indexes :grn_items, type: "nested", include_in_parent: true
+
   end
 
   def self.search(params)
@@ -26,12 +29,52 @@ class Grn < ActiveRecord::Base
   end
 
   def to_indexed_json
+    Gin
     to_json(
-      only: [:id, :store_id, :grn_no, :created_by, :remarks, :po_no, :supplier_id, :created_at, :srr_id],
+      only: [:id, :store_id, :grn_no, :created_by, :remarks, :po_no, :supplier_id, :created_at, :srr_id, :po_id],
       methods: [:store_name, :supplier_name, :grn_no_format, :formated_created_at, :created_by_from_user],
       include: {
         store: {
           only: [:id, :name],
+        },
+        grn_items: {
+          only: [:id],
+          include: {
+            gin_sources:{
+              only: [:id, :gin_item_id],
+              include:{
+                gin_item:{
+                  only: [:id, :gin_id],
+                },
+              },
+            },
+            inventory_po_item: {
+              only: [:id],
+              include: {
+                inventory_prn_item: {
+                  only: [:id, :prn_id],
+                },
+              },
+            },
+          },
+        },
+        srr: {
+          only: [:id],
+          include: {
+            srr_item_sources: {
+              only: [:id, :srr_item_id, :gin_source_id],
+              include: {
+                gin_source: {
+                  only: [:id, :gin_item_id],
+                  include: {
+                    gin_item: {
+                      only: [:id, :gin_id],
+                    },
+                  },
+                },
+              },
+            },
+          },
         },
         srn: {
           only: [:id],

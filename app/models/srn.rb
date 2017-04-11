@@ -7,6 +7,7 @@ class Srn < ActiveRecord::Base
   mapping do
     indexes :store, type: "nested", include_in_parent: true
     indexes :srn_items, type: "nested", include_in_parent: true
+    indexes :gins, type: "nested", include_in_parent: true
   end
 
   belongs_to :store, -> { where(type_id: 4) }, class_name: "Organization"
@@ -58,6 +59,9 @@ class Srn < ActiveRecord::Base
               methods: [:generated_serial_no],
             },
           },
+        },
+        gins: {
+          only: [:id],
         },
       },
     )

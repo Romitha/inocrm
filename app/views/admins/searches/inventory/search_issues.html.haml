@@ -48,10 +48,10 @@
           = h[:created_by]
         .col-md-2
           - if h[:type] == "SRN"
-            = link_to srns_admins_inventories_path(srn_id: h[:id]), "role" => "button",class: "btn btn-info" do
+            = link_to srns_admins_inventories_path(srn_id: h[:id]) do
               View
           - elsif h[:type] == "GIN"
-            = link_to gins_admins_inventories_path(gin_id: h[:id]), "role" => "button",class: "btn btn-info" do
+            = link_to gins_admins_inventories_path(gin_id: h[:id]) do
               View
         .col-md-12
           - h[:extra_objects].each_with_index do |e, index|
@@ -72,8 +72,8 @@
                   = e[:created_by]
                 .col-md-2
                   - if e[:type] == "SRN"
-                    = link_to srns_admins_inventories_path(srn_id: e[:id]), "role" => "button",class: "btn btn-info" do
+                    = link_to srns_admins_inventories_path(srn_id: e[:id]) do
                       View
                   - elsif e[:type] == "GIN"
-                    = link_to gins_admins_inventories_path(gin_id: e[:id]), "role" => "button",class: "btn btn-info" do
+                    = link_to gins_admins_inventories_path(gin_id: e[:id]) do
                       View

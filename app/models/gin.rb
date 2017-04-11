@@ -39,7 +39,7 @@ class Gin < ActiveRecord::Base
   def to_indexed_json
     Srr
     to_json(
-      only: [:id, :remarks, :created_at],
+      only: [:id, :remarks, :created_at, :srn_id],
       methods: [:store_name, :formatted_gin_no, :created_by_user_full_name, :formated_created_at],
       include: {
         srn: {

@@ -72,8 +72,10 @@ module Admins
             raw_gins = Gin.search( params )
             gins = raw_gins.map do |k|
               { id: k.id, no: k.formatted_gin_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name, type: "GIN",
-                extra_objects: (Grn.search( query: "grn_items.gin_sources.gin_item.gin_id:#{k.id}" ).map { |k| { id: k.id, no: k.grn_no_format, created_at: k.formated_created_at, created_by: k.created_by_from_user, type: "GRN" } } + Srr.search( query: "srr_item_sources.gin_source.gin_item.gin_id:#{k.id}" ).map { |k| { id: k.id, no: k.grn_no_format, created_at: k.formated_created_at, created_by: k.created_by_from_user, type: "SRR" } }),
+                extra_objects: (Grn.search( query: "grn_items.gin_sources.gin_item.gin_id:#{k.id}").map { |k| { id: k.id, no: k.grn_no_format, created_at: k.formated_created_at, created_by: k.created_by_from_user, type: "GRN" } } + Srr.search( query: "srr_item_sources.gin_source.gin_item.gin_id:#{k.id}" ).map { |k| { id: k.id, no: k.formatted_srr_no, created_at: k.formated_created_at, created_by: k.created_by_from_user, type: "SRR" } }),
+
               }
+              # and srr.srr_item_sources.gin_source.gin_item.gin_id:#{k.id}
 
             end
           elsif params[:request] == "search_issues"
@@ -117,7 +119,7 @@ module Admins
           raw_srrs = Srr.search( params )
           srrs = raw_srrs.map do |k|
             { id: k.id, no: k.formatted_srr_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name, type: "SRR",
-              extra_objects: (Grn.search( query: "srr_id:#{k.id}" ).map { |k| { id: k.id, no: k.grn_no_format, created_at: k.formated_created_at, created_by: k.created_by_from_user, type: "GRN" } } + Gin.search( query: "gin_item_sources.srr_items.srr_id:#{k.id}" ).map { |k| { id: k.id, no: k.formatted_gin_no, created_at: k.formated_created_at, created_by: k.created_by_from_user, type: "GIN" } }),
+              extra_objects: (Grn.search( query: "srr_id:#{k.id}" ).map { |k| { id: k.id, no: k.grn_no_format, created_at: k.formated_created_at, created_by: k.created_by_from_user, type: "GRN" } } + Gin.search( query: "gin_sources.srr_items.srr_id:#{k.id}" ).map { |k| { id: k.id, no: k.formatted_gin_no, created_at: k.formated_created_at, created_by: k.created_by_from_user, type: "GIN" } }),
             }
 
         end

@@ -1027,6 +1027,7 @@ class InventoryPo < ActiveRecord::Base
   include Tire::Model::Search
   include Tire::Model::Callbacks
 
+
   belongs_to :supplier, class_name: "Organization", foreign_key: :supplier_id
   belongs_to :store, class_name: "Organization", foreign_key: :store_id
   belongs_to :created_by_user, class_name: "User", foreign_key: :created_by
@@ -1042,6 +1043,8 @@ class InventoryPo < ActiveRecord::Base
   mapping do
     indexes :supplier, type: "nested", include_in_parent: true
     indexes :store, type: "nested", include_in_parent: true
+    indexes :inventory_po_items, type: "nested", include_in_parent: true
+
   end
 
   def self.search(params)  
@@ -1072,6 +1075,17 @@ class InventoryPo < ActiveRecord::Base
         },
         supplier: {
           only: [:id, :name],
+        },
+        inventory_po_items: {
+          only: [:id],
+          include: {
+            grn_items: {
+              only: [:id, :grn_id],
+            },
+            inventory_prn_item: {
+              only: [:id, :prn_id],
+            },
+          },
         },
       },
     )
@@ -1139,6 +1153,7 @@ class InventoryPrn < ActiveRecord::Base
 
   mapping do
     indexes :store, type: "nested", include_in_parent: true
+    indexes :inventory_prn_items, type: "nested", include_in_parent: true
   end
 
   belongs_to :store, class_name: "Organization", foreign_key: :store_id
@@ -1147,11 +1162,6 @@ class InventoryPrn < ActiveRecord::Base
   has_many :inventory_prn_items, foreign_key: :prn_id
   accepts_nested_attributes_for :inventory_prn_items, allow_destroy: true
   has_many :inventory_products, through: :inventory_prn_items
-
-
-  mapping do
-    indexes :products, type: "nested", include_in_parent: true
-  end
 
   def self.search(params)  
     tire.search(page: (params[:page] || 1), per_page: 10) do
@@ -1178,7 +1188,20 @@ class InventoryPrn < ActiveRecord::Base
       include: {
         store: {
           only: [:id, :name],
-        }
+        },
+        inventory_prn_items: {
+          only: [:id],
+          include: {
+            inventory_po_items: {
+              only: [:id, :po_id],
+              include: {
+                grn_items: {
+                  only: [:id, :grn_id],
+                },
+              },
+            },
+          },
+        },
       },
     )
 
