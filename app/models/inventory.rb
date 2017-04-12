@@ -1052,8 +1052,8 @@ class InventoryPo < ActiveRecord::Base
       query do
         boolean do
           must { string params[:query] } if params[:query].present?
-          must { range :formated_created_at, lte: params[:po_date_to] } if params[:po_date_to].present?
-          must { range :formated_created_at, gte: params[:po_date_from] } if params[:po_date_from].present?
+          must { range :created_at, lte: params[:po_date_to].to_date.end_of_day  } if params[:po_date_to].present?
+          must { range :created_at, gte: params[:po_date_from].to_date.beginning_of_day } if params[:po_date_from].present?
           # must { term :author_id, params[:author_id] } if params[:author_id].present?
         end
       end
@@ -1168,8 +1168,8 @@ class InventoryPrn < ActiveRecord::Base
       query do
         boolean do
           must { string params[:query] } if params[:query].present?
-          must { range :formated_created_at, lte: params[:range_to].to_date } if params[:range_to].present?
-          must { range :formated_created_at, gte: params[:range_from].to_date } if params[:range_from].present?
+          must { range :created_at, lte: params[:range_to].to_date.end_of_day } if params[:range_to].present?
+          must { range :created_at, gte: params[:range_from].to_date.beginning_of_day } if params[:range_from].present?
           # must { term :author_id, params[:author_id] } if params[:author_id].present?
         end
       end

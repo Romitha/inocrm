@@ -29,8 +29,8 @@ class Srn < ActiveRecord::Base
       query do
         boolean do
           must { string params[:query] } if params[:query].present?
-          must { range :formated_created_at, lte: params[:srn_date_to].to_date } if params[:srn_date_to].present?
-          must { range :formated_created_at, gte: params[:srn_date_from].to_date } if params[:srn_date_from].present?
+          must { range :created_at, lte: params[:srn_date_to].to_date.end_of_day } if params[:srn_date_to].present?
+          must { range :created_at, gte: params[:srn_date_from].to_date.beginning_of_day } if params[:srn_date_from].present?
 
         end
       end

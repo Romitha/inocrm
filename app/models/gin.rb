@@ -24,8 +24,8 @@ class Gin < ActiveRecord::Base
       query do
         boolean do
           must { string params[:query] } if params[:query].present?
-          must { range :formated_created_at, lte: params[:gin_range_to].to_date.end_of_day } if params[:gin_range_to].present?
-          must { range :formated_created_at, gte: params[:gin_range_from].to_date.beginning_of_day } if params[:gin_range_from].present?
+          must { range :created_at, lte: params[:gin_range_to].to_date.end_of_day } if params[:gin_range_to].present?
+          must { range :created_at, gte: params[:gin_range_from].to_date.beginning_of_day } if params[:gin_range_from].present?
           must { range "srn.created_at", lte: params[:srn_range_to].to_date.end_of_day } if params[:srn_range_to].present?
           must { range "srn.created_at", gte: params[:srn_range_from].to_date.beginning_of_day } if params[:srn_range_from].present?
           # filter :range, published_at: { lte: Time.zone.now}
