@@ -526,6 +526,13 @@ module Admins
       if params[:po_id].present?
         @po = InventoryPo.find params[:po_id]
 
+        # if params[:closed_po].present?
+        #   @po.closed = true
+        #   respond_to do |format|
+        #     format.html { redirect_to pos_admins_inventories_path }
+        #   end
+        # end
+
         render "admins/inventories/po/po"
       else
         if params[:search].present?
@@ -538,6 +545,22 @@ module Admins
         @pos = InventoryPo.search(params)
 
         render "admins/inventories/po/pos"
+      end
+    end
+
+    def close_po
+      Inventory
+      if params[:po_id].present?
+        # po_id = params[:po_id]
+        # po_id.closed = true
+
+        @po = InventoryPo.find params[:po_id]
+        @po.update closed: true
+      end
+
+      # render "admins/inventories/po/pos"
+      respond_to do |format|
+        format.html { redirect_to pos_admins_inventories_path(close_param: params[:po_id]) }
       end
     end
 

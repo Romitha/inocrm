@@ -47,6 +47,7 @@
       %th Remarks
       %th Created by
       %th Action
+      %th Closed
   %tbody
     - pos.each_with_index do |po, index|
       %tr
@@ -63,5 +64,11 @@
         %td= simple_format po.remarks
         %td= po.created_by_user_full_name
         %td= link_to "Select", pos_admins_inventories_path(po_id: po.id), target: "_blank"
+        - if params[:close_param] == po.id || po.closed == true
+          %td.rmclass
+        - else
+          %td.rmclass
+            = link_to "Close", close_po_admins_inventories_path(po_id: po.id), rel: "tooltip",  :data => {toggle: "tooltip", placement: "bottom" }, title: "Close", onclick: "Admins.remove_close(this);"
+            / = link_to delete_disposal_method_admins_inventories_path(disposal_id: disposal.id), method: :delete, rel: "tooltip",  :data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Delete"
 
 = paginate pos, remote: false, method: :get

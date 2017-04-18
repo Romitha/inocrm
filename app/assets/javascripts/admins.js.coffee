@@ -13,6 +13,13 @@ window.Admins =
     @serial_return_checkbox()
     return
 
+  remove_close: (e)->
+    if confirm "Are You Sure?"
+      $(e).parent(".rmclass").addClass("hide")
+      $.get "/admins/inventories/close_po"
+    else
+      # if answer no
+
   admin_menu_dropdown: ->
     $(".with_submenu a.pull-right").click ->
       $("span",this).toggleClass("icon-chevron-left icon-chevron-down");

@@ -69,14 +69,17 @@ module Admins
           params[:query] = refined_query
 
           if params[:request] == "search_returns"
+            # if Gin.gin_items.gin_sources.srr_item_sources
             raw_gins = Gin.search( params )
             gins = raw_gins.map do |k|
               { id: k.id, no: k.formatted_gin_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name, type: "GIN",
-                extra_objects: (Grn.search( query: "grn_items.gin_sources.gin_item.gin_id:#{k.id}").map { |k| { id: k.id, no: k.grn_no_format, created_at: k.formated_created_at, created_by: k.created_by_from_user, type: "GRN" } } + Srr.search( query: "srr_item_sources.gin_source.gin_item.gin_id:#{k.id}" ).map { |k| { id: k.id, no: k.formatted_srr_no, created_at: k.formated_created_at, created_by: k.created_by_from_user, type: "SRR" } }),
+                extra_objects: (Grn.search( query: "srr.srr_item_sources.gin_source.gin_item.gin_id:#{k.id}").map { |k| { id: k.id, no: k.grn_no_format, created_at: k.formated_created_at, created_by: k.created_by_from_user, type: "GRN" } } + Srr.search( query: "srr_item_sources.gin_source.gin_item.gin_id:#{k.id} " ).map { |k| { id: k.id, no: k.formatted_srr_no, created_at: k.formated_created_at, created_by: k.created_by_from_user, type: "SRR" } }),
 
               }
+              # GIN - GRN -> rn_items.gin_sources.gin_item.gin_id:#{k.id}
               # and srr.srr_item_sources.gin_source.gin_item.gin_id:#{k.id}
               # gin_sources.srr_items.srr_id:#{k.id}
+            # end
 
             end
           elsif params[:request] == "search_issues"
@@ -147,7 +150,9 @@ module Admins
             raw_grns = Grn.search( params )
             grns = raw_grns.map do |k|
               { id: k.id, no: k.grn_no_format, created_at: k.formated_created_at, created_by: k.created_by_user_full_name, type: "GRN",
-                extra_objects: (Srr.search( query: "grns.id:#{k.id}" ).map { |k| { id: k.id, no: k.formatted_srr_no, created_at: k.formated_created_at, created_by: k.created_by_from_user, type: "SRR" } } + Gin.search( query: "gin_sources.grn_item.grn_id:#{k.id}" ).map { |k| { id: k.id, no: k.formatted_gin_no, created_at: k.formated_created_at, created_by: k.created_by_from_user, type: "GIN" } }),
+                extra_objects: (Srr.search( query: "grns.id:#{k.id}" ).map { |k| { id: k.id, no: k.formatted_srr_no, created_at: k.formated_created_at, created_by: k.created_by_from_user, type: "SRR" } } + Gin.search( query: "gin_sources.srr_items.grn_items.grn_id:#{k.id}" ).map { |k| { id: k.id, no: k.formatted_gin_no, created_at: k.formated_created_at, created_by: k.created_by_from_user, type: "GIN" } }),
+                # gin_sources.srr_items.grn_items.grn_id
+                # gin_sources.grn_item.grn_id
               }
             end
           elsif params[:request] == "search_recieves"
@@ -174,8 +179,10 @@ module Admins
           raw_prns = InventoryPrn.search( params )
           prns = raw_prns.map do |k|
             { id: k.id, no: k.formated_prn_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name, type: "PRN",
-              extra_objects: (InventoryPo.search( query: "inventory_po_items.inventory_prn_item.prn_id:#{k.id}" ).map { |k| { id: k.id, no: k.formated_po_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name, type: "PO" } } + Grn.search( query: "grn_items.inventory_po_items.inventory_prn_item.prn_id:#{k.id}" ).map { |k| { id: k.id, no: k.grn_no_format, created_at: k.formated_created_at, created_by: k.created_by_from_user, type: "GRN" } }),
+              extra_objects: (InventoryPo.search( query: "inventory_po_items.inventory_prn_item.prn_id:#{k.id}" ).map { |k| { id: k.id, no: k.formated_po_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name, type: "PO" } } + Grn.search( query: "grn_items.inventory_po_item.inventory_prn_item.prn_id:#{k.id}" ).map { |k| { id: k.id, no: k.grn_no_format, created_at: k.formated_created_at, created_by: k.created_by_from_user, type: "GRN" } }),
             }
+
+
 
             end
           # Kaminari.paginate_array(prns).page(params[:page]).per(10)
