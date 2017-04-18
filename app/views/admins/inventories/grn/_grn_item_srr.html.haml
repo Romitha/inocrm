@@ -154,8 +154,7 @@
             %dt Returned Quantity:
             %dd= srr_item_source.returned_quantity
             %dt Damage Quantity:
-            %dd= text_field_tag "damage_request_source[#{srr_item_source.id}][requested_quantity]", nil, class: "form-control"
-
+            %dd= text_field_tag "damage_request_source[#{srr_item_source.id}][request_quantity]", nil, class: "form-control", required: true, oninput: "Inventories.hide_damaged_reason_text_field(this, '#{srr_item_source.id}');"
             .damage_reason.hide
               %dt Damage Reason
               %dd= select_tag "damage_request[#{srr_item_source.id}][damage_reason_id]", options_from_collection_for_select(InventoryReason.where(damage: true), 'id', 'reason')
@@ -193,7 +192,7 @@
         .col-md-10
           %dl.dl-horizontal
             %dt Damage quantity:
-            %dd= text_field_tag "damage_request_source[#{srr_item_source.id}][requested_quantity]", (Rails.cache.fetch([:extra_objects, srr_item_source.id, session[:grn_arrived_time].to_i] ) and Rails.cache.fetch([:extra_objects, srr_item_source.id, session[:grn_arrived_time].to_i] )[:damage_request].try(:damage_request_sources).try(:first).try(:request_quantity) ), class: "form-control"
+            %dd= text_field_tag "damage_request_source[#{srr_item_source.id}][request_quantity]", nil, class: "form-control" required: true, oninput: "Inventories.hide_damaged_reason_text_field(this, '#{srr_item_source.id}');"
             .damage_reason.hide
               %dt Damage Reason
               %dd= select_tag "damage_request[#{srr_item_source.id}][damage_reason_id]", options_from_collection_for_select(InventoryReason.where(damage: true), 'id', 'reason')

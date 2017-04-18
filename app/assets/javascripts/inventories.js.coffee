@@ -939,3 +939,12 @@ window.Inventories =
   fractional_disable: (elem)->
     _this = $(elem)
     $("#inventory_product_inventory_product_info_attributes_issue_fractional_allowed").prop("disabled", _this.is(":checked"));
+
+  hide_damaged_reason_text_field: (elem, srr_id)->
+    _this = $(elem)
+    if _this.val() > '0'
+      $(".damage_reason").removeClass("hide")
+      $("#damage_request_"+srr_id+"_damage_reason_id").prop({"disabled": false, "required": false})
+    else
+      $(".damage_reason").addClass("hide")
+      $("#damage_request_"+srr_id+"_damage_reason_id").prop({"disabled": true, "required": false})
