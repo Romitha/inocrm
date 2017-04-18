@@ -90,6 +90,23 @@ class Grn < ActiveRecord::Base
 
   end
 
+  after_save :update_children_indics
+
+  def update_children_indics
+    [:grn_items].each do |children|
+      send(children).each do |child|
+        # child.update_index
+        # parent.to_s.classify.constantize.find(self.send(parent).id).update_index
+        # children.to_s.classify.constantize.find(child.id).update_index
+        child.update_index
+
+        if child.is_a? GrnItem
+          child.update_relation_index
+        end
+      end
+    end
+  end
+
   def grn_no_format
     grn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_grn_no_format"])
   end
