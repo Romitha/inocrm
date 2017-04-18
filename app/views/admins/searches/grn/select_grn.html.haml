@@ -1,6 +1,6 @@
 .row
   .col-md-2
-    %h4 GIN:
+    %h4 GRN:
     = link_to search_grn_admins_searches_path, "role" => "button",class: "btn btn-info", data: {disable_with: "Please wait..."} do
       Search GRN Again
   .col-md-10
@@ -18,15 +18,33 @@
       %dt Remarks:
       %dd= simple_format @grn.try(:remarks)
 %hr
-
-.row
-  .col-md-2
-    %h4 PO:
-  .col-md-10
-    %dl.dl-horizontal
-      %dt PO No:
-      %dd= (@grn.inventory_po.try(:formated_po_no) || @grn.po_no )
-%hr
+- if @grn.po_id || @grn.po_no
+  .row
+    .col-md-2
+      %h4 PO:
+    .col-md-10
+      %dl.dl-horizontal
+        %dt PO No:
+        %dd= (@grn.inventory_po.try(:formated_po_no) || @grn.po_no )
+  %hr
+- if @grn.srn_id
+  .row
+    .col-md-2
+      %h4 SRN:
+    .col-md-10
+      %dl.dl-horizontal
+        %dt SRN No:
+        %dd= @grn.srn.try(:formatted_srn_no)
+  %hr
+- if @grn.srr_id
+  .row
+    .col-md-2
+      %h4 SRR:
+    .col-md-10
+      %dl.dl-horizontal
+        %dt SRR No:
+        %dd= @grn.srr.try(:formatted_srr_no)
+  %hr
 
 = collapse_wrapper collapse_id: "grn_item_list", labelledby: "grn_item_list_labelledby" do
   - @grn.grn_items.each_with_index do |grnitem, index|
@@ -72,6 +90,34 @@
             %dt Bin:
             - if inventory.present?
               %dd=inventory.try(:inventory_bin).try(:description)
+      %hr
+      - if grnitem.po_item_id
+        .row
+          .col-md-2
+            %h4 PO Item:
+          .col-md-4
+            %dl.dl-horizontal
+              %dt Quantity:
+              %dd= grnitem.inventory_po_item.quantity
+              %dt Unit cost:
+              %dd= number_with_precision grnitem.inventory_po_item.unit_cost, precision: 2
+              %dt Unit cost GRN:
+              %dd= number_with_precision grnitem.inventory_po_item.unit_cost_grn, precision: 2
+        %hr
+      - if grnitem.srr_item_id
+        .row
+          .col-md-2
+            %h4 SRR Item:
+          .col-md-4
+            %dl.dl-horizontal
+              %dt Quantity:
+              %dd= grnitem.srr_item.quantity
+              %dt Total cost:
+              %dd #{ grnitem.srr_item.currency_code } #{number_with_precision grnitem.srr_item.total_cost, precision: 2}
+              %dt Product no:
+              %dd= grnitem.srr_item.inventory_product.product_no
+        %hr
+
       .row{style: "margin-top:10px;"}
         .col-md-9
           %p.bg-info.h5.strong{style: "text-align: center;"} GRN Cost Adjustments

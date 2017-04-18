@@ -16,30 +16,43 @@
         %dt Created by
         %dd= gin.created_by_user_full_name
 
+      - if gin.srn_id
+        %hr
+        .row
+          .col-md-2
+            %h4 SRN:
+          .col-md-10
+            %dl.dl-horizontal
+              %dt SRN No:
+              %dd= gin.srn.try(:formatted_srn_no)
+        %hr
+
       %h4.small_scale_padding-top1 GIN Items
       %table.table.table-bordered
         %thead
           %tr
-            %th{colspan: 3} GIN item
             %th{colspan: 1}
-            %th{colspan: 5} Product
+            %th{colspan: 4} Product
+            %th{colspan: 3} GIN item
+
           %tr
+            %th
+            %th Item Code
+            %th Description
+            %th product no
+            %th model no
             %th Issued Quantity
             %th Remarks
             %th Total Cost
-            %th
-            %th product no
-            %th model no
-            %th Serial no
-            %th Description
+
         %tbody
-          - gin.gin_items.each do |gin_item|
+          - gin.gin_items.each_with_index do |gin_item, index|
             %tr
+              %td=(index+1)
+              %td= gin_item.inventory_product.try(:generated_item_code)
+              %td= gin_item.inventory_product.try(:description)
+              %td= gin_item.inventory_product.try(:product_no)
+              %td= gin_item.inventory_product.try(:model_no)
               %td= gin_item.issued_quantity
               %td= gin_item.remarks
               %td= gin_item.total_cost
-              %td
-              %td= gin_item.inventory_product.product_no
-              %td= gin_item.inventory_product.model_no
-              %td= gin_item.inventory_product.serial_no
-              %td= gin_item.inventory_product.description

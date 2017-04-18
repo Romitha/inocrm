@@ -369,6 +369,7 @@ Rails.application.routes.draw do
         get "srns"
         get "prns"
         get "pos"
+        get "close_po"
         get "view_srn"
         get "view_prn"
         get "view_gin"

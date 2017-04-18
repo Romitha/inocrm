@@ -20,24 +20,24 @@
       %table.table.table-bordered
         %thead
           %tr
-            %th{colspan: 2} PRN item
             %th{colspan: 1}
-            %th{colspan: 5} Product
+            %th{colspan: 4} Product
+            %th{colspan: 2} PRN item
           %tr
+            %th
+            %th Item Code
+            %th Description
+            %th Model no
+            %th Product no
             %th Quantity
             %th Remarks
-            %th
-            %th product no
-            %th model no
-            %th Serial no
-            %th Description
         %tbody
-          - prn.inventory_prn_items.each do |prn_item|
+          - prn.inventory_prn_items.each_with_index do |prn_item, index|
             %tr
+              %td= (index+1)
+              %td= prn_item.inventory_product.try(:generated_item_code)
+              %td= prn_item.inventory_product.try(:description)
+              %td= prn_item.inventory_product.try(:model_no)
+              %td= prn_item.inventory_product.try(:product_no)
               %td= prn_item.quantity
               %td= prn_item.remarks
-              %td
-              %td= prn_item.inventory_product.product_no
-              %td= prn_item.inventory_product.model_no
-              %td= prn_item.inventory_product.serial_no
-              %td= prn_item.inventory_product.description

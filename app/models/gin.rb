@@ -54,6 +54,11 @@ class Gin < ActiveRecord::Base
           include: {
             srr_items: {
               only: [:id, :srr_id],
+              include: {
+                grn_items: {
+                  only: [:id, :grn_id],
+                },
+              },
             },
             grn_item: {
               only: [:id, :grn_id],

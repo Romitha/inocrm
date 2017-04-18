@@ -1146,6 +1146,7 @@ class InventoryPoItemTax < ActiveRecord::Base
 end
 
 class InventoryPrn < ActiveRecord::Base
+  Grn
   self.table_name = "inv_prn"
 
   include Tire::Model::Search

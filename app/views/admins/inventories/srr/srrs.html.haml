@@ -20,26 +20,26 @@
       %table.table.table-bordered
         %thead
           %tr
-            %th{colspan: 3} SRR item
             %th{colspan: 1}
-            %th{colspan: 5} Product
+            %th{colspan: 4} Product
+            %th{colspan: 3} SRR item
           %tr
+            %th
+            %th Item Code
+            %th Description
+            %th model no
+            %th product no
             %th Quantity
             %th Remarks
             %th Total Cost
-            %th
-            %th product no
-            %th model no
-            %th Serial no
-            %th Description
         %tbody
-          - srr.srr_items.each do |srr_item|
+          - srr.srr_items.each_with_index do |srr_item, index|
             %tr
+              %td= (index+1)
+              %td= srr_item.inventory_product.try(:generated_item_code)
+              %td= srr_item.inventory_product.try(:description)
+              %td= srr_item.inventory_product.try(:model_no)
+              %td= srr_item.inventory_product.try(:product_no)
               %td= srr_item.quantity
               %td= srr_item.remarks
               %td= srr_item.total_cost
-              %td
-              %td= srr_item.inventory_product.product_no
-              %td= srr_item.inventory_product.model_no
-              %td= srr_item.inventory_product.serial_no
-              %td= srr_item.inventory_product.description
