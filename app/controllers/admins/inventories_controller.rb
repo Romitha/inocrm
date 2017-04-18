@@ -1360,41 +1360,6 @@ module Admins
     #   end
     # end
 
-    def srr
-      if params[:gin_id].present?
-        Inventory
-        @gin = Gin.find params[:gin_id]
-
-        @srr = Srr.new store_id: @gin.store.id, created_by: current_user.id, requested_module_id: @gin.srn.try(:requested_module_id)
-
-        @saveable = false
-        srr_item_sources_availability = []
-
-        @gin.gin_items.each do |gin_item|
-          srr_item = @srr.srr_items.build product_id: gin_item.product_id, product_condition_id: gin_item.product_condition_id, spare_part: gin_item.spare_part, currency_id: gin_item.currency_id
-
-          gin_item.gin_sources.each do |gin_source|
-            if gin_source.returned_quantity.to_f < gin_source.issued_quantity.to_f
-              srr_item.srr_item_sources.build gin_source_id: gin_source.id, unit_cost: gin_source.grn_item.unit_cost, currency_id: gin_source.grn_item.currency_id#, returned_quantity: gin_source.returned_quantity, 
-            end
-
-          end
-
-          srr_item_sources_availability << srr_item.srr_item_sources.present?
-
-        end
-
-        @saveable = srr_item_sources_availability.include?(true)
-
-      else
-        @remote = true
-
-      end
-
-      render "admins/inventories/srr/srr"
-
-    end
-
     def srns
       if params[:srn_id].present?
         @srn = Srn.find params[:srn_id]
@@ -1425,36 +1390,6 @@ module Admins
       end
 
       redirect_to srn_admins_inventories_url
-    end
-
-    def create_srr
-      @srr = Srr.new srr_params
-
-      @srr.srr_items.each do |srr_item|
-        @srr.srr_items.delete(srr_item) if srr_item.new_record? and srr_item.quantity.to_f <= 0
-
-      end
-      @srr.attributes = {}
-
-      if @srr.save
-        # @srr.srr_items.each do |srr_item|
-        #   srr_item.update closed: (srr_item.quantity.to_f <= srr_item.srr_item_sources.sum(:returned_quantity))
-
-        # end
-
-        @srr.srr_item_sources.each do |srr_item_source|
-          srr_item_source.gin_source.update returned_quantity: srr_item_source.gin_source.srr_items.sum(:quantity)
-        end
-
-        CompanyConfig.first.increase_inv_last_srr_no
-
-
-        flash[:success] = "Successfully saved."
-      else
-        flash[:alert] = "Unable to save. Please try again"
-      end
-
-      redirect_to srr_admins_inventories_url
     end
 
     def gin
@@ -1935,17 +1870,6 @@ module Admins
         render "admins/inventories/srn/srn.js"
       else
         render "admins/inventories/srn/srn"
-      end
-    end
-
-    def srrs
-      Inventory
-      Invoice
-      Role
-      if params[:srr_id].present?
-        @srr = Srr.find params[:srr_id]
-
-        render "admins/inventories/srr/srrs"
       end
     end
 
