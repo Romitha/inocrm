@@ -366,8 +366,8 @@ end
 class TicketContract < ActiveRecord::Base
   self.table_name = "spt_contract"
 
-  # include Tire::Model::Search
-  # include Tire::Model::Callbacks
+  include Tire::Model::Search
+  include Tire::Model::Callbacks
 
   has_many :tickets, foreign_key: :contract_id
   has_many :contract_products, foreign_key: :contract_id
