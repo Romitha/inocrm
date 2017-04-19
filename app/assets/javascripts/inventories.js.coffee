@@ -951,3 +951,10 @@ window.Inventories =
       $(".damage_reason").addClass("hide")
       $("#damage_request_"+srr_id+"_damage_reason_id").removeClass("required")
       $("#damage_request_"+srr_id+"_damage_reason_id").prop({"disabled": true})
+
+  limit_input_value: (elem, availableVal) ->
+    this_elem = $(elem)
+    this_value = parseFloat(this_elem.val())
+
+    if this_value > availableVal
+      this_elem.val(availableVal)
