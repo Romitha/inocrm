@@ -944,18 +944,10 @@ window.Inventories =
     _this = $(elem)
     if _this.val() > '0'
       $(".damage_reason").removeClass("hide")
-      $("#damage_request_"+srr_id+"_damage_reason_id").prop({"disabled": false, "required": false})
+      $("#damage_request_"+srr_id+"_damage_reason_id").addClass("required")
+      $(".validate_form").validate()
+      $("#damage_request_"+srr_id+"_damage_reason_id").prop({"disabled": false})
     else
       $(".damage_reason").addClass("hide")
-      $("#damage_request_"+srr_id+"_damage_reason_id").prop({"disabled": true, "required": false})
-
-  limit_input_value: (elem, issued_quantity, stock_quantity) ->
-    this_elem = $(elem)
-    this_value = parseFloat(this_elem.val())
-
-    if issued_quantity < stock_quantity
-      if this_value > issued_quantity
-        this_elem.val(issued_quantity)
-    else
-      if this_value > stock_quantity
-        this_elem.val(stock_quantity)
+      $("#damage_request_"+srr_id+"_damage_reason_id").removeClass("required")
+      $("#damage_request_"+srr_id+"_damage_reason_id").prop({"disabled": true})
