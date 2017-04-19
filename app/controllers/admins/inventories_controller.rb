@@ -906,7 +906,7 @@ module Admins
                   created_by: current_user.id,
                 }
 
-                damage_request_source = damage_request.damage_request_sources.build params[:damage_request_source][srr_item_source_id].permit(:requested_quantity)
+                damage_request_source = damage_request.damage_request_sources.build params[:damage_request_source][srr_item_source_id].permit(:request_quantity)
 
                 damage_request_source.grn_item = @grn_item
 
