@@ -1,12 +1,15 @@
 - Organization
 = simple_form_for @grn, url: create_grn_admins_inventories_path, method: :post do |f|
   = f.input :po_id, as: :hidden
+  = f.input :srr_id, as: :hidden, input_html: { value: (@srr_item and @srr_item.srr.try(:id)) }
   .row
-    .col-md-2
-      = f.association :supplier, collection: Organization.suppliers
-    - unless params[:po_item_id].present?
+    - if @srr_item.present?
       .col-md-2
-        = f.input :po_no, label: "PO No"
+        = f.association :supplier, collection: Organization.suppliers
+    - unless params[:po_item_id].present?
+      - if @srr_item.present?
+        .col-md-2
+          = f.input :po_no, label: "PO No"
     .col-md-12
       = f.input :remarks
     .col-md-12
