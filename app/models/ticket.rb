@@ -366,6 +366,9 @@ end
 class TicketContract < ActiveRecord::Base
   self.table_name = "spt_contract"
 
+  # include Tire::Model::Search
+  # include Tire::Model::Callbacks
+
   has_many :tickets, foreign_key: :contract_id
   has_many :contract_products, foreign_key: :contract_id
   belongs_to :sla_time, foreign_key: :sla_id
@@ -374,6 +377,63 @@ class TicketContract < ActiveRecord::Base
   validates_presence_of [:customer_id, :sla_id, :created_by]
 
   validates_numericality_of [:sla_id]
+
+  mapping do
+    indexes :organization, type: "nested", include_in_parent: true
+    # indexes :supplier, type: "nested", include_in_parent: true
+    # indexes :store, type: "nested", include_in_parent: true
+    # indexes :inventory_po_items, type: "nested", include_in_parent: true
+
+  end
+
+  def self.search(params)
+    tire.search(page: (params[:page] || 1), per_page: 10) do
+      query do
+        boolean do
+          must { string params[:query] } if params[:query].present?
+          # must { range :created_at, lte: params[:po_date_to].to_date.end_of_day  } if params[:po_date_to].present?
+          # must { range :created_at, gte: params[:po_date_from].to_date.beginning_of_day } if params[:po_date_from].present?
+          # must { term :author_id, params[:author_id] } if params[:author_id].present?
+        end
+      end
+      sort { by :created_at, {order: "desc", ignore_unmapped: true} }
+      # highlight customer_name: {number_of_fragments: 0}, ticket_status_name: {number_of_fragments: 0}, :options => { :tag => '<strong class="highlight">' } if params[:query].present?
+      # filter :range, published_at: { lte: Time.zone.now}
+      # raise to_curl
+    end
+  end
+
+  def to_indexed_json
+    Organization
+    to_json(
+      only: [ :id, :created_at, :created_by, :customer_id],
+      methods: [:formated_created_at, :created_by_user_full_name],
+      include: {
+        organization: {
+          only: [:id, :name, :code],
+          include: {
+            account: {
+              only: [:id, :industry_types_id],
+              include: {
+                industry_type: {
+                  only: [:id, :name, :code],
+                },
+              },
+            },
+          },
+        },
+      },
+    )
+
+  end
+
+  def created_by_user_full_name
+    created_by_user.full_name
+  end
+
+  def formated_created_at
+    created_at.strftime(INOCRM_CONFIG["short_date_format"])
+  end
 
   def is_used_anywhere?
     contract_products.any?
