@@ -949,9 +949,13 @@ window.Inventories =
       $(".damage_reason").addClass("hide")
       $("#damage_request_"+srr_id+"_damage_reason_id").prop({"disabled": true, "required": false})
 
-  limit_input_value: (elem, availableVal) ->
+  limit_input_value: (elem, issued_quantity, stock_quantity) ->
     this_elem = $(elem)
     this_value = parseFloat(this_elem.val())
 
-    if this_value > availableVal
-      this_elem.val(availableVal)
+    if issued_quantity < stock_quantity
+      if this_value > issued_quantity
+        this_elem.val(issued_quantity)
+    else
+      if this_value > stock_quantity
+        this_elem.val(stock_quantity)

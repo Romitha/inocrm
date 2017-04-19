@@ -95,7 +95,9 @@
                     = issued_qty
                   %dt Stock in hand:
                   %dd
-                    %span{class: "label label-#{stock_quantity.to_f <= 0 ? 'danger' : 'default'}"}= stock_quantity.to_f
+                    %span{class: "label label-#{stock_quantity.to_f <= 0 ? 'danger' : 'default'}"}
+                    - stock_qty = stock_quantity.to_f
+                    = stock_qty
                   %dt Rack:
                   %dd= inventory_rack
                   %dt Shelf:
@@ -143,7 +145,7 @@
               - if !need_serial and !need_batch
                 .col-md-12
                   / = i.input :issued_quantity, input_html: {onclick: "Tickets.numbersonly()", class: "integer"}
-                  = i.input :issued_quantity, input_html: {oninput: "Inventories.limit_input_value(this, '#{issued_qty}')"}
+                  = i.input :issued_quantity, input_html: {oninput: "Inventories.limit_input_value(this, '#{issued_qty}', '#{stock_qty}')"}
               - else
                 = i.input :issued_quantity, as: :hidden, input_html: {id: "issued_quantity_input#{i.object.srn_item_id}", onclick: "Tickets.numbersonly()", class: "integer"}
                 .col-md-12
