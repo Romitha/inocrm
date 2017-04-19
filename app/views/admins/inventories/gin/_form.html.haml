@@ -90,7 +90,9 @@
                   %dt Requested Qty:
                   %dd= i.object.srn_item.quantity.to_f
                   %dt Balanced Qty to be issued:
-                  %dd= i.object.srn_item.quantity.to_f - i.object.srn_item.gin_items.sum(:issued_quantity)
+                  %dd
+                    - issued_qty = i.object.srn_item.quantity.to_f - i.object.srn_item.gin_items.sum(:issued_quantity)
+                    = issued_qty
                   %dt Stock in hand:
                   %dd
                     %span{class: "label label-#{stock_quantity.to_f <= 0 ? 'danger' : 'default'}"}= stock_quantity.to_f
@@ -140,7 +142,8 @@
             .row
               - if !need_serial and !need_batch
                 .col-md-12
-                  = i.input :issued_quantity, input_html: {onclick: "Tickets.numbersonly()", class: "integer"}
+                  / = i.input :issued_quantity, input_html: {onclick: "Tickets.numbersonly()", class: "integer"}
+                  = i.input :issued_quantity, input_html: {oninput: "Inventories.limit_input_value(this, '#{issued_qty}')"}
               - else
                 = i.input :issued_quantity, as: :hidden, input_html: {id: "issued_quantity_input#{i.object.srn_item_id}", onclick: "Tickets.numbersonly()", class: "integer"}
                 .col-md-12
