@@ -906,7 +906,7 @@ module Admins
                   created_by: current_user.id,
                 }
 
-                damage_request_source = damage_request.damage_request_sources.build params[:damage_request_source][srr_item_source_id].permit(:requested_quantity)
+                damage_request_source = damage_request.damage_request_sources.build params[:damage_request_source][srr_item_source_id].permit(:request_quantity)
 
                 damage_request_source.grn_item = @grn_item
 
@@ -969,7 +969,10 @@ module Admins
       @grn = Grn.new grn_params
       if @grn.inventory_po.present? # With PO Items
         @grn.store_id = @grn.inventory_po.store_id
-        @grn.po_id = @grn.inventory_po.id
+
+      elsif @grn.srr.present?
+        @grn.store_id = @grn.srr.store_id
+
       else                          # Without PO Items
         @grn.store_id = session[:store_id]
       end
@@ -1082,6 +1085,8 @@ module Admins
         srr_item_source = SrrItemSource.find srr_item_source_id
 
         grn_item = Rails.cache.fetch([:grn_item, srr_item_source_id, session[:grn_arrived_time].to_i])
+
+        grn_item.srr_item = srr_item_source.srr_item
         grn_item.grn = @grn
 
         inventory = srr_item_source.srr_item.inventory_product.inventories.find_by_store_id(srr_item_source.srr_item.srr.store_id)
@@ -1950,7 +1955,7 @@ module Admins
       end
 
       def grn_params
-        params.require(:grn).permit(:remarks, :po_id, :po_no, :supplier_id, :srn_id)
+        params.require(:grn).permit(:remarks, :po_id, :po_no, :supplier_id, :srn_id, :srr_id)
       end
 
       def srn_params

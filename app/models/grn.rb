@@ -4,14 +4,6 @@ class Grn < ActiveRecord::Base
   include Tire::Model::Search
   include Tire::Model::Callbacks
 
-  mapping do
-    indexes :store, type: "nested", include_in_parent: true
-    indexes :srn, type: "nested", include_in_parent: true
-    indexes :srr, type: "nested", include_in_parent: true
-    indexes :grn_items, type: "nested", include_in_parent: true
-
-  end
-
   def self.search(params)
     tire.search(page: (params[:page] || 1), per_page: 10) do
       query do
@@ -26,6 +18,15 @@ class Grn < ActiveRecord::Base
       end
       sort { by :grn_no, {order: "desc", ignore_unmapped: true} }
     end
+  end
+
+
+  mapping do
+    indexes :store, type: "nested", include_in_parent: true
+    indexes :srn, type: "nested", include_in_parent: true
+    indexes :srr, type: "nested", include_in_parent: true
+    indexes :grn_items, type: "nested", include_in_parent: true
+
   end
 
   def to_indexed_json

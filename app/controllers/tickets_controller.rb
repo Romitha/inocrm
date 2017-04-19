@@ -2144,31 +2144,6 @@ class TicketsController < ApplicationController
     # render "tickets/../contracts/contracts"
   end
 
-  # def contract
-  #   Ticket
-  #   if params[:edit]
-  #     @inventory_product_condition = TicketContract.find params[:product_condition_id]
-  #     if @inventory_product_condition.update inventory_product_condition_params
-  #       params[:edit] = nil
-  #       render json: @inventory_product_condition
-  #     else
-  #       render json: @inventory_product_condition.errors.full_messages.join
-  #     end
-
-  #   else
-  #     if params[:create]
-  #       @inventory_product_condition = TicketContract.new inventory_product_condition_params
-  #       if @inventory_product_condition.save
-  #         params[:create] = nil
-  #         @inventory_product_condition = TicketContract.new
-  #       end
-  #     else
-  #       @inventory_product_condition = TicketContract.new
-  #     end
-  #     @inventory_product_condition_all = TicketContract.order(updated_at: :desc)
-  #   end
-  # end
-
   def invoice_advance_payment
 
     Inventory
