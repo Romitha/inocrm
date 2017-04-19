@@ -1421,15 +1421,13 @@ module Admins
         # @srns = @srns.where("created_at >= :start_date AND created_at <= :end_date AND closed = :closed", { start_date: params[:search_srn][:srn_date_from], end_date: params[:search_srn][:srn_date_to] }) if params[:search_srn][:srn_date_from].present? and params[:search_srn][:srn_date_to].present?
 
       when "select_srn"
-        Inventory
-        Organization
         @srn = Srn.find params[:srn_id]
         @gin = @srn.gins.build store_id: @srn.store_id
         @srn.srn_items.where(closed: false).each do |srn_item|
           Rails.cache.delete([ :gin, :grn_serial_items, srn_item.id ])
           Rails.cache.delete([ :gin, :grn_batches, srn_item.id ])
           # not null: returned_quantity
-          @gin.gin_items.build product_id: srn_item.product_id, srn_item_id: srn_item.id, returnable: srn_item.returnable, spare_part: srn_item.spare_part, main_product_id: srn_item.main_product_id#, currency_id: srn_item.gin_items.first.currency_id#, product_condition_id: srn_item., 
+          @gin.gin_items.build product_id: srn_item.product_id, srn_item_id: srn_item.id, returnable: srn_item.returnable, spare_part: srn_item.spare_part, main_product_id: srn_item.main_product_id, currency_id: srn_item.inventory_product.inventory_product_info.currency_id#, product_condition_id: srn_item., 
         end
 
       end
@@ -1960,7 +1958,7 @@ module Admins
       end
 
       def gin_params
-        params.require(:gin).permit(:id, :store_id, :srn_id, :remarks, gin_items_attributes: [:id, :_destroy, :product_id, :main_product_id, :srn_item_id, :issued_quantity, :product_condition_id, :remarks, :returnable, :spare_part ])
+        params.require(:gin).permit(:id, :store_id, :srn_id, :remarks, gin_items_attributes: [:id, :_destroy, :product_id, :main_product_id, :srn_item_id, :issued_quantity, :product_condition_id, :remarks, :returnable, :spare_part, :currency_id ])
       end
 
       def prn_params

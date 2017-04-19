@@ -4,13 +4,6 @@ class Srr < ActiveRecord::Base
   include Tire::Model::Search
   include Tire::Model::Callbacks
 
-  mapping do
-    indexes :store, type: "nested", include_in_parent: true
-    indexes :srr_items, type: "nested", include_in_parent: true
-    indexes :grns, type: "nested", include_in_parent: true
-    indexes :srr_item_sources, type: "nested", include_in_parent: true
-  end
-
   belongs_to :store, class_name: "Organization"
   belongs_to :requested_location, class_name: "Organization"
   belongs_to :created_by_user, class_name: "User", foreign_key: :created_by
@@ -23,6 +16,13 @@ class Srr < ActiveRecord::Base
 
   has_many :ticket_spare_part_stores, foreign_key: :inv_srr_id
   has_many :ticket_on_loan_spare_parts, foreign_key: :inv_srr_id
+
+  mapping do
+    indexes :store, type: "nested", include_in_parent: true
+    indexes :srr_items, type: "nested", include_in_parent: true
+    indexes :grns, type: "nested", include_in_parent: true
+    indexes :srr_item_sources, type: "nested", include_in_parent: true
+  end
 
   def self.search(params)
     tire.search(page: (params[:page] || 1), per_page: (params[:per_page] || 10)) do
@@ -41,8 +41,8 @@ class Srr < ActiveRecord::Base
   end
 
   def to_indexed_json
-
     Gin
+
     to_json(
       only: [:id, :remarks, :created_at, :closed ],
       methods: [:store_name, :formatted_srr_no, :created_by_user_full_name, :formated_created_at],

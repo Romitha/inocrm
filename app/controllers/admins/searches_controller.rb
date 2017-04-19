@@ -51,6 +51,14 @@ module Admins
       # end
     end
 
+    def search_returns
+      render "admins/searches/inventory/search_returns"
+    end
+
+    def search_issues
+      render "admins/searches/inventory/search_issues"
+    end
+
     def search_results
       Gin
       Srr
@@ -133,11 +141,6 @@ module Admins
           srrs
 
         when "grn"
-          # query = { grn_no_format: params[:type_no], range_from: params[:from_date], range_to: params[:to_date] }.map { |k, v| "#{k}:#{v}" if v.present? }.compact
-
-          # refined_query = (query << "store.id:#{params[:store_id]}").join(" AND ")
-          # Grn.search( query: refined_query ).map { |k| { id: k.id, no: k.grn_no_format, created_at: k.formated_created_at, created_by: k.created_by_from_user } }
-
           query = { grn_no_format: params[:type_no] }.map { |k, v| "#{k}:#{v}" if v.present? }.compact
 
           params[:range_from] = params[:from_date]
@@ -243,14 +246,6 @@ module Admins
       elsif params[:request] == "search_issues"
         render "admins/searches/inventory/search_issues"
       end
-    end
-
-    def search_returns
-      render "admins/searches/inventory/search_returns"
-    end
-
-    def search_issues
-      render "admins/searches/inventory/search_issues"
     end
 
     def search_inventory_serial_item
