@@ -4,6 +4,15 @@ class Grn < ActiveRecord::Base
   include Tire::Model::Search
   include Tire::Model::Callbacks
 
+  belongs_to :store, class_name: "Organization"
+  belongs_to :srn
+  belongs_to :srr
+  belongs_to :inventory_po, foreign_key: :po_id
+  belongs_to :created_by_user, class_name: "User", foreign_key: :created_by
+  belongs_to :supplier, class_name: "Organization" #, -> { where(id: 2) }#, foreign_key: :po_id
+
+  has_many :grn_items
+
   def self.search(params)
     tire.search(page: (params[:page] || 1), per_page: 10) do
       query do
@@ -121,21 +130,12 @@ class Grn < ActiveRecord::Base
   end
 
   def formated_created_at
-    created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
+    created_at.strftime(INOCRM_CONFIG["short_date_format"])
   end
 
   def created_by_from_user
     created_by_user.full_name
   end
-
-  belongs_to :store, class_name: "Organization"
-  belongs_to :srn
-  belongs_to :srr
-  belongs_to :inventory_po, foreign_key: :po_id
-  belongs_to :created_by_user, class_name: "User", foreign_key: :created_by
-  belongs_to :supplier, class_name: "Organization" #, -> { where(id: 2) }#, foreign_key: :po_id
-
-  has_many :grn_items
 
 end
 
