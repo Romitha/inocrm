@@ -1116,6 +1116,8 @@ module Admins
         @grn.srr.update closed: @grn.srr.srr_items.all?{ |i| i.closed }
       end
 
+      Grn.find(@grn.id).update_index # It indexes all its children rather than @grn.update_index
+
       flash[:notice] = "Successfully saved."
 
       Rails.cache.delete([:po_item_ids, session[:grn_arrived_time].to_i])
@@ -1189,7 +1191,9 @@ module Admins
           @prn.inventory_prn_items.each do |prn_item|
             prn_item.update closed: true if prn_item.quantity <= prn_item.inventory_po_items.sum(:quantity)
           end
-          @prn.update closed: true if @prn.inventory_prn_items.all?{ |e| e.closed }
+          @prn.update closed: @prn.inventory_prn_items.all?{ |e| e.closed }
+
+          # @prn.update_index
 
           flash[:notice] = "Successfully saved"
           format.html{ redirect_to po_admins_inventories_url }
