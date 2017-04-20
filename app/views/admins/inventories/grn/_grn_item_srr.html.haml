@@ -198,9 +198,10 @@
               %dt Unit cost
               %dd= text_field_tag "grn_item[#{srr_item_source.id}][unit_cost]",( Rails.cache.fetch([:grn_item, srr_item_source.id, session[:grn_arrived_time].to_i] ).try(:unit_cost) or srr_item_source.gin_source.unit_cost), class: "form-control"
 
-
-      %dt Remarks
-      %dd= text_area_tag "grn_item[#{srr_item_source.id}][remarks]", Rails.cache.fetch([:grn_item, srr_item_source.id, session[:grn_arrived_time].to_i] ).try(:remarks), class: "form-control"
+      .row
+        .col-md-2 GRN Remarks
+        .col-md-10
+          = text_area_tag "grn_item[#{srr_item_source.id}][remarks]", Rails.cache.fetch([:grn_item, srr_item_source.id, session[:grn_arrived_time].to_i] ).try(:remarks), class: "form-control"
 
       %hr
   .row
@@ -208,7 +209,6 @@
       %h4 Remarks
     .col-md-10
       = g.input :remarks, label: false
-  %hr
 
   .row
     .col-md-12
