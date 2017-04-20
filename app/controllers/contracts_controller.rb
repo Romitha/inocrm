@@ -1,7 +1,7 @@
 class ContractsController < ApplicationController
-	before_filter :find_model
+  before_filter :find_model
 
-	def contracts
+  def contracts
     Organization
     Ticket
     if params[:search].present?
@@ -11,10 +11,12 @@ class ContractsController < ApplicationController
     params[:query] = refined_contract
     @contracts = TicketContract.search(params)
 
-    # render "tickets/../contracts/contracts"
+  end
 
-	private
-	def find_model
-		@model = Contracts.find(params[:id]) if params[:id]
-	end
+  # render "tickets/../contracts/contracts"
+
+  private
+    def find_model
+      @model = Contracts.find(params[:id]) if params[:id]
+    end
 end
