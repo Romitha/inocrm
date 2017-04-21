@@ -16,6 +16,12 @@ Rails.application.routes.draw do
 
   end
 
+  resources :contracts do
+    collection do
+      patch "contracts"
+    end
+  end
+
   resources :warranties do
     collection do
       post "select_for_warranty"
