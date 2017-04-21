@@ -1837,23 +1837,27 @@ module Admins
 
       end
       # @srr.attributes = {}
+      if @srr.srr_items.present?
+        if @srr.save
+          # @srr.srr_items.each do |srr_item|
+          #   srr_item.update closed: (srr_item.quantity.to_f <= srr_item.srr_item_sources.sum(:returned_quantity))
 
-      if @srr.save
-        # @srr.srr_items.each do |srr_item|
-        #   srr_item.update closed: (srr_item.quantity.to_f <= srr_item.srr_item_sources.sum(:returned_quantity))
+          # end
 
-        # end
+          @srr.srr_item_sources.each do |srr_item_source|
+            srr_item_source.gin_source.increment! :returned_quantity, srr_item_source.returned_quantity.to_f
+          end
 
-        @srr.srr_item_sources.each do |srr_item_source|
-          srr_item_source.gin_source.increment! :returned_quantity, srr_item_source.returned_quantity.to_f
+          CompanyConfig.first.increase_inv_last_srr_no
+
+
+          flash[:success] = "Successfully saved."
+        else
+          flash[:alert] = "Unable to save. Please try again"
         end
-
-        CompanyConfig.first.increase_inv_last_srr_no
-
-
-        flash[:success] = "Successfully saved."
       else
-        flash[:alert] = "Unable to save. Please try again"
+        flash[:alert] = "There are no item to return. Please try with any returnable item (s)"
+
       end
 
       redirect_to srr_admins_inventories_url
