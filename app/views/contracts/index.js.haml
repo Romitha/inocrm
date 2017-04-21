@@ -1,0 +1,10 @@
+- if params[:search].present?
+  $("#customerlist").html("#{j render 'contracts/customerlist'}");
+- elsif params[:select].present?
+  $("#contractlist").html("#{j render 'contracts/contractlist'}");
+
+- elsif params[:edit_create].present?
+  - if @contract.errors.any?
+    $("#contractform").html("#{j render 'contracts/contractform'}");
+  - else
+    $("#contractform").html("successfully saved");

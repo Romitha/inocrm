@@ -2132,18 +2132,6 @@ class TicketsController < ApplicationController
     end
   end
 
-  def contracts
-    Organization
-    if params[:search].present?
-      refined_contract = params[:contract].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
-    end
-
-    params[:query] = refined_contract
-    @contracts = TicketContract.search(params)
-
-    # render "tickets/../contracts/contracts"
-  end
-
   def invoice_advance_payment
 
     Inventory

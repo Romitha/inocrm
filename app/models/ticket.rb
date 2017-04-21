@@ -443,8 +443,11 @@ class TicketContract < ActiveRecord::Base
 end
 
 class ContractProduct < ActiveRecord::Base
+  Product
   self.table_name = "spt_contract_product"
+
   belongs_to :ticket_contract, foreign_key: :contract_id
+  belongs_to :product, foreign_key: :product_serial_id
 end
 
 class TicketStatus < ActiveRecord::Base
