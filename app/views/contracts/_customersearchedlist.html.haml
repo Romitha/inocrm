@@ -1,0 +1,26 @@
+- organizations = (@organizations || Organization.organization_customers)
+
+- if organizations.present?
+  .col-md-12
+    .row
+      .col-md-12
+        %table.table.table-hover
+          %thead
+            %tr
+              %th No
+              %th Name
+              %th Account No
+              %th Industry Type
+              %th Action
+          %tbody
+            - organizations.each_with_index do |org, index|
+              %tr
+                %td
+                  - if params[:page]
+                    = (index+1)+ 10*(params[:page].to_i-1)
+                  - else
+                    = (index+1)
+                %td= org.name
+                %td
+                %td= org.industry_type.name
+                %td= link_to "Select"

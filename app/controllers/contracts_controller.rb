@@ -3,11 +3,19 @@ class ContractsController < ApplicationController
   def index
     Ticket
     Organization
+    IndustryType
+
+    # if params[:search].present?
+    #   refined_contract = params[:contract].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
+    #   params[:query] = refined_contract
+    #   @contracts = TicketContract.search(params)
+    # end
 
     if params[:search].present?
-      refined_contract = params[:contract].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
-      params[:query] = refined_contract
-      @contracts = TicketContract.search(params)
+      refined_customer = params[:organization_customers].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
+      params[:query] = ["accounts_dealer_types.dealer_code:CUS", refined_customer].compact.join(" AND ")
+      @organizations = Organization.search(params)
+
     end
 
     if params[:select]
