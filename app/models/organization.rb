@@ -162,7 +162,7 @@ class Organization < ActiveRecord::Base
 
   def to_indexed_json
     to_json(
-      only: [:id, :name],
+      only: [:id, :name, :type_id, :code],
       # methods: [:store_name],
       include: {
         industry_type: {
@@ -178,6 +178,14 @@ class Organization < ActiveRecord::Base
         },
         contact_numbers: {
           only: [:value],
+        },
+        account: {
+          only: [:id, :industry_types_id],
+          # include: {
+          #   industry_type: {
+          #     only: [:id, :code, :name],
+          #   },
+          # },
         },
       },
     )
