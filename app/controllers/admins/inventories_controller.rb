@@ -1086,6 +1086,8 @@ module Admins
 
         grn_item = Rails.cache.fetch([:grn_item, srr_item_source_id, session[:grn_arrived_time].to_i])
 
+        grn_item.inventory_not_updated = false
+
         grn_item.srr_item = srr_item_source.srr_item
         grn_item.grn = @grn
 
@@ -1103,11 +1105,22 @@ module Admins
 
         if Rails.cache.fetch([ :extra_objects, srr_item_source_id, session[:grn_arrived_time].to_i ] ).present?
           inventory_serial_item = Rails.cache.fetch([ :extra_objects, srr_item_source_id, session[:grn_arrived_time].to_i ] )[:inventory_serial_item]
-          inventory_serial_item.save! if inventory_serial_item.present?
+
+          if inventory_serial_item.present?
+            inventory_serial_item.save!
+
+            grn_item.inventory_serial_items << inventory_serial_item
+
+          end
 
           damage_request = Rails.cache.fetch([ :extra_objects, srr_item_source_id, session[:grn_arrived_time].to_i ] )[:damage_request]
           damage_request.save! if damage_request.present?
 
+        end
+
+        if grn_item.inventory_product.product_type == "Batch"
+          grn_item.grn_batches.create( inventory_batch_id: srr_item_source.gin_source.grn_batch.inventory_batch_id, recieved_quantity: srr_item_source.returned_quantity, remaining_quantity: srr_item_source.returned_quantity )
+        else
         end
 
       end
@@ -1849,7 +1862,6 @@ module Admins
           end
 
           CompanyConfig.first.increase_inv_last_srr_no
-
 
           flash[:success] = "Successfully saved."
         else

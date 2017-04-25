@@ -15,5 +15,9 @@ class SlaTime < ActiveRecord::Base
     Ticket
     tickets.any? or product_brands.any? or product_categories.any?
   end
+
+  def time_with_description
+    "#{sla_time}H - #{description}"
+  end
   
 end
