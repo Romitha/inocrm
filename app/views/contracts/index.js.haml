@@ -2,13 +2,17 @@
   / $("#customerlist").html("#{j render 'contracts/customerlist'}");
   $("#customerlist").html("#{j render 'contracts/customersearchedlist'}");
 - elsif params[:select].present?
-  $("#contractlist").html("#{j render 'contracts/contractlist'}");
+  $("#contractlist").html("#{j render 'contracts/contractslist'}");
 
 - elsif params[:edit_create].present?
+  $("#contractedit").html("#{j render 'contracts/contractform'}");
+
+- elsif params[:save].present?
   - if @contract.errors.any?
     $("#contractform").html("#{j render 'contracts/contractform'}");
   - else
     $("#contractform").html("successfully saved");
 
 
+Tickets.initial_loaders();
 Tickets.remove_ajax_loader();

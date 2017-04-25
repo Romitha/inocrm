@@ -1,0 +1,65 @@
+- organization = @organization
+- ticket_contracts = @ticket_contracts
+.row
+  .col-md-12
+    .row
+      .col-md-2
+        %h4 Inova - Customer
+      .col-md-10
+        = link_to "New Customer", contracts_path(edit_create: true), remote: true, class: "btn btn-sm btn-warning"
+    .col-md-5
+      %dl.dl-horizontal
+        %dt Customer Name:
+        %dd= organization.name
+        / %dt Address:
+        / %dd= organization.addresses.full_address
+        %dt Account no:
+        %dd
+        %dt Customer code:
+        %dd
+        %dt Industry type:
+        %dd= organization.industry_type.name
+    .col-md-5
+      %dl.dl-horizontal
+        %dt Created at:
+        %dd= organization.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
+        %dt Created by:
+        %dd
+        %dt Under contract:
+        %dd
+
+    = paginate ticket_contracts, remote: true, method: :get
+        
+    %table.table.table-bordered
+      %thead
+        %tr
+          %th No
+          %th Contract no
+          %th Owner dep
+          %th Start date
+          %th Exp date
+          %th Hold
+          %th Active
+          %th Currency
+          %th Ammount
+          %th Contract type
+          %th Action
+      %tbody
+        - ticket_contracts.each_with_index do |con, index|
+          %tr
+            %td
+              - if params[:page]
+                = (index+1)+ 10*(params[:page].to_i-1)
+              - else
+                = (index+1)      
+            %td= con.contract_no
+            %td
+            %td= con.contract_start_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
+            %td= con.contract_end_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
+            %td= boolean_in_word con.hold, "Yes", "No"
+            %td
+            %td
+            %td= con.amount
+            %td
+            %td= link_to "Edit", contracts_path(edit_create: true, contract_id: con.id), remote: true
+#contractedit
