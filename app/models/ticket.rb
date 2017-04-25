@@ -385,6 +385,7 @@ class TicketContract < ActiveRecord::Base
   belongs_to :organization, foreign_key: :customer_id
   belongs_to :ticket_contract_type, foreign_key: :contract_type_id
   belongs_to :currency
+  belongs_to :created_by_user, class_name: "User", foreign_key: :created_by
   validates_presence_of [:customer_id, :sla_id, :created_by]
 
   validates_numericality_of [:sla_id]

@@ -26,10 +26,12 @@ class ContractsController < ApplicationController
     end
 
     if params[:edit_create]
+      @organization = Organization.find params[:customer_id]
+
       @contract = if params[:contract_id].present?
-        TicketContract.find params[:contract_id]
+        @organization.ticket_contracts.find params[:contract_id]
       else
-        TicketContract.new
+        @organization.ticket_contracts.build
       end
     end
 
@@ -38,28 +40,36 @@ class ContractsController < ApplicationController
         @contract = TicketContract.find params[:contract_id]
         @contract.attributes = contract_params
       else
-        @contract = TicketContract.new contract_params
+        @contract = @organization.ticket_contracts.build contract_params
       end
       @contract.save
     end
 
   end
   def create
-    if params[:save]
-      if params[:contract_id]
+    Ticket
+
+    if params[:save].present?
+      if params[:contract_id].present?
         @contract = TicketContract.find params[:contract_id]
         @contract.attributes = contract_params
       else
         @contract = TicketContract.new contract_params
       end
+
+      @organization = @contract.organization
+      @ticket_contracts = @organization.ticket_contracts.page params[:page]
+
+
       @contract.save
+
     end
     render :index
   end
 
   private
-  def contract_params
-    params.require(:ticket_contract).permit(:id, :created_at, :created_by, :customer_id, :contract_no, :contract_type_id, :hold, :contract_b2b, :remind_required, :currency_id, :amount, :contract_start_at, :contract_end_at, :remarks, :attachment_url, contract_products_attributes: [ :id, :_destroy, :invoice_id, :item_no, :description, :amount, product_attributes:[:id, :serial_no, :product_brand_id, :product_category_id, :model_no, :product_no, :pop_status_id, :sold_country_id, :pop_note, :pop_doc_url, :corporate_product, :sold_at, :sold_by]])
-  end
+    def contract_params
+      params.require(:ticket_contract).permit(:id, :created_at, :created_by, :customer_id, :sla_id, :contract_no, :contract_type_id, :hold, :contract_b2b, :remind_required, :currency_id, :amount, :contract_start_at, :contract_end_at, :remarks, :attachment_url, contract_products_attributes: [ :id, :_destroy, :invoice_id, :item_no, :description, :amount, :sla_id, product_attributes:[:id, :serial_no, :product_brand_id, :product_category_id, :model_no, :product_no, :pop_status_id, :sold_country_id, :pop_note, :pop_doc_url, :corporate_product, :sold_at, :sold_by, :remarks]])
+    end
 
 end

@@ -9,9 +9,10 @@
 
 - elsif params[:save].present?
   - if @contract.errors.any?
-    $("#contractform").html("#{j render 'contracts/contractform'}");
+    $("#contractedit").html("#{j render 'contracts/contractform'}");
   - else
-    $("#contractform").html("successfully saved");
+	$("#contractlist").html("#{j render 'contracts/contractslist'}");
+    $("#contractedit").html("successfully saved");
 
 
 Tickets.initial_loaders();
