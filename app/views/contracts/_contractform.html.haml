@@ -1,5 +1,16 @@
 %h3 New Contract
 = simple_nested_form_for @contract, url: contracts_path(save: true), html: {class: "validate_form"}, method: :post, remote: true do |f|
+  = hidden_field_tag :contract_id, @contract.id
+
+  = f.input :customer_id, as: :hidden
+  = f.input :created_by, as: :hidden, input_html: {value: current_user.id}
+
+  - if @contract.errors.any?
+    .row
+      .col-md-12
+        %ul
+          - @contract.errors.full_messages.each do |error|
+            %li= error
   .row
     .col-md-3
       = f.input :contract_no
@@ -20,6 +31,9 @@
       = f.input :contract_start_at,as: :string, required: true,input_html: {class: "datepicker"}
     .col-md-3
       = f.input :contract_end_at, as: :string, required: true, input_html: {class: "datepicker"}
+
+    .col-md-3
+      = f.association :sla_time, required: true, label_method: :description
   .row
     .col-md-8
       = f.input :remarks
@@ -42,8 +56,6 @@
             .col-md-2
               = p.input :product_no
           .row
-            .col-md-3
-              = c.association :sla_time, required: true, label_method: :description
             .col-md-2
               = p.input :corporate_product, wrapper: :append
             .col-md-3

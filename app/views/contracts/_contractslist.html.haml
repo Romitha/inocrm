@@ -6,7 +6,7 @@
       .col-md-2
         %h4 Inova - Customer
       .col-md-10
-        = link_to "New Customer", contracts_path(edit_create: true), remote: true, class: "btn btn-sm btn-warning"
+        = link_to "New Customer", contracts_path(edit_create: true, customer_id: organization.id), remote: true, class: "btn btn-sm btn-warning"
     .col-md-5
       %dl.dl-horizontal
         %dt Customer Name:
@@ -61,5 +61,5 @@
             %td
             %td= con.amount
             %td
-            %td= link_to "Edit", contracts_path(edit_create: true, contract_id: con.id), remote: true
+            %td= link_to "Edit", contracts_path(edit_create: true, contract_id: con.id, customer_id: organization.id), remote: true
 #contractedit
