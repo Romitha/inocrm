@@ -363,6 +363,11 @@ class TicketContactType < ActiveRecord::Base
   validates_presence_of [:code, :name]
 end
 
+class TicketContractType < ActiveRecord::Base
+  self.table_name = "mst_spt_contract_type"
+
+end
+
 class TicketContract < ActiveRecord::Base
   self.table_name = "spt_contract"
 
@@ -371,9 +376,15 @@ class TicketContract < ActiveRecord::Base
 
   has_many :tickets, foreign_key: :contract_id
   has_many :contract_products, foreign_key: :contract_id
+
+  has_many :contract_products, foreign_key: :contract_id
+  accepts_nested_attributes_for :contract_products, allow_destroy: true
+  has_many :products, through: :contract_products
+
   belongs_to :sla_time, foreign_key: :sla_id
   belongs_to :organization, foreign_key: :customer_id
-
+  belongs_to :ticket_contract_type, foreign_key: :contract_type_id
+  belongs_to :currency
   validates_presence_of [:customer_id, :sla_id, :created_by]
 
   validates_numericality_of [:sla_id]
@@ -448,6 +459,10 @@ class ContractProduct < ActiveRecord::Base
 
   belongs_to :ticket_contract, foreign_key: :contract_id
   belongs_to :product, foreign_key: :product_serial_id
+  belongs_to :sla_time, foreign_key: :sla_id
+
+  accepts_nested_attributes_for :product, allow_destroy: true
+
 end
 
 class TicketStatus < ActiveRecord::Base

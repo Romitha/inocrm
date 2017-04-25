@@ -21,10 +21,19 @@ class ContractsController < ApplicationController
     if params[:select]
       if params[:organization_id]
         @organization = Organization.find params[:organization_id]
+        @ticket_contracts = @organization.ticket_contracts.page params[:page]
       end
     end
 
     if params[:edit_create]
+      @contract = if params[:contract_id].present?
+        TicketContract.find params[:contract_id]
+      else
+        TicketContract.new
+      end
+    end
+
+    if params[:save]
       if params[:contract_id]
         @contract = TicketContract.find params[:contract_id]
         @contract.attributes = contract_params
@@ -34,6 +43,18 @@ class ContractsController < ApplicationController
       @contract.save
     end
 
+  end
+  def create
+    if params[:save]
+      if params[:contract_id]
+        @contract = TicketContract.find params[:contract_id]
+        @contract.attributes = contract_params
+      else
+        @contract = TicketContract.new contract_params
+      end
+      @contract.save
+    end
+    render :index
   end
 
   private

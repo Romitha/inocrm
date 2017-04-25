@@ -23,4 +23,4 @@
                 %td= org.name
                 %td
                 %td= org.industry_type.name
-                %td= link_to "Select"
+                %td= link_to "Select", contracts_path(organization_id: org.id, select: true), remote: true
