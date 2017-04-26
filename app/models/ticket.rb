@@ -377,14 +377,13 @@ class TicketContract < ActiveRecord::Base
   has_many :tickets, foreign_key: :contract_id
   has_many :contract_products, foreign_key: :contract_id
 
-  has_many :contract_products, foreign_key: :contract_id
   accepts_nested_attributes_for :contract_products, allow_destroy: true
   has_many :products, through: :contract_products
 
   belongs_to :sla_time, foreign_key: :sla_id
   belongs_to :organization, foreign_key: :customer_id
   belongs_to :ticket_contract_type, foreign_key: :contract_type_id
-  belongs_to :currency
+  belongs_to :ticket_currency, foreign_key: :currency_id
   belongs_to :created_by_user, class_name: "User", foreign_key: :created_by
   validates_presence_of [:customer_id, :sla_id, :created_by]
 

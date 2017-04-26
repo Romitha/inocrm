@@ -1,5 +1,6 @@
 - organizations = (@organizations || Organization.organization_customers)
 
+%h4 Search Customers
 .row
   .col-md-12
     = form_tag contracts_path(contracts_callback: "search_customers"), remote: true, method: :get, class: "form-horizontal" do

@@ -1,3 +1,4 @@
+%hr
 %h3 New Contract
 = simple_nested_form_for @contract, url: contracts_path(save: true), html: {class: "validate_form"}, method: :post, remote: true do |f|
   = hidden_field_tag :contract_id, @contract.id
@@ -21,10 +22,10 @@
     .col-md-2
       = f.input :contract_b2b, wrapper: :append, label: "Back to back contract"
     .col-md-2
-      / = f.input :, wrapper: :append
+      = f.input :remind_required, wrapper: :append, label: "Need remainding before expiry"
   .row
     .col-md-2
-      = f.association :currency, label_method: :code
+      = f.association :ticket_currency, label_method: :code
     .col-md-4
       = f.input :amount
     .col-md-3
@@ -33,7 +34,7 @@
       = f.input :contract_end_at, as: :string, required: true, input_html: {class: "datepicker"}
 
     .col-md-3
-      = f.association :sla_time, required: true, label_method: :description
+      = f.association :sla_time, required: true, label_method: :description, include_blank: false
   .row
     .col-md-8
       = f.input :remarks
@@ -46,9 +47,9 @@
         = c.simple_fields_for :product do |p|
           .row
             .col-md-2
-              = p.association :product_brand, required: true
+              = p.association :product_brand, required: true, include_blank: false
             .col-md-2
-              = p.association :product_category, required: true
+              = p.association :product_category, required: true, include_blank: false
             .col-md-4
               = p.input :serial_no, required: true
             .col-md-2
@@ -56,6 +57,8 @@
             .col-md-2
               = p.input :product_no
           .row
+            .col-md-3
+              = c.association :sla_time, required: true, label_method: :description, include_blank: false
             .col-md-2
               = p.input :corporate_product, wrapper: :append
             .col-md-3
@@ -68,7 +71,7 @@
             .col-md-6
               = c.input :remarks
             .col-md-3
-              /= c.input :remarks
+              /= c.input :atachdoc
 
           .col-md-2.small_scale_padding-top3
             = c.link_to_remove  class: "remove_c_t_v_link", title: "Remove" do
