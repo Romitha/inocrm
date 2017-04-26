@@ -1,32 +1,38 @@
 - organization = @organization
 - ticket_contracts = @ticket_contracts
+%hr
 .row
   .col-md-12
     .row
       .col-md-2
-        %h4 Inova - Customer
-      .col-md-10
-        = link_to "New Customer", contracts_path(edit_create: true, customer_id: organization.id), remote: true, class: "btn btn-sm btn-warning"
-    .col-md-5
-      %dl.dl-horizontal
-        %dt Customer Name:
-        %dd= organization.name
-        / %dt Address:
-        / %dd= organization.addresses.full_address
-        %dt Account no:
-        %dd
-        %dt Customer code:
-        %dd
-        %dt Industry type:
-        %dd= organization.industry_type.name
-    .col-md-5
-      %dl.dl-horizontal
-        %dt Created at:
-        %dd= organization.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
-        %dt Created by:
-        %dd
-        %dt Under contract:
-        %dd
+        %h4 Customer
+      .row
+      %br
+      .col-md-5
+        %dl.dl-horizontal
+          %dt Customer Name:
+          %dd= organization.name
+          %dt Address:
+          / %dd= organization.addresses
+          %dd
+            - organization.addresses.primary_address.each do |address|
+              = address.full_address
+          / - if organization.addresses.primary == true
+          %dt Account no:
+          %dd
+          %dt Customer code:
+          %dd= organization.code
+          %dt Industry type:
+          %dd= organization.industry_type.name
+      .col-md-5
+        %dl.dl-horizontal
+          %dt Created at:
+          %dd= organization.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
+          %dt Created by:
+          %dd= organization.created_by_user.try(:full_name)
+          %dt Under contract:
+          %dd
+      %br
 
     = paginate ticket_contracts, remote: true, method: :get
         
@@ -34,15 +40,18 @@
       %thead
         %tr
           %th No
+          %th Created at
           %th Contract no
           %th Owner dep
           %th Start date
           %th Exp date
           %th Hold
           %th Active
+          %th Amount
           %th Currency
-          %th Ammount
           %th Contract type
+          %th No of Products
+          %th Created By
           %th Action
       %tbody
         - ticket_contracts.each_with_index do |con, index|
@@ -51,15 +60,22 @@
               - if params[:page]
                 = (index+1)+ 10*(params[:page].to_i-1)
               - else
-                = (index+1)      
+                = (index+1)
+            %td= con.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
             %td= con.contract_no
-            %td
+            %td= con.organization.name
             %td= con.contract_start_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
             %td= con.contract_end_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
             %td= boolean_in_word con.hold, "Yes", "No"
             %td
-            %td
             %td= con.amount
-            %td
+            %td= con.ticket_currency.try(:code)
+            %td= con.ticket_contract_type.try(:name)
+            %td= con.products.count
+            %td= con.created_by_user.try(:full_name)
             %td= link_to "Edit", contracts_path(edit_create: true, contract_id: con.id, customer_id: organization.id), remote: true
+    %br
+    = link_to "New Contract", contracts_path(edit_create: true, customer_id: organization.id), remote: true, class: "btn btn-sm btn-warning"
+    %br
+    %br
 #contractedit
