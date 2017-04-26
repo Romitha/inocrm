@@ -1,44 +1,65 @@
 - ticket = @ticket
-%h3 New Ticket
+
 .row
-  .col-md-6
-    .ticket_no
-      Ticket No: #{@ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])}
-    .ticket_status
-      Status: #{@status.name}
-  .col-md-6.pull-right.text-right
-    .ticket_logged_at
-      Ticket logged at:
-      = link_to "#", id: "logged_at_new_ticket", data: {type: "combodate", resource: "ticket", name: "logged_at", url: ticket_update_tickets_path, value: @ticket.logged_at.strftime("%d-%m-%Y %H:%M"), "original-title" => "Update Logged date"} do
-        = DateTime.now.strftime("%d-%m-%Y %H:%M")
+  %ul.nav.nav-tabs
+    %li.active
+      %a{"data-toggle" => "tab", :href => "#tab1"} New Ticket
+    %li
+      %a{"data-toggle" => "tab", :href => "#tab2"} New Ticket With Contracts
+  .tab-content
+    #tab1.tab-pane.fade.in.active
+      .row.small_scale_padding-top1
+        .container
+          %h3 New Ticket
+          .row
+            .col-md-6
+              .ticket_no
+                Ticket No: #{@ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])}
+              .ticket_status
+                Status: #{@status.name}
+            .col-md-6.pull-right.text-right
+              .ticket_logged_at
+                Ticket logged at:
+                = link_to "#", id: "logged_at_new_ticket", data: {type: "combodate", resource: "ticket", name: "logged_at", url: ticket_update_tickets_path, value: @ticket.logged_at.strftime("%d-%m-%Y %H:%M"), "original-title" => "Update Logged date"} do
+                  = DateTime.now.strftime("%d-%m-%Y %H:%M")
 
-      <script>
-      setTimeout(function(){
-      $('#logged_at_new_ticket').editable({
-      mode: "inline",
-      format: 'DD-MM-YYYY HH:mm',
-      viewformat: 'DD-MM-YYYY HH:mm',
-      template: 'D - MMMM - YYYY HH:mm',
-      combodate: {
-      minYear: 2000,
-      maxYear: 2020,
-      minuteStep: 1
-      },
-      });
-      }, 2000);
-      </script>
+                <script>
+                setTimeout(function(){
+                $('#logged_at_new_ticket').editable({
+                mode: "inline",
+                format: 'DD-MM-YYYY HH:mm',
+                viewformat: 'DD-MM-YYYY HH:mm',
+                template: 'D - MMMM - YYYY HH:mm',
+                combodate: {
+                minYear: 2000,
+                maxYear: 2020,
+                minuteStep: 1
+                },
+                });
+                }, 2000);
+                </script>
 
-    .ticket_logged_by
-      Ticket logged by: #{User.cached_find_by_id(@ticket.logged_by).full_name}
-    .ticket_sla_time
-      SLA Time (hrs) :
-      %span.sla_time #{ticket.sla_time}
-.serial_search
-  = form_tag find_by_serial_tickets_path, method: :post, remote: true do
-    = label_tag "Search By Serial"
-    = text_field_tag :serial_search, nil, class: "form-control"
-.row
-  .col-md-12
-    #product_load
+              .ticket_logged_by
+                Ticket logged by: #{User.cached_find_by_id(@ticket.logged_by).full_name}
+              .ticket_sla_time
+                SLA Time (hrs) :
+                %span.sla_time #{ticket.sla_time}
+          .serial_search
+            = form_tag find_by_serial_tickets_path, method: :post, remote: true do
+              = label_tag "Search By Serial"
+              = text_field_tag :serial_search, nil, class: "form-control"
+          .row
+            .col-md-12
+              #product_load
 
-#render_ticket_form
+          #render_ticket_form
+
+    #tab2.tab-pane.fade
+      .row.small_scale_padding-top1
+        .container
+          %h4 Search Customer
+          .row#searchform
+            = render "tickets/add_ticket_with_contracts/customerlist", from_where: "new_ticket"
+            / = render "contracts/customerlist", from_where: "new_ticket"
+          .row#customerlist
+          .row#contractlist

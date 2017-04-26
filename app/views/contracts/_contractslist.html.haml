@@ -73,9 +73,13 @@
             %td= con.ticket_contract_type.try(:name)
             %td= con.products.count
             %td= con.created_by_user.try(:full_name)
-            %td= link_to "Edit", contracts_path(edit_create: true, contract_id: con.id, customer_id: organization.id), remote: true
+            - if params[:from_where] == "new_ticket"
+              %td= link_to "Select"
+            - else
+              %td= link_to "Edit", contracts_path(edit_create: true, contract_id: con.id, customer_id: organization.id), remote: true
     %br
-    = link_to "New Contract", contracts_path(edit_create: true, customer_id: organization.id), remote: true, class: "btn btn-sm btn-warning"
+    - unless params[:from_where] == "new_ticket"
+      = link_to "New Contract", contracts_path(edit_create: true, customer_id: organization.id), remote: true, class: "btn btn-sm btn-warning"
     %br
     %br
 #contractedit
