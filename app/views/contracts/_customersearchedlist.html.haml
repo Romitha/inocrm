@@ -10,6 +10,7 @@
               %th No
               %th Name
               %th Account No
+              %th Code
               %th Industry Type
               %th Action
           %tbody
@@ -22,5 +23,6 @@
                     = (index+1)
                 %td= org.name
                 %td
+                %td= org.code
                 %td= org.industry_type.name
-                %td= link_to "Select", contracts_path(organization_id: org.id, select: true), remote: true
+                %td= link_to "Select", contracts_path(organization_id: org.id, select: true, from_where: params[:from_where]), remote: true
