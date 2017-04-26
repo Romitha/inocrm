@@ -44,7 +44,6 @@
               = s.input :main_product_id, as: :hidden, input_html: {class: "dynamic_main_product_id"}
 
             = link_to "Select main part", "#", id: "main_product_id_output_#{s.object.object_id}", class: "mainStoreIdPass applyStoreId", onclick: "Inventories.search_product_for_part(this); return false;", data: {storeId: "undefined", modalId: "search_product", remote: "true", selectpath: "", selectoptions: "onclick:Inventories.assign_i_product(this, 'search_product', 'main_product_id_output_#{s.object.object_id}');<>from_where:prn"}
-            / = link_to "Select main part", "#", id: "main_product_id_output_#{s.object.object_id}", class: "main_part_link applyStoreId", onclick: "Inventories.search_product_for_part(this); return false;", data: {storeId: "undefined", modalId: "search_product", remote: "true", selectpath: "", selectoptions: "onclick:Inventories.assign_i_product(this, 'search_product', 'main_product_id_output_#{s.object.object_id}');<>from_where:part_of_main_unit"}
 
         .row
           .col-md-12
