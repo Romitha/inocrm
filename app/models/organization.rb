@@ -70,6 +70,7 @@ class Organization < ActiveRecord::Base
   has_many :ticket_contracts, foreign_key: :customer_id
 
   belongs_to :mst_title, foreign_key: :title_id
+  belongs_to :created_by_user, class_name: "User", foreign_key: :created_by
 
   TYPES = %w(SUP CUS INDSUP INDCUS)
 
