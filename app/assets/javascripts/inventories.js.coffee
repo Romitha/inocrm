@@ -827,6 +827,9 @@ window.Inventories =
         else if $(elem).is("#storeIdPassMainPart")
           $(elem).prev().find(".mainStoreIdPass").data({"storeId": $("#storeIdPassMainPart").data("mainpartstoreid"), "storeid": $("#storeIdPassMainPart").data("mainpartstoreid")})
 
+          selectoptions = $(elem).prev().find(".mainStoreIdPass").data("selectoptions")
+          console.log selectoptions
+
         ), 100
 
       return
@@ -849,11 +852,13 @@ window.Inventories =
   assign_i_product: (elem, dom1, ref_dom)->
     _this = $(elem)
     $("##{dom1}").modal("hide");
-    $("##{ref_dom}").prev().find(".product_info:eq(0)").html _this.data("content")
-    $("##{ref_dom}").prev().find(".dynamic_main_product_id:eq(0)").val(_this.data("productid"))
 
-    $("#"+window.localStorage.getItem("mainStoreIdPass")).prev().find(".product_info:eq(0)").html _this.data("content")
-    $("#"+window.localStorage.getItem("mainStoreIdPass")).prev().find(".dynamic_main_product_id:eq(0)").val(_this.data("productid"))
+    if window.localStorage.getItem("mainStoreIdPass") isnt null
+      $("#"+window.localStorage.getItem("mainStoreIdPass")).prev().find(".product_info:eq(0)").html _this.data("content")
+      $("#"+window.localStorage.getItem("mainStoreIdPass")).prev().find(".dynamic_main_product_id:eq(0)").val(_this.data("productid"))
+    else
+      $("##{ref_dom}").prev().find(".product_info:eq(0)").html _this.data("content")
+      $("##{ref_dom}").prev().find(".dynamic_main_product_id:eq(0)").val(_this.data("productid"))
 
     $(".applicable_product_id").val(_this.data("productid"))
 
