@@ -17,6 +17,7 @@ class User < ActiveRecord::Base
   # def only_if_unconfirmed
   #   pending_any_confirmation {yield}
   # end
+
   has_many :addresses, as: :addressable
   accepts_nested_attributes_for :addresses, allow_destroy: true
 
