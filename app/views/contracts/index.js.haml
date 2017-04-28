@@ -7,6 +7,9 @@
 - elsif params[:edit_create].present?
   $("#contractedit").html("#{j render 'contracts/contractform'}");
 
+- elsif params[:select_contract].present?
+  $("#contractselect").html("#{j render 'contracts/contractproducts'}");
+
 - elsif params[:save].present?
   - if @contract.errors.any?
     $("#contractedit").html("#{j render 'contracts/contractform'}");

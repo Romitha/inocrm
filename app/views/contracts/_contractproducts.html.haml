@@ -1,0 +1,35 @@
+- products = @products
+
+%h3 Contract Products
+%br/
+.col-md-12
+  %table.table.table-bordered
+    %thead
+      %tr
+        %th No
+        %th Product Brand
+        %th Product Category
+        %th Product No
+        %th Model No
+        %th Serial No
+        %th Select
+    %tbody
+      - products.each_with_index do |cp, index|
+        %tr
+          %td
+            - if params[:page]
+              = (index+1)+ 10*(params[:page].to_i-1)
+            - else
+              = (index+1)
+          %td
+            = cp.product_brand.name
+          %td
+            = cp.product_category.name
+          %td
+            = cp.product_no
+          %td
+            = cp.model_no
+          %td
+            = cp.serial_no
+          %td
+            = link_to "Select"

@@ -35,6 +35,15 @@ class ContractsController < ApplicationController
       end
     end
 
+    if params[:select_contract]
+      @organization = Organization.find params[:customer_id]
+
+      if params[:contract_id]
+        @contract = TicketContract.find params[:contract_id]
+        @products = @contract.products
+      end
+    end
+
     if params[:save]
       if params[:contract_id]
         @contract = TicketContract.find params[:contract_id]
