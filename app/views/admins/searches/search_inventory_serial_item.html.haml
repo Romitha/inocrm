@@ -27,7 +27,7 @@
         .col-md-2.control-label
           = label_tag "Serial Code", "Serial Code"
         .col-md-4
-          = text_field_tag "search_inventory[inventory_product][generated_serial_no]", (params[:search_inventory] and params[:search_inventory][:inventory_product][:generated_serial_no]), :placeholder => "Serial Code", class: "form-control"
+          = text_field_tag "search_inventory[generated_serial_no]", (params[:search_inventory] and params[:search_inventory][:generated_serial_no]), :placeholder => "Serial Code", class: "form-control"
         .col-md-2.control-label
           = label_tag "Item Code", "Item Code"
         .col-md-4
@@ -57,7 +57,7 @@
         .col-md-2.control-label
           = label_tag "Serial No", "Serial No"
         .col-md-4
-          = text_field_tag "search_inventory[generated_serial_no]", (params[:search_inventory] and params[:search_inventory][:generated_serial_no]), :placeholder => "Serial No", class: "form-control"
+          = text_field_tag "search_inventory[serial_no]", (params[:search_inventory] and params[:search_inventory][:serial_no]), :placeholder => "Serial No", class: "form-control"
         .col-md-2.control-label
           = label_tag "CT No", "CT No"
         .col-md-4
@@ -95,6 +95,7 @@
           %li
             %strong Damaged
             = boolean_in_word serial_item.damaged, "Yes", "No"
+
           %li
             %strong Repaired
             = boolean_in_word serial_item.repaired, "Yes", "No"
@@ -117,13 +118,14 @@
             
         %strong Description:
         = serial_item.inventory_product.try(:description)
+
         %br/
         %strong Remarks:
         %span{title: serial_item.try(:remarks)}
           = serial_item.try(:remarks).try :truncate, 50
 
       %tr
-        %td{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Serial No: #{serial_item.generated_serial_no}", "data-content"=> yield(:serial_item_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "top" }
+        %td{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Serial No: #{serial_item.try(:serial_no)}", "data-content"=> yield(:serial_item_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "top" }
           - if params[:page]
             = (index+1) + 10*(params[:page].to_i-1)
           - else
@@ -131,7 +133,7 @@
         %td
           = serial_item.inventory_product.try(:generated_item_code)
         %td
-          = serial_item.try(:generated_serial_no)
+          = serial_item.try(:serial_no)
         %td
           = serial_item.try(:ct_no)
         / %td
