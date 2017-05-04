@@ -374,6 +374,8 @@ class TicketContract < ActiveRecord::Base
   include Tire::Model::Search
   include Tire::Model::Callbacks
 
+  mount_uploader :attachment_url, AttachmentUrlUploader
+
   has_many :tickets, foreign_key: :contract_id
   has_many :contract_products, foreign_key: :contract_id
 
@@ -459,6 +461,8 @@ class ContractProduct < ActiveRecord::Base
 
   belongs_to :ticket_contract, foreign_key: :contract_id
   belongs_to :product, foreign_key: :product_serial_id
+  accepts_nested_attributes_for :product, allow_destroy: true
+
   belongs_to :sla_time, foreign_key: :sla_id
 
   accepts_nested_attributes_for :product, allow_destroy: true

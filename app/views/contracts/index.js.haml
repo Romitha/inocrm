@@ -1,3 +1,7 @@
+- if params[:product] and params[:product][:pop_doc_url]
+  $("#preview_of_pop_doc_url").html("#{@new_product.pop_doc_url.file.filename if @new_product.pop_doc_url.present?}");
+  $(".pop_doc_url_wrapper").empty();
+
 - if params[:search].present?
   / $("#customerlist").html("#{j render 'contracts/customerlist'}");
   $("#customerlist").html("#{j render 'contracts/customersearchedlist'}");
@@ -11,12 +15,21 @@
   $("#contractselect").html("#{j render 'contracts/contractproducts'}");
 
 - elsif params[:save].present?
-  - if @contract.errors.any?
+  - if params[:ajax_upload].present?
     $("#contractedit").html("#{j render 'contracts/contractform'}");
   - else
-    $("#contractlist").html("#{j render 'contracts/contractslist'}");
-    $("#contractedit").html("successfully saved");
+
+    - if @contract.errors.any?
+      $("#contractedit").html("#{j render 'contracts/contractform'}");
+      console.log("error");
+    - else
+      console.log("success");
+      $("#contractedit").html("#{j render 'contracts/contractform'}");
+      $("#").html("successfully saved");
+      $("#contract_alert").removeClass("hide");
+      $("#contract_alert #content").html("successfully saved");
 
 
 Tickets.initial_loaders();
 Tickets.remove_ajax_loader();
+Tickets.multi_pop_url_doc_upload();

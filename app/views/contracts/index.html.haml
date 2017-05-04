@@ -1,5 +1,14 @@
-%h3 Contracts
-=render 'customerlist'
-#customerlist
-#contractlist
-#contractform
+#contract_alert.alert.alert-success.alert-dismissable.fade.in.hide{role: "alert"}
+  %button{class: "close", "aria-label" => "Close", data: {dismiss: "alert"}}
+    %span &times;
+
+  #content
+
+.row
+  %h3 Contracts
+.row#searchform
+  / =render 'searchform'
+  =render 'customerlist'
+.row#customerlist
+.row#contractlist
+.row#contractform

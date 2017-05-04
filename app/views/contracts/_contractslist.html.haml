@@ -3,40 +3,37 @@
 %hr
 .row
   .col-md-12
-    %h4 Customer
-    - unless params[:from_where] == "new_ticket"
-      = link_to "New Contract", contracts_path(edit_create: true, customer_id: organization.id), remote: true, class: "btn btn-sm btn-warning"
+    .row
+      .col-md-2
+        %h4 Customer
+      .row
+      %br
+      .col-md-5
+        %dl.dl-horizontal
+          %dt Customer Name:
+          %dd= organization.name
+          %dt Address:
+          %dd
+            - organization.addresses.primary_address.each do |address|
+              = address.full_address
+          %dt Account no:
+          %dd
+          %dt Customer code:
+          %dd= organization.code
+          %dt Industry type:
+          %dd= organization.industry_type.name
+      .col-md-5
+        %dl.dl-horizontal
+          %dt Created at:
+          %dd= organization.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
+          %dt Created by:
+          %dd= organization.created_by_user.try(:full_name)
+          %dt Under contract:
+          %dd
+      %br
 
-.row
-  .col-md-6
-    %dl.dl-horizontal
-      %dt Customer Name:
-      %dd= organization.name
-      %dt Address:
-      %dd
-        - organization.addresses.primary_address.each do |address|
-          = address.full_address
-          %br
-
-      %dt Account no:
-      %dd
-      %dt Customer code:
-      %dd= organization.code
-      %dt Industry type:
-      %dd= organization.industry_type.name
-  .col-md-6
-    %dl.dl-horizontal
-      %dt Created at:
-      %dd= organization.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
-      %dt Created by:
-      %dd= organization.created_by_user.try(:full_name)
-      %dt Under contract:
-      %dd
-
-.row
-  .col-md-12
     = paginate ticket_contracts, remote: true, method: :get
-  .col-md-12
+        
     %table.table.table-bordered
       %thead
         %tr
@@ -75,9 +72,12 @@
             %td= con.products.count
             %td= con.created_by_user.try(:full_name)
             - if params[:from_where] == "new_ticket"
-              %td= link_to "Select", contracts_path(select_contract: true, contract_id: con.id, customer_id: organization.id), remote: true
+              %td= link_to "Select"
             - else
               %td= link_to "Edit", contracts_path(edit_create: true, contract_id: con.id, customer_id: organization.id), remote: true
-
+    %br
+    - unless params[:from_where] == "new_ticket"
+      = link_to "New Contract", contracts_path(edit_create: true, customer_id: organization.id), remote: true, class: "btn btn-sm btn-warning"
+    %br
+    %br
 #contractedit
-#contractselect

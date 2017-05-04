@@ -1,82 +1,97 @@
+- contract = @contract
+
 %hr
 %h3 New Contract
-= simple_nested_form_for @contract, url: contracts_path(save: true), html: {class: "validate_form"}, method: :post, remote: true do |f|
-  = hidden_field_tag :contract_id, @contract.id
+= simple_nested_form_for contract, url: contracts_path(save: true), html: {class: "validate_form"}, method: :post, remote: true, multiple: true do |f|
+  = hidden_field_tag :contract_id, contract.id
 
   = f.input :customer_id, as: :hidden
   = f.input :created_by, as: :hidden, input_html: {value: current_user.id}
+  = f.input :owner_organization_id, as: :hidden, input_html: {value: Organization.owner.id }
 
-  - if @contract.errors.any?
+  - if contract.errors.any?
     .row
       .col-md-12
         %ul
-          - @contract.errors.full_messages.each do |error|
+          - contract.errors.full_messages.each do |error|
             %li= error
   .row
     .col-md-3
       = f.input :contract_no
     .col-md-3
-      = f.association :ticket_contract_type, input_html: {required: true}
+      = f.association :ticket_contract_type, input_html: {required: true}, label: "Contract Type"
     .col-md-2
       = f.input :hold, wrapper: :append
     .col-md-2
-      = f.input :contract_b2b, wrapper: :append, label: "Back to back contract"
+      = f.input :contract_b2b, wrapper: :append, label: "Back to Back Contract"
     .col-md-2
-      = f.input :remind_required, wrapper: :append, label: "Need remainding before expiry"
+      = f.input :remind_required, wrapper: :append, label: "Need Remind before Expiry"
   .row
     .col-md-2
-      = f.association :ticket_currency, label_method: :code
+      = f.association :ticket_currency, label_method: :code, label: "Currency"
     .col-md-4
       = f.input :amount
     .col-md-3
-      = f.input :contract_start_at,as: :string, required: true,input_html: {class: "datepicker"}
+      = f.input :contract_start_at, as: :string, required: true,input_html: {class: "datepicker", value: f.object.contract_start_at.try(:strftime, INOCRM_CONFIG["short_date_format"])}
     .col-md-3
-      = f.input :contract_end_at, as: :string, required: true, input_html: {class: "datepicker"}
+      = f.input :contract_end_at, as: :string, required: true, input_html: {class: "datepicker", value: f.object.contract_end_at.try(:strftime, INOCRM_CONFIG["short_date_format"])}
 
     .col-md-3
-      = f.association :sla_time, required: true, label_method: :description, include_blank: false
+      = f.association :sla_time, required: true, label_method: :description, include_blank: false, label: "SLA"
   .row
     .col-md-8
       = f.input :remarks
     .col-md-2
-      / =f.input :attach_docorm
+      = f.label "attachment url uploader:"
+      = f.file_field :attachment_url, accept: 'application/doc, application/pdf'
+      = f.object.attachment_url.present? and link_to(f.object.attachment_url.file.filename, f.object.attachment_url.url, target: "_blank")
     %hr
     .col-md-12
       = f.simple_fields_for :contract_products do |c|
-        - c.object.build_product
-        = c.simple_fields_for :product do |p|
-          .row
-            .col-md-2
-              = p.association :product_brand, required: true, include_blank: false
-            .col-md-2
-              = p.association :product_category, required: true, include_blank: false
-            .col-md-4
-              = p.input :serial_no, required: true
-            .col-md-2
-              = p.input :model_no
-            .col-md-2
-              = p.input :product_no
-          .row
-            .col-md-3
-              = c.association :sla_time, required: true, label_method: :description, include_blank: false
-            .col-md-2
-              = p.input :corporate_product, wrapper: :append
-            .col-md-3
-              = p.association :product_pop_status
-            .col-md-4
-              = p.input :pop_note
-          .row
-            .col-md-3
-              = p.association :product_sold_country, label_method: :code
-            .col-md-6
-              = c.input :remarks
-            .col-md-3
-              /= c.input :atachdoc
+        - c.object.build_product unless c.object.persisted?
 
-          .col-md-2.small_scale_padding-top3
-            = c.link_to_remove  class: "remove_c_t_v_link", title: "Remove" do
-              %button.btn.btn-danger Remove
-          %hr
+        = c.simple_fields_for :product do |p|
+          = panels panel_type: "info", header_content: "Products" do
+            .row
+              .col-md-2
+                = p.association :product_brand, required: true, include_blank: false
+              .col-md-2
+                = p.association :product_category, required: true, include_blank: false
+              .col-md-4
+                = p.input :serial_no, required: true
+              .col-md-2
+                = p.input :model_no
+              .col-md-2
+                = p.input :product_no
+            .row
+              .col-md-3
+                = c.association :sla_time, required: true, label_method: :description, include_blank: false, label: "SLA"
+              .col-md-2
+                = p.input :corporate_product, wrapper: :append
+              .col-md-3
+                = p.association :product_pop_status
+              .col-md-4
+                = p.input :pop_note
+            .row
+              .col-md-3
+                = p.association :product_sold_country, label_method: :code
+              .col-md-6
+                = c.input :remarks
+              .col-md-3
+                %strong.small_scale_padding-bottom3{style: "display: block;"} POP note document
+                #preview_of_pop_doc_url{style: "word-wrap: break-word;"}
+                  - if p.object.pop_doc_url.present?
+                    yes
+                    = p.object.pop_doc_url.file.filename
+                  = p.label "Upload pop note"
+                  = p.file_field :pop_doc_url, accept: 'image/png,image/gif,image/jpeg,application/pdf', class: "product_pop_doc_url"
+
+                .pop_doc_url_wrapper
+
+            .col-md-2.small_scale_padding-top3
+              = c.link_to_remove  class: "remove_c_t_v_link",:data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Remove" do
+                %button.btn.btn-danger Remove
+            %hr
 
       = f.link_to_add "Add Product", :contract_products, class: "btn btn-sm btn-success"
   .row
@@ -85,3 +100,8 @@
     .col-md-12
       = f.submit "Save", class: "btn btn-sm btn-success", remote: true
 
+%script#pop_doc_url_upload{type: "text/x-tmpl"}
+  .pop_doc_url_upload.span12
+    {%= o.name %}
+    .progress
+      .progress-bar.progress-bar-success.progress-bar-striped{role: "progressbar", "aria-valuemax" => 100, "aria-valuemin" => 0, "aria-valuenow" => 0}
