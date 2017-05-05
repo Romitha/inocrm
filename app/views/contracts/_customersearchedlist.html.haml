@@ -1,8 +1,20 @@
 - organizations = (@organizations || Organization.organization_customers)
+- print_object = @print_object
+
+.row
+  %br/
+  .col-md-9
+  .col-md-3
+    =label_tag "Number of Customers: "
+    =print_object[:totalCustomers]
+  %br/
 
 - if organizations.present?
   .row
+    %br/
     .col-md-12
+      = paginate organizations, remote: true, method: :get
+
       %table.table.table-hover
         %thead
           %tr
@@ -25,3 +37,5 @@
               %td= org.code
               %td= org.industry_type.name
               %td= link_to "Select", contracts_path(organization_id: org.id, select: true, from_where: params[:from_where]), remote: true
+
+      = paginate organizations, remote: true, method: :get

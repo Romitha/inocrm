@@ -16,6 +16,12 @@ class ContractsController < ApplicationController
       params[:query] = ["accounts_dealer_types.dealer_code:CUS", refined_customer].map { |v| v if v.present? }.compact.join(" AND ")
       @organizations = Organization.search(params)
 
+      total_customers = @organizations.total
+
+      @print_object = {
+        totalCustomers: total_customers,
+      }
+
     end
 
     if params[:select]
