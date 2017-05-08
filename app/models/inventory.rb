@@ -1049,6 +1049,7 @@ class InventoryPo < ActiveRecord::Base
 
   def self.search(params)  
     tire.search(page: (params[:page] || 1), per_page: 10) do
+      params[:query] = params[:query].split(" AND ").map{|q| q.starts_with?("formated_po_no") ? q+" OR #{q.gsub('formated_po_no', 'po_no')}" : q }.join(" AND ")
       query do
         boolean do
           must { string params[:query] } if params[:query].present?
@@ -1067,7 +1068,7 @@ class InventoryPo < ActiveRecord::Base
   def to_indexed_json
     Warranty
     to_json(
-      only: [:created_at, :id, :delivery_date, :closed],
+      only: [:created_at, :id, :delivery_date, :closed, :po_no],
       methods: [:store_name, :formated_po_no, :formated_created_at, :created_by_user_full_name],
       include: {
         store: {
@@ -1166,6 +1167,7 @@ class InventoryPrn < ActiveRecord::Base
 
   def self.search(params)  
     tire.search(page: (params[:page] || 1), per_page: 10) do
+      params[:query] = params[:query].split(" AND ").map{|q| q.starts_with?("formated_prn_no") ? q+" OR #{q.gsub('formated_prn_no', 'prn_no')}" : q }.join(" AND ")
       query do
         boolean do
           must { string params[:query] } if params[:query].present?

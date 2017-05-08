@@ -13,7 +13,7 @@
       .form-group
         = label_tag "PO No", "PO No", class: "col-md-2 control-label"
         .col-md-10
-          = text_field_tag "po[formated_po_no]", nil, placeholder: "Po No", class: "form-control"
+          = text_field_tag "po[formated_po_no]", params[:formated_po_no], placeholder: "Po No", class: "form-control"
       .form-group
         = label_tag "PO No", "PO date from", class: "col-md-2 control-label"
         .col-md-10

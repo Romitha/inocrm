@@ -21,6 +21,7 @@ class Gin < ActiveRecord::Base
 
   def self.search(params)
     tire.search(page: (params[:page] || 1), per_page: 10) do
+      params[:query] = params[:query].split(" AND ").map{|q| q.starts_with?("formatted_gin_no") ? q+" OR #{q.gsub('formatted_gin_no', 'gin_no')}" : q }.join(" AND ")
       query do
         boolean do
           must { string params[:query] } if params[:query].present?
@@ -39,7 +40,7 @@ class Gin < ActiveRecord::Base
   def to_indexed_json
     Srr
     to_json(
-      only: [:id, :remarks, :created_at, :srn_id],
+      only: [:id, :remarks, :created_at, :srn_id, :gin_no],
       methods: [:store_name, :formatted_gin_no, :created_by_user_full_name, :formated_created_at],
       include: {
         srn: {

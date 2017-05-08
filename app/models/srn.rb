@@ -26,6 +26,7 @@ class Srn < ActiveRecord::Base
 
   def self.search(params)
     tire.search(page: (params[:page] || 1), per_page: 10) do
+      params[:query] = params[:query].split(" AND ").map{|q| q.starts_with?("formatted_srn_no") ? q+" OR #{q.gsub('formatted_srn_no', 'srn_no')}" : q }.join(" AND ")
       query do
         boolean do
           must { string params[:query] } if params[:query].present?
