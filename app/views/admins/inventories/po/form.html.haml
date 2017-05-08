@@ -75,20 +75,21 @@
 
         - if i.object.inventory_prn_item and i.object.inventory_prn_item.inventory_product
           .row
-            .col-md-3
+            .col-md-6
               - if i.object.inventory_prn_item.inventory_product.product_no
                 %strong Product Number:
                 = i.object.inventory_prn_item.inventory_product.product_no
               - else
                 %strong Model Number:
                 = i.object.inventory_prn_item.inventory_product.try(:model_no)
-            .col-md-3
+            .col-md-6
               %strong Item Code:
               = i.object.inventory_prn_item.inventory_product.generated_item_code
-            .col-md-3
+          .row
+            .col-md-6
               %strong Item Description:
               = i.object.inventory_prn_item.inventory_product.description
-            .col-md-3
+            .col-md-6
               %strong Balance Qty to be Purchased:
               = i.object.inventory_prn_item.quantity - i.object.inventory_prn_item.inventory_po_items.sum(:quantity)
 
