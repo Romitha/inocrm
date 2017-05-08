@@ -15,7 +15,9 @@ class Grn < ActiveRecord::Base
 
   def self.search(params)
     tire.search(page: (params[:page] || 1), per_page: 10) do
-      params[:query] = params[:query].split(" AND ").map{|q| q.starts_with?("grn_no_format") ? q+" OR #{q.gsub('grn_no_format', 'grn_no')}" : q }.join(" AND ")
+      if params[:query]
+        params[:query] = params[:query].split(" AND ").map{|q| q.starts_with?("grn_no_format") ? q+" OR #{q.gsub('grn_no_format', 'grn_no')}" : q }.join(" AND ")
+      end
       query do
         boolean do
           must { string params[:query] } if params[:query].present?
