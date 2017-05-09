@@ -59,7 +59,9 @@ class Product < ActiveRecord::Base
 
   has_many :tickets, through: :ticket_product_serials
   has_many :warranties, foreign_key: :product_serial_id
-  has_many :contract_product, foreign_key: :product_serial_id
+  has_many :contract_products, foreign_key: :product_serial_id
+  has_many :ticket_contracts, through: :contract_products
+
   has_many :ref_product_serials, class_name: "TicketProductSerial", foreign_key: :ref_product_serial_id
   accepts_nested_attributes_for :ref_product_serials, allow_destroy: true
 
@@ -74,6 +76,10 @@ class Product < ActiveRecord::Base
 
   def append_pop_status
     self.pop_note = "#{self.pop_note} <span class='pop_note_e_time'>(edited on #{Time.now.strftime('%d %b, %Y at %H:%M:%S')})</span><br/>#{pop_note_was}"
+  end
+
+  def cannot_removable_from_contract?(contract_id)
+    ticket_contracts.find_by_id(contract_id) and ticket_contracts.find_by_id(contract_id).tickets.any?
   end
 end
 

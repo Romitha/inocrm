@@ -448,9 +448,13 @@ class TicketContract < ActiveRecord::Base
     created_at.strftime(INOCRM_CONFIG["short_date_format"])
   end
 
-  def is_used_anywhere?
-    contract_products.any?
-    tickets.any?
+  # def is_used_anywhere?
+  #   contract_products.any?
+  #   tickets.any?
+  # end
+
+  def dynamic_active
+    hold.present? and (contract_start_at.to_date..(contract_end_at.to_date+1.day)).include?(DateTime.now)
   end
 
 end
