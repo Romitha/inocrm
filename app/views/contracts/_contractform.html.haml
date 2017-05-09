@@ -94,6 +94,8 @@
             %hr
 
       = f.link_to_add "Add Product", :contract_products, class: "btn btn-sm btn-success"
+      %button.btn.btn-info{"data-target" => "#productsModel", "data-toggle" => "modal", :type => "button"} Select Product
+
   .row
   .row
     %hr
@@ -105,3 +107,23 @@
     {%= o.name %}
     .progress
       .progress-bar.progress-bar-success.progress-bar-striped{role: "progressbar", "aria-valuemax" => 100, "aria-valuemin" => 0, "aria-valuenow" => 0}
+
+
+#productsModel.modal.fade{:role => "dialog"}
+  .modal-dialog
+    / Modal content
+    .modal-content
+      .modal-header
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+        %h3.modal-title Search Product
+      .modal-body
+        / = form_tag "#", method: :post, remote: true do
+        = form_tag search_product_contracts_path, method: :get, remote: true do
+          .col-md-10
+            = text_field_tag "query", params[:query], class: "form-control", placeholder: "Type any. for target seach"
+          .col-md-2
+            = submit_tag "Search", :name => "search_product", class: "btn btn-sm btn-success"
+          .col-md-12
+            #searchproduct
+      .modal-footer
+        %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close

@@ -19,6 +19,7 @@ Rails.application.routes.draw do
   resources :contracts do
     collection do
       patch "contracts"
+      get "search_product"
     end
   end
 

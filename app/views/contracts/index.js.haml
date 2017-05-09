@@ -14,6 +14,9 @@
 - elsif params[:select_contract].present?
   $("#contractselect").html("#{j render 'contracts/contractproducts'}");
 
+- elsif params[:search_product].present?
+  $("#searchproduct").html("#{j render 'contracts/searchproduct'}");
+
 - elsif params[:save].present?
   - if params[:ajax_upload].present?
     $("#contractedit").html("#{j render 'contracts/contractform'}");

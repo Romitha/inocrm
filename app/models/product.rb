@@ -38,6 +38,14 @@ class Product < ActiveRecord::Base
         },
         product_pop_status: {
           only: [:name, :code]
+        },
+        ticket_contracts: {
+          only: [:id],
+          include: {
+            organization: {
+              only: [:id, :name],
+            }
+          }
         }
       }
     )

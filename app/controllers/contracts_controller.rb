@@ -59,8 +59,16 @@ class ContractsController < ApplicationController
       end
       @contract.save
     end
-
   end
+
+  def search_product
+    if params[:search_product]
+      puts "*************************"
+      @products = Product.search(params)
+      puts "*************************"
+    end
+  end
+
   def create
     Ticket
 
