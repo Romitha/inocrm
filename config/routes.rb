@@ -382,7 +382,7 @@ Rails.application.routes.draw do
         get "srns"
         get "prns"
         get "pos"
-        get "close_po"
+        # get "close_po"
         get "view_srn"
         get "view_prn"
         get "view_gin"
@@ -446,7 +446,8 @@ Rails.application.routes.draw do
           :reason,
           :manufacture,
           :unit,
-          :inventory
+          :inventory,
+          :close_po
         ].each do |action|
           match "#{action.to_s}", action: action, via: [:get, :post, :put]
         end

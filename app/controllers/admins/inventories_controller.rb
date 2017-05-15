@@ -551,17 +551,29 @@ module Admins
     def close_po
       Inventory
       if params[:po_id].present?
-        # po_id = params[:po_id]
-        # po_id.closed = true
 
         @po = InventoryPo.find params[:po_id]
-        @po.update closed: true
+        if params[:form_param].present?
+          @po.update po_params
+
+          @po.inventory_po_items.each do |po_item|
+            prnitem_id = po_item.inventory_prn_item.id
+            @prnitem = InventoryPrnItem.find prnitem_id
+            @prnitem.update closed: false
+
+            prn_id = po_item.inventory_prn_item.inventory_prn.id
+            @prn = InventoryPrn.find prn_id
+            @prn.update closed: false
+          end
+        end
       end
 
-      # render "admins/inventories/po/pos"
-      respond_to do |format|
-        format.html { redirect_to pos_admins_inventories_path(close_param: params[:po_id]) }
+      if request.xhr?
+        render "admins/inventories/po/pos.js"
+      else
+        redirect_to pos_admins_inventories_path(close_param: params[:po_id])
       end
+
     end
 
     def view_prn
@@ -1991,7 +2003,7 @@ module Admins
       end
 
       def po_params
-        params.require(:inventory_po).permit(:id, :created_by, :store_id, :supplier_id, :po_no, :delivery_date, :your_ref, :payment_term_id, :discount_amount, :currency_id, :remarks, :deliver_to, :delivery_date_text, :quotation_no, :delivery_mode, inventory_po_items_attributes: [ :id, :_destroy, :prn_item_id, :quantity, :unit_cost, :unit_id, :unit_cost_grn, :remarks, :description, inventory_po_item_taxes_attributes: [ :id, :_destroy, :po_item_id, :tax_id, :tax_rate, :amount ] ] )
+        params.require(:inventory_po).permit(:id, :created_by, :store_id, :supplier_id, :po_no, :delivery_date, :your_ref, :payment_term_id, :discount_amount, :currency_id, :remarks, :deliver_to, :delivery_date_text, :quotation_no, :delivery_mode, :closed, inventory_po_items_attributes: [ :id, :_destroy, :prn_item_id, :quantity, :unit_cost, :unit_id, :unit_cost_grn, :remarks, :description, :closed, inventory_po_item_taxes_attributes: [ :id, :_destroy, :po_item_id, :tax_id, :tax_rate, :amount ], inventory_prn_item_attributes: [ :id, :_destroy, :closed, inventory_prn_attributes: [ :id, :_destroy, :closed ] ],  ] )
       end
 
       def srr_params

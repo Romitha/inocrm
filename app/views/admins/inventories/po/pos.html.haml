@@ -68,7 +68,18 @@
           %td.rmclass
         - else
           %td.rmclass
-            = link_to "Close", close_po_admins_inventories_path(po_id: po.id), rel: "tooltip",  :data => {toggle: "tooltip", placement: "bottom" }, title: "Close", onclick: "Admins.remove_close(this);"
+            / = link_to "Close", close_po_admins_inventories_path(po_id: po.id), rel: "tooltip",  :data => {toggle: "tooltip", placement: "bottom", modalId: "close_po_id", remote: "true"}, title: "Close"
+
+            = link_to "Close", close_po_admins_inventories_path(po_id: po.id), data: {modalId: "close_po_id", remote: "true"}
+
             / = link_to delete_disposal_method_admins_inventories_path(disposal_id: disposal.id), method: :delete, rel: "tooltip",  :data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Delete"
 
 = paginate pos, remote: false, method: :get
+
+#close_po_id.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "close_po_id", "aria-hidden" => true}
+  .modal-dialog.modal-lg
+    .modal-content
+      .modal-header
+        %h4.modal-title Select Product
+      .modal-body
+      .modal-footer

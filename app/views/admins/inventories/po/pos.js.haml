@@ -1,0 +1,6 @@
+$("#close_po_id").modal();
+$("#close_po_id .modal-content").html("#{j render 'admins/inventories/po/close_po_form', po: @po}");
+$(".validate_form").validate();
+Tickets.remove_ajax_loader();
+
+$("a[rel~=popover], .has-popover").popover();

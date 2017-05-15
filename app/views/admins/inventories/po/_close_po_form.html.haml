@@ -1,0 +1,19 @@
+.row
+  .col-md-12.small_scale_padding-top1.small_scale_padding-left3
+    %h4 Are you sure you want to close this PO ?
+.row
+  .col-md-12.small_scale_padding-top2.small_scale_padding-right3.small_scale_padding-top1.small_scale_padding-left3.small_scale_padding-bottom2
+    = simple_nested_form_for po, url: close_po_admins_inventories_path(po_id: po.id, form_param: true), method: :post, html: {class: "validate_form"} do |f|
+      = f.input :remarks, input_html: {value: nil, required: true}
+      = simple_format f.object.remarks
+      = f.input :closed, wrapper: :append, input_html: {checked: true}, as: :hidden
+      
+      = f.simple_fields_for :inventory_po_items do |i|
+        = i.input :remarks, input_html: {value: "closed by :  " + current_user.email + "  closed at :  " + DateTime.now.strftime("%d-%m-%Y %H:%M") }, as: :hidden
+        = i.input :closed, wrapper: :append, input_html: {checked: true}, as: :hidden
+
+      = f.submit "Close", class: "btn btn-sm btn-success pull-right"
+      = link_to "Cancel", "#", data: {dismiss: "modal"}, class: "btn btn-sm btn-warning pull-right small_scale_padding-right1"
+
+= javascript_tag do
+  $("#validate_form").validate();
