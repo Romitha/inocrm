@@ -675,8 +675,6 @@ window.Tickets =
         # _this.initial_loaders()
         $("a[rel~=popover], .has-popover").popover()
 
-  remove_spareparts: (elem)->
-
   select_brand_create_invoice_for_so: ->
     $("#brand_id_for_sales").change ->
       product_brand_id = $(@).val()

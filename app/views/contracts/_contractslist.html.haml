@@ -1,5 +1,10 @@
 - organization = @organization
-- ticket_contracts = @ticket_contracts
+
+- contract_products = if params[:from_where] == "new_ticket"
+  - @contract_products.uniq{|c| c.contract_id }
+- else
+  - @contract_products
+
 %hr
 .row
   .col-md-12
@@ -32,8 +37,6 @@
           %dd
       %br
 
-    = paginate ticket_contracts, remote: true, method: :get
-        
     %table.table.table-bordered
       %thead
         %tr
@@ -45,36 +48,58 @@
           %th Exp date
           %th Hold
           %th Active
-          %th Amount
-          %th Currency
-          %th Contract type
-          %th No of Products
-          %th Created By
+
+          - if params[:from_where] == "new_ticket"
+            %th Serial No
+            %th Brand
+            %th Category
+            %th Model No
+            %th Product No
+
+          - else
+            %th Amount
+            %th Currency
+            %th Contract type
+            %th No Of products
+            %th Created by
+
           %th Action
       %tbody
-        - ticket_contracts.each_with_index do |con, index|
+        - contract_products.each_with_index do |con, index|
           %tr
             %td
               - if params[:page]
                 = (index+1)+ 10*(params[:page].to_i-1)
               - else
                 = (index+1)
-            %td= con.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
-            %td= con.contract_no
-            %td= con.organization.name
-            %td= con.contract_start_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
-            %td= con.contract_end_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
-            %td= boolean_in_word con.hold, "Yes", "No"
-            %td= boolean_in_word con.dynamic_active, "Yes", "No"
-            %td= con.amount
-            %td= con.ticket_currency.try(:code)
-            %td= con.ticket_contract_type.try(:name)
-            %td= con.products.count
-            %td= con.created_by_user.try(:full_name)
+            %td= con.ticket_contract.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
+            %td= con.ticket_contract.contract_no
+            %td= con.ticket_contract.organization.name
+            %td= con.ticket_contract.contract_start_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
+            %td= con.ticket_contract.contract_end_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
+            %td= boolean_in_word con.ticket_contract.hold, "Yes", "No"
+            %td= boolean_in_word con.ticket_contract.dynamic_active, "Yes", "No"
+
             - if params[:from_where] == "new_ticket"
-              %td= link_to "Select", contracts_path(select_contract: true, contract_id: con.id, customer_id: organization.id), remote: true
+              %td= con.product.serial_no
+              %td= con.product.product_brand.name
+              %td= con.product.product_category.name
+              %td= con.product.model_no
+              %td= con.product.product_no
+
             - else
-              %td= link_to "Edit", contracts_path(edit_create: true, contract_id: con.id, customer_id: organization.id), remote: true
+              %td= con.ticket_contract.amount
+              %td= con.ticket_contract.ticket_currency.try(:code)
+              %td= con.ticket_contract.ticket_contract_type.name
+              %td= con.ticket_contract.products.count
+              %td= con.ticket_contract.created_by_user.full_name
+
+            %td
+              - if params[:from_where] == "new_ticket"
+                / %td= link_to "Select", contracts_path(select_contract: true, contract_id: con.id, customer_id: organization.id), remote: true
+                = link_to "Select", find_by_serial_tickets_path(contract_id: con.ticket_contract.id, serial_search: con.product.serial_no), remote: true, method: :post
+              - else
+                = link_to "Edit", contracts_path(edit_create: true, contract_id: con.ticket_contract.id, customer_id: con.ticket_contract.organization.id), remote: true, onclick: "Tickets.ajax_loader(); return false;"
     %br
     - unless params[:from_where] == "new_ticket"
       = link_to "New Contract", contracts_path(edit_create: true, customer_id: organization.id), remote: true, class: "btn btn-sm btn-warning"
