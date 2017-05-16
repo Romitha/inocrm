@@ -63,9 +63,19 @@ class ContractsController < ApplicationController
 
   def search_product
     if params[:search_product]
-      puts "*************************"
       @products = Product.search(params)
-      puts "*************************"
+    end
+  end
+
+  def submit_selected_products
+    if params[:done]
+      if params[:serial_products_ids].present?
+        serial_products = Product.where(id: params[:serial_products_ids])
+        Rails.cache.write([:contract_products, request.remote_ip], serial_products)
+
+        @cached_products = Rails.cache.fetch([:contract_products, request.remote_ip])
+
+      end
     end
   end
 
@@ -113,6 +123,14 @@ class ContractsController < ApplicationController
 
         @contract.save
 
+        Rails.cache.fetch([:contract_products, request.remote_ip]).to_a.each do |product|
+          unless @contract.product_ids.include?(product.id)
+            @contract.contract_products.create(product_serial_id: product.id, sla_id: product.product_brand.sla_id)
+          end
+
+        end
+
+        Rails.cache.delete([:contract_products, request.remote_ip])
 
       end
     end

@@ -68,6 +68,7 @@ class Organization < ActiveRecord::Base
   has_many :inventory_racks, foreign_key: :location_id
 
   has_many :ticket_contracts, foreign_key: :customer_id
+  has_many :contract_products, through: :ticket_contracts
 
   belongs_to :mst_title, foreign_key: :title_id
   belongs_to :created_by_user, class_name: "User", foreign_key: :created_by

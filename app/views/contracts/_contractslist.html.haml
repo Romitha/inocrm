@@ -72,7 +72,7 @@
             %td= con.products.count
             %td= con.created_by_user.try(:full_name)
             - if params[:from_where] == "new_ticket"
-              %td= link_to "Select"
+              %td= link_to "Select", contracts_path(select_contract: true, contract_id: con.id, customer_id: organization.id), remote: true
             - else
               %td= link_to "Edit", contracts_path(edit_create: true, contract_id: con.id, customer_id: organization.id), remote: true
     %br
@@ -81,3 +81,4 @@
     %br
     %br
 #contractedit
+#contractselect

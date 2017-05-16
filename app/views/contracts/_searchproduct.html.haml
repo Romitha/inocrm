@@ -1,34 +1,40 @@
 - products = @products
-
+- cached_products = @cached_products
 %br/
-
 - if products.present?
   = paginate products, remote: true, method: :get
-  %table.table.table-hover
-    %thead
-      %tr
-        %th No
-        %th Serial No
-        %th Customer Name
-        %th Hold
-        %th Active
-        %th Action
-    %tbody
-      - products.each_with_index do |p, index|
+
+  = form_tag submit_selected_products_contracts_path, method: :post, remote: true do
+
+    = submit_tag "Done", :name => "done", class: "btn btn-sm btn-success btn-primary"
+
+    %table.table.table-hover
+      %thead
         %tr
-          %td
-            - if params[:page]
-              = (index+1)+ 5*(params[:page].to_i-1)
+          %th No
+          %th Serial No
+          %th Customer Name
+          %th Hold
+          %th Active
+          %th Action
+      %tbody
+        - products.each_with_index do |p, index|
+          %tr
+            %td
+              - if params[:page]
+                = (index+1)+ 5*(params[:page].to_i-1)
+              - else
+                = (index+1)
+            %td= p.serial_no
+            - if p.ticket_contracts.last.present?
+              %td= p.ticket_contracts.last.organization.try(:name)
+              %td= boolean_in_word p.ticket_contracts.last.try(:hold), "Yes", "No"
+              %td
             - else
-              = (index+1)
-          %td= p.serial_no
-          - if p.ticket_contracts.last.present?
-            %td= p.ticket_contracts.last.organization.try(:name)
-            %td= boolean_in_word p.ticket_contracts.last.try(:hold), "Yes", "No"
-            %td
-          - else
-            %td
-            %td
-            %td
-          %td= link_to "Select"
+              %td
+              %td
+              %td
+            / %td= link_to "Select"
+            %td= check_box_tag "serial_products_ids[]", p.id, Rails.cache.fetch([:contract_products, request.remote_ip]).to_a.map { |e| e.id }.include?(p.id.to_f)
+            / %td= check_box_tag "serial_products_ids[]", p.id
   = paginate products, remote: true, method: :get

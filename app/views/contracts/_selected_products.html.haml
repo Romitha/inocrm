@@ -1,0 +1,29 @@
+- products = @cached_products
+
+- if products.present?
+  %h3 Selected Products
+
+  .col-md-12
+    %table.table.table-hover
+      %thead
+        %tr
+          %th No
+          %th Serial No
+          %th Product No
+          %th Model No
+          %th Product Brand
+          %th Product Category
+
+      %tbody
+        - products.each_with_index do |p, index|
+          %tr
+            %td
+              - if params[:page]
+                = (index+1)+ 10*(params[:page].to_i-1)
+              - else
+                = (index+1)
+            %td= p.serial_no
+            %td= p.product_no
+            %td= p.model_no
+            %td= p.product_brand.name
+            %td= p.product_category.name

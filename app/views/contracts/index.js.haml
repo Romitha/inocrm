@@ -17,6 +17,9 @@
 - elsif params[:search_product].present?
   $("#searchproduct").html("#{j render 'contracts/searchproduct'}");
 
+- elsif params[:done].present?
+  $("#searchproduct").html("#{j render 'contracts/contractform'}");
+
 - elsif params[:save].present?
   - if params[:ajax_upload].present?
     $("#contractedit").html("#{j render 'contracts/contractform'}");
