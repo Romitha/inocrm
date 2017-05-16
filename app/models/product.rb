@@ -87,7 +87,7 @@ class Product < ActiveRecord::Base
   end
 
   def cannot_removable_from_contract?(contract_id)
-    ticket_contracts.find_by_id(contract_id) and ticket_contracts.find_by_id(contract_id).tickets.any?
+    ticket_contracts.find_by_id(contract_id) and ticket_contracts.find_by_id(contract_id).tickets.any? and ((ticket_ids - ticket_contracts.find_by_id(contract_id).ticket_ids) != ticket_ids)
   end
 end
 

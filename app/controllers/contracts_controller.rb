@@ -4,6 +4,7 @@ class ContractsController < ApplicationController
     Ticket
     Organization
     IndustryType
+    Product
 
     # if params[:search].present?
     #   refined_contract = params[:contract].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
@@ -16,12 +17,6 @@ class ContractsController < ApplicationController
       params[:query] = ["accounts_dealer_types.dealer_code:CUS", refined_customer].map { |v| v if v.present? }.compact.join(" AND ")
       @organizations = Organization.search(params)
 
-      total_customers = @organizations.total
-
-      @print_object = {
-        totalCustomers: total_customers,
-      }
-
     end
 
     if params[:select]
@@ -30,9 +25,9 @@ class ContractsController < ApplicationController
         @ticket_contracts = @organization.ticket_contracts.page params[:page]
       end
     end
-
     if params[:edit_create]
       @organization = Organization.find params[:customer_id]
+      # @product = Product.find params[:product_serial_id]
 
       @contract = if params[:contract_id].present?
         @organization.ticket_contracts.find params[:contract_id]

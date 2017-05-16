@@ -65,7 +65,7 @@
             %td= con.contract_start_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
             %td= con.contract_end_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
             %td= boolean_in_word con.hold, "Yes", "No"
-            %td
+            %td= boolean_in_word con.dynamic_active, "Yes", "No"
             %td= con.amount
             %td= con.ticket_currency.try(:code)
             %td= con.ticket_contract_type.try(:name)
