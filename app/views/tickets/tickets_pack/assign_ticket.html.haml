@@ -70,3 +70,60 @@
             %p= simple_format ticket.remarks
 
         = f.submit "Save", data: {disable_with: "Please wait..."}, class: "btn btn-success small_scale_margin-top1 small_scale_margin-bottom1"
+
+
+
+%script{ type: "text/x-handlebars", id: "index"}
+  %h2 Welcome to index
+  <button class="btn btn-link" {{action "showGroupForm" }} > New group </button>
+  {{#link-to "index"}} go to index {{/link-to}}
+
+  {{outlet}}
+
+  {{#if showGroupFormBool}}
+  {{ new-group obj=newObj selectArray=selectArray ticketId="#{ticket.id}"  }}
+  {{/if}}
+
+%script{ type: "text/x-handlebars", id: "groups" }
+  {{new-group}}
+
+
+%script{type: "text/x-handlebars", id: "components/new-group"}
+  %h2 Assign Engineer
+  = form_tag "#" do
+    {{obj.ticket_id}}
+    .row
+      .col-sm-6
+        {{select-box optionArray=selectArray click=(action (mut obj.assignSbu) value="target.value") }}
+        {{obj.assignSbu}}
+      .col-sm-6
+        {{select-box optionArray=selectArray click=(action (mut obj.assignTo) value="target.value") }}
+        {{obj.assignTo}}
+
+      .col-sm-12
+        .row
+          {{obj.subEng.length}}
+          %h2 Support Engineers
+
+          {{#each obj.subEng as |se|}}
+          .col-sm-5
+            {{select-box optionArray=selectArray click=(action (mut se.assignSbu) value="target.value") }}
+            {{se.assignSbu}}
+          .col-sm-5
+            {{select-box optionArray=selectArray click=(action (mut se.assignTo) value="target.value") }}
+            
+          .col-sm-2
+            <button {{action 'removeSubEng' se }}>Remove</button>
+
+          {{/each}}
+
+      .col-sm-6
+        <button {{action 'addSubEng' obj }}>Add Sub Engineer</button>
+
+    = submit_tag "save"
+
+%script{type: "text/x-handlebars", id: "components/select-box"}
+  {{optionArray}}
+  {{#each optionArray as |option|}}
+  <option value={{ option.id }} > {{option.name}} </option>
+  {{/each}}

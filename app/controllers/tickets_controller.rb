@@ -59,6 +59,8 @@ class TicketsController < ApplicationController
 
     Rails.cache.delete([:ticket_initiated_attributes, session[:time_now]])
 
+    Rails.cache.delete([:ticket_contract, session[:time_now]])
+
     session[:time_now] = Time.now.strftime("%H%M%S")
     Rails.cache.write([:ticket_initiated_attributes, session[:time_now]], {ticket_no: @ticket_no, status_id: @status.id, logged_by: current_user.id, logged_at: DateTime.now})
 
@@ -149,6 +151,10 @@ class TicketsController < ApplicationController
       session[:customer_id] ||= nil
       session[:serial_no] = serial_no
       @product = (Product.find_by_serial_no(serial_no) || Product.new(serial_no: serial_no, corporate_product: false))
+
+      @contract = TicketContract.find(params[:contract_id]) if params[:contract_id].present?
+      Rails.cache.write([:ticket_contract, session[:time_now]], @contract)
+
       Warranty
       #@base_currency = Currency.find_by_base_currency(true)
       if @product.persisted?
@@ -156,7 +162,7 @@ class TicketsController < ApplicationController
         @product_category = @product.product_category
 
         ticket_attr = Rails.cache.fetch([:ticket_initiated_attributes, session[:time_now]])
-        Rails.cache.write([:ticket_initiated_attributes, session[:time_now]], ticket_attr.merge({sla_id: (@product_category.sla_id || @product_brand.sla_id)}))
+        Rails.cache.write([:ticket_initiated_attributes, session[:time_now]], ticket_attr.merge({sla_id: (@product_category.sla_id || @product_brand.sla_id), contract_id: @contract.try(:id)}))
 
         # session[:ticket_initiated_attributes].merge!({sla_id: (@product_category.sla_id || @product_brand.sla_id)})
 
@@ -167,18 +173,21 @@ class TicketsController < ApplicationController
 
         # @ticket.ticket_accessories.uniq!{|ac| ac.id}
         @customer = @product.tickets.last.try(:customer)
-        Rails.cache.write([:histories, session[:product_id]], Kaminari.paginate_array(@product.tickets.reject{|t| t==@ticket}))
+        Rails.cache.write([:histories, session[:product_id]], Kaminari.paginate_array(@product.tickets.reject{|t| t.id==@ticket.id}))
         @histories = Rails.cache.read([:histories, session[:product_id]]).page(params[:page]).per(3)
+
       else
         @product_brands = ProductBrand.all
         @product_categories = ProductCategory.all
 
         @new_product_brand = ProductBrand.new# currency_id: @base_currency.try(:id)
         @new_product_category = ProductCategory.new
+
       end
       respond_to do |format|
         format.js
       end
+
     end
   end
 
@@ -4446,7 +4455,7 @@ class TicketsController < ApplicationController
     end
 
     def ticket_params
-      ticket_params = params.require(:ticket).permit(:onsite_type_id, :logged_at, :ticket_no, :ticket_close_approved, :note, :current_user_id, :sla_id, :serial_no, :status_hold, :repair_type_id, :base_currency_id, :ticket_close_approval_required, :ticket_close_approval_requested, :regional_support_job, :job_started_action_id, :job_start_note, :job_started_at, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, :status_resolve_id, ticket_deliver_units_attributes: [:deliver_to_id, :note, :created_at, :created_by, :received, :id, :received_at, :received_by, :current_user_id], ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :ticket_action_id, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer, :ticket_action_id], ticket_estimations_attributes: [:note, :currency_id, :status_id, :requested_at, :requested_by, :request_type], user_ticket_actions_attributes: [:id, :action_engineer_id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, user_assign_ticket_action_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy], ticket_re_assign_request_attributes: [:reason_id, :_destroy], ticket_action_taken_attributes: [:action, :_destroy], ticket_terminate_job_attributes: [:id, :reason_id, :foc_requested, :_destroy], act_hold_attributes: [:id, :reason_id, :_destroy, :un_hold_action_id], hp_case_attributes: [:id, :case_id, :case_note], ticket_finish_job_attributes: [:resolution, :_destroy], act_terminate_job_payments_attributes: [:id, :amount, :payment_item_id, :_destroy, :ticket_id, :currency_id], act_fsr_attributes: [:print_fsr], serial_request_attributes: [:reason], job_estimation_attributes: [:supplier_id]], ticket_extra_remarks_attributes: [:id, :note, :created_by, :extra_remark_id], products_attributes: [:id, :sold_country_id, :pop_note, :pop_doc_url, :pop_status_id], ticket_fsrs_attributes: [:id, :engineer_id, :work_started_at, :work_finished_at, :hours_worked, :down_time, :travel_hours, :engineer_time_travel, :engineer_time_on_site, :resolution, :completion_level, :created_by, :remarks, :approved, :current_user_id], ticket_on_loan_spare_parts_attributes: [:id, :approved_inv_product_id, :approved_store_id, :approved_main_inv_product_id, :approved, :return_part_damage, :return_part_damage_reason_id, :other_mileage, :other_repairs])
+      ticket_params = params.require(:ticket).permit(:onsite_type_id, :logged_at, :ticket_no, :ticket_close_approved, :note, :current_user_id, :sla_id, :serial_no, :status_hold, :repair_type_id, :base_currency_id, :ticket_close_approval_required, :ticket_close_approval_requested, :regional_support_job, :job_started_action_id, :job_start_note, :job_started_at, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, :status_resolve_id, :contract_id, ticket_deliver_units_attributes: [:deliver_to_id, :note, :created_at, :created_by, :received, :id, :received_at, :received_by, :current_user_id], ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :ticket_action_id, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer, :ticket_action_id], ticket_estimations_attributes: [:note, :currency_id, :status_id, :requested_at, :requested_by, :request_type], user_ticket_actions_attributes: [:id, :action_engineer_id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, user_assign_ticket_action_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy], ticket_re_assign_request_attributes: [:reason_id, :_destroy], ticket_action_taken_attributes: [:action, :_destroy], ticket_terminate_job_attributes: [:id, :reason_id, :foc_requested, :_destroy], act_hold_attributes: [:id, :reason_id, :_destroy, :un_hold_action_id], hp_case_attributes: [:id, :case_id, :case_note], ticket_finish_job_attributes: [:resolution, :_destroy], act_terminate_job_payments_attributes: [:id, :amount, :payment_item_id, :_destroy, :ticket_id, :currency_id], act_fsr_attributes: [:print_fsr], serial_request_attributes: [:reason], job_estimation_attributes: [:supplier_id]], ticket_extra_remarks_attributes: [:id, :note, :created_by, :extra_remark_id], products_attributes: [:id, :sold_country_id, :pop_note, :pop_doc_url, :pop_status_id], ticket_fsrs_attributes: [:id, :engineer_id, :work_started_at, :work_finished_at, :hours_worked, :down_time, :travel_hours, :engineer_time_travel, :engineer_time_on_site, :resolution, :completion_level, :created_by, :remarks, :approved, :current_user_id], ticket_on_loan_spare_parts_attributes: [:id, :approved_inv_product_id, :approved_store_id, :approved_main_inv_product_id, :approved, :return_part_damage, :return_part_damage_reason_id, :other_mileage, :other_repairs])
       ticket_params[:current_user_id] = current_user.id
       ticket_params
     end

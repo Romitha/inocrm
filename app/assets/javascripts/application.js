@@ -32,7 +32,9 @@
 //= require mustache
 //= require phoenix
 //= require fuzzy_search
+//= require ember.init
 //= require_tree .
+
 $.fn.editable.defaults.ajaxOptions = {type: "PUT", mode: "inline"};
 $.fn.editable.defaults.error = function(response, newValue){
   if(response.status == 500){
