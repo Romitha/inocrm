@@ -6,7 +6,7 @@
   .col-md-9
   .col-md-3
     =label_tag "Number of Customers: "
-    =print_object[:totalCustomers]
+    = organizations.total
   %br/
 
 - if organizations.present?

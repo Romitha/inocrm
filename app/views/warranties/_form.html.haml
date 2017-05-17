@@ -53,8 +53,51 @@
             %br
             - if @warranties.present?
               = render "warranties/select_warranties", warranties: @warranties
+
+            - if ticket.ticket_contract.present?
+              .col-md-12
+                .col-md-12
+                  %h3 Contract
+                .col-md-12
+                  .col-md-3
+                    %strong Created At:
+                    = ticket.ticket_contract.created_at
+                  .col-md-3
+                    %strong Created By:
+                    = ticket.ticket_contract.created_by
+                  .col-md-3
+                    %strong Under Contract
+                  .col-md-3
+                    %strong Contract No:
+                    = ticket.ticket_contract.contract_no
+                  .col-md-3
+                    %strong Contract Type:
+                    = ticket.ticket_contract.contract_type.name
+                  .col-md-3
+                    %strong Owner Department:
+                    = ticket.ticket_contract.organization.name
+                  .col-md-3
+                    %strong Back to Back Contract:
+                    = boolean_in_word ticket.ticket_contract.contract_b2b, "Yes", "No"
+                  .col-md-3
+                    %strong Hold
+                    = boolean_in_word ticket.ticket_contract.hold, "Yes", "No"
+                  .col-md-3
+                    %strong Start Date:
+                    = ticket.ticket_contract.contract_start_at
+                  .col-md-3
+                    %strong Exp Date:
+                    = ticket.ticket_contract.contract_end_at
+                  .col-md-3
+                    %strong Remarks:
+                    = ticket.ticket_contract.remarks
+                  .col-md-3
+                    %strong Amount:
+                    = ticket.ticket_contract.amount
+
             = link_to "Back", create_customer_tickets_path(customer_id: customer.id), remote: true, method: :post
             = link_to "Next", "#", class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2", onclick: "Warranties.tab_trigger(); false;"
+
 
 
       = tab_content tabpointer: "join_ticket" do
