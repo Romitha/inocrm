@@ -40,7 +40,7 @@
 %hr
 #tab_panel
   = tab_panel do
-    = tab_nav_tab({id: "w_q_h_tab"}, warranty: {active_class: "active", content: "Warranty"}, join_ticket: {content: "Join"}, q_and_a: {content: "Q And A", link_id: "qa"})
+    = tab_nav_tab({id: "w_q_h_tab"}, warranty: {active_class: "active", content: "Warranties / Contracts"}, join_ticket: {content: "Join"}, q_and_a: {content: "Q And A", link_id: "qa"})
     .tab-content
       = tab_content active_class: "active", tabpointer: "warranty" do
         #warranty_details
@@ -72,7 +72,7 @@
                     = ticket.ticket_contract.contract_no
                   .col-md-3
                     %strong Contract Type:
-                    = ticket.ticket_contract.contract_type.name
+                    = ticket.ticket_contract.ticket_contract_type.name
                   .col-md-3
                     %strong Owner Department:
                     = ticket.ticket_contract.organization.name
