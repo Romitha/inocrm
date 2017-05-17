@@ -40,6 +40,7 @@
             %legend Ticket
             = simple_nested_form_for ticket, remote: true, :authenticity_token => true, html: {class: "validate_form auto_save_form"} do |f|
               = f.input :status_id, as: :hidden
+              = f.input :contract_id, as: :hidden
               = f.input :ticket_no, as: :hidden
               = f.input :base_currency_id, as: :hidden, input_html: {value: TicketCurrency.find_by(base_currency: true).try(:id)}
               .row

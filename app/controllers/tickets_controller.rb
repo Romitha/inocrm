@@ -162,7 +162,7 @@ class TicketsController < ApplicationController
         @product_category = @product.product_category
 
         ticket_attr = Rails.cache.fetch([:ticket_initiated_attributes, session[:time_now]])
-        Rails.cache.write([:ticket_initiated_attributes, session[:time_now]], ticket_attr.merge({sla_id: (@product_category.sla_id || @product_brand.sla_id), contract_id: @contract.try(:id)}))
+        Rails.cache.write([:ticket_initiated_attributes, session[:time_now]], ticket_attr.merge({sla_id: (@product_category.sla_id || @product_brand.sla_id)}))
 
         # session[:ticket_initiated_attributes].merge!({sla_id: (@product_category.sla_id || @product_brand.sla_id)})
 
@@ -170,6 +170,12 @@ class TicketsController < ApplicationController
 
         # @ticket = (Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]]) || Ticket.new(session[:ticket_initiated_attributes]))
         @ticket = (Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]]) || Ticket.new(Rails.cache.fetch([:ticket_initiated_attributes, session[:time_now]])))
+
+        @ticket.contract_id = @contract.try(:id)
+
+        puts "**********"
+        puts @ticket.inspect
+        puts "**********"
 
         # @ticket.ticket_accessories.uniq!{|ac| ac.id}
         @customer = @product.tickets.last.try(:customer)
