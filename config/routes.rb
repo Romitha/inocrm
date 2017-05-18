@@ -21,6 +21,7 @@ Rails.application.routes.draw do
       patch "contracts"
       get "search_product"
       post "submit_selected_products"
+      put "contract_update"
     end
   end
 

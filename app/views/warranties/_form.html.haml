@@ -36,7 +36,6 @@
         = table_body [priority, problemcategory, problemdescription, warranty, tickettype, customerchargeable, jobtype]
     = render "users/customer_and_contact_person", customer: customer, ticket: ticket
 
-
 %hr
 #tab_panel
   = tab_panel do
@@ -61,10 +60,10 @@
                 .col-md-12
                   .col-md-3
                     %strong Created At:
-                    = ticket.ticket_contract.created_at
+                    = ticket.ticket_contract.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
                   .col-md-3
                     %strong Created By:
-                    = ticket.ticket_contract.created_by
+                    = ticket.ticket_contract.created_by_user_full_name
                   .col-md-3
                     %strong Under Contract
                   .col-md-3
@@ -78,16 +77,18 @@
                     = ticket.ticket_contract.organization.name
                   .col-md-3
                     %strong Back to Back Contract:
-                    = boolean_in_word ticket.ticket_contract.contract_b2b, "Yes", "No"
+                    = link_to "#", class: "inline_edit", data: {type: "select", source: [{value: 1, text: "Yes"},{value: 0, text: "No"}], resource: "ticket_contract", name: "contract_b2b", url: contract_update_contracts_path(contract_id: ticket.ticket_contract.id), "original-title" => "Edit Contract Back to Back"} do
+                      = boolean_in_word ticket.ticket_contract.contract_b2b, "Yes", "No"
                   .col-md-3
-                    %strong Hold
-                    = boolean_in_word ticket.ticket_contract.hold, "Yes", "No"
+                    %strong Hold:
+                    = link_to "#", class: "inline_edit", data: {type: "select", source: [{value: 1, text: "Yes"},{value: 0, text: "No"}], resource: "ticket_contract", name: "hold", url: contract_update_contracts_path(contract_id: ticket.ticket_contract.id), "original-title" => "Edit Hold"} do
+                      = boolean_in_word ticket.ticket_contract.hold, "Yes", "No"
                   .col-md-3
                     %strong Start Date:
-                    = ticket.ticket_contract.contract_start_at
+                    = ticket.ticket_contract.contract_start_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
                   .col-md-3
                     %strong Exp Date:
-                    = ticket.ticket_contract.contract_end_at
+                    = ticket.ticket_contract.contract_end_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
                   .col-md-3
                     %strong Remarks:
                     = ticket.ticket_contract.remarks

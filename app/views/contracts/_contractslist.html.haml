@@ -1,9 +1,9 @@
 - organization = @organization
 
 - contract_products = if params[:from_where] == "new_ticket"
-  - @contract_products.uniq{|c| c.contract_id }
-- else
   - @contract_products
+- else
+  - @contract_products.to_a.uniq{|c| c.contract_id }
 
 %hr
 .row
