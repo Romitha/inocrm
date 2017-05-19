@@ -27,6 +27,8 @@ class ContractsController < ApplicationController
       end
     end
     if params[:edit_create]
+      Rails.cache.delete([:contract_products, request.remote_ip])
+
       @organization = Organization.find params[:customer_id]
       # @product = Product.find params[:product_serial_id]
 
@@ -46,8 +48,8 @@ class ContractsController < ApplicationController
       end
     end
 
-    if params[:save]
-      if params[:contract_id]
+    if params[:save].present?
+      if params[:contract_id].present?
         @contract = TicketContract.find params[:contract_id]
         @contract.attributes = contract_params
       else
@@ -64,14 +66,23 @@ class ContractsController < ApplicationController
   end
 
   def submit_selected_products
-    if params[:done]
+    if params[:done].present?
       if params[:serial_products_ids].present?
         serial_products = Product.where(id: params[:serial_products_ids])
-        Rails.cache.write([:contract_products, request.remote_ip], serial_products)
+        puts serial_products.count
+        Rails.cache.delete([:contract_products, request.remote_ip])
 
-        @cached_products = Rails.cache.fetch([:contract_products, request.remote_ip])
-
+        @cached_products = Rails.cache.fetch([:contract_products, request.remote_ip]){ serial_products.to_a }
       end
+    end
+
+    if params[:remove].present?
+      a = Rails.cache.fetch([:contract_products, request.remote_ip])
+
+      a.delete_if{|e| e.id.to_f == params[:selected_product].to_f }
+      Rails.cache.delete([:contract_products, request.remote_ip])
+
+      @cached_products = Rails.cache.fetch([:contract_products, request.remote_ip]){ a }
     end
   end
 
