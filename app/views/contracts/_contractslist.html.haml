@@ -1,7 +1,7 @@
 - organization = @organization
 
 - contract_products = if params[:from_where] == "new_ticket"
-  - @contract_products
+  - @contract_products.to_a.select{|c| (c.ticket_contract.contract_start_at.to_date .. c.ticket_contract.contract_end_at.to_date).include?(Date.today)}
 - else
   - @contract_products.to_a.uniq{|c| c.contract_id }
 
