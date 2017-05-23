@@ -182,6 +182,7 @@ Rails.application.routes.draw do
       # post "save_add_edit_contract"
 
       get "alert"
+      get "load_sbu"
 
       get "ajax_show"
       put "edit_po_note"
@@ -238,6 +239,7 @@ Rails.application.routes.draw do
       post "update_return_store_part"
       post "update_ticket_close_approval"
       post "update_collect_parts"
+      post "update_assign_engineer_ticket"
 
     end
 

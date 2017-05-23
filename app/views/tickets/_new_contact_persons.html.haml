@@ -48,15 +48,16 @@
           = table_header ["Name", "VAT", "Industry type"]
           = table_body ["#{customer.organization.name}", "#{customer.organization.vat_number}", customer.organization.industry_type.try(:name)]
 
-%strong.name_validate Customer
-= label_tag "Select Customer", class: "small_scale_margin-right1 small_scale_margin-left2" do
-  = radio_button_tag "customer_select", "select", false, class: "radio_for_customer_select", onchange: "Tickets.customer_select('select'); false;", required:true
-  Select
-= label_tag "New Customer" do
-  = radio_button_tag "customer_select", "create", false, class: "radio_for_customer_select", onchange: "Tickets.customer_select('create'); false;", required:true
-  New
+- unless ticket.ticket_contract.present?
+  %strong.name_validate Customer
+  = label_tag "Select Customer", class: "small_scale_margin-right1 small_scale_margin-left2" do
+    = radio_button_tag "customer_select", "select", false, class: "radio_for_customer_select", onchange: "Tickets.customer_select('select'); false;", required:true
+    Select
+  = label_tag "New Customer" do
+    = radio_button_tag "customer_select", "create", false, class: "radio_for_customer_select", onchange: "Tickets.customer_select('create'); false;", required:true
+    New
 
-%hr
+  %hr
 
 = link_to "", contact_persons_tickets_path, remote: true, class: "glyphicon glyphicon-refresh hide", id: "create_contact_person"
 #contact_persons
@@ -120,7 +121,7 @@
               %br/
   .row
     .col-md-12
-      = link_to "Back", find_by_serial_tickets_path(serial_search: product.serial_no), remote: true, method: :post, data: {disable_with: "Please wait..."}
+      = link_to "Back", find_by_serial_tickets_path(serial_search: product.serial_no, contract_id: ticket.contract_id), remote: true, method: :post, data: {disable_with: "Please wait..."}
       / - if ticket.contact_person1 and ticket.contact_person2 and ticket.report_person
       - if ticket.contact_person1 and ticket.report_person
         = link_to "Next", new_warranty_path, remote: true, class: "btn btn-sm btn-success  small_scale_margin-top2 small_scale_margin-bottom2", data: {disable_with: "Please wait..."}

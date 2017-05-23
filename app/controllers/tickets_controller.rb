@@ -95,15 +95,29 @@ class TicketsController < ApplicationController
         # session[:ticket_initiated_attributes] = {}
         Rails.cache.write([:ticket_initiated_attributes, session[:time_now]], {})
 
-
         @notice = "Great! new ticket is initiated."
         Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @new_ticket)
         User
         ContactNumber
-        @existing_customer = (Customer.find_by_id(session[:customer_id]) || @product.tickets.last.try(:customer))
-        Rails.cache.fetch([:existing_customer, request.remote_ip.to_s, session[:time_now]]) do
-          @existing_customer
+
+        @existing_customer = if @new_ticket.ticket_contract.present?
+          organization = @new_ticket.ticket_contract.organization
+          address = (organization.addresses.primary_address.first || organization.addresses.first)
+
+          if organization.customers.any?
+            organization.customers.first
+
+          elsif address.present?
+            organization.customers.create(title_id: address.contact_person_title_id, name: address.contact_person_name, address1: address.address1, address2: address.address2, address3: address.address3, address4: address.city, district_id: address.district_id)
+
+          end
+
+        else
+          (Customer.find_by_id(session[:customer_id]) || @product.tickets.last.try(:customer))
+
         end
+
+        Rails.cache.fetch([:existing_customer, request.remote_ip.to_s, session[:time_now]]){ @existing_customer }
         @new_customer = Customer.new
         @new_customer.contact_type_values.build([{contact_type_id: 2}, {contact_type_id: 4}])
         format.js {render :new_customer}
@@ -172,10 +186,6 @@ class TicketsController < ApplicationController
         @ticket = (Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]]) || Ticket.new(Rails.cache.fetch([:ticket_initiated_attributes, session[:time_now]])))
 
         @ticket.contract_id = @contract.try(:id)
-
-        puts "**********"
-        puts @ticket.inspect
-        puts "**********"
 
         # @ticket.ticket_accessories.uniq!{|ac| ac.id}
         @customer = @product.tickets.last.try(:customer)
@@ -999,6 +1009,43 @@ class TicketsController < ApplicationController
       render js: "alert('template is unavailable');"
     end
     
+  end
+
+  def load_sbu
+    case params[:type]
+    when "sbu"
+      @sbus = if params[:filter_sbu].present?
+        sbu = Sbu.find params[:filter_sbu]
+
+        @sbus = sbu.engineers.map { |s| {id: s.id, name: s.full_name} }
+
+      else
+        @sbus = Sbu.all.map { |s| {id: s.id, name: s.sbu} }
+
+      end
+
+    when "ticket"
+      @ticketEngs = if params[:ticket_id].present?
+        Ticket.find(params[:ticket_id]).ticket_engineers.parent_engineers.map { |u| { name: u.user.full_name, image: u.user.avatar.url, sub_engs: u.sub_engineers.map { |e| { name: e.user.full_name, image: e.user.avatar.url } } } }
+
+      else
+        []
+
+      end
+
+    end
+
+    render json: {sbus: @sbus, ticketEngs: @ticketEngs}
+
+  end
+
+  def update_assign_engineer_ticket
+    assign_eng_params = ActiveSupport::JSON.decode params[:assign_eng_params]
+
+    @ticket = Ticket.find assign_eng_params["ticket_id"]
+
+    render json: assign_eng_params
+
   end
 
   def assign_ticket

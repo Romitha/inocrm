@@ -329,7 +329,20 @@ class TicketEngineer < ActiveRecord::Base
 
   has_many :ticket_owners, class_name: "Ticket", foreign_key: :owner_engineer_id
 
+  belongs_to :parent_engineer, class_name: "TicketEngineer"
+  has_many :sub_engineers, class_name: "TicketEngineer", foreign_key: :parent_engineer_id
+
+  scope :parent_engineers, -> {where(parent_engineer_id: nil)}
+
   def sbu_name
     user_ticket_action.user_assign_ticket_action.sbu.sbu
+  end
+
+  def rec_sub_engineers
+    if sub_engineers.empty?
+      {parent_eng: self}
+    else
+      {parent_eng: self, subEngs: sub_engineers.map { |s| s.rec_sub_engineers }}
+    end
   end
 end
