@@ -742,3 +742,15 @@ window.Tickets =
     $("#po_range_from_id").val("")
     $("#po_range_to_id").val("")
     $("#ticket_no_id").val("")
+
+  disabled_end_at:->
+    if $("#ticket_contract_contract_end_at").val() == ''
+      $("#ticket_contract_contract_end_at").prop('disabled', true);
+
+    $('#ticket_contract_contract_start_at').blur ->
+      _this = this
+      if $(this).val() != ''
+        $("#ticket_contract_contract_end_at").prop('disabled', false);
+      else
+        $("#ticket_contract_contract_end_at").prop('disabled', true);
+    return
