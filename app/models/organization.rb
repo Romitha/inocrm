@@ -305,6 +305,7 @@ class Account < ActiveRecord::Base
 
   belongs_to :organization
   belongs_to :industry_type, foreign_key: :industry_types_id
+  belongs_to :account_manager, class_name: "User"
 
   has_many :accounts_dealer_types
   has_many :dealer_types, through: :accounts_dealer_types

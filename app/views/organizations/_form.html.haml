@@ -44,8 +44,18 @@
     - f.object.build_account if !f.object.account.present? and f.object.refers != "VSIS"
     = f.simple_fields_for :account do |a|
       .row
-        .col-md-12{class: "has-tooltip", title: "Industry type", data: {toggle: "tooltip", placement: "left"}}
+        .col-md-4{class: "has-tooltip", title: "Industry type", data: {toggle: "tooltip", placement: "left"}}
           = a.association :industry_type, include_blank: false
+        .col-md-2
+          = a.input :credit_allow, as: :boolean, label: "Allow credit", input_html: {class: "credit_allow"}
+          .credit_allow_control.hide
+            = a.input :credit_period_day
+        .col-md-2
+          = a.input :goodwill_status, as: :boolean
+        .col-md-2
+          = a.input :svat_no, include_blank: false
+        .col-md-2
+          = a.association :account_manager, include_blank: false, label_method: :full_name
 
   .row
     .col-md-12

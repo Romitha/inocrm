@@ -7,6 +7,7 @@ window.Organizations =
     @chosen_select_disable_search()
     @dealer_type_check()
     @live_search_organization()
+    @credit_allow()
     return
 
   show_more_less: ->
@@ -123,3 +124,11 @@ window.Organizations =
       searchClass: "search"
     }
     organizationList = new List('organizations_search_initialization', options)
+
+  credit_allow: ->
+    $(".credit_allow").click ->
+      if $(@).is(":checked")
+        $(".credit_allow_control").removeClass("hide")
+      else
+        $(".credit_allow_control").addClass("hide")
+        $(".credit_allow_control input").val("")
