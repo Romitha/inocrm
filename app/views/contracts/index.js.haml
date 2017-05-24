@@ -5,7 +5,9 @@
 - if params[:search].present?
   / $("#customerlist").html("#{j render 'contracts/customerlist'}");
   $("#customerlist").html("#{j render 'contracts/customersearchedlist'}");
+  $("#contractlist").addClass("hide");
 - elsif params[:select].present?
+  $("#contractlist").removeClass("hide");
   $("#contractlist").html("#{j render 'contracts/contractslist'}");
 
 - elsif params[:edit_create].present?
