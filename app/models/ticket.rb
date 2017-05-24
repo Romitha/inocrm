@@ -449,7 +449,7 @@ class TicketContract < ActiveRecord::Base
   end
 
   def dynamic_active
-    hold.present? and (contract_start_at.to_date..(contract_end_at.to_date+1.day)).include?(DateTime.now)
+    !hold.present? and (contract_start_at.to_date .. contract_end_at.to_date+1.day).include?(Date.today)
   end
 
 end
