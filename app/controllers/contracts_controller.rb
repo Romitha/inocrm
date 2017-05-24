@@ -22,10 +22,18 @@ class ContractsController < ApplicationController
     if params[:select]
       if params[:organization_id]
         @organization = Organization.find params[:organization_id]
+        @contracts = @organization.ticket_contracts.page params[:page]
+      end
+    end
+
+    if params[:select_ticket]
+      if params[:organization_id]
+        @organization = Organization.find params[:organization_id]
         # @ticket_contracts = @organization.ticket_contracts.page params[:page]
         @contract_products = @organization.contract_products
       end
     end
+
     if params[:edit_create]
       Rails.cache.delete([:contract_products, request.remote_ip])
 

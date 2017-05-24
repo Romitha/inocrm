@@ -36,6 +36,9 @@
               %td
               %td= org.code
               %td= org.industry_type.name
-              %td= link_to "Select", contracts_path(organization_id: org.id, select: true, from_where: params[:from_where]), remote: true
+              - if params[:from_where] == "new_ticket"
+                %td= link_to "Select", contracts_path(organization_id: org.id, select_ticket: true, from_where: params[:from_where]), remote: true
+              - else
+                %td= link_to "Select", contracts_path(organization_id: org.id, select: true, from_where: params[:from_where]), remote: true
 
       = paginate organizations, remote: true, method: :get

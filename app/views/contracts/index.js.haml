@@ -10,6 +10,10 @@
   $("#contractlist").removeClass("hide");
   $("#contractlist").html("#{j render 'contracts/contractslist'}");
 
+- elsif params[:select_ticket].present?
+  $("#contractlist").removeClass("hide");
+  $("#contractlist").html("#{j render 'contracts/ticket_contracts_list'}");
+
 - elsif params[:edit_create].present?
   $("#contractedit").html("#{j render 'contracts/contractform'}");
 

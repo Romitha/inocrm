@@ -1,0 +1,80 @@
+- organization = @organization
+
+/ - contract_products = if params[:from_where] == "new_ticket"
+- contract_products = @contract_products.to_a.select{|c| (c.ticket_contract.contract_start_at.to_date .. c.ticket_contract.contract_end_at.to_date).include?(Date.today)}
+
+%hr
+.row
+  .col-md-12
+    .row
+      .col-md-2
+        %h4 Customer
+      .row
+      %br
+      .col-md-5
+        %dl.dl-horizontal
+          %dt Customer Name:
+          %dd= organization.name
+          %dt Address:
+          %dd
+            - organization.addresses.primary_address.each do |address|
+              = address.full_address
+          %dt Account no:
+          %dd
+          %dt Customer code:
+          %dd= organization.code
+          %dt Industry type:
+          %dd= organization.industry_type.name
+      .col-md-5
+        %dl.dl-horizontal
+          %dt Created at:
+          %dd= organization.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
+          %dt Created by:
+          %dd= organization.created_by_user.try(:full_name)
+          %dt Under contract:
+          %dd
+      %br
+
+    %table.table.table-bordered
+      %thead
+        %tr
+          %th No
+          %th Created at
+          %th Contract no
+          %th Owner dep
+          %th Start date
+          %th Exp date
+          %th Hold
+          %th Active
+          %th Serial No
+          %th Brand
+          %th Category
+          %th Model No
+          %th Product No
+          %th Action
+      %tbody
+        - contract_products.each_with_index do |con, index|
+          %tr
+            %td
+              - if params[:page]
+                = (index+1)+ 10*(params[:page].to_i-1)
+              - else
+                = (index+1)
+            %td= con.ticket_contract.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
+            %td= con.ticket_contract.contract_no
+            %td= con.ticket_contract.organization.name
+            %td= con.ticket_contract.contract_start_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
+            %td= con.ticket_contract.contract_end_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
+            %td= boolean_in_word con.ticket_contract.hold, "Yes", "No"
+            %td= boolean_in_word con.ticket_contract.dynamic_active, "Yes", "No"
+            %td= con.product.serial_no
+            %td= con.product.product_brand.name
+            %td= con.product.product_category.name
+            %td= con.product.model_no
+            %td= con.product.product_no
+            %td
+              = link_to "Select", find_by_serial_tickets_path(contract_id: con.ticket_contract.id, serial_search: con.product.serial_no), remote: true, method: :post
+    %br
+    %br
+    %br
+#contractselect
