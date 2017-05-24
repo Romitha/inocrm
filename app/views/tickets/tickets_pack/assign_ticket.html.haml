@@ -89,10 +89,15 @@
 %script{ type: "text/x-handlebars", id: "groups" }
   .row
     {{#each model as |eng|}}
-    .col-sm-1
-      {{ group-list ticketId="#{ticket.id}" ticketEng=eng }}
+    .col-md-1.col-sm-2
+      {{#each eng.eng_set as |subEng|}}
+      .assign-engineers
+        {{ group-list ticketId="#{ticket.id}" ticketEng=subEng }}
+        .controls
+          <button {{action 'removeTicketEng' subEng }}>Remove</button>
+      %hr
+      {{/each}}
 
-      <button {{action 'removeTicketEng' eng }}>Remove</button>
     {{/each}}
 
 
@@ -139,5 +144,4 @@
 %script{type: "text/x-handlebars", id: "components/group-list"}
   .thumbnail
     <img src={{if imageNotAvailable '/assets/no_image.jpg' ticketEng.image }} />
-    .caption
-      %p {{ticketEng.name}}
+    {{ticketEng.name}}

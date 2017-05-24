@@ -43,8 +43,13 @@
       = f.input :remarks
     .col-md-2
       = f.label "attachment url uploader:"
-      = f.file_field :attachment_url, accept: 'application/doc, application/pdf'
-      = f.object.attachment_url.present? and link_to(f.object.attachment_url.file.filename, f.object.attachment_url.url, target: "_blank")
+      = f.file_field :attachment_url, accept: 'application/doc, application/pdf', class: "product_pop_doc_url", data: {class: "attachement_url_wrapper"}
+
+      - if f.object.attachment_url.present?
+        = link_to(f.object.attachment_url.file.filename, f.object.attachment_url.url, target: "_blank")
+
+      .attachement_url_wrapper
+
     %hr
     .col-md-12
       = f.simple_fields_for :contract_products do |c|
@@ -118,10 +123,10 @@
                   %strong.small_scale_padding-bottom3{style: "display: block;"} POP note document
                   #preview_of_pop_doc_url{style: "word-wrap: break-word;"}
                     - if p.object.pop_doc_url.present?
-                      yes
-                      = p.object.pop_doc_url.file.filename
+                      = link_to p.object.pop_doc_url.file.filename, p.object.pop_doc_url.url, target: "_blank"
+
                     = p.label "Upload pop note"
-                    = p.file_field :pop_doc_url, accept: 'image/png,image/gif,image/jpeg,application/pdf', class: "product_pop_doc_url"
+                    = p.file_field :pop_doc_url, accept: 'image/png,image/gif,image/jpeg,application/pdf', class: "product_pop_doc_url", data: {class: "pop_doc_url_wrapper"}
 
                   .pop_doc_url_wrapper
 
@@ -132,7 +137,7 @@
 
       .col-md-12
         #selectedproducts
-      = f.link_to_add "Add Product", :contract_products, class: "btn btn-sm btn-success"
+      = f.link_to_add "Add Product", :contract_products, class: "btn btn-sm btn-success", onclick: "setTimeout(function(){Tickets.multi_pop_url_doc_upload(); return false;}, 200)"
       %button.btn.btn-info{"data-target" => "#productsModel", "data-toggle" => "modal", :type => "button"} Select Product
 
   .row

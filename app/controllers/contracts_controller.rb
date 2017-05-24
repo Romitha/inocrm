@@ -117,9 +117,10 @@ class ContractsController < ApplicationController
             cached_contract.save
 
             # @contract.attributes = cached_contract.attributes
-            @contract.attributes = contract_params
 
           end
+          @contract.attributes = contract_params
+
         else
           @contract = (cached_contract or TicketContract.new)
           @contract.attributes = contract_params
@@ -140,10 +141,10 @@ class ContractsController < ApplicationController
         Rails.cache.delete([:contract_products, request.remote_ip])
 
       end
+      @organization = @contract.organization
+      @ticket_contracts = @organization.ticket_contracts
     end
 
-    @organization = @contract.organization
-    @ticket_contracts = @organization.ticket_contracts.page params[:page]
 
     render :index
   end

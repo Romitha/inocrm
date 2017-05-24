@@ -45,7 +45,7 @@ App.Engineer = Ember.Object.extend()
 App.SubEngineer = Ember.Object.extend()
 
 App.GroupsRoute = Ember.Route.extend
-  model: (params)-> Ember.$.getJSON('/tickets/load_sbu', {type: "ticket", ticket_id: params.ticket_id}).then( (data)-> console.log(data.ticketEngs); data.ticketEngs )
+  model: (params)-> Ember.$.getJSON('/tickets/load_sbu', {type: "ticket", ticket_id: params.ticket_id}).then( (data)-> data.ticketEngs )
 
   actions:
     removeTicketEng: (obj)->

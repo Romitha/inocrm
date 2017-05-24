@@ -139,6 +139,7 @@ window.Tickets =
             # $(".profile_image_wrapper").empty();
 
   multi_pop_url_doc_upload: ->
+    _this = this
     $(".product_pop_doc_url").fileupload
       # url: '/users/profile/temp_save_user_profile_image'
       # type: "POST"
@@ -146,8 +147,9 @@ window.Tickets =
       dataType: "script"
       autoUpload: false
       add: (e, data) ->
-        console.log data
+        _this.ajax_loader()
 
+        output_class = $(e.target).data("class")
         types = /(\.|\/)(gif|jpe?g|png|pdf)$/i
         maxsize = 1024*1024
         file = data.files[0]
@@ -162,10 +164,8 @@ window.Tickets =
             data.formData = formData
             # data.formData.ajax_upload = true
 
-            console.log data.formData
-
             data.context = $(tmpl('pop_doc_url_upload', file))
-            $(".pop_doc_url_wrapper", e.target ).html(data.context)
+            $("."+output_class ).html(data.context)
             data.submit()
           else
             alert "Your image file is with #{file.size}KB is exceeding than limited size of #{maxsize}KB. Please select other image file not exceeding 1MB"
@@ -177,7 +177,8 @@ window.Tickets =
           progress = parseInt(data.loaded/data.total*100, 10)
           data.context.find(".progress-bar").css("width", progress+"%").html("<span class='sr-only'>"+progress+"% completed </span>")
           if progress==100
-            $("#ajax-loader").addClass("hide");
+            _this.remove_ajax_loader()
+
             # $(".profile_image_wrapper").empty();
 
   prevent_enter: ->

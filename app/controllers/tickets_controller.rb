@@ -1026,10 +1026,11 @@ class TicketsController < ApplicationController
 
     when "ticket"
       @ticketEngs = if params[:ticket_id].present?
-        Ticket.find(params[:ticket_id]).ticket_engineers.parent_engineers.map { |u| { name: u.user.full_name, image: u.user.avatar.url, sub_engs: u.sub_engineers.map { |e| { name: e.user.full_name, image: e.user.avatar.url } } } }
+        # Ticket.find(params[:ticket_id]).ticket_engineers.map { |u| { name: u.user.full_name, image: u.user.avatar.url, sub_engs: u.sub_engineers.map { |e| { name: e.user.full_name, image: e.user.avatar.url } } } }
+        Ticket.find(params[:ticket_id]).ticket_engineers.group_by{ |t| t.group_no.to_i }.map { |k, v| { group_no: k, eng_set: v.map{ |r| { name: r.user.full_name, image: r.user.avatar.url, id: r.id, order_no: r.order_no } }.sort{ |p, n| p[:order_no].to_i <=> n[:order_no].to_i } } }#.inject({}){|i, (k, v)| i[k] = v.sort{|p, n| p.order_no.to_i <=> n.order_no.to_i } }
 
       else
-        []
+        {}
 
       end
 

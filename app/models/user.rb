@@ -345,4 +345,19 @@ class TicketEngineer < ActiveRecord::Base
       {parent_eng: self, subEngs: sub_engineers.map { |s| s.rec_sub_engineers }}
     end
   end
+
+  has_many :dyna_columns, as: :resourceable, autosave: true
+
+  [:group_no, :order_no].each do |dyna_method|
+    define_method(dyna_method) do
+      dyna_columns.find_by_data_key(dyna_method).try(:data_value)
+    end
+
+    define_method("#{dyna_method}=") do |value|
+      data = dyna_columns.find_or_initialize_by(data_key: dyna_method)
+      data.data_value = (value.class==Fixnum ? value : value.strip)
+      data.save# if data.persisted?
+    end
+  end
+
 end
