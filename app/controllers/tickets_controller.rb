@@ -1040,6 +1040,7 @@ class TicketsController < ApplicationController
 
     render json: {sbus: @sbus, ticketEngs: {new_group_no: ((@ticketEngs.try(:last) and @ticketEngs.last[:group_no]).to_i + 1), engs: @ticketEngs}}
 
+    render json: response
   end
 
   def remove_eng
