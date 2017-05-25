@@ -1,5 +1,6 @@
 - organizations = (@organizations || Organization.organization_customers)
 
+/ = collapse collapse_type: "info", labelledby: "contracts_form_collapse_search_customers", header_content: "Search Customers", collapse_link: "contracts_form_collapse_search_customers_link", collapse_id: "contracts_form_collapse", collapse_in: "in" do
 %h4 Search Customers
 = form_tag contracts_path(contracts_callback: "search_customers"), remote: true, method: :get, class: "form-horizontal" do
   .row

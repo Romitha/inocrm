@@ -1,6 +1,5 @@
 - contract = @contract
 
-%hr
 %h3 Contract Details
 = simple_nested_form_for contract, url: contracts_path(save: true), html: {class: "validate_form"}, method: :post, remote: true, multiple: true do |f|
   = hidden_field_tag :contract_id, contract.id
@@ -52,91 +51,98 @@
 
     %hr
     .col-md-12
-      = f.simple_fields_for :contract_products do |c|
-        - c.object.build_product unless c.object.persisted?
+      = collapse_wrapper collapse_id: "products_collapse", labelledby: "products_collapse_labelledby" do
+        .row
+          = f.simple_fields_for :contract_products do |c|
+            - c.object.build_product unless c.object.persisted?
 
-        = c.simple_fields_for :product do |p|
-          = panels panel_type: "info", header_content: "Products" do
-            - if p.object.tickets.any?
-              - product = p.object
-              - contrac = c.object
-              %dl.dl-horizontal
-                %dt product_brand
-                %dd= product.product_brand.try(:name)
-                %dt product_category
-                %dd= product.product_category.try(:name)
-                %dt serial_no
-                %dd= product.serial_no
-                %dt model_no
-                %dd= product.model_no
-                %dt product_no
-                %dd= product.product_no
-                %dt sla_time
-                %dd= contrac.sla_time.try(:description)
-                %dt corporate_product
-                %dd= boolean_in_word product.corporate_product, "Yes", "No"
-                %dt product_pop_status
-                %dd= product.product_pop_status.try(:name)
-                %dt pop_note
-                %dd= product.pop_note
-                %dt product_sold_country
-                %dd= product.product_sold_country.try(:code)
-                %dt remarks
-                %dd= contrac.remarks
-                %dt POP note document
-                - if p.object.pop_doc_url.present?
-                  %dd= link_to(product.pop_doc_url.file.try(:filename), product.pop_doc_url.url, target: "_blank")
-                - if p.object.cannot_removable_from_contract?(contract.id)
-                  cannot remove
-                - else
-                  .col-md-2.small_scale_padding-top3
-                    = c.link_to_remove  class: "remove_c_t_v_link",:data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Remove" do
-                      %button.btn.btn-danger Remove
-            - else
-              No tickets
-              .row
-                .col-md-2
-                  = p.association :product_brand, required: true, include_blank: false
-                .col-md-2
-                  = p.association :product_category, required: true, include_blank: false
-                .col-md-4
-                  = p.input :serial_no, required: true
-                .col-md-2
-                  = p.input :model_no
-                .col-md-2
-                  = p.input :product_no
-              .row
-                .col-md-3
-                  = c.association :sla_time, required: true, label_method: :description, include_blank: false, label: "SLA"
-                .col-md-2
-                  = p.input :corporate_product, wrapper: :append
-                .col-md-3
-                  = p.association :product_pop_status
-                .col-md-4
-                  = p.input :pop_note
-              .row
-                .col-md-3
-                  = p.association :product_sold_country, label_method: :code
-                .col-md-6
-                  = c.input :remarks
-                .col-md-3
-                  %strong.small_scale_padding-bottom3{style: "display: block;"} POP note document
-                  #preview_of_pop_doc_url{style: "word-wrap: break-word;"}
-                    - if p.object.pop_doc_url.present?
-                      = link_to p.object.pop_doc_url.file.filename, p.object.pop_doc_url.url, target: "_blank"
+            = c.simple_fields_for :product do |p|
+              = collapse collapse_type: "info", labelledby: "labelledby_#{p.object.id}", header_content: "Product: #{p.object.product_brand.try(:name)}:#{p.object.product_category.try(:name)}:#{p.object.serial_no}", collapse_link: "invunitlink_#{p.object.id}", collapse_id: "products_collapse" do
+                .col-md-12
+                  - if p.object.tickets.any?
+                    - product = p.object
+                    - contrac = c.object
+                    / = collapse collapse_type: "info", labelledby: "labelledby_#{product.id}", header_content: "Product: #{product.product_brand.try(:name)}", collapse_link: "invunitlink_#{product.id}", collapse_id: "products_collapse", collapse_in: "in" do
+                    %dl.dl-horizontal
+                      %dt product_brand
+                      %dd= product.product_brand.try(:name)
+                      %dt product_category
+                      %dd= product.product_category.try(:name)
+                      %dt serial_no
+                      %dd= product.serial_no
+                      %dt model_no
+                      %dd= product.model_no
+                      %dt product_no
+                      %dd= product.product_no
+                      %dt sla_time
+                      %dd= contrac.sla_time.try(:description)
+                      %dt corporate_product
+                      %dd= boolean_in_word product.corporate_product, "Yes", "No"
+                      %dt product_pop_status
+                      %dd= product.product_pop_status.try(:name)
+                      %dt pop_note
+                      %dd= product.pop_note
+                      %dt product_sold_country
+                      %dd= product.product_sold_country.try(:code)
+                      %dt remarks
+                      %dd= contrac.remarks
+                      %dt POP note document
+                      - if p.object.pop_doc_url.present?
+                        %dd= link_to(product.pop_doc_url.file.try(:filename), product.pop_doc_url.url, target: "_blank")
+                      - if p.object.cannot_removable_from_contract?(contract.id)
+                        cannot remove
+                      - else
+                        .col-md-2.small_scale_padding-top3
+                          = c.link_to_remove  class: "remove_c_t_v_link",:data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Remove" do
+                            %button.btn.btn-danger Remove
 
-                    = p.label "Upload pop note"
-                    = p.file_field :pop_doc_url, accept: 'image/png,image/gif,image/jpeg,application/pdf', class: "product_pop_doc_url", data: {class: "pop_doc_url_wrapper"}
+                  - else
+                    .row
+                      .col-md-2
+                        = p.association :product_brand, required: true, include_blank: false
+                      .col-md-2
+                        = p.association :product_category, required: true, include_blank: false
+                      .col-md-4
+                        = p.input :serial_no, required: true
+                      .col-md-2
+                        = p.input :model_no
+                      .col-md-2
+                        = p.input :product_no
+                    .row
+                      .col-md-3
+                        = c.association :sla_time, required: true, label_method: :description, include_blank: false, label: "SLA"
+                      .col-md-2
+                        = p.input :corporate_product, wrapper: :append
+                      .col-md-3
+                        = p.association :product_pop_status
+                      .col-md-4
+                        = p.input :pop_note
+                    .row
+                      .col-md-3
+                        = p.association :product_sold_country, label_method: :code
+                      .col-md-6
+                        = c.input :remarks
+                      .col-md-3
+                        %strong.small_scale_padding-bottom3{style: "display: block;"} POP note document
+                        #preview_of_pop_doc_url{style: "word-wrap: break-word;"}
+                          - if p.object.pop_doc_url.present?
+                            = link_to p.object.pop_doc_url.file.filename, p.object.pop_doc_url.url, target: "_blank"
 
-                  .pop_doc_url_wrapper
+                          = p.label "Upload pop note"
+                          = p.file_field :pop_doc_url, accept: 'image/png,image/gif,image/jpeg,application/pdf', class: "product_pop_doc_url", data: {class: "pop_doc_url_wrapper"}
 
-              .col-md-2.small_scale_padding-top3
-                = c.link_to_remove  class: "remove_c_t_v_link",:data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Remove" do
-                  %button.btn.btn-danger Remove
-              %hr
+                        .pop_doc_url_wrapper
 
-      .col-md-12
+                    .col-md-2.small_scale_padding-top3
+                      = c.link_to_remove  class: "remove_c_t_v_link",:data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Remove" do
+                        %button.btn.btn-danger Remove
+              %br
+      .row
+        / = collapse_wrapper collapse_id: "selected_products_collapse", labelledby: "selected_products_collapse_labelledby" do
+        /   = collapse collapse_type: "info", labelledby: "labelledby_selected_products_collapse", header_content: "Selected Products", collapse_link: "invunitlink_selected_products_collapse", collapse_id: "selected_products_collapse" do
         #selectedproducts
+
+
       = f.link_to_add "Add Product", :contract_products, class: "btn btn-sm btn-success", onclick: "setTimeout(function(){Tickets.multi_pop_url_doc_upload(); return false;}, 200)"
       %button.btn.btn-info{"data-target" => "#productsModel", "data-toggle" => "modal", :type => "button"} Select Product
 
