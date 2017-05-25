@@ -57,86 +57,132 @@
             - c.object.build_product unless c.object.persisted?
 
             = c.simple_fields_for :product do |p|
-              = collapse collapse_type: "info", labelledby: "labelledby_#{p.object.id}", header_content: "Product: #{p.object.product_brand.try(:name)}:#{p.object.product_category.try(:name)}:#{p.object.serial_no}", collapse_link: "invunitlink_#{p.object.id}", collapse_id: "products_collapse" do
+              - if p.object.id.present?
+                = collapse collapse_type: "info", labelledby: "labelledby_#{p.object.id}", header_content: "Product: #{p.object.product_brand.try(:name)}:#{p.object.product_category.try(:name)}:#{p.object.serial_no}", collapse_link: "invunitlink_#{p.object.id}", collapse_id: "products_collapse" do
+                  .col-md-12
+                    - if p.object.tickets.any?
+                      - product = p.object
+                      - contrac = c.object
+                      / = collapse collapse_type: "info", labelledby: "labelledby_#{product.id}", header_content: "Product: #{product.product_brand.try(:name)}", collapse_link: "invunitlink_#{product.id}", collapse_id: "products_collapse", collapse_in: "in" do
+                      %dl.dl-horizontal
+                        %dt product_brand
+                        %dd= product.product_brand.try(:name)
+                        %dt product_category
+                        %dd= product.product_category.try(:name)
+                        %dt serial_no
+                        %dd= product.serial_no
+                        %dt model_no
+                        %dd= product.model_no
+                        %dt product_no
+                        %dd= product.product_no
+                        %dt sla_time
+                        %dd= contrac.sla_time.try(:description)
+                        %dt corporate_product
+                        %dd= boolean_in_word product.corporate_product, "Yes", "No"
+                        %dt product_pop_status
+                        %dd= product.product_pop_status.try(:name)
+                        %dt pop_note
+                        %dd= product.pop_note
+                        %dt product_sold_country
+                        %dd= product.product_sold_country.try(:code)
+                        %dt remarks
+                        %dd= contrac.remarks
+                        %dt POP note document
+                        - if p.object.pop_doc_url.present?
+                          %dd= link_to(product.pop_doc_url.file.try(:filename), product.pop_doc_url.url, target: "_blank")
+                        - if p.object.cannot_removable_from_contract?(contract.id)
+                          cannot remove
+                        - else
+                          .col-md-2.small_scale_padding-top3
+                            = c.link_to_remove  class: "remove_c_t_v_link",:data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Remove" do
+                              %button.btn.btn-danger Remove
+
+                    - else
+                      .row
+                        .col-md-2
+                          = p.association :product_brand, required: true, include_blank: false
+                        .col-md-2
+                          = p.association :product_category, required: true, include_blank: false
+                        .col-md-4
+                          = p.input :serial_no, required: true
+                        .col-md-2
+                          = p.input :model_no
+                        .col-md-2
+                          = p.input :product_no
+                      .row
+                        .col-md-3
+                          = c.association :sla_time, required: true, label_method: :description, include_blank: false, label: "SLA"
+                        .col-md-2
+                          = p.input :corporate_product, wrapper: :append
+                        .col-md-3
+                          = p.association :product_pop_status
+                        .col-md-4
+                          = p.input :pop_note
+                      .row
+                        .col-md-3
+                          = p.association :product_sold_country, label_method: :code
+                        .col-md-6
+                          = c.input :remarks
+                        .col-md-3
+                          %strong.small_scale_padding-bottom3{style: "display: block;"} POP note document
+                          #preview_of_pop_doc_url{style: "word-wrap: break-word;"}
+                            - if p.object.pop_doc_url.present?
+                              = link_to p.object.pop_doc_url.file.filename, p.object.pop_doc_url.url, target: "_blank"
+
+                            = p.label "Upload pop note"
+                            = p.file_field :pop_doc_url, accept: 'image/png,image/gif,image/jpeg,application/pdf', class: "product_pop_doc_url", data: {class: "pop_doc_url_wrapper"}
+
+                          .pop_doc_url_wrapper
+
+                      .col-md-2.small_scale_padding-top3
+                        = c.link_to_remove  class: "remove_c_t_v_link",:data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Remove" do
+                          %button.btn.btn-danger Remove
+                %br
+              - else
                 .col-md-12
-                  - if p.object.tickets.any?
-                    - product = p.object
-                    - contrac = c.object
-                    / = collapse collapse_type: "info", labelledby: "labelledby_#{product.id}", header_content: "Product: #{product.product_brand.try(:name)}", collapse_link: "invunitlink_#{product.id}", collapse_id: "products_collapse", collapse_in: "in" do
-                    %dl.dl-horizontal
-                      %dt Product Brand
-                      %dd= product.product_brand.try(:name)
-                      %dt Product Category
-                      %dd= product.product_category.try(:name)
-                      %dt Serial No
-                      %dd= product.serial_no
-                      %dt Model No
-                      %dd= product.model_no
-                      %dt Product No
-                      %dd= product.product_no
-                      %dt Sla Time
-                      %dd= contrac.sla_time.try(:description)
-                      %dt Corporate Product
-                      %dd= boolean_in_word product.corporate_product, "Yes", "No"
-                      %dt Product Pop Status
-                      %dd= product.product_pop_status.try(:name)
-                      %dt Pop Note
-                      %dd= product.pop_note
-                      %dt Product Sold Country
-                      %dd= product.product_sold_country.try(:code)
-                      %dt Remarks
-                      %dd= contrac.remarks
-                      %dt POP note document
-                      - if p.object.pop_doc_url.present?
-                        %dd= link_to(product.pop_doc_url.file.try(:filename), product.pop_doc_url.url, target: "_blank")
-                      - if p.object.cannot_removable_from_contract?(contract.id)
-                        cannot remove
-                      - else
-                        .col-md-2.small_scale_padding-top3
-                          = c.link_to_remove  class: "remove_c_t_v_link",:data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Remove" do
-                            %button.btn.btn-danger Remove
+                  .row
+                    %h3 New Product
+                  .row
+                    .col-md-2
+                      = p.association :product_brand, required: true, include_blank: false
+                    .col-md-2
+                      = p.association :product_category, required: true, include_blank: false
+                    .col-md-4
+                      = p.input :serial_no, required: true
+                    .col-md-2
+                      = p.input :model_no
+                    .col-md-2
+                      = p.input :product_no
+                  .row
+                    .col-md-3
+                      = c.association :sla_time, required: true, label_method: :description, include_blank: false, label: "SLA"
+                    .col-md-2
+                      = p.input :corporate_product, wrapper: :append
+                    .col-md-3
+                      = p.association :product_pop_status
+                    .col-md-4
+                      = p.input :pop_note
+                  .row
+                    .col-md-3
+                      = p.association :product_sold_country, label_method: :code
+                    .col-md-6
+                      = c.input :remarks
+                    .col-md-3
+                      %strong.small_scale_padding-bottom3{style: "display: block;"} POP note document
+                      #preview_of_pop_doc_url{style: "word-wrap: break-word;"}
+                        - if p.object.pop_doc_url.present?
+                          = link_to p.object.pop_doc_url.file.filename, p.object.pop_doc_url.url, target: "_blank"
 
-                  - else
-                    .row
-                      .col-md-2
-                        = p.association :product_brand, required: true, include_blank: false
-                      .col-md-2
-                        = p.association :product_category, required: true, include_blank: false
-                      .col-md-4
-                        = p.input :serial_no, required: true
-                      .col-md-2
-                        = p.input :model_no, required: false
-                      .col-md-2
-                        = p.input :product_no, required: false
-                    .row
-                      .col-md-3
-                        = c.association :sla_time, required: true, label_method: :description, include_blank: false, label: "SLA"
-                      .col-md-2
-                        = p.input :corporate_product, wrapper: :append
-                      .col-md-3
-                        = p.association :product_pop_status
-                      .col-md-4
-                        = p.input :pop_note
-                    .row
-                      .col-md-3
-                        = p.association :product_sold_country, label_method: :code
-                      .col-md-6
-                        = c.input :remarks
-                      .col-md-3
-                        %strong.small_scale_padding-bottom3{style: "display: block;"} POP note document
-                        #preview_of_pop_doc_url{style: "word-wrap: break-word;"}
-                          - if p.object.pop_doc_url.present?
-                            = link_to p.object.pop_doc_url.file.filename, p.object.pop_doc_url.url, target: "_blank"
+                        = p.label "Upload pop note"
+                        = p.file_field :pop_doc_url, accept: 'image/png,image/gif,image/jpeg,application/pdf', class: "product_pop_doc_url", data: {class: "pop_doc_url_wrapper"}
 
-                          = p.label "Upload pop note"
-                          = p.file_field :pop_doc_url, accept: 'image/png,image/gif,image/jpeg,application/pdf', class: "product_pop_doc_url", data: {class: "pop_doc_url_wrapper"}
+                      .pop_doc_url_wrapper
 
-                        .pop_doc_url_wrapper
+                  .col-md-2.small_scale_padding-top3
+                    = c.link_to_remove  class: "remove_c_t_v_link",:data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Remove" do
+                      %button.btn.btn-danger Remove
+                  %hr
 
-                    .col-md-2.small_scale_padding-top3
-                      = c.link_to_remove  class: "remove_c_t_v_link",:data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Remove" do
-                        %button.btn.btn-danger Remove
-              %br
       .row
         / = collapse_wrapper collapse_id: "selected_products_collapse", labelledby: "selected_products_collapse_labelledby" do
         /   = collapse collapse_type: "info", labelledby: "labelledby_selected_products_collapse", header_content: "Selected Products", collapse_link: "invunitlink_selected_products_collapse", collapse_id: "selected_products_collapse" do
