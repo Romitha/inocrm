@@ -73,7 +73,11 @@
             %td= con.product.model_no
             %td= con.product.product_no
             %td
-              = link_to "Select", find_by_serial_tickets_path(contract_id: con.ticket_contract.id, serial_search: con.product.serial_no), remote: true, method: :post
+              - active = boolean_in_word con.ticket_contract.dynamic_active, "Yes", "No"
+              - if active == "Yes"
+                = link_to "Select", find_by_serial_tickets_path(contract_id: con.ticket_contract.id, serial_search: con.product.serial_no), remote: true, method: :post
+              - else
+                %font{:color => "red"} Not Active
     %br
     %br
     %br
