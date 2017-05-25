@@ -1027,7 +1027,7 @@ class TicketsController < ApplicationController
     when "ticket"
       @ticketEngs = if params[:ticket_id].present?
         # Ticket.find(params[:ticket_id]).ticket_engineers.map { |u| { name: u.user.full_name, image: u.user.avatar.url, sub_engs: u.sub_engineers.map { |e| { name: e.user.full_name, image: e.user.avatar.url } } } }
-        Ticket.find(params[:ticket_id]).ticket_engineers.group_by{ |t| t.group_no.to_i }.map { |k, v| { group_no: k, eng_set: v.map{ |r| { name: r.user.full_name, image: r.user.avatar.url, id: r.id, order_no: r.order_no } }.sort{ |p, n| p[:order_no].to_i <=> n[:order_no].to_i } } }#.inject({}){|i, (k, v)| i[k] = v.sort{|p, n| p.order_no.to_i <=> n.order_no.to_i } }
+        Ticket.find(params[:ticket_id]).ticket_engineers.group_by{ |t| t.group_no.to_i }.map { |k, v| { group_no: k, ticket_id: params[:ticket_id], eng_set: v.map{ |r| { name: r.user.full_name, image: r.user.avatar.url, id: r.id, order_no: r.order_no, group_no: r.group_no, ticket_id: r.ticket_id } }.sort{ |p, n| p[:order_no].to_i <=> n[:order_no].to_i } } }#.inject({}){|i, (k, v)| i[k] = v.sort{|p, n| p.order_no.to_i <=> n.order_no.to_i } }
 
       else
         {}
@@ -1036,16 +1036,47 @@ class TicketsController < ApplicationController
 
     end
 
-    render json: {sbus: @sbus, ticketEngs: @ticketEngs}
+    render json: {sbus: @sbus, ticketEngs: {new_group_no: ((@ticketEngs.try(:last) and @ticketEngs.last[:group_no]).to_i + 1), engs: @ticketEngs}}
 
+  end
+
+  def remove_eng
+    Ticket
+    @ticket_engineer = TicketEngineer.find(params[:ticket_engineer_id])
+
+    response = if @ticket_engineer.deletable?
+      @ticket_engineer.delete
+    end
+
+    render json: response
   end
 
   def update_assign_engineer_ticket
     assign_eng_params = ActiveSupport::JSON.decode params[:assign_eng_params]
+    # { ticket_id: "10", group_no: "2", order_no: "0", sbu_id: "2", assign_to: "1", subEng: [{user_id: "1"}] }
+
+    current_order_no = assign_eng_params["order_no"].to_i
+    current_group_no = assign_eng_params["group_no"].to_i
 
     @ticket = Ticket.find assign_eng_params["ticket_id"]
 
-    render json: assign_eng_params
+    ticket_engineer = @ticket.ticket_engineers.build(user_id: assign_eng_params["assign_to"] )
+
+    assign_eng_params["subEng"].to_a.each do |sub_eng|
+      ticket_engineer.sub_engineers.build( user_id: sub_eng["user_id"] )
+    end
+
+    # ticket_engineer.user_assign_ticket_actions.build(sbu_id: assign_eng_params["sbu_id"], assign_to: assign_eng_params["assign_to"])
+
+    parent_engineer = @ticket.ticket_engineers.select{|t| t.order_no.to_i == current_order_no and t.group_no.to_i == current_group_no }.first
+
+    ticket_engineer.parent_engineer_id = parent_engineer.try(:id)
+
+    ticket_engineer.save
+    ticket_engineer.group_no = current_group_no
+    ticket_engineer.order_no = (current_order_no + 1)
+
+    render json: ticket_engineer
 
   end
 

@@ -78,61 +78,89 @@
 
   {{outlet}}
 
-  {{#if showGroupFormBool}}
-  {{ new-group obj=newObj sbuArray=model assignTo=assignTo ticketId="#{ticket.id}" saveForm=( action 'saveNewObj' ) }}
-  <button class="btn btn-link" {{action "showGroupForm"}}>Cancel</button>
-  {{else}}
-  <button class="btn btn-link" {{action "showGroupForm" }} > New group </button>
-  {{/if}}
-
+  / {{#if showGroupFormBool}}
+  / {{ new-group obj=newObj sbuArray=model assignTo=assignTo ticketId="#{ticket.id}" saveForm=( action 'saveNewObj' ) }}
+  / <button class="btn btn-link" {{action "showGroupForm"}}>Cancel</button>
+  / {{else}}
+  / <button class="btn btn-link" {{action "showGroupForm" }} > New group </button>
+  / {{/if}}
 
 %script{ type: "text/x-handlebars", id: "groups" }
   .row
-    {{#each model as |eng|}}
-    .col-md-1.col-sm-2
+    {{#each model.engs as |eng|}}
+    .col-md-1.col-sm-2.assign-group
+      %strong Group: {{eng.eng_set.lastObject.group_no}}
       {{#each eng.eng_set as |subEng|}}
       .assign-engineers
-        {{ group-list ticketId="#{ticket.id}" ticketEng=subEng }}
+        {{#group-list ticketId="#{ticket.id}" ticketEng=subEng }}
         .controls
-          <button {{action 'removeTicketEng' subEng }}>Remove</button>
-      %hr
+          <span class="glyphicon glyphicon-remove" aria-hidden="true" title="Remove engineer from list" {{action 'removeTicketEng' subEng }}>
+          </span>
+        {{/group-list}}
+
+        .vertical_line
       {{/each}}
+      .add_engineer
+        {{#link-to "groups.new" (query-params order_no=eng.eng_set.lastObject.order_no group_no=eng.eng_set.lastObject.group_no ticket_id=eng.eng_set.lastObject.ticket_id) }}
+        <span class="glyphicon glyphicon-plus-sign" aria-hidden="true" title="Add Engineer"></span>
+        {{/link-to}}
+
+      %hr
 
     {{/each}}
 
+    {{#link-to "groups.new" (query-params order_no=0 group_no=model.new_group_no ticket_id="#{ticket.id}") }} new group {{/link-to}}
+
+  {{outlet}}
+
+%script{type: "text/x-handlebars", id: "groups/new"}
+  {{#unless model.newObj.group_no}}
+  {{#link-to "groups.new" (query-params order_no=null group_no=null ticket_id=null) }}
+  <span class="glyphicon glyphicon-refresh" aria-hidden="true" title="Please refresh and click add icon to view form"></span>
+  Refresh
+  {{/link-to}}
+  {{/unless}}
+
+  {{ new-group obj=model.newObj sbuArray=model.sbus assignTo=assignTo ticketId="#{ticket.id}" saveForm=( action 'saveNewObj' ) }}
+  {{#link-to "groups" "#{ticket.id}"}} Cancel {{/link-to}}
+
+  {{model.newObj.order_no}}
 
 %script{type: "text/x-handlebars", id: "components/new-group"}
-  %h2 Assign Engineer
+  %h4 Assign Engineer
+  %strong New Entry for Group {{obj.group_no}} order {{obj.order_no}}
+  {{#if obj.group_no}}
   < form >
   .row
     .col-sm-6
+      <label for="Assign SBU">Assign SBU</label>
       {{select-box optionArray=sbuArray click=(action (mut obj.sbu_id) value="target.value") }}
-      {{obj.sbu_id}}
     .col-sm-6
+      <label for="Assign to">Assign to</label>
       {{select-box optionArray=assignTo click=(action (mut obj.assign_to) value="target.value") }}
-      {{obj.assign_to}}
 
     .col-sm-12
+      %h4 Support Engineers
       .row
-        {{obj.subEng.length}}
-        %h2 Support Engineers
 
         {{#each obj.subEng as |se|}}
-        .col-sm-10
+        .col-sm-11
+          <label for="Assign">Assign</label>
           {{select-box optionArray=assignTo click=(action (mut se.user_id) value="target.value") }}
           {{se.user_id}}
 
-        .col-sm-2
-          <button {{action 'removeSubEng' se }}>Remove</button>
+        .col-sm-1.small_scale_margin-top4
+          <span class="glyphicon glyphicon-minus-sign" aria-hidden="true" title="Remove Sub Engineer" {{action 'removeSubEng' se }}></span>
 
         {{/each}}
 
-    .col-sm-6
-      <button {{action 'addSubEng' obj }}>Add Sub Engineer</button>
+    .col-sm-6.small_scale_margin-top2.small_scale_margin-bottom2
+      <span class="glyphicon glyphicon-plus-sign" aria-hidden="true" title="Add Sub Engineer" {{action 'addSubEng' obj }}></span>
 
   <button type="submit" {{ action saveForm }} >Save</button>
 
   </ form >
+  {{/if}}
 
 %script{type: "text/x-handlebars", id: "components/select-box"}
   {{optionArray}}
@@ -144,4 +172,5 @@
 %script{type: "text/x-handlebars", id: "components/group-list"}
   .thumbnail
     <img src={{if imageNotAvailable '/assets/no_image.jpg' ticketEng.image }} />
-    {{ticketEng.name}}
+    %strong {{ticketEng.name}}
+    {{yield}}
