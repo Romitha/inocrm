@@ -16,15 +16,45 @@
   padding-top: 1.3%;
 }
 
-.assign-engineers{
-  .controls {
-    position: absolute;
-    z-index: 1000;
-    display: none;
-  }
-  &:hover {
+.assign-group {
+  .assign-engineers{
+
+    .thumbnail {
+      position: relative;
+      margin: 0;
+    }
     .controls {
-      display: block;
+      position: absolute;
+      z-index: 1000;
+      display: none;
+      top: 0;
+      right: 0px;
+    }
+    &:hover {
+      .controls {
+        display: block;
+        height: 100%;
+        width: 20px;
+        background-color: rgba(0,0,0, 0.2);
+        color: white;
+        text-align: center;
+      }
+    }
+
+    .vertical_line {
+      width: 1px;
+      background-color: white;
+      border-left: black 1px solid;
+      height: 40px;
+      margin: auto;
+    }
+  }
+
+  .add_engineer {
+    .glyphicon {
+      margin: auto;
+      width: 100%;
+      text-align: center;
     }
   }
 }

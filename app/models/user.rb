@@ -326,8 +326,10 @@ class TicketEngineer < ActiveRecord::Base
   belongs_to :ticket
   belongs_to :user
   belongs_to :user_ticket_action, foreign_key: :created_action_id
+  belongs_to :ticket_workflow_process, foreign_key: :workflow_process_id
 
   has_many :ticket_owners, class_name: "Ticket", foreign_key: :owner_engineer_id
+  has_many :user_assign_ticket_actions, foreign_key: :assign_to_engineer_id
 
   belongs_to :parent_engineer, class_name: "TicketEngineer"
   has_many :sub_engineers, class_name: "TicketEngineer", foreign_key: :parent_engineer_id
@@ -344,6 +346,10 @@ class TicketEngineer < ActiveRecord::Base
     else
       {parent_eng: self, subEngs: sub_engineers.map { |s| s.rec_sub_engineers }}
     end
+  end
+
+  def deletable?
+    !(ticket_workflow_process.present? or user_assign_ticket_actions.any?)
   end
 
   has_many :dyna_columns, as: :resourceable, autosave: true
