@@ -117,7 +117,10 @@
                         .col-md-3
                           = p.association :product_pop_status
                         .col-md-4
-                          = p.input :pop_note
+                          .col-md-12
+                            = p.input :pop_note, input_html: {value: ""}
+                          .col-md-12
+                            = p.object.pop_note
                       .row
                         .col-md-3
                           = p.association :product_sold_country, label_method: :code
