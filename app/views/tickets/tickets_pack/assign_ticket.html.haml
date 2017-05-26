@@ -122,9 +122,6 @@
   {{/unless}}
 
   {{ new-group obj=model.newObj sbuArray=model.sbus assignTo=assignTo ticketId="#{ticket.id}" saveForm=( action 'saveNewObj' ) }}
-  {{#link-to "groups" "#{ticket.id}"}} Cancel {{/link-to}}
-
-  {{model.newObj.order_no}}
 
 %script{type: "text/x-handlebars", id: "components/new-group"}
   %h4 Assign Engineer
@@ -133,12 +130,12 @@
   < form >
   .row
     .col-sm-6
-      <label for="Assign SBU">Assign SBU</label>
+      <label for="Assign SBU" class="required control-label">Assign SBU</label>
       {{select-box optionArray=sbuArray click=(action (mut obj.sbu_id) value="target.value") }}
-      {{obj.sbu_id}}
+
     .col-sm-6
+      <label for="Assign to" class="required control-label">Assign to</label>
       {{select-box optionArray=assignTo click=(action (mut obj.assign_to) value="target.value") }}
-      {{obj.assign_to}}
 
     .col-sm-12
       %h4 Support Engineers
@@ -149,7 +146,7 @@
           <label for="Assign">Assign</label>
           {{select-box optionArray=assignTo click=(action (mut se.user_id) value="target.value") }}
 
-        .col-sm-1.small_scale_margin-top4
+        .col-sm-1.small_scale_margin-top3
           <span class="glyphicon glyphicon-minus-sign" aria-hidden="true" title="Remove Sub Engineer" {{action 'removeSubEng' se }}></span>
 
         {{/each}}
