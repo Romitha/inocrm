@@ -135,8 +135,10 @@
     .col-sm-6
       <label for="Assign SBU">Assign SBU</label>
       {{select-box optionArray=sbuArray click=(action (mut obj.sbu_id) value="target.value") }}
+      {{obj.sbu_id}}
     .col-sm-6
       {{select-box optionArray=assignTo click=(action (mut obj.assign_to) value="target.value") }}
+      {{obj.assign_to}}
 
     .col-sm-12
       %h4 Support Engineers
