@@ -2,48 +2,47 @@
 - select_for_pop = params["function_param"]
 - ticket = @ticket
 
-- if params[:action] == "ajax_show"
-  - if ticket.ticket_contract.present?
-    .row
-      .col-md-12
-        %h4 Contract
-      .col-md-12
-        .col-md-3
-          %strong Contract No:
-          = ticket.ticket_contract.contract_no
-        .col-md-3
-          %strong Created At:
-          = ticket.ticket_contract.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
-        .col-md-3
-          %strong Created By:
-          = ticket.ticket_contract.created_by_user_full_name
-        .col-md-3
-          %strong Under Contract
-        .col-md-3
-          %strong Contract Type:
-          = ticket.ticket_contract.ticket_contract_type.name
-        .col-md-3
-          %strong Owner Department:
-          = ticket.ticket_contract.organization.name
-        .col-md-3
-          %strong Back to Back Contract:
-          = boolean_in_word ticket.ticket_contract.contract_b2b, "Yes", "No"
-        .col-md-3
-          %strong Hold:
-          = boolean_in_word ticket.ticket_contract.hold, "Yes", "No"
-        .col-md-3
-          %strong Start Date:
-          = ticket.ticket_contract.contract_start_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
-        .col-md-3
-          %strong Exp Date:
-          = ticket.ticket_contract.contract_end_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
-        .col-md-3
-          %strong Amount:
-          = ticket.ticket_contract.amount
-        .col-md-6
-          %strong Remarks:
-          = ticket.ticket_contract.remarks
-    %br
+- if ticket.ticket_contract.present?
+  .row
+    .col-md-12
+      %h4 Contract
+    .col-md-12
+      .col-md-3
+        %strong Created At:
+        = ticket.ticket_contract.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
+      .col-md-3
+        %strong Created By:
+        = ticket.ticket_contract.created_by_user_full_name
+      .col-md-3
+        %strong Under Contract
+      .col-md-3
+        %strong Contract No:
+        = ticket.ticket_contract.contract_no
+      .col-md-3
+        %strong Contract Type:
+        = ticket.ticket_contract.ticket_contract_type.name
+      .col-md-3
+        %strong Owner Department:
+        = ticket.ticket_contract.organization.name
+      .col-md-3
+        %strong Back to Back Contract:
+        = boolean_in_word ticket.ticket_contract.contract_b2b, "Yes", "No"
+      .col-md-3
+        %strong Hold:
+        = boolean_in_word ticket.ticket_contract.hold, "Yes", "No"
+      .col-md-3
+        %strong Start Date:
+        = ticket.ticket_contract.contract_start_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
+      .col-md-3
+        %strong Exp Date:
+        = ticket.ticket_contract.contract_end_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
+      .col-md-3
+        %strong Amount:
+        = ticket.ticket_contract.amount
+      .col-md-6
+        %strong Remarks:
+        = ticket.ticket_contract.remarks
+  %br
 
 %table.table.table-responsive.table-condensed.table-bordered
   %thead
