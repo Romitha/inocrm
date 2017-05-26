@@ -119,9 +119,8 @@ App.NewGroupComponent = Ember.Component.extend
     removeSubEng: (remObj)->
       @get("obj.subEng").removeObject(remObj)
 
-    saveEng: ->
-      console.log "submitted"
-      return
+  disableSaveBtn: Ember.computed "obj.sbu_id", "obj.assign_to", ->
+    !Ember.isPresent(@get("obj.sbu_id")) or !Ember.isPresent(@get("obj.assign_to"))
 
 App.GroupListComponent = Ember.Component.extend
   imageNotAvailable: Ember.computed.equal("ticketEng.image", null)
