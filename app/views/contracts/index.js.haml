@@ -10,17 +10,18 @@
 - elsif params[:select].present?
   $("#contractlist").removeClass("hide");
   $("#contractlist").html("#{j render 'contracts/contractslist'}");
-  $("a[href='#contracts_form_collapse_contracts_link']").trigger("click");
+  / $("a[href='#contracts_form_collapse_contracts_link']").trigger("click");
+  $("a[href='#contracts_form_collapse_search_customers_link']").trigger("click");
 
 - elsif params[:select_ticket].present?
   $("#contractlist").removeClass("hide");
   $("#contractlist").html("#{j render 'contracts/ticket_contracts_list'}");
-  $("a[href='#contracts_ticket_form_collapse_contracts_link']").trigger("click");
+  $("a[href='#contracts_ticket_form_collapse_search_customers_link']").trigger("click");
 
 - elsif params[:edit_create].present?
   $("#contractedit").removeClass("hide");
   $("#contractedit").html("#{j render 'contracts/contractform'}");
-  $("a[href='#contracts_form_collapse_form_link']").trigger("click");
+  $("a[href='#contracts_form_collapse_contracts_link']").trigger("click");
 
 - elsif params[:select_contract].present?
   $("#contractselect").html("#{j render 'contracts/contractproducts'}");
