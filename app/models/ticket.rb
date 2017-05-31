@@ -390,6 +390,7 @@ class TicketContract < ActiveRecord::Base
   validates_presence_of [:customer_id, :sla_id, :created_by]
 
   validates_numericality_of [:sla_id]
+  validates_uniqueness_of :contract_no
 
   mapping do
     indexes :organization, type: "nested", include_in_parent: true

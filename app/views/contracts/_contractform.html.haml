@@ -64,27 +64,27 @@
                     - contrac = c.object
                     / = collapse collapse_type: "info", labelledby: "labelledby_#{product.id}", header_content: "Product: #{product.product_brand.try(:name)}", collapse_link: "invunitlink_#{product.id}", collapse_id: "products_collapse", collapse_in: "in" do
                     %dl.dl-horizontal
-                      %dt product_brand
+                      %dt Product Brand
                       %dd= product.product_brand.try(:name)
-                      %dt product_category
+                      %dt Product Category
                       %dd= product.product_category.try(:name)
-                      %dt serial_no
+                      %dt Serial No
                       %dd= product.serial_no
-                      %dt model_no
+                      %dt Model No
                       %dd= product.model_no
-                      %dt product_no
+                      %dt Product No
                       %dd= product.product_no
-                      %dt sla_time
+                      %dt Sla Time
                       %dd= contrac.sla_time.try(:description)
-                      %dt corporate_product
+                      %dt Corporate Product
                       %dd= boolean_in_word product.corporate_product, "Yes", "No"
-                      %dt product_pop_status
+                      %dt Product Pop Status
                       %dd= product.product_pop_status.try(:name)
-                      %dt pop_note
+                      %dt Pop Note
                       %dd= product.pop_note
-                      %dt product_sold_country
+                      %dt Product Sold Country
                       %dd= product.product_sold_country.try(:code)
-                      %dt remarks
+                      %dt Remarks
                       %dd= contrac.remarks
                       %dt POP note document
                       - if p.object.pop_doc_url.present?
@@ -105,9 +105,9 @@
                       .col-md-4
                         = p.input :serial_no, required: true
                       .col-md-2
-                        = p.input :model_no
+                        = p.input :model_no, required: false
                       .col-md-2
-                        = p.input :product_no
+                        = p.input :product_no, required: false
                     .row
                       .col-md-3
                         = c.association :sla_time, required: true, label_method: :description, include_blank: false, label: "SLA"
