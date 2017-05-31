@@ -83,7 +83,7 @@
               = link_to "Edit", contracts_path(edit_create: true, contract_id: con.id, customer_id: con.organization.id), remote: true, onclick: "Tickets.ajax_loader(); return false;"
     %br
     - unless params[:from_where] == "new_ticket"
-      = link_to "New Contract", contracts_path(edit_create: true, customer_id: organization.id), remote: true, class: "btn btn-sm btn-warning"
+      = link_to "New Contract", contracts_path(edit_create: true, customer_id: organization.id), remote: true, class: "btn btn-sm btn-warning", onclick: "Tickets.ajax_loader(); return false;"
     %br
     %br
 / #contractedit
