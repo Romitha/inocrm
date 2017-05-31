@@ -6,6 +6,8 @@ class CreateRpermissions < ActiveRecord::Migration
       t.string :controller_resource
       t.string :controller_action
 
+      t.belongs_to :subject_class
+
       t.timestamps
     end
 

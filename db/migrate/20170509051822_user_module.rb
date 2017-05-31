@@ -32,7 +32,8 @@ class UserModule < ActiveRecord::Migration
     remove_column :users, :organization_id
     remove_column :users, :title_id
     remove_column :spt_contract, :contract_no
-    add_column :spt_contract, :contract_no, :string, null: false, unique: true
+    add_column :spt_contract, :contract_no, :string, null: false
+    execute "ALTER TABLE spt_contract ADD UNIQUE(contract_no)"
 
     add_column :accounts, :code, "INT UNSIGNED NULL"
     add_column :accounts, :vat_no, :string, limit:100, null:true
