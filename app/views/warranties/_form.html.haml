@@ -56,8 +56,11 @@
             - if ticket.ticket_contract.present?
               .col-md-12
                 .col-md-12
-                  %h3 Contract
+                  %h4 Contract No: #{ticket.ticket_contract.contract_no}
                 .col-md-12
+                  / .col-md-3
+                  /   %strong Contract No:
+                  /   = ticket.ticket_contract.contract_no
                   .col-md-3
                     %strong Created At:
                     = ticket.ticket_contract.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
@@ -66,9 +69,6 @@
                     = ticket.ticket_contract.created_by_user_full_name
                   .col-md-3
                     %strong Under Contract
-                  .col-md-3
-                    %strong Contract No:
-                    = ticket.ticket_contract.contract_no
                   .col-md-3
                     %strong Contract Type:
                     = ticket.ticket_contract.ticket_contract_type.name
@@ -84,6 +84,9 @@
                     = link_to "#", class: "inline_edit", data: {type: "select", source: [{value: 1, text: "Yes"},{value: 0, text: "No"}], resource: "ticket_contract", name: "hold", url: contract_update_contracts_path(contract_id: ticket.ticket_contract.id), "original-title" => "Edit Hold"} do
                       = boolean_in_word ticket.ticket_contract.hold, "Yes", "No"
                   .col-md-3
+                    %strong Amount:
+                    = ticket.ticket_contract.amount
+                  .col-md-3
                     %strong Start Date:
                     = ticket.ticket_contract.contract_start_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
                   .col-md-3
@@ -92,9 +95,6 @@
                   .col-md-3
                     %strong Remarks:
                     = ticket.ticket_contract.remarks
-                  .col-md-3
-                    %strong Amount:
-                    = ticket.ticket_contract.amount
 
             = link_to "Back", create_customer_tickets_path(customer_id: customer.id), remote: true, method: :post
             = link_to "Next", "#", class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2", onclick: "Warranties.tab_trigger(); false;"

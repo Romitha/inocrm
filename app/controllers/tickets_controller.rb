@@ -779,6 +779,8 @@ class TicketsController < ApplicationController
             @bpm_process_error = true
           end
         end
+        @ticket.update_index
+
         flash_message = @bpm_process_error ? "Ticket successfully saved. But BPM error. Please continue after rectifying BPM" : "Thank you. ticket is successfully registered."
 
         WebsocketRails[:posts].trigger 'new', {task_name: "Ticket", task_id: @ticket.id, task_verb: "created.", by: current_user.email, at: Time.now.strftime('%d/%m/%Y at %H:%M:%S')}
