@@ -80,3 +80,34 @@ task upload_printer_template: :environment do
     PrintTemplate.first.update_attribute print.to_sym, file.read
   end
 end
+
+task seed_roles_permissions: :environment do
+  Rpermission
+
+  Rpermission.delete_all
+  SubjectAction.delete_all
+  SubjectAttribute.delete_all
+
+  permission_file = File.join Rails.root, "config", "permissions_list.yaml"
+  permissions = YAML.load File.open(permission_file)
+
+  permissions.each do |key, value|
+    s_class = SubjectClass.find_by_name(key)
+
+    value.each do |s_key, s_value|
+      rpermission = s_class.rpermissions.create name: s_key
+
+      if s_value["actions"].present?
+        rpermission.subject_actions.create s_value["actions"].map { |e| { name: e } }
+
+      end
+
+      if s_value["attributes"].present?
+        rpermission.subject_attributes.create s_value["attributes"]
+
+      end
+    end
+
+  end
+
+end

@@ -14,8 +14,8 @@ class Ability
       if user.current_user_role_name.try(:to_sym) == :admin
         can :manage, :all
       elsif user.roles.present?
-        cannot :read, :all
-        cannot :manage, :all
+        # cannot :read, :all
+        # cannot :manage, :all
 
         # user.roles.find(user.current_user_role_id).rpermissions.where(controller_resource: "Organization").each do |rpermission|
         #   can rpermission.controller_action.to_sym, rpermission.controller_resource.constantize, id: user.organization.try(:id)
@@ -24,9 +24,16 @@ class Ability
         # user.roles.find(user.current_user_role_id).rpermissions.where(controller_resource: "User").each do |rpermission|
         #   can rpermission.controller_action.to_sym, rpermission.controller_resource.constantize, id: ((user.organization && user.organization.user_ids.present?) ? user.organization.user_ids : user.id)
         # end
+        Role.find_by_id(user.current_user_role_id).rpermissions.each do |rpermission|
+          can rpermission.subject_actions.map { |s| s.name.to_sym }, rpermission.subject_class.name.classify.constantize, Hash[ rpermission.subject_attributes.map { |a| [ a.name.to_sym, a.value ] } ]
+
+        end
+
       else
-        can [:update, :initiate_user_profile_edit, :upload_avatar], User, id: user.id
-        can :index, Organization
+        # can [:update, :initiate_user_profile_edit, :upload_avatar], User, id: user.id
+        can :index, all
+
+
       end
     end
     #

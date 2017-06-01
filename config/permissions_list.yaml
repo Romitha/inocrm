@@ -1,0 +1,144 @@
+User:
+  View personal profile:
+    actions:
+      - profile
+      - initiate_user_profile_edit
+
+    attributes:
+      []
+
+  View users profile:
+    actions:
+      []
+    attributes:
+      []
+
+  Access user modifications:
+    actions:
+      - new
+      - create
+      - update
+      - upload_avatar
+
+    attributes:
+      []
+      # -
+      #   :name: a
+      #   :value: b
+      # -
+      #   :name: c
+      #   :value: d
+
+  Access admin store and branch information:
+  Access admin sbu information:
+
+ProductSoldCountry:
+  Access admin country information:
+    actions:
+      - sdfasdf
+
+RegionalSupportCenter:
+  Access admin regional information:
+
+SlaTime:
+  Access admin SLA information:
+
+  Access admin permission information:
+
+IndustryType:
+  Access admin industry type information:
+
+Sbu:
+  Access admin sbu information:
+
+Organization:
+  View organizations:
+    actions:
+      - single (need to review)
+      - list (need to review)
+  Modify organization:
+    actions:
+      - asdf
+
+  View parent organization:
+    actions:
+      - asdf
+  Modify parent organization:
+    actions:
+      - asdf
+
+ProductBrand:
+  Access admin brand information:
+
+SparePartDescription:
+  Access admin spare part information:
+
+Reason:
+  Access admin reason information:
+
+Accessory:
+  Access admin accessory information:
+
+GeQAndA:
+  Access admin general question information:
+
+Feedback:
+  Access admin customer feedback information:
+
+TicketStartAction:
+  Access admin ticket start action information:
+
+ProblemCategory:
+  Access admin problem category information:
+
+AdditionalCharge:
+  Access admin additional charge information:
+
+DispatchMethod:
+  Access admin dispatch method information:
+
+PaymentItem:
+  Access admin payment item information:
+
+PaymentTerm:
+  Access admin payment term information:
+
+Tax:
+  Access admin tax information:
+
+InventoryCategory1:
+  Access admin inventory brand information:
+
+InventoryCategory2:
+  Access admin inventory product meta information:
+
+InventoryCategory3:
+  Access admin inventory category information:
+
+InventoryDisposalMethod:
+  Access admin inventory disposal method information:
+
+InventoryRack:
+  Access admin inventory location information:
+
+Manufacture:
+  Access admin inventory manufacture information:
+
+ProductCondition:
+  Access admin inventory product condition information:
+
+InventoryProduct:
+  Access admin inventory product information:
+
+InventoryUnit:
+  Access admin inventory unit information:
+
+Inventory:
+  Access admin inventory information:
+
+InventoryReason:
+  Access admin inventory reason information:
+
+Ticket:
+  Add new ticket:
+  Assign ticket:

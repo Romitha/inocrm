@@ -8,6 +8,22 @@ rpermissions = [
   ["Create new user for Organization", 1, 7]
 ]
 
+subject_classes = [
+  ['Ticket', 1, ],
+  ['Inventory', 1, ],
+  ['ContactNumber', 1, ],
+  ['Designation', 1, ],
+  ['DocumentAttachment', 1, ],
+  ['Invoice', 1, ],
+  ['Organization', 1, ],
+  ['QAndA', 1, ],
+  ['RolesAndPermission', 1, ],
+  ['User', 1, ],
+  ['Todo', 1, ],
+  ['Warranty', 1, ],
+
+]
+
 organization = Organization.find_or_create_by name: "VS Information Systems", short_name: "VS Information Sys", code: "123456", web_site: "http://www.vsis.com", vat_number: "34358-90", refers: "VSIS", description: "VSIS is product owner of this application", type_id: 1
 user = User.find_by_email("admin@inovacrm.com")
 unless(user)
@@ -27,11 +43,11 @@ unless(user)
   # Rpermission.find_or_create_by!(rpermissions.map { |rp| {name: rp[0], controller_resource: rp[1], controller_action: rp[2]} })
   Rpermission
   SubjectBase.create [{name: "Model"}, {name: "Controller"}]
-  SubjectClass.create [{name: "User", subject_base_id: 1}, {name: "Organization", subject_base_id: 1}]
-  SubjectAttribute.create [{name: "id"}, {name: "task_id"}]
-  SubjectAction.create [{name: "update_user"}, {name: "index"}, {name: "create_organization"}, {name: "profile"}, {name: "show"}, {name: "update_organization"}, {name: "create_user"}]
+  # SubjectAttribute.create [{name: "id"}, {name: "task_id"}]
+  # SubjectAction.create [{name: "update_user"}, {name: "index"}, {name: "create_organization"}, {name: "profile"}, {name: "show"}, {name: "update_organization"}, {name: "create_user"}]
 
-  rpermissions.each { |rp| Rpermission.create_with( subject_attribute_id: 1, subject_action_id: rp[2], subject_class_id: rp[1] ).find_or_create_by(name: rp[0]) }
+  subject_classes.each { |rp| SubjectClass.create_with( name: rp[0], subject_base_id: rp[1] ).find_or_create_by(name: rp[0]) }
+  rpermissions.each { |rp| Rpermission.create_with( subject_action_id: rp[2], subject_class_id: rp[1] ).find_or_create_by(name: rp[0]) }
   admin.rpermission_ids = [1,2,3,4,5,6,7]
   default_user.rpermission_ids = [2, 4, 5]
 
