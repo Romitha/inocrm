@@ -5,6 +5,7 @@ class ContractsController < ApplicationController
     Organization
     IndustryType
     Product
+    Inventory
 
     # if params[:search].present?
     #   refined_contract = params[:contract].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
