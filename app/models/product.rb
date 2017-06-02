@@ -80,7 +80,7 @@ class Product < ActiveRecord::Base
   belongs_to :product_sold_country, foreign_key: :sold_country_id
   belongs_to :inv_serial_item, foreign_key: :inventory_serial_item_id
 
-  validates_presence_of [:serial_no, :product_brand_id, :product_category_id, :model_no, :product_no]
+  validates_presence_of [:serial_no, :product_brand_id, :product_category_id]
 
   def append_pop_status
     self.pop_note = "#{self.pop_note} <span class='pop_note_e_time'>(edited on #{Time.now.strftime('%d %b, %Y at %H:%M:%S')})</span><br/>#{pop_note_was}"

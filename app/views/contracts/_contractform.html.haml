@@ -106,9 +106,9 @@
                         .col-md-4
                           = p.input :serial_no, required: true
                         .col-md-2
-                          = p.input :model_no, required: false
+                          = p.input :model_no
                         .col-md-2
-                          = p.input :product_no, required: false
+                          = p.input :product_no
                       .row
                         .col-md-3
                           = c.association :sla_time, required: true, label_method: :description, include_blank: false, label: "SLA"
@@ -153,9 +153,9 @@
                     .col-md-4
                       = p.input :serial_no, required: true
                     .col-md-2
-                      = p.input :model_no, required: false
+                      = p.input :model_no
                     .col-md-2
-                      = p.input :product_no, required: false
+                      = p.input :product_no
                   .row
                     .col-md-3
                       = c.association :sla_time, required: true, label_method: :description, include_blank: false, label: "SLA"
