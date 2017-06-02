@@ -169,8 +169,10 @@ window.Tickets =
             data.submit()
           else
             alert "Your image file is with #{file.size}KB is exceeding than limited size of #{maxsize}KB. Please select other image file not exceeding 1MB"
+            _this.remove_ajax_loader()
         else
           alert("#{file.name} is not a gif, jpg, jpeg, png  or pdf file")
+          _this.remove_ajax_loader()
         # alert data.files[0]
       progress: (e, data) ->
         if data.context
@@ -178,8 +180,6 @@ window.Tickets =
           data.context.find(".progress-bar").css("width", progress+"%").html("<span class='sr-only'>"+progress+"% completed </span>")
           if progress==100
             _this.remove_ajax_loader()
-
-            # $(".profile_image_wrapper").empty();
 
   prevent_enter: ->
     $("#new_ticket").keypress (event) ->

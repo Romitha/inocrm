@@ -54,7 +54,7 @@
       = collapse_wrapper collapse_id: "products_collapse", labelledby: "products_collapse_labelledby" do
         .row
           = f.simple_fields_for :contract_products do |c|
-            - c.object.build_product unless c.object.present?
+            - c.object.build_product unless c.object.product.present?
 
             = c.simple_fields_for :product do |p|
               - if p.object.id.present?
