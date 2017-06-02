@@ -16,9 +16,9 @@
             %li= error
   .row
     .col-md-3
-      = f.input :contract_no, input_html: {required: true}
+      = f.input :contract_no, required: true
     .col-md-3
-      = f.association :ticket_contract_type, include_blank: false, input_html: {required: true}, label: "Contract Type"
+      = f.association :ticket_contract_type, include_blank: false, required: true, label: "Contract Type"
     .col-md-2
       = f.input :hold, wrapper: :append
     .col-md-2
@@ -106,9 +106,9 @@
                         .col-md-4
                           = p.input :serial_no, required: true
                         .col-md-2
-                          = p.input :model_no
+                          = p.input :model_no, required: false
                         .col-md-2
-                          = p.input :product_no
+                          = p.input :product_no, required: false
                       .row
                         .col-md-3
                           = c.association :sla_time, required: true, label_method: :description, include_blank: false, label: "SLA"
@@ -153,9 +153,9 @@
                     .col-md-4
                       = p.input :serial_no, required: true
                     .col-md-2
-                      = p.input :model_no
+                      = p.input :model_no, required: false
                     .col-md-2
-                      = p.input :product_no
+                      = p.input :product_no, required: false
                   .row
                     .col-md-3
                       = c.association :sla_time, required: true, label_method: :description, include_blank: false, label: "SLA"
