@@ -50,7 +50,7 @@
     .col-md-1
       = grn_item.current_unit_cost
     .col-md-1
-      = grn_item.inventory_product.inventories.sum{|i| i.store_id.to_i == grn_item.grn.store_id.to_i ? i.product_stock_cost : 0}
+      = grn_item.total_grn_cost
     .col-md-1
       = link_to "Select", inventories_admins_searches_path(select_action: "select_non_serial_or_batch_more", grn_item_id: grn_item.id, store_id: @store.try(:id) )
   %hr

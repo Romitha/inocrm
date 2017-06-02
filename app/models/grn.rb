@@ -192,6 +192,18 @@ class GrnItem < ActiveRecord::Base
     grn.supplier.try(:name)
   end
 
+  def total_grn_cost
+    current_unit_cost * if inventory_serial_items.any?
+      1
+
+    elsif inventory_batches.any?
+      grn_batches.sum(:remaining_quantity)
+    else
+      remaining_quantity
+    end
+
+  end
+
   def update_relation_index
     [:inventory_serial_items, :inventory_batches].each do |children|
       send(children).each do |child|
@@ -283,7 +295,7 @@ class GrnItem < ActiveRecord::Base
     Inventory
     to_json(
       only: [:id, :serial_no, :ct_no, :created_at, :current_unit_cost, :inventory_not_updated, :remaining_quantity, :recieved_quantity, :reserved_quantity],
-      methods: [:grn_supplier_name],
+      methods: [:grn_supplier_name, :total_grn_cost],
       include: {
         inventory_product: {
           only: [:id, :description, :model_no, :product_no, :spare_part_no, :created_at],
