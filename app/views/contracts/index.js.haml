@@ -21,6 +21,7 @@
 - elsif params[:edit_create].present?
   $("#contractedit").removeClass("hide");
   $("#contractedit").html("#{j render 'contracts/contractform'}");
+  / $("a[href='#contracts_form_collapse_form_link']").trigger("click");
   $("a[href='#contracts_form_collapse_contracts_link']").trigger("click");
 
 - elsif params[:select_contract].present?
