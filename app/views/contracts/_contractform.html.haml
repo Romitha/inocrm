@@ -41,7 +41,7 @@
     .col-md-8
       = f.input :remarks
     .col-md-2
-      = f.label "attachment url uploader:"
+      = f.label "Attachment:"
       = f.file_field :attachment_url, accept: 'application/doc, application/pdf', class: "product_pop_doc_url", data: {class: "attachement_url_wrapper"}
 
       - if f.object.attachment_url.present?
