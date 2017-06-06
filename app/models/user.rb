@@ -262,8 +262,6 @@ class SbuEngineer < ActiveRecord::Base
   belongs_to :sbu, foreign_key: :sbu_id
   belongs_to :engineer, class_name: "User", foreign_key: :engineer_id
 
-  validates_uniqueness_of :engineer_id, scope: :sbu_id
-
   def is_used_anywhere?
     # engineer.present?
   end

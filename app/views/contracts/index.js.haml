@@ -17,14 +17,9 @@
   $("a[href='#contracts_ticket_form_collapse_search_customers_link']").trigger("click");
 
 - elsif params[:edit_create].present?
-  Inventories.filter_category();
   $("#contractedit").removeClass("hide");
   $("#contractedit").html("#{j render 'contracts/contractform'}");
   $("a[href='#contracts_form_collapse_form_link']").trigger("click");
-
-
-
-
 
 - elsif params[:select_contract].present?
   $("#contractselect").html("#{j render 'contracts/contractproducts'}");
@@ -49,6 +44,7 @@
       $("#").html("successfully saved");
       $("#contract_alert").removeClass("hide");
       $("#contract_alert #content").html("successfully saved");
+
 
 Tickets.initial_loaders();
 Contracts.disabled_datepicker();
