@@ -109,7 +109,6 @@ group :test do
   gem 'rspec-rails'
   gem 'ffaker'
   gem "shoulda-matchers"
-
 end
 
 gem 'httpi'
