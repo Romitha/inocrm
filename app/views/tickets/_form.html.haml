@@ -10,7 +10,7 @@
       More
 
 - popstatus = link_to "#", class: "inline_edit", data: {type: "select", source: ProductPopStatus.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "product", name: "pop_status_id", url: product_update_tickets_path(product_id: product.id), "original-title" => "Update pop_status"} do
-  = product.product_pop_status.name
+  = product.product_pop_status.try(:name)
 
 
 .row
