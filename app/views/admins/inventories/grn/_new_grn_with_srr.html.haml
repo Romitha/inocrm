@@ -34,7 +34,7 @@
               %td #{ srr_item.currency_code } #{number_with_precision srr_item.total_cost, precision: 2}
               %td= srr_item.inventory_product.product_no
               %td= srr_item.inventory_product.model_no
-              %td= srr_item.inventory_product.serial_no
+              %td= srr_item.inventory_product.generated_item_code
               %td= srr_item.inventory_product.description
               %td= link_to "Select", grn_admins_inventories_path(purchase_order: "select_srr_item", srr_item_id: srr_item.id), remote: true, class: "srr_item_select_link", id: "srr_item_#{srr_item.id}"
 

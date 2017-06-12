@@ -1,6 +1,6 @@
 .row
   .col-md-12
-    = panels panel_type: "success", header_content: "Po no: #{@po.formated_po_no}" do
+    = panels panel_type: "success", header_content: "GRN no: #{CompanyConfig.first.next_sup_last_grn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_grn_no_format"])}" do
 
       %h4 Purchase Order Info
       %dl.dl-horizontal
@@ -45,7 +45,7 @@
                 %td= number_with_precision po_item.unit_cost_grn, precision: 2
                 %td= po_item.inventory_prn_item.inventory_product.product_no
                 %td= po_item.inventory_prn_item.inventory_product.model_no
-                %td= po_item.inventory_prn_item.inventory_product.generated_serial_no
+                %td= po_item.inventory_prn_item.inventory_product.generated_item_code
                 %td= po_item.inventory_prn_item.inventory_product.description
                 %td
                   - if po_item.inventory_prn_item.inventory_product.inventories.any?

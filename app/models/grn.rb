@@ -12,6 +12,8 @@ class Grn < ActiveRecord::Base
   belongs_to :supplier, class_name: "Organization" #, -> { where(id: 2) }#, foreign_key: :po_id
 
   has_many :grn_items
+  has_many :grn_batches, through: :grn_items
+  has_many :grn_serial_items, through: :grn_items
 
   def self.search(params)
     tire.search(page: (params[:page] || 1), per_page: 10) do
@@ -341,6 +343,63 @@ end
 class GrnBatch < ActiveRecord::Base
   self.table_name = "inv_grn_batch"
 
+  include Tire::Model::Search
+  include Tire::Model::Callbacks
+
+  mapping do
+    indexes :grn_item, type: "nested", include_in_parent: true
+    indexes :inventory_batch, type: "nested", include_in_parent: true
+    indexes :gin_sources, type: "nested", include_in_parent: true
+    indexes :damages, type: "nested", include_in_parent: true
+  end
+
+  def self.search(params)
+    # https://www.elastic.co/guide/en/elasticsearch/reference/2.3/query-dsl-query-string-query.html
+    tire.search(page: (params[:page] || 1), per_page: 10) do
+      query do
+        boolean do
+          must { string params[:query] } if params[:query].present?
+          # must { term :store_id, params[:store_id] } if params[:store_id].present?
+          # puts params[:store_id]
+        end
+      end
+      sort { by :created_at, {order: "desc", ignore_unmapped: true} }
+      # filter :range, published_at: { lte: Time.zone.now}
+      # raise to_curl
+    end
+  end
+
+  def to_indexed_json
+    to_json(
+      only: [:id, :remaining_quantity, :damage_quantity, :recieved_quantity, :damage_quantity],
+      methods: [:batch_stock_cost],
+      include: {
+        grn_item: {
+          only: [:current_unit_cost, :remaining_quantity],
+          include: {
+            currency: {
+              only: [:currency, :code],
+            },
+            grn: {
+              only: [:created_at, :store_id],
+              methods: [:grn_no_format],
+            },
+          },
+        },
+        inventory_batch: {
+          only: [:id, :lot_no, :batch_no, :inventory_id, :product_id, :manufatured_date, :expiry_date],
+          include: {
+            inventory: {
+              only: [:id, :store_id, :product_id, :stock_quantity, :available_quantity],
+            },
+
+          },
+        },
+      },
+    )
+
+  end
+
   belongs_to :grn_item
   belongs_to :inventory_batch
   accepts_nested_attributes_for :inventory_batch, allow_destroy: true
@@ -358,11 +417,36 @@ class GrnBatch < ActiveRecord::Base
 
   end
 
-  after_save do |grn_batch|
+  # after_save do |grn_batch|
+  #   [:inventory_batch].each do |parent|
+  #     parent.to_s.classify.constantize.find(grn_batch.send(parent).id).update_index
+  #     puts "gone inside inventory batch"
+  #     # association is not detected when created through associational way. Example: grn_item.grn_batches.create ... not create index of inventory batch. Ref admins/inventories_controller:1134
+  #   end
+
+  #   puts "****************"
+  #   puts "Grn batch is saved. Expected this must loaded first."
+  #   puts "****************"
+
+  # end
+
+  after_save :to_do_for_after_save
+
+  def to_do_for_after_save
     [:inventory_batch].each do |parent|
-      grn_batch.send(parent).update_index
+      parent.to_s.classify.constantize.find(self.send(parent).id).update_index
+      puts "gone inside inventory batch"
+
     end
 
+    puts "****************"
+    puts "Grn batch is saved. Expected this must loaded first."
+    puts "****************"
+
+  end
+
+  def batch_stock_cost
+    remaining_quantity.to_f * grn_item.current_unit_cost
   end
 
 end

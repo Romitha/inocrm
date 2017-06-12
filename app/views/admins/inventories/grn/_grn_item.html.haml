@@ -4,12 +4,9 @@
   - inventory_product = @po_item.inventory_prn_item.inventory_product
 
   - balance_to_be_inserted = @po_item.quantity
+  / - balance_to_be_inserted = @balance_to_be_recieved
 
-  - already_recieved = case inventory_product.product_type
-  - when "Serial", "Non Serial Non Batch"
-    - inventory_product.grn_items.by_store(session[:store_id]).sum(:recieved_quantity)
-  - when "Batch"
-    - inventory_product.grn_batches.sum(:recieved_quantity)
+  - already_recieved = @already_recieved
 
   - inventory = inventory_product.inventories.find_by_store_id session[:store_id]
   - url = initialize_grn_admins_inventories_path(po_item_id: @po_item.try(:id), inventory_product_id: @inventory_product.try(:id))
@@ -33,33 +30,31 @@
 = simple_nested_form_for @grn_item, url: url, method: :post, remote: true, html: {class: "validate_form"} do |g|
 
   .row.small_scale_padding-top1.small_scale_padding-bottom1
-    .col-md-4
-      %strong Item Code:
-      = inventory_product.generated_item_code
-    .col-md-4
-      %strong Item Description:
-      = inventory_product.description
-    .col-md-4
-      %strong Balance Qty To Be Received:
-      / = @grn_item.srn_item.quantity.to_f - @grn_item.gin_sources.sum(:issued_quantity) + @grn_item.gin_sources.sum(:returned_quantity)
-      = balance_to_be_inserted - already_recieved
-    .col-md-4
-      %strong PO Remarks:
-      =inventory.remarks
-    .col-md-4
-      %strong Rack:
-      =inventory.inventory_bin.inventory_shelf.inventory_rack.description
-    .col-md-4
-      %strong Shelf:
-      =inventory.inventory_bin.inventory_shelf.description
-    .col-md-4
-      %strong BIN:
-      =inventory.inventory_bin.description
-    .col-md-4
-      %strong Stock In Hand:
-      =inventory.stock_quantity
-    .col-md-4
-      %strong Remarks:
+    .col-md-12
+      %dl.dl-horizontal
+        %dt Item Code:
+        %dd= inventory_product.generated_item_code
+
+        %dt Item Description:
+        %dd= inventory_product.description
+
+        %dt Stock In Hand:
+        %dd=inventory.stock_quantity
+
+        %dt{title: "Balance Qty To Be Received:"} Balance Qty To Be Received:
+        %dd= balance_to_be_inserted - already_recieved
+
+        %dt Rack:
+        %dd=inventory.inventory_bin.inventory_shelf.inventory_rack.description
+
+        %dt Shelf:
+        %dd=inventory.inventory_bin.inventory_shelf.description
+
+        %dt BIN:
+        %dd=inventory.inventory_bin.description
+
+        %dt PO Remarks:
+        %dd=inventory.remarks
 
   - if !need_serial and need_batch
     %fieldset

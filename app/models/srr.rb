@@ -45,7 +45,7 @@ class Srr < ActiveRecord::Base
 
   def to_indexed_json
     Gin
-
+    Srn
     to_json(
       only: [:id, :remarks, :created_at, :closed, :srr_no ],
       methods: [:store_name, :formatted_srr_no, :created_by_user_full_name, :formated_created_at],
@@ -62,6 +62,16 @@ class Srr < ActiveRecord::Base
           include: {
             inventory_product: {
               only: [:product_no, :model_no, :serial_no, :description],
+              include: {
+                srn_items: {
+                  only: [:id],
+                  include: {
+                    srn: {
+                      only: [:id, :so_no],
+                    }
+                  }
+                }
+              }
             }
           },
         },

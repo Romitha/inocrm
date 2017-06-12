@@ -11,6 +11,10 @@
         .col-md-10
           = text_field_tag "srr[formated_srr_no]", nil, placeholder: "SRR No", class: "form-control"
       .form-group
+        = label_tag "Sales Order No", "Sales Order No", class: "col-md-2 control-label"
+        .col-md-10
+          = text_field_tag "srr[srr_items.inventory_product.srn_items.srn.so_no]", nil, placeholder: "Sales Order No", class: "form-control"
+      .form-group
         = label_tag "SRR No", "SRR date from", class: "col-md-2 control-label"
         .col-md-10
           = text_field_tag "srr[range_from]", nil, placeholder: "SRR Date from", class: "form-control datepicker"
