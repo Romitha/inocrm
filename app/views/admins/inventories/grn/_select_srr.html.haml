@@ -5,6 +5,7 @@
       %th No
       %th Store
       %th SRR No
+      %th Sales Order No
       %th SRR Date
       %th Remarks
       %th Returned by
@@ -15,6 +16,7 @@
         %td= index+1
         %td= srr.store_name
         %td= srr.formatted_srr_no
+        %td= srr.srr_items.map{|s| s.inventory_product.srn_items.map { |si| si.srn.so_no }.join(", ")}.join(", ")
         %td= srr.formated_created_at
         %td= simple_format srr.remarks
         %td= srr.created_by_user_full_name

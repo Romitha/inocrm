@@ -25,6 +25,8 @@
     %dl.dl-horizontal
       %dt SRN No:
       %dd= @srn.srn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_srn_no_format"])
+      %dt Sales Order No:
+      %dd= @srn.so_no
       %dt Required Date:
       %dd= @srn.required_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
       %dt Created at:
@@ -131,13 +133,13 @@
 
                   = hidden_field_tag :main_inventory_serial_part_id
 
-                  = link_to "Part of main product", "javascript:void(0)", onclick: "Admins.select_serial_item_or_part_in_srn(this, 'serial_item', '#{i.object.main_product_id}', 'true', #{product.id}); return false;"
+                  = link_to "Part of main product", "javascript:void(0)", onclick: "Admins.select_serial_item_or_part_in_srn(this, 'serial_item', '#{i.object.main_product_id}', 'true', #{product.id}); return false;", class: "btn btn-sm btn-success"
 
-              .col-md-12
+              .col-md-12  
                 - if need_serial and !need_batch
-                  = link_to "Add serial item", batch_or_serial_for_gin_admins_inventories_path(store_id: f.object.store_id, product_id: i.object.product_id, srn_item_id: i.object.srn_item_id, batch_or_serial: "serial"), remote: true, style: 'color:#ef0000;'
+                  = link_to "Add serial item", batch_or_serial_for_gin_admins_inventories_path(store_id: f.object.store_id, product_id: i.object.product_id, srn_item_id: i.object.srn_item_id, batch_or_serial: "serial"), remote: true, class: "btn btn-sm btn-success"
                 - elsif need_batch and !need_serial
-                  = link_to "Add batch", batch_or_serial_for_gin_admins_inventories_path(store_id: f.object.store_id, product_id: i.object.product_id, srn_item_id: i.object.srn_item_id, batch_or_serial: "batch"), remote: true
+                  = link_to "Add batch", batch_or_serial_for_gin_admins_inventories_path(store_id: f.object.store_id, product_id: i.object.product_id, srn_item_id: i.object.srn_item_id, batch_or_serial: "batch"), remote: true, class: "btn btn-sm btn-success"
               .col-md-12
                 %div{id: "batch_or_serial_frame#{i.object.srn_item_id}"}
 

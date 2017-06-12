@@ -1038,6 +1038,8 @@ class InventoryPo < ActiveRecord::Base
   has_many :inventory_po_items, foreign_key: :po_id
   accepts_nested_attributes_for :inventory_po_items, allow_destroy: true
 
+  has_many :grns, foreign_key: :po_id
+
   validates_presence_of [:supplier_id, :store_id, :po_no, :discount_amount]
 
   mapping do

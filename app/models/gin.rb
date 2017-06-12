@@ -46,7 +46,7 @@ class Gin < ActiveRecord::Base
       methods: [:store_name, :formatted_gin_no, :created_by_user_full_name, :formated_created_at],
       include: {
         srn: {
-          only: [:id, :created_at],
+          only: [:id, :created_at, :so_no],
           methods: [:formatted_srn_no, :formated_created_at],
         },
         store: {

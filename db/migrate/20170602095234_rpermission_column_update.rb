@@ -11,6 +11,7 @@ class RpermissionColumnUpdate < ActiveRecord::Migration
 
     # remove_column :spt_ticket, :updated_by
 
+    add_column :subject_actions, :value, :string
     add_column :subject_actions, :rpermission_id, "INT UNSIGNED NOT NULL"
     add_index :subject_actions, :rpermission_id, name: "fk_subject_actions_rpermission_id1_idx"
     execute "SET FOREIGN_KEY_CHECKS = 0"

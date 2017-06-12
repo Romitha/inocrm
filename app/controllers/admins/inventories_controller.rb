@@ -674,6 +674,7 @@ module Admins
         @po_item = InventoryPoItem.find params[:po_item_id]
 
         @grn_item = Rails.cache.fetch([:grn_item, params[:po_item_id].to_i, session[:grn_arrived_time].to_i ]) { GrnItem.new }
+        @already_recieved = @po_item.inventory_po.grns.to_a.sum{|grn| grn.grn_batches.any? ? grn.grn_batches.sum(:recieved_quantity) : grn.grn_items.sum(:recieved_quantity) }
 
         @render_template = "grn_item"
 
@@ -1132,7 +1133,7 @@ module Admins
 
         if grn_item.inventory_product.product_type == "Batch"
           grn_item.grn_batches.create( inventory_batch_id: srr_item_source.gin_source.grn_batch.inventory_batch_id, recieved_quantity: srr_item_source.returned_quantity, remaining_quantity: srr_item_source.returned_quantity )
-        else
+
         end
 
       end
@@ -1217,6 +1218,7 @@ module Admins
             prn_item.update closed: true if prn_item.quantity <= prn_item.inventory_po_items.sum(:quantity)
           end
           @prn.update closed: @prn.inventory_prn_items.all?{ |e| e.closed }
+          sleep 3
 
           # @prn.update_index
 

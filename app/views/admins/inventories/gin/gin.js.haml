@@ -1,6 +1,6 @@
 - case params[:gin_callback]
 - when "search_srn"
-	$("#gin_wrapper").html("#{j render 'admins/inventories/gin/select_srn', srns: @srns}");
+  $("#gin_wrapper").html("#{j render 'admins/inventories/gin/select_srn', srns: @srns}");
 - when "select_srn"
-	$("#gin_wrapper").html("#{j render 'admins/inventories/gin/form'}");
-	$(".validate_form").validate()
+  $("#gin_wrapper").html("#{j render 'admins/inventories/gin/form'}");
+  $(".validate_form").validate()

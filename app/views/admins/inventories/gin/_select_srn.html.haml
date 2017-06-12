@@ -7,7 +7,8 @@
       %tr
         %th No
         %th Store
-        / %th Serial No
+        %th Sales Order No
+        %th Quantity Available
         %th SRN No
         %th SRN Date
         %th Required date
@@ -24,9 +25,8 @@
             - else
               = (index+1)
           %td= srn.store.name
-          / %td
-          /   - srn.srn_items.each do |s|
-          /     = s.inventory_product.generated_serial_no
+          %td= srn.so_no
+          %td= boolean_in_word (srn.inventories.to_a.sum{|i| i.available_quantity.to_f } > 0), "Yes", "No"
           %td= srn.srn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_srn_no_format"])
           %td= srn.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
           %td= srn.required_at.try(:strftime, INOCRM_CONFIG['short_date_format'])

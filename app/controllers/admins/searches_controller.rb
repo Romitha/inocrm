@@ -337,13 +337,13 @@ module Admins
 
       when "Batch"
         if @store.present?
-          query = [query, "inventory.store_id:#{@store.id}", "grn_batches.remaining_quantity:>0"].join(" AND ")
+          query = ["inventory_batch.inventory.store_id:#{@store.id}", "remaining_quantity:>0"].join(" AND ")
 
         end
 
         params[:query] = query
 
-        @inventory_batches = InventoryBatch.search(params)
+        @grn_batches = GrnBatch.search(params)
 
         render "admins/searches/inventory/select_batches"
         
