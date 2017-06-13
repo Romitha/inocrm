@@ -54,7 +54,7 @@
                 %td= grn.grn_no_format
                 %td= grn.created_at.to_date.try :strftime, INOCRM_CONFIG["short_date_format"]
                 / %td= grn.try(:po_id).to_s.rjust(5, INOCRM_CONFIG["inventory_po_no_format"])
-                %td= grn.po_no
+                %td= (grn.inventory_po.try(:formated_po_no) or grn.po_no)
                 %td= grn.supplier_name
                 %td{title: grn.remarks}= grn.remarks.try :truncate, 50
                 %td= grn.created_by_user.try(:full_name)

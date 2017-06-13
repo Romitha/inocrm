@@ -103,7 +103,8 @@ class Grn < ActiveRecord::Base
           },
         },
         inventory_po: {
-          only: [:id, :formated_po_no],
+          only: [:id],
+          methods: [:formated_po_no],
         }
       },
     )
