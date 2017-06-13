@@ -41,6 +41,7 @@ class Grn < ActiveRecord::Base
     indexes :srn, type: "nested", include_in_parent: true
     indexes :srr, type: "nested", include_in_parent: true
     indexes :grn_items, type: "nested", include_in_parent: true
+    indexes :inventory_po, type: "nested", include_in_parent: true
 
   end
 
