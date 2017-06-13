@@ -43,8 +43,6 @@
         %tbody
           - @grns.each_with_index do |grn, index|
             %tr
-              / %td= params[:page]
-              / %td= index+1
               %td
                 - if params[:page]
                   = (index+1)+ 10*(params[:page].to_i-1)
@@ -53,8 +51,7 @@
               %td= grn.store_name
               %td= grn.grn_no_format
               %td= grn.formated_created_at
-              / %td= grn.try(:po_id).to_s.rjust(5, INOCRM_CONFIG["inventory_po_no_format"])
-              %td= grn.po_no
+              %td= (grn.inventory_po.try(:formated_po_no) or grn.po_no)
               %td= grn.supplier_name
               %td{title: grn.remarks}= grn.remarks.try :truncate, 50
               %td= grn.created_by_user.try(:full_name)
