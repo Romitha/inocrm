@@ -67,7 +67,12 @@
             %td= con.organization.name
             %td= con.contract_start_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
             %td= con.contract_end_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
-            %td= boolean_in_word con.hold, "Yes", "No"
+            %td
+              - chk_hold = boolean_in_word con.hold, "Yes", "No"
+              - if chk_hold == "Yes"
+                %font{:color => "green"} Yes
+              - else
+                %font{:color => "red"} No
             %td= boolean_in_word con.dynamic_active, "Yes", "No"
             %td= con.amount
             %td= con.ticket_currency.try(:code)
