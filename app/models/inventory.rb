@@ -1114,7 +1114,7 @@ class InventoryPo < ActiveRecord::Base
   end
 
   def assign_po_no
-    self.po_no = CompanyConfig.first.next_sup_last_po_no
+    self.po_no = CompanyConfig.first.next_inv_last_po_no
   end
 
   before_create :assign_po_no

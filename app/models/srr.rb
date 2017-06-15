@@ -109,7 +109,7 @@ class Srr < ActiveRecord::Base
   end
 
   def assign_srr_no
-    self.srr_no = CompanyConfig.first.next_sup_last_srr_no
+    self.srr_no = CompanyConfig.first.next_inv_last_srr_no
   end
 
   before_create :assign_srr_no
