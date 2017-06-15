@@ -24,6 +24,6 @@ class RpermissionColumnUpdate < ActiveRecord::Migration
     add_foreign_key :subject_attributes, :rpermissions, name: "fk_subject_attributes_rpermissions", column: :rpermission_id
     execute "SET FOREIGN_KEY_CHECKS = 1"
 
-    add_column :subject_attributes, :value, , :string
+    add_column :subject_attributes, :value, :string
   end
 end
