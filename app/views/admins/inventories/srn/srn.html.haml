@@ -21,7 +21,7 @@
       .col-md-3
         = f.input :required_at, as: :string, input_html: {class: "datepicker"}
       .col-md-3
-        = f.input :so_no, label: "Sales Order No"
+        = f.input :so_no, label: "Sales Order No", required: true
       .col-md-3
         = f.association :so_customer, collection: Organization.customers, label: "SO customer"
       .col-md-3

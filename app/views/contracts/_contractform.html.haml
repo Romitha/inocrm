@@ -6,7 +6,6 @@
 
   = f.input :customer_id, as: :hidden
   = f.input :created_by, as: :hidden, input_html: {value: current_user.id}
-  = f.input :owner_organization_id, as: :hidden, input_html: {value: Organization.owner.id }
 
   - if contract.errors.any?
     .row
@@ -15,39 +14,50 @@
           - contract.errors.full_messages.each do |error|
             %li= error
   .row
-    .col-md-3
+    .col-md-2
       = f.input :contract_no, required: true
-    .col-md-3
+    .col-md-2
       = f.association :ticket_contract_type, include_blank: false, required: true, label: "Contract Type"
     .col-md-2
-      = f.input :hold, wrapper: :append
-    .col-md-2
-      = f.input :contract_b2b, wrapper: :append, label: "Back to Back Contract"
-    .col-md-2
-      = f.input :remind_required, wrapper: :append, label: "Need Remind before Expiry"
-  .row
-    .col-md-2
       = f.association :ticket_currency, label_method: :code, label: "Currency"
-    .col-md-4
-      = f.input :amount
-    .col-md-3
-      = f.input :contract_start_at, as: :string, required: true,input_html: {class: "datepicker", value: f.object.contract_start_at.try(:strftime, INOCRM_CONFIG["short_date_format"])}
-    .col-md-3
-      = f.input :contract_end_at, as: :string, required: true, input_html: {class: "datepicker", value: f.object.contract_end_at.try(:strftime, INOCRM_CONFIG["short_date_format"])}
 
-    .col-md-3
+    .col-md-2
       = f.association :sla_time, required: true, label_method: :description, include_blank: false, label: "SLA"
+    .col-md-2
+      = label_tag "Owner branch" do
+        Owner Branch
+        = f.select :owner_organization_id, (contract.organization.members.collect{|m| [m.name, m.id ] } << [contract.organization.name, contract.organization.id]), {include_blank: false}, {class: "form-control col-md-12 small_scale_margin-top4"}
+
+    .col-md-2
+      = f.input :amount
+  .row
+    .col-md-6
+      .row
+        .col-md-4
+          = f.input :contract_start_at, as: :string, required: true,input_html: {class: "datepicker", value: f.object.contract_start_at.try(:strftime, INOCRM_CONFIG["short_date_format"])}
+        .col-md-4
+          = f.input :contract_end_at, as: :string, required: true, input_html: {class: "datepicker", value: f.object.contract_end_at.try(:strftime, INOCRM_CONFIG["short_date_format"])}
+        .col-md-4
+          = f.input :process_at, as: :string, required: true, input_html: {class: "datepicker", value: f.object.process_at.try(:strftime, INOCRM_CONFIG["short_date_format"])}
+        .col-md-4
+          = f.input :hold, wrapper: :append
+        .col-md-4
+          = f.input :contract_b2b, wrapper: :append, label: "Back to Back Contract"
+        .col-md-4
+          = f.input :remind_required, wrapper: :append, label: "Need Remind before Expiry"
+
+    .col-md-6
+      / .row
+      /   .col-md-6
+      /     = f.association :organization_contact, label: "Address company", required: true, collection: contract.organization.members
+      /     = f.association :contact_address, collection: contract.organization.members, as: :grouped_select, group_method: :organization_contact_addresses, label_method: :full_address, required: true
+      /   .col-md-6
+      /     = f.association :organization_bill, label: "Bill company", required: true, collection: contract.organization.members
+      /     = f.association :bill_address, collection: contract.organization.members, as: :grouped_select, group_method: :organization_contact_addresses, label_method: :full_address, required: true
+
   .row
     .col-md-8
       = f.input :remarks
-    .col-md-2
-      = f.label "Attachment:"
-      = f.file_field :attachment_url, accept: 'application/doc, application/pdf', class: "product_pop_doc_url", data: {class: "attachement_url_wrapper"}
-
-      - if f.object.attachment_url.present?
-        = link_to(f.object.attachment_url.file.filename, f.object.attachment_url.url, target: "_blank")
-
-      .attachement_url_wrapper
 
     %hr
     .col-md-12

@@ -41,3 +41,17 @@ class OrganizationContactType < ActiveRecord::Base
   has_many :addresses
   has_many :contact_numbers
 end
+
+class OrganizationContactAddress < ActiveRecord::Base
+  self.table_name = "oraganization_contact_addresses"
+
+  belongs_to :organization
+  belongs_to :country, class_name: "ProductSoldCountry"
+  belongs_to :province
+  belongs_to :district
+
+  def full_address
+    "#{address1}, #{address2}, #{address3}, #{city}"
+  end
+
+end

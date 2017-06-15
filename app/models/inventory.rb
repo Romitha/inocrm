@@ -1112,6 +1112,13 @@ class InventoryPo < ActiveRecord::Base
   def formated_created_at
     created_at.strftime(INOCRM_CONFIG["short_date_format"])
   end
+
+  def assign_po_no
+    self.po_no = CompanyConfig.first.next_sup_last_po_no
+  end
+
+  before_create :assign_po_no
+
 end
 
 class InventoryPoItem < ActiveRecord::Base
@@ -1231,6 +1238,12 @@ class InventoryPrn < ActiveRecord::Base
   def formated_created_at
     created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
   end
+
+  def assign_prn_no
+    self.prn_no = CompanyConfig.first.next_sup_last_prn_no
+  end
+
+  before_create :assign_prn_no
 
 end
 

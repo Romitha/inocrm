@@ -50,7 +50,7 @@
   - @grn.grn_items.each_with_index do |grnitem, index|
     - inventory = grnitem.inventory_product.inventories.find_by_store_id(grnitem.grn.store_id)
 
-    = collapse collapse_type: "info", labelledby: "grn_item_list_labelledby_#{grnitem.id}", header_content: "GRN Item #{index+1} - #{grnitem.inventory_product.generated_item_code} #{grnitem.inventory_product.try(:description)}", collapse_link: "grn_itemlink_#{grnitem.id}", collapse_id: "grn_item_list" do
+    = collapse collapse_type: "info", labelledby: "grn_item_list_labelledby_#{grnitem.id}", header_content: "GRN Item #{index+1} - #{grnitem.inventory_product.generated_item_code} #{grnitem.inventory_product.try(:description)} - #{grnitem.inventory_product.try(:product_no)}", collapse_link: "grn_itemlink_#{grnitem.id}", collapse_id: "grn_item_list" do
       .row
         .col-md-2
           %h4 Info:
@@ -199,7 +199,6 @@
 
       .row
         .col-md-12
-          / - if grnitem.inventory_product.inventory_product_info.try(:need_serial) == true && grnitem.inventory_product.inventory_product_info.try(:need_batch) == false
           = collapse_wrapper collapse_id: "serial_item_list", labelledby: "serial_item_list_labelledby" do
             - grnitem.grn_serial_items.each_with_index do |serial_item, index|
               = collapse collapse_type: "success", labelledby: "serial_item_list_labelledby_#{serial_item.id}", header_content: "Serial Item #{index+1}", collapse_link: "serial_itemlink_#{serial_item.id}", collapse_id: "serial_item_list" do

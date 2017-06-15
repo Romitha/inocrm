@@ -23,6 +23,17 @@
               = text_field_tag "search_srn[srn_date_from]", (params[:search_srn] and params[:search_srn][:srn_date_from]), :placeholder => "SRN Date from", class: "form-control datepicker"
             .col-md-3.model_no
               = text_field_tag "search_srn[srn_date_to]", (params[:search_srn] and params[:search_srn][:srn_date_to]), :placeholder => "SRN Date to", class: "form-control datepicker"
+          .row.small_scale_margin-top1
+            .col-md-3
+              = label_tag "Inventory available?" do
+                Inventory available?
+                .radio
+                  %label
+                    = radio_button_tag 'search_srn[inventories_available]', "Yes", true
+                    Yes
+                  %label
+                    = radio_button_tag 'search_srn[inventories_available]', "No", false
+                    No
 
           .row.small_scale_margin-top1
             .col-md-1

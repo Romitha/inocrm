@@ -108,6 +108,12 @@ class Srr < ActiveRecord::Base
     created_by_user.full_name
   end
 
+  def assign_srr_no
+    self.srr_no = CompanyConfig.first.next_sup_last_srr_no
+  end
+
+  before_create :assign_srr_no
+
 end
 
 class SrrItem < ActiveRecord::Base

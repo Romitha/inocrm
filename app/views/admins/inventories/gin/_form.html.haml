@@ -31,6 +31,10 @@
       %dd= @srn.required_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
       %dt Created at:
       %dd= @srn.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
+      %dt Created by
+      %dd= @srn.created_by_user_full_name
+      %dt SO Customer
+      %dd= @srn.so_customer.try(:name)
       %dt Remarks
       %dd= @srn.remarks
 

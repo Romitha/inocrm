@@ -29,6 +29,10 @@ class Srn < ActiveRecord::Base
 
   end
 
+  def inventories_available
+    inventories.to_a.sum{|i| i.available_quantity.to_f } > 0 ? "Yes" : "No"
+  end
+
   def self.search(params)
     tire.search(page: (params[:page] || 1), per_page: 10) do
       if params[:query]
@@ -53,7 +57,7 @@ class Srn < ActiveRecord::Base
   def to_indexed_json
     to_json(
       only: [:id, :remarks, :created_at, :created_by, :closed, :store_id, :requested_module_id, :srn_no, :so_no],
-      methods: [:store_name, :formatted_srn_no, :created_by_user_full_name, :formated_created_at, :inventories],
+      methods: [:store_name, :formatted_srn_no, :created_by_user_full_name, :formated_created_at, :inventories_available],
       include: {
         store: {
           only: [:id, :name],
@@ -93,6 +97,12 @@ class Srn < ActiveRecord::Base
   def created_by_user_full_name
     created_by_user.full_name
   end
+
+  def assign_srn_no
+    self.srn_no = CompanyConfig.first.next_sup_last_srn_no
+  end
+
+  before_create :assign_srn_no
 
 end
 

@@ -113,6 +113,13 @@ class Gin < ActiveRecord::Base
       data.save
     end
   end
+
+  def assign_gin_no
+    self.gin_no = CompanyConfig.first.next_sup_last_gin_no
+  end
+
+  before_create :assign_gin_no
+
 end
 
 class GinItem < ActiveRecord::Base

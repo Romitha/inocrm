@@ -374,7 +374,7 @@ class TicketContract < ActiveRecord::Base
   include Tire::Model::Search
   include Tire::Model::Callbacks
 
-  mount_uploader :attachment_url, AttachmentUrlUploader
+  # mount_uploader :attachment_url, AttachmentUrlUploader
 
   has_many :tickets, foreign_key: :contract_id
   has_many :contract_products, foreign_key: :contract_id
@@ -387,6 +387,13 @@ class TicketContract < ActiveRecord::Base
   belongs_to :ticket_contract_type, foreign_key: :contract_type_id
   belongs_to :ticket_currency, foreign_key: :currency_id
   belongs_to :created_by_user, class_name: "User", foreign_key: :created_by
+
+  belongs_to :organization_contact, class_name: "Organization"
+  belongs_to :organization_bill, class_name: "Organization"
+
+  belongs_to :contact_address, class_name: "OrganizationContactAddress"
+  belongs_to :bill_address, class_name: "OrganizationContactAddress"
+
   validates_presence_of [:customer_id, :sla_id, :created_by]
 
   validates_numericality_of [:sla_id]

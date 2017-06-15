@@ -1678,7 +1678,7 @@ module Admins
 
         end
 
-        @gin.srn.update closed: true if @gin.srn.srn_items.all?{|srn_item| srn_item.closed }
+        @gin.srn.update closed: @gin.srn.srn_items.all?{|srn_item| srn_item.closed }
 
         flash[:notice] = "Issued."
       else
