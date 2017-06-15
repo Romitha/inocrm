@@ -1,0 +1,20 @@
+= simple_nested_form_for @permission, url: subject_attributes_form_admins_roles_url, method: :post, html: {class: "validate_form"} do |f|
+  = hidden_field_tag :permission_id, @permission.id
+
+  %br
+  .row
+    = f.simple_fields_for :subject_attributes do |a|
+      .col-md-12
+        .col-md-2.small_scale_padding-top3
+          = a.link_to_remove  class: "remove_c_t_v_link", title: "Remove Condition" do
+            %button.btn.btn-danger Remove
+        .col-md-5
+          = a.input :name
+        .col-md-5
+          = a.input :value
+      %hr
+    = f.link_to_add "Add", :subject_attributes, class: "btn btn-sm btn-success"
+
+  .row{style: "margin-top:20px; margin-bottom:20px;"}
+    .col-md-6
+      = f.submit "save", class: "btn btn-success", id: "submit_new_permission", name: "save"

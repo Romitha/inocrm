@@ -1,0 +1,15 @@
+%h2 Meta Conditions to Permissions
+
+.row
+  .col-md-3.role
+    = label_tag "Role"
+    = select_tag "role[id]", options_from_collection_for_select(Role.all, :id, :name, (params[:permission] and params[:permission][:role])), class: "form-control", include_blank: true, type: "filter_class"
+
+  .col-md-3.resource
+    = label_tag "Resource"
+    = select_tag "class[id]", options_from_collection_for_select(SubjectClass.all, :id, :name, (params[:permission] and params[:permission][:class])), class: "form-control", include_blank: true, type: "filter_action"
+  .col-md-3.permission
+    = label_tag "Permission"
+    = select_tag "permission[id]", options_from_collection_for_select(Rpermission.all, :id, :name, (params[:permission] and params[:permission][:action])), class: "form-control", include_blank: true, onchange: "Tickets.ajax_loader(); return false;"
+
+#attributes_form

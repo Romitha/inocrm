@@ -11,6 +11,8 @@ window.Admins =
     @grn_main_part_hover()
     @popup_button_enable()
     @serial_return_checkbox()
+    @filter_permissions()
+    @select_permission()
     return
 
   admin_menu_dropdown: ->
@@ -322,3 +324,39 @@ window.Admins =
   serial_return_checkbox: ->
     $(".serial_return_checkbox").each ->
       $(@).prop("checked", false)
+
+  filter_permissions: ->
+    permission_list = $("#class_id")
+    permission_list_html = permission_list.html()
+    permission_list.empty()
+
+    permission_list = $("#permission_id")
+    permission_list_html = permission_list.html()
+    permission_list.empty()
+
+    $("#role_id").change ->
+      permission_list = $("#permission_id")
+      permission_list_html = permission_list.html()
+      permission_list.empty()
+
+      type = $("#role_id").attr('type')
+      value = $("#role_id").val()
+      data = {value_key: value, type: type}
+
+      $.post "/admins/roles/filter_permissions", data, (response) ->
+
+        $("#class_id").html(response.option_html)
+
+    $("#class_id").change ->
+      type = $("#class_id").attr('type')
+      value = $("#class_id").val()
+      data = {value_key: value, type: type}
+
+      $.post "/admins/roles/filter_permissions", data, (response) ->
+
+        $("#permission_id").html(response.option_html)
+
+  select_permission: ->
+    $("#permission_id").change ->
+      permission_id = $(@).val()
+      $.post "subject_attributes_form", {permission_id: permission_id}

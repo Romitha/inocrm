@@ -462,10 +462,26 @@ Rails.application.routes.draw do
 
     resources :roles do
       collection do
-        get "permissions"
+        post "filter_permissions"
+        post "subject_attributes_form"
+        [
+          :permissions,
+          :create_permissions,
+          :attributes,
+          # :filter_permissions,
+        ].each do |action|
+          match "#{action.to_s}", action: action, via: [:get, :post, :put]
+        end
       end      
     end
   end
+
+  # resources :roles do
+  #   collection do
+  #     get "permissions"
+  #     post "create_permissions"
+  #   end
+  # end
 
   resources :inventories, except: [:index, :show, :create, :new, :update, :destroy, :edit] do
     collection do

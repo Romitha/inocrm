@@ -5,6 +5,7 @@ class Rpermission < ActiveRecord::Base
   # belongs_to :subject_attribute
   # belongs_to :subject_base
   has_many :subject_attributes # ok
+  accepts_nested_attributes_for :subject_attributes, allow_destroy: true
   has_many :subject_actions # ok
 
 end
