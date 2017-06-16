@@ -42,7 +42,7 @@
               = f.input :status_id, as: :hidden
               = f.input :contract_id, as: :hidden
               = f.input :ticket_no, as: :hidden
-              = f.input :base_currency_id, as: :hidden, input_html: {value: TicketCurrency.find_by(base_currency: true).try(:id)}
+              = f.input :base_currency_id, as: :hidden, input_html: {value: (ticket.ticket_contract.present? ? ticket.ticket_contract.currency_id : TicketCurrency.find_by(base_currency: true).try(:id))}
               .row
                 .col-md-3
                   .panel.panel-default

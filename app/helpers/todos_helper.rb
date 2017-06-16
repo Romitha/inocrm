@@ -85,6 +85,11 @@ module TodosHelper
       deliver_unit_id: "-",
       supp_engr_user: "-",
       engineer_id: "-",
+      d42_assignment_required: "Y",
+      d43_no_assignment: "N",
+      d44_store_part_need_approval: "Y",
+      d45_manufacture_part_need_approval: "Y",
+      d46_manufacture_part_approved: "Y",
     }
   end
 

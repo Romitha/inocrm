@@ -771,7 +771,7 @@ class TicketsController < ApplicationController
           di_pop_approval_pending = ["RCD", "RPN", "APN", "LPN", "APV"].include?(@ticket.products.first.product_pop_status.try(:code)) ? "Y" : "N"
           priority = @ticket.priority
 
-          @bpm_response = view_context.send_request_process_data start_process: true, process_name: "SPPT", query: {ticket_id: ticket_id, d1_pop_approval_pending: di_pop_approval_pending, priority: priority}
+          @bpm_response = view_context.send_request_process_data start_process: true, process_name: "SPPT", query: {ticket_id: ticket_id, d1_pop_approval_pending: di_pop_approval_pending, priority: priority, d42_assignment_required: d42_assignment_required, engineer_id: engineer_id }
 
           if @bpm_response[:status].try(:upcase) == "SUCCESS"
             @ticket.ticket_workflow_processes.create(process_id: @bpm_response[:process_id], process_name: @bpm_response[:process_name])
@@ -1146,13 +1146,50 @@ class TicketsController < ApplicationController
         supp_engr_user = user_assign_ticket_action.assign_to
         engineer_id = @ticket_engineer ? @ticket_engineer.id : "-"
         supp_hd_user = @ticket.created_by
+        d43_no_assignment = "Y"
 
-        @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: {d2_re_correction: d2_recorrection, d3_regional_support_job: d3_regional_support_job, supp_engr_user: supp_engr_user, supp_hd_user: supp_hd_user, engineer_id: engineer_id}
+        @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: {d2_re_correction: d2_recorrection, d3_regional_support_job: d3_regional_support_job, supp_engr_user: supp_engr_user, supp_hd_user: supp_hd_user, engineer_id: engineer_id, d43_no_assignment: d43_no_assignment}
 
         if @bpm_response[:status].upcase == "SUCCESS"
-          flash[:notice] = "Successfully updated."
+          all_success = true
+          error_engs =
 
-          WebsocketRails[:posts].trigger 'new', {task_name: "Assign ticket", task_id: @ticket.id, task_verb: "updated.", by: current_user.email, at: Time.now.strftime('%d/%m/%Y at %H:%M:%S')}
+          @ticket.ticket_engineers.each do |ticket_engineer|
+            unless ticket_engineer.parent_engineer.present?
+              # bpm output variables
+              ticket_id = @ticket.id
+              di_pop_approval_pending = "N"
+              priority = @ticket.priority
+              d42_assignment_required = "N"
+              engineer_id = ticket_engineer.user_id
+
+              @bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT", query: {ticket_id: ticket_id, d1_pop_approval_pending: di_pop_approval_pending, priority: priority, d42_assignment_required: d42_assignment_required, engineer_id: engineer_id }
+
+              if @bpm_response1[:status].try(:upcase) == "SUCCESS"
+                workflow_process = @ticket.ticket_workflow_processes.create(process_id: @bpm_response[:process_id], process_name: @bpm_response[:process_name])
+
+                ticket_engineer.status = 1
+                ticket_engineer.job_assigned_at = DateTime.now
+                ticket_engineer.workflow_process_id = workflow_process.process_id
+
+                ticket_engineer.save
+
+              else
+                all_success = false
+                @bpm_process_error = true
+                error_engs += engineer_id+", "
+              end
+
+            end
+          end
+
+          unless all_success
+            flash[:notice] = "Successfully updated."
+          else
+            flash[:error] = "ticket is updated. Engineer assignment error. ("+error_engs+")"
+          end
+
+          # WebsocketRails[:posts].trigger 'new', {task_name: "Assign ticket", task_id: @ticket.id, task_verb: "updated.", by: current_user.email, at: Time.now.strftime('%d/%m/%Y at %H:%M:%S')}
         else
           flash[:error] = "ticket is updated. but Bpm error"
         end
