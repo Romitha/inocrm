@@ -104,6 +104,7 @@ class ContractsController < ApplicationController
       if params[:contract_id].present?
         @contract = TicketContract.find params[:contract_id]
         @contract.attributes = contract_params
+        @contract.save
       else
         @contract = TicketContract.new contract_params
       end
@@ -118,15 +119,15 @@ class ContractsController < ApplicationController
 
         if params[:contract_id].present?
           @contract = TicketContract.find params[:contract_id]
-          if cached_contract.try(:id) == @contract.id
-            puts "****************************"
-            puts "On the way to assign"
-            puts "****************************"
-            cached_contract.save
+          # if cached_contract.try(:id) == @contract.id
+          #   puts "****************************"
+          #   puts "On the way to assign"
+          #   puts "****************************"
+          #   cached_contract.save
 
-            # @contract.attributes = cached_contract.attributes
+          #   # @contract.attributes = cached_contract.attributes
 
-          end
+          # end
           @contract.attributes = contract_params
 
         else

@@ -133,16 +133,18 @@
                           = p.association :product_sold_country, label_method: :code
                         .col-md-6
                           = c.input :remarks
-                        .col-md-3
-                          %strong.small_scale_padding-bottom3{style: "display: block;"} POP note document
-                          #preview_of_pop_doc_url{style: "word-wrap: break-word;"}
-                            - if p.object.pop_doc_url.present?
-                              = link_to p.object.pop_doc_url.file.filename, p.object.pop_doc_url.url, target: "_blank"
 
-                            = p.label "Upload pop note"
-                            = p.file_field :pop_doc_url, accept: 'image/png,image/gif,image/jpeg,application/pdf', class: "product_pop_doc_url", data: {class: "pop_doc_url_wrapper"}
+                        - if p.object.persisted?
+                          .col-md-3
+                            %strong.small_scale_padding-bottom3{style: "display: block;"} POP note document
+                            #preview_of_pop_doc_url{style: "word-wrap: break-word;"}
+                              - if p.object.pop_doc_url.present?
+                                = link_to p.object.pop_doc_url.file.filename, p.object.pop_doc_url.url, target: "_blank"
 
-                          .pop_doc_url_wrapper
+                              = p.label "Upload pop note"
+                              = p.file_field :pop_doc_url, accept: 'image/png,image/gif,image/jpeg,application/pdf', class: "product_pop_doc_url", data: {class: "pop_doc_url_wrapper"}
+
+                            .pop_doc_url_wrapper
 
                       .col-md-2.small_scale_padding-top3
                         = c.link_to_remove  class: "remove_c_t_v_link",:data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Remove" do
@@ -177,16 +179,18 @@
                       = p.association :product_sold_country, label_method: :code
                     .col-md-6
                       = c.input :remarks
-                    .col-md-3
-                      %strong.small_scale_padding-bottom3{style: "display: block;"} POP note document
-                      #preview_of_pop_doc_url{style: "word-wrap: break-word;"}
-                        - if p.object.pop_doc_url.present?
-                          = link_to p.object.pop_doc_url.file.filename, p.object.pop_doc_url.url, target: "_blank"
 
-                        = p.label "Upload pop note"
-                        = p.file_field :pop_doc_url, accept: 'image/png,image/gif,image/jpeg,application/pdf', class: "product_pop_doc_url", data: {class: "pop_doc_url_wrapper"}
+                    - if p.object.persisted?
+                      .col-md-3
+                        %strong.small_scale_padding-bottom3{style: "display: block;"} POP note document
+                        #preview_of_pop_doc_url{style: "word-wrap: break-word;"}
+                          - if p.object.pop_doc_url.present?
+                            = link_to p.object.pop_doc_url.file.filename, p.object.pop_doc_url.url, target: "_blank"
 
-                      .pop_doc_url_wrapper
+                          = p.label "Upload pop note"
+                          = p.file_field :pop_doc_url, accept: 'image/png,image/gif,image/jpeg,application/pdf', class: "product_pop_doc_url", data: {class: "pop_doc_url_wrapper"}
+
+                        .pop_doc_url_wrapper
 
                   .col-md-2.small_scale_padding-top3
                     = c.link_to_remove  class: "remove_c_t_v_link",:data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Remove" do
