@@ -373,6 +373,8 @@ class Ticket < ActiveRecord::Base
 
   belongs_to :owner_engineer, class_name: "TicketEngineer"
 
+  belongs_to :owner_organization, class_name: "Organization"
+
   belongs_to :onsite_type
   accepts_nested_attributes_for :onsite_type, allow_destroy: true
 
@@ -501,6 +503,7 @@ class TicketContract < ActiveRecord::Base
 
   belongs_to :contact_address, class_name: "OrganizationContactAddress"
   belongs_to :bill_address, class_name: "OrganizationContactAddress"
+  belongs_to :owner_organization, class_name: "Organization"
 
   validates_presence_of [:customer_id, :sla_id, :created_by]
 

@@ -23,16 +23,16 @@ class UserModuleV1 < ActiveRecord::Migration
     add_column :spt_contract, :contact_address_id,"INT UNSIGNED NOT NULL"
     add_column :spt_contract, :organization_bill_id,"INT UNSIGNED NOT NULL"
     add_column :spt_contract, :bill_address_id,"INT UNSIGNED NOT NULL"
-    add_column :spt_contract, :product_brand_id,"INT UNSIGNED NOT NULL"
-    add_column :spt_contract, :product_category_id,"INT UNSIGNED NOT NULL"
-    add_column :spt_contract, :contact_person_id,"INT UNSIGNED NOT NULL"
+    add_column :spt_contract, :product_brand_id,"INT UNSIGNED NULL"
+    add_column :spt_contract, :product_category_id,"INT UNSIGNED NULL"
+    add_column :spt_contract, :contact_person_id,"INT UNSIGNED NULL"
     add_column :spt_contract, :process_at, :datetime, null:false
     add_column :spt_contract, :legacy_contract_no, :string, limit:50, null:true
     add_column :spt_contract, :additional_charges, :integer, null:true
     add_column :spt_contract, :season, :integer, null:true
     add_column :spt_contract, :accepted_at, :datetime, null:true
     add_column :spt_contract, :documnet_received, :boolean, null:true
-    add_column :spt_contract, :payment_type_id, "INT UNSIGNED NOT NULL"
+    add_column :spt_contract, :payment_type_id, "INT UNSIGNED NULL"
     add_column :spt_contract, :payment_completed,:boolean, null:false, default:false
     add_column :spt_contract, :document_generated_count, :integer, null:false, default:false
     add_column :spt_contract, :last_doc_generated_at, :datetime, null:true
