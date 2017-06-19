@@ -94,6 +94,7 @@ class Inventory < ActiveRecord::Base
 
     end
 
+    Srn.where( store_id: store_id ).each{|srn| srn.update_index }
   end
 
   def reset_values
