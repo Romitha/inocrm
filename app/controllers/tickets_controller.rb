@@ -1134,6 +1134,9 @@ class TicketsController < ApplicationController
       user_ticket_action = @ticket.user_ticket_actions.last
       user_ticket_action.user_assign_ticket_action.regional_support_center_job = @ticket.regional_support_job
       h_assign_regional_support_center = user_ticket_action.assign_regional_support_centers.first
+      user_assign_ticket_action.assign_to = @ticket.ticket_engineers.first.user_id
+      user_assign_ticket_action.assign_to_engineer_id = @ticket.ticket_engineers.first.id
+      user_assign_ticket_action.sbu_id = @ticket.ticket_engineers.first.sbu_id
 
       user_assign_ticket_action = user_ticket_action.user_assign_ticket_action
       user_assign_ticket_action.assign_to = @ticket.ticket_engineers.first.user_id
@@ -1149,6 +1152,12 @@ class TicketsController < ApplicationController
       user_ticket_action.assign_regional_support_centers.reload unless !user_assign_ticket_action.recorrection and user_assign_ticket_action.regional_support_center_job
 
       if @ticket.save
+        @ticket.ticket_engineers.each do |ticket_engineer|
+          unless ticket_engineer.created_action_id.present?
+            ticket_engineer.update created_action_id: user_ticket_action.id
+          end
+        end
+
         @ticket.ticket_engineers.each do |ticket_engineer|
           unless ticket_engineer.created_action_id.present?
             ticket_engineer.update created_action_id: user_ticket_action.id
@@ -4283,6 +4292,15 @@ class TicketsController < ApplicationController
 
         engineer_close_approval_required = (@ticket.ticket_fsrs.any?{|fsr| fsr.engineer_id == @ticket_engineer.id } or @ticket.ticket_spare_parts.any?{|part| part.engineer_id == @ticket_engineer.id } or @ticket.ticket_on_loan_spare_parts.any?{|onloanpart| onloanpart.engineer_id == @ticket_engineer.id })
 
+
+        @ticket_engineer = TicketEngineer.find params[:engineer_id]
+        @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
+
+        engineer_close_approval_required = (@ticket.ticket_fsrs.any?{|fsr| fsr.engineer_id == @ticket_engineer.id } or @ticket.ticket_spare_parts.any?{|part| part.engineer_id == @ticket_engineer.id } or @ticket.ticket_on_loan_spare_parts.any?{|onloanpart| onloanpart.engineer_id == @ticket_engineer.id })
+
+        close_approval_requested = @ticket.ticket_close_approval_requested # getting from the form
+        close_approval_requested = true if not engineer_close_approval_required
+        @ticket_engineer.update status: (engineer_close_approval_required)? 2 : 3 , job_completed_at: DateTime.now, job_close_approval_required: engineer_close_approval_required, ticket_close_approval_requested: close_approval_requested
 
         @ticket.ticket_close_approval_required = (@ticket.ticket_fsrs.any? or @ticket.ticket_spare_parts.any? or @ticket.ticket_on_loan_spare_parts.any?)
         @ticket.ticket_close_approval_requested = true 
