@@ -23,7 +23,10 @@
 
     = f.input :resolution_summary, required: true, input_html: {id: "resolution_summary_text"}
 
+    - close_approval = (@ticket.ticket_fsrs.any?{|fsr| fsr.engineer_id == Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:bpm_input_variables].detect{ |e| e.first == "engineer_id" }.second.to_i } or @ticket.ticket_spare_parts.any?{|part| part.engineer_id == Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:bpm_input_variables].detect{ |e| e.first == "engineer_id" }.second.to_i } or @ticket.ticket_on_loan_spare_parts.any?{|onloanpart| onloanpart.engineer_id == Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:bpm_input_variables].detect{ |e| e.first == "engineer_id" }.second.to_i })
+
     = label_tag "Request to close the Ticket"
-    = f.check_box :ticket_close_approval_requested, checked: !(ticket.ticket_fsrs.any? or ticket.ticket_spare_parts.any? or ticket.ticket_on_loan_spare_parts.any?), disabled: !(ticket.ticket_fsrs.any? or ticket.ticket_spare_parts.any? or ticket.ticket_on_loan_spare_parts.any?)
+    = f.check_box :ticket_close_approval_requested, checked: !close_approval, disabled: !close_approval
 
     = f.submit "Save", class: "btn btn-success", id: "job_finish_submit"
+

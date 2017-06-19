@@ -1062,8 +1062,11 @@ class TicketsController < ApplicationController
     current_group_no = assign_eng_params["group_no"].to_i
 
     @ticket = Ticket.find assign_eng_params["ticket_id"]
+    @ticket_workfow = @ticket.ticket_workflow_processes.where process_id: assign_eng_params["process_id"]
+    re_assignment = @ticket.ticket_engineers.any? { |en| en.workflow_process_id == @ticket_workfow.first.try(:id)  }
 
-    ticket_engineer = @ticket.ticket_engineers.build(user_id: assign_eng_params["assign_to"] )
+
+    ticket_engineer = @ticket.ticket_engineers.build(user_id: assign_eng_params["assign_to"], re_open_index: @ticket.re_open_index, re_assignment: re_assignment, sbu_id: assign_eng_params["sbu_id"])
 
     assign_eng_params["subEng"].to_a.each do |sub_eng|
       ticket_engineer.sub_engineers.build( user_id: sub_eng["user_id"] )
@@ -1099,6 +1102,12 @@ class TicketsController < ApplicationController
       @user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(2).id)
       @user_assign_ticket_action = @user_ticket_action.build_user_assign_ticket_action
       @assign_regional_support_center = @user_ticket_action.assign_regional_support_centers.build
+
+      @ticket_workfow = @ticket.ticket_workflow_processes.where process_id: assign_eng_params["process_id"]
+      @re_assignment_rq_engineer =  @ticket.ticket_engineers. { |en| en.workflow_process_id == @ticket_workfow.first.try(:id)  }.first
+      @re_assignment = @re_assignment_rq_engineer.present
+
+      @re_assignment_requested_by = @ticket_engineer.try(:user_id)
     end
     respond_to do |format|
       format.html {render "tickets/tickets_pack/assign_ticket"}
@@ -1110,7 +1119,11 @@ class TicketsController < ApplicationController
     TaskAction
     @continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
 
-    if @continue
+    @ticket_workfow = @ticket.ticket_workflow_processes.where process_id: assign_eng_params["process_id"] 
+    @re_assignment_rq_engineer =  @ticket.ticket_engineers. { |en| en.workflow_process_id == @ticket_workfow.first.try(:id)  }.first
+    @re_assignment = @re_assignment_rq_engineer.present
+
+    if @continue and @ticket.ticket_engineers.any?
 
       t_params = ticket_params
       t_params["user_ticket_actions_attributes"].first.merge!("action_at" => DateTime.now )
@@ -1121,10 +1134,19 @@ class TicketsController < ApplicationController
       user_ticket_action.user_assign_ticket_action.regional_support_center_job = @ticket.regional_support_job
       user_assign_ticket_action = user_ticket_action.user_assign_ticket_action
       h_assign_regional_support_center = user_ticket_action.assign_regional_support_centers.first
+      user_assign_ticket_action.assign_to = @ticket.ticket_engineers.first.user_id
+      user_assign_ticket_action.assign_to_engineer_id = @ticket.ticket_engineers.first.id
+      user_assign_ticket_action.sbu_id = @ticket.ticket_engineers.first.sbu_id
 
       user_ticket_action.assign_regional_support_centers.reload unless !user_assign_ticket_action.recorrection and user_assign_ticket_action.regional_support_center_job
 
       if @ticket.save
+
+        @ticket.ticket_engineers.each do |ticket_engineer|
+          unless ticket_engineer.created_action_id.present?
+            ticket_engineer.update created_action_id: user_ticket_action.id
+          end
+        end
 
         @ticket.update status_id: TicketStatus.find_by_code("ASN").id
 
@@ -1135,18 +1157,28 @@ class TicketsController < ApplicationController
 
         end
 
-        if !user_assign_ticket_action.recorrection
-          @ticket_engineer = @ticket.ticket_engineers.create user_id: user_assign_ticket_action.assign_to, created_action_id: user_ticket_action.id, created_at: DateTime.now
-          @ticket.update owner_engineer_id: @ticket_engineer.id
-        end
+        # if !user_assign_ticket_action.recorrection
+        #   @ticket_engineer = @ticket.ticket_engineers.create user_id: user_assign_ticket_action.assign_to, created_action_id: user_ticket_action.id, created_at: DateTime.now
+        #   @ticket.update owner_engineer_id: @ticket_engineer.id
+        # end
 
         # bpm output variables
         d2_recorrection = user_assign_ticket_action.recorrection ? "Y" : "N"
         d3_regional_support_job = user_assign_ticket_action.regional_support_center_job ? "Y" : "N"
-        supp_engr_user = user_assign_ticket_action.assign_to
-        engineer_id = @ticket_engineer ? @ticket_engineer.id : "-"
         supp_hd_user = @ticket.created_by
-        d43_no_assignment = "Y"
+        if  @re_assignment
+          @ticket_engineer = @ticket.ticket_engineers. { |en| en.parent_engineer_id == @re_assignment_rq_engineer.id  }.first
+
+          @ticket_engineer.update status: 1, job_assigned_at: DateTime.now, workflow_process_id: @ticket_workfow.first.try(:id)
+
+          supp_engr_user = @ticket_engineer.user_id
+          engineer_id = @ticket_engineer.id
+          d43_no_assignment = "N"
+        else
+          supp_engr_user = "-"
+          engineer_id = "-"
+          d43_no_assignment = "Y"
+        end
 
         @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: {d2_re_correction: d2_recorrection, d3_regional_support_job: d3_regional_support_job, supp_engr_user: supp_engr_user, supp_hd_user: supp_hd_user, engineer_id: engineer_id, d43_no_assignment: d43_no_assignment}
 
@@ -1154,32 +1186,37 @@ class TicketsController < ApplicationController
           all_success = true
           error_engs =
 
-          @ticket.ticket_engineers.each do |ticket_engineer|
-            unless ticket_engineer.parent_engineer.present?
-              # bpm output variables
-              ticket_id = @ticket.id
-              di_pop_approval_pending = "N"
-              priority = @ticket.priority
-              d42_assignment_required = "N"
-              engineer_id = ticket_engineer.user_id
+          if !user_assign_ticket_action.recorrection and !@re_assignment
+            @ticket.ticket_engineers.each do |ticket_engineer|
+              unless ticket_engineer.parent_engineer.present?
+                # bpm output variables
+                ticket_id = @ticket.id
+                di_pop_approval_pending = "N"
+                priority = @ticket.priority
+                d42_assignment_required = "N"
+                engineer_id = ticket_engineer.id
 
-              @bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT", query: {ticket_id: ticket_id, d1_pop_approval_pending: di_pop_approval_pending, priority: priority, d42_assignment_required: d42_assignment_required, engineer_id: engineer_id }
+                supp_engr_user = ticket_engineer.user_id
+                supp_hd_user = @ticket.created_by
 
-              if @bpm_response1[:status].try(:upcase) == "SUCCESS"
-                workflow_process = @ticket.ticket_workflow_processes.create(process_id: @bpm_response[:process_id], process_name: @bpm_response[:process_name])
+                @bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT", query: {ticket_id: ticket_id, d1_pop_approval_pending: di_pop_approval_pending, priority: priority, d42_assignment_required: d42_assignment_required, engineer_id: engineer_id , supp_engr_user: supp_engr_user, supp_hd_user: supp_hd_user}
 
-                ticket_engineer.status = 1
-                ticket_engineer.job_assigned_at = DateTime.now
-                ticket_engineer.workflow_process_id = workflow_process.process_id
+                if @bpm_response1[:status].try(:upcase) == "SUCCESS"
+                  workflow_process = @ticket.ticket_workflow_processes.create(process_id: @bpm_response[:process_id], process_name: @bpm_response[:process_name])
 
-                ticket_engineer.save
+                  ticket_engineer.status = 1
+                  ticket_engineer.job_assigned_at = DateTime.now
+                  ticket_engineer.workflow_process_id = workflow_process.process_id
 
-              else
-                all_success = false
-                @bpm_process_error = true
-                error_engs += engineer_id+", "
+                  ticket_engineer.save
+
+                else
+                  all_success = false
+                  @bpm_process_error = true
+                  error_engs += engineer_id+", "
+                end
+
               end
-
             end
           end
 
@@ -3755,6 +3792,9 @@ class TicketsController < ApplicationController
 
         @ticket.save
 
+        @ticket_engineer = TicketEngineer.find params[:engineer_id]
+        @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
+
         # bpm output variables
 
         bpm_variables = view_context.initialize_bpm_variables.merge(supp_engr_user: current_user.id)
@@ -3794,6 +3834,9 @@ class TicketsController < ApplicationController
 
         @ticket.save
 
+        @ticket_engineer = TicketEngineer.find params[:engineer_id]
+        @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
+
         redirect_to todos_url, notice: "Ticket Warranty Type and Customer Chargeable Updated."
       else
         redirect_to todos_url, notice: "Ticket Warranty Type and Customer Chargeable faild to Updated."
@@ -3821,6 +3864,9 @@ class TicketsController < ApplicationController
 
     if @continue
       if @ticket.update ticket_params
+        @ticket_engineer = TicketEngineer.find params[:engineer_id]
+        @ticket_engineer.update status: 3, re_assignment_requested: true, job_completed_at: DateTime.now, job_clodes_at: DateTime.now 
+        @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
 
         # bpm output variables
 
@@ -3856,6 +3902,9 @@ class TicketsController < ApplicationController
       @ticket.save
       act_hold.update_attribute(:sla_pause, act_hold.reason.sla_pause)
 
+      @ticket_engineer = TicketEngineer.find params[:engineer_id]
+      @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
+
       # view_context.ticket_bpm_headers process_id, ticket_id, ""
       # Rails.cache.delete([:workflow_header, process_id])
 
@@ -3875,6 +3924,9 @@ class TicketsController < ApplicationController
 
       user_ticket_action.act_hold.update(un_hold_action_id: @ticket.user_ticket_actions.last.id)
 
+      @ticket_engineer = TicketEngineer.find params[:engineer_id]
+      @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
+
       # view_context.ticket_bpm_headers process_id, ticket_id, ""
       # Rails.cache.delete([:workflow_header, process_id])
 
@@ -3890,11 +3942,19 @@ class TicketsController < ApplicationController
     TicketSparePart
     engineer_id = params[:engineer_id]
 
+    @ticket_engineer = TicketEngineer.find params[:engineer_id]
+    @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
+
     @ticket.attributes = ticket_params
     user_ticket_action = @ticket.user_ticket_actions.last
     # @ticket.user_ticket_actions.reload
     ticket_fsr = @ticket.ticket_fsrs.last
     ticket_fsr.ticket_fsr_no =  CompanyConfig.first.increase_sup_last_fsr_no
+
+    @ticket_engineer.ticket_support_engineers.each do |sup_eng|
+      ticket_fsr.ticket_fsr_support_engineers.create engineer_support_id: sup_eng.id
+    end
+
     ticket_fsr.save
     last_ticket_fsr = @ticket.ticket_fsrs.last
     act_fsr = user_ticket_action.act_fsr
@@ -3922,6 +3982,9 @@ class TicketsController < ApplicationController
     t_params = ticket_fsr_params
     @ticket_fsr = @ticket.ticket_fsrs.find_by_id params[:ticket_fsr_id]
     t_params["resolution"] = t_params["resolution"].present? ? "#{t_params['resolution']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket_fsr.resolution}" : @ticket_fsr.resolution
+
+    @ticket_engineer = TicketEngineer.find params[:engineer_id]
+    @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
 
     if @ticket_fsr.update t_params
       user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(12).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id)
@@ -3969,6 +4032,10 @@ class TicketsController < ApplicationController
 
         @ticket.save
 
+        @ticket_engineer = TicketEngineer.find params[:engineer_id]
+        @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
+        @ticket_engineer.update status: 3, job_terminated: true, job_completed_at: DateTime.now, job_clodes_at: DateTime.now 
+
         bpm_variables = view_context.initialize_bpm_variables.merge(d4_job_complete: "Y", d8_job_finished: "Y", d11_terminate_job:  "Y", d9_qc_required:(@ticket.ticket_type.code == "IH" ? "Y" : "N"), d10_job_estimate_required_final: ((@ticket.cus_chargeable or @ticket.cus_payment_required) ? "Y" : "N"), d12_need_to_invoice: ((@ticket.cus_chargeable or @ticket.cus_payment_required) ? "Y" : "N"), d6_close_approval_required: ((@ticket.ticket_fsrs.any? or @ticket.ticket_spare_parts.any?) ? "Y" : "N"), d7_close_approval_requested: (@ticket.ticket_close_approval_requested ? "Y" : "N"))
 
         @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
@@ -3996,6 +4063,9 @@ class TicketsController < ApplicationController
 
     if @continue
       if @ticket.update ticket_params
+
+        @ticket_engineer = TicketEngineer.find params[:engineer_id]
+        @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
 
         # bpm output variables
 
@@ -4030,31 +4100,100 @@ class TicketsController < ApplicationController
     if @continue
       if @ticket.update ticket_params
 
+        @ticket_engineer = TicketEngineer.find params[:engineer_id]
+        @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
+
+        engineer_close_approval_required = (@ticket.ticket_fsrs.any?{|fsr| fsr.engineer_id == @ticket_engineer.id } or @ticket.ticket_spare_parts.any?{|part| part.engineer_id == @ticket_engineer.id } or @ticket.ticket_on_loan_spare_parts.any?{|onloanpart| onloanpart.engineer_id == @ticket_engineer.id })
+
+        close_approval_requested = @ticket.ticket_close_approval_requested # getting from the form
+        close_approval_requested = true if not engineer_close_approval_required
+        @ticket_engineer.update status: (engineer_close_approval_required)? 2 : 3 , job_completed_at: DateTime.now, job_close_approval_required: engineer_close_approval_required, ticket_close_approval_requested: close_approval_requested
+
         @ticket.ticket_close_approval_required = (@ticket.ticket_fsrs.any? or @ticket.ticket_spare_parts.any? or @ticket.ticket_on_loan_spare_parts.any?)
-        @ticket.ticket_status_resolve = TicketStatusResolve.find_by_code("RSV")
-        @ticket.job_finished = true
-        @ticket.job_finished_at = DateTime.now
-        @ticket.ticket_close_approval_requested = true if not @ticket.ticket_close_approval_required
 
-        bpm_variables = view_context.initialize_bpm_variables.merge(supp_engr_user: current_user.id, d7_close_approval_requested: (@ticket.ticket_close_approval_requested ? "Y" : "N"), d4_job_complete: "Y", d8_job_finished: "Y", d9_qc_required: (@ticket.ticket_type.code == "IH" ? "Y" : "N"), d10_job_estimate_required_final: ((@ticket.cus_chargeable or @ticket.cus_payment_required) ? "Y" : "N"), d12_need_to_invoice: ((@ticket.cus_chargeable or @ticket.cus_payment_required) ? "Y" : "N"), d6_close_approval_required: (@ticket.ticket_close_approval_required ? "Y" : "N"))
+        final_task = false
+        if !@ticket.ticket_engineers.any?{|eng| eng.status.to_i < 2 }
+          @ticket.ticket_status_resolve = TicketStatusResolve.find_by_code("RSV")
+          @ticket.job_finished = true
+          @ticket.job_finished_at = DateTime.now
+          final_task = true
+        end
 
+        @ticket.ticket_close_approval_requested = true 
+        @ticket.ticket_close_approved = true 
+        if @ticket.ticket_close_approval_required
+          @ticket.ticket_engineers.each do |eng|
+            if eng.ticket_close_approval_required
+              @ticket.ticket_close_approval_requested = false if !eng.ticket_close_approval_requested
+              @ticket.ticket_close_approved = false if !eng.ticket_close_approved
+            end            
+          end
+        end
 
-        if @ticket.ticket_type.code == "IH"
-          @ticket.ticket_status = TicketStatus.find_by_code("QCT")
-        elsif (@ticket.cus_chargeable or @ticket.cus_payment_required)
-          @ticket.ticket_status = TicketStatus.find_by_code("PMT")
-        else
-          @ticket.ticket_status = TicketStatus.find_by_code("CFB") 
-        end  
+        d9_qc_required = (@ticket.ticket_type.code == "IH" ) and (CompanyConfig.first.sup_qc_required) ? "Y" : "N"
 
-        @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(55).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id) if @ticket.ticket_close_approval_requested
+        bpm_variables = view_context.initialize_bpm_variables.merge(supp_engr_user: current_user.id, d7_close_approval_requested: (@ticket_engineer.ticket_close_approval_requested ? "Y" : "N"), d4_job_complete: "Y", d8_job_finished: (final_task ? "Y" : "N" ), d9_qc_required: d9_qc_required, d10_job_estimate_required_final: ((@ticket.cus_chargeable or @ticket.cus_payment_required) ? "Y" : "N"), d12_need_to_invoice: ((@ticket.cus_chargeable or @ticket.cus_payment_required) ? "Y" : "N"), d6_close_approval_required: (@ticket_engineer.ticket_close_approval_required ? "Y" : "N"))
+
+        if final_task
+          if @ticket.ticket_type.code == "IH"
+            @ticket.ticket_status = TicketStatus.find_by_code("QCT")
+          elsif (@ticket.cus_chargeable or @ticket.cus_payment_required)
+            @ticket.ticket_status = TicketStatus.find_by_code("PMT")
+          else
+            @ticket.ticket_status = TicketStatus.find_by_code("CFB") 
+          end  
+        end
+
+        @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(55).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id) if @ticket_engineer.ticket_close_approval_requested
 
         @ticket.save
 
         @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
         if @bpm_response[:status].upcase == "SUCCESS"
-          @flash_message = "Successfully updated."
+
+          all_success = true
+          error_engs = ""
+          if !final_task
+            next_engineer = @ticket.ticket_engineers. { |en| en.parent_engineer_id == @ticket_engineer.id  }.first
+            if  next_engineer.present?
+
+                # bpm output variables
+                ticket_id = @ticket.id
+                di_pop_approval_pending = "N"
+                priority = @ticket.priority
+                d42_assignment_required = "N"
+
+                supp_engr_user = next_engineer.user_id
+                engineer_id = next_engineer.id
+                supp_hd_user = @ticket.created_by
+
+                @bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT", query: {ticket_id: ticket_id, d1_pop_approval_pending: di_pop_approval_pending, priority: priority, d42_assignment_required: d42_assignment_required, engineer_id: engineer_id , supp_engr_user: supp_engr_user, supp_hd_user: supp_hd_user}
+
+                if @bpm_response1[:status].try(:upcase) == "SUCCESS"
+                  workflow_process = @ticket.ticket_workflow_processes.create(process_id: @bpm_response[:process_id], process_name: @bpm_response[:process_name])
+
+                  next_engineer.status = 1
+                  next_engineer.job_assigned_at = DateTime.now
+                  next_engineer.workflow_process_id = workflow_process.process_id
+
+                  next_engineer.save
+
+                else
+                  all_success = false
+                  @bpm_process_error = true
+                  error_engs += engineer_id+", "
+                end
+
+            end
+          end
+
+          if all_success
+            @flash_message = "Successfully updated."
+          else
+            @flash_message = "ticket is updated. Engineer assignment error. ("+error_engs+")"
+          end
+
         else
           @flash_message = "ticket is updated. but Bpm error"
         end
@@ -4074,6 +4213,9 @@ class TicketsController < ApplicationController
 
     if @continue
       if @ticket.update ticket_params
+
+        @ticket_engineer = TicketEngineer.find params[:engineer_id]
+        @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
 
         # bpm output variables
 
@@ -4104,6 +4246,9 @@ class TicketsController < ApplicationController
 
     if @continue
       if @ticket.update ticket_params
+
+        @ticket_engineer = TicketEngineer.find params[:engineer_id]
+        @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
 
         # bpm output variables
 
@@ -4146,6 +4291,9 @@ class TicketsController < ApplicationController
         user_ticket_action.build_deliver_unit(ticket_deliver_unit_id: ticket_deliver_unit.id)
         user_ticket_action.save
 
+        @ticket_engineer = TicketEngineer.find params[:engineer_id]
+        @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
+
         # bpm output variables
 
         bpm_variables = view_context.initialize_bpm_variables.merge(supp_engr_user: current_user.id, d22_deliver_unit: "Y", deliver_unit_id: ticket_deliver_unit.id, d23_delivery_items_pending: "N")
@@ -4184,6 +4332,10 @@ class TicketsController < ApplicationController
       user_ticket_action = @ticket.user_ticket_actions.last
       user_ticket_action.build_deliver_unit(ticket_deliver_unit_id: ticket_deliver_unit.id)
       user_ticket_action.save
+
+      @ticket_engineer = TicketEngineer.find params[:engineer_id]
+      @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
+
       @flash_message = "Successfully updated."
     else
       @flash_message = "Un successfully updated."
@@ -4199,6 +4351,9 @@ class TicketsController < ApplicationController
     if @continue
 
       if @ticket.update ticket_params
+
+        @ticket_engineer = TicketEngineer.find params[:engineer_id]
+        @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
 
         user_ticket_action = @ticket.user_ticket_actions.last
         job_estimate = user_ticket_action.job_estimation
@@ -4263,6 +4418,9 @@ class TicketsController < ApplicationController
       @ticket_spare_part.engineer_id = engineer_id
 
       if @ticket_spare_part.save
+
+        @ticket_engineer = TicketEngineer.find params[:engineer_id]
+        @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
 
         SparePartDescription.find_or_create_by(description: @ticket_spare_part.spare_part_description)
         request_spare_part_id = @ticket_spare_part.id
@@ -4383,6 +4541,9 @@ class TicketsController < ApplicationController
       @ticket_on_loan_spare_part.requested_quantity = requested_quantity
 
       if @ticket_on_loan_spare_part.save
+
+        @ticket_engineer = TicketEngineer.find params[:engineer_id]
+        @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
 
         action_id = TaskAction.find_by_action_no(18).id
 
