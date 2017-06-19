@@ -1131,6 +1131,9 @@ class TicketsController < ApplicationController
       user_ticket_action = @ticket.user_ticket_actions.last
       user_ticket_action.user_assign_ticket_action.regional_support_center_job = @ticket.regional_support_job
       h_assign_regional_support_center = user_ticket_action.assign_regional_support_centers.first
+      user_assign_ticket_action.assign_to = @ticket.ticket_engineers.first.user_id
+      user_assign_ticket_action.assign_to_engineer_id = @ticket.ticket_engineers.first.id
+      user_assign_ticket_action.sbu_id = @ticket.ticket_engineers.first.sbu_id
 
       user_assign_ticket_action = user_ticket_action.user_assign_ticket_action
       user_assign_ticket_action.assign_to = @ticket.ticket_engineers.first.user_id
