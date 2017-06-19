@@ -54,7 +54,7 @@
                       = label_tag "Engineer", nil, class: "assign_to_for_regional_label"
                       = ua.select :assign_to, option_groups_from_collection_for_select(RegionalSupportCenter.all, :engineers, :id, :id, :full_name), {include_blank: false}, id: "assign_to_for_regional", class: "form-control"
 
-                  .regional_hiddible
+                  .regional_hiddibles.hide
                     .col-md-6
                       %strong Assign SBU
                       = ua.select :sbu_id, options_from_collection_for_select(Sbu.all, :id, :sbu), {include_blank: true}, id: "assign_sbu", class: "form-control"

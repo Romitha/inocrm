@@ -91,6 +91,8 @@ class Inventory < ActiveRecord::Base
       # parent.to_s.classify.constantize.find(self.send(parent).id).grn_items.each{ |grn_item| grn_item.update_relation_index }
 
     end
+
+    Srn.where( store_id: store_id ).each{|srn| srn.update_index }
   end
 
   def reset_values
