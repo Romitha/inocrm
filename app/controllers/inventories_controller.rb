@@ -576,7 +576,7 @@ class InventoriesController < ApplicationController
           end
         end
         status_action_id = SparePartStatusAction.find_by_code("CEA").id
-        po_required = true
+        po_required = CompanyConfig.first.sup_mf_parts_po_requied
 
       end
       @estimation.ticket_estimation_parts.each do |ticket_estimation_part|
@@ -1642,7 +1642,7 @@ class InventoriesController < ApplicationController
         else
           estimation.update estimation_params
 
-          #If Part has chabged by chargeable eng
+          #If Part has changed by chargeable eng
           if params[:store_id].present?
             estimation.ticket_estimation_parts.each do |p|
               if p.ticket_spare_part.ticket_spare_part_store.present?

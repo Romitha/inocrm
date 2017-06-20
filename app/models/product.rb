@@ -105,6 +105,7 @@ class ProductBrand < ActiveRecord::Base
   belongs_to :currency, foreign_key: :currency_id
   belongs_to :sla_time, foreign_key: :sla_id
   belongs_to :supplier, class_name: "Organization", foreign_key: :organization_id
+  belongs_to :product_brand_costs
 
   validates_uniqueness_of :name
 
@@ -178,8 +179,8 @@ class Accessory < ActiveRecord::Base
   end
 end
 
-# class RepairType < ActiveRecord::Base
-#   self.table_name = "mst_spt_ticket_repair_type"
+class ProductBrandCost < ActiveRecord::Base
+  self.table_name = "mst_spt_product_brand_cost"
 
-#   has_many :tickets, foreign_key: :repair_type_id
-# end
+  belongs_to :product_brand
+end
