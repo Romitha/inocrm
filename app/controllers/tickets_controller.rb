@@ -4145,7 +4145,16 @@ class TicketsController < ApplicationController
 
         @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(55).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id) if @ticket_engineer.ticket_close_approval_requested
 
+        if final_task
+          #Action 88 - Finish Job
+          user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(88).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id) 
+          user_ticket_action.build_ticket_finish_job(resolution: "")
+        end
+
         @ticket.save
+
+        #Calculate Total Costs and Time
+        @ticket.calculate_ticket_total_costs       
 
         @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
@@ -4342,7 +4351,7 @@ class TicketsController < ApplicationController
     redirect_to @ticket, notice: @flash_message
   end
 
-  def update_job_estimation_request
+  def update_job_estimation_request #External Job
     TaskAction
     @continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
     engineer_id = params[:engineer_id]
@@ -4406,6 +4415,7 @@ class TicketsController < ApplicationController
     request_onloan_spare_part_id = "-"
     onloan_request = "N"
     process_name = ""
+    estimation_required = CompanyConfig.first.sup_nc_estimation_required
 
     if @continue
       @ticket_spare_part = TicketSparePart.new
@@ -4415,8 +4425,18 @@ class TicketsController < ApplicationController
       @ticket_spare_part.requested_at = DateTime.now
       @ticket_spare_part.requested_by = current_user.id
       @ticket_spare_part.engineer_id = engineer_id
+      @ticket_spare_part.request_approval_required = false
 
       if @ticket_spare_part.save
+
+        if @ticket_spare_part.cus_chargeable_part
+          estimation_required = true
+          d44_store_part_need_approval = CompanyConfig.first.sup_st_parts_ch_need_approval ? "Y" : "N"
+          d45_manufacture_part_need_approval = CompanyConfig.first.sup_mf_parts_ch_need_approval ? "Y" : "N"
+        else
+          d44_store_part_need_approval = CompanyConfig.first.sup_st_parts_nc_need_approval ? "Y" : "N"
+          d45_manufacture_part_need_approval = CompanyConfig.first.sup_mf_parts_nc_need_approval ? "Y" : "N"
+        end    
 
         @ticket_engineer = TicketEngineer.find params[:engineer_id]
         @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
@@ -4425,14 +4445,17 @@ class TicketsController < ApplicationController
         request_spare_part_id = @ticket_spare_part.id
 
         if @ticket_spare_part.request_from == "M"
+          @ticket_spare_part.update request_approval_required: true if d45_manufacture_part_need_approval == "Y"
+
           @ticket_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code("MPR").id unless @ticket_spare_part.cus_chargeable_part
           action_id = TaskAction.find_by_action_no(14).id
-          @ticket_spare_part.create_ticket_spare_part_manufacture(payment_expected_manufacture: 0, manufacture_currency_id: @ticket_spare_part.ticket.manufacture_currency_id, requested_quantity: requested_quantity)
+          @ticket_spare_part.create_ticket_spare_part_manufacture(payment_expected_manufacture: 0, manufacture_currency_id: @ticket_spare_part.ticket.manufacture_currency_id, requested_quantity: requested_quantity, po_required: CompanyConfig.first.sup_mf_parts_po_requied)
 
           process_name = "SPPT_MFR_PART_REQUEST"
-          query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, supp_engr_user: supp_engr_user, priority: priority}
+          query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, supp_engr_user: supp_engr_user, priority: priority, d45_manufacture_part_need_approval: d45_manufacture_part_need_approval}
 
         elsif @ticket_spare_part.request_from == "S"
+          @ticket_spare_part.update request_approval_required: true if d44_store_part_need_approval == "Y"
 
           @ticket_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code("STR").id unless @ticket_spare_part.cus_chargeable_part
           action_id = TaskAction.find_by_action_no(15).id
@@ -4440,7 +4463,7 @@ class TicketsController < ApplicationController
           @ticket_spare_part_store = @ticket_spare_part.create_ticket_spare_part_store(store_id: params[:store_id], inv_product_id: params[:inv_product_id], mst_inv_product_id: params[:mst_inv_product_id], part_of_main_product: (params[:part_of_main_product] || 0), store_requested: !@ticket_spare_part.cus_chargeable_part, store_requested_at: ( !@ticket_spare_part.cus_chargeable_part ? DateTime.now : nil), store_requested_by: ( !@ticket_spare_part.cus_chargeable_part ? current_user.id : nil), requested_quantity: requested_quantity)
 
           process_name = "SPPT_STORE_PART_REQUEST"
-          query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, request_onloan_spare_part_id: request_onloan_spare_part_id, onloan_request: onloan_request, supp_engr_user: supp_engr_user, priority: priority}
+          query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, request_onloan_spare_part_id: request_onloan_spare_part_id, onloan_request: onloan_request, supp_engr_user: supp_engr_user, priority: priority, d44_store_part_need_approval: d44_store_part_need_approval}
 
         elsif @ticket_spare_part.request_from == "NS"
           #@ticket_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code("RQT").id
@@ -4457,7 +4480,7 @@ class TicketsController < ApplicationController
         user_ticket_action.build_request_spare_part(ticket_spare_part_id: @ticket_spare_part.id)
         user_ticket_action.save
 
-        if @ticket_spare_part.cus_chargeable_part # and (@ticket_spare_part.request_from == "M" or @ticket_spare_part.request_from == "S" or @ticket_spare_part.request_from == "NS")
+        if estimation_required # Create Estimate
 
           action_id = TaskAction.find_by_action_no(33).id
           user_ticket_action = @ticket_spare_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket_spare_part.ticket.re_open_count, action_id: action_id, action_engineer_id: engineer_id)
@@ -4479,7 +4502,7 @@ class TicketsController < ApplicationController
 
         # bpm output variables
 
-        bpm_variables = view_context.initialize_bpm_variables.merge(supp_engr_user: current_user.id, request_spare_part_id: @ticket_spare_part.id, onloan_request: "N", d15_part_estimate_required: (@ticket_spare_part.cus_chargeable_part ? "Y" : "N"), part_estimation_id: (@ticket_spare_part.cus_chargeable_part ? @ticket_estimation.try(:id) : "-"), d16_request_manufacture_part: (@ticket_spare_part.request_from == "M" ? "Y" : "N"), d17_request_store_part: ((@ticket_spare_part.request_from == "S" and !@ticket_spare_part.cus_chargeable_part) ? "Y" : "N"))
+        bpm_variables = view_context.initialize_bpm_variables.merge(supp_engr_user: current_user.id, request_spare_part_id: @ticket_spare_part.id, onloan_request: "N", d15_part_estimate_required:  (estimation_required ? "Y" : "N"), part_estimation_id: (estimation_required ? part_estimation_id : "-"), d16_request_manufacture_part: ((@ticket_spare_part.request_from == "M" and !estimation_required) ? "Y" : "N"), d17_request_store_part: ((@ticket_spare_part.request_from == "S" and !estimation_required) ? "Y" : "N"))
 
         @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
 

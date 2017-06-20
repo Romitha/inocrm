@@ -166,6 +166,44 @@ class Ticket < ActiveRecord::Base
     ["CLS", "TBC"].include? ticket_status.try(:code)
   end
 
+  def calculate_ticket_total_cost
+
+    engineer_time = 0
+    sup_engineer_time = 0
+    engineer_cost = 0
+    sup_engineer_cost = 0
+    part_cost = 0
+    additional_cost = 0
+    external_cost = 0
+
+    engineer_time += ticket_engineers.sum(:job_actual_time_spent) #In Minutes
+    
+    sup_engineer_time += ticket_engineers.to_a.sum{ |ticket_engineer|  ticket_engineer.ticket_support_engineers.sum(:job_actual_time_spent) } #In Minutes
+
+    engineer_time += ticket_fsrs.sum(:hours_worked) * 60 #In Minutes
+
+    sup_engineer_time += ticket_fsrs.to_a.sum{ |fsr|  fsr.ticket_fsr_support_engineers.sum(:hours_worked) } * 60 #In Minutes
+
+    ticket_estimations.each do |ticket_estimation|
+      if ((ticket_estimation.approval_required == false) or ((ticket_estimation.approval_required == true) and (ticket_estimation.approved == true))) and ((ticket_estimation.cust_approval_required == false) or ((ticket_estimation.cust_approval_required == true) and (ticket_estimation.cust_approved == true)))
+
+        part_cost += ticket_estimation.estimation_parts.sum(:cost_price)
+        additional_cost += ticket_estimation.estimation_additionals.sum(:cost_price)
+        external_cost += ticket_estimation.estimation_externals.sum(:cost_price)
+      end
+    end
+
+    brand_costs = products.first.product_brand.product_brand_costs.where(currency_id: base_currency_id)
+    if brand_costs.present?
+      engineer_cost = engineer_time * brand_costs.first.engineer_cost / 60 #per hour
+      sup_engineer_cost = sup_engineer_time * brand_costs.first.support_engineer_cost / 60 #per hour
+    end
+
+    ticket_total_cost_params = {engineer_time: engineer_time, sup_engineer_time: sup_engineer_time, engineer_cost: engineer_cost, sup_engineer_cost: sup_engineer_cost, part_cost: part_cost, additional_cost: additional_cost, external_cost: external_cost}
+
+    ticket_total_cost.present? : ticket_total_cost.update(ticket_total_cost_params) : create_ticket_total_cost(ticket_total_cost_params)
+
+  end
 
   belongs_to :ticket_type, foreign_key: :ticket_type_id
   belongs_to :warranty_type, foreign_key: :warranty_type_id
@@ -273,6 +311,8 @@ class Ticket < ActiveRecord::Base
   accepts_nested_attributes_for :onsite_type, allow_destroy: true
 
   has_many :hp_cases, through: :user_ticket_actions
+
+  has_one :ticket_total_cost
 
   validates_presence_of [:ticket_no, :priority, :status_id, :problem_description, :informed_method_id, :job_type_id, :ticket_type_id, :warranty_type_id, :base_currency_id, :problem_category_id]
 
@@ -645,5 +685,12 @@ class TicketReAssignRequest < ActiveRecord::Base
 
   belongs_to :reason
   belongs_to :user_ticket_action, foreign_key: :ticket_action_id
+
+end
+
+class TicketTotalCost < ActiveRecord::Base
+  self.table_name = "spt_ticket_total_cost"
+
+  belongs_to :ticket
 
 end
