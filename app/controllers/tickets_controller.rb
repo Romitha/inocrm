@@ -1068,7 +1068,7 @@ class TicketsController < ApplicationController
     ticket_engineer = @ticket.ticket_engineers.build(user_id: assign_eng_params["assign_to"], re_open_index: @ticket.re_open_index, re_assignment: re_assignment, sbu_id: assign_eng_params["sbu_id"])
 
     assign_eng_params["subEng"].to_a.each do |sub_eng|
-      ticket_engineer.sub_engineers.build( user_id: sub_eng["user_id"] )
+      ticket_engineer.ticket_support_engineers.build( user_id: sub_eng["user_id"] )
     end
 
     # ticket_engineer.user_assign_ticket_actions.build(sbu_id: assign_eng_params["sbu_id"], assign_to: assign_eng_params["assign_to"])

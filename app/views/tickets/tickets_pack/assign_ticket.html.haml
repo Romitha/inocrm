@@ -112,11 +112,11 @@
   {{/link-to}}
   {{/unless}}
 
-  {{ new-group obj=model.newObj sbuArray=model.sbus assignTo=assignTo ticketId="#{ticket.id}" saveForm=( action 'saveNewObj' ) }}
+  {{ new-group obj=model.newObj sbuArray=model.sbus assignTo=assignTo ticketId="#{ticket.id}" processId="#{Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]}" saveForm=( action 'saveNewObj' ) }}
 
 %script{type: "text/x-handlebars", id: "components/new-group"}
   %h4 Assign Engineer
-  %strong New Entry for Group {{obj.channel_no}} order {{obj.order_no}}
+  %strong New Entry for Line {{obj.channel_no}} order {{obj.order_no}}
   {{#if obj.channel_no}}
   < form >
   .row
@@ -147,7 +147,7 @@
 
   .row
     .col-md-1
-      <button type="submit" class="btn btn-sm btn-primary" disabled={{disableSaveBtn}} {{ action saveForm }} >Save</button>
+      <button type="submit" class="btn btn-sm btn-primary" disabled={{disableSaveBtn}} {{ action saveForm }} >Add</button>
     .col-md-1
       {{#link-to "groups" "#{ticket.id}"}} Cancel {{/link-to}}
 
