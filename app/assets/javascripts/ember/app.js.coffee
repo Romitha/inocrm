@@ -74,6 +74,7 @@ App.GroupsNewController = Ember.Controller.extend
   group_no: null
   order_no: null
   ticket_id: null
+  process_id: null
 
   assignToObserver: Ember.observer "model.newObj.sbu_id", ->
     if Ember.isPresent(@get("model.newObj.sbu_id"))
@@ -94,6 +95,10 @@ App.GroupsNewController = Ember.Controller.extend
     if Ember.isPresent(@get("model"))
       @set "model.newObj.ticket_id", @get("ticket_id")
 
+  observeProcessId: Ember.observer "process_id", ->
+    if Ember.isPresent(@get("model"))
+      @set "model.newObj.process_id", @get("process_id")
+
   actions:
     saveNewObj: ->
       Ember.$.post("/tickets/update_assign_engineer_ticket", {assign_eng_params: JSON.stringify(@get("model.newObj")) }).then (response)=>
@@ -104,6 +109,7 @@ App.NewGroupComponent = Ember.Component.extend
   init: ->
     @_super()
     @set "obj.ticket_id", @get("ticketId")
+    @set "obj.process_id", @get("processId")
 
   actions:
     addSubEng: ->

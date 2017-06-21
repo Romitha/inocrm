@@ -333,6 +333,7 @@ class TicketEngineer < ActiveRecord::Base
 
   belongs_to :parent_engineer, class_name: "TicketEngineer"
   has_many :sub_engineers, class_name: "TicketEngineer", foreign_key: :parent_engineer_id
+  has_many :ticket_support_engineers, foreign_key: :engineer_id
 
   scope :parent_engineers, -> {where(parent_engineer_id: nil)}
 
@@ -365,5 +366,19 @@ class TicketEngineer < ActiveRecord::Base
       data.save# if data.persisted?
     end
   end
+
+end
+
+def TicketFsrSupportEngineer
+  self.table_name = "spt_ticket_fsr_support_eng"
+
+  belongs_to :ticket_fsr, foreign_key: :fsr_id
+
+end
+
+def TicketSupportEngineer
+  self.table_name = "spt_ticket_engineer_support"
+
+  belongs_to :ticket_engineers, foreign_key: :engineer_id
 
 end

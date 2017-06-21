@@ -201,6 +201,7 @@ class TicketFsr < ActiveRecord::Base
   accepts_nested_attributes_for :act_fsr, allow_destroy: true
 
   has_many :ticket_spare_parts, foreign_key: :fsr_id
+  has_many :ticket_fsr_support_engineers, foreign_key: :fsr_id
 
   before_save do |ticket_fsr|
     if ticket_fsr.persisted? and ticket_fsr.remarks_changed? and ticket_fsr.remarks.present?
