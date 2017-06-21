@@ -36,5 +36,9 @@
           - if srn.requested_module.name == "Support"
             %td
           - else
-            %td= link_to "Select", gin_admins_inventories_path(gin_callback: "select_srn", srn_id: srn.id), remote: true
+            %td
+              - if srn.closed
+                Issued
+              - else
+                = link_to "Issue", gin_admins_inventories_path(gin_callback: "select_srn", srn_id: srn.id), remote: true
   %hr

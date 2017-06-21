@@ -85,6 +85,8 @@ class Inventory < ActiveRecord::Base
 
   def update_relation_index
 
+    Srn.where( store_id: store_id ).each{|srn| srn.update_index }
+
     [:inventory_product].each do |parent|
       send(parent).update_index
 
@@ -92,12 +94,12 @@ class Inventory < ActiveRecord::Base
 
     end
 
-    Srn.where( store_id: store_id ).each{|srn| srn.update_index }
   end
 
   def reset_values
     if (["stock_quantity", "available_quantity"] & changed).present?
       Rails.cache.delete([:stock_cost, product_id, id ])
+
 
     end
   end
