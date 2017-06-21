@@ -36,11 +36,11 @@
         .col-md-2
           %button.btn.btn-primary.btn-xs{onclick: "Tickets.check_previous(this); return false;", type: "button", data: {"ticket-id" => ticket.id}} Check Previous Detail
 
-
     .row
       .col-md-2
-        = f.input :cus_chargeable_part, as: :boolean, checked_value: true, unchecked_value: false, wrapper: :append, wrapper_html: {class: "col-md-12 #{'hide' if(@ticket_spare_part.ticket.cus_chargeable or @ticket_spare_part.ticket.warranty_type.code == 'NW' or @ticket_spare_part.ticket.warranty_type.code == 'UW')}"}, input_html: {checked: (true if(@ticket_spare_part.ticket.cus_chargeable or @ticket_spare_part.ticket.warranty_type.code == "NW" or @ticket_spare_part.ticket.warranty_type.code == "UW"))}
-        - if @ticket_spare_part.ticket.cus_chargeable or @ticket_spare_part.ticket.warranty_type.code == 'NW' or @ticket_spare_part.ticket.warranty_type.code == 'UW'
+        - chargeable_contract = @ticket_spare_part.ticket.ticket_contract.contract_type.chargeable if @ticket_spare_part.ticket.ticket_contract.present?
+        = f.input :cus_chargeable_part, as: :boolean, checked_value: true, unchecked_value: false, wrapper: :append, wrapper_html: {class: "col-md-12 #{'hide' if(@ticket_spare_part.ticket.cus_chargeable or @ticket_spare_part.ticket.warranty_type.code == 'NW' or @ticket_spare_part.ticket.warranty_type.code == 'UW' or chargeable_contract)}"}, input_html: {checked: (true if(@ticket_spare_part.ticket.cus_chargeable or @ticket_spare_part.ticket.warranty_type.code == "NW" or @ticket_spare_part.ticket.warranty_type.code == "UW" or chargeable_contract))}
+        - if @ticket_spare_part.ticket.cus_chargeable or @ticket_spare_part.ticket.warranty_type.code == 'NW' or @ticket_spare_part.ticket.warranty_type.code == 'UW' or chargeable_contract
           .col-md-12
             = label_tag "Customer chargeable"
             = check_box_tag :cus_chargeable_part, nil, true, disabled: true
