@@ -20,74 +20,84 @@
       %th Estimation status
 
   %tbody
+
+    - ticket_workfow = ticket.ticket_workflow_processes.where process_id: params["process_id"]
+    - ticket_engineers = ticket.ticket_engineers.where(workflow_process_id: ticket_workfow.first.try(:id))
+
     - ticket.cached_ticket_estimations.each_with_index do |estimation, index|
-      - estimation_external_present = estimation.ticket_estimation_externals.present?
-      - estimation_external_or_part = (estimation.ticket_estimation_externals.first or estimation.ticket_estimation_parts.first)
-      - ticket_spare_part = estimation_external_or_part.ticket_spare_part unless estimation_external_present
-      %tr
-        %td
-          = link_to index+1, load_estimation_inventories_path(estimation_id: estimation.id, estimation_type: "#{estimation_external_present ? 'external' : 'part' }", task_id: params[:task_id], template_action: params[:action]), remote: true
 
-        %td= estimation.requested_at.getlocal.try(:strftime, "%b %d, %Y %H:%M")
-        %td
-          .has-popover{title: "Description", data: {"toggle" => "popover", "title" => "Popover title", "trigger" => "hover", "content" => (estimation_external_present ? estimation_external_or_part.description : ticket_spare_part.spare_part_description)}}= truncate (estimation_external_present ? estimation_external_or_part.description : ticket_spare_part.spare_part_description), length: 20
-        %td
-          - if estimation_external_present
-            = estimation_external_or_part.try(:organization).try(:name)
-          - else
+      - est_engineers = ticket_engineers.where(id: estimation.engineer_id)
+      - est_ownership = est_engineers.pressent?
 
-            = ticket_spare_part.ticket_spare_part_manufacture.requested_quantity if ticket_spare_part.ticket_spare_part_manufacture.present?
+      - if est_ownership
 
-            - if ticket_spare_part.ticket_spare_part_store.present?
-              - if ticket_spare_part.ticket_spare_part_store.store_request_approved
-                = ticket_spare_part.ticket_spare_part_store.approved_quantity
-              - else
-                = ticket_spare_part.ticket_spare_part_store.requested_quantity
+        - estimation_external_present = estimation.ticket_estimation_externals.present?
+        - estimation_external_or_part = (estimation.ticket_estimation_externals.first or estimation.ticket_estimation_parts.first)
+        - ticket_spare_part = estimation_external_or_part.ticket_spare_part unless estimation_external_present
+        %tr
+          %td
+            = link_to index+1, load_estimation_inventories_path(estimation_id: estimation.id, estimation_type: "#{estimation_external_present ? 'external' : 'part' }", task_id: params[:task_id], template_action: params[:action]), remote: true
 
-            - if ticket_spare_part.ticket_spare_part_non_stock.present?
-              - if ticket_spare_part.ticket_spare_part_non_stock.approval_required and ticket_spare_part.ticket_spare_part_non_stock.approved
-                = ticket_spare_part.ticket_spare_part_non_stock.approved_quantity
-              - else
-                = ticket_spare_part.ticket_spare_part_non_stock.requested_quantity
-
-        %td
-          - if estimation.approval_required
+          %td= estimation.requested_at.getlocal.try(:strftime, "%b %d, %Y %H:%M")
+          %td
+            .has-popover{title: "Description", data: {"toggle" => "popover", "title" => "Popover title", "trigger" => "hover", "content" => (estimation_external_present ? estimation_external_or_part.description : ticket_spare_part.spare_part_description)}}= truncate (estimation_external_present ? estimation_external_or_part.description : ticket_spare_part.spare_part_description), length: 20
+          %td
             - if estimation_external_present
-              = number_with_precision estimation.ticket_estimation_externals.sum(:approved_estimated_price), precision: 2
-              = estimation.currency.try(:code)
+              = estimation_external_or_part.try(:organization).try(:name)
             - else
-              = number_with_precision estimation.ticket_estimation_parts.sum(:approved_estimated_price), precision: 2
-          - else
-            - if estimation_external_present
-              = number_with_precision estimation.ticket_estimation_externals.sum(:estimated_price), precision: 2
+
+              = ticket_spare_part.ticket_spare_part_manufacture.requested_quantity if ticket_spare_part.ticket_spare_part_manufacture.present?
+
+              - if ticket_spare_part.ticket_spare_part_store.present?
+                - if ticket_spare_part.ticket_spare_part_store.store_request_approved
+                  = ticket_spare_part.ticket_spare_part_store.approved_quantity
+                - else
+                  = ticket_spare_part.ticket_spare_part_store.requested_quantity
+
+              - if ticket_spare_part.ticket_spare_part_non_stock.present?
+                - if ticket_spare_part.ticket_spare_part_non_stock.approval_required and ticket_spare_part.ticket_spare_part_non_stock.approved
+                  = ticket_spare_part.ticket_spare_part_non_stock.approved_quantity
+                - else
+                  = ticket_spare_part.ticket_spare_part_non_stock.requested_quantity
+
+          %td
+            - if estimation.approval_required
+              - if estimation_external_present
+                = number_with_precision estimation.ticket_estimation_externals.sum(:approved_estimated_price), precision: 2
+                = estimation.currency.try(:code)
+              - else
+                = number_with_precision estimation.ticket_estimation_parts.sum(:approved_estimated_price), precision: 2
             - else
-              = number_with_precision estimation.ticket_estimation_parts.sum(:estimated_price), precision: 2
+              - if estimation_external_present
+                = number_with_precision estimation.ticket_estimation_externals.sum(:estimated_price), precision: 2
+              - else
+                = number_with_precision estimation.ticket_estimation_parts.sum(:estimated_price), precision: 2
 
-        %td
-          = number_with_precision estimation.ticket_estimation_additionals.send(:sum, (estimation.approval_required ? :approved_estimated_price : :estimated_price )), precision: 2
+          %td
+            = number_with_precision estimation.ticket_estimation_additionals.send(:sum, (estimation.approval_required ? :approved_estimated_price : :estimated_price )), precision: 2
 
-        %td
-          - total_tax = if estimation.approval_required
-            - estimation.ticket_estimation_externals.to_a.sum{|e| e.ticket_estimation_external_taxes.sum(:approved_tax_amount) } + estimation.ticket_estimation_parts.to_a.sum{|e| e.ticket_estimation_part_taxes.sum(:approved_tax_amount) } + estimation.ticket_estimation_additionals.to_a.sum{|e| e.ticket_estimation_additional_taxes.sum(:approved_tax_amount) }
+          %td
+            - total_tax = if estimation.approval_required
+              - estimation.ticket_estimation_externals.to_a.sum{|e| e.ticket_estimation_external_taxes.sum(:approved_tax_amount) } + estimation.ticket_estimation_parts.to_a.sum{|e| e.ticket_estimation_part_taxes.sum(:approved_tax_amount) } + estimation.ticket_estimation_additionals.to_a.sum{|e| e.ticket_estimation_additional_taxes.sum(:approved_tax_amount) }
 
-          - else
-            - estimation.ticket_estimation_externals.to_a.sum{|e| e.ticket_estimation_external_taxes.sum(:estimated_tax_amount) } + estimation.ticket_estimation_parts.to_a.sum{|e| e.ticket_estimation_part_taxes.sum(:estimated_tax_amount) } + estimation.ticket_estimation_additionals.to_a.sum{|e| e.ticket_estimation_additional_taxes.sum(:estimated_tax_amount) }
+            - else
+              - estimation.ticket_estimation_externals.to_a.sum{|e| e.ticket_estimation_external_taxes.sum(:estimated_tax_amount) } + estimation.ticket_estimation_parts.to_a.sum{|e| e.ticket_estimation_part_taxes.sum(:estimated_tax_amount) } + estimation.ticket_estimation_additionals.to_a.sum{|e| e.ticket_estimation_additional_taxes.sum(:estimated_tax_amount) }
 
-          = number_with_precision(total_tax, precision: 2)
+            = number_with_precision(total_tax, precision: 2)
 
-        %td
-          - total_est = if estimation.approval_required
-            - estimation.ticket_estimation_externals.sum(:approved_estimated_price) + estimation.ticket_estimation_parts.sum(:approved_estimated_price) + estimation.ticket_estimation_additionals.sum(:approved_estimated_price)
+          %td
+            - total_est = if estimation.approval_required
+              - estimation.ticket_estimation_externals.sum(:approved_estimated_price) + estimation.ticket_estimation_parts.sum(:approved_estimated_price) + estimation.ticket_estimation_additionals.sum(:approved_estimated_price)
 
-          - else
-            - estimation.ticket_estimation_externals.sum(:estimated_price) + estimation.ticket_estimation_parts.sum(:estimated_price) + estimation.ticket_estimation_additionals.sum(:estimated_price)
+            - else
+              - estimation.ticket_estimation_externals.sum(:estimated_price) + estimation.ticket_estimation_parts.sum(:estimated_price) + estimation.ticket_estimation_additionals.sum(:estimated_price)
 
-          = number_with_precision(total_est + total_tax, precision: 2)
+            = number_with_precision(total_est + total_tax, precision: 2)
 
-        %td
-          = number_with_precision estimation.send(estimation.approval_required ? :approved_adv_pmnt_amount : :advance_payment_amount), precision: 2
+          %td
+            = number_with_precision estimation.send(estimation.approval_required ? :approved_adv_pmnt_amount : :advance_payment_amount), precision: 2
 
-        %td= estimation.estimation_status.name
+          %td= estimation.estimation_status.name
 
 - if params[:partial_template_for_show] == 'estimation'
   = render "invoices/ticket_quotations", ticket: ticket
