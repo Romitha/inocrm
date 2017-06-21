@@ -296,7 +296,10 @@ class InventoriesController < ApplicationController
     elsif params[:store_request]
 
       if continue
+
         if store_chargeable and cea
+
+          d44_store_part_need_approval = CompanyConfig.first.sup_st_parts_ch_need_approval ? "Y" : "N"
 
           ticket_spare_part.ticket_spare_part_store.update store_requested: true, store_requested_at: DateTime.now, store_requested_by: current_user.id
 
@@ -307,7 +310,7 @@ class InventoriesController < ApplicationController
 
           # Create Process "SPPT_STORE_PART_REQUEST",
           process_name = "SPPT_STORE_PART_REQUEST"
-          query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, request_onloan_spare_part_id: request_onloan_spare_part_id, onloan_request: onloan_request, supp_engr_user: supp_engr_user, priority: priority}
+          query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, request_onloan_spare_part_id: request_onloan_spare_part_id, onloan_request: onloan_request, supp_engr_user: supp_engr_user, priority: priority, d44_store_part_need_approval: d44_store_part_need_approval}
 
         end
 
@@ -324,7 +327,10 @@ class InventoriesController < ApplicationController
 
     elsif params[:manufacture_request]
       if continue
+
         if manufacture_chargeable and cea
+
+          d45_manufacture_part_need_approval = CompanyConfig.first.sup_mf_parts_ch_need_approval ? "Y" : "N"
 
           save_ticket_spare_part["MPR", 14] #Request Spare Part from Manufacture
 
@@ -332,7 +338,7 @@ class InventoriesController < ApplicationController
           bpm_variables.merge!(d16_request_manufacture_part: "Y")
 
           process_name = "SPPT_MFR_PART_REQUEST"
-          query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, supp_engr_user: supp_engr_user, priority: priority}
+          query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, supp_engr_user: supp_engr_user, priority: priority, d45_manufacture_part_need_approval: d45_manufacture_part_need_approval}
         end
 
       else
@@ -548,7 +554,7 @@ class InventoriesController < ApplicationController
       if @estimation.cust_approved
 
         if (@estimation.cust_approval_required)
-          @estimation.ticket.update cus_payment_required: true
+          @estimation.ticket.update cus_payment_required: true, cus_chargeable: true
         end
 
 
@@ -614,6 +620,14 @@ class InventoriesController < ApplicationController
           priority = @estimation.ticket.priority
           ticket_id = @ticket.id
 
+          if ticket_estimation_part.ticket_spare_part.cus_chargeable_part
+            d44_store_part_need_approval = CompanyConfig.first.sup_st_parts_ch_need_approval ? "Y" : "N"
+            d45_manufacture_part_need_approval = CompanyConfig.first.sup_mf_parts_ch_need_approval ? "Y" : "N"
+          else
+            d44_store_part_need_approval = CompanyConfig.first.sup_st_parts_nc_need_approval ? "Y" : "N"
+            d45_manufacture_part_need_approval = CompanyConfig.first.sup_mf_parts_nc_need_approval ? "Y" : "N"
+          end 
+
           if ticket_estimation_part.ticket_spare_part.ticket_spare_part_manufacture.present?
             #save_ticket_spare_part["MPR", 14] #Request Spare Part from Manufacture
             status_action_id = SparePartStatusAction.find_by_code("MPR").id
@@ -622,7 +636,7 @@ class InventoriesController < ApplicationController
             bpm_variables.merge!(d16_request_manufacture_part: "Y")
 
             process_name = "SPPT_MFR_PART_REQUEST"
-            query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, supp_engr_user: supp_engr_user, priority: priority}
+            query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, supp_engr_user: supp_engr_user, priority: priority, d45_manufacture_part_need_approval: d45_manufacture_part_need_approval}
           end
 
           if ticket_estimation_part.ticket_spare_part.ticket_spare_part_store.present?
@@ -638,7 +652,7 @@ class InventoriesController < ApplicationController
 
             # Create Process "SPPT_STORE_PART_REQUEST",
             process_name = "SPPT_STORE_PART_REQUEST"
-            query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, request_onloan_spare_part_id: request_onloan_spare_part_id, onloan_request: onloan_request, supp_engr_user: supp_engr_user, priority: priority}
+            query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, request_onloan_spare_part_id: request_onloan_spare_part_id, onloan_request: onloan_request, supp_engr_user: supp_engr_user, priority: priority, d44_store_part_need_approval: d44_store_part_need_approval}
                 
           end
 
@@ -693,7 +707,7 @@ class InventoriesController < ApplicationController
       if @estimation.cust_approved
 
         if (@estimation.cust_approval_required)
-          @estimation.ticket.update cus_payment_required: true
+          @estimation.ticket.update cus_payment_required: true, cus_chargeable: true
         end
 
         if ( !@estimation.approval_required and @estimation.advance_payment_amount.to_f > 0) or ( @estimation.approval_required and @estimation.approved_adv_pmnt_amount.to_f > 0)
@@ -786,7 +800,10 @@ class InventoriesController < ApplicationController
 
         if t_est_price > 0
           @ticket_estimation.update_attribute(:cust_approval_required, true)
-          d14_val = (((t_est_price - t_cost_price)*100/t_cost_price) < CompanyConfig.first.try(:sup_external_job_profit_margin).to_f)
+
+          d14_val = (((t_est_price - t_cost_price)*100/t_cost_price) < CompanyConfig.first.try(:sup_external_job_profit_margin).to_f) if CompanyConfig.first.try(:sup_external_job_profit_margin).to_f > 0
+
+          d14_val = true if CompanyConfig.first.try(:sup_estimation_need_approval)
 
         else
           @ticket_estimation.update_attribute(:cust_approval_required, false)
@@ -803,7 +820,7 @@ class InventoriesController < ApplicationController
 
         if !d14_val
           @ticket.update_attribute(:status_resolve_id, TicketStatusResolve.find_by_code("EST").id)# (Estimated).
-          @ticket_estimation.update_attribute(:status_id, EstimationStatus.find_by_code("EST").id)#EST (Estimated).
+          @ticket_estimation.update_attributes(status_id: EstimationStatus.find_by_code("EST").id, approval_required: false)#EST (Estimated).
         else
           @ticket_estimation.update_attribute(:approval_required, true)
         end       
@@ -859,8 +876,7 @@ class InventoriesController < ApplicationController
         end
 
         @ticket.update_attribute(:status_resolve_id, TicketStatusResolve.find_by_code("EST").id)# (Estimated).
-        @ticket_estimation.update_attribute(:status_id, EstimationStatus.find_by_code("EST").id)#EST (Estimated).
-        @ticket_estimation.update_attribute(:approved, true)
+        @ticket_estimation.update_attributes(status_id: EstimationStatus.find_by_code("EST").id, approved: true)#EST (Estimated).
 
         # bpm output variables
         bpm_variables = view_context.initialize_bpm_variables
@@ -1661,7 +1677,9 @@ class InventoriesController < ApplicationController
           if t_est_price > 0
             estimation.update_attribute(:cust_approval_required, true)
 
-            d19_estimate_internal_below_margin = (((t_est_price - t_cost_price)*100/t_cost_price) < CompanyConfig.first.try(:sup_internal_part_profit_margin).to_f) ? "Y" : "N"
+            d19_estimate_internal_below_margin = (((t_est_price - t_cost_price)*100/t_cost_price) < CompanyConfig.first.try(:sup_internal_part_profit_margin).to_f) ? "Y" : "N"  if CompanyConfig.first.try(:sup_internal_part_profit_margin).to_f > 0
+
+            d19_estimate_internal_below_margin = "Y" if CompanyConfig.first.try(:sup_estimation_need_approval)
           else
             estimation.update_attribute(:cust_approval_required, false)
             d19_estimate_internal_below_margin = "N"
@@ -1702,7 +1720,66 @@ class InventoriesController < ApplicationController
 
             # WebsocketRails[:posts].trigger 'new', {task_name: "Spare part", task_id: spt_ticket_spare_part.id, task_verb: "received and issued.", by: current_user.email, at: Time.now.strftime('%d/%m/%Y at %H:%M:%S')}
 
-            flash[:notice]= "Successfully updated"
+            all_success = true
+            error_parts = ""
+
+            if (t_est_price <= 0) and (d19_estimate_internal_below_margin == "N")
+              estimation.ticket_estimation_parts.each do |p|
+
+                ticket_spare_part = p.ticket_spare_part
+
+                process_name = ""
+                query = {}
+                ticket_id = @ticket.id
+                request_spare_part_id = ticket_spare_part.id
+                supp_engr_user = ticket_spare_part.requested_by
+                priority = @ticket.priority
+                request_onloan_spare_part_id = "-"
+                onloan_request = "N"
+
+                if ticket_spare_part.ticket_spare_part_store.present?
+
+                  d44_store_part_need_approval = ticket_spare_part.update request_approval_required ? "Y" : "N"
+
+                  ticket_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code("STR").id
+
+                  process_name = "SPPT_STORE_PART_REQUEST"
+                  query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, request_onloan_spare_part_id: request_onloan_spare_part_id, onloan_request: onloan_request, supp_engr_user: supp_engr_user, priority: priority, d44_store_part_need_approval: d44_store_part_need_approval}
+
+                end
+                if ticket_spare_part.ticket_spare_part_manufacture.present?
+
+                  d45_manufacture_part_need_approval = @ticket_spare_part.update request_approval_required ? "Y" : "N"
+
+                  @ticket_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code("MPR").id 
+
+                  process_name = "SPPT_MFR_PART_REQUEST"
+                  query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, supp_engr_user: supp_engr_user, priority: priority, d45_manufacture_part_need_approval: d45_manufacture_part_need_approval}
+
+                end
+
+                if process_name.present?
+                  @bpm_response1 = view_context.send_request_process_data start_process: true, process_name: process_name, query: query
+
+                  if @bpm_response1[:status].try(:upcase) == "SUCCESS"
+                    @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name])
+                    view_context.ticket_bpm_headers @bpm_response1[:process_id], @ticket.id, request_spare_part_id
+                  else
+                    @bpm_process_error = true
+                    all_success = false
+                    error_parts += ticket_spare_part.spare_part_no + ","
+                  end
+                end
+
+              end
+            end
+
+            if all_success
+              flash[:notice]= "Successfully updated"
+            else
+              flash[:error]= "Estimate part is updated. but Bpm error for parts (" + error_parts + ")"
+            end
+
           else
             flash[:error]= "Estimate part is updated. but Bpm error"
           end
@@ -1779,7 +1856,66 @@ class InventoriesController < ApplicationController
 
             # WebsocketRails[:posts].trigger 'new', {task_name: "Spare part", task_id: spt_ticket_spare_part.id, task_verb: "received and issued.", by: current_user.email, at: Time.now.strftime('%d/%m/%Y at %H:%M:%S')}
 
-            flash[:notice]= "Successfully updated"
+            all_success = true
+            error_parts = ""
+
+            if (t_est_price <= 0)
+              estimation.ticket_estimation_parts.each do |p|
+
+                ticket_spare_part = p.ticket_spare_part
+
+                process_name = ""
+                query = {}
+                ticket_id = @ticket.id
+                request_spare_part_id = ticket_spare_part.id
+                supp_engr_user = ticket_spare_part.requested_by
+                priority = @ticket.priority
+                request_onloan_spare_part_id = "-"
+                onloan_request = "N"
+
+                if ticket_spare_part.ticket_spare_part_store.present?
+
+                  d44_store_part_need_approval = ticket_spare_part.update request_approval_required ? "Y" : "N"
+
+                  ticket_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code("STR").id
+
+                  process_name = "SPPT_STORE_PART_REQUEST"
+                  query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, request_onloan_spare_part_id: request_onloan_spare_part_id, onloan_request: onloan_request, supp_engr_user: supp_engr_user, priority: priority, d44_store_part_need_approval: d44_store_part_need_approval}
+
+                end
+                if ticket_spare_part.ticket_spare_part_manufacture.present?
+
+                  d45_manufacture_part_need_approval = @ticket_spare_part.update request_approval_required ? "Y" : "N"
+
+                  @ticket_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code("MPR").id 
+
+                  process_name = "SPPT_MFR_PART_REQUEST"
+                  query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, supp_engr_user: supp_engr_user, priority: priority, d45_manufacture_part_need_approval: d45_manufacture_part_need_approval}
+
+                end
+
+                if process_name.present?
+                  @bpm_response1 = view_context.send_request_process_data start_process: true, process_name: process_name, query: query
+
+                  if @bpm_response1[:status].try(:upcase) == "SUCCESS"
+                    @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name])
+                    view_context.ticket_bpm_headers @bpm_response1[:process_id], @ticket.id, request_spare_part_id
+                  else
+                    @bpm_process_error = true
+                    all_success = false
+                    error_parts += ticket_spare_part.spare_part_no + ","
+                  end
+                end
+
+              end
+            end
+
+            if all_success
+              flash[:notice]= "Successfully updated"
+            else
+              flash[:error]= "Estimate part is updated. but Bpm error for parts (" + error_parts + ")"
+            end
+
           else
             flash[:error]= "Estimate part is updated. but Bpm error"
           end

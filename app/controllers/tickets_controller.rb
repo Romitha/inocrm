@@ -1103,8 +1103,8 @@ class TicketsController < ApplicationController
       @user_assign_ticket_action = @user_ticket_action.build_user_assign_ticket_action
       @assign_regional_support_center = @user_ticket_action.assign_regional_support_centers.build
 
-      @ticket_workfow = @ticket.ticket_workflow_processes.where process_id: assign_eng_params["process_id"]
-      @re_assignment_rq_engineer =  @ticket.ticket_engineers. { |en| en.workflow_process_id == @ticket_workfow.first.try(:id)  }.first
+      @ticket_workfow = @ticket.ticket_workflow_processes.where process_id: params["process_id"]
+      @re_assignment_rq_engineer =  @ticket.ticket_engineers.where(workflow_process_id: @ticket_workfow.first.try(:id)).first
       @re_assignment = @re_assignment_rq_engineer.present
 
       @re_assignment_requested_by = @ticket_engineer.try(:user_id)
@@ -1119,8 +1119,8 @@ class TicketsController < ApplicationController
     TaskAction
     @continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
 
-    @ticket_workfow = @ticket.ticket_workflow_processes.where process_id: assign_eng_params["process_id"] 
-    @re_assignment_rq_engineer =  @ticket.ticket_engineers. { |en| en.workflow_process_id == @ticket_workfow.first.try(:id)  }.first
+    @ticket_workfow = @ticket.ticket_workflow_processes.where process_id: params["process_id"] 
+    @re_assignment_rq_engineer =  @ticket.ticket_engineers.where(workflow_process_id: @ticket_workfow.first.try(:id)).first
     @re_assignment = @re_assignment_rq_engineer.present
 
     if @continue and @ticket.ticket_engineers.any?
@@ -3593,6 +3593,19 @@ class TicketsController < ApplicationController
 
       # bpm output variables
       d30_parts_collection_pending = TicketSparePart.any?{|sp| sp.id != spt_ticket_spare_part.id and sp.ticket_spare_part_manufacture.try(:collect_pending_manufacture)} ? "Y" : "N"
+
+      if !CompanyConfig.first.sup_mf_parts_collect_required
+        d30_parts_collection_pending = "Y"
+        spt_ticket_spare_part.ticket_spare_part_manufacture.update_attributes collect_pending_manufacture: false, collected_manufacture: true
+        #, recieved_manufacture: true
+
+        spt_ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("CLT").id)
+        spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)  
+
+        #spt_ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("RCS").id) 
+        #spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)   
+      end
+
       bpm_variables = view_context.initialize_bpm_variables.merge(d30_parts_collection_pending: d30_parts_collection_pending)
 
       @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
@@ -4448,7 +4461,7 @@ class TicketsController < ApplicationController
         if @ticket_spare_part.request_from == "M"
           @ticket_spare_part.update request_approval_required: true if d45_manufacture_part_need_approval == "Y"
 
-          @ticket_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code("MPR").id unless @ticket_spare_part.cus_chargeable_part
+          @ticket_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code("MPR").id unless estimation_required #@ticket_spare_part.cus_chargeable_part
           action_id = TaskAction.find_by_action_no(14).id
           @ticket_spare_part.create_ticket_spare_part_manufacture(payment_expected_manufacture: 0, manufacture_currency_id: @ticket_spare_part.ticket.manufacture_currency_id, requested_quantity: requested_quantity, po_required: CompanyConfig.first.sup_mf_parts_po_requied)
 
@@ -4458,7 +4471,7 @@ class TicketsController < ApplicationController
         elsif @ticket_spare_part.request_from == "S"
           @ticket_spare_part.update request_approval_required: true if d44_store_part_need_approval == "Y"
 
-          @ticket_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code("STR").id unless @ticket_spare_part.cus_chargeable_part
+          @ticket_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code("STR").id unless estimation_required #@ticket_spare_part.cus_chargeable_part
           action_id = TaskAction.find_by_action_no(15).id
 
           @ticket_spare_part_store = @ticket_spare_part.create_ticket_spare_part_store(store_id: params[:store_id], inv_product_id: params[:inv_product_id], mst_inv_product_id: params[:mst_inv_product_id], part_of_main_product: (params[:part_of_main_product] || 0), store_requested: !@ticket_spare_part.cus_chargeable_part, store_requested_at: ( !@ticket_spare_part.cus_chargeable_part ? DateTime.now : nil), store_requested_by: ( !@ticket_spare_part.cus_chargeable_part ? current_user.id : nil), requested_quantity: requested_quantity)
