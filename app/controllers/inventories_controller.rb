@@ -290,6 +290,12 @@ class InventoriesController < ApplicationController
 
         end
       else
+
+        if ticket_spare_part.ticket_spare_part_manufacture.present and !CompanyConfig.first.sup_mf_parts_return_required and !ticket_spare_part.ticket_spare_part_manufacture.po_required
+          ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("CLS").id) 
+          ticket_spare_part.ticket_spare_part_status_actions.create(status_id: ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now) 
+        end  
+
         flash[:error] = "spare part is updated. But not returned"
       end
 
@@ -301,9 +307,14 @@ class InventoriesController < ApplicationController
 
           d44_store_part_need_approval = CompanyConfig.first.sup_st_parts_ch_need_approval ? "Y" : "N"
 
-          ticket_spare_part.ticket_spare_part_store.update store_requested: true, store_requested_at: DateTime.now, store_requested_by: current_user.id
+          ticket_spare_part.ticket_spare_part_store.update store_requested: true, store_requested_at: DateTime.now, store_requested_by: current_user.id if (d44_store_part_need_approval == "N")
 
           save_ticket_spare_part["STR", 15] #Request Spare Part from Store 
+
+          if d44_store_part_need_approval == "N"
+            #Create SRN 
+            ticket_spare_part.ticket_spare_part_store.create_support_srn(current_user.id, ticket_spare_part.ticket_spare_part_store.store_id, ticket_spare_part.ticket_spare_part_store.inv_product_id, ticket_spare_part.ticket_spare_part_store.requested_quantity, ticket_spare_part.ticket_spare_part_store.mst_inv_product_id )
+          end             
 
           # bpm output variables
           bpm_variables.merge!(d17_request_store_part: "Y")
@@ -640,11 +651,17 @@ class InventoriesController < ApplicationController
           end
 
           if ticket_estimation_part.ticket_spare_part.ticket_spare_part_store.present?
-            ticket_estimation_part.ticket_spare_part.ticket_spare_part_store.update store_requested: true, store_requested_at: DateTime.now, store_requested_by: current_user.id
+
+            ticket_estimation_part.ticket_spare_part.ticket_spare_part_store.update store_requested: true, store_requested_at: DateTime.now, store_requested_by: current_user.id if d44_store_part_need_approval == "N"
 
             #save_ticket_spare_part["STR", 15] #Request Spare Part from Store 
             status_action_id = SparePartStatusAction.find_by_code("STR").id
             action_id = TaskAction.find_by_action_no(15).id
+
+            if d44_store_part_need_approval == "N"
+              #Create SRN 
+              @ticket_spare_part.ticket_spare_part_store.create_support_srn(current_user.id, @ticket_spare_part.ticket_spare_part_store.store_id, @ticket_spare_part.ticket_spare_part_store.inv_product_id, @ticket_spare_part.ticket_spare_part_store.requested_quantity, @ticket_spare_part.ticket_spare_part_store.mst_inv_product_id )
+            end            
 
             bpm_variables.merge!(d17_request_store_part: "Y")
             request_onloan_spare_part_id = '-'
@@ -1746,6 +1763,14 @@ class InventoriesController < ApplicationController
                   process_name = "SPPT_STORE_PART_REQUEST"
                   query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, request_onloan_spare_part_id: request_onloan_spare_part_id, onloan_request: onloan_request, supp_engr_user: supp_engr_user, priority: priority, d44_store_part_need_approval: d44_store_part_need_approval}
 
+                  #update record spt_ticket_spare_part_store
+                  ticket_spare_part.ticket_spare_part_store.update(store_requested: (d44_store_part_need_approval == "N"), store_requested_at: ( (d44_store_part_need_approval == "N") ? DateTime.now : nil), store_requested_by: ( (d44_store_part_need_approval == "N") ? supp_engr_user : nil))
+
+                  if d44_store_part_need_approval == "N"
+                    #Create SRN 
+                    ticket_spare_part.ticket_spare_part_store.create_support_srn(current_user.id, ticket_spare_part.ticket_spare_part_store.store_id, ticket_spare_part.ticket_spare_part_store.inv_product_id, ticket_spare_part.ticket_spare_part_store.requested_quantity, ticket_spare_part.ticket_spare_part_store.mst_inv_product_id )
+                  end
+
                 end
                 if ticket_spare_part.ticket_spare_part_manufacture.present?
 
@@ -1881,6 +1906,14 @@ class InventoriesController < ApplicationController
 
                   process_name = "SPPT_STORE_PART_REQUEST"
                   query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, request_onloan_spare_part_id: request_onloan_spare_part_id, onloan_request: onloan_request, supp_engr_user: supp_engr_user, priority: priority, d44_store_part_need_approval: d44_store_part_need_approval}
+
+                  #update record spt_ticket_spare_part_store
+                  ticket_spare_part.ticket_spare_part_store.update(store_requested: (d44_store_part_need_approval == "N"), store_requested_at: ( (d44_store_part_need_approval == "N") ? DateTime.now : nil), store_requested_by: ( (d44_store_part_need_approval == "N") ? supp_engr_user : nil))
+
+                  if d44_store_part_need_approval == "N"
+                    #Create SRN 
+                    ticket_spare_part.ticket_spare_part_store.create_support_srn(current_user.id, ticket_spare_part.ticket_spare_part_store.store_id, ticket_spare_part.ticket_spare_part_store.inv_product_id, ticket_spare_part.ticket_spare_part_store.requested_quantity, ticket_spare_part.ticket_spare_part_store.mst_inv_product_id )
+                  end                        
 
                 end
                 if ticket_spare_part.ticket_spare_part_manufacture.present?
