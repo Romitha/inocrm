@@ -1505,10 +1505,15 @@ class TicketsController < ApplicationController
 
           @ticket_spare_part.update ticket_spare_part_params(@ticket_spare_part)
 
-          @ticket_spare_part.ticket_spare_part_store.update store_request_approved_at: DateTime.now, store_request_approved_by: current_user.id
-
           d18_approve_request_store_part = "N"
-          if @ticket_spare_part.ticket_spare_part_store.store_request_approved
+          if @ticket_spare_part.request_approved
+
+            #update record spt_ticket_spare_part
+            @ticket_spare_part.update request_approved_at: DateTime.now, request_approved_by: current_user.id
+
+            #update record spt_ticket_spare_part_store
+            @ticket_spare_part.ticket_spare_part_store.update(store_requested: true, store_requested_at: DateTime.now, store_requested_by: current_user.id )
+
             #Approve Spare Part for Store
             action_id = TaskAction.find_by_action_no(47).id
             d18_approve_request_store_part = "Y"
@@ -1516,11 +1521,8 @@ class TicketsController < ApplicationController
             @ticket_spare_part.update status_action_id: SparePartStatusAction.find_by_code("APS").id
             @ticket_spare_part.ticket_spare_part_status_actions.create(status_id: @ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now) 
 
-            srn = @ticket_spare_part.ticket_spare_part_store.approved_store.srns.create(created_by: current_user.id, created_at: DateTime.now, requested_module_id: BpmModule.find_by_code("SPT").id, srn_no: CompanyConfig.first.increase_inv_last_srn_no)#inv_srn
-
-            srn_item = srn.srn_items.create(product_id: @ticket_spare_part.ticket_spare_part_store.approved_inventory_product.try(:id), quantity: approved_quantity, returnable: false, spare_part: true)#inv_srn_item
-
-            @ticket_spare_part.ticket_spare_part_store.update inv_srn_id: srn.id, inv_srn_item_id: srn_item.id
+            #Create SRN 
+            @ticket_spare_part.ticket_spare_part_store.create_support_srn(current_user.id, @ticket_spare_part.ticket_spare_part_store.approved_store_id, @ticket_spare_part.ticket_spare_part_store.approved_inventory_product.try(:id), approved_quantity, @ticket_spare_part.ticket_spare_part_store.approved_main_inv_product_id)
 
           else
             #Reject Spare Part for Store
@@ -1546,6 +1548,72 @@ class TicketsController < ApplicationController
             flash[:error] = "ticket is updated. but Bpm error"
           end
         end
+      end
+    else
+      flash[:notice] = "ticket is not updated. Bpm error"
+    end
+    redirect_to todos_url
+  end
+
+  def update_approve_manufacture_parts
+
+    @continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
+ 
+    if @continue
+
+      @ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
+      @terminated = (@ticket_spare_part.status_action_id == SparePartStatusAction.find_by_code("CLS").id)
+
+      if @terminated
+        bpm_variables = view_context.initialize_bpm_variables.merge(d46_manufacture_part_approved: "N")
+
+        @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+        if @bpm_response[:status].upcase == "SUCCESS"
+          flash[:error] = "Request allready terminated."
+        else
+          flash[:error] = "Request allready terminated. but Bpm error"
+        end
+      else
+
+        @ticket_spare_part.update ticket_spare_part_params(@ticket_spare_part)
+
+        d46_manufacture_part_approved = "N"
+        if @ticket_spare_part.request_approved
+
+          #update record spt_ticket_spare_part
+          @ticket_spare_part.update request_approved_at: DateTime.now, request_approved_by: current_user.id
+
+          #Approve Spare Part Manufacture
+          action_id = TaskAction.find_by_action_no(89).id
+          d46_manufacture_part_approved = "Y"
+
+          @ticket_spare_part.update status_action_id: SparePartStatusAction.find_by_code("APM").id
+          @ticket_spare_part.ticket_spare_part_status_actions.create(status_id: @ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now) 
+
+        else
+          #Reject Spare Part Manufacture
+          action_id = TaskAction.find_by_action_no(90).id
+
+          @ticket_spare_part.update status_action_id: SparePartStatusAction.find_by_code("CLS").id
+
+          @ticket_spare_part.ticket_spare_part_status_actions.create([{status_id: SparePartStatusAction.find_by_code("RJM").id, done_by: current_user.id, done_at: DateTime.now}, {status_id: SparePartStatusAction.find_by_code("CLS").id , done_by: current_user.id, done_at: DateTime.now}])  
+        end
+
+        user_ticket_action = @ticket_spare_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket_spare_part.ticket.re_open_count, action_id: action_id)
+        user_ticket_action.build_request_spare_part(ticket_spare_part_id: @ticket_spare_part.id)
+        user_ticket_action.save
+
+        bpm_variables = view_context.initialize_bpm_variables.merge(d46_manufacture_part_approved: d46_manufacture_part_approved)
+
+        @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+        if @bpm_response[:status].upcase == "SUCCESS"
+          flash[:notice] = "Successfully updated."
+        else
+          flash[:error] = "ticket is updated. but Bpm error"
+        end
+
       end
     else
       flash[:notice] = "ticket is not updated. Bpm error"
@@ -2847,14 +2915,31 @@ class TicketsController < ApplicationController
   def update_check_fsr
     TaskAction
     @ticket.attributes = ticket_params
+    job_close_approved = params[:job_close_approved].to_bool
 
     @continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
 
     if @continue
       # bpm output variables
       bpm_variables = view_context.initialize_bpm_variables.merge supp_engr_user: params[:supp_engr_user]
+
+      ticket_workfow = @ticket.ticket_workflow_processes.where process_id: params[:process_id]
+      job_engineers =  @ticket.ticket_engineers.where(workflow_process_id: ticket_workfow.first.try(:id))
+
+      job_engineers.each do |engineer|
+        engineer.update job_closed_at: DateTime.now, status: 3 if (engineer.job_close_approval_requested) and (job_close_approved) and (engineer.status <3)
+        engineer.update job_close_approved: job_close_approved if (engineer.job_close_approval_requested)
+      end
+
+# final task
+      all_closed = true
+      @ticket.ticket_engineers.each do |engineer|
+        all_closed = false if ((!engineer.job_close_approval_required) or (engineer.job_close_approved and engineer.job_close_approval_required))
+      end
+      @ticket.ticket_close_approved = all_closed
+
       @ticket.save
-      if @ticket.ticket_close_approved #Approved (Checked)
+      if job_close_approved #Approved (Checked)
 
         bpm_variables.merge! d40_ticket_approved_to_close: "Y"
 
@@ -2863,20 +2948,22 @@ class TicketsController < ApplicationController
         user_ticket_action.build_act_ticket_close_approve(approved: true, owner_engineer_id: params[:owner_engineer_id])
         user_ticket_action.save
 
-        @ticket.update owner_engineer_id: params[:owner_engineer_id], ticket_close_approved: true
+        @ticket.update owner_engineer_id: params[:owner_engineer_id]
 
+# final task
         @ticket.set_ticket_close(current_user.id)
 
       else # Rejected (Not Checked)
 
-        bpm_variables.merge! d41_re_open: "Y" if @ticket.status_id == TicketStatus.find_by_code("ROP").id or !@ticket.job_finished
+        #bpm_variables.merge! d41_re_open: "Y" if @ticket.status_id == TicketStatus.find_by_code("ROP").id or !@ticket.job_finished
+        bpm_variables.merge! d41_re_open: "N"
 
 #        Set Action:(66) Reject Close Ticket, and  DB.spt_act_ticket_close_approve 
         user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(66).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
         user_ticket_action.build_act_ticket_close_approve(approved: false, reject_reason_id: params[:reject_reason_id])
         user_ticket_action.save
 
-        @ticket.update ticket_close_approval_requested: false
+        job_engineers.update_all(job_close_approval_requested: false)
 
       end
 
@@ -2896,7 +2983,7 @@ class TicketsController < ApplicationController
         end
       end
 
-      @ticket.ticket_fsrs.where(approved: true).update_all(approved_action_id: user_ticket_action.id)
+      @ticket.ticket_fsrs.where(approved: true, approved_action_id: nil).update_all(approved_action_id: user_ticket_action.id)
       @ticket.ticket_fsrs.where(approved: false).update_all(approved_action_id: nil)
 
       @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
@@ -3583,6 +3670,8 @@ class TicketsController < ApplicationController
 
       spt_ticket_spare_part.ticket_spare_part_manufacture.update_attributes collect_pending_manufacture: true if spt_ticket_spare_part.ticket_spare_part_manufacture
 
+      spt_ticket_spare_part.ticket_spare_part_manufacture.update po_required: CompanyConfig.first.sup_mf_parts_po_required
+
       spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
 
       # Set Action (31) Order Spare Part from Sup, DB.spt_act_request_spare_part.
@@ -3596,11 +3685,15 @@ class TicketsController < ApplicationController
 
       if !CompanyConfig.first.sup_mf_parts_collect_required
         d30_parts_collection_pending = "Y"
+
+        #Collect Part
         spt_ticket_spare_part.ticket_spare_part_manufacture.update_attributes collect_pending_manufacture: false, collected_manufacture: true
-        #, recieved_manufacture: true
 
         spt_ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("CLT").id)
         spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)  
+
+        #Recieve Part
+        #spt_ticket_spare_part.ticket_spare_part_manufacture.update_attributes recieved_manufacture: true
 
         #spt_ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("RCS").id) 
         #spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)   
@@ -3660,7 +3753,7 @@ class TicketsController < ApplicationController
 
   end
 
-  def update_order_mfp_return_manufacture_part
+  def update_order_mfp_return_manufacture_part #sRequest From Store
     Ticket
     TicketEstimation
     spt_ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
@@ -3684,7 +3777,14 @@ class TicketsController < ApplicationController
     if @continue and (spt_ticket_spare_part.status_action_id != SparePartStatusAction.find_by_code("CLS").id) and spt_ticket_spare_part.update(ticket_spare_part_params(spt_ticket_spare_part))
 
       ticket_estimation_part = TicketEstimationPart.new
+      need_estimation = CompanyConfig.first.sup_st_nc_estimayion_required
       if spt_ticket_spare_part.cus_chargeable_part
+        need_estimation = true
+        d44_store_part_need_approval = CompanyConfig.first.sup_st_parts_ch_need_approval ? "Y" : "N"
+      else
+        d44_store_part_need_approval = CompanyConfig.first.sup_st_parts_nc_need_approval ? "Y" : "N"
+      end
+      if need_estimation
         d29_part_estimate_required_2  = "Y"
 
         #create record spt_ticket_estimation
@@ -3703,8 +3803,12 @@ class TicketsController < ApplicationController
         @bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT_STORE_PART_REQUEST", query: {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, request_onloan_spare_part_id: request_onloan_spare_part_id, onloan_request: onloan_request, supp_engr_user: supp_engr_user, priority: priority}            
       end
 
+      #update record spt_ticket_spare_part
+      spt_ticket_spare_part.update_attributes estimation_required: need_estimation, requiest_approval_required: (d44_store_part_need_approval == "Y" ), requrest_approved: false, request_appoved_at: null, request_approved_by: null
+
       #create record spt_ticket_spare_part_store
-      spt_ticket_spare_part.ticket_spare_part_store.update(store_id: params[:store_id], inv_product_id: params[:inv_product_id], mst_inv_product_id: params[:mst_inv_product_id], store_requested: !spt_ticket_spare_part.cus_chargeable_part, store_requested_at: ( !spt_ticket_spare_part.cus_chargeable_part ? DateTime.now : nil), store_requested_by: ( !spt_ticket_spare_part.cus_chargeable_part ? current_user.id : nil), requested_quantity: requested_quantity)
+      store_requested = !need_estimation and (d44_store_part_need_approval == "N" )
+      spt_ticket_spare_part.ticket_spare_part_store.update(store_id: params[:store_id], inv_product_id: params[:inv_product_id], mst_inv_product_id: params[:mst_inv_product_id], store_requested: store_requested, store_requested_at: ( store_requested ? DateTime.now : nil), store_requested_by: ( store_requested? current_user.id : nil), requested_quantity: requested_quantity)
 
       #delete record spt_ticket_spare_part_manufacture
       spt_ticket_spare_part.ticket_spare_part_manufacture.delete
@@ -4512,6 +4616,12 @@ class TicketsController < ApplicationController
           query = {ticket_id: ticket_id, part_estimation_id: part_estimation_id, supp_engr_user: supp_engr_user, priority: priority}
 
           @ticket_spare_part.update_attribute :estimation_required, true
+
+        else
+            if (d44_store_part_need_approval == "N") and (@ticket_spare_part.request_from == "S")
+              #Create SRN 
+              @ticket_spare_part.ticket_spare_part_store.create_support_srn(current_user.id, @ticket_spare_part.ticket_spare_part_store.store_id, @ticket_spare_part.ticket_spare_part_store.inv_product_id, @ticket_spare_part.ticket_spare_part_store.requested_quantity, @ticket_spare_part.ticket_spare_part_store.mst_inv_product_id )
+            end 
         end
 
         # bpm output variables

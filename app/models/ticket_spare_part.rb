@@ -187,6 +187,16 @@ class TicketSparePartStore < ActiveRecord::Base
 
   belongs_to :srr, foreign_key: :inv_srr_id
   belongs_to :srr_item, foreign_key: :inv_srr_item_id
+
+  def create_support_srn(current_user_id, store_id, inventory_product_id, quantity, main_inventory_product_id=nil)
+
+    srn = Srn.create(store_id: store_id, created_by: current_user_id, created_at: DateTime.now, requested_module_id: BpmModule.find_by_code("SPT").id, srn_no: CompanyConfig.first.increase_inv_last_srn_no)#inv_srn
+
+    srn_item = srn.srn_items.create(product_id: inventory_product_id, quantity: quantity, returnable: false, spare_part: true, main_product_id: main_inventory_product_id)#inv_srn_item
+
+    update inv_srn_id: srn.id, inv_srn_item_id: srn_item.id
+
+  end
 end
 
 class TicketFsr < ActiveRecord::Base
