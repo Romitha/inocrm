@@ -13,7 +13,8 @@
 
       %h4 Job belongs to : #{job_engineers.map{|eng| eng.user.full_name}.join(", ")}
       Job Completed (Approve To Close):
-      = f.check_box :ticket_close_approved, id: "ticket_close_approved_check"
+      // = f.check_box :ticket_close_approved, id: "ticket_close_approved_check"
+      = check_box_tag :job_close_approved, false, true, id: "ticket_close_approved_check"
     .col-md-6.col-xs-6#close_approve_reject_reason
       = f.label "Reject Reason"
       = select_tag :reject_reason_id,  options_for_select(Reason.where(reject_close: true).map {|r| [r.reason, r.id] }), include_blank: false
@@ -160,7 +161,7 @@
                             %th Event No.
                             %th Event Closed
                         %tbody
-                          - fsr.ticket_spare_parts.where(engineer_id: job_engineers.map { |eng| eng.id }).each_with_index do |tsp, i|
+                          - fsr.ticket_spare_parts.each_with_index do |tsp, i|
                             %tr
                               %th= i+1
                               %td= tsp.spare_part_no
