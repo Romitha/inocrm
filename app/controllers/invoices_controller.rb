@@ -262,7 +262,8 @@ class InvoicesController < ApplicationController
 
       elsif params[:reject] #Reject QC
 
-        bpm_variables.merge! d38_ticket_close_approved: ( !@ticket.ticket_close_approval_required or @ticket.ticket_close_approval_requested or @ticket.ticket_close_approved) ? "N" : "Y"
+        #bpm_variables.merge! d38_ticket_close_approved: ( !@ticket.ticket_close_approval_required or @ticket.ticket_close_approval_requested or @ticket.ticket_close_approved) ? "N" : "Y"
+        bpm_variables.merge! d38_ticket_close_approved: "Y"
 
         @ticket.update qc_passed: false, status_id: TicketStatus.find_by_code("ROP").id, re_open_count: (@ticket.re_open_count.to_i+1), job_finished: false, job_finished_at: nil, ticket_close_approval_required: true, ticket_close_approval_requested: false, ticket_close_approved: false
 
@@ -283,7 +284,7 @@ class InvoicesController < ApplicationController
     redirect_to todos_url
   end
 
-  def update_customer_feedback
+  def update_customer_feedback #Customer feedback and Terminate Job
     @ticket = Ticket.find params[:ticket_id]
     editable_ticket_params = {}
     re_open = params[:re_opened].present?
@@ -352,6 +353,8 @@ class InvoicesController < ApplicationController
       end
       @ticket.update editable_ticket_params if editable_ticket_params.present?
       @ticket.set_ticket_close(current_user.id) unless re_open
+      #Calculate Total Costs and Time
+      @ticket.calculate_ticket_total_costs unless re_open
 
       if @ticket.ticket_terminated
         # Action:(60)Terminate Job Customer Feedback, DB.spt_act_customer_feedback.
@@ -441,7 +444,7 @@ class InvoicesController < ApplicationController
 
   end
 
-  def update_invoice
+  def update_invoice #Final Invoice
     Tax
     Warranty
     @ticket = Ticket.find_by_id params[:ticket_id]
@@ -543,6 +546,9 @@ class InvoicesController < ApplicationController
     user_ticket_action.build_act_print_invoice(invoice_id: @invoice.id)
     user_ticket_action.save
     @total_estimation_amount = @ticket.ticket_estimations.where(foc_approved: false, cust_approved: true).map { |estimation| estimation.approval_required ? (estimation.ticket_estimation_externals.sum(:approved_estimated_price)+estimation.ticket_estimation_parts.sum(:approved_estimated_price)+estimation.ticket_estimation_additionals.sum(:approved_estimated_price)) : (estimation.ticket_estimation_externals.sum(:estimated_price)+estimation.ticket_estimation_parts.sum(:estimated_price)+estimation.ticket_estimation_additionals.sum(:estimated_price)) }.compact.sum
+
+    #Calculate Total Costs and Time
+    @ticket.calculate_ticket_total_costs if !@invoice.canceled
 
     render "tickets/tickets_pack/estimate_job_final/estimate_job_final"
 
