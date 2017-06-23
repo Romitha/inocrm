@@ -2930,13 +2930,6 @@ class TicketsController < ApplicationController
         engineer.update job_close_approved: job_close_approved if (engineer.job_close_approval_requested)
       end
 
-# final task
-      all_closed = true
-      @ticket.ticket_engineers.each do |engineer|
-        all_closed = false if ((!engineer.job_close_approval_required) or (engineer.job_close_approved and engineer.job_close_approval_required))
-      end
-      @ticket.ticket_close_approved = all_closed
-
       @ticket.save
       if job_close_approved #Approved (Checked)
 
@@ -2949,8 +2942,19 @@ class TicketsController < ApplicationController
 
         @ticket.update owner_engineer_id: params[:owner_engineer_id]
 
-# final task
-        @ticket.set_ticket_close(current_user.id)
+        # final close
+        if !@ticket.ticket_engineers.any?{|eng| eng.status.to_i < 3 }
+          all_closed = true
+          @ticket.ticket_engineers.each do |engineer|
+            all_closed = false if ((!engineer.job_close_approval_required) or (engineer.job_close_approved and engineer.job_close_approval_required))
+          end
+          @ticket.update ticket_close_approved: all_closed
+
+          #Calculate Total Costs and Time
+          @ticket.calculate_ticket_total_costs   
+
+          @ticket.set_ticket_close(current_user.id)
+        end
 
       else # Rejected (Not Checked)
 
@@ -4222,17 +4226,17 @@ class TicketsController < ApplicationController
         engineer_close_approval_required = (@ticket.ticket_fsrs.any?{|fsr| fsr.engineer_id == @ticket_engineer.id } or @ticket.ticket_spare_parts.any?{|part| part.engineer_id == @ticket_engineer.id } or @ticket.ticket_on_loan_spare_parts.any?{|onloanpart| onloanpart.engineer_id == @ticket_engineer.id })
 
         close_approval_requested = @ticket.ticket_close_approval_requested # getting from the form
-        close_approval_requested = true if not engineer_close_approval_required
-        @ticket_engineer.update status: (engineer_close_approval_required)? 2 : 3 , job_completed_at: DateTime.now, job_close_approval_required: engineer_close_approval_required, ticket_close_approval_requested: close_approval_requested
+        close_approval_requested = false if not engineer_close_approval_required
+        @ticket_engineer.update status: (engineer_close_approval_required)? 2 : 3 , job_completed_at: DateTime.now, job_close_approval_required: engineer_close_approval_required, job_close_approval_requested: close_approval_requested
 
         @ticket.ticket_close_approval_required = (@ticket.ticket_fsrs.any? or @ticket.ticket_spare_parts.any? or @ticket.ticket_on_loan_spare_parts.any?)
 
-        final_task = false
+        final_resolution = false
         if !@ticket.ticket_engineers.any?{|eng| eng.status.to_i < 2 }
           @ticket.ticket_status_resolve = TicketStatusResolve.find_by_code("RSV")
           @ticket.job_finished = true
           @ticket.job_finished_at = DateTime.now
-          final_task = true
+          final_resolution = true
         end
 
         @ticket.ticket_close_approval_requested = true 
@@ -4240,7 +4244,7 @@ class TicketsController < ApplicationController
         if @ticket.ticket_close_approval_required
           @ticket.ticket_engineers.each do |eng|
             if eng.ticket_close_approval_required
-              @ticket.ticket_close_approval_requested = false if !eng.ticket_close_approval_requested
+              @ticket.ticket_close_approval_requested = false if !eng.job_close_approval_requested
               @ticket.ticket_close_approved = false if !eng.ticket_close_approved
             end            
           end
@@ -4248,9 +4252,9 @@ class TicketsController < ApplicationController
 
         d9_qc_required = (@ticket.ticket_type.code == "IH" ) and (CompanyConfig.first.sup_qc_required) ? "Y" : "N"
 
-        bpm_variables = view_context.initialize_bpm_variables.merge(supp_engr_user: current_user.id, d7_close_approval_requested: (@ticket_engineer.ticket_close_approval_requested ? "Y" : "N"), d4_job_complete: "Y", d8_job_finished: (final_task ? "Y" : "N" ), d9_qc_required: d9_qc_required, d10_job_estimate_required_final: ((@ticket.cus_chargeable or @ticket.cus_payment_required) ? "Y" : "N"), d12_need_to_invoice: ((@ticket.cus_chargeable or @ticket.cus_payment_required) ? "Y" : "N"), d6_close_approval_required: (@ticket_engineer.ticket_close_approval_required ? "Y" : "N"))
+        bpm_variables = view_context.initialize_bpm_variables.merge(supp_engr_user: current_user.id, d7_close_approval_requested: (@ticket_engineer.job_close_approval_requested ? "Y" : "N"), d4_job_complete: "Y", d8_job_finished: (final_resolution ? "Y" : "N" ), d9_qc_required: d9_qc_required, d10_job_estimate_required_final: ((@ticket.cus_chargeable or @ticket.cus_payment_required) ? "Y" : "N"), d12_need_to_invoice: ((@ticket.cus_chargeable or @ticket.cus_payment_required) ? "Y" : "N"), d6_close_approval_required: (@ticket_engineer.ticket_close_approval_required ? "Y" : "N"))
 
-        if final_task
+        if final_resolution
           if @ticket.ticket_type.code == "IH"
             @ticket.ticket_status = TicketStatus.find_by_code("QCT")
           elsif (@ticket.cus_chargeable or @ticket.cus_payment_required)
@@ -4260,9 +4264,9 @@ class TicketsController < ApplicationController
           end  
         end
 
-        @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(55).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id) if @ticket_engineer.ticket_close_approval_requested
+        @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(55).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id) if @ticket_engineer.job_close_approval_requested
 
-        if final_task
+        if final_resolution
           #Action 88 - Finish Job
           user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(88).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id) 
           user_ticket_action.build_ticket_finish_job(resolution: "")
@@ -4271,7 +4275,7 @@ class TicketsController < ApplicationController
         @ticket.save
 
         #Calculate Total Costs and Time
-        @ticket.calculate_ticket_total_costs       
+        @ticket.calculate_ticket_total_costs   
 
         @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
@@ -4279,7 +4283,7 @@ class TicketsController < ApplicationController
 
           all_success = true
           error_engs = ""
-          if !final_task
+          if !final_resolution
             next_engineer = @ticket.ticket_engineers. { |en| en.parent_engineer_id == @ticket_engineer.id  }.first
             if  next_engineer.present?
 

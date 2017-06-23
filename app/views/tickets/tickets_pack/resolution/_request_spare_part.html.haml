@@ -20,7 +20,10 @@
     - if ticket.ticket_type.code == 'OS'
       .row
         .col-md-3
-          = f.association :ticket_fsr, collection: ticket.ticket_fsrs.map{|tf| [tf.ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"]), tf.id]}, wrapper_html: {class: "col-md-12"}, label: "Ticket FSR", required: true
+          - ticket_workfow = ticket.ticket_workflow_processes.where process_id: Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:process_id]
+          - job_engineers =  ticket.ticket_engineers.where(workflow_process_id: ticket_workfow.first.try(:id))
+
+          = f.association :ticket_fsr, collection: ticket.ticket_fsrs.where(engineer_id: job_engineers.map { |eng| eng.id  }).map{|tf| [tf.ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"]), tf.id]}, wrapper_html: {class: "col-md-12"}, label: "Ticket FSR", required: true
     .row
       .col-md-3
         = f.input :spare_part_no, wrapper_html: {class: "col-md-12"}, required: true, placeholder: "Part Number"
