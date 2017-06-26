@@ -2,9 +2,20 @@ module TicketsHelper
   def re_open_ticket(ticket_id, re_open_action_id, engineer_id=nil)
     ticket = Ticket.find ticket_id
 
-    start_engineer = ticket.ticket_engineers.find engineer_id if engineer_id.present?
+    start_engineer = ticket.ticket_engineers.find engineer_id if engineer_id.present? # root doesn't have engineer_id
 
-    #Create ticket_engineers table for re-open
+    # ***********************
+    # if start_engineer
+    #   begin
+    #     child = start_engineer.sub_engineers.first
+    #   do
+    #   end until child.present?
+    # else
+    # end
+    # ticket.ticket_engineers
+    # ***********************
+
+    #Create - duplicate ticket_engineers table for re-open
     eng_map = []
     ticket.ticket_engineers.each do |engineer|
 
@@ -34,11 +45,13 @@ module TicketsHelper
 
     #Remove reassignment requested engineers
     go_ahead = true
+    re_assign_found = false
     do while go_ahead
       go_ahead = false
       ticket.ticket_engineers.each do |engineer|
-        if engineer.re_assignment_requested = true
+        if (engineer.re_assignment_requested = true) and (engineer.re_open_index == ticket.re_open_count)
           go_ahead = true
+          re_assign_found = true
           assn_eng = engineer
           assn_eng_prnt_id = engineer.parent_engineer_id
         end
@@ -46,7 +59,7 @@ module TicketsHelper
 
       if go_ahead
         ticket.ticket_engineers.each do |engineer|
-          if engineer.parent_engineer_id = assn_eng.id
+          if engineer.parent_engineer_id = assn_eng.id and (engineer.re_open_index == ticket.re_open_count)
             engineer.update parent_engineer_id: assn_eng_prnt_id
           end
         end
@@ -54,49 +67,50 @@ module TicketsHelper
       end
     end
 
+    #set Order_no according to channel_no after remove reassignment engineers
+    if re_assign_found
+
+    end
+
     #Call BPM
-          all_success = true
-          error_engs =
+    all_success = true
+    error_engs = ''
 
 
-            @ticket.ticket_engineers.each do |ticket_engineer|
-              unless (ticket_engineer.parent_engineer.present?) and (ticket_engineer.re_open_index == ticket.re_open_count )
-                # bpm output variables
-                ticket_id = @ticket.id
-                di_pop_approval_pending = "N"
-                priority = @ticket.priority
-                d42_assignment_required = "N"
-                engineer_id = ticket_engineer.id
+      @ticket.ticket_engineers.each do |ticket_engineer|
+        if (!ticket_engineer.parent_engineer.present?) and (ticket_engineer.re_open_index == ticket.re_open_count )
+          # bpm output variables
+          ticket_id = @ticket.id
+          di_pop_approval_pending = "N"
+          priority = @ticket.priority
+          d42_assignment_required = "N"
+          engineer_id = ticket_engineer.id
 
-                supp_engr_user = ticket_engineer.user_id
-                supp_hd_user = @ticket.created_by
+          supp_engr_user = ticket_engineer.user_id
+          supp_hd_user = @ticket.created_by
 
-                @bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT", query: {ticket_id: ticket_id, d1_pop_approval_pending: di_pop_approval_pending, priority: priority, d42_assignment_required: d42_assignment_required, engineer_id: engineer_id , supp_engr_user: supp_engr_user, supp_hd_user: supp_hd_user}
+          @bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT", query: {ticket_id: ticket_id, d1_pop_approval_pending: di_pop_approval_pending, priority: priority, d42_assignment_required: d42_assignment_required, engineer_id: engineer_id , supp_engr_user: supp_engr_user, supp_hd_user: supp_hd_user}
 
-                if @bpm_response1[:status].try(:upcase) == "SUCCESS"
-                  workflow_process = @ticket.ticket_workflow_processes.create(process_id: @bpm_response[:process_id], process_name: @bpm_response[:process_name])
+          if @bpm_response1[:status].try(:upcase) == "SUCCESS"
+            workflow_process = @ticket.ticket_workflow_processes.create(process_id: @bpm_response[:process_id], process_name: @bpm_response[:process_name])
 
-                  ticket_engineer.status = 1
-                  ticket_engineer.job_assigned_at = DateTime.now
-                  ticket_engineer.workflow_process_id = workflow_process.process_id
+            ticket_engineer.status = 1
+            ticket_engineer.job_assigned_at = DateTime.now
+            ticket_engineer.workflow_process_id = workflow_process.process_id
 
-                  ticket_engineer.save
+            ticket_engineer.save
 
-                else
-                  all_success = false
-                  @bpm_process_error = true
-                  error_engs += engineer_id+", "
-                end
-
-              end
-            end
-
-
-          unless all_success
-            flash[:notice] = "Successfully updated."
           else
-            flash[:error] = "ticket is updated. Engineer assignment error. ("+error_engs+")"
+            all_success = false
+            @bpm_process_error = true
+            error_engs += engineer_id+", "
           end
+
+        end
+      end
+
+
+    error_engs
 
   end
 end
