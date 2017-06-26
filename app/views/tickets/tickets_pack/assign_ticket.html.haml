@@ -80,7 +80,7 @@
   .row
     {{#each model.engs as |eng|}}
     .col-md-1.col-sm-2.assign-group
-      %strong Group: {{eng.eng_set.lastObject.channel_no}}
+      %strong Channel: {{eng.eng_set.lastObject.channel_no}}
       {{#each eng.eng_set as |subEng|}}
       .assign-engineers
         {{#group-list ticketId="#{ticket.id}" ticketEng=subEng }}
