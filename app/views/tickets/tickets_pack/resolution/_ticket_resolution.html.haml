@@ -1,5 +1,6 @@
 - present_of_start_ticket_action =  ticket.user_ticket_actions.find_by_action_id(TaskAction.find_by_action_no(5).id).present?
 - TicketSparePart
+- ticket_engineer = ticket.ticket_engineers.find(id: params[:engineer_id])
 .row
   .col-md-3
     Ticket Type:
@@ -16,51 +17,57 @@
   .col-md-3
     Repair type:
     %strong= ticket.ticket_repair_type.name
+  -if ticket.re_open_count > 0
+    .col-md-3
+      Current Re-Open No.:
+      %strong= ticket_engineer.re_open_index
+
 .row
   .col-md-12
     .form-group
       %label Activity
       %select{:class => "activity_id", :id => "template_caller"}
+        - job_finished = (ticket_engineer.status > 1) or  (ticket.job_finished)
         - unless present_of_start_ticket_action
           %option{:value => "start_action", data: {task_id: params[:task_id]}} Start Action
-        - unless ticket.job_finished
+        - unless job_finished
           %option{:value => "re_assign", data: {task_id: params[:task_id]}} Re Assign
-        - if present_of_start_ticket_action and not ticket.job_finished
+        - if present_of_start_ticket_action and not job_finished
           %option{:value => "change_ticket_cus_warranty", data: {task_id: params[:task_id]}} Change Ticket Warranty Type or Customer Chargeable
-        - if present_of_start_ticket_action and not ticket.job_finished
+        - if present_of_start_ticket_action and not job_finished
           %option{:value => "change_ticket_repair_type", data: {task_id: params[:task_id]}} Change Ticket Repair Type
         - if present_of_start_ticket_action and not ticket.status_hold
           %option{:value => "hold", data: {task_id: params[:task_id]}} Hold
         - if present_of_start_ticket_action and ticket.status_hold
           %option{:value => "un_hold", data: {task_id: params[:task_id]}} Un Hold
-        - if present_of_start_ticket_action and not ticket.job_finished
+        - if present_of_start_ticket_action and not job_finished
           %option{:value => "edit_serial_no_request", data: {task_id: params[:task_id]}} Edit Serial No Request
-        - if present_of_start_ticket_action and ticket.ticket_type.code == 'OS'  and not ticket.job_finished
+        - if present_of_start_ticket_action and ticket.ticket_type.code == 'OS'  and not job_finished
           %option{:value => "create_fsr", data: {task_id: params[:task_id]}} Create FSR
         - if present_of_start_ticket_action and ticket.ticket_fsrs.find_by_approved(:false).present?
           %option{:value => "edit_fsr", data: {task_id: params[:task_id]}} Edit FSR
-        - if present_of_start_ticket_action and not ticket.job_finished
+        - if present_of_start_ticket_action and not job_finished
           %option{:value => "terminate_job", data: {task_id: params[:task_id]}} Terminate Job
         - if present_of_start_ticket_action
           %option{:value => "action_taken", data: {task_id: params[:task_id]}} Action Taken
-        - if present_of_start_ticket_action and not ticket.job_finished and  ticket.ticket_repair_type.code == "IN" and (ticket.ticket_type.code == 'OS' ? ticket.ticket_fsrs.any? : true)
+        - if present_of_start_ticket_action and not job_finished and  ticket.ticket_repair_type.code == "IN" and (ticket.ticket_type.code == 'OS' ? ticket.ticket_fsrs.any? : true)
           %option{:value => "request_spare_part", data: {task_id: params[:task_id]}} Request Spare Part
-        - if present_of_start_ticket_action and not ticket.job_finished
+        - if present_of_start_ticket_action and not job_finished
           %option{:value => "request_on_loan_spare_part", data: {task_id: params[:task_id]}} Request On Loan Spare Part
         - if present_of_start_ticket_action
           %option{:value => "hp_case_id", data: {task_id: params[:task_id]}} HP Case Action
-        - if present_of_start_ticket_action and not ticket.job_finished and (ticket.ticket_repair_type.code=="IN" or (ticket.ticket_repair_type.code=="EX" and ticket.ticket_deliver_units.any?{|d| (d.received)}))
+        - if present_of_start_ticket_action and not job_finished and (ticket.ticket_repair_type.code=="IN" or (ticket.ticket_repair_type.code=="EX" and ticket.ticket_deliver_units.any?{|d| (d.received)}))
           %option{:value => "resolved_job", data: {task_id: params[:task_id]}} Resolve the Job
-        - if present_of_start_ticket_action and ticket.job_finished
+        - if present_of_start_ticket_action and job_finished
           %option{:value => "request_close_approval", data: {task_id: params[:task_id]}} Request close approval
 
-        - if present_of_start_ticket_action and ticket.ticket_repair_type.code == "EX" and not (ticket.ticket_deliver_units.any?{|d| !d.received} or ticket.job_finished) and ticket.ticket_estimations.any?{|ts| ((ts.status_id == EstimationStatus.find_by_code("EST").id) or (ts.status_id == EstimationStatus.find_by_code("CLS").id) or (ts.status_id == EstimationStatus.find_by_code("APP").id)) and ((ts.cust_approved) or ( !ts.cust_approval_required))}
+        - if present_of_start_ticket_action and ticket.ticket_repair_type.code == "EX" and not (ticket.ticket_deliver_units.any?{|d| !d.received} or job_finished) and ticket.ticket_estimations.any?{|ts| ((ts.status_id == EstimationStatus.find_by_code("EST").id) or (ts.status_id == EstimationStatus.find_by_code("CLS").id) or (ts.status_id == EstimationStatus.find_by_code("APP").id)) and ((ts.cust_approved) or ( !ts.cust_approval_required))}
           %option{:value => "deliver_unit", data: {task_id: params[:task_id]}} Deliver Unit
 
-        - if present_of_start_ticket_action and !ticket.ticket_estimations.any?{|ts| (ts.status_id == EstimationStatus.find_by_code("RQS").id) } and ticket.ticket_repair_type.code=="EX" and not ticket.job_finished
+        - if present_of_start_ticket_action and !ticket.ticket_estimations.any?{|ts| (ts.status_id == EstimationStatus.find_by_code("RQS").id) } and ticket.ticket_repair_type.code=="EX" and not job_finished
           %option{:value => "job_estimation_request", data: {task_id: params[:task_id]}} Job Estimate Request (External)
 
-        - if present_of_start_ticket_action and ticket.ticket_repair_type.code=="EX" and ticket.ticket_deliver_units.any?{|d| (d.collected and !d.received)} and not ticket.job_finished
+        - if present_of_start_ticket_action and ticket.ticket_repair_type.code=="EX" and ticket.ticket_deliver_units.any?{|d| (d.collected and !d.received)} and not job_finished
           %option{:value => "recieve_unit", data: {task_id: params[:task_id]}} Receive Unit
 
 .form-group

@@ -273,9 +273,23 @@ class InvoicesController < ApplicationController
       bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
       if bpm_response[:status].upcase == "SUCCESS"
-        flash[:notice] = "Successfully updated"
+
+        if params[:reject] #Reject QC
+          re_open_action_id = @ticket.user_ticket_actions.where(action_id: TaskAction.find_by_action_no(67).id).last.id
+
+          re_open_ticket_response = re_open_ticket(@ticket.id, re_open_action_id, start_engineer_id)
+
+          if !re_open_ticket_response.present?
+            flash[:notice] = "Successfully updated"
+          else
+            flash[:error] = "QC is updated. Re-Open Error ("+re_open_ticket_response+")"
+          end
+        else
+          flash[:notice] = "Successfully updated"
+        end
+
       else
-        flash[:error] = "invoice is updated. but Bpm error"
+        flash[:error] = "QC is updated. but Bpm error"
       end
     else
       flash[:error] = "Bpm error."
@@ -308,9 +322,10 @@ class InvoicesController < ApplicationController
         d39_re_open = "Y"
 
         if !@ticket.ticket_close_approval_required or @ticket.ticket_close_approval_requested or @ticket.ticket_close_approved
-          d38_ticket_close_approved = "N" #Create Engineer task
+          #d38_ticket_close_approved = "N" #Create Engineer task
           editable_ticket_params.merge! ticket_close_approval_requested: false, ticket_close_approved: false
         end
+
         editable_ticket_params.merge! re_open_count: (@ticket.re_open_count.to_i+1), job_finished: false, job_finished_at: nil, status_id: TicketStatus.find_by_code("ROP").id, cus_payment_completed: false
 
       else
@@ -373,7 +388,22 @@ class InvoicesController < ApplicationController
       bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
       if bpm_response[:status].upcase == "SUCCESS"
-        flash[:notice] = "Successfully updated"
+
+        if re_open
+
+          re_open_action_id = user_ticket_action.id
+
+          re_open_ticket_response = re_open_ticket(@ticket.id, re_open_action_id, start_engineer_id)
+
+          if !re_open_ticket_response.present?
+            flash[:notice] = "Successfully updated"
+          else
+            flash[:error] = "Customer feedback is updated. Re-Open Error ("+re_open_ticket_response+")"
+          end
+
+        else
+          flash[:notice] = "Successfully updated"
+        end
         Rails.cache.delete(["/tickets/customer_feedback", params[:task_id]]) unless request.xhr?
       else
         flash[:error] = "Ticket is updated. but Bpm error"
