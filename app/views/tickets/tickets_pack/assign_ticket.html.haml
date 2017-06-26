@@ -80,7 +80,7 @@
   .row
     {{#each model.engs as |eng|}}
     .col-md-1.col-sm-2.assign-group
-      %strong Group: {{eng.eng_set.lastObject.channel_no}}
+      %strong Channel: {{eng.eng_set.lastObject.channel_no}}
       {{#each eng.eng_set as |subEng|}}
       .assign-engineers
         {{#group-list ticketId="#{ticket.id}" ticketEng=subEng }}
@@ -116,7 +116,7 @@
 
 %script{type: "text/x-handlebars", id: "components/new-group"}
   %h4 Assign Engineer
-  %strong New Entry for Line {{obj.channel_no}} order {{obj.order_no}}
+  %strong New Entry for Channel {{obj.channel_no}} order {{obj.order_no}}
   {{#if obj.channel_no}}
   < form >
   .row
