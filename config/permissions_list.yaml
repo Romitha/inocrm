@@ -9,7 +9,9 @@ User:
 
   View users profile:
     actions:
-      []
+      - check_user_session
+      - profile
+      - initiate_user_profile_edit
     attributes:
       []
 
@@ -30,26 +32,52 @@ User:
       #   :value: d
 
   Access admin store and branch information:
+    actions:
+      []
+    attributes:
+      []
   Access admin sbu information:
+    actions:
+      []
+    attributes:
+      []
 
 ProductSoldCountry:
   Access admin country information:
     actions:
-      - sdfasdf
+      - country
+      - delete_admin_country
 
 RegionalSupportCenter:
   Access admin regional information:
+    actions:
+      - regional_support_center
+      - delete_admin_regional_support_center
 
 SlaTime:
   Access admin SLA information:
+    actions:
+      - sla
+      - delete_admin_sla
 
   Access admin permission information:
 
 IndustryType:
   Access admin industry type information:
+    actions:
+      - industry_type
+      - delete_admin_industry_type
+    attributes:
+      []
 
 Sbu:
   Access admin sbu information:
+    actions:
+      - sbu
+      - delete_admin_sbu
+      - delete_admin_sbu_engineer
+    attributes:
+      []
 
 Organization:
   View organizations:
@@ -69,76 +97,156 @@ Organization:
 
 ProductBrand:
   Access admin brand information:
+    actions:
+      - inventory_brand
+      - delete_inventory_brand
 
 SparePartDescription:
   Access admin spare part information:
 
 Reason:
   Access admin reason information:
+    actions:
+      - reason
+      - delete_admin_inventory_reason
 
 Accessory:
   Access admin accessory information:
+    actions:
+      - accessories
+      - delete_admin_accessory
 
 GeQAndA:
   Access admin general question information:
+    actions:
+      - general_question
+      - delete_admin_general_question
 
 Feedback:
   Access admin customer feedback information:
+    actions:
+      - customer_feedback
+      - delete_admin_customer_feedback
 
 TicketStartAction:
   Access admin ticket start action information:
+    actions:
+      - start_action
+      - delete_admin_ticket_start_action
 
 ProblemCategory:
-  Access admin problem category information:
+  Access admin ticket problem category information:
+    actions:
+      - problem_and_category
+      - delete_problem_category
 
 AdditionalCharge:
   Access admin additional charge information:
+    actions:
+      - additional_charge
+      - delete_admin_additional_charge
 
 DispatchMethod:
   Access admin dispatch method information:
+    actions:
+      - dispatch_method
+      - delete_dispatch_method
 
 PaymentItem:
   Access admin payment item information:
+    actions:
+      - payment_item
+      - delete_admin_payment_item
 
 PaymentTerm:
   Access admin payment term information:
+    actions:
+      - payment_term
+      - delete_payment_term
 
 Tax:
   Access admin tax information:
+    actions:
+      - tax
+      - delete_tax
+      - delete_tax_rate
 
 InventoryCategory1:
   Access admin inventory brand information:
+    actions:
+      - inventory_brand
+      - delete_inventory_brand
+      - delete_admin_brands_and_category
 
 InventoryCategory2:
   Access admin inventory product meta information:
+    actions:
+      - inventory_product_category
+      - delete_inventory_product_category
 
 InventoryCategory3:
   Access admin inventory category information:
+    actions:
+      - category
+      - delete_inventory_category
+      - delete_admin_brands_and_category
 
 InventoryDisposalMethod:
   Access admin inventory disposal method information:
+    actions:
+      - disposal_method
+      - delete_disposal_method
 
 InventoryRack:
   Access admin inventory location information:
+    actions:
+      - location
+      - delete_location_rack
+      - delete_location_shelf
+      - delete_location_bin
 
 Manufacture:
   Access admin inventory manufacture information:
+    actions:
+      - manufacture
+      - delete_manufacture
+      - delete_inventory_manufacture
 
 ProductCondition:
   Access admin inventory product condition information:
+    actions:
+      - product_condition
+      - delete_product_condition
 
 InventoryProduct:
   Access admin inventory product information:
+    actions:
+      - product
+      - delete_inventory_product_form
 
 InventoryUnit:
   Access admin inventory unit information:
+    actions:
+      - unit
+      - delete_inventory_unit
 
 Inventory:
   Access admin inventory information:
+    actions:
+      - inventory
 
 InventoryReason:
   Access admin inventory reason information:
+    actions:
+      - reason
+      - delete_admin_inventory_reason
 
 Ticket:
   Add new ticket:
+    actions:
+      - set_ticket
+
   Assign ticket:
+    actions:
+      - assign_ticket
+      - update_assign_ticket
