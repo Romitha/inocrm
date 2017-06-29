@@ -69,9 +69,9 @@ App.GroupsNewRoute = Ember.Route.extend
       sbus: Ember.$.getJSON('/tickets/load_sbu', {type: "sbu"}).then( (data)-> data.sbus )
 
 App.GroupsNewController = Ember.Controller.extend
-  queryParams: ['group_no', 'order_no', 'ticket_id']
+  queryParams: ['channel_no', 'order_no', 'ticket_id']
 
-  group_no: null
+  channel_no: null
   order_no: null
   ticket_id: null
   process_id: null
@@ -87,9 +87,9 @@ App.GroupsNewController = Ember.Controller.extend
     if Ember.isPresent(@get("model"))
       @set "model.newObj.order_no", @get("order_no")
 
-  observeGroupNo: Ember.observer "group_no", ->
+  observeGroupNo: Ember.observer "channel_no", ->
     if Ember.isPresent(@get("model"))
-      @set "model.newObj.group_no", @get("group_no")
+      @set "model.newObj.channel_no", @get("channel_no")
 
   observeTicketId: Ember.observer "ticket_id", ->
     if Ember.isPresent(@get("model"))

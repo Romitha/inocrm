@@ -245,6 +245,7 @@ class InvoicesController < ApplicationController
     update_ticket_params = ticket_params
     @ticket = Ticket.find params[:ticket_id]
     continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    start_engineer_id = params[:start_engineer_id]
 
     if continue
       # bpm output variables
@@ -254,20 +255,15 @@ class InvoicesController < ApplicationController
 
         bpm_variables.merge! d37_qc_passed: "Y"
 
-        update_ticket_params.merge! status_id: TicketStatus.find_by_code("PMT").id, qc_passed: true
-        unless @ticket.cus_chargeable or @ticket.cus_payment_required or @ticket.ticket_terminated
-          update_ticket_params.merge! status_id: TicketStatus.find_by_code("CFB").id
-        end
-
+        update_ticket_params.merge! status_id: TicketStatus.find_by_code("#{!(@ticket.cus_chargeable or @ticket.cus_payment_required or @ticket.ticket_terminated) ? 'CFB' : 'PMT' }").id, qc_passed: true
 
       elsif params[:reject] #Reject QC
-
-        #bpm_variables.merge! d38_ticket_close_approved: ( !@ticket.ticket_close_approval_required or @ticket.ticket_close_approval_requested or @ticket.ticket_close_approved) ? "N" : "Y"
         bpm_variables.merge! d38_ticket_close_approved: "Y"
 
-        @ticket.update qc_passed: false, status_id: TicketStatus.find_by_code("ROP").id, re_open_count: (@ticket.re_open_count.to_i+1), job_finished: false, job_finished_at: nil, ticket_close_approval_required: true, ticket_close_approval_requested: false, ticket_close_approved: false
+        update_ticket_params.merge! qc_passed: false, status_id: TicketStatus.find_by_code("ROP").id, re_open_count: (@ticket.re_open_count.to_i+1), job_finished: false, job_finished_at: nil, ticket_close_approval_required: true, ticket_close_approval_requested: false, ticket_close_approved: false
 
       end
+
       @ticket.update update_ticket_params
 
       bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
@@ -277,13 +273,25 @@ class InvoicesController < ApplicationController
         if params[:reject] #Reject QC
           re_open_action_id = @ticket.user_ticket_actions.where(action_id: TaskAction.find_by_action_no(67).id).last.id
 
-          re_open_ticket_response = re_open_ticket(@ticket.id, re_open_action_id, start_engineer_id)
+          re_open_ticket_response_engineer_ids = @ticket.re_open_ticket(re_open_action_id, start_engineer_id) # returns newly created engineer ids array
 
-          if !re_open_ticket_response.present?
-            flash[:notice] = "Successfully updated"
-          else
-            flash[:error] = "QC is updated. Re-Open Error ("+re_open_ticket_response+")"
+          newly_assigned_engs = []
+
+          @ticket.ticket_engineers.where(id: re_open_ticket_response_engineer_ids).each do |engineer|
+            @bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT", query: {ticket_id: @ticket.id, d1_pop_approval_pending: "N", priority: @ticket.priority, d42_assignment_required: "N", engineer_id: engineer.id , supp_engr_user: engineer.user_id, supp_hd_user: @ticket.created_by}
+
+            if @bpm_response1[:status].try(:upcase) == "SUCCESS"
+              workflow_process = @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name])
+
+              ticket_engineer.update status: 1, job_assigned_at: DateTime.now, workflow_process_id: workflow_process.process_id
+
+              newly_assigned_engs << engineer.user.full_name
+            end
+
           end
+
+          flash[:notice] = "Successfully re-assigned to #{newly_assigned_engs.join(', ')}"
+
         else
           flash[:notice] = "Successfully updated"
         end
@@ -300,7 +308,8 @@ class InvoicesController < ApplicationController
 
   def update_customer_feedback #Customer feedback and Terminate Job
     @ticket = Ticket.find params[:ticket_id]
-    editable_ticket_params = {}
+    editable_ticket_params = {re_open_count: (@ticket.re_open_count.to_i+1), job_finished: false, job_finished_at: nil, status_id: TicketStatus.find_by_code("ROP").id, cus_payment_completed: false}
+
     re_open = params[:re_opened].present?
     customer_feedback_payment_completed = params[:payment_completed].present?
     customer_feedback_unit_return_customer = params[:unit_return_customer].present?
@@ -308,28 +317,25 @@ class InvoicesController < ApplicationController
     customer_feedback_dispatch_method_id = params[:dispatch_method_id]
     customer_feedback_re_opened = params[:re_opened].present?
     customer_feedback_feedback_description = params[:feedback_description]
+    d39_re_open = "N"
+    d38_ticket_close_approved = "Y" #Not create Engineer task
 
     @ticket_payment_received = TicketPaymentReceived.new ticket_payment_received_params if @ticket.cus_payment_required
     #@final_invoice = @ticket.ticket_invoices.order(created_at: :desc).find_by_canceled false
     @final_invoice = @ticket.final_invoice
 
     continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    start_engineer_id = params[:start_engineer_id]
 
     if continue
-      d39_re_open = "N"
-      d38_ticket_close_approved = "Y" #Not create Engineer task
       if re_open
         d39_re_open = "Y"
 
-        if !@ticket.ticket_close_approval_required or @ticket.ticket_close_approval_requested or @ticket.ticket_close_approved
-          #d38_ticket_close_approved = "N" #Create Engineer task
-          editable_ticket_params.merge! ticket_close_approval_requested: false, ticket_close_approved: false
-        end
+        editable_ticket_params.merge! ticket_close_approval_requested: false, ticket_close_approved: false if !@ticket.ticket_close_approval_required or @ticket.ticket_close_approval_requested or @ticket.ticket_close_approved
 
-        editable_ticket_params.merge! re_open_count: (@ticket.re_open_count.to_i+1), job_finished: false, job_finished_at: nil, status_id: TicketStatus.find_by_code("ROP").id, cus_payment_completed: false
+        # editable_ticket_params.merge! re_open_count: (@ticket.re_open_count.to_i+1), job_finished: false, job_finished_at: nil, status_id: TicketStatus.find_by_code("ROP").id, cus_payment_completed: false
 
       else
-
         if @ticket.cus_payment_required
           if @ticket.final_amount_to_be_paid.to_f > 0
             if @ticket_payment_received.amount.to_f > 0
@@ -366,10 +372,12 @@ class InvoicesController < ApplicationController
         @continue = true
 
       end
-      @ticket.update editable_ticket_params if editable_ticket_params.present?
-      @ticket.set_ticket_close(current_user.id) unless re_open
-      #Calculate Total Costs and Time
-      @ticket.calculate_ticket_total_costs unless re_open
+      @ticket.update editable_ticket_params# if editable_ticket_params.present?
+      unless re_open
+        @ticket.set_ticket_close(current_user.id)
+        #Calculate Total Costs and Time
+        @ticket.calculate_ticket_total_costs
+      end
 
       if @ticket.ticket_terminated
         # Action:(60)Terminate Job Customer Feedback, DB.spt_act_customer_feedback.
@@ -393,13 +401,24 @@ class InvoicesController < ApplicationController
 
           re_open_action_id = user_ticket_action.id
 
-          re_open_ticket_response = re_open_ticket(@ticket.id, re_open_action_id, start_engineer_id)
+          re_open_ticket_response_engineer_ids = @ticket.re_open_ticket(re_open_action_id, start_engineer_id)
 
-          if !re_open_ticket_response.present?
-            flash[:notice] = "Successfully updated"
-          else
-            flash[:error] = "Customer feedback is updated. Re-Open Error ("+re_open_ticket_response+")"
+          newly_assigned_engs = []
+
+          @ticket.ticket_engineers.where(id: re_open_ticket_response_engineer_ids).each do |engineer|
+            @bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT", query: {ticket_id: @ticket.id, d1_pop_approval_pending: "N", priority: @ticket.priority, d42_assignment_required: "N", engineer_id: engineer.id , supp_engr_user: engineer.user_id, supp_hd_user: @ticket.created_by}
+
+            if @bpm_response1[:status].try(:upcase) == "SUCCESS"
+              workflow_process = @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name])
+
+              ticket_engineer.update status: 1, job_assigned_at: DateTime.now, workflow_process_id: workflow_process.process_id
+
+              newly_assigned_engs << engineer.user.full_name
+            end
+
           end
+
+          flash[:notice] = "Successfully re-assigned to #{newly_assigned_engs.join(', ')}"
 
         else
           flash[:notice] = "Successfully updated"
@@ -578,7 +597,7 @@ class InvoicesController < ApplicationController
     @total_estimation_amount = @ticket.ticket_estimations.where(foc_approved: false, cust_approved: true).map { |estimation| estimation.approval_required ? (estimation.ticket_estimation_externals.sum(:approved_estimated_price)+estimation.ticket_estimation_parts.sum(:approved_estimated_price)+estimation.ticket_estimation_additionals.sum(:approved_estimated_price)) : (estimation.ticket_estimation_externals.sum(:estimated_price)+estimation.ticket_estimation_parts.sum(:estimated_price)+estimation.ticket_estimation_additionals.sum(:estimated_price)) }.compact.sum
 
     #Calculate Total Costs and Time
-    @ticket.calculate_ticket_total_costs if !@invoice.canceled
+    @ticket.calculate_ticket_total_costs unless @invoice.canceled
 
     render "tickets/tickets_pack/estimate_job_final/estimate_job_final"
 
