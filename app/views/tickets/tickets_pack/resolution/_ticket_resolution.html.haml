@@ -27,7 +27,7 @@
     .form-group
       %label Activity
       %select{:class => "activity_id", :id => "template_caller"}
-        - job_finished = (ticket_engineer.status > 1) or  (ticket.job_finished)
+        - job_finished = (ticket_engineer.status > 1 or ticket.job_finished)
         - unless present_of_start_ticket_action
           %option{:value => "start_action", data: {task_id: params[:task_id]}} Start Action
         - unless job_finished

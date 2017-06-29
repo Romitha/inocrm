@@ -353,9 +353,13 @@ class TicketEngineer < ActiveRecord::Base
     !(ticket_workflow_process.present? or user_assign_ticket_actions.any?)
   end
 
+  def root_engineer?
+    channel_no.to_i == 1 and order_no.to_i == 1
+  end
+
   has_many :dyna_columns, as: :resourceable, autosave: true
 
-  [:group_no, :order_no].each do |dyna_method|
+  [:group_no].each do |dyna_method|
     define_method(dyna_method) do
       dyna_columns.find_by_data_key(dyna_method).try(:data_value)
     end

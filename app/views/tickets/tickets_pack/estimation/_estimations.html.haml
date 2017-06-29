@@ -21,15 +21,15 @@
 
   %tbody
 
-    - ticket_workfow = ticket.ticket_workflow_processes.where process_id: params["process_id"]
-    - ticket_engineers = ticket.ticket_engineers.where(workflow_process_id: ticket_workfow.first.try(:id))
+    - ticket_workfows = ticket.ticket_workflow_processes.where process_id: params[:process_id]
+    - ticket_engineers = ticket.ticket_engineers.where(workflow_process_id: ticket_workfows.first.try(:id))
 
     - ticket.cached_ticket_estimations.each_with_index do |estimation, index|
 
       - est_engineers = ticket_engineers.where(id: estimation.engineer_id)
-      - est_ownership = est_engineers.pressent?
+      / - est_ownership = est_engineers.pressent?
 
-      - if est_ownership
+      - if est_engineers.any?
 
         - estimation_external_present = estimation.ticket_estimation_externals.present?
         - estimation_external_or_part = (estimation.ticket_estimation_externals.first or estimation.ticket_estimation_parts.first)
@@ -44,9 +44,9 @@
           %td
             - if estimation_external_present
               = estimation_external_or_part.try(:organization).try(:name)
-            - else
 
-              = ticket_spare_part.ticket_spare_part_manufacture.requested_quantity if ticket_spare_part.ticket_spare_part_manufacture.present?
+            - else
+              = ticket_spare_part.ticket_spare_part_manufacture.try(:requested_quantity)
 
               - if ticket_spare_part.ticket_spare_part_store.present?
                 - if ticket_spare_part.ticket_spare_part_store.store_request_approved

@@ -185,7 +185,8 @@ class Ticket < ActiveRecord::Base
     sup_engineer_time += ticket_fsrs.to_a.sum{ |fsr|  fsr.ticket_fsr_support_engineers.sum(:hours_worked) } * 60 #In Minutes
 
     ticket_estimations.each do |ticket_estimation|
-      if ((ticket_estimation.approval_required == false) or ((ticket_estimation.approval_required == true) and (ticket_estimation.approved == true))) and ((ticket_estimation.cust_approval_required == false) or ((ticket_estimation.cust_approval_required == true) and (ticket_estimation.cust_approved == true)))
+      # if (!ticket_estimation.approval_required or (ticket_estimation.approval_required and ticket_estimation.approved)) and (!ticket_estimation.cust_approval_required or (ticket_estimation.cust_approval_required and ticket_estimation.cust_approved))
+      if !((ticket_estimation.approval_required and !ticket_estimation.approved) or (ticket_estimation.cust_approval_required and !ticket_estimation.cust_approved))
 
         part_cost += ticket_estimation.estimation_parts.sum(:cost_price)
         additional_cost += ticket_estimation.estimation_additionals.sum(:cost_price)
@@ -201,7 +202,74 @@ class Ticket < ActiveRecord::Base
 
     ticket_total_cost_params = {engineer_time: engineer_time, sup_engineer_time: sup_engineer_time, engineer_cost: engineer_cost, sup_engineer_cost: sup_engineer_cost, part_cost: part_cost, additional_cost: additional_cost, external_cost: external_cost}
 
-    ticket_total_cost.present? : ticket_total_cost.update(ticket_total_cost_params) : create_ticket_total_cost(ticket_total_cost_params)
+    ticket_total_cost.present? ? ticket_total_cost.update(ticket_total_cost_params) : create_ticket_total_cost(ticket_total_cost_params)
+
+  end
+
+  def re_open_ticket(re_open_action_id, engineer_id = nil)
+    re_opened_engineer_ids = []
+    max_channel_no = ticket_engineers.pluck(:channel_no).max
+
+    start_engineer = if engineer_id.present?
+      ticket_engineers.find engineer_id
+    else
+      channel_no = 1
+      init_queued_engineer = ticket_engineers.where(channel_no: channel_no, order_no: 1).first
+
+      begin
+        unless init_queued_engineer.present?
+          channel_no += 1
+          init_queued_engineer = ticket_engineers.where(channel_no: channel_no, order_no: 1).first 
+        end
+        init_engineer = init_queued_engineer if init_queued_engineer and !init_queued_engineer.re_assignment_requested and init_queued_engineer.re_open_index.to_i == 0 and init_queued_engineer.status > 0
+        init_queued_engineer = (init_queued_engineer and init_queued_engineer.sub_engineers.first)
+
+      end until init_engineer.present? or max_channel_no < channel_no
+
+      init_engineer
+
+    end
+    current_engineer = start_engineer if !start_engineer.re_assignment_requested and start_engineer.re_open_index.to_i == 0 and start_engineer.status > 0
+    parent_engineer = nil
+
+    order_no = start_engineer.order_no.to_i
+
+    until current_engineer.blank?
+      new_engineer = ticket_engineers.build current_engineer.attributes.select{|a| ["user_id", "sbu_id", "re_assignment_requested", "channel_no"].include? a}
+      new_engineer.attributes = {created_action_id: re_open_action_id, re_open_index: self.re_open_count}
+
+      new_engineer.parent_engineer = parent_engineer
+      new_engineer.order_no = order_no
+
+      new_engineer.save
+
+      re_opened_engineer_ids << [new_engineer.id]
+
+      parent_engineer = new_engineer
+
+      # current_engineer = current_engineer.sub_engineers.first
+      queued_current_engineer = current_engineer.sub_engineers.first
+
+      begin
+        current_engineer = if !queued_current_engineer.re_assignment_requested and queued_current_engineer.re_open_index.to_i == 0 and queued_current_engineer.status > 0
+          queued_current_engineer
+        else
+          nil
+        end
+        queued_current_engineer = queued_current_engineer.sub_engineers.first
+
+      end until current_engineer.present? or queued_current_engineer.blank?
+
+      order_no += 1
+
+      unless current_engineer.present? or engineer_id.present?
+        current_engineer = ticket_engineers.where(channel_no: (new_engineer.channel_no+1), order_no: 1, re_open_index: 0 ).first
+        order_no = current_engineer.order_no.to_i
+      end
+
+    end
+
+    re_opened_engineer_ids
 
   end
 

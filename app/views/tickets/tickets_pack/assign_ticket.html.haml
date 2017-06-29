@@ -25,8 +25,6 @@
           = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
         = f.simple_fields_for "user_ticket_actions_attributes[]", @user_ticket_action do |u|
-
-          / = u.input :action_at, as: :hidden#, input_html: {value: DateTime.now.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")}
           = u.input :action_id, as: :hidden
           = u.input :action_by, as: :hidden, input_html: {value: current_user.id}
           = u.input :re_open_index, as: :hidden, input_html: {value: ticket.re_open_count}
@@ -74,22 +72,15 @@
 
 %hr
 %script{ type: "text/x-handlebars", id: "application"}
-  {{#link-to "groups" "#{ticket.id}" activeClass="hide"}} show groups {{/link-to}}
+  {{#link-to "groups" "#{ticket.id}" activeClass="hide"}} show Channels {{/link-to}}
 
   {{outlet}}
-
-  / {{#if showGroupFormBool}}
-  / {{ new-group obj=newObj sbuArray=model assignTo=assignTo ticketId="#{ticket.id}" saveForm=( action 'saveNewObj' ) }}
-  / <button class="btn btn-link" {{action "showGroupForm"}}>Cancel</button>
-  / {{else}}
-  / <button class="btn btn-link" {{action "showGroupForm" }} > New group </button>
-  / {{/if}}
 
 %script{ type: "text/x-handlebars", id: "groups" }
   .row
     {{#each model.engs as |eng|}}
     .col-md-1.col-sm-2.assign-group
-      %strong Group: {{eng.eng_set.lastObject.group_no}}
+      %strong Group: {{eng.eng_set.lastObject.channel_no}}
       {{#each eng.eng_set as |subEng|}}
       .assign-engineers
         {{#group-list ticketId="#{ticket.id}" ticketEng=subEng }}
@@ -101,7 +92,7 @@
         .vertical_line
       {{/each}}
       .add_engineer
-        {{#link-to "groups.new" (query-params order_no=eng.eng_set.lastObject.order_no group_no=eng.eng_set.lastObject.group_no ticket_id=eng.eng_set.lastObject.ticket_id) }}
+        {{#link-to "groups.new" (query-params order_no=eng.eng_set.lastObject.order_no channel_no=eng.eng_set.lastObject.channel_no ticket_id=eng.eng_set.lastObject.ticket_id) }}
         <span class="glyphicon glyphicon-plus-sign" aria-hidden="true" title="Add Engineer"></span>
         {{/link-to}}
 
@@ -109,13 +100,13 @@
 
     {{/each}}
 
-    {{#link-to "groups.new" (query-params order_no=0 group_no=model.new_group_no ticket_id="#{ticket.id}") }} new group {{/link-to}}
+    {{#link-to "groups.new" (query-params order_no=0 channel_no=model.new_channel_no ticket_id="#{ticket.id}") }} new group {{/link-to}}
 
   {{outlet}}
 
 %script{type: "text/x-handlebars", id: "groups/new"}
-  {{#unless model.newObj.group_no}}
-  {{#link-to "groups.new" (query-params order_no=null group_no=null ticket_id=null) }}
+  {{#unless model.newObj.channel_no}}
+  {{#link-to "groups.new" (query-params order_no=null channel_no=null ticket_id=null) }}
   <span class="glyphicon glyphicon-refresh" aria-hidden="true" title="Please refresh and click add icon to view form"></span>
   Refresh
   {{/link-to}}
@@ -125,8 +116,8 @@
 
 %script{type: "text/x-handlebars", id: "components/new-group"}
   %h4 Assign Engineer
-  %strong New Entry for Line {{obj.group_no}} order {{obj.order_no}}
-  {{#if obj.group_no}}
+  %strong New Entry for Channel {{obj.channel_no}} order {{obj.order_no}}
+  {{#if obj.channel_no}}
   < form >
   .row
     .col-sm-6
