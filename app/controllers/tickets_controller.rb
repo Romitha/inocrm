@@ -3815,7 +3815,7 @@ class TicketsController < ApplicationController
 
       #create record spt_ticket_spare_part_store
       store_requested = (!need_estimation and d44_store_part_need_approval == "N" )
-      spt_ticket_spare_part.ticket_spare_part_store.update(store_id: params[:store_id], inv_product_id: params[:inv_product_id], mst_inv_product_id: params[:mst_inv_product_id], store_requested: store_requested, store_requested_at: ( store_requested ? DateTime.now : nil), store_requested_by: ( store_requested? current_user.id : nil), requested_quantity: requested_quantity)
+      spt_ticket_spare_part.ticket_spare_part_store.update(store_id: params[:store_id], inv_product_id: params[:inv_product_id], mst_inv_product_id: params[:mst_inv_product_id], store_requested: store_requested, store_requested_at: ( store_requested ? DateTime.now : nil), store_requested_by: ( store_requested ? current_user.id : nil), requested_quantity: requested_quantity)
 
       #delete record spt_ticket_spare_part_manufacture
       spt_ticket_spare_part.ticket_spare_part_manufacture.delete
