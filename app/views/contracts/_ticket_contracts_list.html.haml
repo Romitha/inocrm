@@ -39,11 +39,11 @@
       %thead
         %tr
           %th No
-          %th Created at
-          %th Contract no
-          %th Owner dep
-          %th Start date
-          %th Exp date
+          %th Created At
+          %th Contract No
+          %th Owner Dep.
+          %th Start Date
+          %th Exp Date
           %th Hold
           %th Active
           %th Serial No
@@ -65,13 +65,13 @@
             %td= con.ticket_contract.organization.name
             %td= con.ticket_contract.contract_start_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
             %td= con.ticket_contract.contract_end_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
+            %td= boolean_in_word con.ticket_contract.hold, "Yes", "No"
             %td
-              - chk_hold = boolean_in_word con.ticket_contract.hold, "Yes", "No"
-              - if chk_hold == "Yes"
+              - chk_active = boolean_in_word con.ticket_contract.dynamic_active, "Yes", "No"
+              - if chk_active == "Yes"
                 %font{:color => "green"} Yes
               - else
                 %font{:color => "red"} No
-            %td= boolean_in_word con.ticket_contract.dynamic_active, "Yes", "No"
             %td= con.product.serial_no
             %td= con.product.product_brand.name
             %td= con.product.product_category.name
@@ -81,8 +81,8 @@
               - active = boolean_in_word con.ticket_contract.dynamic_active, "Yes", "No"
               - if active == "Yes"
                 = link_to "Select", find_by_serial_tickets_path(contract_id: con.ticket_contract.id, serial_search: con.product.serial_no), remote: true, method: :post
-              - else
-                %font{:color => "red"} Not Active
+              / - else
+              /   %font{:color => "red"} Not Active
     %br
     %br
     %br
