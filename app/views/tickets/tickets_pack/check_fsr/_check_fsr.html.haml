@@ -1,4 +1,6 @@
 - uri = URI(request.url)
+- engineer_id = Rails.cache.fetch([uri, params[:task_id]])[:bpm_input_variables].detect{ |e| e.first == "engineer_id" }.second
+
 = simple_nested_form_for ticket, url: update_check_fsr_ticket_path(ticket.id), method: :post do |f| # update_check_fsr_ticket_path(ticket.id)
 
   = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
@@ -10,15 +12,14 @@
     -if ticket.re_open_count > 0
     .col-md-3
       Current Re-Open No.:
-      %strong= ticket.ticket_engineers.find(id: params[:engineer_id]).re_open_index
+      %strong= ticket.ticket_engineers.find(id: engineer_id).re_open_index
       
     .col-md-6.col-xs-6
-      - ticket_workfow = ticket.ticket_workflow_processes.where process_id: Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
-      - job_engineers =  ticket.ticket_engineers.where(workflow_process_id: ticket_workfow.first.try(:id))
+      - ticket_workfows = ticket.ticket_workflow_processes.where process_id: Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
+      - job_engineers =  ticket.ticket_engineers.where(workflow_process_id: ticket_workfows.first.try(:id))
 
       %h4 Job belongs to : #{job_engineers.map{|eng| eng.user.full_name}.join(", ")}
       Job Completed (Approve To Close):
-      // = f.check_box :ticket_close_approved, id: "ticket_close_approved_check"
       = check_box_tag :job_close_approved, false, true, id: "ticket_close_approved_check"
     .col-md-6.col-xs-6#close_approve_reject_reason
       = f.label "Reject Reason"
@@ -33,11 +34,11 @@
         .col-md-4
           %h4 Manufacture Parts Return Required: #{CompanyConfig.first.sup_mf_parts_return_required ? 'Yes' : 'No'}
           %strong No of Return pending parts:
-          = f.object.ticket_spare_parts.where(part_returned: false, engineer_id: job_engineers.map { |eng| eng.id }).count
+          = f.object.ticket_spare_parts.where(part_returned: false, engineer_id: job_engineers.ids).count
 
         .col-md-4
           %strong No of un-closed events:
-          = f.object.ticket_spare_parts.joins(:ticket_spare_part_manufacture).where(spt_ticket_spare_part_manufacture: {event_closed: false}, engineer_id: job_engineers.map { |eng| eng.id }).count
+          = f.object.ticket_spare_parts.joins(:ticket_spare_part_manufacture).where(spt_ticket_spare_part_manufacture: {event_closed: false}, engineer_id: job_engineers.ids).count
 
       - if f.object.ticket_spare_parts.present?
         %hr
@@ -60,7 +61,7 @@
               %th Note
               %th Approved
           %tbody
-            - f.object.ticket_spare_parts.where(engineer_id: job_engineers.map { |eng| eng.id }).each_with_index do |tsp, i|
+            - f.object.ticket_spare_parts.where(engineer_id: job_engineers.ids).each_with_index do |tsp, i|
               %tr
                 %th= i+1
                 %td #{tsp.spare_part_no}
@@ -90,7 +91,7 @@
               %th Return Part S/N
               %th Approved
           %tbody
-            - f.object.ticket_on_loan_spare_parts.where(engineer_id: job_engineers.map { |eng| eng.id }).each_with_index do |tsp, i|
+            - f.object.ticket_on_loan_spare_parts.where(engineer_id: job_engineers.ids).each_with_index do |tsp, i|
               %tr
                 %th= i+1
                 %td= simple_format tsp.approved_inventory_product.try(:description)
@@ -103,7 +104,7 @@
         %p FSR Information
         = f.simple_fields_for :ticket_fsrs do |ff|
           - fsr = ff.object
-          - if job_engineers.map { |eng| eng.id.to_i }.include?(fsr.engineer_id.to_i)
+          - if job_engineers.ids.include?(fsr.engineer_id.to_i)
             = ff.input :current_user_id, as: :hidden, input_html: {value: current_user.id}
 
             %button.btn.btn-info{"data-target" => "##{fsr.id}", "data-toggle" => "collapse", :type => "button"} FSR #{fsr.ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])}
@@ -187,7 +188,7 @@
       .row.col-md-12.col-xs-12{style: "margin-top:20px; margin-bottom:20px;"}
         .col-md-6
           = f.label "Job Belongs to:"
-          = f.select :owner_engineer_id, ticket.ticket_engineers.map{ |e| [e.user.email, e.user_id] }
+          = f.select :owner_engineer_id, ticket.ticket_engineers.map{ |e| [e.user.email, e.id] }
         .col-md-12
           = f.input :remarks, input_html: {value: nil}
           = simple_format f.object.remarks

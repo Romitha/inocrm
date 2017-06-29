@@ -291,7 +291,7 @@ class InventoriesController < ApplicationController
         end
       else
 
-        if ticket_spare_part.ticket_spare_part_manufacture.present and !CompanyConfig.first.sup_mf_parts_return_required and !ticket_spare_part.ticket_spare_part_manufacture.po_required
+        if ticket_spare_part.ticket_spare_part_manufacture.present? and !CompanyConfig.first.sup_mf_parts_return_required and !ticket_spare_part.ticket_spare_part_manufacture.po_required
           ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("CLS").id) 
           ticket_spare_part.ticket_spare_part_status_actions.create(status_id: ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now) 
         end  
@@ -312,8 +312,9 @@ class InventoriesController < ApplicationController
           save_ticket_spare_part["STR", 15] #Request Spare Part from Store 
 
           if d44_store_part_need_approval == "N"
-            #Create SRN 
+            #Create SRN
             ticket_spare_part.ticket_spare_part_store.create_support_srn(current_user.id, ticket_spare_part.ticket_spare_part_store.store_id, ticket_spare_part.ticket_spare_part_store.inv_product_id, ticket_spare_part.ticket_spare_part_store.requested_quantity, ticket_spare_part.ticket_spare_part_store.mst_inv_product_id )
+
           end             
 
           # bpm output variables
@@ -659,8 +660,9 @@ class InventoriesController < ApplicationController
             action_id = TaskAction.find_by_action_no(15).id
 
             if d44_store_part_need_approval == "N"
-              #Create SRN 
-              @ticket_spare_part.ticket_spare_part_store.create_support_srn(current_user.id, @ticket_spare_part.ticket_spare_part_store.store_id, @ticket_spare_part.ticket_spare_part_store.inv_product_id, @ticket_spare_part.ticket_spare_part_store.requested_quantity, @ticket_spare_part.ticket_spare_part_store.mst_inv_product_id )
+              #Create SRN
+              ticket_estimation_part.ticket_spare_part.ticket_spare_part_store.create_support_srn(current_user.id, ticket_estimation_part.ticket_spare_part.ticket_spare_part_store.store_id, ticket_estimation_part.ticket_spare_part.ticket_spare_part_store.inv_product_id, ticket_estimation_part.ticket_spare_part.ticket_spare_part_store.requested_quantity, ticket_estimation_part.ticket_spare_part.ticket_spare_part_store.mst_inv_product_id )
+
             end            
 
             bpm_variables.merge!(d17_request_store_part: "Y")
@@ -1660,6 +1662,9 @@ class InventoriesController < ApplicationController
     estimation = TicketEstimation.find params[:part_estimation_id]
     @ticket = Ticket.find params[:ticket_id]
     requested_quantity = params[:requested_quantity]
+    d19_estimate_internal_below_margin = "N"
+    @jump_next = params[:estimation_complete_check].to_bool if params[:estimation_complete_check].present?
+
 
     continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
 
@@ -1670,7 +1675,6 @@ class InventoriesController < ApplicationController
         if estimation.ticket_estimation_parts.any? { |p| p.ticket_spare_part.spare_part_status_action.code == "CLS" }
           estimation.update status_id: EstimationStatus.find_by_code("CLS").id
           @jump_next = true
-          d19_estimate_internal_below_margin = "N"
           flash[:notice]= "Requested Part is terminated."
         else
           estimation.update estimation_params
@@ -1678,12 +1682,9 @@ class InventoriesController < ApplicationController
           #If Part has changed by chargeable eng
           if params[:store_id].present?
             estimation.ticket_estimation_parts.each do |p|
-              if p.ticket_spare_part.ticket_spare_part_store.present?
-                p.ticket_spare_part.ticket_spare_part_store.update(store_id: params[:store_id], inv_product_id: params[:inv_product_id], requested_quantity: requested_quantity)
-              end
-              if p.ticket_spare_part.ticket_spare_part_non_stock.present?
-                p.ticket_spare_part.ticket_spare_part_non_stock.update(store_id: params[:store_id], inv_product_id: params[:inv_product_id], requested_quantity: requested_quantity)
-              end
+              p.ticket_spare_part.ticket_spare_part_store.update(store_id: params[:store_id], inv_product_id: params[:inv_product_id], requested_quantity: requested_quantity) if p.ticket_spare_part.ticket_spare_part_store.present?
+
+              p.ticket_spare_part.ticket_spare_part_non_stock.update(store_id: params[:store_id], inv_product_id: params[:inv_product_id], requested_quantity: requested_quantity) if p.ticket_spare_part.ticket_spare_part_non_stock.present?
             end
           end
 
@@ -1699,10 +1700,8 @@ class InventoriesController < ApplicationController
             d19_estimate_internal_below_margin = "Y" if CompanyConfig.first.try(:sup_estimation_need_approval)
           else
             estimation.update_attribute(:cust_approval_required, false)
-            d19_estimate_internal_below_margin = "N"
           end
 
-          @jump_next = params[:estimation_complete_check].to_bool if params[:estimation_complete_check].present?
           if @jump_next
             if d19_estimate_internal_below_margin == "N"
 
@@ -1714,8 +1713,7 @@ class InventoriesController < ApplicationController
               estimation.update status_id: EstimationStatus.find_by_code('EST').id            
             end
             
-            estimation.update_attribute(:approval_required, (d19_estimate_internal_below_margin == "Y" ? true : false))
-            estimation.update_attributes(estimated_at: DateTime.now, estimated_by: current_user.id)
+            estimation.update(approval_required: (d19_estimate_internal_below_margin == "Y" ? true : false), estimated_at: DateTime.now, estimated_by: current_user.id)
 
             #Set Action (74) part estimation completed, DB.spt_act_request_spare_part
             user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(74).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
@@ -1738,11 +1736,10 @@ class InventoriesController < ApplicationController
             # WebsocketRails[:posts].trigger 'new', {task_name: "Spare part", task_id: spt_ticket_spare_part.id, task_verb: "received and issued.", by: current_user.email, at: Time.now.strftime('%d/%m/%Y at %H:%M:%S')}
 
             all_success = true
-            error_parts = ""
+            error_parts = []
 
-            if (t_est_price <= 0) and (d19_estimate_internal_below_margin == "N")
+            if t_est_price <= 0 and d19_estimate_internal_below_margin == "N"
               estimation.ticket_estimation_parts.each do |p|
-
                 ticket_spare_part = p.ticket_spare_part
 
                 process_name = ""
@@ -1756,7 +1753,7 @@ class InventoriesController < ApplicationController
 
                 if ticket_spare_part.ticket_spare_part_store.present?
 
-                  d44_store_part_need_approval = ticket_spare_part.update request_approval_required ? "Y" : "N"
+                  d44_store_part_need_approval = ticket_spare_part.request_approval_required ? "Y" : "N"
 
                   ticket_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code("STR").id
 
@@ -1764,17 +1761,18 @@ class InventoriesController < ApplicationController
                   query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, request_onloan_spare_part_id: request_onloan_spare_part_id, onloan_request: onloan_request, supp_engr_user: supp_engr_user, priority: priority, d44_store_part_need_approval: d44_store_part_need_approval}
 
                   #update record spt_ticket_spare_part_store
-                  ticket_spare_part.ticket_spare_part_store.update(store_requested: (d44_store_part_need_approval == "N"), store_requested_at: ( (d44_store_part_need_approval == "N") ? DateTime.now : nil), store_requested_by: ( (d44_store_part_need_approval == "N") ? supp_engr_user : nil))
+                  ticket_spare_part.ticket_spare_part_store.update store_requested: (d44_store_part_need_approval == "N"), store_requested_at: ( d44_store_part_need_approval == "N" ? DateTime.now : nil), store_requested_by: ( d44_store_part_need_approval == "N" ? supp_engr_user : nil)
 
                   if d44_store_part_need_approval == "N"
-                    #Create SRN 
+                    #Create SRN
                     ticket_spare_part.ticket_spare_part_store.create_support_srn(current_user.id, ticket_spare_part.ticket_spare_part_store.store_id, ticket_spare_part.ticket_spare_part_store.inv_product_id, ticket_spare_part.ticket_spare_part_store.requested_quantity, ticket_spare_part.ticket_spare_part_store.mst_inv_product_id )
                   end
 
                 end
+
                 if ticket_spare_part.ticket_spare_part_manufacture.present?
 
-                  d45_manufacture_part_need_approval = @ticket_spare_part.update request_approval_required ? "Y" : "N"
+                  d45_manufacture_part_need_approval = @ticket_spare_part.request_approval_required ? "Y" : "N"
 
                   @ticket_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code("MPR").id 
 
@@ -1792,7 +1790,7 @@ class InventoriesController < ApplicationController
                   else
                     @bpm_process_error = true
                     all_success = false
-                    error_parts += ticket_spare_part.spare_part_no + ","
+                    error_parts << ticket_spare_part.spare_part_no
                   end
                 end
 
@@ -1802,7 +1800,7 @@ class InventoriesController < ApplicationController
             if all_success
               flash[:notice]= "Successfully updated"
             else
-              flash[:error]= "Estimate part is updated. but Bpm error for parts (" + error_parts + ")"
+              flash[:error]= "Estimate part is updated. but Bpm error for parts ( #{error_parts.join(', ')} )"
             end
 
           else
@@ -1813,9 +1811,9 @@ class InventoriesController < ApplicationController
         end
 
       else
-        flash[:error] = "Already estimated."
         bpm_variables = view_context.initialize_bpm_variables
         bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+        flash[:error] = "Already estimated."
       end
     else
       flash[:error]= "Unable to update. Bpm error"
@@ -1911,8 +1909,9 @@ class InventoriesController < ApplicationController
                   ticket_spare_part.ticket_spare_part_store.update(store_requested: (d44_store_part_need_approval == "N"), store_requested_at: ( (d44_store_part_need_approval == "N") ? DateTime.now : nil), store_requested_by: ( (d44_store_part_need_approval == "N") ? supp_engr_user : nil))
 
                   if d44_store_part_need_approval == "N"
-                    #Create SRN 
+                    #Create SRN
                     ticket_spare_part.ticket_spare_part_store.create_support_srn(current_user.id, ticket_spare_part.ticket_spare_part_store.store_id, ticket_spare_part.ticket_spare_part_store.inv_product_id, ticket_spare_part.ticket_spare_part_store.requested_quantity, ticket_spare_part.ticket_spare_part_store.mst_inv_product_id )
+
                   end                        
 
                 end

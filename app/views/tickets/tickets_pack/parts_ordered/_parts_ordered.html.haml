@@ -3,15 +3,14 @@
 - TicketEstimation
 
 = collapse_wrapper collapse_id: "ticket_spare_part_id_#{params[:action]}" do
-  - ticket_workfow = ticket.ticket_workflow_processes.where process_id: params["process_id"]
-  - ticket_engineers = ticket.ticket_engineers.where(workflow_process_id: ticket_workfow.first.try(:id))
+  - ticket_workfows = ticket.ticket_workflow_processes.where process_id: params["process_id"]
+  - ticket_engineers = ticket.ticket_engineers.where(workflow_process_id: ticket_workfows.first.try(:id))
 
   - ticket.cached_ticket_spare_parts.each do |ticket_spare_part|
 
     - part_engineers = ticket_engineers.where(id: ticket_spare_part.engineer_id)
-    - part_ownership = part_engineers.pressent?
 
-    - if part_ownership
+    - if part_engineers.any?
 
       - @manufacture_warranty = (ticket_spare_part.ticket_spare_part_manufacture and not ticket_spare_part.cus_chargeable_part)
       - @manufacture_chargeable = (ticket_spare_part.ticket_spare_part_manufacture and ticket_spare_part.cus_chargeable_part)
@@ -336,11 +335,9 @@
           = render "tickets/tickets_pack/parts_ordered/ticket_spare_part_form", ticket_spare_part: ticket_spare_part
 
   - ticket.ticket_on_loan_spare_parts.each do |ticket_on_loan_spare_part|
-
     - part_engineers = ticket_engineers.where(id: ticket_on_loan_spare_part.engineer_id)
-    - part_ownership = part_engineers.pressent?
 
-    - if part_ownership
+    - if part_engineers.any?
 
       = collapse collapse_type: "info", header_content: "Ticket spare part (On-loan): #{ticket_on_loan_spare_part.inventory_product.generated_item_code} - #{ticket_on_loan_spare_part.inventory_product.description}", collapse_link: "ticket_on_loan_spare_part_link_#{params[:action]}_#{ticket_on_loan_spare_part.id}", collapse_id: "ticket_spare_part_id_#{params[:action]}", labelledby: "ticket_spare_on_loan_part_lby_#{params[:action]}_#{ticket_on_loan_spare_part.id}" do
         - ticket_spare_part_ref = ticket_on_loan_spare_part.ticket_spare_part
