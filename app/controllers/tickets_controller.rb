@@ -1142,16 +1142,6 @@ class TicketsController < ApplicationController
       user_assign_ticket_action.assign_to_engineer_id = @ticket.ticket_engineers.first.id
       user_assign_ticket_action.sbu_id = @ticket.ticket_engineers.first.sbu_id
 
-      user_assign_ticket_action = user_ticket_action.user_assign_ticket_action
-      user_assign_ticket_action.assign_to = @ticket.ticket_engineers.first.user_id
-      user_assign_ticket_action.assign_to_engineer_id = @ticket.ticket_engineers.first.id
-      user_assign_ticket_action.sbu_id = @ticket.ticket_engineers.first.sbu_id
-
-      user_assign_ticket_action = user_ticket_action.user_assign_ticket_action
-      user_assign_ticket_action.assign_to = @ticket.ticket_engineers.first.user_id
-      user_assign_ticket_action.assign_to_engineer_id = @ticket.ticket_engineers.first.id
-      user_assign_ticket_action.sbu_id = @ticket.ticket_engineers.first.sbu_id
-
 
       user_ticket_action.assign_regional_support_centers.reload unless !user_assign_ticket_action.recorrection and user_assign_ticket_action.regional_support_center_job
 
