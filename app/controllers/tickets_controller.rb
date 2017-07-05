@@ -1040,7 +1040,7 @@ class TicketsController < ApplicationController
 
     end
 
-    render json: {sbus: @sbus, ticketEngs: {new_group_no: ((@ticketEngs.try(:last) and @ticketEngs.last[:channel_no]).to_i + 1), engs: @ticketEngs}}
+    render json: {sbus: @sbus, ticketEngs: {new_channel_no: ((@ticketEngs.try(:last) and @ticketEngs.last[:channel_no]).to_i + 1), engs: @ticketEngs}}
 
   end
 
@@ -1067,7 +1067,7 @@ class TicketsController < ApplicationController
     re_assignment = @ticket.ticket_engineers.any? { |en| en.workflow_process_id == @ticket_workfow.first.try(:id)  }
 
 
-    ticket_engineer = @ticket.ticket_engineers.build(user_id: assign_eng_params["assign_to"], re_open_index: @ticket.re_open_index, re_assignment: re_assignment, sbu_id: assign_eng_params["sbu_id"])
+    ticket_engineer = @ticket.ticket_engineers.build(user_id: assign_eng_params["assign_to"], re_open_index: @ticket.re_open_count, re_assignment: re_assignment, sbu_id: assign_eng_params["sbu_id"])
 
     assign_eng_params["subEng"].to_a.each do |sub_eng|
       ticket_engineer.ticket_support_engineers.build( user_id: sub_eng["user_id"] )
