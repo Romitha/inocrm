@@ -1106,7 +1106,7 @@ class TicketsController < ApplicationController
 
       @ticket_workfow = @ticket.ticket_workflow_processes.where process_id: params["process_id"]
       @re_assignment_rq_engineer =  @ticket.ticket_engineers.where(workflow_process_id: @ticket_workfow.first.try(:id)).first
-      @re_assignment = @re_assignment_rq_engineer.present
+      @re_assignment = @re_assignment_rq_engineer.present?
 
       @re_assignment_requested_by = @ticket_engineer.try(:user_id)
     end
