@@ -4608,7 +4608,9 @@ class TicketsController < ApplicationController
         else
           d44_store_part_need_approval = CompanyConfig.first.sup_st_parts_nc_need_approval ? "Y" : "N"
           d45_manufacture_part_need_approval = CompanyConfig.first.sup_mf_parts_nc_need_approval ? "Y" : "N"
-        end    
+        end
+
+        d18_approve_request_store_part =  (d44_store_part_need_approval == "N") ? "Y" : "N"
 
         @ticket_engineer = TicketEngineer.find params[:engineer_id]
         @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
@@ -4635,7 +4637,7 @@ class TicketsController < ApplicationController
           @ticket_spare_part_store = @ticket_spare_part.create_ticket_spare_part_store(store_id: params[:store_id], inv_product_id: params[:inv_product_id], mst_inv_product_id: params[:mst_inv_product_id], part_of_main_product: (params[:part_of_main_product] || 0), store_requested: !@ticket_spare_part.cus_chargeable_part, store_requested_at: ( !@ticket_spare_part.cus_chargeable_part ? DateTime.now : nil), store_requested_by: ( !@ticket_spare_part.cus_chargeable_part ? current_user.id : nil), requested_quantity: requested_quantity)
 
           process_name = "SPPT_STORE_PART_REQUEST"
-          query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, request_onloan_spare_part_id: request_onloan_spare_part_id, onloan_request: onloan_request, supp_engr_user: supp_engr_user, priority: priority, d44_store_part_need_approval: d44_store_part_need_approval}
+          query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, request_onloan_spare_part_id: request_onloan_spare_part_id, onloan_request: onloan_request, supp_engr_user: supp_engr_user, priority: priority, d44_store_part_need_approval: d44_store_part_need_approval, d18_approve_request_store_part: d18_approve_request_store_part}
 
         elsif @ticket_spare_part.request_from == "NS"
           #@ticket_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code("RQT").id
@@ -4777,9 +4779,12 @@ class TicketsController < ApplicationController
         request_onloan_spare_part_id = @ticket_on_loan_spare_part.id
         onloan_request = "Y"
 
+        d44_store_part_need_approval = CompanyConfig.first.sup_st_parts_ch_need_approval ? "Y" : "N"
+        d18_approve_request_store_part =  (d44_store_part_need_approval == "N") ? "Y" : "N"
+
         # Create Process "SPPT_STORE_PART_REQUEST"
 
-        bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT_STORE_PART_REQUEST", query: {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, request_onloan_spare_part_id: request_onloan_spare_part_id, onloan_request: onloan_request, supp_engr_user: supp_engr_user, priority: priority}
+        bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT_STORE_PART_REQUEST", query: {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, request_onloan_spare_part_id: request_onloan_spare_part_id, onloan_request: onloan_request, supp_engr_user: supp_engr_user, priority: priority, d44_store_part_need_approval: d44_store_part_need_approval, d18_approve_request_store_part: d18_approve_request_store_part}
 
 
         if bpm_response1[:status].try(:upcase) == "SUCCESS"
