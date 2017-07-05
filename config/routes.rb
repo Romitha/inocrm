@@ -176,6 +176,7 @@ Rails.application.routes.draw do
       get "hp_po"
       get "view_po"
       get "view_delivered_bundle"
+      get "approve_manufacture_parts"
 
       post "update_issue_store_parts"
 

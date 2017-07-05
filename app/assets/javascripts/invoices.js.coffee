@@ -139,11 +139,13 @@ window.Invoices =
         $("#unit_return_customer").prop("disabled", true)
         $("#dispatch_method_id").prop("disabled", true)
         $("#unit_dispatch_wrapper").addClass("hide")
+        $("#reopen_to_engineer").removeClass("hide")
       else
         $("#ticket_payment_reciever_wrapper").removeClass("hide")
         $("#unit_dispatch_wrapper").removeClass("hide")
         $("#dispatch_method_id").prop("disabled", false)
         $("#unit_return_customer").prop("disabled", false)
+        $("#reopen_to_engineer").addClass("hide")
 
   readonly_checkbox_in_customer_feedback: ->
     final_amount_to_be_paids = parseFloat($("#final_amount_to_be_paids").text())

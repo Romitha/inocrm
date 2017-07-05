@@ -165,14 +165,14 @@ window.Inventories =
     $("#act_quality_control_reject_reason").click ->
       if $(@).is(":checked")
         $("#dynamic_action_id").val($(@).data("approve-action-no"))
-        $("#reject_reason_sec_hide").addClass("hide")
+        $(".reject_reason_sec_hide").addClass("hide")
         $("#change_value_submit").val("Approve")
         $("#change_value_submit").attr("name", "approve")
         $("#reject_reason").prop({"disabled": true, "required": false})
 
       else
         $("#dynamic_action_id").val($(@).data("reject-action-no"))
-        $("#reject_reason_sec_hide").removeClass("hide")
+        $(".reject_reason_sec_hide").removeClass("hide")
         $("#change_value_submit").val("Reject")
         $("#reject_reason").prop({"disabled": false, "required": true})
         $("#change_value_submit").attr("name", "reject")

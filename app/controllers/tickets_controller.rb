@@ -770,6 +770,8 @@ class TicketsController < ApplicationController
           ticket_id = @ticket.id
           di_pop_approval_pending = ["RCD", "RPN", "APN", "LPN", "APV"].include?(@ticket.products.first.product_pop_status.try(:code)) ? "Y" : "N"
           priority = @ticket.priority
+          d42_assignment_required = "Y"
+          engineer_id = "-"
 
           @bpm_response = view_context.send_request_process_data start_process: true, process_name: "SPPT", query: {ticket_id: ticket_id, d1_pop_approval_pending: di_pop_approval_pending, priority: priority, d42_assignment_required: d42_assignment_required, engineer_id: engineer_id }
 
@@ -1557,6 +1559,44 @@ class TicketsController < ApplicationController
       flash[:notice] = "ticket is not updated. Bpm error"
     end
     redirect_to todos_url
+  end
+
+  def approve_manufacture_parts
+    Inventory
+    Warranty
+    ContactNumber
+    QAndA
+    TaskAction
+    TicketSparePart
+    TicketSparePartManufacture
+    TicketEstimation
+    Tax
+
+    ticket_id = params[:ticket_id]
+    # ticket_id = 5
+    @ticket = Ticket.find_by_id ticket_id
+    session[:ticket_id] = @ticket.id
+
+    @onloan_request = true if params[:onloan_request] == "Y"
+
+
+    if @onloan_request
+      @onloan_spare_part = @ticket.ticket_on_loan_spare_parts.find params[:request_onloan_spare_part_id]
+      @spare_part = @onloan_spare_part.ticket_spare_part
+    else
+      @spare_part = @ticket.ticket_spare_parts.find params[:request_spare_part_id]
+    end
+
+    if @ticket
+      @product = @ticket.products.first
+
+      Rails.cache.delete([:histories, @product.id])
+      Rails.cache.delete([:join, @ticket.id])
+    end
+
+    respond_to do |format|
+      format.html {render "tickets/tickets_pack/approve_manufacture_parts/approve_manufacture_parts"}
+    end
   end
 
   def update_approve_manufacture_parts
