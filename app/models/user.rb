@@ -350,7 +350,8 @@ class TicketEngineer < ActiveRecord::Base
   end
 
   def deletable?
-    !(ticket_workflow_process.present? or user_assign_ticket_actions.any?)
+    TaskAction
+    !(ticket_workflow_process.present? or user_assign_ticket_actions.any? or sub_engineers.any?)
   end
 
   def root_engineer?
@@ -373,14 +374,14 @@ class TicketEngineer < ActiveRecord::Base
 
 end
 
-def TicketFsrSupportEngineer
+class TicketFsrSupportEngineer < ActiveRecord::Base
   self.table_name = "spt_ticket_fsr_support_eng"
 
   belongs_to :ticket_fsr, foreign_key: :fsr_id
 
 end
 
-def TicketSupportEngineer
+class TicketSupportEngineer < ActiveRecord::Base
   self.table_name = "spt_ticket_engineer_support"
 
   belongs_to :ticket_engineers, foreign_key: :engineer_id

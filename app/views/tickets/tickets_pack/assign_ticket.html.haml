@@ -85,8 +85,10 @@
       .assign-engineers
         {{#group-list ticketId="#{ticket.id}" ticketEng=subEng }}
         .controls
+          {{#if subEng.deletable}}
           <span class="glyphicon glyphicon-remove" aria-hidden="true" title="Remove engineer from list" {{action 'removeTicketEng' subEng }}>
           </span>
+          {{/if}}
         {{/group-list}}
 
         .vertical_line
@@ -100,7 +102,7 @@
 
     {{/each}}
 
-    {{#link-to "groups.new" (query-params order_no=0 channel_no=model.new_channel_no ticket_id="#{ticket.id}") }} new group {{/link-to}}
+    {{#link-to "groups.new" (query-params order_no=0 channel_no=model.new_channel_no ticket_id="#{ticket.id}") }} new Channel {{/link-to}}
 
   {{outlet}}
 
@@ -116,7 +118,7 @@
 
 %script{type: "text/x-handlebars", id: "components/new-group"}
   %h4 Assign Engineer
-  %strong New Entry for Channel {{obj.channel_no}} order {{obj.order_no}}
+  %strong New Entry for Channel:{{obj.channel_no}} order:{{obj.order_no}}
   {{#if obj.channel_no}}
   < form >
   .row

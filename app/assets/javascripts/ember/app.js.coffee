@@ -47,7 +47,7 @@ App.Engineer = Ember.Object.extend()
 App.SubEngineer = Ember.Object.extend()
 
 App.GroupsRoute = Ember.Route.extend
-  model: (params)-> Ember.$.getJSON('/tickets/load_sbu', {type: "ticket", ticket_id: params.ticket_id}).then( (data)-> console.log(data.ticketEngs); data.ticketEngs )
+  model: (params)-> Ember.$.getJSON('/tickets/load_sbu', {type: "ticket", ticket_id: params.ticket_id}).then( (data)-> data.ticketEngs )
 
   actions:
     removeTicketEng: (obj)->
@@ -63,10 +63,16 @@ App.GroupsController = Ember.Controller.extend
       @send("refreshModel")
 
 App.GroupsNewRoute = Ember.Route.extend
+
   model: ->
     Ember.RSVP.hash
       newObj: App.Engineer.create()
       sbus: Ember.$.getJSON('/tickets/load_sbu', {type: "sbu"}).then( (data)-> data.sbus )
+
+  afterModel: (model, transition)->
+    console.log transition.queryParams
+    model.newObj.set("channel_no", transition.queryParams.channel_no)
+    model.newObj.set("order_no", transition.queryParams.order_no)
 
 App.GroupsNewController = Ember.Controller.extend
   queryParams: ['channel_no', 'order_no', 'ticket_id']
