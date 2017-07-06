@@ -4286,7 +4286,7 @@ class TicketsController < ApplicationController
 
         close_approval_requested = @ticket.ticket_close_approval_requested # getting from the form
         close_approval_requested = true if not engineer_close_approval_required
-        @ticket_engineer.update status: (engineer_close_approval_required)? 2 : 3 , job_completed_at: DateTime.now, job_close_approval_required: engineer_close_approval_required, ticket_close_approval_requested: close_approval_requested
+        @ticket_engineer.update status: (engineer_close_approval_required ? 2 : 3), job_completed_at: DateTime.now, job_close_approval_required: engineer_close_approval_required, job_close_approval_requested: close_approval_requested
 
         @ticket.ticket_close_approval_required = (@ticket.ticket_fsrs.any? or @ticket.ticket_spare_parts.any? or @ticket.ticket_on_loan_spare_parts.any?)
         @ticket.ticket_close_approval_requested = true 
