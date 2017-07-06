@@ -387,3 +387,11 @@ class TicketSupportEngineer < ActiveRecord::Base
   belongs_to :ticket_engineers, foreign_key: :engineer_id
 
 end
+
+class OrganizationContactPerson < ActiveRecord::Base
+  self.table_name = "organization_contact_person"
+
+  belongs_to :organization
+  belongs_to :contact_person_type
+
+end

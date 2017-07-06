@@ -305,7 +305,6 @@ class Ticket < ActiveRecord::Base
   has_many :accessories, through: :ticket_accessories
   accepts_nested_attributes_for :ticket_accessories, allow_destroy: true
 
-  belongs_to :customer, class_name: "Customer", foreign_key: "customer_id"
   belongs_to :sla_time, foreign_key: :sla_id
 
   has_many :dyna_columns, as: :resourceable, autosave: true

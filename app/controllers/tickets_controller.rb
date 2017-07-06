@@ -351,7 +351,7 @@ class TicketsController < ApplicationController
       if params[:customer_id].present?
         @new_customer = Customer.find params[:customer_id]
         @ticket.customer_id = @new_customer.id
-        @ticket.contact_person1 ||= @product.tickets.last.try(:contact_person1)
+        @ticket.contact_person1 ||= (@product.tickets.last.try(:contact_person1)) # (@ticket.ticket_contract and @ticket.ticket_contract.organization.) 
         @ticket.contact_person2 ||= @product.tickets.last.try(:contact_person2)
         @ticket.report_person ||= @product.tickets.last.try(:report_person)
         Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @ticket)
@@ -1216,6 +1216,9 @@ class TicketsController < ApplicationController
                 bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT", query: {ticket_id: ticket_id, d1_pop_approval_pending: di_pop_approval_pending, priority: priority, d42_assignment_required: d42_assignment_required, engineer_id: engineer_id , supp_engr_user: supp_engr_user, supp_hd_user: supp_hd_user}
 
                 if bpm_response1[:status].try(:upcase) == "SUCCESS"
+
+                  view_context.ticket_bpm_headers @bpm_response1[:process_id], @ticket.id
+
                   workflow_process = @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name])
 
                   ticket_engineer.update status: 1, job_assigned_at: DateTime.now, workflow_process_id: workflow_process.id 
