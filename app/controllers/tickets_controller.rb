@@ -1216,9 +1216,9 @@ class TicketsController < ApplicationController
                 bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT", query: {ticket_id: ticket_id, d1_pop_approval_pending: di_pop_approval_pending, priority: priority, d42_assignment_required: d42_assignment_required, engineer_id: engineer_id , supp_engr_user: supp_engr_user, supp_hd_user: supp_hd_user}
 
                 if bpm_response1[:status].try(:upcase) == "SUCCESS"
-                  workflow_process = @ticket.ticket_workflow_processes.create(process_id: @bpm_response[:process_id], process_name: @bpm_response[:process_name])
+                  workflow_process = @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name])
 
-                  ticket_engineer.update status: 1, job_assigned_at: DateTime.now, workflow_process_id: workflow_process.process_id 
+                  ticket_engineer.update status: 1, job_assigned_at: DateTime.now, workflow_process_id: workflow_process.id 
 
                 else
                   all_success = false
@@ -1230,10 +1230,10 @@ class TicketsController < ApplicationController
             end
           end
 
-          unless all_success
+          if all_success
             flash[:notice] = "Successfully updated."
           else
-            flash[:error] = "ticket is updated. Engineer assignment error. (error_engs.join(', '))"
+            flash[:error] = "ticket is updated. Engineer assignment error. #{error_engs.join(', ')}"
           end
 
           # WebsocketRails[:posts].trigger 'new', {task_name: "Assign ticket", task_id: @ticket.id, task_verb: "updated.", by: current_user.email, at: Time.now.strftime('%d/%m/%Y at %H:%M:%S')}
