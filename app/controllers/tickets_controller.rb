@@ -3003,7 +3003,7 @@ class TicketsController < ApplicationController
           @ticket.update ticket_close_approved: !@ticket.ticket_engineers.any?{|eng| eng.job_close_approval_required and !eng.job_close_approved }
 
           #Calculate Total Costs and Time
-          @ticket.calculate_ticket_total_costs   
+          @ticket.calculate_ticket_total_cost 
 
           @ticket.set_ticket_close(current_user.id)
         end
@@ -4335,7 +4335,7 @@ class TicketsController < ApplicationController
         @ticket.save
 
         #Calculate Total Costs and Time
-        @ticket.calculate_ticket_total_costs   
+        @ticket.calculate_ticket_total_cost   
 
         @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
@@ -4360,7 +4360,7 @@ class TicketsController < ApplicationController
               @bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT", query: {ticket_id: ticket_id, d1_pop_approval_pending: di_pop_approval_pending, priority: priority, d42_assignment_required: d42_assignment_required, engineer_id: engineer_id , supp_engr_user: supp_engr_user, supp_hd_user: supp_hd_user}
 
               if @bpm_response1[:status].try(:upcase) == "SUCCESS"
-                workflow_process = @ticket.ticket_workflow_processes.create(process_id: @bpm_response[:process_id], process_name: @bpm_response[:process_name])
+                workflow_process = @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name])
 
                 view_context.ticket_bpm_headers @bpm_response1[:process_id], @ticket.id
 
