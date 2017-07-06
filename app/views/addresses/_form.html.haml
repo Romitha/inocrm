@@ -22,9 +22,9 @@
               = address.input :category, collection: Address::TYPES, include_blank: false, input_html: {class: "chosen-select"}
 
           .col-md-3
-            = address.association :contact_person_title, lebel_method: :title, input_html: {class: "chosen-select"}, label: "Title"
+            = address.association :contact_person_title, lebel_method: :title, label: "Title", required: true
           .col-md-9
-            = address.input :contact_person_name
+            = address.input :contact_person_name, required: true
           = address.input :address1, wrapper_html: {class: "col-md-12"}, label:"Address Line1", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Type the Line1"}
           = address.input :address2, wrapper_html: {class: "col-md-12"}, label:"Address Line2", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Type the Line2"}
           = address.input :address3, wrapper_html: {class: "col-md-12"}, label:"Address Line3", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Type the Line3"}

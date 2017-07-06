@@ -1217,9 +1217,10 @@ class TicketsController < ApplicationController
 
                 if bpm_response1[:status].try(:upcase) == "SUCCESS"
 
-                  view_context.ticket_bpm_headers @bpm_response1[:process_id], @ticket.id
 
                   workflow_process = @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name])
+
+                  view_context.ticket_bpm_headers bpm_response1[:process_id], @ticket.id
 
                   ticket_engineer.update status: 1, job_assigned_at: DateTime.now, workflow_process_id: workflow_process.id 
 
@@ -4360,6 +4361,8 @@ class TicketsController < ApplicationController
 
               if @bpm_response1[:status].try(:upcase) == "SUCCESS"
                 workflow_process = @ticket.ticket_workflow_processes.create(process_id: @bpm_response[:process_id], process_name: @bpm_response[:process_name])
+
+                view_context.ticket_bpm_headers @bpm_response1[:process_id], @ticket.id
 
                 next_engineer.update status: 1, job_assigned_at: DateTime.now, workflow_process_id: workflow_process.process_id
 
