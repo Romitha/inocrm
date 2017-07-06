@@ -200,7 +200,7 @@ class Ticket < ActiveRecord::Base
       sup_engineer_cost = sup_engineer_time * brand_costs.first.support_engineer_cost / 60 #per hour
     end
 
-    ticket_total_cost_params = {engineer_time: engineer_time, sup_engineer_time: sup_engineer_time, engineer_cost: engineer_cost, sup_engineer_cost: sup_engineer_cost, part_cost: part_cost, additional_cost: additional_cost, external_cost: external_cost}
+    ticket_total_cost_params = {engineer_time_spent: engineer_time, support_engineer_time_spent: sup_engineer_time, engineer_cost: engineer_cost, support_engineer_cost: sup_engineer_cost, part_cost: part_cost, additional_cost: additional_cost, external_cost: external_cost}
 
     ticket_total_cost.present? ? ticket_total_cost.update(ticket_total_cost_params) : create_ticket_total_cost(ticket_total_cost_params)
 
