@@ -105,7 +105,7 @@ class ProductBrand < ActiveRecord::Base
   belongs_to :currency, foreign_key: :currency_id
   belongs_to :sla_time, foreign_key: :sla_id
   belongs_to :supplier, class_name: "Organization", foreign_key: :organization_id
-  belongs_to :product_brand_costs
+  has_many :product_brand_costs
 
   validates_uniqueness_of :name
 
