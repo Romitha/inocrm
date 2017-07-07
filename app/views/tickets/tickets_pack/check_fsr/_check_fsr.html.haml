@@ -1,13 +1,15 @@
 - uri = URI(request.url)
-- engineer_id = Rails.cache.fetch([uri, params[:task_id]])[:bpm_input_variables].detect{ |e| e.first == "engineer_id" }.second
+- engineer_id = Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].detect{ |e| e.first == "engineer_id" }.second
 
 = simple_nested_form_for ticket, url: update_check_fsr_ticket_path(ticket.id), method: :post do |f| # update_check_fsr_ticket_path(ticket.id)
 
   = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
   = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
   = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
+
   - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
     = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+
   .row
     - if ticket.re_open_count > 0
       .col-md-3
