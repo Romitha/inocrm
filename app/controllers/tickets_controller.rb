@@ -4310,9 +4310,9 @@ class TicketsController < ApplicationController
           end
         end
 
-        d9_qc_required = @ticket.ticket_type.code == "IH" and CompanyConfig.first.sup_qc_required ? "Y" : "N"
+        d9_qc_required = (@ticket.ticket_type.code == "IH" and CompanyConfig.first.sup_qc_required) ? "Y" : "N"
 
-        bpm_variables = view_context.initialize_bpm_variables.merge(supp_engr_user: current_user.id, d7_close_approval_requested: (@ticket_engineer.job_close_approval_requested ? "Y" : "N"), d4_job_complete: "Y", d8_job_finished: (final_resolution ? "Y" : "N" ), d9_qc_required: d9_qc_required, d10_job_estimate_required_final: (@ticket.cus_chargeable or @ticket.cus_payment_required ? "Y" : "N"), d12_need_to_invoice: (@ticket.cus_chargeable or @ticket.cus_payment_required ? "Y" : "N"), d6_close_approval_required: (@ticket_engineer.job_close_approval_required ? "Y" : "N"))
+        bpm_variables = view_context.initialize_bpm_variables.merge(supp_engr_user: current_user.id, d7_close_approval_requested: (@ticket_engineer.job_close_approval_requested ? "Y" : "N"), d4_job_complete: "Y", d8_job_finished: (final_resolution ? "Y" : "N" ), d9_qc_required: d9_qc_required, d10_job_estimate_required_final: (@ticket.cus_chargeable or @ticket.cus_payment_required ? "Y" : "N"), d11_terminate_job: (@ticket.ticket_terminated ? "Y" : "N"), d12_need_to_invoice: (@ticket.cus_chargeable or @ticket.cus_payment_required ? "Y" : "N"), d6_close_approval_required: (@ticket_engineer.job_close_approval_required ? "Y" : "N"))
 
         if final_resolution
           if @ticket.ticket_type.code == "IH"
@@ -4337,7 +4337,13 @@ class TicketsController < ApplicationController
         #Calculate Total Costs and Time
         @ticket.calculate_ticket_total_cost   
 
-        @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+        # @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+        @bpm_response = view_context.send_request complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+        puts "**************8"
+        @bpm_response
+        puts "**************8"
+
 
         if @bpm_response[:status].upcase == "SUCCESS"
 
