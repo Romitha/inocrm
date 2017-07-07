@@ -9,11 +9,11 @@
   - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
     = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
   .row
-    -if ticket.re_open_count > 0
-    .col-md-3
-      Current Re-Open No.:
-      %strong= ticket.ticket_engineers.find(id: engineer_id).re_open_index
-      
+    - if ticket.re_open_count > 0
+      .col-md-3
+        Current Re-Open No.:
+        %strong= ticket.ticket_engineers.find(id: engineer_id).re_open_index
+
     .col-md-6.col-xs-6
       - ticket_workfows = ticket.ticket_workflow_processes.where process_id: Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
       - job_engineers =  ticket.ticket_engineers.where(workflow_process_id: ticket_workfows.first.try(:id))

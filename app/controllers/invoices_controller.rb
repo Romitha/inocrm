@@ -308,9 +308,9 @@ class InvoicesController < ApplicationController
 
   def update_customer_feedback #Customer feedback and Terminate Job
     @ticket = Ticket.find params[:ticket_id]
-    editable_ticket_params = {re_open_count: (@ticket.re_open_count.to_i+1), job_finished: false, job_finished_at: nil, status_id: TicketStatus.find_by_code("ROP").id, cus_payment_completed: false}
-
     re_open = params[:re_opened].present?
+    editable_ticket_params = {re_open_count: (re_open ? (@ticket.re_open_count.to_i+1) : @ticket.re_open_count.to_i), job_finished: false, job_finished_at: nil, status_id: TicketStatus.find_by_code("ROP").id, cus_payment_completed: false}
+
     customer_feedback_payment_completed = params[:payment_completed].present?
     customer_feedback_unit_return_customer = params[:unit_return_customer].present?
     customer_feedback_feedback_id = params[:feedback_id]
