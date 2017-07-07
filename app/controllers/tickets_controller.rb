@@ -2964,7 +2964,7 @@ class TicketsController < ApplicationController
   def update_check_fsr
     TaskAction
     @ticket.attributes = ticket_params
-    job_close_approved = params[:job_close_approved].to_bool
+    job_close_approved = params[:job_close_approved].present?
 
     @continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
 
