@@ -4337,8 +4337,8 @@ class TicketsController < ApplicationController
         #Calculate Total Costs and Time
         @ticket.calculate_ticket_total_cost   
 
-        # @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
-        @bpm_response = view_context.send_request complete_task: true, task_id: params[:task_id], query: bpm_variables
+        @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+        # @bpm_response = view_context.send_request complete_task: true, task_id: params[:task_id], query: bpm_variables
 
         puts "**************8"
         puts @bpm_response
