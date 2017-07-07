@@ -1,5 +1,6 @@
 - uri = URI(request.url)
-- engineer_id = Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].detect{ |e| e.first == "engineer_id" }.second
+/ - engineer_id = Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].detect{ |e| e.first == "engineer_id" }.second
+- engineer_id = params["supp_engr_user"]
 
 = simple_nested_form_for ticket, url: update_check_fsr_ticket_path(ticket.id), method: :post do |f| # update_check_fsr_ticket_path(ticket.id)
 
