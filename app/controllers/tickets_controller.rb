@@ -4341,7 +4341,7 @@ class TicketsController < ApplicationController
         @bpm_response = view_context.send_request complete_task: true, task_id: params[:task_id], query: bpm_variables
 
         puts "**************8"
-        @bpm_response
+        puts @bpm_response
         puts "**************8"
 
 
