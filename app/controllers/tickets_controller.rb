@@ -4340,11 +4340,6 @@ class TicketsController < ApplicationController
         @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
         # @bpm_response = view_context.send_request complete_task: true, task_id: params[:task_id], query: bpm_variables
 
-        puts "**************8"
-        puts @bpm_response
-        puts "**************8"
-
-
         if @bpm_response[:status].upcase == "SUCCESS"
 
           all_success = true

@@ -376,7 +376,7 @@ class InvoicesController < ApplicationController
       unless re_open
         @ticket.set_ticket_close(current_user.id)
         #Calculate Total Costs and Time
-        @ticket.calculate_ticket_total_costs
+        @ticket.calculate_ticket_total_cost
       end
 
       if @ticket.ticket_terminated
@@ -597,7 +597,7 @@ class InvoicesController < ApplicationController
     @total_estimation_amount = @ticket.ticket_estimations.where(foc_approved: false, cust_approved: true).map { |estimation| estimation.approval_required ? (estimation.ticket_estimation_externals.sum(:approved_estimated_price)+estimation.ticket_estimation_parts.sum(:approved_estimated_price)+estimation.ticket_estimation_additionals.sum(:approved_estimated_price)) : (estimation.ticket_estimation_externals.sum(:estimated_price)+estimation.ticket_estimation_parts.sum(:estimated_price)+estimation.ticket_estimation_additionals.sum(:estimated_price)) }.compact.sum
 
     #Calculate Total Costs and Time
-    @ticket.calculate_ticket_total_costs unless @invoice.canceled
+    @ticket.calculate_ticket_total_cost unless @invoice.canceled
 
     render "tickets/tickets_pack/estimate_job_final/estimate_job_final"
 
