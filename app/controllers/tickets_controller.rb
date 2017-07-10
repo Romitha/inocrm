@@ -1125,20 +1125,23 @@ class TicketsController < ApplicationController
     @re_assignment_rq_engineer =  @ticket.ticket_engineers.where(workflow_process_id: @ticket_workfows.first.try(:id)).first
     @re_assignment = @re_assignment_rq_engineer.present?
 
-    if @continue and @ticket.ticket_engineers.any?
+    t_params = ticket_params
+    t_params["user_ticket_actions_attributes"].first.merge!("action_at" => DateTime.now )
+    @ticket.attributes = t_params
 
-      t_params = ticket_params
-      t_params["user_ticket_actions_attributes"].first.merge!("action_at" => DateTime.now )
-      @ticket.attributes = t_params
+    user_ticket_action = @ticket.user_ticket_actions.last
+    user_ticket_action.user_assign_ticket_action.regional_support_center_job = @ticket.regional_support_job
+    h_assign_regional_support_center = user_ticket_action.assign_regional_support_centers.first
 
-      user_ticket_action = @ticket.user_ticket_actions.last
-      user_ticket_action.user_assign_ticket_action.regional_support_center_job = @ticket.regional_support_job
-      h_assign_regional_support_center = user_ticket_action.assign_regional_support_centers.first
+    user_assign_ticket_action = user_ticket_action.user_assign_ticket_action
 
-      user_assign_ticket_action = user_ticket_action.user_assign_ticket_action
-      user_assign_ticket_action.assign_to = @ticket.ticket_engineers.first.user_id
-      user_assign_ticket_action.assign_to_engineer_id = @ticket.ticket_engineers.first.id
-      user_assign_ticket_action.sbu_id = @ticket.ticket_engineers.first.sbu_id
+    if @continue and (@ticket.ticket_engineers.any? or user_assign_ticket_action.recorrection)
+
+      if @ticket.ticket_engineers.any?
+        user_assign_ticket_action.assign_to = @ticket.ticket_engineers.first.user_id
+        user_assign_ticket_action.assign_to_engineer_id = @ticket.ticket_engineers.first.id
+        user_assign_ticket_action.sbu_id = @ticket.ticket_engineers.first.sbu_id
+      end
 
       user_ticket_action.assign_regional_support_centers.reload unless !user_assign_ticket_action.recorrection and user_assign_ticket_action.regional_support_center_job
 
@@ -1234,7 +1237,7 @@ class TicketsController < ApplicationController
         end
       end
     else
-      flash[:notice] = "ticket is not updated. Bpm error"
+      flash[:error] = "ticket is not updated. Bpm error"
     end
     # redirect_to todos_url, notice: @flash_message
     redirect_to @ticket

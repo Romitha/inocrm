@@ -17,7 +17,7 @@
               %strong FSR No:
               = fsr.object.ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])
             .col-md-12
-              = tf :input :form_no
+              = tf.input :form_no
             .col-md-12
               = fsr.input :completion_level, as: :radio_buttons, label: false, collection: {"Full" => "F","Partial" => "P"}, wrapper: :append
             .col-md-12
