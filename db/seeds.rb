@@ -24,7 +24,7 @@ subject_classes = [
 
 ]
 
-organization = Organization.find_or_create_by name: "VS Information Systems", short_name: "VS Information Sys", code: "123456", web_site: "http://www.vsis.com", vat_number: "34358-90", refers: "VSIS", description: "VSIS is product owner of this application", type_id: 1
+organization = Organization.find_or_create_by name: "VS Information Systems", short_name: "VS Information Sys", code: "123456", web_site: "http://www.vsis.com", vat_number: "34358-90", refers: "CRM_OWNER", description: "VSIS is product owner of this application", type_id: 1
 user = User.find_by_email("admin@inovacrm.com")
 unless(user)
   user = User.create(email: "admin@inovacrm.com", password: "123456789", organization_id: organization.id)

@@ -41,7 +41,7 @@
       = f.input :web_site, placeholder: "Web Site", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Web Site"}
 
   - unless params[:action] == "store_and_branch"
-    - f.object.build_account if !f.object.account.present? and f.object.refers != "VSIS"
+    - f.object.build_account if !f.object.account.present? and f.object.refers != "CRM_OWNER"
     = f.simple_fields_for :account do |a|
       .row
         .col-md-4{class: "has-tooltip", title: "Industry type", data: {toggle: "tooltip", placement: "left"}}
@@ -113,7 +113,7 @@
             - if tapbar[5]==link_info or tapbar[7] == link_info
               %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"} unless(Organization::TYPES[2,3].include?(organization.category))
             - elsif tapbar[7]==link_info
-              %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"} if organization.refers=="VSIS"
+              %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"} if organization.refers=="CRM_OWNER"
             - else
               %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"}
           - else
@@ -162,14 +162,14 @@
           = render "organizations/members", organizations: organization.members, by: "origin", parent_organization: organization
         = render "organizations/parent_member", parent_member: organization
 
-    - if organization.refers == "VSIS"
+    - if organization.refers == "CRM_OWNER"
       .tab-pane.limit-height{id: "roles_and_permissions#{organization.id}"}
         .fixed-height
           = link_to "Add Roles and set Permissions", new_organization_roles_and_permission_path(organization), class: "btn btn-primary btn-sm small_scale_margin-bottom1"
           - organization.roles.order("created_at DESC").each do |role|
             = render "roles_and_permissions/role", role: role
 
-    - unless organization.refers == "VSIS"
+    - unless organization.refers == "CRM_OWNER"
       .tab-pane.limit-height{id: "dealer_types#{organization.id}"}
         = render "dealer_types/form", organization: organization
 
