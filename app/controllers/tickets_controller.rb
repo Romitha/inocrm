@@ -1582,15 +1582,15 @@ class TicketsController < ApplicationController
     @ticket = Ticket.find_by_id ticket_id
     session[:ticket_id] = @ticket.id
 
-    @onloan_request = true if params[:onloan_request] == "Y"
+    # @onloan_request = true if params[:onloan_request] == "Y"
 
 
-    if @onloan_request
-      @onloan_spare_part = @ticket.ticket_on_loan_spare_parts.find params[:request_onloan_spare_part_id]
-      @spare_part = @onloan_spare_part.ticket_spare_part
-    else
-      @spare_part = @ticket.ticket_spare_parts.find params[:request_spare_part_id]
-    end
+    # if @onloan_request
+    #   @onloan_spare_part = @ticket.ticket_on_loan_spare_parts.find params[:request_onloan_spare_part_id]
+    #   @spare_part = @onloan_spare_part.ticket_spare_part
+    # else
+    @spare_part = @ticket.ticket_spare_parts.find params[:request_spare_part_id]
+    # end
 
     if @ticket
       @product = @ticket.products.first

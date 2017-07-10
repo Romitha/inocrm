@@ -96,7 +96,8 @@
       / = f.association :start_engineer_id, class: "active_on_reject", label_method: :id, input_html: {multiple: false, class: "dropdown"}, include_blank: "Root", label: "Re-Open to Engineer Root", collection: ticket.ticket_engineers.select { |t| t.re_open_index == 0 && t.re_assignment_requested == false && t.status > 0 }
       .col-md-6
         = label_tag "Re-Open to Engineer"
-        = select_tag :start_engineer_id, options_from_collection_for_select(ticket.ticket_engineers.select { |t| t.re_open_index == 0 && t.re_assignment_requested == false && t.status > 0 }, "id", "id"), class: "form-control", include_blank: "Root"
+        / = select_tag :start_engineer_id, options_from_collection_for_select(ticket.ticket_engineers.select { |t| t.re_open_index == 0 && t.re_assignment_requested == false && t.status > 0 }, "id", "id"), class: "form-control", include_blank: "Root"
+        = select_tag :start_engineer_id, grouped_options_for_select(ticket.ticket_engineers.select { |t| t.re_open_index == 0 && t.re_assignment_requested == false && t.status > 0 }, "id", "id"), class: "form-control", include_blank: "Root"
   %br/
 
   .row
