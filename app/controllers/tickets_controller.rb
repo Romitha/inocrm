@@ -4165,7 +4165,7 @@ class TicketsController < ApplicationController
     @ticket_fsr = @ticket.ticket_fsrs.find_by_id params[:ticket_fsr_id]
     t_params["resolution"] = t_params["resolution"].present? ? "#{t_params['resolution']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket_fsr.resolution}" : @ticket_fsr.resolution
 
-    @ticket_engineer = TicketEngineer.find params[:engineer_id]
+    @ticket_engineer = TicketEngineer.find engineer_id
     @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
 
     if @ticket_fsr.update t_params
