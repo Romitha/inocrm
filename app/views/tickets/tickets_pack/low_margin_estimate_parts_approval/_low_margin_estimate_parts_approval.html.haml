@@ -116,7 +116,7 @@
                         %td
                           = number_with_precision grn_item.current_unit_cost, precision: 2
 
-      - unless t.object.ticket_spare_part.ticket_spare_part_manufacture.present?
+      - if !t.object.ticket_spare_part.ticket_spare_part_manufacture.present? or CompanyConfig.first.sup_nc_estimation_required
         %hr
         .row.estimate_extend_with_tax
           .col-md-2
