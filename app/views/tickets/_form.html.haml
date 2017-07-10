@@ -1,6 +1,6 @@
 - ticket = @ticket
 - product_to_day_warranties = product.warranties.select{|w| (w.start_at.to_date..w.end_at.to_date).include?(Date.today)}
-- selected_warranty_id = (product_to_day_warranties.present? ? (((product_to_day_warranties.any?{|w| w.warranty_type_id==1} and 1) or (product_to_day_warranties.any?{|w| w.warranty_type_id==2} and 2))) : 4 )
+- selected_warranty_id = (product_to_day_warranties.present? ? (((product_to_day_warranties.any?{|w| w.warranty_type_id==1} and 1) or (product_to_day_warranties.any?{|w| w.warranty_type_id==2} and 2))) : INOCRM_CONFIG["Ticket"]["warranty_type_id"] )
 
 - popnote = capture do
   = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "product", name: "pop_note", url: product_update_tickets_path(product_id: product.id), "original-title" => "Update pop note", value: ""}, style: "line-height: 6px;" do
@@ -81,7 +81,7 @@
                 .col-md-3
                   .panel.panel-default
                     .panel-body
-                      = f.association :ticket_type, as: :radio_buttons, wrapper_html: {class: "radio_as_list"}, input_html: {class: "ticket_type"}, checked: (ticket.ticket_type_id or 1)
+                      = f.association :ticket_type, as: :radio_buttons, wrapper_html: {class: "radio_as_list"}, input_html: {class: "ticket_type"}, checked: (ticket.ticket_type_id or INOCRM_CONFIG["Ticket"]["ticket_type_id"])
                       = f.input :regional_support_job, label: "Regional", wrapper: :append
                       - unless ticket.ticket_contract.present?
                         = f.association :onsite_type, include_blank: false

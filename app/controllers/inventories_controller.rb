@@ -539,11 +539,21 @@ class InventoriesController < ApplicationController
       @quotation = CustomerQuotation.find params[:quotation_id]
 
     end
+
+    respond_to do |format|
+      format.js
+    end
   end
 
   def load_estimation_ticket_info
     @estimation_type = params[:estimation_type]
     @estimation = TicketEstimation.find params[:estimation_id]
+
+
+    respond_to do |format|
+      format.js
+    end
+
   end
 
   def update_estimation_part_customer_approval

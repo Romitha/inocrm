@@ -773,7 +773,7 @@ class TicketsController < ApplicationController
           d42_assignment_required = "Y"
           engineer_id = "-"
 
-          @bpm_response = view_context.send_request_process_data start_process: true, process_name: "SPPT", query: {ticket_id: ticket_id, d1_pop_approval_pending: di_pop_approval_pending, priority: priority, d42_assignment_required: d42_assignment_required, engineer_id: engineer_id }
+          @bpm_response = view_context.send_request_process_data start_process: true, process_name: "SPPT", query: {ticket_id: ticket_id, d1_pop_approval_pending: di_pop_approval_pending, priority: priority, d42_assignment_required: d42_assignment_required, engineer_id: engineer_id, supp_engr_user: engineer_id, supp_hd_user: @ticket.created_by }
 
           if @bpm_response[:status].try(:upcase) == "SUCCESS"
             @ticket.ticket_workflow_processes.create(process_id: @bpm_response[:process_id], process_name: @bpm_response[:process_name])
@@ -1743,7 +1743,16 @@ class TicketsController < ApplicationController
     engineer_id = params[:engineer_id]
 
     if @continue
-      if @ticket.job_finished and @ticket.ticket_close_approval_required
+
+      ticket_workfows = ticket.ticket_workflow_processes.where process_id: params[:process_id]
+      ticket_engineers = ticket.ticket_engineers.where(workflow_process_id: ticket_workfows.first.try(:id))
+
+      engineer_close_approval_required = (@ticket.ticket_fsrs.any?{|fsr| ticket_engineers.ids.include?(fsr.engineer_id) } or @ticket.ticket_spare_parts.any?{|part| ticket_engineers.ids.include?(part.engineer_id) } or @ticket.ticket_on_loan_spare_parts.any?{|onloanpart| ticket_engineers.ids.include?(onloanpart.engineer_id) })
+
+      @ticket_engineer = TicketEngineer.find engineer_id
+      job_finished = (@ticket_engineer.status > 1 or @ticket.job_finished)
+
+      if job_finished and engineer_close_approval_required
 
         @ticket.attributes = ticket_params
         @ticket.ticket_close_approval_requested = true
@@ -1751,6 +1760,19 @@ class TicketsController < ApplicationController
         bpm_variables = view_context.initialize_bpm_variables.merge(supp_engr_user: current_user.id, d7_close_approval_requested: "Y", d4_job_complete: "Y", d9_qc_required: (@ticket.ticket_type.code == "IH" ? "Y" : "N"), d10_job_estimate_required_final: ((@ticket.cus_chargeable or @ticket.cus_payment_required) ? "Y" : "N"), d12_need_to_invoice: ((@ticket.cus_chargeable or @ticket.cus_payment_required) ? "Y" : "N"), d6_close_approval_required: "Y")
 
         @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(55).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id) 
+
+        @ticket.ticket_close_approval_required = (@ticket.ticket_fsrs.any? or @ticket.ticket_spare_parts.any? or @ticket.ticket_on_loan_spare_parts.any?)
+        @ticket.ticket_close_approval_requested = true 
+        @ticket.ticket_close_approved = true
+
+        if @ticket.ticket_close_approval_required
+          @ticket.ticket_engineers.each do |eng|
+            if eng.job_close_approval_required
+              @ticket.ticket_close_approval_requested = false if not eng.job_close_approval_requested
+              @ticket.ticket_close_approved = false if not eng.job_close_approved
+            end            
+          end
+        end
 
         if @ticket.save
 
@@ -4224,13 +4246,31 @@ class TicketsController < ApplicationController
         @ticket_engineer = TicketEngineer.find params[:engineer_id]
         @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
 
+        close_approval_requested = params[:job_close_approval_requested] # getting from the form
+
+        if close_approval_requested
+          @ticket.ticket_close_approval_required = (@ticket.ticket_fsrs.any? or @ticket.ticket_spare_parts.any? or @ticket.ticket_on_loan_spare_parts.any?)
+          @ticket.ticket_close_approval_requested = true 
+          @ticket.ticket_close_approved = true
+
+          if @ticket.ticket_close_approval_required
+            @ticket.ticket_engineers.each do |eng|
+              if eng.job_close_approval_required
+                @ticket.ticket_close_approval_requested = false if not eng.job_close_approval_requested
+                @ticket.ticket_close_approved = false if not eng.job_close_approved
+              end            
+            end
+          end
+          @ticket.save
+        end
+
         # bpm output variables
 
-        bpm_variables = view_context.initialize_bpm_variables.merge(supp_engr_user: current_user.id, d7_close_approval_requested: (@ticket.ticket_close_approval_requested ? "Y" : "N") )
+        bpm_variables = view_context.initialize_bpm_variables.merge(supp_engr_user: current_user.id, d7_close_approval_requested: (close_approval_requested ? "Y" : "N") )
 
         @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
 
-        @ticket.user_ticket_actions.create(action_id: TaskAction.find_by_action_no(55).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id) if @ticket.ticket_close_approval_requested
+        @ticket.user_ticket_actions.create(action_id: TaskAction.find_by_action_no(55).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id) if close_approval_requested
 
         @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
@@ -4256,20 +4296,21 @@ class TicketsController < ApplicationController
 
     if @continue
       if @ticket.update ticket_params
-        close_approval_requested = @ticket.ticket_close_approval_requested # getting from the form
+        close_approval_requested = params[:job_close_approval_requested] # getting from the form
 
-        @ticket_engineer = TicketEngineer.find params[:engineer_id]
+        @ticket_engineer = TicketEngineer.find engineer_id
         @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
 
-        engineer_close_approval_required = (@ticket.ticket_fsrs.any?{|fsr| fsr.engineer_id == @ticket_engineer.id } or @ticket.ticket_spare_parts.any?{|part| part.engineer_id == @ticket_engineer.id } or @ticket.ticket_on_loan_spare_parts.any?{|onloanpart| onloanpart.engineer_id == @ticket_engineer.id })
+        ticket_workfows = ticket.ticket_workflow_processes.where process_id: params[:process_id]
+        ticket_engineers = ticket.ticket_engineers.where(workflow_process_id: ticket_workfows.first.try(:id))
+
+        engineer_close_approval_required = (@ticket.ticket_fsrs.any?{|fsr| ticket_engineers.ids.include?(fsr.engineer_id) } or @ticket.ticket_spare_parts.any?{|part| ticket_engineers.ids.include?(part.engineer_id) } or @ticket.ticket_on_loan_spare_parts.any?{|onloanpart| ticket_engineers.ids.include?(onloanpart.engineer_id) })
 
         close_approval_requested = false if not engineer_close_approval_required
 
         @ticket_engineer.update status: (engineer_close_approval_required ? 2 : 3) , job_completed_at: DateTime.now, job_close_approval_required: engineer_close_approval_required, job_close_approval_requested: close_approval_requested
 
         @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
-
-        engineer_close_approval_required = (@ticket.ticket_fsrs.any?{|fsr| fsr.engineer_id == @ticket_engineer.id } or @ticket.ticket_spare_parts.any?{|part| part.engineer_id == @ticket_engineer.id } or @ticket.ticket_on_loan_spare_parts.any?{|onloanpart| onloanpart.engineer_id == @ticket_engineer.id })
 
         @ticket.ticket_close_approval_required = (@ticket.ticket_fsrs.any? or @ticket.ticket_spare_parts.any? or @ticket.ticket_on_loan_spare_parts.any?)
         @ticket.ticket_close_approval_requested = true 
@@ -4938,7 +4979,7 @@ class TicketsController < ApplicationController
     end
 
     def ticket_params
-      ticket_params = params.require(:ticket).permit(:onsite_type_id, :logged_at, :ticket_no, :ticket_close_approved, :note, :current_user_id, :sla_id, :serial_no, :status_hold, :repair_type_id, :base_currency_id, :ticket_close_approval_required, :ticket_close_approval_requested, :regional_support_job, :job_started_action_id, :job_start_note, :job_started_at, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, :status_resolve_id, :contract_id, :owner_organization_id, ticket_deliver_units_attributes: [:deliver_to_id, :note, :created_at, :created_by, :received, :id, :received_at, :received_by, :current_user_id], ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :ticket_action_id, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer, :ticket_action_id], ticket_estimations_attributes: [:note, :currency_id, :status_id, :requested_at, :requested_by, :request_type], user_ticket_actions_attributes: [:id, :action_engineer_id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, user_assign_ticket_action_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy], ticket_re_assign_request_attributes: [:reason_id, :_destroy], ticket_action_taken_attributes: [:action, :_destroy], ticket_terminate_job_attributes: [:id, :reason_id, :foc_requested, :_destroy], act_hold_attributes: [:id, :reason_id, :_destroy, :un_hold_action_id], hp_case_attributes: [:id, :case_id, :case_note], ticket_finish_job_attributes: [:resolution, :_destroy], act_terminate_job_payments_attributes: [:id, :amount, :payment_item_id, :_destroy, :ticket_id, :currency_id], act_fsr_attributes: [:print_fsr], serial_request_attributes: [:reason], job_estimation_attributes: [:supplier_id]], ticket_extra_remarks_attributes: [:id, :note, :created_by, :extra_remark_id], products_attributes: [:id, :sold_country_id, :pop_note, :pop_doc_url, :pop_status_id], ticket_fsrs_attributes: [:id, :engineer_id, :work_started_at, :work_finished_at, :hours_worked, :down_time, :travel_hours, :engineer_time_travel, :engineer_time_on_site, :resolution, :completion_level, :created_by, :remarks, :approved, :current_user_id], ticket_on_loan_spare_parts_attributes: [:id, :approved_inv_product_id, :approved_store_id, :approved_main_inv_product_id, :approved, :return_part_damage, :return_part_damage_reason_id, :other_mileage, :other_repairs])
+      ticket_params = params.require(:ticket).permit(:onsite_type_id, :logged_at, :ticket_no, :ticket_close_approved, :note, :current_user_id, :sla_id, :serial_no, :status_hold, :repair_type_id, :base_currency_id, :ticket_close_approval_required, :ticket_close_approval_requested, :regional_support_job, :job_started_action_id, :job_start_note, :job_started_at, :contact_type_id, :cus_chargeable, :informed_method_id, :job_type_id, :other_accessories, :priority, :problem_category_id, :problem_description, :remarks, :inform_cp, :resolution_summary, :status_id, :ticket_type_id, :warranty_type_id, :status_resolve_id, :contract_id, :owner_organization_id, ticket_deliver_units_attributes: [:deliver_to_id, :note, :created_at, :created_by, :received, :id, :received_at, :received_by, :current_user_id], ticket_accessories_attributes: [:id, :accessory_id, :note, :_destroy], q_and_answers_attributes: [:problematic_question_id, :answer, :ticket_action_id, :id], joint_tickets_attributes: [:joint_ticket_id, :id, :_destroy], ge_q_and_answers_attributes: [:id, :general_question_id, :answer, :ticket_action_id], ticket_estimations_attributes: [:note, :currency_id, :status_id, :requested_at, :requested_by, :request_type], user_ticket_actions_attributes: [:id, :action_engineer_id, :_destroy, :action_at, :action_by, :action_id, :re_open_index, user_assign_ticket_action_attributes: [:sbu_id, :_destroy, :assign_to, :recorrection], assign_regional_support_centers_attributes: [:regional_support_center_id, :_destroy], ticket_re_assign_request_attributes: [:reason_id, :_destroy], ticket_action_taken_attributes: [:action, :_destroy], ticket_terminate_job_attributes: [:id, :reason_id, :foc_requested, :_destroy], act_hold_attributes: [:id, :reason_id, :_destroy, :un_hold_action_id], hp_case_attributes: [:id, :case_id, :case_note], ticket_finish_job_attributes: [:resolution, :_destroy], act_terminate_job_payments_attributes: [:id, :amount, :payment_item_id, :_destroy, :ticket_id, :currency_id], act_fsr_attributes: [:print_fsr], serial_request_attributes: [:reason], job_estimation_attributes: [:supplier_id]], ticket_extra_remarks_attributes: [:id, :note, :created_by, :extra_remark_id], products_attributes: [:id, :sold_country_id, :pop_note, :pop_doc_url, :pop_status_id], ticket_fsrs_attributes: [:id, :form_no, :engineer_id, :work_started_at, :work_finished_at, :hours_worked, :down_time, :travel_hours, :engineer_time_travel, :engineer_time_on_site, :resolution, :completion_level, :created_by, :remarks, :approved, :current_user_id], ticket_on_loan_spare_parts_attributes: [:id, :approved_inv_product_id, :approved_store_id, :approved_main_inv_product_id, :approved, :return_part_damage, :return_part_damage_reason_id, :other_mileage, :other_repairs])
       ticket_params[:current_user_id] = current_user.id
       ticket_params
     end
@@ -4992,7 +5033,7 @@ class TicketsController < ApplicationController
     end
 
     def ticket_fsr_params
-      ticket_fsr_params = params.require(:ticket_fsr).permit(:travel_hours, :work_started_at, :work_finished_at, :hours_worked, :down_time, :engineer_time_travel, :engineer_time_on_site, :resolution, :completion_level, :remarks, :ticket_id, ticket_attributes: [:remarks, :id])
+      ticket_fsr_params = params.require(:ticket_fsr).permit(:form_no, :travel_hours, :work_started_at, :work_finished_at, :hours_worked, :down_time, :engineer_time_travel, :engineer_time_on_site, :resolution, :completion_level, :remarks, :ticket_id, ticket_attributes: [:remarks, :id])
       ticket_fsr_params[:current_user_id] = current_user.id
       ticket_fsr_params[:work_started_at] = Time.strptime(ticket_fsr_params[:work_started_at],'%m/%d/%Y %I:%M %p') if ticket_fsr_params[:work_started_at].present?
       ticket_fsr_params[:work_finished_at] = Time.strptime(ticket_fsr_params[:work_finished_at],'%m/%d/%Y %I:%M %p') if ticket_fsr_params[:work_finished_at].present?

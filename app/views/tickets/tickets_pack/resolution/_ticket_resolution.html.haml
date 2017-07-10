@@ -27,48 +27,53 @@
     .form-group
       %label Activity
       %select{:class => "activity_id", :id => "template_caller"}
+        - ticket_workfows = ticket.ticket_workflow_processes.where process_id: params["process_id"]
+        - ticket_engineers = ticket.ticket_engineers.where(workflow_process_id: ticket_workfows.first.try(:id))
+
+        - close_approval_required = (ticket.ticket_fsrs.any?{|fsr| ticket_engineers.ids.include?(fsr.engineer_id) } or ticket.ticket_spare_parts.any?{|part| ticket_engineers.ids.include?(part.engineer_id) } or ticket.ticket_on_loan_spare_parts.any?{|onloanpart| ticket_engineers.ids.include?(onloanpart.engineer_id) })
+
         - job_finished = (ticket_engineer.status > 1 or ticket.job_finished)
         - unless present_of_start_ticket_action
-          %option{:value => "start_action", data: {task_id: params[:task_id]}} Start Action
+          %option{:value => "start_action", data: {task_id: params[:task_id], process_id: params[:process_id], engineer_id: params[:engineer_id]}} Start Action
         - unless job_finished
-          %option{:value => "re_assign", data: {task_id: params[:task_id]}} Re Assign
+          %option{:value => "re_assign", data: {task_id: params[:task_id], process_id: params[:process_id], engineer_id: params[:engineer_id]}} Re Assign
         - if present_of_start_ticket_action and not job_finished
-          %option{:value => "change_ticket_cus_warranty", data: {task_id: params[:task_id]}} Change Ticket Warranty Type or Customer Chargeable
+          %option{:value => "change_ticket_cus_warranty", data: {task_id: params[:task_id], process_id: params[:process_id], engineer_id: params[:engineer_id]}} Change Ticket Warranty Type or Customer Chargeable
         - if present_of_start_ticket_action and not job_finished
-          %option{:value => "change_ticket_repair_type", data: {task_id: params[:task_id]}} Change Ticket Repair Type
+          %option{:value => "change_ticket_repair_type", data: {task_id: params[:task_id], process_id: params[:process_id], engineer_id: params[:engineer_id]}} Change Ticket Repair Type
         - if present_of_start_ticket_action and not ticket.status_hold
-          %option{:value => "hold", data: {task_id: params[:task_id]}} Hold
+          %option{:value => "hold", data: {task_id: params[:task_id], process_id: params[:process_id], engineer_id: params[:engineer_id]}} Hold
         - if present_of_start_ticket_action and ticket.status_hold
-          %option{:value => "un_hold", data: {task_id: params[:task_id]}} Un Hold
+          %option{:value => "un_hold", data: {task_id: params[:task_id], process_id: params[:process_id], engineer_id: params[:engineer_id]}} Un Hold
         - if present_of_start_ticket_action and not job_finished
-          %option{:value => "edit_serial_no_request", data: {task_id: params[:task_id]}} Edit Serial No Request
+          %option{:value => "edit_serial_no_request", data: {task_id: params[:task_id], process_id: params[:process_id], engineer_id: params[:engineer_id]}} Edit Serial No Request
         - if present_of_start_ticket_action and ticket.ticket_type.code == 'OS'  and not job_finished
-          %option{:value => "create_fsr", data: {task_id: params[:task_id]}} Create FSR
+          %option{:value => "create_fsr", data: {task_id: params[:task_id], process_id: params[:process_id], engineer_id: params[:engineer_id]}} Create FSR
         - if present_of_start_ticket_action and ticket.ticket_fsrs.find_by_approved(:false).present?
-          %option{:value => "edit_fsr", data: {task_id: params[:task_id]}} Edit FSR
+          %option{:value => "edit_fsr", data: {task_id: params[:task_id], process_id: params[:process_id], engineer_id: params[:engineer_id]}} Edit FSR
         - if present_of_start_ticket_action and not job_finished
-          %option{:value => "terminate_job", data: {task_id: params[:task_id]}} Terminate Job
+          %option{:value => "terminate_job", data: {task_id: params[:task_id], process_id: params[:process_id], engineer_id: params[:engineer_id]}} Terminate Job
         - if present_of_start_ticket_action
-          %option{:value => "action_taken", data: {task_id: params[:task_id]}} Action Taken
+          %option{:value => "action_taken", data: {task_id: params[:task_id], process_id: params[:process_id], engineer_id: params[:engineer_id]}} Action Taken
         - if present_of_start_ticket_action and not job_finished and  ticket.ticket_repair_type.code == "IN" and (ticket.ticket_type.code == 'OS' ? ticket.ticket_fsrs.any? : true)
-          %option{:value => "request_spare_part", data: {task_id: params[:task_id]}} Request Spare Part
+          %option{:value => "request_spare_part", data: {task_id: params[:task_id], process_id: params[:process_id], engineer_id: params[:engineer_id]}} Request Spare Part
         - if present_of_start_ticket_action and not job_finished
-          %option{:value => "request_on_loan_spare_part", data: {task_id: params[:task_id]}} Request On Loan Spare Part
+          %option{:value => "request_on_loan_spare_part", data: {task_id: params[:task_id], process_id: params[:process_id], engineer_id: params[:engineer_id]}} Request On Loan Spare Part
         - if present_of_start_ticket_action
-          %option{:value => "hp_case_id", data: {task_id: params[:task_id]}} HP Case Action
+          %option{:value => "hp_case_id", data: {task_id: params[:task_id], process_id: params[:process_id], engineer_id: params[:engineer_id]}} HP Case Action
         - if present_of_start_ticket_action and not job_finished and (ticket.ticket_repair_type.code=="IN" or (ticket.ticket_repair_type.code=="EX" and ticket.ticket_deliver_units.any?{|d| (d.received)}))
-          %option{:value => "resolved_job", data: {task_id: params[:task_id]}} Resolve the Job
-        - if present_of_start_ticket_action and job_finished
-          %option{:value => "request_close_approval", data: {task_id: params[:task_id]}} Request close approval
+          %option{:value => "resolved_job", data: {task_id: params[:task_id], process_id: params[:process_id], engineer_id: params[:engineer_id]}} Resolve the Job
+        - if present_of_start_ticket_action and job_finished and close_approval_required
+          %option{:value => "request_close_approval", data: {task_id: params[:task_id], process_id: params[:process_id], engineer_id: params[:engineer_id]}} Request close approval
 
         - if present_of_start_ticket_action and ticket.ticket_repair_type.code == "EX" and not (ticket.ticket_deliver_units.any?{|d| !d.received} or job_finished) and ticket.ticket_estimations.any?{|ts| ((ts.status_id == EstimationStatus.find_by_code("EST").id) or (ts.status_id == EstimationStatus.find_by_code("CLS").id) or (ts.status_id == EstimationStatus.find_by_code("APP").id)) and ((ts.cust_approved) or ( !ts.cust_approval_required))}
-          %option{:value => "deliver_unit", data: {task_id: params[:task_id]}} Deliver Unit
+          %option{:value => "deliver_unit", data: {task_id: params[:task_id], process_id: params[:process_id], engineer_id: params[:engineer_id]}} Deliver Unit
 
         - if present_of_start_ticket_action and !ticket.ticket_estimations.any?{|ts| (ts.status_id == EstimationStatus.find_by_code("RQS").id) } and ticket.ticket_repair_type.code=="EX" and not job_finished
-          %option{:value => "job_estimation_request", data: {task_id: params[:task_id]}} Job Estimate Request (External)
+          %option{:value => "job_estimation_request", data: {task_id: params[:task_id], process_id: params[:process_id], engineer_id: params[:engineer_id]}} Job Estimate Request (External)
 
         - if present_of_start_ticket_action and ticket.ticket_repair_type.code=="EX" and ticket.ticket_deliver_units.any?{|d| (d.collected and !d.received)} and not job_finished
-          %option{:value => "recieve_unit", data: {task_id: params[:task_id]}} Receive Unit
+          %option{:value => "recieve_unit", data: {task_id: params[:task_id], process_id: params[:process_id], engineer_id: params[:engineer_id]}} Receive Unit
 
 .form-group
   #resolution_templates

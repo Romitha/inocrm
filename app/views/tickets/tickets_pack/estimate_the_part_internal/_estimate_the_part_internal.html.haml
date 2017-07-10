@@ -133,11 +133,12 @@
               = p.input :note, input_html: {value: nil}
               = simple_format p.object.note
 
-          - unless t.object.ticket_spare_part.ticket_spare_part_manufacture.present?
+          - if !t.object.ticket_spare_part.ticket_spare_part_manufacture.present? or CompanyConfig.first.sup_nc_estimation_required
             .col-md-9.head_estimated_price_class.estimate_extend_with_tax
               .row
-                .col-md-2
-                  = t.association :supplier, collection: Organization.suppliers, input_html: {class: "est_internal_supplier"}
+                - unless t.object.ticket_spare_part.ticket_spare_part_manufacture.present?
+                 .col-md-2
+                   = t.association :supplier, collection: Organization.suppliers, input_html: {class: "est_internal_supplier"}
                 .col-md-3
                   = t.input :cost_price, label: "Cost Price (#{ticket.ticket_currency.code})", as: :string, input_html: {data: { initValue: t.object.cost_price.to_f }, min: 0, class: "value_class only_float", id: "cost_price_id",oninput: "Inventories.calculate_cost_price(this);Inventories.unit_calculation(this);"}
                 .col-md-3

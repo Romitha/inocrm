@@ -27,5 +27,7 @@
             = f.simple_fields_for :ticket_fsrs do |tf|
               = tf.input :created_by, as: :hidden, input_html: {value: current_user.id}
               = tf.input :engineer_id, as: :hidden, input_html: {value: Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:bpm_input_variables].detect{ |e| e.first == "engineer_id" }.second }
+              = tf :input :form_no
+
           .col-md-6
             = f.submit "Save", class: "btn btn-success", id: "create_fsr_submit"

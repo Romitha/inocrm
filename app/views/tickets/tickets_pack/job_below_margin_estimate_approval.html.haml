@@ -5,7 +5,7 @@
 = render "tickets/tickets_pack/ticket_header", ticket: ticket, product: product
 
 = tab_panel do
-  = tab_nav_tab({class: "small_scale_margin-bottom2"}, ticket_info: {content: "Ticket info"}, low_margin_estimate: {content: "Low margin estimate", active_class: "active"})
+  = tab_nav_tab({class: "small_scale_margin-bottom2"}, ticket_info: {content: "Ticket info"}, low_margin_estimate: {content: "Job Estimation Approval", active_class: "active"})
   .tab-content
     = tab_content tabpointer: :ticket_info do
       = tab_panel do

@@ -1,10 +1,10 @@
 - ticket_estimation_parts = estimation.ticket_estimation_parts
 - ticket_estimation_additionals = estimation.ticket_estimation_additionals
 
-- total_additional_cost = ticket_estimation_additionals.to_a.sum{|e| estimation.approval_required ? e.approved_estimated_price : e.estimated_price }
+- total_additional_cost = ticket_estimation_additionals.to_a.sum{|e| estimation.approval_required ? e.approved_estimated_price.to_f : e.estimated_price.to_f }
 - total_additional_tax = ticket_estimation_additionals.to_a.sum{|e| estimation.approval_required ? e.ticket_estimation_additional_taxes.sum(:approved_tax_amount) : e.ticket_estimation_additional_taxes.sum(:estimated_tax_amount) }
 
-- total_part_cost = ticket_estimation_parts.to_a.sum{|e| estimation.approval_required ? e.approved_estimated_price : e.estimated_price }
+- total_part_cost = ticket_estimation_parts.to_a.sum{|e| estimation.approval_required ? e.approved_estimated_price.to_f : e.estimated_price.to_f }
 - total_part_tax = ticket_estimation_parts.to_a.sum{|e| estimation.approval_required ? e.ticket_estimation_part_taxes.sum(:approved_tax_amount) : e.ticket_estimation_part_taxes.sum(:estimated_tax_amount) }
 
 - final_tot_tax = total_part_tax + total_additional_tax

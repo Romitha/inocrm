@@ -24,9 +24,9 @@
     .col-md-2
       = f.association :sla_time, required: true, label_method: :description, include_blank: false, label: "SLA"
     .col-md-2
-      = label_tag "Owner branch" do
+      = label_tag "Owner Division" do
         Owner Branch
-        = f.select :owner_organization_id, (contract.organization.members.collect{|m| [m.name, m.id ] } << [contract.organization.name, contract.organization.id]), {include_blank: false}, {class: "form-control col-md-12 small_scale_margin-top4"}
+        = f.select :owner_organization_id, ( Organization.owner.members.collect{ |m| [m.name, m.id ] } << [Organization.owner.name, Organization.owner.id] ), {include_blank: false}, {class: "form-control col-md-12 small_scale_margin-top4"}
 
     .col-md-2
       = f.input :amount
