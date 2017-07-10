@@ -523,7 +523,7 @@ window.Tickets =
           $(@).addClass("hide")
 
   fade_flash_msg: ->
-    $("#fade").delay(2000).fadeOut(1000)
+    $("#fade").delay(2000).fadeOut(3000)
 
   check_validation: (tag_attrib, validation_method)->
     if validation_method == "presence"
