@@ -19,7 +19,7 @@
     .col-md-2
       = f.association :ticket_contract_type, include_blank: false, required: true, label: "Contract Type"
     .col-md-2
-      = f.association :ticket_currency, label_method: :code, label: "Currency"
+      = f.association :ticket_currency, label_method: :code, label: "Currency", required: true, include_blank: false
 
     .col-md-2
       = f.association :sla_time, required: true, label_method: :description, include_blank: false, label: "SLA"

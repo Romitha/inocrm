@@ -595,7 +595,7 @@ class InventoriesController < ApplicationController
           end
         end
         status_action_id = SparePartStatusAction.find_by_code("CEA").id
-        po_required = CompanyConfig.first.sup_mf_parts_po_requied
+        po_required = CompanyConfig.first.sup_mf_parts_po_required
 
       end
       @estimation.ticket_estimation_parts.each do |ticket_estimation_part|

@@ -33,7 +33,7 @@
       %dt
         Un Used Return Reason :
       %dd
-        = spare_part.spare_part_description
+        = spare_part.unused_reason.try(:reason)
       %dt
         Received Spare Part  No:
       %dd
@@ -47,7 +47,7 @@
       %dt
         Part Serial No:
       %dd
-        = spare_part.spare_part_description
+        = spare_part.faulty_serial_no
       %dt
         Return Part Serial No:
       %dd
@@ -55,7 +55,7 @@
       %dt
         Part CT No:
       %dd
-        
+        = spare_part.faulty_ct_no
       %dt
         Return CT No:
       %dd
