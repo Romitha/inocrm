@@ -1,0 +1,60 @@
+- if @store
+  %h4 Create PRN
+
+  = simple_nested_form_for @prn, url: create_prn_admins_inventories_url, html: {class: "validate_form"} do |f|
+    = f.input :created_by, as: :hidden, input_html: { value: current_user.id }
+    = f.input :prn_no, as: :hidden, input_html: {value: CompanyConfig.first.next_sup_last_prn_no}
+    = f.input :store_id, as: :hidden, input_html: {value: @store.id }
+    .row
+      .col-md-6
+        %strong PRN No:
+        = CompanyConfig.first.next_sup_last_prn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_prn_no_format"])
+        %br/
+        %strong Store Name:
+        = @store.name
+      .col-md-6.text-right
+        %strong Created by:
+        = current_user.full_name
+        %br/
+        %strong Created at:
+        = DateTime.now.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
+      .col-md-12.small_scale_padding-top1
+        = link_to "Change store", prn_admins_inventories_path
+      .col-md-3.small_scale_padding-top1
+        = f.input :required_at, as: :string, input_html: {class: "datepicker"}, label: "Required date"
+      .col-md-9.small_scale_padding-top1
+        = f.input :remarks
+
+      = f.simple_fields_for :inventory_prn_items do |i|
+        .product_info
+        = i.input :product_id, as: :hidden, input_html: {class: "dynamic_main_product_id"}
+        .row
+          .col-md-1
+            = i.link_to_remove class: "remove_c_t_v_link", title: "Remove item" do
+              %span.glyphicon.glyphicon-remove-sign
+          .col-md-3
+            = i.input :quantity, as: :string, label: "Requested quantity", required: true
+          .col-md-8
+            = i.input :remarks
+
+      .col-md-12
+        = f.link_to_add :inventory_prn_items, id: "add_serial_part", onclick: "Inventories.search_product_for_part(this); return false;", data: {storeId: @store.id, id: "store_id", modalId: "modal_for_main_part", remote: "true", selectpath: "", selectoptions: "onclick:Inventories.assign_i_product(this, 'modal_for_main_part', 'add_serial_part');<>clicked_area:prn<>from_where:prn"} do
+          %span.glyphicon.glyphicon-plus-sign
+          Add Item
+      .col-md-12
+        = f.submit "Save", class: "btn btn-sm btn-success"
+
+  #modal_for_main_part.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "modal_for_main_part", "aria-hidden" => true}
+    .modal-dialog.modal-lg
+      .modal-content
+        .modal-header
+          %h4.modal-title Select Product
+        .modal-body
+        .modal-footer
+- else
+  .list-group#store-list
+    %h2.small_scale_padding-bottom1 Select Store
+    - Organization.stores.each do |store|
+      = link_to prn_admins_inventories_path(store_id: store.id, with_srn: "no"),  remote: true, class: "list-group-item" do
+        %h4.list-group-item-heading{id: "store_name_#{store.id}"}= store.name
+        .list-group-item-text{id: "store_desc_#{store.id}"}= simple_format store.description

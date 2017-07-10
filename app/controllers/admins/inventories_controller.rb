@@ -1754,12 +1754,21 @@ module Admins
     def prn
       Inventory
 
+      case params[:srn]
+      when "yes"
+        @render_template = "main_prn"
+      when "no"
+        @render_template = "with_srn"
+      end
+
       if params[:store_id].present?
         @store = Organization.find params[:store_id]
         @prn = InventoryPrn.new
+        @render_template = "main_prn"
       end
       respond_to do |format|
         format.html {render "admins/inventories/prn/prn"}
+        format.js {render "admins/inventories/prn/prn"}
       end
     end
 

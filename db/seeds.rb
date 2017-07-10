@@ -356,3 +356,15 @@ CompanyConfig.create sup_last_fsr_no: 0, inv_last_srn_no: 0, inv_last_srr_no: 0,
 ].each do |t|
   OnsiteType.create_with(name: t[1]).find_or_create_by(code: t[0])
 end
+
+[
+  ["EMail", "EM", "3"],
+  ["Telephone", "TP", "2"],
+  ["Mobile", "MB", "2"],
+  ["Viber", "", "2"],
+  ["Whats UP", "", "2"],
+  ["Skyp", "", "1"],
+  ["LinkdIN", "", "1"]
+].each do |t|
+  OrganizationContactType.create_with(name: t[0]).find_or_create_by(code: t[1], validate_id: t[2])}
+end
