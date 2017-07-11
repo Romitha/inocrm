@@ -194,6 +194,11 @@ class ContactPerson1 < ActiveRecord::Base
 
   belongs_to :mst_title, foreign_key: :title_id
   validates_presence_of [:title_id, :name]
+
+  def full_name
+    "#{try(:mst_title).try(:title)} #{name}"
+  end
+
 end
 
 class ContactPerson2 < ActiveRecord::Base
@@ -209,6 +214,11 @@ class ContactPerson2 < ActiveRecord::Base
 
   belongs_to :mst_title, foreign_key: :title_id
   validates_presence_of [:title_id, :name]
+
+  def full_name
+    "#{try(:mst_title).try(:title)} #{name}"
+  end
+
 end
 
 class ReportPerson < ActiveRecord::Base

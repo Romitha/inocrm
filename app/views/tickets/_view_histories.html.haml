@@ -19,16 +19,16 @@
         %dd= history.problem_description
         %br
         %dt Customer
-        %dd #{history.customer and history.customer.mst_title.title} #{history.customer and history.customer.name.capitalize }
+        %dd #{history.customer and history.customer.full_name }
         %dt Contact person1
-        %dd #{history.contact_person1 and history.contact_person1.mst_title.title} #{history.contact_person1 and history.contact_person1.name.capitalize}
+        %dd #{history.contact_person1 and history.contact_person1.full_name}
         %dt Contact person2
-        %dd #{history.contact_person2 and history.contact_person2.mst_title.title} #{history.contact_person2 and history.contact_person2.name.capitalize}
+        %dd #{history.contact_person2 and history.contact_person2.full_name}
         %dt Report person
-        %dd #{history.report_person and history.report_person.mst_title.title} #{history.report_person and history.report_person.name.capitalize}
+        %dd #{history.report_person and history.report_person.full_name}
         %br
         %dt Engineer
-        %dd= User.find_by_id(history.owner_engineer_id).try(:first_name)
+        %dd= User.find_by_id(history.owner_engineer_id).try(:full_name)
         %dt Reported by
         %dd
         %dt Resolution summary

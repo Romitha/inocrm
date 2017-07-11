@@ -4395,7 +4395,7 @@ class TicketsController < ApplicationController
 
                 view_context.ticket_bpm_headers @bpm_response1[:process_id], @ticket.id
 
-                next_engineer.update status: 1, job_assigned_at: DateTime.now, workflow_process_id: workflow_process.process_id
+                next_engineer.update status: 1, job_assigned_at: DateTime.now, workflow_process_id: workflow_process.id
 
               else
                 all_success = false

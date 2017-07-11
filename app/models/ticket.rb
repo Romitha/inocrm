@@ -130,7 +130,7 @@ class Ticket < ActiveRecord::Base
   end
 
   def update_ticket_no
-    self.ticket_no = (self.class.any? ? (self.class.order("created_at ASC").map{|t| t.ticket_no.to_i}.max + 1) : 1)
+    self.ticket_no = CompanyConfig.first.sup_last_ticket_no.to_i + 1 #(self.class.any? ? (self.class.order("created_at ASC").map{|t| t.ticket_no.to_i}.max + 1) : 1)
   end
 
 
@@ -147,7 +147,11 @@ class Ticket < ActiveRecord::Base
   end
 
   def flash_cache
+    Organization
+
     Rails.cache.delete([:join, self.id])
+    CompanyConfig.first.increment! :sup_last_ticket_no, 1
+
   end
 
   def set_ticket_close(user_id)
