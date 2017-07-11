@@ -310,15 +310,21 @@
                   %dl.dl-horizontal
                     - if ticket_spare_part.cus_chargeable_part
                       %dt Estimated price (#{tsp.ticket_estimation.currency.code})
-                      %dd= number_with_precision tsp.estimated_price, precision: 2
-                    %dt Estimated by
-                    %dd= User.cached_find_by_id(tsp.ticket_estimation.estimated_by).try(:full_name)
-                    %dt Estimated at
-                    %dd= tsp.ticket_estimation.estimated_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
+                      %dd= number_with_precision (tsp.ticket_estimation.approval_required ? tsp.approved_estimated_price : tsp.estimated_price), precision: 2
+                    - if tsp.ticket_estimation.approval_required
+                      %dt Estimated by
+                      %dd= User.cached_find_by_id(tsp.ticket_estimation.approved_by).try(:full_name)
+                      %dt Estimated at
+                      %dd= tsp.ticket_estimation.approved_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
+                    - else
+                      %dt Estimated by
+                      %dd= User.cached_find_by_id(tsp.ticket_estimation.estimated_by).try(:full_name)
+                      %dt Estimated at
+                      %dd= tsp.ticket_estimation.estimated_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
                     %dt{title: "Advance payment amount"} Advance payment amount (#{tsp.ticket_estimation.currency.code})
-                    %dd= tsp.ticket_estimation.advance_payment_amount
+                    %dd= tsp.ticket_estimation.approval_required ? tsp.ticket_estimation.approved_adv_pmnt_amount : tsp.ticket_estimation.advance_payment_amount
                     %dt{title: "Est. additional amount"} Est. additional amount (#{tsp.ticket_estimation.currency.code})
-                    %dd= number_with_precision tsp.ticket_estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2
+                    %dd= number_with_precision (tsp.ticket_estimation.approval_required ? tsp.ticket_estimation.ticket_estimation_additionals.sum(:approved_estimated_price) : tsp.ticket_estimation.ticket_estimation_additionals.sum(:estimated_price)), precision: 2
                     %dt Estimate warranty
                     %dd= tsp.warranty_period
                     - if tsp.ticket_estimation.cust_approval_required

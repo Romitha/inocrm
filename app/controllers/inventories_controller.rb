@@ -351,7 +351,7 @@ class InventoriesController < ApplicationController
           bpm_variables.merge!(d16_request_manufacture_part: "Y")
 
           process_name = "SPPT_MFR_PART_REQUEST"
-          query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, supp_engr_user: supp_engr_user, priority: priority, d45_manufacture_part_need_approval: d45_manufacture_part_need_approval}
+          query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, supp_engr_user: supp_engr_user, priority: priority, d45_manufacture_part_need_approval: d45_manufacture_part_need_approval, d46_manufacture_part_approved: "Y"}
         end
 
       else
@@ -659,7 +659,7 @@ class InventoriesController < ApplicationController
             bpm_variables.merge!(d16_request_manufacture_part: "Y")
 
             process_name = "SPPT_MFR_PART_REQUEST"
-            query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, supp_engr_user: supp_engr_user, priority: priority, d45_manufacture_part_need_approval: d45_manufacture_part_need_approval}
+            query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, supp_engr_user: supp_engr_user, priority: priority, d45_manufacture_part_need_approval: d45_manufacture_part_need_approval, d46_manufacture_part_approved: "Y"}
           end
 
           if ticket_estimation_part.ticket_spare_part.ticket_spare_part_store.present?
@@ -1792,7 +1792,7 @@ class InventoriesController < ApplicationController
                   @ticket_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code("MPR").id 
 
                   process_name = "SPPT_MFR_PART_REQUEST"
-                  query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, supp_engr_user: supp_engr_user, priority: priority, d45_manufacture_part_need_approval: d45_manufacture_part_need_approval}
+                  query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, supp_engr_user: supp_engr_user, priority: priority, d45_manufacture_part_need_approval: d45_manufacture_part_need_approval, d46_manufacture_part_approved: "Y"}
 
                 end
 
@@ -1938,7 +1938,7 @@ class InventoriesController < ApplicationController
                   @ticket_spare_part.update_attribute :status_action_id, SparePartStatusAction.find_by_code("MPR").id 
 
                   process_name = "SPPT_MFR_PART_REQUEST"
-                  query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, supp_engr_user: supp_engr_user, priority: priority, d45_manufacture_part_need_approval: d45_manufacture_part_need_approval}
+                  query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, supp_engr_user: supp_engr_user, priority: priority, d45_manufacture_part_need_approval: d45_manufacture_part_need_approval, d46_manufacture_part_approved: "Y"}
 
                 end
 

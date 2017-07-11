@@ -29,7 +29,7 @@
       - est_engineers = ticket_engineers.where(id: estimation.engineer_id)
       / - est_ownership = est_engineers.pressent?
 
-      - if est_engineers.any?
+      - if est_engineers.any? or params[:partial_template_for_show] == "estimation"
 
         - estimation_external_present = estimation.ticket_estimation_externals.present?
         - estimation_external_or_part = (estimation.ticket_estimation_externals.first or estimation.ticket_estimation_parts.first)
@@ -95,7 +95,7 @@
             = number_with_precision(total_est + total_tax, precision: 2)
 
           %td
-            = number_with_precision estimation.send(estimation.approval_required ? :approved_adv_pmnt_amount : :advance_payment_amount), precision: 2
+            = number_with_precision (estimation.approval_required ? estimation.approved_adv_pmnt_amount : estimation.advance_payment_amount), precision: 2
 
           %td= estimation.estimation_status.name
 

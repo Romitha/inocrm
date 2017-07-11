@@ -4661,7 +4661,7 @@ class TicketsController < ApplicationController
           @ticket_spare_part.create_ticket_spare_part_manufacture(payment_expected_manufacture: 0, manufacture_currency_id: @ticket_spare_part.ticket.manufacture_currency_id, requested_quantity: requested_quantity, po_required: CompanyConfig.first.sup_mf_parts_po_required)
 
           process_name = "SPPT_MFR_PART_REQUEST"
-          query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, supp_engr_user: supp_engr_user, priority: priority, d45_manufacture_part_need_approval: d45_manufacture_part_need_approval}
+          query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, supp_engr_user: supp_engr_user, priority: priority, d45_manufacture_part_need_approval: d45_manufacture_part_need_approval, d46_manufacture_part_approved: "Y"}
 
         elsif @ticket_spare_part.request_from == "S"
           @ticket_spare_part.update request_approval_required: true if d44_store_part_need_approval == "Y"
