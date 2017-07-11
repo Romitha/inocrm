@@ -188,9 +188,9 @@ class Ticket < ActiveRecord::Base
       # if (!ticket_estimation.approval_required or (ticket_estimation.approval_required and ticket_estimation.approved)) and (!ticket_estimation.cust_approval_required or (ticket_estimation.cust_approval_required and ticket_estimation.cust_approved))
       if !((ticket_estimation.approval_required and !ticket_estimation.approved) or (ticket_estimation.cust_approval_required and !ticket_estimation.cust_approved))
 
-        part_cost += ticket_estimation.estimation_parts.sum(:cost_price)
-        additional_cost += ticket_estimation.estimation_additionals.sum(:cost_price)
-        external_cost += ticket_estimation.estimation_externals.sum(:cost_price)
+        part_cost += ticket_estimation.ticket_estimation_parts.sum(:cost_price)
+        additional_cost += ticket_estimation.ticket_estimation_additionals.sum(:cost_price)
+        external_cost += ticket_estimation.ticket_estimation_externals.sum(:cost_price)
       end
     end
 
