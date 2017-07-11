@@ -14,7 +14,7 @@
   %hr
 
 %fieldset
-  %legend Approve Manufacture store part
+  %legend Approve Manufacture Part
   = simple_nested_form_for spare_part, url: update_approve_manufacture_parts_tickets_path, method: :post, html: {id: "new_ticket_spare_part"} do |f|
     = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
     = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
