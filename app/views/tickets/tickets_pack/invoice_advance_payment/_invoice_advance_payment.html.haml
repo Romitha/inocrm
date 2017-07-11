@@ -56,9 +56,10 @@
 - else
   .row
     .col-md-3
-      %strong Customer name:
-      = @ticket.customer.mst_title.title
-      = @ticket.customer.name
+      - if @ticket.customer.present?
+        %strong Customer name:
+        = @ticket.customer.mst_title.try(:title)
+        = @ticket.customer.name
     .col-md-2
       %strong Ticket no:
       = @ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])

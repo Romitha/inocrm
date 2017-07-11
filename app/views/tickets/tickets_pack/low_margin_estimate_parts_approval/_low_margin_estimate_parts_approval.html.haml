@@ -145,7 +145,7 @@
             %hr
             .panel-group
               .panel.panel-success
-                .panel-heading Additional taxes
+                .panel-heading Part taxes
                 .panel-body
                   = t.simple_fields_for :ticket_estimation_part_taxes do |ee|
                     = ee.input :tax_rate,  as: :hidden, input_html: {id: "tax_rate_hidden_field_id", class: "payment_item_value"}
@@ -164,7 +164,7 @@
                             = number_with_precision ee.object.estimated_tax_amount, precision: 2
 
                       .col-md-4#ddd
-                        = ee.input :approved_tax_amount, label: "Approved tax amount (#{ticket.ticket_currency.code})", as: :string, input_html: {min: 0, class: "estimated_tax_amount_class only_float", id:"approved_tax_amount_id", oninput: "Inventories.calculate_tax_price(this); return false;", value: ee.object.approved_tax_amount.to_f, data: {initvalue: ee.object.approved_tax_amount.to_f }}, wrapper_html: {class: "inline-input"}
+                        = ee.input :approved_tax_amount, label: "Approved tax amount (#{ticket.ticket_currency.code})", as: :string, input_html: {min: 0, class: "estimated_tax_amount_class only_float", id:"approved_tax_amount_id", oninput: "Inventories.calculate_tax_price(this); return false;", value: ee.object.estimated_tax_amount.to_f, data: {initvalue: ee.object.estimated_tax_amount.to_f }}, wrapper_html: {class: "inline-input"}
 
                         / = f.association :inventory_category1, include_blank: false, input_html: {required: true, id: "filter_product", onchange: "Admins.filter_product(this); return false;", data: {"filter-params" => "inventory_category1_id", "render-dom" => "product_categories"}}, label: "Brand"
 
@@ -209,14 +209,14 @@
                 = ta.input :approved_estimated_price, as: :string, input_html: { data: {initvalue: ta.object.estimated_price.to_f }, class: "estimation_value only_float", oninput: "Inventories.calculate_cost_price(this);", value: ta.object.estimated_price }, label: "Approved estimated price (#{estimate_currency})"
               .col-md-2.col-xs-2.col-sm-2
                 %strong
-                  Profit(%):dd
+                  Profit(%):
                   .append_profit_margin{ data: {estimate: ta.object.estimated_price.to_f, cost: ta.object.cost_price.to_f}}= number_with_precision (ta.object.estimated_price.to_f/ta.object.cost_price.to_f - 1)*100, precision: 2 if ta.object.cost_price.to_f > 0
 
 
               .col-md-12
                 .panel-group
                   .panel.panel-success
-                    .panel-heading Taxes
+                    .panel-heading Additional Taxes
                     .panel-body.tax_wrapper
                       = ta.simple_fields_for :ticket_estimation_additional_taxes do |e|
                         = e.input :tax_rate,  as: :hidden, input_html: { class: "payment_item_value"}
@@ -234,7 +234,7 @@
                                 = number_with_precision e.object.estimated_tax_amount, precision: 2
                           .col-md-4#ddd
 
-                            = e.input :approved_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class", oninput: "Inventories.calculate_tax_price(this); return false;", value: e.object.approved_tax_amount.to_f, data: {initvalue: e.object.approved_tax_amount.to_f }}, label: "Approved tax amount (#{estimate_currency})"
+                            = e.input :approved_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class", oninput: "Inventories.calculate_tax_price(this); return false;", value: e.object.estimated_tax_amount.to_f, data: {initvalue: e.object.estimated_tax_amount.to_f }}, label: "Approved tax amount (#{estimate_currency})"
 
                             / = e.input :approved_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class", value: e.object.estimated_tax_amount}, label: "Approved tax amount (#{estimate_currency})"
 

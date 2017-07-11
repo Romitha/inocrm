@@ -230,6 +230,7 @@ Rails.application.routes.draw do
       post "update_order_mfp_return_manufacture_part"
       post "update_order_mfp_termnt_prt_order"
       post "update_approve_store_parts"
+      post "update_approve_manufacture_parts"
       post "update_deliver_bundle"
       post "update_bundle_return_part"
       post "update_edit_serial"
