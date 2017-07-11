@@ -1622,13 +1622,13 @@ class TicketsController < ApplicationController
         if @ticket_spare_part.request_approved
 
           #update record spt_ticket_spare_part
-          @ticket_spare_part.update request_approved_at: DateTime.now, request_approved_by: current_user.id
+          @ticket_spare_part.update request_approved_at: DateTime.now, request_approved_by: current_user.id, status_action_id: SparePartStatusAction.find_by_code("APM").id
 
           #Approve Spare Part Manufacture
           action_id = TaskAction.find_by_action_no(89).id
           d46_manufacture_part_approved = "Y"
 
-          @ticket_spare_part.update status_action_id: SparePartStatusAction.find_by_code("APM").id
+          # @ticket_spare_part.update status_action_id: SparePartStatusAction.find_by_code("APM").id
           @ticket_spare_part.ticket_spare_part_status_actions.create(status_id: @ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now) 
 
         else

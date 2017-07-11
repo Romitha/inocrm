@@ -1,7 +1,6 @@
 - uri = URI(request.url)
-- request_part = spare_part.ticket_spare_part_store
 
-- if spare_part and request_part.is_a? TicketSparePartStore
+- if spare_part
   .row
     .col-md-3
       %strong Part No:
@@ -9,88 +8,33 @@
     .col-md-3
       %strong Part Description:
       #{spare_part.spare_part_description}
+    .col-md-3
+      %strong Part terminated:
+      = boolean_in_word spare_part.terminated, "Yes", "No"
   %hr
-
-- if request_part.is_a? TicketSparePartStore
-  - if request_part.ticket_spare_part.ticket_estimation_parts.present?
-    - request_part.ticket_spare_part.ticket_estimation_parts.each do |tsp|
-      .row
-        .col-md-3
-          %strong Warranty Period (months):
-          = tsp.warranty_period
-      %hr
-
-  - if request_part.ticket_spare_part.part_terminated
-    .row
-      .col-md-6
-        %strong Part terminated:
-        Terminated
-    %hr
-
-- if request_part.is_a? TicketOnLoanSparePart
-  .row
-    .col-md-4
-      %strong Status:
-      = request_part.spare_part_status_action.name
-
-  - if request_part.part_terminated
-    .row
-      .col-md-6
-        %strong Part terminated:
-        Terminated
-    %hr
 
 %fieldset
   %legend Approve Manufacture store part
-  = simple_nested_form_for (@onloan_request ? (spare_part || ticket) : spare_part), url: update_approve_manufacture_parts_tickets_path, method: :post, html: {id: "new_ticket_spare_part"} do |f|
+  = simple_nested_form_for spare_part, url: update_approve_manufacture_parts_tickets_path, method: :post, html: {id: "new_ticket_spare_part"} do |f|
     = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
     = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
     = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
     - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
       = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
-    = f.simple_fields_for (params[:onloan_request] == "Y" ? "ticket_on_loan_spare_parts_attributes[]" : "ticket_spare_part_store_attributes"), (params[:onloan_request] == "Y" ? @onloan_spare_part : spare_part.ticket_spare_part_store) do |sto|
+    = f.simple_fields_for "ticket_spare_part_manufacture_attributes" do |sto|
       = sto.input :id, as: :hidden
 
-      = sto.input :approved_store_id, as: :hidden, input_html: {id: "store_id", value: sto.object.store_id}
-      = hidden_field_tag :mst_store_id, sto.object.store_id, id: "mst_store_id"
-      = sto.input :approved_inv_product_id, as: :hidden, input_html: {id: "inv_product_id", value: sto.object.inv_product_id}
-      = sto.input :approved_main_inv_product_id, as: :hidden, input_html: {id: "mst_inv_product_id", value: (params[:onloan_request] == "Y" ? sto.object.main_inv_product_id : sto.object.mst_inv_product_id)}
-      = sto.input :ticket_id, as: :hidden, input_html: {value: ticket.id} if @onloan_request and spare_part.present?
-
       .row
-        - if @onloan_request
-          .col-md-6
-            = sto.radio_button :approved, true, checked: true, class: "request_approved"
-            = label_tag "Approve"
-            = sto.radio_button :approved, false, checked: false, class: "request_approved"
-            = label_tag "Reject"
-
-        - else
-          .col-md-6
-            = f.radio_button :request_approved, true, checked: true, class: "request_approved", disabled: (@onloan_request ? sto.object.part_terminated : sto.object.ticket_spare_part.part_terminated)
-            = label_tag "Approve"
-            = f.radio_button :request_approved, false, checked: (@onloan_request ? sto.object.part_terminated : sto.object.ticket_spare_part.part_terminated), class: "request_approved"
-            = label_tag "Reject"
-        .col-md-6.request_from_radio_buttons
-          = label_tag "Part of a Main Product" do
-            = radio_button_tag "approve_part_of_main_product", true, request_part.main_inventory_product.present?, class: "approve_part_of_main_product", id: "approve_part_of_main_product_true"
-            Part of a Main Product
-          = label_tag "Seperate Product" do
-            = radio_button_tag "approve_part_of_main_product", false, !request_part.main_inventory_product.present?, class: "approve_part_of_main_product", id: "approve_part_of_main_product_false"
-            Seperate Product
+        .col-md-6
+          = f.radio_button :request_approved, true, checked: true, class: "request_approved", disabled: sto.object.ticket_spare_part.part_terminated
+          = label_tag "Approve"
+          = f.radio_button :request_approved, false, checked: sto.object.ticket_spare_part.part_terminated, class: "request_approved"
+          = label_tag "Reject"
 
     .row
       .col-md-12
-        - if spare_part
-          = f.input :note, input_html: { value: nil}
-          = simple_format f.object.note
-        - else
-          = f.input :remarks, input_html: { value: nil}
-          = simple_format f.object.remarks
+        = f.input :note, input_html: { value: nil}
+        = simple_format f.object.note
 
         = f.submit "Save", class: "btn btn-success btn-sm", id: "approve_store_part"
-
-#inventory_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "inventory_modal", "aria-hidden" => true}
-  .modal-dialog.modal-lg
-    .modal-content

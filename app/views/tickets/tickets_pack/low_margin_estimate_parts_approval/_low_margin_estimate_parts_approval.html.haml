@@ -166,12 +166,6 @@
                       .col-md-4#ddd
                         = ee.input :approved_tax_amount, label: "Approved tax amount (#{ticket.ticket_currency.code})", as: :string, input_html: {min: 0, class: "estimated_tax_amount_class only_float", id:"approved_tax_amount_id", oninput: "Inventories.calculate_tax_price(this); return false;", value: ee.object.estimated_tax_amount.to_f, data: {initvalue: ee.object.estimated_tax_amount.to_f }}, wrapper_html: {class: "inline-input"}
 
-                        / = f.association :inventory_category1, include_blank: false, input_html: {required: true, id: "filter_product", onchange: "Admins.filter_product(this); return false;", data: {"filter-params" => "inventory_category1_id", "render-dom" => "product_categories"}}, label: "Brand"
-
-                        / = ee.input :approved_tax_amount, label: "Approved tax amount (#{ticket.ticket_currency.code})", as: :string, input_html: {class: "estimated_tax_amount_class"}
-
-                        / = t.input :approved_estimated_price, label: "Approved Estimated Price (#{ticket.ticket_currency.code})", as: :string, input_html: {min: 0, class: "estimation_value only_float", oninput: "Inventories.calculate_cost_price(this);", value: t.object.estimated_price.to_f, data: {initvalue: t.object.estimated_price.to_f }}, wrapper_html: {class: "inline-input"}
-
                       .add_sign.col-md-3{style: "padding-top:2.5%;"}
                         = ee.link_to_remove id: "remove_tag_id", class: "remove_c_t_v_link", onclick: "Inventories.remove_function(this); return false;" do
                           %span.glyphicon.glyphicon-remove-sign
