@@ -1651,6 +1651,7 @@ class TicketsController < ApplicationController
         @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: query
 
         if @bpm_response[:status].upcase == "SUCCESS"
+          view_context.ticket_bpm_headers params[:process_id], @ticket_spare_part.ticket.id, @ticket_spare_part.id
           flash[:notice] = "Successfully updated."
         else
           flash[:error] = "ticket is updated. but Bpm error"
@@ -1749,8 +1750,8 @@ class TicketsController < ApplicationController
 
     if @continue
 
-      ticket_workfows = ticket.ticket_workflow_processes.where process_id: params[:process_id]
-      ticket_engineers = ticket.ticket_engineers.where(workflow_process_id: ticket_workfows.first.try(:id))
+      ticket_workfows = @ticket.ticket_workflow_processes.where process_id: params[:process_id]
+      ticket_engineers = @ticket.ticket_engineers.where(workflow_process_id: ticket_workfows.first.try(:id))
 
       engineer_close_approval_required = (@ticket.ticket_fsrs.any?{|fsr| ticket_engineers.ids.include?(fsr.engineer_id) } or @ticket.ticket_spare_parts.any?{|part| ticket_engineers.ids.include?(part.engineer_id) } or @ticket.ticket_on_loan_spare_parts.any?{|onloanpart| ticket_engineers.ids.include?(onloanpart.engineer_id) })
 
@@ -4306,8 +4307,8 @@ class TicketsController < ApplicationController
         @ticket_engineer = TicketEngineer.find engineer_id
         @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
 
-        ticket_workfows = ticket.ticket_workflow_processes.where process_id: params[:process_id]
-        ticket_engineers = ticket.ticket_engineers.where(workflow_process_id: ticket_workfows.first.try(:id))
+        ticket_workfows = @ticket.ticket_workflow_processes.where process_id: params[:process_id]
+        ticket_engineers = @ticket.ticket_engineers.where(workflow_process_id: ticket_workfows.first.try(:id))
 
         engineer_close_approval_required = (@ticket.ticket_fsrs.any?{|fsr| ticket_engineers.ids.include?(fsr.engineer_id) } or @ticket.ticket_spare_parts.any?{|part| ticket_engineers.ids.include?(part.engineer_id) } or @ticket.ticket_on_loan_spare_parts.any?{|onloanpart| ticket_engineers.ids.include?(onloanpart.engineer_id) })
 
