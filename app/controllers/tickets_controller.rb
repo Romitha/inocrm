@@ -1644,9 +1644,11 @@ class TicketsController < ApplicationController
         user_ticket_action.build_request_spare_part(ticket_spare_part_id: @ticket_spare_part.id)
         user_ticket_action.save
 
-        bpm_variables = view_context.initialize_bpm_variables.merge(d46_manufacture_part_approved: d46_manufacture_part_approved)
+        query = {ticket_id: @ticket_spare_part.ticket_id, request_spare_part_id: @ticket_spare_part.id, supp_engr_user: params[:supp_engr_user], d46_manufacture_part_approved: d46_manufacture_part_approved}
 
-        @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+        # bpm_variables = view_context.initialize_bpm_variables.merge(d46_manufacture_part_approved: d46_manufacture_part_approved)
+
+        @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: query
 
         if @bpm_response[:status].upcase == "SUCCESS"
           flash[:notice] = "Successfully updated."
