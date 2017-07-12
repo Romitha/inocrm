@@ -21,13 +21,28 @@
 
     = f.input :resolution_summary, required: true, input_html: {id: "resolution_summary_text"}
 
-    - ticket_workfows = ticket.ticket_workflow_processes.where process_id: params["process_id"]
+    - ticket_workfows = ticket.ticket_workflow_processes.where process_id: params[:process_id]
     - ticket_engineers = ticket.ticket_engineers.where(workflow_process_id: ticket_workfows.first.try(:id))
 
     - close_approval_required = (ticket.ticket_fsrs.any?{|fsr| ticket_engineers.ids.include?(fsr.engineer_id) } or ticket.ticket_spare_parts.any?{|part| ticket_engineers.ids.include?(part.engineer_id) } or ticket.ticket_on_loan_spare_parts.any?{|onloanpart| ticket_engineers.ids.include?(onloanpart.engineer_id) })
 
+    ticket engineers:
+    = ticket_engineers.ids
+    %br
+    ticket workflows
+    = ticket_workflows.first.try(:id)
+    %br
+    ticket fsrs engineer:
+    = ticket.ticket_fsrs.pluck(:engineer_id)
+    %br
+    ticket spare part engineer:
+    = ticket.ticket_spare_parts.pluck(:engineer_id)
+    %br
+    ticket on loan engineer:
+    = ticket.ticket_on_loan_spare_parts.pluck(:engineer_id)
+
     = label_tag "Request to close the Job"
-    = check_box_tag :job_close_approval_requested, true, checked: close_approval_required, disabled: !close_approval_required
+    = check_box_tag :job_close_approval_requested, true, close_approval_required, disabled: !close_approval_required
 
     = f.submit "Save", class: "btn btn-success", id: "job_finish_submit"
 

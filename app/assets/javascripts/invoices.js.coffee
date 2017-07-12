@@ -82,55 +82,35 @@ window.Invoices =
     $("#deducted_amount").keyup -> calculate()
 
   check_fsr_dynamic_check_behavour: ->
+    all_checked = true
 
-    $("#ticket_close_approved_check").click ->
-      if $(@).is(":checked")
-        $("#close_approve_reject_reason").addClass("hide").prop("disabled", true)
-      else
-        $("#close_approve_reject_reason").removeClass("hide").prop("disabled", false)
-
-    not_all_checked = false
-    $(".dynamic_check").each ->
-      unless $(@).is(":checked")
-        not_all_checked = true
-
-    if not_all_checked
-      $("#ticket_close_approved_check").prop
-        checked: false
-        disabled: true
-      $("#close_approve_reject_reason").removeClass("hide").prop("disabled", false)
-    else
-      $("#ticket_close_approved_check").prop
-        checked: true
-        disabled: false
-      $("#close_approve_reject_reason").addClass("hide").prop("disabled", true)
-
-    $(".dynamic_check").click ->
-      not_all_checked = false
-      $(".dynamic_check").each ->
-        unless $(@).is(":checked")
-          not_all_checked = true
-
-      if not_all_checked
+    all_checked_action = ->
+      if all_checked
         $("#ticket_close_approved_check").prop
-          checked: false
+          checked: all_checked
           disabled: true
-        $("#close_approve_reject_reason").removeClass("hide").prop("disabled", false)
+        $("#close_approve_reject_reason").removeClass("hide").prop("disabled", !all_checked)
       else
         $("#ticket_close_approved_check").prop
-          checked: true
-          disabled: false
-        $("#close_approve_reject_reason").removeClass("hide").prop("disabled", false)
+          checked: !not_all_checked
+          disabled: true
+        $("#close_approve_reject_reason").addClass("hide").prop("disabled", all_checked)
 
       if $("#ticket_close_approved_check").is(":checked")
         $("#close_approve_reject_reason").addClass("hide").prop("disabled", true)
       else
         $("#close_approve_reject_reason").removeClass("hide").prop("disabled", false)
 
-    if $("#ticket_close_approved_check").is(":checked")
-      $("#close_approve_reject_reason").addClass("hide").prop("disabled", true)
-    else
-      $("#close_approve_reject_reason").removeClass("hide").prop("disabled", false)
+    $(".dynamic_check").each ->
+      unless $(@).is(":checked")
+        all_checked = false
+    all_checked_action()
+
+    $(".dynamic_check").click ->
+      unless $(@).is(":checked")
+        all_checked = false
+      all_checked_action()
+
 
   customer_feedback_re_opened: ->
     $("#re_opened").change ->

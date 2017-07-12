@@ -24,7 +24,7 @@
             Print FSR:
             = rf.check_box :print_fsr
           .col-md-0
-            = f.simple_fields_for :ticket_fsrs do |tf|
+            = f.simple_fields_for "ticket_fsrs_attributes[]", @ticket_fsr do |tf|
               = tf.input :created_by, as: :hidden, input_html: {value: current_user.id}
               = tf.input :engineer_id, as: :hidden, input_html: {value: Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:bpm_input_variables].detect{ |e| e.first == "engineer_id" }.second }
               .col-md-4
