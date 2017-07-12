@@ -42,6 +42,9 @@
   .col-md-6
     %strong Part Description:
     #{spare_part.spare_part_description}
+  .col-md-6
+    %strong Requested quantity:
+    = spare_part.ticket_spare_part_manufacture.try(:requested_quantity)
 
 .row.small_scale_margin-top1
   .col-md-12

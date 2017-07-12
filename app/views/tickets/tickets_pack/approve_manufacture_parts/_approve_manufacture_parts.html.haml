@@ -14,6 +14,9 @@
     .col-md-3
       %strong Chargeable part:
       = boolean_in_word spare_part.cus_chargeable_part, "Yes", "No"
+    .col-md-3
+      %strong Requested quantity:
+      = spare_part.ticket_spare_part_manufacture.try(:requested_quantity)
   %hr
 
 %fieldset

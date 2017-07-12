@@ -47,6 +47,9 @@
   .col-md-4
     %strong Event No:
     #{spare_part.ticket_spare_part_manufacture.try(:event_no)}
+  .col-md-4
+    %strong Requested quantity:
+    = spare_part.ticket_spare_part_manufacture.try(:requested_quantity)
 
 .row{style: "margin-top:10px;"}
   = simple_nested_form_for spare_part, url: update_received_and_issued_tickets_path, method: :post do |f|

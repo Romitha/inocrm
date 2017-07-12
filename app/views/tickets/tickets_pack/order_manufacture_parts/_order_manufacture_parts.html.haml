@@ -24,16 +24,19 @@
     %strong Terminated Reason:
     #{spare_part.part_terminated_reason.try(:reason)}
 .row
-  .col-md-4
+  .col-md-3
     %strong Faulty Serial No:
     #{spare_part.faulty_serial_no}
     = hidden_field_tag :ticket_spare_part_faulty_serial_no, spare_part.faulty_serial_no
-  .col-md-4
+  .col-md-3
     %strong Faulty CT No:
     #{spare_part.faulty_ct_no}
     = hidden_field_tag :ticket_spare_part_faulty_ct_no, spare_part.faulty_ct_no
-  .col-md-4
+  .col-md-3
     %button.btn.btn-primary.btn-xs{onclick: "Tickets.check_previous(this); return false;", type: "button", data: {"ticket-id" => spare_part.ticket.id}} Check Previous Detail
+  .col-md-3
+    %strong Requested quantity:
+    = spare_part.ticket_spare_part_manufacture.try(:requested_quantity)
 
 .row
   .col-md-12.small_scale_margin-top2

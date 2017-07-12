@@ -42,6 +42,10 @@
         Part Event No:
       %dd
         = spare_part.ticket_spare_part_manufacture.try(:event_no)
+      %dt Requested quantity:
+      %dd
+        = spare_part.ticket_spare_part_manufacture.try(:requested_quantity)
+
   .col-md-4
     %dl.dl-horizontal
       %dt
