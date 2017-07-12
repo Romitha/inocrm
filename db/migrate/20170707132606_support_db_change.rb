@@ -2,6 +2,7 @@ class SupportDbChange < ActiveRecord::Migration
   def change
     add_column :spt_ticket_engineer, :task_description, "TEXT NULL"
     add_column :company_config, :sup_mf_parts_need_warranty, :boolean, default: true
+    add_column :company_config, :sup_mf_parts_need_quantity, :boolean, default: false
 
     create_table :mst_contact_person_type, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"

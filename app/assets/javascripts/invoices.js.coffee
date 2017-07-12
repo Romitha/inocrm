@@ -82,32 +82,35 @@ window.Invoices =
     $("#deducted_amount").keyup -> calculate()
 
   check_fsr_dynamic_check_behavour: ->
-    all_checked = true
+    all_checked = false
 
     all_checked_action = ->
-      if all_checked
-        $("#ticket_close_approved_check").prop
-          checked: all_checked
-          disabled: true
-        $("#close_approve_reject_reason").removeClass("hide").prop("disabled", !all_checked)
-      else
-        $("#ticket_close_approved_check").prop
-          checked: !all_checked
-          disabled: true
-        $("#close_approve_reject_reason").addClass("hide").prop("disabled", all_checked)
+      console.log "checked"
+      $("#ticket_close_approved_check").prop
+        checked: all_checked
+
+      $("#close_approve_reject_reason").removeClass("hide").prop("disabled", !all_checked)
 
       if $("#ticket_close_approved_check").is(":checked")
         $("#close_approve_reject_reason").addClass("hide").prop("disabled", true)
       else
         $("#close_approve_reject_reason").removeClass("hide").prop("disabled", false)
 
-    $(".dynamic_check").each ->
-      unless $(@).is(":checked")
-        all_checked = false
+    if $(".dynamic_check").length == 0
+      all_checked = false
+    else
+      partial_check = true
+      $(".dynamic_check").each ->
+        if !$(@).is(":checked")
+          partial_check = false
+
+      all_checked = partial_check
+
+    console.log(all_checked)
     all_checked_action()
 
     $(".dynamic_check").click ->
-      unless $(@).is(":checked")
+      if !$(@).is(":checked")
         all_checked = false
       all_checked_action()
 

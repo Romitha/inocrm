@@ -2966,6 +2966,7 @@ class TicketsController < ApplicationController
     TicketSparePart
     Inventory
     Warranty
+    Organization
     @ticket = Ticket.find_by_id params[:ticket_id]
     if @ticket
       @product = @ticket.products.first
@@ -4133,7 +4134,7 @@ class TicketsController < ApplicationController
     ticket_fsr.ticket_fsr_no =  CompanyConfig.first.increase_sup_last_fsr_no
 
     @ticket_engineer.ticket_support_engineers.each do |sup_eng|
-      ticket_fsr.ticket_fsr_support_engineers.create engineer_support_id: sup_eng.id
+      ticket_fsr.ticket_fsr_support_engineers.build engineer_support_id: sup_eng.id
     end
 
     ticket_fsr.save
@@ -4330,6 +4331,11 @@ class TicketsController < ApplicationController
               @ticket.ticket_close_approved = false if not eng.job_close_approved
             end            
           end
+        end
+
+        if (@ticket.cus_chargeable or @ticket.cus_payment_required) and !(@ticket.ticket_estimations.any?)
+          @ticket.cus_chargeable = false
+          @ticket.cus_payment_required = false
         end
 
         d9_qc_required = (@ticket.ticket_type.code == "IH" and CompanyConfig.first.sup_qc_required) ? "Y" : "N"
