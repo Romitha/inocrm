@@ -11,6 +11,9 @@
     .col-md-3
       %strong Part terminated:
       = boolean_in_word spare_part.part_terminated, "Yes", "No"
+    .col-md-3
+      %strong Chargeable part:
+      = boolean_in_word spare_part.cus_chargeable_part, "Yes", "No"
   %hr
 
 %fieldset

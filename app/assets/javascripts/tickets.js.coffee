@@ -416,7 +416,7 @@ window.Tickets =
     _this = this
     $("#template_caller").change ->
       _this.ajax_loader()
-      $.post "/tickets/call_resolution_template", {call_template: $(@).val(), task_id: $(":selected", @).data("task-id"), process_id: $(":selected", @).data("process-id")}
+      $.post "/tickets/call_resolution_template", {call_template: $(@).val(), task_id: $(":selected", @).data("task-id"), process_id: $(":selected", @).data("process-id"), engineer_id: $(":selected", @).data("engineer-id")}
 
   call_alert_template: (call_template)->
     _this = this
