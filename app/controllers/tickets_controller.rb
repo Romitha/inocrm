@@ -4360,6 +4360,8 @@ class TicketsController < ApplicationController
         @ticket.calculate_ticket_total_cost   
 
         @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+        File.open(Rails.root.join("bug_file.txt"), "w+"){|file| file.write("bpm_variables: #{bpm_variables}\nbpm_response: #{@bpm_response}\n"); file.close}
         # @bpm_response = view_context.send_request complete_task: true, task_id: params[:task_id], query: bpm_variables
 
         if @bpm_response[:status].upcase == "SUCCESS"
