@@ -2992,13 +2992,9 @@ class TicketsController < ApplicationController
       job_engineers =  @ticket.ticket_engineers.where(workflow_process_id: ticket_workfow.first.try(:id))
 
       job_engineers.each do |engineer|
-        if engineer.job_close_approval_requested
-          engineer.attributes = {job_close_approved: job_close_approved}
-          engineer.attributes = {job_close_at: DateTime.now, status: 3} if job_close_approved and engineer.status < 3
-        end
-
+        engineer.attributes = {job_close_approved: job_close_approved} if engineer.job_close_approval_requested
+        engineer.attributes = {job_close_at: DateTime.now, status: 3} if job_close_approved and engineer.status < 3
         engineer.save
-
       end
 
       @ticket.save
@@ -3014,9 +3010,9 @@ class TicketsController < ApplicationController
         @ticket.update owner_engineer_id: params[:owner_engineer_id]
 
         # final close
-        unless @ticket.ticket_engineers.any?{|eng| eng.status.to_i < 3 }
+        if @ticket.ticket_engineers.all?{|eng| eng.status.to_i == 3 }
 
-          @ticket.update ticket_close_approved: !@ticket.ticket_engineers.any?{|eng| eng.job_close_approval_required and !eng.job_close_approved }
+          @ticket.update ticket_close_approved: job_close_approved
 
           #Calculate Total Costs and Time
           @ticket.calculate_ticket_total_cost 
@@ -4316,19 +4312,15 @@ class TicketsController < ApplicationController
 
         @ticket_engineer.update status: (engineer_close_approval_required ? 2 : 3) , job_completed_at: DateTime.now, job_close_approval_required: engineer_close_approval_required, job_close_approval_requested: close_approval_requested
 
-        @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
-
         @ticket.ticket_close_approval_required = (@ticket.ticket_fsrs.any? or @ticket.ticket_spare_parts.any? or @ticket.ticket_on_loan_spare_parts.any?)
         @ticket.ticket_close_approval_requested = true 
         @ticket.ticket_close_approved = true
 
-
-        final_resolution = false
-        if not @ticket.ticket_engineers.any?{|eng| eng.status.to_i < 2 }
+        final_resolution =  not @ticket.ticket_engineers.any?{|eng| eng.status.to_i < 2 }
+        if final_resolution
           @ticket.ticket_status_resolve = TicketStatusResolve.find_by_code("RSV")
           @ticket.job_finished = true
           @ticket.job_finished_at = DateTime.now
-          final_resolution = true
         end
 
         if @ticket.ticket_close_approval_required
