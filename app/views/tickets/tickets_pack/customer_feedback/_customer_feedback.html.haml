@@ -18,7 +18,6 @@
             = check_box_tag :re_opened
           .col-md-6.hide#reopen_to_engineer
             = label_tag "Re-Open to Engineer"
-            / = select_tag :start_engineer_id, options_from_collection_for_select(ticket.ticket_engineers.select { |t| t.re_open_index == 0 && t.re_assignment_requested == false && t.status > 0 }, :id, :id), class: "form-control", include_blank: "Root"
             - ticket_engineer_by_channel = ticket.ticket_engineers.group_by{|t| t.channel_no}.inject({}){|i, (k, v)| i.merge("channel_no:#{k}" => v.map { |e| [e.user.full_name, e.id] })}
 
             = select_tag :start_engineer_id, grouped_options_for_select(ticket_engineer_by_channel), class: "form-control", include_blank: "Root"
