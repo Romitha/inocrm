@@ -27,7 +27,7 @@
     - close_approval_required = (ticket.ticket_fsrs.any?{|fsr| ticket_engineers.ids.include?(fsr.engineer_id) } or ticket.ticket_spare_parts.any?{|part| ticket_engineers.ids.include?(part.engineer_id) } or ticket.ticket_on_loan_spare_parts.any?{|onloanpart| ticket_engineers.ids.include?(onloanpart.engineer_id) })
 
     = label_tag "Request to close the Job"
-    = check_box_tag :job_close_approval_requested, checked: close_approval_required, disabled: !close_approval_required
+    = check_box_tag :job_close_approval_requested, true, checked: close_approval_required, disabled: !close_approval_required
 
     = f.submit "Save", class: "btn btn-success", id: "job_finish_submit"
 

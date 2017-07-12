@@ -22,7 +22,7 @@
 
       %h4 Job belongs to : #{job_engineers.map{|eng| eng.user.full_name}.join(", ")}
       Job Completed (Approve To Close):
-      = check_box_tag :job_close_approved, false, true, id: "ticket_close_approved_check"
+      = check_box_tag :job_close_approved, true, false, id: "ticket_close_approved_check"
     .col-md-6.col-xs-6#close_approve_reject_reason
       = f.label "Reject Reason"
       = select_tag :reject_reason_id,  options_for_select(Reason.where(reject_close: true).map {|r| [r.reason, r.id] }), include_blank: false
