@@ -3101,7 +3101,7 @@ class TicketsController < ApplicationController
     Inventory
     Warranty
 
-    @ticket = Ticket.find_by_id params[:ticket_id]
+    @ticket = Ticket.find params[:ticket_id]
     if @ticket
       @product = @ticket.products.first
       Rails.cache.delete([:histories, @product.id])

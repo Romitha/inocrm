@@ -388,13 +388,14 @@ class TicketFsrSupportEngineer < ActiveRecord::Base
   self.table_name = "spt_ticket_fsr_support_eng"
 
   belongs_to :ticket_fsr, foreign_key: :fsr_id
+  belongs_to :ticket_support_engineer, foreign_key: :engineer_support_id
 
 end
 
 class TicketSupportEngineer < ActiveRecord::Base
   self.table_name = "spt_ticket_engineer_support"
 
-  belongs_to :ticket_engineers, foreign_key: :engineer_id
+  belongs_to :ticket_engineer, foreign_key: :engineer_id
 
 end
 

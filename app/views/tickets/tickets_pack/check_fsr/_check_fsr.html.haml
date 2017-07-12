@@ -133,6 +133,23 @@
                   .col-md-4
                     %strong Travel(hours):
                     = fsr.travel_hours
+                %br
+                  - if fsr.ticket_fsr_support_engineers.present?
+                    .col-md-6
+                      %table.table
+                        %thead
+                          %tr
+                            %th Engineer
+                            %th Hours Worked
+                        %tbody
+                          - fsr.ticket_fsr_support_engineers.each_with_index do |eng, index|
+                            %tr
+                              %td
+                                = eng.ticket_support_engineer.ticket_engineer.user.full_name
+                              %td
+                                = eng.hours_worked
+
+
                   %hr
                   .col-md-12
                     %h4 For Invoicing
