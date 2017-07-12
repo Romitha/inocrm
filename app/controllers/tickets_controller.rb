@@ -2980,7 +2980,7 @@ class TicketsController < ApplicationController
   def update_check_fsr
     TaskAction
     @ticket.attributes = ticket_params
-    job_close_approved = params[:job_close_approved].present?
+    job_close_approved = (params[:job_close_approved].present? and params[:job_close_approved].to_bool)
 
     @continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
 
@@ -2988,12 +2988,12 @@ class TicketsController < ApplicationController
       # bpm output variables
       bpm_variables = view_context.initialize_bpm_variables.merge supp_engr_user: params[:supp_engr_user]
 
-      ticket_workfow = @ticket.ticket_workflow_processes.where process_id: params[:process_id]
-      job_engineers =  @ticket.ticket_engineers.where(workflow_process_id: ticket_workfow.first.try(:id))
+      ticket_workfows = @ticket.ticket_workflow_processes.where process_id: params[:process_id]
+      job_engineers =  @ticket.ticket_engineers.where(workflow_process_id: ticket_workfows.first.try(:id))
 
       job_engineers.each do |engineer|
         engineer.attributes = {job_close_approved: job_close_approved} if engineer.job_close_approval_requested
-        engineer.attributes = {job_close_at: DateTime.now, status: 3} if job_close_approved and engineer.status < 3
+        engineer.attributes = {job_closed_at: DateTime.now, status: 3} if job_close_approved and engineer.status < 3
         engineer.save
       end
 
@@ -4298,7 +4298,7 @@ class TicketsController < ApplicationController
 
     if @continue
       if @ticket.update ticket_params
-        close_approval_requested = params[:job_close_approval_requested] # getting from the form
+        close_approval_requested = (params[:job_close_approval_requested].present? and params[:job_close_approval_requested].to_bool) # getting from the form(params[:job_close_approval_requested].present? and params[:job_close_approval_requested].to_bool)
 
         @ticket_engineer = TicketEngineer.find engineer_id
         @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
