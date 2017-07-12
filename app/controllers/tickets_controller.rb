@@ -4316,7 +4316,7 @@ class TicketsController < ApplicationController
         @ticket.ticket_close_approval_requested = true 
         @ticket.ticket_close_approved = true
 
-        final_resolution =  not @ticket.ticket_engineers.any?{|eng| eng.status.to_i < 2 }
+        final_resolution =  @ticket.ticket_engineers.none?{|eng| eng.status.to_i < 2 }
         if final_resolution
           @ticket.ticket_status_resolve = TicketStatusResolve.find_by_code("RSV")
           @ticket.job_finished = true
