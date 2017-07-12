@@ -401,6 +401,7 @@ class TicketSupportEngineer < ActiveRecord::Base
   self.table_name = "spt_ticket_engineer_support"
 
   belongs_to :ticket_engineer, foreign_key: :engineer_id
+  belongs_to :user, foreign_key: :user_id
 
 end
 

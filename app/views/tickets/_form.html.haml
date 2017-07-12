@@ -88,8 +88,7 @@
                 .col-md-3
                   .panel.panel-default
                     .panel-body
-                      = f.input :cus_chargeable, label: "Customer Chargeable", as: :radio_buttons, wrapper_html: {class: "radio_as_list"}, required: true, input_html: { selected: (ticket.ticket_contract.present? and ticket.ticket_contract.ticket_contract_type.chargeable) }
-
+                      = f.input :cus_chargeable, label: "Customer Chargeable", as: :radio_buttons, wrapper_html: {class: "radio_as_list"}, required: true, checked: (true if(ticket.ticket_contract.present? and ticket.ticket_contract.ticket_contract_type.chargeable))
                       / = f.input :cus_chargeable, label: "Customer Chargeable", as: :radio_buttons, wrapper_html: {class: "radio_as_list #{ticket.ticket_contract.present? ? 'hide' : '' }"}, required: true, input_html: { selected: false }
               .small_scale_padding-top1
                 = f.input :other_accessories, wrapper_html: {class: "col-md-4"}, input_html: {rows: 1}

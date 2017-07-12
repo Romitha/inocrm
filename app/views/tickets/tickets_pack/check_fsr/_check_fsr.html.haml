@@ -146,7 +146,7 @@
                       %tbody
                         - fsr.ticket_fsr_support_engineers.each_with_index do |eng, index|
                           %tr
-                            %td= eng.ticket_support_engineer.ticket_engineer.user.full_name
+                            %td= eng.ticket_support_engineer.user.full_name
                             %td= eng.hours_worked
 
                 %hr
