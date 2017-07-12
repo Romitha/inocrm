@@ -4337,7 +4337,7 @@ class TicketsController < ApplicationController
         bpm_variables = view_context.initialize_bpm_variables.merge(supp_engr_user: current_user.id, d4_job_complete: "Y", d6_close_approval_required: (@ticket_engineer.job_close_approval_required ? "Y" : "N"), d7_close_approval_requested: (@ticket_engineer.job_close_approval_requested ? "Y" : "N"), d8_job_finished: (final_resolution ? "Y" : "N" ), d9_qc_required: d9_qc_required, d10_job_estimate_required_final: (@ticket.cus_chargeable or @ticket.cus_payment_required ? "Y" : "N"), d11_terminate_job: (@ticket.ticket_terminated ? "Y" : "N"), d12_need_to_invoice: (@ticket.cus_chargeable or @ticket.cus_payment_required ? "Y" : "N"))
 
         if final_resolution
-          if @ticket.ticket_type.code == "IH"
+          if d9_qc_required == "Y"
             @ticket.ticket_status = TicketStatus.find_by_code("QCT")
           elsif (@ticket.cus_chargeable or @ticket.cus_payment_required)
             @ticket.ticket_status = TicketStatus.find_by_code("PMT")
@@ -4399,21 +4399,21 @@ class TicketsController < ApplicationController
           end
 
           if all_success
-            @flash_message = "Successfully updated."
+            flash[:notice] = "Successfully updated."
           else
-            @flash_message = "ticket is updated. Engineer assignment error. (#{error_engs.join(', ')})"
+            flash[:error] = "ticket is updated. Engineer assignment error. (#{error_engs.join(', ')})"
           end
 
         else
-          @flash_message = "ticket is updated. but Bpm error"
+          flash[:error] = "ticket is updated. but Bpm error"
         end
       else
-        @flash_message = "ticket is failed to updated."
+        flash[:error] = "ticket is failed to updated."
       end
     else
-      @flash_message = @flash_message
+      flash[:error] = "BPM Error."
     end
-    redirect_to @ticket, notice: @flash_message
+    redirect_to @ticket
   end
 
   def update_hp_case_id
