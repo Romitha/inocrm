@@ -62,7 +62,7 @@
         .request_from
         .requested_quantity_manufacture_wrapper.col-md-4.hide
           = label_tag "Required Quantity"
-          = text_field_tag "requested_quantity", 1, class: "form-control", readonly: CompanyConfig.first.sup_mf_parts_need_quantity
+          = text_field_tag "requested_quantity", 1, class: "form-control", readonly: !CompanyConfig.first.sup_mf_parts_need_quantity
 
       .col-md-4.not_non_stock
         .part.hide

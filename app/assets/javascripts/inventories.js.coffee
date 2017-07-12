@@ -95,7 +95,6 @@ window.Inventories =
 
       $(".requested_quantity_manufacture_wrapper input").prop
         disabled: true
-        readonly: true
 
       $(".request_from").empty()
       $("#store_id", "#mst_store_id", "#inv_product_id", "#mst_inv_product_id").val("")
