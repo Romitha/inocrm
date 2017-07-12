@@ -64,14 +64,14 @@
         .col-md-6
           %fieldset
             %legend Support Engineers
-              = fsr.simple_fields_for :ticket_fsr_support_engineers do |a|
-                = a.input :id, as: :hidden
-                .col-md-6
-                  %strong Support Engineer:
-                  %br/
-                  = a.object.ticket_support_engineer.user.full_name
-                .col-md-5
-                  = a.input :hours_worked, label: "Hours Worked (In Hours)"
+            = fsr.simple_fields_for :ticket_fsr_support_engineers do |a|
+              = a.input :id, as: :hidden
+              .col-md-6
+                %strong Support Engineer:
+                %br/
+                = a.object.ticket_support_engineer.user.full_name
+              .col-md-5
+                = a.input :hours_worked, label: "Hours Worked (In Hours)"
 
       = fsr.simple_fields_for :ticket do |t|
         .row
