@@ -232,6 +232,11 @@ class ReportPerson < ActiveRecord::Base
   
   belongs_to :mst_title, foreign_key: :title_id
   validates_presence_of [:title_id, :name]
+
+  def full_name
+    "#{try(:mst_title).try(:title)} #{name}"
+  end
+
 end
 
 class RegularCustomer < ActiveRecord::Base

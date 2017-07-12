@@ -1651,7 +1651,7 @@ class TicketsController < ApplicationController
         @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: query
 
         if @bpm_response[:status].upcase == "SUCCESS"
-          view_context.ticket_bpm_headers params[:process_id], @ticket_spare_part.ticket.id, @ticket_spare_part.id
+          # view_context.ticket_bpm_headers params[:process_id], @ticket_spare_part.ticket.id, @ticket_spare_part.id
           flash[:notice] = "Successfully updated."
         else
           flash[:error] = "ticket is updated. but Bpm error"
@@ -4961,7 +4961,9 @@ class TicketsController < ApplicationController
       if @continue
         process_id = ((@bpm_response and @bpm_response[:process_id]) || params[:process_id])
         ticket_id = ( @ticket.try(:id) || params[:ticket_id] )
-        view_context.ticket_bpm_headers process_id, ticket_id, ""
+        ticket_spare_part_id = (@ticket_spare_part.try(:id) || params[:request_spare_part_id])
+
+        view_context.ticket_bpm_headers process_id, ticket_id, ticket_spare_part_id
         Rails.cache.delete([:workflow_header, process_id])
       end
       @ticket.current_user_id = current_user.id if @ticket.present? and @ticket.is_a?(Ticket) and @ticket.persisted?

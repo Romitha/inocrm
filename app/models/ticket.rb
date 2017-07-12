@@ -250,6 +250,8 @@ class Ticket < ActiveRecord::Base
 
       new_engineer.save
 
+      current_engineer.ticket_support_engineers.update_all(engineer_id: new_engineer.id)
+
       re_opened_engineer_ids << [new_engineer.id]
 
       parent_engineer = new_engineer
