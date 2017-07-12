@@ -133,77 +133,74 @@
                   .col-md-4
                     %strong Travel(hours):
                     = fsr.travel_hours
-                %br
-                  - if fsr.ticket_fsr_support_engineers.present?
-                    .col-md-6
-                      %table.table
-                        %thead
+                %hr
+                - if fsr.ticket_fsr_support_engineers.present?
+                  .col-md-6
+                    %table.table
+                      %thead
+                        %tr
+                          %th Engineer
+                          %th Hours Worked (Hrs)
+                      %tbody
+                        - fsr.ticket_fsr_support_engineers.each_with_index do |eng, index|
                           %tr
-                            %th Engineer
-                            %th Hours Worked
-                        %tbody
-                          - fsr.ticket_fsr_support_engineers.each_with_index do |eng, index|
-                            %tr
-                              %td
-                                = eng.ticket_support_engineer.ticket_engineer.user.full_name
-                              %td
-                                = eng.hours_worked
+                            %td= eng.ticket_support_engineer.ticket_engineer.user.full_name
+                            %td= eng.hours_worked
 
-
-                  %hr
+                %hr
+                .col-md-12
+                  %h4 For Invoicing
+                .col-md-3
+                  %strong Engineer Time Travel:
+                  = fsr.engineer_time_travel
+                .col-md-3
+                  %strong Engineer Time On Sight:
+                  = fsr.engineer_time_on_site
+                .col-md-3
+                  %strong Other Charges Mileage:
+                  = fsr.other_mileage
+                .col-md-3
+                  %strong Other Charges Repairs:
+                  = fsr.other_repairs
+                .col-md-6
+                  %strong Resolution:
+                  = simple_format fsr.resolution
+                .col-md-6
+                  %strong Level of Completion:
+                  = fsr.completion_level
+                .col-md-12{style: "margin-top: 15px;"}
+                  %p Replaced Parts
                   .col-md-12
-                    %h4 For Invoicing
-                  .col-md-3
-                    %strong Engineer Time Travel:
-                    = fsr.engineer_time_travel
-                  .col-md-3
-                    %strong Engineer Time On Sight:
-                    = fsr.engineer_time_on_site
-                  .col-md-3
-                    %strong Other Charges Mileage:
-                    = fsr.other_mileage
-                  .col-md-3
-                    %strong Other Charges Repairs:
-                    = fsr.other_repairs
-                  .col-md-6
-                    %strong Resolution:
-                    = simple_format fsr.resolution
-                  .col-md-6
-                    %strong Level of Completion:
-                    = fsr.completion_level
-                  .col-md-12{style: "margin-top: 15px;"}
-                    %p Replaced Parts
-                    .col-md-12
-                      %table.table
-                        %thead
+                    %table.table
+                      %thead
+                        %tr
+                          %th No
+                          %th Part No
+                          %th Description
+                          %th Quantity
+                          %th Return Accepted
+                          %th Return Part S/N
+                          %th Event No.
+                          %th Event Closed
+                      %tbody
+                        - fsr.ticket_spare_parts.each_with_index do |tsp, i|
                           %tr
-                            %th No
-                            %th Part No
-                            %th Description
-                            %th Quantity
-                            %th Return Accepted
-                            %th Return Part S/N
-                            %th Event No.
-                            %th Event Closed
-                        %tbody
-                          - fsr.ticket_spare_parts.each_with_index do |tsp, i|
-                            %tr
-                              %th= i+1
-                              %td= tsp.spare_part_no
-                              %td= tsp.spare_part_description
-                              %td= tsp.request_from == "M" ? tsp.ticket_spare_part_manufacture.requested_quantity : tsp.request_from == "S" ? tsp.ticket_spare_part_store.approved_quantity : tsp.ticket_spare_part_non_stock.approved_quantity
+                            %th= i+1
+                            %td= tsp.spare_part_no
+                            %td= tsp.spare_part_description
+                            %td= tsp.request_from == "M" ? tsp.ticket_spare_part_manufacture.requested_quantity : tsp.request_from == "S" ? tsp.ticket_spare_part_store.approved_quantity : tsp.ticket_spare_part_non_stock.approved_quantity
 
-                              %td= tsp.returned_part_accepted ? "Yes" : "No"
-                              %td= tsp.return_part_serial_no
-                              %td= tsp.request_from == 'M' ? tsp.ticket_spare_part_manufacture.try(:event_no) : ""
-                              %td= tsp.ticket_spare_part_manufacture.try(:event_closed) ? "Yes" : "No"
+                            %td= tsp.returned_part_accepted ? "Yes" : "No"
+                            %td= tsp.return_part_serial_no
+                            %td= tsp.request_from == 'M' ? tsp.ticket_spare_part_manufacture.try(:event_no) : ""
+                            %td= tsp.ticket_spare_part_manufacture.try(:event_closed) ? "Yes" : "No"
 
-                    .col-md-3
-                      = ff.label "Approve FSR"
-                      = ff.check_box :approved, class: "dynamic_check"
-                    .col-md-9
-                      = ff.input :remarks, input_html: {value: nil}
-                      = simple_format ff.object.remarks
+                  .col-md-3
+                    = ff.label "Approve FSR"
+                    = ff.check_box :approved, class: "dynamic_check"
+                  .col-md-9
+                    = ff.input :remarks, input_html: {value: nil}
+                    = simple_format ff.object.remarks
       .row.col-md-12.col-xs-12{style: "margin-top:20px; margin-bottom:20px;"}
         .col-md-6
           = f.label "Job Belongs to:"
