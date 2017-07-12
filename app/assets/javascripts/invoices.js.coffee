@@ -92,7 +92,7 @@ window.Invoices =
         $("#close_approve_reject_reason").removeClass("hide").prop("disabled", !all_checked)
       else
         $("#ticket_close_approved_check").prop
-          checked: !not_all_checked
+          checked: !all_checked
           disabled: true
         $("#close_approve_reject_reason").addClass("hide").prop("disabled", all_checked)
 

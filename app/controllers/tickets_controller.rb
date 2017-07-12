@@ -4215,7 +4215,7 @@ class TicketsController < ApplicationController
 
         @ticket_engineer = TicketEngineer.find params[:engineer_id]
         @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
-        @ticket_engineer.update status: 3, job_terminated: true, job_completed_at: DateTime.now, job_clodes_at: DateTime.now 
+        @ticket_engineer.update status: 3, job_terminated: true, job_completed_at: DateTime.now, job_closed_at: DateTime.now
 
         bpm_variables = view_context.initialize_bpm_variables.merge(d4_job_complete: "Y", d8_job_finished: "Y", d11_terminate_job:  "Y", d9_qc_required:(@ticket.ticket_type.code == "IH" ? "Y" : "N"), d10_job_estimate_required_final: ((@ticket.cus_chargeable or @ticket.cus_payment_required) ? "Y" : "N"), d12_need_to_invoice: ((@ticket.cus_chargeable or @ticket.cus_payment_required) ? "Y" : "N"), d6_close_approval_required: ((@ticket.ticket_fsrs.any? or @ticket.ticket_spare_parts.any?) ? "Y" : "N"), d7_close_approval_requested: (@ticket.ticket_close_approval_requested ? "Y" : "N"))
 
@@ -4333,8 +4333,16 @@ class TicketsController < ApplicationController
         end
 
         d9_qc_required = (@ticket.ticket_type.code == "IH" and CompanyConfig.first.sup_qc_required) ? "Y" : "N"
+        supp_engr_user = current_user.id
+        d4_job_complete = "Y"
+        d6_close_approval_required = @ticket_engineer.job_close_approval_required ? "Y" : "N"
+        d7_close_approval_requested = @ticket_engineer.job_close_approval_requested ? "Y" : "N"
+        d8_job_finished = final_resolution ? "Y" : "N"
+        d10_job_estimate_required_final = (@ticket.cus_chargeable or @ticket.cus_payment_required) ? "Y" : "N"
+        d11_terminate_job = @ticket.ticket_terminated ? "Y" : "N"
+        d12_need_to_invoice = (@ticket.cus_chargeable or @ticket.cus_payment_required) ? "Y" : "N"
 
-        bpm_variables = view_context.initialize_bpm_variables.merge(supp_engr_user: current_user.id, d4_job_complete: "Y", d6_close_approval_required: (@ticket_engineer.job_close_approval_required ? "Y" : "N"), d7_close_approval_requested: (@ticket_engineer.job_close_approval_requested ? "Y" : "N"), d8_job_finished: (final_resolution ? "Y" : "N" ), d9_qc_required: d9_qc_required, d10_job_estimate_required_final: (@ticket.cus_chargeable or @ticket.cus_payment_required ? "Y" : "N"), d11_terminate_job: (@ticket.ticket_terminated ? "Y" : "N"), d12_need_to_invoice: (@ticket.cus_chargeable or @ticket.cus_payment_required ? "Y" : "N"))
+        bpm_variables = view_context.initialize_bpm_variables.merge(supp_engr_user: supp_engr_user, d4_job_complete: d4_job_complete, d6_close_approval_required: d6_close_approval_required, d7_close_approval_requested: d7_close_approval_requested, d8_job_finished: d8_job_finished, d9_qc_required: d9_qc_required, d10_job_estimate_required_final: d10_job_estimate_required_final, d11_terminate_job: d11_terminate_job, d12_need_to_invoice: d12_need_to_invoice)
 
         if final_resolution
           if d9_qc_required == "Y"
