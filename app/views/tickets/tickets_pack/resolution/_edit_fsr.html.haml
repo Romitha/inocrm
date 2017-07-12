@@ -58,8 +58,19 @@
             = fsr.input :remarks, input_html: {value: nil}, label: "Remarks (FSR)"
             = simple_format fsr.object.remarks
 
-        
-      .row
+        .row
+        %hr
+          .col-md-6
+            = fsr.simple_fields_for :ticket_fsr_support_engineers do |a|
+              = a.input :id, as: :hidden
+              .col-md-6
+                %strong Engineer
+                %br/
+                = a.object.ticket_support_engineer.ticket_engineer.user.full_name
+                / = a.input :engineer_support_id, as: :hidden, input_html: {value: sup.id}
+              .col-md-5
+                = a.input :hours_worked, label: "Hours Worked (In Hours)"
+
         = fsr.simple_fields_for :ticket do |t|
           .col-md-12
             = t.input :remarks, as: :text, label: "Remarks (Ticket)", input_html: {value: nil}
