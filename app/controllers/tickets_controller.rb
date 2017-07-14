@@ -108,7 +108,7 @@ class TicketsController < ApplicationController
             organization.customers.first
 
           elsif address.present?
-            organization.customers.create(title_id: address.contact_person_title_id, name: address.contact_person_name, address1: address.address1, address2: address.address2, address3: address.address3, address4: address.city, district_id: address.district_id)
+            organization.customers.create(title_id: organization.title_id, name: organization.name, address1: address.address1, address2: address.address2, address3: address.address3, address4: address.city, district_id: address.district_id)
 
           end
 
@@ -4055,7 +4055,7 @@ class TicketsController < ApplicationController
     if @continue
       if @ticket.update ticket_params
         @ticket_engineer = TicketEngineer.find params[:engineer_id]
-        @ticket_engineer.update status: 3, re_assignment_requested: true, job_completed_at: DateTime.now, job_clodes_at: DateTime.now 
+        @ticket_engineer.update status: 3, re_assignment_requested: true, job_completed_at: DateTime.now, job_closed_at: DateTime.now 
         @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
 
         # bpm output variables

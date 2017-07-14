@@ -26,7 +26,7 @@
             %th Action
         %tbody
           - organizations.each_with_index do |org, index|
-            %tr
+            %tr{ title: "#{'There is no valid address for this customer. Please add address and able to select' unless org.addresses.present? }"}
               %td
                 - if params[:page]
                   = (index+1)+ 10*(params[:page].to_i-1)
@@ -37,7 +37,9 @@
               %td= org.code
               %td= org.industry_type.name
               - if params[:from_where] == "new_ticket"
-                %td= link_to "Select", contracts_path(organization_id: org.id, select_ticket: true, from_where: params[:from_where]), remote: true, onclick: "Tickets.ajax_loader(); return false;"
+                %td
+                  = link_to_if org.addresses.present?, "Select", contracts_path(organization_id: org.id, select_ticket: true, from_where: params[:from_where]), remote: true, onclick: "Tickets.ajax_loader(); return false;" do
+                    Create address
               - else
                 %td= link_to "Select", contracts_path(organization_id: org.id, select: true, from_where: params[:from_where]), remote: true, onclick: "Tickets.ajax_loader(); return false;"
 
