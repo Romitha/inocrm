@@ -1009,6 +1009,14 @@ class TicketsController < ApplicationController
       @render_template = "tickets/tickets_pack/parts_ordered/parts_ordered"
       @variables = {ticket: @ticket}
 
+    when "workflow"
+
+      # product = @ticket.products.first
+      @user_ticket_actions = @ticket.cached_user_ticket_actions
+
+      @render_template = "tickets/tickets_pack/workflow"
+      @variables = {ticket: @ticket}
+
     else
       render js: "alert('template is unavailable');"
     end
