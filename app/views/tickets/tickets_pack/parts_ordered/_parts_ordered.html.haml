@@ -220,15 +220,15 @@
                 %dd= User.cached_find_by_id(spare_part_store.try(:store_requested_by)).try(:full_name)
                 %dt Store requested at
                 %dd= spare_part_store.try(:store_requested_at).try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
-                - if spare_part_store.store_request_approved
+                - if ticket_spare_part.request_approved
                   %dt Request approved
-                  %dd= spare_part_store.store_request_approved ? "Yes" : "No"
+                  %dd= ticket_spare_part.request_approved ? "Yes" : "No"
                   %dt Request approved by
-                  %dd= User.cached_find_by_id(spare_part_store.store_request_approved_by).try(:full_name)
+                  %dd= User.cached_find_by_id(ticket_spare_part.request_approved_by).try(:full_name)
                   %dt Request approved at
-                  %dd= spare_part_store.store_request_approved_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
+                  %dd= ticket_spare_part.request_approved_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
                 %dt Required quantity
-                %dd= spare_part_store.store_request_approved ? spare_part_store.try(:approved_quantity) : spare_part_store.try(:requested_quantity)
+                %dd= ticket_spare_part.request_approved ? spare_part_store.try(:approved_quantity) : spare_part_store.try(:requested_quantity)
                 %dt Store
                 %dd= spare_part_store.store.try(:name)
                 %dt Issued by
