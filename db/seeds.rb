@@ -368,3 +368,16 @@ end
 ].each do |t|
   OrganizationContactType.create_with(name: t[0]).find_or_create_by(code: t[1], validate_id: t[2])}
 end
+
+[
+  ["CP1", "Contact person 1"],
+  ["CP2", "Contact person 2"]
+].each do |t|
+  ContactPersonPrimaryType.create_with(name: t[1]).find_or_create_by(code: t[0])
+end
+[
+  ["Accounts"],
+  ["Procument"]
+].each do |t|
+  ContactPersonType.create_with(name: t[0])
+end
