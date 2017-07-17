@@ -45,7 +45,7 @@
                   = ticket_spare_part.ticket_spare_part_manufacture.requested_quantity if ticket_spare_part.ticket_spare_part_manufacture.present?
 
                   - if ticket_spare_part.ticket_spare_part_store.present?
-                    - if ticket_spare_part.ticket_spare_part_store.store_request_approved
+                    - if ticket_spare_part.request_approved
                       = ticket_spare_part.ticket_spare_part_store.approved_quantity
                     - else
                       = ticket_spare_part.ticket_spare_part_store.requested_quantity

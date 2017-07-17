@@ -1012,7 +1012,7 @@ class TicketsController < ApplicationController
     when "workflow"
 
       # product = @ticket.products.first
-      @user_ticket_actions = @ticket.cached_user_ticket_actions
+      # @user_ticket_actions = @ticket.cached_user_ticket_actions
 
       @render_template = "tickets/tickets_pack/workflow"
       @variables = {ticket: @ticket}

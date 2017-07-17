@@ -184,11 +184,11 @@
                       Customer Chargeable: No
                 .row
                   .col-md-4
-                    Store Requested By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_requested_by)).try(:user_name)}
+                    Store Requested By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_requested_by)).try(:full_name)}
                   .col-md-4
-                    Store Request Approved By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_request_approved_by)).try(:user_name)}
+                    Store Request Approved By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.request_approved_by).try(:full_name)}
                   .col-md-4
-                    Store Issued By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:issued_by)).try(:user_name)}
+                    Store Issued By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:issued_by)).try(:full_name)}
                 .row
                   .col-md-4
                     -if action.request_spare_part.ticket_spare_part.request_from == 'M'
@@ -753,7 +753,7 @@
                   .col-md-4
                     Bundled id: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_manufacture.return_parts_bundle_id}
                   .col-md-4
-                    Bundled by: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_manufacture.add_bundle_by).try(:user_name)}
+                    Bundled by: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_manufacture.add_bundle_by).try(:full_name)}
 
             -if action.action_id == 47 and action.request_spare_part
               .panel-body
@@ -782,11 +782,11 @@
                 -if action.request_spare_part.ticket_spare_part.request_from == 'S'
                   .row
                     .col-md-4
-                      Store Requested By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_requested_by)).try(:user_name)}
+                      Store Requested By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_requested_by)).try(:full_name)}
                     .col-md-4
-                      Store Request Approved By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_request_approved_by)).try(:user_name)}
+                      Store Request Approved By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.request_approved_by).try(:full_name)}
                     .col-md-4
-                      Store Issued By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:issued_by)).try(:user_name)}
+                      Store Issued By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:issued_by)).try(:full_name)}
 
             -if action.action_id == 48 and action.request_spare_part
               .panel-body
@@ -815,11 +815,11 @@
                 -if action.request_spare_part.ticket_spare_part.request_from == 'S'
                   .row
                     .col-md-4
-                      Store Requested By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_requested_by)).try(:user_name)}
+                      Store Requested By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_requested_by)).try(:full_name)}
                     .col-md-4
-                      Store Request Approved By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_request_approved_by)).try(:user_name)}
+                      Store Request Approved By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.request_approved_by).try(:full_name)}
                     .col-md-4
-                      Store Issued By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:issued_by)).try(:user_name)}
+                      Store Issued By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:issued_by)).try(:full_name)}
 
             -if action.action_id == 49 and action.request_spare_part
               .panel-body
@@ -848,11 +848,11 @@
                 -if action.request_spare_part.ticket_spare_part.request_from == 'S'
                   .row
                     .col-md-4
-                      Store Requested By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_requested_by)).try(:user_name)}
+                      Store Requested By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_requested_by)).try(:full_name)}
                     .col-md-4
-                      Store Request Approved By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_request_approved_by)).try(:user_name)}
+                      Store Request Approved By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.request_approved_by).try(:full_name)}
                     .col-md-4
-                      Store Issued By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:issued_by)).try(:user_name)}
+                      Store Issued By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:issued_by)).try(:full_name)}
 
             -if action.action_id == 50
               .panel-body
@@ -881,11 +881,11 @@
                 -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'S'
                   .row
                     .col-md-4
-                      Store Requested By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_requested_by)).try(:user_name)}
+                      Store Requested By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_requested_by)).try(:full_name)}
                     .col-md-4
-                      Store Request Approved By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_request_approved_by)).try(:user_name)}
+                      Store Request Approved By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_approved_by).try(:full_name)}
                     .col-md-4
-                      Store Issued By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:issued_by)).try(:user_name)}
+                      Store Issued By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:issued_by)).try(:full_name)}
 
             - if action.action_id == 51
               .panel-body
@@ -916,9 +916,9 @@
                     .col-md-4
                       Store Requested By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_requested_by)).try(:email)}
                     .col-md-4
-                      Store Request Approved By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_request_approved_by)).try(:user_name)}
+                      Store Request Approved By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_approved_by).try(:full_name)}
                     .col-md-4
-                      Store Issued By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:issued_by)).try(:user_name)}
+                      Store Issued By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:issued_by)).try(:full_name)}
 
             -if action.action_id == 52
               .panel-body
@@ -947,11 +947,11 @@
                 -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'S'
                   .row
                     .col-md-4
-                      Store Requested By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_requested_by)).try(:user_name)}
+                      Store Requested By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_requested_by)).try(:full_name)}
                     .col-md-4
-                      Store Request Approved By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_request_approved_by)).try(:user_name)}
+                      Store Request Approved By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_approved_by).try(:full_name)}
                     .col-md-4
-                      Store Issued By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:issued_by)).try(:user_name)}
+                      Store Issued By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:issued_by)).try(:full_name)}
 
             -if action.action_id == 53
               .panel-body
@@ -980,11 +980,11 @@
                 -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'S'
                   .row
                     .col-md-4
-                      Store Requested By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_requested_by)).try(:user_name)}
+                      Store Requested By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_requested_by)).try(:full_name)}
                     .col-md-4
-                      Store Request Approved By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_request_approved_by)).try(:user_name)}
+                      Store Request Approved By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_approved_by).try(:full_name)}
                     .col-md-4
-                      Store Issued By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:issued_by)).try(:user_name)}
+                      Store Issued By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:issued_by)).try(:full_name)}
 
             -if action.action_id == 54
               .panel-body
@@ -1013,11 +1013,11 @@
                 -if action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_from == 'S'
                   .row
                     .col-md-4
-                      Store Requested By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_requested_by)).try(:user_name)}
+                      Store Requested By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_requested_by)).try(:full_name)}
                     .col-md-4
-                      Store Request Approved By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_request_approved_by)).try(:user_name)}
+                      Store Request Approved By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.request_approved_by).try(:full_name)}
                     .col-md-4
-                      Store Issued By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:issued_by)).try(:user_name)}
+                      Store Issued By: #{User.find_by_id(action.request_on_loan_spare_part.ticket_on_loan_spare_part.ticket_spare_part.ticket_spare_part_store.try(:issued_by)).try(:full_name)}
 
             -if action.action_id == 56
               .panel-body
@@ -1301,11 +1301,11 @@
                       Customer Chargeable: No
                 .row
                   .col-md-4
-                    Store Requested By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_requested_by)).try(:user_name)}
+                    Store Requested By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_requested_by)).try(:full_name)}
                   .col-md-4
-                    Store Request Approved By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_request_approved_by)).try(:user_name)}
+                    Store Request Approved By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.request_approved_by).try(:full_name)}
                   .col-md-4
-                    Store Issued By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:issued_by)).try(:user_name)}
+                    Store Issued By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:issued_by)).try(:full_name)}
                 .row
                   .col-md-4
                     -if action.request_spare_part.ticket_spare_part.request_from == 'M'
@@ -1332,11 +1332,11 @@
                       Customer Chargeable: No
                 .row
                   .col-md-4
-                    Store Requested By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_requested_by)).try(:user_name)}
+                    Store Requested By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_requested_by)).try(:full_name)}
                   .col-md-4
-                    Store Request Approved By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store_request_approved_by)).try(:user_name)}
+                    Store Request Approved By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.request_approved_by).try(:full_name)}
                   .col-md-4
-                    Store Issued By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:issued_by)).try(:user_name)}
+                    Store Issued By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:issued_by)).try(:full_name)}
                 .row
                   .col-md-4
                     -if action.request_spare_part.ticket_spare_part.request_from == 'M'
