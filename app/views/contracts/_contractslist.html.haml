@@ -23,8 +23,8 @@
               = address.full_address
           %dt Account no:
           %dd
-          %dt Customer code:
-          %dd= organization.code
+          / %dt Customer code:
+          / %dd= organization.code
           %dt Industry type:
           %dd= organization.industry_type.name
       .col-md-5
@@ -85,7 +85,8 @@
               /   / %td= link_to "Select", contracts_path(select_contract: true, contract_id: con.id, customer_id: organization.id), remote: true
               /   = link_to "Select", find_by_serial_tickets_path(contract_id: con.ticket_contract.id, serial_search: con.product.serial_no), remote: true, method: :post
               / - else
-              = link_to "Edit", contracts_path(edit_create: true, contract_id: con.id, customer_id: con.organization.id), remote: true, onclick: "Tickets.ajax_loader(); return false;"
+              -if !con.tickets.present?
+                = link_to "Edit", contracts_path(edit_create: true, contract_id: con.id, customer_id: con.organization.id), remote: true, onclick: "Tickets.ajax_loader(); return false;"
     %br
     - unless params[:from_where] == "new_ticket"
       = link_to "New Contract", contracts_path(edit_create: true, customer_id: organization.id), remote: true, class: "btn btn-sm btn-warning", onclick: "Tickets.ajax_loader(); return false;"
