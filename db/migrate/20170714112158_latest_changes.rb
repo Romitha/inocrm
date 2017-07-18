@@ -1,8 +1,8 @@
 class LatestChanges < ActiveRecord::Migration
   def change
-    remove_column :company_config, :last_account_code
+    # remove_column :company_config, :last_account_code
 
-    add_column :company_config, :last_account_no, :integer, null:false, default:0
+    # add_column :company_config, :last_account_no, :integer, null:false, default:0
     # add_column :company_config, :sup_mf_parts_need_warranty, :boolean, null:false, default:1
     # add_column :company_config, :sup_mf_parts_need_quantity,:boolean, null:false, default:0
 
