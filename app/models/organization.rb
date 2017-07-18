@@ -93,7 +93,6 @@ class Organization < ActiveRecord::Base
 
   validates_presence_of :vat_number, if: Proc.new {|organization| TYPES[0,2].include?(organization.category)}
 
-
   [:previous_vat_number].each do |dyna_method|
     define_method(dyna_method) do
       self.dyna_columns.find_by_data_key(dyna_method).try(:data_value)
@@ -314,6 +313,20 @@ class Account < ActiveRecord::Base
 
   def created_user
     User.cached_find_by_id(created_by)
+  end
+
+  has_many :dyna_columns, as: :resourceable
+
+  [:previous_vat_number].each do |dyna_method|
+    define_method(dyna_method) do
+      self.dyna_columns.find_by_data_key(dyna_method).try(:data_value)
+    end
+
+    define_method("#{dyna_method}=") do |value|
+      data = self.dyna_columns.find_or_initialize_by(data_key: dyna_method)
+      data.data_value = (value.class==Fixnum ? value : value.strip)
+      data.save
+    end
   end
 end
 

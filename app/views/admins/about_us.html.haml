@@ -24,7 +24,7 @@
       = organization.short_name
 
 .row
-  .col-lg-6= "Vat Number: #{organization.vat_number}" if organization.vat_number
+  .col-lg-6= "Vat Number: #{organization.account.vat_number}" if organization.account.vat_number
   .col-lg-6.text-right= link_to "Visit website",organization.web_site, data: {toggle: "tooltip", placement: "bottom"}, title: organization.web_site, rel: "tooltip", :target => "_blank" 
 .row
   .col-md-12

@@ -21,7 +21,7 @@
       %tbody
         %tr
           %th.text-right Vat Number : &nbsp;
-          %td.vat_number= organization.vat_number
+          %td.vat_number= organization.account.vat_number
         %tr
           %th.text-right Created at : &nbsp;
           %td= organization.account and organization.account.created_at.strftime(INOCRM_CONFIG["short_date_format"])

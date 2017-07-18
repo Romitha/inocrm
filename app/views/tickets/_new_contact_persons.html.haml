@@ -46,7 +46,7 @@
         %h4 Organization
         = initiate_table table_type: "table-hover table-bordered" do
           = table_header ["Name", "VAT", "Industry type"]
-          = table_body ["#{customer.organization.name}", "#{customer.organization.vat_number}", customer.organization.industry_type.try(:name)]
+          = table_body ["#{customer.organization.name}", "#{customer.organization.account.vat_number}", customer.organization.industry_type.try(:name)]
 
 - unless ticket.ticket_contract.present?
   %strong.name_validate Customer
