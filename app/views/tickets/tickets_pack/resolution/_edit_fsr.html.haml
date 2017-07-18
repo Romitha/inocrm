@@ -25,12 +25,12 @@
             .col-md-12
               = fsr.input :work_started_at, as: :string, input_html: {class: "datetimepicker", data: {mindate: @ticket.logged_at.strftime("%b %d, %Y %H:%M")}}
               %strong Started at:
-              = @ticket_fsr.work_started_at.try :strftime, "%d %b, %Y %H:%M %p"
+              = @ticket_fsr.work_started_at.try :strftime, "%d %b, %Y %H:%M"
               %hr
             .col-md-12
               = fsr.input :work_finished_at, as: :string, input_html: {class: "datetimepicker"}
               %strong Finished at:
-              = @ticket_fsr.work_finished_at.try :strftime, "%d %b, %Y %H:%M %p"
+              = @ticket_fsr.work_finished_at.try :strftime, "%d %b, %Y %H:%M"
               %hr
 
         .col-md-3

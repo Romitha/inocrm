@@ -15,7 +15,7 @@
       .row
         - unless t.object.ticket_spare_part.ticket_spare_part_manufacture.present?
           .col-md-3
-            %strong Supplier:
+            %strong Supplier :
             = t.object.try(:supplier).try(:name)
         .col-md-3
           %strong Part No :
@@ -27,6 +27,11 @@
           %strong Warranty Period (months) :
           #{t.object.try(:warranty_period)}
 
+      %hr
+      .row
+        .col-md-3
+          %strong Chargeable :
+          = boolean_in_word t.object.cus_chargeable_part, "Yes", "No"
         .col-md-3
           %strong Required Qnty:
           = (t.object.ticket_spare_part.ticket_spare_part_store or t.object.ticket_spare_part.ticket_spare_part_manufacture or t.object.ticket_spare_part.ticket_spare_part_non_stock).requested_quantity
@@ -174,6 +179,9 @@
                   %span.glyphicon.glyphicon-plus-sign
                   Add tax
 
+      = t.simple_fields_for :ticket_spare_part do |tsp|
+        = tsp.input :note
+
   .row
     .col-md-12
       %fieldset
@@ -293,11 +301,12 @@
 
   .row
     .col-md-6
+
       = f.input :note, input_html: {value: nil}
       = simple_format @estimation.note
 
   .row
     .col-md-12
       = label_tag "Approval Complete"
-      = check_box_tag :approval_complete_check, true, true
+      = check_box_tag :approval_complete_check, true, false
       = f.submit "Save", class: "btn btn-success btn-sm"

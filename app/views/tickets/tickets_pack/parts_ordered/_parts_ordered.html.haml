@@ -57,7 +57,7 @@
               %dt Action Status
               %dd
                 = ticket_spare_part.spare_part_status_action.name
-                = link_to "history", "#", tabindex: "0", rel: "popover", title: "Action History", data: {toggle: "popover", trigger: "click", content: ticket_spare_part.ticket_spare_part_status_actions.map { |tsp| "#{tsp.spare_part_status_action.name} <span class='text-muted text3'>#{User.cached_find_by_id(tsp.done_by).email}-#{tsp.done_at.strftime('INOCRM_CONFIG["short_date_format"] %H:%M %P')}</span>" }.join("<br/>"), placement: "bottom", html: true}
+                = link_to "history", "#", tabindex: "0", rel: "popover", title: "Action History", data: {toggle: "popover", trigger: "click", content: ticket_spare_part.ticket_spare_part_status_actions.map { |tsp| "#{tsp.spare_part_status_action.name} <span class='text-muted text3'>#{User.cached_find_by_id(tsp.done_by).email}-#{tsp.done_at.strftime('INOCRM_CONFIG[\"short_date_format\"] %H:%M %P')}</span>" }.join("<br/>"), placement: "bottom", html: true}
 
 
               %dt Pending
@@ -386,7 +386,7 @@
                 %dt Action Status
                 %dd
                   = ticket_spare_part_ref.spare_part_status_action.name
-                  = link_to "history", "#", tabindex: "0", rel: "popover", title: "Action History", data: {toggle: "popover", trigger: "click", content: ticket_spare_part_ref.ticket_spare_part_status_actions.map { |tsp| "#{tsp.spare_part_status_action.name} <span class='text-muted text3'>#{User.cached_find_by_id(tsp.done_by).email}-#{tsp.done_at.strftime('INOCRM_CONFIG["short_date_format"] %H:%M %P')}</span>" }.join("<br/>"), placement: "bottom", html: true}
+                  = link_to "history", "#", tabindex: "0", rel: "popover", title: "Action History", data: {toggle: "popover", trigger: "click", content: ticket_spare_part_ref.ticket_spare_part_status_actions.map { |tsp| "#{tsp.spare_part_status_action.name} <span class='text-muted text3'>#{User.cached_find_by_id(tsp.done_by).email}-#{tsp.done_at.strftime('INOCRM_CONFIG[\"short_date_format\"] %H:%M %P')}</span>" }.join("<br/>"), placement: "bottom", html: true}
 
 
                 %dt Pending
@@ -501,7 +501,7 @@
               %dt Action Status
               %dd
                 = ticket_on_loan_spare_part.spare_part_status_action.name
-                = link_to "history", "#", tabindex: "0", rel: "popover", title: "Action History", data: {toggle: "popover", trigger: "click", content: ticket_on_loan_spare_part.ticket_on_loan_spare_part_status_actions.map { |tsp| "#{tsp.spare_part_status_action.name} <span class='text-muted text3'>#{User.cached_find_by_id(tsp.done_by).email}-#{tsp.done_at.strftime('INOCRM_CONFIG["short_date_format"] %H:%M %P')}</span>" }.join("<br/>"), placement: "bottom", html: true}
+                = link_to "history", "#", tabindex: "0", rel: "popover", title: "Action History", data: {toggle: "popover", trigger: "click", content: ticket_on_loan_spare_part.ticket_on_loan_spare_part_status_actions.map { |tsp| "#{tsp.spare_part_status_action.name} <span class='text-muted text3'>#{User.cached_find_by_id(tsp.done_by).email}-#{tsp.done_at.strftime('INOCRM_CONFIG[\"short_date_format\"] %H:%M %P')}</span>" }.join("<br/>"), placement: "bottom", html: true}
               %dt Pending
               %dd
                 - if ticket_on_loan_spare_part.spare_part_status_action.code == "RPR"

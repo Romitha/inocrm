@@ -25,7 +25,10 @@
           .col-md-3
             %strong Part status:
             #{t.object.ticket_spare_part.try(:spare_part_status_action).try(:name)}
-
+          .col-md-3
+            %strong Chargeable:
+            = boolean_in_word t.object.ticket_spare_part.cus_chargeable_part, "Yes", "No"
+        .row
           - unless t.object.ticket_spare_part.ticket_spare_part_non_stock.present?
             .col-md-3
               %strong Required Qnty:

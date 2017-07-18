@@ -291,10 +291,10 @@ class InventoriesController < ApplicationController
         end
       else
 
-        if ticket_spare_part.ticket_spare_part_manufacture.present? and !CompanyConfig.first.sup_mf_parts_return_required and !ticket_spare_part.ticket_spare_part_manufacture.po_required
-          ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("CLS").id) 
-          ticket_spare_part.ticket_spare_part_status_actions.create(status_id: ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now) 
-        end  
+        # if ticket_spare_part.ticket_spare_part_manufacture.present? and !CompanyConfig.first.sup_mf_parts_return_required and !ticket_spare_part.ticket_spare_part_manufacture.po_required
+        #   ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("CLS").id) 
+        #   ticket_spare_part.ticket_spare_part_status_actions.create(status_id: ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now) 
+        # end  
 
         flash[:error] = "spare part is updated. But not returned"
       end

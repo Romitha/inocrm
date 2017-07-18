@@ -3046,6 +3046,12 @@ class TicketsController < ApplicationController
       @ticket.ticket_spare_parts.each do |s|
         if params[:ticket_spare_part_ids].to_a.include? s.id.to_s
           s.update close_approved: true, close_approved_action_id: user_ticket_action.id
+
+        if s.ticket_spare_part_manufacture.present? and !CompanyConfig.first.sup_mf_parts_return_required and !s.ticket_spare_part_manufacture.po_required
+          s.update(status_action_id: SparePartStatusAction.find_by_code("CLS").id) 
+          s.ticket_spare_part_status_actions.create(status_id: s.status_action_id, done_by: current_user.id, done_at: DateTime.now) 
+        end
+
         else
           s.update close_approved: false, close_approved_action_id: nil
         end
@@ -3591,7 +3597,7 @@ class TicketsController < ApplicationController
   def workflow_diagram
     @ticket_id = params[:ticket_id]
     @ticket = Ticket.find @ticket_id
-    @workflow_processes = @ticket.ticket_workflow_processes.to_a
+    @workflow_processes = params[:workflow_process_id].present? ? [HashToObject.new({process_id: params[:workflow_process_id]})] : @ticket.ticket_workflow_processes.to_a
     @workflow_process_ids = @workflow_processes.map { |p| p.process_id }
     @task_list = []
     @workflow_process_ids.each do |workflow_process_id|

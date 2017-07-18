@@ -40,3 +40,9 @@ icon: ["icon-folder-open","icon-user-tie","icon-hour-glass","icon-bug","icon-bar
 Ticket:
   warranty_type_id: 4
   ticket_type_id: 2
+
+TicketSparePart:
+  faulty_serial_no: "N/A"
+  faulty_ct_no: "N/A"
+  received_part_serial_no: "N/A"
+  received_part_ct_no: "N/A"

@@ -55,6 +55,7 @@
               %th Description
               %th Request Type
               %th Status
+              %th Used status
               %th Part Returned
               %th Quantity
               %th Return Accepted
@@ -71,7 +72,8 @@
                 %td #{tsp.spare_part_no}
                 %td #{tsp.spare_part_description}
                 %td= tsp.request_from == "M" ? "Manufacture" : tsp.request_from == "S" ? "Store" : "Non stock"
-                %td #{tsp.spare_part_status_action.name}
+                %td= tsp.spare_part_status_action.name
+                %td= tsp.spare_part_status_use.name
                 %td= tsp.part_returned ? 'Yes' : 'No'
                 %td= tsp.request_from == "M" ? tsp.ticket_spare_part_manufacture.requested_quantity : tsp.request_from == "S" ? tsp.ticket_spare_part_store.approved_quantity : tsp.ticket_spare_part_non_stock.approved_quantity
                 %td= tsp.returned_part_accepted ? 'Yes' : 'No'
@@ -91,6 +93,7 @@
               %th Description
               %th Quantity
               %th Status
+              %th Used Status
               %th Part Returned
               %th Return Part S/N
               %th Approved
@@ -101,6 +104,7 @@
                 %td= simple_format tsp.approved_inventory_product.try(:description)
                 %td= tsp.approved_quantity
                 %td #{tsp.spare_part_status_action.name}
+                %td #{tsp.spare_part_status_use.name}
                 %td= tsp.part_returned ? 'Yes' : 'No'
                 %td= tsp.return_part_serial_no
                 %td= check_box_tag :ticket_on_loan_spare_part_ids, tsp.id, tsp.approved, name: "ticket_on_loan_spare_part_ids[]", class: "dynamic_check"

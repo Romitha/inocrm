@@ -202,17 +202,11 @@
       .row
         - if @onloan_request
           .col-md-6
-            = sto.radio_button :approved, true, checked: true, class: "request_approved"
-            = label_tag "Approve"
-            = sto.radio_button :approved, false, checked: false, class: "request_approved"
-            = label_tag "Reject"
+            = sto.input :approved, as: :radio_buttons, collection: {"Approve" => "true", "Reject" => "false"}, input_html: {class: "request_approved"}, required: true
 
         - else
           .col-md-6
-            = f.radio_button :request_approved, true, checked: true, class: "request_approved", disabled: (@onloan_request ? sto.object.part_terminated : sto.object.ticket_spare_part.part_terminated)
-            = label_tag "Approve"
-            = f.radio_button :request_approved, false, checked: (@onloan_request ? sto.object.part_terminated : sto.object.ticket_spare_part.part_terminated), class: "request_approved"
-            = label_tag "Reject"
+            = f.input :request_approved, as: :radio_buttons, collection: {"Approve" => "true", "Reject" => "false"}, checked: ("false" if (@onloan_request ? sto.object.part_terminated : sto.object.ticket_spare_part.part_terminated)), required: true
         .col-md-6.request_from_radio_buttons          
           = label_tag "Part of a Main Product" do
             = radio_button_tag "approve_part_of_main_product", true, request_part.main_inventory_product.present?, class: "approve_part_of_main_product", id: "approve_part_of_main_product_true"

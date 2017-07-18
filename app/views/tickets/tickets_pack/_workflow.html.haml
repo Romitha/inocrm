@@ -7,31 +7,7 @@
         %a{"data-toggle" => "tab", :href => "#tab2"} Engineers Time Allocation
     .tab-content
       #tab1.tab-pane.fade.in.active
-        %h1 Assignments
-        .row
-          .col-md-1 No
-          .col-md-2 Engineer
-          .col-md-1 Type
-          .col-md-2 Started at
-          .col-md-2 Finished at
-          .col-md-2 Closed at
-          .col-md-1 Finished time spent
-          .col-md-1 Closed time spent
-        - index = 0
-        - @ticket.ticket_engineers.group_by{|e| e.user.full_name}.each do |k, v|
-          - index += 1
-          .row
-            .col-md-1= index
-            .col-md-2= k
-            .col-md-1 Support
-            .col-md-2
-              .row
-                .col-md-5 RO-Index
-                .col-md-7 
-              - v.each do |v_sub|
-                .row
-                  .col-md-5= v_sub.re_open_index
-                  .col-md-7= v_sub.job_started_at.try(:strftime, INOCRM_CONFIG['long_date_format'])
+        = render "tickets/tickets_pack/workflow_preview", ticket: ticket
 
       #tab2.tab-pane.fade.in
         %h1 Engineers Time Allocation
