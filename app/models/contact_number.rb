@@ -58,3 +58,11 @@ class ContactPersonContactType < ActiveRecord::Base
 
   validates_presence_of [:contact_type_id, :value]
 end
+
+class ContactPersonPrimaryType < ActiveRecord::Base
+  self.table_name = "mst_contact_person_primary_type"
+end
+
+class ContactPersonPrimaryTypeConnector < ActiveRecord::Base
+  self.table_name = "contact_person_primary_type"
+end
