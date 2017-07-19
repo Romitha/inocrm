@@ -1,7 +1,7 @@
 - uri = URI(request.url)
 - engineer_id = params["supp_engr_user"]
 
-= simple_nested_form_for ticket, url: update_check_fsr_ticket_path(ticket.id), method: :post do |f| # update_check_fsr_ticket_path(ticket.id)
+= simple_nested_form_for ticket, url: update_check_fsr_ticket_path(ticket.id), method: :post do |f|
 
   = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
   = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
@@ -14,7 +14,7 @@
     - if ticket.re_open_count > 0
       .col-md-3
         Current Re-Open No.:
-        %strong= ticket.ticket_engineers.find(id: engineer_id).re_open_index
+        %strong= ticket.ticket_engineers.find(engineer_id).re_open_index
 
     .col-md-6.col-xs-6
       - ticket_workfows = ticket.ticket_workflow_processes.where process_id: Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
@@ -22,7 +22,7 @@
 
       %h4 Job belongs to : #{job_engineers.map{|eng| eng.user.full_name}.join(", ")}
       Job Completed (Approve To Close):
-      = check_box_tag :job_close_approved, true, true#, id: "ticket_close_approved_check", class: "hide"
+      = check_box_tag :job_close_approved, true, true, id: "ticket_close_approved_check", class: "hide"
       %strong.check_box_value_label
 
     .col-md-6.col-xs-6#close_approve_reject_reason

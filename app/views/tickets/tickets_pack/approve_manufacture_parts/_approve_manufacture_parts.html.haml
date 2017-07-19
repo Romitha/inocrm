@@ -33,10 +33,7 @@
 
       .row
         .col-md-6
-          = f.radio_button :request_approved, true, checked: false, class: "request_approved", disabled: sto.object.ticket_spare_part.part_terminated
-          = label_tag "Approve"
-          = f.radio_button :request_approved, false, checked: sto.object.ticket_spare_part.part_terminated, class: "request_approved"
-          = label_tag "Reject", required: true
+          = f.input :request_approved, as: :radio_buttons, collection: {"Approve" => "true", "Reject" => "false"}, checked: ("false" if sto.object.ticket_spare_part.part_terminated), disabled: ("true" if sto.object.ticket_spare_part.part_terminated)
 
     .row
       .col-md-12
