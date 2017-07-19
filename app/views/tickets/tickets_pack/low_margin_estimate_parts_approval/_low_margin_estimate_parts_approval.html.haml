@@ -31,7 +31,7 @@
       .row
         .col-md-3
           %strong Chargeable :
-          = boolean_in_word t.object.cus_chargeable_part, "Yes", "No"
+          = boolean_in_word t.object.ticket_spare_part.cus_chargeable_part, "Yes", "No"
         .col-md-3
           %strong Required Qnty:
           = (t.object.ticket_spare_part.ticket_spare_part_store or t.object.ticket_spare_part.ticket_spare_part_manufacture or t.object.ticket_spare_part.ticket_spare_part_non_stock).requested_quantity
