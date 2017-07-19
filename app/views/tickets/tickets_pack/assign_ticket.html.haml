@@ -17,6 +17,13 @@
         = render "tickets/tickets_pack/ticket_info", ticket: ticket, product: product, customer: customer, warranties: warranties, histories: histories, join_tickets: join_tickets, ge_q_and_as: ge_q_and_as, pr_q_and_as: pr_q_and_answers
     = tab_content tabpointer: :assign_ticket, active_class: "active" do
 
+      - if @re_assignment
+        %h3 Re-Assignment Requested
+        %br/
+        %em Requested by: #{@re_assignment_requested_by}
+        %br/
+        %strong Requested reason: #{@re_assignment_reason}
+
       = simple_nested_form_for ticket, url: update_assign_ticket_tickets_path, method: :post do |f|
         = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
         = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
@@ -33,7 +40,7 @@
             = u.simple_fields_for :user_assign_ticket_action do |ua|
               .row
                 .col-md-3.small_scale_padding-top2
-                  = ua.input :recorrection, wrapper: :append, input_html: {id: "pass_to_re_correction"}
+                  = ua.input :recorrection, wrapper: :append, input_html: {id: "pass_to_re_correction", disabled: @re_assignment}
                 .col-md-3.small_scale_padding-top2.pass_to_recorrection_hiddible
                   = f.input :regional_support_job, label: "Regional Support Job", wrapper: :append
                 .col-md-2
@@ -72,7 +79,7 @@
 
 %hr
 %script{ type: "text/x-handlebars", id: "application"}
-  {{#link-to "groups" "#{ticket.id}" activeClass="hide"}} show Channels {{/link-to}}
+  {{#link-to "groups" "#{ticket.id}" (query-params re_assigned="#{@engineer_id || 'false'}") activeClass="hide"}} show Channels {{/link-to}}
 
   {{outlet}}
 
@@ -101,8 +108,8 @@
       %hr
 
     {{/each}}
-
-    {{#link-to "groups.new" (query-params order_no=0 channel_no=model.new_channel_no ticket_id="#{ticket.id}") }} new Channel {{/link-to}}
+    - unless @re_assignment
+      {{#link-to "groups.new" (query-params order_no=0 channel_no=model.new_channel_no ticket_id="#{ticket.id}") }} new Channel {{/link-to}}
 
   {{outlet}}
 
@@ -122,13 +129,18 @@
   {{#if obj.channel_no}}
   < form >
   .row
-    .col-sm-6
+    .col-sm-4
       <label for="Assign SBU" class="required control-label">Assign SBU</label>
       {{select-box optionArray=sbuArray click=(action (mut obj.sbu_id) value="target.value") }}
 
-    .col-sm-6
+    .col-sm-4
       <label for="Assign to" class="required control-label">Assign to</label>
       {{select-box optionArray=assignTo click=(action (mut obj.assign_to) value="target.value") }}
+    .col-sm-4
+      <label for="Assign to" class="required control-label">
+      Task Description
+      {{textarea value=obj.task_description cols="80" rows="3" class="form-control"}}
+      </label>
 
     .col-sm-12
       %h4 Support Engineers

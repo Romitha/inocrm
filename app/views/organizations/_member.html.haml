@@ -8,7 +8,7 @@
         - organization.accounts_dealer_types.each do |d|
           %span.label.label-success= d.dealer_type.name
       .col-md-12
-        Vat Number: #{organization.account.vat_number}
+        Vat Number: #{organization.account.try(:vat_number)}
       .col-md-12
         %span
           = link_to edit_organization_path(organization), class: "has-tooltip", data: {toggle: "tooltip", placement: "right"}, title: "Edit #{organization.name}" do

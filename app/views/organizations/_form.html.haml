@@ -34,9 +34,6 @@
   .row
     .col-md-4
       = f.association :organization_type, include_blank: false, input_html: {onchange: "Inventories.limit_visible_vat_web(this); return false;"}
-    - unless Organization::TYPES[2,3].include?(organization.category)
-      .col-md-4{class: "#{'for_store_and_branch' if params[:action] == 'store_and_branch'}"}
-        = f.input :vat_number, placeholder: "VAT Number", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "VAT Number"}
     .col-md-4.pull-right{class: "#{'for_store_and_branch' if params[:action] == 'store_and_branch'}"}
       = f.input :web_site, placeholder: "Web Site", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Web Site"}
 
@@ -52,6 +49,10 @@
             = a.input :credit_period_day
         .col-md-2
           = a.input :goodwill_status, as: :boolean
+
+        - unless Organization::TYPES[2,3].include?(organization.category)
+          .col-md-2{class: "#{'for_store_and_branch' if params[:action] == 'store_and_branch'}"}
+            = a.input :vat_number, placeholder: "VAT Number", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "VAT Number"}
         .col-md-2
           = a.input :svat_no, include_blank: false
         .col-md-2

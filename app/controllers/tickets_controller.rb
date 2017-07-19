@@ -1039,7 +1039,17 @@ class TicketsController < ApplicationController
     when "ticket"
       @ticketEngs = if params[:ticket_id].present?
         # Ticket.find(params[:ticket_id]).ticket_engineers.map { |u| { name: u.user.full_name, image: u.user.avatar.url, sub_engs: u.sub_engineers.map { |e| { name: e.user.full_name, image: e.user.avatar.url } } } }
-        Ticket.find(params[:ticket_id]).ticket_engineers.group_by{ |t| t.channel_no.to_i }.map { |k, v| { channel_no: k, ticket_id: params[:ticket_id], eng_set: v.map{ |r| { name: r.user.full_name, image: r.user.avatar.url, id: r.id, order_no: r.order_no, channel_no: r.channel_no, ticket_id: r.ticket_id, deletable: r.deletable? } }.sort{ |p, n| p[:order_no].to_i <=> n[:order_no].to_i } } }#.inject({}){|i, (k, v)| i[k] = v.sort{|p, n| p.order_no.to_i <=> n.order_no.to_i } }
+        ticket_engineers = Ticket.find(params[:ticket_id]).ticket_engineers
+        re_assigned_ticket_engineer = ticket_engineers.find_by_id(params[:re_assigned]) if params[:re_assigned].present? and params[:re_assigned] != "false"
+
+        filtered_engineers = if re_assigned_ticket_engineer
+          ticket_engineers.where(channel_no: re_assigned_ticket_engineer.channel_no)
+        else
+          ticket_engineers #.inject({}){|i, (k, v)| i[k] = v.sort{|p, n| p.order_no.to_i <=> n.order_no.to_i } }
+
+        end
+
+        filtered_engineers.group_by{ |t| t.channel_no.to_i }.map { |k, v| { channel_no: k, ticket_id: params[:ticket_id], eng_set: v.map{ |r| { name: r.user.full_name, image: r.user.avatar.url, id: r.id, order_no: r.order_no, channel_no: r.channel_no, ticket_id: r.ticket_id, deletable: r.deletable? } }.sort{ |p, n| p[:order_no].to_i <=> n[:order_no].to_i } } }
 
       else
         {}
@@ -1076,7 +1086,7 @@ class TicketsController < ApplicationController
     re_assignment = @ticket.ticket_engineers.any? { |en| en.workflow_process_id == @ticket_workfow.first.try(:id)  }
 
 
-    ticket_engineer = @ticket.ticket_engineers.build(user_id: assign_eng_params["assign_to"], re_open_index: @ticket.re_open_count, re_assignment: re_assignment, sbu_id: assign_eng_params["sbu_id"], channel_no: current_channel_no, order_no: (current_order_no+1))
+    ticket_engineer = @ticket.ticket_engineers.build(user_id: assign_eng_params["assign_to"], re_open_index: @ticket.re_open_count, re_assignment: re_assignment, sbu_id: assign_eng_params["sbu_id"], task_description: assign_eng_params["task_description"], channel_no: current_channel_no, order_no: (current_order_no+1))
 
     assign_eng_params["subEng"].to_a.each do |sub_eng|
       ticket_engineer.ticket_support_engineers.build( user_id: sub_eng["user_id"] )
@@ -1113,11 +1123,18 @@ class TicketsController < ApplicationController
       @user_assign_ticket_action = @user_ticket_action.build_user_assign_ticket_action
       @assign_regional_support_center = @user_ticket_action.assign_regional_support_centers.build
 
-      @ticket_workfow = @ticket.ticket_workflow_processes.where process_id: params["process_id"]
-      @re_assignment_rq_engineer =  @ticket.ticket_engineers.where(workflow_process_id: @ticket_workfow.first.try(:id)).first
+      #@ticket_workfow = @ticket.ticket_workflow_processes.where process_id: params["process_id"]
+      #@re_assignment_rq_engineer =  @ticket.ticket_engineers.where(workflow_process_id: @ticket_workfow.first.try(:id)).first 
+      @engineer_id = params[:engineer_id]
+      @re_assignment_rq_engineer = TicketEngineer.find @engineer_id if @engineer_id.present? and @engineer_id != "-"
       @re_assignment = @re_assignment_rq_engineer.present?
 
-      @re_assignment_requested_by = @ticket_engineer.try(:user_id)
+      if @re_assignment
+        @re_assignment_requested_by = (@re_assignment_rq_engineer and @re_assignment_rq_engineer.user.full_name)
+        re_assign_request = @ticket.user_ticket_actions.find_by_action_id(TaskAction.find_by_action_no(6).id).try(:ticket_re_assign_request)
+        @re_assignment_reason = (re_assign_request and re_assign_request.reason.try(:reason))
+      end
+
     end
     respond_to do |format|
       format.html {render "tickets/tickets_pack/assign_ticket"}
@@ -1130,7 +1147,9 @@ class TicketsController < ApplicationController
     @continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
 
     @ticket_workfows = @ticket.ticket_workflow_processes.where process_id: params["process_id"] 
-    @re_assignment_rq_engineer =  @ticket.ticket_engineers.where(workflow_process_id: @ticket_workfows.first.try(:id)).first
+    #@re_assignment_rq_engineer =  @ticket.ticket_engineers.where(workflow_process_id: @ticket_workfows.first.try(:id)).last
+    engineer_id = params[:engineer_id]
+    @re_assignment_rq_engineer = TicketEngineer.find engineer_id if engineer_id.present? and engineer_id != "-"
     @re_assignment = @re_assignment_rq_engineer.present?
 
     t_params = ticket_params
@@ -1182,14 +1201,24 @@ class TicketsController < ApplicationController
         engineer_id = "-"
         d43_no_assignment = "Y"
 
-        if  @re_assignment and @ticket.ticket_engineers.where(parent_engineer_id: @re_assignment_rq_engineer.id).present?
+        if  @re_assignment
           @ticket_engineer = @ticket.ticket_engineers.where(parent_engineer_id: @re_assignment_rq_engineer.id).first
 
-          @ticket_engineer.update status: 1, job_assigned_at: DateTime.now, workflow_process_id: @ticket_workfows.first.try(:id)
+          if @ticket_engineer.present?
 
-          supp_engr_user = @ticket_engineer.user_id
-          engineer_id = @ticket_engineer.id
-          d43_no_assignment = "N"
+            @ticket_engineer.update status: 1, job_assigned_at: DateTime.now, workflow_process_id: @ticket_workfows.first.try(:id)
+
+            supp_engr_user = @ticket_engineer.user_id
+            engineer_id = @ticket_engineer.id
+            d43_no_assignment = "N"
+          else
+            flash[:error] = "Please assign a new engineer."
+            redirect_to @ticket and return;
+          end
+
+        elsif !user_assign_ticket_action.recorrection and @ticket.ticket_engineers.empty?
+          flash[:error] = "Please assign a new engineer."
+          redirect_to @ticket and return;
 
         end
 

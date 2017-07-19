@@ -36,7 +36,7 @@ class UserModule < ActiveRecord::Migration
     execute "ALTER TABLE spt_contract ADD UNIQUE(contract_no)"
 
     add_column :accounts, :code, "INT UNSIGNED NULL"
-    add_column :accounts, :vat_no, :string, limit:100, null:true
+    add_column :accounts, :vat_number, :string, limit:100, null:true
     add_column :accounts, :svat_no, :string, limit:100, null:true
     add_column :accounts, :goodwill_status, :integer, null:false, default:1
     add_column :accounts, :credit_allow, :boolean, null:false

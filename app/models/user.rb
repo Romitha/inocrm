@@ -366,7 +366,8 @@ class TicketEngineer < ActiveRecord::Base
 
   def deletable?
     TaskAction
-    !(ticket_workflow_process.present? or user_assign_ticket_actions.any? or sub_engineers.any?)
+    # !(ticket_workflow_process.present? or user_assign_ticket_actions.any? or sub_engineers.any?)
+    status == 0
   end
 
   def root_engineer?
