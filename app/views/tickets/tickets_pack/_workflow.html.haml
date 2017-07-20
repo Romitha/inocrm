@@ -1,3 +1,5 @@
+- finished = []
+- closed = []
 .row
   #product_load
     %ul.nav.nav-tabs
@@ -10,4 +12,57 @@
         = render "tickets/tickets_pack/workflow_preview", ticket: ticket
 
       #tab2.tab-pane.fade.in
-        %h1 Engineers Time Allocation
+        %br/
+
+        %table.table
+          %thead
+            %tr
+              %th No
+              %th Engineers
+              %th Started At
+              %th Finished At
+              %th Closed At
+              %th Finished Time Spent (hh:mm)
+              %th Closed Time Spent (hh:mm)
+          %tbody
+            - @ticket.ticket_engineers.each_with_index do |eng, index|
+              %tr
+                %td=(index+1)
+                %td
+                  .col-md-12
+                    =eng.user.full_name
+                  %br
+                  .col-md-12
+                    - if eng.ticket_support_engineers.present?
+                      %strong Support Engineers
+                      - eng.ticket_support_engineers.each_with_index do |sub, index|
+                        .col-md-12
+                          .col-md-1
+                            #{index+1}.
+                          .col-md-10
+                            = sub.user.full_name
+                %td=eng.job_started_at.try(:strftime, INOCRM_CONFIG['long_date_format'])
+                %td=eng.job_completed_at.try(:strftime, INOCRM_CONFIG['long_date_format'])
+                %td=eng.job_closed_at.try(:strftime, INOCRM_CONFIG['long_date_format'])
+                %td
+                  - finished_time = eng.job_completed_at - eng.job_started_at
+
+                  = convert_hours_minutes(finished_time)
+                  - finished << finished_time
+                %td
+                  - closed_time =(eng.job_closed_at - eng.job_started_at)
+
+                  =convert_hours_minutes(closed_time)
+                  - closed << closed_time
+
+        .col-md-12
+          .col-md-12
+            .col-md-6
+            .col-md-6.text-right
+              %strong Total Finished Time:
+              = convert_hours_minutes(finished.sum)
+          .col-md-12
+            .col-md-6
+            .col-md-6.text-right
+              %strong Total Closed Time:
+              = convert_hours_minutes(closed.sum)
