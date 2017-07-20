@@ -2,7 +2,7 @@
 %fieldset
   %legend Un Hold
   = simple_form_for ticket, url: update_un_hold_ticket_path(ticket), method: :post do |f|
-    = uf.input :engineer_id, as: :hidden, input_html: {value: params[:engineer_id]}
+    = f.input :engineer_id, as: :hidden, input_html: {value: params[:engineer_id]}
 
     = f.simple_fields_for "user_ticket_actions_attributes[]", @user_ticket_action do |uf|
       = uf.input :action_id, as: :hidden, input_html: {value: TaskAction.find_by_action_no(9).id}
