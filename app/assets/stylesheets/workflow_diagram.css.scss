@@ -8,7 +8,7 @@
   }
   #main_image{
     position: absolute;
-    background-image: url("Support_Ticket_Active_workflow.jpg");
+    background-image: url("Support_Ticket_Active_workflow_new.jpg");
     z-index: -1;
     background-size:1365px 707px;
     background-repeat: no-repeat;
@@ -18,340 +18,189 @@
     width: 1365px;
     height: 707px;
   }
-  #add_ticket{
+  .task_box {
     position: absolute;
-    top: 12px;
+    padding: 11px;
+    border-radius: 9px;
+    border: 3px solid red;
+    margin: 0;
+    z-index:1;
+
+  }
+
+  #add_ticket{
+    top: 8px;
     left: 96px;
     width: 61px;
     height: 15px;
-    padding: 11px;
-    border-radius: 9px;
-    border: 3px solid red;
-    margin: 0;
-    z-index:1;
   }
   #assign_ticket{
-    position: absolute;
-    top: 85px;
+    top: 142px;
     left: 96px;
     width: 62px;
     height: 15px;
-    padding: 11px;
-    border-radius: 9px;
-    border: 3px solid red;
-    margin: 0;
-    z-index:1;
   }
   #pop_approval{
-    position: absolute;
-    top: 247px;
+    top: 296px;
     left: 98px;
     width: 61px;
     height: 16px;
-    padding: 11px;
-    border-radius: 9px;
-    border: 3px solid red;
-    margin: 0;
-    z-index:1;
- }
+  }
   #resolution{
-    position: absolute;
-    top: 171px;
+    top: 228px;
     left: 224px;
     width: 61px;
     height: 16px;
-    padding: 11px;
-    border-radius: 9px;
-    border: 3px solid red;
-    margin: 0;
-    z-index:1;
   }
   #edit_serial_no{
-    position: absolute;
-    top: 247px;
+    top: 297px;
     left: 225px;
     width: 60px;
     height: 16px;
-    padding: 11px;
-    border-radius: 9px;
-    border: 3px solid red;
-    margin: 0;
-    z-index:1;
+  }
+  #approve_job_estimate{
+    top: 78px;
+    left: 395px;
+    width: 61px;
+    height: 15px;
   }
   #approve_close_ticket{
-    position: absolute;
-    top: 242px;
-    left: 399px;
+    top: 292px;
+    left: 398px;
     width: 62px;
     height: 18px;
-    padding: 11px;
-    border-radius: 9px;
-    border: 3px solid red;
-    margin: 0;
-    z-index:1;
   }
   #invoice_advance_payment{
-    position: absolute;
-    top: 326px;
+    top: 368px;
     left: 400px;
     width: 61px;
     height: 17px;
-    padding: 11px;
-    border-radius: 9px;
-    border: 3px solid red;
-    margin: 0;
-    z-index:1;
   }
   #job_estimate{
-    position: absolute;
-    top: 411px;
+    top: 445px;
     left: 400px;
     width: 63px;
     height: 15px;
-    padding: 11px;
-    border-radius: 9px;
-    border: 3px solid red;
-    margin: 0;
-    z-index:1;
   }
   #return_store_part{
-    position: absolute;
-    top: 491px;
+    top: 516px;
     left: 401px;
     width: 62px;
     height: 16px;
-    padding: 11px;
-    border-radius: 9px;
-    border: 3px solid red;
-    margin: 0;
-    z-index:1;
   }
   #mark_delivered_colleted{
-    position: absolute;
-    top: 558px;
+    top: 577px;
     left: 401px;
     width: 62px;
     height: 16px;
-    padding: 11px;
-    border-radius: 9px;
-    border: 3px solid red;
-    margin: 0;
-    z-index:1;
   }
-  #approve_job_estimate{
-    position: absolute;
-    top: 89px;
-    left: 567px;
+  #approve_manufacture_part{
+    top: 79px;
+    left: 570px;
     width: 61px;
     height: 15px;
-    padding: 11px;
-    border-radius: 9px;
-    border: 3px solid red;
-    margin: 0;
-    z-index:1;
   }
   #order_part{
-    position: absolute;
-    top: 241px;
+    top: 292px;
     left: 573px;
     width: 61px;
     height: 16px;
-    padding: 11px;
-    border-radius: 9px;
-    border: 3px solid red;
-    margin: 0;
-    z-index:1;
   }
   #quality_control{
-    position: absolute;
-    top: 645px;
+    top: 655px;
     left: 575px;
     width: 61px;
     height: 16px;
-    padding: 11px;
-    border-radius: 9px;
-    border: 3px solid red;
-    margin: 0;
-    z-index:1;
   }
   #extend_warranty{
-    position: absolute;
-    top: 88px;
+    top: 77px;
     left: 718px;
     width: 62px;
     height: 16px;
-    padding: 11px;
-    border-radius: 9px;
-    border: 3px solid red;
-    margin: 0;
-    z-index:1;
   }
   #receive_Issue_part{
-      position: absolute;
-      top: 244px;
-      left: 718px;
-      width: 62px;
-      height: 16px;
-      padding: 11px;
-      border-radius: 9px;
-      border: 3px solid red;
-      margin: 0;
-      z-index:1;
+    top: 294px;
+    left: 718px;
+    width: 62px;
+    height: 16px;
   }
   #customer_feedback{
-      position: absolute;
-      top: 328px;
-      left: 718px;
-      width: 61px;
-      height: 16px;
-      padding: 11px;
-      border-radius: 9px;
-      border: 3px solid red;
-      margin: 0;
-      z-index:1;
+    top: 370px;
+    left: 718px;
+    width: 61px;
+    height: 16px;
   }
   #final_job_estimate{
-      position: absolute;
-      top: 416px;
-      left: 720px;
-      width: 61px;
-      height: 16px;
-      padding: 11px;
-      border-radius: 9px;
-      border: 3px solid red;
-      margin: 0;
-      z-index:1;
+    top: 450px;
+    left: 720px;
+    width: 61px;
+    height: 16px;
   }
   #approve_store_part{
-      position: absolute;
-      top: 90px;
-      left: 854px;
-      width: 61px;
-      height: 17px;
-      padding: 11px;
-      border-radius: 9px;
-      border: 3px solid red;
-      margin: 0;
-      z-index:1;
+    position: absolute;
+    top: 78px;
+    left: 854px;
+    width: 61px;
+    height: 17px;
   }
   #return_manufacture_part{
-      position: absolute;
-      top: 244px;
-      left: 854px;
-      width: 62px;
-      height: 18px;
-      padding: 11px;
-      border-radius: 9px;
-      border: 3px solid red;
-      margin: 0;
-      z-index:1;
+    top: 294px;
+    left: 854px;
+    width: 62px;
+    height: 18px;
   }
   #approve_foc{
-      position: absolute;
-      top: 90px;
-      left: 1032px;
-      width: 61px;
-      height: 16px;
-      padding: 11px;
-      border-radius: 9px;
-      border: 3px solid red;
-      margin: 0;
-      z-index:1;
+    top: 80px;
+    left: 1032px;
+    width: 61px;
+    height: 16px;
   }
   #bundle_return_part{
-      position: absolute;
-      top: 242px;
-      left: 1033px;
-      width: 61px;
-      height: 15px;
-      padding: 11px;
-      border-radius: 9px;
-      border: 3px solid red;
-      margin: 0;
-      z-index:1;
+    top: 294px;
+    left: 1033px;
+    width: 61px;
+    height: 15px;
   }
   #part_estimate{
-      position: absolute;
-      top: 414px;
-      left: 1037px;
-      width: 57px;
-      height: 16px;
-      padding: 11px;
-      border-radius: 9px;
-      border: 3px solid red;
-      margin: 0;
-      z-index:1;
+    top: 447px;
+    left: 1037px;
+    width: 57px;
+    height: 16px;
   }
   #collect_part{
-      position: absolute;
-      top: 564px;
-      left: 1034px;
-      width: 61px;
-      height: 15px;
-      padding: 11px;
-      border-radius: 9px;
-      border: 3px solid red;
-      margin: 0;
-      z-index:1;
+    top: 582px;
+    left: 1034px;
+    width: 61px;
+    height: 15px;
   }
   #approve_part_estimate{
-      position: absolute;
-      top: 87px;
-      left: 1216px;
-      width: 62px;
-      height: 14px;
-      padding: 11px;
-      border-radius: 9px;
-      border: 3px solid red;
-      margin: 0;
-      z-index:1;
+    top: 76px;
+    left: 1216px;
+    width: 62px;
+    height: 14px;
   }
   #close_event{
-      position: absolute;
-      top: 239px;
-      left: 1218px;
-      width: 63px;
-      height: 15px;
-      padding: 11px;
-      border-radius: 9px;
-      border: 3px solid red;
-      margin: 0;
-      z-index:1;
+    top: 289px;
+    left: 1218px;
+    width: 63px;
+    height: 15px;
   }
   #issue_customer_terminate{
-      position: absolute;
-      top: 330px;
-      left: 1219px;
-      width: 63px;
-      height: 15px;
-      padding: 11px;
-      border-radius: 9px;
-      border: 3px solid red;
-      margin: 0;
-      z-index:1;
+    top: 371px;
+    left: 1219px;
+    width: 63px;
+    height: 15px;
   }
   #issue_store_part{
-      position: absolute;
-      top: 483px;
-      left: 1222px;
-      width: 63px;
-      height: 16px;
-      padding: 11px;
-      border-radius: 9px;
-      border: 3px solid red;
-      margin: 0;
-      z-index:1;
+    top: 510px;
+    left: 1222px;
+    width: 63px;
+    height: 16px;
   }
   #bundle_deliver{
-      position: absolute;
-      top: 561px;
-      left: 1224px;
-      width: 63px;
-      height: 16px;
-      padding: 11px;
-      border-radius: 9px;
-      border: 3px solid red;
-      margin: 0;
-      z-index:1;
+    top: 580px;
+    left: 1224px;
+    width: 63px;
+    height: 16px;
   }
 }
