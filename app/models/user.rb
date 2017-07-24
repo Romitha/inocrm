@@ -405,11 +405,3 @@ class TicketSupportEngineer < ActiveRecord::Base
   belongs_to :user, foreign_key: :user_id
 
 end
-
-class OrganizationContactPerson < ActiveRecord::Base
-  self.table_name = "organization_contact_person"
-
-  belongs_to :organization
-  belongs_to :contact_person_type
-
-end

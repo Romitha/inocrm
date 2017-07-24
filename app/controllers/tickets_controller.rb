@@ -112,6 +112,18 @@ class TicketsController < ApplicationController
 
           end
 
+        elsif @product.owner_customer.present?
+          organization = @product.owner_customer
+          address = (organization.addresses.primary_address.first || organization.addresses.first)
+
+          if organization.customers.any?
+            organization.customers.first
+
+          elsif address.present?
+            organization.customers.create(title_id: organization.title_id, name: organization.name, address1: address.address1, address2: address.address2, address3: address.address3, address4: address.city, district_id: address.district_id)
+
+          end
+
         else
           (Customer.find_by_id(session[:customer_id]) || @product.tickets.last.try(:customer))
 
@@ -351,8 +363,8 @@ class TicketsController < ApplicationController
       if params[:customer_id].present?
         @new_customer = Customer.find params[:customer_id]
         @ticket.customer_id = @new_customer.id
-        @ticket.contact_person1 ||= (@product.tickets.last.try(:contact_person1)) # (@ticket.ticket_contract and @ticket.ticket_contract.organization.) 
-        @ticket.contact_person2 ||= @product.tickets.last.try(:contact_person2)
+        @ticket.contact_person1 ||= (@product.tickets.last.try(:contact_person1) or (@product.owner_customer.present? and @product.owner_customer.organization_contact_persons.contact_persons1.first) ) # (@ticket.ticket_contract and @ticket.ticket_contract.organization.) 
+        @ticket.contact_person2 ||= (@product.tickets.last.try(:contact_person2) or (@product.owner_customer.present? and @product.owner_customer.organization_contact_persons.contact_persons2.first) )
         @ticket.report_person ||= @product.tickets.last.try(:report_person)
         Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @ticket)
         session[:customer_id] = @new_customer.id
@@ -368,7 +380,12 @@ class TicketsController < ApplicationController
           @new_customer.name = organization.name
 
           if @new_customer.save!
+            # @product.update(owner_customer_id: organization.id)
+            @product.create_product_owner_history(organization.id, current_user.id, "Added in ticket")
             @ticket.customer_id = @new_customer.id
+            @ticket.contact_person1 = @product.owner_customer.organization_contact_persons.contact_persons1.first
+            @ticket.contact_person2 = @product.owner_customer.organization_contact_persons.contact_persons2.first
+
             session[:customer_id] = @new_customer.id
             Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @ticket)
             @notice = "Great! #{@new_customer.name} is saved."

@@ -44,12 +44,12 @@
         .col-md-4{class: "has-tooltip", title: "Industry type", data: {toggle: "tooltip", placement: "left"}}
           = a.association :industry_type, include_blank: false
         .col-md-2
-          = a.input :credit_allow, as: :boolean, label: "Allow credit", input_html: {class: "credit_allow"}
+          = a.input :credit_allow, as: :boolean, label: "Allow credit", input_html: {class: "credit_allow"}, wrapper: :append
           .credit_allow_control.hide
             = a.input :credit_period_day
         .col-md-2
-          = a.input :goodwill_status, as: :boolean
-
+          = a.input :goodwill_status, as: :boolean, wrapper: :append
+      .row
         - unless Organization::TYPES[2,3].include?(organization.category)
           .col-md-2{class: "#{'for_store_and_branch' if params[:action] == 'store_and_branch'}"}
             = a.input :vat_number, placeholder: "VAT Number", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "VAT Number"}

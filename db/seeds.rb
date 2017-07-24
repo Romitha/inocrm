@@ -24,7 +24,7 @@ subject_classes = [
 
 ]
 
-organization = Organization.find_or_create_by name: "VS Information Systems", short_name: "VS Information Sys", code: "123456", web_site: "http://www.vsis.com", vat_number: "34358-90", refers: "CRM_OWNER", description: "VSIS is product owner of this application", type_id: 1
+organization = Organization.create_with(name: "VS Information Systems", short_name: "VS Information Sys", code: "123456", web_site: "http://www.vsis.com", description: "VSIS is product owner of this application", type_id: 1).find_or_create_by(refers: "CRM_OWNER")
 user = User.find_by_email("admin@inovacrm.com")
 unless(user)
   user = User.create(email: "admin@inovacrm.com", password: "123456789", organization_id: organization.id)
@@ -40,7 +40,7 @@ unless(user)
 
   # Rpermission.find_or_create_by!(rpermissions.map { |rp| {name: rp[0], controller_resource: rp[1], controller_action: rp[2]} })
   Rpermission
-  SubjectBase.create [{name: "Model"}, {name: "Controller"}]
+  # SubjectBase.create [{name: "Model"}, {name: "Controller"}]
   # SubjectAttribute.create [{name: "id"}, {name: "task_id"}]
   # SubjectAction.create [{name: "update_user"}, {name: "index"}, {name: "create_organization"}, {name: "profile"}, {name: "show"}, {name: "update_organization"}, {name: "create_user"}]
 
@@ -324,9 +324,7 @@ TicketEstimation
   ["EST", "Estimated"],
   ["CLS", "Closed"],
   ["APP", "Advance Payment Pending"]
-].each do |t|
-  EstimationStatus.create_with(name: t[1]).find_or_create_by(code: t[0])
-end
+].each{ |t| EstimationStatus.create_with(name: t[1]).find_or_create_by(code: t[0]) }
 
 WorkflowMapping.find(11).update(process_name: "SPPT_MFR_PART_REQUEST")
 
@@ -335,16 +333,12 @@ WorkflowMapping.find(11).update(process_name: "SPPT_MFR_PART_REQUEST")
   ["INDSUP", "Individual Supplier"],
   ["CUS", "Customer"],
   ["INDCUS", "Individual Customer"]
-].each do |t|
-  DealerType.create_with(name: t[1]).find_or_create_by(code: t[0])
-end
+].each { |t| DealerType.create_with(name: t[1]).find_or_create_by(code: t[0])}
 
 [
   ["Computer Softwear"],
   ["Computer Hardwear"],
-].each do |t|
-  IndustryType.create_with(name: t[0]).find_or_create_by(name: t[0])
-end
+].each { |t| IndustryType.create_with(name: t[0]).find_or_create_by(name: t[0])}
 
 CompanyConfig.create sup_last_fsr_no: 0, inv_last_srn_no: 0, inv_last_srr_no: 0, inv_last_sbn_no: 0, inv_last_prn_no: 0, inv_last_grn_no: 0, inv_last_gin_no: 0, sup_last_quotation_no: 0, sup_last_bundle_no: 0 unless CompanyConfig.any? #, sup_sla_id: 0 is foreign key constraint
 
@@ -353,9 +347,7 @@ CompanyConfig.create sup_last_fsr_no: 0, inv_last_srn_no: 0, inv_last_srr_no: 0,
   ["ESG", "Onsite ESG"],
   ["NTW", "Onsite NTW"],
   ["OTR", "Onsite OTR"]
-].each do |t|
-  OnsiteType.create_with(name: t[1]).find_or_create_by(code: t[0])
-end
+].each{ |t| OnsiteType.create_with(name: t[1]).find_or_create_by(code: t[0])}
 
 [
   ["EMail", "EM", "3"],
@@ -365,9 +357,7 @@ end
   ["Whats UP", "", "2"],
   ["Skyp", "", "1"],
   ["LinkdIN", "", "1"]
-].each do |t|
-  OrganizationContactType.create_with(name: t[0]).find_or_create_by(code: t[1], validate_id: t[2])}
-end
+].each { |t| OrganizationContactType.create_with(name: t[0]).find_or_create_by(code: t[1], validate_id: t[2])}
 
 [
   ["CP1", "Contact person 1"],
@@ -375,9 +365,10 @@ end
 ].each do |t|
   ContactPersonPrimaryType.create_with(name: t[1]).find_or_create_by(code: t[0])
 end
+
 [
   ["Accounts"],
   ["Procument"]
 ].each do |t|
-  ContactPersonType.create_with(name: t[0])
+  OrganizationContactPersonType.create_with(name: t[0]).find_or_create_by(name: t[0])
 end

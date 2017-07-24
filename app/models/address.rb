@@ -35,13 +35,6 @@ class Province < ActiveRecord::Base
   has_many :contact_numbers
 end
 
-class OrganizationContactType < ActiveRecord::Base
-  self.table_name = "mst_contact_types"
-
-  has_many :addresses
-  has_many :contact_numbers
-end
-
 class OrganizationContactAddress < ActiveRecord::Base
   self.table_name = "oraganization_contact_addresses"
 

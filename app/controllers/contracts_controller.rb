@@ -63,7 +63,14 @@ class ContractsController < ApplicationController
       else
         @contract = @organization.ticket_contracts.build contract_params
       end
+
       @contract.save
+
+      @contract.products.each do |product|
+        product.create_product_owner_history(@organization.id, current_user.id, "Added in contract")
+
+      end
+
     end
   end
 

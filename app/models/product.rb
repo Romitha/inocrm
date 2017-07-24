@@ -70,6 +70,8 @@ class Product < ActiveRecord::Base
   has_many :contract_products, foreign_key: :product_serial_id
   has_many :ticket_contracts, through: :contract_products
 
+  has_many :product_customer_histories
+
   has_many :ref_product_serials, class_name: "TicketProductSerial", foreign_key: :ref_product_serial_id
   accepts_nested_attributes_for :ref_product_serials, allow_destroy: true
 
@@ -79,6 +81,7 @@ class Product < ActiveRecord::Base
   belongs_to :product_pop_status, foreign_key: :pop_status_id
   belongs_to :product_sold_country, foreign_key: :sold_country_id
   belongs_to :inv_serial_item, foreign_key: :inventory_serial_item_id
+  belongs_to :owner_customer, class_name: "Organization"
 
   validates_presence_of [:serial_no, :product_brand_id, :product_category_id]
 
@@ -88,6 +91,18 @@ class Product < ActiveRecord::Base
 
   def cannot_removable_from_contract?(contract_id)
     ticket_contracts.find_by_id(contract_id) and ticket_contracts.find_by_id(contract_id).tickets.any? and ((ticket_ids - ticket_contracts.find_by_id(contract_id).ticket_ids) != ticket_ids)
+  end
+
+  def create_product_owner_history(owner_customer_id, created_by, note)
+    if self.owner_customer_id != owner_customer_id
+      if self.persisted?
+        self.update owner_customer_id: owner_customer_id
+        self.product_customer_histories.create(created_by: created_by, note: note)
+      else
+        self.owner_customer_id = owner_customer_id
+        self.product_customer_histories.build(created_by: created_by, note: note)
+      end
+    end
   end
 end
 
@@ -183,4 +198,11 @@ class ProductBrandCost < ActiveRecord::Base
   self.table_name = "mst_spt_product_brand_cost"
 
   belongs_to :product_brand
+end
+
+class ProductCustomerHistory < ActiveRecord::Base
+  self.table_name = "spt_customer_product_history"
+
+  belongs_to :product, foreign_key: :product_serial_id
+  belongs_to :owner_customer, class_name: "Organization"
 end

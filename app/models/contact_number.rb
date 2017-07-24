@@ -61,8 +61,43 @@ end
 
 class ContactPersonPrimaryType < ActiveRecord::Base
   self.table_name = "mst_contact_person_primary_type"
+
+  has_many :contact_person_primary_type_connectors, foreign_key: :contact_person_id
+  has_many :organization_contact_persons, through: :contact_person_primary_type_connectors
 end
 
 class ContactPersonPrimaryTypeConnector < ActiveRecord::Base
   self.table_name = "contact_person_primary_type"
+
+  belongs_to :organization_contact_person, foreign_key: :contact_person_id
+  belongs_to :contact_person_primary_type, foreign_key: :primary_type_id
+
+end
+
+class OrganizationContactPerson < ActiveRecord::Base
+  self.table_name = "organization_contact_person"
+
+  belongs_to :organization
+  belongs_to :contact_person_type
+
+  has_many :contact_person_primary_type_connectors, foreign_key: :contact_person_id
+  has_many :contact_person_primary_types, through: :contact_person_primary_type_connectors
+
+  scope :contact_persons1, -> { joins(:contact_person_primary_types).where(mst_contact_person_primary_type: {code: "CP1"}) }
+  scope :contact_persons2, -> { joins(:contact_person_primary_types).where(mst_contact_person_primary_type: {code: "CP2"}) }
+
+end
+
+class OrganizationContactPersonType < ActiveRecord::Base
+  self.table_name = "mst_contact_person_type"
+
+
+end
+
+class OrganizationContactType < ActiveRecord::Base
+  self.table_name = "mst_contact_types"
+
+  has_many :addresses
+  has_many :contact_numbers
+
 end

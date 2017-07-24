@@ -74,6 +74,9 @@ class Organization < ActiveRecord::Base
   belongs_to :created_by_user, class_name: "User", foreign_key: :created_by
 
   has_many :organization_contact_addresses
+  has_many :organization_contact_persons
+  accepts_nested_attributes_for :organization_contact_persons, allow_destroy: true
+
 
   TYPES = %w(SUP CUS INDSUP INDCUS)
 

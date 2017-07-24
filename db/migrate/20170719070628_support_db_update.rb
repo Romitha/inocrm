@@ -3,9 +3,9 @@ class SupportDbUpdate < ActiveRecord::Migration
     remove_column :company_config, :sup_estimation_need_approval
     add_column :company_config, :sup_ch_estimation_need_approval, :boolean, null:false, default:0
     add_column :company_config, :sup_nc_estimation_need_approval, :boolean, null:false, default:0
-    add_column :company_config, :owner_customer_id, "INT UNSIGNED NULL"
-    add_column :spt_contract, :office_out_at, :datetime
-    add_column :spt_contract, :office_in_at, :datetime
+    add_column :spt_product_serial, :owner_customer_id, "INT UNSIGNED NULL"
+    add_column :spt_ticket_fsr, :office_out_at, :datetime
+    add_column :spt_ticket_fsr, :office_in_at, :datetime
 
     create_table :mst_spt_template_email, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
@@ -32,7 +32,7 @@ class SupportDbUpdate < ActiveRecord::Migration
     end
 
     [
-      { table: :company_config, column: :owner_customer_id, options: {name: "fk_spt_product_serial_organizations1_idx"} },
+      { table: :spt_product_serial, column: :owner_customer_id, options: {name: "fk_spt_product_serial_organizations1_idx"} },
     ]
     .each do |f|
       add_index f[:table], f[:column], f[:options]
@@ -40,7 +40,7 @@ class SupportDbUpdate < ActiveRecord::Migration
 
     execute "SET FOREIGN_KEY_CHECKS = 0"
     [
-      { table: :company_config, reference_table: :organizations, name: "fk_spt_product_serial_organizations1", column: :owner_customer_id },
+      { table: :spt_product_serial, reference_table: :organizations, name: "fk_spt_product_serial_organizations1", column: :owner_customer_id },
       { table: :spt_customer_product_history, reference_table: :spt_product_serial, name: "fk_spt_customer_prodcut_history_spt_product_serial1", column: :product_serial_id },
       { table: :spt_customer_product_history, reference_table: :organizations, name: "fk_spt_customer_prodcut_history_organizations1", column: :owner_customer_id },
       { table: :spt_customer_product_history, reference_table: :users, name: "fk_spt_customer_prodcut_history_users1", column: :created_by },

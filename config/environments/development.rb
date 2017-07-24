@@ -54,4 +54,13 @@ Rails.application.configure do
   }
 
   config.middleware.delete Rack::Lock
+
+  config.web_console.whiny_requests = false
+
+  # # config/application.rb
+
+  # config.web_console.whitelisted_ips = '192.168.1.5'
+  # # or a whole network
+  # config.web_console.whitelisted_ips = '192.168.0.0/16'
+
 end
