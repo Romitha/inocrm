@@ -1,5 +1,6 @@
 %fieldset
   %legend Edit FSR
+  =params[:action]
   - ticket_workfows = ticket.ticket_workflow_processes.where process_id: params["process_id"]
   - ticket_engineers = ticket.ticket_engineers.where(workflow_process_id: ticket_workfows.first.try(:id))
 
@@ -15,6 +16,7 @@
           .row
             .col-md-12
               %strong FSR No:
+              = params[:action]
               = fsr.object.ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])
             .col-md-12
               .row
@@ -23,14 +25,18 @@
             .col-md-12
               = fsr.input :completion_level, as: :radio_buttons, label: false, collection: {"Full" => "F","Partial" => "P"}, wrapper: :append
             .col-md-12
-              = fsr.input :work_started_at, as: :string, input_html: {class: "datetimepicker", data: {mindate: @ticket.logged_at.strftime("%b %d, %Y %H:%M")}}
+              = fsr.input :office_out_at, as: :string, input_html: {class: "datetimepicker", id: "out_at", onblur: "Tickets.edit_fsr_travel_hours(this); return false;"}
+            .col-md-12
+              = fsr.input :work_started_at, as: :string, input_html: {class: "datetimepicker", id: "work_started", onblur: "Tickets.edit_fsr_travel_hours(this); return false;", data: {mindate: @ticket.logged_at.strftime("%b %d, %Y %H:%M")}}, disabled: true
               %strong Started at:
               = @ticket_fsr.work_started_at.try :strftime, "%d %b, %Y %H:%M"
               %hr
             .col-md-12
-              = fsr.input :work_finished_at, as: :string, input_html: {class: "datetimepicker"}
+              = fsr.input :work_finished_at, as: :string, input_html: {class: "datetimepicker", id: "work_finished", onblur: "Tickets.edit_fsr_travel_hours(this); return false;"}, disabled: true
               %strong Finished at:
               = @ticket_fsr.work_finished_at.try :strftime, "%d %b, %Y %H:%M"
+            .col-md-12
+              = fsr.input :office_in_at, as: :string, input_html: {class: "datetimepicker", id: "in_at", onblur: "Tickets.edit_fsr_travel_hours(this); return false;"}, disabled: true
               %hr
 
         .col-md-3
@@ -41,7 +47,7 @@
             .col-md-12
               = fsr.input :down_time, input_html: {min: "0", class: "only_float"}, label: "Down time (in hours)"
             .col-md-12
-              = fsr.input :travel_hours, input_html: {min: "0", class: "only_float"}, label: "Travel hours (in hours)"
+              = fsr.input :travel_hours, input_html: {min: "0", class: "only_float", id: "travelled_hours"}, label: "Travel hours (in hours)"
             .col-md-12
               = fsr.input :engineer_time_travel, input_html: {min: "0", class: "only_float"}, label: "Engineer time travel (in hours)"
             .col-md-12
