@@ -105,9 +105,6 @@ class ContractsController < ApplicationController
     Ticket
 
     if params[:ajax_upload].present?
-      puts "*************************"
-      puts params[:ajax_upload]
-      puts "*************************"
       if params[:contract_id].present?
         @contract = TicketContract.find params[:contract_id]
         @contract.attributes = contract_params

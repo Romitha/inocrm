@@ -39,8 +39,7 @@
       $("#contractedit").html("#{j render 'contracts/contractform'}");
       console.log("error");
     - else
-      console.log("success");
-      $("#contractedit").html("#{j render 'contracts/contractform'}");
+      $("#contractedit").empty();
       $("#contract_alert").removeClass("hide");
       $("#contract_alert #content").html("successfully saved");
 

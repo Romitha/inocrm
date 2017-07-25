@@ -12,7 +12,9 @@
       .col-md-2
         %strong Informed to
         %br/
-        = f.select :inform_cp, [["Contact Person1", 1], ["Contact Person2", 2]], {}, class: "col-md-12 small_scale_margin-top5"
+        - contact_person_array = [["Contact Person1", 1]]
+        - contact_person_array.push(["Contact Person2", 2]) if ticket.contact_person2.present?
+        = f.select :inform_cp, contact_person_array, {}, class: "col-md-12 small_scale_margin-top5"
 
       .col-md-8
         = f.input :note
