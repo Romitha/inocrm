@@ -85,6 +85,7 @@ Rails.application.routes.draw do
       get "dashboard"
       put "relate"
       get "pin_relation"
+      post "update_organization_contact_person"
       post "option_for_vat_number"
       patch "demote_as_department"
       delete "remove_department_org"
@@ -408,6 +409,7 @@ Rails.application.routes.draw do
 
         get "prn"
         post "create_prn"
+        post "submit_selected_products"
 
         get "gin"
         get "batch_or_serial_for_gin"

@@ -315,6 +315,7 @@ class InventoryProduct < ActiveRecord::Base
   mapping do
     indexes :inventory_product_info, type: "nested", include_in_parent: true
     indexes :inventory_unit, type: "nested", include_in_parent: true
+    indexes :srn_items, type: "nested", include_in_parent: true
     indexes :stores, type: "nested", include_in_parent: true
     indexes :grn_items, type: "nested", include_in_parent: true
     indexes :only_grn_items, type: "nested", include_in_parent: true
@@ -398,6 +399,7 @@ class InventoryProduct < ActiveRecord::Base
   def to_indexed_json
     Product
     Inventory
+    Srn
     to_json(
       only: [:id, :description, :model_no, :product_no, :spare_part_no, :fifo, :created_at, :serial_no, :remarks, :created_by_user, :updated_by_user],
       methods: [:category3_id, :category2_id, :category1_id, :category3_name, :category2_name, :category1_name, :generated_serial_no, :generated_item_code, :created_by_from_user, :updated_by_from_user, :manufacture, :product_type],
@@ -405,6 +407,10 @@ class InventoryProduct < ActiveRecord::Base
       include: {
         inventory_unit: {
           only: [:unit],
+        },
+        srn_items: {
+          only: [:id, :closed],
+          methods: [:formatted_srn_no, :srn_id, :store_id],
         },
         inventory_product_info: {
           only: [:need_serial, :need_batch],

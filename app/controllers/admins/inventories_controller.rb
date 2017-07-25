@@ -1753,18 +1753,92 @@ module Admins
 
     def prn
       Inventory
+      Srn
+      Organization
 
       case params[:srn]
       when "yes"
         @render_template = "main_prn"
       when "no"
+        Rails.cache.delete(session[:prn_srn_arrived_time]) if session[:prn_srn_arrived_time].present?
+
+        session[:prn_srn_arrived_time] = nil
+
         @render_template = "with_srn"
+      when "search_srn"
+
+        if params[:search].present?
+          refined_inventory_product = params[:search_inventory][:srn_item].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
+          refined_search = [refined_inventory_product, refined_search].map{|v| v if v.present? }.compact.join(" AND ")
+          puts "*********************************"
+          puts refined_search
+          puts "*********************************"
+        end
+        params[:query] = refined_search
+        @srn_items = SrnItem.search(params)
       end
 
       if params[:store_id].present?
         @store = Organization.find params[:store_id]
         @prn = InventoryPrn.new
         @render_template = "main_prn"
+      end
+      if params[:store_id_with_srn].present?
+        @store = Organization.find params[:store_id_with_srn]
+        # @prn = InventoryPrn.new
+        @render_template = "with_srn"
+      end
+      respond_to do |format|
+        format.html {render "admins/inventories/prn/prn"}
+        format.js {render "admins/inventories/prn/prn"}
+      end
+    end
+    def submit_selected_products
+      Inventory
+      Srn
+      Gin
+      Organization
+
+      if params[:done].present?
+        session[:prn_srn_arrived_time] ||= Time.now.strftime("%H%M%S")
+
+        params[:with_srn] = "no"
+        @store = Organization.find params[:store_id_with_srn]
+        @prn = InventoryPrn.new
+        @srn_item_array = []
+        prn_items_attributes = []
+
+        params[:srn_item_ids].to_a.each do |srn_item_id|
+          srn_item = SrnItem.find(srn_item_id)
+
+          prn_items_attributes << {product_id: srn_item.product_id, quantity: srn_item.quantity, srn_item: srn_item}
+
+
+          puts "++++++++++++++++++++"+srn_item_id+"+++++++++++++++++++++++++++"
+
+        end
+
+
+        prn_items_attributes.group_by{|e| e[:product_id]}.each do |k, v|
+
+          prn_item = @prn.inventory_prn_items.build quantity: v.sum{|e| e[:quantity]}, product_id: k
+
+          @srn_item_array << {srn_items: v.map { |e| e[:srn_item] }, prn_item_object_id: prn_item.object_id }
+        end
+
+        Rails.cache.write(session[:prn_srn_arrived_time], @srn_item_array)
+
+        # if params[:products_ids].present?
+        #   inventory_product = InventoryProduct.where(id: params[:products_ids])
+        #   puts inventory_product.country_id
+          # Rails.cache.delete([:contract_products, request.remote_ip])
+
+          # @cached_products = Rails.cache.fetch([:contract_products, request.remote_ip]){ inventory_product.to_a }
+        # end
+      end
+
+      if params[:srn_form] == "yes"
+        @srn_form_show = true
       end
       respond_to do |format|
         format.html {render "admins/inventories/prn/prn"}

@@ -99,10 +99,17 @@ class Srn < ActiveRecord::Base
   end
 
   def assign_srn_no
+    Organization
+
     self.srn_no = CompanyConfig.first.next_sup_last_srn_no
   end
 
+  # def update_index_inventory_product
+  #   inventory_products.each{ |inventory_product| inventory_product.update_index }
+  # end
+
   before_create :assign_srn_no
+  # after_create :update_index_inventory_product
 
 end
 
@@ -131,6 +138,9 @@ end
 class SrnItem < ActiveRecord::Base
   self.table_name = "inv_srn_item"
 
+  include Tire::Model::Search
+  include Tire::Model::Callbacks
+
   belongs_to :srn
   belongs_to :inventory_product, foreign_key: :product_id
   belongs_to :main_inventory_product, class_name: "InventoryProduct", foreign_key: :main_product_id
@@ -142,4 +152,67 @@ class SrnItem < ActiveRecord::Base
   has_many :gins, through: :gin_items
 
   validates :quantity, :numericality => {:greater_than => 0}
+
+  def formatted_srn_no
+    srn.srn_no.to_s.rjust(6, INOCRM_CONFIG["inventory_srn_no_format"])
+  end
+
+  def srn_id
+    srn.id
+  end
+
+  def store_id
+    srn.store.id
+  end
+
+  def self.search(params)
+    tire.search(page: (params[:page] || 1), per_page: 10) do
+      query do
+        boolean do
+          must { string params[:query] } if params[:query].present?
+        end
+      end
+      sort { by :created_at, {order: "desc", ignore_unmapped: true} }
+    end
+  end
+
+  def update_index_inventory_product
+    Inventory
+
+    inventory_product.update_index
+  end
+
+  after_create :update_index_inventory_product
+
+  mapping do
+    indexes :inventory_product, type: "nested", include_in_parent: true
+    indexes :srn, type: "nested", include_in_parent: true
+    indexes :inventory_unit, type: "nested", include_in_parent: true
+  end
+
+  def to_indexed_json
+    Srn
+    Inventory
+    to_json(
+      only: [:id],
+      methods: [:srn_id],
+      include: {
+        inventory_product: {
+          only: [:id, :description, :model_no, :product_no, :spare_part_no, :created_at, :inventories],
+          methods: [:category3_id, :category2_id, :category1_id, :category1_name, :category2_name,:category3_name, :generated_item_code],
+          include: {
+            inventory_unit: {
+              only: [:unit],
+            },
+          },
+        },
+        srn: {
+          only: [:id],
+          methods: [:formatted_srn_no],
+        },
+      },
+    )
+
+
+  end
 end

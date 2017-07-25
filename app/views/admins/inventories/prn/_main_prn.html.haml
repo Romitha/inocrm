@@ -1,6 +1,5 @@
 - if @store
   %h4 Create PRN
-
   = simple_nested_form_for @prn, url: create_prn_admins_inventories_url, html: {class: "validate_form"} do |f|
     = f.input :created_by, as: :hidden, input_html: { value: current_user.id }
     = f.input :prn_no, as: :hidden, input_html: {value: CompanyConfig.first.next_sup_last_prn_no}
@@ -18,29 +17,58 @@
         %br/
         %strong Created at:
         = DateTime.now.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
-      .col-md-12.small_scale_padding-top1
-        = link_to "Change store", prn_admins_inventories_path
+      / .col-md-12.small_scale_padding-top1
+      /   = link_to "Change store", prn_admins_inventories_path
       .col-md-3.small_scale_padding-top1
         = f.input :required_at, as: :string, input_html: {class: "datepicker"}, label: "Required date"
       .col-md-9.small_scale_padding-top1
         = f.input :remarks
-
       = f.simple_fields_for :inventory_prn_items do |i|
+        - Rails.cache.fetch(session[:prn_srn_arrived_time]).to_a.select{|e| e[:prn_item_object_id] == i.object.object_id}.each do |e|
+          %h4 Srn Information
+          - e[:srn_items].each do |srn_item|
+            %dl.dl-horizontal
+              %dt Srn No :
+              %dd= srn_item.srn.formatted_srn_no
+              %dt Requested Quantity :
+              %dd= srn_item.quantity
+              %dt Balanced Qty to be issued:
+              %dd
+                - issued_qty = srn_item.quantity.to_f - srn_item.gin_items.sum(:issued_quantity)
+                = issued_qty
+
+        - if @srn_form_show
+          %h4 Prn Information
+          %dl.dl-horizontal
+            %dt Item code:
+            %dd= i.object.inventory_product.generated_item_code
+            %dt Item description:
+            %dd= i.object.inventory_product.description
+            %dt Order unit
+            %dd= i.object.inventory_product.inventory_unit.unit
+            %dt Stock in hand
+            %dd
+            %dt Item type
+            %dd
         .product_info
         = i.input :product_id, as: :hidden, input_html: {class: "dynamic_main_product_id"}
         .row
           .col-md-1
             = i.link_to_remove class: "remove_c_t_v_link", title: "Remove item" do
               %span.glyphicon.glyphicon-remove-sign
-          .col-md-3
-            = i.input :quantity, as: :string, label: "Requested quantity", required: true
+          - if @srn_form_show
+            .col-md-3
+              = i.input :quantity, as: :string, label: "Request quantity", required: true
+          - else
+            .col-md-3
+              = i.input :quantity, as: :string, label: "Requested quantity", required: true
           .col-md-8
             = i.input :remarks
-
-      .col-md-12
-        = f.link_to_add :inventory_prn_items, id: "add_serial_part", onclick: "Inventories.search_product_for_part(this); return false;", data: {storeId: @store.id, id: "store_id", modalId: "modal_for_main_part", remote: "true", selectpath: "", selectoptions: "onclick:Inventories.assign_i_product(this, 'modal_for_main_part', 'add_serial_part');<>clicked_area:prn<>from_where:prn"} do
-          %span.glyphicon.glyphicon-plus-sign
-          Add Item
+      - unless @srn_form_show
+        .col-md-12
+          = f.link_to_add :inventory_prn_items, id: "add_serial_part", onclick: "Inventories.search_product_for_part(this); return false;", data: {storeId: @store.id, id: "store_id", modalId: "modal_for_main_part", remote: "true", selectpath: "", selectoptions: "onclick:Inventories.assign_i_product(this, 'modal_for_main_part', 'add_serial_part');<>clicked_area:prn<>from_where:prn"} do
+            %span.glyphicon.glyphicon-plus-sign
+            Add Item
       .col-md-12
         = f.submit "Save", class: "btn btn-sm btn-success"
 

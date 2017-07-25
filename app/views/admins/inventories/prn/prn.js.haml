@@ -13,9 +13,17 @@
   $("#prn_frame").addClass("hide");
 
 - if params[:with_srn] == "no"
-  $("#main_prn").html("#{ j render 'admins/inventories/prn/'+@render_template }");
+  $("#main_prn").html("#{ j render 'admins/inventories/prn/main_prn' }");
 
+- if params[:with_srn] == "yes"
+  $("#main_prn").html("#{ j render 'admins/inventories/prn/with_srn' }");
 
+- if params[:srn] == "search_srn"
+  $("#search_result").html("#{ j render 'admins/inventories/prn/search_srn_results' }");
+
+/ - if params[:done].present?
+/   $alert("aaaa");
+/   $("#search_result1").html("#{ j render 'admins/inventories/prn/srn_main_prn' }");
 / - render_frame = "prn_frame"
 / - if params[:srn] == "yes"
 /   $("{#main_prn}").html("#{j render 'admins/inventories/prn/main_prn' }");
