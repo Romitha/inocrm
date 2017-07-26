@@ -22,13 +22,14 @@
           %tr
             %th{colspan: 1}
             %th{colspan: 4} Product
-            %th{colspan: 2} PRN item
+            %th{colspan: 3} PRN item
           %tr
-            %th
+            %th No
             %th Item Code
             %th Description
             %th Model no
             %th Product no
+            %th SRN (s)
             %th Quantity
             %th Remarks
         %tbody
@@ -39,5 +40,11 @@
               %td= prn_item.inventory_product.try(:description)
               %td= prn_item.inventory_product.try(:model_no)
               %td= prn_item.inventory_product.try(:product_no)
+              %td
+                - prn_item.srn_items.each do |srn_item|
+                  = link_to srns_admins_inventories_path(srn_id: srn_item.srn.id), target: "_blank" do
+                    = srn_item.formatted_srn_no
+                  %br/
+
               %td= prn_item.quantity
               %td= prn_item.remarks

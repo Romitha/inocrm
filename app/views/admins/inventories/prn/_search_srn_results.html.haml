@@ -2,51 +2,52 @@
 %h2.small_scale_padding-top1 Searched SRN Items
 = form_tag submit_selected_products_admins_inventories_path(store_id_with_srn: @store.id, srn_form: "yes"), method: :post, remote: true do
   = paginate srn_items, remote: true, method: :get
-  / - if @srns.present?
-  %table.table.table-hover
-    %thead
-      %tr
-        %th No
-        %th SRN No
-        %th Created At
-        %th Brand
-        %th Product
-        %th Category
-        %th Item Code
-        %th Description
-        %th Model No
-        %th Product No
-        %th Part No
-        %th Unit
-        %th Balance Qty
-        %th Available Qty
-        %th Action
-    %tbody
-      / - srn_items.select{|ip| ip.srn_items.all?{|si| si.store_id.to_i == params[:store_id_with_srn].to_i} }.each_with_index do |srn_item, index|
-      - srn_items.each_with_index do |srn_item, index|
-        %tr
-          %td
-            - if params[:page]
-              = (index+1)+ 10*(params[:page].to_i-1)
-            - else
-              = (index+1)
-          %td= srn_item.srn.formatted_srn_no
-          %td= srn_item.srn.created_at.to_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
-          %td= srn_item.inventory_product.category1_name
-          %td= srn_item.inventory_product.category2_name
-          %td= srn_item.inventory_product.category3_name
-          %td= srn_item.inventory_product.generated_item_code
-          %td= srn_item.inventory_product.description
-          %td= srn_item.inventory_product.model_no
-          %td= srn_item.inventory_product.product_no
-          %td= srn_item.inventory_product.spare_part_no
-          %td= srn_item.inventory_product.inventory_unit.unit
-          %td
-            / - issued_qty = srn_item.quantity.to_f - srn_item.gin_items.sum(:issued_quantity)
-            / = issued_qty
-          / %td= {data: {fixed: (srn_item.quantity.to_f - srn_item.gin_items.sum(:issued_quantity))}}= srn_item.quantity.to_f - srn_item.gin_items.sum(:issued_quantity)
-          %td= srn_item.inventory_product.inventories.to_a.select{|i| params[:store_id_with_srn].present? ? (i if params[:store_id_with_srn].to_i == i.store_id.to_i) : i }.compact.sum{|i| i.available_quantity.to_f}
-          %td= check_box_tag "srn_item_ids[]", srn_item.id
+  .row
+    .col-md-1 No
+    .col-md-1 SRN No
+    .col-md-1 Brand
+    .col-md-1 Product
+    .col-md-1 Category
+    .col-md-1 Item Code
+    .col-md-2 Description
+    .col-md-1 PRN No (s)
+    .col-md-1 Unit
+    .col-md-1 Available Qty
+    .col-md-1 Action
+  %hr
+  - srn_items.each_with_index do |srn_item, index|
+    .row
+      - content_for :srn_info_more, flush: true do
+        %ul
+          %li
+            %strong Created At:
+            = srn_item.inventory_product.created_at.to_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
+          %li
+            %strong Model No:
+            = srn_item.inventory_product.model_no
+          %li
+            %strong Product No:
+            = srn_item.inventory_product.product_no
+          %li
+            %strong Part No
+            = srn_item.inventory_product.spare_part_no
+
+
+      .col-md-1{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Item code:", "data-content"=> yield(:srn_info_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }
+        - if params[:page]
+          = (index+1)+ 10*(params[:page].to_i-1)
+        - else
+          = (index+1)
+      .col-md-1= srn_item.srn.formatted_srn_no
+      .col-md-1= srn_item.inventory_product.category1_name
+      .col-md-1= srn_item.inventory_product.category2_name
+      .col-md-1= srn_item.inventory_product.category3_name
+      .col-md-1= srn_item.inventory_product.generated_item_code
+      .col-md-2= srn_item.inventory_product.description
+      .col-md-1= srn_item.inventory_prn_items.map{|inventory_prn_item| inventory_prn_item.formated_prn_no}.join(", ")
+      .col-md-1= srn_item.inventory_product.inventory_unit.unit
+      .col-md-1= srn_item.inventory.available_quantity
+      .col-md-1= check_box_tag "srn_item_ids[]", srn_item.id
   = paginate srn_items, remote: true, method: :get
-  = submit_tag "Done", :name => "done", class: "btn btn-sm btn-success btn-primary"
+  = submit_tag "Crate PRN", :name => "done", class: "btn btn-sm btn-success btn-primary"
 #search_result1

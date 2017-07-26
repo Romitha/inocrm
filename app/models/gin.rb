@@ -114,11 +114,19 @@ class Gin < ActiveRecord::Base
     end
   end
 
+  before_create :assign_gin_no
   def assign_gin_no
     self.gin_no = CompanyConfig.first.next_sup_last_gin_no
   end
 
-  before_create :assign_gin_no
+
+  def issued_quantity
+    gin_items.sum(:issued_quantity) - gin_items.sum(:returned_quantity)
+  end
+
+  def balance_to_be_issued
+    srn.requested_quantity - issued_quantity
+  end
 
 end
 

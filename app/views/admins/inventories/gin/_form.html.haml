@@ -1,4 +1,5 @@
-= link_to "Re-search", gin_admins_inventories_path
+- unless ["srn_page"].include?(params[:from])
+  = link_to "Re-search", gin_admins_inventories_path
 - total_stock_quantity = 0
 .row
   .col-md-2
@@ -37,6 +38,27 @@
       %dd= @srn.so_customer.try(:name)
       %dt Remarks
       %dd= @srn.remarks
+%hr
+.row
+  .col-md-2
+    %h4 PRN
+  .col-md-10
+    .row
+      - @srn.prn_srn_items.each do |prn_srn_item|
+        .col-md-6
+          %dl.dl-horizontal
+            %dt PRN No:
+            %dd= prn_srn_item.inventory_prn_item.inventory_prn.formated_prn_no
+            %dt PRN Quantity:
+            %dd= prn_srn_item.inventory_prn_item.inventory_prn.inventory_prn_items.sum(:quantity)
+            %dt PRN Item status:
+            %dd= boolean_in_word prn_srn_item.inventory_prn_item.inventory_prn.closed, "Closed", "Not Closed"
+            %dt PRN Date:
+            %dd= prn_srn_item.inventory_prn_item.inventory_prn.created_at.strftime(INOCRM_CONFIG['short_date_format'])
+            %dt Total PO Quantity:
+            %dd= prn_srn_item.inventory_prn_item.inventory_prn.po_quantity
+            %dt Created by:
+            %dd= prn_srn_item.inventory_prn_item.inventory_prn.created_by_user_full_name
 
 %hr
 %h4 GIN Items
@@ -171,7 +193,7 @@
         = f.input :remarks, input_html: {value: nil}
         = simple_format f.object.remarks
       .col-md-12
-        = f.submit "Save", class: "btn btn-sm btn-success"
+        = f.submit "Save", class: "btn btn-sm btn-success", data: {disable_with: "Please wait..."}
 
 #batch_or_serial_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "batch_or_serial_modal", "aria-hidden" => true}
 

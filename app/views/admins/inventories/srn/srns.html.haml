@@ -26,13 +26,14 @@
           %tr
             %th{colspan: 1}
             %th{colspan: 4} Product
-            %th{colspan: 2} SRN item
+            %th{colspan: 3} SRN item
           %tr
             %th
             %th Item Code
             %th Description
             %th Product no
             %th Model no
+            %th PRN (s)
             %th Quantity
             %th Remarks
         %tbody
@@ -43,5 +44,10 @@
               %td= srn_item.inventory_product.try(:description)
               %td= srn_item.inventory_product.try(:product_no)
               %td= srn_item.inventory_product.try(:model_no)
+              %td= srn_item.inventory_prn_items.map{|prn_item| prn_item.inventory_prn.formated_prn_no}.uniq.join(", ")
               %td= srn_item.quantity
               %td= srn_item.remarks
+
+= link_to "Issue", gin_admins_inventories_path(gin_callback: "select_srn", srn_id: srn.id, from: "srn_page"), remote: true, class: "btn btn-sm btn-primary"
+
+#gin_wrapper

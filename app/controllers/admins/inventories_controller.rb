@@ -1191,6 +1191,7 @@ module Admins
     def prns
       Inventory
       Invoice
+      Srn
 
       if params[:prn_id].present?
         @prn = InventoryPrn.find params[:prn_id]
@@ -1398,6 +1399,8 @@ module Admins
 
     def srns
       if params[:srn_id].present?
+        Role
+        Inventory
         @srn = Srn.find params[:srn_id]
 
         render "admins/inventories/srn/srns"
@@ -1768,6 +1771,7 @@ module Admins
       when "search_srn"
 
         if params[:search].present?
+          refined_search = "closed:false"
           refined_inventory_product = params[:search_inventory][:srn_item].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
           refined_search = [refined_inventory_product, refined_search].map{|v| v if v.present? }.compact.join(" AND ")
           puts "*********************************"
@@ -1855,7 +1859,12 @@ module Admins
       respond_to do |format|
         if @prn.inventory_prn_items.any? and @prn.save
           Rails.cache.fetch(session[:prn_srn_arrived_time]).to_a.each do |item_element|
-            @prn.inventory_prn_items.select{|prn_item|prn_item.prn_item_object_id.to_i == item_element[:prn_item_object_id].to_i }.first.srn_items << item_element[:srn_items]
+            prn_item = @prn.inventory_prn_items.select{|prn_item|prn_item.prn_item_object_id.to_i == item_element[:prn_item_object_id].to_i }.first
+
+            if prn_item.present?
+              prn_item.srn_items << item_element[:srn_items]
+            end
+
           end
 
           CompanyConfig.first.increase_inv_last_prn_no

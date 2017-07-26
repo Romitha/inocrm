@@ -8,6 +8,7 @@
           = form_tag prn_admins_inventories_path(srn: "search_srn"), remote: true, method: :get, class: "form-horizontal" do
             .row
               = hidden_field_tag "store_id", params[:store_id_with_srn]
+              = hidden_field_tag "search_inventory[srn_item][srn.store_id]", params[:store_id_with_srn]
               / .col-md-3.store
               .col-md-12.brand
                 = label_tag InventoryCategoryCaption.first.caption
@@ -20,7 +21,7 @@
                 = select_tag "search_inventory[srn_item][inventory_product.category3_id]", option_groups_from_collection_for_select(InventoryCategory2.all, :inventory_category3s, :id, :id, :name), include_blank: true, class: "form-control", id: "search_inventory_mst_inv_product_category3_id"
             .row.small_scale_margin-top1
               .col-md-4.srn_no
-                = text_field_tag "search_inventory[srn_item][srn_no]",nil, :placeholder => "Srn No", class: "form-control"
+                = text_field_tag "search_inventory[srn_item][srn.formatted_srn_no]",nil, :placeholder => "Srn No", class: "form-control"
               .col-md-4.item_code
                 = text_field_tag "search_inventory[srn_item][inventory_product.generated_item_code]", nil, :placeholder => "Item Code", class: "form-control"
             .row.small_scale_margin-top1

@@ -1184,6 +1184,8 @@ class InventoryPrn < ActiveRecord::Base
 
   has_many :inventory_prn_items, foreign_key: :prn_id
   accepts_nested_attributes_for :inventory_prn_items, allow_destroy: true
+  has_many :prn_srn_items, through: :inventory_prn_items
+
   has_many :inventory_products, through: :inventory_prn_items
 
   def self.search(params)  
@@ -1249,11 +1251,15 @@ class InventoryPrn < ActiveRecord::Base
     created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
   end
 
+  before_create :assign_prn_no
   def assign_prn_no
     self.prn_no = CompanyConfig.first.next_sup_last_prn_no
   end
 
-  before_create :assign_prn_no
+  def po_quantity
+    inventory_prn_items.to_a.sum{|prn_item| prn_item.po_items_quantity }
+  end
+
 
 end
 
@@ -1283,6 +1289,14 @@ class InventoryPrnItem < ActiveRecord::Base
 
   has_many :prn_srn_items, foreign_key: :prn_item_id
   has_many :srn_items, through: :prn_srn_items
+
+  def po_items_quantity
+    inventory_po_items.sum(:quantity)
+  end
+
+  def formated_prn_no
+    inventory_prn.formated_prn_no
+  end
 
 end
 
