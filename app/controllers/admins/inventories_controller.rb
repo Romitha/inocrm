@@ -1822,6 +1822,7 @@ module Admins
         prn_items_attributes.group_by{|e| e[:product_id]}.each do |k, v|
 
           prn_item = @prn.inventory_prn_items.build quantity: v.sum{|e| e[:quantity]}, product_id: k
+          # prn_item.prn_item_object_id = prn_item.object_id
 
           @srn_item_array << {srn_items: v.map { |e| e[:srn_item] }, prn_item_object_id: prn_item.object_id }
         end
@@ -1853,8 +1854,16 @@ module Admins
 
       respond_to do |format|
         if @prn.inventory_prn_items.any? and @prn.save
+          Rails.cache.fetch(session[:prn_srn_arrived_time]).to_a.each do |item_element|
+            @prn.inventory_prn_items.select{|prn_item|prn_item.prn_item_object_id.to_i == item_element[:prn_item_object_id].to_i }.first.srn_items << item_element[:srn_items]
+          end
+
           CompanyConfig.first.increase_inv_last_prn_no
           flash[:notice] = "Successfully saved"
+
+          Rails.cache.delete(session[:prn_srn_arrived_time])
+          session[:prn_srn_arrived_time] = nil
+
         else
           flash[:alert] = "Unable to save. Please check whether items are validated. There must be atleast one item."
         end
@@ -2084,7 +2093,7 @@ module Admins
       end
 
       def prn_params
-        params.require(:inventory_prn).permit(:id, :store_id, :created_by, :prn_no, :required_at, :remarks, inventory_prn_items_attributes: [:id, :product_id, :_destroy, :quantity, :remarks])
+        params.require(:inventory_prn).permit(:id, :store_id, :created_by, :prn_no, :required_at, :remarks, inventory_prn_items_attributes: [:id, :product_id, :_destroy, :quantity, :remarks, :prn_item_object_id])
       end
 
       def po_params

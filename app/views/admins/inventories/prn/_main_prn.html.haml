@@ -24,6 +24,8 @@
       .col-md-9.small_scale_padding-top1
         = f.input :remarks
       = f.simple_fields_for :inventory_prn_items do |i|
+        = i.input :prn_item_object_id, as: :hidden, input_html: {value: i.object.object_id}
+
         - Rails.cache.fetch(session[:prn_srn_arrived_time]).to_a.select{|e| e[:prn_item_object_id] == i.object.object_id}.each do |e|
           %h4 Srn Information
           - e[:srn_items].each do |srn_item|

@@ -104,7 +104,7 @@ module Admins
         if params[:create]
           @organization = Organization.new organization_params
           @organization.parent_organization = Organization.owner
-          @organization.type_id = 4
+          @organization.type_id = 4 unless [2, 4].include?(@organization.type_id)
           if @organization.save
             params[:create] = nil
             @organization = Organization.new

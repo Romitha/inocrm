@@ -1266,4 +1266,30 @@ class InventoryPrnItem < ActiveRecord::Base
   has_many :inventory_po_items, foreign_key: :prn_item_id
 
   validates_presence_of :product_id
+
+  has_many :dyna_columns, as: :resourceable, autosave: true
+
+  [:prn_item_object_id].each do |dyna_method|
+    define_method(dyna_method) do
+      dyna_columns.find_by_data_key(dyna_method).try(:data_value)
+    end
+
+    define_method("#{dyna_method}=") do |value|
+      data = dyna_columns.find_or_initialize_by(data_key: dyna_method)
+      data.data_value = (value.class==Fixnum ? value : value.strip)
+      data.save# if data.persisted?
+    end
+  end
+
+  has_many :prn_srn_items, foreign_key: :prn_item_id
+  has_many :srn_items, through: :prn_srn_items
+
+end
+
+class PrnSrnItem < ActiveRecord::Base
+  self.table_name = "inv_prn_srn_item"
+
+  belongs_to :inventory_prn_item, foreign_key: :prn_item_id
+  belongs_to :srn_item, foreign_key: :srn_item_id
+
 end

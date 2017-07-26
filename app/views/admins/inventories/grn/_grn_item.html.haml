@@ -39,7 +39,7 @@
         %dd= inventory_product.description
 
         %dt Stock In Hand:
-        %dd=inventory.stock_quantity
+        %dd=inventory.try(:stock_quantity)
 
         %dt{title: "Balance Qty To Be Received:"} Balance Qty To Be Received:
         %dd= balance_to_be_inserted - already_recieved

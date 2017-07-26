@@ -99,7 +99,7 @@
                 %td
                   =organization.description
                 %td
-                  =organization.account.vat_number
+                  =organization.account.try(:vat_number)
                 %td
                   =organization.web_site
 
