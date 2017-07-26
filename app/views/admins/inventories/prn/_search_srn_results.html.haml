@@ -31,7 +31,7 @@
             - else
               = (index+1)
           %td= srn_item.srn.formatted_srn_no
-          %td= srn_item.inventory_product.created_at.to_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
+          %td= srn_item.srn.created_at.to_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
           %td= srn_item.inventory_product.category1_name
           %td= srn_item.inventory_product.category2_name
           %td= srn_item.inventory_product.category3_name

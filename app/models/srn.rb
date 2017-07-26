@@ -208,7 +208,7 @@ class SrnItem < ActiveRecord::Base
         },
         srn: {
           only: [:id],
-          methods: [:formatted_srn_no],
+          methods: [:formatted_srn_no, :created_at],
         },
       },
     )
