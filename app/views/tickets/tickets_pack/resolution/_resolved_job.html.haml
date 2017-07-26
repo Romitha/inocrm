@@ -8,6 +8,13 @@
     - Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
       = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
+    .col-md-12
+      - ticket_eng_time_spent = @ticket.ticket_engineers.to_a.sum{|t| t.job_actual_time_spent}
+      - ticket_sup_eng_time_spent = @ticket.ticket_engineers.to_a.sum{|s| s.ticket_support_engineers.sum(:job_actual_time_spent)}
+
+      %strong Job Actual Time Spent (In Hours):
+      #{(ticket_eng_time_spent + ticket_sup_eng_time_spent)} Hours
+
     = f.simple_fields_for "user_ticket_actions_attributes[]", @user_ticket_action do |uf|
       = uf.input :action_id, as: :hidden, input_html: {value: TaskAction.find_by_action_no(21).id}
       = uf.input :action_by, as: :hidden, input_html: {value: current_user.id}

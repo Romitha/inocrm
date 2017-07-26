@@ -45,15 +45,17 @@
                 %td=eng.job_completed_at.try(:strftime, INOCRM_CONFIG['long_date_format'])
                 %td=eng.job_closed_at.try(:strftime, INOCRM_CONFIG['long_date_format'])
                 %td
-                  - finished_time = eng.job_completed_at - eng.job_started_at
+                  - if eng.job_completed_at.present?
+                    - finished_time = eng.job_completed_at - eng.job_started_at
 
-                  = convert_hours_minutes(finished_time)
-                  - finished << finished_time
+                    = convert_hours_minutes(finished_time)
+                    - finished << finished_time
                 %td
-                  - closed_time =(eng.job_closed_at - eng.job_started_at)
+                  - if eng.job_closed_at.present?
+                    - closed_time =(eng.job_closed_at - eng.job_started_at)
 
-                  =convert_hours_minutes(closed_time)
-                  - closed << closed_time
+                    =convert_hours_minutes(closed_time)
+                    - closed << closed_time
 
         .col-md-12
           .col-md-12
