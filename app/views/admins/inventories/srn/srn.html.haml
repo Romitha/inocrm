@@ -16,7 +16,9 @@
   #store_controller.hide
     .row
       .col-md-12
-        %h4#store_name
+        %h4
+          %span Store:
+          %span#store_name
         = link_to "Change store", srn_admins_inventories_path
       .col-md-3
         = f.input :required_at, as: :string, input_html: {class: "datepicker"}
@@ -43,7 +45,7 @@
               .product_info
               = s.input :main_product_id, as: :hidden, input_html: {class: "dynamic_main_product_id"}
 
-            = link_to "Select main part", "#", id: "main_product_id_output_#{s.object.object_id}", class: "mainStoreIdPass applyStoreId", onclick: "Inventories.search_product_for_part(this); return false;", data: {storeId: "undefined", modalId: "search_product", remote: "true", selectpath: "", selectoptions: "onclick:Inventories.assign_i_product(this, 'search_product', 'main_product_id_output_#{s.object.object_id}');<>from_where:prn"}
+            = link_to "Select main unit", "#", id: "main_product_id_output_#{s.object.object_id}", class: "mainStoreIdPass applyStoreId", onclick: "Inventories.search_product_for_part(this); return false;", data: {storeId: "undefined", modalId: "search_product", remote: "true", selectpath: "", selectoptions: "onclick:Inventories.assign_i_product(this, 'search_product', 'main_product_id_output_#{s.object.object_id}');<>from_where:prn"}
 
         .row
           .col-md-12
@@ -64,7 +66,7 @@
       .col-md-6
         = f.link_to_add "Add part of main unit", :srn_items, id: "storeIdPassMainPart", onclick: "Inventories.search_product_for_part(this); return false;", data: {storeId: "undefined", id: "store_id", modalId: "search_product", remote: "true", selectpath: "", selectoptions: "onclick:Inventories.assign_i_product(this, 'search_product', 'storeIdPassMainPart');<>from_where:part_of_main_unit"}
       .col-md-12
-        = f.submit "Save", class: "btn btn-success btn-sm"
+        = f.submit "Save", class: "btn btn-success btn-sm", data: {disable_with: "Please wait..."}
 
 #search_product.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "search_product", "aria-hidden" => true}
   .modal-dialog.modal-lg

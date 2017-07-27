@@ -201,7 +201,7 @@ class ReportsController < ApplicationController
         address: (owner.addresses.primary_address.first and owner.addresses.primary_address.first.full_address),
         website: owner.web_site,
         contactDetails: owner.contact_numbers.map { |c| {category: c.category, value: c.value } },
-        vat_num: owner.vat_number,
+        vat_num: owner.account.vat_number,
       },
 
       duplicate_d: "#{'D' if ticket.ticket_complete_print_count > 0}",
