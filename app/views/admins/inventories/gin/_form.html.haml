@@ -43,8 +43,8 @@
   .col-md-2
     %h4 Related PRN (s)
   .col-md-10
-    = collapse_wrapper option_id: "related_prn_info"
-      = collapse labelledby: "last_prn_info_label", collapse_link: "last_prn_info_link", collapse_id: "last_prn_info", collapse_in: "in"
+    = collapse_wrapper option_id: "related_prn_info" do
+      = collapse labelledby: "last_prn_info_label", collapse_link: "last_prn_info_link", collapse_id: "last_prn_info", header_content: "Related PRN (s)" do
         .row
           - @srn.prn_srn_items.each do |prn_srn_item|
             .col-md-6
