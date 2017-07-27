@@ -279,9 +279,16 @@ class InventoryProduct < ActiveRecord::Base
         grn_batches.to_a.sum{|g| g.inventory_batch.inventory_id == inventory_id ? (g.grn_item.current_unit_cost.to_f * g.remaining_quantity.to_f) : 0 }
 
       else
-        store_id = inventories.where(id: inventory_id).first.try(:store_id)
+        # store_id = inventories.where(id: inventory_id).first.try(:store_id)
+        # grn_items.only_grn_items1.to_a.sum{|g| g.grn.store_id == store_id ? g.remaining_quantity.to_f * g.current_unit_cost.to_f : 0 }
+        total_sum = 0
+        inventories.where(id: inventory_id).each do |inventory|
+          store_id = inventory.store_id
+          total_sum += grn_items.only_grn_items1.to_a.sum{|g| g.grn.store_id.to_i == store_id.to_i ? g.remaining_quantity.to_f * g.current_unit_cost.to_f : 0 } if store_id.present?
 
-        grn_items.only_grn_items1.to_a.sum{|g| g.grn.store_id == store_id ? g.remaining_quantity.to_f * g.current_unit_cost.to_f : 0 }
+        end
+
+        total_sum
 
       end
 
@@ -1305,5 +1312,11 @@ class PrnSrnItem < ActiveRecord::Base
 
   belongs_to :inventory_prn_item, foreign_key: :prn_item_id
   belongs_to :srn_item, foreign_key: :srn_item_id
+
+  after_save :update_model_info
+
+  def update_model_info
+    srn_item.update_index
+  end
 
 end

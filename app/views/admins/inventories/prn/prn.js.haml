@@ -22,8 +22,9 @@
   $("#search_result").html("#{ j render 'admins/inventories/prn/search_srn_results' }");
 
 
+$("a[rel~=popover], .has-popover").popover();
+Tickets.initial_loaders();
 Tickets.remove_ajax_loader();
-$("a[rel~=popover], .has-popover").popover()
 
 $('.datepicker').datepicker({
 format: "yyyy-m-dd",

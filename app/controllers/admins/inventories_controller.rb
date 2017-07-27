@@ -1419,6 +1419,8 @@ module Admins
     end
 
     def create_srn
+      Role
+
       @srn = Srn.new srn_params
       if @srn.save
         Organization
