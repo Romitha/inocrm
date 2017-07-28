@@ -78,6 +78,8 @@ class Organization < ActiveRecord::Base
   accepts_nested_attributes_for :organization_contact_persons, allow_destroy: true
 
 
+  has_many :organization_contact_persons
+  accepts_nested_attributes_for :organization_contact_persons, allow_destroy: true
   TYPES = %w(SUP CUS INDSUP INDCUS)
 
   scope :organization_suppliers, -> {where(category: TYPES[0])}

@@ -154,6 +154,11 @@ class MstTitle < ActiveRecord::Base
   validates :title, presence: true, uniqueness: true
 end
 
+class ContactPersonType < ActiveRecord::Base
+  self.table_name = "mst_contact_person_type"
+  has_one :organization_contact_person
+end
+
 class Customer < ActiveRecord::Base
   self.table_name = "spt_customer"
 
@@ -404,4 +409,12 @@ class TicketSupportEngineer < ActiveRecord::Base
   belongs_to :ticket_engineer, foreign_key: :engineer_id
   belongs_to :user, foreign_key: :user_id
 
+end
+
+class OrganizationContactPerson < ActiveRecord::Base
+  self.table_name = "organization_contact_person"
+
+  belongs_to :organization
+  belongs_to :contact_person_type
+  belongs_to :mst_title
 end

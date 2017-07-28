@@ -1,0 +1,22 @@
+.col-md-12
+  = simple_nested_form_for organization_contact_person.organization, url: update_organization_contact_person_organization_path(organization_id: organization_contact_person.organization.id), method: :post, html: {class: "validate_form"} do |f|
+    = f.simple_fields_for "organization_contact_persons_attributes[]", organization_contact_person do |oc|
+      .row
+        = panels panel_type: "success", header_content: "Add Contact Person" do
+
+          = oc.select :title_id, MstTitle.all.map{|a| [a.title, a.id]}
+
+          = oc.input :name, wrapper_html: {class: "col-md-12"}, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Person Name"}
+          
+          = oc.input :email, wrapper_html: {class: "col-md-12"}, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Email Address"}
+          
+          = oc.input :mobile, wrapper_html: {class: "col-md-12"}, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Mobile Number"}
+         
+          = oc.input :telephone, wrapper_html: {class: "col-md-12"}, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Telephone Number"}
+          
+          = oc.input :note, wrapper_html: {class: "col-md-12"}, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Note"}
+                  
+          = oc.select :type_id, ContactPersonType.all.map{|a| [a.name, a.id]}
+          
+          / = f.submit "Add new Contact", class: "btn btn-success pull-right", id: "submit_new_contact_person"
+          = oc.submit "save", name: "save", class: "btn btn-success pull-right"

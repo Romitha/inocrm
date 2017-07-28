@@ -1,0 +1,24 @@
+.row.margin-none
+  .col-md-5
+    = link_to "#", class: "inline_edit", data: {type: "text", resource: "organization_contact_person", name: "name", url: update_organization_contact_person_organization_path, "original-title" => "Update Details"} do
+      = organization_contact_person.name
+    %br/
+
+    = link_to "#", class: "inline_edit", data: {type: "text", resource: "organization_contact_person", name: "email", url: update_organization_contact_person_organization_path, "original-title" => "Update Details"} do
+      = organization_contact_person.email
+    %br/
+
+    = link_to "#", class: "inline_edit", data: {type: "text", resource: "organization_contact_person", name: "mobile", url: update_organization_contact_person_organization_path, "original-title" => "Update Details"} do
+      = organization_contact_person.mobile
+    %br/    
+
+    = link_to "#", class: "inline_edit", data: {type: "text", resource: "organization_contact_person", name: "telephone", url: update_organization_contact_person_organization_path, "original-title" => "Update Details"} do
+      = organization_contact_person.telephone
+    %br/
+
+    = link_to "#", class: "inline_edit", data: {type: "text", resource: "organization_contact_person", name: "note", url: update_organization_contact_person_organization_path, "original-title" => "Update Details"} do
+      = organization_contact_person.note
+    %br/
+
+    / type id and title id
+  %hr

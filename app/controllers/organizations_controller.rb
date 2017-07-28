@@ -191,13 +191,32 @@ class OrganizationsController < ApplicationController
     end
   end
 
+  def update_organization_contact_person
+    if params[:organization_id].present?
+      puts "************************* organization ***********************************"
+      @organization = Organization.find params[:organization_id]
+      puts "************************* params***********************************"
+      if params["save"].present?
+        puts "************************* save ***********************************"
+        if @organization.update organization_params
+          puts "************************* if 2 ***********************************"
+          redirect_to organization_url(@organization), notice: "Successfully saved"
+        else
+          puts "************************* else ***********************************"
+          flash[:notice] = "Unsuccessful"
+          redirect_to organization_url(@organization)
+        end
+      end
+    end
+  end
+
   private
     def set_organization
       @organization = Organization.find params[:id]
     end
 
     def organization_params
-      params.require(:organization).permit(:title_id, :name, :department_org_id, :category, :description, :logo, :type_id, :web_site, :code, :short_name, addresses_attributes: [:id, :category, :address, :primary, :_destroy],  contact_numbers_attributes: [:id, :category, :value, :_destroy], account_attributes: [:id, :_destroy, :industry_types_id, :credit_allow, :credit_period_day, :goodwill_status, :svat_no, :account_manager_id, :code, :vat_number], customers_attributes: [:id, :_destroy, :organization_id, :title_id, :name, :address1, :address2, :address3, :address4, :district_id, contact_type_values_attributes: [:id, :contact_type_id, :value, :_destroy]])
+      params.require(:organization).permit(:title_id, :name, :department_org_id, :category, :description, :logo, :type_id, :web_site, :code, :short_name, addresses_attributes: [:id, :category, :address, :primary, :_destroy],  contact_numbers_attributes: [:id, :category, :value, :_destroy], account_attributes: [:id, :_destroy, :industry_types_id, :credit_allow, :credit_period_day, :goodwill_status, :svat_no, :account_manager_id, :code, :vat_number], customers_attributes: [:id, :_destroy, :organization_id, :title_id, :name, :address1, :address2, :address3, :address4, :district_id, contact_type_values_attributes: [:id, :contact_type_id, :value, :_destroy]], organization_contact_persons_attributes: [:id, :title_id, :name, :email, :mobile, :telephone, :type_id, :note])
     end
 
     def customer_params

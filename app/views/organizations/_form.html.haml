@@ -1,4 +1,4 @@
-- tapbar = [["Contact Number", "#contact_numbers#{organization.id}"], ["Address", "#addresses#{organization.id}"], ["Employees", "#contact_persons#{organization.id}"], ["Documents & Attachements", "#documents#{organization.id}"], ["Designations", "#designations#{organization.id}"], ["Organization Relations", "#organization_relations#{organization.id}"], ["Roles and Permissions", "#roles_and_permissions#{organization.id}"], ["Dealer Types", "#dealer_types#{organization.id}"]]
+- tapbar = [["Contact Number", "#contact_numbers#{organization.id}"], ["Address", "#addresses#{organization.id}"], ["Employees", "#contact_persons#{organization.id}"], ["Documents & Attachements", "#documents#{organization.id}"], ["Designations", "#designations#{organization.id}"], ["Organization Relations", "#organization_relations#{organization.id}"], ["Roles and Permissions", "#roles_and_permissions#{organization.id}"], ["Dealer Types", "#dealer_types#{organization.id}"], ["Contact Person", "#organization_contact_persons#{organization.id}"]]
 
 = simple_nested_form_for organization, url: url, html: {class: "validate_form"} do |f|
   = hidden_field_tag :organization_id, f.object.id
@@ -176,6 +176,12 @@
 
       / - organization.accounts_dealer_types.order("created_at DESC").each do |accounts_dealer_type|
       /   = render "dealer_types/dealer_type", dealer_type: accounts_dealer_type
+
+    .tab-pane.limit-height{id: "organization_contact_persons#{organization.id}"}
+      = render "organization_contact_persons/form", organization_contact_person: organization.organization_contact_persons.build
+
+      - organization.organization_contact_persons.each do |organization_contact_person|
+        = render "organization_contact_persons/organization_contact_person", organization_contact_person: organization_contact_person
 
 %script{type: "text/html", id: "load_logo"}
   <img src="{{{result.logo.url}}}" alt= "Organization logo" class="img-responsive" />
