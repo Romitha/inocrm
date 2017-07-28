@@ -15,7 +15,6 @@
           .row
             .col-md-12
               %strong FSR No:
-              = params[:action]
               = fsr.object.ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])
             .col-md-12
               .row
@@ -25,6 +24,9 @@
               = fsr.input :completion_level, as: :radio_buttons, label: false, collection: {"Full" => "F","Partial" => "P"}, wrapper: :append
             .col-md-12
               = fsr.input :office_out_at, as: :string, input_html: {class: "datetimepicker", id: "out_at", onblur: "Tickets.edit_fsr_travel_hours(this); return false;"}
+              %strong Out At:
+              = @ticket_fsr.office_out_at.try :strftime, "%d %b, %Y %H:%M"
+              %hr
             .col-md-12
               = fsr.input :work_started_at, as: :string, input_html: {class: "datetimepicker", id: "work_started", onblur: "Tickets.edit_fsr_travel_hours(this); return false;", data: {mindate: @ticket.logged_at.strftime("%b %d, %Y %H:%M")}}, disabled: true
               %strong Started at:
@@ -34,8 +36,11 @@
               = fsr.input :work_finished_at, as: :string, input_html: {class: "datetimepicker", id: "work_finished", onblur: "Tickets.edit_fsr_travel_hours(this); return false;"}, disabled: true
               %strong Finished at:
               = @ticket_fsr.work_finished_at.try :strftime, "%d %b, %Y %H:%M"
+              %hr
             .col-md-12
               = fsr.input :office_in_at, as: :string, input_html: {class: "datetimepicker", id: "in_at", onblur: "Tickets.edit_fsr_travel_hours(this); return false;"}, disabled: true
+              %strong In At:
+              = @ticket_fsr.office_in_at.try :strftime, "%d %b, %Y %H:%M"
               %hr
 
         .col-md-3

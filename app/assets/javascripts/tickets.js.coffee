@@ -762,12 +762,10 @@ window.Tickets =
 
     if $('#out_at').val() != ''
       $('#work_started').prop('disabled', false)
+      $('#in_at').prop('disabled', false)
 
     if $('#work_started').val() != ''
       $('#work_finished').prop('disabled', false)
-
-    if $('#work_finished').val() != ''
-      $('#in_at').prop('disabled', false)
 
     if $('#in_at').val() != ''
 
@@ -786,7 +784,10 @@ window.Tickets =
       worked_time = finished - started
       time_in_out = in_at - out_at
 
-      travel_time = time_in_out - worked_time
+      if isNaN(worked_time)
+        travel_time = time_in_out
+      else
+        travel_time = time_in_out - worked_time
 
       travel_time_in_hours = travel_time/(1000*60*60)
 

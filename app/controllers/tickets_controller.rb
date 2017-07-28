@@ -5113,6 +5113,8 @@ class TicketsController < ApplicationController
       ticket_fsr_params[:current_user_id] = current_user.id
       ticket_fsr_params[:work_started_at] = Time.strptime(ticket_fsr_params[:work_started_at],'%m/%d/%Y %I:%M %p') if ticket_fsr_params[:work_started_at].present?
       ticket_fsr_params[:work_finished_at] = Time.strptime(ticket_fsr_params[:work_finished_at],'%m/%d/%Y %I:%M %p') if ticket_fsr_params[:work_finished_at].present?
+      ticket_fsr_params[:office_out_at] = Time.strptime(ticket_fsr_params[:office_out_at],'%m/%d/%Y %I:%M %p') if ticket_fsr_params[:office_out_at].present?
+      ticket_fsr_params[:office_in_at] = Time.strptime(ticket_fsr_params[:office_in_at],'%m/%d/%Y %I:%M %p') if ticket_fsr_params[:office_in_at].present?
       ticket_fsr_params
     end
 
