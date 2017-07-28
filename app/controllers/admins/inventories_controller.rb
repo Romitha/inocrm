@@ -1799,6 +1799,22 @@ module Admins
         format.js {render "admins/inventories/prn/prn"}
       end
     end
+
+    def filter_product_and_category
+      if params[:type] == "filter_product"
+        brand = InventoryCategory1.find params[:value_key]
+        @result = brand.inventory_category2s.map{|p| [p.name, p.id]}.uniq
+        @response = {option_html: view_context.options_for_select(@result)}
+
+      elsif params[:type] == "filter_category"
+        product = InventoryCategory2.find params[:value_key]
+        @result = product.inventory_category3s.map{|c| [c.name, c.id]}
+        @response = {option_html: view_context.options_for_select(@result)}
+      end
+
+      render json: @response
+    end
+
     def submit_selected_products
       Inventory
       Srn

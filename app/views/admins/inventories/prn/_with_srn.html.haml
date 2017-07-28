@@ -12,10 +12,10 @@
               / .col-md-3.store
               .col-md-12.brand
                 = label_tag InventoryCategoryCaption.first.caption
-                = select_tag "search_inventory[srn_item][inventory_product.category1_id]", options_from_collection_for_select(InventoryCategory1.all, :id, :name, nil), include_blank: true, class: "form-control", id: "search_inventory_brand"
+                = select_tag "search_inventory[srn_item][inventory_product.category1_id]", options_from_collection_for_select(InventoryCategory1.all, :id, :name, nil), include_blank: true, class: "form-control", id: "search_inventory_brand", type: "filter_product"
               .col-md-12.product
                 = label_tag InventoryCategoryCaption.second.caption
-                = select_tag "search_inventory[srn_item][inventory_product.category2_id]", option_groups_from_collection_for_select(InventoryCategory1.all, :inventory_category2s, :id, :id, :name, nil), include_blank: true, class: "form-control", id: "search_inventory_product"
+                = select_tag "search_inventory[srn_item][inventory_product.category2_id]", option_groups_from_collection_for_select(InventoryCategory1.all, :inventory_category2s, :id, :id, :name, nil), include_blank: true, class: "form-control", id: "search_inventory_product", type: "filter_category"
               .col-md-12.category
                 = label_tag InventoryCategoryCaption.third.caption
                 = select_tag "search_inventory[srn_item][inventory_product.category3_id]", option_groups_from_collection_for_select(InventoryCategory2.all, :inventory_category3s, :id, :id, :name), include_blank: true, class: "form-control", id: "search_inventory_mst_inv_product_category3_id"

@@ -17,6 +17,9 @@
 
 - if params[:with_srn] == "yes"
   $("#main_prn").html("#{ j render 'admins/inventories/prn/with_srn' }");
+  Inventories.filter_product_and_category();
+
+
 
 - if params[:srn] == "search_srn"
   $("#search_result").html("#{ j render 'admins/inventories/prn/search_srn_results' }");

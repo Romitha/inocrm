@@ -410,6 +410,7 @@ Rails.application.routes.draw do
         get "prn"
         post "create_prn"
         post "submit_selected_products"
+        post "filter_product_and_category"
 
         get "gin"
         get "batch_or_serial_for_gin"

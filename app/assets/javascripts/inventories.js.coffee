@@ -967,3 +967,34 @@ window.Inventories =
 
     if this_value > availableVal
       this_elem.val(availableVal)
+
+  filter_product_and_category: ->
+    filter_list = $("#search_inventory_product")
+    filter_list_html = filter_list.html()
+    filter_list.empty()
+
+    filter_list = $("#search_inventory_mst_inv_product_category3_id")
+    filter_list_html = filter_list.html()
+    filter_list.empty()
+
+    $("#search_inventory_brand").change ->
+      filter_list = $("#search_inventory_mst_inv_product_category3_id")
+      filter_list_html = filter_list.html()
+      filter_list.empty()
+
+      type = $("#search_inventory_brand").attr('type')
+      value = $("#search_inventory_brand").val()
+      data = {value_key: value, type: type}
+
+      $.post "/admins/inventories/filter_product_and_category", data, (response) ->
+
+        $("#search_inventory_product").html(response.option_html)
+
+    $("#search_inventory_product").change ->
+      type = $("#search_inventory_product").attr('type')
+      value = $("#search_inventory_product").val()
+      data = {value_key: value, type: type}
+
+      $.post "/admins/inventories/filter_product_and_category", data, (response) ->
+
+        $("#search_inventory_mst_inv_product_category3_id").html(response.option_html)
