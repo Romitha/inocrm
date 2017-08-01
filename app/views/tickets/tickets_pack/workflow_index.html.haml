@@ -1,5 +1,8 @@
 #main_image
-  %h4{align: "center", style: "margin-bottom: 0;"}= @ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
+  %h4{align: "center", style: "margin-bottom: 0;"}
+    = @ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
+    - @ticket.ticket_engineers.group_by{ |t| t.task_description }.map { |k,v| {task_description: k}}.each do |eng|
+      =eng[:task_description]
 
   - manufacture_parts_po_pending = @ticket.ticket_spare_parts.any? { |t| t.ticket_spare_part_manufacture.try(:po_required) and not t.ticket_spare_part_manufacture.try(:po_completed) and t.ticket_spare_part_manufacture.try(:bundled)}
 

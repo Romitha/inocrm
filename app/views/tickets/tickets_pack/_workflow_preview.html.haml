@@ -1,6 +1,6 @@
 = link_to "Workflow", workflow_diagram_tickets_path(ticket_id: ticket.id ), :target => "_blank", class: "btn btn-info"
 
-- ticket.ticket_engineers.group_by{ |t| t.re_open_index }.map { |k, v| { re_open_index: k, eng_set: v.group_by{|v1| v1.channel_no.to_i }.map{ |k1, rr| { channel_no: k1, channeled_eng_set: rr.map{ |r| {name: r.user.full_name, image: r.user.avatar.url, id: r.id, order_no: r.order_no, channel_no: r.channel_no, ticket_id: r.ticket_id, deletable: r.deletable?, workflow_process_id: r.ticket_workflow_process.try(:process_id), process_status: r.status.to_i} }.sort{ |p, n| p[:order_no].to_i <=> n[:order_no].to_i } } } } }.each do |indexed_ticket_engineer|
+- ticket.ticket_engineers.group_by{ |t| t.re_open_index }.map { |k, v| { re_open_index: k, eng_set: v.group_by{|v1| v1.channel_no.to_i }.map{ |k1, rr| { channel_no: k1, channeled_eng_set: rr.map{ |r| {name: r.user.full_name, image: r.user.avatar.url, id: r.id, order_no: r.order_no, channel_no: r.channel_no, ticket_id: r.ticket_id, deletable: r.deletable?, workflow_process_id: r.ticket_workflow_process.try(:process_id), process_status: r.status.to_i, task_description: r.task_description} }.sort{ |p, n| p[:order_no].to_i <=> n[:order_no].to_i } } } } }.each do |indexed_ticket_engineer|
   %fieldset
     %legend Re-Open: #{indexed_ticket_engineer[:re_open_index]}
     .row
@@ -17,7 +17,10 @@
             - else
               - "inherit"
 
-            .assign-engineers
+
+            - content_for :engineer, flush: true do
+              =channeled_eng_set[:task_description]
+            .assign-engineers{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Task Description", "data-content"=> yield(:engineer), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }
               = link_to workflow_diagram_tickets_path(ticket_id: ticket.id, workflow_process_id: channeled_eng_set[:workflow_process_id] ), :target => "_blank" do
                 .thumbnail
                   <img src="#{channeled_eng_set[:image] || '/assets/no_image.jpg'}" />
