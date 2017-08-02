@@ -200,6 +200,15 @@ class Organization < ActiveRecord::Base
 
   end
 
+  after_create :assign_to_organization
+
+  def assign_to_organization
+    if account
+      account.update account_no: (CompanyConfig.first.last_account_no +1)
+      CompanyConfig.first.increment! :last_account_no, 1
+    end
+  end
+
 end
 
 class OrganizationType < ActiveRecord::Base

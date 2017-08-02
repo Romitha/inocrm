@@ -800,6 +800,10 @@ class TicketsController < ApplicationController
         end
         @ticket.update_index
 
+        # if params[:send_email].present?
+        #   send_email(params[:to_address], params[:cc_address], ticket_id, '', '', '',  new_ticket_code[global constant])
+        # end
+
         flash_message = @bpm_process_error ? "Ticket successfully saved. But BPM error. Please continue after rectifying BPM" : "Thank you. ticket is successfully registered."
 
         WebsocketRails[:posts].trigger 'new', {task_name: "Ticket", task_id: @ticket.id, task_verb: "created.", by: current_user.email, at: Time.now.strftime('%d/%m/%Y at %H:%M:%S')}
@@ -842,7 +846,7 @@ class TicketsController < ApplicationController
           end
 
           format.json {render json: @ticket.errors[:logged_at].join}
-          
+
         else
           format.html {redirect_to @ticket, error: "Unable to update ticket. Please validate your inputs."}
           format.json {render json: @ticket.errors.full_messages.join}
@@ -1268,6 +1272,12 @@ class TicketsController < ApplicationController
                   view_context.ticket_bpm_headers bpm_response1[:process_id], @ticket.id
 
                   ticket_engineer.update status: 1, job_assigned_at: DateTime.now, workflow_process_id: workflow_process.id 
+
+                  to_address = ticket_engineer.user.email
+                  ticket_engineer.ticket_support_engineers.each do |support_engineer|
+                    to_address = to_address + ', ' + support_engineer.user.email
+                  end
+                  # send_email(to_address, '', ticket_id, '', '', ticket_engineer.id,  assign_job_code[global constant])
 
                 else
                   all_success = false
@@ -2037,6 +2047,8 @@ class TicketsController < ApplicationController
         if @bpm_response[:status].upcase == "SUCCESS"
 
           WebsocketRails[:posts].trigger 'new', {task_name: "Spare part", task_id: spt_ticket_spare_part.id, task_verb: "received and issued.", by: current_user.email, at: Time.now.strftime('%d/%m/%Y at %H:%M:%S')}
+
+          # send_email(spt_ticket_spare_part.engineer.user.email, '', spt_ticket_spare_part.ticket_id, spt_ticket_spare_part.id, false, spt_ticket_spare_part.engineer_id,  part_issued_code[global constant])
 
           flash[:notice]= "Successfully updated"
         else
@@ -3501,6 +3513,8 @@ class TicketsController < ApplicationController
             @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
             if @bpm_response[:status].upcase == "SUCCESS"
+              # send_email(@onloan_request_part.engineer.user.email, '', @onloan_request_part.ticket_id, @onloan_request_part.id, true, @onloan_request_part.engineer_id,  part_issued_code[global constant])
+
               flash[:notice] = "Successfully updated."
             else
               flash[:error] = "ticket is updated. but Bpm error"
@@ -3529,6 +3543,8 @@ class TicketsController < ApplicationController
             @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
             if @bpm_response[:status].upcase == "SUCCESS"
+              # send_email(@ticket_spare_part.engineer.user.email, '', @ticket_spare_part.ticket_id, @ticket_spare_part.id, false, @ticket_spare_part.engineer_id,  part_issued_code[global constant])
+
               flash[:notice] = "Successfully updated."
             else
               flash[:error] = "ticket is updated. but Bpm error"
@@ -4464,6 +4480,13 @@ class TicketsController < ApplicationController
                 view_context.ticket_bpm_headers @bpm_response1[:process_id], @ticket.id
 
                 next_engineer.update status: 1, job_assigned_at: DateTime.now, workflow_process_id: workflow_process.id
+
+                to_address = next_engineer.user.email
+                next_engineer.ticket_support_engineers.each do |support_engineer|
+                  to_address = to_address + ', ' + support_engineer.user.email
+                end
+                # send_email(to_address, '', ticket_id, '', '', next_engineer.id,  assign_job_code[global constant])
+
 
               else
                 all_success = false

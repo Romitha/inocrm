@@ -836,12 +836,12 @@ class InventoriesController < ApplicationController
 
           d14_val = (((t_est_price - t_cost_price)*100/t_cost_price) < CompanyConfig.first.try(:sup_external_job_profit_margin).to_f) if CompanyConfig.first.try(:sup_external_job_profit_margin).to_f > 0
 
-          d14_val = true if CompanyConfig.first.try(:sup_estimation_need_approval)
+          d14_val = true if CompanyConfig.first.try(:sup_ch_estimation_need_approval)
 
         else
           @ticket_estimation.update_attribute(:cust_approval_required, false)
-          d14_val = false
 
+          d14_val = true if CompanyConfig.first.try(:sup_nc_estimation_need_approval)
         end
              
         # Set Action (27) Job Estimation Done, DB.spt_act_job_estimate. Set supp_engr_user = supp_engr_user (Input variable)
@@ -1711,9 +1711,10 @@ class InventoriesController < ApplicationController
 
             d19_estimate_internal_below_margin = (((t_est_price - t_cost_price)*100/t_cost_price) < CompanyConfig.first.try(:sup_internal_part_profit_margin).to_f) ? "Y" : "N"  if CompanyConfig.first.try(:sup_internal_part_profit_margin).to_f > 0
 
-            d19_estimate_internal_below_margin = "Y" if CompanyConfig.first.try(:sup_estimation_need_approval)
+            d19_estimate_internal_below_margin = "Y" if CompanyConfig.first.try(:sup_ch_estimation_need_approval)
           else
             estimation.update_attribute(:cust_approval_required, false)
+            d19_estimate_internal_below_margin = "Y" if CompanyConfig.first.try(:sup_nc_estimation_need_approval)
           end
 
           if @jump_next
