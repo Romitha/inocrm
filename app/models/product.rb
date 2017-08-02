@@ -70,7 +70,7 @@ class Product < ActiveRecord::Base
   has_many :contract_products, foreign_key: :product_serial_id
   has_many :ticket_contracts, through: :contract_products
 
-  has_many :product_customer_histories
+  has_many :product_customer_histories, foreign_key: :product_serial_id
 
   has_many :ref_product_serials, class_name: "TicketProductSerial", foreign_key: :ref_product_serial_id
   accepts_nested_attributes_for :ref_product_serials, allow_destroy: true

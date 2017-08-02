@@ -414,6 +414,10 @@ class InvoicesController < ApplicationController
               ticket_engineer.update status: 1, job_assigned_at: DateTime.now, workflow_process_id: workflow_process.process_id
 
               newly_assigned_engs << engineer.user.full_name
+
+              # if params[:send_email].present?
+              #   send_email(params[:to_address], params[:cc_address], ticket_id, '', '', '',  job_completed_code[global constant])
+              # end
             end
 
           end
