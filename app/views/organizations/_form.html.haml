@@ -52,7 +52,7 @@
       .row
         - unless Organization::TYPES[2,3].include?(organization.category)
           .col-md-2{class: "#{'for_store_and_branch' if params[:action] == 'store_and_branch'}"}
-            = a.input :vat_number, placeholder: "VAT Number", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "VAT Number"}
+            = a.input :vat_no, placeholder: "VAT Number", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "VAT Number"}
         .col-md-2
           = a.input :svat_no, include_blank: false
         .col-md-2
