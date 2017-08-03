@@ -93,7 +93,7 @@ class Organization < ActiveRecord::Base
   validates_format_of :web_site, :with => URI::regexp(%w(http https)), if: Proc.new{|o| o.web_site.present? }
 
   # validates :title_id, presence: true
-  validates :name, presence: true
+  validates :name, presence: true, uniqueness: true
   validates :short_name, presence: true
 
   validates_presence_of :vat_number, if: Proc.new {|organization| TYPES[0,2].include?(organization.category)}

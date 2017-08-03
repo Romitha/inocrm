@@ -180,7 +180,9 @@
                   Add tax
 
       = t.simple_fields_for :ticket_spare_part do |tsp|
-        = tsp.input :note
+        = tsp.input :note, input_html: {value: nil}
+        = simple_format tsp.object.note
+
 
   .row
     .col-md-12

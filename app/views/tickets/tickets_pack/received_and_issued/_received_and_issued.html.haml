@@ -73,6 +73,10 @@
     .col-md-12
       = simple_format f.object.note
     .col-md-12
+      - if !spare_part.ticket_spare_part_manufacture.try(:received_manufacture)
+        = label_tag "Issue", "Issue"
+        = check_box_tag "issue", true, false
+
       %div{title: "#{'Part not yet collected' unless spare_part.ticket_spare_part_manufacture.try(:collected_manufacture)}"}= f.submit "Save", class: "btn btn-success", disabled: !spare_part.ticket_spare_part_manufacture.try(:collected_manufacture)
 
 

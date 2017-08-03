@@ -1408,6 +1408,8 @@ class TicketsController < ApplicationController
       Rails.cache.delete([:histories, session[:product_id]])
       Rails.cache.delete([:join, @ticket.id])
 
+      @ticket_engineer = @ticket.ticket_engineers.find_by_id(params[:engineer_id])
+
       @user_ticket_action = @ticket.user_ticket_actions.build(action_id: 2)
       @user_assign_ticket_action = @user_ticket_action.build_user_assign_ticket_action
       @assign_regional_support_center = @user_ticket_action.assign_regional_support_centers.build
@@ -2004,6 +2006,8 @@ class TicketsController < ApplicationController
     TaskAction
     spt_ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
     @ticket = spt_ticket_spare_part.ticket
+    issue = (params[:issue].present? and params[:issue].to_bool)
+    receive_screen = false
 
     @continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
 
@@ -2012,6 +2016,9 @@ class TicketsController < ApplicationController
       spt_ticket_spare_part.update ticket_spare_part_params(spt_ticket_spare_part)
 
       if spt_ticket_spare_part.ticket_spare_part_manufacture.try(:collected_manufacture) and !spt_ticket_spare_part.ticket_spare_part_manufacture.try(:received_manufacture) #DB.spt_ticket_spare_part.status_action_id = CLT (Collected)
+
+        receive_screen = true
+
         spt_ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("RCS").id) 
 
         spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)   
@@ -2025,7 +2032,8 @@ class TicketsController < ApplicationController
 
         flash[:notice]= "Successfully updated"
 
-      elsif spt_ticket_spare_part.ticket_spare_part_manufacture.try(:received_manufacture) and !spt_ticket_spare_part.ticket_spare_part_manufacture.try(:issued)
+      end
+      if (!receive_screen or (receive_screen and issue)) and spt_ticket_spare_part.ticket_spare_part_manufacture.try(:received_manufacture) and !spt_ticket_spare_part.ticket_spare_part_manufacture.try(:issued)
 
         spt_ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("ISS").id) 
         spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now) 
@@ -3660,6 +3668,7 @@ class TicketsController < ApplicationController
     @ticket_id = params[:ticket_id]
     @ticket = Ticket.find @ticket_id
     @workflow_processes = params[:workflow_process_id].present? ? [HashToObject.new({process_id: params[:workflow_process_id]})] : @ticket.ticket_workflow_processes.to_a
+
     @workflow_process_ids = @workflow_processes.map { |p| p.process_id }
     @task_list = []
     @workflow_process_ids.each do |workflow_process_id|
