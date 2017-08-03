@@ -21,7 +21,7 @@
 
 %fieldset
   %legend Approve Manufacture Part
-  = simple_nested_form_for spare_part, url: update_approve_manufacture_parts_tickets_path, method: :post, html: {id: "new_ticket_spare_part"} do |f|
+  = simple_nested_form_for spare_part, url: update_approve_manufacture_parts_tickets_path, method: :post, html: {id: "new_ticket_spare_part"} do |f| # 
     = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
     = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]
     = hidden_field_tag :owner, Rails.cache.fetch([uri.path, params[:task_id]])[:owner]
@@ -33,11 +33,15 @@
 
       .row
         .col-md-6
-          = f.input :request_approved, as: :radio_buttons, collection: {"Approve" => "true", "Reject" => "false"}, checked: ("false" if sto.object.ticket_spare_part.part_terminated), disabled: ("true" if sto.object.ticket_spare_part.part_terminated)
+          = f.input :request_approved, as: :radio_buttons, collection: {"Approve" => "true", "Reject" => "false"}, checked: ("false" if sto.object.ticket_spare_part.part_terminated), disabled: ("true" if sto.object.ticket_spare_part.part_terminated), wrapper: :append
 
     .row
       .col-md-12
         = f.input :note, input_html: { value: nil}
         = simple_format f.object.note
 
-        = f.submit "Save", class: "btn btn-success btn-sm", id: "approve_store_part"
+        - msg = "Do you really want to reject? #{'It is estimated part' if spare_part.estimation_required }"
+        %div{class: "alertMsg hide", data: {msg: msg}}
+
+        %button{ type: "button", class: "btn btn-success btn-sm", onclick: "Tickets.approveManufacturePart(this); return false;"}
+          Save

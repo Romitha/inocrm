@@ -647,6 +647,10 @@ window.Tickets =
         e.preventDefault()
         e.stopPropagation()
         alert "Net amount for final invoice #{net_amount} must be 0 for FOC. Please try again after reconciliation."
+      else if $("input[name='payment_completed']").is(":checked")
+        if not confirm("Do you really want to make payment complete?")
+          e.preventDefault()
+          e.stopPropagation()
 
   load_serialparts: ->
     $("#load_serialparts").change ->
@@ -792,3 +796,13 @@ window.Tickets =
       travel_time_in_hours = travel_time/(1000*60*60)
 
       $('#travelled_hours').val(travel_time_in_hours)
+
+
+  approveManufacturePart: (e)->
+    console.log($(e))
+    if $("input[name='ticket_spare_part[request_approved]']:checked").val() == "false"
+      if confirm($(".alertMsg").data("msg"))
+        $(e).parents("form").eq(0).submit();
+
+    else
+      $(e).parents("form").eq(0).submit();

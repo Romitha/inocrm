@@ -46,3 +46,8 @@ TicketSparePart:
   faulty_ct_no: "N/A"
   received_part_serial_no: "N/A"
   received_part_ct_no: "N/A"
+  control_visible_request_from_radio: false
+
+TicketSparePartManufacture:
+  event_no: "N/A"
+  order_no: "N/A"

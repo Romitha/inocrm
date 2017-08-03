@@ -1,7 +1,10 @@
 - present_of_start_ticket_action =  ticket.user_ticket_actions.find_by_action_id(TaskAction.find_by_action_no(5).id).present?
 - TicketSparePart
-- ticket_engineer = ticket.ticket_engineers.find(params[:engineer_id])
+- ticket_engineer = @ticket_engineer
 .row
+  - if ticket_engineer
+    .col-md-12
+      %h2 Task: #{ticket_engineer.task_description}
   .col-md-3
     Ticket Type:
     %strong= ticket.ticket_type.name

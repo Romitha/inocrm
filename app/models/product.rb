@@ -95,12 +95,12 @@ class Product < ActiveRecord::Base
 
   def create_product_owner_history(owner_customer_id, created_by, note)
     if self.owner_customer_id != owner_customer_id
-      if self.persisted?
-        self.update owner_customer_id: owner_customer_id
-        self.product_customer_histories.create(created_by: created_by, note: note)
+      if persisted?
+        update owner_customer_id: owner_customer_id
+        product_customer_histories.create(owner_customer_id: owner_customer_id, created_by: created_by, note: note)
       else
-        self.owner_customer_id = owner_customer_id
-        self.product_customer_histories.build(created_by: created_by, note: note)
+        owner_customer_id = owner_customer_id
+        product_customer_histories.build(owner_customer_id: owner_customer_id, created_by: created_by, note: note)
       end
     end
   end
