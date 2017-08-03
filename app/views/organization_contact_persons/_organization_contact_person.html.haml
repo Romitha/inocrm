@@ -1,22 +1,23 @@
 .row.margin-none
   .col-md-5
-    = link_to "#", class: "inline_edit", data: {type: "text", resource: "organization_contact_person", name: "name", url: update_organization_contact_person_organization_path, "original-title" => "Update Details"} do
+    Name :
+    = link_to "#", class: "inline_edit", data: {type: "text", resource: "organization_contact_person", name: "name",url: update_organization_contact_person_organization_path(organization_contact_person_id: organization_contact_person.id), "original-title" => "Update Details"} do
       = organization_contact_person.name
     %br/
-
-    = link_to "#", class: "inline_edit", data: {type: "text", resource: "organization_contact_person", name: "email", url: update_organization_contact_person_organization_path, "original-title" => "Update Details"} do
+    Email :
+    = link_to "#", class: "inline_edit", data: {type: "text", resource: "organization_contact_person", name: "email",url: update_organization_contact_person_organization_path(organization_contact_person_id: organization_contact_person.id), "original-title" => "Update Details"} do
       = organization_contact_person.email
     %br/
-
-    = link_to "#", class: "inline_edit", data: {type: "text", resource: "organization_contact_person", name: "mobile", url: update_organization_contact_person_organization_path, "original-title" => "Update Details"} do
+    Mobile :
+    = link_to "#", class: "inline_edit", data: {type: "text", resource: "organization_contact_person", name: "mobile", url: update_organization_contact_person_organization_path(organization_contact_person_id: organization_contact_person.id), "original-title" => "Update Details"} do
       = organization_contact_person.mobile
     %br/    
-
-    = link_to "#", class: "inline_edit", data: {type: "text", resource: "organization_contact_person", name: "telephone", url: update_organization_contact_person_organization_path, "original-title" => "Update Details"} do
+    Telephone :
+    = link_to "#", class: "inline_edit", data: {type: "text", resource: "organization_contact_person", name: "telephone",url: update_organization_contact_person_organization_path(organization_contact_person_id:organization_contact_person.id), "original-title" => "Update Details"} do
       = organization_contact_person.telephone
     %br/
-
-    = link_to "#", class: "inline_edit", data: {type: "text", resource: "organization_contact_person", name: "note", url: update_organization_contact_person_organization_path, "original-title" => "Update Details"} do
+    Note :
+    = link_to "#", class: "inline_edit", data: {type: "text", resource: "organization_contact_person", name: "note", url: update_organization_contact_person_organization_path(organization_contact_person_id: organization_contact_person.id), "original-title" => "Update Details"} do
       = organization_contact_person.note
     %br/
 

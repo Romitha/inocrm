@@ -191,21 +191,27 @@ class OrganizationsController < ApplicationController
     end
   end
 
+  def create_organization_contact_person
+    @organization_contact_person = OrganizationContactPerson.new organization_contact_person_params
+    respond_to do |format|
+      if @organization_contact_person.save
+        # contact_persons1.contact_person_primary_types << ContactPersonPrimaryType.find_by_code("CP1")
+
+        format.html {redirect_to organization_url(@organization.id), notice: "Successfully saved"}
+      else
+        flash[:notice] = "Unsuccessful"
+        format.html {redirect_to organization_url(@organization.id)}
+      end
+    end
+  end
+
   def update_organization_contact_person
-    if params[:organization_id].present?
-      puts "************************* organization ***********************************"
-      @organization = Organization.find params[:organization_id]
-      puts "************************* params***********************************"
-      if params["save"].present?
-        puts "************************* save ***********************************"
-        if @organization.update organization_params
-          puts "************************* if 2 ***********************************"
-          redirect_to organization_url(@organization), notice: "Successfully saved"
-        else
-          puts "************************* else ***********************************"
-          flash[:notice] = "Unsuccessful"
-          redirect_to organization_url(@organization)
-        end
+    @organization_contact_person = OrganizationContactPerson.find params[:organization_contact_person_id]
+    respond_to do |format|
+      if @organization_contact_person.update organization_contact_person_params
+        format.json { render json: @organization_contact_person }
+      else
+        format.json { render json: @organization_contact_person.errors }
       end
     end
   end
@@ -216,9 +222,12 @@ class OrganizationsController < ApplicationController
     end
 
     def organization_params
-      params.require(:organization).permit(:title_id, :name, :department_org_id, :category, :description, :logo, :type_id, :web_site, :code, :short_name, addresses_attributes: [:id, :category, :address, :primary, :_destroy],  contact_numbers_attributes: [:id, :category, :value, :_destroy], account_attributes: [:id, :_destroy, :industry_types_id, :credit_allow, :credit_period_day, :goodwill_status, :svat_no, :account_manager_id, :code, :vat_number], customers_attributes: [:id, :_destroy, :organization_id, :title_id, :name, :address1, :address2, :address3, :address4, :district_id, contact_type_values_attributes: [:id, :contact_type_id, :value, :_destroy]], organization_contact_persons_attributes: [:id, :title_id, :name, :email, :mobile, :telephone, :type_id, :note])
+      params.require(:organization).permit(:title_id, :name, :department_org_id, :category, :description, :logo, :type_id, :web_site, :code, :short_name, addresses_attributes: [:id, :category, :address, :primary, :_destroy],  contact_numbers_attributes: [:id, :category, :value, :_destroy], account_attributes: [:id, :_destroy, :industry_types_id, :credit_allow, :credit_period_day, :goodwill_status, :svat_no, :account_manager_id, :code, :vat_number], customers_attributes: [:id, :_destroy, :organization_id, :title_id, :name, :address1, :address2, :address3, :address4, :district_id, contact_type_values_attributes: [:id, :contact_type_id, :value, :_destroy]])
     end
 
+    def organization_contact_person_params
+      params.require(:organization_contact_person).permit(:id, :organization_id, :title_id, :name, :email, :mobile, :telephone, :type_id, :note)
+    end
     def customer_params
       params.require(:customer).permit(:id, :_destroy, :organization_id, :title_id, :name, :address1, :address2, :address3, :address4, :district_id, contact_type_values_attributes: [:id, :contact_type_id, :value, :_destroy])
     end
