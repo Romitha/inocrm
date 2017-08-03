@@ -195,8 +195,11 @@ class OrganizationsController < ApplicationController
     @organization_contact_person = OrganizationContactPerson.new organization_contact_person_params
     respond_to do |format|
       if @organization_contact_person.save
-        # contact_persons1.contact_person_primary_types << ContactPersonPrimaryType.find_by_code("CP1")
-
+        if params[:cp_num] == "cp1"
+          @organization_contact_person.contact_person_primary_types << ContactPersonPrimaryType.find_by_code("CP1")
+        else
+          @organization_contact_person.contact_person_primary_types << ContactPersonPrimaryType.find_by_code("CP2")
+        end
         format.html {redirect_to organization_url(@organization.id), notice: "Successfully saved"}
       else
         flash[:notice] = "Unsuccessful"
