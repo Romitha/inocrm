@@ -79,18 +79,14 @@ class OrganizationContactPerson < ActiveRecord::Base
 
   belongs_to :organization
   belongs_to :contact_person_type
+  belongs_to :mst_title, foreign_key: :title_id
+  belongs_to :contact_person_type, foreign_key: :type_id
 
   has_many :contact_person_primary_type_connectors, foreign_key: :contact_person_id
   has_many :contact_person_primary_types, through: :contact_person_primary_type_connectors
 
   scope :contact_persons1, -> { joins(:contact_person_primary_types).where(mst_contact_person_primary_type: {code: "CP1"}) }
   scope :contact_persons2, -> { joins(:contact_person_primary_types).where(mst_contact_person_primary_type: {code: "CP2"}) }
-
-end
-
-class OrganizationContactPersonType < ActiveRecord::Base
-  self.table_name = "mst_contact_person_type"
-
 
 end
 

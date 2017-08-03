@@ -9,28 +9,30 @@
       #tab1.tab-pane.fade.in.active
         .row.small_scale_padding-top1
           .container
-            = simple_nested_form_for organization_contact_person, url: create_organization_contact_person_organization_path(organization_id: organization_contact_person.organization.id, cp_num:"cp1"), method: :post, html: {class: "validate_form"} do |oc|
+            = simple_nested_form_for organization_contact_person, url: create_organization_contact_person_organization_path(organization_id: organization_contact_person.organization.id, cp_num:"cp2"), method: :post, html: {class: "validate_form"} do |oc|
               .row
                 = panels panel_type: "success", header_content: "Add Contact Person 1" do
 
-                  = oc.select :title_id, MstTitle.all.map{|a| [a.title, a.id]}
+                  = oc.association :mst_title, label:"Title", wrapper_html: {class: "col-md-4"}, input_html: {class: "chosen-select"}
+                  .col-md-2
+                  = oc.association :contact_person_type, wrapper_html: {class: "col-md-4"}, input_html: {class: "chosen-select"}
 
-                  = oc.input :name, wrapper_html: {class: "col-md-12"}, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Person Name"}
+                  = oc.input :name, wrapper_html: {class: "col-md-6"}, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Person Name"}
 
-                  = oc.input :email, wrapper_html: {class: "col-md-12"}, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Email Address"}
+                  = oc.input :email, wrapper_html: {class: "col-md-6"}, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Email Address"}
 
-                  = oc.input :mobile, wrapper_html: {class: "col-md-12"}, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Mobile Number"}
+                  = oc.input :mobile, wrapper_html: {class: "col-md-6"}, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Mobile Number"}
 
-                  = oc.input :telephone, wrapper_html: {class: "col-md-12"}, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Telephone Number"}
+                  = oc.input :telephone, wrapper_html: {class: "col-md-6"}, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Telephone Number"}
+
+                  = oc.input :designation, wrapper_html: {class: "col-md-6"}, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Designation"}
 
                   = oc.input :note, wrapper_html: {class: "col-md-12"}, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Note"}
-
-                  = oc.select :type_id, ContactPersonType.all.map{|a| [a.name, a.id]}
 
                   = oc.hidden_field :organization_id
 
                   / = f.submit "Add new Contact", class: "btn btn-success pull-right", id: "submit_new_contact_person"
-                  = oc.submit "Save", name: "save", class: "btn btn-success pull-right"
+                  = oc.submit "Save", name: "save", class: "col-md-2 btn btn-success pull-left"
 
       #tab2.tab-pane.fade
         .row.small_scale_padding-top1
@@ -39,21 +41,23 @@
               .row
                 = panels panel_type: "success", header_content: "Add Contact Person 2" do
 
-                  = oc.select :title_id, MstTitle.all.map{|a| [a.title, a.id]}
+                  = oc.association :mst_title, label:"Title", wrapper_html: {class: "col-md-4"}, input_html: {class: "chosen-select"}
+                  .col-md-2
+                  = oc.association :contact_person_type, wrapper_html: {class: "col-md-4"}, input_html: {class: "chosen-select"}
 
-                  = oc.input :name, wrapper_html: {class: "col-md-12"}, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Person Name"}
+                  = oc.input :name, wrapper_html: {class: "col-md-6"}, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Person Name"}
 
-                  = oc.input :email, wrapper_html: {class: "col-md-12"}, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Email Address"}
+                  = oc.input :email, wrapper_html: {class: "col-md-6"}, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Email Address"}
 
-                  = oc.input :mobile, wrapper_html: {class: "col-md-12"}, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Mobile Number"}
+                  = oc.input :mobile, wrapper_html: {class: "col-md-6"}, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Mobile Number"}
 
-                  = oc.input :telephone, wrapper_html: {class: "col-md-12"}, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Telephone Number"}
+                  = oc.input :telephone, wrapper_html: {class: "col-md-6"}, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Telephone Number"}
+
+                  = oc.input :designation, wrapper_html: {class: "col-md-6"}, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Designation"}
 
                   = oc.input :note, wrapper_html: {class: "col-md-12"}, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Note"}
-
-                  = oc.select :type_id, ContactPersonType.all.map{|a| [a.name, a.id]}
 
                   = oc.hidden_field :organization_id
 
                   / = f.submit "Add new Contact", class: "btn btn-success pull-right", id: "submit_new_contact_person"
-                  = oc.submit "Save", name: "save", class: "btn btn-success pull-right"
+                  = oc.submit "Save", name: "save", class: "col-md-2 btn btn-success pull-left"

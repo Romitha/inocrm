@@ -71,7 +71,7 @@
       .col-md-2
         = a.association :account_manager, include_blank: false, label_method: :full_name
       .col-md-2{class: "#{'for_store_and_branch hide' if params[:action] == 'store_and_branch'}"}
-        = f.input :code, label: "Customer Code"
+        = a.input :code, label: "Customer Code"
   .row
     .col-md-12
       = f.input :description, placeholder: "Description", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Description"}
@@ -128,7 +128,7 @@
             - else
               %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"}
           - else
-            - if ["Contact Number", "Address", "Documents & Attachements", "Organization Relations", "Dealer Types"].include? link_info[0]
+            - if ["Contact Number", "Address", "Documents & Attachements", "Organization Relations", "Dealer Types", "Contact Person"].include? link_info[0]
               %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"}
 
   .tab-content.small_scale_margin-top1
