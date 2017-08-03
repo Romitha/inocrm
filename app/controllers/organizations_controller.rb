@@ -229,7 +229,7 @@ class OrganizationsController < ApplicationController
     end
 
     def organization_contact_person_params
-      params.require(:organization_contact_person).permit(:id, :organization_id, :title_id, :name, :email, :mobile, :telephone, :type_id, :note)
+      params.require(:organization_contact_person).permit(:id, :organization_id, :title_id, :name, :email, :mobile, :telephone, :type_id, :note, :designation)
     end
     def customer_params
       params.require(:customer).permit(:id, :_destroy, :organization_id, :title_id, :name, :address1, :address2, :address3, :address4, :district_id, contact_type_values_attributes: [:id, :contact_type_id, :value, :_destroy])

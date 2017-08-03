@@ -128,7 +128,7 @@
             - else
               %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"}
           - else
-            - if ["Contact Number", "Address", "Documents & Attachements", "Organization Relations", "Dealer Types"].include? link_info[0]
+            - if ["Contact Number", "Address", "Documents & Attachements", "Organization Relations", "Dealer Types", "Contact Person"].include? link_info[0]
               %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"}
 
   .tab-content.small_scale_margin-top1
