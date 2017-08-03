@@ -29,7 +29,7 @@
           = i.input :product_id, as: :hidden, input_html: {class: "dynamic_main_product_id"}
           = i.input :prn_item_object_id, as: :hidden, input_html: {value: i.object.object_id}
           %fieldset
-            %legend Product: #{i.object.inventory_product.generated_item_code}
+            %legend Product: #{i.object.inventory_product.try(:generated_item_code)}
             - if @srn_form_show
               .row
                 - Rails.cache.fetch(session[:prn_srn_arrived_time]).to_a.select{|e| e[:prn_item_object_id] == i.object.object_id}.each do |e|
