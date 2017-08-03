@@ -1861,13 +1861,15 @@ module Admins
 
       respond_to do |format|
         if @prn.inventory_prn_items.any? and @prn.save
-          Rails.cache.fetch(session[:prn_srn_arrived_time]).to_a.each do |item_element|
-            prn_item = @prn.inventory_prn_items.select{|prn_item|prn_item.prn_item_object_id.to_i == item_element[:prn_item_object_id].to_i }.first
+          if session[:prn_srn_arrived_time].present?
+            Rails.cache.fetch(session[:prn_srn_arrived_time]).to_a.each do |item_element|
+              prn_item = @prn.inventory_prn_items.select{|prn_item|prn_item.prn_item_object_id.to_i == item_element[:prn_item_object_id].to_i }.first
 
-            if prn_item.present?
-              prn_item.srn_items << item_element[:srn_items]
+              if prn_item.present?
+                prn_item.srn_items << item_element[:srn_items]
+              end
+
             end
-
           end
 
           CompanyConfig.first.increase_inv_last_prn_no
