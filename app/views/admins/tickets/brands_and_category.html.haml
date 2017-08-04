@@ -43,6 +43,29 @@
           .col-md-12
             = f.link_to_add :product_categories do
               %span.glyphicon.glyphicon-plus-sign Add a Category
+
+        .panel.panel-success
+          .panel-heading
+            %h3.panel-title Cost Rates
+          .panel-body
+            .row
+              = f.simple_fields_for :product_brand_costs do |cost|
+                .row
+                  / - @currency =  Currency.all
+                  = cost.input :currency_id, as: :hidden
+                  = cost.input :updated_by, as: :hidden, input_html: {value: current_user.id}
+                  %tr
+                    .col-md-12
+                      .col-md-4
+                        %strong currency
+                        %br/
+                        = cost.object.currency.code
+                        / =cur.currency
+                      .col-md-4
+                        = cost.input :engineer_cost
+                      .col-md-4
+                        = cost.input :support_engineer_cost
+
         .row
           .col-md-12
             = f.submit "Save", class: "btn btn-success btn-sm", id: "submit_new_brands_and_category", name: "#{params[:edit_more] ? 'update' : 'create'}"
