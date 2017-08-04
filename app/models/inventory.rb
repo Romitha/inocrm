@@ -1258,9 +1258,9 @@ class InventoryPrn < ActiveRecord::Base
     created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
   end
 
-  before_create :assign_prn_no
-  def assign_prn_no
-    self.prn_no = CompanyConfig.first.next_sup_last_prn_no
+  after_create :update_prn_no
+  def update_prn_no
+    update prn_no: CompanyConfig.first.next_sup_last_prn_no
   end
 
   def po_quantity
