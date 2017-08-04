@@ -121,6 +121,7 @@ class ProductBrand < ActiveRecord::Base
   belongs_to :sla_time, foreign_key: :sla_id
   belongs_to :supplier, class_name: "Organization", foreign_key: :organization_id
   has_many :product_brand_costs
+  accepts_nested_attributes_for :product_brand_costs, allow_destroy: true
 
   validates_uniqueness_of :name
 
@@ -198,6 +199,7 @@ class ProductBrandCost < ActiveRecord::Base
   self.table_name = "mst_spt_product_brand_cost"
 
   belongs_to :product_brand
+  belongs_to :currency
 end
 
 class ProductCustomerHistory < ActiveRecord::Base

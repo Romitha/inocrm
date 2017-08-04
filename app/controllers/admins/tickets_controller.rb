@@ -561,9 +561,11 @@ module Admins
       else
         if params[:create]
           @brands_and_category = ProductBrand.new brands_and_category_params
+          # @brands_and_category.product_brand_costs.build(currency_id: currency.id)
           if @brands_and_category.save
             params[:create] = nil
             @brands_and_category = ProductBrand.new
+            flash[:notice] = "Successfully saved!"
           else
             flash[:error] = "Unable to save"
           end
@@ -581,6 +583,10 @@ module Admins
 
         else
           @brands_and_category = ProductBrand.new
+
+            Currency.all.each do |currency|
+              @brands_and_category.product_brand_costs.build(currency_id: currency.id)
+            end
         end
         @brands_and_category_all = ProductBrand.order(updated_at: :desc)
       end
@@ -662,7 +668,7 @@ module Admins
       end
 
       def brands_and_category_params
-        params.require(:product_brand).permit(:organization_id, :currency_id, :sla_id, :name, :parts_return_days, :warranty_date_format, product_categories_attributes: [:_destroy, :id, :sla_id, :name])
+        params.require(:product_brand).permit(:organization_id, :currency_id, :sla_id, :name, :parts_return_days, :warranty_date_format, product_categories_attributes: [:_destroy, :id, :sla_id, :name], product_brand_costs_attributes: [:id, :engineer_cost, :support_engineer_cost, :currency_id, :updated_by])
       end
 
       def product_category_params
