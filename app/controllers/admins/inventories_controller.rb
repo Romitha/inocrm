@@ -1776,9 +1776,7 @@ module Admins
           refined_search = "closed:false"
           refined_inventory_product = params[:search_inventory][:srn_item].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
           refined_search = [refined_inventory_product, refined_search].map{|v| v if v.present? }.compact.join(" AND ")
-          puts "*********************************"
-          puts refined_search
-          puts "*********************************"
+
         end
         params[:query] = refined_search
         @srn_items = SrnItem.search(params)
@@ -1875,8 +1873,10 @@ module Admins
           CompanyConfig.first.increase_inv_last_prn_no
           flash[:notice] = "Successfully saved"
 
-          Rails.cache.delete(session[:prn_srn_arrived_time])
-          session[:prn_srn_arrived_time] = nil
+          if session[:prn_srn_arrived_time].present?
+            Rails.cache.delete(session[:prn_srn_arrived_time])
+            session[:prn_srn_arrived_time] = nil
+          end
 
         else
           flash[:alert] = "Unable to save. Please check whether items are validated. There must be atleast one item."

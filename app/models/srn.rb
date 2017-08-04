@@ -157,7 +157,7 @@ class SrnItem < ActiveRecord::Base
           must { string params[:query] } if params[:query].present?
         end
       end
-      sort { by :created_at, {order: "desc", ignore_unmapped: true} }
+      sort { by "srn.id", {order: "desc", ignore_unmapped: true} }
     end
   end
 
@@ -189,7 +189,7 @@ class SrnItem < ActiveRecord::Base
     Inventory
     Gin
     to_json(
-      only: [:id, :closed, :quantity],
+      only: [:id, :closed, :quantity, :created_at],
       methods: [:srn_id, :inventory, :balance_to_be_issued],
       include: {
         inventory_product: {
