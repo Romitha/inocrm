@@ -204,8 +204,7 @@ class Organization < ActiveRecord::Base
 
   def assign_to_organization
     if account
-      # self.account.update({account_no: (CompanyConfig.first.last_account_no +1)})
-      self.account.update({account_no: (CompanyConfig.first.last_account_no.to_i + 1)})
+      self.account.update account_no: (CompanyConfig.first.last_account_no + 1 )
       CompanyConfig.first.increment! :last_account_no, 1
     end
   end
