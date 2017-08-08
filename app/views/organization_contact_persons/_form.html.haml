@@ -9,7 +9,7 @@
       #tab1.tab-pane.fade.in.active
         .row.small_scale_padding-top1
           .container
-            = simple_nested_form_for organization_contact_person, url: create_organization_contact_person_organization_path(organization_id: organization_contact_person.organization.id, cp_num:"cp1"), method: :post, html: {class: "validate_form"} do |oc|
+            = simple_nested_form_for organization_contact_person, url: create_organization_contact_person_organization_path(organization_id: organization_contact_person.organization.id, cp_num:"cp2"), method: :post, html: {class: "validate_form"} do |oc|
               .row
                 = panels panel_type: "success", header_content: "Add Contact Person 1" do
 
@@ -39,7 +39,7 @@
           .container
             = simple_nested_form_for organization_contact_person, url: create_organization_contact_person_organization_path(organization_id: organization_contact_person.organization.id, cp_num:"cp2"), method: :post, html: {class: "validate_form"} do |oc|
               .row
-                = panels panel_type: "success", header_content: "Add Contact Person 2" do
+                = panels panel_type: "success", header_content: "Add Contact Person " do
 
                   = oc.association :mst_title, label:"Title", wrapper_html: {class: "col-md-4"}, input_html: {class: "chosen-select"}
                   .col-md-2
