@@ -47,7 +47,7 @@
           .row
             .col-md-12
               %strong #{@ticket_fsr.ticket_engineer.user.full_name}
-              = fsr.input :hours_worked, input_html: {min: "0", class: "only_float"}, label: "Hours worked (in hours)"
+              = fsr.input :hours_worked, input_html: {min: "0", class: "only_float", id: "worked_hours"}, label: "Hours worked (in hours)"
             .col-md-12
               = fsr.input :down_time, input_html: {min: "0", class: "only_float"}, label: "Down time (in hours)"
             .col-md-12

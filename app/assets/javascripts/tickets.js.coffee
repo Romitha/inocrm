@@ -771,32 +771,34 @@ window.Tickets =
     if $('#work_started').val() != ''
       $('#work_finished').prop('disabled', false)
 
+
+    date_finished = $("#work_finished").val()
+    date_started = $("#work_started").val()
+
+    date_in = $("#in_at").val()
+    date_out = $("#out_at").val()
+
+    finished = new Date(date_finished)
+    started = new Date(date_started)
+
+    in_at = new Date(date_in)
+    out_at = new Date(date_out)
+
+    worked_time = finished - started
+    time_in_out = in_at - out_at
+
+    if isNaN(worked_time)
+      travel_time = time_in_out
+    else
+      travel_time = time_in_out - worked_time
+
+    worked_time_in_hours = worked_time/(1000*60*60)
+    travel_time_in_hours = travel_time/(1000*60*60)
+
+    if $('#work_finished').val() != ''
+      $('#worked_hours').val(worked_time_in_hours)
     if $('#in_at').val() != ''
-
-      date_finished = $("#work_finished").val()
-      date_started = $("#work_started").val()
-
-      date_in = $("#in_at").val()
-      date_out = $("#out_at").val()
-
-      finished = new Date(date_finished)
-      started = new Date(date_started)
-
-      in_at = new Date(date_in)
-      out_at = new Date(date_out)
-
-      worked_time = finished - started
-      time_in_out = in_at - out_at
-
-      if isNaN(worked_time)
-        travel_time = time_in_out
-      else
-        travel_time = time_in_out - worked_time
-
-      travel_time_in_hours = travel_time/(1000*60*60)
-
       $('#travelled_hours').val(travel_time_in_hours)
-
 
   approveManufacturePart: (e)->
     console.log($(e))
