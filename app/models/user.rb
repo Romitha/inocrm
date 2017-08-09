@@ -181,6 +181,10 @@ class Customer < ActiveRecord::Base
     "#{try(:mst_title).try(:title)} #{name}"
   end
 
+  def full_address
+    "#{address1}, #{address2}, #{address3}, #{address4}"
+  end
+
   def is_used_anywhere?
     tickets.any?# or contact_types.any?
   end

@@ -23,65 +23,73 @@ module TicketsHelper
     
   # end
 
+  def send_email(*args)
+    WorkflowMapping
 
-  # def send_email(to_addresses, cc_addresses, ticket_id, spare_part_id, onloan, engineer_id,  email_code)
+    options = args.extract_options!
 
-  #     ticket =  Ticket.find_by_id(ticket_id)
-  #     spare_part = TicketSparePart.find_by_id(spare_part_id)
-  #     engineer = TicketEngineer.find_by_id(engineer_id)
-       
-  #     #Customer
-  #     customer_name = ticket.cutomer.title.try  + ticket.cutomer.name
-  #     customer_address = ticket.cutomer.address1.try + ‘, ’+ ticket.cutomer.address2.try + ‘, ’+ ticket.cutomer.address3.try + ‘, ’+ ticket.cutomer.address4.try
-  #     customer_code = ticket.cutomer.organization.account.code.try
-  #     customer_contact_person_name = ticket.contact_person1.contact_report_person.title + ticket.contact_person1.contact_report_person.name
-       
-  #     #ticket
-  #     ticket_no = ticket.no
-  #     ticket_logged_at = ticket.logged_at
-  #     ticket_logged_by = ticket.logged_by
-  #     ticket_contract_no = ticket.contact.contract_no
-  #     ticket_type = ticket.ticket_type = IH ? “in-house” : ”on-site”
-  #     ticket_informed_method = ticket. informed_method.name
-  #     ticket_problem_description = ticket. problem_description
-       
-  #     ticket_product_brand = ticket.
-  #     ticket_product_category = ticket.
-  #     ticket_product_name = ticket.
-  #     ticket_product_serial_no = ticket.
-       
-  #     #Job Completed
-       
-  #     ticket_Job_completed_at = ticket.
-  #     ticket_Dispatch_method = ticket.
-       
-  #     #spare Part
-       
-  #     spare_part_no = spare_part.no
-  #     spare_part_name = spare_part.description
-  #     if onloan
-  #        spare_part_type =  “Onloan”
-  #     else
-  #       spare_part_type =  “Store” if spare_part.store.present?
-  #       spare_part_type =  “Manufacture” if spare_part.manufacture.present?
-  #     end
-       
-  #     #assign_engineer
-       
-  #     engineer_name = engineer.user.name
-  #     assigned_at = engineer. job_assigned_at
-  #     assigned_by = engineer.created_action.action_by.user.name
-  #     task_description = engineer.task_description
-       
-  #     email =  mst_spt_template_email.findby(email_code)
-  #     if email.present? and email.active
-  #        mail_subject = email.subject 
-  #        #replace by above variables
-  #        mail_body = email.body 
-  #        #replace by above variables
-  #        Emal send with to_addresses and cc_addresses
-  #     end
+    ticket_id = options[:ticket_id]
+    spare_part_id = options[:spare_part_id]
+    engineer_id = options[:engineer_id]
+    onloan = options[:onloan]
+    email_code = options[:email_code]
+    email_to = options[:email_to]
+    email_cc = options[:email_cc]
 
-  # end 
+    ticket =  Ticket.find_by_id(ticket_id)
+    spare_part = TicketSparePart.find_by_id(spare_part_id)
+    engineer = TicketEngineer.find_by_id(engineer_id)
+
+    body_merger = {}
+
+    if ticket.present?
+      customer_info = {customer_name: ticket.customer.full_name, customer_address: ticket.customer.full_address, customer_code: (ticket.customer.organization and ticket.customer.organization.account.code), customer_contact_person_name: ticket.contact_person1.full_name }
+
+      body_merger.merge!(customer_info)
+
+      ticket_info = { ticket_no: ticket.ticket_no, ticket_logged_at: ticket.logged_at.try(:strftime, INOCRM_CONFIG["short_date_format"]), ticket_logged_by: ticket.logged_by_user, ticket_contract_no: ticket.ticket_contract.contract_no, ticket_informed_method: ticket.inform_method.try(:name), ticket_problem_description: ticket.problem_description, ticket_product_brand: ticket.products.first.brand_name, ticket_product_category: ticket.products.first.category_name, ticket_product_serial_no: ticket.products.first.serial_no }
+
+      body_merger.merge!(ticket_info)
+
+      job_completed_info = {ticket_job_completed_at: ticket.job_finished_at.try(:string,INOCRM_CONFIG["short_date_format"] ), ticket_dispatch_method: "ticket."}
+
+      body_merger.merge!(job_completed_info)
+
+
+    end
+
+    if spare_part.present?
+      spare_part_type = case
+      when onloan
+        "Onloan"
+      when spare_part.ticket_spare_part_store.present?
+        "Store"
+      when spare_part.ticket_spare_part_manufacture.present?
+        "Manufacture"
+      end
+
+      spare_part_info = {spare_part_no: spare_part.spare_part_no, spare_part_name: spare_part.spare_part_description, spare_part_type: spare_part_type}
+
+      body_merger.merge!(spare_part_info)
+
+    end
+
+    if engineer.present?
+      engineer_info = {engineer_name: engineer.user.full_name, assigned_at: engineer.assigned_at.try(:strftime, INOCRM_CONFIG["short_date_format"]) , assigned_by: User.cached_find_by_id(engineer.job_assigned_by).full_name, task_description: engineer.task_description }    
+
+      body_merger.merge!(engineer_info)
+
+    end
+
+    email = EmailTemplate.find_by_code(email_code)
+
+    if email.present? and email.active
+      reprocessed_email_body = email.body.to_s.gsub(/#\w+/){ |s| body_merger[s[1..-1].to_sym] }
+
+      UserMailer.welcome_email(to: email_to, cc: email_cc, subject: email.subject, body: reprocessed_email_body).deliver_now if EmailTemplate.find_by_code(email_code).try(:active)
+
+    end
+
+  end
 
 end

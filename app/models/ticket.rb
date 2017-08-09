@@ -74,14 +74,6 @@ class Ticket < ActiveRecord::Base
             },
           }
         },
-        # user_ticket_actions: {
-        #   only: [:id, :action_id],
-        #   include: {
-        #     hp_case: {
-        #       only: [:ticket_action_id, :case_id],
-        #     },
-        #   }
-        # },
         hp_cases: {
           only: [:ticket_action_id, :case_id],
         },
@@ -149,6 +141,10 @@ class Ticket < ActiveRecord::Base
     Rails.cache.fetch([self.id, :ticket_estimations]){ self.ticket_estimations.to_a }
   end
 
+  def logged_by_user
+    User.cached_find_by_id(logged_by).try(:full_name)
+  end
+
   def flash_cache
     Organization
 
@@ -175,21 +171,15 @@ class Ticket < ActiveRecord::Base
 
   def calculate_ticket_total_cost
 
-    engineer_time = 0
-    sup_engineer_time = 0
     engineer_cost = 0
     sup_engineer_cost = 0
     part_cost = 0
     additional_cost = 0
     external_cost = 0
 
-    engineer_time += ticket_engineers.sum(:job_actual_time_spent) #In Minutes
+    engineer_time += (ticket_engineers.sum(:job_actual_time_spent) + (ticket_fsrs.sum(:hours_worked) * 60)) #In Minutes
     
-    sup_engineer_time += ticket_engineers.to_a.sum{ |ticket_engineer|  ticket_engineer.ticket_support_engineers.sum(:job_actual_time_spent) } #In Minutes
-
-    engineer_time += ticket_fsrs.sum(:hours_worked) * 60 #In Minutes
-
-    sup_engineer_time += ticket_fsrs.to_a.sum{ |fsr|  fsr.ticket_fsr_support_engineers.sum(:hours_worked) } * 60 #In Minutes
+    sup_engineer_time += (ticket_engineers.to_a.sum{ |ticket_engineer|  ticket_engineer.ticket_support_engineers.sum(:job_actual_time_spent) } + (ticket_fsrs.to_a.sum{ |fsr|  fsr.ticket_fsr_support_engineers.sum(:hours_worked) } * 60)) #In Minutes
 
     ticket_estimations.each do |ticket_estimation|
       # if (!ticket_estimation.approval_required or (ticket_estimation.approval_required and ticket_estimation.approved)) and (!ticket_estimation.cust_approval_required or (ticket_estimation.cust_approval_required and ticket_estimation.cust_approved))
@@ -296,6 +286,15 @@ class Ticket < ActiveRecord::Base
   belongs_to :contact_person1, foreign_key: :contact_person1_id
   belongs_to :contact_person2, foreign_key: :contact_person2_id
   belongs_to :report_person, foreign_key: :reporter_id
+  belongs_to :sla_time, foreign_key: :sla_id
+  belongs_to :ticket_status_resolve, foreign_key: :status_resolve_id
+  belongs_to :repair_type, foreign_key: :repair_type_id
+  belongs_to :manufacture_currency, class_name: "Currency", foreign_key: :manufacture_currency_id
+  belongs_to :ticket_start_action, foreign_key: :job_started_action_id
+  belongs_to :ticket_repair_type, foreign_key: :repair_type_id
+  belongs_to :reason, foreign_key: :hold_reason_id
+  belongs_to :owner_engineer, class_name: "TicketEngineer"
+  belongs_to :owner_organization, class_name: "Organization"
 
   has_many :ticket_product_serials, foreign_key: :ticket_id
   has_many :products, through: :ticket_product_serials
@@ -314,7 +313,6 @@ class Ticket < ActiveRecord::Base
   has_many :accessories, through: :ticket_accessories
   accepts_nested_attributes_for :ticket_accessories, allow_destroy: true
 
-  belongs_to :sla_time, foreign_key: :sla_id
 
   has_many :dyna_columns, as: :resourceable, autosave: true
 
@@ -330,9 +328,6 @@ class Ticket < ActiveRecord::Base
 
   has_many :ticket_workflow_processes
 
-  belongs_to :ticket_status_resolve, foreign_key: :status_resolve_id
-  belongs_to :repair_type, foreign_key: :repair_type_id
-  belongs_to :manufacture_currency, class_name: "Currency", foreign_key: :manufacture_currency_id
 
   has_many :ticket_spare_parts
   accepts_nested_attributes_for :ticket_spare_parts, allow_destroy: true
@@ -340,9 +335,6 @@ class Ticket < ActiveRecord::Base
   has_many :ticket_on_loan_spare_parts
   accepts_nested_attributes_for :ticket_on_loan_spare_parts, allow_destroy: true
 
-  belongs_to :ticket_start_action, foreign_key: :job_started_action_id
-  belongs_to :ticket_repair_type, foreign_key: :repair_type_id
-  belongs_to :reason, foreign_key: :hold_reason_id
 
   has_many :ticket_fsrs
   accepts_nested_attributes_for :ticket_fsrs, allow_destroy: true
@@ -379,9 +371,6 @@ class Ticket < ActiveRecord::Base
   has_many :ticket_engineers, class_name: "TicketEngineer", foreign_key: :ticket_id
   has_many :users, through: :ticket_engineers
 
-  belongs_to :owner_engineer, class_name: "TicketEngineer"
-
-  belongs_to :owner_organization, class_name: "Organization"
 
   belongs_to :onsite_type
   accepts_nested_attributes_for :onsite_type, allow_destroy: true

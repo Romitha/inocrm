@@ -1,8 +1,11 @@
 class UserMailer < ApplicationMailer
+  default from: "no_replay@inocrm.com"
 
-  def welcome_email(user)
-    @user = user
-    email_with_name = %(umeshblader@gmail.com)
-    mail(to: email_with_name, subject: 'Welcome to My Awesome Site')
+  def welcome_email(*args)
+    options = args.extract_options!
+    options[:content_type] = "text/html"
+    # @user = user
+    # email_with_name = %(umeshblader@gmail.com)
+    mail(options)
   end
 end

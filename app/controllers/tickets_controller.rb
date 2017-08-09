@@ -800,9 +800,13 @@ class TicketsController < ApplicationController
         end
         @ticket.update_index
 
-        # if params[:send_email].present?
-        #   send_email(params[:to_address], params[:cc_address], ticket_id, '', '', '',  new_ticket_code[global constant])
-        # end
+        email_to = params[:email_to].to_s
+        cc = email_to.scan(/cc:\w+\@{1}\w+\.\w+/).map{|e| e[3..-1]}
+        to = (email_to.scan(/to:\w+\@{1}\w+\.\w+/).map{|e| e[3..-1]}.first or cc.first)
+
+        if params[:send_email].present? and params[:send_email].to_bool
+          view_context.send_email(email_to: to, email_cc: cc, ticket_id: @ticket.id, email_code: "NEW_TICKET") if to.present?
+        end
 
         flash_message = @bpm_process_error ? "Ticket successfully saved. But BPM error. Please continue after rectifying BPM" : "Thank you. ticket is successfully registered."
 
@@ -857,6 +861,8 @@ class TicketsController < ApplicationController
 
   def q_and_answer_save
     QAndA
+    WorkflowMapping
+
     @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
     @ticket.q_and_answers.clear
     @ticket.ge_q_and_answers.clear

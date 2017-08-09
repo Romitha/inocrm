@@ -8,3 +8,8 @@ class WorkflowHeaderTitle < ActiveRecord::Base
   # has_many :tickets, foreign_key: :status_resolve_id
 
 end
+
+class EmailTemplate < ActiveRecord::Base
+  self.table_name = "mst_spt_template_email"
+
+end

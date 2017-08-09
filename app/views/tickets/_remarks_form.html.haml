@@ -1,6 +1,7 @@
 #remarks
 
   = simple_nested_form_for ticket, url: finalize_ticket_save_tickets_path, method: :post, remote: true, html: {class: "validate_form"} do |f|
+
     .row
       .col-md-2
         %strong Contact By
@@ -16,7 +17,11 @@
         - contact_person_array.push(["Contact Person2", 2]) if ticket.contact_person2.present?
         = f.select :inform_cp, contact_person_array, {}, class: "col-md-12 small_scale_margin-top5"
 
-      .col-md-8
+      - unless ticket.ticket_contract.present?
+        .col-md-2
+          = f.association :ticket_currency, label_method: :code, include_blank: false
+
+      .col-md-4.pull-right
         = f.input :note
         = f.input :remarks, label: "Remarks (Internal)"
         = f.simple_fields_for :ticket_extra_remarks do |er|
@@ -38,6 +43,16 @@
         = check_box_tag "first_resolution", nil, false, class: "first_resolution"
         = label_tag "1st Level Resolution"
         = f.input :resolution_summary, required: true, label: "Resolution", input_html: {class: "ticket_resolution_summary"}
+
+      / - if EmailTemplate.find_by_code("NEW_TICKET").try(:active)
+      .col-md-12
+        = check_box_tag "send_email", true, EmailTemplate.find_by_code("NEW_TICKET").try(:default_enable)
+        = label_tag "Send Email"
+      .col-md-4
+        = text_field_tag "email_to", nil, placeholder: "Enter email like 'to:a@email.com, cc:b@email.com'", class: "form-control small_scale_margin-bottom2"
+        .hint
+          Enter email like to:a@email.com, cc:b@email.com, cc:c@email.com. It can be multiple occurance. But to:... email must be one occurance. Please avoid space after to: and cc:
+
     .row
       .col-md-12
         = link_to "Back", new_warranty_path, remote: true, data: {disable_with: "Please wait..."}
