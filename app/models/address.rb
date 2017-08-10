@@ -9,8 +9,8 @@ class Address < ActiveRecord::Base
 
   # validates_uniqueness_of :primary, conditions: -> { where(primary: true)}, scope: [:addressable_id, :addressable_type]
 
-  scope :primary_address, -> {where(primary: true)}
-  scope :non_primary_address, -> {where(primary: false)}
+  scope :primary_address, -> {where(primary_address: true)}
+  scope :non_primary_address, -> {where(primary_address: false)}
 
   belongs_to :country, class_name: "ProductSoldCountry"
   belongs_to :province

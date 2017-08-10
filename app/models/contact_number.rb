@@ -9,8 +9,8 @@ class ContactNumber < ActiveRecord::Base
   #                :length => { :minimum => 10, :maximum => 15 }
   # validates :category, presence: true
 
-  scope :primary_contactnumber, -> {where(primary: true)}
-  scope :nonprimary_contactnumber, -> {where(primary: false)}
+  scope :primary_contactnumber, -> {where(primary_contact: true)}
+  scope :nonprimary_contactnumber, -> {where(primary_contact: false)}
 
   belongs_to :country, class_name: "ProductSoldCountry"
   belongs_to :province
