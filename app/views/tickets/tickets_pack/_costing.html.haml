@@ -1,0 +1,56 @@
+%h3 Costing
+%br/
+.row
+  .col-md-12
+    %strong Currency: #{@ticket.ticket_currency.code}
+  .col-md-12
+    %br/
+  .col-md-4
+    %dl.dl-horizontal
+      %dt Engineer Cost:
+      %dd.text-right
+        = number_with_precision engineer_cost = @ticket.ticket_total_cost.try(:engineer_cost), precision: 2
+      %dt Support Engineer Cost:
+      %dd.text-right
+        = number_with_precision sup_engineer_cost = @ticket.ticket_total_cost.try(:support_engineer_cost), precision: 2
+      %dt Part Cost:
+      %dd.text-right
+        =number_with_precision part_cost = @ticket.ticket_total_cost.try(:part_cost), precision: 2
+      %dt Additional Cost:
+      %dd.text-right
+        =number_with_precision additional_cost = @ticket.ticket_total_cost.try(:additional_cost), precision: 2
+      %dt External Cost:
+      %dd.text-right
+        = number_with_precision external_cost = @ticket.ticket_total_cost.try(:external_cost), precision: 2
+      %dt Total Cost:
+      %dd.text-right.strong
+        - if external_cost && sup_engineer_cost && part_cost && additional_cost && external_cost
+          =number_with_precision (engineer_cost + sup_engineer_cost + part_cost + additional_cost + external_cost), precision: 2
+  .col-md-4
+    %dl.dl-horizontal
+      %dt Invoice Amount:
+      %dd.text-right
+        - if @ticket.final_invoice.present?
+          = number_with_precision invoice_amount = @ticket.final_invoice.total_amount, precision: 2
+      %dt Total Amount Recieved:
+      %dd.text-right
+        - if @ticket.final_invoice.present?
+          = number_with_precision total_amount_recieved = @ticket.final_invoice.total_advance_recieved, precision: 2
+      %dt Payment Pending:
+      %dd.text-right.strong
+        - if invoice_amount.present?
+          = number_with_precision (invoice_amount - total_amount_recieved), precision: 2
+  .col-md-4
+    %dl.dl-horizontal
+      %dt Engineer Time Spent:
+      %dd.text-right
+        =engineer_time_spent = @ticket.ticket_engineers.to_a.sum{|e| e.job_actual_time_spent}
+      %dt Support Engineer Time spent:
+      %dd.text-right
+        =sup_engineer_time_spent = @ticket.ticket_engineers.to_a.sum { |e| e.ticket_support_engineers.sum(:job_actual_time_spent) }
+      %dt Total Time Spent:
+      %dd.text-right.strong
+        = (engineer_time_spent + sup_engineer_time_spent)
+
+  / .col-md-12.text-right
+  /   %strong Total Payment Expected From Manufacture (#{})

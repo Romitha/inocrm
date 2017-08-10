@@ -1044,6 +1044,9 @@ class TicketsController < ApplicationController
       @render_template = "tickets/tickets_pack/workflow"
       @variables = {ticket: @ticket}
 
+    when "costing"
+      @render_template = "tickets/tickets_pack/costing"
+
     else
       render js: "alert('template is unavailable');"
     end
