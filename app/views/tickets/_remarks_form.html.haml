@@ -44,14 +44,14 @@
         = label_tag "1st Level Resolution"
         = f.input :resolution_summary, required: true, label: "Resolution", input_html: {class: "ticket_resolution_summary"}
 
-      / - if EmailTemplate.find_by_code("NEW_TICKET").try(:active)
-      .col-md-12
-        = check_box_tag "send_email", true, EmailTemplate.find_by_code("NEW_TICKET").try(:default_enable)
-        = label_tag "Send Email"
-      .col-md-4
-        = text_field_tag "email_to", nil, placeholder: "Enter email like 'to:a@email.com, cc:b@email.com'", class: "form-control small_scale_margin-bottom2"
-        .hint
-          Enter email like to:a@email.com, cc:b@email.com, cc:c@email.com. It can be multiple occurance. But to:... email must be one occurance. Please avoid space after to: and cc:
+      - if EmailTemplate.find_by_code("NEW_TICKET").try(:active)
+        .col-md-12
+          = check_box_tag "send_email", true, EmailTemplate.find_by_code("NEW_TICKET").try(:default_enable)
+          = label_tag "Send Email"
+        .col-md-4
+          = text_field_tag "email_to", nil, placeholder: "Enter email like 'to:a@email.com, cc:b@email.com'", class: "form-control small_scale_margin-bottom2"
+          .hint
+            Enter email like to:a@email.com, cc:b@email.com, cc:c@email.com. It can be multiple occurance. But to:... email must be one occurance. Please avoid space after to: and cc:
 
     .row
       .col-md-12

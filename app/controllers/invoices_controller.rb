@@ -281,7 +281,7 @@ class InvoicesController < ApplicationController
             @bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT", query: {ticket_id: @ticket.id, d1_pop_approval_pending: "N", priority: @ticket.priority, d42_assignment_required: "N", engineer_id: engineer.id , supp_engr_user: engineer.user_id, supp_hd_user: @ticket.created_by}
 
             if @bpm_response1[:status].try(:upcase) == "SUCCESS"
-              workflow_process = @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name])
+              workflow_process = @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name], engineer_id: engineer.id)
 
               ticket_engineer.update status: 1, job_assigned_at: DateTime.now, workflow_process_id: workflow_process.process_id
 
@@ -409,15 +409,19 @@ class InvoicesController < ApplicationController
             @bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT", query: {ticket_id: @ticket.id, d1_pop_approval_pending: "N", priority: @ticket.priority, d42_assignment_required: "N", engineer_id: engineer.id, supp_engr_user: engineer.user_id, supp_hd_user: @ticket.created_by}
 
             if @bpm_response1[:status].try(:upcase) == "SUCCESS"
-              workflow_process = @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name])
+              workflow_process = @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name], engineer_id: engineer.id)
 
               ticket_engineer.update status: 1, job_assigned_at: DateTime.now, workflow_process_id: workflow_process.process_id
 
               newly_assigned_engs << engineer.user.full_name
 
-              # if params[:send_email].present?
-              #   send_email(params[:to_address], params[:cc_address], ticket_id, '', '', '',  job_completed_code[global constant])
-              # end
+              email_to = params[:email_to].to_s
+              cc = email_to.scan(/cc:\w+\@{1}\w+\.\w+/).map{|e| e[3..-1]}
+              to = (email_to.scan(/to:\w+\@{1}\w+\.\w+/).map{|e| e[3..-1]}.first or cc.first)
+
+              if params[:send_email].present? and params[:send_email].to_bool
+                view_context.send_email(email_to: to, email_cc: cc, ticket_id: @ticket.id, email_code: "COMPLETE_JOB") if to.present?
+              end
             end
 
           end

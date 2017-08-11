@@ -79,6 +79,15 @@
               .col-md-3
                 %strong Informed Note:
                 = i.note
+
+    - if EmailTemplate.find_by_code("COMPLETE_JOB").try(:active)
+      .col-md-12
+        = check_box_tag "send_email", true, EmailTemplate.find_by_code("COMPLETE_JOB").try(:default_enable)
+        = label_tag "Send Email"
+      .col-md-4
+        = text_field_tag "email_to", nil, placeholder: "Enter email like 'to:a@email.com, cc:b@email.com'", class: "form-control small_scale_margin-bottom2"
+        .hint
+          Enter email like to:a@email.com, cc:b@email.com, cc:c@email.com. It can be multiple occurance. But to:... email must be one occurance. Please avoid space after to: and cc:
     = f.submit "Save", class: "btn btn-success"
 
 - else

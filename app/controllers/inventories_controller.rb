@@ -376,7 +376,7 @@ class InventoriesController < ApplicationController
         bpm_response1 = view_context.send_request_process_data start_process: true, process_name: process_name, query: query
 
         if bpm_response1[:status].try(:upcase) == "SUCCESS"
-          @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name])
+          @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name], engineer_id: engineer_id, spare_part_id: request_spare_part_id)
           view_context.ticket_bpm_headers bpm_response1[:process_id], @ticket.id, request_spare_part_id
         else
           @bpm_process_error = true
@@ -494,7 +494,7 @@ class InventoriesController < ApplicationController
             bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT_STORE_PART_RETURN", query: {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, request_onloan_spare_part_id: request_onloan_spare_part_id, onloan_request: onloan_request, supp_engr_user: supp_engr_user, priority: priority}
 
             if bpm_response1[:status].try(:upcase) == "SUCCESS"
-              @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name])
+              @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name], engineer_id: engineer_id, on_loan_spare_part_id: request_onloan_spare_part_id)
               view_context.ticket_bpm_headers bpm_response1[:process_id], @ticket.id, "", request_onloan_spare_part_id
             else
               @bpm_process_error = true
@@ -708,7 +708,7 @@ class InventoriesController < ApplicationController
             bpm_response1 = view_context.send_request_process_data start_process: true, process_name: process_name, query: query
 
             if bpm_response1[:status].try(:upcase) == "SUCCESS"
-              @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name])
+              @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name], engineer_id: engineer_id, spare_part_id: request_spare_part_id)
               view_context.ticket_bpm_headers bpm_response1[:process_id], @ticket.id, request_spare_part_id
               flash[:notice] = "Successfully part requested"
             else
@@ -1801,7 +1801,7 @@ class InventoriesController < ApplicationController
                   @bpm_response1 = view_context.send_request_process_data start_process: true, process_name: process_name, query: query
 
                   if @bpm_response1[:status].try(:upcase) == "SUCCESS"
-                    @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name])
+                    @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name], engineer_id: ticket_spare_part.engineer_id, spare_part_id: request_spare_part_id)
                     view_context.ticket_bpm_headers @bpm_response1[:process_id], @ticket.id, request_spare_part_id
                   else
                     @bpm_process_error = true
@@ -1947,7 +1947,7 @@ class InventoriesController < ApplicationController
                   @bpm_response1 = view_context.send_request_process_data start_process: true, process_name: process_name, query: query
 
                   if @bpm_response1[:status].try(:upcase) == "SUCCESS"
-                    @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name])
+                    @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name], engineer_id: ticket_spare_part.engineer_id, spare_part_id: request_spare_part_id)
                     view_context.ticket_bpm_headers @bpm_response1[:process_id], @ticket.id, request_spare_part_id
                   else
                     @bpm_process_error = true

@@ -354,6 +354,7 @@ class TicketEngineer < ActiveRecord::Base
 
   has_many :ticket_owners, class_name: "Ticket", foreign_key: :owner_engineer_id
   has_many :user_assign_ticket_actions, foreign_key: :assign_to_engineer_id
+  has_many :ticket_workflow_processes, foreign_key: :engineer_id
 
   belongs_to :parent_engineer, class_name: "TicketEngineer"
   has_many :sub_engineers, class_name: "TicketEngineer", foreign_key: :parent_engineer_id

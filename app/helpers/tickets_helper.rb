@@ -47,7 +47,7 @@ module TicketsHelper
 
       body_merger.merge!(customer_info)
 
-      ticket_info = { ticket_no: ticket.ticket_no, ticket_logged_at: ticket.logged_at.try(:strftime, INOCRM_CONFIG["short_date_format"]), ticket_logged_by: ticket.logged_by_user, ticket_contract_no: ticket.ticket_contract.contract_no, ticket_informed_method: ticket.inform_method.try(:name), ticket_problem_description: ticket.problem_description, ticket_product_brand: ticket.products.first.brand_name, ticket_product_category: ticket.products.first.category_name, ticket_product_serial_no: ticket.products.first.serial_no }
+      ticket_info = { ticket_no: ticket.ticket_no, ticket_logged_at: ticket.logged_at.try(:strftime, INOCRM_CONFIG["short_date_format"]), ticket_logged_by: ticket.logged_by_user, ticket_contract_no: ticket.ticket_contract.contract_no, ticket_informed_method: ticket.inform_method.try(:name), product_name: ticket.products.first.name, ticket_problem_description: ticket.problem_description, ticket_product_brand: ticket.products.first.brand_name, ticket_product_category: ticket.products.first.category_name, ticket_product_serial_no: ticket.products.first.serial_no }
 
       body_merger.merge!(ticket_info)
 

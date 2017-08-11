@@ -1276,17 +1276,25 @@ class TicketsController < ApplicationController
                 if bpm_response1[:status].try(:upcase) == "SUCCESS"
 
 
-                  workflow_process = @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name])
+                  workflow_process = @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name], engineer_id: engineer_id)
 
                   view_context.ticket_bpm_headers bpm_response1[:process_id], @ticket.id
 
-                  ticket_engineer.update status: 1, job_assigned_at: DateTime.now, workflow_process_id: workflow_process.id 
+                  ticket_engineer.update status: 1, job_assigned_at: DateTime.now, workflow_process_id: workflow_process.id
 
-                  to_address = ticket_engineer.user.email
-                  ticket_engineer.ticket_support_engineers.each do |support_engineer|
-                    to_address = to_address + ', ' + support_engineer.user.email
+                  email_template = EmailTemplate.find_by_code("ASSIGN_JOB")
+
+                  email_to = ticket_engineer.user.email
+                  if email_template.try(:active)
+                    view_context.send_email(email_to: email_to, ticket_id: @ticket.id, engineer_id: ticket_engineer.id, email_code: "ASSIGN_JOB") if email_to.present?
+
+                    ticket_engineer.ticket_support_engineers.each do |support_engineer|
+                      view_context.send_email(email_to: support_engineer.user.email, ticket_id: @ticket.id, email_code: "ASSIGN_JOB") if support_engineer.user.email.present?
+
+                    end
+
                   end
-                  # send_email(to_address, '', ticket_id, '', '', ticket_engineer.id,  assign_job_code[global constant])
+
 
                 else
                   all_success = false
@@ -2065,7 +2073,13 @@ class TicketsController < ApplicationController
 
           WebsocketRails[:posts].trigger 'new', {task_name: "Spare part", task_id: spt_ticket_spare_part.id, task_verb: "received and issued.", by: current_user.email, at: Time.now.strftime('%d/%m/%Y at %H:%M:%S')}
 
-          # send_email(spt_ticket_spare_part.engineer.user.email, '', spt_ticket_spare_part.ticket_id, spt_ticket_spare_part.id, false, spt_ticket_spare_part.engineer_id,  part_issued_code[global constant])
+          email_template = EmailTemplate.find_by_code("PART_ISSUED")
+
+          email_to = spt_ticket_spare_part.engineer.user.email
+          if email_template.try(:active)
+            view_context.send_email(email_to: email_to, ticket_id: @ticket.id, engineer_id: spt_ticket_spare_part.engineer.id, spare_part_id: spt_ticket_spare_part.id, email_code: "PART_ISSUED") if email_to.present?
+
+          end
 
           flash[:notice]= "Successfully updated"
         else
@@ -3530,7 +3544,14 @@ class TicketsController < ApplicationController
             @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
             if @bpm_response[:status].upcase == "SUCCESS"
-              # send_email(@onloan_request_part.engineer.user.email, '', @onloan_request_part.ticket_id, @onloan_request_part.id, true, @onloan_request_part.engineer_id,  part_issued_code[global constant])
+
+              email_template = EmailTemplate.find_by_code("PART_ISSUED")
+
+              email_to = @onloan_request_part.engineer.user.email
+              if email_template.try(:active)
+                view_context.send_email(email_to: email_to, ticket_id: @onloan_request_part.ticket.id, engineer_id: @onloan_request_part.engineer_id, spare_part_id: @onloan_request_part.ticket_spare_part.id, onloan: true, email_code: "PART_ISSUED") if email_to.present?
+
+              end
 
               flash[:notice] = "Successfully updated."
             else
@@ -3560,7 +3581,14 @@ class TicketsController < ApplicationController
             @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
             if @bpm_response[:status].upcase == "SUCCESS"
-              # send_email(@ticket_spare_part.engineer.user.email, '', @ticket_spare_part.ticket_id, @ticket_spare_part.id, false, @ticket_spare_part.engineer_id,  part_issued_code[global constant])
+
+              email_template = EmailTemplate.find_by_code("PART_ISSUED")
+
+              email_to = @ticket_spare_part.engineer.user.email
+              if email_template.try(:active)
+                view_context.send_email(email_to: email_to, ticket_id: @ticket_spare_part.ticket_id, engineer_id: @ticket_spare_part.engineer_id, spare_part_id: @ticket_spare_part.id, email_code: "PART_ISSUED") if email_to.present?
+
+              end
 
               flash[:notice] = "Successfully updated."
             else
@@ -3676,9 +3704,13 @@ class TicketsController < ApplicationController
   def workflow_diagram
     @ticket_id = params[:ticket_id]
     @ticket = Ticket.find @ticket_id
+    ticket_engineer = TicketEngineer.find(params[:engineer_id]) if params[:engineer_id].present?
+
     @workflow_processes = params[:workflow_process_id].present? ? [HashToObject.new({process_id: params[:workflow_process_id]})] : @ticket.ticket_workflow_processes.to_a
 
     @workflow_process_ids = @workflow_processes.map { |p| p.process_id }
+
+    @workflow_process_ids << ticket_engineer.ticket_workflow_processes.pluck(:process_id) if ticket_engineer.present?
     @task_list = []
     @workflow_process_ids.each do |workflow_process_id|
 
@@ -3986,7 +4018,7 @@ class TicketsController < ApplicationController
       @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
       if @bpm_response1[:status].try(:upcase) == "SUCCESS"
-        @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name])
+        @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name], engineer_id: spt_ticket_spare_part.engineer_id, spare_part_id: request_spare_part_id)
         view_context.ticket_bpm_headers @bpm_response1[:process_id], @ticket.id, request_spare_part_id
       else
         @bpm_process_error = true
@@ -4493,18 +4525,26 @@ class TicketsController < ApplicationController
               @bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT", query: {ticket_id: ticket_id, d1_pop_approval_pending: di_pop_approval_pending, priority: priority, d42_assignment_required: d42_assignment_required, engineer_id: engineer_id , supp_engr_user: supp_engr_user, supp_hd_user: supp_hd_user}
 
               if @bpm_response1[:status].try(:upcase) == "SUCCESS"
-                workflow_process = @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name])
+                workflow_process = @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name], engineer_id: engineer_id)
 
                 view_context.ticket_bpm_headers @bpm_response1[:process_id], @ticket.id
 
                 next_engineer.update status: 1, job_assigned_at: DateTime.now, workflow_process_id: workflow_process.id
 
-                to_address = next_engineer.user.email
-                next_engineer.ticket_support_engineers.each do |support_engineer|
-                  to_address = to_address + ', ' + support_engineer.user.email
-                end
-                # send_email(to_address, '', ticket_id, '', '', next_engineer.id,  assign_job_code[global constant])
+                email_template = EmailTemplate.find_by_code("ASSIGN_JOB")
 
+                email_to = next_engineer.engineer.user.email
+                if email_template.try(:active)
+                  view_context.send_email(email_to: email_to, ticket_id: ticket_id, engineer_id: next_engineer.id, email_code: "ASSIGN_JOB") if email_to.present?
+
+                  
+                  next_engineer.ticket_support_engineers.each do |support_engineer|
+                    email_to = support_engineer.user.email
+                    view_context.send_email(email_to: email_to, ticket_id: ticket_id, engineer_id: next_engineer.id, email_code: "ASSIGN_JOB") if email_to.present?
+
+                  end
+
+                end
 
               else
                 all_success = false
@@ -4840,7 +4880,8 @@ class TicketsController < ApplicationController
           @bpm_response1 = view_context.send_request_process_data start_process: true, process_name: process_name, query: query
 
           if @bpm_response1[:status].try(:upcase) == "SUCCESS"
-            @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name])
+            est_id = estimation_required ? part_estimation_id : nil
+            @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name], engineer_id: @ticket_spare_part.engineer_id, spare_part_id: request_spare_part_id, estimation_id: est_id)
             view_context.ticket_bpm_headers @bpm_response1[:process_id], @ticket.id, request_spare_part_id
           else
             @bpm_process_error = true
@@ -4935,7 +4976,7 @@ class TicketsController < ApplicationController
 
 
         if bpm_response1[:status].try(:upcase) == "SUCCESS"
-          @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name])
+          @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name], engineer_id: engineer_id, on_loan_spare_part_id: request_onloan_spare_part_id)
 
           view_context.ticket_bpm_headers bpm_response1[:process_id], @ticket.id, "", request_onloan_spare_part_id
         else

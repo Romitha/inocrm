@@ -21,7 +21,7 @@
             - content_for :engineer, flush: true do
               =channeled_eng_set[:task_description]
             .assign-engineers{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Task Description", "data-content"=> yield(:engineer), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }
-              = link_to workflow_diagram_tickets_path(ticket_id: ticket.id, workflow_process_id: channeled_eng_set[:workflow_process_id] ), :target => "_blank" do
+              = link_to workflow_diagram_tickets_path(ticket_id: ticket.id, workflow_process_id: channeled_eng_set[:workflow_process_id], engineer_id: channeled_eng_set[:id] ), :target => "_blank" do
                 .thumbnail
                   <img src="#{channeled_eng_set[:image] || '/assets/no_image.jpg'}" />
                   %strong{style: "color: #{color};"}= channeled_eng_set[:name]
