@@ -398,6 +398,10 @@ class TicketEngineer < ActiveRecord::Base
     end
   end
 
+  def full_name
+    user.full_name
+  end
+
 end
 
 class TicketFsrSupportEngineer < ActiveRecord::Base
@@ -414,6 +418,9 @@ class TicketSupportEngineer < ActiveRecord::Base
   belongs_to :ticket_engineer, foreign_key: :engineer_id
   belongs_to :user, foreign_key: :user_id
 
+  def full_name
+    user.full_name
+  end
 end
 
 class OrganizationContactPerson < ActiveRecord::Base

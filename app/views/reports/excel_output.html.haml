@@ -21,6 +21,9 @@
               = text_field_tag "l_range_from", params[:l_range_from], class: "form-control datepicker", placeholder: "Select From logged date"
             .col-md-4
               = text_field_tag "l_range_to", params[:l_range_to], class: "form-control datepicker", placeholder: "Select To logged date"
+            .col-md-4
+              = label_tag "Non Contract"
+              = check_box_tag "search_ticket[contract_id]", true
           .row.small_scale_margin-top1
             .col-md-4
               = label_tag "Brand"
@@ -39,16 +42,32 @@
             .col-md-4.small_scale_margin-top1
               = text_field_tag "search_ticket[ticket_spare_parts.spare_part_no]", nil, :placeholder => "Spare Part No", class: "form-control"
             .col-md-4.small_scale_margin-top1
-              = text_field_tag "search_ticket[customer.name]", nil, :placeholder => "Customer Name", class: "form-control"
-              
+              = text_field_tag "search_ticket[ticket_contract.contract_no]", nil, :placeholder => "Contract No", class: "form-control"
+
           .row.small_scale_margin-top1
-            .col-md-4
-              = text_field_tag "search_ticket[customer.district.name]", nil, :placeholder => "District", class: "form-control"
-            .col-md-4
-              = text_field_tag "search_ticket[owner_engineer.user.last_name]", nil, :placeholder => "Engineer(Last name)", class: "form-control"
-            .col-md-4
-              = text_field_tag "search_ticket[owner_engineer.sbu_name]", nil, :placeholder => "Support Group(SBU)", class: "form-control"
+            .col-md-4.small_scale_margin-top1
+              = label_tag "Engineer (Last Name)"
+              = select_tag "search_ticket[owner_engineer.user.last_name]", options_from_collection_for_select(TicketEngineer.all.to_a.uniq{|t| t.user.full_name}, :id, :full_name), include_blank: true, class: "form-control"
+
+            .col-md-4.small_scale_margin-top1
+              = label_tag "Support Group(SBU)"
+              = select_tag "search_ticket[owner_engineer.sbu_name]", options_from_collection_for_select(Sbu.all, :id, :sbu), include_blank: true, class: "form-control"
+
+            .col-md-4.small_scale_margin-top1
+              = label_tag "Support Engineer"
+              = select_tag "search_ticket[owner_engineer.support_engineer.user.last_name]", options_from_collection_for_select(TicketSupportEngineer.all.to_a.uniq{|s| s.user.full_name}, :id, :full_name), include_blank: true, class: "form-control"
               
+            .col-md-4.small_scale_margin-top1
+              = label_tag "Customer"
+              = select_tag "search_ticket[customer.name]", options_from_collection_for_select(Organization.organization_customers, :name, :name), include_blank: true, class: "form-control"
+
+            .col-md-4.small_scale_margin-top1
+              = label_tag "District"
+              = select_tag "search_ticket[customer.district.name]", options_from_collection_for_select(District.all, :id, :name), include_blank: true, class: "form-control"
+
+            .col-md-4.small_scale_margin-top1
+              = label_tag "Ticket Status"
+              = select_tag "search_ticket[ticket_status.name]", options_from_collection_for_select(TicketStatus.all, :name, :name), include_blank: true, class: "form-control"
 
           .row.small_scale_margin-top1
             .col-md-1
