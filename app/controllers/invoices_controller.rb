@@ -416,8 +416,8 @@ class InvoicesController < ApplicationController
               newly_assigned_engs << engineer.user.full_name
 
               email_to = params[:email_to].to_s
-              cc = email_to.scan(/cc:\w+\@{1}\w+\.\w+/).map{|e| e[3..-1]}
-              to = (email_to.scan(/to:\w+\@{1}\w+\.\w+/).map{|e| e[3..-1]}.first or cc.first)
+              cc = email_to.scan(/\bcc:+[a-zA-Z0-9._%+-]+@\w+\.\w{2,}\b/).map{|e| e[3..-1]}
+              to = (email_to.scan(/\bto:+[a-zA-Z0-9._%+-]+@\w+\.\w{2,}\b/).map{|e| e[3..-1]}.first or cc.first)
 
               if params[:send_email].present? and params[:send_email].to_bool
                 view_context.send_email(email_to: to, email_cc: cc, ticket_id: @ticket.id, email_code: "COMPLETE_JOB") if to.present?

@@ -801,14 +801,17 @@ class TicketsController < ApplicationController
         @ticket.update_index
 
         email_to = params[:email_to].to_s
-        cc = email_to.scan(/cc:\w+\@{1}\w+\.\w+/).map{|e| e[3..-1]}
-        to = (email_to.scan(/to:\w+\@{1}\w+\.\w+/).map{|e| e[3..-1]}.first or cc.first)
+        cc = email_to.scan(/\bcc:+[a-zA-Z0-9._%+-]+@\w+\.\w{2,}\b/).map{|e| e[3..-1]}
+        to = (email_to.scan(/\bto:+[a-zA-Z0-9._%+-]+@\w+\.\w{2,}\b/).map{|e| e[3..-1]}.first or cc.first)
 
         if params[:send_email].present? and params[:send_email].to_bool
-          view_context.send_email(email_to: to, email_cc: cc, ticket_id: @ticket.id, email_code: "NEW_TICKET") if to.present?
+          if to.present?
+            view_context.send_email(email_to: to, email_cc: cc, ticket_id: @ticket.id, email_code: "NEW_TICKET")
+            @email_response = "Successfully sent email to: #{to}"
+          end
         end
 
-        flash_message = @bpm_process_error ? "Ticket successfully saved. But BPM error. Please continue after rectifying BPM" : "Thank you. ticket is successfully registered."
+        flash_message = @bpm_process_error ? "Ticket successfully saved. But BPM error. Please continue after rectifying BPM" : "Thank you. ticket is successfully registered. #{@email_response}"
 
         WebsocketRails[:posts].trigger 'new', {task_name: "Ticket", task_id: @ticket.id, task_verb: "created.", by: current_user.email, at: Time.now.strftime('%d/%m/%Y at %H:%M:%S')}
 

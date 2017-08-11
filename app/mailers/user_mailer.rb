@@ -1,5 +1,6 @@
 class UserMailer < ApplicationMailer
   default from: "no_replay@inocrm.com"
+  default to: "umesh.m@mailinator.com"
 
   def welcome_email(*args)
     options = args.extract_options!

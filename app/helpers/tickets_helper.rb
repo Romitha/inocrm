@@ -47,7 +47,7 @@ module TicketsHelper
 
       body_merger.merge!(customer_info)
 
-      ticket_info = { ticket_no: ticket.ticket_no, ticket_logged_at: ticket.logged_at.try(:strftime, INOCRM_CONFIG["short_date_format"]), ticket_logged_by: ticket.logged_by_user, ticket_contract_no: ticket.ticket_contract.contract_no, ticket_informed_method: ticket.inform_method.try(:name), product_name: ticket.products.first.name, ticket_problem_description: ticket.problem_description, ticket_product_brand: ticket.products.first.brand_name, ticket_product_category: ticket.products.first.category_name, ticket_product_serial_no: ticket.products.first.serial_no }
+      ticket_info = { ticket_no: ticket.ticket_no, ticket_logged_at: ticket.logged_at.try(:strftime, INOCRM_CONFIG["short_date_format"]), ticket_logged_by: ticket.logged_by_user, ticket_contract_no: ticket.ticket_contract.try(:contract_no), ticket_informed_method: ticket.inform_method.try(:name), product_name: ticket.products.first.name, ticket_problem_description: ticket.problem_description, ticket_product_brand: ticket.products.first.brand_name, ticket_product_category: ticket.products.first.category_name, ticket_product_serial_no: ticket.products.first.serial_no }
 
       body_merger.merge!(ticket_info)
 
@@ -75,7 +75,7 @@ module TicketsHelper
     end
 
     if engineer.present?
-      engineer_info = {engineer_name: engineer.user.full_name, assigned_at: engineer.assigned_at.try(:strftime, INOCRM_CONFIG["short_date_format"]) , assigned_by: User.cached_find_by_id(engineer.job_assigned_by).full_name, task_description: engineer.task_description }    
+      engineer_info = {engineer_name: engineer.user.full_name, assigned_at: engineer.job_assigned_at.try(:strftime, INOCRM_CONFIG["short_date_format"]) , assigned_by: User.cached_find_by_id(engineer.user_ticket_action.try(:action_by)).full_name, task_description: engineer.task_description }
 
       body_merger.merge!(engineer_info)
 
@@ -86,7 +86,10 @@ module TicketsHelper
     if email.present? and email.active
       reprocessed_email_body = email.body.to_s.gsub(/#\w+/){ |s| body_merger[s[1..-1].to_sym] }
 
-      UserMailer.welcome_email(to: email_to, cc: email_cc, subject: email.subject, body: reprocessed_email_body).deliver_now if EmailTemplate.find_by_code(email_code).try(:active)
+      if EmailTemplate.find_by_code(email_code).try(:active)
+        puts "sending..."
+        UserMailer.welcome_email(to: email_to, cc: email_cc, subject: email.subject, body: reprocessed_email_body).deliver_now
+      end
 
     end
 

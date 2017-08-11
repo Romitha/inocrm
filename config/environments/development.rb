@@ -14,9 +14,6 @@ Rails.application.configure do
   config.action_controller.perform_caching = true
   config.cache_store = :dalli_store, nil, { :namespace => "inovcrm", :expires_in => 1.day, :compress => true }
 
-  # Don't care if the mailer can't send.
-  config.action_mailer.raise_delivery_errors = false
-
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
 
@@ -43,14 +40,33 @@ Rails.application.configure do
 
   config.assets.initialize_on_precompile = false
 
+  # config.action_mailer.smtp_settings = {
+  #   # address: "tipsanit.railsplayground.net",
+  #   # port: 25,
+  #   # domain: "tipsanity.com",
+  #   # user_name: "no_reply@tipsanity.com",
+  #   # password: "FHnhaM!q@lrc",
+  #   # authentication: :login,
+  #   # enable_starttls_auto: false
+  # }
+
+  # Don't care if the mailer can't send.
+  config.action_mailer.raise_delivery_errors = true
+
+  config.action_mailer.delivery_method = :smtp
+
   config.action_mailer.smtp_settings = {
-    # address: "tipsanit.railsplayground.net",
-    # port: 25,
-    # domain: "tipsanity.com",
-    # user_name: "no_reply@tipsanity.com",
-    # password: "FHnhaM!q@lrc",
+    # address: 'smtp.gmail.com',
     # authentication: :login,
-    # enable_starttls_auto: false
+    # enable_starttls_auto: true,
+    # port: 587,
+    :address              => "inovaitsys.com",
+    :authentication       => :plain,
+    :enable_starttls_auto => false,
+    :port                 => 25,
+    :domain               => "mail.inovaitsys.com",
+    :user_name            => "inocrmtest@inovaitsys.com",
+    :password             => "INOVA951",
   }
 
   config.middleware.delete Rack::Lock

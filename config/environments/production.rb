@@ -79,16 +79,20 @@ Rails.application.configure do
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
+  config.action_mailer.default_url_options = { host: '192.168.1.146' }
+
   config.action_mailer.raise_delivery_errors = false
   config.action_mailer.delivery_method = :smtp
 
   config.action_mailer.smtp_settings = {
-    :address              => "mail.inovaitsys.com",
-    :port                 => 465,
-    :user_name            => "inocrmtest",
+    :address              => "inovaitsys.com",
+    :authentication       => :plain,
+    :enable_starttls_auto => false,
+    :port                 => 25,
+    :domain               => "mail.inovaitsys.com",
+    :user_name            => "inocrmtest@inovaitsys.com",
     :password             => "INOVA951",
-    :authentication       => "plain",
-    :enable_starttls_auto => true,
   }
+
 
 end
