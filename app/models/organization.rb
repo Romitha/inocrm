@@ -325,6 +325,9 @@ class Account < ActiveRecord::Base
   has_many :accounts_dealer_types
   has_many :dealer_types, through: :accounts_dealer_types
 
+  validates :code, presence: true, uniqueness: true
+
+
   def created_user
     User.cached_find_by_id(created_by)
   end

@@ -108,10 +108,10 @@ mst_currency = [
 ContactNumber
 
 contact_type_validate = [
-  ['NA', "Not Applicable"],
-  ["PN", "Phone Number"],
-  ["EM", "Email"],
-].each{ |t| ContactTypeValidate.create_with(name: t[1]).find_or_create_by(code: t[0])}
+  ['NA', "Not Applicable", ""],
+  ["PN", "Phone Number", ""],
+  ["EM", "Email", ""],
+].each{ |t| ContactTypeValidate.create_with(name: t[1], pattern: t[2]).find_or_create_by(code: t[0])}
 
 mst_spt_customer_contact_type = [
   ["Telephone", false, false, 2],
@@ -351,13 +351,14 @@ CompanyConfig.create sup_last_fsr_no: 0, inv_last_srn_no: 0, inv_last_srr_no: 0,
 ].each{ |t| OnsiteType.create_with(name: t[1]).find_or_create_by(code: t[0])}
 
 [
+  ["Fixed Line", "FL", "2"],
   ["EMail", "EM", "3"],
-  ["Telephone", "TP", "2"],
   ["Mobile", "MB", "2"],
+  ["Skyp", "", "1"],
   ["Viber", "", "2"],
   ["Whats UP", "", "2"],
-  ["Skyp", "", "1"],
-  ["LinkdIN", "", "1"]
+  ["LinkdIN", "", "1"],
+  ["Fax", "FX", "2"]
 ].each { |t| OrganizationContactType.create_with(name: t[0]).find_or_create_by(code: t[1], validate_id: t[2])}
 
 [
@@ -372,4 +373,16 @@ end
   ["Procument"]
 ].each do |t|
   OrganizationContactPersonType.create_with(name: t[0]).find_or_create_by(name: t[0])
+end
+
+[
+  ["Immediately", "Full payment with the Purchase Order / Acknowledgement"]
+].each do |t|
+  PaymentTerm.create_with(name: t[0], description: t[1]).find_or_create_by(name: t[0])}
+end
+
+[
+  ["Extra Labour", ""]
+].each do |t|
+  PaymentItem.create_with(name: t[0], default_amount: t[1]).find_or_create_by(name: t[0])}
 end
