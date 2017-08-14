@@ -57,19 +57,19 @@ class User < ActiveRecord::Base
   end
 
   def other_addresses
-    addresses.where.not(primary: true)
+    addresses.where.not(primary_address: true)
   end
 
   def primary_address
-    addresses.find_by_primary true
+    addresses.find_by_primary_address true
   end
 
   def primary_contact_number
-    contact_numbers.find_by_primary true
+    contact_numbers.find_by_primary_contact true
   end
 
   def other_contact_numbers
-    contact_numbers.where.not(primary: true)    
+    contact_numbers.where.not(primary_contact: true)
   end
 
   has_many :dyna_columns, as: :resourceable, autosave: true

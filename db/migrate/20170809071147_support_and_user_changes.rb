@@ -65,7 +65,7 @@ class SupportAndUserChanges < ActiveRecord::Migration
     add_column :spt_ticket_workflow_process, :spare_part_id, "INT UNSIGNED NULL"
     add_column :spt_ticket_workflow_process, :on_loan_spare_part_id, "INT UNSIGNED NULL"
     
-    add_column :spt_ticket_engineer, :task_description, :text
+    # add_column :spt_ticket_engineer, :task_description, :text
 
     add_column :mst_contact_type_validate, :pattern, :string, limit:255
     
@@ -92,12 +92,6 @@ class SupportAndUserChanges < ActiveRecord::Migration
       t.index :updated_by, name: "fk_bank_detail_users2_idx"
       t.index :organization_id, name: "fk_bank_detail_organizations1_idx"
     end
-
-    # # create_table :crm_organisation, id: false do |t|
-    # #   t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
-    # #   t.column :dealer_types_id, :integer
-    # #   t.column :account_id, :integer
-    # # end
 
     [
       { table: :spt_ticket_invoice, column: :updated_by, options: {name: "fk_spt_ticket_invoice_users1_idx"} },

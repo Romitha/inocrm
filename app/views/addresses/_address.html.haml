@@ -4,11 +4,8 @@
       = address.category
     %br/
     = link_to content_tag(:span, glyph(:trash, {:tag => :span})), polymorphic_path([address.addressable, address]), method: :delete, rel: "tooltip", data: {toggle: "tooltip", placement: "right", confirm: "Are you sure? do you want to delete?"}, title: "Delete"
-    = link_to content_tag(:span, glyph(:send, {:tag => :span})), polymorphic_path([:make_primary_address, address.addressable, address]), method: :post, rel: "tooltip", data: {toggle: "tooltip", placement: "right", confirm: "Are you sure? do you want to make this as primary address?"}, title: "Make Primary" unless address.primary
+    = link_to content_tag(:span, glyph(:send, {:tag => :span})), polymorphic_path([:make_primary_address, address.addressable, address]), method: :post, rel: "tooltip", data: {toggle: "tooltip", placement: "right", confirm: "Are you sure? do you want to make this as primary address?"}, title: "Make Primary" unless address.primary_address
   .col-md-5
-    = link_to "#", class: "inline_edit", data: {type: "text", resource: "address", name: "contact_person_name", url: polymorphic_path([address.addressable, address]), "original-title" => "Update address"} do
-      = address.contact_person_name
-    %br/
     = link_to "#", class: "inline_edit", data: {type: "textarea", resource: "address", name: "address1", url: polymorphic_path([address.addressable, address]), "original-title" => "Update address"} do
       = address.address1
     %br/
