@@ -82,7 +82,6 @@ class SupportAndUserChanges < ActiveRecord::Migration
       t.string :account_no, limit:100, null: false
       t.string :bank_address, limit:500
       t.string :swift_code, limit:100
-      t.string :bank_name, limit:255
       t.column :created_by, "INT UNSIGNED NOT NULL"
       t.datetime :created_at, null: false
       t.column :updated_by, "INT UNSIGNED NOT NULL"
