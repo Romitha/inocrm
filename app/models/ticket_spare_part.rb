@@ -39,7 +39,7 @@ class TicketSparePart < ActiveRecord::Base
 
   validates_presence_of :spare_part_description
 
-  belongs_to :engineer, class_name: "User", foreign_key: :engineer_id
+  belongs_to :engineer, class_name: "TicketEngineer", foreign_key: :engineer_id
 
   before_save do |ticket_spare_part|
    if ticket_spare_part.persisted? and ticket_spare_part.note_changed? and ticket_spare_part.note.present?
