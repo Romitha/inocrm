@@ -4536,7 +4536,7 @@ class TicketsController < ApplicationController
 
                 email_template = EmailTemplate.find_by_code("ASSIGN_JOB")
 
-                email_to = next_engineer.engineer.user.email
+                email_to = next_engineer.user.email
                 if email_template.try(:active)
                   view_context.send_email(email_to: email_to, ticket_id: ticket_id, engineer_id: next_engineer.id, email_code: "ASSIGN_JOB") if email_to.present?
 

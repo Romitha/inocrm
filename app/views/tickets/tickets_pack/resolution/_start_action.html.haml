@@ -15,6 +15,7 @@
         %strong Tast Description:
         - ticket.ticket_engineers.group_by{ |t| t.task_description }.map { |k,v| {task_description: k}}.each do |eng|
           =eng[:task_description]
+          %br/
     .row
       .col-md-12
         %h5.strong Start at: #{DateTime.now.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")}

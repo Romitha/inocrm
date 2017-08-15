@@ -172,6 +172,8 @@ class Ticket < ActiveRecord::Base
   def calculate_ticket_total_cost
 
     engineer_cost = 0
+    engineer_time = 0
+    sup_engineer_time = 0
     sup_engineer_cost = 0
     part_cost = 0
     additional_cost = 0
