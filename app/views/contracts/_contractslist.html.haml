@@ -22,9 +22,9 @@
             - organization.addresses.primary_address.each do |address|
               = address.full_address
           %dt Account no:
-          %dd
-          / %dt Customer code:
-          / %dd= organization.code
+          %dd= organization.account.account_no
+          %dt Customer code:
+          %dd= organization.get_code
           %dt Industry type:
           %dd= organization.industry_type.name
       .col-md-5
@@ -33,8 +33,8 @@
           %dd= organization.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
           %dt Created by:
           %dd= organization.created_by_user.try(:full_name)
-          %dt Under contract:
-          %dd
+          / %dt Under contract:
+          / %dd
       %br
 
     %table.table.table-bordered

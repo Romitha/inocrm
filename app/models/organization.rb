@@ -142,6 +142,14 @@ class Organization < ActiveRecord::Base
     addresses.primary_address.first
   end
 
+  def get_code
+    organization_type.try(:code)
+  end
+
+  # def acc_no
+  #   account.account_no
+  # end
+
   def self.customers
     joins(accounts_dealer_types: :dealer_type).where("mst_dealer_types.code = 'CUS' or mst_dealer_types.code = 'INDCUS'").references(:dealer_type)
   end
@@ -155,6 +163,7 @@ class Organization < ActiveRecord::Base
     indexes :accounts_dealer_types, type: "nested", include_in_parent: true
     indexes :addresses, type: "nested", include_in_parent: true
     indexes :contact_numbers, type: "nested", include_in_parent: true
+    indexes :account, type: "nested", include_in_parent: true
   end
 
   def self.search(params)
@@ -171,7 +180,7 @@ class Organization < ActiveRecord::Base
   def to_indexed_json
     to_json(
       only: [:id, :name, :type_id, :code],
-      # methods: [:store_name],
+      methods: [:get_code],
       include: {
         industry_type: {
           only: [:id, :name],
@@ -188,7 +197,7 @@ class Organization < ActiveRecord::Base
           only: [:value],
         },
         account: {
-          only: [:id, :industry_types_id],
+          only: [:id, :industry_types_id,:account_no],
           # include: {
           #   industry_type: {
           #     only: [:id, :code, :name],
