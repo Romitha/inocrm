@@ -15,7 +15,7 @@
     .col-md-3
       = label_tag "Customer Code" do
         Customer Code
-        = text_field_tag "organization_customers[code]", (params[:organization_customers] and params[:organization_customers][:code]), :placeholder => "Customer Code", class: "form-control"
+        = text_field_tag "organization_customers[get_code]", (params[:organization_customers] and params[:organization_customers][:get_code]), :placeholder => "Customer Code", class: "form-control"
     .col-md-3
       = label_tag "Industry Type" do
         Industry Type

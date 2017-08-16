@@ -33,8 +33,8 @@
                 - else
                   = (index+1)
               %td= org.name
-              %td
-              %td= org.code
+              %td= org.account.account_no
+              %td= org.get_code
               %td= org.industry_type.name
               - if params[:from_where] == "new_ticket"
                 %td
