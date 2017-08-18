@@ -100,19 +100,19 @@
           %tbody
             - Organization.owner.members.each_with_index do |organization, index|
               %tr
-                %tbody
+                %td
                   =(index+1)
-                %tbody
+                %td
                   = link_to organization.name, organization_path(organization), target: "_blank"
-                %tbody
+                %td
                   =organization.short_name
-                %tbody
+                %td
                   =organization.organization_type.name
-                %tbody
+                %td
                   =organization.description
-                %tbody
+                %td
                   =organization.account.try(:vat_number)
-                %tbody
+                %td
                   =organization.web_site
 
   %br
