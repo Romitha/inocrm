@@ -65,10 +65,10 @@ class AddressesController < ApplicationController
   def make_primary_address
     @organization = Organization.find params[:organization_id]
 
-    @organization.addresses.where(primary: true).each do |address|
-      address.update_attribute(:primary, false)
+    @organization.addresses.where(primary_address: true).each do |address|
+      address.update_attribute(:primary_address, false)
     end
-    @address.update_attribute(:primary, true)
+    @address.update_attribute(:primary_address, true)
 
     respond_to do |format|
       format.html {redirect_to (@address.addressable_type == "User" ? profile_user_path(@address.addressable) : polymorphic_path([@address.addressable])), notice: "Address is set to primary."}

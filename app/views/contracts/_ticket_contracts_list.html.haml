@@ -20,9 +20,9 @@
             - organization.addresses.primary_address.each do |address|
               = address.full_address
           %dt Account no:
-          %dd
+          %dd= organization.account.account_no
           %dt Customer code:
-          %dd= organization.code
+          %dd= organization.get_code
           %dt Industry type:
           %dd= organization.industry_type.name
       .col-md-5
