@@ -58,10 +58,10 @@ class ContactNumbersController < ApplicationController
   end
 
   def make_primary_contact_number
-    ContactNumber.where(primary: true).each do |contact_number|
-      contact_number.update_attribute(:primary, false)
+    ContactNumber.where(primary_contact: true).each do |contact_number|
+      contact_number.update_attribute(:primary_contact, false)
     end
-    @contact_number.update_attribute(:primary, true)
+    @contact_number.update_attribute(:primary_contact, true)
 
     respond_to do |format|
       format.html {redirect_to (@contact_number.c_numberable_type=="User" ? profile_user_url(@contact_number.c_numberable) : polymorphic_url([@contact_number.c_numberable])), notice: "contact_number is set to primary."}
@@ -81,6 +81,6 @@ class ContactNumbersController < ApplicationController
     end
 
     def contact_number_params
-      params.require(:contact_number).permit(:category, :value, :primary, :c_numberable_type, :c_numberable_id, :country_id, :province_id, :district_id, :type_id)
+      params.require(:contact_number).permit(:value, :primary_contact, :c_numberable_type, :c_numberable_id, :country_id, :province_id, :district_id, :type_id)
     end
 end

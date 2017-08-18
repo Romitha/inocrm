@@ -71,6 +71,9 @@ class SupportAndUserChanges < ActiveRecord::Migration
     
     add_column :contact_numbers, :primary_contact, :boolean
 
+    add_column :addresses, :po_box, :string, limit:100
+    add_column :addresses, :postal_code, :string, limit:100
+
     drop_table :oraganization_contact_person
     drop_table :oraganization_contact_addresses
 

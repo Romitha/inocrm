@@ -13,8 +13,8 @@
       /   = contact_number.association :district, input_html: {class: "chosen-select"}
       .col-md-3
         .has-tooltip{data: {toggle: "tooltip", placement: "left"}, title: "Type"}
-          = contact_number.input :category, collection: ContactNumber::TYPES, include_blank: false, input_html: {class: "chosen-select"}
-          / = contact_number.association :organization_contact_type, required: true, input_html: {class: "chosen-select"}
+          / = contact_number.input :category, collection: ContactNumber::TYPES, include_blank: false, input_html: {class: "chosen-select"}
+          = contact_number.association :organization_contact_type, required: true, input_html: {class: "chosen-select"}
         = contact_number.input :c_numberable_type, as: :hidden
         = contact_number.input :c_numberable_id, as: :hidden
 
@@ -26,5 +26,5 @@
       .col-md-12
         .hide
           = contact_number.label "Make as primary"
-          = contact_number.check_box :primary
+          = contact_number.check_box :primary_contact
         = contact_number.submit "Save", class: "btn btn-success", id: "submit_new_contact_number"
