@@ -334,7 +334,7 @@ class Account < ActiveRecord::Base
   has_many :accounts_dealer_types
   has_many :dealer_types, through: :accounts_dealer_types
 
-  validates :code, presence: true, uniqueness: true
+  # validates :code, presence: true, uniqueness: true
 
 
   def created_user

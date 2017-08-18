@@ -415,13 +415,13 @@ class InvoicesController < ApplicationController
 
               newly_assigned_engs << engineer.user.full_name
 
-              email_to = params[:email_to].to_s
-              cc = email_to.scan(/\bcc:+[a-zA-Z0-9._%+-]+@\w+\.\w{2,}\b/).map{|e| e[3..-1]}
-              to = (email_to.scan(/\bto:+[a-zA-Z0-9._%+-]+@\w+\.\w{2,}\b/).map{|e| e[3..-1]}.first or cc.first)
+              email_to = engineer.user.email
+              to = email_to
 
-              if params[:send_email].present? and params[:send_email].to_bool
-                view_context.send_email(email_to: to, email_cc: cc, ticket_id: @ticket.id, email_code: "COMPLETE_JOB") if to.present?
+              if to.present?
+                view_context.send_email(email_to: to, ticket_id: @ticket.id, email_code: "COMPLETE_JOB")
               end
+
             end
 
           end
@@ -429,6 +429,14 @@ class InvoicesController < ApplicationController
           flash[:notice] = "Successfully re-assigned to #{newly_assigned_engs.join(', ')}"
 
         else
+          email_to = params[:email_to].to_s
+          cc = email_to.scan(/\bcc:+[a-zA-Z0-9._%+-]+@\w+\.\w{2,}\b/).map{|e| e[3..-1]}
+          to = (email_to.scan(/\bto:+[a-zA-Z0-9._%+-]+@\w+\.\w{2,}\b/).map{|e| e[3..-1]}.first or cc.first)
+
+          if params[:send_email].present? and params[:send_email].to_bool and to.present?
+            view_context.send_email(email_to: to, email_cc: cc, ticket_id: @ticket.id, email_code: "COMPLETE_JOB")
+          end
+
           flash[:notice] = "Successfully updated"
         end
         Rails.cache.delete(["/tickets/customer_feedback", params[:task_id]]) unless request.xhr?
