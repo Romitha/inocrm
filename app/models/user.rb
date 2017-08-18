@@ -126,7 +126,7 @@ class User < ActiveRecord::Base
   end
 
   def primary_address
-    addresses.find_by_primary(true)
+    addresses.find_by_primary_address(true)
   end
 
   def primary_address=(address)
