@@ -11,7 +11,10 @@
 = render "tickets/tickets_pack/ticket_header", ticket: ticket, product: product
 
 = tab_panel do
-  = tab_nav_tab({class: "small_scale_margin-bottom1"}, ticket_info: {content: "Ticket info"}, assign_ticket: {content: "Resolution", active_class: "active"}, parts_ordered: {content: "Parts Ordered"}, estimation1: {content: "Estimation"}, quotation: {content: "Quotation"}, q_and_as: {content: "Q & A"})
+  - if params[:from_where1]
+    = tab_nav_tab({class: "small_scale_margin-bottom1"}, ticket_info: {content: "Ticket info"}, estimation1: {content: "Estimation"}, quotation: {content: "Quotation"})
+  - else
+    = tab_nav_tab({class: "small_scale_margin-bottom1"}, ticket_info: {content: "Ticket info"}, assign_ticket: {content: "Resolution", active_class: "active"}, parts_ordered: {content: "Parts Ordered"}, estimation1: {content: "Estimation"}, quotation: {content: "Quotation"}, q_and_as: {content: "Q & A"})
   .tab-content
     = tab_content tabpointer: :ticket_info do
       = tab_panel do

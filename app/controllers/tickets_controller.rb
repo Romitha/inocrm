@@ -950,6 +950,8 @@ class TicketsController < ApplicationController
     @ticket = Ticket.find params[:ticket_id]
     # @edit_ticket = session[:edit_ticket]
 
+    params[:from_where] = "estimations_quotations"
+
     @rendering_dom = "#"+params[:partial_template_for_show]
 
     case params[:partial_template_for_show]
