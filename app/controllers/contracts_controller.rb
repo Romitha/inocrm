@@ -19,6 +19,13 @@ class ContractsController < ApplicationController
 
     end
 
+    if params[:search_cus_product].present?
+      refined_customer = params[:organization_customers].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
+      params[:query] = ["accounts_dealer_types.dealer_code:CUS", refined_customer].map { |v| v if v.present? }.compact.join(" AND ")
+      @organizations = Organization.search(params)
+
+    end
+
     if params[:select]
       if params[:organization_id]
         @organization = Organization.find params[:organization_id]
@@ -31,6 +38,24 @@ class ContractsController < ApplicationController
         @organization = Organization.find params[:organization_id]
         # @ticket_contracts = @organization.ticket_contracts.page params[:page]
         @contract_products = @organization.contract_products
+      end
+    end
+
+    if params[:select_product]
+      if params[:organization_id]
+        @organization = Organization.find params[:organization_id]
+        @organization.products.build if @organization.products.blank?
+        # @ticket_contracts = @organization.ticket_contracts.page params[:page]
+        # @contract_products = @organization.contract_products
+      end
+    end
+
+    if params[:select_product_ticket]
+      if params[:organization_id]
+        @organization = Organization.find params[:organization_id]
+        @organization.products.build if @organization.products.blank?
+        # @ticket_contracts = @organization.ticket_contracts.page params[:page]
+        # @contract_products = @organization.contract_products
       end
     end
 
@@ -70,8 +95,29 @@ class ContractsController < ApplicationController
         product.create_product_owner_history(@organization.id, current_user.id, "Added in contract")
 
       end
-
     end
+
+    if params[:save_product].present?
+      if params[:owner_customer_id].present?
+
+        @cus_product = Product.find params[:owner_customer_id]
+        @cus_product.attributes = customer_product_params
+      else
+
+        @cus_product = @organization.products.build customer_product_params
+      end
+
+      @cus_product.save
+
+      @cus_product.products.each do |product|
+        product.create_product_owner_history(@organization.id, current_user.id, "Added in contract")
+
+      end
+    end
+
+
+    # if params[:save_product].present?
+    # end
   end
 
   def search_product
@@ -172,9 +218,42 @@ class ContractsController < ApplicationController
     end
   end
 
+  def save_cus_products
+    if params[:save_product].present?
+      if params[:owner_customer_id].present?
+        @cus_product = Organization.find params[:owner_customer_id]
+
+        @cus_product.attributes = customer_product_params
+        @cus_product.save
+
+
+
+        @cus_product.products.each do |product|
+          product.create_product_owner_history(@cus_product.id, current_user.id, "Added in contract")
+
+
+        end
+      end
+    end
+    render :index
+  end
+
+  def customer_search
+    Ticket
+    Organization
+    IndustryType
+    Product
+
+    render "customer_product/customer_search"
+  end
+
   private
     def contract_params
       params.require(:ticket_contract).permit(:id, :created_at, :created_by, :customer_id, :sla_id, :contract_no, :contract_type_id, :hold, :contract_b2b, :remind_required, :currency_id, :amount, :contract_start_at, :contract_end_at, :remarks, :owner_organization_id, :process_at, contract_products_attributes: [ :id, :_destroy, :invoice_id, :item_no, :description, :amount, :sla_id, :remarks, product_attributes:[:id, :_destroy, :serial_no, :product_brand_id, :product_category_id, :model_no, :product_no, :pop_status_id, :sold_country_id, :pop_note, :pop_doc_url, :corporate_product, :sold_at, :sold_by, :remarks]])
+    end
+
+    def customer_product_params
+      params.require(:organization).permit(:id, products_attributes: [:id, :serial_no, :product_brand_id, :product_category_id, :model_no, :product_no, :pop_status_id, :sold_country_id, :pop_note, :pop_doc_url, :corporate_product, :sold_at, :sold_by, :remarks, :description, :_destroy])      
     end
 
 end

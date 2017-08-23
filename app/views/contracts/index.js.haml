@@ -6,6 +6,12 @@
   $("#customerlist").html("#{j render 'contracts/customersearchedlist'}");
   $("#contractlist").addClass("hide");
   $("#contractedit").addClass("hide");
+
+- elsif params[:search_cus_product].present?
+  $("#customerlist1").html("#{j render 'contracts/customersearchedlist'}");
+  $("#contractlist1").addClass("hide");
+  $("#contractedit1").addClass("hide");
+
 - elsif params[:select].present?
   $("#contractlist").removeClass("hide");
   $("#contractlist").html("#{j render 'contracts/contractslist'}");
@@ -14,6 +20,16 @@
 - elsif params[:select_ticket].present?
   $("#contractlist").removeClass("hide");
   $("#contractlist").html("#{j render 'contracts/ticket_contracts_list'}");
+  $("a[href='#contracts_ticket_form_collapse_search_customers_link']").trigger("click");
+
+- elsif params[:select_product].present?
+  $("#contractlist").removeClass("hide");
+  $("#contractlist").html("#{j render 'contracts/cus_products'}");
+  $("a[href='#contracts_ticket_form_collapse_search_customers_link']").trigger("click");
+
+- elsif params[:select_product_ticket].present?
+  $("#contractlist1").removeClass("hide");
+  $("#contractlist1").html("#{j render 'contracts/cus_products'}");
   $("a[href='#contracts_ticket_form_collapse_search_customers_link']").trigger("click");
 
 - elsif params[:edit_create].present?
@@ -42,6 +58,20 @@
       $("#contractedit").empty();
       $("#contract_alert").removeClass("hide");
       $("#contract_alert #content").html("successfully saved");
+
+- elsif params[:save_product].present?
+  - if params[:ajax_upload].present?
+    / $("#contractedit").html("#{j render 'customer_product/customerlist'}");
+  - else
+
+    - if @cus_product.errors.any?
+      / $("#contractedit").html("#{j render 'contracts/contractform'}");
+      console.log("error");
+    - else
+      $("#contractedit").empty();
+      $("#contractlist").addClass("hide");
+      $("#contract_alert #content").html("successfully saved");
+      $("#contract_alert").removeClass("hide");
 
 
 Tickets.initial_loaders();

@@ -64,3 +64,16 @@
                 .col-md-12#customerlist
               = collapse collapse_type: "info", labelledby: "contracts_ticket_form_collapse_contracts", header_content: "Contracts", collapse_link: "contracts_ticket_form_collapse_contracts_link", collapse_id: "contracts_form_collapse", collapse_in: "in" do
                 .col-md-12#contractlist
+
+      #tab3.tab-pane.fade
+        .row.small_scale_padding-top1
+          .container
+            = collapse_wrapper collapse_id: "contracts_form_collapse1", labelledby: "contracts_ticket_form_collapse_labelledby1" do
+              = collapse collapse_type: "info", labelledby: "contract_ticket_form_collapse_search_customers1", header_content: "Search Customers", collapse_link: "contracts_ticket_form_collapse_search_customers_link1", collapse_id: "contracts_form_collapse1", collapse_in: "in" do
+                %h4 Search Customer
+                .col-md-12#searchform1
+                  = render "customer_product/customerlist_ticket", from_where: "cus_product_ticket"
+                / = render "contracts/customerlist", from_where: "new_ticket"
+                .col-md-12#customerlist1
+              = collapse collapse_type: "info", labelledby: "contracts_ticket_form_collapse_contracts1", header_content: "Products", collapse_link: "contracts_ticket_form_collapse_contracts_link1", collapse_id: "contracts_form_collapse1", collapse_in: "in" do
+                .col-md-12#contractlist1
