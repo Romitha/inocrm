@@ -99,7 +99,12 @@
 
           %td= estimation.estimation_status.name
 
+
 - if params[:partial_template_for_show] == 'estimation'
   = render "invoices/ticket_quotations", ticket: ticket
 
 %div{id: "estimation_ajax_frame_#{params[:action]}"}
+
+/ =params[:from_where]
+- if params[:action] == "ajax_show"
+  .col-md-3.pull-right= link_to "Estimation and Quotation", resolution_tickets_path(ticket_id: ticket.id, from_where1: params[:from_where]), remote: false
