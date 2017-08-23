@@ -44,6 +44,9 @@ class Organization < ActiveRecord::Base
 
   has_many :ticket_estimation_externals, foreign_key: :repair_by_id
 
+  has_many :products, foreign_key: :owner_customer_id
+  accepts_nested_attributes_for :products, allow_destroy: true
+
   has_many :job_estimations, foreign_key: :supplier_id
 
   has_many :act_job_estimations, foreign_key: :supplier_id

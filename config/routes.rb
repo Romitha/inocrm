@@ -20,7 +20,9 @@ Rails.application.routes.draw do
     collection do
       patch "contracts"
       get "search_product"
+      get "customer_search"
       post "submit_selected_products"
+      post "save_cus_products"
       put "contract_update"
     end
   end
