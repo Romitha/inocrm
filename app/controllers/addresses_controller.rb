@@ -26,7 +26,7 @@ class AddressesController < ApplicationController
         if current_user.valid_password?(params[:current_user_password])
 
           if @address.save!
-            @address.addressable.update_index
+            # @address.addressable.update_index
             format.html {redirect_to profile_user_path(@address.addressable), notice: "Address is successfully created."}
           else
             format.html {redirect_to profile_user_path(@address.addressable), error: "Something gone error with address field. #{@address.errors.full_messages.join(',')}"}
