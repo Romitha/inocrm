@@ -167,6 +167,7 @@ class Organization < ActiveRecord::Base
     indexes :addresses, type: "nested", include_in_parent: true
     indexes :contact_numbers, type: "nested", include_in_parent: true
     indexes :account, type: "nested", include_in_parent: true
+    indexes :products, type: "nested", include_in_parent: true
   end
 
   def self.search(params)
@@ -187,6 +188,9 @@ class Organization < ActiveRecord::Base
       include: {
         industry_type: {
           only: [:id, :name],
+        },
+        products: {
+          only: [:id],
         },
         accounts_dealer_types: {
           only: [:id],
