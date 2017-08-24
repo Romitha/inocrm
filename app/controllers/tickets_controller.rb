@@ -3715,7 +3715,7 @@ class TicketsController < ApplicationController
 
     @workflow_process_ids = @workflow_processes.map { |p| p.process_id }
 
-    @workflow_process_ids << ticket_engineer.ticket_workflow_processes.pluck(:process_id) if ticket_engineer.present?
+    @workflow_process_ids << ticket_engineer.ticket_workflow_processes.where(ticket_id: @ticket.id).pluck(:process_id) if ticket_engineer.present?
     @task_list = []
     @workflow_process_ids.each do |workflow_process_id|
 

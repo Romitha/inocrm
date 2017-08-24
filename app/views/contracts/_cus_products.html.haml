@@ -54,13 +54,13 @@
                 = (index+1)+ 10*(params[:page].to_i-1)
               - else
                 = (index+1)
-            %td= product.product_brand.name
-            %td= product.product_category.name
+            %td= product.product_brand.try(:name)
+            %td= product.product_category.try(:name)
             %td= product.serial_no
             %td= product.model_no
             %td= product.product_no
             %td= product.corporate_product
-            %td= product.product_sold_country.Country
+            %td= product.product_sold_country.try(:Country)
             %td= link_to "Select", find_by_serial_tickets_path(serial_search: product.serial_no), remote: true, method: :post
     %hr
 -else
