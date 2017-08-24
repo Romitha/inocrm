@@ -6,6 +6,9 @@
   $("#customerlist").html("#{j render 'contracts/customersearchedlist'}");
   $("#contractlist").addClass("hide");
   $("#contractedit").addClass("hide");
+  $("#customerlist").removeClass("hide");
+  $("#contract_alert").addClass("hide");
+
 
 - elsif params[:search_cus_product].present?
   $("#customerlist1").html("#{j render 'contracts/customersearchedlist'}");
@@ -26,6 +29,9 @@
   $("#contractlist").removeClass("hide");
   $("#contractlist").html("#{j render 'contracts/cus_products'}");
   $("a[href='#contracts_ticket_form_collapse_search_customers_link']").trigger("click");
+  Inventories.filter_product();
+  Inventories.filter_category();
+  $("a[href='#contracts_ticket_form_collapse_contracts_link']").trigger("click");
 
 - elsif params[:select_product_ticket].present?
   $("#contractlist1").removeClass("hide");
@@ -42,6 +48,7 @@
 
 - elsif params[:search_product].present?
   $("#searchproduct").html("#{j render 'contracts/searchproduct'}");
+
 
 - elsif params[:done].present?
   $("#searchproduct").html("#{j render 'contracts/contractform'}");
@@ -61,18 +68,17 @@
 
 - elsif params[:save_product].present?
   - if params[:ajax_upload].present?
-    / $("#contractedit").html("#{j render 'customer_product/customerlist'}");
   - else
 
     - if @cus_product.errors.any?
-      / $("#contractedit").html("#{j render 'contracts/contractform'}");
       console.log("error");
     - else
       $("#contractedit").empty();
       $("#contractlist").addClass("hide");
+      $("#customerlist").addClass("hide");
       $("#contract_alert #content").html("successfully saved");
       $("#contract_alert").removeClass("hide");
-
+      $("a[href='#contracts_ticket_form_collapse_search_customers_link']").trigger("click");
 
 Tickets.initial_loaders();
 Contracts.disabled_datepicker();

@@ -30,7 +30,7 @@
       %br
 
 - if params[:from_where] == "cus_product_ticket"
-  - if organization.products.any?
+  - if organization.products.present?
     %hr
     / = paginate products, remote: true, method: :get
     %table.table.table-hover
@@ -48,25 +48,27 @@
 
       %tbody
         - organization.products.each_with_index do |product, index|
-          %tr
-            %td
-              - if params[:page]
-                = (index+1)+ 10*(params[:page].to_i-1)
-              - else
-                = (index+1)
-            %td= product.product_brand.name
-            %td= product.product_category.name
-            %td= product.serial_no
-            %td= product.model_no
-            %td= product.product_no
-            %td= product.corporate_product
-            %td= product.product_sold_country.Country
-            %td= link_to "Select", find_by_serial_tickets_path(serial_search: product.serial_no), remote: true, method: :post
+          - if product.persisted?
+            %tr
+              %td
+                - if params[:page]
+                  = (index+1)+ 10*(params[:page].to_i-1)
+                - else
+                  = (index+1)
+              %td= product.product_brand.name
+              %td= product.product_category.name
+              %td= product.serial_no
+              %td= product.model_no
+              %td= product.product_no
+              %td= product.corporate_product
+              %td= product.product_sold_country.Country
+              %td= link_to "Select", find_by_serial_tickets_path(serial_search: product.serial_no), remote: true, method: :post
+              %td=product.product_category.name
     %hr
 -else
   %h3 Product Details
   = simple_nested_form_for organization, url: save_cus_products_contracts_path(save_product: true), html: {class: "validate_form"}, method: :post, remote: true do |o|
-    =o.simple_fields_for :products do |f|
+    = o.simple_fields_for :products do |f|
       - if f.object.id.present?
         = collapse collapse_type: "info", labelledby: "labelledby_#{f.object.id}", header_content: "Product: #{f.object.product_brand.try(:name)}:#{f.object.product_category.try(:name)}:#{f.object.serial_no}", collapse_link: "invunitlink_#{f.object.id}", collapse_id: "products_collapse" do
           .row
@@ -83,6 +85,7 @@
           .row
             .col-md-3
               / = c.association :sla_time, required: true, label_method: :description, include_blank: false, label: "SLA"
+              = f.association :product_sold_country, label_method: :Country
             .col-md-2
               = f.input :corporate_product, wrapper: :append
             .col-md-3
@@ -92,10 +95,9 @@
 
               = hidden_field_tag :owner_customer_id, organization.id
           .row
-            .col-md-3
-              = f.association :product_sold_country, label_method: :Country
             .col-md-6
               =f.input :description
+
             - if f.object.persisted?
               .col-md-3
                 %strong.small_scale_padding-bottom3{style: "display: block;"} POP note document
@@ -109,59 +111,56 @@
                 .pop_doc_url_wrapper
 
           .col-md-2.small_scale_padding-top3
-            = o.link_to_remove  class: "remove_c_t_v_link",:data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Remove" do
+            = f.link_to_remove  class: "remove_c_t_v_link",:data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Remove" do
               %button.btn.btn-danger Remove
 
         %br
       - else
-        .col-md-12
-          .row
-            %h4 New Product
-          .row
-            .col-md-2
-              = f.association :product_brand, required: true, include_blank: false
-            .col-md-2
-              = f.association :product_category, required: true, include_blank: false
-            .col-md-4
-              = f.input :serial_no, required: true
-            .col-md-2
-              = f.input :model_no
-            .col-md-2
-              = f.input :product_no
-          .row
+        .row
+          %h4 New Product
+        .row
+          .col-md-2
+            = f.association :product_brand, required: true, include_blank: false
+          .col-md-2
+            = f.association :product_category, required: true, include_blank: false
+          .col-md-4
+            = f.input :serial_no, required: true
+          .col-md-2
+            = f.input :model_no
+          .col-md-2
+            = f.input :product_no
+        .row
+          .col-md-3
+            = f.association :product_sold_country, label_method: :Country
+          .col-md-2
+            = f.input :corporate_product, wrapper: :append
+          .col-md-3
+            = f.association :product_pop_status
+          .col-md-4
+            = f.input :pop_note
+
+            = hidden_field_tag :owner_customer_id, organization.id
+        .row
+          .col-md-12
+            =f.input :description
+          - if f.object.persisted?
             .col-md-3
-              / = c.association :sla_time, required: true, label_method: :description, include_blank: false, label: "SLA"
-            .col-md-2
-              = f.input :corporate_product, wrapper: :append
-            .col-md-3
-              = f.association :product_pop_status
-            .col-md-4
-              = f.input :pop_note
+              %strong.small_scale_padding-bottom3{style: "display: block;"} POP note document
+              #preview_of_pop_doc_url{style: "word-wrap: break-word;"}
+                - if f.object.pop_doc_url.present?
+                  = link_to f.object.pop_doc_url.file.filename, f.object.pop_doc_url.url, target: "_blank"
 
-              = hidden_field_tag :owner_customer_id, organization.id
-          .row
-            .col-md-3
-              = f.association :product_sold_country, label_method: :Country
-            .col-md-6
-              =f.input :description
-            - if f.object.persisted?
-              .col-md-3
-                %strong.small_scale_padding-bottom3{style: "display: block;"} POP note document
-                #preview_of_pop_doc_url{style: "word-wrap: break-word;"}
-                  - if f.object.pop_doc_url.present?
-                    = link_to f.object.pop_doc_url.file.filename, f.object.pop_doc_url.url, target: "_blank"
+                = f.label "Upload pop note"
+                = f.file_field :pop_doc_url, accept: 'image/png,image/gif,image/jpeg,application/pdf', class: "product_pop_doc_url", data: {class: "pop_doc_url_wrapper"}
 
-                  = f.label "Upload pop note"
-                  = f.file_field :pop_doc_url, accept: 'image/png,image/gif,image/jpeg,application/pdf', class: "product_pop_doc_url", data: {class: "pop_doc_url_wrapper"}
-
-                .pop_doc_url_wrapper
-
+              .pop_doc_url_wrapper
+        .row
           .col-md-2.small_scale_padding-top3
             = o.link_to_remove  class: "remove_c_t_v_link",:data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Remove" do
               %button.btn.btn-danger Remove
-          %hr
-    .col-md-10   
-      = o.link_to_add "Add Product", :products, class: "btn btn-sm btn-success", onclick: "setTimeout(function(){Tickets.multi_pop_url_doc_upload(); return false;}, 200)"
-    .col-md-2
-      = o.submit "Save", class: "btn btn-sm btn-success", remote: true, data: {disable_with: "Please wait..."}
+      %hr
+
+    = o.link_to_add "Add Product", :products, class: "btn btn-sm btn-warning", onclick: "setTimeout(function(){Tickets.multi_pop_url_doc_upload(); return false;}, 200)"
+
+    = o.submit "Save", class: "btn btn-sm btn-success", remote: true, data: {disable_with: "Please wait..."}
 

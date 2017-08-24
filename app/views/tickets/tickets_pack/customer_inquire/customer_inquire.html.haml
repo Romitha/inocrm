@@ -6,10 +6,12 @@
   %form{:action => customer_inquire_tickets_path, :method => "get"}
     .col-md-5
       = text_field_tag "query", params[:query], class: "form-control", placeholder: "Type any. for target seach, type: laptop or name:laptop likewise."
-    .col-md-3
+    .col-md-2
       = text_field_tag "range_from", params[:range_from], class: "form-control datepicker", placeholder: "Select Created From date"
-    .col-md-3
+    .col-md-2
       = text_field_tag "range_to", params[:range_to], class: "form-control datepicker", placeholder: "Select Created To date"
+    .col-md-2
+      = select_tag "range_to", params[:range_to], class: "form-control", placeholder: "Select "
     .col-md-1
       = submit_tag "Search", :name => nil, class: "btn btn-sm btn-success"
     .col-md-5
@@ -22,6 +24,7 @@
             .small Ex: If any ticket_no is T00001, type: "T00001" or "suppor_ticket_no:T00001"
             %p Any ticket customer chargeable can be done:
             .small Ex: If any ticket_no customer chargeable is yes, type: "cus_chargeable:1 or 0"
+
 
 = paginate tickets, remote: false, method: :get
 .row
