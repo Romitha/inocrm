@@ -950,8 +950,6 @@ class TicketsController < ApplicationController
     @ticket = Ticket.find params[:ticket_id]
     # @edit_ticket = session[:edit_ticket]
 
-    params[:from_where] = "estimations_quotations"
-
     @rendering_dom = "#"+params[:partial_template_for_show]
 
     case params[:partial_template_for_show]
@@ -1026,6 +1024,8 @@ class TicketsController < ApplicationController
       @variables = {ticket: @ticket}
 
     when "estimation"
+      params[:from_where1] = "estimations_quotations"
+
       Invoice
       # product = @ticket.products.first
       @user_ticket_actions = @ticket.cached_user_ticket_actions
