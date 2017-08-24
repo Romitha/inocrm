@@ -3755,7 +3755,7 @@ class TicketsController < ApplicationController
       @workflow_processes = params[:workflow_process_id].present? ? [HashToObject.new({process_id: params[:workflow_process_id]})] : @ticket.ticket_workflow_processes.to_a
     end
     @workflow_process_ids = @workflow_processes.map { |p| p.process_id }
- 
+
     @task_list = []
     @workflow_process_ids.each do |workflow_process_id|
 
