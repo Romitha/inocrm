@@ -1,10 +1,11 @@
 = simple_nested_form_for ticket_on_loan_spare_part, url: update_onloan_part_order_inventories_path, method: :put, html: {class: "validate_form"} do |f| #ticket_on_loan_spare_part as object
 
-  = hidden_field_tag :process_id, Rails.cache.fetch([@uri.path, params[:task_id]])[:process_id]
-  = hidden_field_tag :task_id, Rails.cache.fetch([@uri.path, params[:task_id]])[:task_id]
-  = hidden_field_tag :owner, Rails.cache.fetch([@uri.path, params[:task_id]])[:owner]
-  - Rails.cache.fetch([@uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
-    = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+  - unless params[:from_where1]
+    = hidden_field_tag :process_id, Rails.cache.fetch([@uri.path, params[:task_id]])[:process_id]
+    = hidden_field_tag :task_id, Rails.cache.fetch([@uri.path, params[:task_id]])[:task_id]
+    = hidden_field_tag :owner, Rails.cache.fetch([@uri.path, params[:task_id]])[:owner]
+    - Rails.cache.fetch([@uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
+      = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
   = hidden_field_tag :ticket_on_loan_spare_part_id, ticket_on_loan_spare_part.id
   = f.input :id, as: :hidden
