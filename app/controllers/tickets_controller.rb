@@ -386,7 +386,7 @@ class TicketsController < ApplicationController
             @product.create_product_owner_history(organization.id, current_user.id, "Added in ticket")
             @ticket.customer_id = @new_customer.id
             @ticket.contact_person1 = (@product.owner_customer.organization_contact_persons.contact_persons1.first and @product.owner_customer.organization_contact_persons.contact_persons1.first.report_persons.first)
-            @ticket.contact_person2 = (@product.owner_customer.organization_contact_persons.contact_persons2.first and @product.owner_customer.organization_contact_persons.contact_persons2.first)
+            @ticket.contact_person2 = (@product.owner_customer.organization_contact_persons.contact_persons2.first and @product.owner_customer.organization_contact_persons.contact_persons2.first.report_persons.first)
 
             session[:customer_id] = @new_customer.id
             Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @ticket)
