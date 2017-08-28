@@ -72,76 +72,6 @@ class TicketsController < ApplicationController
     respond_with(@ticket)
   end
 
-  def create
-    # Rails.cache.write(:ticket_params, ticket_params)
-    session[:time_now] ||= Time.now.strftime("%H%M%S")
-    @new_ticket = (Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]]) || Ticket.new)
-    @new_ticket.ticket_accessories.clear
-    @new_ticket.attributes = ticket_params
-
-    Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @new_ticket)
-
-    @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
-
-    @product = Product.find session[:product_id]
-    @product_brand = @product.product_brand
-    @product_category = @product.product_category
-    @new_ticket.sla_id = (@product_category.sla_id || @product_brand.sla_id)
-
-    Warranty
-    respond_to do |format|
-
-      if @new_ticket.valid?
-        # session[:ticket_initiated_attributes] = {}
-        Rails.cache.write([:ticket_initiated_attributes, session[:time_now]], {})
-
-        @notice = "Great! new ticket is initiated."
-        Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @new_ticket)
-        User
-        ContactNumber
-
-        @existing_customer = if @new_ticket.ticket_contract.present?
-          organization = @new_ticket.ticket_contract.organization
-          address = (organization.addresses.primary_address.first || organization.addresses.first)
-
-          if organization.customers.any?
-            organization.customers.first
-
-          elsif address.present?
-            organization.customers.create(title_id: organization.title_id, name: organization.name, address1: address.address1, address2: address.address2, address3: address.address3, address4: address.city, district_id: address.district_id)
-
-          end
-
-        elsif @product.owner_customer.present?
-          organization = @product.owner_customer
-          address = (organization.addresses.primary_address.first || organization.addresses.first)
-
-          if organization.customers.any?
-            organization.customers.first
-
-          elsif address.present?
-            organization.customers.create(title_id: organization.title_id, name: organization.name, address1: address.address1, address2: address.address2, address3: address.address3, address4: address.city, district_id: address.district_id)
-
-          end
-
-        else
-          (Customer.find_by_id(session[:customer_id]) || @product.tickets.last.try(:customer))
-
-        end
-
-        Rails.cache.fetch([:existing_customer, request.remote_ip.to_s, session[:time_now]]){ @existing_customer }
-        @new_customer = Customer.new
-        @new_customer.contact_type_values.build([{contact_type_id: 2}, {contact_type_id: 4}])
-        format.js {render :new_customer}
-      else
-
-        # format.js {render :find_by_serial}
-        format.js {render js: "alert('Please enter valid and required information.'); Tickets.remove_ajax_loader();"}
-      end
-
-    end
-  end
-
   def update_attribute
     t_params = ticket_params
     t_params[:user_ticket_actions_attributes].first[:action_at] = Time.now if t_params[:user_ticket_actions_attributes].present?
@@ -353,6 +283,76 @@ class TicketsController < ApplicationController
     end
   end
 
+  def create
+    # Rails.cache.write(:ticket_params, ticket_params)
+    session[:time_now] ||= Time.now.strftime("%H%M%S")
+    @new_ticket = (Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]]) || Ticket.new)
+    @new_ticket.ticket_accessories.clear
+    @new_ticket.attributes = ticket_params
+
+    Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @new_ticket)
+
+    @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
+
+    @product = Product.find session[:product_id]
+    @product_brand = @product.product_brand
+    @product_category = @product.product_category
+    @new_ticket.sla_id = (@product_category.sla_id || @product_brand.sla_id)
+
+    Warranty
+    respond_to do |format|
+
+      if @new_ticket.valid?
+        # session[:ticket_initiated_attributes] = {}
+        Rails.cache.write([:ticket_initiated_attributes, session[:time_now]], {})
+
+        @notice = "Great! new ticket is initiated."
+        Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @new_ticket)
+        User
+        ContactNumber
+
+        @existing_customer = if @new_ticket.ticket_contract.present?
+          organization = @new_ticket.ticket_contract.organization
+          address = (organization.addresses.primary_address.first || organization.addresses.first)
+
+          if organization.customers.any?
+            organization.customers.first
+
+          elsif address.present?
+            organization.customers.create(title_id: organization.title_id, name: organization.name, address1: address.address1, address2: address.address2, address3: address.address3, address4: address.city, district_id: address.district_id)
+
+          end
+
+        elsif @product.owner_customer.present?
+          organization = @product.owner_customer
+          address = (organization.addresses.primary_address.first || organization.addresses.first)
+
+          if organization.customers.any?
+            organization.customers.first
+
+          elsif address.present?
+            organization.customers.create(title_id: organization.title_id, name: organization.name, address1: address.address1, address2: address.address2, address3: address.address3, address4: address.city, district_id: address.district_id)
+
+          end
+
+        else
+          (Customer.find_by_id(session[:customer_id]) || @product.tickets.last.try(:customer))
+
+        end
+
+        Rails.cache.fetch([:existing_customer, request.remote_ip.to_s, session[:time_now]]){ @existing_customer }
+        @new_customer = Customer.new
+        @new_customer.contact_type_values.build([{contact_type_id: 2}, {contact_type_id: 4}])
+        format.js {render :new_customer}
+      else
+
+        # format.js {render :find_by_serial}
+        format.js {render js: "alert('Please enter valid and required information.'); Tickets.remove_ajax_loader();"}
+      end
+
+    end
+  end
+
   def create_customer
     User
     ContactNumber
@@ -363,8 +363,9 @@ class TicketsController < ApplicationController
       if params[:customer_id].present?
         @new_customer = Customer.find params[:customer_id]
         @ticket.customer_id = @new_customer.id
-        @ticket.contact_person1 ||= (@product.tickets.last.try(:contact_person1) or (@product.owner_customer.present? and @product.owner_customer.organization_contact_persons.contact_persons1.first) ) # (@ticket.ticket_contract and @ticket.ticket_contract.organization.) 
-        @ticket.contact_person2 ||= (@product.tickets.last.try(:contact_person2) or (@product.owner_customer.present? and @product.owner_customer.organization_contact_persons.contact_persons2.first) )
+        @ticket.contact_person1 ||= @product.tickets.last.try(:contact_person1) # (@ticket.ticket_contract and @ticket.ticket_contract.organization.)
+
+        @ticket.contact_person2 ||= @product.tickets.last.try(:contact_person2)
         @ticket.report_person ||= @product.tickets.last.try(:report_person)
         Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @ticket)
         session[:customer_id] = @new_customer.id
@@ -374,8 +375,9 @@ class TicketsController < ApplicationController
 
       elsif params[:organization_id].present?
         organization = Organization.find params[:organization_id]
-        if organization.primary_address.present?
-          @new_customer = Customer.new organization.primary_address.attributes.select{|a| ["address1", "address2", "address3", "district_id"].include? a }
+        if organization.primary_address.present? or organization.addresses.present?
+          address = (organization.primary_address or organization.addresses.first)
+          @new_customer = Customer.new address.attributes.select{|a| ["address1", "address2", "address3", "district_id"].include? a }
           @new_customer.organization_id = organization.id
           @new_customer.name = organization.name
 
@@ -383,8 +385,8 @@ class TicketsController < ApplicationController
             # @product.update(owner_customer_id: organization.id)
             @product.create_product_owner_history(organization.id, current_user.id, "Added in ticket")
             @ticket.customer_id = @new_customer.id
-            @ticket.contact_person1 = @product.owner_customer.organization_contact_persons.contact_persons1.first
-            @ticket.contact_person2 = @product.owner_customer.organization_contact_persons.contact_persons2.first
+            @ticket.contact_person1 = (@product.owner_customer.organization_contact_persons.contact_persons1.first and @product.owner_customer.organization_contact_persons.contact_persons1.first.report_persons.first)
+            @ticket.contact_person2 = (@product.owner_customer.organization_contact_persons.contact_persons2.first and @product.owner_customer.organization_contact_persons.contact_persons2.first)
 
             session[:customer_id] = @new_customer.id
             Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @ticket)
@@ -394,6 +396,8 @@ class TicketsController < ApplicationController
             @display_select_option = true
             format.js {render :new_customer}
           end
+        else
+          format.js {render js: "alert('Organizatin must have atleast one address.');"}
         end
       else
         @new_customer = Customer.new customer_params
@@ -3715,7 +3719,8 @@ class TicketsController < ApplicationController
 
     @workflow_process_ids = @workflow_processes.map { |p| p.process_id }
 
-    @workflow_process_ids << ticket_engineer.ticket_workflow_processes.where(ticket_id: @ticket.id).pluck(:process_id) if ticket_engineer.present?
+    @workflow_process_ids << ticket_engineer.ticket_workflow_processes.pluck(:process_id) if ticket_engineer.present?
+
     @task_list = []
     @workflow_process_ids.each do |workflow_process_id|
 
