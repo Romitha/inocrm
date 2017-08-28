@@ -84,6 +84,7 @@ class OrganizationContactPerson < ActiveRecord::Base
 
   has_many :contact_person_primary_type_connectors, foreign_key: :contact_person_id
   has_many :contact_person_primary_types, through: :contact_person_primary_type_connectors
+  has_many :report_persons, foreign_key: :organization_contact_person_id
 
   scope :contact_persons1, -> { joins(:contact_person_primary_types).where(mst_contact_person_primary_type: {code: "CP1"}) }
   scope :contact_persons2, -> { joins(:contact_person_primary_types).where(mst_contact_person_primary_type: {code: "CP2"}) }
