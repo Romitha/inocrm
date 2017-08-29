@@ -47,7 +47,7 @@
               - elsif params[:from_where] == "cus_product_ticket"
                 %td
                   = link_to_if (org.products.present? {|p| p.persisted?} and org.addresses.any?), "Select", contracts_path(organization_id: org.id, select_product_ticket: true, from_where: params[:from_where]), remote: true, onclick: "Tickets.ajax_loader(); return false;"  do
-                    No Products
+                    No Product or Address
 
               - else
                 %td= link_to "Select", contracts_path(organization_id: org.id, select: true, from_where: params[:from_where]), remote: true, onclick: "Tickets.ajax_loader(); return false;"

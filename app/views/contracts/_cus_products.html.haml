@@ -121,7 +121,7 @@
                 = f.input :product_no
             .row
               .col-md-3
-                = f.input :date_installation, as: :string, required: true,input_html: {class: "datepicker", value: f.object.date_installation.try(:strftime, INOCRM_CONFIG["short_date_format"])}
+                = f.input :date_installation, as: :string, input_html: {class: "datepicker", value: f.object.date_installation.try(:strftime, INOCRM_CONFIG["short_date_format"])}
 
             %br
             %br
