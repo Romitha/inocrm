@@ -3714,12 +3714,14 @@ class TicketsController < ApplicationController
     @ticket_id = params[:ticket_id]
     @ticket = Ticket.find @ticket_id
     ticket_engineer = TicketEngineer.find(params[:engineer_id]) if params[:engineer_id].present?
-
-    @workflow_processes = params[:workflow_process_id].present? ? [HashToObject.new({process_id: params[:workflow_process_id]})] : @ticket.ticket_workflow_processes.to_a
-
-    @workflow_process_ids = @workflow_processes.map { |p| p.process_id }
-
-    @workflow_process_ids << ticket_engineer.ticket_workflow_processes.where(ticket_id: @ticket.id).pluck(:process_id) if ticket_engineer.present?
+ 
+    if ticket_engineer.present?
+      @workflow_processes = ticket_engineer.ticket_workflow_processes.to_a
+    else
+      @workflow_processes = params[:workflow_process_id].present? ? [HashToObject.new({process_id: params[:workflow_process_id]})] : @ticket.ticket_workflow_processes.to_a
+    end
+    workflow_process_ids = @workflow_processes.map { |p| p.process_id }
+ 
     @task_list = []
     @workflow_process_ids.each do |workflow_process_id|
 
