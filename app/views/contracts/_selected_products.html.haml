@@ -28,4 +28,8 @@
             %td= p.model_no
             %td= p.product_brand.name
             %td= p.product_category.name
-            %td= link_to "Remove", submit_selected_products_contracts_path(remove: true, selected_product: p.id), remote: true, class: "btn btn-sm btn-warning", method: :post
+            %td
+              - if params[:from_where] == "cus_product"
+                = link_to "Remove", submit_selected_products_contracts_path(remove_cus_product: true, selected_product: p.id, from_where: params[:from_where]), remote: true, class: "btn btn-sm btn-warning", method: :post
+              - else
+                = link_to "Remove", submit_selected_products_contracts_path(remove: true, selected_product: p.id), remote: true, class: "btn btn-sm btn-warning", method: :post

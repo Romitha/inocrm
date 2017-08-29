@@ -191,7 +191,7 @@ class OrganizationsController < ApplicationController
     end
   end
 
-  def create_organization_contact_person
+  def create_organization_contact_person  
     @organization_contact_person = OrganizationContactPerson.new organization_contact_person_params
     respond_to do |format|
       if @organization_contact_person.save

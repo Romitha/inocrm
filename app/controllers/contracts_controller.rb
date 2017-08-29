@@ -114,10 +114,6 @@ class ContractsController < ApplicationController
 
       end
     end
-
-
-    # if params[:save_product].present?
-    # end
   end
 
   def search_product
@@ -144,6 +140,25 @@ class ContractsController < ApplicationController
       Rails.cache.delete([:contract_products, request.remote_ip])
 
       @cached_products = Rails.cache.fetch([:contract_products, request.remote_ip]){ a }
+    end
+
+    if params[:done_cus_product].present?
+      if params[:serial_products_ids].present?
+        serial_products = Product.where(id: params[:serial_products_ids])
+        puts serial_products.count
+        Rails.cache.delete([:products, request.remote_ip])
+
+        @cached_products = Rails.cache.fetch([:products, request.remote_ip]){ serial_products.to_a }
+      end
+    end
+
+    if params[:remove_cus_product].present?
+      a = Rails.cache.fetch([:products, request.remote_ip])
+
+      a.delete_if{|e| e.id.to_f == params[:selected_product].to_f }
+      Rails.cache.delete([:products, request.remote_ip])
+
+      @cached_products = Rails.cache.fetch([:products, request.remote_ip]){ a }
     end
   end
 
@@ -226,6 +241,15 @@ class ContractsController < ApplicationController
         @cus_product.attributes = customer_product_params
         @cus_product.save
 
+        Rails.cache.fetch([:products, request.remote_ip]).to_a.each do |product|
+          product.update owner_customer_id: params[:owner_customer_id]
+          # unless @cus_product.product_ids.include?(product.id)
+          #   @cus_product.products.create(owner_customer_id: )
+          # end
+        end
+
+
+        Rails.cache.delete([:products, request.remote_ip])
 
 
         @cus_product.products.each do |product|
@@ -253,7 +277,7 @@ class ContractsController < ApplicationController
     end
 
     def customer_product_params
-      params.require(:organization).permit(:id, products_attributes: [:id, :serial_no, :product_brand_id, :product_category_id, :model_no, :product_no, :pop_status_id, :sold_country_id, :pop_note, :pop_doc_url, :corporate_product, :sold_at, :sold_by, :remarks, :description, :_destroy])      
+      params.require(:organization).permit(:id, products_attributes: [:id, :serial_no, :product_brand_id, :product_category_id, :model_no, :product_no, :pop_status_id, :sold_country_id, :pop_note, :pop_doc_url, :corporate_product, :sold_at, :sold_by, :remarks, :description, :name, :date_installation, :note, :_destroy])
     end
 
 end
