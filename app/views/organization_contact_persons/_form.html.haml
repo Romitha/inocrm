@@ -13,11 +13,11 @@
               .row
                 = panels panel_type: "success", header_content: "Add Contact Person 1" do
 
-                  = oc.association :mst_title, label:"Title", wrapper_html: {class: "col-md-4"}, input_html: {class: "chosen-select"}
+                  = oc.association :mst_title, required: true, include_blank: false, label:"Title", wrapper_html: {class: "col-md-4"}, input_html: {class: "chosen-select"}
                   .col-md-2
-                  = oc.association :contact_person_type, wrapper_html: {class: "col-md-4"}, input_html: {class: "chosen-select"}
+                  = oc.association :contact_person_type, required: true, include_blank: false, wrapper_html: {class: "col-md-4"}, input_html: {class: "chosen-select"}
 
-                  = oc.input :name, wrapper_html: {class: "col-md-6"}, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Person Name"}
+                  = oc.input :name, wrapper_html: {class: "col-md-6"}, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Person Name"}, required: true, include_blank: false
 
                   = oc.input :email, wrapper_html: {class: "col-md-6"}, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Email Address"}
 
@@ -41,11 +41,11 @@
               .row
                 = panels panel_type: "success", header_content: "Add Contact Person 2" do
 
-                  = oc.association :mst_title, label:"Title", wrapper_html: {class: "col-md-4"}, input_html: {class: "chosen-select"}
+                  = oc.association :mst_title, required: true, include_blank: false, label:"Title", wrapper_html: {class: "col-md-4"}, input_html: {class: "chosen-select"}
                   .col-md-2
-                  = oc.association :contact_person_type, wrapper_html: {class: "col-md-4"}, input_html: {class: "chosen-select"}
+                  = oc.association :contact_person_type, required: true, include_blank: false, wrapper_html: {class: "col-md-4"}, input_html: {class: "chosen-select"}
 
-                  = oc.input :name, wrapper_html: {class: "col-md-6"}, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Person Name"}
+                  = oc.input :name, wrapper_html: {class: "col-md-6"}, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Person Name"}, required: true
 
                   = oc.input :email, wrapper_html: {class: "col-md-6"}, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Email Address"}
 
