@@ -6,6 +6,10 @@ class Ticket < ActiveRecord::Base
 
   mapping do
     indexes :products, type: "nested", include_in_parent: true
+    indexes :customer, type: "nested", include_in_parent: true
+    indexes :ticket_status, type: "nested", include_in_parent: true
+    indexes :district, type: "nested", include_in_parent: true
+    indexes :owner_engineer, type: "nested", include_in_parent: true
   end
 
   def self.search(params)
@@ -95,6 +99,9 @@ class Ticket < ActiveRecord::Base
         },
         final_invoice: {
           only: [:id, :total_amount, :total_deduction],
+        },
+        ticket_status: {
+          only: [:id, :name],
         },
       }
     )
