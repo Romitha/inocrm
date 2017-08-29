@@ -385,8 +385,42 @@ class TicketsController < ApplicationController
             # @product.update(owner_customer_id: organization.id)
             @product.create_product_owner_history(organization.id, current_user.id, "Added in ticket")
             @ticket.customer_id = @new_customer.id
-            @ticket.contact_person1 = (@product.owner_customer.organization_contact_persons.contact_persons1.first and @product.owner_customer.organization_contact_persons.contact_persons1.first.report_persons.first)
-            @ticket.contact_person2 = (@product.owner_customer.organization_contact_persons.contact_persons2.first and @product.owner_customer.organization_contact_persons.contact_persons2.first.report_persons.first)
+            contact_person1 = @product.owner_customer.organization_contact_persons.contact_persons1.first
+            contact_person2 = @product.owner_customer.organization_contact_persons.contact_persons2.first
+            @ticket.contact_person1_id = (contact_person1 and contact_person1.report_persons.first.try(:id))
+            @ticket.contact_person2_id = (contact_person2 and contact_person2.report_persons.first.try(:id))
+
+            if !@ticket.contact_person1_id.present? and contact_person1.present?
+              built_c1 = contact_person1.report_persons.build(title_id: contact_person1.title_id, name: contact_person1.name)
+              {email: "E-Mail", mobile: "Mobile", telephone: "Telephone"}.each do |key, value|
+                if contact_person1.send(key).present?
+                  built_c1_type = built_c1.contact_person_contact_types.build
+                  built_c1_type.send("contact_type_id=", ContactType.find_by_name(value).try(:id))
+                  built_c1_type.send("value=", contact_person1.send(key))
+                end
+
+              end
+
+              built_c1.save!
+              @ticket.contact_person1_id = built_c1.id
+
+            end
+
+            if @ticket.contact_person2_id.present? and contact_person2.present?
+              built_c2 = contact_person2.report_persons.build(title_id: contact_person2.title_id, name: contact_person2.name)
+              {email: "E-Mail", mobile: "Mobile", telephone: "Telephone"}.each do |key, value|
+                if contact_person2.send(key).present?
+                  built_c2_type = built_c2.contact_person_contact_types.build
+                  built_c2_type.send("contact_type_id=", ContactType.find_by_name(value).try(:id))
+                  built_c2_type.send("value=", contact_person2.send(key))
+                end
+
+              end
+
+              built_c2.save!
+              @ticket.contact_person2_id = built_c2.id
+
+            end
 
             session[:customer_id] = @new_customer.id
             Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @ticket)
@@ -3720,7 +3754,7 @@ class TicketsController < ApplicationController
     else
       @workflow_processes = params[:workflow_process_id].present? ? [HashToObject.new({process_id: params[:workflow_process_id]})] : @ticket.ticket_workflow_processes.to_a
     end
-    workflow_process_ids = @workflow_processes.map { |p| p.process_id }
+    @workflow_process_ids = @workflow_processes.map { |p| p.process_id }
  
     @task_list = []
     @workflow_process_ids.each do |workflow_process_id|
