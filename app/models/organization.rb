@@ -188,6 +188,12 @@ class Organization < ActiveRecord::Base
         },
         products: {
           only: [:id],
+          include: {
+            ticket_contracts: {
+              only: [:id],
+              methods: [:dynamic_active]
+            }
+          },
         },
         accounts_dealer_types: {
           only: [:id],
