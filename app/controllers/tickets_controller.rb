@@ -1301,6 +1301,21 @@ class TicketsController < ApplicationController
         if @bpm_response[:status].upcase == "SUCCESS"
           all_success = true
           error_engs = []
+          email_template = EmailTemplate.find_by_code("ASSIGN_JOB")
+
+          if @ticket_engineer.present?
+            email_to = @ticket_engineer.user.email
+
+            if email_template.try(:active)
+              view_context.send_email(email_to: email_to, ticket_id: @ticket.id, engineer_id: @ticket_engineer.id, email_code: "ASSIGN_JOB") if email_to.present?
+
+              @ticket_engineer.ticket_support_engineers.each do |support_engineer|
+                view_context.send_email(email_to: support_engineer.user.email, ticket_id: @ticket.id, email_code: "ASSIGN_JOB") if support_engineer.user.email.present?
+
+              end
+
+            end
+          end
 
           if not(user_assign_ticket_action.recorrection or @re_assignment)
             @ticket.ticket_engineers.each do |ticket_engineer|
@@ -1325,8 +1340,6 @@ class TicketsController < ApplicationController
                   view_context.ticket_bpm_headers bpm_response1[:process_id], @ticket.id
 
                   ticket_engineer.update status: 1, job_assigned_at: DateTime.now, workflow_process_id: workflow_process.id
-
-                  email_template = EmailTemplate.find_by_code("ASSIGN_JOB")
 
                   email_to = ticket_engineer.user.email
                   if email_template.try(:active)
