@@ -808,3 +808,16 @@ window.Tickets =
 
     else
       $(e).parents("form").eq(0).submit();
+
+  getEmailAddress:->
+    $("#ticket_inform_cp").change ->
+      selected_email = $(":selected", @).data("email")
+      $("#email_to").val("to:#{selected_email}");
+
+  emailSend:->
+    if $("#send_email").is(":checked")
+      $("#email_to").prop("disabled", false)
+
+    else
+      $("#email_to").val("");
+      $("#email_to").prop("disabled", true)

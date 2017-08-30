@@ -191,9 +191,15 @@
 
     .tab-pane.limit-height{id: "organization_contact_persons#{organization.id}"}
       = render "organization_contact_persons/form", organization_contact_person: organization.organization_contact_persons.build
-
-      - organization.organization_contact_persons.each do |organization_contact_person|
-        = render "organization_contact_persons/organization_contact_person", organization_contact_person: organization_contact_person
+      .row
+        .col-md-6
+          %h4 Contact Person 1
+          - organization.organization_contact_persons.contact_persons1.each do |organization_contact_person|
+            = render "organization_contact_persons/organization_contact_person", organization_contact_person: organization_contact_person
+        .col-md-6
+          %h4 Contact Person 2
+          - organization.organization_contact_persons.contact_persons2.each do |organization_contact_person|
+            = render "organization_contact_persons/organization_contact_person", organization_contact_person: organization_contact_person
 
 %script{type: "text/html", id: "load_logo"}
   <img src="{{{result.logo.url}}}" alt= "Organization logo" class="img-responsive" />
