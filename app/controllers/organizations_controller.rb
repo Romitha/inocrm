@@ -16,7 +16,7 @@ class OrganizationsController < ApplicationController
       end
     else
       @dealer_type = DealerType.find_by_code params[:category]
-      @accounts = @dealer_type.accounts
+      @accounts = @dealer_type.accounts.sort{|p, n| p.organization.name <=> n.organization.name}
     end
   end
 
