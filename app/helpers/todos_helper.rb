@@ -133,18 +133,22 @@ module TodosHelper
         # "lk.inova:INOCRM:1.0.0.6"
         # "lk.inova:INOCRM:1.0.0.9"
         # "lk.inova:INOCRM:1.0.1.0"
-        "lk.inova:INOCRM:1.0.2.4"
+        # "lk.inova:INOCRM:1.0.2.4"
+        "lk.inova:INOCRM:1.0.2.5"
       when "production"
         # "lk.inova:INOCRM:1.0.0.4"
         # cloned from github
         # "lk.inova:INOCRM:1.0.0.5"
         # "lk.inova:INOCRM:1.0.0.6"
         # "lk.inova:INOCRM:1.0.0.9"
-        "lk.inova:INOCRM:1.0.2.4"
+        # "lk.inova:INOCRM:1.0.2.4"
+        "lk.inova:INOCRM:1.0.2.5"
       when "test"
-        "lk.inova:INOCRM:1.0.2.4"
+        # "lk.inova:INOCRM:1.0.2.4"
+        "lk.inova:INOCRM:1.0.2.5"
       when "staging"
-        "lk.inova:INOCRM:1.0.2.4"
+        # "lk.inova:INOCRM:1.0.2.4"
+        "lk.inova:INOCRM:1.0.2.5"
       end
         
     end

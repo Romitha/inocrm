@@ -389,6 +389,7 @@ class TicketsController < ApplicationController
             contact_person2 = @product.owner_customer.organization_contact_persons.contact_persons2.first
             @ticket.contact_person1_id = (contact_person1 and contact_person1.report_persons.first.try(:id))
             @ticket.contact_person2_id = (contact_person2 and contact_person2.report_persons.first.try(:id))
+            @ticket.reporter_id = @ticket.contact_person1_id
 
             if !@ticket.contact_person1_id.present? and contact_person1.present?
               built_c1 = contact_person1.report_persons.build(title_id: contact_person1.title_id, name: contact_person1.name)
