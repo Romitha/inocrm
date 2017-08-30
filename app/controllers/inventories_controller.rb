@@ -570,7 +570,8 @@ class InventoriesController < ApplicationController
 
     updatable_estimation_params.merge!(status_id: EstimationStatus.find_by_code("CLS").id, cust_approved_at: DateTime.now, cust_approved_by: current_user.id)
     @ticket = @estimation.ticket
-    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    bpm_continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    continue = params[:task_id].present? ? bpm_continue : true
     engineer_id = params[:engineer_id]
 
     if continue
@@ -591,18 +592,22 @@ class InventoriesController < ApplicationController
             quotation.update advance_payment_requested: true
 
           end
-          # bpm output variables
-          bpm_variables = view_context.initialize_bpm_variables.merge(d20_advance_payment_required: d20_advance_payment_required, advance_payment_estimation_id: (quotation.try(:id) or '-'))
 
           @estimation.ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @estimation.ticket.ticket_status.code == "ASN"
 
-          bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+          if bpm_continue
+            # bpm output variables
+            bpm_variables = view_context.initialize_bpm_variables.merge(d20_advance_payment_required: d20_advance_payment_required, advance_payment_estimation_id: (quotation.try(:id) or '-'))
 
-          if bpm_response[:status].upcase == "SUCCESS"
-            flash[:notice] = "Successfully updated"
-          else
-            flash[:error] = "ticket is updated. but Bpm error"
+            bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+            if bpm_response[:status].upcase == "SUCCESS"
+              flash[:notice] = "Successfully updated"
+            else
+              flash[:error] = "ticket is updated. but Bpm error"
+            end
           end
+
         end
         status_action_id = SparePartStatusAction.find_by_code("CEA").id
         po_required = CompanyConfig.first.sup_mf_parts_po_required
