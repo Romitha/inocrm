@@ -47,7 +47,7 @@ class InvoicesController < ApplicationController
       @estimations = (@ticket.ticket_estimations.where(status_id: EstimationStatus.find_by_code("EST").id) + @quotation.ticket_estimations).uniq{ |q| q.id }
     else
       @quotation = CustomerQuotation.new
-      @estimations = @ticket.ticket_estimations.where(status_id: EstimationStatus.find_by_code("EST").id)
+      @estimations = @ticket.ticket_estimations.where.not(status_id: EstimationStatus.find_by_code("RQS").id)
     end
   end
 
@@ -461,7 +461,7 @@ class InvoicesController < ApplicationController
   end
 
   def update_quotation
-    @ticket = Ticket.find_by_id params[:ticket_id]
+    @ticket = Ticket.find params[:ticket_id]
     checked_estimation_ids = params[:estimation_ids]
     checked_estimations = TicketEstimation.where id: checked_estimation_ids
     engineer_id = params[:engineer_id]

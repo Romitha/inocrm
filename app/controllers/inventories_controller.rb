@@ -572,7 +572,7 @@ class InventoriesController < ApplicationController
     @ticket = @estimation.ticket
     bpm_continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
     continue = params[:task_id].present? ? bpm_continue : true
-    engineer_id = params[:engineer_id]
+    engineer_id = params[:engineer_id].present? ? params[:engineer_id] : @estimation.engineer_id
 
     if continue
       if @estimation.cust_approved
