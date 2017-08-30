@@ -1282,8 +1282,10 @@ class TicketsController < ApplicationController
 
             @ticket_engineer.update status: 1, job_assigned_at: DateTime.now, workflow_process_id: @ticket_workfows.first.try(:id)
 
-            supp_engr_user = @ticket_engineer.user_id
-            engineer_id = @ticket_engineer.id
+            # supp_engr_user = @ticket_engineer.user_id
+            supp_engr_user = @re_assignment_rq_engineer.user_id #modified
+            # engineer_id = @ticket_engineer.id
+            engineer_id = @re_assignment_rq_engineer.id # modified
             d43_no_assignment = "N"
           else
             flash[:error] = "Please assign a new engineer."
@@ -1304,16 +1306,42 @@ class TicketsController < ApplicationController
           email_template = EmailTemplate.find_by_code("ASSIGN_JOB")
 
           if @ticket_engineer.present?
-            email_to = @ticket_engineer.user.email
+            ticket_id = @ticket.id
+            di_pop_approval_pending = "N"
+            priority = @ticket.priority
+            d42_assignment_required = "N"
+            engineer_id = @ticket_engineer.id
 
-            if email_template.try(:active)
-              view_context.send_email(email_to: email_to, ticket_id: @ticket.id, engineer_id: @ticket_engineer.id, email_code: "ASSIGN_JOB") if email_to.present?
+            supp_engr_user = @ticket_engineer.user_id
+            supp_hd_user = @ticket.created_by
 
-              @ticket_engineer.ticket_support_engineers.each do |support_engineer|
-                view_context.send_email(email_to: support_engineer.user.email, ticket_id: @ticket.id, email_code: "ASSIGN_JOB") if support_engineer.user.email.present?
+            bpm_response_r = view_context.send_request_process_data start_process: true, process_name: "SPPT", query: {ticket_id: ticket_id, d1_pop_approval_pending: di_pop_approval_pending, priority: priority, d42_assignment_required: d42_assignment_required, engineer_id: engineer_id , supp_engr_user: supp_engr_user, supp_hd_user: supp_hd_user}
+
+            if bpm_response_r[:status].try(:upcase) == "SUCCESS"
+
+
+              workflow_process = @ticket.ticket_workflow_processes.create(process_id: bpm_response_r[:process_id], process_name: bpm_response_r[:process_name], engineer_id: engineer_id)
+
+              view_context.ticket_bpm_headers bpm_response_r[:process_id], @ticket.id
+
+              @ticket_engineer.update status: 1, job_assigned_at: DateTime.now, workflow_process_id: workflow_process.id
+
+              email_to = @ticket_engineer.user.email
+              if email_template.try(:active)
+                view_context.send_email(email_to: email_to, ticket_id: @ticket.id, engineer_id: @ticket_engineer.id, email_code: "ASSIGN_JOB") if email_to.present?
+
+                @ticket_engineer.ticket_support_engineers.each do |support_engineer|
+                  view_context.send_email(email_to: support_engineer.user.email, ticket_id: @ticket.id, email_code: "ASSIGN_JOB") if support_engineer.user.email.present?
+
+                end
 
               end
 
+
+            else
+              all_success = false
+              @bpm_process_error = true
+              error_engs << engineer_id
             end
           end
 
