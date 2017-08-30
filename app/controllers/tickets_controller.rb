@@ -403,10 +403,11 @@ class TicketsController < ApplicationController
 
               built_c1.save!
               @ticket.contact_person1_id = built_c1.id
+              @ticket.reporter_id = built_c1.id
 
             end
 
-            if @ticket.contact_person2_id.present? and contact_person2.present?
+            if !@ticket.contact_person2_id.present? and contact_person2.present?
               built_c2 = contact_person2.report_persons.build(title_id: contact_person2.title_id, name: contact_person2.name)
               {email: "E-Mail", mobile: "Mobile", telephone: "Telephone"}.each do |key, value|
                 if contact_person2.send(key).present?

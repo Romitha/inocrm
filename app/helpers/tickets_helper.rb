@@ -85,10 +85,10 @@ module TicketsHelper
 
     if email.present? and email.active
       reprocessed_email_body = email.body.to_s.gsub(/#\w+/){ |s| body_merger[s[1..-1].to_sym] }
+      reprocessed_email_subject = email.subject.to_s.gsub(/#\w+/){ |s| body_merger[s[1..-1].to_sym] }
 
       if EmailTemplate.find_by_code(email_code).try(:active)
-        puts "sending..."
-        UserMailer.welcome_email(to: email_to, cc: email_cc, subject: email.subject, body: reprocessed_email_body).deliver_now
+        UserMailer.welcome_email(to: email_to, cc: email_cc, subject: reprocessed_email_subject, body: reprocessed_email_body).deliver_now
       end
 
     end
