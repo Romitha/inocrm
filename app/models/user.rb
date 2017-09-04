@@ -162,6 +162,13 @@ end
 class Customer < ActiveRecord::Base
   self.table_name = "spt_customer"
 
+  include Tire::Model::Search
+  include Tire::Model::Callbacks
+
+  mapping do
+    indexes :contact_type_values, type: "nested", include_in_parent: true
+  end
+
   has_many :tickets, foreign_key: :customer_id
 
   has_many :contact_type_values, foreign_key: :customer_id
@@ -188,10 +195,48 @@ class Customer < ActiveRecord::Base
   def is_used_anywhere?
     tickets.any?# or contact_types.any?
   end
+
+  def self.search(params)  
+    tire.search(page: (params[:page] || 1), per_page: 5) do
+      query do
+        boolean do
+          must { string params[:query] } if params[:query].present?
+
+        end
+      end
+      sort { by :created_at, {order: "desc", ignore_unmapped: true} }
+    end
+      # query { string params[:query] } if params[:query].present?
+
+      # filter :range, published_at: { lte: Time.zone.now} 
+      # raise to_curl
+  end
+
+  def to_indexed_json
+    ContactNumber
+    to_json(
+      only: [:id, :name, :created_at],
+      methods: [:full_name, :full_address],
+      include: {
+        contact_type_values: {
+          only: [:created_at, :id],
+          methods: [:contact_info]
+        },
+      }
+    )
+
+  end
 end
 
 class ContactPerson1 < ActiveRecord::Base
   self.table_name = "spt_contact_report_person"
+
+  include Tire::Model::Search
+  include Tire::Model::Callbacks
+
+  mapping do
+    indexes :contact_person_contact_types, type: "nested", include_in_parent: true
+  end
 
   has_many :tickets, foreign_key: :contact_person1_id
   has_many :regular_customers
@@ -208,10 +253,48 @@ class ContactPerson1 < ActiveRecord::Base
     "#{try(:mst_title).try(:title)} #{name}"
   end
 
+  def self.search(params)  
+    tire.search(page: (params[:page] || 1), per_page: 5) do
+      query do
+        boolean do
+          must { string params[:query] } if params[:query].present?
+
+        end
+      end
+      sort { by :created_at, {order: "desc", ignore_unmapped: true} }
+    end
+      # query { string params[:query] } if params[:query].present?
+
+      # filter :range, published_at: { lte: Time.zone.now} 
+      # raise to_curl
+  end
+
+  def to_indexed_json
+    ContactNumber
+    to_json(
+      only: [:id, :name, :created_at],
+      methods: [:full_name],
+      include: {
+        contact_person_contact_types: {
+          only: [:created_at, :id],
+          methods: [:contact_info]
+        },
+      }
+    )
+
+  end
+
 end
 
 class ContactPerson2 < ActiveRecord::Base
   self.table_name = "spt_contact_report_person"
+
+  include Tire::Model::Search
+  include Tire::Model::Callbacks
+
+  mapping do
+    indexes :contact_person_contact_types, type: "nested", include_in_parent: true
+  end
 
   has_many :tickets, foreign_key: :contact_person2_id
   has_many :regular_customers
@@ -228,11 +311,49 @@ class ContactPerson2 < ActiveRecord::Base
     "#{try(:mst_title).try(:title)} #{name}"
   end
 
+  def self.search(params)  
+    tire.search(page: (params[:page] || 1), per_page: 5) do
+      query do
+        boolean do
+          must { string params[:query] } if params[:query].present?
+
+        end
+      end
+      sort { by :created_at, {order: "desc", ignore_unmapped: true} }
+    end
+      # query { string params[:query] } if params[:query].present?
+
+      # filter :range, published_at: { lte: Time.zone.now} 
+      # raise to_curl
+  end
+
+  def to_indexed_json
+    ContactNumber
+    to_json(
+      only: [:id, :name, :created_at],
+      methods: [:full_name],
+      include: {
+        contact_person_contact_types: {
+          only: [:created_at, :id],
+          methods: [:contact_info]
+        },
+      }
+    )
+
+  end
+
 end
 
 class ReportPerson < ActiveRecord::Base
   self.table_name = "spt_contact_report_person"
   has_many :tickets, foreign_key: :reporter_id
+
+  include Tire::Model::Search
+  include Tire::Model::Callbacks
+
+  mapping do
+    indexes :contact_person_contact_types, type: "nested", include_in_parent: true
+  end
 
   has_many :contact_person_contact_types, foreign_key: :contact_report_person_id
   has_many :contact_types, through: :contact_person_contact_types
@@ -244,6 +365,37 @@ class ReportPerson < ActiveRecord::Base
 
   def full_name
     "#{try(:mst_title).try(:title)} #{name}"
+  end
+
+  def self.search(params)  
+    tire.search(page: (params[:page] || 1), per_page: 5) do
+      query do
+        boolean do
+          must { string params[:query] } if params[:query].present?
+
+        end
+      end
+      sort { by :created_at, {order: "desc", ignore_unmapped: true} }
+    end
+      # query { string params[:query] } if params[:query].present?
+
+      # filter :range, published_at: { lte: Time.zone.now} 
+      # raise to_curl
+  end
+
+  def to_indexed_json
+    ContactNumber
+    to_json(
+      only: [:id, :name, :created_at],
+      methods: [:full_name],
+      include: {
+        contact_person_contact_types: {
+          only: [:created_at, :id],
+          methods: [:contact_info]
+        },
+      }
+    )
+
   end
 
 end

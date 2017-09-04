@@ -77,15 +77,13 @@
                     = ticket.ticket_contract.organization.name
                   .col-md-3
                     %strong Back to Back Contract:
-                    = link_to "#", class: "inline_edit", data: {type: "select", source: [{value: 1, text: "Yes"},{value: 0, text: "No"}], resource: "ticket_contract", name: "contract_b2b", url: contract_update_contracts_path(contract_id: ticket.ticket_contract.id), "original-title" => "Edit Contract Back to Back"} do
-                      = boolean_in_word ticket.ticket_contract.contract_b2b, "Yes", "No"
+                    = boolean_in_word ticket.ticket_contract.contract_b2b, "Yes", "No"
                   .col-md-3
                     %strong Hold:
-                    = link_to "#", class: "inline_edit", data: {type: "select", source: [{value: 1, text: "Yes"},{value: 0, text: "No"}], resource: "ticket_contract", name: "hold", url: contract_update_contracts_path(contract_id: ticket.ticket_contract.id), "original-title" => "Edit Hold"} do
-                      = boolean_in_word ticket.ticket_contract.hold, "Yes", "No"
+                    = boolean_in_word ticket.ticket_contract.hold, "Yes", "No"
                   .col-md-3
                     %strong Amount:
-                    = ticket.ticket_contract.amount
+                    #{ticket.ticket_contract.amount} (#{ticket.ticket_contract.ticket_currency.code})
                   .col-md-3
                     %strong Start Date:
                     = ticket.ticket_contract.contract_start_at.try(:strftime, INOCRM_CONFIG['short_date_format'])

@@ -19,18 +19,14 @@
         - customers.each do |customer|
           %tr
             %td
-              #{customer.mst_title.try(:title)} #{customer.name}
+              = customer.name
             %td
-              = customer.address1
-              %br/
-              = customer.address2
-              %br/
-              = customer.address3
-              %br/
-              = customer.address4
+              - customer.addresses.each do |address|
+                - if address.primary_address
+                  = address.full_address
             %td
-              - customer.contact_type_values.each do |c_value|
-                #{c_value.contact_type.name}: #{c_value.value}
-                %br/
+              - customer.contact_numbers.each do |c_value|
+                - if c_value.primary_contact
+                  = c_value.contact_info
             %td
               = link_to "select", "#", onclick: "Tickets.assign_contact_person('#{customer.id}', '#{submitted_contact_person}','initiate_contact_person'); false;"

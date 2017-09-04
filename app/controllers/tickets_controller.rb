@@ -474,9 +474,12 @@ class TicketsController < ApplicationController
 
       @submit_contact_person = "submit_report_person"
     when "initiate_contact_person"
-      @contact_person_for_customer = params[:contact_person_id].present? ? Customer.find(params[:contact_person_id]) : Customer.new
+      # @contact_person_for_customer = params[:contact_person_id].present? ? Customer.find(params[:contact_person_id]) : Customer.new
+      @contact_person_for_customer = params[:contact_person_id].present? ? Organization.find(params[:contact_person_id]) : Customer.new
       @contact_person_attribs = {title_id: @contact_person_for_customer.title_id, name: @contact_person_for_customer.name}
-      @c_p_c_t_attribs = @contact_person_for_customer.contact_type_values.map{|c_t_v| {contact_type_id: c_t_v.contact_type_id, value: c_t_v.value}}
+      # @c_p_c_t_attribs = @contact_person_for_customer.contact_type_values.map{|c_t_v| {contact_type_id: c_t_v.contact_type_id, value: c_t_v.value}}
+      @c_p_c_t_attribs = []
+
       @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
       if params[:contact_person] == "1"
         @build_contact_person = @ticket.build_contact_person1(@contact_person_attribs)
@@ -491,7 +494,7 @@ class TicketsController < ApplicationController
         @contact_person_frame = "#report_persons_form"
         @submitted_contact_person = "three"
       end
-      @contact_person_for_customer.new_record? ? @build_contact_person.contact_person_contact_types.build([{contact_type_id: 2}, {contact_type_id: 4}]) : @build_contact_person.contact_person_contact_types.build(@c_p_c_t_attribs)
+      @contact_person_for_customer.new_record? ? @build_contact_person.contact_person_contact_types.build([{contact_type_id: 2}, {contact_type_id: 3}]) : @build_contact_person.contact_person_contact_types.build(@c_p_c_t_attribs)
 
       # @header = "Contact Person"
     when "edit_create_contact_person"
@@ -550,35 +553,32 @@ class TicketsController < ApplicationController
         @submitted_contact_person = 1
         search_contact_person = params[:search_contact_person].strip
         @submit_contact_person = "submit_contact_person1"
-        contact_person1_name = ContactPerson1.where("name like ?", "%#{search_contact_person}%")
-        contact_person1_nameandnum = ContactPersonContactType.where("value like ?", "%#{search_contact_person}%").map{|c| c.contact_person1}
-        contact_person1_uniq = contact_person1_name + contact_person1_nameandnum
-        @contact_persons = Kaminari.paginate_array(contact_person1_uniq.uniq).page(params[:page]).per(3)
+        @contact_persons = ContactPerson1.search(query: search_contact_person, page: params[:page])
 
       elsif params[:submit_contact_person2]
         @submitted_contact_person = 2
         search_contact_person = params[:search_contact_person].strip
         @submit_contact_person = "submit_contact_person2"
-        contact_person2_name = ContactPerson2.where("name like ?", "%#{search_contact_person}%")
-        contact_person2_nameandnum = ContactPersonContactType.where("value like ?", "%#{search_contact_person}%").map{|c| c.contact_person2}
-        contact_person2_uniq = contact_person2_name + contact_person2_nameandnum
-        @contact_persons = Kaminari.paginate_array(contact_person2_uniq.uniq).page(params[:page]).per(3)
+
+        @contact_persons = ContactPerson2.search(query: search_contact_person, page: params[:page])
+
       elsif params[:submit_report_person]
         @submitted_contact_person = 3
         search_contact_person = params[:search_contact_person].strip
         @submit_contact_person = "submit_report_person"
-        report_person_name = ReportPerson.where("name like ?", "%#{search_contact_person}%")
-        report_person_nameandnum = ContactPersonContactType.where("value like ?", "%#{search_contact_person}%").map{|c| c.report_person}
-        report_person_uniq = report_person_name + report_person_nameandnum
-        @contact_persons = Kaminari.paginate_array(report_person_uniq.uniq).page(params[:page]).per(3)
+
+        @contact_persons = ContactPerson1.search(query: search_contact_person, page: params[:page])
+
       end
-      search_contact_person = params[:search_contact_person].strip
-      contact_customer_byname = Customer.where("name like ?", "%#{search_contact_person}%")
-      contact_customer_bynum =  ContactTypeValue.where("value like ?", "%#{search_contact_person}%").map{|c| c.customer}
-      contact_customer_byboth =  contact_customer_byname + contact_customer_bynum
-      @customers = Kaminari.paginate_array(contact_customer_byboth.uniq).page(params[:page]).per(3)
+      search_contact_person = [params[:search_contact_person]]
+
+      search_contact_person << "accounts_dealer_types.dealer_code:CUS OR accounts_dealer_types.dealer_code:INDCUS"
+      @customers = Organization.search(query: search_contact_person.map { |s| s if s.present? }.compact.join(" AND "), page: params[:page])
+
     end
+
     render :select_contact_person
+
   end
 
   def create_contact_person_record

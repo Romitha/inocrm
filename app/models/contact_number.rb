@@ -17,6 +17,10 @@ class ContactNumber < ActiveRecord::Base
   belongs_to :district
   belongs_to :organization_contact_type, foreign_key: :type_id
 
+  def contact_info
+    "#{organization_contact_type.try(:name)} : #{value}"
+  end
+
 end
 
 class ContactTypeValidate < ActiveRecord::Base
@@ -46,6 +50,10 @@ class ContactTypeValue < ActiveRecord::Base
 
   belongs_to :customer
   belongs_to :contact_type
+
+  def contact_info
+    "#{contact_type.try(:name)} : #{value}"
+  end
 end
 
 class ContactPersonContactType < ActiveRecord::Base
@@ -57,6 +65,10 @@ class ContactPersonContactType < ActiveRecord::Base
   belongs_to :contact_type, foreign_key: :contact_type_id
 
   validates_presence_of [:contact_type_id, :value]
+
+  def contact_info
+    "#{contact_type.try(:name)} : #{value}"
+  end
 end
 
 class ContactPersonPrimaryType < ActiveRecord::Base

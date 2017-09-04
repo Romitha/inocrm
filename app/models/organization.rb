@@ -200,11 +200,12 @@ class Organization < ActiveRecord::Base
           methods: [:dealer_id, :dealer_name, :dealer_code],
         },
         addresses: {
-          only: [:id],
+          only: [:id, :primary_address],
           methods: [:full_address],
         },
         contact_numbers: {
-          only: [:value],
+          only: [:value, :primary_contact],
+          methods: [:contact_info],
         },
         account: {
           only: [:id, :industry_types_id,:account_no],
