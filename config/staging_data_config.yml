@@ -1,0 +1,53 @@
+# In spt_ticket table, priority column
+priority:
+  Highest: 1
+  High: 2
+  Normal: 3
+  Low: 4
+  Lowest: 5
+
+ticket_no_format: "T00000"
+fsr_no_format: "F00000"
+receipt_no_format: "000000"
+invoice_no_format: "000000"
+quotation_no_format: "Q00000"
+inventory_serial_no_format: "000000"
+inventory_srn_no_format: "000000"
+inventory_grn_no_format: "000000"
+inventory_gin_no_format: "000000"
+inventory_prn_no_format: "000000"
+inventory_po_no_format: "000000"
+inventory_srr_no_format: "000000"
+
+answer_type_for_q_and_a:
+  "yes/no" : "YN"
+  text: TX
+
+pagination:
+  customer_per_page: 2
+  organization_per_page: 2
+
+long_date_format: "%d-%b-%Y"
+short_date_format: "%d-%m-%Y"
+time_format: "%H:%M"
+
+printer_url: "http://127.0.0.1:1963/"
+# non_secured: "http://127.0.0.1:1963"
+# secured: "https://print.doc.lk:1967"
+
+icon: ["icon-folder-open","icon-user-tie","icon-hour-glass","icon-bug","icon-bar-graph-2","icon-speech-bubble","icon-open","icon-download","icon-warning"]
+
+Ticket:
+  warranty_type_id: 4
+  ticket_type_id: 2
+
+TicketSparePart:
+  faulty_serial_no: "N/A"
+  faulty_ct_no: "N/A"
+  received_part_serial_no: "N/A"
+  received_part_ct_no: "N/A"
+  control_visible_request_from_radio: false
+
+TicketSparePartManufacture:
+  event_no: "N/A"
+  order_no: "N/A"

@@ -11,3 +11,9 @@ development:
 test:
   <<: *default
   database: inocrm_testzz
+bobbin:
+  <<: *default
+  database: inova_crm_bobbin
+staging:
+  <<: *default
+  database: inova_crm_pro
