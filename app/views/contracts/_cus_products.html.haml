@@ -71,94 +71,103 @@
   = simple_nested_form_for organization, url: save_cus_products_contracts_path(save_product: true), html: {class: "validate_form"}, method: :post, remote: true do |o|
     = o.simple_fields_for :products do |f|
       - if f.object.id.present?
-        = collapse collapse_type: "info", labelledby: "labelledby_#{f.object.id}", header_content: "Product: #{f.object.product_brand.try(:name)}:#{f.object.product_category.try(:name)}:#{f.object.serial_no}", collapse_link: "invunitlink_#{f.object.id}", collapse_id: "products_collapse" do
-          - if f.object.tickets.any?
-            - product = f.object
+        .panel-group#accordion{ role: "tablist", "aria-multiselectable"=>"true"}
+          .panel.panel-info
+            .panel-heading{role: "tab", id: "headingOne_#{f.object.id}"}
+              %h4.panel-title
+                %a{"aria-controls" => "collapseOne_#{}", "aria-expanded" => "true", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseOne_#{f.object.id}", :role => "button", onclick:"Tickets.dynamically_filter_select(this, 'parent', 'panel-info');"}
+                  Product: #{f.object.product_brand.try(:name)}: #{f.object.product_category.try(:name)}: #{f.object.serial_no}
+            .panel-collapse.collapse{"aria-labelledby" => "headingOne_#{f.object.id}", :id => "collapseOne_#{f.object.id}", :role => "tabpanel"}
+              .panel-body
+              / = collapse collapse_type: "info", labelledby: "labelledby_#{f.object.id}", header_content: "Product: #{f.object.product_brand.try(:name)}:#{f.object.product_category.try(:name)}:#{f.object.serial_no}", collapse_link: "invunitlink_#{f.object.id}", collapse_id: "products_collapse" do
+              - if f.object.tickets.any?
+                - product = f.object
 
-            %dl.dl-horizontal
-              %dt Product Name
-              %dd= product.name
-              %dt Product Description
-              %dd= product.description
-              %dt Product Brand
-              %dd= product.product_brand.try(:name)
-              %dt Product Category
-              %dd= product.product_category.try(:name)
-              %dt Serial No
-              %dd= product.serial_no
-              %dt Model No
-              %dd= product.model_no
-              %dt Product No
-              %dd= product.product_no
-              %dt Corporate Product
-              %dd= boolean_in_word product.corporate_product, "Yes", "No"
-              %dt Product Pop Status
-              %dd= product.product_pop_status.try(:name)
-              %dt Pop Note
-              %dd= product.pop_note
-              %dt Product Sold Country
-              %dd= product.product_sold_country.try(:code)
-              %dt POP note document
-              - if f.object.pop_doc_url.present?
-                %dd= link_to(product.pop_doc_url.file.try(:filename), product.pop_doc_url.url, target: "_blank")
-              %dt Note
-              %dd= product.note
+                %dl.dl-horizontal
+                  %dt Product Name
+                  %dd= product.name
+                  %dt Product Description
+                  %dd= product.description
+                  %dt Product Brand
+                  %dd= product.product_brand.try(:name)
+                  %dt Product Category
+                  %dd= product.product_category.try(:name)
+                  %dt Serial No
+                  %dd= product.serial_no
+                  %dt Model No
+                  %dd= product.model_no
+                  %dt Product No
+                  %dd= product.product_no
+                  %dt Corporate Product
+                  %dd= boolean_in_word product.corporate_product, "Yes", "No"
+                  %dt Product Pop Status
+                  %dd= product.product_pop_status.try(:name)
+                  %dt Pop Note
+                  %dd= product.pop_note
+                  %dt Product Sold Country
+                  %dd= product.product_sold_country.try(:code)
+                  %dt POP note document
+                  - if f.object.pop_doc_url.present?
+                    %dd= link_to(product.pop_doc_url.file.try(:filename), product.pop_doc_url.url, target: "_blank")
+                  %dt Note
+                  %dd= product.note
 
-          -else
-            .row
-              .col-md-4
-                = f.input :name
-              .col-md-8
-                =f.input :description
-            .row
-              .col-md-2
-                = f.association :product_brand, required: true, include_blank: false
-              .col-md-2
-                = f.association :product_category, required: true, include_blank: false
-              .col-md-4 
-                = f.input :serial_no, required: true
-              .col-md-2
-                = f.input :model_no
-              .col-md-2
-                = f.input :product_no
-            .row
-              .col-md-3
-                = f.input :date_installation, as: :string, input_html: {class: "datepicker", value: f.object.date_installation.try(:strftime, INOCRM_CONFIG["short_date_format"])}
+              -else
+                .row
+                  .col-md-4
+                    = f.input :name
+                  .col-md-8
+                    =f.input :description
+                .row
+                  .select_wrapper
+                    .col-md-2
+                      = f.association :product_brand, required: true, input_html: {class: "product_brand"}
+                    .col-md-2
+                      = f.association :product_category, collection: ProductBrand.all, as: :grouped_select, group_method: :product_categories, required: true, input_html: {class: "product_category chosen-select"}
+                  .col-md-4
+                    = f.input :serial_no, required: true
+                  .col-md-2
+                    = f.input :model_no
+                  .col-md-2
+                    = f.input :product_no
+                .row
+                  .col-md-3
+                    = f.input :date_installation, as: :string, input_html: {class: "datepicker", value: f.object.date_installation.try(:strftime, INOCRM_CONFIG["short_date_format"])}
 
-            %br
-            %br
-            .row
-              .col-md-3
-                / = c.association :sla_time, required: true, label_method: :description, include_blank: false, label: "SLA"
-                = f.association :product_sold_country, label_method: :Country
-              .col-md-2
-                = f.input :corporate_product, wrapper: :append
-              .col-md-3
-                = f.association :product_pop_status
-              .col-md-4
-                = f.input :pop_note
+                %br
+                %br
+                .row
+                  .col-md-3
+                    / = c.association :sla_time, required: true, label_method: :description, include_blank: false, label: "SLA"
+                    = f.association :product_sold_country, label_method: :Country
+                  .col-md-2
+                    = f.input :corporate_product, wrapper: :append
+                  .col-md-3
+                    = f.association :product_pop_status
+                  .col-md-4
+                    = f.input :pop_note
 
-                = hidden_field_tag :owner_customer_id, organization.id
+                    = hidden_field_tag :owner_customer_id, organization.id
 
-              - if f.object.persisted?
-                .col-md-3
-                  %strong.small_scale_padding-bottom3{style: "display: block;"} POP note document
-                  #preview_of_pop_doc_url{style: "word-wrap: break-word;"}
-                    - if f.object.pop_doc_url.present?
-                      = link_to f.object.pop_doc_url.file.filename, f.object.pop_doc_url.url, target: "_blank"
+                  - if f.object.persisted?
+                    .col-md-3
+                      %strong.small_scale_padding-bottom3{style: "display: block;"} POP note document
+                      #preview_of_pop_doc_url{style: "word-wrap: break-word;"}
+                        - if f.object.pop_doc_url.present?
+                          = link_to f.object.pop_doc_url.file.filename, f.object.pop_doc_url.url, target: "_blank"
 
-                    = f.label "Upload pop note"
-                    = f.file_field :pop_doc_url, accept: 'image/png,image/gif,image/jpeg,application/pdf', class: "product_pop_doc_url", data: {class: "pop_doc_url_wrapper"}
+                        = f.label "Upload pop note"
+                        = f.file_field :pop_doc_url, accept: 'image/png,image/gif,image/jpeg,application/pdf', class: "product_pop_doc_url", data: {class: "pop_doc_url_wrapper"}
 
-                  .pop_doc_url_wrapper
-            %br
-            .row
-              .col-md-8
-                = f.input :note
+                      .pop_doc_url_wrapper
+                %br
+                .row
+                  .col-md-8
+                    = f.input :note
 
-            .col-md-2.small_scale_padding-top3
-              = f.link_to_remove  class: "remove_c_t_v_link",:data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Remove" do
-                %button.btn.btn-danger Remove
+                .col-md-2.small_scale_padding-top3
+                  = f.link_to_remove  class: "remove_c_t_v_link",:data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Remove" do
+                    %button.btn.btn-danger Remove
 
         %br
       - else
@@ -170,10 +179,11 @@
           .col-md-8
             =f.input :description
         .row
-          .col-md-2
-            = f.association :product_brand, required: true, include_blank: false
-          .col-md-2
-            = f.association :product_category, required: true, include_blank: false
+          .select_wrapper
+            .col-md-2
+              = f.association :product_brand, required: true, input_html: {class: "product_brand"}
+            .col-md-2
+              = f.association :product_category, collection: ProductBrand.all, as: :grouped_select, group_method: :product_categories, required: true, input_html: {class: "product_category chosen-select"}
           .col-md-4
             = f.input :serial_no, required: true
           .col-md-2
@@ -220,13 +230,25 @@
 
         .row
           #selectedproducts
-    = o.link_to_add "Add Product", :products, class: "btn btn-sm btn-warning", onclick: "setTimeout(function(){Tickets.multi_pop_url_doc_upload(); return false;}, 200)"
+    = o.link_to_add "Add Product", :products, class: "btn btn-sm btn-warning", onclick: "var _this = this; setTimeout(function(){Tickets.multi_pop_url_doc_upload(); Tickets.dynamically_filter_select(_this, 'prev'); return false;}, 200)"
     
     %button.btn.btn-info{"data-target" => "#productsModel", "data-toggle" => "modal", :type => "button"} Select Product
 
     %hr
     = o.submit "Save", class: "btn btn-sm btn-success", remote: true, data: {disable_with: "Please wait..."}
 
+
+
+
+/ .panel-group#accordion{ role: "tablist", "aria-multiselectable"=>"true"}
+/   - .each do |product|
+/     .panel.panel-default
+/       .panel-heading{role: "tab", id: "headingOne_#{}"}
+/       %h4.panel-title
+/         %a{"aria-controls" => "collapseOne_#{}", "aria-expanded" => "true", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseOne_#{}", :role => "button"}
+/           Collapsible Group Item #1
+/       .panel-collapse.collapse.in{"aria-labelledby" => "headingOne_#{}", :id => "collapseOne_#{}", :role => "tabpanel"}
+/         .panel-body
 
 
 

@@ -821,3 +821,51 @@ window.Tickets =
     else
       $("#email_to").val("");
       $("#email_to").prop("disabled", true)
+
+
+  dynamically_filter_select: (el, position, parent_class='')->
+    $('.datepicker').datepicker
+      format: "dd-mm-yyyy"
+      todayBtn: true
+      todayHighlight: true
+
+    _this = $(el)
+    if position == "prev"
+      brand_id = _this.prev().find(".select_wrapper .product_brand")
+      category_id = _this.prev().find(".select_wrapper .product_category")
+
+      category_list = category_id
+      category_list_html = category_list.html()
+      category_list.empty()
+
+      brand_id.change ->
+        selected = $(":selected", @).text()
+        console.log(selected)
+        filtered_option = $(category_list_html).filter("optgroup[label='#{selected}']").html()
+        category_list.empty().html(filtered_option).trigger('chosen:updated')
+
+    else if position == "parent"
+      brand_id = _this.parents("."+parent_class).eq(0).find(".select_wrapper .product_brand")
+      category_id = _this.parents("."+parent_class).eq(0).find(".select_wrapper .product_category")
+
+      category_list = category_id
+      category_list_html = category_list.html()
+
+      category_id.prop("disabled", true)
+
+      brand_id.click ->
+        category_id.prop("disabled", false)
+        selected = $(":selected", @).text()
+        console.log(selected)
+        filtered_option = $(category_list_html).filter("optgroup[label='#{selected}']").html()
+        category_list.empty().html(filtered_option).trigger('chosen:updated')
+
+  filter_select_new_product: ->
+    category_list = $("#organization_products_attributes_0_product_category_id")
+    category_list_html = category_list.html()
+    category_list.prop("disabled", true)
+    $("#organization_products_attributes_0_product_brand_id").change ->
+      category_list.prop("disabled", false)
+      selected = $("#organization_products_attributes_0_product_brand_id :selected").text()
+      filtered_option = $(category_list_html).filter("optgroup[label='#{selected}']").html()
+      category_list.empty().html(filtered_option).trigger('chosen:updated')

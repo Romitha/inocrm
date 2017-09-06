@@ -43,7 +43,7 @@
                   %td= boolean_in_word p.ticket_contracts.last.try(:hold), "Yes", "No"
                   %td
               - else
-                %td
+                %td= p.owner_customer.try(:name)
                 %td
                 %td
               / %td= link_to "Select"

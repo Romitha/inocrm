@@ -80,10 +80,18 @@
     $("#contract_alert").removeClass("hide");
     $("a[href='#contracts_ticket_form_collapse_search_customers_link']").trigger("click");
 
+$('.datepicker').datepicker({
+format: "yyyy-m-dd",
+todayBtn: true,
+todayHighlight: true
+});
+
 Tickets.initial_loaders();
 Contracts.disabled_datepicker();
 Tickets.remove_ajax_loader();
 Tickets.multi_pop_url_doc_upload();
 Tickets.disabled_end_at();
+Tickets.filter_select_new_product();
+
 
 $("#ticket_contract_contract_end_at").prop('disabled', ($("#ticket_contract_contract_end_at").val() == ''));
