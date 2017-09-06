@@ -200,7 +200,7 @@ class ReportsController < ApplicationController
         logo: owner.logo.url,
         address: (owner.addresses.primary_address.first and owner.addresses.primary_address.first.full_address),
         website: owner.web_site,
-        contactDetails: owner.contact_numbers.map { |c| {category: c.category, value: c.value } },
+        contactDetails: owner.contact_numbers.map { |c| {category: c.organization_contact_type.try(:name), value: c.value } },
         vat_num: owner.account.vat_number,
       },
 
@@ -349,7 +349,7 @@ class ReportsController < ApplicationController
         logo: owner.logo.url,
         address: (owner.addresses.primary_address.first and owner.addresses.primary_address.first.full_address),
         website: owner.web_site,
-        contactDetails: owner.contact_numbers.map { |c| {category: c.category, value: c.value } },
+        contactDetails: owner.contact_numbers.map { |c| {category: c.organization_contact_type.try(:name), value: c.value } },
       },
 
       customer: customer,
