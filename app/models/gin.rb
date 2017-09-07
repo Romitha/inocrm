@@ -22,7 +22,7 @@ class Gin < ActiveRecord::Base
   def self.search(params)
     tire.search(page: (params[:page] || 1), per_page: 10) do
       if params[:query]
-        params[:query] = params[:query].split(" AND ").map{|q| q.starts_with?("formatted_gin_no") ? q+" OR #{q.gsub('formatted_gin_no', 'gin_no')}" : q }.join(" AND ")
+        params[:query] = params[:query].split(" AND ").map{|q| q.starts_with?("formatted_gin_no") ? "("+q+" OR #{q.gsub('formatted_gin_no', 'gin_no')})" : q }.join(" AND ")
       end
       query do
         boolean do

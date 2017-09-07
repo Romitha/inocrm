@@ -38,7 +38,7 @@ class Srn < ActiveRecord::Base
   def self.search(params)
     tire.search(page: (params[:page] || 1), per_page: 10) do
       if params[:query]
-        params[:query] = params[:query].split(" AND ").map{|q| q.starts_with?("formatted_srn_no") ? q+" OR #{q.gsub('formatted_srn_no', 'srn_no')}" : q }.join(" AND ")
+        params[:query] = params[:query].split(" AND ").map{|q| q.starts_with?("formatted_srn_no") ? "("+q+" OR #{q.gsub('formatted_srn_no', 'srn_no')})" : q }.join(" AND ")
         params[:query].gsub!("/", "\\/")
 
       end
@@ -148,7 +148,7 @@ class SrnItem < ActiveRecord::Base
   def self.search(params)
     tire.search(page: (params[:page] || 1), per_page: 10) do
       if params[:query]
-        params[:query] = params[:query].split(" AND ").map{|q| q.starts_with?("srn.formatted_srn_no") ? q+" OR #{q.gsub('srn.formatted_srn_no', 'srn.srn_no')}" : q }.join(" AND ")
+        params[:query] = params[:query].split(" AND ").map{|q| q.starts_with?("srn.formatted_srn_no") ? "("+q+" OR #{q.gsub('srn.formatted_srn_no', 'srn.srn_no')})" : q }.join(" AND ")
         params[:query].gsub!("/", "\\/")
 
       end

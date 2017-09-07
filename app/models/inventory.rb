@@ -1069,7 +1069,8 @@ class InventoryPo < ActiveRecord::Base
   def self.search(params)  
     tire.search(page: (params[:page] || 1), per_page: 10) do
       if params[:query]
-        params[:query] = params[:query].split(" AND ").map{|q| q.starts_with?("formated_po_no") ? q+" OR #{q.gsub('formated_po_no', 'po_no')}" : q }.join(" AND ")
+        params[:query] = params[:query].split(" AND ").map{|q| q.starts_with?("formated_po_no") ? "("+q+" OR #{q.gsub('formated_po_no', 'po_no')})" : q }.join(" AND ")
+        puts params[:query]
       end
       query do
         boolean do
@@ -1198,7 +1199,7 @@ class InventoryPrn < ActiveRecord::Base
   def self.search(params)  
     tire.search(page: (params[:page] || 1), per_page: 10) do
       if params[:query]
-        params[:query] = params[:query].split(" AND ").map{|q| q.starts_with?("formated_prn_no") ? q+" OR #{q.gsub('formated_prn_no', 'prn_no')}" : q }.join(" AND ")
+        params[:query] = params[:query].split(" AND ").map{|q| q.starts_with?("formated_prn_no") ? "("+q+" OR #{q.gsub('formated_prn_no', 'prn_no')})" : q }.join(" AND ")
       end
       query do
         boolean do
