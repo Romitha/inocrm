@@ -1283,10 +1283,10 @@ class TicketsController < ApplicationController
 
             @ticket_engineer.update status: 1, job_assigned_at: DateTime.now, workflow_process_id: @ticket_workfows.first.try(:id)
 
-            # supp_engr_user = @ticket_engineer.user_id
-            supp_engr_user = @re_assignment_rq_engineer.user_id #modified
-            # engineer_id = @ticket_engineer.id
-            engineer_id = @re_assignment_rq_engineer.id # modified
+            supp_engr_user = @ticket_engineer.user_id
+            # supp_engr_user = @re_assignment_rq_engineer.user_id #modified
+            engineer_id = @ticket_engineer.id
+            # engineer_id = @re_assignment_rq_engineer.id # modified
             d43_no_assignment = "N"
 
             workflow_processes = @ticket_workfows.where( engineer_id: @re_assignment_rq_engineer.id )

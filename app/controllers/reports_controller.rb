@@ -308,7 +308,7 @@ class ReportsController < ApplicationController
     po = InventoryPo.find params[:po_id]
 
     customer = {
-      contactPerson: (po.supplier.addresses.primary_address.first and po.supplier.addresses.primary_address.first.contact_person),
+      contactPerson: (po.supplier.organization_contact_persons.first and po.supplier.organization_contact_persons.first.full_name),
       name: po.supplier.name,
       address: (po.supplier.addresses.primary_address.first and po.supplier.addresses.primary_address.first.full_address),
     }
