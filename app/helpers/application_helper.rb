@@ -18,8 +18,8 @@ module ApplicationHelper
       "DUPLICATE=#{ticket.ticket_print_count > 0 ? 'D' : ''}",
       "DATETIME=#{ticket.created_at.strftime(INOCRM_CONFIG['long_date_format']+' '+INOCRM_CONFIG['time_format'])}",
       "TICKET_REF=#{ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG['ticket_no_format'])}",
-      "COMPANY_NAME=#{ticket.customer.mst_title.try(:title)} #{ticket.customer.name}",
-      "CONTACT_PERSON=#{ticket.contact_person1.mst_title.try(:title)} #{ticket.contact_person1.name}",
+      "COMPANY_NAME=#{ticket.customer.full_name}",
+      "CONTACT_PERSON=#{ticket.contact_person1.full_name}",
       "ADDRESS=#{ticket.customer.address1} #{ticket.customer.address2} #{ticket.customer.address3} #{ticket.customer.address4}",
       "TELPHONE=#{ticket.customer.contact_type_values.select{|c| c.contact_type.name == "Telephone"}.first.try(:value)}",
       "MOBILE=#{ticket.customer.contact_type_values.select{|c| c.contact_type.mobile}.first.try(:value)}",
@@ -217,8 +217,8 @@ module ApplicationHelper
     ticket_date = ticket.created_at.strftime(INOCRM_CONFIG['long_date_format'])
     ticket_time = ticket.created_at.strftime(INOCRM_CONFIG['time_format'])
     ticket_ref = ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG['ticket_no_format'])
-    company_name = ticket.customer.mst_title.title+" "+ticket.customer.name
-    contact_person = "#{ticket.contact_person1.mst_title.title} #{ticket.contact_person1.name}"
+    company_name = ticket.customer.full_name
+    contact_person = "#{ticket.contact_person1.full_name}"
     address1 = ticket.customer.address1
     address2 = ticket.customer.address2
     address3 = ticket.customer.address3
@@ -424,8 +424,8 @@ module ApplicationHelper
     ticket_date = ticket.created_at.strftime(INOCRM_CONFIG['long_date_format'])
     ticket_time = ticket.created_at.strftime(INOCRM_CONFIG['time_format'])
     ticket_ref = ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG['ticket_no_format'])
-    company_name = ticket.customer.mst_title.title+" "+ticket.customer.name
-    contact_person = "#{ticket.contact_person1.mst_title.title} #{ticket.contact_person1.name}"
+    company_name = ticket.customer.full_name
+    contact_person = "#{ticket.contact_person1.full_name}"
     address1 = ticket.customer.address1
     address2 = ticket.customer.address2
     address3 = ticket.customer.address3
