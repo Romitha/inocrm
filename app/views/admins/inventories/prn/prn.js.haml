@@ -22,7 +22,21 @@
   Inventories.filter_store();
 
 - if params[:srn] == "search_srn"
-  $("#search_result").html("#{ j render 'admins/inventories/prn/search_srn_results' }");
+  - if params[:load_more].present?
+    - if @srn_items.present?
+      - content_for :load_more_link, flush: true do
+        = link_to "Load more", prn_admins_inventories_path(srn: "search_srn", query: params[:query], page: (session[:page] || 2), store_id: params[:store_id], load_more: true), remote: true
+
+      $("#load_more_link").html("#{j yield :load_more_link }")
+
+      $("#srn_item_list").append("#{ j render 'admins/inventories/prn/srns' }");
+
+    - else
+      $("#load_more_link").empty();
+
+
+  - else
+    $("#search_result").html("#{ j render 'admins/inventories/prn/search_srn_results' }");
 
 
 $("a[rel~=popover], .has-popover").popover();

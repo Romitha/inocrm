@@ -15,39 +15,10 @@
     .col-md-1 Available Qty
     .col-md-1 Action
   %hr
-  - srn_items.each_with_index do |srn_item, index|
-    .row
-      - content_for :srn_info_more, flush: true do
-        %ul
-          %li
-            %strong Created At:
-            = srn_item.inventory_product.created_at.to_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
-          %li
-            %strong Model No:
-            = srn_item.inventory_product.model_no
-          %li
-            %strong Product No:
-            = srn_item.inventory_product.product_no
-          %li
-            %strong Part No
-            = srn_item.inventory_product.spare_part_no
+  #srn_item_list
+    = render 'admins/inventories/prn/srns'
 
-
-      .col-md-1{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Item code:", "data-content"=> yield(:srn_info_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }
-        - if params[:page]
-          = (index+1)+ 10*(params[:page].to_i-1)
-        - else
-          = (index+1)
-      .col-md-1= srn_item.srn.formatted_srn_no
-      .col-md-1= srn_item.inventory_product.category1_name
-      .col-md-1= srn_item.inventory_product.category2_name
-      .col-md-1= srn_item.inventory_product.category3_name
-      .col-md-1= srn_item.inventory_product.generated_item_code
-      .col-md-2= srn_item.inventory_product.description
-      .col-md-1= srn_item.inventory_prn_items.map{|inventory_prn_item| inventory_prn_item.formated_prn_no}.join(", ")
-      .col-md-1= srn_item.inventory_product.inventory_unit.unit
-      .col-md-1= srn_item.inventory.available_quantity
-      .col-md-1= check_box_tag "srn_item_ids[]", srn_item.id
-  = paginate srn_items, remote: true, method: :get
+  / = paginate srn_items, remote: true, method: :get
+  #load_more_link
+    = link_to "Load more", prn_admins_inventories_path(srn: "search_srn", query: params[:query], page: (session[:page] || 2), store_id: params[:store_id], load_more: true), remote: true
   = submit_tag "Crate PRN", :name => "done", class: "btn btn-sm btn-success btn-primary"
-#search_result1

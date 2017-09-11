@@ -1422,12 +1422,12 @@ module Admins
       Role
 
       @srn = Srn.new srn_params
-      if @srn.save
+      if @srn.srn_items.any? and @srn.save
         Organization
         CompanyConfig.first.increase_inv_last_srn_no
         flash[:notice] = "Successfully created."
       else
-        flash[:error] = "Unable to save. Please verify any validations"
+        flash[:error] = "Unable to save. Please verify any validations and availabilities of SRN Item"
       end
 
       redirect_to srn_admins_inventories_url
@@ -1771,7 +1771,7 @@ module Admins
 
         @render_template = "with_srn"
       when "search_srn"
-
+        session[:page] = params[:page] ? params[:page].to_i + 1 : nil
         if params[:search].present?
           refined_search = "closed:false"
           refined_inventory_product = params[:search_inventory][:srn_item].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
