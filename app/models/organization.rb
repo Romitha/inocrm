@@ -208,7 +208,7 @@ class Organization < ActiveRecord::Base
           methods: [:contact_info],
         },
         account: {
-          only: [:id, :industry_types_id,:account_no],
+          only: [:id, :industry_types_id,:account_no, :code],
           # include: {
           #   industry_type: {
           #     only: [:id, :code, :name],
