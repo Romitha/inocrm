@@ -91,6 +91,8 @@ module Admins
 
             end
           elsif params[:request] == "search_issues"
+            extra_params = {'gin_items.product_no' => params[:product_no], 'srn.so_no' => params[:so_no], 'srn.so_customer_id' => params[:so_customer_id]}.map { |k, v| "#{k}:#{v}" if v.present? }.compact
+            params[:query] = [params[:query], extra_params].join(" AND ")
             raw_gins = Gin.search( params )
             gins = raw_gins.map do |k|
               { id: k.id, no: k.formatted_gin_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name, type: "GIN",
@@ -195,7 +197,7 @@ module Admins
           # Kaminari.paginate_array(InventoryPrn.search( params ).map { |k| { id:k.id, no: k.formated_prn_no, created_at: k.formated_created_at, created_by: k.created_by_user_full_name } }).page(params[:page]).per(10)
 
         when "srn"
-          query = { formatted_srn_no: params[:type_no] }.map { |k, v| "#{k}:#{v}" if v.present? }.compact
+          query = { 'formatted_srn_no' => params[:type_no], 'srn_items.inventory_product.product_no' => params[:product_no], 'so_no' => params[:so_no], 'so_customer_id' => params[:so_customer_id] }.map { |k, v| "#{k}:#{v}" if v.present? }.compact
 
           params[:range_from] = params[:from_date]
           params[:range_to] = params[:to_date]

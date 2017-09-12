@@ -17,8 +17,7 @@
         %br/
         %strong Created at:
         = DateTime.now.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
-      / .col-md-12.small_scale_padding-top1
-      /   = link_to "Change store", prn_admins_inventories_path
+
       .col-md-3.small_scale_padding-top1
         = f.input :required_at, as: :string, input_html: {class: "datepicker"}, label: "Required date"
       .col-md-9.small_scale_padding-top1
@@ -31,6 +30,18 @@
           %fieldset
             - if @srn_form_show
               %legend Product: #{i.object.inventory_product.generated_item_code}
+              .row
+                .col-md-2
+                  %h4 Product Information
+                .col-md-10
+                  %dl.dl-horizontal
+                    %dt Item description
+                    %dd= i.object.inventory_product.description
+                    %dt Model No
+                    %dd= i.object.inventory_product.model_no
+                    %dt Product No
+                    %dd= i.object.inventory_product.product_no
+              %hr
               .row
                 - Rails.cache.fetch(session[:prn_srn_arrived_time]).to_a.select{|e| e[:prn_item_object_id] == i.object.object_id}.each do |e|
                   .col-md-2

@@ -48,7 +48,7 @@
         .col-md-3
           = f.input :delivery_mode, label: "Delivery Mode"
         .col-md-4
-          = f.association :payment_term, required: true, input_html: {class: "chosen-select"}
+          = f.association :payment_term, required: true
         .col-md-4
           = f.input :deliver_to, label: "Deliver To", input_html: {value: Organization.owner.primary_address.try(:full_address)}
         .col-md-4
@@ -74,24 +74,21 @@
         = i.input :prn_item_id, as: :hidden
 
         - if i.object.inventory_prn_item and i.object.inventory_prn_item.inventory_product
-          .row
-            .col-md-6
-              - if i.object.inventory_prn_item.inventory_product.product_no
-                %strong Product Number:
-                = i.object.inventory_prn_item.inventory_product.product_no
-              - else
-                %strong Model Number:
-                = i.object.inventory_prn_item.inventory_product.try(:model_no)
-            .col-md-6
-              %strong Item Code:
-              = i.object.inventory_prn_item.inventory_product.generated_item_code
-          .row
-            .col-md-6
-              %strong Item Description:
-              = i.object.inventory_prn_item.inventory_product.description
-            .col-md-6
-              %strong Balance Qty to be Purchased:
-              = i.object.inventory_prn_item.quantity - i.object.inventory_prn_item.inventory_po_items.sum(:quantity)
+          %dl.dl-horizontal
+            %dt Product Number:
+            %dd= i.object.inventory_prn_item.inventory_product.product_no
+            %dt Model Number:
+            %dd= i.object.inventory_prn_item.inventory_product.try(:model_no)
+            %dt Item Code:
+            %dd= i.object.inventory_prn_item.inventory_product.generated_item_code
+            %dt Item Description:
+            %dd= i.object.inventory_prn_item.inventory_product.description
+            %dt Average Cost (#{i.object.inventory_prn_item.inventory_product.inventory_product_info.currency.code}):
+            %dd= i.object.inventory_prn_item.inventory_product.inventory_product_info.average_cost
+            %dt Standard Cost (#{i.object.inventory_prn_item.inventory_product.inventory_product_info.currency.code}):
+            %dd= i.object.inventory_prn_item.inventory_product.inventory_product_info.standard_cost
+            %dt Balance Qty to be Purchased:
+            %dd= i.object.inventory_prn_item.quantity - i.object.inventory_prn_item.inventory_po_items.sum(:quantity)
 
           = collapse_wrapper collapse_id: "issue_po_item_#{i.object.object_id}", labelledby: "issue_po_item_#{i.object.object_id}_labelledby" do
             = collapse collapse_type: "info", labelledby: "issue_po_item_labelby", header_content: "Select the item", collapse_link: "issue_po_item_#{i.object.object_id}_link", onClick: "Admins.onClick_hide_quantity(this); return false;", collapse_id: "issue_po_item_#{i.object.object_id}", collapse_in: "in" do

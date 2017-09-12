@@ -1,7 +1,7 @@
 - srn_items = @srn_items
 %h2.small_scale_padding-top1 Searched SRN Items
 = form_tag submit_selected_products_admins_inventories_path(store_id_with_srn: @store.id, srn_form: "yes"), method: :post, remote: true do
-  = paginate srn_items, remote: true, method: :get
+  / = paginate srn_items, remote: true, method: :get
   .row
     .col-md-1 No
     .col-md-1 SRN No
@@ -20,5 +20,5 @@
 
   / = paginate srn_items, remote: true, method: :get
   #load_more_link
-    = link_to "Load more", prn_admins_inventories_path(srn: "search_srn", query: params[:query], page: (session[:page] || 2), store_id: params[:store_id], load_more: true), remote: true
+    = link_to "Load more", prn_admins_inventories_path(srn: "search_srn", query: params[:query], page: (session[:page] || 2), load_more: true), remote: true
   = submit_tag "Crate PRN", :name => "done", class: "btn btn-sm btn-success btn-primary"

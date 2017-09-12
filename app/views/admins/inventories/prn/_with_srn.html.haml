@@ -2,6 +2,7 @@
 - if @store
   .row
     .col-md-12
+      %h4 Create PRN
       %fieldset
         %legend Search SRN: #{@store.name}
         #search_frame
@@ -20,12 +21,16 @@
                 = label_tag InventoryCategoryCaption.third.caption
                 = select_tag "search_inventory[srn_item][inventory_product.category3_id]", option_groups_from_collection_for_select(InventoryCategory2.all, :inventory_category3s, :id, :id, :name), include_blank: true, class: "form-control", id: "search_inventory_mst_inv_product_category3_id"
             .row.small_scale_margin-top1
-              .col-md-4.srn_no
-                = text_field_tag "search_inventory[srn_item][srn.formatted_srn_no]",nil, :placeholder => "Srn No", class: "form-control"
-              .col-md-4.item_code
+              .col-md-2.srn_no
+                = text_field_tag "search_inventory[srn_item][srn.formatted_srn_no]", nil, :placeholder => "Srn No", class: "form-control"
+              .col-md-2.item_code
                 = text_field_tag "search_inventory[srn_item][inventory_product.generated_item_code]", nil, :placeholder => "Item Code", class: "form-control"
-              .col-md-4.product_no
+              .col-md-2.product_no
                 = text_field_tag "search_inventory[srn_item][inventory_product.product_no]", nil, :placeholder => "Product No", class: "form-control"
+              .col-md-3
+                = text_field_tag "search_inventory[srn_item][srn.so_no]", nil, :placeholder => "SO No", class: "form-control"
+              .col-md-3
+                = select_tag "search_inventory[srn_item][srn.so_customer_id]", options_from_collection_for_select(Organization.customers, :id, :name, nil), class: "form-control", include_blank: true
             .row.small_scale_margin-top1
               .col-md-1
                 .search

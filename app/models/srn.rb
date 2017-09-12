@@ -202,7 +202,7 @@ class SrnItem < ActiveRecord::Base
           },
         },
         srn: {
-          only: [:id, :srn_no, :store_id],
+          only: [:id, :srn_no, :store_id, :so_no, :so_customer_id],
           methods: [:formatted_srn_no, :created_at],
         },
         gin_items: {

@@ -23,6 +23,18 @@
         = label_tag "Date To", "Date To", class: "col-md-2 control-label"
         .col-md-10
           = text_field_tag "to_date", params[:to_date], placeholder: "Date To", class: "form-control datepicker"
+      .form-group
+        = label_tag "Product No", "Product No", class: "col-md-2 control-label"
+        .col-md-10
+          = text_field_tag "product_no", nil, placeholder: "Product No", class: "form-control"
+      .form-group
+        = label_tag "SO Number", "SO Number", class: "col-md-2 control-label"
+        .col-md-10
+          = text_field_tag "so_no", nil, placeholder: "SO Number", class: "form-control"
+      .form-group
+        = label_tag "Customer", "Customer", class: "col-md-2 control-label"
+        .col-md-10
+          = select_tag "so_customer_id", options_from_collection_for_select(Organization.customers, :id, :name, nil), class: "form-control", include_blank: true
       .col-md-1.pull-right
         = link_to "Reset", search_issues_admins_searches_path, class: "btn btn-warning"
       .col-md-1.pull-right

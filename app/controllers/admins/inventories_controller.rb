@@ -1777,8 +1777,9 @@ module Admins
           refined_inventory_product = params[:search_inventory][:srn_item].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
           refined_search = [refined_inventory_product, refined_search].map{|v| v if v.present? }.compact.join(" AND ")
 
+          params[:query] = refined_search
+
         end
-        params[:query] = refined_search
         @srn_items = SrnItem.search(params)
       end
 
@@ -1789,7 +1790,6 @@ module Admins
       end
       if params[:store_id_with_srn].present?
         @store = Organization.find params[:store_id_with_srn]
-        # @prn = InventoryPrn.new
         @render_template = "with_srn"
       end
       respond_to do |format|

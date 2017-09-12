@@ -34,6 +34,12 @@
                   %label
                     = radio_button_tag 'search_srn[inventories_available]', "No", false
                     No
+            .col-md-3
+              = label_tag "Customer"
+              = select_tag "search_srn[so_customer_id]", options_from_collection_for_select(Organization.customers, :id, :name, nil), class: "form-control", include_blank: true
+            .col-md-2
+              = label_tag "Product No"
+              = text_field_tag "search_srn[srn_items.inventory_product.product_no]", nil, :placeholder => "Product No", class: "form-control"
 
           .row.small_scale_margin-top1
             .col-md-1

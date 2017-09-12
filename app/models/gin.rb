@@ -46,11 +46,14 @@ class Gin < ActiveRecord::Base
       methods: [:store_name, :formatted_gin_no, :created_by_user_full_name, :formated_created_at],
       include: {
         srn: {
-          only: [:id, :created_at, :so_no],
+          only: [:id, :created_at, :so_no, :so_customer_id],
           methods: [:formatted_srn_no, :formated_created_at],
         },
         store: {
           only: [:id, :name],
+        },
+        gin_items: {
+          methods: [:product_no],
         },
         gin_sources: {
           only: [:id, :name],
@@ -151,6 +154,10 @@ class GinItem < ActiveRecord::Base
 
     end
 
+  end
+
+  def product_no
+    inventory_product.try(:product_no)
   end
 
 end
