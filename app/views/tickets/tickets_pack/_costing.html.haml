@@ -3,86 +3,100 @@
 .row
   .col-md-12
     %strong Currency: #{@ticket.ticket_currency.code}
-  .col-md-12
-    %br/
-  .col-md-4
-    %dl.dl-horizontal
-      %dt Engineer Cost:
-      %dd.text-right
-        - engineer_cost = @ticket.ticket_total_cost.try(:engineer_cost)
-        = number_with_precision engineer_cost, precision: 2
-      %dt Support Engineer Cost:
-      %dd.text-right
-        - sup_engineer_cost = @ticket.ticket_total_cost.try(:support_engineer_cost)
-        = number_with_precision sup_engineer_cost, precision: 2
-      %dt Part Cost:
-      %dd.text-right
-        - part_cost = @ticket.ticket_total_cost.try(:part_cost)
-        =number_with_precision part_cost, precision: 2
-      %dt Additional Cost:
-      %dd.text-right
-        - additional_cost = @ticket.ticket_total_cost.try(:additional_cost)
-        =number_with_precision additional_cost, precision: 2
-      %dt External Cost:
-      %dd.text-right
-        - external_cost = @ticket.ticket_total_cost.try(:external_cost)
-        = number_with_precision external_cost, precision: 2
-      %dt Total Cost:
-      %dd.text-right.strong
-        - if external_cost && sup_engineer_cost && part_cost && additional_cost
-          =number_with_precision (engineer_cost + sup_engineer_cost + part_cost + additional_cost + external_cost), precision: 2
-  .col-md-4
-    %dl.dl-horizontal
-      %dt Invoice Amount:
-      %dd.text-right
-        - if @ticket.final_invoice.present?
-          - ttl_amnt = @ticket.final_invoice.total_amount
-          - ttl_ddct = @ticket.final_invoice.total_deduction
-          - invoice_amount = (ttl_amnt - ttl_ddct)
-          = number_with_precision invoice_amount, precision: 2
-      %dt Total Amount Recieved:
-      %dd.text-right
-        - if @ticket.final_invoice.present?
-          - total_amount_recieved = @ticket.ticket_payment_receiveds.sum(:amount).to_f
-          = number_with_precision total_amount_recieved, precision: 2
-      %dt Payment Pending:
-      %dd.text-right.strong
-        - if invoice_amount.present?
-          - if @ticket.job_closed
-            0.00
+  %hr
+  .row
+    .col-md-3
+      %h4 Cost
+    .col-md-4
+      %dl.dl-horizontal
+        %dt Engineer Cost:
+        %dd.text-right
+          - engineer_cost = @ticket.ticket_total_cost.try(:engineer_cost)
+          = number_with_precision engineer_cost, precision: 2
+        %dt Support Engineer Cost:
+        %dd.text-right
+          - sup_engineer_cost = @ticket.ticket_total_cost.try(:support_engineer_cost)
+          = number_with_precision sup_engineer_cost, precision: 2
+        %dt Part Cost:
+        %dd.text-right
+          - part_cost = @ticket.ticket_total_cost.try(:part_cost)
+          =number_with_precision part_cost, precision: 2
+        %dt Additional Cost:
+        %dd.text-right
+          - additional_cost = @ticket.ticket_total_cost.try(:additional_cost)
+          =number_with_precision additional_cost, precision: 2
+        %dt External Cost:
+        %dd.text-right
+          - external_cost = @ticket.ticket_total_cost.try(:external_cost)
+          = number_with_precision external_cost, precision: 2
+        %dt Total Cost:
+        %dd.text-right.strong
+          - if external_cost && sup_engineer_cost && part_cost && additional_cost
+            =number_with_precision (engineer_cost + sup_engineer_cost + part_cost + additional_cost + external_cost), precision: 2
+  %hr
+  .row
+    .col-md-3
+      %h4 Amount
+    .col-md-4
+      %dl.dl-horizontal
+        %dt Invoice Amount:
+        %dd.text-right
+          - if @ticket.final_invoice.present?
+            - ttl_amnt = @ticket.final_invoice.total_amount
+            - ttl_ddct = @ticket.final_invoice.total_deduction
+            - invoice_amount = (ttl_amnt - ttl_ddct)
+            = number_with_precision invoice_amount, precision: 2
+        %dt Total Amount Recieved:
+        %dd.text-right
+          - if @ticket.final_invoice.present?
+            - total_amount_recieved = @ticket.ticket_payment_receiveds.sum(:amount).to_f
+            = number_with_precision total_amount_recieved, precision: 2
+        %dt Payment Pending:
+        %dd.text-right.strong
+          - if invoice_amount.present?
+            - if @ticket.job_closed
+              0.00
+            - else
+              = number_with_precision (invoice_amount - total_amount_recieved), precision: 2
+  %hr
+  .row
+    .col-md-3
+      %h4 Working Hours
+    .col-md-6
+      %dl.dl-horizontal
+        %dt Engineer Time Spent:
+        %dd.text-right
+          - if @ticket.ticket_total_cost.present?
+            - engineer_time_spent = @ticket.ticket_total_cost.try(:engineer_time_spent)
           - else
-            = number_with_precision (invoice_amount - total_amount_recieved), precision: 2
+            - if @ticket.ticket_type.name == "In house"
+              - engineer_time_spent = @ticket.ticket_engineers.sum(:job_actual_time_spent)
+            - else
+              - engineer_time_spent = (@ticket.ticket_fsrs.sum(:hours_worked)*3600)
+          - convert_time_eng = number_with_precision engineer_time_spent, precision: 0
+          = humanize_seconds convert_time_eng.to_i
 
-  .col-md-4
-    %dl.dl-horizontal
-      %dt Engineer Time Spent:
-      %dd.text-right
-        - if @ticket.ticket_total_cost.present?
-          - engineer_time_spent = @ticket.ticket_total_cost.try(:engineer_time_spent)
-        - else
-          - if @ticket.ticket_type.name == "In house"
-            - engineer_time_spent = @ticket.ticket_engineers.sum(:job_actual_time_spent)
+        %dt Sup. Eng Time Spent:
+        %dd.text-right
+          - if @ticket.ticket_total_cost.present?
+            - sup_engineer_time_spent = @ticket.ticket_total_cost.try(:support_engineer_time_spent)
           - else
-            - engineer_time_spent = @ticket.ticket_fsrs.sum(:hours_worked)
-        = number_with_precision engineer_time_spent, precision: 2
+            - if @ticket.ticket_type.name == "In house"
+              - sup_engineer_time_spent = @ticket.ticket_engineers.to_a.sum { |e| e.ticket_support_engineers.sum(:job_actual_time_spent) }
+            - else
+              - get_sup_engineer_time_spent = @ticket.ticket_fsrs.to_a.sum { |e| e.ticket_fsr_support_engineers.sum(:hours_worked) }
+              - sup_engineer_time_spent = (get_sup_engineer_time_spent * 3600)
+          - convert_time_sup_eng = number_with_precision sup_engineer_time_spent, precision: 0
+          = humanize_seconds convert_time_sup_eng.to_i
 
-      %dt Sup. Eng Time Spent:
-      %dd.text-right
-        - if @ticket.ticket_total_cost.present?
-          - sup_engineer_time_spent = @ticket.ticket_total_cost.try(:support_engineer_time_spent)
-        - else
-          - if @ticket.ticket_type.name == "In house"
-            - sup_engineer_time_spent = @ticket.ticket_engineers.to_a.sum { |e| e.ticket_support_engineers.sum(:job_actual_time_spent) }
-          - else
-            - sup_engineer_time_spent = @ticket.ticket_fsrs.to_a.sum { |e| e.ticket_fsr_support_engineers.sum(:hours_worked) }
-        = number_with_precision sup_engineer_time_spent, precision: 2
-        
-      %dt Total Time Spent:
-      %dd.text-right.strong
-        = number_with_precision (engineer_time_spent + sup_engineer_time_spent), precision: 2
 
-  .col-md-12.text-right
-    - if @ticket.ticket_spare_parts.any? {|e| e.spare_part_status_use.name == "Used"}
-      - expected_manufacture = @ticket.ticket_spare_parts.to_a.sum {|e| e.ticket_spare_part_manufacture.payment_expected_manufacture}
-      - m_currency = @ticket.manufacture_currency.code
-      %strong Total Payment Expected From Manufacture (#{m_currency}) : #{expected_manufacture}
+        %dt Total Time Spent:
+        %dd.text-right.strong
+          - get_total_time = number_with_precision (engineer_time_spent + sup_engineer_time_spent), precision: 0
+          = humanize_seconds get_total_time.to_i
+
+    .col-md-12.text-right
+      - if @ticket.ticket_spare_parts.any? {|e| e.spare_part_status_use.name == "Used"}
+        - expected_manufacture = @ticket.ticket_spare_parts.to_a.sum {|e| e.ticket_spare_part_manufacture.payment_expected_manufacture}
+        - m_currency = @ticket.manufacture_currency.code
+        %strong Total Payment Expected From Manufacture (#{m_currency}) : #{expected_manufacture}
