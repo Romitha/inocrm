@@ -69,7 +69,7 @@
       %dt Sup. Eng Time Spent:
       %dd.text-right
         - if @ticket.ticket_total_cost.present?
-          - sup_engineer_time_spent = @ticket.ticket_total_cost.try(:support_engineer_cost)
+          - sup_engineer_time_spent = @ticket.ticket_total_cost.try(:support_engineer_time_spent)
         - else
           - if @ticket.ticket_type.name == "In house"
             - sup_engineer_time_spent = @ticket.ticket_engineers.to_a.sum { |e| e.ticket_support_engineers.sum(:job_actual_time_spent) }
