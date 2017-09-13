@@ -59,27 +59,24 @@
       %dd.text-right
         - if @ticket.ticket_total_cost.present?
           - engineer_time_spent = @ticket.ticket_total_cost.try(:engineer_time_spent)
-          = engineer_time_spent
         - else
           - if @ticket.ticket_type.name == "In house"
             - engineer_time_spent = @ticket.ticket_engineers.sum(:job_actual_time_spent)
-            = engineer_time_spent
           - else
             - engineer_time_spent = @ticket.ticket_fsrs.sum(:hours_worked)
-            = number_with_precision engineer_time_spent, precision: 2
+        = number_with_precision engineer_time_spent, precision: 2
 
       %dt Sup. Eng Time Spent:
       %dd.text-right
         - if @ticket.ticket_total_cost.present?
-          - sup_engineer_time_spent = @ticket.ticket_total_cost.try(:engineer_time_spent)
-          = sup_engineer_time_spent
+          - sup_engineer_time_spent = @ticket.ticket_total_cost.try(:support_engineer_cost)
         - else
           - if @ticket.ticket_type.name == "In house"
             - sup_engineer_time_spent = @ticket.ticket_engineers.to_a.sum { |e| e.ticket_support_engineers.sum(:job_actual_time_spent) }
-            = sup_engineer_time_spent
           - else
             - sup_engineer_time_spent = @ticket.ticket_fsrs.to_a.sum { |e| e.ticket_fsr_support_engineers.sum(:hours_worked) }
-            = number_with_precision sup_engineer_time_spent, precision: 2
+        = number_with_precision sup_engineer_time_spent, precision: 2
+        
       %dt Total Time Spent:
       %dd.text-right.strong
         = number_with_precision (engineer_time_spent + sup_engineer_time_spent), precision: 2
