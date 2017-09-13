@@ -58,8 +58,8 @@ class Srn < ActiveRecord::Base
 
   def to_indexed_json
     to_json(
-      only: [:id, :remarks, :created_at, :created_by, :closed, :store_id, :requested_module_id, :srn_no, :so_no],
-      methods: [:store_name, :formatted_srn_no, :created_by_user_full_name, :formated_created_at, :inventories_available],
+      only: [:id, :remarks, :created_at, :created_by, :closed, :store_id, :requested_module_id, :srn_no, :so_no, :so_customer_id],
+      methods: [:store_name, :formatted_srn_no, :created_by_user_full_name, :formated_created_at, :inventories_available, :so_customer_name],
       include: {
         store: {
           only: [:id, :name],
@@ -86,6 +86,10 @@ class Srn < ActiveRecord::Base
 
   def store_name
     store.name
+  end
+
+  def so_customer_name
+    so_customer.try(:name)
   end
 
   def formatted_srn_no

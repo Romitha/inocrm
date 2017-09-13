@@ -151,11 +151,11 @@ class Organization < ActiveRecord::Base
   # end
 
   def self.customers
-    joins(accounts_dealer_types: :dealer_type).where("mst_dealer_types.code = 'CUS' or mst_dealer_types.code = 'INDCUS'").references(:dealer_type)
+    joins(accounts_dealer_types: :dealer_type).where("mst_dealer_types.code = 'CUS' or mst_dealer_types.code = 'INDCUS'").order("name ASC").references(:dealer_type)
   end
 
   def self.suppliers
-    joins(accounts_dealer_types: :dealer_type).where("mst_dealer_types.code = 'SUP' or mst_dealer_types.code = 'INDSUP'").references(:dealer_type)
+    joins(accounts_dealer_types: :dealer_type).where("mst_dealer_types.code = 'SUP' or mst_dealer_types.code = 'INDSUP'").order("name ASC").references(:dealer_type)
   end
 
   mapping do
