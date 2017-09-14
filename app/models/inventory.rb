@@ -1137,6 +1137,31 @@ class InventoryPo < ActiveRecord::Base
 
   before_create :assign_po_no
 
+  before_save do |po|
+    if po.persisted? and po.remarks_changed? and po.remarks.present?
+      po_remarks = "#{po.remarks} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(po.current_user_id).email}</span><br/>#{po.remarks_was}"
+    elsif po.new_record?
+      po_remarks = po.remarks  
+    else
+      po_remarks = po.remarks_was
+    end
+    po.remarks = po_remarks
+  end
+
+  has_many :dyna_columns, as: :resourceable, autosave: true
+
+  [:current_user_id].each do |dyna_method|
+    define_method(dyna_method) do
+      dyna_columns.find_by_data_key(dyna_method).try(:data_value)
+    end
+
+    define_method("#{dyna_method}=") do |value|
+      data = dyna_columns.find_or_initialize_by(data_key: dyna_method)
+      data.data_value = (value.class==Fixnum ? value : value.strip)
+      data.save
+    end
+  end
+
 end
 
 class InventoryPoItem < ActiveRecord::Base

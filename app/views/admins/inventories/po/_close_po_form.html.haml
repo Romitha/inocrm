@@ -1,19 +1,40 @@
 .row
-  .col-md-12.small_scale_padding-top1.small_scale_padding-left3
-    %h4 Are you sure you want to close this PO ?
-.row
-  .col-md-12.small_scale_padding-top2.small_scale_padding-right3.small_scale_padding-top1.small_scale_padding-left3.small_scale_padding-bottom2
+  .col-md-12
     = simple_nested_form_for po, url: close_po_admins_inventories_path(po_id: po.id, form_param: true), method: :post, html: {class: "validate_form"} do |f|
-      = f.input :remarks, input_html: {value: nil, required: true}
+      = f.input :remarks, input_html: {value: nil}, required: true
       = simple_format f.object.remarks
-      = f.input :closed, wrapper: :append, input_html: {checked: true}, as: :hidden
-      
-      = f.simple_fields_for :inventory_po_items do |i|
-        = i.input :remarks, input_html: {value: "closed by :  " + current_user.email + "  closed at :  " + DateTime.now.strftime("%d-%m-%Y %H:%M") }, as: :hidden
-        = i.input :closed, wrapper: :append, input_html: {checked: true}, as: :hidden
+      / = f.input :closed, as: :hidden, input_html: {value: true}
 
-      = f.submit "Close", class: "btn btn-sm btn-success pull-right"
-      = link_to "Cancel", "#", data: {dismiss: "modal"}, class: "btn btn-sm btn-warning pull-right small_scale_padding-right1"
+      .row
+        .col-md-2
+          %strong Item Code
+        .col-md-2
+          %strong Description
+        .col-md-2
+          %strong Model No
+        .col-md-2
+          %strong Product No
+        .col-md-2
+          %strong Quantity
+        .col-md-2
+          %strong Close Action
+      = f.simple_fields_for :inventory_po_items do |p|
+        .row
+          .col-md-2
+            = p.object.inventory_prn_item.inventory_product.generated_item_code
+          .col-md-2
+            = p.object.inventory_prn_item.inventory_product.description
+          .col-md-2
+            = p.object.inventory_prn_item.inventory_product.model_no
+          .col-md-2
+            = p.object.inventory_prn_item.inventory_product.product_no
+          .col-md-2
+            = p.object.quantity
+          .col-md-2
+            = p.input :closed, wrapper: :append, label: false
+
+      = f.submit "Close", class: "btn btn-sm btn-success"
+      = link_to "Cancel", "#", data: {dismiss: "modal"}, class: "btn btn-link"
 
 = javascript_tag do
   $("#validate_form").validate();

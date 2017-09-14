@@ -64,15 +64,9 @@
         %td= simple_format po.remarks
         %td= po.created_by_user_full_name
         %td= link_to "Select", pos_admins_inventories_path(po_id: po.id), target: "_blank"
-        - if params[:close_param] == po.id || po.closed == true
-          %td.rmclass
-        - else
-          %td.rmclass
-            / = link_to "Close", close_po_admins_inventories_path(po_id: po.id), rel: "tooltip",  :data => {toggle: "tooltip", placement: "bottom", modalId: "close_po_id", remote: "true"}, title: "Close"
-
+        %td.rmclass
+          - unless po.closed
             = link_to "Close", close_po_admins_inventories_path(po_id: po.id), data: {modalId: "close_po_id", remote: "true"}
-
-            / = link_to delete_disposal_method_admins_inventories_path(disposal_id: disposal.id), method: :delete, rel: "tooltip",  :data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Delete"
 
 = paginate pos, remote: false, method: :get
 
@@ -80,6 +74,6 @@
   .modal-dialog.modal-lg
     .modal-content
       .modal-header
-        %h4.modal-title Select Product
+        %h4.modal-title Are you sure you want to close this PO ?
       .modal-body
       .modal-footer

@@ -1,9 +1,12 @@
 - prn = @prn
 .row
   .col-md-12
-    = panels panel_type: "success", header_content: "PRN No: #{prn.formated_prn_no}" do
+    = panels panel_type: "#{prn.closed ? 'danger' : 'success'}", header_content: "PRN No: #{prn.formated_prn_no}" do
 
-      %h4 PRN Info
+      %h4
+        - if prn.closed
+          %span.label.label-danger Closed
+        PRN Info
       %dl.dl-horizontal
         %dt PRN No
         %dd= prn.formated_prn_no
@@ -34,7 +37,7 @@
             %th Remarks
         %tbody
           - prn.inventory_prn_items.each_with_index do |prn_item, index|
-            %tr
+            %tr{class: "#{'danger' if prn_item.closed}"}
               %td= (index+1)
               %td= prn_item.inventory_product.try(:generated_item_code)
               %td= prn_item.inventory_product.try(:description)

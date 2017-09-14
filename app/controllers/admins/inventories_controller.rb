@@ -554,17 +554,24 @@ module Admins
 
         @po = InventoryPo.find params[:po_id]
         if params[:form_param].present?
-          @po.update po_params
-
-          @po.inventory_po_items.each do |po_item|
-            prnitem_id = po_item.inventory_prn_item.id
-            @prnitem = InventoryPrnItem.find prnitem_id
-            @prnitem.update closed: false
-
-            prn_id = po_item.inventory_prn_item.inventory_prn.id
-            @prn = InventoryPrn.find prn_id
-            @prn.update closed: false
+          if @po.update po_params
+            # @po.inventory_po_items.update_all closed: @po.closed
+            if @po.inventory_po_items.all? { |p| p.closed }
+              @po.update closed: true, remarks: "Closed"
+            end
           end
+
+          # @po.inventory_po_items.each do |po_item|
+          #   prnitem_id = po_item.inventory_prn_item.id
+          #   @prnitem = InventoryPrnItem.find prnitem_id
+          #   @prnitem.update closed: false
+
+          #   prn_id = po_item.inventory_prn_item.inventory_prn.id
+          #   @prn = InventoryPrn.find prn_id
+          #   @prn.update closed: false
+          # end
+
+          "closed by :  " + current_user.email + "  closed at :  " + DateTime.now.strftime("%d-%m-%Y %H:%M")
         end
       end
 
@@ -779,8 +786,19 @@ module Admins
 
       # end
 
+      need_serial = @inventory_product.inventory_product_info.need_serial.present?
+      need_batch = @inventory_product.inventory_product_info.need_batch.present?
+
+      validate = if !need_serial and need_batch
+        @grn_item.grn_batches.any?
+      elsif need_serial and !need_batch
+        @grn_item.grn_serial_items.any?
+      else
+        true
+      end
+
       if params[:next].present?
-        if @grn_item.valid?
+        if validate and @grn_item.valid?
           if not Rails.cache.fetch([:inventory_product_ids, session[:grn_arrived_time].to_i]).to_a.include? params[:inventory_product_id].to_i
             a = Rails.cache.fetch([:inventory_product_ids, session[:grn_arrived_time].to_i]).to_a
             a << params[:inventory_product_id].to_i
@@ -793,6 +811,7 @@ module Admins
 
           end
         else
+          @grn_item.errors[:base] << "There are something wrong. Please check Serial item or Batches or Non Serials or Non Batches"
           a = Rails.cache.fetch([:inventory_product_ids, session[:grn_arrived_time].to_i]).to_a
           a.delete(params[:inventory_product_id].to_i)
           Rails.cache.write([:inventory_product_ids, session[:grn_arrived_time].to_i], a)
@@ -2111,7 +2130,9 @@ module Admins
       end
 
       def po_params
-        params.require(:inventory_po).permit(:id, :created_by, :store_id, :supplier_id, :po_no, :delivery_date, :your_ref, :payment_term_id, :discount_amount, :currency_id, :remarks, :deliver_to, :delivery_date_text, :quotation_no, :delivery_mode, :closed, inventory_po_items_attributes: [ :id, :_destroy, :prn_item_id, :quantity, :unit_cost, :unit_id, :unit_cost_grn, :remarks, :description, :closed, inventory_po_item_taxes_attributes: [ :id, :_destroy, :po_item_id, :tax_id, :tax_rate, :amount ], inventory_prn_item_attributes: [ :id, :_destroy, :closed, inventory_prn_attributes: [ :id, :_destroy, :closed ] ],  ] )
+        po_params = params.require(:inventory_po).permit(:id, :created_by, :store_id, :supplier_id, :po_no, :delivery_date, :your_ref, :payment_term_id, :discount_amount, :currency_id, :remarks, :deliver_to, :delivery_date_text, :quotation_no, :delivery_mode, :closed, inventory_po_items_attributes: [ :id, :_destroy, :prn_item_id, :quantity, :unit_cost, :unit_id, :unit_cost_grn, :remarks, :description, :closed, inventory_po_item_taxes_attributes: [ :id, :_destroy, :po_item_id, :tax_id, :tax_rate, :amount ], inventory_prn_item_attributes: [ :id, :_destroy, :closed, inventory_prn_attributes: [ :id, :_destroy, :closed ] ],  ] )
+        po_params[:current_user_id] = current_user.id
+        po_params
       end
 
       def srr_params

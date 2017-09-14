@@ -1,9 +1,12 @@
 - po = @po
 .row
   .col-md-12
-    = panels panel_type: "success", header_content: "Po no: #{@po.formated_po_no}" do
+    = panels panel_type: "#{po.closed ? 'danger' : 'success'}", header_content: "Po no: #{@po.formated_po_no}" do
 
-      %h4 Purchase Order Info
+      %h4
+        - if po.closed
+          %span.label.label-danger Closed
+        Purchase Order Info
       %dl.dl-horizontal
         %dt Supplier
         %dd= @po.supplier.name
@@ -42,9 +45,9 @@
             %th Unit cost GRN
             %th Description
         %tbody
-          - @po.inventory_po_items.where(closed: false).each_with_index do |po_item, index|
+          - @po.inventory_po_items.each_with_index do |po_item, index|
             - if !po_item.inventory_prn_item.inventory_product.non_stock_item
-              %tr
+              %tr{class: "#{'danger' if po_item.closed}"}
                 %td= (index+1)
                 %td= po_item.inventory_prn_item.inventory_product.try(:generated_item_code)
                 %td= po_item.inventory_prn_item.inventory_product.try(:description)
