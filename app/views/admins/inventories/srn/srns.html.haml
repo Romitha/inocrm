@@ -1,9 +1,12 @@
 - srn = @srn
 .row
   .col-md-12
-    = panels panel_type: "success", header_content: "SRN No: #{srn.srn_no}" do
+    = panels panel_type: "#{srn.closed ? 'danger' : 'success'}", header_content: "SRN No: #{srn.srn_no}" do
 
-      %h4 SRN Info
+      %h4
+        - if srn.closed
+          %span.label.label-danger Closed
+        SRN Info
       %dl.dl-horizontal
         %dt SRN No
         %dd= srn.formatted_srn_no
@@ -40,7 +43,7 @@
             %th Remarks
         %tbody
           - srn.srn_items.each_with_index do |srn_item, index|
-            %tr
+            %tr{class: "#{'danger' if srn_item.closed}", title: "Closed"}
               %td= (index+1)
               %td= srn_item.inventory_product.try(:generated_item_code)
               %td= srn_item.inventory_product.try(:description)
@@ -50,6 +53,16 @@
               %td= srn_item.quantity
               %td= srn_item.remarks
 
-= link_to "Issue", gin_admins_inventories_path(gin_callback: "select_srn", srn_id: srn.id, from: "srn_page"), remote: true, class: "btn btn-sm btn-primary"
+- unless srn.closed
+  = link_to "Issue", gin_admins_inventories_path(gin_callback: "select_srn", srn_id: srn.id, from: "srn_page"), remote: true, class: "btn btn-sm btn-primary"
+  = link_to "Terminate", close_srn_admins_inventories_path(srn_id: srn.id, close_srn: true), remote: "true"
 
 #gin_wrapper
+
+#close_srn.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "close_po_id", "aria-hidden" => true}
+  .modal-dialog.modal-lg
+    .modal-content
+      .modal-header
+        %h4.modal-title Are you sure you want to close this SRN ?
+      .modal-body
+      .modal-footer

@@ -47,7 +47,7 @@
         %tbody
           - @po.inventory_po_items.each_with_index do |po_item, index|
             - if !po_item.inventory_prn_item.inventory_product.non_stock_item
-              %tr{class: "#{'danger' if po_item.closed}"}
+              %tr{class: "#{'danger' if po_item.closed}", title: "Closed"}
                 %td= (index+1)
                 %td= po_item.inventory_prn_item.inventory_product.try(:generated_item_code)
                 %td= po_item.inventory_prn_item.inventory_product.try(:description)

@@ -526,13 +526,6 @@ module Admins
       if params[:po_id].present?
         @po = InventoryPo.find params[:po_id]
 
-        # if params[:closed_po].present?
-        #   @po.closed = true
-        #   respond_to do |format|
-        #     format.html { redirect_to pos_admins_inventories_path }
-        #   end
-        # end
-
         render "admins/inventories/po/po"
       else
         if params[:search].present?
@@ -558,18 +551,9 @@ module Admins
             # @po.inventory_po_items.update_all closed: @po.closed
             if @po.inventory_po_items.all? { |p| p.closed }
               @po.update closed: true, remarks: "Closed"
+              sleep 3
             end
           end
-
-          # @po.inventory_po_items.each do |po_item|
-          #   prnitem_id = po_item.inventory_prn_item.id
-          #   @prnitem = InventoryPrnItem.find prnitem_id
-          #   @prnitem.update closed: false
-
-          #   prn_id = po_item.inventory_prn_item.inventory_prn.id
-          #   @prn = InventoryPrn.find prn_id
-          #   @prn.update closed: false
-          # end
 
           "closed by :  " + current_user.email + "  closed at :  " + DateTime.now.strftime("%d-%m-%Y %H:%M")
         end
@@ -579,6 +563,56 @@ module Admins
         render "admins/inventories/po/pos.js"
       else
         redirect_to pos_admins_inventories_path(close_param: params[:po_id])
+      end
+
+    end
+
+    def close_srn
+      Inventory
+      Ticket
+      @srn = Srn.find params[:srn_id]
+      unless params[:close_srn].present?
+        if @srn.update srn_params
+          @srn.srn_items.each do |srn_item|
+            if srn_item.issue_terminated
+              srn_item.update closed: true, issue_terminated_at: DateTime.now, issue_terminated_by: current_user.id
+            end
+          end
+
+          if @srn.srn_items.all? { |p| p.closed }
+            @srn.update closed: true, remarks: "Closed"
+            sleep 3
+          end
+        end
+
+      end
+
+      if request.xhr?
+        render "admins/inventories/srn/srn.js"
+      else
+        redirect_to srns_admins_inventories_url(srn_id: @srn.id)
+      end
+
+    end
+
+    def close_prn
+      Inventory
+      Ticket
+      @prn = InventoryPrn.find params[:prn_id]
+      unless params[:close_prn].present?
+        if @prn.update prn_params
+          if @prn.inventory_prn_items.empty?
+            @prn.delete
+          end
+        end
+        sleep 3
+
+      end
+
+      if request.xhr?
+        render "admins/inventories/prn/prn.js"
+      else
+        redirect_to search_receives_admins_searches_url
       end
 
     end
@@ -635,7 +669,8 @@ module Admins
         @inventory_products = InventoryProduct.search(params)
 
         @inventory_products.to_a.each do |ipid|
-          Rails.cache.delete([:grn_item, :i_product, ipid.id, session[:pre_grn_arrived_time].to_i ])
+          # Rails.cache.delete([:grn_item, :i_product, ipid.id, session[:pre_grn_arrived_time].to_i ])
+          Rails.cache.delete([:grn_item, ipid.id, session[:pre_grn_arrived_time].to_i ])
           Rails.cache.delete([:serial_item, :i_product, ipid.id, session[:pre_grn_arrived_time].to_i ])
         end
 
@@ -647,7 +682,8 @@ module Admins
       when "select_inventory"
         @inventory_product = InventoryProduct.find params[:inventory_product_id]
 
-        @grn_item = Rails.cache.fetch([:grn_item, :i_product, @inventory_product.id, session[:grn_arrived_time].to_i ]) { GrnItem.new }
+        # @grn_item = Rails.cache.fetch([:grn_item, :i_product, @inventory_product.id, session[:grn_arrived_time].to_i ]) { GrnItem.new }
+        @grn_item = Rails.cache.fetch([:grn_item, @inventory_product.id, session[:grn_arrived_time].to_i ]) { GrnItem.new }
 
         @render_template = "grn_item"
         
@@ -804,7 +840,8 @@ module Admins
             a << params[:inventory_product_id].to_i
             Rails.cache.write([:inventory_product_ids, session[:grn_arrived_time].to_i], a)
           end
-          Rails.cache.write([:grn_item, :i_product, @inventory_product.id, session[:grn_arrived_time].to_i ], @grn_item)
+          # Rails.cache.write([:grn_item, :i_product, @inventory_product.id, session[:grn_arrived_time].to_i ], @grn_item)
+          Rails.cache.write([:grn_item, @inventory_product.id, session[:grn_arrived_time].to_i ], @grn_item)
 
           if Rails.cache.fetch([:inventory_product_ids, session[:grn_arrived_time].to_i]).to_a.count > 0
             @grn = Grn.new
@@ -825,7 +862,8 @@ module Admins
 
         end
 
-        # Rails.cache.delete([:grn_item, :i_product, @inventory_product.id ] )
+        Rails.cache.delete([:grn_item, :i_product, @inventory_product.id ] )
+        # Rails.cache.delete([:grn_item, @inventory_product.id ] )
         # Rails.cache.delete([ :serial_item, :i_product, @inventory_product.id ])
       end
 
@@ -840,11 +878,23 @@ module Admins
       Inventory
       Grn
       @po_item = InventoryPoItem.find params[:po_item_id]
+      @already_recieved = @po_item.inventory_po.grns.to_a.sum{|grn| grn.grn_batches.any? ? grn.grn_batches.sum(:recieved_quantity) : grn.grn_items.sum(:recieved_quantity) }
 
       @grn_item = GrnItem.new grn_item_params
 
+      need_serial = @po_item.inventory_prn_item.inventory_product.inventory_product_info.need_serial.present?
+      need_batch = @po_item.inventory_prn_item.inventory_product.inventory_product_info.need_batch.present?
+
+      validate = if !need_serial and need_batch
+        @grn_item.grn_batches.any?
+      elsif need_serial and !need_batch
+        @grn_item.grn_serial_items.any?
+      else
+        true
+      end
+
       if params[:next].present?
-        if @grn_item.valid?
+        if validate and @grn_item.valid?
 
           if not Rails.cache.fetch([:po_item_ids, session[:grn_arrived_time].to_i]).to_a.include? params[:po_item_id].to_i
             a = Rails.cache.fetch([:po_item_ids, session[:grn_arrived_time].to_i]).to_a
@@ -861,6 +911,8 @@ module Admins
           end
 
         else
+          @grn_item.errors[:base] << "There are something wrong. Please check Serial item or Batches or Non Serials or Non Batches"
+
           a = Rails.cache.fetch([:po_item_ids, session[:grn_arrived_time].to_i]).to_a
           a.delete(params[:po_item_id].to_i)
           Rails.cache.write([:po_item_ids, session[:grn_arrived_time].to_i], a)
@@ -889,6 +941,17 @@ module Admins
       Organization
 
       @srr_item = SrrItem.find params[:srr_item_id]
+
+      # need_serial = @srr_item.inventory_product.inventory_product_info.need_serial.present?
+      # need_batch = @srr_item.inventory_product.inventory_product_info.need_batch.present?
+
+      # validate = if !need_serial and need_batch
+      #   @grn_item.grn_batches.any?
+      # elsif need_serial and !need_batch
+      #   @grn_item.grn_serial_items.any?
+      # else
+      #   true
+      # end
 
       if params[:srr_item_source].present?
         srr_item_source_ids = params[:srr_item_source].keep_if{|key, value| value["accept"] == "1" }.keys
@@ -965,6 +1028,8 @@ module Admins
               end
 
             else
+              @grn_item.errors[:base] << "There are something wrong. Please check Serial item or Batches or Non Serials or Non Batches"
+
               a = Rails.cache.fetch([:srr_item_source_ids, session[:grn_arrived_time].to_i]).to_a
               a.delete(params[:srr_item_source_id].to_i)
               Rails.cache.write([:srr_item_source_ids, session[:grn_arrived_time].to_i], a)
@@ -1066,7 +1131,8 @@ module Admins
       # Without PO Items
       Rails.cache.fetch([:inventory_product_ids, session[:grn_arrived_time].to_i]).to_a.each do | inventory_product_id |
         inventory_product = InventoryProduct.find inventory_product_id
-        grn_item = Rails.cache.fetch( [:grn_item, :i_product, inventory_product.id, session[:grn_arrived_time].to_i ] )
+        # grn_item = Rails.cache.fetch( [:grn_item, :i_product, inventory_product.id, session[:grn_arrived_time].to_i ] )
+        grn_item = Rails.cache.fetch( [:grn_item, inventory_product.id, session[:grn_arrived_time].to_i ] )
         grn_item.grn = @grn
 
         bulk_serial_items = Rails.cache.fetch([ :serial_item, inventory_product.class.to_s.to_sym, inventory_product.id, session[:grn_arrived_time].to_i ]).to_a
@@ -1103,7 +1169,8 @@ module Admins
 
         grn_item.grn_item_current_unit_cost_histories.create created_by: current_user.id, current_unit_cost: grn_item.current_unit_cost
 
-        Rails.cache.delete([:grn_item, :i_product, inventory_product.id, session[:grn_arrived_time].to_i ] )
+        # Rails.cache.delete([:grn_item, :i_product, inventory_product.id, session[:grn_arrived_time].to_i ] )
+        Rails.cache.delete([:grn_item, inventory_product.id, session[:grn_arrived_time].to_i ] )
         Rails.cache.delete([ :serial_item, inventory_product.class.to_s.to_sym, inventory_product.id, session[:grn_arrived_time].to_i ])
 
         # InventorySerialItem.where(id: grn_item.inventory_serial_item_ids).each do |item|
@@ -1837,9 +1904,6 @@ module Admins
 
           prn_items_attributes << {product_id: srn_item.product_id, quantity: srn_item.quantity, srn_item: srn_item}
 
-
-          puts "++++++++++++++++++++"+srn_item_id+"+++++++++++++++++++++++++++"
-
         end
 
 
@@ -2106,7 +2170,7 @@ module Admins
       end
 
       def grn_item_params
-        params.require(:grn_item).permit(:id, :recieved_quantity, :unit_cost, :remarks, :current_user_id, grn_item_current_unit_cost_histories_attributes: [:id, :current_unit_cost, :created_by, :created_at], grn_batches_attributes: [:id, :recieved_quantity, :remaining_quantity, :_destroy, inventory_batch_attributes: [:id, :_destroy, :inventory_id, :product_id, :created_by, :lot_no, :batch_no, :manufatured_date, :expiry_date, :remarks, inventory_batch_warranties_attributes: [:id, :_destroy, inventory_warranty_attributes: [:id, :_destroy, :created_by, :start_at, :end_at, :period_part, :period_labour, :period_onsight, :remarks, :warranty_type_id]] ]], grn_serial_items_attributes: [:id, :_destroy, :recieved_quantity, :remaining, inventory_serial_item_attributes: [:id, :_destroy, :inventory_id, :product_id, :inv_status_id, :created_by, :serial_no, :ct_no, :manufatured_date, :expiry_date, :scavenge, :parts_not_completed, :damage, :used, :repaired, :reserved, :product_condition_id, :remarks, inventory_serial_warranties_attributes: [:id, :_destroy, inventory_warranty_attributes: [:id, :_destroy, :created_by, :start_at, :end_at, :period_part, :period_labour, :period_onsight, :remarks, :warranty_type_id]]]])
+        params.require(:grn_item).permit(:id, :recieved_quantity, :product_id, :unit_cost, :remarks, :current_user_id, grn_item_current_unit_cost_histories_attributes: [:id, :current_unit_cost, :created_by, :created_at], grn_batches_attributes: [:id, :recieved_quantity, :remaining_quantity, :_destroy, inventory_batch_attributes: [:id, :_destroy, :inventory_id, :product_id, :created_by, :lot_no, :batch_no, :manufatured_date, :expiry_date, :remarks, inventory_batch_warranties_attributes: [:id, :_destroy, inventory_warranty_attributes: [:id, :_destroy, :created_by, :start_at, :end_at, :period_part, :period_labour, :period_onsight, :remarks, :warranty_type_id]] ]], grn_serial_items_attributes: [:id, :_destroy, :recieved_quantity, :remaining, inventory_serial_item_attributes: [:id, :_destroy, :inventory_id, :product_id, :inv_status_id, :created_by, :serial_no, :ct_no, :manufatured_date, :expiry_date, :scavenge, :parts_not_completed, :damage, :used, :repaired, :reserved, :product_condition_id, :remarks, inventory_serial_warranties_attributes: [:id, :_destroy, inventory_warranty_attributes: [:id, :_destroy, :created_by, :start_at, :end_at, :period_part, :period_labour, :period_onsight, :remarks, :warranty_type_id]]]])
       end
 
       def inventory_serial_item_params
@@ -2118,7 +2182,9 @@ module Admins
       end
 
       def srn_params
-        params.require(:srn).permit(:id, :srn_no, :requested_module_id, :created_by, :store_id, :required_at, :remarks, :so_no, :so_customer_id, srn_items_attributes: [:id, :product_id, :main_product_id, :quantity, :remarks, :_destroy, :returnable, :spare_part])
+        srn_params = params.require(:srn).permit(:id, :srn_no, :requested_module_id, :created_by, :store_id, :required_at, :remarks, :so_no, :so_customer_id, srn_items_attributes: [:id, :product_id, :main_product_id, :quantity, :remarks, :_destroy, :returnable, :spare_part, :issue_terminated, :issue_terminated_reason_id])
+        srn_params[:current_user_id] = current_user.id
+        srn_params
       end
 
       def gin_params
@@ -2126,7 +2192,9 @@ module Admins
       end
 
       def prn_params
-        params.require(:inventory_prn).permit(:id, :store_id, :created_by, :prn_no, :required_at, :remarks, inventory_prn_items_attributes: [:id, :product_id, :_destroy, :quantity, :remarks, :prn_item_object_id])
+        prn_params = params.require(:inventory_prn).permit(:id, :store_id, :created_by, :prn_no, :required_at, :remarks, inventory_prn_items_attributes: [:id, :product_id, :_destroy, :quantity, :remarks, :prn_item_object_id])
+        prn_params[:current_user_id] = current_user.id
+        prn_params
       end
 
       def po_params

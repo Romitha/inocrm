@@ -1171,14 +1171,14 @@ class InventoryPoItem < ActiveRecord::Base
   belongs_to :inventory_prn_item, foreign_key: :prn_item_id
   belongs_to :inventory_unit, foreign_key: :unit_id
 
-  has_many :inventory_po_item_taxes, foreign_key: :po_item_id
+  has_many :inventory_po_item_taxes, foreign_key: :po_item_id, dependent: :delete_all
   accepts_nested_attributes_for :inventory_po_item_taxes, allow_destroy: true
 
   has_many :grn_items, foreign_key: :po_item_id
   accepts_nested_attributes_for :grn_items, allow_destroy: true
   has_many :grns, through: :grn_items
 
-  has_many :dyna_columns, as: :resourceable, autosave: true
+  has_many :dyna_columns, as: :resourceable, autosave: true, dependent: :delete_all
 
   [:temp_id].each do |dyna_method|
     define_method(dyna_method) do
@@ -1190,6 +1190,10 @@ class InventoryPoItem < ActiveRecord::Base
       data.data_value = (value.class==Fixnum ? value : value.strip)
       data.save# if data.persisted?
     end
+  end
+
+  def hard_deletable?
+    grn_items.any?
   end
 end
 
@@ -1293,6 +1297,31 @@ class InventoryPrn < ActiveRecord::Base
     inventory_prn_items.to_a.sum{|prn_item| prn_item.po_items_quantity }
   end
 
+  before_save do |prn|
+    if prn.persisted? and prn.remarks_changed? and prn.remarks.present?
+      prn_remarks = "#{prn.remarks} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(prn.current_user_id).email}</span><br/>#{prn.remarks_was}"
+    elsif prn.new_record?
+      prn_remarks = prn.remarks  
+    else
+      prn_remarks = prn.remarks_was
+    end
+    prn.remarks = prn_remarks
+  end
+
+  has_many :dyna_columns, as: :resourceable, autosave: true
+
+  [:current_user_id].each do |dyna_method|
+    define_method(dyna_method) do
+      dyna_columns.find_by_data_key(dyna_method).try(:data_value)
+    end
+
+    define_method("#{dyna_method}=") do |value|
+      data = dyna_columns.find_or_initialize_by(data_key: dyna_method)
+      data.data_value = (value.class==Fixnum ? value : value.strip)
+      data.save
+    end
+  end
+
 
 end
 
@@ -1306,7 +1335,7 @@ class InventoryPrnItem < ActiveRecord::Base
 
   validates_presence_of :product_id
 
-  has_many :dyna_columns, as: :resourceable, autosave: true
+  has_many :dyna_columns, as: :resourceable, autosave: true, dependent: :delete_all
 
   [:prn_item_object_id].each do |dyna_method|
     define_method(dyna_method) do
@@ -1329,6 +1358,11 @@ class InventoryPrnItem < ActiveRecord::Base
 
   def formated_prn_no
     inventory_prn.formated_prn_no
+  end
+
+  def hard_deletable?
+    Srn
+    srn_items.any? or prn_srn_items.any? or inventory_po_items.any?
   end
 
 end

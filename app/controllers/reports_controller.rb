@@ -303,6 +303,7 @@ class ReportsController < ApplicationController
   def po_output
     Inventory
     Invoice
+    ContactNumber
     # https://github.com/mileszs/wicked_pdf
 
     po = InventoryPo.find params[:po_id]

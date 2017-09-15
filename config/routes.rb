@@ -455,7 +455,9 @@ Rails.application.routes.draw do
           :manufacture,
           :unit,
           :inventory,
-          :close_po
+          :close_po,
+          :close_srn,
+          :close_prn,
         ].each do |action|
           match "#{action.to_s}", action: action, via: [:get, :post, :put]
         end

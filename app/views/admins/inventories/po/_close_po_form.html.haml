@@ -6,6 +6,8 @@
       / = f.input :closed, as: :hidden, input_html: {value: true}
 
       .row
+        .col-md-1
+          Remove
         .col-md-2
           %strong Item Code
         .col-md-2
@@ -16,10 +18,12 @@
           %strong Product No
         .col-md-2
           %strong Quantity
-        .col-md-2
-          %strong Close Action
+        .col-md-1
+          %strong Close
       = f.simple_fields_for :inventory_po_items do |p|
         .row
+          .col-md-1
+            = p.link_to_remove "X" if p.object.hard_deletable?
           .col-md-2
             = p.object.inventory_prn_item.inventory_product.generated_item_code
           .col-md-2
@@ -30,7 +34,7 @@
             = p.object.inventory_prn_item.inventory_product.product_no
           .col-md-2
             = p.object.quantity
-          .col-md-2
+          .col-md-1
             = p.input :closed, wrapper: :append, label: false
 
       = f.submit "Close", class: "btn btn-sm btn-success"

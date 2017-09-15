@@ -37,7 +37,7 @@
       %dt SO Customer
       %dd= @srn.so_customer.try(:name)
       %dt Remarks
-      %dd= @srn.remarks
+      %dd= simple_format @srn.remarks
 %hr
 .row
   .col-md-2

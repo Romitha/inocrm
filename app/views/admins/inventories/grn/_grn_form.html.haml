@@ -1,4 +1,36 @@
 - Organization
+
+- countable_array = [Rails.cache.fetch([:po_item_ids, session[:grn_arrived_time].to_i]).to_a, Rails.cache.fetch([:inventory_product_ids, session[:grn_arrived_time].to_i]).to_a, Rails.cache.fetch([:srr_item_source_ids, session[:grn_arrived_time].to_i]).to_a].map{|e| e if e.any? }.compact.first
+
+%h4 Recieved Quantities
+%table.table.table-bordered
+  %thead
+    %tr
+      %th product no
+      %th model no
+      %th Serial no
+      %th Description
+      %th Recieved Quantity
+  %tbody
+    - countable_array.each do |el_id|
+      - grn_item = Rails.cache.fetch([:grn_item, el_id, session[:grn_arrived_time].to_i ])
+      - inventory_product = grn_item.inventory_product
+      - need_serial = inventory_product.inventory_product_info.need_serial.present?
+      - need_batch = inventory_product.inventory_product_info.need_batch.present?
+
+      - count = if !need_serial and need_batch
+        - grn_item.grn_batches.to_a.sum{|e| e.recieved_quantity}
+      - elsif need_serial and !need_batch
+        - grn_item.grn_serial_items.to_a.count
+      - else
+        - grn_item.recieved_quantity
+      %tr
+        %td= inventory_product.product_no
+        %td= inventory_product.model_no
+        %td= inventory_product.generated_item_code
+        %td= inventory_product.description
+        %td= count
+
 = simple_form_for @grn, url: create_grn_admins_inventories_path, method: :post do |f|
   = f.input :po_id, as: :hidden
   = f.input :srr_id, as: :hidden, input_html: { value: (@srr_item and @srr_item.srr.try(:id)) }

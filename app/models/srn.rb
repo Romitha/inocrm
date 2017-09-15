@@ -57,6 +57,7 @@ class Srn < ActiveRecord::Base
   end
 
   def to_indexed_json
+    Role
     to_json(
       only: [:id, :remarks, :created_at, :created_by, :closed, :store_id, :requested_module_id, :srn_no, :so_no, :so_customer_id],
       methods: [:store_name, :formatted_srn_no, :created_by_user_full_name, :formated_created_at, :inventories_available, :so_customer_name],
@@ -114,6 +115,31 @@ class Srn < ActiveRecord::Base
   def requested_quantity
     srn_items.sum(:quantity)
   end
+
+  before_save do |srn|
+    if srn.persisted? and srn.remarks_changed? and srn.remarks.present?
+      srn_remarks = "#{srn.remarks} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(srn.current_user_id).email}</span><br/>#{srn.remarks_was}"
+    elsif srn.new_record?
+      srn_remarks = srn.remarks  
+    else
+      srn_remarks = srn.remarks_was
+    end
+    srn.remarks = srn_remarks
+  end
+
+  has_many :dyna_columns, as: :resourceable, autosave: true
+
+  [:current_user_id].each do |dyna_method|
+    define_method(dyna_method) do
+      dyna_columns.find_by_data_key(dyna_method).try(:data_value)
+    end
+
+    define_method("#{dyna_method}=") do |value|
+      data = dyna_columns.find_or_initialize_by(data_key: dyna_method)
+      data.data_value = (value.class==Fixnum ? value : value.strip)
+      data.save
+    end
+  end
 end
 
 class SrnItem < ActiveRecord::Base
@@ -125,6 +151,7 @@ class SrnItem < ActiveRecord::Base
   belongs_to :srn
   belongs_to :inventory_product, foreign_key: :product_id
   belongs_to :main_inventory_product, class_name: "InventoryProduct", foreign_key: :main_product_id
+  belongs_to :issue_terminated_reason, class_name: "InventoryReason"
 
   has_many :ticket_spare_part_stores, foreign_key: :inv_srn_item_id
   has_many :ticket_on_loan_spare_parts, foreign_key: :inv_srn_item_id

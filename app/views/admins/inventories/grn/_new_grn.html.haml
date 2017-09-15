@@ -38,6 +38,7 @@
             %th Action
         %tbody
           - @po.inventory_po_items.where(closed: false).each do |po_item|
+
             - if !po_item.inventory_prn_item.inventory_product.non_stock_item
               %tr
                 %td= po_item.quantity
@@ -54,5 +55,3 @@
                     No inventories
 
       #grn_item_frame
-
-

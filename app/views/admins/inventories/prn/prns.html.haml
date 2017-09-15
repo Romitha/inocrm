@@ -37,7 +37,7 @@
             %th Remarks
         %tbody
           - prn.inventory_prn_items.each_with_index do |prn_item, index|
-            %tr{class: "#{'danger' if prn_item.closed}"}
+            %tr{class: "#{'danger' if prn_item.closed}", title: "Closed"}
               %td= (index+1)
               %td= prn_item.inventory_product.try(:generated_item_code)
               %td= prn_item.inventory_product.try(:description)
@@ -51,3 +51,13 @@
 
               %td= prn_item.quantity
               %td= prn_item.remarks
+
+= link_to "Remove", close_prn_admins_inventories_path(prn_id: prn.id, close_prn: true), remote: "true"
+
+#close_prn.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "close_po_id", "aria-hidden" => true}
+  .modal-dialog.modal-lg
+    .modal-content
+      .modal-header
+        %h4.modal-title Are you sure you want to close this PRN ?
+      .modal-body
+      .modal-footer

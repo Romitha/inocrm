@@ -21,7 +21,7 @@
       .form-group
         = label_tag "PO No", "Supplier", class: "col-md-2 control-label"
         .col-md-10
-          = select_tag "po[supplier.id]", options_from_collection_for_select(Organization.suppliers, "id", "name"), class: "form-control"
+          = select_tag "po[supplier.id]", options_from_collection_for_select(Organization.suppliers, "id", "name"), class: "form-control", include_blank: true
       .btn-group
         = submit_tag "Search", class: "btn btn-success btn-lg", name: "search"
         %input{:onclick => "window.location.reload()", :type => "button", class: "btn btn-lg", :value => "Back"}

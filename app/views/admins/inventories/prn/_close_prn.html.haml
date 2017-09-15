@@ -1,0 +1,41 @@
+.row
+  .col-md-12
+    = simple_nested_form_for prn, url: close_prn_admins_inventories_path(prn_id: prn.id, form_param: true), method: :post, html: {class: "validate_form"} do |f|
+      = f.input :remarks, input_html: {value: nil}, required: true
+      = simple_format f.object.remarks
+      / = f.input :closed, as: :hidden, input_html: {value: true}
+
+      .row
+        .col-md-2
+          %strong Item Code
+        .col-md-2
+          %strong Description
+        .col-md-2
+          %strong Model No
+        .col-md-2
+          %strong Product No
+        .col-md-2
+          %strong Quantity
+        .col-md-2
+          %strong Close Action
+
+      = f.simple_fields_for :inventory_prn_items do |p|
+        .row
+          .col-md-2
+            = p.object.inventory_product.generated_item_code
+          .col-md-2
+            = p.object.inventory_product.description
+          .col-md-2
+            = p.object.inventory_product.model_no
+          .col-md-2
+            = p.object.inventory_product.product_no
+          .col-md-2
+            = p.object.quantity
+          .col-md-2
+            = p.link_to_remove "X" unless p.object.hard_deletable?
+
+      = f.submit "Close", class: "btn btn-sm btn-success"
+      = link_to "Cancel", "#", data: {dismiss: "modal"}, class: "btn btn-link"
+
+= javascript_tag do
+  $(".validate_form").validate();

@@ -1,16 +1,17 @@
 - if @po_item
+  - cache_id = @po_item.id
   - need_serial = @po_item.inventory_prn_item.inventory_product.inventory_product_info.need_serial.present?
   - need_batch = @po_item.inventory_prn_item.inventory_product.inventory_product_info.need_batch.present?
   - inventory_product = @po_item.inventory_prn_item.inventory_product
 
   - balance_to_be_inserted = @po_item.quantity
-  / - balance_to_be_inserted = @balance_to_be_recieved
 
   - already_recieved = @already_recieved
 
   - inventory = inventory_product.inventories.find_by_store_id session[:store_id]
   - url = initialize_grn_admins_inventories_path(po_item_id: @po_item.try(:id), inventory_product_id: @inventory_product.try(:id))
 - elsif @inventory_product
+  - cache_id = @inventory_product.id
   - need_serial = @inventory_product.inventory_product_info.need_serial.present?
   - need_batch = @inventory_product.inventory_product_info.need_batch.present?
   - inventory_product = @inventory_product
@@ -27,7 +28,9 @@
   - resource_reference_id = @inventory_product.id
   - resource_reference_class = @inventory_product.class
 
+
 = simple_nested_form_for @grn_item, url: url, method: :post, remote: true, html: {class: "validate_form"} do |g|
+  = g.input :product_id, as: :hidden, input_html: {value: inventory_product.id}
 
   .row.small_scale_padding-top1.small_scale_padding-bottom1
     .col-md-12
@@ -57,6 +60,10 @@
         %dd=inventory.remarks
 
   - if !need_serial and need_batch
+    %h4
+      Recieved Quantities
+      %span.label.label-success
+        = Rails.cache.fetch([:grn_item, cache_id, session[:grn_arrived_time].to_i ]).grn_batches.to_a.sum{|e| e.recieved_quantity}
     %fieldset
       %legend GRN Batches
       = g.simple_fields_for :grn_batches do |b|
@@ -108,6 +115,10 @@
       = g.link_to_add "Add", :grn_batches, class: "add_grn_items", onclick: "Inventories.add_warranty_click(this);"
 
   - if need_serial and !need_batch
+    %h4
+      Recieved Quantities
+      .label.label-success
+        = Rails.cache.fetch([:grn_item, cache_id, session[:grn_arrived_time].to_i ]).grn_serial_items.to_a.count
 
     = tab_panel do
       = tab_nav_tab({class: "small_scale_margin-bottom1"}, single_serial_item: {content: "Item by item", active_class: "active"}, bulk_update: {content: "Bulk update"})
@@ -213,6 +224,11 @@
                 .progress-bar.progress-bar-success.progress-bar-striped{role: "progressbar", "aria-valuemax" => 100, "aria-valuemin" => 0, "aria-valuenow" => 0}
 
   - if !(need_serial or need_batch)
+    %h4
+      Recieved Quantities
+      .label.label-success
+        = Rails.cache.fetch([:grn_item, cache_id, session[:grn_arrived_time].to_i ]).recieved_quantity
+
     = g.input :recieved_quantity, as: :decimal, input_html: {value: (g.object.recieved_quantity || 0), class: "integer", required: true }, label: "Received quantity"
   - else
     = g.input :recieved_quantity, as: :hidden, input_html: {value: (need_serial and !need_batch ? 1 : 0 )}

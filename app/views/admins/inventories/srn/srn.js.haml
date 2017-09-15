@@ -1,6 +1,6 @@
 - if @modal_active
   $("#search_product").modal({backdrop: "static"});
-  $("#search_product .modal-body").html("#{j render 'admins/inventories/srn/search_inventory'}");
+  c
   Inventories.filter_product();
   Inventories.filter_category();
   Inventories.filter_store();
@@ -13,6 +13,11 @@
 
 - elsif @select_inventory
   $("#select_inventories").html("#{j render 'admins/inventories/srn/select_inventory'}");
+
+- if params[:close_srn].present?
+  $("#close_srn").modal();
+  $("#close_srn .modal-body").html("#{j render 'admins/inventories/srn/close_srn', srn: @srn}");
+
 
 Tickets.remove_ajax_loader();
 

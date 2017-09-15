@@ -39,6 +39,10 @@
     $("#search_result").html("#{ j render 'admins/inventories/prn/search_srn_results' }");
 
 
+- if params[:close_prn].present?
+  $("#close_prn").modal();
+  $("#close_prn .modal-body").html("#{j render 'admins/inventories/prn/close_prn', prn: @prn}");
+
 $("a[rel~=popover], .has-popover").popover();
 Tickets.initial_loaders();
 Tickets.remove_ajax_loader();
