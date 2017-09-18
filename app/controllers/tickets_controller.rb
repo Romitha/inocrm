@@ -1339,7 +1339,7 @@ class TicketsController < ApplicationController
                     view_context.send_email(email_to: email_to, ticket_id: @ticket.id, engineer_id: ticket_engineer.id, email_code: "ASSIGN_JOB") if email_to.present?
 
                     ticket_engineer.ticket_support_engineers.each do |support_engineer|
-                      view_context.send_email(email_to: support_engineer.user.email, ticket_id: @ticket.id, email_code: "ASSIGN_JOB") if support_engineer.user.email.present?
+                      view_context.send_email(email_to: support_engineer.user.email, engineer_id: ticket_engineer.id, ticket_id: @ticket.id, email_code: "ASSIGN_JOB") if support_engineer.user.email.present?
 
                     end
 
@@ -4261,9 +4261,10 @@ class TicketsController < ApplicationController
 
       @ticket.save
       act_hold.update_attribute(:sla_pause, act_hold.reason.sla_pause)
-
-      @ticket_engineer = TicketEngineer.find params[:engineer_id]
-      @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
+      if params[:engineer_id].present?
+        @ticket_engineer = TicketEngineer.find params[:engineer_id]
+        @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
+      end
 
       # view_context.ticket_bpm_headers process_id, ticket_id, ""
       # Rails.cache.delete([:workflow_header, process_id])
@@ -4283,10 +4284,10 @@ class TicketsController < ApplicationController
       user_ticket_action = @ticket.user_ticket_actions.find_by_id(@ticket.last_hold_action_id)
 
       user_ticket_action.act_hold.update(un_hold_action_id: @ticket.user_ticket_actions.last.id)
-
-      @ticket_engineer = TicketEngineer.find params[:engineer_id]
-      @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
-
+      if params[:engineer_id].present?
+        @ticket_engineer = TicketEngineer.find params[:engineer_id]
+        @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
+      end
       # view_context.ticket_bpm_headers process_id, ticket_id, ""
       # Rails.cache.delete([:workflow_header, process_id])
 

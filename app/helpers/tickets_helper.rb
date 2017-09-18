@@ -56,7 +56,7 @@ module TicketsHelper
 
       body_merger.merge!(customer_info)
 
-      ticket_info = {ticket_owner_engineer: ticket.owner_engineer.try(:full_name), ticket_resolution: ticket.resolution_summary, ticket_no: ticket.ticket_no, ticket_logged_at: ticket.logged_at.try(:strftime, INOCRM_CONFIG["short_date_format"]),ticket_logged_by: ticket.logged_by_user, ticket_priority: INOCRM_CONFIG["priority"].key(ticket.priority), ticket_informed_method: ticket.inform_method.try(:name), ticket_product_name: ticket.products.first.name, ticket_problem_description: ticket.problem_description, ticket_product_brand: ticket.products.first.brand_name, ticket_product_category: ticket.products.first.category_name, ticket_product_serial_no: ticket.products.first.serial_no }
+      ticket_info = {ticket_owner_engineer: ticket.ticket_engineers.first.try(:full_name), ticket_resolution: ticket.resolution_summary, ticket_no: ticket.ticket_no, ticket_logged_at: ticket.logged_at.try(:strftime, INOCRM_CONFIG["short_date_format"]),ticket_logged_by: ticket.logged_by_user, ticket_priority: INOCRM_CONFIG["priority"].key(ticket.priority), ticket_informed_method: ticket.inform_method.try(:name), ticket_product_name: ticket.products.first.name, ticket_problem_description: ticket.problem_description, ticket_product_brand: ticket.products.first.brand_name, ticket_product_category: ticket.products.first.category_name, ticket_product_serial_no: ticket.products.first.serial_no }
 
       body_merger.merge!(ticket_info)
 
@@ -64,7 +64,7 @@ module TicketsHelper
 
       body_merger.merge!(ticket_contract)
 
-      job_completed_info = {ticket_job_completed_at: ticket.job_finished_at.try(:string,INOCRM_CONFIG["short_date_format"] ), ticket_dispatch_method: "ticket."}
+      job_completed_info = {ticket_job_completed_at: ticket.job_finished_at.try(:strftime,INOCRM_CONFIG["short_date_format"] ), ticket_dispatch_method: "ticket."}
 
       body_merger.merge!(job_completed_info)
 
