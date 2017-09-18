@@ -1248,7 +1248,7 @@ class InventoryPrn < ActiveRecord::Base
   def to_indexed_json
     Warranty
     to_json(
-      only: [:created_at, :prn_no, :store_id, :required_at, :remarks, :closed],
+      only: [:id, :created_at, :prn_no, :store_id, :required_at, :remarks, :closed],
       methods: [:store_name, :formated_prn_no, :created_by_user_full_name, :formated_created_at],
       include: {
         store: {

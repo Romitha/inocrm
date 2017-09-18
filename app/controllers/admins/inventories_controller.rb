@@ -603,6 +603,7 @@ module Admins
         if @prn.update prn_params
           if @prn.inventory_prn_items.empty?
             @prn.delete
+            @prn.update_index
           end
         end
         sleep 3
@@ -828,7 +829,8 @@ module Admins
       validate = if !need_serial and need_batch
         @grn_item.grn_batches.any?
       elsif need_serial and !need_batch
-        @grn_item.grn_serial_items.any?
+        @grn_item.grn_serial_items.any? or Rails.cache.fetch([ :serial_item, @inventory_product.class.to_s.to_sym, @inventory_product.id, session[:grn_arrived_time].to_i ]).to_a.any?
+
       else
         true
       end
