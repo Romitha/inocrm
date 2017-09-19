@@ -422,7 +422,7 @@ class InvoicesController < ApplicationController
               if @bpm_response1[:status].try(:upcase) == "SUCCESS"
                 workflow_process = @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name], engineer_id: engineer.id, re_open_index: @ticket.re_open_count)
 
-                ticket_engineer.update status: 1, job_assigned_at: DateTime.now, workflow_process_id: workflow_process.process_id
+                engineer.update status: 1, job_assigned_at: DateTime.now, workflow_process_id: workflow_process.process_id
 
                 newly_assigned_engs << engineer.user.full_name
 
