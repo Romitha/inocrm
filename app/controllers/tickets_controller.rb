@@ -1328,7 +1328,7 @@ class TicketsController < ApplicationController
                 if bpm_response1[:status].try(:upcase) == "SUCCESS"
 
 
-                  workflow_process = @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name], engineer_id: engineer_id)
+                  workflow_process = @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name], engineer_id: engineer_id, re_open_index: @ticket.re_open_count)
 
                   view_context.ticket_bpm_headers bpm_response1[:process_id], @ticket.id
 
@@ -1889,6 +1889,10 @@ class TicketsController < ApplicationController
       engineer_close_approval_required = (@ticket.ticket_fsrs.any?{|fsr| ticket_engineers.ids.include?(fsr.engineer_id) } or @ticket.ticket_spare_parts.any?{|part| ticket_engineers.ids.include?(part.engineer_id) } or @ticket.ticket_on_loan_spare_parts.any?{|onloanpart| ticket_engineers.ids.include?(onloanpart.engineer_id) })
 
       @ticket_engineer = TicketEngineer.find engineer_id
+
+      @ticket_engineer.update status: (engineer_close_approval_required ? 2 : 3) , job_completed_at: DateTime.now, job_close_approval_required: engineer_close_approval_required, job_close_approval_requested: engineer_close_approval_required, job_closed_at: (engineer_close_approval_required ? nil : DateTime.now)
+
+
       job_finished = (@ticket_engineer.status > 1 or @ticket.job_finished)
 
       if job_finished and engineer_close_approval_required
@@ -1907,10 +1911,13 @@ class TicketsController < ApplicationController
         if @ticket.ticket_close_approval_required
           @ticket.ticket_engineers.each do |eng|
             if eng.job_close_approval_required
-              @ticket.ticket_close_approval_requested = false if not eng.job_close_approval_requested
-              @ticket.ticket_close_approved = false if not eng.job_close_approved
+              @ticket.ticket_close_approval_requested = false if eng.job_close_approval_required and not eng.job_close_approval_requested
+              @ticket.ticket_close_approved = false if eng.job_close_approval_required and not eng.job_close_approved
             end            
           end
+        else
+          @ticket.ticket_close_approval_requested = false 
+          @ticket.ticket_close_approved = false
         end
 
         if @ticket.save
@@ -3140,7 +3147,7 @@ class TicketsController < ApplicationController
       job_engineers =  @ticket.ticket_engineers.where(workflow_process_id: ticket_workfows.first.try(:id))
 
       job_engineers.each do |engineer|
-        engineer.attributes = {job_close_approved: job_close_approved} if engineer.job_close_approval_requested
+        engineer.attributes = {job_close_approved: job_close_approved} if engineer.job_close_approval_required
         engineer.attributes = {job_closed_at: DateTime.now, status: 3} if job_close_approved and engineer.status < 3
         engineer.save
       end
@@ -3160,7 +3167,7 @@ class TicketsController < ApplicationController
         # final close
         if @ticket.ticket_engineers.all?{|eng| eng.status.to_i == 3 }
 
-          @ticket.update ticket_close_approved: job_close_approved
+          @ticket.update ticket_close_approved: job_close_approved, job_closed: job_close_approved, job_closed_at: DateTime.now
 
           #Calculate Total Costs and Time
           @ticket.calculate_ticket_total_cost 
@@ -3180,16 +3187,17 @@ class TicketsController < ApplicationController
 
         job_engineers.update_all(job_close_approval_requested: false)
 
+        @ticket.update job_close_approval_requested: false if @ticket.job_close_approval_requested
       end
 
       @ticket.ticket_spare_parts.each do |s|
         if params[:ticket_spare_part_ids].to_a.include? s.id.to_s
           s.update close_approved: true, close_approved_action_id: user_ticket_action.id
 
-        if s.ticket_spare_part_manufacture.present? and !CompanyConfig.first.sup_mf_parts_return_required and !s.ticket_spare_part_manufacture.po_required
-          s.update(status_action_id: SparePartStatusAction.find_by_code("CLS").id) 
-          s.ticket_spare_part_status_actions.create(status_id: s.status_action_id, done_by: current_user.id, done_at: DateTime.now) 
-        end
+          if s.ticket_spare_part_manufacture.present? and !CompanyConfig.first.sup_mf_parts_return_required and !s.ticket_spare_part_manufacture.po_required
+            s.update(status_action_id: SparePartStatusAction.find_by_code("CLS").id) 
+            s.ticket_spare_part_status_actions.create(status_id: s.status_action_id, done_by: current_user.id, done_at: DateTime.now) 
+          end
 
         else
           s.update close_approved: false, close_approved_action_id: nil
@@ -4144,7 +4152,7 @@ class TicketsController < ApplicationController
 
     if @continue
       if @ticket.update(ticket_params)
-        @ticket.update job_started_at: DateTime.now
+        @ticket.update job_started_at: DateTime.now if !@ticket.job_started_at.present?
         @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(5).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id)
 
         @ticket.ticket_status_resolve = TicketStatusResolve.find_by_code("NAP")
@@ -4490,7 +4498,7 @@ class TicketsController < ApplicationController
 
         close_approval_requested = false if not engineer_close_approval_required
 
-        @ticket_engineer.update status: (engineer_close_approval_required ? 2 : 3) , job_completed_at: DateTime.now, job_close_approval_required: engineer_close_approval_required, job_close_approval_requested: close_approval_requested
+        @ticket_engineer.update status: (engineer_close_approval_required ? 2 : 3) , job_completed_at: DateTime.now, job_close_approval_required: engineer_close_approval_required, job_close_approval_requested: close_approval_requested, job_closed_at: (engineer_close_approval_required ? nil : DateTime.now)
 
         @ticket.ticket_close_approval_required = (@ticket.ticket_fsrs.any? or @ticket.ticket_spare_parts.any? or @ticket.ticket_on_loan_spare_parts.any?)
         @ticket.ticket_close_approval_requested = true 
@@ -4501,15 +4509,23 @@ class TicketsController < ApplicationController
           @ticket.ticket_status_resolve = TicketStatusResolve.find_by_code("RSV")
           @ticket.job_finished = true
           @ticket.job_finished_at = DateTime.now
+
+          if not @ticket.ticket_close_approval_required
+            @ticket.job_closed = true
+            @ticket.job_closed_at = DateTime.now
+          end
         end
 
         if @ticket.ticket_close_approval_required
           @ticket.ticket_engineers.each do |eng|
             if eng.job_close_approval_required
-              @ticket.ticket_close_approval_requested = false if not eng.job_close_approval_requested
-              @ticket.ticket_close_approved = false if not eng.job_close_approved
+              @ticket.ticket_close_approval_requested = false if eng.job_close_approval_required and not eng.job_close_approval_requested
+              @ticket.ticket_close_approved = false if eng.job_close_approval_required and not eng.job_close_approved
             end            
           end
+        else
+          @ticket.ticket_close_approval_requested = false 
+          @ticket.ticket_close_approved = false
         end
 
         if (@ticket.cus_chargeable or @ticket.cus_payment_required) and !(@ticket.ticket_estimations.any?)

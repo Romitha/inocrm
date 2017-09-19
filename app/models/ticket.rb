@@ -259,12 +259,12 @@ class Ticket < ActiveRecord::Base
       queued_current_engineer = current_engineer.sub_engineers.first
 
       begin
-        current_engineer = if !queued_current_engineer.re_assignment_requested and queued_current_engineer.re_open_index.to_i == 0 and queued_current_engineer.status > 0
+        current_engineer = if queued_current_engineer.present? and !queued_current_engineer.re_assignment_requested and queued_current_engineer.re_open_index.to_i == 0 and queued_current_engineer.status > 0
           queued_current_engineer
         else
           nil
         end
-        queued_current_engineer = queued_current_engineer.sub_engineers.first
+        queued_current_engineer = (queued_current_engineer.present? and queued_current_engineer.sub_engineers.first)
 
       end until current_engineer.present? or queued_current_engineer.blank?
 
