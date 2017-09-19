@@ -1,13 +1,15 @@
 = collapse_wrapper collapse_id: "gin_serial_item_collapse_#{params[:srn_item_id].to_i}", labelledby: "gin_serial_item_collapse_labelledby" do
   - Rails.cache.fetch([:gin, (params[:serial_flag] == 'true' ? :grn_serial_items : :grn_batches), params[:srn_item_id].to_i]).to_a.each do |serial_or_batch_item|
-    = collapse collapse_type: "info", labelledby: "gin_serial_item_collapse_search", header_content: "GRN No: #{serial_or_batch_item.grn_item.grn.grn_no_format} - ", collapse_link: "gin_serial_item_collapse_search_inv_#{serial_or_batch_item.id}", collapse_id: "gin_serial_item_collapse_#{params[:srn_item_id].to_i}" do
-      - serial_or_batch = serial_or_batch_item.try(:inventory_serial_item).present? ? serial_or_batch_item.inventory_serial_item : serial_or_batch_item.inventory_batch
-      %fieldset
-        - if serial_or_batch.is_a? InventorySerialItem
-          %legend Serial No: #{serial_or_batch.serial_no}
-        - else
-          %legend Serial No: #{serial_or_batch.batch_no}
+    - serial_or_batch = serial_or_batch_item.try(:inventory_serial_item).present? ? serial_or_batch_item.inventory_serial_item : serial_or_batch_item.inventory_batch
 
+    - serial_no_or_batch_no = if serial_or_batch.is_a? InventorySerialItem
+      - serial_or_batch.serial_no
+    - else
+      - serial_or_batch.batch_no
+
+    = collapse collapse_type: "info", labelledby: "gin_serial_item_collapse_search", header_content: "GRN No: #{serial_or_batch_item.grn_item.grn.grn_no_format} - #{serial_no_or_batch_no} (#{grn_item.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])})", collapse_link: "gin_serial_item_collapse_search_inv_#{serial_or_batch_item.id}", collapse_id: "gin_serial_item_collapse_#{params[:srn_item_id].to_i}" do
+      %fieldset
+        %legend= serial_no_or_batch_no
         .row
           - if serial_or_batch.is_a? InventorySerialItem
             %dl.dl-horizontal

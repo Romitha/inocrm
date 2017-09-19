@@ -116,6 +116,10 @@
                   %dd= product.generated_item_code
                   %dt Item description:
                   %dd= product.description
+                  %dt Model No
+                  %dd= product.model_no
+                  %dt Product No
+                  %dd= product.product_no
                   %dt Unit:
                   %dd= product.inventory_unit.unit
                   %dt Requested Qty:
@@ -195,7 +199,7 @@
         = f.input :remarks, input_html: {value: nil}
         = simple_format f.object.remarks
       .col-md-12
-        = f.submit "Save", class: "btn btn-sm btn-success", data: {disable_with: "Please wait..."}
+        = f.submit "Save", class: "btn btn-sm btn-success", data: {disable_with: "Please wait...", confirm: "Please make sure the issueing quantities. It cannot be reversed."}
 
 #batch_or_serial_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "batch_or_serial_modal", "aria-hidden" => true}
 
