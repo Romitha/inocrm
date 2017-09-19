@@ -163,7 +163,7 @@ class Ticket < ActiveRecord::Base
   def set_ticket_close(user_id)
     manufacture_parts_po_completed = !ticket_spare_parts.any? { |t| t.ticket_spare_part_manufacture.try(:po_required) and not t.ticket_spare_part_manufacture.try(:po_completed) }
 
-    if job_closed and (cus_payment_completed or !cus_payment_required) and (ticket_close_approved or !ticket_close_approval_required) and manufacture_parts_po_completed
+    if job_closed and (cus_payment_completed or !cus_payment_required) and (ticket_close_approved or !ticket_close_approval_required) and manufacture_parts_po_completed and status_id == TicketStatus.find_by_code("TBC").id
       update status_id: TicketStatus.find_by_code("CLS").id, ticket_closed_at: DateTime.now # Ticket Closed
 
       # 87 - Close Ticket
