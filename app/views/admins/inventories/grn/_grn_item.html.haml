@@ -118,7 +118,7 @@
     %h4
       Recieved Quantities
       .label.label-success
-        = Rails.cache.fetch([:grn_item, cache_id, session[:grn_arrived_time].to_i ]).grn_serial_items.to_a.count
+        = Rails.cache.fetch([:grn_item, cache_id, session[:grn_arrived_time].to_i ]).grn_serial_items.to_a.count + @bulk_upload_serials.count
 
     = tab_panel do
       = tab_nav_tab({class: "small_scale_margin-bottom1"}, single_serial_item: {content: "Item by item", active_class: "active"}, bulk_update: {content: "Bulk update"})

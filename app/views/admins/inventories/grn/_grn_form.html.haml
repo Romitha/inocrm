@@ -21,7 +21,7 @@
       - count = if !need_serial and need_batch
         - grn_item.grn_batches.to_a.sum{|e| e.recieved_quantity}
       - elsif need_serial and !need_batch
-        - grn_item.grn_serial_items.to_a.count
+        - grn_item.grn_serial_items.to_a.count + @bulk_upload_serials.count
       - else
         - grn_item.recieved_quantity
       %tr

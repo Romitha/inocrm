@@ -681,6 +681,7 @@ module Admins
 
       when "select_inventory"
         @inventory_product = InventoryProduct.find params[:inventory_product_id]
+        @bulk_upload_serials = Rails.cache.fetch([ :serial_item, @inventory_product.class.to_s.to_sym, @inventory_product.id, session[:grn_arrived_time].to_i ]).to_a
 
         # @grn_item = Rails.cache.fetch([:grn_item, :i_product, @inventory_product.id, session[:grn_arrived_time].to_i ]) { GrnItem.new }
         @grn_item = Rails.cache.fetch([:grn_item, @inventory_product.id, session[:grn_arrived_time].to_i ]) { GrnItem.new }
@@ -715,6 +716,7 @@ module Admins
 
       when "select_po_item"
         @po_item = InventoryPoItem.find params[:po_item_id]
+        @bulk_upload_serials = Rails.cache.fetch([ :serial_item, @po_item.class.to_s.to_sym, @po_item.id, session[:grn_arrived_time].to_i ]).to_a
 
         @grn_item = Rails.cache.fetch([:grn_item, params[:po_item_id].to_i, session[:grn_arrived_time].to_i ]) { GrnItem.new }
         @already_recieved = @po_item.inventory_po.grns.to_a.sum{|grn| grn.grn_batches.any? ? grn.grn_batches.sum(:recieved_quantity) : grn.grn_items.sum(:recieved_quantity) }
@@ -817,10 +819,7 @@ module Admins
       @inventory_product = InventoryProduct.find params[:inventory_product_id]
       @grn_item = GrnItem.new grn_item_params
 
-      # Rails.cache.fetch([ :serial_item, :i_product, params[:inventory_product_id].to_i, session[:grn_arrived_time].to_i ]).each do |serial_item|
-      #   @grn_item.inventory_serial_items << serial_item
-
-      # end
+      @bulk_upload_serials = Rails.cache.fetch([ :serial_item, @inventory_product.class.to_s.to_sym, @inventory_product.id, session[:grn_arrived_time].to_i ]).to_a
 
       need_serial = @inventory_product.inventory_product_info.need_serial.present?
       need_batch = @inventory_product.inventory_product_info.need_batch.present?
@@ -828,7 +827,7 @@ module Admins
       validate = if !need_serial and need_batch
         @grn_item.grn_batches.any?
       elsif need_serial and !need_batch
-        @grn_item.grn_serial_items.any? or Rails.cache.fetch([ :serial_item, @inventory_product.class.to_s.to_sym, @inventory_product.id, session[:grn_arrived_time].to_i ]).to_a.any?
+        @grn_item.grn_serial_items.any? or @bulk_upload_serials.any?
 
       else
         true
@@ -883,13 +882,15 @@ module Admins
 
       @grn_item = GrnItem.new grn_item_params
 
+      @bulk_upload_serials = Rails.cache.fetch([ :serial_item, @po_item.class.to_s.to_sym, @po_item.id, session[:grn_arrived_time].to_i ]).to_a
+
       need_serial = @po_item.inventory_prn_item.inventory_product.inventory_product_info.need_serial.present?
       need_batch = @po_item.inventory_prn_item.inventory_product.inventory_product_info.need_batch.present?
 
       validate = if !need_serial and need_batch
         @grn_item.grn_batches.any?
       elsif need_serial and !need_batch
-        @grn_item.grn_serial_items.any?
+        @grn_item.grn_serial_items.any? or @bulk_upload_serials.any?
       else
         true
       end
