@@ -59,11 +59,11 @@
           .col-md-12
             = s.link_to_remove "Remove", class: "srn_item_remove"
     .row
-      .col-md-6
+      .col-md-6.small_scale_margin-bottom5
         / = f.link_to_add "Add", :srn_items, id: "storeIdPass", class: "applyStoreId", data: {producttype: "product_id"}, onclick: "Inventories.search_product(this); return false;"
         = f.link_to_add "Add Item", :srn_items, id: "storeIdPass", class: "applyStoreId", onclick: "Inventories.search_product_for_part(this); return false;", data: {id: "store_id", modalId: "search_product", remote: "true", selectpath: "", selectoptions: "onclick:Inventories.assign_i_product(this, 'search_product', 'storeIdPass');<>from_where:prn"}
 
-      .col-md-6
+      .col-md-6.small_scale_margin-bottom5
         = f.link_to_add "Add part of main unit", :srn_items, id: "storeIdPassMainPart", onclick: "Inventories.search_product_for_part(this); return false;", data: {storeId: "undefined", id: "store_id", modalId: "search_product", remote: "true", selectpath: "", selectoptions: "onclick:Inventories.assign_i_product(this, 'search_product', 'storeIdPassMainPart');<>from_where:part_of_main_unit"}
       .col-md-12
         = f.submit "Save", class: "btn btn-success btn-sm", data: {disable_with: "Please wait..."}
@@ -84,7 +84,7 @@
     %dd {{description}}
     %dt Order unit:
     %dd {{unit}}
-    %dt Stock in hand:
+    %dt Available Quantity:
     %dd {{stock_in_hand}}
     %dt Item type:
     %dd {{item_type}}

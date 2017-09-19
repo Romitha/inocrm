@@ -1195,6 +1195,15 @@ class InventoryPoItem < ActiveRecord::Base
   def hard_deletable?
     grn_items.any?
   end
+
+  before_destroy :adjust_closes
+
+  def adjust_closes
+    inventory_prn_item.update closed: false
+    inventory_prn_item.inventory_prn.update closed: false
+    true
+  end
+
 end
 
 class InventoryPoItemTax < ActiveRecord::Base
@@ -1349,7 +1358,7 @@ class InventoryPrnItem < ActiveRecord::Base
     end
   end
 
-  has_many :prn_srn_items, foreign_key: :prn_item_id
+  has_many :prn_srn_items, foreign_key: :prn_item_id, dependent: :delete_all
   has_many :srn_items, through: :prn_srn_items
 
   def po_items_quantity
@@ -1362,7 +1371,7 @@ class InventoryPrnItem < ActiveRecord::Base
 
   def hard_deletable?
     Srn
-    srn_items.any? or prn_srn_items.any? or inventory_po_items.any?
+    inventory_po_items.any?
   end
 
 end

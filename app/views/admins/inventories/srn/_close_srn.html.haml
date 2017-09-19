@@ -22,21 +22,22 @@
           %strong Close Action
 
       = f.simple_fields_for :srn_items do |p|
-        .row
-          .col-md-2
-            = p.object.inventory_product.generated_item_code
-          .col-md-2
-            = p.object.inventory_product.description
-          .col-md-2
-            = p.object.inventory_product.model_no
-          .col-md-2
-            = p.object.inventory_product.product_no
-          .col-md-1
-            = p.object.quantity
-          .col-md-2
-            = p.association :issue_terminated_reason, label: false, label_method: :reason, collection: InventoryReason.where(srn_issue_terminate: true), required: true
-          .col-md-1
-            = p.input :issue_terminated, wrapper: :append, label: false
+        - unless p.object.closed?
+          .row
+            .col-md-2
+              = p.object.inventory_product.generated_item_code
+            .col-md-2
+              = p.object.inventory_product.description
+            .col-md-2
+              = p.object.inventory_product.model_no
+            .col-md-2
+              = p.object.inventory_product.product_no
+            .col-md-1
+              = p.object.quantity
+            .col-md-2
+              = p.association :issue_terminated_reason, label: false, label_method: :reason, collection: InventoryReason.where(srn_issue_terminate: true), required: true
+            .col-md-1
+              = p.input :issue_terminated, wrapper: :append, label: false
 
       = f.submit "Close", class: "btn btn-sm btn-success"
       = link_to "Cancel", "#", data: {dismiss: "modal"}, class: "btn btn-link"

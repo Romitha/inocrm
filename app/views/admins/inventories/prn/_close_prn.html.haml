@@ -17,7 +17,7 @@
         .col-md-2
           %strong Quantity
         .col-md-2
-          %strong Close Action
+          %strong Delete Action
 
       = f.simple_fields_for :inventory_prn_items do |p|
         .row
@@ -34,7 +34,7 @@
           .col-md-2
             = p.link_to_remove "X" unless p.object.hard_deletable?
 
-      = f.submit "Close", class: "btn btn-sm btn-success"
+      = f.submit "Delete", class: "btn btn-sm btn-success"
       = link_to "Cancel", "#", data: {dismiss: "modal"}, class: "btn btn-link"
 
 = javascript_tag do

@@ -242,6 +242,11 @@ class SrnItem < ActiveRecord::Base
         inventory_prn_items: {
           only: [:id],
           methods: [:formated_prn_no],
+          include: {
+            inventory_prn: {
+              only: [:id]
+            }
+          }
         }
       },
     )

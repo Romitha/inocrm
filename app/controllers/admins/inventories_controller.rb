@@ -550,12 +550,11 @@ module Admins
           if @po.update po_params
             # @po.inventory_po_items.update_all closed: @po.closed
             if @po.inventory_po_items.all? { |p| p.closed }
-              @po.update closed: true, remarks: "Closed"
+              @po.update closed: true
               sleep 3
             end
           end
 
-          "closed by :  " + current_user.email + "  closed at :  " + DateTime.now.strftime("%d-%m-%Y %H:%M")
         end
       end
 

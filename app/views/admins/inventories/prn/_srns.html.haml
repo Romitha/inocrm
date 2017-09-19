@@ -34,9 +34,9 @@
     .col-md-2= srn_item.inventory_product.description
     .col-md-1
       - srn_item.inventory_prn_items.each do |inventory_prn_item|
-        = link_to prns_admins_inventories_path(prn_id: inventory_prn_item.id), target: "_blank" do
+        = link_to prns_admins_inventories_path(prn_id: inventory_prn_item.inventory_prn.id), target: "_blank" do
           = inventory_prn_item.formated_prn_no
 
     .col-md-1= srn_item.inventory_product.inventory_unit.unit
-    .col-md-1= srn_item.inventory.available_quantity
+    .col-md-1= srn_item.inventory.try(:available_quantity)
     .col-md-1= check_box_tag "srn_item_ids[]", srn_item.id
