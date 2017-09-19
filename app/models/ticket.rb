@@ -272,7 +272,7 @@ class Ticket < ActiveRecord::Base
 
       unless current_engineer.present? or engineer_id.present?
         current_engineer = ticket_engineers.where(channel_no: (new_engineer.channel_no+1), order_no: 1, re_open_index: 0 ).first
-        order_no = current_engineer.order_no.to_i
+        order_no = current_engineer.try(:order_no).to_i
       end
 
     end
