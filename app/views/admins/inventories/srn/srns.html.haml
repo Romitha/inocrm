@@ -56,7 +56,7 @@
                     %strong Terminated Reason:
                     = srn_item.issue_terminated_reason.reason
 
-            %tr{class: "#{'danger' if srn_item.closed}", title: "Closed"}
+            %tr{class: "#{'danger' if srn_item.closed}", title: "#{'Closed' if srn_item.closed}"}
               %td{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "data-content"=> yield(:serial_item_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "top" }
                 = (index+1)
               %td= srn_item.inventory_product.try(:generated_item_code)

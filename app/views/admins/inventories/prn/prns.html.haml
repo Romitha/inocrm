@@ -37,7 +37,7 @@
             %th Remarks
         %tbody
           - prn.inventory_prn_items.each_with_index do |prn_item, index|
-            %tr{class: "#{'danger' if prn_item.closed}", title: "Closed"}
+            %tr{class: "#{'danger' if prn_item.closed}", title: "#{'Closed' if prn_item.closed}"}
               %td= (index+1)
               %td= prn_item.inventory_product.try(:generated_item_code)
               %td= prn_item.inventory_product.try(:description)
