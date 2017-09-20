@@ -422,6 +422,14 @@ window.Inventories =
     @calculate_total_amount()
       # @add_tax_value($(e).parent().siblings().find(".estimated_value")[0])
 
+  calculate_tax_ammount: (e)->
+    tax_ammount_cal = $(e).parents().eq(1).find(".tax_amount")
+    default_amount = parseFloat($(":checked", e).data("default-amount"))
+    unit_cost = parseFloat($("#inventory_po_inventory_po_items_attributes_0_unit_cost").val())
+    unit_quantity = parseFloat($("#inventory_po_inventory_po_items_attributes_0_quantity").val())
+
+    cal_tax = (unit_cost*unit_quantity)*(default_amount/100)
+    tax_ammount_cal.val(Number(cal_tax).toFixed(2))
   remove_tax_from_estimation: (e)->
     _this = $(e)
     removed_tax = parseFloat(_this.parents(".parent_class_set").eq(0).find(".estimated_tax_amount_class").val())
@@ -970,3 +978,12 @@ window.Inventories =
 
     if this_value > availableVal
       this_elem.val(availableVal)
+
+  srn_close_terminate_validation: (elem) ->
+    _this = $(elem)
+    terminate_reason = $(elem).parents().eq(5).find(".terminate_reason")
+    if _this.is(":checked")
+      terminate_reason.prop("disabled", false)
+    else
+      terminate_reason.prop("disabled", true)
+      terminate_reason.val("")

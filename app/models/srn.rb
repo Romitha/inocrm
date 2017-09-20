@@ -152,6 +152,7 @@ class SrnItem < ActiveRecord::Base
   belongs_to :inventory_product, foreign_key: :product_id
   belongs_to :main_inventory_product, class_name: "InventoryProduct", foreign_key: :main_product_id
   belongs_to :issue_terminated_reason, class_name: "InventoryReason"
+  belongs_to :issue_terminated_by_user, class_name: "User", foreign_key: :issue_terminated_by
 
   has_many :ticket_spare_part_stores, foreign_key: :inv_srn_item_id
   has_many :ticket_on_loan_spare_parts, foreign_key: :inv_srn_item_id

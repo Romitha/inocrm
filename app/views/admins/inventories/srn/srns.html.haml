@@ -43,8 +43,22 @@
             %th Remarks
         %tbody
           - srn.srn_items.each_with_index do |srn_item, index|
+            - content_for :serial_item_more, flush: true do
+              - if srn_item.issue_terminated?
+                %ul
+                  %li
+                    %strong Terminated By:
+                    = srn_item.issue_terminated_by_user.full_name
+                  %li
+                    %strong Terminate At:
+                    = srn_item.issue_terminated_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
+                  %li
+                    %strong Terminated Reason:
+                    = srn_item.issue_terminated_reason.reason
+
             %tr{class: "#{'danger' if srn_item.closed}", title: "Closed"}
-              %td= (index+1)
+              %td{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "data-content"=> yield(:serial_item_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "top" }
+                = (index+1)
               %td= srn_item.inventory_product.try(:generated_item_code)
               %td= srn_item.inventory_product.try(:description)
               %td= srn_item.inventory_product.try(:product_no)
@@ -63,6 +77,6 @@
   .modal-dialog.modal-lg
     .modal-content
       .modal-header
-        %h4.modal-title Are you sure you want to close this SRN ?
+        %h4.modal-title Do you want to close this SRN ?
       .modal-body
       .modal-footer
