@@ -34,10 +34,10 @@
               = p.object.inventory_product.product_no
             .col-md-1
               = p.object.quantity
-          .col-md-2
-            = p.association :issue_terminated_reason, label: false, label_method: :reason, collection: InventoryReason.where(srn_issue_terminate: true), required: true, disabled: true, input_html: {class: "terminate_reason"}
-          .col-md-1
-            = p.input :issue_terminated, wrapper: :append, label: false, input_html: {onclick: "Inventories.srn_close_terminate_validation(this);"}
+            .col-md-2
+              = p.association :issue_terminated_reason, label: false, label_method: :reason, collection: InventoryReason.where(srn_issue_terminate: true), required: true, disabled: true, input_html: {class: "terminate_reason"}
+            .col-md-1
+              = p.input :issue_terminated, wrapper: :append, label: false, input_html: {onclick: "Inventories.srn_close_terminate_validation(this);"}
 
       = f.submit "Terminate", class: "btn btn-sm btn-success"
       = link_to "Cancel", "#", data: {dismiss: "modal"}, class: "btn btn-link"
