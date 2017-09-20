@@ -23,7 +23,7 @@
       = f.simple_fields_for :inventory_po_items do |p|
         .row
           .col-md-1
-            = p.link_to_remove "    X" if p.object.hard_deletable?
+            = p.link_to_remove "X" if p.object.hard_deletable?
           .col-md-2
             = p.object.inventory_prn_item.inventory_product.generated_item_code
           .col-md-2

@@ -555,6 +555,12 @@ module Admins
             end
           end
 
+          if @po.inventory_po_items.empty? and @po.closed and @po.grns.empty?
+            @po.destroy
+            @po.update_index
+            sleep 3
+          end
+
         end
       end
 

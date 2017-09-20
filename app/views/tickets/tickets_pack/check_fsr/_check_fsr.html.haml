@@ -10,16 +10,16 @@
   - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
     = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
+    - ticket_workfows = ticket.ticket_workflow_processes.where process_id: Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
+    - job_engineers =  ticket.ticket_engineers.where(workflow_process_id: ticket_workfows.first.try(:id))
+
   .row
     - if ticket.re_open_count > 0
       .col-md-3
         Current Re-Open No.:
-        %strong= ticket.ticket_engineers.find(engineer_id).re_open_index
+        %strong= job_engineers.first.try(:re_open_index)
 
     .col-md-6.col-xs-6
-      - ticket_workfows = ticket.ticket_workflow_processes.where process_id: Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
-      - job_engineers =  ticket.ticket_engineers.where(workflow_process_id: ticket_workfows.first.try(:id))
-
       %h4 Job belongs to : #{job_engineers.map{|eng| eng.user.full_name}.join(", ")}
       Job Completed (Approve To Close):
       = check_box_tag :job_close_approved, true, true, id: "ticket_close_approved_check", class: "hide"

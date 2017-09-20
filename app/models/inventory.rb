@@ -1193,7 +1193,7 @@ class InventoryPoItem < ActiveRecord::Base
   end
 
   def hard_deletable?
-    grn_items.any?
+    grn_items.empty?
   end
 
   before_destroy :adjust_closes

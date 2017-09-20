@@ -31,7 +31,7 @@
           %td= srn.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
           %td= srn.required_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
           %td= srn.requested_module.name
-          %td{title: srn.remarks}= srn.remarks.try :truncate, 50
+          %td= simple_format srn.remarks
           %td= srn.created_by_user_full_name
           - if srn.requested_module.name == "Support"
             %td
