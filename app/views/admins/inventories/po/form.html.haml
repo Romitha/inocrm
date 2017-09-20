@@ -110,9 +110,9 @@
               %hr
               .row
                 .col-md-2
-                  = i.input :quantity, required: true, as: :string, input_html: {value: i.object.inventory_prn_item.quantity - i.object.inventory_prn_item.inventory_po_items.sum(:quantity), class: "dynamic_quantity"}, label: "Order Quantity"
+                  = i.input :quantity, required: true, as: :string, input_html: {value: i.object.inventory_prn_item.quantity - i.object.inventory_prn_item.inventory_po_items.sum(:quantity), class: "dynamic_quantity"}, label: "Order Quantity", input_html: {class: "unit_qty"}
                 .col-md-2
-                  = i.input :unit_cost, required: true, as: :string, label: "PO Unit Cost"
+                  = i.input :unit_cost, required: true, as: :string, label: "PO Unit Cost", input_html: {class: "unit_cost"}
 
                 .col-md-2
                   = i.input :unit_cost_grn, required: true, as: :string, label: "GRN Unit Cost (#{i.object.inventory_prn_item.inventory_product.inventory_product_info.currency.code})"
@@ -171,7 +171,7 @@
               .col-md-4
                 = label_tag "Tax"
                 %br/
-                = t.select :tax_id, Tax.all.map{|p| ["#{p.tax} (#{p.tax_rates.find_by_active(true).try(:rate).to_f}%)", p.id, {"data-default-amount" => (p.tax_rates.find_by_active(true).try(:rate).to_f || 0)}]}, {include_blank: true}, {class: "payment_item_select tax_rate_calculation col-md-4", onchange: "Inventories.payment_amount_select(this); Inventories.calculate_tax_ammount(this); return false;"}
+                = t.select :tax_id, Tax.all.map{|p| ["#{p.tax} (#{p.tax_rates.find_by_active(true).try(:rate).to_f}%)", p.id, {"data-default-amount" => (p.tax_rates.find_by_active(true).try(:rate).to_f || 0)}]}, {include_blank: true}, {class: "payment_item_select tax_rate_calculation col-md-4", onclick: "Inventories.payment_amount_select(this); Inventories.calculate_tax_ammount(this); return false;"}
               .col-md-5
                 %font{:color => "#90032A"}
                   = t.input :amount, require: true, input_html: {class: "tax_amount"}

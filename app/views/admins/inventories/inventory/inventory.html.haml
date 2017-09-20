@@ -18,16 +18,16 @@
           = inventory.inventory_product.serial_no
         .col-md-3
           %strong Stock quantity:
-          = link_to "#", class: "inline_edit", data: {type: "text", resource: "inventory", name: "stock_quantity", url: inventory_admins_inventories_path(edit: true, inventory_id: inventory.id), "original-title" => "Update Product Category"} do
-            = inventory.stock_quantity
+          / = link_to "#", class: "inline_edit", data: {type: "text", resource: "inventory", name: "stock_quantity", url: inventory_admins_inventories_path(edit: true, inventory_id: inventory.id), "original-title" => "Update Product Category"} do
+          = inventory.stock_quantity
         .col-md-3
           %strong Reserved quantity:
-          = link_to "#", class: "inline_edit", data: {type: "text", resource: "inventory", name: "reserved_quantity", url: inventory_admins_inventories_path(edit: true, inventory_id: inventory.id), "original-title" => "Update Product Category"} do
-            = inventory.reserved_quantity
+          / = link_to "#", class: "inline_edit", data: {type: "text", resource: "inventory", name: "reserved_quantity", url: inventory_admins_inventories_path(edit: true, inventory_id: inventory.id), "original-title" => "Update Product Category"} do
+          = inventory.reserved_quantity
         .col-md-3
           %strong Available quanitity:
-          = link_to "#", class: "inline_edit", data: {type: "text", resource: "inventory", name: "available_quantity", url: inventory_admins_inventories_path(edit: true, inventory_id: inventory.id), "original-title" => "Update Product Category"} do
-            = inventory.available_quantity
+          / = link_to "#", class: "inline_edit", data: {type: "text", resource: "inventory", name: "available_quantity", url: inventory_admins_inventories_path(edit: true, inventory_id: inventory.id), "original-title" => "Update Product Category"} do
+          = inventory.available_quantity
         .col-md-3
           %strong Reorder level:
           = link_to "#", class: "inline_edit", data: {type: "text", resource: "inventory", name: "reorder_level", url: inventory_admins_inventories_path(edit: true, inventory_id: inventory.id), "original-title" => "Update Product Category"} do

@@ -425,8 +425,8 @@ window.Inventories =
   calculate_tax_ammount: (e)->
     tax_ammount_cal = $(e).parents().eq(1).find(".tax_amount")
     default_amount = parseFloat($(":checked", e).data("default-amount"))
-    unit_cost = parseFloat($("#inventory_po_inventory_po_items_attributes_0_unit_cost").val())
-    unit_quantity = parseFloat($("#inventory_po_inventory_po_items_attributes_0_quantity").val())
+    unit_cost = parseFloat($(e).parents().eq(6).find(".unit_cost").val())
+    unit_quantity = parseFloat($(e).parents().eq(6).find(".unit_qty").val())
 
     cal_tax = (unit_cost*unit_quantity)*(default_amount/100)
     tax_ammount_cal.val(Number(cal_tax).toFixed(2))
