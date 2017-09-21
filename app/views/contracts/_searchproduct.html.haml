@@ -16,10 +16,10 @@
           %tr
             %th No
             %th Serial No
+            %th Brand
+            %th Category
             %th Model No
             %th Product No
-            %th Product
-            %th Brand
             %th Customer Name
             %th Hold
             %th Active
@@ -33,10 +33,10 @@
                 - else
                   = (index+1)
               %td= p.serial_no
+              %td= p.brand_name
+              %td= p.category_name
               %td= p.model_no
               %td= p.product_no
-              %td= p.category_name
-              %td= p.brand_name
               - if p.ticket_contracts.present?
                 - if p.ticket_contracts.last.present?
                   %td= p.ticket_contracts.last.organization.try(:name)

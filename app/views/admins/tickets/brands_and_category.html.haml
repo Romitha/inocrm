@@ -8,7 +8,7 @@
       .panel-body
         .row
           .col-md-4
-            = f.association :supplier, collection: Organization.organization_suppliers, label_method: :name
+            = f.association :supplier, collection: Organization.organization_suppliers, label_method: :name, label: "Brand Owner"
           .col-md-4
             = f.label "Currency:"
             = f.select :currency_id, Currency.all.map{|a| [a.currency, a.id]}
@@ -76,7 +76,7 @@
       .panel-heading
         %h3.panel-title
           %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
-            #{index+1} Brands & category : #{brands_and_category.name}
+            #{index+1} Product Brand : #{brands_and_category.name}
           - unless brands_and_category.is_used_anywhere?
             = link_to delete_admin_brands_and_category_admins_tickets_path(brands_and_category_id: brands_and_category.id), method: :delete,  :data => { :confirm => 'Are you sure?' } do
               %span.glyphicon.glyphicon-trash
@@ -90,7 +90,7 @@
                 Edit More >>
           .row.col-md-12
             .col-md-2
-              %strong Supplier:
+              %strong Brand Owner:
             .col-md-4
               = link_to "#", class: "inline_edit", data: {type: "select", source: Organization.organization_suppliers.collect{|organization| {value: organization.id, text: organization.name}}, resource: "product_brand", name: "organization_id", url: brands_and_category_admins_tickets_path(edit: true, brands_and_category_id: brands_and_category.id), "original-title" => "Update Brands"} do
                 = brands_and_category.supplier.try(:name)
