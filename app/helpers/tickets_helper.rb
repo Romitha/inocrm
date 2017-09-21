@@ -87,7 +87,7 @@ module TicketsHelper
     end
 
     if engineer.present?
-      engineer_info = {engineer_name: engineer.user.full_name, assigned_at: engineer.job_assigned_at.try(:strftime, INOCRM_CONFIG["short_date_format"]) , assigned_by: User.cached_find_by_id(engineer.user_ticket_action.try(:action_by)).full_name, task_description: engineer.task_description }
+      engineer_info = {engineer_name: engineer.user.full_name, assigned_at: engineer.job_assigned_at.try(:strftime, INOCRM_CONFIG["short_date_format"]) , assigned_by: User.cached_find_by_id(engineer.user_ticket_action.try(:action_by)).try(:full_name), task_description: engineer.task_description }
 
       body_merger.merge!(engineer_info)
 
