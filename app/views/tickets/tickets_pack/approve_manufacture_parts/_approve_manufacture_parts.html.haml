@@ -37,7 +37,7 @@
 
     .row
       .col-md-12
-        = f.input :note, input_html: { value: nil}
+        = f.input :note, input_html: { value: nil}, label: "Spare Part Note"
         = simple_format f.object.note
 
         - msg = "Do you really want to reject? #{'It is estimated part' if spare_part.estimation_required }"

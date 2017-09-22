@@ -45,7 +45,7 @@ class TicketSparePart < ActiveRecord::Base
    if ticket_spare_part.persisted? and ticket_spare_part.note_changed? and ticket_spare_part.note.present?
       ticket_spare_part_note = "#{ticket_spare_part.note} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(ticket_spare_part.current_user_id).email}</span><br/>#{ticket_spare_part.note_was}"
     else
-      ticket_spare_part_note = ticket_spare_part.note_was
+      ticket_spare_part_note = ticket_spare_part.note
     end
     ticket_spare_part.note = ticket_spare_part_note
   end

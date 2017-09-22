@@ -57,7 +57,7 @@
         %div{class: "#{'control_visible_request_from_radio' unless INOCRM_CONFIG['TicketSparePart']['control_visible_request_from_radio']}"}
 
         .request_part_request_from
-          = f.input :request_from, as: :radio_buttons, collection: {"Manufacture" => "M", "Store" => "S", "Non Stock" => "NS"}, input_html: {class: "request_from_radio_buttons"}, disabled: ("M" if ["NW", "UW"].include?(@ticket_spare_part.ticket.warranty_type.code) and CompanyConfig.first.sup_mf_parts_need_warranty ), checked: ("S" if @ticket_spare_part.ticket.cus_chargeable or ["NW", "UW"].include?(@ticket_spare_part.ticket.warranty_type.code)), wrapper: :append
+          = f.input :request_from, as: :radio_buttons, collection: {"Manufacture #{INOCRM_CONFIG['TicketSparePart']['manufacture_label']}" => "M", "Store" => "S", "Non Stock" => "NS"}, input_html: {class: "request_from_radio_buttons"}, disabled: ("M" if ["NW", "UW"].include?(@ticket_spare_part.ticket.warranty_type.code) and CompanyConfig.first.sup_mf_parts_need_warranty ), checked: (@ticket_spare_part.ticket.cus_chargeable or ["NW", "UW"].include?(@ticket_spare_part.ticket.warranty_type.code ? "S" : "M")), wrapper: :append
         .spare_part_select
           = link_to "select", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true, class: "hide"
 

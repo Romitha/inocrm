@@ -111,6 +111,8 @@
                 - elsif ticket_spare_part.ticket_spare_part_non_stock
                   = "Non Stock(Service) - "
                 = ticket_spare_part.cus_chargeable_part ? "Chargeable" : "Non-chargeable"
+              %dt Note
+              %dd= ticket_spare_part.note
         %hr
         .row
           .col-md-2
