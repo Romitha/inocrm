@@ -92,12 +92,12 @@
                   %dd= product.product_brand.try(:name)
                   %dt Product Category
                   %dd= product.product_category.try(:name)
-                  %dt Serial No
-                  %dd= product.serial_no
-                  %dt Model No
-                  %dd= product.model_no
                   %dt Product No
                   %dd= product.product_no
+                  %dt Model No
+                  %dd= product.model_no
+                  %dt Serial No
+                  %dd= product.serial_no
                   %dt Corporate Product
                   %dd= boolean_in_word product.corporate_product, "Yes", "No"
                   %dt Product Pop Status
