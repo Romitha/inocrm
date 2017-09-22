@@ -992,5 +992,7 @@ window.Inventories =
     _this = $(elem)
     if _this.val() == ""
       $("#customer_quotation_print_bank_detail_id").prop("disabled", true)
+      $("#ticket_invoice_print_bank_detail_id").prop("disabled", true)
     else
       $("#customer_quotation_print_bank_detail_id").prop("disabled", false)
+      $("#ticket_invoice_print_bank_detail_id").prop("disabled", false)
