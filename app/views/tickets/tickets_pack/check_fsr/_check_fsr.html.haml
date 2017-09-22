@@ -1,5 +1,7 @@
 - uri = URI(request.url)
 - engineer_id = params["supp_engr_user"]
+- ticket_workfows = ticket.ticket_workflow_processes.where process_id: params[:process_id]
+- job_engineers =  ticket.ticket_engineers.where(workflow_process_id: ticket_workfows.first.try(:id))
 
 = simple_nested_form_for ticket, url: update_check_fsr_ticket_path(ticket.id), method: :post do |f|
 
@@ -10,8 +12,6 @@
   - Rails.cache.fetch([uri.path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
     = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
-    - ticket_workfows = ticket.ticket_workflow_processes.where process_id: Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
-    - job_engineers =  ticket.ticket_engineers.where(workflow_process_id: ticket_workfows.first.try(:id))
 
   .row
     - if ticket.re_open_count > 0
