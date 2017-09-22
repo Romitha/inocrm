@@ -180,7 +180,7 @@
                   Add tax
 
       = t.simple_fields_for :ticket_spare_part do |tsp|
-        = tsp.input :note, input_html: {value: nil}
+        = tsp.input :note, input_html: {value: nil}, label: "Spare Part Note"
         = simple_format tsp.object.note
 
 
@@ -255,21 +255,6 @@
     .col-md-3
       = f.input :approved_adv_pmnt_amount, as: :string, input_html: {class: "only_float", oninput: "Inventories.limit_payment_required(this); return false;", value: f.object.advance_payment_amount}, label: "Approved advance payment amount (Estimated: #{estimate_currency} #{f.object.advance_payment_amount})"
 
-    / .col-md-3.col-md-offset-6
-    /   %strong Total cost price (#{estimate_currency}):
-    /   %span#total_cost_price
-    /     = number_with_precision f.object.ticket_estimation_additionals.sum(:cost_price), precision: 2
-    /   %br
-    /   %strong Total appr. estimated price (#{number_with_precision estimate_currency, precision: 2}):
-    /   %span#total_estimated_price.for_payment_limit
-    /     = number_with_precision estimation.ticket_estimation_additionals.sum(:estimated_price), precision: 2
-    /   %br
-    /   %strong Total profit (%):
-    /   %span#total_margin_price{style: "font-weight:bold;"}
-    /   %span (
-    /   %span#db_margin{style: "font-weight:bold;"}= CompanyConfig.first.try(:sup_external_job_profit_margin).to_f
-    /   %span )
-
     - total_cost = [estimation.ticket_estimation_parts.sum(:cost_price), estimation.ticket_estimation_additionals.sum(:cost_price)].sum
 
     - total_estimation = [estimation.ticket_estimation_parts.sum(:estimated_price), estimation.ticket_estimation_additionals.sum(:estimated_price)].sum
@@ -304,7 +289,7 @@
   .row
     .col-md-6
 
-      = f.input :note, input_html: {value: nil}
+      = f.input :note, input_html: {value: nil}, label: "Estimation Note"
       = simple_format @estimation.note
 
   .row

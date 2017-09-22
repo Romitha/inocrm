@@ -12,7 +12,7 @@
 
       = tab_nav_tab({class: "small_scale_margin-bottom1"}, ticket_info: {content: "Ticket info"}, customer_feedback: {content: "Customer Feedback", active_class: "active"}, view_invoice: {content: "Invoice"}, inform_customer: {content: "Contact customer"} )
     - else
-      = tab_nav_tab({class: "small_scale_margin-bottom1"}, ticket_info: {content: "Ticket info"}, customer_feedback: {content: "Customer Feedback", active_class: "active"} )
+      = tab_nav_tab({class: "small_scale_margin-bottom1"}, ticket_info: {content: "Ticket info"} ) # , customer_feedback: {content: "Customer Feedback", active_class: "active"}
 
   .tab-content
     = tab_content tabpointer: :ticket_info, active_class: "#{'active' if ticket.ticket_closed? }" do
@@ -30,6 +30,7 @@
           = tab_panel do
             = render "tickets/tickets_pack/customer_feedback/view_invoice", ticket: ticket
 
-        = tab_content tabpointer: :inform_customer do
-          = tab_panel do
-            = render "tickets/tickets_pack/customer_feedback/inform_customer", ticket: ticket, product: product
+        .hide
+          = tab_content tabpointer: :inform_customer do
+            = tab_panel do
+              = render "tickets/tickets_pack/customer_feedback/inform_customer", ticket: ticket, product: product

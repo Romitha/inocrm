@@ -112,7 +112,7 @@
                   = "Non Stock(Service) - "
                 = ticket_spare_part.cus_chargeable_part ? "Chargeable" : "Non-chargeable"
               %dt Note
-              %dd= ticket_spare_part.note
+              %dd= simple_format ticket_spare_part.note
         %hr
         .row
           .col-md-2

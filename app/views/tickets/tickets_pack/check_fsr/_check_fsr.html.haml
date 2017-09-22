@@ -81,7 +81,7 @@
                 %td= tsp.ticket_spare_part_manufacture.try(:event_closed) ? "Yes" : "No"
                 %td= tsp.return_part_serial_no
                 %td= tsp.ticket_spare_part_manufacture.try(:po_required) ? "Yes" : "No"
-                %td= truncate(tsp.note, length: 10)
+                %td{"type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Spare Part Note", "data-content"=> simple_format(tsp.note), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right"}= truncate(tsp.note, length: 10)
                 %td= check_box_tag :ticket_spare_part_ids, tsp.id, tsp.close_approved, name: "ticket_spare_part_ids[]", class: "dynamic_check"
 
       - if f.object.ticket_on_loan_spare_parts.present?
@@ -205,14 +205,14 @@
                     = ff.label "Approve FSR"
                     = ff.check_box :approved, class: "dynamic_check"
                   .col-md-9
-                    = ff.input :remarks, input_html: {value: nil}
+                    = ff.input :remarks, input_html: {value: nil}, label: "Fsr Remarks"
                     = simple_format ff.object.remarks
       .row.col-md-12.col-xs-12{style: "margin-top:20px; margin-bottom:20px;"}
         .col-md-6
           = f.label "Job Belongs to:"
           = f.select :owner_engineer_id, ticket.ticket_engineers.map{ |e| [e.user.email, e.id] }
         .col-md-12
-          = f.input :remarks, input_html: {value: nil}
+          = f.input :remarks, input_html: {value: nil}, label: "Ticket Remarks"
           = simple_format f.object.remarks
 
         .col-md-6.col-xs-6

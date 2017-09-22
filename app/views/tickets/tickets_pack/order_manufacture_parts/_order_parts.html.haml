@@ -14,7 +14,7 @@
         .col-md-12
           = tm.input :order_no, input_html: {id: "order_no", value: INOCRM_CONFIG['TicketSparePartManufacture']['order_no']}
         .col-md-12
-          = f.input :note, input_html: {value: nil}
+          = f.input :note, input_html: {value: nil}, label: "Spare Part Note"
           = simple_format spare_part.note
         .col-md-12
           = f.submit "Save", class: "btn btn-success", onclick: "Tickets.presence_validater(this, {presence: ['#event_no', '#order_no']}); return false;"

@@ -11,7 +11,7 @@ class UserModule < ActiveRecord::Migration
     add_column :accounts, :vat_number, :string, limit:100, null:true
     add_column :accounts, :svat_no, :string, limit:100, null:true
     add_column :accounts, :goodwill_status, :integer, null:false, default:1
-    add_column :accounts, :credit_allow, :boolean, null:false
+    add_column :accounts, :credit_allow, :boolean, null:false, default: 0
     add_column :accounts, :credit_period_day, :integer, null:true
     add_column :accounts, :account_manager_id, "INT UNSIGNED NULL"
     add_column :users, :organization_id, "INT UNSIGNED NULL"

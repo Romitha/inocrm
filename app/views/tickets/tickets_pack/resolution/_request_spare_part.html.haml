@@ -45,6 +45,8 @@
 
         - strict_check_condition = @ticket_spare_part.ticket.cus_chargeable or chargeable_contract or (!@ticket_spare_part.ticket.ticket_contract.present? and (@ticket_spare_part.ticket.warranty_type.code == 'NW' or @ticket_spare_part.ticket.warranty_type.code == 'UW'))
 
+        - default_checked = INOCRM_CONFIG['request_part_default'].present? ? INOCRM_CONFIG['request_part_default'] : (@ticket_spare_part.ticket.cus_chargeable or ["NW", "UW"].include?(@ticket_spare_part.ticket.warranty_type.code) ? "S" : "M")
+
 
         = f.input :cus_chargeable_part, as: :boolean, checked_value: true, unchecked_value: false, wrapper: :append, wrapper_html: {class: "col-md-12 #{'hide' if strict_check_condition }"}, input_html: {checked: (true if strict_check_condition )}
 
@@ -54,10 +56,10 @@
             = check_box_tag :cus_chargeable_part, nil, true, disabled: true
 
       .col-md-6
-        %div{class: "#{'control_visible_request_from_radio' unless INOCRM_CONFIG['TicketSparePart']['control_visible_request_from_radio']}"}
+        %div{class: "#{'control_visible_request_from_radio' unless INOCRM_CONFIG['TicketSparePart']['control_visible_store_request_from_radio']}"}
 
         .request_part_request_from
-          = f.input :request_from, as: :radio_buttons, collection: {"Manufacture #{INOCRM_CONFIG['TicketSparePart']['manufacture_label']}" => "M", "Store" => "S", "Non Stock" => "NS"}, input_html: {class: "request_from_radio_buttons"}, disabled: ("M" if ["NW", "UW"].include?(@ticket_spare_part.ticket.warranty_type.code) and CompanyConfig.first.sup_mf_parts_need_warranty ), checked: (@ticket_spare_part.ticket.cus_chargeable or ["NW", "UW"].include?(@ticket_spare_part.ticket.warranty_type.code ? "S" : "M")), wrapper: :append
+          = f.input :request_from, as: :radio_buttons, collection: {"Manufacture #{INOCRM_CONFIG['TicketSparePart']['manufacture_label']}" => "M", "Store" => "S", "Non Stock" => "NS"}, input_html: {class: "request_from_radio_buttons"}, disabled: ("M" if ["NW", "UW"].include?(@ticket_spare_part.ticket.warranty_type.code) and CompanyConfig.first.sup_mf_parts_need_warranty ), checked: default_checked, wrapper: :append
         .spare_part_select
           = link_to "select", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true, class: "hide"
 

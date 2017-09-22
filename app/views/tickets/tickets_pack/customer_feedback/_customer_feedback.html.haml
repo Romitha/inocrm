@@ -55,7 +55,7 @@
             = f.input :receipt_description
           .col-md-2
             = label_tag "Payment type"
-            = f.select :payment_type, TicketPaymentReceivedType::TYPES
+            = f.select :payment_type, INOCRM_CONFIG['TicketPaymentReceivedType'], class: "form-control"
 
           .col-md-4
             = f.input :payment_note, label: "Payment note (Ex: credit card no, cheque no, bank, etc...)"

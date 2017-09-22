@@ -68,7 +68,7 @@
 
     = f.input :received_part_serial_no, wrapper_html: {class: "col-md-6"}
     = f.input :received_part_ct_no, wrapper_html: {class: "col-md-6"}
-    = f.input :note, wrapper_html: {class: "col-md-12"}, input_html: {value: nil}
+    = f.input :note, wrapper_html: {class: "col-md-12"}, input_html: {value: nil}, label: "Spare Part Note"
 
     .col-md-12
       = simple_format f.object.note

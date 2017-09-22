@@ -16,7 +16,6 @@
 
       - if f.object.ticket_terminated
         - act_terminate_job = ticket.user_ticket_actions.map{|u| u.ticket_terminate_job if u.ticket_terminate_job.present? }.compact.first
-        / = label_tag "FOC"
         %strong FOC
         = radio_button_tag :foc_payment_required, "true", act_terminate_job.try(:foc_requested)
         = label_tag "Payment required"
@@ -53,7 +52,7 @@
       - if uninvoiced_any
         = f.submit "Save", class: "btn btn-sm btn-success", id: "save_only_submit", disabled: (ticket.final_invoice.present? ? false : true), data: {confirm: "Uninvoiced estimation is there. Are you sure?", disabled_with: "Please wait..."}
       - else
-        = f.submit "Save", class: "btn btn-sm btn-success", id: "save_only_submit", disabled: (ticket.final_invoice.present? ? false : true), data: {disabled_with: "Please wait...", deduction: (ticket.final_invoice.try(:net_total_amount))}
+        = f.submit "Save", class: "btn btn-sm btn-success", id: "save_only_submit", disabled: (ticket.final_invoice.present? ? false : true), data: {confirm: "This is the final invoice. It cannot be modified further. Are you sure?", disabled_with: "Please wait...", deduction: (ticket.final_invoice.try(:net_total_amount))}
 
 - if ticket.final_invoice.present?
   %table.table.table-responsive.table-condensed.table-bordered.small_scale_margin-top1

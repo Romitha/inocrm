@@ -63,7 +63,7 @@
             %option{:value => "action_taken", data: {task_id: params[:task_id], process_id: params[:process_id], engineer_id: params[:engineer_id]}} Action Taken
           - if present_of_start_ticket_action and not job_finished and  ticket.ticket_repair_type.code == "IN" and (ticket.ticket_type.code == 'OS' ? ticket.ticket_fsrs.any? : true)
             %option{:value => "request_spare_part", data: {task_id: params[:task_id], process_id: params[:process_id], engineer_id: params[:engineer_id]}} Request Spare Part
-          - if present_of_start_ticket_action and not job_finished
+          - if present_of_start_ticket_action and not job_finished and INOCRM_CONFIG['TicketSparePart']['control_visible_store_request_from_radio']
             %option{:value => "request_on_loan_spare_part", data: {task_id: params[:task_id], process_id: params[:process_id], engineer_id: params[:engineer_id]}} Request On Loan Spare Part
           - if present_of_start_ticket_action
             %option{:value => "hp_case_id", data: {task_id: params[:task_id], process_id: params[:process_id], engineer_id: params[:engineer_id]}} HP Case Action
