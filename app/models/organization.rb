@@ -80,6 +80,10 @@ class Organization < ActiveRecord::Base
 
   has_many :organization_contact_persons
   accepts_nested_attributes_for :organization_contact_persons, allow_destroy: true
+
+  has_many :organization_bank_details
+  accepts_nested_attributes_for :organization_bank_details, allow_destroy: true
+
   TYPES = %w(SUP CUS INDSUP INDCUS)
 
   scope :organization_suppliers, -> {where(category: TYPES[0])}
@@ -402,4 +406,13 @@ class DealerType < ActiveRecord::Base
 
   has_many :accounts_dealer_types, foreign_key: :dealer_types_id
   has_many :accounts, through: :accounts_dealer_types
+end
+
+class OrganizationBankDetail < ActiveRecord::Base
+  self.table_name = "organization_bank_detail"
+
+  belongs_to :organization
+
+  has_many :invoices
+
 end

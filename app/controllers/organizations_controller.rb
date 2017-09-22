@@ -219,6 +219,41 @@ class OrganizationsController < ApplicationController
     end
   end
 
+  def create_bank_detail
+    @organization_bank_detail = OrganizationBankDetail.new organization_bank_detail_params
+    respond_to do |format|
+      @organization_bank_detail.created_by = current_user.id
+      @organization_bank_detail.updated_by = current_user.id
+      if @organization_bank_detail.save
+        format.html {redirect_to organization_url(@organization.id), notice: "Successfully saved"}
+      else
+        flash[:notice] = "Unsuccessful"
+        format.html {redirect_to organization_url(@organization.id)}
+      end
+    end
+  end
+
+  def update_organization_bank_detail
+    @organization_bank_detail = OrganizationBankDetail.find params[:organization_bank_detail_id]
+    respond_to do |format|
+      if @organization_bank_detail.update organization_bank_detail_params
+        format.json { render json: @organization_bank_detail }
+      else
+        format.json { render json: @organization_bank_detail.errors }
+      end
+    end
+  end
+
+  def delete_organization_bank_detail
+    @organization_bank_detail = OrganizationBankDetail.find params[:organization_bank_detail_id]
+    if @organization_bank_detail.present?
+      @organization_bank_detail.delete
+    end
+    respond_to do |format|
+      format.html {redirect_to organization_url(@organization.id), notice: "Bank Details Removed"}
+    end
+  end
+
   private
     def set_organization
       @organization = Organization.find params[:id]
@@ -230,6 +265,9 @@ class OrganizationsController < ApplicationController
 
     def organization_contact_person_params
       params.require(:organization_contact_person).permit(:id, :organization_id, :title_id, :name, :email, :mobile, :telephone, :type_id, :note, :designation)
+    end
+    def organization_bank_detail_params
+      params.require(:organization_bank_detail).permit(:id, :organization_id, :description, :bank_name, :account_no, :bank_address, :swift_code, :_destroy)
     end
     def customer_params
       params.require(:customer).permit(:id, :_destroy, :organization_id, :title_id, :name, :address1, :address2, :address3, :address4, :district_id, contact_type_values_attributes: [:id, :contact_type_id, :value, :_destroy])

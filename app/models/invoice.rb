@@ -20,6 +20,7 @@ class TicketInvoice < ActiveRecord::Base
   belongs_to :ticket
   belongs_to :currency
   belongs_to :created_by_ch_eng, class_name: "User", foreign_key: :created_by
+  belongs_to :organization_bank_detail
 
   has_many :ticket_invoice_estimations, foreign_key: :invoice_id
   has_many :ticket_estimations, through: :ticket_invoice_estimations
