@@ -723,11 +723,11 @@ class InvoicesController < ApplicationController
     end
 
     def customer_quotation_params
-      params.require(:customer_quotation).permit(:id, :validity_period, :delivery_period, :warranty, :payment_term_id, :customer_contacted, :canceled, :note)
+      params.require(:customer_quotation).permit(:id, :validity_period, :delivery_period, :warranty, :payment_term_id, :customer_contacted, :canceled, :note, :print_organization_id, :print_bank_detail_id, :print_currency_id, :print_exchange_rate)
     end
 
     def invoice_params
-      params.require(:ticket_invoice).permit(:id, :deducted_amount, :customer_sent, :canceled, :note, :payment_term_id, :total_amount, :total_advance_recieved, :total_deduction, :net_total_amount)
+      params.require(:ticket_invoice).permit(:id, :deducted_amount, :customer_sent, :canceled, :note, :payment_term_id, :total_amount, :total_advance_recieved, :total_deduction, :net_total_amount, :print_organization_id, :print_bank_detail_id, :print_currency_id, :print_exchange_rate)
     end
 
     def inform_customer_params

@@ -24,6 +24,10 @@
           = f.input :customer_contacted, wrapper: :append
           = f.input :canceled, wrapper: :append
           = f.input :note
+          = f.association :organization, input_html: {onchange: "Inventories.get_bank_details(this)"}
+          = f.association :organization_bank_detail, label_method: :bank_name,  disabled: true
+          = f.association :print_currency, label_method: :code, label: "Currency"
+          = f.input :print_exchange_rate, label: "Exchange Rate"
         .col-md-9
           #paginate_estimation
             %table.table.table-responsive.table-condensed.table-bordered

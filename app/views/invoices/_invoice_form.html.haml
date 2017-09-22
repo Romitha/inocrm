@@ -22,6 +22,10 @@
         = f.input :note
         = f.input :customer_sent, wrapper: :append
         = f.input :canceled, wrapper: :append if f.object.persisted? and !ticket.ticket_invoices.where.not(id: f.object.id).any? { |i| !i.canceled }
+        = f.association :organization, input_html: {onchange: "Inventories.get_bank_details(this)"}
+        = f.association :organization_bank_detail, label_method: :bank_name,  disabled: true
+        = f.association :print_currency, label_method: :code, label: "Currency"
+        = f.input :print_exchange_rate, label: "Exchange Rate"
 
       .col-md-9
         %table.table.table-responsive.table-condensed.table-bordered

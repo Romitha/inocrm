@@ -987,3 +987,10 @@ window.Inventories =
     else
       terminate_reason.prop("disabled", true)
       terminate_reason.val("")
+
+  get_bank_details: (elem)->
+    _this = $(elem)
+    if _this.val() == ""
+      $("#customer_quotation_print_bank_detail_id").prop("disabled", true)
+    else
+      $("#customer_quotation_print_bank_detail_id").prop("disabled", false)

@@ -20,7 +20,9 @@ class TicketInvoice < ActiveRecord::Base
   belongs_to :ticket
   belongs_to :currency
   belongs_to :created_by_ch_eng, class_name: "User", foreign_key: :created_by
-  belongs_to :organization_bank_detail
+  belongs_to :organization,-> { where(refers: "CRM_OWNER") }, foreign_key: :print_organization_id
+  belongs_to :organization_bank_detail, foreign_key: :print_bank_detail_id
+  belongs_to :print_currency, class_name: "Currency"
 
   has_many :ticket_invoice_estimations, foreign_key: :invoice_id
   has_many :ticket_estimations, through: :ticket_invoice_estimations
@@ -99,6 +101,9 @@ class CustomerQuotation < ActiveRecord::Base
   belongs_to :ticket
   belongs_to :payment_term
   belongs_to :currency
+  belongs_to :organization,-> { where(refers: "CRM_OWNER") }, foreign_key: :print_organization_id
+  belongs_to :organization_bank_detail, foreign_key: :print_bank_detail_id
+  belongs_to :print_currency, class_name: "Currency"
 
   has_many :ticket_payment_receiveds
   accepts_nested_attributes_for :ticket_payment_receiveds, allow_destroy: true
