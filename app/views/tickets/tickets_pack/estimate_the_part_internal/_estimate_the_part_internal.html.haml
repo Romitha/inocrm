@@ -133,7 +133,7 @@
           .col-md-3
             = t.simple_fields_for :ticket_spare_part do |p|
               = p.input :current_user_id, as: :hidden, input_html: {value: current_user.id}
-              = p.input :note, input_html: {value: nil}
+              = p.input :note, input_html: {value: nil}, label: 'Spare Part Note'
               = simple_format p.object.note
 
           - if !t.object.ticket_spare_part.ticket_spare_part_manufacture.present? or CompanyConfig.first.sup_nc_estimation_required
@@ -281,7 +281,7 @@
 
     .col-md-12
       = hidden_field_tag :estimate_low_margin, id: "estimate_low_margin"
-      = f.input :note, input_html: {value: nil}
+      = f.input :note, input_html: {value: nil}, label: 'Estimation Note'
       = simple_format estimation.note
 
 
