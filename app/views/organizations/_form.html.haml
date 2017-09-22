@@ -130,7 +130,10 @@
             - else
               %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"}
           - else
-            - if ["Contact Number", "Address", "Documents & Attachements", "Organization Relations", "Dealer Types", "Contact Person"].include? link_info[0]
+            - a = ["Contact Number", "Address", "Documents & Attachements", "Organization Relations", "Dealer Types", "Contact Person"]
+            - a.push("Bank Details") if organization.parent_organization_id == Organization.owner.id
+
+            - if a.include? link_info[0]
               %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"}
 
   .tab-content.small_scale_margin-top1

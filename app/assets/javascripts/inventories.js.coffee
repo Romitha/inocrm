@@ -988,11 +988,26 @@ window.Inventories =
       terminate_reason.prop("disabled", true)
       terminate_reason.val("")
 
-  get_bank_details: (elem)->
-    _this = $(elem)
-    if _this.val() == ""
-      $("#customer_quotation_print_bank_detail_id").prop("disabled", true)
-      $("#ticket_invoice_print_bank_detail_id").prop("disabled", true)
-    else
-      $("#customer_quotation_print_bank_detail_id").prop("disabled", false)
-      $("#ticket_invoice_print_bank_detail_id").prop("disabled", false)
+  get_bank_details_quotation:->
+    bank_list = $("#customer_quotation_print_bank_detail_id")
+    bank_list_html = bank_list.html()
+    console.log bank_list_html
+    bank_list.empty()
+    # bank_list.prop("disabled", true)
+    $("#customer_quotation_print_organization_id").change ->
+      bank_list.prop("disabled", false)
+      selected = $("#customer_quotation_print_organization_id :selected").text()
+      filtered_option = $(bank_list_html).filter("optgroup[label='#{selected}']").html()
+      bank_list.empty().html(filtered_option).trigger('chosen:updated')
+
+  get_bank_details_invoice:->
+    bank_list = $("#ticket_invoice_print_bank_detail_id")
+    bank_list_html = bank_list.html()
+    console.log bank_list_html
+    bank_list.empty()
+    # bank_list.prop("disabled", true)
+    $("#ticket_invoice_print_organization_id").change ->
+      bank_list.prop("disabled", false)
+      selected = $("#ticket_invoice_print_organization_id :selected").text()
+      filtered_option = $(bank_list_html).filter("optgroup[label='#{selected}']").html()
+      bank_list.empty().html(filtered_option).trigger('chosen:updated')

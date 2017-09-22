@@ -30,7 +30,7 @@
         = check_box_tag :unit_return_customer, true, (ticket.ticket_type.code == 'IH'), disabled: (ticket.ticket_type.code != 'IH')
         %br/
         = label_tag "Dispatch method"
-        = select_tag :dispatch_method_id, options_from_collection_for_select(DispatchMethod.all, :id, :name), include_blank: true
+        = select_tag :dispatch_method_id, options_from_collection_for_select(DispatchMethod.all, :id, :name)
       .col-md-3
         = label_tag "Feedback"
         %br

@@ -2,5 +2,6 @@ $("#estimation_wrapper").html("#{j render 'invoice_form', invoice: @invoice, tic
 
 Tickets.remove_ajax_loader();
 Invoices.quotation_change();
+Inventories.get_bank_details_invoice()
 
 $(".validate_form_i").validate();
