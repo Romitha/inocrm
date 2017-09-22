@@ -1,0 +1,26 @@
+- if organization_bank_detail.persisted?
+  .row.margin-none
+    .col-md-5
+      Bank Name :
+      = link_to "#", class: "inline_edit", data: {type: "text", resource: "organization_bank_detail", name: "bank_name",url: update_organization_bank_detail_organization_path(organization_bank_detail_id: organization_bank_detail.id), "original-title" => "Update Details"} do
+        = organization_bank_detail.bank_name
+      %br/
+      Account No :
+      = link_to "#", class: "inline_edit", data: {type: "text", resource: "organization_bank_detail", name: "account_no",url: update_organization_bank_detail_organization_path(organization_bank_detail_id: organization_bank_detail.id), "original-title" => "Update Details"} do
+        = organization_bank_detail.account_no
+      %br/
+      Swift Code:
+      = link_to "#", class: "inline_edit", data: {type: "text", resource: "organization_bank_detail", name: "swift_code",url: update_organization_bank_detail_organization_path(organization_bank_detail_id: organization_bank_detail.id), "original-title" => "Update Details"} do
+        = organization_bank_detail.swift_code
+      %br/
+      Bank Address :
+      = link_to "#", class: "inline_edit", data: {type: "text", resource: "organization_bank_detail", name: "bank_address",url: update_organization_bank_detail_organization_path(organization_bank_detail_id: organization_bank_detail.id), "original-title" => "Update Details"} do
+        = organization_bank_detail.bank_address
+      %br/
+      Description :
+      = link_to "#", class: "inline_edit", data: {type: "text", resource: "organization_bank_detail", name: "description",url: update_organization_bank_detail_organization_path(organization_bank_detail_id: organization_bank_detail.id), "original-title" => "Update Details"} do
+        = organization_bank_detail.description
+      %br/
+      = link_to content_tag(:span, glyph(:trash, {:tag => :span})), delete_organization_bank_detail_organization_path(organization_bank_detail_id: organization_bank_detail.id), method: :delete, rel: "tooltip", data: {toggle: "tooltip", placement: "right", confirm: "Are you sure? do you want to delete?"}, title: "Delete"
+      / type id and title id
+    %hr

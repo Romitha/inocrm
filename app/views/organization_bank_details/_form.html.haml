@@ -1,0 +1,24 @@
+.row
+  #product_load
+    .row.small_scale_padding-top1
+      .container
+        = simple_nested_form_for organization_bank_detail, url: create_bank_detail_organization_path(organization_id: organization_bank_detail.organization.id), method: :post, html: {id: "validate_form10"} do |oc|
+          .row
+            = panels panel_type: "success", header_content: "Add Bank Details" do
+
+              = oc.input :bank_name, wrapper_html: {class: "col-md-6"}, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}}, required: true
+              .col-md-8
+              = oc.input :account_no, wrapper_html: {class: "col-md-6"}, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}}, required: true
+
+              = oc.input :swift_code, wrapper_html: {class: "col-md-6"}, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}}
+
+              = oc.input :bank_address, wrapper_html: {class: "col-md-12"}, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}}
+
+              = oc.input :description, wrapper_html: {class: "col-md-12"}, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}}, required: true
+
+              = oc.hidden_field :organization_id
+
+              / = f.submit "Add new Contact", class: "btn btn-success pull-right", id: "submit_new_contact_person"
+              = oc.submit "Save", name: "save", class: "col-md-2 btn btn-success pull-left"
+= javascript_tag do
+  setTimeout(function(){$("#validate_form10").validate();}, 300)
