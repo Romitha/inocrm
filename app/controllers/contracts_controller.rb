@@ -239,23 +239,19 @@ class ContractsController < ApplicationController
         @cus_product = Organization.find params[:owner_customer_id]
 
         @cus_product.attributes = customer_product_params
-        @cus_product.save
-
-        Rails.cache.fetch([:products, request.remote_ip]).to_a.each do |product|
-          product.update owner_customer_id: params[:owner_customer_id]
-          # unless @cus_product.product_ids.include?(product.id)
-          #   @cus_product.products.create(owner_customer_id: )
-          # end
-        end
-
-
-        Rails.cache.delete([:products, request.remote_ip])
+        if @cus_product.save
+          Rails.cache.fetch([:products, request.remote_ip]).to_a.each do |product|
+            product.update owner_customer_id: params[:owner_customer_id]
+            # unless @cus_product.product_ids.include?(product.id)
+            #   @cus_product.products.create(owner_customer_id: )
+            # end
+          end
+          Rails.cache.delete([:products, request.remote_ip])
 
 
-        @cus_product.products.each do |product|
-          product.create_product_owner_history(@cus_product.id, current_user.id, "Added in contract")
-
-
+          @cus_product.products.each do |product|
+            product.create_product_owner_history(@cus_product.id, current_user.id, "Added in Product")
+          end
         end
       end
     end

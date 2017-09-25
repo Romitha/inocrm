@@ -69,16 +69,15 @@
 - elsif params[:save_product].present?
   - if params[:ajax_upload].present?
   - else
-
-    / - if @cus_product.errors.any? { |e|  }?
-    /   console.log("error");
-    / - else
-    $("#contractedit").empty();
-    $("#contractlist").addClass("hide");
-    $("#customerlist").addClass("hide");
-    $("#contract_alert #content").html("successfully saved");
-    $("#contract_alert").removeClass("hide");
-    $("a[href='#contracts_ticket_form_collapse_search_customers_link']").trigger("click");
+    - if @cus_product.errors.any?
+      console.log("#{@cus_product.errors.full_messages.join(', ')}");
+    - else
+      $("#contractedit").empty();
+      $("#contractlist").addClass("hide");
+      $("#customerlist").addClass("hide");
+      $("#contract_alert #content").html("successfully saved");
+      $("#contract_alert").removeClass("hide");
+      $("a[href='#contracts_ticket_form_collapse_search_customers_link']").trigger("click");
 
 $('.datepicker').datepicker({
 format: "yyyy-m-dd",
