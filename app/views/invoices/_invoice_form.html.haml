@@ -17,8 +17,7 @@
         = ticket.ticket_currency.code
         %br/
         = f.input :deducted_amount, as: :string, input_html: {id: "deducted_amount" }
-        = label_tag "Payment term"
-        = f.association :payment_term, label: false, required: true
+        = f.association :payment_term, label: "Payment term", required: true
         = f.input :note, label: "Invoice Note"
         = f.input :customer_sent, wrapper: :append
         = f.input :canceled, wrapper: :append if f.object.persisted? and !ticket.ticket_invoices.where.not(id: f.object.id).any? { |i| !i.canceled }

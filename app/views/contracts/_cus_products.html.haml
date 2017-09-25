@@ -124,12 +124,12 @@
                       = f.association :product_brand, required: true, input_html: {class: "product_brand"}
                     .col-md-2
                       = f.association :product_category, collection: ProductBrand.all, as: :grouped_select, group_method: :product_categories, required: true, input_html: {class: "product_category chosen-select"}
-                  .col-md-4
-                    = f.input :serial_no, required: true
                   .col-md-2
                     = f.input :model_no
                   .col-md-2
                     = f.input :product_no
+                  .col-md-4
+                    = f.input :serial_no, required: true
                 .row
                   .col-md-3
                     = f.input :date_installation, as: :string, input_html: {class: "datepicker", value: f.object.date_installation.try(:strftime, INOCRM_CONFIG["short_date_format"])}
@@ -184,12 +184,12 @@
               = f.association :product_brand, required: true, input_html: {class: "product_brand"}
             .col-md-2
               = f.association :product_category, collection: ProductBrand.all, as: :grouped_select, group_method: :product_categories, required: true, input_html: {class: "product_category chosen-select"}
-          .col-md-4
-            = f.input :serial_no, required: true
           .col-md-2
             = f.input :model_no
           .col-md-2
             = f.input :product_no
+          .col-md-4
+            = f.input :serial_no, required: true
         .row
           .col-md-3
             = f.input :date_installation, as: :string, input_html: {class: "datepicker", value: f.object.date_installation.try(:strftime, INOCRM_CONFIG["short_date_format"])}

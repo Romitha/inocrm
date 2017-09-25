@@ -10,7 +10,8 @@
   - else
     - if ticket.final_invoice_id.present?
 
-      = tab_nav_tab({class: "small_scale_margin-bottom1"}, ticket_info: {content: "Ticket info"}, customer_feedback: {content: "Customer Feedback", active_class: "active"}, view_invoice: {content: "Invoice"}, inform_customer: {content: "Contact customer"} )
+      = tab_nav_tab({class: "small_scale_margin-bottom1"}, ticket_info: {content: "Ticket info"}, customer_feedback: {content: "Customer Feedback", active_class: "active"}, view_invoice: {content: "Invoice"} )
+      / , inform_customer: {content: "Contact customer"}
     - else
       = tab_nav_tab({class: "small_scale_margin-bottom1"}, ticket_info: {content: "Ticket info"} ) # , customer_feedback: {content: "Customer Feedback", active_class: "active"}
 
