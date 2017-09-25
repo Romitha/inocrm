@@ -61,4 +61,4 @@ TicketPaymentReceivedType:
   TT_payment: 6
   other: 1
 
-request_part_default: "" 
+request_part_default: "M"
