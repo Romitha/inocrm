@@ -10,4 +10,4 @@
     = f.association :part_terminated_reason, label: "Terminate Reason", collection: Reason.where(terminate_spare_part: true), label_method: :reason, value_method: :id if @spare_part.status_action_id != SparePartStatusAction.find_by_code("CLS").id
     = f.input :note, input_html: {value: nil}
     = simple_format spare_part.note
-    = f.submit "Save", class: "btn btn-success"
+    = f.submit "Save", class: "btn btn-success", data: {disable_with: "Please wait..."}

@@ -17,4 +17,4 @@
           = f.input :note, input_html: {value: nil}, label: "Spare Part Note"
           = simple_format spare_part.note
         .col-md-12
-          = f.submit "Save", class: "btn btn-success", onclick: "Tickets.presence_validater(this, {presence: ['#event_no', '#order_no']}); return false;"
+          = f.submit "Save", class: "btn btn-success", onclick: "Tickets.presence_validater(this, {presence: ['#event_no', '#order_no']}); return false;", data: {disable_with: "Please wait..."}

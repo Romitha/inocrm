@@ -10,4 +10,4 @@
     = f.simple_fields_for "user_ticket_actions_attributes[]", @user_ticket_action  do |uf|
       = uf.simple_fields_for :action_warranty_extend do |aw|
         = aw.input :reject_note, label: "Request note"
-    = f.submit "Save", class: "btn btn-success"
+    = f.submit "Save", class: "btn btn-success", data: {disable_with: "Please wait..."}

@@ -49,9 +49,9 @@
       = f.select :part_terminated_reason_id, Reason.where(terminate_spare_part: true).map{|r| [r.reason, r.id]}, {include_blank: true}, {class: "part_terminated_select"} # showing part_terminated is cheched through javascript
     = hidden_field_tag :terminate, "terminate"
 
-  = f.submit "terminate", name: "terminate", class: "btn btn-sm btn-success" if @str
-  = f.submit "received", name: "recieved", class: "btn btn-sm btn-success" if @iss
+  = f.submit "terminate", name: "terminate", class: "btn btn-sm btn-success", data: {disable_with: "Please wait..."} if @str
+  = f.submit "received", name: "recieved", class: "btn btn-sm btn-success", data: {disable_with: "Please wait..."} if @iss
   - if @rce or @rpr
     %label{:for => "Update without return"} Update without return
     = check_box_tag "update_without_return", true, false, class: "small_scale_margin-right1"
-    = f.submit "return", name: "return", class: "btn btn-sm btn-success"
+    = f.submit "return", name: "return", class: "btn btn-sm btn-success", data: {disable_with: "Please wait..."}

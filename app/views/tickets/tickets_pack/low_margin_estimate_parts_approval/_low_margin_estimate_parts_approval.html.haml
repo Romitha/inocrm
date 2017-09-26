@@ -296,4 +296,4 @@
     .col-md-12
       = label_tag "Approval Complete"
       = check_box_tag :approval_complete_check, true, false
-      = f.submit "Save", class: "btn btn-success btn-sm"
+      = f.submit "Save", class: "btn btn-success btn-sm", data: {disable_with: "Please wait..."}

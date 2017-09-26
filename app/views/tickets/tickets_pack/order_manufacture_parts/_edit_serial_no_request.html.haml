@@ -31,4 +31,4 @@
       = label_tag "Task completed"
       = check_box_tag "complete_task", true, true # this is for extend_warranty purpose. this can be used anywhere as render
 
-    = f.submit "Save", class: "btn btn-success"
+    = f.submit "Save", class: "btn btn-success", data: {disable_with: "Please wait..."}

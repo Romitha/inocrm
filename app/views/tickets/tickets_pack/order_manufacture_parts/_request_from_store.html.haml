@@ -35,7 +35,7 @@
         = simple_format f.object.note
     .row
       .col-md-12
-        = f.submit "Save", class: "btn btn-success", onclick: "Inventories.request_from_store(event, this);"
+        = f.submit "Save", class: "btn btn-success", onclick: "Inventories.request_from_store(event, this);", data: {disable_with: "Please wait..."}
 
 #inventory_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "inventory_modal", "aria-hidden" => true}
   .modal-dialog.modal-lg

@@ -24,4 +24,4 @@
       = f.input :job_start_note, wrapper_html: {class: "col-md-7"}, required: true
     = f.input :remarks, input_html: {value: nil}
     = simple_format ticket.remarks
-    = f.submit "Save", class: "btn btn-success btn-sm", id: "update_start_action"
+    = f.submit "Save", class: "btn btn-success btn-sm", id: "update_start_action", data: {disable_with: "Please wait..."}

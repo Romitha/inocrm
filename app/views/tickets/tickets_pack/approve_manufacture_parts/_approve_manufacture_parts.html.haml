@@ -43,5 +43,5 @@
         - msg = "Do you really want to reject? #{'It is estimated part' if spare_part.estimation_required }"
         %div{class: "alertMsg hide", data: {msg: msg}}
 
-        %button{ type: "button", class: "btn btn-success btn-sm", onclick: "Tickets.approveManufacturePart(this); return false;"}
+        %button{ type: "button", class: "btn btn-success btn-sm", onclick: "Tickets.approveManufacturePart(this); return false;", data: {disable_with: "Please wait..."}}
           Save

@@ -87,7 +87,7 @@
           = simple_format ft.object.remarks
     .row.col-md-12
       .col-md-3
-        = f.submit "Save", class: "btn btn-success"
+        = f.submit "Save", class: "btn btn-success", data: {disable_with: "Please wait..."}
 
 #inventory_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "inventory_modal", "aria-hidden" => true}
   .modal-dialog.modal-lg
