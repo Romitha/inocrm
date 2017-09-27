@@ -37,6 +37,9 @@ class TicketInvoice < ActiveRecord::Base
   accepts_nested_attributes_for :ticket_invoice_total_taxes, allow_destroy: true
   has_many :taxes, through: :ticket_invoice_total_taxes
 
+  def currency_type
+    currency.code
+  end
 
 end
 

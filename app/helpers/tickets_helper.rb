@@ -68,7 +68,7 @@ module TicketsHelper
 
       body_merger.merge!(job_completed_info)
 
-      ticket_invoice = {ticket_invoice_no: ticket.final_invoice.try(:invoice_no), ticket_invoice_currency: ticket.final_invoice.try(:currency).code, ticket_invoice_net_total: (number_with_precision ticket.final_invoice.try(:net_total_amount), precision: 2 )}
+      ticket_invoice = {ticket_invoice_no: ticket.final_invoice.try(:invoice_no), ticket_invoice_currency: ticket.final_invoice.try(:currency_type), ticket_invoice_net_total: (number_with_precision ticket.final_invoice.try(:net_total_amount), precision: 2 )}
 
       body_merger.merge!(ticket_invoice)
 
