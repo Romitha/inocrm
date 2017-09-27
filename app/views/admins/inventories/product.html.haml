@@ -199,11 +199,17 @@
               .row.col-md-12
                 .col-md-6
                   Need Serial:
-                  = link_to_if !inv_product.grn_items.any?, "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "inventory_product_info", name: "need_serial", url: product_admins_inventories_path(edit: true, product_info_id: inv_product.inventory_product_info.product_id), "original-title" => "Update Need Serial"} do
+                  - if !inv_product.grn_items.any?
+                    = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "inventory_product_info", name: "need_serial", url: product_admins_inventories_path(edit: true, product_info_id: inv_product.inventory_product_info.product_id), "original-title" => "Update Need Serial"} do
+                      = inv_product.inventory_product_info.need_serial && "Yes" || "No"
+                  - else
                     = inv_product.inventory_product_info.need_serial && "Yes" || "No"
                 .col-md-6
                   Need Batch:
-                  = link_to_if !inv_product.grn_items.any?, "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "inventory_product_info", name: "need_batch", url: product_admins_inventories_path(edit: true, product_info_id: inv_product.inventory_product_info.product_id), "original-title" => "Update Need Batch"} do
+                  - if !inv_product.grn_items.any?
+                    = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "inventory_product_info", name: "need_batch", url: product_admins_inventories_path(edit: true, product_info_id: inv_product.inventory_product_info.product_id), "original-title" => "Update Need Batch"} do
+                      = inv_product.inventory_product_info.need_batch && "Yes" || "No"
+                  - else
                     = inv_product.inventory_product_info.need_batch && "Yes" || "No"
               .row.col-md-12
                 .col-md-6

@@ -261,7 +261,7 @@ module ApplicationHelper
       canceled = "CANCELED"
     else
       canceled = ""
-
+    end
     total_amount = 0
     net_total_amount = 0
     total_advance_amount = 0
@@ -470,6 +470,7 @@ module ApplicationHelper
       canceled = "CANCELED"
     else
       canceled = ""
+    end
     total_amount = 0
     net_total_amount = 0
     currency = invoice.currency.try(:code)
