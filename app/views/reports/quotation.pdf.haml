@@ -3,6 +3,10 @@
 - print_object = @print_object
 - print_object1 = @print_hash_to_object
 
+- if print_object[:canceled]?
+  .watermark
+    %h4.watermark-text Canceled
+
 .report_pdf.container
   .row
     .col-xs-2

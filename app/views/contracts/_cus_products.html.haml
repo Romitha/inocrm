@@ -40,9 +40,9 @@
           %th Name
           %th Product Brand
           %th Product Category
-          %th Serial Number
           %th Model No
           %th Product No
+          %th Serial Number
           %th Corporate Product
           %th Action
 
@@ -58,9 +58,9 @@
               %td= product.name
               %td= product.product_brand.name
               %td= product.product_category.name
-              %td= product.serial_no
               %td= product.model_no
               %td= product.product_no
+              %td= product.serial_no
               %td= boolean_in_word product.corporate_product, "Yes", "No"
               %td
                 -if product.ticket_contracts.none?{|c| c.dynamic_active }

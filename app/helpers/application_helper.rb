@@ -257,6 +257,10 @@ module ApplicationHelper
     validity_period = quotation.validity_period
     delivery_period = quotation.delivery_period
     warranty = quotation.warranty
+    if quotation.canceled?
+      canceled = "CANCELED"
+    else
+      canceled = ""
 
     total_amount = 0
     net_total_amount = 0
@@ -358,6 +362,7 @@ module ApplicationHelper
 
     [
       "DUPLICATE_D=#{ticket.ticket_complete_print_count > 0 ? 'D' : ''}",
+      "CANCELED=#{canceled}",
       "QUOTATION_NO=#{quotation_no}",
       "PRODUCT_BRAND=#{product_brand}",
       "MODEL_NO=#{model_no}",
@@ -461,7 +466,10 @@ module ApplicationHelper
     special_note = ticket.note
     invoice_note = invoice.note
     created_by = invoice.created_by_ch_eng.full_name
-
+    if invoice.canceled?
+      canceled = "CANCELED"
+    else
+      canceled = ""
     total_amount = 0
     net_total_amount = 0
     currency = invoice.currency.try(:code)
@@ -610,6 +618,7 @@ module ApplicationHelper
 
     [
       "DUPLICATE_D=#{ticket.ticket_complete_print_count > 0 ? 'D' : ''}",
+      "CANCELED=#{canceled}",
       "INVOICE_NO=#{invoice_no}",
       "PRODUCT_BRAND=#{product_brand}",
       "MODEL_NO=#{model_no}",

@@ -20,7 +20,7 @@
           = f.input :delivery_period
           = f.input :warranty
           = label_tag "Payment term"
-          = f.association :payment_term, label: false
+          = f.association :payment_term, required: true
           = f.input :customer_contacted, wrapper: :append
           = f.input :canceled, wrapper: :append
           = f.input :note, label: "Quotation Note"

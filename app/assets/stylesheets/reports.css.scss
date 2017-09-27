@@ -761,10 +761,28 @@
     overflow-y: scroll;
   }
   .container {
+    position:absolute;
+    z-index:1;
+
     margin-right: auto;
     margin-left: auto;
     padding-left: 15px;
     padding-right: 15px;
+  }
+  .watermark-text{
+    color:#ffbfbf;
+    font-size:120px;
+    transform:rotate(300deg);
+    -webkit-transform:rotate(330deg);
+  }
+  .watermark{
+    position:absolute;
+    z-index:0;
+    background:white;
+    display:block;
+    min-height:50%;
+    min-width:50%;
+    color:yellow;
   }
   @media (min-width: 768px) {
     .container {

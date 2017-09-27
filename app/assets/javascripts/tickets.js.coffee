@@ -800,6 +800,18 @@ window.Tickets =
     if $('#in_at').val() != ''
       $('#travelled_hours').val(travel_time_in_hours)
 
+  set_max_support_eng_worked_hours: (e)->
+    elem = $(e)
+    $(".support_worked_hours").val(0);
+    $(".support_worked_hours").prop("max", $(elem).val());
+
+  max_time_support: (e)->
+    elem = $(e)
+    sup_time = $(elem).val()
+    eng_time = $("#worked_hours").val()
+    if parseFloat($(elem).val()) > parseFloat($("#worked_hours").val())
+      alert "Support engineer work hours canot be highr than engineer work hours"
+      $(elem).val(eng_time)
   approveManufacturePart: (e)->
     console.log($(e))
     if $("input[name='ticket_spare_part[request_approved]']:checked").val() == "false"
