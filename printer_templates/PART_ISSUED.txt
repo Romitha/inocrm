@@ -1,0 +1,49 @@
+Email Body
+
+Action: PART_ISSUED
+
+Customer
+customer_name(title + name):                #customer_name 
+customer_address:                           #customer_address
+customer_code:                              #customer_code
+customer_contact_person_name(title + name): #customer_contact_person_name 
+
+Ticket
+ticket_no:                      #ticket_no
+ticket_logged_at:               #ticket_logged_at
+ticket_logged_by:               #ticket_logged_by
+ticket_contract_no:             #ticket_contract_no
+ticket_type(in-house/ on-site): #ticket_type 
+ticket_informed_method:         #ticket_informed_method
+ticket_problem_description:     #ticket_problem_description
+ticket_owner_division:          #ticket_owner_division
+contract_type:                  #contract_type
+contract_active(Yes/No):        #contract_active
+contract_start_at:              #contract_start_at
+contract_end_at:                #contract_end_at
+ticket_priority:                #ticket_priority
+ticket_status:                  #ticket_status
+ticket_owner_engineer(+Title):  #ticket_owner_engineer
+
+ticket_product_brand:     #ticket_product_brand
+ticket_product_category:  #ticket_product_category
+ticket_product_name:      #ticket_product_name
+ticket_product_serial_no: #ticket_product_serial_no
+
+Job Completed
+
+ticket_job_completed_at: #ticket_job_completed_at
+ticket_dispatch_method:  #ticket_dispatch_method
+
+Spare Part
+
+spare_part_no:   #spare_part_no
+spare_part_name: #spare_part_name
+spare_part_type: #spare_part_type
+
+assign_engineer
+
+engineer_name:    #engineer_name
+assigned_at:      #assigned_at
+assigned_by:      #assigned_by
+task_description: #task_description
