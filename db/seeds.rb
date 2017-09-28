@@ -49,9 +49,9 @@ unless(user)
 
   # Rpermission.find_or_create_by!(rpermissions.map { |rp| {name: rp[0], controller_resource: rp[1], controller_action: rp[2]} })
   Rpermission
-  # SubjectBase.create [{name: "Model"}, {name: "Controller"}]
+  SubjectBase.create [{name: "Model"}, {name: "Controller"}] unless SubjectBase.all.any?
   # SubjectAttribute.create [{name: "id"}, {name: "task_id"}]
-  # SubjectAction.create [{name: "update_user"}, {name: "index"}, {name: "create_organization"}, {name: "profile"}, {name: "show"}, {name: "update_organization"}, {name: "create_user"}]
+  SubjectAction.create [{name: "update_user"}, {name: "index"}, {name: "create_organization"}, {name: "profile"}, {name: "show"}, {name: "update_organization"}, {name: "create_user"}] unless SubjectAction.all.any?
 
   subject_classes.each { |rp| SubjectClass.create_with( name: rp[0], subject_base_id: rp[1] ).find_or_create_by(name: rp[0]) }
   rpermissions.each { |rp| Rpermission.create_with( subject_action_id: rp[2], subject_class_id: rp[1] ).find_or_create_by(name: rp[0]) }
