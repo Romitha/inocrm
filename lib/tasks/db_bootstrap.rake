@@ -75,9 +75,15 @@ end
 
 task upload_printer_template: :environment do
   Ticket
+  WorkflowMapping
   ["fsr", "bundle_hp", "invoice", "quotation", "receipt", "ticket", "ticket_complete", "ticket_sticker"].each do |print|
     file = File.open File.join(Rails.root, "printer_templates", "print_#{print}.xml"), "rb"
     PrintTemplate.first.update_attribute print.to_sym, file.read
+  end
+
+  ['ASSIGN_JOB', 'COMPLETE_JOB', 'INVOICE_COMPLETED', 'NEW_TICKET', 'PART_ISSUED'].each do |f|
+    file = File.open File.join(Rails.root, "printer_templates", "#{f}.txt"), "rb"
+    EmailTemplate.find_by_code(f).update_attribute :body, file.read
   end
 end
 
