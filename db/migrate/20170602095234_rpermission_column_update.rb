@@ -1,13 +1,13 @@
 class RpermissionColumnUpdate < ActiveRecord::Migration
   def change
 
-    remove_foreign_key :rpermissions, name: :fk_main_permissions_main_permissions2
-    remove_index :rpermissions, name: :fk_main_permissions_main_permissions2_idx
-    remove_column :rpermissions, :subject_attribute_id
+    remove_foreign_key :subject_attributes, name: :fk_main_permissions_main_permissions2
+    # remove_index :rpermissions, name: :fk_main_permissions_main_permissions2_idx
+    # remove_column :rpermissions, :subject_attribute_id
 
-    remove_foreign_key :rpermissions, name: :fk_main_permissions_main_permissions1
-    remove_index :rpermissions, name: :fk_main_permissions_main_permissions1_idx
-    remove_column :rpermissions, :subject_action_id
+    remove_foreign_key :subject_actions, name: :fk_main_permissions_main_permissions1
+    # remove_index :rpermissions, name: :fk_main_permissions_main_permissions1_idx
+    # remove_column :rpermissions, :subject_action_id
 
     # remove_column :spt_ticket, :updated_by
 
