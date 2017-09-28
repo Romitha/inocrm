@@ -26,7 +26,7 @@ class TicketEstimation < ActiveRecord::Base
 
   before_save do |ticket_estimation|
     if ticket_estimation.persisted? and ticket_estimation.note_changed? and ticket_estimation.note.present?
-      ticket_estimation_note = "#{ticket_estimation.note} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(ticket_estimation.current_user_id).email}</span><br/>#{ticket_estimation.note_was}"
+      ticket_estimation_note = "#{ticket_estimation.note} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(ticket_estimation.current_user_id).try(:full_name)}</span><br/>#{ticket_estimation.note_was}"
     elsif ticket_estimation.new_record?
       ticket_estimation_note = ticket_estimation.note  
     else

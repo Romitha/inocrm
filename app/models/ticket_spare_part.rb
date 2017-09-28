@@ -43,7 +43,7 @@ class TicketSparePart < ActiveRecord::Base
 
   before_save do |ticket_spare_part|
    if ticket_spare_part.persisted? and ticket_spare_part.note_changed? and ticket_spare_part.note.present?
-      ticket_spare_part_note = "#{ticket_spare_part.note} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(ticket_spare_part.current_user_id).email}</span><br/>#{ticket_spare_part.note_was}"
+      ticket_spare_part_note = "#{ticket_spare_part.note} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(ticket_spare_part.current_user_id).try(:full_name)}</span><br/>#{ticket_spare_part.note_was}"
     elsif ticket_spare_part.new_record?
       ticket_spare_part_note = ticket_spare_part.note
     else
@@ -218,7 +218,7 @@ class TicketFsr < ActiveRecord::Base
 
   before_save do |ticket_fsr|
     if ticket_fsr.persisted? and ticket_fsr.remarks_changed? and ticket_fsr.remarks.present?
-      ticket_fsr_remarks = "#{ticket_fsr.remarks} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(ticket_fsr.current_user_id).email}</span><br/>#{ticket_fsr.remarks_was}"
+      ticket_fsr_remarks = "#{ticket_fsr.remarks} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(ticket_fsr.current_user_id).try(:full_name)}</span><br/>#{ticket_fsr.remarks_was}"
     elsif ticket_fsr.new_record?
       ticket_fsr_remarks = ticket_fsr.remarks
     else
@@ -259,7 +259,7 @@ class TicketDeliverUnit < ActiveRecord::Base
 
   before_save do |ticket_deliver_unit|
     if ticket_deliver_unit.persisted? and ticket_deliver_unit.note_changed? and ticket_deliver_unit.note.present?
-      ticket_deliver_unit_note = "#{ticket_deliver_unit.note} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(ticket_deliver_unit.current_user_id).email}</span><br/>#{ticket_deliver_unit.note_was}"
+      ticket_deliver_unit_note = "#{ticket_deliver_unit.note} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(ticket_deliver_unit.current_user_id).try(:full_name)}</span><br/>#{ticket_deliver_unit.note_was}"
     elsif ticket_deliver_unit.new_record?
       ticket_deliver_unit_note = ticket_deliver_unit.note  
     else

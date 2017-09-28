@@ -118,7 +118,7 @@ class Srn < ActiveRecord::Base
 
   before_save do |srn|
     if srn.persisted? and srn.remarks_changed? and srn.remarks.present?
-      srn_remarks = "#{srn.remarks} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(srn.current_user_id).email}</span><br/>#{srn.remarks_was}"
+      srn_remarks = "#{srn.remarks} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(srn.current_user_id).try(:full_name)}</span><br/>#{srn.remarks_was}"
     elsif srn.new_record?
       srn_remarks = srn.remarks  
     else

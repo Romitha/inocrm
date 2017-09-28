@@ -94,7 +94,7 @@ class Gin < ActiveRecord::Base
 
   before_save do |gin|
    if gin.persisted? and gin.remarks_changed? and gin.remarks.present?
-      gin_remarks = "#{gin.remarks} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(gin.current_user_id).email}</span><br/>#{gin.remarks_was}"
+      gin_remarks = "#{gin.remarks} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(gin.current_user_id).try(:full_name)}</span><br/>#{gin.remarks_was}"
     else
       gin_remarks = gin.remarks_was
     end

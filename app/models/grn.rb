@@ -238,7 +238,7 @@ class GrnItem < ActiveRecord::Base
 
   before_save do |grn_item|
     if grn_item.persisted? and grn_item.remarks_changed? and grn_item.remarks.present?
-      grn_item_remarks = "#{grn_item.remarks} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(grn_item.current_user_id).email}</span><br/>#{grn_item.remarks_was}"
+      grn_item_remarks = "#{grn_item.remarks} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(grn_item.current_user_id).try(:full_name)}</span><br/>#{grn_item.remarks_was}"
     elsif grn_item.new_record?
       grn_item_remarks = grn_item.remarks  
     else

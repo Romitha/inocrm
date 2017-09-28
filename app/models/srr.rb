@@ -144,7 +144,7 @@ class SrrItem < ActiveRecord::Base
 
   before_save do |srr_item|
    srr_item_remarks = if srr_item.persisted? and srr_item.remarks_changed? and srr_item.remarks.present?
-      "#{srr_item.remarks} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(srr_item.current_user_id).email}</span><br/>#{srr_item.remarks_was}"
+      "#{srr_item.remarks} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(srr_item.current_user_id).try(:full_name)}</span><br/>#{srr_item.remarks_was}"
     else
       srr_item.remarks_was
     end

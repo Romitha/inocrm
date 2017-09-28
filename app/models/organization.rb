@@ -413,6 +413,6 @@ class OrganizationBankDetail < ActiveRecord::Base
 
   belongs_to :organization
 
-  has_many :invoices
+  has_many :ticket_invoice
 
 end
