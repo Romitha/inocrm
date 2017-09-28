@@ -46,11 +46,10 @@
             .col-md-12
               Remarks: #{simple_format wr.inventory_warranty.try(:remarks)}
 
-
     = initiate_table table_type: "table-bordered" do
       = table_header ["No", "Serial No", "CT No"]
       = multi_table_body do
-        - Rails.cache.fetch([ :serial_item, params[:refer_resource_class].to_sym, params[:refer_resource_id].to_i, session[:grn_arrived_time].to_i ]).to_a.each_with_index do |is, index|
+        - Rails.cache.fetch([ :serial_item, params[:refer_resource_class].to_s.to_sym, params[:refer_resource_id].to_i, session[:grn_arrived_time].to_i ]).to_a.each_with_index do |is, index|
           = multi_table_row [index+1]+[is.serial_no, is.ct_no]
 
   - if params[:new_bulk_upload_serial].present?
@@ -65,6 +64,13 @@
   $("#bulk_serial_item_render .modal-body").html("#{j render 'admins/inventories/grn/bulk_serial_items'}");
 
   - content_for :content_for_sheet do
+
+    = initiate_table table_type: "table-bordered" do
+      = table_header ["No", "Serial No"]
+      = multi_table_body do
+        - @available_serial_items.to_a.each_with_index do |is, index|
+          = multi_table_row [index+1]+[is.serial_no]
+
     = initiate_table table_type: "table-bordered" do
       = table_header ["No", "Serial No", "CT No"]
       = multi_table_body do

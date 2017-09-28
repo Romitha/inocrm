@@ -810,7 +810,10 @@ module Admins
         @time_store = Time.now.strftime("%H%M%S")
         session[:time_store_for_buck_upload] = @timestore.to_i
 
-        Rails.cache.fetch([:bulk_serial, @time_store.to_i ]) { (@sheet.last_row - 1).times.map{|m| @sheet.row(m+2)} }
+        serial_nos = []
+        Rails.cache.fetch([:bulk_serial, @time_store.to_i ]) { (@sheet.last_row - 1).times.map{|m| serial_nos << @sheet.row(m+2)[0]; @sheet.row(m+2)}.compact }
+
+        @available_serial_items = InventorySerialItem.joins(:inventory).where(serial_no: serial_nos, inv_inventory: {store_id: session[:store_id]})
 
         File.delete(File.join(Rails.root, "public", "uploads", uploaded_io.original_filename))
 
