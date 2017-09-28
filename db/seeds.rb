@@ -33,7 +33,7 @@ mst_organizations_types = [
 ].each{ |t| OrganizationType.create_with(name: t[1]).find_or_create_by(code: t[0])}
 
 organization = Organization.create_with(name: "VS Information Systems", short_name: "VS Information Sys", code: "123456", web_site: "http://www.vsis.com", description: "VSIS is product owner of this application", type_id: 1).find_or_create_by(refers: "CRM_OWNER")
-organization.account.create(credit_allow: false)
+organization.create_account(credit_allow: false) unless organization.account.present?
 user = User.find_by_email("admin@inovacrm.com")
 unless(user)
   user = User.create(email: "admin@inovacrm.com", password: "123456789", organization_id: organization.id)
