@@ -392,12 +392,12 @@ end
 end
 
 [
-  ["NEW_TICKET", 'New Ticket - T_No:#ticket_no C_No:#ticket_contract_no #customer_name', true, true],
-  ["COMPLETE_JOB", 'Close Ticket - T_No:#ticket_no C_No:#ticket_contract_no #customer_name', true, true],
-  ["ASSIGN_JOB", 'Assign Ticket - T_No:#ticket_no C_No:#ticket_contract_no #customer_name', true, true],
+  ["NEW_TICKET", 'New Ticket - T_No:#ticket_no C_No:#ticket_contract_no #customer_name', true, true, 'body'],
+  ["COMPLETE_JOB", 'Close Ticket - T_No:#ticket_no C_No:#ticket_contract_no #customer_name', true, true, 'body'],
+  ["ASSIGN_JOB", 'Assign Ticket - T_No:#ticket_no C_No:#ticket_contract_no #customer_name', true, true, 'body'],
   ["PART_ISSUED", '', true, true],
-  ["INVOICE_COMPLETED", 'Ticket Invoice Completed - T_No:#ticket_no C_No:#ticket_contract_no #customer_name', true, true],
+  ["INVOICE_COMPLETED", 'Ticket Invoice Completed - T_No:#ticket_no C_No:#ticket_contract_no #customer_name', true, true, 'body'],
 ].each do |t|
-  EmailTemplate.create_with(subject: t[1], active: t[2], default_enable: t[3]).find_or_create_by(code: t[0])
+  EmailTemplate.create_with(subject: t[1], active: t[2], default_enable: t[3], body: t[4]).find_or_create_by(code: t[0])
 
 end
