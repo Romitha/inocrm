@@ -761,13 +761,15 @@
     overflow-y: scroll;
   }
   .container {
-    position:absolute;
-    z-index:1;
-
     margin-right: auto;
     margin-left: auto;
     padding-left: 15px;
     padding-right: 15px;
+  }
+  .watermark_container{
+    position:absolute;
+    z-index:1;
+
   }
   .watermark-text{
     color:#ffbfbf;

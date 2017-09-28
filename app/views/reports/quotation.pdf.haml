@@ -7,7 +7,7 @@
   .watermark
     %h4.watermark-text Canceled
 
-.report_pdf.container
+.report_pdf.container.watermark_container
   .row
     .col-xs-2
       = wicked_pdf_image_tag (print_object1.owner.logo || "organization_image.png"), class: "img-responsive"
