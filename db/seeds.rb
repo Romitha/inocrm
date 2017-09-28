@@ -378,13 +378,13 @@ end
 [
   ["Immediately", "Full payment with the Purchase Order / Acknowledgement"]
 ].each do |t|
-  PaymentTerm.create_with(name: t[0], description: t[1]).find_or_create_by(name: t[0])}
+  PaymentTerm.create_with(name: t[0], description: t[1]).find_or_create_by(name: t[0])
 end
 
 [
   ["Extra Labour", ""]
 ].each do |t|
-  PaymentItem.create_with(name: t[0], default_amount: t[1]).find_or_create_by(name: t[0])}
+  PaymentItem.create_with(name: t[0], default_amount: t[1]).find_or_create_by(name: t[0])
 end
 
 [
