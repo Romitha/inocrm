@@ -1308,7 +1308,7 @@ class InventoryPrn < ActiveRecord::Base
 
   before_save do |prn|
     if prn.persisted? and prn.remarks_changed? and prn.remarks.present?
-      prn_remarks = "#{prn.remarks} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(prn.current_user_id).email}</span><br/>#{prn.remarks_was}"
+      prn_remarks = "#{prn.remarks} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(prn.current_user_id).try(:email)}</span><br/>#{prn.remarks_was}"
     elsif prn.new_record?
       prn_remarks = prn.remarks  
     else
