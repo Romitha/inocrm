@@ -6,7 +6,7 @@ class CreateRpermissions < ActiveRecord::Migration
       t.string :controller_resource
       t.string :controller_action
 
-      t.belongs_to :subject_class
+      t.column :subject_class_id, "INT UNSIGNED"
 
       t.timestamps
     end
