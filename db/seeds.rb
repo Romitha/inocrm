@@ -377,6 +377,8 @@ end
   ContactPersonType.create_with(name: t[0]).find_or_create_by(name: t[0])
 end
 
+Invoice
+TaskAction
 [
   ["Immediately", "Full payment with the Purchase Order / Acknowledgement"]
 ].each do |t|
