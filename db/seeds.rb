@@ -24,6 +24,7 @@ subject_classes = [
 
 ]
 
+Organization
 mst_organizations_types = [
   ["HDO", "Head Office"],
   ["BRN", "Branch"],
