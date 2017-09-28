@@ -369,11 +369,12 @@ CompanyConfig.create sup_last_fsr_no: 0, inv_last_srn_no: 0, inv_last_srr_no: 0,
   ContactPersonPrimaryType.create_with(name: t[1]).find_or_create_by(code: t[0])
 end
 
+
 [
   ["Accounts"],
   ["Procument"]
 ].each do |t|
-  OrganizationContactPersonType.create_with(name: t[0]).find_or_create_by(name: t[0])
+  ContactPersonType.create_with(name: t[0]).find_or_create_by(name: t[0])
 end
 
 [
