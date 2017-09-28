@@ -24,6 +24,13 @@ subject_classes = [
 
 ]
 
+mst_organizations_types = [
+  ["HDO", "Head Office"],
+  ["BRN", "Branch"],
+  ["DPT", "Department"],
+  ["STR", "Store"]
+].each{ |t| OrganizationType.create_with(name: t[1]).find_or_create_by(code: t[0])}
+
 organization = Organization.create_with(name: "VS Information Systems", short_name: "VS Information Sys", code: "123456", web_site: "http://www.vsis.com", description: "VSIS is product owner of this application", type_id: 1).find_or_create_by(refers: "CRM_OWNER")
 organization.account.create(credit_allow: false)
 user = User.find_by_email("admin@inovacrm.com")
@@ -217,13 +224,6 @@ mst_spt_action = [
   ["86", "Create PO for Part", "", false],
   ["87", "Close the ticket", "", false],
 ].each{ |t| TaskAction.create_with(action_description: t[1], task_id: t[2], hide: t[3]).find_or_create_by(action_no: t[0]) }
-
-mst_organizations_types = [
-  ["HDO", "Head Office"],
-  ["BRN", "Branch"],
-  ["DPT", "Department"],
-  ["STR", "Store"]
-].each{ |t| OrganizationType.create_with(name: t[1]).find_or_create_by(code: t[0])}
 
 Product
 mst_spt_pop_status = [
