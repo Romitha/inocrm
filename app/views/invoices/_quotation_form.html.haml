@@ -16,6 +16,8 @@
           = f.input :customer_contacted, wrapper: :append
           = f.input :canceled, wrapper: :append
           = f.input :note, label: "Quotation Note"
+          = f.input :remark, label: "Quotation Remark", input_html: {value: nil}
+          = simple_format f.object.remark
           .panel.panel-info
             .panel-body
               = f.association :organization, collection: ([Organization.owner] + Organization.owner.members)
