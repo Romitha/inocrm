@@ -29,73 +29,79 @@
           %strong Balance Qty to be issued:
           #balance_to_be_issued{data: {fixed: (@srn_item.quantity.to_f - @srn_item.gin_items.sum(:issued_quantity))}}= @srn_item.quantity.to_f - @srn_item.gin_items.sum(:issued_quantity)
       %hr
-      = form_tag batch_or_serial_for_gin_admins_inventories_path(batch_or_serial: "issued_qty", serial_flag: "true"), method: :get, remote: true do
-        = hidden_field_tag :srn_item_id, params[:srn_item_id]
-        - counter = 0
-        .col-md-12= submit_tag "Issue", class: "btn btn-sm btn-success btn-primary pull-right"
+
+      #serial_gin_search_initialization
         .row
-          .col-md-2
-            %strong NO
-          .col-md-2
-            %strong GRN No
-          .col-md-2
-            %strong Serial No
-          .col-md-2
-            %strong CT No
-          .col-md-2
-            %strong Condition
-          .col-md-2
-            %strong Select
+          .col-md-11= text_field_tag "search", nil, placeholder: "Search", class: "form-control search"
+          .col-md-1= submit_tag "Search", class: "btn btn-success btn-sm pull-right"
 
-        %hr
-        - @grn_items.each do |grn_item|
-          - grn_item.grn_serial_items.where(remaining: true).each_with_index do |grn_serial_item, index1|
-            - if grn_serial_item.inventory_serial_item.inv_status_id == InventorySerialItemStatus.find_by_code("AV").id
+        = form_tag batch_or_serial_for_gin_admins_inventories_path(batch_or_serial: "issued_qty", serial_flag: "true"), method: :get, remote: true do
+          = hidden_field_tag :srn_item_id, params[:srn_item_id]
+          - counter = 0
+          = submit_tag "Issue", class: "btn btn-sm btn-primary small_scale_margin-top3"
+          .row
+            .col-md-2
+              %strong NO
+            .col-md-2
+              %strong GRN No
+            .col-md-2
+              %strong Serial No
+            .col-md-2
+              %strong CT No
+            .col-md-2
+              %strong Condition
+            .col-md-2
+              %strong Select
 
-              - content_for :serial_more, flush: true do
-                %ul
-                  %li
-                    %strong Status:
-                    #{grn_serial_item.inventory_serial_item.inventory_serial_item_status.name}
-                  %li
-                    %strong Parts to be completed:
-                    #{boolean_in_word grn_serial_item.inventory_serial_item.parts_not_completed, "Yes", "No"}
-                  %li
-                    %strong Scavenge:
-                    #{boolean_in_word grn_serial_item.inventory_serial_item.scavenge, "Yes", "No"}
-                    / = grn_serial_item.inventory_serial_item.scavenge
-                  %li
-                    %strong Damaged:
-                    #{boolean_in_word grn_serial_item.inventory_serial_item.damage, "Yes", "No"}
-                  %li
-                    %strong Used:
-                    #{boolean_in_word grn_serial_item.inventory_serial_item.used, "Yes", "No"}
-                  %li
-                    %strong Repaired:
-                    #{boolean_in_word grn_serial_item.inventory_serial_item.repaired, "Yes", "No"}
-                  %li
-                    %strong Reserved:
-                    #{boolean_in_word grn_serial_item.inventory_serial_item.reserved, "Yes", "No"}
-                  %li
-                    %strong Manufactured Date:
-                    #{grn_serial_item.inventory_serial_item.manufatured_date.try :strftime, INOCRM_CONFIG["short_date_format"]}
-                  %li
-                    %strong Expiry Date:
-                    #{grn_serial_item.inventory_serial_item.expiry_date.try :strftime, INOCRM_CONFIG["short_date_format"]}
-                  %li
-                    %strong Remarks:
-                    #{grn_serial_item.inventory_serial_item.remarks}
-              .row
-                .col-md-2{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Item code:", "data-content"=> yield(:serial_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }
-                  = counter += 1
-                .col-md-2{title: grn_item.created_at.try(:strftime, INOCRM_CONFIG["short_date_format"])}
-                  = grn_item.grn.grn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_grn_no_format"])
-                .col-md-2
-                  = grn_serial_item.inventory_serial_item.try(:serial_no).to_s.rjust(5, INOCRM_CONFIG["inventory_serial_no_format"])
-                .col-md-2
-                  = grn_serial_item.inventory_serial_item.try(:ct_no)
-                .col-md-2
-                  = grn_serial_item.inventory_serial_item.try(:product_condition).try(:condition)
-                .col-md-2
-                  = check_box_tag "grn_serial_item_ids[]", grn_serial_item.id, false, onchange: "Inventories.selected_quantity(this); return false;"
-              %hr
+          %hr
+          .serial_gin_list
+            - @grn_items.each do |grn_item|
+              - grn_item.grn_serial_items.where(remaining: true).each_with_index do |grn_serial_item, index1|
+                - if grn_serial_item.inventory_serial_item.inv_status_id == InventorySerialItemStatus.find_by_code("AV").id
+
+                  - content_for :serial_more, flush: true do
+                    %ul
+                      %li
+                        %strong Status:
+                        #{grn_serial_item.inventory_serial_item.inventory_serial_item_status.name}
+                      %li
+                        %strong Parts to be completed:
+                        #{boolean_in_word grn_serial_item.inventory_serial_item.parts_not_completed, "Yes", "No"}
+                      %li
+                        %strong Scavenge:
+                        #{boolean_in_word grn_serial_item.inventory_serial_item.scavenge, "Yes", "No"}
+                      %li
+                        %strong Damaged:
+                        #{boolean_in_word grn_serial_item.inventory_serial_item.damage, "Yes", "No"}
+                      %li
+                        %strong Used:
+                        #{boolean_in_word grn_serial_item.inventory_serial_item.used, "Yes", "No"}
+                      %li
+                        %strong Repaired:
+                        #{boolean_in_word grn_serial_item.inventory_serial_item.repaired, "Yes", "No"}
+                      %li
+                        %strong Reserved:
+                        #{boolean_in_word grn_serial_item.inventory_serial_item.reserved, "Yes", "No"}
+                      %li
+                        %strong Manufactured Date:
+                        #{grn_serial_item.inventory_serial_item.manufatured_date.try :strftime, INOCRM_CONFIG["short_date_format"]}
+                      %li
+                        %strong Expiry Date:
+                        #{grn_serial_item.inventory_serial_item.expiry_date.try :strftime, INOCRM_CONFIG["short_date_format"]}
+                      %li
+                        %strong Remarks:
+                        #{grn_serial_item.inventory_serial_item.remarks}
+                  .row
+                    .col-md-2{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Item code:", "data-content"=> yield(:serial_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }
+                      = counter += 1
+                    .col-md-2{title: grn_item.created_at.try(:strftime, INOCRM_CONFIG["short_date_format"])}
+                      .grn_no= grn_item.grn.grn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_grn_no_format"])
+                    .col-md-2
+                      .serial_no= grn_serial_item.inventory_serial_item.try(:serial_no).to_s.rjust(5, INOCRM_CONFIG["inventory_serial_no_format"])
+                    .col-md-2
+                      = grn_serial_item.inventory_serial_item.try(:ct_no)
+                    .col-md-2
+                      = grn_serial_item.inventory_serial_item.try(:product_condition).try(:condition)
+                    .col-md-2
+                      = check_box_tag "grn_serial_item_ids[]", grn_serial_item.id, false, onchange: "Inventories.selected_quantity(this); return false;"
+                  %hr

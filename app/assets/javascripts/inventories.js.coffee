@@ -1011,3 +1011,11 @@ window.Inventories =
       selected = $("#ticket_invoice_print_organization_id :selected").text()
       filtered_option = $(bank_list_html).filter("optgroup[label='#{selected}']").html()
       bank_list.empty().html(filtered_option).trigger('chosen:updated')
+
+  live_search_serial_gin: ->
+    options = {
+      valueNames: [ 'grn_no', 'serial_no' ]
+      listClass: "serial_gin_list"
+      searchClass: "search"
+    }
+    organizationList = new List('serial_gin_search_initialization', options)
