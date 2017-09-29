@@ -41,6 +41,33 @@ class TicketInvoice < ActiveRecord::Base
     currency.code
   end
 
+  before_save do |ticket_invoice|
+   if ticket_invoice.persisted? and ticket_invoice.remark_changed? and ticket_invoice.remark.present?
+      ticket_invoice_remark = "#{ticket_invoice.remark} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(ticket_invoice.current_user_id).try(:full_name)}</span><br/>#{ticket_invoice.remark_was}"
+    elsif ticket_invoice.new_record?
+      ticket_invoice_remark = "#{ticket_invoice.remark} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(ticket_invoice.current_user_id).try(:full_name)}</span>"
+    else
+      ticket_invoice_remark = ticket_invoice.remark_was
+    end
+    ticket_invoice.remark = ticket_invoice_remark
+  end
+
+  has_many :dyna_columns, as: :resourceable, autosave: true
+
+  # has_many :invoices, foreign_key: "customer_id"
+
+  [:current_user_id].each do |dyna_method|
+    define_method(dyna_method) do
+      dyna_columns.find_by_data_key(dyna_method).try(:data_value)
+    end
+
+    define_method("#{dyna_method}=") do |value|
+      data = dyna_columns.find_or_initialize_by(data_key: dyna_method)
+      data.data_value = (value.class==Fixnum ? value : value.strip)
+      data.save
+    end
+  end
+
 end
 
 class TicketInvoiceAdvancePayment < ActiveRecord::Base
@@ -114,6 +141,33 @@ class CustomerQuotation < ActiveRecord::Base
   has_many :customer_quotation_estimations
   has_many :ticket_estimations, through: :customer_quotation_estimations
   has_many :act_quotations
+
+  before_save do |customer_quotation|
+   if customer_quotation.persisted? and customer_quotation.remark_changed? and customer_quotation.remark.present?
+      customer_quotation_remark = "#{customer_quotation.remark} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(customer_quotation.current_user_id).try(:full_name)}</span><br/>#{customer_quotation.remark_was}"
+    elsif customer_quotation.new_record?
+      customer_quotation_remark = "#{customer_quotation.remark} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(customer_quotation.current_user_id).try(:full_name)}</span>"
+    else
+      customer_quotation_remark = customer_quotation.remark_was
+    end
+    customer_quotation.remark = customer_quotation_remark
+  end
+
+  has_many :dyna_columns, as: :resourceable, autosave: true
+
+  # has_many :invoices, foreign_key: "customer_id"
+
+  [:current_user_id].each do |dyna_method|
+    define_method(dyna_method) do
+      dyna_columns.find_by_data_key(dyna_method).try(:data_value)
+    end
+
+    define_method("#{dyna_method}=") do |value|
+      data = dyna_columns.find_or_initialize_by(data_key: dyna_method)
+      data.data_value = (value.class==Fixnum ? value : value.strip)
+      data.save
+    end
+  end
 
 end
 
