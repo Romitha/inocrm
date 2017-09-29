@@ -470,7 +470,11 @@ Rails.application.routes.draw do
 
       end
     end
-    resources :dashboards
+    resources :dashboards do
+      collection do
+        post "reindex_all_model"
+      end
+    end
     resources :sales
 
     resources :roles do

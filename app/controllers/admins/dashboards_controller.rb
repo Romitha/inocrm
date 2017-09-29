@@ -39,5 +39,14 @@ module Admins
       render json: response
 
     end
+
+    def reindex_all_model
+      [['Grn'], ['GrnItem', 'Grn'], ['GrnBatch', 'Grn'], ['InventoryProduct', 'Inventory'], ['InventorySerialItem', 'Inventory'], ['InventoryBatch', 'Inventory'], ['Product'], ['Ticket', 'ContactNumber'], ['InventoryPrn', 'Inventory'], ['InventoryPo', 'Inventory'], ["Gin"], ['Organization'], ['SoPo', 'TicketSparePart'], [ "Srr", "Srr" ], [ "Srn", "Srn" ], ["ContactPerson1", "User"], ["ContactPerson2", "User"], ["ReportPerson", "User"], ["Customer", "User"]].each do |models|
+        system "rake environment tire:deep_import CLASS=#{models.first} PCLASS=#{models.last} FORCE=true"
+      end
+      respond_to do |format|
+        format.html {redirect_to admins_root_url, notice: 'Index is successfully completed. System is ready to continious run...'}
+      end
+    end
   end
 end
