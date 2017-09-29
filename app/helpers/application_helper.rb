@@ -258,7 +258,7 @@ module ApplicationHelper
     delivery_period = quotation.delivery_period
     warranty = quotation.warranty
     if quotation.canceled?
-      canceled = "CANCELED"
+      canceled = "CANCELED" 
     else
       canceled = ""
     end
@@ -467,7 +467,7 @@ module ApplicationHelper
     invoice_note = invoice.note
     created_by = invoice.created_by_ch_eng.full_name
     if invoice.canceled?
-      canceled = "CANCELED"
+      canceled = "CANCELED" 
     else
       canceled = ""
     end
