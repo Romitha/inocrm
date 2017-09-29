@@ -482,6 +482,8 @@ class InvoicesController < ApplicationController
     checked_estimations = TicketEstimation.where id: checked_estimation_ids
     engineer_id = params[:engineer_id]
     action_no = 0
+    quotation_cancel_remark = ""
+
     if params[:action_type] == "create"
       @customer_quotation = CustomerQuotation.new customer_quotation_params
       @customer_quotation.customer_quotation_no = CompanyConfig.first.increase_sup_last_quotation_no
@@ -499,10 +501,13 @@ class InvoicesController < ApplicationController
           @customer_quotation.ticket_estimations.each do |estimation|
             estimation.update quoted: estimation.quoted.to_i-1
           end
+          quotation_cancel_remark = "Canceled."
         end
       else
         if !@customer_quotation.canceled_was
           @customer_quotation.ticket_estimations.each { |estimation| estimation.update quoted: (estimation.quoted.to_i-1) }
+        else
+          quotation_cancel_remark = "Reverted the Cancellation."
         end
 
         TicketEstimation.where(id: checked_estimation_ids).each { |estimation| estimation.update quoted: (estimation.quoted.to_i+1) }
@@ -510,11 +515,13 @@ class InvoicesController < ApplicationController
       # Action (84) Edit Quotation, DB.spt_act_quotation.
       action_no = 84
     end
+    @customer_quotation.current_user_id = current_user.id
     @customer_quotation.ticket_id = @ticket.id
     @customer_quotation.currency_id = @ticket.ticket_currency.id
     @customer_quotation.created_by = current_user.id
     @customer_quotation.save
     @customer_quotation.ticket_estimation_ids = checked_estimation_ids
+    @customer_quotation.update remark: quotation_cancel_remark  if quotation_cancel_remark != ""
 
     #Action 81/84
     user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(action_no).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id)
@@ -534,6 +541,8 @@ class InvoicesController < ApplicationController
 
     action_no = 0
     canceled = false
+    invoice_cancel_remark = ""
+
     if params[:action_type] == "create"
       @invoice = TicketInvoice.new invoice_params
       @invoice.invoice_no = CompanyConfig.first.increase_sup_last_invoice_no
@@ -559,6 +568,7 @@ class InvoicesController < ApplicationController
           @invoice.act_terminate_job_payments.update_all "invoiced = invoiced-1"
 
           canceled = true
+          invoice_cancel_remark = "Canceled."
         end
 
         if @ticket.final_invoice_id == @invoice.id
@@ -569,6 +579,9 @@ class InvoicesController < ApplicationController
         if !@invoice.canceled_was
           @invoice.ticket_estimations.update_all "invoiced = invoiced-1"
           @invoice.act_terminate_job_payments.update_all "invoiced = invoiced-1"
+        else
+          invoice_cancel_remark = "Reverted the Cancellation."
+
         end
 
         TicketEstimation.where(id: checked_estimation_ids).update_all "invoiced = invoiced+1"
@@ -579,6 +592,8 @@ class InvoicesController < ApplicationController
       # Action (83) Edit TicketInvoice, DB.spt_act_print_invoice.
       action_no = 83
     end
+
+    @invoice.current_user_id = current_user.id
     @invoice.ticket = @ticket
     @invoice.created_by = current_user.id
     @invoice.print_count += @invoice.print_count.to_i
@@ -619,6 +634,7 @@ class InvoicesController < ApplicationController
     @invoice.ticket_invoice_total_taxes.build template_total_tax
 
     @invoice.save
+    @invoice.update remark: invoice_cancel_remark  if invoice_cancel_remark != ""
     @ticket.update final_amount_to_be_paid: (canceled ? nil : ([@invoice.net_total_amount.to_f] << 0).max), cus_payment_completed: !(canceled or (([@invoice.net_total_amount.to_f] << 0).max > 0))
 
     @ticket.update final_invoice_id: @invoice.id if !@invoice.canceled
