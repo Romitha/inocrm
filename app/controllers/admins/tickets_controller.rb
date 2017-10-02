@@ -567,7 +567,7 @@ module Admins
             @brands_and_category = ProductBrand.new
             flash[:notice] = "Successfully saved!"
           else
-            flash[:error] = "Unable to save"
+            flash[:error] = "Unable to save #{@brands_and_category.errors.full_messages.join(', ')}"
           end
 
         elsif params[:edit_more]
