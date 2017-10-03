@@ -478,6 +478,7 @@ class TicketEngineer < ActiveRecord::Base
   belongs_to :user
   belongs_to :user_ticket_action, foreign_key: :created_action_id
   belongs_to :ticket_workflow_process, foreign_key: :workflow_process_id
+  belongs_to :sbu_engineer, foreign_key: :sbu_id
 
   has_many :ticket_owners, class_name: "Ticket", foreign_key: :owner_engineer_id
   has_many :user_assign_ticket_actions, foreign_key: :assign_to_engineer_id

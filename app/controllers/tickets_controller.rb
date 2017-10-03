@@ -1247,7 +1247,7 @@ class TicketsController < ApplicationController
       if @ticket.ticket_engineers.any?
         user_assign_ticket_action.assign_to = @ticket.ticket_engineers.first.user_id
         user_assign_ticket_action.assign_to_engineer_id = @ticket.ticket_engineers.first.id
-        user_assign_ticket_action.sbu_id = @ticket.ticket_engineers.first.sbu_id
+        user_assign_ticket_action.sbu_id = @ticket.ticket_engineers.first.sbu_engineer.try(:sbu).(:id)
       end
 
       user_ticket_action.assign_regional_support_centers.reload unless !user_assign_ticket_action.recorrection and user_assign_ticket_action.regional_support_center_job
