@@ -450,37 +450,12 @@ class Sbu < ActiveRecord::Base
   accepts_nested_attributes_for :sbu_engineers, allow_destroy: true
   has_many :engineers, through: :sbu_engineers, source: :engineer
   has_many :user_assign_ticket_actions
+  has_many :user_assign_ticket_actions, foreign_key: :sbu_id
 
   def is_used_anywhere?
     TaskAction
     sbu_engineers.any? or engineers.any? or user_assign_ticket_actions.any?
   end
-
-# class Pet < ActiveRecord::Base
-#   has_many :dogs
-# end
-
-# class Dog < ActiveRecord::Base
-#   belongs_to :pet
-#   has_many :breeds
-# end
-
-# class Breed < ActiveRecord::Base
-#   belongs_to :dog
-# end
-
-# In this case, we've chosen to namespace the Dog::Breed, because we want to access Dog.find(123).breeds as a nice and convenient association.
-
-# Now, if we now want to create a has_many :dog_breeds, :through => :dogs association on Pet, we suddenly have a problem. Rails won't be able to find a :dog_breeds association on Dog, so Rails can't possibly know which Dog association you want to use. Enter :source:
-
-# class Pet < ActiveRecord::Base
-#   has_many :dogs
-#   has_many :dog_breeds, :through => :dogs, :source => :breeds
-# end
-
-# With :source, we're telling Rails to look for an association called :breeds on the Dog model (as that's the model used for :dogs), and use that.
-
-  has_many :user_assign_ticket_actions, foreign_key: :sbu_id
 end
 
 class Feedback < ActiveRecord::Base

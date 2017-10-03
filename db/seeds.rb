@@ -270,16 +270,16 @@ spare_part_status_action = [
 
 workflow_mappings = [
   ["SPPT", "add_ticket", "/tickets/edit-ticket", "SPT_SC_1", "Support - Edit Ticket", "h1", "ticket_id,supp_hd_user",nil],
-  ["SPPT", "assign_ticket", "/tickets/assign-ticket", "SPT_SC_2", "Support - Assign Ticket", "h1", "ticket_id, engineer_id", nil],
+  ["SPPT", "assign_ticket", "/tickets/assign-ticket", "SPT_SC_2", "Support - Assign Ticket", "h1", "ticket_id,engineer_id", nil],
   ["SPPT", "resolution", "/tickets/resolution", "SPT_SC_3", "Support - Resolution", "h1", "ticket_id,supp_engr_user,engineer_id", nil],
   ["SPPT", "pop_approval", "/tickets/pop-approval", "SPT_SC_5", "Support - POP Approval", "h1", "ticket_id", nil],
   ["SPPT", "edit_serial_no", "/tickets/edit_serial", "SPT_SC_6", "Support - Edit Serial No", "h1", "ticket_id", nil],
   ["SPPT", "job_estimate", "/tickets/estimate_job", "SPT_SC_7", "Support - Job Estimation", "h1", "ticket_id", nil],
-  ["SPPT", "mark_delivered_colleted", "/tickets/deliver_unit", "SPT_SC_8", "Support - Unit To Be Delivered or Colleced for External Repaire", "h1", "ticket_id,deliver_unit_id", nil],
+  ["SPPT", "mark_delivered_colleted", "/tickets/deliver_unit", "SPT_SC_8", "Support - Unit To Be Delivered or Collected for External Repaire", "h1", "ticket_id,deliver_unit_id", nil],
   ["SPPT_MFR_PART_REQUEST", "order_part", "/tickets/order_manufacture_parts", "SPT_SC_9", "Support - Order Part (Manufacture)", "h3", "ticket_id,request_spare_part_id,supp_engr_user", nil],
   ["SPPT_MFR_PART_REQUEST", "receive_Issue_part", "/tickets/received_and_issued", "SPT_SC_10", "Support - Receive or Issue Part (Manufacture)", "h3", "ticket_id,request_spare_part_id,supp_engr_user", nil],
   ["SPPT_MFR_PART_RETURN", "return_manufacture_part", "/tickets/return_manufacture_part", "SPT_SC_11", "Support - Return Part (Manufacture)", "h3", "ticket_id,request_spare_part_id,supp_engr_user", nil],
-  ["SPPT", "extend_warranty", "/tickets/extend_warranty", "SPT_SC_12", "Support - Extend Warranty", "h1", "ticket_id", nil],
+  ["SPPT_MFR_PART_REQUEST", "extend_warranty", "/tickets/extend_warranty", "SPT_SC_12", "Support - Extend Warranty", "h1", "ticket_id", nil],
   ["SPPT", "approve_close_ticket", "/tickets/check_fsr", "SPT_SC_13", "Support - Ticket Close Approval", "h1", "ticket_id,supp_engr_user", nil],
   ["SPPT", "customer_feedback", "/tickets/customer_feedback", "SPT_SC_14", "Support - Customer Feedback", "h1", "ticket_id,supp_engr_user", nil],
   ["SPPT_PART_ESTIMATE", "part_estimate", "/tickets/estimate_the_part_internal", "SPT_SC_15", "Support - Part Estimation", "h2", "ticket_id,part_estimation_id,supp_engr_user", nil],
@@ -287,17 +287,18 @@ workflow_mappings = [
   ["SPPT_STORE_PART_REQUEST", "issue_store_part", "/tickets/issue_store_part", "SPT_SC_17", "Support - Issue Part (Store)", "h2", "ticket_id,request_spare_part_id,request_onloan_spare_part_id,onloan_request,supp_engr_user", nil],
   ["SPPT_STORE_PART_RETURN", "return_store_part", "/tickets/return_store_part", "SPT_SC_18", "Support - Return Part (Store)", "h2", "ticket_id,request_spare_part_id,request_onloan_spare_part_id,onloan_request", nil],
   ["SPPT", "approve_job_estimate", "/tickets/job_below_margin_estimate_approval", "SPT_SC_19", "Support - Job Estimation Approval", "h1", "ticket_id", nil],
-  ["SPPT_PART_ESTIMATE", "approve_part_estimate", "/tickets/low_margin_estimate_parts_approval", "SPT_SC_20", "Support - Part Estimation Approval (Store)", "h2", "ticket_id,part_estimation_id,supp_engr_user", nil],
+  ["SPPT_PART_ESTIMATE", "approve_part_estimate", "/tickets/low_margin_estimate_parts_approval", "SPT_SC_20", "Support - Part Estimation Approval", "h2", "ticket_id,part_estimation_id,supp_engr_user", nil],
   ["SPPT_MFR_PART_RETURN", "bundle_return_part", "/tickets/bundle_return_part", "SPT_SC_21", "Support - Returned Parts To Be Bundled", nil, "ticket_id,request_spare_part_id", nil],
   ["SPPT_MFR_PART_RETURN", "bundle_deliver", "/tickets/deliver_bundle", "SPT_SC_22", "Support - Return Parts Bundles To Be Delivered", nil, "bundle_id", nil],
   ["SPPT_MFR_PART_REQUEST", "collect_part", "/tickets/collect_parts", "SPT_SC_23", "Support - Manufacture parts to be collected", nil, "ticket_id,request_spare_part_id", nil],
   ["SPPT", "issue_customer_terminate", "/tickets/customer_feedback", "SPT_SC_24", "Support - Terminated Job Return To Custormer", "h1", "ticket_id", nil],
-  ["SPPT", "customer_advance_payment", "/tickets/customer_advance_payment", "SPT_SC_27", "", nil, nil, nil],
+  ["SPPT", "customer_advance_payment", "/tickets/customer_advance_payment", "SPT_SC_27", "Support - Customer Advance Payment", "h1", "ticket_id", nil],
   ["SPPT", "quality_control", "/tickets/quality_control", "SPT_SC_28", "Support - Quality Control", "h1", "ticket_id,supp_engr_user", nil],
   ["SPPT", "invoice_advance_payment", "/tickets/invoice_advance_payment", "SPT_SC_29", "Support - Advance Payment Invoice", "h1", "ticket_id,advance_payment_estimation_id", nil],
   ["SPPT_MFR_PART_RETURN", "close_event", "/tickets/close_event", "SPT_SC_30", "Support - Close Event", "h1", "ticket_id,request_spare_part_id", nil],
   ["SPPT", "approve_foc", "/tickets/terminate_job_foc_approval", "SPT_SC_31", "Support - FOC Approval", "h1", "ticket_id", nil],
-  ["SPPT", "final_job_estimate", "/tickets/estimate_job_final", "SPT_SC_33", "Support - Final Job Estimation", "h1", "ticket_id", nil]
+  ["SPPT", "final_job_estimate", "/tickets/estimate_job_final", "SPT_SC_33", "Support - Final Job Estimation", "h1", "ticket_id", nil],
+  ["SPPT_MFR_PART_REQUEST", "approve_manufacture_part", "/tickets/approve_manufacture_parts", "SPT_SC_37", "Support - Approve Part (Manufacture)", "h3", "ticket_id,request_spare_part_id,supp_engr_user", nil]
 ].each{ |t| WorkflowMapping.create_with(process_name: t[0], url: t[2], screen: t[3], first_header_title: t[4],second_header_title_name: t[5], input_variables: t[6], output_variables: t[7]).find_or_create_by(task_name: t[1])}
 
 # 75  Low Margin Part Estimation Approval Suport Manager / Asst. mng  20  spt_act_job_estimate

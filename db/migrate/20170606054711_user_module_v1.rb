@@ -200,7 +200,7 @@ class UserModuleV1 < ActiveRecord::Migration
       { table: :spt_contract, reference_table: :mst_spt_contract_payment_type, name: "fk_spt_contract_mst_spt_contract_payment_type1", column: :payment_type_id },
       { table: :spt_contract, reference_table: :users, name: "fk_spt_contract_users2", column: :last_doc_generated_by },
       { table: :mst_spt_product_brand_cost, reference_table: :users, name: "fk_mst_spt_sla_users10", column: :updated_by },
-      { table: :mst_spt_product_brand_cost, reference_table: :mst_spt_product_brand, name: "fk_mst_spt_product_brand_cost_rate_mst_spt_product_brand1", column: :currency_id },
+      { table: :mst_spt_product_brand_cost, reference_table: :mst_spt_product_brand, name: "fk_mst_spt_product_brand_cost_rate_mst_spt_product_brand1", column: :product_brand_id },
       { table: :spt_ticket_total_cost, reference_table: :spt_ticket, name: "fk_spt_ticket_cost_spt_ticket1", column: :ticket_id },
       { table: :spt_ticket_fsr_support_eng, reference_table: :spt_ticket_fsr, name: "fk_spt_ticket_fsr_support_eng_spt_ticket_fsr1", column: :fsr_id },
       { table: :spt_ticket_fsr_support_eng, reference_table: :spt_ticket_engineer_support, name: "fk_spt_ticket_fsr_support_eng_spt_ticket_engineer_support1", column: :engineer_support_id },
