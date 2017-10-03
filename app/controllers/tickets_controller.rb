@@ -1102,21 +1102,20 @@ class TicketsController < ApplicationController
     case params[:type]
     when "sbu"
       @sbus = if params[:filter_sbu].present?
-        # sbu = Sbu.find params[:filter_sbu]
-        sbu_engineer = SbuEngineer.find params[:filter_sbu]
-        sbu = sbu_engineer.sbu
+        sbu = Sbu.find params[:filter_sbu]
+        # sbu_engineer = SbuEngineer.find params[:filter_sbu]
+        # sbu = sbu_engineer.sbu
 
         @sbus = sbu.engineers.map { |s| {id: s.id, name: s.full_name} }
 
       else
-        # @sbus = Sbu.all.map { |s| {id: s.id, name: s.sbu} }
-        @sbus = SbuEngineer.all.map { |s| {id: s.id, name: s.sbu.try(:sbu)} }
+        @sbus = Sbu.all.map { |s| {id: s.id, name: s.sbu} }
+        # @sbus = SbuEngineer.all.map { |s| {id: s.id, name: s.sbu.try(:sbu)} }
 
       end
 
     when "ticket"
       @ticketEngs = if params[:ticket_id].present?
-        # Ticket.find(params[:ticket_id]).ticket_engineers.map { |u| { name: u.user.full_name, image: u.user.avatar.url, sub_engs: u.sub_engineers.map { |e| { name: e.user.full_name, image: e.user.avatar.url } } } }
         ticket_engineers = Ticket.find(params[:ticket_id]).ticket_engineers
         re_assigned_ticket_engineer = ticket_engineers.find_by_id(params[:re_assigned]) if params[:re_assigned].present? and params[:re_assigned] != "false"
 
@@ -1163,8 +1162,11 @@ class TicketsController < ApplicationController
     @ticket_workfow = @ticket.ticket_workflow_processes.where process_id: assign_eng_params["process_id"]
     re_assignment = @ticket.ticket_engineers.any? { |en| en.workflow_process_id == @ticket_workfow.first.try(:id)  }
 
+    sbu_engineer = SbuEngineer.where(sbu_id: assign_eng_params["sbu_id"], engineer_id: assign_eng_params["assign_to"]).first
 
-    ticket_engineer = @ticket.ticket_engineers.build(user_id: assign_eng_params["assign_to"], re_open_index: @ticket.re_open_count, re_assignment: re_assignment, sbu_id: assign_eng_params["sbu_id"], task_description: assign_eng_params["task_description"], channel_no: current_channel_no, order_no: (current_order_no+1))
+    # ticket_engineer = @ticket.ticket_engineers.build(user_id: assign_eng_params["assign_to"], re_open_index: @ticket.re_open_count, re_assignment: re_assignment, sbu_id: assign_eng_params["sbu_id"], task_description: assign_eng_params["task_description"], channel_no: current_channel_no, order_no: (current_order_no+1))
+
+    ticket_engineer = @ticket.ticket_engineers.build(user_id: assign_eng_params["assign_to"], re_open_index: @ticket.re_open_count, re_assignment: re_assignment, sbu_id: sbu_engineer.try(:id), task_description: assign_eng_params["task_description"], channel_no: current_channel_no, order_no: (current_order_no+1))
 
     assign_eng_params["subEng"].to_a.each do |sub_eng|
       ticket_engineer.ticket_support_engineers.build( user_id: sub_eng["user_id"] )
