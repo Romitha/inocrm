@@ -65,21 +65,24 @@
 
   - content_for :content_for_sheet do
     %font{:color => "blue"}
-      %strong Imported Excel Sheet Results
+      %strong Imported Excel Sheet Results - Records Count: #{(@sheet.last_row - 1)}
       %br
     = initiate_table table_type: "table-bordered" do
       = table_header ["No", "Serial No", "CT No"]
       = multi_table_body do
         - (@sheet.last_row - 1).times.each_with_index do |r, index|
           = multi_table_row [index+1]+@sheet.row(r+2)
+    - num = @available_serial_items.to_a.count
     .row
       .col-md-4
         .panel.panel-danger
-          .panel-heading Duplicate Serial Numbers
+          .panel-heading Duplicate Serial Numbers : #{num}
           .panel-body
             %font{:color => "red"}
               %strong
                 - @available_serial_items.to_a.each_with_index do |is, index|
+                  =index+1
+                  = ")"
                   =is.serial_no
                   %br
 

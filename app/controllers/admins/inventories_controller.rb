@@ -347,6 +347,7 @@ module Admins
       Product
       Currency
       InventorySerialItem
+
       if params[:edit]
         if params[:product_id]
           @inventory_product_form = InventoryProduct.find params[:product_id]
@@ -380,9 +381,19 @@ module Admins
         end
         # @inventory_product_all = InventoryProduct.order(updated_at: :desc).select{ |i| i.persisted? }
         @inventory_product_all = Kaminari.paginate_array(InventoryProduct.order( updated_at: :desc)).page(params[:page]).per(10)
+      end
+    end
 
+    def search_product_invenoties
+
+      if params[:search].present?
+        refined_inventory_product = params[:search_inventory].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
 
       end
+      params[:query] = refined_inventory_product
+      @inventory_product_list = InventoryProduct.search(params)
+
+      render "admins/inventories/product"
     end
 
     def product_condition
@@ -813,7 +824,7 @@ module Admins
         serial_nos = []
         Rails.cache.fetch([:bulk_serial, @time_store.to_i ]) { (@sheet.last_row - 1).times.map{|m| serial_nos << @sheet.row(m+2)[0]; @sheet.row(m+2)}.compact }
 
-        @available_serial_items = InventorySerialItem.joins(:inventory).where(serial_no: serial_nos, inv_inventory: {store_id: session[:store_id]}).select(:serial_no).distinct() 
+        @available_serial_items = InventorySerialItem.joins(:inventory).where(serial_no: serial_nos, inv_inventory: {store_id: session[:store_id]}).select(:serial_no).distinct()
 
 
         File.delete(File.join(Rails.root, "public", "uploads", uploaded_io.original_filename))
