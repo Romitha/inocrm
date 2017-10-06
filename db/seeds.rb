@@ -224,6 +224,9 @@ mst_spt_action = [
   ["85", "Estimate Job Final Update", "3", false],
   ["86", "Create PO for Part", "", false],
   ["87", "Close the ticket", "", false],
+  ["88", 'Finish the Job', '3', false],
+  ["89", 'Approve Spare Part from Manufacture', '16', false],
+  ["90", 'Reject Spare Part from Manufacture', '16', false]
 ].each{ |t| TaskAction.create_with(action_description: t[1], task_id: t[2], hide: t[3]).find_or_create_by(action_no: t[0]) }
 
 Product
