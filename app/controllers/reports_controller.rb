@@ -61,10 +61,12 @@ class ReportsController < ApplicationController
       ticket_estimation = ticket_quotation_estimation.ticket_estimation
 
       total_advance_amount += ticket_estimation.approval_required ? ticket_estimation.approved_adv_pmnt_amount.to_f : ticket_estimation.advance_payment_amount.to_f
-
+      if quotation.print_currency.try(:code) != quotation.currency.try(:code)
+        total_advance_amount *= exchange_rate
+      end
       ticket_estimation.ticket_estimation_externals.each do |estimation_external|
         unit_price = ticket_estimation.approval_required ? estimation_external.approved_estimated_price.to_f : estimation_external.estimated_price.to_f
-        if not (quotation.print_currency.try(:code) == quotation.currency.try(:code))
+        if quotation.print_currency.try(:code) != quotation.currency.try(:code)
           unit_price *= exchange_rate
         end
         repeat_data_hash = {}
@@ -79,7 +81,7 @@ class ReportsController < ApplicationController
 
         total_amount += unit_price
 
-        repeat_data_hash[:currency] = ticket_estimation.currency.code
+        repeat_data_hash[:currency] = (quotation.print_currency.try(:code) || ticket_estimation.currency.code)
 
         repeat_data << repeat_data_hash
 
@@ -87,7 +89,7 @@ class ReportsController < ApplicationController
           repeat_data_hash = {}
 
           unit_price = ticket_estimation.approval_required ? ticket_estimation_external_tax.approved_tax_amount.to_f : ticket_estimation_external_tax.estimated_tax_amount.to_f
-          if not (quotation.print_currency.try(:code) == quotation.currency.try(:code))
+          if quotation.print_currency.try(:code) != quotation.currency.try(:code)
             unit_price *= exchange_rate
           end
           row_count += 1
@@ -100,7 +102,7 @@ class ReportsController < ApplicationController
 
           total_amount += unit_price
 
-          repeat_data_hash[:currency] = ticket_estimation.currency.code
+          repeat_data_hash[:currency] = (quotation.print_currency.try(:code) || ticket_estimation.currency.code)
 
           repeat_data << repeat_data_hash
 
@@ -114,8 +116,9 @@ class ReportsController < ApplicationController
         quantity = ( ( estimation_part.ticket_spare_part.ticket_spare_part_store or estimation_part.ticket_spare_part.ticket_spare_part_non_stock ).try(:approved_quantity) or ( estimation_part.ticket_spare_part.ticket_spare_part_manufacture or estimation_part.ticket_spare_part.ticket_spare_part_store or estimation_part.ticket_spare_part.ticket_spare_part_non_stock ).try(:requested_quantity) )
 
         unit_price = (quantity and quantity.to_f != 0) ? total_price/quantity.to_f : 0
-        if not (quotation.print_currency.try(:code) == quotation.currency.try(:code))
+          if quotation.print_currency.try(:code) != quotation.currency.try(:code)
           unit_price *= exchange_rate
+          total_price *= exchange_rate
         end
         repeat_data_hash = {}
 
@@ -132,14 +135,14 @@ class ReportsController < ApplicationController
 
         total_amount += total_price
 
-        repeat_data_hash[:currency] = ticket_estimation.currency.code
+        repeat_data_hash[:currency] = (quotation.print_currency.try(:code) || ticket_estimation.currency.code)
 
         repeat_data << repeat_data_hash
 
         estimation_part.ticket_estimation_part_taxes.each do |ticket_estimation_part_tax|
 
           unit_price = ticket_estimation.approval_required ? ticket_estimation_part_tax.approved_tax_amount.to_f : ticket_estimation_part_tax.estimated_tax_amount.to_f
-          if not (quotation.print_currency.try(:code) == quotation.currency.try(:code))
+          if quotation.print_currency.try(:code) != quotation.currency.try(:code)
             unit_price *= exchange_rate
           end
           repeat_data_hash = {}
@@ -155,7 +158,7 @@ class ReportsController < ApplicationController
 
           total_amount += unit_price
 
-          repeat_data_hash[:currency] = ticket_estimation.currency.code
+          repeat_data_hash[:currency] = (quotation.print_currency.try(:code) || ticket_estimation.currency.code)
 
           repeat_data << repeat_data_hash
 
@@ -167,7 +170,7 @@ class ReportsController < ApplicationController
         repeat_data_hash = {}
 
         unit_price = ticket_estimation.approval_required ? ticket_estimation_additional.approved_estimated_price.to_f : ticket_estimation_additional.estimated_price.to_f
-        if not (quotation.print_currency.try(:code) == quotation.currency.try(:code))
+        if quotation.print_currency.try(:code) != quotation.currency.try(:code)
           unit_price *= exchange_rate
         end
         row_count += 1
@@ -180,7 +183,7 @@ class ReportsController < ApplicationController
         repeat_data_hash[:totalprice] = view_context.standard_currency_format(unit_price)
         total_amount += unit_price
 
-        repeat_data_hash[:currency] = ticket_estimation.currency.code
+        repeat_data_hash[:currency] = (quotation.print_currency.try(:code) || ticket_estimation.currency.code)
 
         repeat_data << repeat_data_hash
 
@@ -188,7 +191,7 @@ class ReportsController < ApplicationController
           repeat_data_hash = {}
 
           unit_price = ticket_estimation.approval_required ? ticket_estimation_additional_tax.approved_tax_amount.to_f : ticket_estimation_additional_tax.estimated_tax_amount.to_f
-          if not (quotation.print_currency.try(:code) == quotation.currency.try(:code))
+          if quotation.print_currency.try(:code) != quotation.currency.try(:code)
             unit_price *= exchange_rate
           end
           row_count += 1
@@ -199,7 +202,7 @@ class ReportsController < ApplicationController
           repeat_data_hash[:totalprice] = view_context.standard_currency_format(unit_price)
           total_amount += unit_price
 
-          repeat_data_hash[:currency] = ticket_estimation.currency.code
+          repeat_data_hash[:currency] = (quotation.print_currency.try(:code) || ticket_estimation.currency.code)
 
           repeat_data << repeat_data_hash
         end

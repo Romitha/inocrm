@@ -123,12 +123,12 @@
               %td
                 = (ob[:quantity] and ob[:quantity].to_f)
               %td.col-xs-2.text-right
-                = ob[:unit_price]
                 - if ob[:unit_price].present?
                   =ob[:currency]
+                = ob[:unit_price]
               %td.col-xs-2.text-right
-                = ob[:totalprice]
                 = ob[:currency]
+                = ob[:totalprice]
 
       %table.table.table-striped
         %tbody
@@ -137,16 +137,16 @@
             %td{colspan: 3}
             %th.text-right Total Amount:
             %td.text-right{colspan: 2}
-              = number_with_precision print_object[:total_amount], precision: 2
               = print_object[:currency]
+              = number_with_precision print_object[:total_amount], precision: 2
 
           %tr
             %th
             %td{colspan: 3}
             %th.text-right Minimum Advanced Required:
             %td.text-right{colspan: 2}
-              = number_with_precision print_object[:total_advance_amount], precision: 2
               = print_object[:currency]
+              = number_with_precision print_object[:total_advance_amount], precision: 2
 
           %tr
             %th
