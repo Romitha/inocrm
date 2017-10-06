@@ -485,9 +485,11 @@ class InvoicesController < ApplicationController
     quotation_cancel_remark = ""
 
     if params[:action_type] == "create"
+
       @customer_quotation = CustomerQuotation.new customer_quotation_params
       @customer_quotation.customer_quotation_no = CompanyConfig.first.increase_sup_last_quotation_no
       @customer_quotation.engineer_id = engineer_id
+
 
       checked_estimations.each { |estimation| estimation.update quoted: (estimation.quoted.to_i+1) }
       # Action (81) Create Quotation, DB.spt_act_quotation.
@@ -495,6 +497,15 @@ class InvoicesController < ApplicationController
     elsif params[:action_type] == "update"
       @customer_quotation = CustomerQuotation.find params[:quotation_id]
       @customer_quotation.attributes = customer_quotation_params
+
+      if @customer_quotation.print_organization_id_changed? && !@customer_quotation.print_organization_id.present?
+        @customer_quotation.print_organization_id = @customer_quotation.print_organization_id_was
+
+      if @customer_quotation.print_currency_id_changed? && !@customer_quotation.print_currency_id.present?
+        @customer_quotation.print_currency_id = @customer_quotation.print_currency_id_was
+
+      if @customer_quotation.print_exchange_rate_changed? && !@customer_quotation.print_exchange_rate.present?
+        @customer_quotation.print_exchange_rate = @customer_quotation.print_exchange_rate_was
 
       if @customer_quotation.canceled
         if !@customer_quotation.canceled_was

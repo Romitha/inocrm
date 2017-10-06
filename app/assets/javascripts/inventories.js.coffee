@@ -989,6 +989,7 @@ window.Inventories =
       terminate_reason.val("")
 
   get_bank_details_quotation:->
+    $("#customer_quotation_print_organization_id").val("");
     bank_list = $("#customer_quotation_print_bank_detail_id")
     bank_list_html = bank_list.html()
     console.log bank_list_html
@@ -1007,6 +1008,7 @@ window.Inventories =
         $("#customer_quotation_print_exchange_rate").val("1")
       else
         $("#customer_quotation_print_exchange_rate").prop("disabled", true)
+        $("#customer_quotation_print_exchange_rate").val("")
 
   get_bank_details_invoice:->
     bank_list = $("#ticket_invoice_print_bank_detail_id")
