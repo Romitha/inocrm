@@ -1000,6 +1000,14 @@ window.Inventories =
       filtered_option = $(bank_list_html).filter("optgroup[label='#{selected}']").html()
       bank_list.empty().html(filtered_option).trigger('chosen:updated')
 
+  currency_change:->
+    $("#customer_quotation_print_currency_id").change ->
+      if $("#customer_quotation_print_currency_id").val() != ""
+        $("#customer_quotation_print_exchange_rate").prop("disabled", false)
+        $("#customer_quotation_print_exchange_rate").val("1")
+      else
+        $("#customer_quotation_print_exchange_rate").prop("disabled", true)
+
   get_bank_details_invoice:->
     bank_list = $("#ticket_invoice_print_bank_detail_id")
     bank_list_html = bank_list.html()

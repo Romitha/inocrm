@@ -23,7 +23,7 @@
               = f.association :organization, collection: ([Organization.owner] + Organization.owner.members)
               = f.association :organization_bank_detail, label_method: :bank_name, collection: ([Organization.owner] + Organization.owner.members), as: :grouped_select, group_method: :organization_bank_details, input_html: {class: "chosen-select"}
               = f.association :print_currency, label_method: :code, label: "Currency"
-              = f.input :print_exchange_rate, label: "Exchange Rate"
+              = f.input :print_exchange_rate, label: "Exchange Rate", disabled: true
         .col-md-9
           #paginate_estimation
             %table.table.table-responsive.table-condensed.table-bordered

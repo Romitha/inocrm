@@ -45,8 +45,11 @@ class ReportsController < ApplicationController
     canceled = quotation.canceled
 
     print_organization_bank = quotation.organization_bank_detail.try(:bank_name)
-    exchange_rate = quotation.print_exchange_rate.to_f
-
+    if quotation.print_exchange_rate.present?
+      exchange_rate = quotation.print_exchange_rate.to_f
+    else
+      exchange_rate = 1
+    end
     row_count = 0
     total_amount = 0
     total_advance_amount = 0

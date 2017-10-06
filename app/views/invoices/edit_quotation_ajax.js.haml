@@ -2,6 +2,6 @@ $("#quotation_wrapper").html("#{j render 'quotation_form', quotation: @quotation
 
 Tickets.remove_ajax_loader();
 Invoices.quotation_change();
-Inventories.get_bank_details_quotation()
-
+Inventories.get_bank_details_quotation();
+Inventories.currency_change();
 $(".validate_form_q").validate();
