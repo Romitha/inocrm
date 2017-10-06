@@ -44,7 +44,7 @@ class ReportsController < ApplicationController
     quotation_note = quotation.note
     canceled = quotation.canceled
 
-    print_organization_bank = quotation.organization_bank_detail.bank_name
+    print_organization_bank = quotation.organization_bank_detail.try(:bank_name)
     exchange_rate = quotation.print_exchange_rate.to_f
 
     row_count = 0
