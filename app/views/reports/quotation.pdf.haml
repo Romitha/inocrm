@@ -7,33 +7,35 @@
   .watermark
     %h4.watermark-text Canceled
 
-.report_pdf.container.watermark_container
-  .row
-    .col-xs-2
-      = wicked_pdf_image_tag (print_object1.owner.logo || "organization_image.png"), class: "img-responsive"
-    .col-xs-7.text-center
-      %span12
-        %h3{:style => "text-decoration: underline;"} Proforma Invoice
-      %span12
-        %strong=print_object1.owner.name
-      %br/
-      %span12
-        %strong=print_object1.owner.address
-      %br/
-      %span12
-        %strong=print_object1.owner.website
-      %br/
-      %span12
-        %table.col-xs-4.col-xs-offset-4
-          %tbody
-            - print_object1.owner.contactDetails.each do |contact_detail|
-              %tr
-                %th.text-right
-                  .col-xs-offset-1
-                    = contact_detail[:category]
-                %td
-                  .col-xs-offset-1
-                    = contact_detail[:value]
+  .report_pdf.container.watermark_container
+- else
+  .report_pdf.container
+.row
+  .col-xs-2
+    = wicked_pdf_image_tag (print_object1.owner.logo || "organization_image.png"), class: "img-responsive"
+  .col-xs-7.text-center
+    %span12
+      %h3{:style => "text-decoration: underline;"} Proforma Invoice
+    %span12
+      %strong=print_object1.owner.name
+    %br/
+    %span12
+      %strong=print_object1.owner.address
+    %br/
+    %span12
+      %strong=print_object1.owner.website
+    %br/
+    %span12
+      %table.col-xs-4.col-xs-offset-4
+        %tbody
+          - print_object1.owner.contactDetails.each do |contact_detail|
+            %tr
+              %th.text-right
+                .col-xs-offset-1
+                  = contact_detail[:category]
+              %td
+                .col-xs-offset-1
+                  = contact_detail[:value]
 
   %br/
   .row
@@ -151,6 +153,14 @@
             %td{colspan: 3}
             %th.text-right Payment Term:
             %td.text-right{colspan: 2}= print_object[:payment_term]
+
+          %tr
+            %th
+            %td{colspan: 3}
+            %th.text-right Bank Name:
+            %td.text-right{colspan: 2}= print_object[:print_organization_bank]
+
+
 
     .col-xs-10
       %table.table-condensed

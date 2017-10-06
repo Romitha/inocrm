@@ -42,11 +42,15 @@ class ReportsController < ApplicationController
 
     delivery_period = quotation.delivery_period
     quotation_note = quotation.note
+    canceled = quotation.canceled
+
+    print_organization_bank = quotation.organization_bank_detail.bank_name
+    exchange_rate = quotation.print_exchange_rate.to_f
 
     row_count = 0
     total_amount = 0
     total_advance_amount = 0
-    currency = quotation.currency.try(:code)
+    currency = (quotation.print_currency.try(:code) || quotation.currency.try(:code))
     payment_term = quotation.payment_term.try(:name)
     warranty = quotation.warranty
     created_by = User.cached_find_by_id(quotation.created_by).try(:full_name)
@@ -60,7 +64,9 @@ class ReportsController < ApplicationController
 
       ticket_estimation.ticket_estimation_externals.each do |estimation_external|
         unit_price = ticket_estimation.approval_required ? estimation_external.approved_estimated_price.to_f : estimation_external.estimated_price.to_f
-
+        if not (quotation.print_currency.try(:code) == quotation.currency.try(:code))
+          unit_price *= exchange_rate
+        end
         repeat_data_hash = {}
 
         row_count += 1
@@ -81,7 +87,9 @@ class ReportsController < ApplicationController
           repeat_data_hash = {}
 
           unit_price = ticket_estimation.approval_required ? ticket_estimation_external_tax.approved_tax_amount.to_f : ticket_estimation_external_tax.estimated_tax_amount.to_f
-
+          if not (quotation.print_currency.try(:code) == quotation.currency.try(:code))
+            unit_price *= exchange_rate
+          end
           row_count += 1
           repeat_data_hash[:item_index] = row_count
           # repeat_data_hash[:item_code] = index
@@ -106,7 +114,9 @@ class ReportsController < ApplicationController
         quantity = ( ( estimation_part.ticket_spare_part.ticket_spare_part_store or estimation_part.ticket_spare_part.ticket_spare_part_non_stock ).try(:approved_quantity) or ( estimation_part.ticket_spare_part.ticket_spare_part_manufacture or estimation_part.ticket_spare_part.ticket_spare_part_store or estimation_part.ticket_spare_part.ticket_spare_part_non_stock ).try(:requested_quantity) )
 
         unit_price = (quantity and quantity.to_f != 0) ? total_price/quantity.to_f : 0
-
+        if not (quotation.print_currency.try(:code) == quotation.currency.try(:code))
+          unit_price *= exchange_rate
+        end
         repeat_data_hash = {}
 
         row_count += 1
@@ -129,7 +139,9 @@ class ReportsController < ApplicationController
         estimation_part.ticket_estimation_part_taxes.each do |ticket_estimation_part_tax|
 
           unit_price = ticket_estimation.approval_required ? ticket_estimation_part_tax.approved_tax_amount.to_f : ticket_estimation_part_tax.estimated_tax_amount.to_f
-
+          if not (quotation.print_currency.try(:code) == quotation.currency.try(:code))
+            unit_price *= exchange_rate
+          end
           repeat_data_hash = {}
 
           row_count += 1
@@ -155,7 +167,9 @@ class ReportsController < ApplicationController
         repeat_data_hash = {}
 
         unit_price = ticket_estimation.approval_required ? ticket_estimation_additional.approved_estimated_price.to_f : ticket_estimation_additional.estimated_price.to_f
-
+        if not (quotation.print_currency.try(:code) == quotation.currency.try(:code))
+          unit_price *= exchange_rate
+        end
         row_count += 1
         repeat_data_hash[:item_index] = row_count
 
@@ -174,7 +188,9 @@ class ReportsController < ApplicationController
           repeat_data_hash = {}
 
           unit_price = ticket_estimation.approval_required ? ticket_estimation_additional_tax.approved_tax_amount.to_f : ticket_estimation_additional_tax.estimated_tax_amount.to_f
-
+          if not (quotation.print_currency.try(:code) == quotation.currency.try(:code))
+            unit_price *= exchange_rate
+          end
           row_count += 1
           repeat_data_hash[:item_index] = row_count
 
@@ -192,7 +208,7 @@ class ReportsController < ApplicationController
 
     end
 
-    owner = Organization.owner
+    owner = (quotation.organization || Organization.owner)
 
     @print_object = {
       owner: {
@@ -205,6 +221,7 @@ class ReportsController < ApplicationController
       },
 
       duplicate_d: "#{'D' if ticket.ticket_complete_print_count > 0}",
+      canceled: canceled,
       quotation_no: quotation_no,
       product_brand: product_brand,
       model_no: model_no,
@@ -226,6 +243,10 @@ class ReportsController < ApplicationController
       warranty: warranty,
       note: quotation_note,
       created_by: created_by,
+      print_organization_bank: print_organization_bank,
+
+
+
       row_count: row_count,
       total_amount: view_context.standard_currency_format(total_amount),
       total_advance_amount: view_context.standard_currency_format(total_advance_amount),
