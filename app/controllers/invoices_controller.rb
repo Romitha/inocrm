@@ -498,14 +498,11 @@ class InvoicesController < ApplicationController
       @customer_quotation = CustomerQuotation.find params[:quotation_id]
       @customer_quotation.attributes = customer_quotation_params
 
-      if @customer_quotation.print_organization_id_changed? && !@customer_quotation.print_organization_id.present?
-        @customer_quotation.print_organization_id = @customer_quotation.print_organization_id_was
-
-      if @customer_quotation.print_currency_id_changed? && !@customer_quotation.print_currency_id.present?
-        @customer_quotation.print_currency_id = @customer_quotation.print_currency_id_was
-
-      if @customer_quotation.print_exchange_rate_changed? && !@customer_quotation.print_exchange_rate.present?
-        @customer_quotation.print_exchange_rate = @customer_quotation.print_exchange_rate_was
+      ['print_organization_id', 'print_currency_id', 'print_exchange_rate'].each do |attr|
+        if @customer_quotation.send('#{attr}_changed?') && !@customer_quotation.send('#{attr}').present?
+          @customer_quotation.send('#{attr}') = @customer_quotation.send('#{attr}_was')
+        end
+      end
 
       if @customer_quotation.canceled
         if !@customer_quotation.canceled_was
