@@ -1,6 +1,6 @@
 %h3 Inventory Location
 
-= simple_nested_form_for @inventory_rack, url: location_admins_inventories_path, html: { class: "validate_form" }, method: :post do |f|
+= simple_nested_form_for @inventory_rack, url: location_admins_inventories_path, html: { class: "validate_form" }, method: :post, multipart: true do |f|
   = hidden_field_tag :rack_id, f.object.id
   .panel.panel-primary
     .panel-heading
@@ -11,9 +11,9 @@
           = f.input :description, input_html: {rows: 1}
         .col-md-6
           = f.association :organization, collection: Organization.stores, label: "Store", include_blank: false
-        .col-md-6
-          = f.label "aisle_image"
-          = f.file_field :aisle_image, accept: 'image/png,image/gif,image/jpeg,application/pdf'
+        / .col-md-6
+        /   = f.label "aisle_image"
+        /   = f.file_field :aisle_image, accept: 'image/png,image/gif,image/jpeg,application/pdf'
         .col-md-6
           = f.input :created_by, as: :hidden, input_html: {value: current_user.id}
           = f.input :updated_by, as: :hidden, input_html: {value: current_user.id}
@@ -59,20 +59,6 @@
       .row{style: "margin-top:20px;"}
         .col-md-11
           = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_inventory_location", name: "#{params[:edit_more] ? 'update' : 'create'}"
-/ #accordion.panel-group
-/   - @inventory_all_rack.each_with_index do |rack, index|
-/     .panel.panel-primary
-/       .panel-heading
-/         %h3.panel-title
-/           %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
-/             #{index+1} Rack : #{rack.description}
-/           - unless rack.is_used_anywhere?
-/             = link_to delete_location_rack_admins_inventories_path(rack_id: rack.id),method: :delete, :data => { :confirm => 'Are you sure?' } do
-/               %span.glyphicon.glyphicon-trash
-
-/       .panel-collapse.collapse.in{:id => "#{index}"}
-/         .panel-body
-
 = collapse_wrapper collapse_id: "inventory_rack_list", labelledby: "inv_rack_labelledby" do
   - @inventory_all_rack.each_with_index do |rack, index|
     = collapse collapse_type: "primary", labelledby: "labelledby_#{rack.id}", header_content: "#{index+1} Rack : #{rack.description}", collapse_link: "invracklink_#{rack.id}", collapse_id: "inventory_rack_list" do
@@ -96,16 +82,6 @@
         .col-md-4
           = link_to "#", class: "inline_edit", data: {type: "select", source: Organization.all.collect{|organization| {value: organization.id, text: organization.name}}, resource: "inventory_rack", name: "location_id", url: location_admins_inventories_path(edit: true, rack_id: rack.id), "original-title" => "Update rack name"} do
             = rack.organization.name
-      .row.col-md-12
-        / - rack.inventory_shelfs.each do |shelf|
-        /   .panel.panel-danger
-        /     .panel-heading
-        /       %h3.panel-title
-        /         %span Shelf: #{shelf.description}
-        /         - unless shelf.is_used_anywhere?
-        /           = link_to delete_location_shelf_admins_inventories_path(shelf_id: shelf.id),method: :delete,  :data => { :confirm => 'Are you sure?' } do
-        /             %span.glyphicon.glyphicon-trash
-        /     .panel-body
 
         = collapse_wrapper collapse_id: "inventory_shelf_list", labelledby: "inv_shelf_labelledby" do
           - rack.inventory_shelfs.each do |shelf|

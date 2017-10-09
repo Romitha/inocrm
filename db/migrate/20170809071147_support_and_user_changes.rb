@@ -48,13 +48,13 @@ class SupportAndUserChanges < ActiveRecord::Migration
     add_column :spt_ticket_invoice, :print_organization_id, "INT UNSIGNED NULL"
     add_column :spt_ticket_invoice, :print_bank_detail_id, "INT UNSIGNED NULL"
     add_column :spt_ticket_invoice, :print_currency_id, "INT UNSIGNED NULL"
-    add_column :spt_ticket_invoice, :print_exchange_rate, :decimal, scale: 3, precision: 8
+    add_column :spt_ticket_invoice, :print_exchange_rate, :decimal, scale: 4, precision: 8
 
     add_column :spt_ticket_customer_quotation, :updated_by, "INT UNSIGNED NULL"
     add_column :spt_ticket_customer_quotation, :print_organization_id, "INT UNSIGNED NULL"
     add_column :spt_ticket_customer_quotation, :print_bank_detail_id, "INT UNSIGNED NULL"
     add_column :spt_ticket_customer_quotation, :print_currency_id, "INT UNSIGNED NULL"
-    add_column :spt_ticket_customer_quotation, :print_exchange_rate, :decimal, scale: 3, precision: 8
+    add_column :spt_ticket_customer_quotation, :print_exchange_rate, :decimal, scale: 4, precision: 8
     
     add_column :spt_contact_report_person, :organization_contact_person_id, "INT UNSIGNED NULL"
     
