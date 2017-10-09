@@ -990,6 +990,8 @@ window.Inventories =
 
   get_bank_details_quotation:->
     $("#customer_quotation_print_organization_id").val("");
+    $("#customer_quotation_print_currency_id").val("");
+    $("#customer_quotation_print_exchange_rate").val("");
     bank_list = $("#customer_quotation_print_bank_detail_id")
     bank_list_html = bank_list.html()
     console.log bank_list_html
@@ -1004,10 +1006,8 @@ window.Inventories =
   currency_change:->
     $("#customer_quotation_print_currency_id").change ->
       if $("#customer_quotation_print_currency_id").val() != ""
-        $("#customer_quotation_print_exchange_rate").prop("disabled", false)
         $("#customer_quotation_print_exchange_rate").val("1")
       else
-        $("#customer_quotation_print_exchange_rate").prop("disabled", true)
         $("#customer_quotation_print_exchange_rate").val("")
 
   get_bank_details_invoice:->

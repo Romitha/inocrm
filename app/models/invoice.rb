@@ -131,7 +131,7 @@ class CustomerQuotation < ActiveRecord::Base
   belongs_to :ticket
   belongs_to :payment_term
   belongs_to :currency
-  belongs_to :organization,-> { where(refers: "CRM_OWNER") }, foreign_key: :print_organization_id
+  belongs_to :organization, foreign_key: :print_organization_id
   belongs_to :organization_bank_detail, foreign_key: :print_bank_detail_id
   belongs_to :print_currency, class_name: "Currency"
 
