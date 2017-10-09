@@ -384,8 +384,9 @@ module Admins
       end
     end
 
-    def search_product_invenoties
-
+    def search_product_inventories
+      Inventory
+      Product
       if params[:search].present?
         refined_inventory_product = params[:search_inventory].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
 

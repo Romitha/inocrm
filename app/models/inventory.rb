@@ -420,7 +420,7 @@ class InventoryProduct < ActiveRecord::Base
           methods: [:formatted_srn_no, :srn_id, :store_id],
         },
         inventory_product_info: {
-          only: [:need_serial, :need_batch],
+          only: [:product_id, :need_serial, :need_batch],
           methods: [:currency_type],
           include: {
             manufacture: {
@@ -492,6 +492,7 @@ end
 
 class InventoryProductInfo < ActiveRecord::Base
   self.table_name = "mst_inv_product_info"
+  self.primary_key = 'product_id'
 
   mount_uploader :picture, ProductInfoUploader
 

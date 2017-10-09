@@ -425,7 +425,7 @@ Rails.application.routes.draw do
         get 'srr'
         post 'create_srr'
 
-        get "search_product_invenoties"
+        get "search_product_inventories"
 
         delete "delete_product_category"
         delete "delete_admin_brands_and_category"
