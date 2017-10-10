@@ -989,8 +989,10 @@ module Admins
             product_id: @srr_item.product_id,
             recieved_quantity: srr_item_source.returned_quantity,
             remaining_quantity: srr_item_source.returned_quantity,
-            current_unit_cost: @grn_item.unit_cost,
-            currency_id: @srr_item.currency_id,
+            reserved_quantity: 0,
+            damage_quantity: 0,
+            current_unit_cost: srr_item_source.unit_cost,
+            currency_id: srr_item_source.currency_id,
           }
 
           if params[:next].present?
@@ -1003,44 +1005,53 @@ module Admins
 
               end
 
+              # For Serial Item
               if params[:inventory_serial_item] and params[:inventory_serial_item][srr_item_source_id].present?
-                grn_serial_item = srr_item_source.gin_source.grn_serial_item
+                issued_grn_serial_item = srr_item_source.gin_source.grn_serial_item
 
-                grn_serial_item.inventory_serial_item.attributes = params[:inventory_serial_item][srr_item_source_id].permit(:scavenge, :parts_not_completed, :damage, :used, :repaired, :reserved)
+                issued_grn_serial_item.inventory_serial_item.attributes = params[:inventory_serial_item][srr_item_source_id].permit(:scavenge, :parts_not_completed, :damage, :used, :repaired, :reserved)
+
+                issued_grn_serial_item.inventory_serial_item.inv_status_id = InventorySerialItemStatus.find_by_code('AV').id unless issued_grn_serial_item.inventory_serial_item.damage
 
                 Rails.cache.write([:extra_objects, srr_item_source.id, session[:grn_arrived_time].to_i], {inventory_serial_item: srr_item_source.gin_source.grn_serial_item.inventory_serial_item } )
 
               end
 
               if params[:damage_request_source].present?
-                damage_request = if params[:damage_request].present?
-                  DamageRequest.new params[:damage_request][srr_item_source_id].permit(:damage_reason_id)
-                else
-                  DamageRequest.new
+                if params[:damage_request].present?
+                  damage_request = Damage.new({
+                    store_id: @srr_item.srr.store_id,
+                    product_id: @srr_item.product_id,
+                    grn_batch_id: nil,
+                    grn_serial_item_id: nil,
+                    grn_serial_part_id: nil,
+                    spare_part: @grn_item.inventory_product.spare_part,
+                    unit_cost: @grn_item.unit_cost,
+                    currency_id: @grn_item.currency_id,
+                    srr_item_id: @srr_item.id,
+                    product_condition_id: nil,
+                    repair_quantity: 0,
+                    spare_quantity: 0,
+                    disposal_quantity: 0,
+                    disposed_quantity: 0
+                  })
+
+                  damage_request.grn_item = @grn_item
+                  damage_request.attributes = params[:damage_request][srr_item_source_id].permit(:damage_reason_id)
+                  damage_request.attributes = params[:damage_request_source][srr_item_source_id].permit(:quantity)
+
+                  @grn_item.damage_quantity = damage_request.quantity
+
                 end
 
-                damage_request.attributes = {
-                  store_id: @srr_item.srr.store_id,
-                  product_id: @srr_item.product_id,
-                  created_by: current_user.id,
-                }
+                if damage_request.present?
 
-                damage_request_source = damage_request.damage_request_sources.build params[:damage_request_source][srr_item_source_id].permit(:requested_quantity)
+                  extra_objects = (Rails.cache.fetch([:extra_objects, srr_item_source.id, session[:grn_arrived_time].to_i] ) || {} )
 
-                damage_request_source.grn_item = @grn_item
+                  extra_objects[:damage_request] = damage_request
+                  Rails.cache.write([:extra_objects, srr_item_source.id, session[:grn_arrived_time].to_i], extra_objects )
 
-                damage_request_source.attributes = {
-                  unit_cost: @grn_item.unit_cost,
-                  currency_id: @grn_item.currency_id,
-
-                }
-
-                extra_objects = (Rails.cache.fetch([:extra_objects, srr_item_source.id, session[:grn_arrived_time].to_i] ) || {} )
-
-                extra_objects[:damage_request] = damage_request
-                Rails.cache.write([:extra_objects, srr_item_source.id, session[:grn_arrived_time].to_i], extra_objects )
-
-                # damage_request.save
+                end
 
               end
 
@@ -1216,15 +1227,18 @@ module Admins
 
         inventory = srr_item_source.srr_item.inventory_product.inventories.find_by_store_id(srr_item_source.srr_item.srr.store_id)
         inventory.increment! :stock_quantity, grn_item.recieved_quantity
-        inventory.increment! :available_quantity, grn_item.recieved_quantity
+        inventory.increment! :available_quantity, (grn_item.recieved_quantity - grn_item.damage_quantity)
 
         grn_item.grn_item_current_unit_cost_histories.build created_by: current_user.id, current_unit_cost: grn_item.current_unit_cost
-
-        Rails.cache.delete([ :extra_objects, srr_item_source_id, session[:grn_arrived_time].to_i ] )
 
         srr_item_source.srr_item.update closed: (srr_item_source.srr_item.quantity.to_f <= srr_item_source.srr_item.srr_item_sources.sum(:returned_quantity).to_f )
 
         grn_item.save!
+
+        if grn_item.inventory_product.product_type == "Batch"
+          grn_item.grn_batches.create( inventory_batch_id: srr_item_source.gin_source.grn_batch.inventory_batch_id, recieved_quantity: srr_item_source.returned_quantity, remaining_quantity: srr_item_source.returned_quantity )
+
+        end        
 
         if Rails.cache.fetch([ :extra_objects, srr_item_source_id, session[:grn_arrived_time].to_i ] ).present?
           inventory_serial_item = Rails.cache.fetch([ :extra_objects, srr_item_source_id, session[:grn_arrived_time].to_i ] )[:inventory_serial_item]
@@ -1237,14 +1251,27 @@ module Admins
           end
 
           damage_request = Rails.cache.fetch([ :extra_objects, srr_item_source_id, session[:grn_arrived_time].to_i ] )[:damage_request]
-          damage_request.save! if damage_request.present?
+
+          if damage_request.present?
+
+            damage_request.grn_item_id = @grn_item.id
+            damage_request.grn_batch_id = @grn_item.grn_batches.first.id, if @grn_item.grn_batches.first.present?
+            damage_request.grn_serial_item_id = @grn_item.grn_serial_items.first.id, if @grn_item.grn_serial_items.first.present?
+            damage_request.grn_serial_part_id = @grn_item.grn_serial_parts.first.id, if @grn_item.grn_serial_parts.first.present?
+            damage_request.product_condition_id = inventory_serial_item.product_condition_id if inventory_serial_item.present?
+
+            damage_request.save! 
+
+            @grn_item.grn_serial_items.first.update remaining: false if @grn_item.grn_serial_items.first.present?
+
+            @grn_item.grn_batches.first.update remaining_quantity: (@grn_item.grn_batches.first.remaining_quantity - damage_request.quantity) if @grn_item.grn_batches.first.present?  
+
+            @grn_item.grn_batches.first.update damage_quantity: damage_request.quantity if @grn_item.grn_batches.first.present?      
+          end
 
         end
 
-        if grn_item.inventory_product.product_type == "Batch"
-          grn_item.grn_batches.create( inventory_batch_id: srr_item_source.gin_source.grn_batch.inventory_batch_id, recieved_quantity: srr_item_source.returned_quantity, remaining_quantity: srr_item_source.returned_quantity )
-
-        end
+        Rails.cache.delete([ :extra_objects, srr_item_source_id, session[:grn_arrived_time].to_i ] )
 
       end
 
