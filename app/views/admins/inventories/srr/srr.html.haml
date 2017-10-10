@@ -41,6 +41,8 @@
           %dd= @gin.srn.created_at.strftime(INOCRM_CONFIG["short_date_format"])
           %dt Remarks:
           %dd= simple_format @gin.srn.remarks
+          %dt Requested quantity
+          %dd= @gin.srn.srn_items.sum(:quantity)
 
     %hr
     .row
@@ -59,6 +61,10 @@
           %dd= @gin.created_at.strftime(INOCRM_CONFIG["short_date_format"])
           %dt Remarks:
           %dd= simple_format @gin.remarks
+          %dt Issued quantity
+          %dd= @gin.gin_items.sum(:issued_quantity)
+          %dt Returned quantity
+          %dd= @gin.gin_items.sum(:returned_quantity)
     %hr
 
     = f.simple_fields_for :srr_items do |g|
