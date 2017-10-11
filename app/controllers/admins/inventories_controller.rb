@@ -1255,9 +1255,9 @@ module Admins
           if damage_request.present?
 
             damage_request.grn_item_id = @grn_item.id
-            damage_request.grn_batch_id = @grn_item.grn_batches.first.id, if @grn_item.grn_batches.first.present?
-            damage_request.grn_serial_item_id = @grn_item.grn_serial_items.first.id, if @grn_item.grn_serial_items.first.present?
-            damage_request.grn_serial_part_id = @grn_item.grn_serial_parts.first.id, if @grn_item.grn_serial_parts.first.present?
+            damage_request.grn_batch_id = @grn_item.grn_batches.first.id if @grn_item.grn_batches.first.present?
+            damage_request.grn_serial_item_id = @grn_item.grn_serial_items.first.id if @grn_item.grn_serial_items.first.present?
+            damage_request.grn_serial_part_id = @grn_item.grn_serial_parts.first.id if @grn_item.grn_serial_parts.first.present?
             damage_request.product_condition_id = inventory_serial_item.product_condition_id if inventory_serial_item.present?
 
             damage_request.save! 
