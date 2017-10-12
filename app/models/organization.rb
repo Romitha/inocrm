@@ -84,6 +84,9 @@ class Organization < ActiveRecord::Base
   has_many :organization_bank_details
   accepts_nested_attributes_for :organization_bank_details, allow_destroy: true
 
+  has_one :ancestor, class_name: 'OrganizationTreePath'
+  has_many :descendants, class_name: 'OrganizationTreePath', foreign_key: :descendant_id
+
   TYPES = %w(SUP CUS INDSUP INDCUS)
 
   scope :organization_suppliers, -> {where(category: TYPES[0])}
@@ -415,4 +418,12 @@ class OrganizationBankDetail < ActiveRecord::Base
 
   has_many :ticket_invoice
 
+end
+
+class OrganizationTreePath < ActiveRecord::Base
+  self.table_name = 'organization_treepath'
+
+  def flat_children
+
+  end
 end

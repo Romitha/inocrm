@@ -246,7 +246,7 @@ class GrnItem < ActiveRecord::Base
     end
     grn_item.remarks = grn_item_remarks
 
-    if grn_item.current_unit_cost_changed? or grn_item.remaining_quantity_changed?
+    if (grn_item.current_unit_cost_changed? or grn_item.remaining_quantity_changed?) and grn_item.persisted?
       Inventory.where(product_id: grn_item.product_id, store_id: grn_item.grn.store_id).pluck(:id).uniq{|i| i }.each do |id|
         Rails.cache.delete([:stock_cost, grn_item.product_id, id ])
 
@@ -428,32 +428,13 @@ class GrnBatch < ActiveRecord::Base
 
   end
 
-  # after_save do |grn_batch|
-  #   [:inventory_batch].each do |parent|
-  #     parent.to_s.classify.constantize.find(grn_batch.send(parent).id).update_index
-  #     puts "gone inside inventory batch"
-  #     # association is not detected when created through associational way. Example: grn_item.grn_batches.create ... not create index of inventory batch. Ref admins/inventories_controller:1134
-  #   end
-
-  #   puts "****************"
-  #   puts "Grn batch is saved. Expected this must loaded first."
-  #   puts "****************"
-
-  # end
-
   after_save :to_do_for_after_save
 
   def to_do_for_after_save
     [:inventory_batch].each do |parent|
       parent.to_s.classify.constantize.find(self.send(parent).id).update_index
-      puts "gone inside inventory batch"
-
+      
     end
-
-    puts "****************"
-    puts "Grn batch is saved. Expected this must loaded first."
-    puts "****************"
-
   end
 
   def batch_stock_cost
