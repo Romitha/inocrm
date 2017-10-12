@@ -1244,9 +1244,9 @@ module Admins
           inventory_serial_item = Rails.cache.fetch([ :extra_objects, srr_item_source_id, session[:grn_arrived_time].to_i ] )[:inventory_serial_item]
 
           if inventory_serial_item.present?
-            inventory_serial_item.save!
-
             grn_item.inventory_serial_items << inventory_serial_item
+
+            inventory_serial_item.save!
 
           end
 
@@ -1254,24 +1254,26 @@ module Admins
 
           if damage_request.present?
 
-            damage_request.grn_item_id = @grn_item.id
-            damage_request.grn_batch_id = @grn_item.grn_batches.first.id if @grn_item.grn_batches.first.present?
-            damage_request.grn_serial_item_id = @grn_item.grn_serial_items.first.id if @grn_item.grn_serial_items.first.present?
-            damage_request.grn_serial_part_id = @grn_item.grn_serial_parts.first.id if @grn_item.grn_serial_parts.first.present?
+            damage_request.grn_item_id = grn_item.id
+            damage_request.grn_batch_id = grn_item.grn_batches.first.id if grn_item.grn_batches.first.present?
+            damage_request.grn_serial_item_id = grn_item.grn_serial_items.first.id if grn_item.grn_serial_items.first.present?
+            damage_request.grn_serial_part_id = grn_item.grn_serial_parts.first.id if grn_item.grn_serial_parts.first.present?
             damage_request.product_condition_id = inventory_serial_item.product_condition_id if inventory_serial_item.present?
 
             damage_request.save! 
 
-            @grn_item.grn_serial_items.first.update remaining: false if @grn_item.grn_serial_items.first.present?
+            grn_item.grn_serial_items.first.update remaining: false if grn_item.grn_serial_items.first.present?
 
-            @grn_item.grn_batches.first.update remaining_quantity: (@grn_item.grn_batches.first.remaining_quantity - damage_request.quantity) if @grn_item.grn_batches.first.present?  
+            grn_item.grn_batches.first.update remaining_quantity: (grn_item.grn_batches.first.remaining_quantity - damage_request.quantity) if grn_item.grn_batches.first.present?  
 
-            @grn_item.grn_batches.first.update damage_quantity: damage_request.quantity if @grn_item.grn_batches.first.present?      
+            grn_item.grn_batches.first.update damage_quantity: damage_request.quantity if grn_item.grn_batches.first.present?      
           end
 
         end
 
         Rails.cache.delete([ :extra_objects, srr_item_source_id, session[:grn_arrived_time].to_i ] )
+
+        inventory.update_index
 
       end
 
