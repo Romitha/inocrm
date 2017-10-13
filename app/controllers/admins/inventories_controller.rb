@@ -995,10 +995,11 @@ module Admins
               end
 
               # For Serial Item
-              if params[:inventory_serial_item] and params[:inventory_serial_item][srr_item_source_id].present?
+              # if params[:inventory_serial_item] and params[:inventory_serial_item][srr_item_source_id].present?
+              if @grn_item.inventory_product.product_type == 'Serial'
                 issued_inventory_serial_item = srr_item_source.gin_source.grn_serial_item.inventory_serial_item
 
-                issued_inventory_serial_item.attributes = params[:inventory_serial_item][srr_item_source_id].permit(:scavenge, :parts_not_completed, :damage, :used, :repaired, :reserved)
+                issued_inventory_serial_item.attributes = params[:inventory_serial_item][srr_item_source_id].permit(:scavenge, :parts_not_completed, :damage, :used, :repaired, :reserved) if params[:inventory_serial_item].present?
 
                 issued_inventory_serial_item.inv_status_id = InventorySerialItemStatus.find_by_code('AV').id unless issued_inventory_serial_item.damage
 
@@ -1079,12 +1080,7 @@ module Admins
 
         end
 
-
-        # render js: "alert('Successfully saved.'); window.location.href='#{grn_admins_inventories_url}';"
-
       else
-        # render js: "alert('There must be atleast one item to be selected.. Please try again..'); Tickets.remove_ajax_loader();"
-
       end
       render "admins/inventories/grn/grn"
 
@@ -1100,7 +1096,7 @@ module Admins
       elsif @grn.srr.present?
         @grn.store_id = @grn.srr.store_id
 
-      else                          # Without PO Items
+      else # Without PO Items
         @grn.store_id = session[:store_id]
       end
       @grn.created_at = DateTime.now
@@ -1152,6 +1148,10 @@ module Admins
         Rails.cache.delete([ :serial_item, po_item.class.to_s.to_sym, po_item.id, session[:grn_arrived_time].to_i ])
 
         po_item.update closed: (po_item.quantity.to_f <= po_item.grn_items.sum(:recieved_quantity).to_f )
+
+        inventory.update_index
+        grn_item.inventory_product.update_index
+
       end
 
       if @grn.inventory_po.present?
@@ -1207,6 +1207,9 @@ module Admins
         #   item.update_index
         # end
 
+        inventory.update_index
+        grn_item.inventory_product.update_index
+
       end
 
       # With SRR Items
@@ -1220,15 +1223,17 @@ module Admins
         grn_item.srr_item = srr_item_source.srr_item
         grn_item.grn = @grn
 
-        inventory = srr_item_source.srr_item.inventory_product.inventories.find_by_store_id(srr_item_source.srr_item.srr.store_id)
-        inventory.increment! :stock_quantity, grn_item.recieved_quantity
-        inventory.increment! :available_quantity, (grn_item.recieved_quantity - grn_item.damage_quantity)
 
         grn_item.grn_item_current_unit_cost_histories.build created_by: current_user.id, current_unit_cost: grn_item.current_unit_cost
 
         srr_item_source.srr_item.update closed: (srr_item_source.srr_item.quantity.to_f <= srr_item_source.srr_item.srr_item_sources.sum(:returned_quantity).to_f )
 
         grn_item.save!
+
+        inventory = grn_item.inventory_product.inventories.find_by_store_id(@grn.store_id)
+        # inventory = srr_item_source.srr_item.inventory_product.inventories.find_by_store_id(srr_item_source.srr_item.srr.store_id)
+        inventory.increment! :stock_quantity, grn_item.recieved_quantity
+        inventory.increment! :available_quantity, (grn_item.recieved_quantity - grn_item.damage_quantity)
 
         # if grn_item.inventory_product.product_type == "Batch"
         #   grn_item.grn_batches.create( inventory_batch_id: srr_item_source.gin_source.grn_batch.inventory_batch_id, recieved_quantity: srr_item_source.returned_quantity, remaining_quantity: srr_item_source.returned_quantity )
@@ -1238,12 +1243,12 @@ module Admins
         if Rails.cache.fetch([ :extra_objects, srr_item_source_id, session[:grn_arrived_time].to_i ] ).present?
           inventory_serial_item = Rails.cache.fetch([ :extra_objects, srr_item_source_id, session[:grn_arrived_time].to_i ] )[:inventory_serial_item]
 
-          if inventory_serial_item.present?
-            # grn_item.inventory_serial_items << inventory_serial_item
+          # if inventory_serial_item.present?
+          #   # grn_item.inventory_serial_items << inventory_serial_item
 
-            inventory_serial_item.save!
+          #   inventory_serial_item.save!
 
-          end
+          # end
 
           damage_request = Rails.cache.fetch([ :extra_objects, srr_item_source_id, session[:grn_arrived_time].to_i ] )[:damage_request]
 
@@ -1264,11 +1269,14 @@ module Admins
             grn_item.grn_batches.first.update damage_quantity: damage_request.quantity if grn_item.grn_batches.first.present?      
           end
 
+          inventory_serial_item.update_index
+
         end
 
         Rails.cache.delete([ :extra_objects, srr_item_source_id, session[:grn_arrived_time].to_i ] )
 
         inventory.update_index
+        grn_item.inventory_product.update_index
 
       end
 
@@ -1276,7 +1284,7 @@ module Admins
         @grn.srr.update closed: @grn.srr.srr_items.all?{ |i| i.closed }
       end
 
-      Grn.find(@grn.id).update_index # It indexes all its children rather than @grn.update_index
+      @grn.update_index # It indexes all its children rather than @grn.update_index
 
       flash[:notice] = "Successfully saved."
 
@@ -1713,12 +1721,9 @@ module Admins
               tot_cost_price = grn_serial_item.grn_item.current_unit_cost.to_d + grn_serial_item.inventory_serial_item.inventory_serial_items_additional_costs.sum(:cost).to_d #inventory_serial_items_additional_costs
               gin_item.currency_id  = grn_serial_item.grn_item.currency_id
 
-              # iss_grn_serial_item_id  = grn_serial_item.id
-              # iss_grn_item_id  = grn_serial_item.grn_item_id
+              grn_serial_item.grn_item.decrement! :remaining_quantity, 1
 
               grn_serial_item.update remaining: false
-
-              grn_serial_item.grn_item.decrement! :remaining_quantity, 1
 
               grn_serial_item.inventory_serial_item.update inv_status_id: InventorySerialItemStatus.find_by_code("NA").id, updated_by: current_user.id
 
@@ -1809,11 +1814,13 @@ module Admins
         @gin.attributes = @gin.attributes.merge(created_by: current_user.id, gin_no: CompanyConfig.first.increase_inv_last_gin_no )#inv_gin
         @gin.save
         @gin.gin_items.each do |gin_item|
-          Rails.cache.fetch([ :gin, :grn_batches, gin_item.srn_item_id.to_i ]).to_a.each do |grn_batch|
-            grn_batch.save
-            grn_batch.inventory_batch.inventory_product.update_index
+          # Rails.cache.fetch([ :gin, :grn_batches, gin_item.srn_item_id.to_i ]).to_a.each do |grn_batch|
+          #   grn_batch.save
+          #   grn_batch.inventory_batch.inventory_product.update_index
 
-          end
+          # end
+          gin_item.inventory_product.update_index
+          @inventory.update_index if @inventory.present?
 
         end
 
@@ -2103,11 +2110,6 @@ module Admins
       # @srr.attributes = {}
       if @srr.srr_items.present?
         if @srr.save
-          # @srr.srr_items.each do |srr_item|
-          #   srr_item.update closed: (srr_item.quantity.to_f <= srr_item.srr_item_sources.sum(:returned_quantity))
-
-          # end
-
           @srr.srr_item_sources.each do |srr_item_source|
             srr_item_source.gin_source.increment! :returned_quantity, srr_item_source.returned_quantity.to_f
             srr_item_source.gin_source.gin_item.increment! :returned_quantity, srr_item_source.returned_quantity.to_f

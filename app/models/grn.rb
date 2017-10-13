@@ -220,20 +220,20 @@ class GrnItem < ActiveRecord::Base
   end
 
   def update_relation_index
-    [:inventory_serial_items, :inventory_batches].each do |children|
-      send(children).each do |child|
-        # child.update_index
-        # parent.to_s.classify.constantize.find(self.send(parent).id).update_index
-        children.to_s.classify.constantize.find(child.id).update_index
+    # [:inventory_serial_items, :inventory_batches].each do |children|
+    #   send(children).each do |child|
+    #     # child.update_index
+    #     # parent.to_s.classify.constantize.find(self.send(parent).id).update_index
+    #     children.to_s.classify.constantize.find(child.id).update_index
 
-      end
-    end
+    #   end
+    # end
 
-    [:inventory_product].each do |parent|
-      send(parent).update_index
-      # parent.to_s.classify.constantize.find(self.send(parent).id).update_index
+    # [:inventory_product].each do |parent|
+    #   send(parent).update_index
+    #   # parent.to_s.classify.constantize.find(self.send(parent).id).update_index
 
-    end
+    # end
   end
 
   before_save do |grn_item|
