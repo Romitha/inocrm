@@ -128,6 +128,8 @@ gem "factory_girl_rails"
 gem 'wicked_pdf'
 gem 'wkhtmltopdf-binary'
 
+gem 'backburner'
+
 
 # gem "em-http-request"
 

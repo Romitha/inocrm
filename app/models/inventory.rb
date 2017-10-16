@@ -762,7 +762,7 @@ class InventorySerialItem < ActiveRecord::Base
     Inventory
     Grn
     to_json(
-      only: [:serial_no, :ct_no, :damaged, :used, :scavenge, :repaired, :reserved, :parts_not_completed, :manufatured_date, :expiry_date, :remarks, :created_at],
+      only: [:id, :serial_no, :ct_no, :damaged, :used, :scavenge, :repaired, :reserved, :parts_not_completed, :manufatured_date, :expiry_date, :remarks, :created_at],
       methods: [:generated_serial_no],
       include: {
         inventory_product: {
@@ -783,11 +783,11 @@ class InventorySerialItem < ActiveRecord::Base
           only: [:id, :serial_item_id, :cost],
         },
         remaining_grn_items: {
-          only: [:current_unit_cost, :remaining_quantity, :created_at],
+          only: [:id, :current_unit_cost, :remaining_quantity, :created_at],
           include: {
             grn: {
+              only: [:id, :grn_no, :created_at, :store_id],
               methods: [:grn_no_format],
-              only: [:grn_no, :created_at, :store_id],
             },
             currency: {
               only: [:code, :symbol, :currency]

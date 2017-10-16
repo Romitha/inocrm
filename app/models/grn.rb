@@ -287,6 +287,7 @@ class GrnItem < ActiveRecord::Base
     indexes :inventory_product, type: "nested", include_in_parent: true
     indexes :inventory_serial_items, type: "nested", include_in_parent: true
     indexes :grn, type: "nested", include_in_parent: true
+    indexes :grn_serial_items, type: "nested", include_in_parent: true
     indexes :grn_item_current_unit_cost_histories, type: "nested", include_in_parent: true
   end
 
@@ -336,6 +337,9 @@ class GrnItem < ActiveRecord::Base
               only: [:name]
             }
           }
+        },
+        grn_serial_items: {
+          only: [:id, :remaining]
         },
         grn: {
           only: [:grn_no, :created_at, :store_id, :remarks],

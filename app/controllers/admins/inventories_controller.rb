@@ -1208,10 +1208,6 @@ module Admins
         Rails.cache.delete([:grn_item, inventory_product.id, session[:grn_arrived_time].to_i ] )
         Rails.cache.delete([ :serial_item, inventory_product.class.to_s.to_sym, inventory_product.id, session[:grn_arrived_time].to_i ])
 
-        # InventorySerialItem.where(id: grn_item.inventory_serial_item_ids).each do |item|
-        #   item.update_index
-        # end
-
         inventory.update_index
         InventoryProduct.find(grn_item.inventory_product.id).update_index # cached object doesnt have elasticsearch existance
 
@@ -1219,6 +1215,7 @@ module Admins
 
       # With SRR Items
       Rails.cache.fetch([:srr_item_source_ids, session[:grn_arrived_time].to_i]).to_a.each do | srr_item_source_id |
+
         srr_item_source = SrrItemSource.find srr_item_source_id
 
         grn_item = Rails.cache.fetch([:grn_item, srr_item_source_id, session[:grn_arrived_time].to_i])
@@ -1234,6 +1231,8 @@ module Admins
         srr_item_source.srr_item.update closed: (srr_item_source.srr_item.quantity.to_f <= srr_item_source.srr_item.srr_item_sources.sum(:returned_quantity).to_f )
 
         grn_item.save!
+        grn_item.grn_serial_items.offset(1).destroy_all
+        grn_item.update_index
 
         inventory = grn_item.inventory_product.inventories.find_by_store_id(@grn.store_id)
         # inventory = srr_item_source.srr_item.inventory_product.inventories.find_by_store_id(srr_item_source.srr_item.srr.store_id)
@@ -1247,13 +1246,6 @@ module Admins
 
         if Rails.cache.fetch([ :extra_objects, srr_item_source_id, session[:grn_arrived_time].to_i ] ).present?
           inventory_serial_item = Rails.cache.fetch([ :extra_objects, srr_item_source_id, session[:grn_arrived_time].to_i ] )[:inventory_serial_item]
-
-          # if inventory_serial_item.present?
-          #   # grn_item.inventory_serial_items << inventory_serial_item
-
-          #   inventory_serial_item.save!
-
-          # end
 
           damage_request = Rails.cache.fetch([ :extra_objects, srr_item_source_id, session[:grn_arrived_time].to_i ] )[:damage_request]
 
@@ -1274,7 +1266,7 @@ module Admins
             grn_item.grn_batches.first.update damage_quantity: damage_request.quantity if grn_item.grn_batches.first.present?      
           end
 
-          inventory_serial_item.update_index
+          InventorySerialItem.find(inventory_serial_item.id).update_index
 
         end
 
@@ -1820,12 +1812,13 @@ module Admins
         @gin.attributes = @gin.attributes.merge(created_by: current_user.id, gin_no: CompanyConfig.first.increase_inv_last_gin_no )#inv_gin
         @gin.save
         @gin.gin_items.each do |gin_item|
-          # Rails.cache.fetch([ :gin, :grn_batches, gin_item.srn_item_id.to_i ]).to_a.each do |grn_batch|
-          #   grn_batch.save
-          #   grn_batch.inventory_batch.inventory_product.update_index
+          Rails.cache.fetch([ :gin, :grn_batches, gin_item.srn_item_id.to_i ]).to_a.each do |grn_batch|
+            # to update index fot batches
+            grn_batch.save
+            grn_batch.inventory_batch.inventory_product.update_index
 
-          # end
-          gin_item.inventory_product.update_index
+          end
+          # gin_item.inventory_product.update_index
           @inventory.update_index if @inventory.present?
 
         end
@@ -1897,6 +1890,8 @@ module Admins
       @inventory = @product.inventories.find_by_store_id params[:store_id]
       @srn_item = SrnItem.find params[:srn_item_id]
       @grn_items = @product.grn_items.joins(:grn).where("inventory_not_updated = false and remaining_quantity > 0 and inv_grn.store_id = #{@store.id}").order("inv_grn.created_at #{@product.fifo ? 'ASC' : 'DESC' }")
+
+      # @grn_items = GrnItem.search(query: "inventory_product.id:#{@product.id} AND inventory_not_updated:false AND remaining_quantity:>0 AND grn.store_id:#{@store.id} AND grn_serial_items.remaining:true")
 
       # @grn_items = GrnItem.search(query: "inventory_not_updated:false AND remaining_quantity:>0 AND grn.store_id:#{@store.id}")
       render "admins/inventories/gin/batch_or_serial_for_gin"

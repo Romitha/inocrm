@@ -54,7 +54,12 @@ GEM
       sshkit (>= 1.6.1, != 1.7.0)
     ansi (1.5.0)
     arel (6.0.0)
+    backburner (1.4.1)
+      beaneater (~> 1.0)
+      concurrent-ruby (~> 1.0.1)
+      dante (> 0.1.5)
     bcrypt (3.1.10)
+    beaneater (1.0.0)
     binding_of_caller (0.7.2)
       debug_inspector (>= 0.0.1)
     bootstrap-datepicker-rails (1.4.0)
@@ -127,6 +132,7 @@ GEM
       sass (~> 3.2.19)
     compass-rails (2.0.0)
       compass (>= 0.12.2)
+    concurrent-ruby (1.0.5)
     cucumber (2.4.0)
       builder (>= 2.1.2)
       cucumber-core (~> 1.5.0)
@@ -146,6 +152,7 @@ GEM
     cucumber-wire (0.0.1)
     daemons (1.2.3)
     dalli (2.7.4)
+    dante (0.2.0)
     database_cleaner (1.5.3)
     debug_inspector (0.0.2)
     devise (3.4.1)
@@ -426,6 +433,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  backburner
   bootstrap-datepicker-rails
   bootstrap-editable-rails
   bootstrap-wysihtml5-rails
