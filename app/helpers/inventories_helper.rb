@@ -16,7 +16,6 @@ module InventoriesHelper
       if options[:store_id].present?
         inventories = inventory_product.inventories.to_a.select{|i| options[:store_id].to_i == i.store_id.to_i }
         # store = inventory_product.inventories.find_by_store_id(options[:store_id])
-
         available_quantities = number_with_precision inventories.sum{|i| i.available_quantity.to_f }, precision: 2
 
         stock_quantity = inventories.sum{ |i| i.stock_quantity.to_f }
@@ -28,7 +27,7 @@ module InventoriesHelper
         # i_pro = InventoryProduct.find inventory_product.id
 
         # stock_cost = inventories.sum{ |i| i_pro.stock_cost(i.id)}
-        stock_cost = number_with_precision inventories.sum{ |i| i.product_stock_cost },precision: 2
+        stock_cost = number_with_precision inventories.sum{ |i| i.product_stock_cost }, precision: 2
         # stock_cost = inventories.map{|i| [i.id, i.product_id, i.store_id, i.product_stock_cost]}#.sum{ |i| i.product_stock_cost}
 
       end

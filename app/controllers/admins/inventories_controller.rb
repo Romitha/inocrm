@@ -994,6 +994,8 @@ module Admins
 
               end
 
+              damaged = (params[:damage_request_source].present? and params[:damage_request_source][srr_item_source_id]['quantity'].to_f > 0)
+
               # For Serial Item
               # if params[:inventory_serial_item] and params[:inventory_serial_item][srr_item_source_id].present?
               if @grn_item.inventory_product.product_type == 'Serial'
@@ -1005,6 +1007,8 @@ module Admins
 
                 @grn_item.inventory_serial_items << issued_inventory_serial_item
 
+                damaged = issued_inventory_serial_item.damage
+
                 Rails.cache.write([:extra_objects, srr_item_source.id, session[:grn_arrived_time].to_i], {inventory_serial_item: issued_inventory_serial_item } )
 
               end
@@ -1014,7 +1018,8 @@ module Admins
 
               end
 
-              if issued_inventory_serial_item.try(:damage) or (params[:damage_request_source].present? and params[:damage_request_source][srr_item_source_id]['quantity'].to_f > 0)
+              if damaged
+
                 if params[:damage_request].present?
                   damage_request = Damage.new({
                     store_id: @srr_item.srr.store_id,
@@ -1124,9 +1129,7 @@ module Admins
           tot_recieved_qty += gb.recieved_quantity
         end
 
-        grn_item.grn_serial_items.each do |s|
-          tot_recieved_qty += 1
-        end
+        tot_recieved_qty += grn_item.grn_serial_items.to_a.count
 
         tot_recieved_qty = grn_item.recieved_quantity if tot_recieved_qty == 0
 
@@ -1140,7 +1143,9 @@ module Admins
         grn_item.save!
 
         inventory = grn_item.inventory_product.inventories.find_by_store_id(@grn.store_id)
-        inventory.update stock_quantity: (inventory.stock_quantity + tot_recieved_qty), available_quantity: (inventory.available_quantity + tot_recieved_qty)
+        # inventory.update stock_quantity: (inventory.stock_quantity + tot_recieved_qty), available_quantity: (inventory.available_quantity + tot_recieved_qty)
+        inventory.increment! :stock_quantity, tot_recieved_qty
+        inventory.increment! :available_quantity, tot_recieved_qty
 
         grn_item.grn_item_current_unit_cost_histories.create created_by: current_user.id, current_unit_cost: grn_item.current_unit_cost
 
@@ -1150,7 +1155,7 @@ module Admins
         po_item.update closed: (po_item.quantity.to_f <= po_item.grn_items.sum(:recieved_quantity).to_f )
 
         inventory.update_index
-        grn_item.inventory_product.update_index
+        InventoryProduct.find(grn_item.inventory_product.id).update_index # cached object doesnt have elasticsearch existance
 
       end
 
@@ -1208,7 +1213,7 @@ module Admins
         # end
 
         inventory.update_index
-        grn_item.inventory_product.update_index
+        InventoryProduct.find(grn_item.inventory_product.id).update_index # cached object doesnt have elasticsearch existance
 
       end
 
@@ -1276,7 +1281,8 @@ module Admins
         Rails.cache.delete([ :extra_objects, srr_item_source_id, session[:grn_arrived_time].to_i ] )
 
         inventory.update_index
-        grn_item.inventory_product.update_index
+        InventoryProduct.find(grn_item.inventory_product.id).update_index # cached object doesnt have elasticsearch existance
+        # grn_item.inventory_product.update_index
 
       end
 
