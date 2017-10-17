@@ -1,0 +1,55 @@
+- contracts = @contracts
+
+%table.table.table-bordered
+  %thead
+    %tr
+      %th No
+      %th Customer
+      %th Created At
+      %th Contract No
+      %th Owner Dep.
+      %th Contract Start Date
+      %th Contract End Date
+      %th Hold
+      %th Active
+      %th Amount
+      %th Currency
+      %th Contract Type
+      %th No Of Products
+      %th Created By
+      %th Payment Completed
+      %th Action
+
+  %tbody
+    - contracts.each_with_index do |con, index|
+      %tr
+        %td
+          - if params[:page]
+            = (index+1)+ 10*(params[:page].to_i-1)
+          - else
+            = (index+1)
+        %td= con.organization.try(:name)
+        %td= con.formated_created_at
+        %td= con.contract_no
+        %td= con.owner_organization.name
+        %td= con.formated_contract_start_at
+        %td= con.formated_contract_end_at
+        %td
+          - chk_hold = boolean_in_word con.hold, "Yes", "No"
+          - if chk_hold == "Yes"
+            %font{:color => "green"} Yes
+          - else
+            %font{:color => "red"} No
+        %td= boolean_in_word con.dynamic_active, "Yes", "No"
+        %td= con.amount
+        %td= con.ticket_currency.try(:code)
+        %td= con.ticket_contract_type.try(:name)
+        %td= con.num_of_products
+        %td= con.created_by_user_full_name
+        %td= boolean_in_word con.payment_completed, "Yes", "No"
+        %td
+          = link_to "Edit", contracts_path(edit_create_contract: true, contract_id: con.id, customer_id: con.organization.id), remote: true, onclick: "Tickets.ajax_loader(); return false;"
+          / = link_to "Edit", contracts_path(edit_create: true, contract_id: con.id, customer_id: con.organization.id), remote: true, onclick: "Tickets.ajax_loader(); return false;"
+          / = link_to "Edit", contracts_path(edit_create: true, contract_id: con.id, customer_id: con.organization.id), remote: true, onclick: "Tickets.ajax_loader(); return false;"
+          / = link_to "Edit", contracts_path(edit_create: true, contract_id: con.id, customer_id: con.organization.id), remote: true, onclick: "Tickets.ajax_loader(); return false;"
+

@@ -19,6 +19,15 @@ class ContractsController < ApplicationController
 
     end
 
+    if params[:search_contract_details].present?
+      refined_contract = params[:search_contracts].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
+      refined_search = [refined_contract, refined_search].map{|v| v if v.present? }.compact.join(" AND ")
+      
+      params[:query] = refined_contract
+      @contracts = TicketContract.search(params)
+
+    end
+
     if params[:search_cus_product].present?
       refined_customer = params[:organization_customers].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
       params[:query] = ["accounts_dealer_types.dealer_code:CUS", refined_customer].map { |v| v if v.present? }.compact.join(" AND ")
@@ -72,6 +81,18 @@ class ContractsController < ApplicationController
       end
     end
 
+    if params[:edit_create_contract]
+      Rails.cache.delete([:contract_products, request.remote_ip])
+
+      @organization = Organization.find params[:customer_id]
+      # @product = Product.find params[:product_serial_id]
+
+      @contract = if params[:contract_id].present?
+        @organization.ticket_contracts.find params[:contract_id]
+      else
+        @organization.ticket_contracts.build
+      end
+    end
     if params[:select_contract]
       @organization = Organization.find params[:customer_id]
 

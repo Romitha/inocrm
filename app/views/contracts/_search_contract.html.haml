@@ -1,0 +1,22 @@
+%h4 Search Contracts
+= form_tag contracts_path(contracts_callback: "search_contracts"), remote: true, method: :get, class: "form-horizontal" do
+  .row
+    .col-md-3
+      = label_tag "Contract No" do
+        Contract No
+        = text_field_tag "search_contracts[contract_no]", (params[:search_contracts] and params[:search_contracts][:contract_no]), :placeholder => "Contract No", class: "form-control"
+    .col-md-3
+      = label_tag "Contract Date From", "Contract Date From"
+      = text_field_tag "contract_date_from", params[:contract_date_from], class: "form-control datepicker", placeholder: "Select from date"
+    .col-md-3
+      = label_tag "Contract Date To", "Contract Date To"
+      = text_field_tag "contract_date_to", params[:contract_date_to], class: "form-control datepicker", placeholder: "Select To date"
+    .col-md-3
+      = label_tag "Payment completed"
+      = check_box_tag "search_contracts[payment_completed]", (params[:search_contracts] and params[:search_contracts][:payment_completed]), class: "form-control"
+  .row
+    .col-md-3
+      = label_tag "Contract Type"
+      = select_tag "search_contracts[ticket_contract_type.id]", options_from_collection_for_select(TicketContractType.all, :id, :name), class: "form-control chosen-select", include_blank: true
+    .col-md-12
+      = submit_tag "Search", name: "search_contract_details", class: "btn btn-sm btn-success"

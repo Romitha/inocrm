@@ -2,6 +2,15 @@
   $("#preview_of_pop_doc_url").html("#{@new_product.pop_doc_url.file.filename if @new_product.pop_doc_url.present?}");
   $(".pop_doc_url_wrapper").empty();
 
+
+
+- if params[:search_contract_details].present?
+  $("#search_contract").html("#{j render 'contracts/contracts_searched_list.html'}");
+  $("#search_contract").removeClass("hide");
+
+
+
+
 - if params[:search].present?
   $("#customerlist").html("#{j render 'contracts/customersearchedlist'}");
   $("#contractlist").addClass("hide");
@@ -43,6 +52,12 @@
   $("#contractedit").html("#{j render 'contracts/contractform'}");
   $("a[href='#contracts_form_collapse_form_link']").trigger("click");
 
+- elsif params[:edit_create_contract].present?
+  $("#contractedit1").removeClass("hide");
+  $("#contractedit1").html("#{j render 'contracts/contractform'}");
+  / $("a[href='#contracts_form_collapse_form_link1']").trigger("click");
+  / $("a[href='#contracts_form_collapse_search_contracts_link']").trigger("click");
+
 - elsif params[:select_contract].present?
   $("#contractselect").html("#{j render 'contracts/contractproducts'}");
 
@@ -56,13 +71,23 @@
 - elsif params[:save].present?
   - if params[:ajax_upload].present?
     $("#contractedit").html("#{j render 'contracts/contractform'}");
+    $("#contractedit1").html("#{j render 'contracts/contractform'}");
   - else
 
     - if @contract.errors.any?
       $("#contractedit").html("#{j render 'contracts/contractform'}");
+      $("#contractedit1").html("#{j render 'contracts/contractform'}");
       console.log("error");
     - else
       $("#contractedit").empty();
+      $("#contractedit1").empty();
+
+      $("#contractlist").empty();
+
+
+      $("#search_contract").addClass("hide");
+      $("#customerlist").addClass("hide");
+      
       $("#contract_alert").removeClass("hide");
       $("#contract_alert #content").html("successfully saved");
 

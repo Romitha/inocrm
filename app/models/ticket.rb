@@ -520,6 +520,8 @@ class TicketContract < ActiveRecord::Base
 
   mapping do
     indexes :organization, type: "nested", include_in_parent: true
+    indexes :ticket_contract_type, type: "nested", include_in_parent: true
+    indexes :owner_organization, type: "nested", include_in_parent: true
     # indexes :supplier, type: "nested", include_in_parent: true
     # indexes :store, type: "nested", include_in_parent: true
     # indexes :inventory_po_items, type: "nested", include_in_parent: true
@@ -531,6 +533,8 @@ class TicketContract < ActiveRecord::Base
       query do
         boolean do
           must { string params[:query] } if params[:query].present?
+          must { range :contract_end_at, lte: params[:contract_date_to].to_date.end_of_day } if params[:contract_date_to].present?
+          must { range :contract_start_at, gte: params[:contract_date_from].to_date.beginning_of_day } if params[:contract_date_from].present?
           # must { range :created_at, lte: params[:po_date_to].to_date.end_of_day  } if params[:po_date_to].present?
           # must { range :created_at, gte: params[:po_date_from].to_date.beginning_of_day } if params[:po_date_from].present?
           # must { term :author_id, params[:author_id] } if params[:author_id].present?
@@ -546,8 +550,8 @@ class TicketContract < ActiveRecord::Base
   def to_indexed_json
     Organization
     to_json(
-      only: [ :id, :created_at, :created_by, :customer_id],
-      methods: [:formated_created_at, :created_by_user_full_name],
+      only: [ :id, :created_at, :created_by, :customer_id, :products, :contract_no, :amount, :payment_completed, :contract_start_at,:contract_end_at],
+      methods: [:num_of_products, :formated_created_at, :created_by_user_full_name, :formated_contract_start_at, :formated_contract_end_at],
       include: {
         organization: {
           only: [:id, :name, :code],
@@ -562,9 +566,22 @@ class TicketContract < ActiveRecord::Base
             },
           },
         },
+        ticket_contract_type: {
+          only: [:id, :name],
+        },
+        ticket_currency: {
+          only: [:id, :code],
+        },
+        owner_organization: {
+          only: [:id, :name],
+        },
       },
     )
 
+  end
+  
+  def num_of_products
+    products.count
   end
 
   def created_by_user_full_name
@@ -573,6 +590,13 @@ class TicketContract < ActiveRecord::Base
 
   def formated_created_at
     created_at.strftime(INOCRM_CONFIG["short_date_format"])
+  end
+
+  def formated_contract_start_at
+    contract_start_at.try :strftime, INOCRM_CONFIG["short_date_format"]
+  end
+  def formated_contract_end_at
+    contract_end_at.try :strftime, INOCRM_CONFIG["short_date_format"]
   end
 
   def dynamic_active
