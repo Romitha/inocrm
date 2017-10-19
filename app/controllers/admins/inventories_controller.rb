@@ -1005,7 +1005,8 @@ module Admins
 
                 issued_inventory_serial_item.inv_status_id = InventorySerialItemStatus.find_by_code('AV').id unless issued_inventory_serial_item.damage
 
-                @grn_item.inventory_serial_items << issued_inventory_serial_item
+                # @grn_item.inventory_serial_items << issued_inventory_serial_item
+                @grn_item.grn_serial_items.build serial_item_id: issued_inventory_serial_item.id
 
                 damaged = issued_inventory_serial_item.damage
 
@@ -1231,7 +1232,7 @@ module Admins
         srr_item_source.srr_item.update closed: (srr_item_source.srr_item.quantity.to_f <= srr_item_source.srr_item.srr_item_sources.sum(:returned_quantity).to_f )
 
         grn_item.save!
-        grn_item.grn_serial_items.offset(1).destroy_all
+        # grn_item.grn_serial_items.offset(1).destroy_all
         grn_item.update_index
 
         inventory = grn_item.inventory_product.inventories.find_by_store_id(@grn.store_id)
@@ -1274,7 +1275,6 @@ module Admins
 
         inventory.update_index
         InventoryProduct.find(grn_item.inventory_product.id).update_index # cached object doesnt have elasticsearch existance
-        # grn_item.inventory_product.update_index
 
       end
 
