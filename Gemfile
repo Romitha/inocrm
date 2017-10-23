@@ -131,7 +131,7 @@ gem 'wkhtmltopdf-binary'
 gem 'backburner'
 
 group :production do
-  gem 'god'
+  gem 'god' # sudo apt-get install god
 end
 
 
