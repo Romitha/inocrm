@@ -1,6 +1,8 @@
 class Grn < ActiveRecord::Base
   self.table_name = "inv_grn"
 
+  include Backburner::Performable
+
   include Tire::Model::Search
   include Tire::Model::Callbacks
 
@@ -115,18 +117,22 @@ class Grn < ActiveRecord::Base
 
   def update_children_indics
     [:grn_items].each do |children|
-      send(children).each do |child|
-        # child.update_index
-        # parent.to_s.classify.constantize.find(self.send(parent).id).update_index
-        # children.to_s.classify.constantize.find(child.id).update_index
-        child.update_index
+      send(children).import
+      # send(children).async.each do |child|
+      #   # child.update_index
+      #   # parent.to_s.classify.constantize.find(self.send(parent).id).update_index
+      #   # children.to_s.classify.constantize.find(child.id).update_index
+      #   child.update_index
 
-        if child.is_a? GrnItem
-          child.update_relation_index
-        end
-      end
+      #   if child.is_a? GrnItem
+      #     child.update_relation_index
+      #   end
+      # end
     end
   end
+
+  handle_asynchronously :update_children_indics, queue: 'index-model', pri: 5001
+
 
   def grn_no_format
     grn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_grn_no_format"])
@@ -158,6 +164,8 @@ end
 
 class GrnItem < ActiveRecord::Base
   self.table_name = "inv_grn_item"
+
+  include Backburner::Performable
 
   include Tire::Model::Search
   include Tire::Model::Callbacks
@@ -192,6 +200,7 @@ class GrnItem < ActiveRecord::Base
   accepts_nested_attributes_for :grn_item_current_unit_cost_histories, allow_destroy: true
 
   after_save :update_relation_index
+  before_save :rectify_stock_cost
 
   def self.only_grn_items1
     # select{|grn_item| grn_item.grn_serial_items.blank? and grn_item.grn_batches.blank? and grn_item.grn_serial_parts.blank? and grn_item.remaining_quantity >0}
@@ -220,23 +229,23 @@ class GrnItem < ActiveRecord::Base
   end
 
   def update_relation_index
-    # [:inventory_serial_items, :inventory_batches].each do |children|
-    #   send(children).each do |child|
-    #     # child.update_index
-    #     # parent.to_s.classify.constantize.find(self.send(parent).id).update_index
-    #     children.to_s.classify.constantize.find(child.id).update_index
 
-    #   end
-    # end
+    async.update_index_async
 
-    # [:inventory_product].each do |parent|
-    #   send(parent).update_index
-    #   # parent.to_s.classify.constantize.find(self.send(parent).id).update_index
-
-    # end
   end
 
-  before_save do |grn_item|
+  def update_index_async
+    case inventory_product.product_type
+      when "Serial"
+        inventory_serial_items.import
+      when "Batch"
+        inventory_batches.import
+    end
+  end
+
+  def rectify_stock_cost
+    grn_item = self
+
     if grn_item.persisted? and grn_item.remarks_changed? and grn_item.remarks.present?
       grn_item_remarks = "#{grn_item.remarks} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(grn_item.current_user_id).try(:full_name)}</span><br/>#{grn_item.remarks_was}"
     elsif grn_item.new_record?
@@ -262,8 +271,38 @@ class GrnItem < ActiveRecord::Base
 
       end
     end
-
   end
+
+  # handle_asynchronously :rectify_stock_cost, queue: 'index-model', pri: 5002
+
+  # before_save do |grn_item|
+  #   if grn_item.persisted? and grn_item.remarks_changed? and grn_item.remarks.present?
+  #     grn_item_remarks = "#{grn_item.remarks} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(grn_item.current_user_id).try(:full_name)}</span><br/>#{grn_item.remarks_was}"
+  #   elsif grn_item.new_record?
+  #     grn_item_remarks = grn_item.remarks  
+  #   else
+  #     grn_item_remarks = grn_item.remarks_was
+  #   end
+  #   grn_item.remarks = grn_item_remarks
+
+  #   if (grn_item.current_unit_cost_changed? or grn_item.remaining_quantity_changed?) and grn_item.persisted?
+  #     Inventory.where(product_id: grn_item.product_id, store_id: grn_item.grn.store_id).pluck(:id).uniq{|i| i }.each do |id|
+  #       Rails.cache.delete([:stock_cost, grn_item.product_id, id ])
+
+  #     end
+
+  #     grn_item.inventory_serial_items.pluck(:product_id, :inventory_id).uniq{|i| i[0] and i[1]}.each do |a|
+  #       Rails.cache.delete([:stock_cost, a[0], a[1] ])
+
+  #     end
+
+  #     grn_item.inventory_batches.pluck(:product_id, :inventory_id).uniq{|i| i[0] and i[1]}.each do |a|
+  #       Rails.cache.delete([:stock_cost, a[0], a[1] ])
+
+  #     end
+  #   end
+
+  # end
 
   has_many :dyna_columns, as: :resourceable, autosave: true
 

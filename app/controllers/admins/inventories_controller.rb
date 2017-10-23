@@ -1,5 +1,7 @@
 module Admins
   class InventoriesController < ApplicationController
+    include Backburner::Performable
+
     layout "admins"
 
     def index
@@ -1267,7 +1269,8 @@ module Admins
             grn_item.grn_batches.first.update damage_quantity: damage_request.quantity if grn_item.grn_batches.first.present?      
           end
 
-          InventorySerialItem.find(inventory_serial_item.id).update_index
+          # InventorySerialItem.find(inventory_serial_item.id).update_index
+          inventory_serial_item.save!
 
         end
 

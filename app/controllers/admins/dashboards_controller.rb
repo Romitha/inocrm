@@ -1,5 +1,7 @@
 module Admins
   class DashboardsController < ApplicationController
+    include Backburner::Performable
+
     layout "admins"
     
     def index
@@ -41,12 +43,23 @@ module Admins
     end
 
     def reindex_all_model
+
+      DashboardsController.async.reindex_all_models_async
+
+      respond_to do |format|
+        format.html {redirect_to admins_root_url, notice: 'Index is successfully initiated. System needs around 2-5 minutes to complete indexing...'}
+      end
+    end
+
+    def self.reindex_all_models_async
       [['Grn'], ['GrnItem', 'Grn'], ['GrnBatch', 'Grn'], ['InventoryProduct', 'Inventory'], ['InventorySerialItem', 'Inventory'], ['InventoryBatch', 'Inventory'], ['Product'], ['Ticket', 'ContactNumber'], ['InventoryPrn', 'Inventory'], ['InventoryPo', 'Inventory'], ["Gin"], ['Organization'], ['SoPo', 'TicketSparePart'], [ "Srr", "Srr" ], [ "Srn", "Srn" ], [ "SrnItem", "Srn" ], ["ContactPerson1", "User"], ["ContactPerson2", "User"], ["ReportPerson", "User"], ["Customer", "User"]].each do |models|
         system "rake environment tire:deep_import CLASS=#{models.first} PCLASS=#{models.last} FORCE=true"
       end
-      respond_to do |format|
-        format.html {redirect_to admins_root_url, notice: 'Index is successfully completed. System is ready to continious run...'}
-      end
     end
+
+    # private :reindex_all_models_async
+
+    # handle_asynchronously :reindex_all_models_async, queue: 'model-index', pri: 5000
+
   end
 end

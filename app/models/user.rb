@@ -1,4 +1,5 @@
 class User < ActiveRecord::Base
+  include Backburner::Performable
   # self.table_name = "users"
 
   belongs_to :mst_title, foreign_key: :title_id
@@ -50,7 +51,6 @@ class User < ActiveRecord::Base
 
   attr_accessor :coord_x, :coord_y, :coord_w, :coord_h
   after_update :crop_avatar
-
 
   def crop_avatar
     avatar.recreate_versions! if coord_x.present?

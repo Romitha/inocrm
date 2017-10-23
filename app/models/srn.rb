@@ -1,6 +1,8 @@
 class Srn < ActiveRecord::Base
   self.table_name = "inv_srn"
 
+  include Backburner::Performable
+
   include Tire::Model::Search
   include Tire::Model::Callbacks
 

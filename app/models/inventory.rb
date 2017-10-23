@@ -1,6 +1,8 @@
 class Inventory < ActiveRecord::Base
   self.table_name = "inv_inventory"
 
+  include Backburner::Performable
+
   include Tire::Model::Search
   include Tire::Model::Callbacks
 
@@ -84,8 +86,10 @@ class Inventory < ActiveRecord::Base
   before_save :reset_values
 
   def update_relation_index
-
-    Srn.where( store_id: store_id ).each{|srn| srn.update_index }
+    Srn.joins(:srn_items).where( store_id: store_id ).where.not(closed: true).each do |srn|
+      srn.update_index
+      srn.srn_items.where(product_id: inventory_product.id).where.not(closed: true).import
+    end
 
     [:inventory_product].each do |parent|
       send(parent).update_index
@@ -95,6 +99,8 @@ class Inventory < ActiveRecord::Base
     end
 
   end
+
+  handle_asynchronously :update_relation_index, queue: 'index-model', pri: 5000
 
   def reset_values
     if (["stock_quantity", "available_quantity"] & changed).present?
@@ -250,26 +256,26 @@ class InventoryProduct < ActiveRecord::Base
   end
 
   def stock_cost(inventory_id = nil)
-    # product_type_count = if inventory_product_info.need_serial
-    #   grn_serial_items.active_serial_items.to_a.count
+    product_type_count = if inventory_product_info.need_serial
+      grn_serial_items.active_serial_items.to_a.count
 
-    # elsif inventory_product_info.need_batch
-    #   grn_batches.to_a.count
+    elsif inventory_product_info.need_batch
+      grn_batches.to_a.count
 
-    # else
-    #   grn_items.only_grn_items1.count
+    else
+      grn_items.only_grn_items1.count
 
-    # end
+    end
 
-    # if product_type_count.to_i != self.type_count.to_i
+    if product_type_count.to_i != self.type_count.to_i
 
-    #   Rails.cache.delete([:stock_cost, self.id, inventory_id.to_i ])
+      Rails.cache.delete([:stock_cost, self.id, inventory_id.to_i ])
 
-    #   self.type_count = product_type_count
+      self.type_count = product_type_count
 
-    #   self.save if self.type_count.nil?
+      self.save if self.type_count.nil?
 
-    # end
+    end
 
     Rails.cache.fetch([:stock_cost, id, inventory_id.to_i ]) do
       stock_cost = if inventory_product_info.need_serial

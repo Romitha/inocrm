@@ -130,6 +130,10 @@ gem 'wkhtmltopdf-binary'
 
 gem 'backburner'
 
+group :production do
+  gem 'god'
+end
+
 
 # gem "em-http-request"
 
