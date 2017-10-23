@@ -1664,9 +1664,6 @@ module Admins
 
         if main_inventory_serial_part_id.present? or gin_item.issued_quantity.to_f > 0
           if gin_item.srn_item.main_product_id.present?
-            puts "**********************************************************************"
-            puts "enetred into main product"
-            puts "**********************************************************************"
 
             main_inventory_serial_part = InventorySerialPart.find_by_id(main_inventory_serial_part_id)
 
@@ -1720,11 +1717,6 @@ module Admins
             @inventory = product.inventories.find_by_store_id store.id
             # if product.inventory_product_info.need_serial #Issue Serial Item
             Rails.cache.fetch([ :gin, :grn_serial_items, gin_item.srn_item_id.to_i ]).to_a.each do |grn_serial_item|
-
-              puts "**********************************************************************"
-              puts "enetred into grn_serial_items product"
-              puts "**********************************************************************"
-
               product_id = grn_serial_item.inventory_serial_item.product_id
 
               tot_cost_price = grn_serial_item.grn_item.current_unit_cost.to_d + grn_serial_item.inventory_serial_item.inventory_serial_items_additional_costs.sum(:cost).to_d #inventory_serial_items_additional_costs
@@ -1748,11 +1740,6 @@ module Admins
 
             # elsif product.inventory_product_info.need_batch #Issue Batch Item
             Rails.cache.fetch([ :gin, :grn_batches, gin_item.srn_item_id.to_i ]).to_a.each do |grn_batch|
-
-              puts "**********************************************************************"
-              puts "enetred into grn_batches product"
-              puts "**********************************************************************"
-
               gin_source = grn_batch.gin_sources.select{|g| g.new_record? }.first
               # gin_source = grn_batch.gin_sources.build
 
@@ -1785,11 +1772,6 @@ module Admins
             end
 
             if !(product.inventory_product_info.need_batch or product.inventory_product_info.need_serial) #Issue Non Serial / Non Batch Item
-
-              puts "**********************************************************************"
-              puts "enetred into non serial and non batch product"
-              puts "**********************************************************************"
-
               @grn_items = product.grn_items.joins(:grn).where("inventory_not_updated = false and remaining_quantity > 0 and inv_grn.store_id = #{store.id}").order("inv_grn.created_at #{product.fifo ? 'ASC' : 'DESC' }")
 
               iss_quantity1 = 0
