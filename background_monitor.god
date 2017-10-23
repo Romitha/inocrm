@@ -44,3 +44,8 @@ God.watch do |w|
     end
   end
 end
+
+# god stop backburner-worker-1
+# god -c path/to/background_monitor.god -D (with foreground process)
+# god -c path/to/background_monitor.god (with background process)
+# http://godrb.com/ for more information

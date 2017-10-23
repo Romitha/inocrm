@@ -86,7 +86,16 @@ class Inventory < ActiveRecord::Base
   before_save :reset_values
 
   def update_relation_index
+
+    puts "**********************************************************************"
+    puts "enetred into update_relation_index"
+    puts "**********************************************************************"
+
     Srn.joins(:srn_items).where( store_id: store_id ).where.not(closed: true).each do |srn|
+
+      puts "**********************************************************************"
+      puts "enetred into srn indexing"
+      puts "**********************************************************************"
       srn.update_index
       srn.srn_items.where(product_id: inventory_product.id).where.not(closed: true).import
     end
@@ -100,7 +109,7 @@ class Inventory < ActiveRecord::Base
 
   end
 
-  handle_asynchronously :update_relation_index, queue: 'index-model', pri: 5000
+  handle_asynchronously :update_relation_index, queue: 'index-model', pri: 5000, delay: 3.seconds
 
   def reset_values
     if (["stock_quantity", "available_quantity"] & changed).present?
