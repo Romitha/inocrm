@@ -2005,6 +2005,7 @@ module Admins
 
               if prn_item.present?
                 prn_item.srn_items << item_element[:srn_items]
+                prn_item.srn_items.import
               end
 
             end

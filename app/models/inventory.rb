@@ -81,28 +81,18 @@ class Inventory < ActiveRecord::Base
 
   validates_presence_of [:store_id, :product_id, :stock_quantity, :available_quantity, :reserved_quantity, :created_by]
 
-  after_save :async_update_relation_index
+  after_save :update_relation_index
 
   before_save :reset_values
 
-  def async_update_relation_index
-    async.update_relation_index
-  end
-
   def update_relation_index
 
-    puts "**********************************************************************"
-    puts "enetred into update_relation_index"
-    puts "**********************************************************************"
+    # Srn.where( store_id: store_id ).where.not(closed: true).each do |srn|
+    #   srn.update_index
+    #   srn.srn_items.where(product_id: inventory_product.id).where.not(closed: true).import
+    # end
 
-    Srn.where( store_id: store_id ).where.not(closed: true).each do |srn|
-
-      puts "**********************************************************************"
-      puts "enetred into srn indexing"
-      puts "**********************************************************************"
-      srn.update_index
-      srn.srn_items.where(product_id: inventory_product.id).where.not(closed: true).import
-    end
+    Srn.where( store_id: store_id ).where.not(closed: true).import
 
     [:inventory_product].each do |parent|
       send(parent).update_index
@@ -113,7 +103,7 @@ class Inventory < ActiveRecord::Base
 
   end
 
-  # handle_asynchronously :update_relation_index, queue: 'index-model', pri: 5000, delay: 3.seconds
+  handle_asynchronously :update_relation_index, queue: 'index-model', pri: 5000, delay: 3.seconds
 
   def reset_values
     if (["stock_quantity", "available_quantity"] & changed).present?
