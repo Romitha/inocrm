@@ -81,7 +81,7 @@ class Inventory < ActiveRecord::Base
 
   validates_presence_of [:store_id, :product_id, :stock_quantity, :available_quantity, :reserved_quantity, :created_by]
 
-  # after_save :update_relation_index
+  after_save :update_relation_index
 
   before_save :reset_values
 
