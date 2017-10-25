@@ -81,7 +81,7 @@ class Inventory < ActiveRecord::Base
 
   validates_presence_of [:store_id, :product_id, :stock_quantity, :available_quantity, :reserved_quantity, :created_by]
 
-  after_save :update_relation_index
+  # after_save :update_relation_index
 
   before_save :reset_values
 
@@ -92,7 +92,7 @@ class Inventory < ActiveRecord::Base
     #   srn.srn_items.where(product_id: inventory_product.id).where.not(closed: true).import
     # end
 
-    Srn.where( store_id: store_id ).where.not(closed: true).import
+    # Srn.joins(:srn_items).where( store_id: store_id, inv_srn_item: {product_id: product_id} ).where.not(closed: true).async.import
 
     [:inventory_product].each do |parent|
       send(parent).update_index
@@ -116,6 +116,8 @@ end
 
 class InventoryProduct < ActiveRecord::Base
   self.table_name = "mst_inv_product"
+
+  include Backburner::Performable
 
   # https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html will be describing more...
   include Tire::Model::Search

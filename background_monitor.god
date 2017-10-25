@@ -4,7 +4,7 @@ God.watch do |w|
   w.env = { 'RAILS_ENV' => 'production', 'QUEUES' => 'backburner-jobs,indx-model' }
   w.group    = 'backburner-workers'
   w.interval = 30.seconds
-  w.start = "bundle exec rake -f Rakefile backburner:work RAILS_ENV=production"
+  w.start = "~/.rvm/bin/rvm ruby-2.2.0@rails_4_2_1 do bundle exec rake -f Rakefile backburner:work RAILS_ENV=production"
   w.log   = "/var/log/god/backburner-worker-1.log"
 
   # restart if memory gets too high

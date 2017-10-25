@@ -1157,8 +1157,8 @@ module Admins
 
         po_item.update closed: (po_item.quantity.to_f <= po_item.grn_items.sum(:recieved_quantity).to_f )
 
-        inventory.update_index
-        InventoryProduct.find(grn_item.inventory_product.id).update_index # cached object doesnt have elasticsearch existance
+        # inventory.update_index
+        # InventoryProduct.find(grn_item.product_id).async.update_index # cached object doesnt have elasticsearch existance
 
       end
 
@@ -1211,8 +1211,9 @@ module Admins
         Rails.cache.delete([:grn_item, inventory_product.id, session[:grn_arrived_time].to_i ] )
         Rails.cache.delete([ :serial_item, inventory_product.class.to_s.to_sym, inventory_product.id, session[:grn_arrived_time].to_i ])
 
-        inventory.update_index
-        InventoryProduct.find(grn_item.inventory_product.id).update_index # cached object doesnt have elasticsearch existance
+        grn_item.save! # this is to update index
+        # inventory.update_index
+        # InventoryProduct.find(grn_item.inventory_product.id).async.update_index # cached object doesnt have elasticsearch existance
 
       end
 
@@ -1270,14 +1271,16 @@ module Admins
           end
 
           # InventorySerialItem.find(inventory_serial_item.id).update_index
-          inventory_serial_item.save!
+          inventory_serial_item.save! # it make anavailable item to available item
 
         end
 
+        grn_item.save! # this is to update index
+
         Rails.cache.delete([ :extra_objects, srr_item_source_id, session[:grn_arrived_time].to_i ] )
 
-        inventory.update_index
-        InventoryProduct.find(grn_item.inventory_product.id).update_index # cached object doesnt have elasticsearch existance
+        # inventory.update_index
+        # InventoryProduct.find(grn_item.inventory_product.id).async.update_index # cached object doesnt have elasticsearch existance
 
       end
 
@@ -1285,7 +1288,13 @@ module Admins
         @grn.srr.update closed: @grn.srr.srr_items.all?{ |i| i.closed }
       end
 
-      @grn.update_index # It indexes all its children rather than @grn.update_index
+      @grn.async.update_index # It indexes all its children rather than @grn.update_index
+      Inventory.where(store_id: @grn.store_id, product_id: @grn.grn_items.pluck(:product_id)).async.import
+
+      Srn.joins(:srn_items).where( store_id: @grn.store_id, inv_srn_item: {product_id: @grn.grn_items.pluck(:product_id)} ).where.not(closed: true, inv_srn_item: {closed: true}).async.import
+
+      InventoryProduct.where(id: @grn.grn_items.pluck(:product_id)).async.import # cached object doesnt have elasticsearch existance
+
 
       flash[:notice] = "Successfully saved."
 
@@ -1507,6 +1516,7 @@ module Admins
         if params[:create]
           @inventory = Inventory.new inventory_params
           if @inventory.save
+            # @inventory.inventory_product.update_index
             params[:create] = nil
             @inventory = Inventory.new
             flash[:notice] = "Successfully saved."
@@ -1799,6 +1809,9 @@ module Admins
               end
               gin_item.issued_quantity = iss_quantity1
             end
+
+            product.async.update_index
+            @inventory.async.update_index
 
           end
         end

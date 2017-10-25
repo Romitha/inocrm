@@ -113,7 +113,7 @@ class Grn < ActiveRecord::Base
 
   end
 
-  after_save :update_children_indics
+  # after_save :update_children_indics
 
   def update_children_indics
     [:grn_items].each do |children|
