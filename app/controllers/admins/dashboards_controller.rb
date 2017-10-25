@@ -44,7 +44,7 @@ module Admins
 
     def reindex_all_model
 
-      DashboardsController.async.reindex_all_models_async
+      DashboardsController.async( ttr: 300.seconds ).reindex_all_models_async
 
       respond_to do |format|
         format.html {redirect_to admins_root_url, notice: 'Index is successfully initiated. System needs around 2-5 minutes to complete indexing...'}
