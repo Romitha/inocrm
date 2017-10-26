@@ -1097,6 +1097,8 @@ module Admins
     def create_grn
       Inventory
       Organization
+      serial_inventories = []
+
       @grn = Grn.new grn_params
       if @grn.inventory_po.present? # With PO Items
         @grn.store_id = @grn.inventory_po.store_id
@@ -1143,22 +1145,21 @@ module Admins
         grn_item.unit_cost = grn_item.current_unit_cost = po_item.unit_cost_grn
         grn_item.currency_id = grn_item.inventory_product.inventory_product_info.currency_id
         grn_item.inventory_not_updated = false
-        grn_item.save!
 
         inventory = grn_item.inventory_product.inventories.find_by_store_id(@grn.store_id)
-        # inventory.update stock_quantity: (inventory.stock_quantity + tot_recieved_qty), available_quantity: (inventory.available_quantity + tot_recieved_qty)
-        inventory.increment! :stock_quantity, tot_recieved_qty
-        inventory.increment! :available_quantity, tot_recieved_qty
+        inventory.stock_quantity += tot_recieved_qty
+        inventory.available_quantity += tot_recieved_qty
 
-        grn_item.grn_item_current_unit_cost_histories.create created_by: current_user.id, current_unit_cost: grn_item.current_unit_cost
+        grn_item.grn_item_current_unit_cost_histories.build created_by: current_user.id, current_unit_cost: grn_item.current_unit_cost
 
-        Rails.cache.delete([:grn_item, po_item_id, session[:grn_arrived_time].to_i] )
-        Rails.cache.delete([ :serial_item, po_item.class.to_s.to_sym, po_item.id, session[:grn_arrived_time].to_i ])
 
         po_item.update closed: (po_item.quantity.to_f <= po_item.grn_items.sum(:recieved_quantity).to_f )
 
-        # inventory.update_index
-        # InventoryProduct.find(grn_item.product_id).async.update_index # cached object doesnt have elasticsearch existance
+        serial_inventories << inventory #inventory has to save
+
+        grn_item.save!
+        Rails.cache.delete([:grn_item, po_item_id, session[:grn_arrived_time].to_i] )
+        Rails.cache.delete([ :serial_item, po_item.class.to_s.to_sym, po_item.id, session[:grn_arrived_time].to_i ])
 
       end
 
@@ -1203,18 +1204,18 @@ module Admins
         grn_item.save!
 
         inventory = grn_item.inventory_product.inventories.find_by_store_id(@grn.store_id)
-        inventory.update stock_quantity: (inventory.stock_quantity + tot_recieved_qty), available_quantity: (inventory.available_quantity + tot_recieved_qty)
+        inventory.stock_quantity += tot_recieved_qty
+        inventory.available_quantity += tot_recieved_qty
 
-        grn_item.grn_item_current_unit_cost_histories.create created_by: current_user.id, current_unit_cost: grn_item.current_unit_cost
+        grn_item.grn_item_current_unit_cost_histories.build created_by: current_user.id, current_unit_cost: grn_item.current_unit_cost
 
         # Rails.cache.delete([:grn_item, :i_product, inventory_product.id, session[:grn_arrived_time].to_i ] )
-        Rails.cache.delete([:grn_item, inventory_product.id, session[:grn_arrived_time].to_i ] )
-        Rails.cache.delete([ :serial_item, inventory_product.class.to_s.to_sym, inventory_product.id, session[:grn_arrived_time].to_i ])
+
+        serial_inventories << inventory #inventory has to save
 
         grn_item.save! # this is to update index
-        # inventory.update_index
-        # InventoryProduct.find(grn_item.inventory_product.id).async.update_index # cached object doesnt have elasticsearch existance
-
+        Rails.cache.delete([:grn_item, inventory_product.id, session[:grn_arrived_time].to_i ] )
+        Rails.cache.delete([ :serial_item, inventory_product.class.to_s.to_sym, inventory_product.id, session[:grn_arrived_time].to_i ])
       end
 
       # With SRR Items
@@ -1234,14 +1235,15 @@ module Admins
 
         srr_item_source.srr_item.update closed: (srr_item_source.srr_item.quantity.to_f <= srr_item_source.srr_item.srr_item_sources.sum(:returned_quantity).to_f )
 
-        grn_item.save!
         # grn_item.grn_serial_items.offset(1).destroy_all
-        grn_item.update_index
+        # grn_item.update_index
 
         inventory = grn_item.inventory_product.inventories.find_by_store_id(@grn.store_id)
         # inventory = srr_item_source.srr_item.inventory_product.inventories.find_by_store_id(srr_item_source.srr_item.srr.store_id)
-        inventory.increment! :stock_quantity, grn_item.recieved_quantity
-        inventory.increment! :available_quantity, (grn_item.recieved_quantity - grn_item.damage_quantity)
+        inventory.stock_quantity += grn_item.recieved_quantity
+        inventory.available_quantity += (grn_item.recieved_quantity - grn_item.damage_quantity)
+        serial_inventories << inventory #inventory has to save
+        grn_item.save!
 
         # if grn_item.inventory_product.product_type == "Batch"
         #   grn_item.grn_batches.create( inventory_batch_id: srr_item_source.gin_source.grn_batch.inventory_batch_id, recieved_quantity: srr_item_source.returned_quantity, remaining_quantity: srr_item_source.returned_quantity )
@@ -1289,7 +1291,9 @@ module Admins
       end
 
       @grn.async.update_index # It indexes all its children rather than @grn.update_index
-      Inventory.where(store_id: @grn.store_id, product_id: @grn.grn_items.pluck(:product_id)).async.import
+      # Inventory.where(store_id: @grn.store_id, product_id: @grn.grn_items.pluck(:product_id)).async.import
+
+      serial_inventories.each(&:save) if serial_inventories.present?
 
       Srn.joins(:srn_items).where( store_id: @grn.store_id, inv_srn_item: {product_id: @grn.grn_items.pluck(:product_id)} ).where.not(closed: true, inv_srn_item: {closed: true}).async.import
 
@@ -1838,9 +1842,6 @@ module Admins
           serial_inventory_ids = []
 
           Rails.cache.fetch([ :gin, :grn_serial_items, gin_item.srn_item_id.to_i ]).to_a.each do |grn_serial_item|
-            puts "************************************************************************"
-            puts "Gone inside to GRN Serial item"
-            puts "************************************************************************"
             grn_serial_item.save!
             # grn_serial_item.inventory_serial_item.inventory.save!
             # grn_serial_item.inventory_serial_item.inventory.stock_quantity -= 1
@@ -1855,9 +1856,6 @@ module Admins
           end
 
           Rails.cache.fetch([ :gin, :grn_batches, gin_item.srn_item_id.to_i ]).to_a.each do |grn_batch|
-            puts "************************************************************************"
-            puts "Gone inside to GRN Batch item"
-            puts "************************************************************************"
             # to update index fot batches
             serial_inventory_ids << grn_batch.inventory_batch.inventory.id
 
@@ -1872,9 +1870,6 @@ module Admins
           product = gin_item.inventory_product
 
           if !(product.inventory_product_info.need_batch or product.inventory_product_info.need_serial)
-            puts "************************************************************************"
-            puts "Gone inside to GRN Item"
-            puts "************************************************************************"
             GrnItem.where(id: grn_item_ids.uniq).import if grn_item_ids.present?
             # Inventory.where(id: inventory_ids.uniq).import if inventory_ids.present?
             inventories_array.each(&:save) if inventories_array.present?
