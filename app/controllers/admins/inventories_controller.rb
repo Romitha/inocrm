@@ -1516,7 +1516,7 @@ module Admins
         if params[:create]
           @inventory = Inventory.new inventory_params
           if @inventory.save
-            # @inventory.inventory_product.update_index
+            @inventory.inventory_product.async.update_index
             params[:create] = nil
             @inventory = Inventory.new
             flash[:notice] = "Successfully saved."
