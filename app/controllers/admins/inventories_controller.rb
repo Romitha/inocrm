@@ -1650,7 +1650,7 @@ module Admins
       Organization
       Inventory
       grn_item_ids = []
-      inventory_ids = []
+      inventories_array = []
 
       @gin = Gin.new gin_params
       main_inventory_serial_part_id = params[:main_inventory_serial_part_id]
@@ -1743,8 +1743,8 @@ module Admins
               grn_serial_item.inventory_serial_item.inv_status_id = InventorySerialItemStatus.find_by_code("NA").id
               grn_serial_item.inventory_serial_item.updated_by = current_user.id #inventory serial item has to save
 
-              grn_serial_item.inventory_serial_item.inventory.stock_quantity -= 1
-              grn_serial_item.inventory_serial_item.inventory.available_quantity -= 1
+              # grn_serial_item.inventory_serial_item.inventory.stock_quantity -= 1
+              # grn_serial_item.inventory_serial_item.inventory.available_quantity -= 1
 
               gin_item.gin_sources.build(grn_item_id: grn_serial_item.grn_item_id, grn_serial_item_id: grn_serial_item.id, issued_quantity: 1, unit_cost: tot_cost_price, returned_quantity: 0)#inv_gin_source
 
@@ -1775,6 +1775,8 @@ module Admins
                 grn_batch.inventory_batch.inventory.stock_quantity -= grn_batch_issued_qty# if @inventory.present? has to save inventory
                 grn_batch.inventory_batch.inventory.available_quantity -= grn_batch_issued_qty# if @inventory.present? has to save inventory
 
+                inventories_array << grn_batch.inventory_batch.inventory
+
                 gin_item.inventory_not_updated = false
 
                 gin_source.attributes = gin_source.attributes.merge(grn_item_id: iss_grn_item_id, unit_cost: tot_cost_price, returned_quantity: 0)#inv_gin_source                    
@@ -1798,11 +1800,11 @@ module Admins
 
                   grn_item.remaining_quantity -= grn_item_issued_qty # has to save grn_item
 
-                  inventory_ids << @inventory.id
 
                   if @inventory.present?
                     @inventory.stock_quantity -= grn_item_issued_qty if @inventory.present? # has to save @inventory
                     @inventory.available_quantity -= grn_item_issued_qty if @inventory.present? # has to save @inventory
+                    inventories_array << @inventory
 
                   end
 
@@ -1833,27 +1835,49 @@ module Admins
         @gin.save!
 
         @gin.gin_items.each do |gin_item|
+          serial_inventory_ids = []
+
           Rails.cache.fetch([ :gin, :grn_serial_items, gin_item.srn_item_id.to_i ]).to_a.each do |grn_serial_item|
+            puts "************************************************************************"
+            puts "Gone inside to GRN Serial item"
+            puts "************************************************************************"
             grn_serial_item.save!
-            grn_serial_item.inventory_serial_item.inventory.save!
+            # grn_serial_item.inventory_serial_item.inventory.save!
+            # grn_serial_item.inventory_serial_item.inventory.stock_quantity -= 1
+            # grn_serial_item.inventory_serial_item.inventory.available_quantity -= 1
+            serial_inventory_ids << grn_serial_item.inventory_serial_item.inventory.id
+
+            grn_serial_item.inventory_serial_item.inventory.decrement! :stock_quantity, 1
+            grn_serial_item.inventory_serial_item.inventory.decrement! :available_quantity, 1
+
             grn_serial_item.inventory_serial_item.save!
             grn_serial_item.grn_item.save!
           end
 
           Rails.cache.fetch([ :gin, :grn_batches, gin_item.srn_item_id.to_i ]).to_a.each do |grn_batch|
+            puts "************************************************************************"
+            puts "Gone inside to GRN Batch item"
+            puts "************************************************************************"
             # to update index fot batches
+            serial_inventory_ids << grn_batch.inventory_batch.inventory.id
+
             grn_batch.grn_item.save!
             grn_batch.inventory_batch.inventory.save!
             grn_batch.save!
             # grn_batch.inventory_batch.inventory_product.update_index
+            inventories_array.each(&:save) if inventories_array.present?
 
           end
 
           product = gin_item.inventory_product
 
           if !(product.inventory_product_info.need_batch or product.inventory_product_info.need_serial)
+            puts "************************************************************************"
+            puts "Gone inside to GRN Item"
+            puts "************************************************************************"
             GrnItem.where(id: grn_item_ids.uniq).import if grn_item_ids.present?
-            Inventory.where(id: inventory_ids.uniq).import if inventory_ids.present?
+            # Inventory.where(id: inventory_ids.uniq).import if inventory_ids.present?
+            inventories_array.each(&:save) if inventories_array.present?
           end
 
           Rails.cache.delete([ :gin, :grn_serial_items, gin_item.srn_item_id.to_i ])
