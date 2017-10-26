@@ -17,7 +17,8 @@ module Admins
 
       case params[:grn_callback]
       when "select_grn"
-        @grn = Grn.find params[:grn_id]
+        Grn
+        @grn = GrnItem.find(params[:grn_id]).grn
         if params[:cost_change]
           @cost_change = "cost_change"
         end
