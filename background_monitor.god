@@ -10,7 +10,7 @@ God.watch do |w|
   # restart if memory gets too high
   w.transition(:up, :restart) do |on|
     on.condition(:memory_usage) do |c|
-      c.above = 8000.megabytes
+      c.above = 1000.megabytes
       c.times = 3
     end
   end
@@ -26,7 +26,7 @@ God.watch do |w|
   w.transition([:start, :restart], :up) do |on|
     on.condition(:process_running) do |c|
       c.running = true
-      c.interval = 5.seconds
+      c.interval = 10.seconds
     end
 
     # failsafe

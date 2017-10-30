@@ -93,7 +93,7 @@ class Organization < ActiveRecord::Base
   scope :individual_suppliers, -> {where(category: TYPES[2])}
   scope :organization_customers, -> {where(category: TYPES[1])}
   scope :individual_customers, -> {where(category: TYPES[3])}
-  scope :owner, -> {where(refers: "CRM_OWNER").first}
+  scope :owner, -> { where(refers: "CRM_OWNER").first }
 
   scope :stores, -> { where(type_id: 4)}
 
