@@ -1111,7 +1111,7 @@ module Admins
       end
       @grn.created_at = DateTime.now
       @grn.created_by = current_user.id
-      @grn.grn_no = CompanyConfig.first.increase_inv_last_grn_no
+      # @grn.grn_no = CompanyConfig.first.increase_inv_last_grn_no
       @grn.save!
 
       # With PO Items
@@ -1830,7 +1830,7 @@ module Admins
 
         gin_item.returned_quantity = 0
 
-        gin_item.srn_item.closed = (gin_item.srn_item.quantity <= gin_item.srn_item.gin_items.sum(:issued_quantity) + gin_item.issued_quantity.to_f)
+        # gin_item.srn_item.closed = (gin_item.srn_item.quantity <= gin_item.srn_item.gin_items.sum(:issued_quantity) + gin_item.issued_quantity.to_f)
 
       end
 
@@ -1874,6 +1874,8 @@ module Admins
             # Inventory.where(id: inventory_ids.uniq).import if inventory_ids.present?
             inventories_array.each(&:save) if inventories_array.present?
           end
+
+          gin_item.srn_item.update closed: (gin_item.srn_item.quantity <= gin_item.srn_item.gin_items.sum(:issued_quantity) + gin_item.issued_quantity.to_f)
 
           Rails.cache.delete([ :gin, :grn_serial_items, gin_item.srn_item_id.to_i ])
           Rails.cache.delete([ :gin, :grn_batches, gin_item.srn_item_id.to_i ])

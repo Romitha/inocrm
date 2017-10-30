@@ -22,9 +22,6 @@
                   = submit_tag "Search", name: "search", class: "btn btn-sm btn-warning"
               .col-md-1
                 .reset
-                  / = link_to "Reset", "role" => "button", onclick: "Searches.reset_searchgrn(); return false;",class: "btn btn-warning" do
-                  / Reset
-                  / = link_to "Reset", "#", onclick: "Searches.reset_searchgrn(); return false;", class: "resetgrn"
                   = link_to "Reset", search_grn_admins_searches_path, class: "btn btn-warning"
 
   - if @grns.any?
@@ -58,6 +55,6 @@
                 %td= grn.supplier_name
                 %td{title: grn.remarks}= grn.remarks.try :truncate, 50
                 %td= grn.created_by_user.try(:full_name)
-                %td= link_to "Select", search_grn_admins_searches_path(grn_callback: "select_grn",grn_id: grn.id)
+                %td= link_to "Select", search_grn_admins_searches_path(grn_callback: "select_grn", grn_id: grn.id)
           = paginate @grns, remote: false, method: :get
           %hr

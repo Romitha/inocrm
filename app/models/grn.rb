@@ -155,7 +155,8 @@ class Grn < ActiveRecord::Base
   end
 
   def assign_grn_no
-    self.grn_no = CompanyConfig.first.next_sup_last_grn_no
+    # self.grn_no = CompanyConfig.first.next_sup_last_grn_no
+    self.grn_no = CompanyConfig.first.increase_inv_last_grn_no
   end
 
   before_create :assign_grn_no
