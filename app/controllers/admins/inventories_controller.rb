@@ -1279,7 +1279,7 @@ module Admins
           end
 
           # InventorySerialItem.find(inventory_serial_item.id).update_index
-          inventory_serial_item.save! # it make anavailable item to available item
+          inventory_serial_item.save! if inventory_serial_item.present? # it make anavailable item to available item 
 
         end
 
