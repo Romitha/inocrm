@@ -230,8 +230,7 @@ class GrnItem < ActiveRecord::Base
   end
 
   def update_relation_index
-
-    async.update_index_async
+    async(delay: 5.seconds).update_index_async
 
   end
 
