@@ -996,14 +996,18 @@ module Admins
 
               end
 
-              damaged = (params[:damage_request_source].present? and params[:damage_request_source][srr_item_source_id]['quantity'].to_f > 0)
+              if params[:inventory_serial_item].present?
+                inventory_serial_item_params = params[:inventory_serial_item][srr_item_source_id].permit(:scavenge, :parts_not_completed, :damage, :used, :repaired, :reserved)
+                # damaged = (params[:damage_request_source].present? and params[:damage_request_source][srr_item_source_id]['quantity'].to_f > 0)
+                damaged = (inventory_serial_item_params[:damage].present? and inventory_serial_item_params[:damage].to_bool)
+              end
 
               # For Serial Item
               # if params[:inventory_serial_item] and params[:inventory_serial_item][srr_item_source_id].present?
               if @grn_item.inventory_product.product_type == 'Serial'
                 issued_inventory_serial_item = srr_item_source.gin_source.grn_serial_item.inventory_serial_item
 
-                issued_inventory_serial_item.attributes = params[:inventory_serial_item][srr_item_source_id].permit(:scavenge, :parts_not_completed, :damage, :used, :repaired, :reserved) if params[:inventory_serial_item].present?
+                issued_inventory_serial_item.attributes = inventory_serial_item_params if inventory_serial_item_params.present?
 
                 issued_inventory_serial_item.inv_status_id = InventorySerialItemStatus.find_by_code('AV').id unless issued_inventory_serial_item.damage
 
@@ -1022,7 +1026,6 @@ module Admins
               end
 
               if damaged
-
                 if params[:damage_request].present?
                   damage_request = Damage.new({
                     store_id: @srr_item.srr.store_id,
@@ -1147,15 +1150,16 @@ module Admins
         grn_item.inventory_not_updated = false
 
         inventory = grn_item.inventory_product.inventories.find_by_store_id(@grn.store_id)
-        inventory.stock_quantity += tot_recieved_qty
-        inventory.available_quantity += tot_recieved_qty
+        # inventory.stock_quantity += tot_recieved_qty
+        # inventory.available_quantity += tot_recieved_qty
 
         grn_item.grn_item_current_unit_cost_histories.build created_by: current_user.id, current_unit_cost: grn_item.current_unit_cost
 
 
         po_item.update closed: (po_item.quantity.to_f <= po_item.grn_items.sum(:recieved_quantity).to_f )
 
-        serial_inventories << inventory #inventory has to save
+        # serial_inventories << inventory #inventory has to save
+        serial_inventories << {id: inventory.id, stock_quantity: tot_recieved_qty, available_quantity: tot_recieved_qty}
 
         grn_item.save!
         Rails.cache.delete([:grn_item, po_item_id, session[:grn_arrived_time].to_i] )
@@ -1204,14 +1208,15 @@ module Admins
         grn_item.save!
 
         inventory = grn_item.inventory_product.inventories.find_by_store_id(@grn.store_id)
-        inventory.stock_quantity += tot_recieved_qty
-        inventory.available_quantity += tot_recieved_qty
+        # inventory.stock_quantity += tot_recieved_qty
+        # inventory.available_quantity += tot_recieved_qty
 
         grn_item.grn_item_current_unit_cost_histories.build created_by: current_user.id, current_unit_cost: grn_item.current_unit_cost
 
         # Rails.cache.delete([:grn_item, :i_product, inventory_product.id, session[:grn_arrived_time].to_i ] )
 
-        serial_inventories << inventory #inventory has to save
+        # serial_inventories << inventory #inventory has to save
+        serial_inventories << {id: inventory.id, stock_quantity: tot_recieved_qty, available_quantity: tot_recieved_qty}
 
         grn_item.save! # this is to update index
         Rails.cache.delete([:grn_item, inventory_product.id, session[:grn_arrived_time].to_i ] )
@@ -1241,10 +1246,13 @@ module Admins
 
         inventory = grn_item.inventory_product.inventories.find_by_store_id(@grn.store_id)
         # inventory = srr_item_source.srr_item.inventory_product.inventories.find_by_store_id(srr_item_source.srr_item.srr.store_id)
-        inventory.stock_quantity += grn_item.recieved_quantity
-        inventory.available_quantity += (grn_item.recieved_quantity - grn_item.damage_quantity)
-        inventory.damage_quantity += grn_item.damage_quantity
-        serial_inventories << inventory #inventory has to save
+
+        # inventory.stock_quantity += grn_item.recieved_quantity
+        # inventory.available_quantity += (grn_item.recieved_quantity - grn_item.damage_quantity)
+        # inventory.damage_quantity += grn_item.damage_quantity
+
+        # serial_inventories << inventory #inventory has to save
+        serial_inventories << {id: inventory.id, stock_quantity: grn_item.recieved_quantity, available_quantity: (grn_item.recieved_quantity - grn_item.damage_quantity), damage_quantity: grn_item.damage_quantity}
         grn_item.save!
 
         # if grn_item.inventory_product.product_type == "Batch"
@@ -1295,7 +1303,15 @@ module Admins
       @grn.async.update_index # It indexes all its children rather than @grn.update_index
       # Inventory.where(store_id: @grn.store_id, product_id: @grn.grn_items.pluck(:product_id)).async.import
 
-      serial_inventories.each(&:save) if serial_inventories.present?
+      serial_inventories.group_by{|i| i[:id]}.each do |k, v|
+        inventory = Inventory.find(k)
+        inventory.stock_quantity += v.sum{|i| i[:stock_quantity].to_f }
+        inventory.available_quantity += v.sum{|i| i[:available_quantity].to_f }
+        inventory.damage_quantity += v.sum{|i| i[:damage_quantity].to_f }
+
+        inventory.save
+      end
+      # serial_inventories.each(&:save) if serial_inventories.present?
 
       Srn.joins(:srn_items).where( store_id: @grn.store_id, inv_srn_item: {product_id: @grn.grn_items.pluck(:product_id)} ).where.not(closed: true, inv_srn_item: {closed: true}).async.import
 
