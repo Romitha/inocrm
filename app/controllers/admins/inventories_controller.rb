@@ -996,18 +996,14 @@ module Admins
 
               end
 
-              if params[:inventory_serial_item].present?
-                inventory_serial_item_params = params[:inventory_serial_item][srr_item_source_id].permit(:scavenge, :parts_not_completed, :damage, :used, :repaired, :reserved)
-                # damaged = (params[:damage_request_source].present? and params[:damage_request_source][srr_item_source_id]['quantity'].to_f > 0)
-                damaged = (inventory_serial_item_params[:damage].present? and inventory_serial_item_params[:damage].to_bool)
-              end
+              damaged = (params[:damage_request_source].present? and params[:damage_request_source][srr_item_source_id]['quantity'].to_f > 0)
 
               # For Serial Item
               # if params[:inventory_serial_item] and params[:inventory_serial_item][srr_item_source_id].present?
               if @grn_item.inventory_product.product_type == 'Serial'
                 issued_inventory_serial_item = srr_item_source.gin_source.grn_serial_item.inventory_serial_item
 
-                issued_inventory_serial_item.attributes = inventory_serial_item_params if inventory_serial_item_params.present?
+                issued_inventory_serial_item.attributes = params[:inventory_serial_item][srr_item_source_id].permit(:scavenge, :parts_not_completed, :damage, :used, :repaired, :reserved) if params[:inventory_serial_item].present?
 
                 issued_inventory_serial_item.inv_status_id = InventorySerialItemStatus.find_by_code('AV').id unless issued_inventory_serial_item.damage
 
