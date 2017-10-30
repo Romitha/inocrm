@@ -1,5 +1,6 @@
 - contracts = @contracts
-
+- organization = @organization
+= paginate contracts, remote: true, method: :get
 %table.table.table-bordered
   %thead
     %tr
@@ -15,15 +16,22 @@
       %th Amount
       %th Currency
       %th Contract Type
-      %th No Of Products
-      %th Created By
-      %th Payment Completed
+      %th Payments Completed
       %th Action
-
   %tbody
     - contracts.each_with_index do |con, index|
+      - content_for :contracts_brief, flush: true do
+        %ul
+          %li
+            %strong Created By:
+            #{con.created_by_user_full_name}
+        %ul
+          %li
+            %strong No Of Products:
+            #{con.num_of_products}
+      %th 
       %tr
-        %td
+        %td{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Contract No: #{con.contract_no}", "data-content"=> yield(:contracts_brief), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }
           - if params[:page]
             = (index+1)+ 10*(params[:page].to_i-1)
           - else
@@ -31,7 +39,7 @@
         %td= con.organization.try(:name)
         %td= con.formated_created_at
         %td= con.contract_no
-        %td= con.owner_organization.name
+        %td= con.owner_organization.try(:name)
         %td= con.formated_contract_start_at
         %td= con.formated_contract_end_at
         %td
@@ -44,12 +52,10 @@
         %td= con.amount
         %td= con.ticket_currency.try(:code)
         %td= con.ticket_contract_type.try(:name)
-        %td= con.num_of_products
-        %td= con.created_by_user_full_name
         %td= boolean_in_word con.payment_completed, "Yes", "No"
         %td
           = link_to "Edit", contracts_path(edit_create_contract: true, contract_id: con.id, customer_id: con.organization.id), remote: true, onclick: "Tickets.ajax_loader(); return false;"
+          = link_to "View", contracts_path(view_contract: true, contract_id: con.id, customer_id: con.organization.id), remote: false
           / = link_to "Edit", contracts_path(edit_create: true, contract_id: con.id, customer_id: con.organization.id), remote: true, onclick: "Tickets.ajax_loader(); return false;"
           / = link_to "Edit", contracts_path(edit_create: true, contract_id: con.id, customer_id: con.organization.id), remote: true, onclick: "Tickets.ajax_loader(); return false;"
-          / = link_to "Edit", contracts_path(edit_create: true, contract_id: con.id, customer_id: con.organization.id), remote: true, onclick: "Tickets.ajax_loader(); return false;"
-
+= paginate contracts, remote: true, method: :get

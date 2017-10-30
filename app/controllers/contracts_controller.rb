@@ -5,6 +5,7 @@ class ContractsController < ApplicationController
     Organization
     IndustryType
     Product
+    ContactNumber
 
     # if params[:search].present?
     #   refined_contract = params[:contract].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
@@ -75,6 +76,7 @@ class ContractsController < ApplicationController
       # @product = Product.find params[:product_serial_id]
 
       @contract = if params[:contract_id].present?
+        @edit_action = "true"
         @organization.ticket_contracts.find params[:contract_id]
       else
         @organization.ticket_contracts.build
@@ -88,11 +90,27 @@ class ContractsController < ApplicationController
       # @product = Product.find params[:product_serial_id]
 
       @contract = if params[:contract_id].present?
+        @edit_action = "true"
         @organization.ticket_contracts.find params[:contract_id]
       else
         @organization.ticket_contracts.build
       end
     end
+
+    if params[:view_contract]
+      Rails.cache.delete([:contract_products, request.remote_ip])
+
+      @organization = Organization.find params[:customer_id]
+      # @product = Product.find params[:product_serial_id]
+
+      @contract = if params[:contract_id].present?
+        @organization.ticket_contracts.find params[:contract_id]
+      else
+        @organization.ticket_contracts.build
+      end
+      render "contracts/view_contract"
+    end
+    
     if params[:select_contract]
       @organization = Organization.find params[:customer_id]
 
@@ -140,6 +158,29 @@ class ContractsController < ApplicationController
   def search_product
     if params[:search_product]
       @products = Product.search(params)
+    end
+  end
+
+  def search_product_contract
+    if params[:search_product]
+      # @products = Product.where(owner_customer_id: params[:customer_id])
+      fined_query = ["owner_customer_id:#{params[:customer_id]}", params[:query]].map { |e| e if e.present? }.compact.join(" AND ")
+      puts "************************************************"
+      puts fined_query
+      puts "************************************************"
+      @products = Product.search(query: fined_query)
+
+    end
+  end
+
+  def edit_contract
+    @contract_detail = TicketContract.find params[:contract_id]
+    respond_to do |format|
+      if @contract_detail.update contract_params
+        format.json { render json: @contract_detail }
+      else
+        format.json { render json: @contract_detail.errors }
+      end
     end
   end
 
@@ -269,7 +310,6 @@ class ContractsController < ApplicationController
           end
           Rails.cache.delete([:products, request.remote_ip])
 
-
           @cus_product.products.each do |product|
             product.create_product_owner_history(@cus_product.id, current_user.id, "Added in Product")
           end
@@ -290,7 +330,7 @@ class ContractsController < ApplicationController
 
   private
     def contract_params
-      params.require(:ticket_contract).permit(:id, :created_at, :created_by, :customer_id, :sla_id, :contract_no, :contract_type_id, :hold, :contract_b2b, :remind_required, :currency_id, :amount, :contract_start_at, :contract_end_at, :remarks, :owner_organization_id, :process_at, contract_products_attributes: [ :id, :_destroy, :invoice_id, :item_no, :description, :amount, :sla_id, :remarks, product_attributes:[:id, :_destroy, :serial_no, :product_brand_id, :product_category_id, :model_no, :product_no, :pop_status_id, :sold_country_id, :pop_note, :pop_doc_url, :corporate_product, :sold_at, :sold_by, :remarks]])
+      params.require(:ticket_contract).permit(:id, :created_at, :created_by, :customer_id, :sla_id, :contract_no, :contract_type_id, :hold, :contract_b2b, :remind_required, :currency_id, :amount, :contract_start_at, :contract_end_at, :remarks, :owner_organization_id, :process_at, :legacy_contract_no, :organization_bill_id, :bill_address_id, :organization_contact_id, :product_brand_id, :product_category_id, :contact_person_id, :additional_charges, :season, :contact_address_id, :accepted_at, :payment_type_id, :documnet_received, contract_products_attributes: [ :id, :_destroy, :invoice_id, :item_no, :description, :amount, :sla_id, :remarks, product_attributes:[:id, :_destroy, :serial_no, :product_brand_id, :product_category_id, :model_no, :product_no, :pop_status_id, :sold_country_id, :pop_note, :pop_doc_url, :corporate_product, :sold_at, :sold_by, :remarks]])
     end
 
     def customer_product_params

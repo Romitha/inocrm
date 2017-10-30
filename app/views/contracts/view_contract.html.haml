@@ -1,0 +1,138 @@
+- contract = @contract
+- organization = @organization
+%br
+%h3 View Contract
+%br
+.row
+  .col-md-2
+    %h4 Customer Information
+  .col-md-5
+    %dl.dl-horizontal
+      %dt Customer Name:
+      %dd= organization.try(:name)
+      %dt Address:
+      %dd
+        - organization.addresses.primary_address.each do |address|
+          = address.full_address
+      %dt Account no:
+      %dd= organization.account.account_no
+      %dt Customer code:
+      %dd= organization.account.try(:code)
+  .col-md-5
+    %dl.dl-horizontal
+      %dt Created at:
+      %dd= organization.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
+      %dt Created by:
+      %dd= organization.created_by_user.try(:full_name)
+%br
+%hr
+- chk_hold = boolean_in_word contract.hold, "Yes", "No"
+- chk_active = boolean_in_word contract.dynamic_active, "Yes", "No"
+.row
+  %br
+  .col-md-2
+    %h4 Contract Information
+  .col-md-4
+    %dl.dl-horizontal
+      - if chk_hold == "No"
+        %font{:color => "green", :size => "4"}
+          %dt Contract Hold :
+        %font{:color => "green", :size => "4"}
+          %dd= chk_hold
+      - if chk_hold == "Yes"
+        %font{:color => "red", :size => "4"}
+          %dt Contract Hold :
+        %font{:color => "red", :size => "4"}
+          %dd= chk_hold
+      %br
+      %dt Contract No:
+      %dd= contract.contract_no
+      %hr
+      %dt Owner Department:
+      %dd= contract.owner_organization.try(:name)
+      %hr
+      %dt Address Company:
+      %dd= contract.organization_contact.try(:name)
+      %hr
+      %dt Billing Company:
+      %dd= contract.organization_bill.try(:name)
+      %hr
+      %dt Start Date:
+      %dd= contract.contract_start_at.try(:strftime, INOCRM_CONFIG["short_date_format"])
+      %hr
+      %dt Process Date:
+      %dd= contract.process_at.try(:strftime, INOCRM_CONFIG["short_date_format"])
+      %hr
+      %dt Hold:
+      %dd= boolean_in_word contract.hold, "Yes", "No"
+      %hr
+      %dt Currency:
+      %dd= contract.ticket_currency.try(:code)
+      %hr
+      %dt Brand:
+      %dd= contract.product_brand.try(:name)
+      %hr
+      %dt Additional Charges:
+      %dd
+        - if contract.additional_charges == 1
+          Option 1
+        - if contract.additional_charges == 2
+          Option 2
+      %hr
+      %dt Accepted Date:
+      %dd= contract.accepted_at.try(:strftime, INOCRM_CONFIG["short_date_format"])
+      %hr
+      %dt Signed Docu. Received:
+      %dd=boolean_in_word contract.documnet_received, "Yes", "No"
+  .col-md-4
+    %dl.dl-horizontal
+      - if chk_active == "Yes"
+        %font{:color => "green", :size => "4"}
+          %dt Contract Active :
+        %font{:color => "green", :size => "4"}
+          %dd= chk_active
+      - if chk_active == "No"
+        %font{:color => "red", :size => "4"}
+          %dt Contract Active :
+        %font{:color => "red", :size => "4"}
+          %dd= chk_active
+      %br
+      %dt Legacy Contract No:
+      %dd= contract.legacy_contract_no
+      %hr
+      %dt Contact Person:
+      %dd= contract.organization_contact_person.try(:name)
+      %hr
+      %dt Contact Address:
+      %dd= contract.contact_address.try(:full_address)
+      %hr
+      %dt Bill Address:
+      %dd= contract.bill_address.try(:full_address)
+      %hr
+      %dt Exp. Date:
+      %dd= contract.contract_end_at.try(:strftime, INOCRM_CONFIG["short_date_format"])
+      %hr
+      %dt Remind before Expiry:
+      %dd= boolean_in_word contract.remind_required, "Yes", "No"
+      %hr
+      %dt Back to Back Contract:
+      %dd= boolean_in_word contract.contract_b2b, "Yes", "No"
+      %hr
+      %dt Contract Type:
+      %dd= contract.ticket_contract_type.try(:name)
+      %hr
+      %dt Category:
+      %dd= contract.product_category.try(:name)
+      %hr
+      %dt Season:
+      %dd
+        - if contract.season == 1
+          Season 1
+        - if contract.season == 2
+          Season 2
+      %hr
+      %dt Payment Type:
+      %dd= contract.ticket_contract_payment_type.try(:name)
+      %hr
+      %dt Remarks:
+      %dd=simple_format contract.remarks

@@ -1,244 +1,246 @@
 - contract = @contract
+- organization = @organization
+.row
+  %h3 Customer Information
+  .col-md-5
+    %dl.dl-horizontal
+      %dt Customer Name:
+      %dd= organization.try(:name)
+      %dt Address:
+      %dd
+        - organization.addresses.primary_address.each do |address|
+          = address.full_address
+      %dt Account no:
+      %dd= organization.account.account_no
+      %dt Customer code:
+      %dd= organization.account.try(:code)
+  .col-md-5
+    %dl.dl-horizontal
+      %dt Created at:
+      %dd= organization.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
+      %dt Created by:
+      %dd= organization.created_by_user.try(:full_name)
+- additional_charges_array = [[ "",""],[ "Option 1","1"],[ "Option 2","2"]]
+- season_array = [[ "",""],[ "Season 1","1"],[ "Season 2","2"]]
+%br
+%br
 
-%h3 Contract Details
-= simple_nested_form_for contract, url: contracts_path(save: true), html: {class: "validate_form"}, method: :post, remote: true, multiple: true do |f|
-  = hidden_field_tag :contract_id, contract.id
+.row
+  %h3 Contract Details
+  %br
+  = simple_nested_form_for contract, url: contracts_path(save: true), html: {class: "validate_form"}, method: :post, remote: true, multiple: true do |f|
+    = hidden_field_tag :contract_id, contract.id
 
-  = f.input :customer_id, as: :hidden
-  = f.input :created_by, as: :hidden, input_html: {value: current_user.id}
+    = f.input :customer_id, as: :hidden
+    = f.input :created_by, as: :hidden, input_html: {value: current_user.id}
 
-  - if contract.errors.any?
+    - if contract.errors.any?
+      .row
+        .col-md-12
+          %ul
+            - contract.errors.full_messages.each do |error|
+              %li= error
     .row
+      .col-md-2
+        = f.input :contract_no, required: true
+      .col-md-2
+        = f.input :legacy_contract_no
+      .col-md-2
+        = f.association :ticket_contract_type, include_blank: false, required: true, label: "Contract Type"
+      .col-md-2
+        = f.association :ticket_currency, label_method: :code, label: "Currency", required: true, include_blank: false
+
+      .col-md-2
+        = f.association :sla_time, required: true, label_method: :description, include_blank: false, label: "SLA"
+      .col-md-2
+        = label_tag "Owner Division" do
+          Owner Branch
+          = f.select :owner_organization_id, ( Organization.owner.members.collect{ |m| [m.name, m.id ] } << [Organization.owner.name, Organization.owner.id] ), {include_blank: false}, {class: "form-control col-md-12 small_scale_margin-top4"}
+
+      / .col-md-2
+      /   = f.input :amount
+    .row
+      .col-md-4
+        = f.input :contract_start_at, as: :string, required: true,input_html: {class: "datepicker", value: f.object.contract_start_at.try(:strftime, INOCRM_CONFIG["short_date_format"])}
+      .col-md-4
+        = f.input :contract_end_at, as: :string, required: true, input_html: {class: "datepicker", value: f.object.contract_end_at.try(:strftime, INOCRM_CONFIG["short_date_format"])}
+      .col-md-4
+        = f.input :process_at, as: :string, required: true, input_html: {class: "datepicker", value: f.object.process_at.try(:strftime, INOCRM_CONFIG["short_date_format"])}
+      .col-md-4
+        = f.input :hold, wrapper: :append
+      .col-md-4
+        = f.input :contract_b2b, wrapper: :append, label: "Back to Back Contract"
+      .col-md-4
+        = f.input :remind_required, wrapper: :append, label: "Need Remind before Expiry"
+    %br
+    %br
+    .row
+      .col-md-2
+        = f.association :organization_bill, label: "Bill company", required: true, collection: ([organization] + organization.members)
+      .col-md-3
+        = f.association :bill_address, collection: ([organization] + organization.members), as: :grouped_select, group_method: :addresses, label_method: :full_address, required: true
+      .col-md-2
+        = f.association :organization_contact, label: "Address company", required: true, collection: ([organization] + organization.members)
+      .col-md-3
+        = f.association :contact_address, collection: ([organization] + organization.members), as: :grouped_select, group_method: :addresses, label_method: :full_address, required: true
+      .col-md-2
+        = f.association :organization_contact_person, include_blank: false, required: true, label: "Contact Person"
+    .row
+      .col-md-2
+        = f.association :product_brand, required: true, include_blank: true
+      .col-md-2
+        = f.association :product_category, collection: ProductBrand.all, as: :grouped_select, group_method: :product_categories, required: true
+      .col-md-1
+      .col-md-2
+        = label_tag "Aditional Charger" do
+          Aditional Chargers
+          = f.select :additional_charges, additional_charges_array, {}, {class: "form-control col-md-12 small_scale_margin-top4"}
+      .col-md-2
+        = label_tag "Season" do
+          Season
+          = f.select :season, season_array, {},{class: "form-control col-md-12 small_scale_margin-top4"}
+    %br
+    %br
+    .row
+      .col-md-2
+        = f.association :ticket_contract_payment_type, include_blank: false, label: "Payment Type"
+      .col-md-2
+        = f.input :accepted_at, as: :string, input_html: {class: "datepicker", value: f.object.accepted_at.try(:strftime, INOCRM_CONFIG["short_date_format"])}
+      .col-md-4.small_scale_margin-top2
+        = f.input :documnet_received, wrapper: :append, label: "Signed Document Received"
+    %br
+    .row
+      .col-md-10
+        = f.input :remarks
+
+      %hr
       .col-md-12
-        %ul
-          - contract.errors.full_messages.each do |error|
-            %li= error
-  .row
-    .col-md-2
-      = f.input :contract_no, required: true
-    .col-md-2
-      = f.association :ticket_contract_type, include_blank: false, required: true, label: "Contract Type"
-    .col-md-2
-      = f.association :ticket_currency, label_method: :code, label: "Currency", required: true, include_blank: false
+        = collapse_wrapper collapse_id: "products_collapse", labelledby: "products_collapse_labelledby" do
+          .row
+            = f.simple_fields_for :contract_products do |c|
+              - c.object.build_product unless c.object.product.present?
 
-    .col-md-2
-      = f.association :sla_time, required: true, label_method: :description, include_blank: false, label: "SLA"
-    .col-md-2
-      = label_tag "Owner Division" do
-        Owner Branch
-        = f.select :owner_organization_id, ( Organization.owner.members.collect{ |m| [m.name, m.id ] } << [Organization.owner.name, Organization.owner.id] ), {include_blank: false}, {class: "form-control col-md-12 small_scale_margin-top4"}
-
-    .col-md-2
-      = f.input :amount
-  .row
-    .col-md-6
-      .row
-        .col-md-4
-          = f.input :contract_start_at, as: :string, required: true,input_html: {class: "datepicker", value: f.object.contract_start_at.try(:strftime, INOCRM_CONFIG["short_date_format"])}
-        .col-md-4
-          = f.input :contract_end_at, as: :string, required: true, input_html: {class: "datepicker", value: f.object.contract_end_at.try(:strftime, INOCRM_CONFIG["short_date_format"])}
-        .col-md-4
-          = f.input :process_at, as: :string, required: true, input_html: {class: "datepicker", value: f.object.process_at.try(:strftime, INOCRM_CONFIG["short_date_format"])}
-        .col-md-4
-          = f.input :hold, wrapper: :append
-        .col-md-4
-          = f.input :contract_b2b, wrapper: :append, label: "Back to Back Contract"
-        .col-md-4
-          = f.input :remind_required, wrapper: :append, label: "Need Remind before Expiry"
-
-    .col-md-6
-      / .row
-      /   .col-md-6
-      /     = f.association :organization_contact, label: "Address company", required: true, collection: contract.organization.members
-      /     = f.association :contact_address, collection: contract.organization.members, as: :grouped_select, group_method: :organization_contact_addresses, label_method: :full_address, required: true
-      /   .col-md-6
-      /     = f.association :organization_bill, label: "Bill company", required: true, collection: contract.organization.members
-      /     = f.association :bill_address, collection: contract.organization.members, as: :grouped_select, group_method: :organization_contact_addresses, label_method: :full_address, required: true
-
-  .row
-    .col-md-8
-      = f.input :remarks
-
-    %hr
-    .col-md-12
-      = collapse_wrapper collapse_id: "products_collapse", labelledby: "products_collapse_labelledby" do
-        .row
-          = f.simple_fields_for :contract_products do |c|
-            - c.object.build_product unless c.object.product.present?
-
-            = c.simple_fields_for :product do |p|
-              - if p.object.id.present?
-                = collapse collapse_type: "info", labelledby: "labelledby_#{p.object.id}", header_content: "Product: #{p.object.product_brand.try(:name)}:#{p.object.product_category.try(:name)}:#{p.object.serial_no}", collapse_link: "invunitlink_#{p.object.id}", collapse_id: "products_collapse" do
-                  .col-md-12
-                    - if p.object.tickets.any?
-                      - product = p.object
-                      - contrac = c.object
-                      / = collapse collapse_type: "info", labelledby: "labelledby_#{product.id}", header_content: "Product: #{product.product_brand.try(:name)}", collapse_link: "invunitlink_#{product.id}", collapse_id: "products_collapse", collapse_in: "in" do
-                      %dl.dl-horizontal
-                        %dt Product Brand
-                        %dd= product.product_brand.try(:name)
-                        %dt Product Category
-                        %dd= product.product_category.try(:name)
-                        %dt Serial No
-                        %dd= product.serial_no
-                        %dt Model No
-                        %dd= product.model_no
-                        %dt Product No
-                        %dd= product.product_no
-                        %dt Sla Time
-                        %dd= contrac.sla_time.try(:description)
-                        %dt Corporate Product
-                        %dd= boolean_in_word product.corporate_product, "Yes", "No"
-                        %dt Product Pop Status
-                        %dd= product.product_pop_status.try(:name)
-                        %dt Pop Note
-                        %dd= product.pop_note
-                        %dt Product Sold Country
-                        %dd= product.product_sold_country.try(:code)
-                        %dt Remarks
-                        %dd= contrac.remarks
-                        %dt POP note document
-                        - if p.object.pop_doc_url.present?
-                          %dd= link_to(product.pop_doc_url.file.try(:filename), product.pop_doc_url.url, target: "_blank")
-                        - if p.object.cannot_removable_from_contract?(contract.id)
-                          cannot remove
-                        - else
-                          .col-md-2.small_scale_padding-top3
-                            = c.link_to_remove  class: "remove_c_t_v_link",:data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Remove" do
-                              %button.btn.btn-danger Remove
-
-                    - else
-                      .row
-                        .col-md-2
-                          = p.association :product_brand, required: true, include_blank: false
-                        .col-md-2
-                          = p.association :product_category, required: true, include_blank: false
-                        .col-md-4
-                          = p.input :serial_no, required: true
-                        .col-md-2
-                          = p.input :model_no
-                        .col-md-2
-                          = p.input :product_no
-                      .row
-                        .col-md-3
-                          = c.association :sla_time, required: true, label_method: :description, include_blank: false, label: "SLA"
-                        .col-md-2
-                          = p.input :corporate_product, wrapper: :append
-                        .col-md-3
-                          = p.association :product_pop_status
-                        .col-md-4
-                          = p.input :pop_note
-                      .row
-                        .col-md-3
-                          = p.association :product_sold_country, label_method: :Country
-                        .col-md-6
-                          = c.input :remarks
-
-                        - if p.object.persisted?
-                          .col-md-3
-                            %strong.small_scale_padding-bottom3{style: "display: block;"} POP note document
-                            #preview_of_pop_doc_url{style: "word-wrap: break-word;"}
-                              - if p.object.pop_doc_url.present?
-                                = link_to p.object.pop_doc_url.file.filename, p.object.pop_doc_url.url, target: "_blank"
-
-                              = p.label "Upload pop note"
-                              = p.file_field :pop_doc_url, accept: 'image/png,image/gif,image/jpeg,application/pdf', class: "product_pop_doc_url", data: {class: "pop_doc_url_wrapper"}
-
-                            .pop_doc_url_wrapper
-
-                      .col-md-2.small_scale_padding-top3
-                        = c.link_to_remove  class: "remove_c_t_v_link",:data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Remove" do
-                          %button.btn.btn-danger Remove
-                %br
-              - else
-                .col-md-12
-                  .row
-                    %h3 New Product
-                  .row
-                    .col-md-2
-                      = p.association :product_brand, required: true, include_blank: false
-                    .col-md-2
-                      = p.association :product_category, required: true, include_blank: false
-                    .col-md-2
-                      = p.input :model_no
-                    .col-md-2
-                      = p.input :product_no
-                    .col-md-4
-                      = p.input :serial_no, required: true
-                  .row
-                    .col-md-3
-                      = c.association :sla_time, required: true, label_method: :description, include_blank: false, label: "SLA"
-                    .col-md-2
-                      = p.input :corporate_product, wrapper: :append
-                    .col-md-3
-                      = p.association :product_pop_status
-                    .col-md-4
-                      = p.input :pop_note
-                  .row
-                    .col-md-3
-                      = p.association :product_sold_country, label_method: :code
-                    .col-md-6
-                      = c.input :remarks
-
-                    - if p.object.persisted?
-                      .col-md-3
-                        %strong.small_scale_padding-bottom3{style: "display: block;"} POP note document
-                        #preview_of_pop_doc_url{style: "word-wrap: break-word;"}
+              = c.simple_fields_for :product do |p|
+                - if p.object.id.present?
+                  = collapse collapse_type: "info", labelledby: "labelledby_#{p.object.id}", header_content: "Product: #{p.object.product_brand.try(:name)}:#{p.object.product_category.try(:name)}:#{p.object.serial_no}", collapse_link: "invunitlink_#{p.object.id}", collapse_id: "products_collapse" do
+                    .col-md-12
+                      - if p.object.tickets.any?
+                        - product = p.object
+                        - contrac = c.object
+                        / = collapse collapse_type: "info", labelledby: "labelledby_#{product.id}", header_content: "Product: #{product.product_brand.try(:name)}", collapse_link: "invunitlink_#{product.id}", collapse_id: "products_collapse", collapse_in: "in" do
+                        %dl.dl-horizontal
+                          %dt Product Brand
+                          %dd= product.product_brand.try(:name)
+                          %dt Product Category
+                          %dd= product.product_category.try(:name)
+                          %dt Serial No
+                          %dd= product.serial_no
+                          %dt Model No
+                          %dd= product.model_no
+                          %dt Product No
+                          %dd= product.product_no
+                          %dt Sla Time
+                          %dd= contrac.sla_time.try(:description)
+                          %dt Corporate Product
+                          %dd= boolean_in_word product.corporate_product, "Yes", "No"
+                          %dt Product Pop Status
+                          %dd= product.product_pop_status.try(:name)
+                          %dt Pop Note
+                          %dd= product.pop_note
+                          %dt Product Sold Country
+                          %dd= product.product_sold_country.try(:code)
+                          %dt Remarks
+                          %dd= contrac.remarks
+                          %dt POP note document
                           - if p.object.pop_doc_url.present?
-                            = link_to p.object.pop_doc_url.file.filename, p.object.pop_doc_url.url, target: "_blank"
+                            %dd= link_to(product.pop_doc_url.file.try(:filename), product.pop_doc_url.url, target: "_blank")
+                          - if p.object.cannot_removable_from_contract?(contract.id)
+                            cannot remove
+                          - else
+                            .col-md-2.small_scale_padding-top3
+                              = c.link_to_remove  class: "remove_c_t_v_link",:data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Remove" do
+                                %button.btn.btn-danger Remove
 
-                          = p.label "Upload pop note"
-                          = p.file_field :pop_doc_url, accept: 'image/png,image/gif,image/jpeg,application/pdf', class: "product_pop_doc_url", data: {class: "pop_doc_url_wrapper"}
+                      - else
+                        .row
+                          .col-md-2
+                            = p.association :product_brand, required: true, include_blank: false
+                          .col-md-2
+                            = p.association :product_category, required: true, include_blank: false
+                          .col-md-4
+                            = p.input :serial_no, required: true
+                          .col-md-2
+                            = p.input :model_no
+                          .col-md-2
+                            = p.input :product_no
+                        .row
+                          .col-md-3
+                            = c.association :sla_time, required: true, label_method: :description, include_blank: false, label: "SLA"
+                          .col-md-2
+                            = p.input :corporate_product, wrapper: :append
+                          .col-md-3
+                            = p.association :product_pop_status
+                          .col-md-4
+                            = p.input :pop_note
+                        .row
+                          .col-md-3
+                            = p.association :product_sold_country, label_method: :Country
+                          .col-md-6
+                            = c.input :remarks
 
-                        .pop_doc_url_wrapper
+                          - if p.object.persisted?
+                            .col-md-3
+                              %strong.small_scale_padding-bottom3{style: "display: block;"} POP note document
+                              #preview_of_pop_doc_url{style: "word-wrap: break-word;"}
+                                - if p.object.pop_doc_url.present?
+                                  = link_to p.object.pop_doc_url.file.filename, p.object.pop_doc_url.url, target: "_blank"
 
-                  .col-md-2.small_scale_padding-top3
-                    = c.link_to_remove  class: "remove_c_t_v_link",:data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Remove" do
-                      %button.btn.btn-danger Remove
-                  %hr
+                                = p.label "Upload pop note"
+                                = p.file_field :pop_doc_url, accept: 'image/png,image/gif,image/jpeg,application/pdf', class: "product_pop_doc_url", data: {class: "pop_doc_url_wrapper"}
 
-      .row
-        / = collapse_wrapper collapse_id: "selected_products_collapse", labelledby: "selected_products_collapse_labelledby" do
-        /   = collapse collapse_type: "info", labelledby: "labelledby_selected_products_collapse", header_content: "Selected Products", collapse_link: "invunitlink_selected_products_collapse", collapse_id: "selected_products_collapse" do
-        #selectedproducts
+                              .pop_doc_url_wrapper
+
+                        .col-md-2.small_scale_padding-top3
+                          = c.link_to_remove  class: "remove_c_t_v_link",:data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Remove" do
+                            %button.btn.btn-danger Remove
+                  %br
+        .row
+          #selectedproducts
+        %button.btn.btn-info{"data-target" => "#productsModel", "data-toggle" => "modal", :type => "button"} Add Products
+
+    .row
+    .row
+      %hr
+      .col-md-12
+        = f.submit "Save", class: "btn btn-sm btn-success", remote: true, data: {disable_with: "Please wait..."}
+
+  %script#pop_doc_url_upload{type: "text/x-tmpl"}
+    .pop_doc_url_upload.span12
+      {%= o.name %}
+      .progress
+        .progress-bar.progress-bar-success.progress-bar-striped{role: "progressbar", "aria-valuemax" => 100, "aria-valuemin" => 0, "aria-valuenow" => 0}
 
 
-      / = f.link_to_add "Add Product", :contract_products, class: "btn btn-sm btn-success", onclick: "setTimeout(function(){Tickets.multi_pop_url_doc_upload(); return false;}, 200)"
-      %button.btn.btn-info{"data-target" => "#productsModel", "data-toggle" => "modal", :type => "button"} Select Product
-
-  .row
-  .row
-    %hr
-    .col-md-12
-      = f.submit "Save", class: "btn btn-sm btn-success", remote: true, data: {disable_with: "Please wait..."}
-
-%script#pop_doc_url_upload{type: "text/x-tmpl"}
-  .pop_doc_url_upload.span12
-    {%= o.name %}
-    .progress
-      .progress-bar.progress-bar-success.progress-bar-striped{role: "progressbar", "aria-valuemax" => 100, "aria-valuemin" => 0, "aria-valuenow" => 0}
-
-
-#productsModel.modal.fade{:role => "dialog"}
-  .modal-dialog.modal-lg
-    / Modal content
-    .modal-content
-      .modal-header
-        %button.close{"data-dismiss" => "modal", :type => "button"}
-        %h3.modal-title Search Product
-      .modal-body
-        / = form_tag "#", method: :post, remote: true do
-        = form_tag search_product_contracts_path, method: :get, remote: true do
-          .col-md-10
-            = text_field_tag "query", params[:query], class: "form-control", placeholder: "Type any. for target seach"
-          .col-md-2
-            = submit_tag "Search", :name => "search_product", class: "btn btn-sm btn-success"
-        .col-md-12
-          #searchproduct
-      .modal-footer
-        .col-md-12
-          %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
-          / = submit_tag "Done", :name => "done", class: "btn btn-sm btn-success btn-primary"
+  #productsModel.modal.fade{:role => "dialog"}
+    .modal-dialog.modal-lg
+      / Modal content
+      .modal-content
+        .modal-header
+          %button.close{"data-dismiss" => "modal", :type => "button"}
+          %h3.modal-title Search Product
+        .modal-body
+          / = form_tag "#", method: :post, remote: true do
+          = form_tag search_product_contract_contracts_path(customer_id: organization.id), method: :get, remote: true do
+            .col-md-10
+              = text_field_tag "query", params[:query], class: "form-control", placeholder: "Type any. for target search"
+            .col-md-2
+              = submit_tag "Search", :name => "search_product", class: "btn btn-sm btn-success"
+          .col-md-12
+            #searchproduct
+        .modal-footer
+          .col-md-12
+            %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+            / = submit_tag "Done", :name => "done", class: "btn btn-sm btn-success btn-primary"
 
 
 = javascript_tag do

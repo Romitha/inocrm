@@ -810,7 +810,7 @@ window.Tickets =
     sup_time = $(elem).val()
     eng_time = $("#worked_hours").val()
     if parseFloat($(elem).val()) > parseFloat($("#worked_hours").val())
-      alert "Support engineer work hours canot be highr than engineer work hours"
+      alert "Support engineer work hours can not be higher than engineer work hours"
       $(elem).val(eng_time)
   approveManufacturePart: (e)->
     console.log($(e))
@@ -873,11 +873,30 @@ window.Tickets =
         category_list.empty().html(filtered_option).trigger('chosen:updated')
 
   filter_select_new_product: ->
-    category_list = $("#organization_products_attributes_0_product_category_id")
+    category_list = $("#ticket_contract_product_category_id")
     category_list_html = category_list.html()
     category_list.prop("disabled", true)
-    $("#organization_products_attributes_0_product_brand_id").change ->
+    $("#ticket_contract_product_brand_id").change ->
       category_list.prop("disabled", false)
-      selected = $("#organization_products_attributes_0_product_brand_id :selected").text()
+      selected = $("#ticket_contract_product_brand_id :selected").text()
       filtered_option = $(category_list_html).filter("optgroup[label='#{selected}']").html()
       category_list.empty().html(filtered_option).trigger('chosen:updated')
+
+  filter_bill_address: ->
+    address_bill_list = $("#ticket_contract_bill_address_id")
+    address_bill_list_html = address_bill_list.html()
+    address_bill_list.prop("disabled", true)
+    $("#ticket_contract_organization_bill_id").change ->
+      address_bill_list.prop("disabled", false)
+      selected = $("#ticket_contract_organization_bill_id :selected").text()
+      filtered_option = $(address_bill_list_html).filter("optgroup[label='#{selected}']").html()
+      address_bill_list.empty().html(filtered_option).trigger('chosen:updated')
+
+    address_company_list = $("#ticket_contract_contact_address_id")
+    address_company_list_html = address_company_list.html()
+    address_company_list.prop("disabled", true)
+    $("#ticket_contract_organization_contact_id").change ->
+      address_company_list.prop("disabled", false)
+      selected = $("#ticket_contract_organization_contact_id :selected").text()
+      filtered_option = $(address_company_list_html).filter("optgroup[label='#{selected}']").html()
+      address_company_list.empty().html(filtered_option).trigger('chosen:updated')

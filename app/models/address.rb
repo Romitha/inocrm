@@ -36,7 +36,7 @@ class Province < ActiveRecord::Base
 end
 
 class OrganizationContactAddress < ActiveRecord::Base
-  self.table_name = "oraganization_contact_addresses"
+  self.table_name = "organization_contact_addresses"
 
   belongs_to :organization
   belongs_to :country, class_name: "ProductSoldCountry"

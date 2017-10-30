@@ -2,7 +2,7 @@
 - cached_products = @cached_products
 %br/
 - if products.present?
-  = paginate products, remote: true, method: :get
+  / = paginate products, remote: true, method: :get
 
   = form_tag submit_selected_products_contracts_path(from_where: params[:from_where]), method: :post, remote: true do
     - if params[:from_where] == "cus_product"
@@ -20,16 +20,17 @@
             %th Category
             %th Model No
             %th Product No
-            %th Customer Name
-            %th Hold
-            %th Active
+            %th Product Name
+            %th Product Description
+            - if params[:from_where] == "cus_product"
+              %th Customer Name
             %th Action
         %tbody
           - products.each_with_index do |p, index|
             %tr
               %td
                 - if params[:page]
-                  = (index+1)+ 5*(params[:page].to_i-1)
+                  = (index+1)+ 10*(params[:page].to_i-1)
                 - else
                   = (index+1)
               %td= p.serial_no
@@ -37,16 +38,16 @@
               %td= p.category_name
               %td= p.model_no
               %td= p.product_no
-              - if p.ticket_contracts.present?
-                - if p.ticket_contracts.last.present?
-                  %td= p.ticket_contracts.last.organization.try(:name)
-                  %td= boolean_in_word p.ticket_contracts.last.try(:hold), "Yes", "No"
-                  %td
-              - else
-                %td= p.owner_customer.try(:name)
-                %td
-                %td
-              / %td= link_to "Select"
+              %td= p.name
+              %td= p.description
+              - if params[:from_where] == "cus_product"
+                %td= p.owner_customer_name
+              / - if p.ticket_contracts.present?
+              /   - if p.ticket_contracts.last.present?
+              /     %td= p.ticket_contracts.last.organization.try(:name)
+              /     %td= boolean_in_word p.ticket_contracts.last.try(:hold), "Yes", "No"
+              /     %td
+              / - else
 
 
               %td
@@ -55,4 +56,4 @@
                 - else
                   = check_box_tag "serial_products_ids[]", p.id, Rails.cache.fetch([:contract_products, request.remote_ip]).to_a.map { |e| e.id }.include?(p.id.to_f)
               / %td= check_box_tag "serial_products_ids[]", p.id
-  = paginate products, remote: true, method: :get
+  / = paginate products, remote: true, method: :get

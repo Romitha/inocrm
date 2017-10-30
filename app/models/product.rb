@@ -9,7 +9,7 @@ class Product < ActiveRecord::Base
   end
 
   def self.search(params)  
-    tire.search(page: (params[:page] || 1), per_page: 5) do
+    tire.search(page: (params[:page] || 1), per_page: 10000) do
       query do
         boolean do
           must { string params[:query] } if params[:query].present?
@@ -29,8 +29,8 @@ class Product < ActiveRecord::Base
   def to_indexed_json
     Warranty
     to_json(
-      only: [:id, :serial_no, :model_no, :product_no, :created_at],
-      methods: [:category_name, :brand_name],
+      only: [:id, :serial_no, :model_no, :product_no, :created_at, :owner_customer_id, :name, :description],
+      methods: [:category_name, :brand_name, :owner_customer_name],
       include: {
         tickets: {
           only: [:created_at, :cus_chargeable, :id],
@@ -60,6 +60,9 @@ class Product < ActiveRecord::Base
     product_brand.try(:name)
   end
 
+  def owner_customer_name
+    owner_customer.try(:name)
+  end
   mount_uploader :pop_doc_url, PopDocUrlUploader
 
   has_many :ticket_product_serials, foreign_key: :product_serial_id

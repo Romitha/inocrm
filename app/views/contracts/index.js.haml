@@ -58,13 +58,16 @@
   / $("a[href='#contracts_form_collapse_form_link1']").trigger("click");
   / $("a[href='#contracts_form_collapse_search_contracts_link']").trigger("click");
 
+
 - elsif params[:select_contract].present?
-  $("#contractselect").html("#{j render 'contracts/contractproducts'}");
+  $("#contractselect").html("#{j render 'cont racts/contractproducts'}");
 
 - elsif params[:search_product].present?
   $("#searchproduct").html("#{j render 'contracts/searchproduct'}");
 
-
+- elsif params[:search_product_contract].present?
+  $("#searchproduct").html("#{j render 'contracts/searchproduct'}");
+  
 - elsif params[:done].present?
   $("#searchproduct").html("#{j render 'contracts/contractform'}");
 
@@ -116,6 +119,7 @@ Tickets.remove_ajax_loader();
 Tickets.multi_pop_url_doc_upload();
 Tickets.disabled_end_at();
 Tickets.filter_select_new_product();
-
+Tickets.filter_bill_address();
 
 $("#ticket_contract_contract_end_at").prop('disabled', ($("#ticket_contract_contract_end_at").val() == ''));
+$("a[rel~=popover], .has-popover").popover();

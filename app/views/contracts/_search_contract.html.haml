@@ -1,4 +1,5 @@
 %h4 Search Contracts
+- season_array = [[ "",""],[ "Season 1","1"],[ "Season 2","2"]]
 = form_tag contracts_path(contracts_callback: "search_contracts"), remote: true, method: :get, class: "form-horizontal" do
   .row
     .col-md-3
@@ -11,12 +12,28 @@
     .col-md-3
       = label_tag "Contract Date To", "Contract Date To"
       = text_field_tag "contract_date_to", params[:contract_date_to], class: "form-control datepicker", placeholder: "Select To date"
-    .col-md-3
+    .col-md-3.small_scale_margin-top2
       = label_tag "Payment completed"
-      = check_box_tag "search_contracts[payment_completed]", (params[:search_contracts] and params[:search_contracts][:payment_completed]), class: "form-control"
+      = check_box_tag "search_contracts[payment_completed]", (params[:search_contracts] and params[:search_contracts][:payment_completed]), checked = false
   .row
     .col-md-3
       = label_tag "Contract Type"
-      = select_tag "search_contracts[ticket_contract_type.id]", options_from_collection_for_select(TicketContractType.all, :id, :name), class: "form-control chosen-select", include_blank: true
-    .col-md-12
+      = select_tag "search_contracts[ticket_contract_type.id]", options_from_collection_for_select(TicketContractType.all, :id, :name), class: "form-control parent_class", include_blank: true
+
+    .col-md-3
+      = label_tag "Brand"
+      = select_tag "search_contracts[brand_name]", options_from_collection_for_select(ProductBrand.all, :name, :name), class: "form-control parent_class", include_blank: true
+    .col-md-3
+      = label_tag "Payemnt Type:"
+      = select_tag "search_contracts[payment_type]", options_from_collection_for_select(TicketContractPaymentType.all, :name, :name), class: "form-control parent_class", include_blank: true
+    .col-md-3
+      = label_tag "Season:"
+      = select_tag "search_contracts[season]", raw("<option value=1>Season 1</option> <option value=2>Season 2</option>"), class: "form-control parent_class", include_blank: true
+  .row
+    .col-md-3
+      = label_tag "Owner Department:"
+      = select_tag "search_contracts[owner_organization.id]", options_from_collection_for_select(Organization.all, :id, :name), class: "form-control parent_class", include_blank: true
+  %br
+  .row
+    .col-md-3
       = submit_tag "Search", name: "search_contract_details", class: "btn btn-sm btn-success"

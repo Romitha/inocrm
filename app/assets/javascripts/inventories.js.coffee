@@ -1010,6 +1010,13 @@ window.Inventories =
       else
         $("#customer_quotation_print_exchange_rate").val("")
 
+  currency_change_quatation:->
+    # $("#customer_quotation_print_currency_id").change ->
+    #   if $("#customer_quotation_print_currency_id").val() != ""
+    #     $("#customer_quotation_print_exchange_rate").val("1")
+    #   else
+    #     $("#customer_quotation_print_exchange_rate").val("")
+
   get_bank_details_invoice:->
     bank_list = $("#ticket_invoice_print_bank_detail_id")
     bank_list_html = bank_list.html()

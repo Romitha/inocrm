@@ -504,13 +504,18 @@ class TicketContract < ActiveRecord::Base
   belongs_to :organization, foreign_key: :customer_id
   belongs_to :ticket_contract_type, foreign_key: :contract_type_id
   belongs_to :ticket_currency, foreign_key: :currency_id
+  belongs_to :organization_contact_person, foreign_key: :contact_person_id
   belongs_to :created_by_user, class_name: "User", foreign_key: :created_by
+  belongs_to :product_brand, foreign_key: :product_brand_id
+  belongs_to :product_category, foreign_key: :product_category_id
+  belongs_to :ticket_contract_payment_type, foreign_key: :payment_type_id 
 
   belongs_to :organization_contact, class_name: "Organization"
   belongs_to :organization_bill, class_name: "Organization"
 
-  belongs_to :contact_address, class_name: "OrganizationContactAddress"
-  belongs_to :bill_address, class_name: "OrganizationContactAddress"
+  # belongs_to :organization_contact_addresses, foreign_key: :bill_address
+  belongs_to :contact_address, class_name: "Address"
+  belongs_to :bill_address, class_name: "Address"
   belongs_to :owner_organization, class_name: "Organization"
 
   validates_presence_of [:customer_id, :sla_id, :created_by]
@@ -522,6 +527,9 @@ class TicketContract < ActiveRecord::Base
     indexes :organization, type: "nested", include_in_parent: true
     indexes :ticket_contract_type, type: "nested", include_in_parent: true
     indexes :owner_organization, type: "nested", include_in_parent: true
+    indexes :organization_contact_person, type: "nested", include_in_parent: true
+    indexes :ticket_contract_payment_type, type: "nested", include_in_parent: true
+    # indexes :organization_contact_addresses, type: "nested", include_in_parent: true
     # indexes :supplier, type: "nested", include_in_parent: true
     # indexes :store, type: "nested", include_in_parent: true
     # indexes :inventory_po_items, type: "nested", include_in_parent: true
@@ -549,9 +557,10 @@ class TicketContract < ActiveRecord::Base
 
   def to_indexed_json
     Organization
+    ContactNumber
     to_json(
-      only: [ :id, :created_at, :created_by, :customer_id, :products, :contract_no, :amount, :payment_completed, :contract_start_at,:contract_end_at],
-      methods: [:num_of_products, :formated_created_at, :created_by_user_full_name, :formated_contract_start_at, :formated_contract_end_at],
+      only: [ :id, :created_at, :created_by, :customer_id, :products, :contract_no, :hold, :amount, :payment_completed, :contract_start_at,:contract_end_at, :season],
+      methods: [:num_of_products, :brand_name, :payment_type, :formated_created_at, :created_by_user_full_name, :formated_contract_start_at, :formated_contract_end_at],
       include: {
         organization: {
           only: [:id, :name, :code],
@@ -575,11 +584,25 @@ class TicketContract < ActiveRecord::Base
         owner_organization: {
           only: [:id, :name],
         },
+        organization_contact_person: {
+          only: [:id, :name],
+        },
+        ticket_contract_payment_type: {
+          only: [:id, :name],
+        },
       },
     )
 
   end
-  
+
+  def brand_name
+    product_brand.try(:name)
+  end
+
+  def payment_type
+    ticket_contract_payment_type.try(:name)
+  end
+
   def num_of_products
     products.count
   end
@@ -643,6 +666,11 @@ class TicketPaymentReceivedType < ActiveRecord::Base
   has_many :ticket_payment_receiveds, foreign_key: :type_id
 
   TYPES = {"cash" => 1, "cheque" => 2, "credit card" => 3, "other" => 4}
+end
+
+class TicketContractPaymentType  < ActiveRecord::Base
+  self.table_name = "mst_spt_contract_payment_type"
+
 end
 
 class TicketProductSerial < ActiveRecord::Base
