@@ -811,11 +811,11 @@ class InventorySerialItem < ActiveRecord::Base
   end
 
   after_save do |inventory_serial_item|
-    inventory_serial_item.update_index
+    # inventory_serial_item.update_index
 
-    [:inventory_product].each do |parent|
-      parent.to_s.classify.constantize.find(inventory_serial_item.send(parent).id).update_index
-    end
+    # [:inventory_product].each do |parent|
+    #   parent.to_s.classify.constantize.find(inventory_serial_item.send(parent).id).async.update_index
+    # end
 
   end
 

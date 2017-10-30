@@ -1201,7 +1201,7 @@ module Admins
         grn_item.current_unit_cost = grn_item.unit_cost
         grn_item.currency_id = inventory_product.inventory_product_info.currency_id
         grn_item.inventory_not_updated = false
-        grn_item.save!
+        # grn_item.save!
 
         inventory = grn_item.inventory_product.inventories.find_by_store_id(@grn.store_id)
         # inventory.stock_quantity += tot_recieved_qty
@@ -1269,7 +1269,9 @@ module Admins
             damage_request.grn_serial_part_id = grn_item.grn_serial_parts.first.id if grn_item.grn_serial_parts.first.present?
             damage_request.product_condition_id = inventory_serial_item.product_condition_id if inventory_serial_item.present?
 
-            damage_request.save! 
+            damage_request.save!
+
+            grn_item.remaining_quantity -= grn_item.damage_quantity
 
             grn_item.grn_serial_items.first.update remaining: false if grn_item.grn_serial_items.first.present?
 
@@ -1548,25 +1550,6 @@ module Admins
 
       end
     end
-
-    # def srn
-    #   Organization
-    #   Role
-    #   Inventory
-    #   @store = Organization.find params[:store_id] if params[:store_id].present?
-    #   case params[:srn_callback]
-    #   when "call_search"
-    #     @modal_active = true
-    #   else
-    #     @srn = Srn.new
-    #     @srn_all = Srn.order(updated_at: :desc).page(params[:page]).per(10)
-    #   end
-    #   if request.xhr?
-    #     render "admins/inventories/srn/srn.js"
-    #   else
-    #     render "admins/inventories/srn/srn"
-    #   end
-    # end
 
     def srns
       if params[:srn_id].present?

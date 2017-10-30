@@ -200,7 +200,7 @@ class GrnItem < ActiveRecord::Base
   has_many :grn_item_current_unit_cost_histories, -> { order("created_at desc")}
   accepts_nested_attributes_for :grn_item_current_unit_cost_histories, allow_destroy: true
 
-  after_save :update_relation_index
+  after_create :update_relation_index
   before_save :rectify_stock_cost
 
   def self.only_grn_items1
