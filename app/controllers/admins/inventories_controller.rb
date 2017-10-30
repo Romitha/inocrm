@@ -1228,6 +1228,7 @@ module Admins
         grn_item.inventory_not_updated = false
 
         grn_item.srr_item = srr_item_source.srr_item
+        grn_item.current_unit_cost = grn_item.unit_cost
         grn_item.grn = @grn
 
 
@@ -1242,6 +1243,7 @@ module Admins
         # inventory = srr_item_source.srr_item.inventory_product.inventories.find_by_store_id(srr_item_source.srr_item.srr.store_id)
         inventory.stock_quantity += grn_item.recieved_quantity
         inventory.available_quantity += (grn_item.recieved_quantity - grn_item.damage_quantity)
+        inventory.damage_quantity += grn_item.damage_quantity
         serial_inventories << inventory #inventory has to save
         grn_item.save!
 
