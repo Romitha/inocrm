@@ -222,9 +222,9 @@ class GrnItem < ActiveRecord::Base
       1
 
     elsif inventory_batches.any?
-      grn_batches.sum(:remaining_quantity)
+      grn_batches.sum(:remaining_quantity) + grn_batches.sum(:damage_quantity)
     else
-      remaining_quantity
+      remaining_quantity.to_f + damage_quantity.to_f
     end
 
   end
@@ -481,7 +481,7 @@ class GrnBatch < ActiveRecord::Base
   end
 
   def batch_stock_cost
-    remaining_quantity.to_f * grn_item.current_unit_cost
+    (damage_quantity.to_f + remaining_quantity.to_f) * grn_item.current_unit_cost
   end
 
 end
