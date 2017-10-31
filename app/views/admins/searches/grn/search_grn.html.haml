@@ -55,6 +55,6 @@
                 %td= grn.supplier_name
                 %td{title: grn.remarks}= grn.remarks.try :truncate, 50
                 %td= grn.created_by_user.try(:full_name)
-                %td= link_to "Select", search_grn_admins_searches_path(grn_callback: "select_grn", grn_id: grn.id)
+                %td= link_to "Select", search_grn_admins_searches_path(grn_callback: "select_grn", grn_id: grn.id), target: "_blank"
           = paginate @grns, remote: false, method: :get
           %hr
