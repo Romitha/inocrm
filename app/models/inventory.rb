@@ -287,7 +287,8 @@ class InventoryProduct < ActiveRecord::Base
         grn_serial_items.active_serial_items.to_a.sum{|g| g.inventory_serial_item.inventory_id == inventory_id ? (g.grn_item.current_unit_cost.to_f + g.inventory_serial_item.inventory_serial_items_additional_costs.to_a.sum{|c| c.cost.to_f }) : 0 }
 
       elsif inventory_product_info.need_batch
-        grn_batches.to_a.sum{|g| g.inventory_batch.inventory_id == inventory_id ? (g.grn_item.current_unit_cost.to_f * g.remaining_quantity.to_f) : 0 }
+        # grn_batches.to_a.sum{|g| g.inventory_batch.inventory_id == inventory_id ? (g.grn_item.current_unit_cost.to_f * g.remaining_quantity.to_f) : 0 }
+        grn_batches.to_a.sum{|g| g.inventory_batch.inventory_id == inventory_id ? (g.grn_item.current_unit_cost.to_f * g.recieved_quantity.to_f) : 0 }
 
       else
         # store_id = inventories.where(id: inventory_id).first.try(:store_id)
@@ -295,7 +296,8 @@ class InventoryProduct < ActiveRecord::Base
         total_sum = 0
         inventories.where(id: inventory_id).each do |inventory|
           store_id = inventory.store_id
-          total_sum += grn_items.only_grn_items1.to_a.sum{|g| g.grn.store_id.to_i == store_id.to_i ? g.remaining_quantity.to_f * g.current_unit_cost.to_f : 0 } if store_id.present?
+          # total_sum += grn_items.only_grn_items1.to_a.sum{|g| g.grn.store_id.to_i == store_id.to_i ? g.remaining_quantity.to_f * g.current_unit_cost.to_f : 0 } if store_id.present?
+          total_sum += grn_items.only_grn_items1.to_a.sum{|g| g.grn.store_id.to_i == store_id.to_i ? g.recieved_quantity.to_f * g.current_unit_cost.to_f : 0 } if store_id.present?
 
         end
 
