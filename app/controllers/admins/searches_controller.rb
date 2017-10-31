@@ -265,7 +265,7 @@ module Admins
         @inventory_serial_item.grn_items.each do |grn_item|
           @history << { name: "PRN", element: grn_item.inventory_po_item.inventory_prn_item.inventory_prn, created_at: grn_item.inventory_po_item.inventory_prn_item.inventory_prn.created_at.strftime("%Y-%m-%d") } if grn_item.inventory_po_item.present?
           @history << { name: "PO", element: grn_item.inventory_po_item.inventory_po, created_at: grn_item.inventory_po_item.inventory_po.created_at.strftime("%Y-%m-%d") } if grn_item.inventory_po_item.present?
-          @history << { name: "GRN", element: grn_item, created_at: grn_item.created_at.strftime("%Y-%m-%d") }
+          @history << { name: "GRN", element: grn_item.grn, created_at: grn_item.created_at.strftime("%Y-%m-%d") }
 
           if grn_item.srn_item.present?
             grn_item.srn_item.gin_items.each do |gin_item|

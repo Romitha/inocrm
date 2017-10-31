@@ -145,22 +145,22 @@
         = User.find_by_id(h[:element][:created_by]).try(:full_name)
       .col-md-2
         - if h[:name] == "PRN"
-          = link_to prns_admins_inventories_path(prn_id: h[:element][:id]), "role" => "button",class: "btn btn-success" do
+          = link_to prns_admins_inventories_path(prn_id: h[:element][:id]), "role" => "button",class: "btn btn-success", target: "_blank" do
             View
         - elsif h[:name] == "PO"
-          = link_to pos_admins_inventories_path(po_id: h[:element][:id]), "role" => "button",class: "btn btn-success" do
+          = link_to pos_admins_inventories_path(po_id: h[:element][:id]), "role" => "button",class: "btn btn-success", target: "_blank" do
             View
         - elsif h[:name] == "GRN"
-          = link_to search_grn_admins_searches_path(grn_callback: "select_grn",grn_id: h[:element][:id]), "role" => "button",class: "btn btn-success" do
+          = link_to search_grn_admins_searches_path(grn_callback: "select_grn",grn_id: h[:element][:id]), "role" => "button",class: "btn btn-success", target: "_blank" do
             View
         - elsif h[:name] == "GIN"
-          = link_to gins_admins_inventories_path(gin_id: h[:element][:id]), "role" => "button",class: "btn btn-success" do
+          = link_to gins_admins_inventories_path(gin_id: h[:element][:id]), "role" => "button",class: "btn btn-success", target: "_blank" do
             View
         - elsif h[:name] == "SRN"
-          = link_to srns_admins_inventories_path(srn_id: h[:element][:id]), "role" => "button",class: "btn btn-success" do
+          = link_to srns_admins_inventories_path(srn_id: h[:element][:id]), "role" => "button",class: "btn btn-success", target: "_blank" do
             View
         - elsif h[:name] == "SRR"
-          = link_to srrs_admins_inventories_path(srr_id: h[:element][:id]), "role" => "button",class: "btn btn-success" do
+          = link_to srrs_admins_inventories_path(srr_id: h[:element][:id]), "role" => "button",class: "btn btn-success", target: "_blank" do
             View
 
 

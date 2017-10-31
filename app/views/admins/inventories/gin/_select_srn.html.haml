@@ -28,8 +28,8 @@
           %td= srn.so_no
           %td= srn.inventories_available
           %td= srn.srn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_srn_no_format"])
-          %td= srn.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
-          %td= srn.required_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
+          %td= srn.created_at.to_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
+          %td= (srn.required_at and srn.required_at.to_date.try(:strftime, INOCRM_CONFIG['short_date_format']))
           %td= srn.requested_module.name
           %td= simple_format srn.remarks
           %td= srn.created_by_user_full_name
