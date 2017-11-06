@@ -87,7 +87,11 @@
         = f.association :organization_contact_person, include_blank: false, required: true, label: "Contact Person"
     .row
       .col-md-2
-        = f.association :product_brand, required: true, include_blank: true
+        .product_brand_main
+          = f.association :product_brand, required: true, include_blank: true
+        .product_brand_show.hide
+          Product Brand
+          = text_field_tag :product_brand1,"", disabled:true
       .col-md-2
         = f.association :product_category, collection: ProductBrand.all, as: :grouped_select, group_method: :product_categories, required: true
       .col-md-1
@@ -105,7 +109,7 @@
       .col-md-2
         = f.association :ticket_contract_payment_type, include_blank: false, label: "Payment Type"
       .col-md-2
-        = f.input :accepted_at, as: :string, input_html: {class: "datepicker", value: f.object.accepted_at.try(:strftime, INOCRM_CONFIG["short_date_format"])}
+        = f.input :accepted_at, as: :string, input_html: {class: "datepicker", value: f.object.accepted_at.try(:strftime,INOCRM_CONFIG["short_date_format"])}
       .col-md-4.small_scale_margin-top2
         = f.input :documnet_received, wrapper: :append, label: "Signed Document Received"
     %br
@@ -114,99 +118,60 @@
         = f.input :remarks
 
       %hr
-      .col-md-12
-        = collapse_wrapper collapse_id: "products_collapse", labelledby: "products_collapse_labelledby" do
-          .row
-            = f.simple_fields_for :contract_products do |c|
-              - c.object.build_product unless c.object.product.present?
+      .row
+        .col-md-5
+          .col-md-1
+          %br
+          %h4
+            %strong Products for selected contract
+        .col-md-6
+          = collapse_wrapper collapse_id: "products_collapse", labelledby: "products_collapse_labelledby" do
+            .row
+              = f.simple_fields_for :contract_products do |c|
+                - c.object.build_product unless c.object.product.present?
 
-              = c.simple_fields_for :product do |p|
-                - if p.object.id.present?
-                  = collapse collapse_type: "info", labelledby: "labelledby_#{p.object.id}", header_content: "Product: #{p.object.product_brand.try(:name)}:#{p.object.product_category.try(:name)}:#{p.object.serial_no}", collapse_link: "invunitlink_#{p.object.id}", collapse_id: "products_collapse" do
-                    .col-md-12
-                      - if p.object.tickets.any?
+                = c.simple_fields_for :product do |p|
+                  - if p.object.id.present?
+                    = collapse collapse_type: "info", labelledby: "labelledby_#{p.object.id}", header_content: "Product: #{p.object.product_brand.try(:name)}:#{p.object.product_category.try(:name)}:#{p.object.serial_no}", collapse_link: "invunitlink_#{p.object.id}", collapse_id: "products_collapse" do
+                      .col-md-12
+                        / - if p.object.tickets.any?
                         - product = p.object
+                        / - product = c.object.product
                         - contrac = c.object
-                        / = collapse collapse_type: "info", labelledby: "labelledby_#{product.id}", header_content: "Product: #{product.product_brand.try(:name)}", collapse_link: "invunitlink_#{product.id}", collapse_id: "products_collapse", collapse_in: "in" do
                         %dl.dl-horizontal
+                          %dt Serial No
+                          %dd= product.serial_no
                           %dt Product Brand
                           %dd= product.product_brand.try(:name)
                           %dt Product Category
                           %dd= product.product_category.try(:name)
-                          %dt Serial No
-                          %dd= product.serial_no
                           %dt Model No
                           %dd= product.model_no
                           %dt Product No
                           %dd= product.product_no
-                          %dt Sla Time
-                          %dd= contrac.sla_time.try(:description)
-                          %dt Corporate Product
-                          %dd= boolean_in_word product.corporate_product, "Yes", "No"
-                          %dt Product Pop Status
-                          %dd= product.product_pop_status.try(:name)
-                          %dt Pop Note
-                          %dd= product.pop_note
-                          %dt Product Sold Country
-                          %dd= product.product_sold_country.try(:code)
-                          %dt Remarks
-                          %dd= contrac.remarks
-                          %dt POP note document
-                          - if p.object.pop_doc_url.present?
-                            %dd= link_to(product.pop_doc_url.file.try(:filename), product.pop_doc_url.url, target: "_blank")
+                          %dt Amount
+                          %dd
+                            = link_to "#", class: "inline_edit", data: {type: "text", resource: "contract_product", name: "amount",url: update_contract_product_contracts_path(contract_product_id: contrac.id), "original-title" => "Update Amount"} do
+                              = contrac.try(:amount)
+                          %dt Discount Amount
+                          %dd
+                            = link_to "#", class: "inline_edit", data: {type: "text", resource: "contract_product", name: "discount_amount",url: update_contract_product_contracts_path(contract_product_id: contrac.id), "original-title" => "Update Discount Amount"} do
+                              = contrac.try(:discount_amount)
+                          %dt Installed Location
+                          %dd
+                            = link_to "#", class: "inline_edit", data: {type: "select", resource: "contract_product", source:organization.addresses.collect{|address| {value: address.id, text: address.try(:full_address)}}, name: "installed_location_id", url: update_contract_product_contracts_path(contract_product_id: contrac.id), "original-title" => "Update Installed Location"} do
+                              = contrac.installed_location.try(:full_address)
+                        %br
+                          = link_to "View", contracts_path(view_product: true, product_id: product.id, contract_id:contrac.id), remote: false, class: "btn btn-sm btn-warning", target: "_blank"
                           - if p.object.cannot_removable_from_contract?(contract.id)
                             cannot remove
                           - else
-                            .col-md-2.small_scale_padding-top3
-                              = c.link_to_remove  class: "remove_c_t_v_link",:data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Remove" do
-                                %button.btn.btn-danger Remove
-
-                      - else
-                        .row
-                          .col-md-2
-                            = p.association :product_brand, required: true, include_blank: false
-                          .col-md-2
-                            = p.association :product_category, required: true, include_blank: false
-                          .col-md-4
-                            = p.input :serial_no, required: true
-                          .col-md-2
-                            = p.input :model_no
-                          .col-md-2
-                            = p.input :product_no
-                        .row
-                          .col-md-3
-                            = c.association :sla_time, required: true, label_method: :description, include_blank: false, label: "SLA"
-                          .col-md-2
-                            = p.input :corporate_product, wrapper: :append
-                          .col-md-3
-                            = p.association :product_pop_status
-                          .col-md-4
-                            = p.input :pop_note
-                        .row
-                          .col-md-3
-                            = p.association :product_sold_country, label_method: :Country
-                          .col-md-6
-                            = c.input :remarks
-
-                          - if p.object.persisted?
-                            .col-md-3
-                              %strong.small_scale_padding-bottom3{style: "display: block;"} POP note document
-                              #preview_of_pop_doc_url{style: "word-wrap: break-word;"}
-                                - if p.object.pop_doc_url.present?
-                                  = link_to p.object.pop_doc_url.file.filename, p.object.pop_doc_url.url, target: "_blank"
-
-                                = p.label "Upload pop note"
-                                = p.file_field :pop_doc_url, accept: 'image/png,image/gif,image/jpeg,application/pdf', class: "product_pop_doc_url", data: {class: "pop_doc_url_wrapper"}
-
-                              .pop_doc_url_wrapper
-
-                        .col-md-2.small_scale_padding-top3
-                          = c.link_to_remove  class: "remove_c_t_v_link",:data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Remove" do
-                            %button.btn.btn-danger Remove
+                            = c.link_to_remove  class: "remove_c_t_v_link",:data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Remove" do
+                              %button.btn.btn-danger Remove
                   %br
-        .row
-          #selectedproducts
-        %button.btn.btn-info{"data-target" => "#productsModel", "data-toggle" => "modal", :type => "button"} Add Products
+    .row
+      #selectedproducts
+    %button.btn.btn-info{"data-target" => "#productsModel", "data-toggle" => "modal", :type => "button", onclick:"Tickets.get_brand_id();" } Add Products
 
     .row
     .row
@@ -232,6 +197,7 @@
           / = form_tag "#", method: :post, remote: true do
           = form_tag search_product_contract_contracts_path(customer_id: organization.id), method: :get, remote: true do
             .col-md-10
+              = hidden_field_tag :product_brand
               = text_field_tag "query", params[:query], class: "form-control", placeholder: "Type any. for target search"
             .col-md-2
               = submit_tag "Search", :name => "search_product", class: "btn btn-sm btn-success"

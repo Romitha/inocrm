@@ -24,8 +24,11 @@ Rails.application.routes.draw do
       get "customer_search"
       post "submit_selected_products"
       post "save_cus_products"
+      post "payments_save"
       put "contract_update"
       put "edit_contract"
+      put "update_payments"
+      put "update_contract_product"
     end
   end
 

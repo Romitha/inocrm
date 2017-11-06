@@ -1,0 +1,52 @@
+- product = @product
+%br
+%h3 View product
+%br
+.row
+  .col-md-2
+    %h4 Product Information
+  .col-md-5
+    %dl.dl-horizontal
+      %dt Serial No:
+      %dd= product.serial_no
+      %hr
+      %dt Product Brand:
+      %dd= product.product_brand.try(:name)
+      %hr
+      %dt Product Category:
+      %dd= product.product_category.try(:name)
+      %hr
+      %dt Product Name:
+      %dd= product.try(:name)
+      %hr
+      %dt Product Pop Status:
+      %dd= product.product_pop_status.try(:name)
+      %hr
+      %dt Pop Note:
+      %dd= product.pop_note
+      %hr
+      %dt Sla Time:
+      %dd= @contract_product.sla_time.try(:description)
+
+  .col-md-5
+    %dl.dl-horizontal
+      %dt Model No:
+      %dd= product.model_no
+      %hr
+      %dt Product No:
+      %dd= product.product_no
+      %hr
+      %dt Product Description:
+      %dd= product.description
+      %hr
+      %dt POP note document:
+      %dd= link_to(product.pop_doc_url.file.try(:filename), product.pop_doc_url.url, target: "_blank")
+      %hr
+      %dt Product Sold Country:
+      %dd= product.product_sold_country.try(:code)
+      %hr
+      %dt Corporate Product:
+      %dd= boolean_in_word product.corporate_product, "Yes", "No"
+      %hr
+      %dt Remarks:
+      %dd=simple_format @contract_product.remarks

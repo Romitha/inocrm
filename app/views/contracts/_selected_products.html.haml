@@ -1,5 +1,5 @@
 - products = @cached_products
-
+- organization_for_location = @organization_for_location
 - if products.present?
   %h3 Selected Products
 
@@ -9,10 +9,15 @@
         %tr
           %th No
           %th Serial No
-          %th Product No
-          %th Model No
           %th Product Brand
           %th Product Category
+          %th Model No
+          %th Product No
+          - if params[:from_where] != "cus_product"
+            %th Amount
+            %th Discount Amount
+            %th Installed Location
+
           %th Action
 
       %tbody
@@ -24,12 +29,18 @@
               - else
                 = (index+1)
             %td= p.serial_no
-            %td= p.product_no
-            %td= p.model_no
             %td= p.product_brand.name
             %td= p.product_category.name
+            %td= p.model_no
+            %td= p.product_no
+            - if params[:from_where] != "cus_product"
+              %td= text_field_tag "contract_product_additional_params[#{p.id}][amount]", nil, class: "form-control", required:true
+              %td= text_field_tag "contract_product_additional_params[#{p.id}][discount_amount]", nil, class: "form-control", required:true
+              %td= select_tag "contract_product_additional_params[#{p.id}][installed_location_id]", options_from_collection_for_select(organization_for_location.addresses, :id, :full_address, nil), class: "form-control chosen-select", include_blank: true
+
             %td
               - if params[:from_where] == "cus_product"
                 = link_to "Remove", submit_selected_products_contracts_path(remove_cus_product: true, selected_product: p.id, from_where: params[:from_where]), remote: true, class: "btn btn-sm btn-warning", method: :post
               - else
-                = link_to "Remove", submit_selected_products_contracts_path(remove: true, selected_product: p.id), remote: true, class: "btn btn-sm btn-warning", method: :post
+                = link_to "View", contracts_path(view_product: true, product_id: p.id), remote: false, class: "btn btn-sm btn-warning", target: "_blank"
+                = link_to "Remove", submit_selected_products_contracts_path(remove: true, selected_product: p.id), remote: true, class: "btn btn-sm btn-danger", method: :post

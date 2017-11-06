@@ -836,11 +836,11 @@ window.Tickets =
 
 
   dynamically_filter_select: (el, position, parent_class='')->
-    $('.datepicker').datepicker
-      format: "dd-mm-yyyy"
-      todayBtn: true
-      todayHighlight: true
-
+    $('.datepicker').datepicker({
+    format: "yyyy-m-dd",
+    todayBtn: true,
+    todayHighlight: true
+    });
     _this = $(el)
     if position == "prev"
       brand_id = _this.prev().find(".select_wrapper .product_brand")
@@ -900,3 +900,17 @@ window.Tickets =
       selected = $("#ticket_contract_organization_contact_id :selected").text()
       filtered_option = $(address_company_list_html).filter("optgroup[label='#{selected}']").html()
       address_company_list.empty().html(filtered_option).trigger('chosen:updated')
+
+  get_brand_id: ->
+    main_brand_name = $("#ticket_contract_product_brand_id").val()
+    main_brand_text = $("#ticket_contract_product_brand_id :selected").text()
+    $("#product_brand").val(main_brand_name)
+    $("#product_brand1").val(main_brand_text)
+    if main_brand_name == ""
+      alert "Please Select A Brand First"
+    #   $(".product_brand_main").removeClass("hide");
+    #   $(".product_brand_show").addClass("hide");
+
+    # else
+    #   $(".product_brand_main").addClass("hide");
+    #   $(".product_brand_show").removeClass("hide");

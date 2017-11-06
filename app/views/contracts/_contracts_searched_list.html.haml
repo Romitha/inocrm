@@ -29,7 +29,6 @@
           %li
             %strong No Of Products:
             #{con.num_of_products}
-      %th 
       %tr
         %td{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Contract No: #{con.contract_no}", "data-content"=> yield(:contracts_brief), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }
           - if params[:page]
@@ -55,7 +54,10 @@
         %td= boolean_in_word con.payment_completed, "Yes", "No"
         %td
           = link_to "Edit", contracts_path(edit_create_contract: true, contract_id: con.id, customer_id: con.organization.id), remote: true, onclick: "Tickets.ajax_loader(); return false;"
-          = link_to "View", contracts_path(view_contract: true, contract_id: con.id, customer_id: con.organization.id), remote: false
+          %br
+          = link_to "View", contracts_path(view_contract: true, contract_id: con.id, customer_id: con.organization.id), target: "_blank", remote: false
+          %br
+          = link_to "Payments", contracts_path(view_contract: true, new_payments: true, contract_id: con.id, customer_id: con.organization.id),target: "_blank",  remote: false
           / = link_to "Edit", contracts_path(edit_create: true, contract_id: con.id, customer_id: con.organization.id), remote: true, onclick: "Tickets.ajax_loader(); return false;"
           / = link_to "Edit", contracts_path(edit_create: true, contract_id: con.id, customer_id: con.organization.id), remote: true, onclick: "Tickets.ajax_loader(); return false;"
 = paginate contracts, remote: true, method: :get

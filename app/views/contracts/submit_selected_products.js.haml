@@ -1,1 +1,16 @@
 $("#selectedproducts").html("#{j render 'selected_products'}");
+
+- if @count == 1
+  $(".product_brand_main").removeClass("hide");
+  $(".product_brand_show").addClass("hide");
+- else
+  $(".product_brand_main").addClass("hide");
+  $(".product_brand_show").removeClass("hide");
+
+- if @submit
+  - if @submit_count == 1
+    $(".product_brand_main").removeClass("hide");
+    $(".product_brand_show").addClass("hide");
+  - else
+    $(".product_brand_main").addClass("hide");
+    $(".product_brand_show").removeClass("hide");

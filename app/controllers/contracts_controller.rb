@@ -88,7 +88,7 @@ class ContractsController < ApplicationController
 
       @organization = Organization.find params[:customer_id]
       # @product = Product.find params[:product_serial_id]
-
+      @contract_products = @organization.contract_products.where(contract_id: params[:contract_id])
       @contract = if params[:contract_id].present?
         @edit_action = "true"
         @organization.ticket_contracts.find params[:contract_id]
@@ -98,9 +98,16 @@ class ContractsController < ApplicationController
     end
 
     if params[:view_contract]
+      Invoice
       Rails.cache.delete([:contract_products, request.remote_ip])
 
       @organization = Organization.find params[:customer_id]
+      @products = ContractProduct.all
+
+      @contract_products = @organization.contract_products.where(contract_id: params[:contract_id])
+
+
+      @contract_payment = ContractPaymentReceived.where(contract_id: params[:contract_id])
       # @product = Product.find params[:product_serial_id]
 
       @contract = if params[:contract_id].present?
@@ -108,7 +115,17 @@ class ContractsController < ApplicationController
       else
         @organization.ticket_contracts.build
       end
+
+      @contract_payment_received = ContractPaymentReceived.new contract_id: params[:contract_id]
+
       render "contracts/view_contract"
+    end
+
+   if params[:view_product]
+      # Rails.cache.delete([:contract_products, request.remote_ip])
+      @product = Product.find params[:product_id]
+      @contract_product = ContractProduct.find params[:contract_id]
+      render "contracts/view_product"
     end
     
     if params[:select_contract]
@@ -134,6 +151,7 @@ class ContractsController < ApplicationController
         product.create_product_owner_history(@organization.id, current_user.id, "Added in contract")
 
       end
+
     end
 
     if params[:save_product].present?
@@ -164,12 +182,14 @@ class ContractsController < ApplicationController
   def search_product_contract
     if params[:search_product]
       # @products = Product.where(owner_customer_id: params[:customer_id])
-      fined_query = ["owner_customer_id:#{params[:customer_id]}", params[:query]].map { |e| e if e.present? }.compact.join(" AND ")
-      puts "************************************************"
-      puts fined_query
-      puts "************************************************"
-      @products = Product.search(query: fined_query)
-
+      if params[:product_brand].present?
+        fined_query = ["owner_customer_id:#{params[:customer_id]}", "product_brand_id:#{params[:product_brand]}", params[:query]].map { |e| e if e.present? }.compact.join(" AND ")
+        puts "************************************************"
+        puts fined_query
+        puts "************************************************"
+        @products = Product.search(query: fined_query)
+        @organization1 = Organization.find params[:customer_id]
+      end
     end
   end
 
@@ -190,14 +210,22 @@ class ContractsController < ApplicationController
         serial_products = Product.where(id: params[:serial_products_ids])
         puts serial_products.count
         Rails.cache.delete([:contract_products, request.remote_ip])
-
+        @organization_for_location = Organization.find params[:organization_id]
         @cached_products = Rails.cache.fetch([:contract_products, request.remote_ip]){ serial_products.to_a }
+      else
+        Rails.cache.delete([:contract_products, request.remote_ip])
+        @submit_count = 1
+        @submit = true
+        puts @submit_count
       end
     end
 
     if params[:remove].present?
       a = Rails.cache.fetch([:contract_products, request.remote_ip])
-
+      puts "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+      @count = a.count
+      puts @count
+      puts "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
       a.delete_if{|e| e.id.to_f == params[:selected_product].to_f }
       Rails.cache.delete([:contract_products, request.remote_ip])
 
@@ -269,7 +297,21 @@ class ContractsController < ApplicationController
 
         Rails.cache.fetch([:contract_products, request.remote_ip]).to_a.each do |product|
           unless @contract.product_ids.include?(product.id)
-            @contract.contract_products.create(product_serial_id: product.id, sla_id: product.product_brand.sla_id)
+            c_product = @contract.contract_products.create(product_serial_id: product.id, sla_id: product.product_brand.sla_id)
+
+            if params['contract_product_additional_params'].present?
+              puts "**********************************************************************"
+              puts c_product.product_serial_id
+              puts params['contract_product_additional_params'][c_product.product_serial_id.to_s]
+              puts params['contract_product_additional_params']
+              puts "**********************************************************************"
+
+              if params['contract_product_additional_params'][c_product.product_serial_id.to_s].present?
+                c_product_attr = params['contract_product_additional_params'].require(c_product.product_serial_id.to_s).permit('amount', 'discount_amount', 'installed_location_id' )
+                c_product.update c_product_attr
+              end
+            end
+
           end
 
         end
@@ -319,6 +361,49 @@ class ContractsController < ApplicationController
     render :index
   end
 
+  def payments_save
+    Invoice
+    Ticket
+    payment_completed = (params[:payment_completed].present? and params[:payment_completed].to_bool)
+    contract_payment_received = ContractPaymentReceived.new payment_params
+    
+    @contract = TicketContract.find params[:contract_id]
+    @contract.update_attributes(payment_completed: payment_completed)
+    
+    respond_to do |format|
+      contract_payment_received.created_by = current_user.id
+      if contract_payment_received.save
+        format.html {redirect_to contracts_path, notice: "Payments Successfully Saved"}
+      else
+        flash[:notice] = "Payment Unsuccessful"
+        format.html {redirect_to contracts_path}
+      end
+    end
+  end
+
+  def update_payments
+    Invoice
+    contract_payment_received = ContractPaymentReceived.find params[:payment_id]
+    respond_to do |format|
+      if contract_payment_received.update payment_params
+        format.json { render json: contract_payment_received }
+      else
+        format.json { render json: contract_payment_received.errors }
+      end
+    end
+  end
+  
+  def update_contract_product
+    contract_product = ContractProduct.find params[:contract_product_id]
+    respond_to do |format|
+      if contract_product.update contract_product_params
+        format.json { render json: contract_product }
+      else
+        format.json { render json: contract_product.errors }
+      end
+    end
+  end
+
   def customer_search
     Ticket
     Organization
@@ -333,8 +418,16 @@ class ContractsController < ApplicationController
       params.require(:ticket_contract).permit(:id, :created_at, :created_by, :customer_id, :sla_id, :contract_no, :contract_type_id, :hold, :contract_b2b, :remind_required, :currency_id, :amount, :contract_start_at, :contract_end_at, :remarks, :owner_organization_id, :process_at, :legacy_contract_no, :organization_bill_id, :bill_address_id, :organization_contact_id, :product_brand_id, :product_category_id, :contact_person_id, :additional_charges, :season, :contact_address_id, :accepted_at, :payment_type_id, :documnet_received, contract_products_attributes: [ :id, :_destroy, :invoice_id, :item_no, :description, :amount, :sla_id, :remarks, product_attributes:[:id, :_destroy, :serial_no, :product_brand_id, :product_category_id, :model_no, :product_no, :pop_status_id, :sold_country_id, :pop_note, :pop_doc_url, :corporate_product, :sold_at, :sold_by, :remarks]])
     end
 
+    def payment_params
+      params.require(:contract_payment_received).permit(:id, :contract_id, :payment_installment, :payment_received_at, :amount, :created_at, :created_by, :invoice_no, :remarks)
+    end
+
     def customer_product_params
       params.require(:organization).permit(:id, products_attributes: [:id, :serial_no, :product_brand_id, :product_category_id, :model_no, :product_no, :pop_status_id, :sold_country_id, :pop_note, :pop_doc_url, :corporate_product, :sold_at, :sold_by, :remarks, :description, :name, :date_installation, :note, :_destroy])
+    end
+
+    def contract_product_params
+      params.require(:contract_product).permit(:id, :amount, :discount_amount, :installed_location_id)
     end
 
 end

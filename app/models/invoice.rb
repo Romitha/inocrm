@@ -208,3 +208,8 @@ class TicketInvoiceTerminate < ActiveRecord::Base
   belongs_to :act_terminate_job_payment, foreign_key: :terminate_job_payment_id
   belongs_to :ticket_invoice, foreign_key: :invoice_id
 end
+
+class ContractPaymentReceived < ActiveRecord::Base
+  self.table_name = "spt_contract_payment_received"
+  belongs_to :ticket_contract, foreign_key: :contract_id
+end

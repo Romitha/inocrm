@@ -496,8 +496,10 @@ class TicketContract < ActiveRecord::Base
 
   has_many :tickets, foreign_key: :contract_id
   has_many :contract_products, foreign_key: :contract_id
+  has_many :contract_payment_receiveds, foreign_key: :contract_id
 
   accepts_nested_attributes_for :contract_products, allow_destroy: true
+  accepts_nested_attributes_for :contract_payment_receiveds, allow_destroy: true
   has_many :products, through: :contract_products
 
   belongs_to :sla_time, foreign_key: :sla_id
@@ -638,6 +640,7 @@ class ContractProduct < ActiveRecord::Base
   accepts_nested_attributes_for :product, allow_destroy: true
 
   belongs_to :sla_time, foreign_key: :sla_id
+  belongs_to :installed_location, class_name: "Address"
 
   accepts_nested_attributes_for :product, allow_destroy: true
 
