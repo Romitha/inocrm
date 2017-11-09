@@ -1311,9 +1311,13 @@ module Admins
       end
       # serial_inventories.each(&:save) if serial_inventories.present?
 
-      Srn.joins(:srn_items).where( store_id: @grn.store_id, inv_srn_item: {product_id: @grn.grn_items.pluck(:product_id)} ).where.not(closed: true, inv_srn_item: {closed: true}).async.import
+      Srn.joins(:srn_items).where( store_id: @grn.store_id, inv_srn_item: {product_id: @grn.grn_items.pluck(:product_id)} ).where.not(closed: true, inv_srn_item: {closed: true}).each do |srn|
+        srn.async(queue: 'index-model').update_index
+      end
 
-      InventoryProduct.where(id: @grn.grn_items.pluck(:product_id)).async.import # cached object doesnt have elasticsearch existance
+      InventoryProduct.where(id: @grn.grn_items.pluck(:product_id).uniq).each do |product|
+        product.async(queue: 'index-model').update_index
+      end # cached object doesnt have elasticsearch existance
 
 
       flash[:notice] = "Successfully saved."
