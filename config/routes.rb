@@ -424,7 +424,9 @@ Rails.application.routes.draw do
         post "filter_product_and_category"
 
         get "gin"
-        get "batch_or_serial_for_gin"
+        # get "batch_or_serial_for_gin"
+        match "batch_or_serial_for_gin", action: :batch_or_serial_for_gin, via: [:get, :post]
+
         post "create_gin"
 
         get 'srr'
