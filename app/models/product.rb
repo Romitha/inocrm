@@ -127,6 +127,9 @@ class ProductBrand < ActiveRecord::Base
   has_many :product_brand_costs
   accepts_nested_attributes_for :product_brand_costs, allow_destroy: true
 
+  has_one :contract_document, class_name: "Documents::ContractDocument"
+  accepts_nested_attributes_for :contract_document, allow_destroy: true
+
   validates_uniqueness_of :name
 
   validates_numericality_of [:parts_return_days]

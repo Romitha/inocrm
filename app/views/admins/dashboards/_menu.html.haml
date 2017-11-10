@@ -72,9 +72,12 @@
       = link_to payment_term_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'payment_term' }" do
         %i.fa.fa-bullseye
         Payment term
-      = link_to tax_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'payment_term' }" do
+      = link_to tax_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'tax' }" do
         %i.fa.fa-link
         Tax
+      = link_to annexture_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'annexture' }" do
+        %i.fa.fa-link
+        Annextures
 
     .panel-footer
       = link_to "Tickets", admins_tickets_path

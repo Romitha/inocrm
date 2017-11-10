@@ -265,6 +265,47 @@ module Admins
       end
     end
 
+    def annexture
+      Tax
+      if params[:edit]
+        if params[:annexture_id]
+          @annexture = Documents::Annexture.find params[:annexture_id]
+          if @annexture.update annexture_params
+            render json: @annexture
+          else
+            render json: @annexture.errors.full_messages.join(', ')
+          end
+        end
+
+      else
+        if params[:create]
+          @annexture = Documents::Annexture.new annexture_params
+          if @annexture.save
+            @annexture = Documents::Annexture.new
+            flash[:notice] = 'Successfully saved'
+          else
+            flash[:error] = 'Unable to save!'
+          end
+          redirect_to annexture_admins_tickets_url
+
+        elsif params[:edit_more]
+          @annexture = Documents::Annexture.find params[:annexture_id]
+
+        elsif params[:update]
+          @annexture = Documents::Annexture.find params[:annexture_id]
+          if @annexture.update annexture_params
+            flash[:notice] = 'Successfully saved'
+            @annexture = Documents::Annexture.new
+          end
+          redirect_to annexture_admins_tickets_url
+
+        else
+          @annexture = Documents::Annexture.new
+        end
+        @annexture_all = Documents::Annexture.order(updated_at: :desc)
+      end
+    end
+
     def dispatch_method
       Invoice
       if params[:edit]
@@ -597,9 +638,10 @@ module Admins
       @brands_and_category = ProductBrand.find params[:brands_and_category_id]
       if @brands_and_category.present?
         @brands_and_category.delete
+        flash[:notice] = "Successfully removed from system"
       end
       respond_to do |format|
-        format.html { redirect_to brands_and_category_admins_inventories_path }
+        format.html { redirect_to brands_and_category_admins_tickets_path }
       end
     end
 
@@ -668,11 +710,15 @@ module Admins
       end
 
       def brands_and_category_params
-        params.require(:product_brand).permit(:organization_id, :currency_id, :sla_id, :name, :parts_return_days, :warranty_date_format, product_categories_attributes: [:_destroy, :id, :sla_id, :name], product_brand_costs_attributes: [:id, :engineer_cost, :support_engineer_cost, :currency_id, :updated_by])
+        params.require(:product_brand).permit(:organization_id, :currency_id, :sla_id, :name, :parts_return_days, :warranty_date_format, product_categories_attributes: [:_destroy, :id, :sla_id, :name], product_brand_costs_attributes: [:id, :engineer_cost, :support_engineer_cost, :currency_id, :updated_by], contract_document_attributes: [:id, :_destroy, :code, :name, :description, :document, :document_file_name])
       end
 
       def product_category_params
         params.require(:product_category).permit(:name, :sla_id)
+      end
+
+      def annexture_params
+        params.require(:documents_annexture).permit(:name, :template_name, :document_url)
       end
   end
 end

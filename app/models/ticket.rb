@@ -497,6 +497,8 @@ class TicketContract < ActiveRecord::Base
   has_many :tickets, foreign_key: :contract_id
   has_many :contract_products, foreign_key: :contract_id
   has_many :contract_payment_receiveds, foreign_key: :contract_id
+  has_many :contract_attachments, class_name: 'Documents::ContractAttachment', foreign_key: :contract_id
+  accepts_nested_attributes_for :contract_attachments, allow_destroy: true
 
   accepts_nested_attributes_for :contract_products, allow_destroy: true
   accepts_nested_attributes_for :contract_payment_receiveds, allow_destroy: true

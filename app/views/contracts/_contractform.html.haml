@@ -96,7 +96,7 @@
         = f.association :product_category, collection: ProductBrand.all, as: :grouped_select, group_method: :product_categories, required: true
       .col-md-1
       .col-md-2
-        = label_tag "Aditional Charger" do
+        = label_tag "Aditional Charges" do
           Aditional Chargers
           = f.select :additional_charges, additional_charges_array, {}, {class: "form-control col-md-12 small_scale_margin-top4"}
       .col-md-2
@@ -116,6 +116,28 @@
     .row
       .col-md-10
         = f.input :remarks
+    .row
+      = f.simple_fields_for :contract_attachments do |d|
+        .col-md-2
+          = d.link_to_remove "Remove"
+        .col-md-6
+          - if d.object.persisted?
+            = link_to d.object.attachment_url.file.filename, d.object.attachment_url.url, target: "_blank"
+          - else
+            #document_attachment_upload.btn.btn-info.btn-mini.fileinput-button{style: "min-height: 10px;"}
+              %span Upload attachment
+              = d.file_field :attachment_url
+        %hr
+      .col-md-5
+        = f.link_to_add "Add Attachment", :contract_attachments
+    .row
+      .col-md-3
+        = label_tag "Select Brand Template"
+        = select_tag "contract_document[contract_document_id]", options_from_collection_for_select(Documents::ContractDocument.where(product_brand_id: contract.product_brand_id), :id, :name), include_blank: true, class: "form-control"
+
+      .col-md-3
+        = label_tag "Select Annexture"
+        = select_tag "contract_document[annexture_id]", options_from_collection_for_select(Documents::Annexture.all, :id, :name), include_blank: true, class: "form-control"
 
       %hr
       .row
