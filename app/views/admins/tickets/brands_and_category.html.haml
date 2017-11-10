@@ -1,6 +1,6 @@
 %fieldset
   %legend Brand and Categories
-  = simple_nested_form_for @brands_and_category, url: brands_and_category_admins_tickets_path, html: { class: "validate_form" }, method: :post do |f|
+  = simple_nested_form_for @brands_and_category, url: brands_and_category_admins_tickets_path, html: { class: "validate_form" }, method: :post, multipart: true do |f|
     = hidden_field_tag :brands_and_category_id, f.object.id
     .panel.panel-primary
       .panel-heading
@@ -65,6 +65,28 @@
                         = cost.input :engineer_cost
                       .col-md-4
                         = cost.input :support_engineer_cost
+
+        .panel.panel-success
+          .panel-heading
+            %h3.panel-title Brand Document
+          .panel-body
+            .row
+              - f.object.build_contract_document unless f.object.contract_document.present?
+              = f.simple_fields_for :contract_document do |document|
+                .col-md-4
+                  = document.input :code
+                .col-md-4
+                  = document.input :name
+                .col-md-4
+                  = document.input :description
+                .col-md-10
+                  = document.input :document
+                .col-md-2
+                  #document_attachment_upload.btn.btn-info.btn-mini.fileinput-button{style: "min-height: 10px;"}
+                    %span Upload
+                    = document.file_field :document_file_name
+                  %br/
+                  = link_to document.object.document_file_name.file.filename, document.object.document_file_name.url, target: "_blank" if document.object.document_file_name.present?
 
         .row
           .col-md-12

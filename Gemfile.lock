@@ -163,6 +163,8 @@ GEM
       thread_safe (~> 0.1)
       warden (~> 1.2.3)
     diff-lcs (1.2.5)
+    docx_replace (1.1.0)
+      rubyzip (~> 1.1, >= 1.1.6)
     domain_name (0.5.20160615)
       unf (>= 0.0.5, < 1.0.0)
     em-synchrony (1.0.4)
@@ -170,10 +172,10 @@ GEM
     erubis (2.7.0)
     eventmachine (1.0.9.1)
     execjs (2.5.2)
-    factory_girl (4.7.0)
+    factory_girl (4.9.0)
       activesupport (>= 3.0.0)
-    factory_girl_rails (4.7.0)
-      factory_girl (~> 4.7.0)
+    factory_girl_rails (4.9.0)
+      factory_girl (~> 4.9.0)
       railties (>= 3.0.0)
     faye-websocket (0.10.0)
       eventmachine (>= 0.12.0)
@@ -227,7 +229,7 @@ GEM
       activesupport (>= 3.0.0)
     less (2.6.0)
       commonjs (~> 0.2.7)
-    less-rails (2.7.0)
+    less-rails (2.8.0)
       actionpack (>= 4.0)
       less (~> 2.6.0)
       sprockets (> 2, < 4)
@@ -297,24 +299,8 @@ GEM
     rdoc (4.2.0)
     redcarpet (3.3.3)
     redis (3.2.1)
-    redis-actionpack (4.0.1)
-      actionpack (~> 4)
-      redis-rack (~> 1.5.0)
-      redis-store (~> 1.1.0)
-    redis-activesupport (4.1.4)
-      activesupport (>= 3, < 5)
-      redis-store (~> 1.1.0)
     redis-objects (1.2.0)
       redis (>= 3.0.2)
-    redis-rack (1.5.0)
-      rack (~> 1.5)
-      redis-store (~> 1.1.0)
-    redis-rails (4.0.0)
-      redis-actionpack (~> 4)
-      redis-activesupport (~> 4)
-      redis-store (~> 1.1.0)
-    redis-store (1.1.6)
-      redis (>= 2.2)
     ref (1.0.5)
     responders (2.1.0)
       railties (>= 4.2.0, < 5)
@@ -455,6 +441,7 @@ DEPENDENCIES
   dalli
   database_cleaner
   devise
+  docx_replace
   factory_girl_rails
   ffaker
   god
@@ -466,23 +453,23 @@ DEPENDENCIES
   jquery-rails
   jquery-validation-rails
   kaminari
-  less-rails
+  less-rails (~> 2.8.0)
   migration_comments
   mini_magick
   momentjs-rails (>= 2.8.1)
   mustache
-  mysql2
+  mysql2 (~> 0.3.18)
   nested_form
   rack-mini-profiler
   rails (= 4.2.1)
   rails-erd
   redcarpet
-  redis-rails
   responders
   rmagick
   rolify
   roo
   rspec-rails
+  rubyzip
   sass-rails (~> 4.0.3)
   sdoc (~> 0.4.0)
   selenium-webdriver (~> 3.0.0.beta3)
