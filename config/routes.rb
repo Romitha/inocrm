@@ -325,7 +325,8 @@ Rails.application.routes.draw do
           :payment_item,
           :payment_term,
           :tax,
-          :brands_and_category
+          :brands_and_category,
+          :annexture
         ].each do |action|
           match "#{action.to_s}", action: action, via: [:get, :post, :put]
         end
