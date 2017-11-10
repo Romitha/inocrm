@@ -40,6 +40,18 @@
           %ul
             - contract.errors.full_messages.each do |error|
               %li= error
+    -if params[:edit_create_contract].present?
+      .row
+        .col-md-2
+          .product_bnd.hide
+            = f.association :product_brand, required: true, include_blank: true
+            = f.association :product_category, collection: ProductBrand.all, as: :grouped_select, group_method: :product_categories, required: true
+          %strong Product Brand :
+          = contract.product_brand.try(:name)
+        .col-md-4
+          %strong Product Category :
+          = contract.product_category.try(:name)
+    %br
     .row
       .col-md-2
         = f.input :contract_no, required: true
@@ -61,7 +73,7 @@
       /   = f.input :amount
     .row
       .col-md-4
-        = f.input :contract_start_at, as: :string, required: true,input_html: {class: "datepicker", value: f.object.contract_start_at.try(:strftime, INOCRM_CONFIG["short_date_format"])}
+        = f.input :contract_start_at, as: :string, required: true,input_html: {class: "datepicker", value: f.object.contract_start_at.try(:strftime, INOCRM_CONFIG["short_date_format"]), onblur:"Tickets.show_date();"}
       .col-md-4
         = f.input :contract_end_at, as: :string, required: true, input_html: {class: "datepicker", value: f.object.contract_end_at.try(:strftime, INOCRM_CONFIG["short_date_format"])}
       .col-md-4
@@ -84,17 +96,23 @@
       .col-md-3
         = f.association :contact_address, collection: ([organization] + organization.members), as: :grouped_select, group_method: :addresses, label_method: :full_address, required: true
       .col-md-2
-        = f.association :organization_contact_person, include_blank: false, required: true, label: "Contact Person"
+        = f.association :organization_contact, collection: ([organization] + organization.members), include_blank: false, required: true, label: "Contact Person"
     .row
-      .col-md-2
-        .product_brand_main
-          = f.association :product_brand, required: true, include_blank: true
-        .product_brand_show.hide
-          Product Brand
-          = text_field_tag :product_brand1,"", disabled:true
-      .col-md-2
-        = f.association :product_category, collection: ProductBrand.all, as: :grouped_select, group_method: :product_categories, required: true
-      .col-md-1
+      -if not params[:edit_create_contract].present?
+        .col-md-2
+          .product_brand_main
+            = f.association :product_brand, required: true, include_blank: true
+          .product_brand_show.hide
+            Product Brand
+            = text_field_tag :product_brand1,"", disabled:true
+
+        .col-md-2
+          .product_brand_main
+            = f.association :product_category, collection: ProductBrand.all, as: :grouped_select, group_method: :product_categories, required: true
+          .product_brand_show.hide
+            Product Brand
+            = text_field_tag :product_category1,"", disabled:true
+        .col-md-1
       .col-md-2
         = label_tag "Aditional Charger" do
           Aditional Chargers
@@ -151,11 +169,17 @@
                           %dd= product.product_no
                           %dt Amount
                           %dd
-                            = link_to "#", class: "inline_edit", data: {type: "text", resource: "contract_product", name: "amount",url: update_contract_product_contracts_path(contract_product_id: contrac.id), "original-title" => "Update Amount"} do
+                            -if !contract.payment_completed
+                              = link_to "#", class: "inline_edit", data: {type: "text", resource: "contract_product", name: "amount",url: update_contract_product_contracts_path(contract_product_id: contrac.id), "original-title" => "Update Amount"} do
+                                = contrac.try(:amount)
+                            -else
                               = contrac.try(:amount)
                           %dt Discount Amount
                           %dd
-                            = link_to "#", class: "inline_edit", data: {type: "text", resource: "contract_product", name: "discount_amount",url: update_contract_product_contracts_path(contract_product_id: contrac.id), "original-title" => "Update Discount Amount"} do
+                            -if !contract.payment_completed
+                              = link_to "#", class: "inline_edit", data: {type: "text", resource: "contract_product", name: "discount_amount",url: update_contract_product_contracts_path(contract_product_id: contrac.id), "original-title" => "Update Discount Amount"} do
+                                = contrac.try(:discount_amount)
+                            - else
                               = contrac.try(:discount_amount)
                           %dt Installed Location
                           %dd
@@ -195,9 +219,10 @@
           %h3.modal-title Search Product
         .modal-body
           / = form_tag "#", method: :post, remote: true do
-          = form_tag search_product_contract_contracts_path(customer_id: organization.id), method: :get, remote: true do
+          = form_tag search_product_contract_contracts_path(customer_id: organization.id, contract_id: contract.id, new_contract: params[:new_contract]), method: :get, remote: true do
             .col-md-10
               = hidden_field_tag :product_brand
+              = hidden_field_tag :product_category
               = text_field_tag "query", params[:query], class: "form-control", placeholder: "Type any. for target search"
             .col-md-2
               = submit_tag "Search", :name => "search_product", class: "btn btn-sm btn-success"

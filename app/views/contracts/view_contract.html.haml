@@ -91,6 +91,32 @@
       %hr
       %dt Signed Docu. Received:
       %dd=boolean_in_word contract.documnet_received, "Yes", "No"
+      %hr
+
+      - ttl_amunt_sum = @contract_products.to_a.sum{|e| e.try(:amount)}
+      - ttl_disc_sum = @contract_products.to_a.sum{|e| e.try(:discount_amount)}
+      - final_amount = (ttl_amunt_sum - ttl_disc_sum)
+      - ttl_recived_amount = @contract_payment.to_a.sum{|e| e.try(:amount)}
+      - balance_amount = (final_amount - ttl_recived_amount)
+
+      %font{:color => "red", :size => "2"}
+        %dt Total Recieved Amount:
+        %dd= number_with_precision ttl_recived_amount, precision: 2
+        %br
+        %dt Balance Amount:
+        %dd= number_with_precision balance_amount, precision: 2
+      / - if @contract_products.present?
+      /   %hr
+      /   - ttl_amunt_sum = @contract_products.to_a.sum{|e| e.amount}
+      /   - ttl_disc_sum = @contract_products.to_a.sum{|e| e.discount_amount}
+      /   %font{:color => "red", :size => "2"}
+      /     %dt Total Recieved Amount:
+      /     %dd= number_with_precision (ttl_amunt_sum - ttl_disc_sum), precision: 2
+      /     %br
+      /     %dt Balance Amount:
+      /     %dd
+
+
   .col-md-4
     %dl.dl-horizontal
       - if chk_active == "Yes"
@@ -105,9 +131,7 @@
           %dd= chk_active
       %br
       %dt Legacy Contract No:
-      - products.each do |p|
-        - if p.contract_id == contract.id
-          %dd= p.product.serial_no
+      %dd= contract.legacy_contract_no
       %hr
       %dt Contact Person:
       %dd= contract.organization_contact_person.try(:name)
@@ -145,7 +169,14 @@
       %hr
       %dt Remarks:
       %dd=simple_format contract.remarks
+      %hr
+      %dt Total Amount:
+      %dd=balance_amount
+
 - if @contract_products.present?
+  - if contract.payment_completed
+    %font{:color => "green", :size => "4"}
+      Payment Completed
   %hr
   .row
     %br
@@ -162,7 +193,8 @@
             %th Category
             %th Model No
             %th Product No
-            %th Amount
+            %th Amount(Discounted)
+            %th Action
         %tbody
           - @contract_products.each_with_index do |p, index|
             %tr
@@ -176,101 +208,74 @@
               %td= p.product.category_name
               %td= p.product.model_no
               %td= p.product.product_no
-              %td= p.amount
-- if @contract_payment.present?
+              - amount_without_discount = p.try(:amount)
+              - discount = p.try(:discount_amount)
+              - if !(amount_without_discount == "" && discount == "")
+                - final_amount = (amount_without_discount - discount)
+              -else
+                - final_amount = amount_without_discount
+              %td= number_with_precision final_amount, precision: 2
+              %td= link_to "View", contracts_path(view_product: true, product_id: p.product.id, contract_id:contract.id), remote: false, class: "btn btn-sm btn-warning", target: "_blank"
+- if !contract.payment_completed
   - if params[:new_payments]
+    .completed.hide
+      %font{:color => "green", :size => "4"}
+        Payment Completed
+    .not_completed
+      %font{:color => "red", :size => "4"}
+        Payment Not Completed
     %hr
     .row
       %br
       .col-md-2
         %font{:color => "#4355f2", :size => "4"}
-          %strong  Payment Information
+          %strong  New Payments
       .col-md-10
-        %table.table.table-bordered
-          %thead
-            %tr
-              %th No
-              %th Date Recieved
-              %th Amount
-              %th Installment
-              %th Invoice No
-              %th Remarks
+        = simple_nested_form_for contract_payment_received, url: payments_save_contracts_path(), html: {class: "validate_form"}, method: :post, remote: false, multiple: true do |f|
+          = f.hidden_field :contract_id
+          .col-md-6
+            = f.input :payment_installment, required:true
+            = f.input :amount, required:true, input_html: {oninput: "Tickets.balance_count();" }
+            = hidden_field_tag :balance_to_pay , balance_amount
+          .col-md-6
+            = f.input :payment_received_at, as: :string, input_html: {class: "form-control datepicker"}, required:true
+            = f.input :invoice_no
 
-          %tbody
-            - @contract_payment.each_with_index do |cp, index|
-              %tr
-                %td
-                  - if params[:page]
-                    = (index+1)+ 10*(params[:page].to_i-1)
-                  - else
-                    = (index+1)
-                %td
-                  = link_to "#", class: "inline_edit", data: {type: "text", resource: "contract_payment_received", name: "payment_received_at",url: update_payments_contracts_path(payment_id: cp.id), "original-title" => "Update Payment Received At"} do
-                    = cp.payment_received_at.try(:strftime, INOCRM_CONFIG["short_date_format"])
-                %td
-                  = link_to "#", class: "inline_edit", data: {type: "text", resource: "contract_payment_received", name: "amount",url: update_payments_contracts_path(payment_id: cp.id), "original-title" => "Update Amount"} do
-                    = number_with_precision cp.amount, precision: 2
-                %td
-                  = link_to "#", class: "inline_edit", data: {type: "text", resource: "contract_payment_received", name: "payment_installment",url: update_payments_contracts_path(payment_id: cp.id), "original-title" => "Update Payment Installment"} do  
-                    = cp.payment_installment
-                %td
-                  = link_to "#", class: "inline_edit", data: {type: "text", resource: "contract_payment_received", name: "invoice_no",url: update_payments_contracts_path(payment_id: cp.id), "original-title" => "Update Invoice No"} do
-                    = cp.invoice_no
-                %td
-                  = link_to "#", class: "inline_edit", data: {type: "textarea", resource: "contract_payment_received", name: "remarks",url: update_payments_contracts_path(payment_id: cp.id), "original-title" => "Update Remarks"} do
-                    = cp.remarks
-  - else
-    %hr
-    .row
-      %br
-      .col-md-2
-        %font{:color => "#4355f2", :size => "4"}
-          %strong  Payment Information
-      .col-md-10
-        %table.table.table-bordered
-          %thead
-            %tr
-              %th No
-              %th Date Recieved
-              %th Amount
-              %th Installment
-              %th Invoice No
-              %th Remarks
-
-          %tbody
-            - @contract_payment.each_with_index do |cp, index|
-              %tr
-                %td
-                  - if params[:page]
-                    = (index+1)+ 10*(params[:page].to_i-1)
-                  - else
-                    = (index+1)
-                %td= cp.payment_received_at.try(:strftime, INOCRM_CONFIG["short_date_format"])
-                %td= number_with_precision cp.amount, precision: 2
-                %td= cp.payment_installment
-                %td= cp.invoice_no
-                %td= cp.remarks
-- if params[:new_payments]
+            = hidden_field_tag :contract_id, contract.id
+            %strong Payment Completed
+            = hidden_field_tag "payment_completed", "false"
+          .col-md-12
+            = f.input :remarks
+            = f.input :created_at, as: :hidden, input_html: {value: DateTime.now.strftime("%d-%m-%Y %H:%M")}
+            = f.submit "Save", class: "btn btn-sm btn-success", remote: true
+- if @contract_payment.present?
   %hr
   .row
     %br
     .col-md-2
       %font{:color => "#4355f2", :size => "4"}
-        %strong  New Payments
+        %strong  Payment Information
     .col-md-10
-      = simple_nested_form_for contract_payment_received, url: payments_save_contracts_path(), html: {class: "validate_form"}, method: :post, remote: false, multiple: true do |f|
-        = f.hidden_field :contract_id
-        .col-md-6
-          = f.input :payment_installment, required:true
-          = f.input :amount, required:true
-        .col-md-6
-          = f.input :payment_received_at, as: :string, input_html: {class: "form-control datepicker"}, required:true
-          = f.input :invoice_no
+      %table.table.table-bordered
+        %thead
+          %tr
+            %th No
+            %th Date Recieved
+            %th Amount
+            %th Installment
+            %th Invoice No
+            %th Remarks
 
-          = hidden_field_tag :contract_id, contract.id
-          %strong Payment Completed
-          = check_box_tag 'payment_completed'
-        .col-md-12
-          = f.input :remarks
-          = f.input :created_at, as: :hidden, input_html: {value: DateTime.now.strftime("%d-%m-%Y %H:%M")}
-          = f.submit "Save", class: "btn btn-sm btn-success", remote: true
+        %tbody
+          - @contract_payment.each_with_index do |cp, index|
+            %tr
+              %td
+                - if params[:page]
+                  = (index+1)+ 10*(params[:page].to_i-1)
+                - else
+                  = (index+1)
+              %td= cp.payment_received_at.try(:strftime, INOCRM_CONFIG["short_date_format"])
+              %td= number_with_precision cp.amount, precision: 2
+              %td= cp.payment_installment
+              %td= cp.invoice_no
+              %td= cp.remarks

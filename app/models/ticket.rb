@@ -562,7 +562,7 @@ class TicketContract < ActiveRecord::Base
     ContactNumber
     to_json(
       only: [ :id, :created_at, :created_by, :customer_id, :products, :contract_no, :hold, :amount, :payment_completed, :contract_start_at,:contract_end_at, :season],
-      methods: [:num_of_products, :brand_name, :payment_type, :formated_created_at, :created_by_user_full_name, :formated_contract_start_at, :formated_contract_end_at],
+      methods: [:num_of_products, :brand_name, :payment_type, :formated_created_at, :created_by_user_full_name, :formated_contract_start_at, :formated_contract_end_at, :dynamic_active],
       include: {
         organization: {
           only: [:id, :name, :code],

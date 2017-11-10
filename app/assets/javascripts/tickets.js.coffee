@@ -903,9 +903,13 @@ window.Tickets =
 
   get_brand_id: ->
     main_brand_name = $("#ticket_contract_product_brand_id").val()
+    main_cat_name = $("#ticket_contract_product_category_id").val()
     main_brand_text = $("#ticket_contract_product_brand_id :selected").text()
+    main_cat_text = $("#ticket_contract_product_category_id :selected").text()
     $("#product_brand").val(main_brand_name)
+    $("#product_category").val(main_cat_name)
     $("#product_brand1").val(main_brand_text)
+    $("#product_category1").val(main_cat_text)
     if main_brand_name == ""
       alert "Please Select A Brand First"
     #   $(".product_brand_main").removeClass("hide");
@@ -914,3 +918,46 @@ window.Tickets =
     # else
     #   $(".product_brand_main").addClass("hide");
     #   $(".product_brand_show").removeClass("hide");
+  show_date: ->
+
+    strDate = $("#ticket_contract_contract_start_at").val()
+    dateParts = strDate.split("-");
+
+    date = new Date(dateParts[2], (dateParts[1]), dateParts[0]);
+    # get_start_date = $("#ticket_contract_contract_start_at").val()
+    # convert_start_date = get_start_date.replace("-", ",");
+    # converted_start_date = convert_start_date.replace("-", ",");
+    # alert converted_start_date
+
+    d = new Date(date)
+    year = d.getFullYear()
+    month = d.getMonth()
+    day = d.getDate()
+    if day < 10
+      modi_day = '0'+day
+    else
+      modi_day = day
+
+    if month < 10
+      modi_month = '0'+month
+    else
+      modi_month = month
+
+    someFormattedDate = modi_day + '-' + modi_month + '-' + (year+1)
+    # finaldate = new Date(someFormattedDate)
+    $("#ticket_contract_contract_end_at").val(someFormattedDate)
+
+  balance_count: ->
+    amount_box = parseFloat($("#contract_payment_received_amount").val())
+    balance = parseFloat($("#balance_to_pay").val())
+    if (amount_box == balance)
+      alert "yey"
+    if (amount_box > balance)
+      $("#contract_payment_received_amount").val(balance)
+      $("#payment_completed").val("true")
+      $(".completed").removeClass("hide")
+      $(".not_completed").addClass("hide")
+    if (amount_box < balance)
+      $("#payment_completed").val("false")
+      $(".completed").addClass("hide")
+      $(".not_completed").removeClass("hide")

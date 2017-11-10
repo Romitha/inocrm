@@ -183,12 +183,15 @@ class ContractsController < ApplicationController
     if params[:search_product]
       # @products = Product.where(owner_customer_id: params[:customer_id])
       if params[:product_brand].present?
-        fined_query = ["owner_customer_id:#{params[:customer_id]}", "product_brand_id:#{params[:product_brand]}", params[:query]].map { |e| e if e.present? }.compact.join(" AND ")
+        fined_query = ["owner_customer_id:#{params[:customer_id]}", "product_brand_id:#{params[:product_brand]}", "product_category_id:#{params[:product_category]}", params[:query]].map { |e| e if e.present? }.compact.join(" AND ")
         puts "************************************************"
         puts fined_query
         puts "************************************************"
         @products = Product.search(query: fined_query)
         @organization1 = Organization.find params[:customer_id]
+        if params[:contract_id].present?
+          @contract_id = TicketContract.find params[:contract_id]
+        end
       end
     end
   end
@@ -205,12 +208,16 @@ class ContractsController < ApplicationController
   end
 
   def submit_selected_products
+    Address
     if params[:done].present?
       if params[:serial_products_ids].present?
         serial_products = Product.where(id: params[:serial_products_ids])
         puts serial_products.count
         Rails.cache.delete([:contract_products, request.remote_ip])
         @organization_for_location = Organization.find params[:organization_id]
+        if params[:contract_id].present?
+          @contract_id = TicketContract.find params[:contract_id]
+        end
         @cached_products = Rails.cache.fetch([:contract_products, request.remote_ip]){ serial_products.to_a }
       else
         Rails.cache.delete([:contract_products, request.remote_ip])
@@ -222,6 +229,10 @@ class ContractsController < ApplicationController
 
     if params[:remove].present?
       a = Rails.cache.fetch([:contract_products, request.remote_ip])
+      @organization_for_location = Organization.find params[:organization_id]
+      if params[:contract_id].present?
+        @contract_id = TicketContract.find params[:contract_id]
+      end
       puts "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
       @count = a.count
       puts @count
@@ -267,30 +278,16 @@ class ContractsController < ApplicationController
       Rails.cache.write([:new_product_with_pop_doc_url1, request.remote_ip], @contract)
 
     else
-      # @contract = (Rails.cache.read([:new_product_with_pop_doc_url, request.remote_ip]) or Product.new)
-      # @new_product.attributes = product_params
       if params[:save].present?
         cached_contract = Rails.cache.fetch([:new_product_with_pop_doc_url1, request.remote_ip])
 
         if params[:contract_id].present?
           @contract = TicketContract.find params[:contract_id]
-          # if cached_contract.try(:id) == @contract.id
-          #   puts "****************************"
-          #   puts "On the way to assign"
-          #   puts "****************************"
-          #   cached_contract.save
-
-          #   # @contract.attributes = cached_contract.attributes
-
-          # end
           @contract.attributes = contract_params
-
         else
           @contract = (cached_contract or TicketContract.new)
           @contract.attributes = contract_params
-
         end
-
         Rails.cache.delete([:new_product_with_pop_doc_url1, request.remote_ip])
 
         @contract.save
