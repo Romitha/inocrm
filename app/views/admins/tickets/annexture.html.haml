@@ -1,0 +1,37 @@
+- save_params = @annexture.persisted? ? {edit: true, annexture_id: @annexture.id} : {create: true}
+%h3 Annexture
+= simple_form_for @annexture, url: annexture_admins_tickets_path(save_params), html: {class: "validate_form"},method: :post do |f|
+  .row{style: "margin-top:15px;"}
+    .col-md-6
+      = f.input :name, input_html: {required: true}
+  .row{style: "margin-top:15px;"}
+    .col-md-6
+      = f.input :template_name
+  .row{style: "margin-top:15px;"}
+    .col-md-6
+      #document_attachment_upload.btn.btn-info.btn-mini.fileinput-button{style: "min-height: 10px;"}
+        %span Upload
+        = f.file_field :document_url
+
+  .row{style: "margin-top:20px;margin-bottom:20px;"}
+    .col-md-6
+      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_annexture"
+
+= collapse_wrapper collapse_id: "ticket_annexture_list", labelledby: "tic_annexture_labelledby" do
+  - @annexture_all.each_with_index do |annexture, index|
+    = collapse collapse_type: "info", labelledby: "labelledby_#{annexture.id}", header_content: "#{index+1} Payment Term : #{annexture.name}", collapse_link: "ticannexturelink_#{annexture.id}", collapse_id: "ticket_annexture_list" do
+
+      .row.col-md-12
+        .col-md-1
+          %strong Name:
+        .col-md-3
+          = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "documents_annexture", name: "name", url: annexture_admins_tickets_path(edit: true, annexture_id: annexture.id), "original-title" => "Update Payment Term", value: annexture.name}, style: "line-height: 6px;" do
+            = annexture.name
+        .col-md-1
+          %strong Template Name:
+        .col-md-3
+          = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "documents_annexture", name: "template_name", url: annexture_admins_tickets_path(edit: true, annexture_id: annexture.id), "original-title" => "Update Payment Term", value: annexture.template_name}, style: "line-height: 6px;" do
+            = annexture.template_name
+
+        .col-md-4
+          = link_to annexture.document_url.file.filename, annexture.document_url.url, target: "_blank" if annexture.document_url.present?
