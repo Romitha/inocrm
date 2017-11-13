@@ -429,10 +429,6 @@ class InventoryProduct < ActiveRecord::Base
         inventory_unit: {
           only: [:unit],
         },
-        srn_items: {
-          only: [:id, :closed],
-          methods: [:formatted_srn_no, :srn_id, :store_id],
-        },
         inventory_product_info: {
           only: [:product_id, :need_serial, :need_batch],
           methods: [:currency_type],
@@ -457,6 +453,10 @@ class InventoryProduct < ActiveRecord::Base
       }
     )
 
+    # srn_items: {
+    #   only: [:id, :closed],
+    #   methods: [:formatted_srn_no, :srn_id, :store_id],
+    # },
     # inventory_serial_items: {
     #   only: [:id, :product_id],
     #   include: {
