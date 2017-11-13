@@ -117,7 +117,10 @@ class Grn < ActiveRecord::Base
 
   def update_children_indics
     [:grn_items].each do |children|
-      send(children).import
+      # send(children).import
+      send(children).each do |child|
+        child.async(queue: 'index-model').update_index
+      end
       # send(children).async.each do |child|
       #   # child.update_index
       #   # parent.to_s.classify.constantize.find(self.send(parent).id).update_index
@@ -131,8 +134,7 @@ class Grn < ActiveRecord::Base
     end
   end
 
-  handle_asynchronously :update_children_indics, queue: 'index-model', pri: 5001
-
+  # handle_asynchronously :update_children_indics, queue: 'index-model', pri: 5001
 
   def grn_no_format
     grn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_grn_no_format"])
@@ -200,7 +202,7 @@ class GrnItem < ActiveRecord::Base
   has_many :grn_item_current_unit_cost_histories, -> { order("created_at desc")}
   accepts_nested_attributes_for :grn_item_current_unit_cost_histories, allow_destroy: true
 
-  after_create :update_relation_index
+  # after_create :update_relation_index
   before_save :rectify_stock_cost
 
   def self.only_grn_items1
@@ -230,16 +232,21 @@ class GrnItem < ActiveRecord::Base
   end
 
   def update_relation_index
-    async(delay: 5.seconds).update_index_async
+    async(delay: 5.seconds, queue: 'index-model').update_index_async
 
   end
 
   def update_index_async
     case inventory_product.product_type
       when "Serial"
-        inventory_serial_items.import
+        # inventory_serial_items.import
+        inventory_serial_items.each do |inventory_serial_item|
+          inventory_serial_item.update_index
+        end
       when "Batch"
-        inventory_batches.import
+        inventory_batches.each do |inventory_batch|
+          inventory_batch.update_index
+        end
     end
   end
 
