@@ -239,13 +239,13 @@ class GrnItem < ActiveRecord::Base
   def update_index_async
     case inventory_product.product_type
       when "Serial"
-        # inventory_serial_items.import
-        inventory_serial_items.each do |inventory_serial_item|
-          inventory_serial_item.update_index
+        grn_serial_items.where(remaining: true).each do |grn_serial_item|
+          grn_serial_item.inventory_serial_item.update_index
         end
       when "Batch"
-        inventory_batches.each do |inventory_batch|
-          inventory_batch.update_index
+
+        grn_batches.where('remaining_quantity > 0').each do |grn_batch|
+          grn_batch.inventory_batch.update_index
         end
     end
   end
