@@ -1660,6 +1660,7 @@ module Admins
       Inventory
       grn_item_ids = []
       inventories_array = []
+      product_id_arrays = []
       grn_items_array = []
 
       @gin = Gin.new gin_params
@@ -1890,25 +1891,31 @@ module Admins
 
           gin_item.srn_item.update closed: (gin_item.srn_item.quantity <= gin_item.srn_item.gin_items.sum(:issued_quantity) + gin_item.issued_quantity.to_f)
 
-          grn_items_array.group_by{|i| i[:id]}.each do |k, v|
-            grn_item = GrnItem.find(k)
-            grn_item.remaining_quantity -= v.sum{|i| i[:remaining_quantity].to_f }
-
-            grn_item.save!
-          end
-
-          inventories_array.group_by{|i| i[:id]}.each do |k, v|
-            inventory = Inventory.find(k)
-            inventory.stock_quantity -= v.sum{|i| i[:stock_quantity].to_f }
-            inventory.available_quantity -= v.sum{|i| i[:available_quantity].to_f }
-
-            inventory.save!
-          end
-
           Rails.cache.delete([ :gin, :grn_serial_items, gin_item.srn_item_id.to_i ])
           Rails.cache.delete([ :gin, :grn_batches, gin_item.srn_item_id.to_i ])
-          # gin_item.inventory_product.update_index
 
+        end
+
+
+        grn_items_array.group_by{|i| i[:id]}.each do |k, v|
+          grn_item = GrnItem.find(k)
+          grn_item.remaining_quantity -= v.sum{|i| i[:remaining_quantity].to_f }
+
+          grn_item.save!
+        end
+
+        inventories_array.group_by{|i| i[:id]}.each do |k, v|
+          inventory = Inventory.find(k)
+          product_id_arrays << inventory.product_id
+
+          inventory.stock_quantity -= v.sum{|i| i[:stock_quantity].to_f }
+          inventory.available_quantity -= v.sum{|i| i[:available_quantity].to_f }
+
+          inventory.save!
+        end
+
+        InventoryProduct.where(id: product_id_arrays.uniq).each do |product|
+          product.async(queue: 'index-model').update_index
         end
 
         @gin.srn.update closed: @gin.srn.srn_items.all?{|srn_item| srn_item.closed }

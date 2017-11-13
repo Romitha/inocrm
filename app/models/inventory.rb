@@ -81,7 +81,7 @@ class Inventory < ActiveRecord::Base
 
   validates_presence_of [:store_id, :product_id, :stock_quantity, :available_quantity, :reserved_quantity, :created_by]
 
-  after_save :update_relation_index
+  # after_save :update_relation_index
 
   before_save :reset_values
 
@@ -103,7 +103,7 @@ class Inventory < ActiveRecord::Base
 
   end
 
-  handle_asynchronously :update_relation_index, queue: 'index-model', pri: 5000, delay: 3.seconds
+  handle_asynchronously :update_relation_index, queue: 'index-model', pri: 5000, delay: 3.seconds, ttr: 0
 
   def reset_values
     if (["stock_quantity", "available_quantity"] & changed).present?
