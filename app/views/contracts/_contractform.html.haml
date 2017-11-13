@@ -114,6 +114,15 @@
             = text_field_tag :product_category1,"", disabled:true
         .col-md-1
       .col-md-2
+        .product_brand_main
+          = f.association :product_brand, required: true, include_blank: true
+        .product_brand_show.hide
+          Product Brand
+          = text_field_tag :product_brand1,"", disabled:true
+      .col-md-2
+        = f.association :product_category, collection: ProductBrand.all, as: :grouped_select, group_method: :product_categories, required: true
+      .col-md-1
+      .col-md-2
         = label_tag "Aditional Charges" do
           Aditional Chargers
           = f.select :additional_charges, additional_charges_array, {}, {class: "form-control col-md-12 small_scale_margin-top4"}
