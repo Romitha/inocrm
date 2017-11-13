@@ -1158,6 +1158,7 @@ module Admins
         serial_inventories << {id: inventory.id, stock_quantity: tot_recieved_qty, available_quantity: tot_recieved_qty}
 
         grn_item.save!
+        grn_item.update_relation_index
         Rails.cache.delete([:grn_item, po_item_id, session[:grn_arrived_time].to_i] )
         Rails.cache.delete([ :serial_item, po_item.class.to_s.to_sym, po_item.id, session[:grn_arrived_time].to_i ])
 
@@ -1215,6 +1216,8 @@ module Admins
         serial_inventories << {id: inventory.id, stock_quantity: tot_recieved_qty, available_quantity: tot_recieved_qty}
 
         grn_item.save! # this is to update index
+        grn_item.update_relation_index
+
         Rails.cache.delete([:grn_item, inventory_product.id, session[:grn_arrived_time].to_i ] )
         Rails.cache.delete([ :serial_item, inventory_product.class.to_s.to_sym, inventory_product.id, session[:grn_arrived_time].to_i ])
       end
@@ -1286,6 +1289,7 @@ module Admins
         end
 
         grn_item.save! # this is to update index
+        grn_item.update_relation_index
 
         Rails.cache.delete([ :extra_objects, srr_item_source_id, session[:grn_arrived_time].to_i ] )
 
@@ -1881,7 +1885,7 @@ module Admins
           product = gin_item.inventory_product
 
           if !(product.inventory_product_info.need_batch or product.inventory_product_info.need_serial)
-            GrnItem.where(id: grn_item_ids.uniq).import if grn_item_ids.present?
+            GrnItem.where(id: grn_item_ids.uniq).each {|grn_item| grn_item.async(queue: 'index-model').update_index } if grn_item_ids.present?
             # Inventory.where(id: inventory_ids.uniq).import if inventory_ids.present?
             # inventories_array.each(&:save) if inventories_array.present?
           end
