@@ -1660,6 +1660,7 @@ module Admins
       Inventory
       grn_item_ids = []
       inventories_array = []
+      grn_items_array = []
 
       @gin = Gin.new gin_params
       main_inventory_serial_part_id = params[:main_inventory_serial_part_id]
@@ -1745,7 +1746,8 @@ module Admins
               gin_item.currency_id  = grn_serial_item.grn_item.currency_id
 
               # grn_serial_item.grn_item.decrement! :remaining_quantity, 1
-              grn_serial_item.grn_item.remaining_quantity -= 1 #grn_item has to save
+              # grn_serial_item.grn_item.remaining_quantity -= 1 #grn_item has to save
+              grn_items_array << {id: grn_serial_item.grn_item.id, remaining_quantity: 1}
 
               grn_serial_item.remaining = false #grn_serial_item has to save
 
@@ -1781,7 +1783,10 @@ module Admins
 
 
                 grn_batch.remaining_quantity = ( grn_batch.remaining_quantity.to_f-grn_batch_issued_qty.to_f )
-                grn_batch.grn_item.remaining_quantity -= grn_batch_issued_qty # has to save grn_item
+                # grn_batch.grn_item.remaining_quantity -= grn_batch_issued_qty # has to save grn_item
+                # grn_item_ids << grn_batch.grn_item.id
+                grn_items_array << {id: grn_batch.grn_item.id, remaining_quantity: grn_batch_issued_qty}
+
 
                 # grn_batch.inventory_batch.inventory.stock_quantity -= grn_batch_issued_qty# if @inventory.present? has to save inventory
                 # grn_batch.inventory_batch.inventory.available_quantity -= grn_batch_issued_qty# if @inventory.present? has to save inventory
@@ -1858,23 +1863,16 @@ module Admins
 
           Rails.cache.fetch([ :gin, :grn_serial_items, gin_item.srn_item_id.to_i ]).to_a.each do |grn_serial_item|
             grn_serial_item.save!
-            # grn_serial_item.inventory_serial_item.inventory.save!
-            # grn_serial_item.inventory_serial_item.inventory.stock_quantity -= 1
-            # grn_serial_item.inventory_serial_item.inventory.available_quantity -= 1
-            # serial_inventory_ids << grn_serial_item.inventory_serial_item.inventory.id
-
-            # grn_serial_item.inventory_serial_item.inventory.decrement! :stock_quantity, 1
-            # grn_serial_item.inventory_serial_item.inventory.decrement! :available_quantity, 1
 
             grn_serial_item.inventory_serial_item.save!
-            grn_serial_item.grn_item.save!
+            # grn_serial_item.grn_item.async(queue: 'index-model').save!
           end
 
           Rails.cache.fetch([ :gin, :grn_batches, gin_item.srn_item_id.to_i ]).to_a.each do |grn_batch|
             # to update index fot batches
             serial_inventory_ids << grn_batch.inventory_batch.inventory.id
 
-            grn_batch.grn_item.save!
+            # grn_batch.grn_item.async(queue: 'index-model').save!
             grn_batch.inventory_batch.inventory.save!
             grn_batch.save!
             # grn_batch.inventory_batch.inventory_product.update_index
@@ -1892,13 +1890,21 @@ module Admins
 
           gin_item.srn_item.update closed: (gin_item.srn_item.quantity <= gin_item.srn_item.gin_items.sum(:issued_quantity) + gin_item.issued_quantity.to_f)
 
+          grn_items_array.group_by{|i| i[:id]}.each do |k, v|
+            grn_item = GrnItem.find(k)
+            grn_item.remaining_quantity -= v.sum{|i| i[:remaining_quantity].to_f }
+
+            grn_item.save!
+          end
+
           inventories_array.group_by{|i| i[:id]}.each do |k, v|
             inventory = Inventory.find(k)
             inventory.stock_quantity -= v.sum{|i| i[:stock_quantity].to_f }
             inventory.available_quantity -= v.sum{|i| i[:available_quantity].to_f }
 
-            inventory.save
+            inventory.save!
           end
+
           Rails.cache.delete([ :gin, :grn_serial_items, gin_item.srn_item_id.to_i ])
           Rails.cache.delete([ :gin, :grn_batches, gin_item.srn_item_id.to_i ])
           # gin_item.inventory_product.update_index

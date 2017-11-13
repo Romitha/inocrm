@@ -404,6 +404,8 @@ end
 class GrnBatch < ActiveRecord::Base
   self.table_name = "inv_grn_batch"
 
+  include Backburner::Performable
+
   include Tire::Model::Search
   include Tire::Model::Callbacks
 
@@ -495,6 +497,8 @@ end
 
 class GrnSerialItem < ActiveRecord::Base
   self.table_name = "inv_grn_serial_item"
+
+  include Backburner::Performable
 
   belongs_to :grn_item, foreign_key: :grn_item_id
   accepts_nested_attributes_for :grn_item, allow_destroy: true

@@ -704,6 +704,8 @@ end
 class InventorySerialItem < ActiveRecord::Base
   self.table_name = "inv_inventory_serial_item"
 
+  include Backburner::Performable
+
   include Tire::Model::Search
   include Tire::Model::Callbacks
 

@@ -199,7 +199,7 @@ class SrnItem < ActiveRecord::Base
   def update_index_inventory_product
     Inventory
 
-    inventory_product.update_index
+    inventory_product.async(queue: 'index-model').update_index
   end
 
   def inventory
