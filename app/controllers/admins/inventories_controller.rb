@@ -1889,7 +1889,8 @@ module Admins
             # inventories_array.each(&:save) if inventories_array.present?
           end
 
-          gin_item.srn_item.update closed: (gin_item.srn_item.quantity <= gin_item.srn_item.gin_items.sum(:issued_quantity) + gin_item.issued_quantity.to_f)
+          # gin_item.srn_item.update closed: (gin_item.srn_item.quantity <= gin_item.srn_item.gin_items.sum(:issued_quantity) + gin_item.issued_quantity.to_f)
+          gin_item.srn_item.update closed: (gin_item.srn_item.quantity <= gin_item.srn_item.gin_items.sum(:issued_quantity))
 
           Rails.cache.delete([ :gin, :grn_serial_items, gin_item.srn_item_id.to_i ])
           Rails.cache.delete([ :gin, :grn_batches, gin_item.srn_item_id.to_i ])
