@@ -75,15 +75,14 @@
             %h3.panel-title Brand Document
           .panel-body
             .row
-              - f.object.build_contract_document unless f.object.contract_document.present?
-              = f.simple_fields_for :contract_document do |document|
-                .col-md-4
+              = f.simple_fields_for :contract_documents do |document|
+                .col-md-3
                   = document.input :code
                 .col-md-4
                   = document.input :name
-                .col-md-4
+                .col-md-5
                   = document.input :description
-                .col-md-10
+                .col-md-6
                   = document.input :document
                 .col-md-2
                   #document_attachment_upload.btn.btn-info.btn-mini.fileinput-button{style: "min-height: 10px;"}
@@ -91,6 +90,9 @@
                     = document.file_field :document_file_name
                   %br/
                   = link_to document.object.document_file_name.file.filename, document.object.document_file_name.url, target: "_blank" if document.object.document_file_name.present?
+                .col-md-12
+                  = document.link_to_remove "Remove"
+            = f.link_to_add "Add", :contract_documents
 
         .row
           .col-md-12

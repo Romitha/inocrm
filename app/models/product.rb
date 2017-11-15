@@ -63,6 +63,7 @@ class Product < ActiveRecord::Base
   def owner_customer_name
     owner_customer.try(:name)
   end
+
   mount_uploader :pop_doc_url, PopDocUrlUploader
 
   has_many :ticket_product_serials, foreign_key: :product_serial_id
@@ -127,8 +128,8 @@ class ProductBrand < ActiveRecord::Base
   has_many :product_brand_costs
   accepts_nested_attributes_for :product_brand_costs, allow_destroy: true
 
-  has_one :contract_document, class_name: "Documents::ContractDocument"
-  accepts_nested_attributes_for :contract_document, allow_destroy: true
+  has_many :contract_documents, class_name: "Documents::ContractDocument"
+  accepts_nested_attributes_for :contract_documents, allow_destroy: true
 
   validates_uniqueness_of :name
 

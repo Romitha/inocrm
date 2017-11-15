@@ -167,11 +167,11 @@
     .row
       .col-md-3
         = label_tag "Select Brand Template"
-        = select_tag "contract_document[contract_document_id]", options_from_collection_for_select(Documents::ContractDocument.where(product_brand_id: contract.product_brand_id), :id, :name), include_blank: true, class: "form-control"
+        = select_tag "contract_document[contract_document_id]", options_from_collection_for_select(Documents::ContractDocument.where(product_brand_id: contract.product_brand_id), :id, :name), multiple: true, class: "form-control"
 
       .col-md-3
         = label_tag "Select Annexture"
-        = select_tag "contract_document[annexture_id]", options_from_collection_for_select(Documents::Annexture.all, :id, :name), include_blank: true, class: "form-control"
+        = select_tag "contract_document[annexture_id]", options_from_collection_for_select(Documents::Annexture.all, :id, :name), multiple: true, class: "form-control"
 
       %hr
       .row

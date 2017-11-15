@@ -203,6 +203,10 @@ GEM
       haml (~> 4.0.0)
       nokogiri (~> 1.6.0)
       ruby_parser (~> 3.5)
+    htmltoword (0.5.1)
+      actionpack
+      nokogiri
+      rubyzip (>= 1.0)
     http-cookie (1.0.2)
       domain_name (~> 0.5)
     httpi (2.4.0)
@@ -446,6 +450,7 @@ DEPENDENCIES
   ffaker
   god
   haml-rails
+  htmltoword
   httpi
   jbuilder (~> 2.0)
   jcrop-rails-v2

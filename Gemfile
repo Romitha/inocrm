@@ -133,6 +133,7 @@ gem 'backburner'
 # gem 'docx', '~> 0.2.07', :require => ["docx"]
 gem 'docx_replace'
 gem 'rubyzip'
+gem 'htmltoword'
 
 group :production do
   gem 'god' # sudo apt-get install god
