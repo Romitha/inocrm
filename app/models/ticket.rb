@@ -602,7 +602,7 @@ class TicketContract < ActiveRecord::Base
   def contract_no_genarate
     # product_brand.try(:contract_no_value)
 
-    contract_no_value = "#{formated_contract_start_at}-#{owner_organization.contract_no_value}-#{product_brand.contract_no_value}-#{product_category.contract_no_value}"
+    contract_no_value = "#{formated_contract_start_at}-#{owner_organization.try(:contract_no_value)}-#{product_brand.try(:contract_no_value)}-#{product_category.try(:contract_no_value)}"
     update contract_no: contract_no_value
   end
 
