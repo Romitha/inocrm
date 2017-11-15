@@ -27,14 +27,17 @@
       %dd= product.pop_note
       %hr
       %dt Sla Time:
-      %dd= contract_product.sla_time.try(:description)\
-      
-      %dt Installed Location:
-      %dd= contract_product.installed_location.try(:full_address)
-      %dt Amount:
-      %dd= contract_product.try(:amount)
-      %dt Discount Amount:
-      %dd= contract_product.try(:discount_amount)
+      %dd= contract_product.sla_time.try(:description)
+      - if !params[:view_serial_product]
+        %hr
+        %dt Installed Location:
+        %dd= contract_product.installed_location.try(:full_address)
+        %hr
+        %dt Amount:
+        %dd= contract_product.try(:amount)
+        %hr
+        %dt Discount Amount:
+        %dd= contract_product.try(:discount_amount)
 
   .col-md-5
     %dl.dl-horizontal
