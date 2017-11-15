@@ -184,14 +184,14 @@ class ContractsController < ApplicationController
       # @products = Product.where(owner_customer_id: params[:customer_id])
       if params[:product_brand].present?
         fined_query = ["owner_customer_id:#{params[:customer_id]}", "product_brand_id:#{params[:product_brand]}", "product_category_id:#{params[:product_category]}", params[:query]].map { |e| e if e.present? }.compact.join(" AND ")
-        puts "************************************************"
-        puts fined_query
-        puts "************************************************"
-        @products = Product.search(query: fined_query)
-        @organization1 = Organization.find params[:customer_id]
         if params[:contract_id].present?
           @contract_id = TicketContract.find params[:contract_id]
+          @products = Product.search(query: fined_query).select{|p| !@contract_id.product_ids.map(&:to_s).include? p.id }
+        else
+          @products = Product.search(query: fined_query)
         end
+
+        @organization1 = Organization.find params[:customer_id]
       end
     end
   end
