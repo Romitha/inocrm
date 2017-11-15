@@ -215,7 +215,7 @@
               -else
                 - final_amount = amount_without_discount
               %td= number_with_precision final_amount, precision: 2
-              %td= link_to "View", contracts_path(view_product: true, product_id: p.product.id, contract_id:contract.id), remote: false, class: "btn btn-sm btn-warning", target: "_blank"
+              %td= link_to "View", contracts_path(view_product: true, product_id: p.product.id, contract_id:p.id), remote: false, class: "btn btn-sm btn-warning", target: "_blank"
 - if !contract.payment_completed
   - if params[:new_payments]
     .completed.hide
@@ -242,7 +242,6 @@
             = f.input :invoice_no
 
             = hidden_field_tag :contract_id, contract.id
-            %strong Payment Completed
             = hidden_field_tag "payment_completed", "false"
           .col-md-12
             = f.input :remarks

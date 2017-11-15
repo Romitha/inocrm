@@ -48,7 +48,7 @@
           - else
             %font{:color => "red"} No
         %td= boolean_in_word con.dynamic_active, "Yes", "No"
-        %td= con.amount
+        %td= con.product_amount
         %td= con.ticket_currency.try(:code)
         %td= con.ticket_contract_type.try(:name)
         %td= boolean_in_word con.payment_completed, "Yes", "No"

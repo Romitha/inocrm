@@ -32,7 +32,7 @@
   .row
     .col-md-3
       = label_tag "Owner Department:"
-      = select_tag "search_contracts[owner_organization.id]", options_from_collection_for_select(Organization.all, :id, :name), class: "form-control parent_class", include_blank: true
+      = select_tag "search_contracts[owner_organization.id]", options_from_collection_for_select([Organization.owner] + Organization.owner.members, :id, :name), class: "form-control parent_class", include_blank: true
   %br
   .row
     .col-md-3

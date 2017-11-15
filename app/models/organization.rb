@@ -198,7 +198,7 @@ class Organization < ActiveRecord::Base
           include: {
             ticket_contracts: {
               only: [:id],
-              methods: [:dynamic_active]
+              methods: [:dynamic_active, :product_amount]
             }
           },
         },

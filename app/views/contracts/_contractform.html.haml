@@ -40,22 +40,20 @@
           %ul
             - contract.errors.full_messages.each do |error|
               %li= error
-    -if params[:edit_create_contract].present?
-      .row
-        .col-md-2
-          .product_bnd.hide
-            = f.association :product_brand, required: true, include_blank: true
-            = f.association :product_category, collection: ProductBrand.all, as: :grouped_select, group_method: :product_categories, required: true
-          %strong Product Brand :
-          = contract.product_brand.try(:name)
-        .col-md-4
-          %strong Product Category :
-          = contract.product_category.try(:name)
+    / -if params[:edit_create_contract].present? || (params[:edit_create].present? && !params[:new_contract].present? )
+    /   .row
+    /     .col-md-2
+    /       .product_bnd.hide
+    /         = f.association :product_brand, required: true, include_blank: true
+    /         = f.association :product_category, collection: ProductBrand.all, as: :grouped_select, group_method: :product_categories, required: true
+    /       %strong Product Brand :
+    /       = contract.product_brand.try(:name)
+    /     .col-md-4
+    /       %strong Product Category :
+    /       = contract.product_category.try(:name)
     %br
     .row
-      .col-md-2
-        = f.input :contract_no, required: true
-      .col-md-2
+      .col-md-3
         = f.input :legacy_contract_no
       .col-md-2
         = f.association :ticket_contract_type, include_blank: false, required: true, label: "Contract Type"
@@ -64,10 +62,10 @@
 
       .col-md-2
         = f.association :sla_time, required: true, label_method: :description, include_blank: false, label: "SLA"
-      .col-md-2
+      .col-md-3
         = label_tag "Owner Division" do
           Owner Branch
-          = f.select :owner_organization_id, ( Organization.owner.members.collect{ |m| [m.name, m.id ] } << [Organization.owner.name, Organization.owner.id] ), {include_blank: false}, {class: "form-control col-md-12 small_scale_margin-top4"}
+          = f.select :owner_organization_id, ( Organization.owner.members.collect{ |m| [m.name, m.id ] } << [Organization.owner.name, Organization.owner.id] ), {include_blank: false}, {class: "form-control col-md-12 small_scale_margin-top2"}
 
       / .col-md-2
       /   = f.input :amount
@@ -96,9 +94,26 @@
       .col-md-3
         = f.association :contact_address, collection: ([organization] + organization.members), as: :grouped_select, group_method: :addresses, label_method: :full_address, required: true
       .col-md-2
-        = f.association :organization_contact, collection: ([organization] + organization.members), include_blank: false, required: true, label: "Contact Person"
+        = f.association :organization_contact_person, collection: (organization.organization_contact_persons),include_blank: false, required: true, label: "Contact Person"
     .row
-      -if not params[:edit_create_contract].present?
+      / -if not params[:edit_create_contract].present? || (params[:edit_create].present? && !params[:new_contract].present? )
+      = hidden_field_tag :product_count, contract.num_of_products, onclick:"Tickets.brand_edit();"
+      - if contract.num_of_products > 0 
+        .col-md-2
+          .product_brand_main.hide
+            = f.association :product_brand, required: true, include_blank: true
+          .product_brand_show
+            %strong Product Brand :
+            = text_field_tag :product_brand1,contract.product_brand.try(:name), disabled:true
+
+        .col-md-3
+          .product_brand_main.hide
+            = f.association :product_category, collection: ProductBrand.all, as: :grouped_select, group_method: :product_categories, required: true
+          .product_brand_show
+            %strong Product Category :
+            = text_field_tag :product_category1,contract.product_category.try(:name), disabled:true
+
+      - else
         .col-md-2
           .product_brand_main
             = f.association :product_brand, required: true, include_blank: true
@@ -110,18 +125,10 @@
           .product_brand_main
             = f.association :product_category, collection: ProductBrand.all, as: :grouped_select, group_method: :product_categories, required: true
           .product_brand_show.hide
-            Product Brand
+            Product Category
             = text_field_tag :product_category1,"", disabled:true
         .col-md-1
-      .col-md-2
-        .product_brand_main
-          = f.association :product_brand, required: true, include_blank: true
-        .product_brand_show.hide
-          Product Brand
-          = text_field_tag :product_brand1,"", disabled:true
-      .col-md-2
-        = f.association :product_category, collection: ProductBrand.all, as: :grouped_select, group_method: :product_categories, required: true
-      .col-md-1
+
       .col-md-2
         = label_tag "Aditional Charges" do
           Aditional Chargers
@@ -200,21 +207,24 @@
                           %dd= product.product_no
                           %dt Amount
                           %dd
-                            -if !contract.payment_completed
+                            -if !contract.accepted_at.present?
                               = link_to "#", class: "inline_edit", data: {type: "text", resource: "contract_product", name: "amount",url: update_contract_product_contracts_path(contract_product_id: contrac.id), "original-title" => "Update Amount"} do
                                 = contrac.try(:amount)
                             -else
                               = contrac.try(:amount)
                           %dt Discount Amount
                           %dd
-                            -if !contract.payment_completed
+                            -if !contract.accepted_at.present?
                               = link_to "#", class: "inline_edit", data: {type: "text", resource: "contract_product", name: "discount_amount",url: update_contract_product_contracts_path(contract_product_id: contrac.id), "original-title" => "Update Discount Amount"} do
                                 = contrac.try(:discount_amount)
                             - else
                               = contrac.try(:discount_amount)
                           %dt Installed Location
                           %dd
-                            = link_to "#", class: "inline_edit", data: {type: "select", resource: "contract_product", source:organization.addresses.collect{|address| {value: address.id, text: address.try(:full_address)}}, name: "installed_location_id", url: update_contract_product_contracts_path(contract_product_id: contrac.id), "original-title" => "Update Installed Location"} do
+                            -if !contract.accepted_at.present?
+                              = link_to "#", class: "inline_edit", data: {type: "select", resource: "contract_product", source:organization.addresses.collect{|address| {value: address.id, text: address.try(:full_address)}}, name: "installed_location_id", url: update_contract_product_contracts_path(contract_product_id: contrac.id), "original-title" => "Update Installed Location"} do
+                                = contrac.installed_location.try(:full_address)
+                            - else
                               = contrac.installed_location.try(:full_address)
                         %br
                           = link_to "View", contracts_path(view_product: true, product_id: product.id, contract_id:contrac.id), remote: false, class: "btn btn-sm btn-warning", target: "_blank"
@@ -222,7 +232,7 @@
                             cannot remove
                           - else
                             = c.link_to_remove  class: "remove_c_t_v_link",:data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Remove" do
-                              %button.btn.btn-danger Remove
+                              %button.btn.btn-danger{ onclick:"Tickets.count_down_remove_product();"} Remove
                   %br
     .row
       #selectedproducts

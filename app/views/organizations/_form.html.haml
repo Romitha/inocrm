@@ -74,6 +74,9 @@
         = a.input :code, label: "Customer Code"
       .col-md-2
         = a.input :business_registration_no
+      - if organization.id == Organization.owner.id
+        .col-md-2
+          = f.input :contract_no_value
   .row
     .col-md-12
       = f.input :description, placeholder: "Description", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Description"}

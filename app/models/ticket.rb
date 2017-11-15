@@ -564,7 +564,7 @@ class TicketContract < ActiveRecord::Base
     ContactNumber
     to_json(
       only: [ :id, :created_at, :created_by, :customer_id, :products, :contract_no, :hold, :amount, :payment_completed, :contract_start_at,:contract_end_at, :season],
-      methods: [:num_of_products, :brand_name, :payment_type, :formated_created_at, :created_by_user_full_name, :formated_contract_start_at, :formated_contract_end_at, :dynamic_active],
+      methods: [:num_of_products, :brand_name, :payment_type, :formated_created_at, :created_by_user_full_name, :formated_contract_start_at, :formated_contract_end_at, :dynamic_active, :product_amount],
       include: {
         organization: {
           only: [:id, :name, :code],
@@ -598,6 +598,13 @@ class TicketContract < ActiveRecord::Base
     )
 
   end
+  
+  def contract_no_genarate
+    # product_brand.try(:contract_no_value)
+
+    contract_no_value = "#{formated_contract_start_at}-#{owner_organization.contract_no_value}-#{product_brand.contract_no_value}-#{product_category.contract_no_value}"
+    update contract_no: contract_no_value
+  end
 
   def brand_name
     product_brand.try(:name)
@@ -629,6 +636,10 @@ class TicketContract < ActiveRecord::Base
   def dynamic_active
     # !hold.present? and (contract_start_at.to_date .. contract_end_at.to_date+1.day).include?(Date.today)
     !hold.present? and (contract_start_at.to_date .. contract_end_at.to_date).include?(Date.today)
+  end
+
+  def product_amount
+    contract_products.to_a.sum{|e| e.try(:amount)} - contract_products.to_a.sum{|e| e.try(:discount_amount)}
   end
 
 end

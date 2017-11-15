@@ -65,7 +65,7 @@
                 = (index+1)
             %td= con.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
             %td= con.contract_no
-            %td= con.organization.name
+            %td= con.owner_organization.try(:name)
             %td= con.contract_start_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
             %td= con.contract_end_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
             %td

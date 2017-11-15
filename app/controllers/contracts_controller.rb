@@ -212,7 +212,7 @@ class ContractsController < ApplicationController
     if params[:done].present?
       if params[:serial_products_ids].present?
         serial_products = Product.where(id: params[:serial_products_ids])
-        puts serial_products.count
+        @before_count = Rails.cache.fetch([:contract_products, request.remote_ip]).to_a.count
         Rails.cache.delete([:contract_products, request.remote_ip])
         @organization_for_location = Organization.find params[:organization_id]
         if params[:contract_id].present?
@@ -220,10 +220,8 @@ class ContractsController < ApplicationController
         end
         @cached_products = Rails.cache.fetch([:contract_products, request.remote_ip]){ serial_products.to_a }
       else
+        @before_count = Rails.cache.fetch([:contract_products, request.remote_ip]).to_a.count
         Rails.cache.delete([:contract_products, request.remote_ip])
-        @submit_count = 1
-        @submit = true
-        puts @submit_count
       end
     end
 
@@ -233,10 +231,6 @@ class ContractsController < ApplicationController
       if params[:contract_id].present?
         @contract_id = TicketContract.find params[:contract_id]
       end
-      puts "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-      @count = a.count
-      puts @count
-      puts "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
       a.delete_if{|e| e.id.to_f == params[:selected_product].to_f }
       Rails.cache.delete([:contract_products, request.remote_ip])
 
@@ -280,16 +274,18 @@ class ContractsController < ApplicationController
     else
       if params[:save].present?
         cached_contract = Rails.cache.fetch([:new_product_with_pop_doc_url1, request.remote_ip])
-
         if params[:contract_id].present?
           @contract = TicketContract.find params[:contract_id]
+          
           @contract.attributes = contract_params
+
         else
           @contract = (cached_contract or TicketContract.new)
+          @contract.contract_no_genarate
           @contract.attributes = contract_params
         end
         Rails.cache.delete([:new_product_with_pop_doc_url1, request.remote_ip])
-
+        @contract.contract_no_genarate
         @contract.save
 
         Rails.cache.fetch([:contract_products, request.remote_ip]).to_a.each do |product|
@@ -391,9 +387,11 @@ class ContractsController < ApplicationController
   end
   
   def update_contract_product
+    Ticket
     contract_product = ContractProduct.find params[:contract_product_id]
     respond_to do |format|
       if contract_product.update contract_product_params
+        contract_product.ticket_contract.update_index
         format.json { render json: contract_product }
       else
         format.json { render json: contract_product.errors }

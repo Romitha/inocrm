@@ -951,7 +951,10 @@ window.Tickets =
     amount_box = parseFloat($("#contract_payment_received_amount").val())
     balance = parseFloat($("#balance_to_pay").val())
     if (amount_box == balance)
-      alert "yey"
+      $("#contract_payment_received_amount").val(balance)
+      $("#payment_completed").val("true")
+      $(".completed").removeClass("hide")
+      $(".not_completed").addClass("hide")
     if (amount_box > balance)
       $("#contract_payment_received_amount").val(balance)
       $("#payment_completed").val("true")
@@ -961,3 +964,27 @@ window.Tickets =
       $("#payment_completed").val("false")
       $(".completed").addClass("hide")
       $(".not_completed").removeClass("hide")
+
+  # show_hello: ->
+  #   strDate = $("#ticket_contract_contract_start_at").val()
+  #   dateParts = strDate.split("-");
+  #   date = new Date(dateParts[2], (dateParts[1]), dateParts[0]);
+  #   year = date.getFullYear()
+
+  #   # alert year
+  #   # $("#ticket_contract_contract_no").val("QQQQ")
+  count_down_remove_product: ->
+    num_of_products = parseInt($("#product_count").val())
+    remove_product = (num_of_products - 1)
+
+    $("#product_count").val(remove_product)
+    $("#product_count").click()
+
+  brand_edit: ->
+    num_of_products = parseInt($("#product_count").val())
+    if num_of_products == 0
+      $(".product_brand_main").removeClass("hide");
+      $(".product_brand_show").addClass("hide");
+    else
+      $(".product_brand_main").addClass("hide");
+      $(".product_brand_show").removeClass("hide");
