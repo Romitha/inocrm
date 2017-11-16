@@ -288,16 +288,15 @@ class ContractsController < ApplicationController
         @contract.contract_no_genarate
         @contract.save
 
+        params[:contract_document] and params[:contract_document]['annexture_id'].each do |annexture_id|
+          annexture = Documents::Annexture.find annexture_id
+        end
+
         Rails.cache.fetch([:contract_products, request.remote_ip]).to_a.each do |product|
           unless @contract.product_ids.include?(product.id)
             c_product = @contract.contract_products.create(product_serial_id: product.id, sla_id: product.product_brand.sla_id)
 
             if params['contract_product_additional_params'].present?
-              puts "**********************************************************************"
-              puts c_product.product_serial_id
-              puts params['contract_product_additional_params'][c_product.product_serial_id.to_s]
-              puts params['contract_product_additional_params']
-              puts "**********************************************************************"
 
               if params['contract_product_additional_params'][c_product.product_serial_id.to_s].present?
                 c_product_attr = params['contract_product_additional_params'].require(c_product.product_serial_id.to_s).permit('amount', 'discount_amount', 'installed_location_id' )
