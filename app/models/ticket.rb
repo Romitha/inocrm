@@ -564,7 +564,7 @@ class TicketContract < ActiveRecord::Base
     ContactNumber
     to_json(
       only: [ :id, :created_at, :created_by, :customer_id, :products, :contract_no, :hold, :amount, :payment_completed, :contract_start_at,:contract_end_at, :season],
-      methods: [:num_of_products, :brand_name, :payment_type, :formated_created_at, :created_by_user_full_name, :formated_contract_start_at, :formated_contract_end_at, :dynamic_active, :product_amount],
+      methods: [:num_of_products, :brand_name, :payment_type, :formated_created_at, :created_by_user_full_name, :formated_contract_start_at, :formated_contract_end_at, :dynamic_active, :product_amount, :contract_no_genarate],
       include: {
         organization: {
           only: [:id, :name, :code],
@@ -598,12 +598,17 @@ class TicketContract < ActiveRecord::Base
     )
 
   end
-  
+
+  def contract_no_increase
+    contract_no = CompanyConfig.first.increase_sup_last_contract_serial_no
+    update contract_no: contract_no
+  end
+
   def contract_no_genarate
     # product_brand.try(:contract_no_value)
 
-    contract_no_value = "#{contract_start_at.strftime("%y")}-#{owner_organization.try(:contract_no_value)}-#{product_brand.try(:contract_no_value)}-#{product_category.try(:contract_no_value)}"
-    update contract_no: contract_no_value
+    contract_no_value = "#{contract_start_at.strftime("%y")}-#{owner_organization.try(:contract_no_value)}-#{product_brand.try(:contract_no_value)}-#{product_category.try(:contract_no_value)}-#{contract_no}"
+
   end
 
   def brand_name

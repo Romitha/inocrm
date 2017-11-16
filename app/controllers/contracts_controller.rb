@@ -124,10 +124,12 @@ class ContractsController < ApplicationController
    if params[:view_product]
       # Rails.cache.delete([:contract_products, request.remote_ip])
       @product = Product.find params[:product_id]
-      @contract_product = ContractProduct.find params[:contract_id]
+      if !params[:view_serial_product]
+        @contract_product = ContractProduct.find params[:contract_id]
+      end
       render "contracts/view_product"
     end
-    
+
     if params[:select_contract]
       @organization = Organization.find params[:customer_id]
 
@@ -276,16 +278,15 @@ class ContractsController < ApplicationController
         cached_contract = Rails.cache.fetch([:new_product_with_pop_doc_url1, request.remote_ip])
         if params[:contract_id].present?
           @contract = TicketContract.find params[:contract_id]
-          
           @contract.attributes = contract_params
 
         else
           @contract = (cached_contract or TicketContract.new)
-          @contract.contract_no_genarate
+          @contract.contract_no_increase
           @contract.attributes = contract_params
         end
         Rails.cache.delete([:new_product_with_pop_doc_url1, request.remote_ip])
-        @contract.contract_no_genarate
+
         @contract.save
 
         params[:contract_document] and params[:contract_document]['annexture_id'].each do |annexture_id|

@@ -181,7 +181,7 @@ class Organization < ActiveRecord::Base
           must { string params[:query] } if params[:query].present?
         end
       end
-      sort { by :created_at, {order: "desc", ignore_unmapped: true} }
+      sort { by :name, {order: "asc", ignore_unmapped: true} }
     end
   end
 
@@ -246,7 +246,7 @@ end
 
 class CompanyConfig < ActiveRecord::Base
   self.table_name = "company_config"
-
+  ContractsController
   # has_many :organizations, foreign_key: "type_id"
 
   def increase_inv_last_srn_no
@@ -299,6 +299,11 @@ class CompanyConfig < ActiveRecord::Base
     sup_last_fsr_no
   end
 
+  def increase_sup_last_contract_serial_no
+    update sup_last_contract_serial_no: (sup_last_contract_serial_no.to_i+1)
+    sup_last_contract_serial_no
+  end
+
   def increase_inv_last_prn_no
     update inv_last_prn_no: (inv_last_prn_no.to_i+1)
     inv_last_prn_no
@@ -316,6 +321,10 @@ class CompanyConfig < ActiveRecord::Base
     sup_last_fsr_no.to_i+1
   end
 
+  def next_sup_last_contract_serial_no
+    sup_last_contract_serial_no.to_i+1
+  end
+  
   def next_sup_last_grn_no
     inv_last_grn_no.to_i+1
   end

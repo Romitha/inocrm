@@ -923,16 +923,21 @@ window.Tickets =
     strDate = $("#ticket_contract_contract_start_at").val()
     dateParts = strDate.split("-");
 
-    date = new Date(dateParts[2], (dateParts[1]), dateParts[0]);
+    date1 = new Date(dateParts[2], (dateParts[1]), dateParts[0]);
     # get_start_date = $("#ticket_contract_contract_start_at").val()
     # convert_start_date = get_start_date.replace("-", ",");
     # converted_start_date = convert_start_date.replace("-", ",");
     # alert converted_start_date
 
+    date = new Date(date1);
+    date.setDate(date.getDate() - 1);
+
+
+
     d = new Date(date)
     year = d.getFullYear()
     month = d.getMonth()
-    day = d.getDate()
+    day = (d.getDate())
     if day < 10
       modi_day = '0'+day
     else
@@ -943,7 +948,7 @@ window.Tickets =
     else
       modi_month = month
 
-    someFormattedDate = modi_day + '-' + modi_month + '-' + (year+1)
+    someFormattedDate = (modi_day) + '-' + modi_month + '-' + (year+1)
     # finaldate = new Date(someFormattedDate)
     $("#ticket_contract_contract_end_at").val(someFormattedDate)
 

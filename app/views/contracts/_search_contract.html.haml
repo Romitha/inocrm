@@ -5,7 +5,7 @@
     .col-md-3
       = label_tag "Contract No" do
         Contract No
-        = text_field_tag "search_contracts[contract_no]", (params[:search_contracts] and params[:search_contracts][:contract_no]), :placeholder => "Contract No", class: "form-control"
+        = text_field_tag "search_contracts[contract_no]", (params[:search_contracts] and params[:search_contracts][:contract_no_genarate]), :placeholder => "Contract No", class: "form-control"
     .col-md-3
       = label_tag "Contract Date From", "Contract Date From"
       = text_field_tag "contract_date_from", params[:contract_date_from], class: "form-control datepicker", placeholder: "Select from date"

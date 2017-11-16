@@ -61,7 +61,7 @@
               - else
                 = (index+1)
             %td= con.ticket_contract.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
-            %td= con.ticket_contract.contract_no
+            %td= con.ticket_contract.contract_no_genarate
             %td= con.ticket_contract.organization.name
             %td= con.ticket_contract.contract_start_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
             %td= con.ticket_contract.contract_end_at.try(:strftime, INOCRM_CONFIG['short_date_format'])

@@ -228,15 +228,16 @@
                               = contrac.installed_location.try(:full_address)
                         %br
                           = link_to "View", contracts_path(view_product: true, product_id: product.id, contract_id:contrac.id), remote: false, class: "btn btn-sm btn-warning", target: "_blank"
-                          - if p.object.cannot_removable_from_contract?(contract.id)
-                            cannot remove
+                          - if p.object.cannot_removable_from_contract?(contract.id) || contract.accepted_at.present?
+
                           - else
                             = c.link_to_remove  class: "remove_c_t_v_link",:data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Remove" do
                               %button.btn.btn-danger{ onclick:"Tickets.count_down_remove_product();"} Remove
                   %br
-    .row
-      #selectedproducts
-    %button.btn.btn-info{"data-target" => "#productsModel", "data-toggle" => "modal", :type => "button", onclick:"Tickets.get_brand_id();" } Add Products
+    -if !contract.accepted_at.present?
+      .row
+        #selectedproducts
+      %button.btn.btn-info{"data-target" => "#productsModel", "data-toggle" => "modal", :type => "button", onclick:"Tickets.get_brand_id();" } Add Products
 
     .row
     .row

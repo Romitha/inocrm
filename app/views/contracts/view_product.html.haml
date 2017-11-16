@@ -25,10 +25,10 @@
       %hr
       %dt Pop Note:
       %dd= product.pop_note
-      %hr
-      %dt Sla Time:
-      %dd= contract_product.sla_time.try(:description)
       - if !params[:view_serial_product]
+        %hr
+        %dt Sla Time:
+        %dd= contract_product.sla_time.try(:description)
         %hr
         %dt Installed Location:
         %dd= contract_product.installed_location.try(:full_address)
@@ -58,6 +58,7 @@
       %hr
       %dt Corporate Product:
       %dd= boolean_in_word product.corporate_product, "Yes", "No"
-      %hr
-      %dt Remarks:
-      %dd=simple_format @contract_product.remarks
+      - if !params[:view_serial_product]
+        %hr
+        %dt Remarks:
+        %dd=simple_format @contract_product.remarks
