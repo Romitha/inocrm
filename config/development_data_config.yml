@@ -61,3 +61,5 @@ TicketPaymentReceivedType:
   other: 1
 
 request_part_default: "M"
+
+upload_url: "/home/ubuntu/projects/rails/inova-crm/public/uploads"

@@ -1,9 +1,17 @@
 module Documents
-  class ContractDocument < ApplicationRecord
+  class BrandDocument < ApplicationRecord
     self.table_name = "mst_spt_contract_brand_document"
     mount_uploader :document_file_name, DocumentAttachmentUploader
 
     belongs_to :proudct_brand
+
+  end
+
+  class ContractDocument < ApplicationRecord
+    self.table_name = "spt_contract_document"
+    mount_uploader :document_url, DocumentAttachmentUploader
+
+    belongs_to :ticket_contract, foreign_key: :contract_id
 
   end
 

@@ -62,3 +62,5 @@ TicketPaymentReceivedType:
   other: 1
 
 request_part_default: "M"
+
+upload_url: "/inovacrm/production/uploads"

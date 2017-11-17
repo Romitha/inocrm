@@ -1325,7 +1325,7 @@ module Admins
         srn_item_ids += product.srn_items.by_store(@grn.store_id).ids
       end # cached object doesnt have elasticsearch existance
 
-      SrnItem.where(id: srn_item_ids.uniq).each{|s| s.async(queue: 'index-model').update_index}
+      SrnItem.where(id: srn_item_ids.uniq).where('closed != true').each{|s| s.async(queue: 'index-model').update_index}
 
       flash[:notice] = "Successfully saved."
 

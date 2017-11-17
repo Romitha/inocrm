@@ -499,6 +499,8 @@ class TicketContract < ActiveRecord::Base
   has_many :contract_payment_receiveds, foreign_key: :contract_id
   has_many :contract_attachments, class_name: 'Documents::ContractAttachment', foreign_key: :contract_id
   accepts_nested_attributes_for :contract_attachments, allow_destroy: true
+  has_many :contract_documents, class_name: 'Documents::ContractDocument', foreign_key: :contract_id
+  accepts_nested_attributes_for :contract_documents, allow_destroy: true
 
   accepts_nested_attributes_for :contract_products, allow_destroy: true
   accepts_nested_attributes_for :contract_payment_receiveds, allow_destroy: true
@@ -607,7 +609,7 @@ class TicketContract < ActiveRecord::Base
   def contract_no_genarate
     # product_brand.try(:contract_no_value)
 
-    contract_no_value = "#{contract_start_at.strftime("%y")}-#{owner_organization.try(:contract_no_value)}-#{product_brand.try(:contract_no_value)}-#{product_category.try(:contract_no_value)}-#{ticket_contract_type.try(:contract_no_value)}-#{contract_no}"
+    contract_no_value = "#{contract_start_at.try(:strftime, "%y")}-#{owner_organization.try(:contract_no_value)}-#{product_brand.try(:contract_no_value)}-#{product_category.try(:contract_no_value)}-#{ticket_contract_type.try(:contract_no_value)}-#{contract_no}"
 
   end
 

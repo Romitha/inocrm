@@ -134,7 +134,7 @@ class ContractsController < ApplicationController
       end
       render "contracts/view_product"
     end
-
+    
     if params[:select_contract]
       @organization = Organization.find params[:customer_id]
 
@@ -283,20 +283,56 @@ class ContractsController < ApplicationController
         cached_contract = Rails.cache.fetch([:new_product_with_pop_doc_url1, request.remote_ip])
         if params[:contract_id].present?
           @contract = TicketContract.find params[:contract_id]
+          
           @contract.attributes = contract_params
 
         else
           @contract = (cached_contract or TicketContract.new)
-          @contract.contract_no_increase
+          @contract.contract_no_genarate
           @contract.attributes = contract_params
         end
         Rails.cache.delete([:new_product_with_pop_doc_url1, request.remote_ip])
-
+        @contract.contract_no_genarate
         @contract.save
 
-        params[:contract_document] and params[:contract_document]['annexture_id'].each do |annexture_id|
-          annexture = Documents::Annexture.find annexture_id
+        # contract_document_path = File.join(Dir.home, INOCRM_CONFIG["upload_url"], "/contract_documents/#{@contract.id}/")
+        # contract_document_dir = Dir.exist?(contract_document_path)
+
+        # if not contract_document_dir
+        #   Dir.mkdir(contract_document_path, 0775)
+        # end
+
+        if params[:contract_document].present?
+          params[:contract_document]['annexture_id'].each do |annexture_id|
+            annexture = Documents::Annexture.find annexture_id
+
+            # annexture_exists = File.exist?( File.join( contract_document_path, [@contract.product_brand.name.downcase.gsub(/\W/, ""), "-", annexture.template_name.downcase.gsub(/\W/,""), File.extname(annexture.document_url.file.path)].join("") ) )
+
+            # if annexture.document_url.present? and !annexture_exists
+            #   FileUtils.cp annexture.document_url.file.path, contract_document_path
+            #   File.rename File.join(contract_document_path, File.basename(annexture.document_url.file.path)), [contract_document_path, @contract.product_brand.name.downcase.gsub(/\W/, ""), "-", annexture.template_name.downcase.gsub(/\W/,""), File.extname(annexture.document_url.file.path)].join("")
+
+            # end
+
+            if annexture.document_url.present?
+              name = "#{@contract.product_brand.name}_#{@contract.id}_#{annexture.template_name}"
+
+              contract_document = @contract.contract_documents.find_or_initialize_by name: name
+
+              unless contract_document.document_url.present?
+                contract_document.document_url = annexture.document_url.file
+                contract_document.save!
+              end
+
+            end
+
+          end
         end
+
+        # @contract.contract_attachments.each do |contract_attachment|
+        #   FileUtils.cp contract_attachment.attachment_url.file.path, contract_document_path
+
+        # end
 
         Rails.cache.fetch([:contract_products, request.remote_ip]).to_a.each do |product|
           unless @contract.product_ids.include?(product.id)
@@ -323,6 +359,40 @@ class ContractsController < ApplicationController
 
 
     render :index
+  end
+
+  def generate_contract_document
+    @contract = TicketContract.find(params[:contract_id])
+    # contract_document_path = File.join(Dir.home, INOCRM_CONFIG["upload_url"], "/contract_brand_documents/#{@contract.id}/")
+    # contract_document_dir = Dir.exist?(contract_document_path)
+
+    # if not contract_document_dir
+    #   Dir.mkdir(contract_document_path, 0775)
+    # end
+
+
+    @contract.product_brand.brand_documents.each do |brand_document|
+      if brand_document.document_file_name.present?
+
+        doc_name = "#{brand_document.id}_#{@contract.product_brand.name}"
+        doc = DocxReplace::Doc.new(brand_document.document_file_name.url, "#{Rails.root}/tmp")
+        {key: value}.each do |k, v|
+          doc.replace "##{k}", v
+        end
+
+        contract_document = @contract.contract_documents.find_or_initialize_by name: doc_name
+        # contract_document_dir = File.join(contract_document.document_url.root, contract_document.document_url.store_dir)
+
+        write_doc = Tempfile.new(doc_name, "#{Rails.root}/tmp")
+        doc.commit(write_doc.path)
+        File.rename wdoc.path, "#{Rails.root}/tmp/#{doc_name}.docx"
+
+        File.open("#{Rails.root}/tmp/#{doc_name}.docx"){|f| contract_document.document_url = f}
+
+        contract_document.save!
+
+      end
+    end
   end
 
   def contract_update
