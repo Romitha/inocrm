@@ -93,7 +93,10 @@
                   .col-md-3
                     %strong Remarks:
                     = ticket.ticket_contract.remarks
-
+                .row
+                %br
+                  .col-md-3
+                    = link_to "View Contract", contracts_path(view_contract: true, contract_id: ticket.ticket_contract.id, customer_id: ticket.ticket_contract.organization.id), class: "btn btn-sm btn-warning", target: "_blank", remote: false
             = link_to "Back", create_customer_tickets_path(customer_id: customer.id), remote: true, method: :post
             = link_to "Next", "#", class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2", onclick: "Warranties.tab_trigger(); false;"
 

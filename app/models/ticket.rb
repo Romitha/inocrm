@@ -580,7 +580,7 @@ class TicketContract < ActiveRecord::Base
           },
         },
         ticket_contract_type: {
-          only: [:id, :name],
+          only: [:id, :name, :contract_no_value],
         },
         ticket_currency: {
           only: [:id, :code],
@@ -607,7 +607,7 @@ class TicketContract < ActiveRecord::Base
   def contract_no_genarate
     # product_brand.try(:contract_no_value)
 
-    contract_no_value = "#{contract_start_at.strftime("%y")}-#{owner_organization.try(:contract_no_value)}-#{product_brand.try(:contract_no_value)}-#{product_category.try(:contract_no_value)}-#{contract_no}"
+    contract_no_value = "#{contract_start_at.strftime("%y")}-#{owner_organization.try(:contract_no_value)}-#{product_brand.try(:contract_no_value)}-#{product_category.try(:contract_no_value)}-#{ticket_contract_type.try(:contract_no_value)}-#{contract_no}"
 
   end
 
