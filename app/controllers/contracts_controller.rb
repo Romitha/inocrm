@@ -124,8 +124,13 @@ class ContractsController < ApplicationController
    if params[:view_product]
       # Rails.cache.delete([:contract_products, request.remote_ip])
       @product = Product.find params[:product_id]
-      if !params[:view_serial_product]
-        @contract_product = ContractProduct.find params[:contract_id]
+      if params[:serial_product]
+      else
+        if !params[:view_serial_product]
+          @contract_product = ContractProduct.find params[:contract_id]
+        else
+          @contract_product = TicketContract.find params[:contract_id]
+        end
       end
       render "contracts/view_product"
     end

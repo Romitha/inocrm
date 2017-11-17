@@ -74,7 +74,10 @@
         = a.input :code, label: "Customer Code"
       .col-md-2
         = a.input :business_registration_no
-      - if organization.id == Organization.owner.id
+      - if Organization.owner.id == organization.id
+        .col-md-2
+          = f.input :contract_no_value
+      - elsif Organization.owner.members.map(&:id).include? organization.id
         .col-md-2
           = f.input :contract_no_value
   .row

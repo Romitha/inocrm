@@ -69,6 +69,12 @@
 -else
   %h3 Product Details
   = simple_nested_form_for organization, url: save_cus_products_contracts_path(save_product: true), html: {class: "validate_form"}, method: :post, remote: true do |o|
+    - if organization.errors.any?
+      .row
+        .col-md-12
+          %ul
+            - organization.errors.full_messages.each do |error|
+              %li= error
     = o.simple_fields_for :products do |f|
       - if f.object.id.present?
         .panel-group#accordion{ role: "tablist", "aria-multiselectable"=>"true"}
