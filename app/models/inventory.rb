@@ -423,7 +423,7 @@ class InventoryProduct < ActiveRecord::Base
     Srn
     to_json(
       only: [:id, :description, :model_no, :product_no, :spare_part_no, :fifo, :created_at, :serial_no, :remarks, :created_by_user, :updated_by_user],
-      methods: [:category3_id, :category2_id, :category1_id, :category3_name, :category2_name, :category1_name, :generated_serial_no, :generated_item_code, :created_by_from_user, :updated_by_from_user, :manufacture, :product_type],
+      methods: [:category3_id, :category2_id, :category1_id, :category3_name, :category2_name, :category1_name, :generated_serial_no, :generated_item_code, :created_by_from_user, :updated_by_from_user, :manufacture, :product_type, :grn_items_any?],
 
       include: {
         inventory_unit: {
@@ -453,55 +453,10 @@ class InventoryProduct < ActiveRecord::Base
       }
     )
 
-    # srn_items: {
-    #   only: [:id, :closed],
-    #   methods: [:formatted_srn_no, :srn_id, :store_id],
-    # },
-    # inventory_serial_items: {
-    #   only: [:id, :product_id],
-    #   include: {
-    #     grn_items: {
-    #       only: [:id, :current_unit_cost, :remaining_quantity],
-    #       methods: [:any_remaining_serial_item],
-    #     },
-    #     inventory_serial_items_additional_costs: {
-    #       only: [:id, :cost],
-    #     },
-    #   },
-    # },
-    # grn_batches: {
-    #   only: [:id, :remaining_quantity],
-    #   include: {
-    #     grn_item: {
-    #       only: [:current_unit_cost]
-    #     },
-    #   },
-    # },
-    # grn_serial_items: {
-    #   only: [:id, :remaining],
-    #   include: {
-    #     grn_item: {
-    #       only: [:current_unit_cost]
-    #     },
-    #     inventory_serial_item:{
-    #       only:[:id],
-    #       include: {
-    #         inventory_serial_items_additional_costs:{
-    #           only:[:id, :cost],
-    #         },
-    #       },
-    #     },
-    #   },
-    # },
-    # grn_items: {
-    #   only: [:id, :current_unit_cost, :remaining_quantity],
-    #   include: {
-    #     grn: {
-    #       only: [:grn_no, :currency_id, :created_at, :store_id],
-    #     },
-    #   },
-    # },
+  end
 
+  def grn_items_any?
+    grn_items.any?
   end
 
 end
