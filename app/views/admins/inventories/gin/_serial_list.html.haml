@@ -38,7 +38,7 @@
         = form_tag batch_or_serial_for_gin_admins_inventories_path(batch_or_serial: "issued_qty", serial_flag: "true"), method: :post, remote: true do
           = hidden_field_tag :srn_item_id, params[:srn_item_id]
           - counter = 0
-          = submit_tag "Issue", class: "btn btn-sm btn-primary small_scale_margin-top3"
+          = submit_tag "Issue", class: "btn btn-sm btn-primary small_scale_margin-top3", data: {disable_with: "Please wait..."}
           .row
             .col-md-2
               %strong NO

@@ -169,9 +169,9 @@
 
               .col-md-12  
                 - if need_serial and !need_batch
-                  = link_to "Add serial item", batch_or_serial_for_gin_admins_inventories_path(store_id: f.object.store_id, product_id: i.object.product_id, srn_item_id: i.object.srn_item_id, batch_or_serial: "serial"), remote: true, class: "btn btn-sm btn-success"
+                  = link_to "Add serial item", batch_or_serial_for_gin_admins_inventories_path(store_id: f.object.store_id, product_id: i.object.product_id, srn_item_id: i.object.srn_item_id, batch_or_serial: "serial"), remote: true, class: "btn btn-sm btn-success", data: {disable_with: "Please wait..."}
                 - elsif need_batch and !need_serial
-                  = link_to "Add batch", batch_or_serial_for_gin_admins_inventories_path(store_id: f.object.store_id, product_id: i.object.product_id, srn_item_id: i.object.srn_item_id, batch_or_serial: "batch"), remote: true, class: "btn btn-sm btn-success"
+                  = link_to "Add batch", batch_or_serial_for_gin_admins_inventories_path(store_id: f.object.store_id, product_id: i.object.product_id, srn_item_id: i.object.srn_item_id, batch_or_serial: "batch"), remote: true, class: "btn btn-sm btn-success", data: {disable_with: "Please wait..."}
               .col-md-12
                 %div{id: "batch_or_serial_frame#{i.object.srn_item_id}"}
 
