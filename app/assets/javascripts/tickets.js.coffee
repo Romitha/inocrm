@@ -36,7 +36,8 @@ window.Tickets =
     @onsite_click()
     @numbersonly()
     @edit_fsr_travel_hours()
-
+    @filter_category_report()
+    @filter_category_ticket_report()
     return
 
   initial_loaders: ->
@@ -881,7 +882,26 @@ window.Tickets =
       selected = $("#ticket_contract_product_brand_id :selected").text()
       filtered_option = $(category_list_html).filter("optgroup[label='#{selected}']").html()
       category_list.empty().html(filtered_option).trigger('chosen:updated')
-
+  
+  filter_category_report: ->
+    category_list = $("#search_contracts_category_name")
+    category_list_html = category_list.html()
+    category_list.prop("disabled", true)
+    $("#search_contracts_brand_name").change ->
+      category_list.prop("disabled", false)
+      selected = $("#search_contracts_brand_name :selected").text()
+      filtered_option = $(category_list_html).filter("optgroup[label='#{selected}']").html()
+      category_list.empty().html(filtered_option).trigger('chosen:updated')
+  
+  filter_category_ticket_report: ->
+    category_list = $("#search_contracts_ticket_contract_category_name")
+    category_list_html = category_list.html()
+    category_list.prop("disabled", true)
+    $("#search_contracts_ticket_contract_brand_name").change ->
+      category_list.prop("disabled", false)
+      selected = $("#search_contracts_ticket_contract_brand_name :selected").text()
+      filtered_option = $(category_list_html).filter("optgroup[label='#{selected}']").html()
+      category_list.empty().html(filtered_option).trigger('chosen:updated')
   filter_bill_address: ->
     address_bill_list = $("#ticket_contract_bill_address_id")
     address_bill_list_html = address_bill_list.html()

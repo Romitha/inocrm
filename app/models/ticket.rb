@@ -535,6 +535,7 @@ class TicketContract < ActiveRecord::Base
     indexes :owner_organization, type: "nested", include_in_parent: true
     indexes :organization_contact_person, type: "nested", include_in_parent: true
     indexes :ticket_contract_payment_type, type: "nested", include_in_parent: true
+    indexes :contract_payment_receiveds, type: "nested", include_in_parent: true
     # indexes :organization_contact_addresses, type: "nested", include_in_parent: true
     # indexes :supplier, type: "nested", include_in_parent: true
     # indexes :store, type: "nested", include_in_parent: true
@@ -543,7 +544,7 @@ class TicketContract < ActiveRecord::Base
   end
 
   def self.search(params)
-    tire.search(page: (params[:page] || 1), per_page: 10) do
+    tire.search(page: (params[:page] || 1), per_page: (params[:per_page] || 10)) do
       query do
         boolean do
           must { string params[:query] } if params[:query].present?
@@ -554,7 +555,11 @@ class TicketContract < ActiveRecord::Base
           # must { term :author_id, params[:author_id] } if params[:author_id].present?
         end
       end
-      sort { by :created_at, {order: "desc", ignore_unmapped: true} }
+      if params[:sort_by]
+        sort { by :season, {order: "asc", ignore_unmapped: true} }
+      else
+        sort { by :created_at, {order: "desc", ignore_unmapped: true} }
+      end
       # highlight customer_name: {number_of_fragments: 0}, ticket_status_name: {number_of_fragments: 0}, :options => { :tag => '<strong class="highlight">' } if params[:query].present?
       # filter :range, published_at: { lte: Time.zone.now}
       # raise to_curl
@@ -564,15 +569,17 @@ class TicketContract < ActiveRecord::Base
   def to_indexed_json
     Organization
     ContactNumber
+    Invoice
     to_json(
-      only: [ :id, :created_at, :created_by, :customer_id, :products, :contract_no, :hold, :amount, :payment_completed, :contract_start_at,:contract_end_at, :season],
-      methods: [:num_of_products, :brand_name, :payment_type, :formated_created_at, :created_by_user_full_name, :formated_contract_start_at, :formated_contract_end_at, :dynamic_active, :product_amount, :contract_no_genarate],
+      only: [ :id, :created_at, :created_by, :customer_id, :products, :contract_no, :hold, :amount, :payment_completed, :contract_start_at,:contract_end_at, :season, :accepted_at],
+      methods: [:num_of_products, :brand_name, :category_name, :payment_type, :formated_created_at, :created_by_user_full_name, :formated_contract_start_at, :formated_contract_end_at, :dynamic_active, :formated_accepted_at, :product_amount, :contract_no_genarate],
       include: {
         organization: {
           only: [:id, :name, :code],
           include: {
             account: {
               only: [:id, :industry_types_id],
+              methods: [:get_account_manager],
               include: {
                 industry_type: {
                   only: [:id, :name, :code],
@@ -596,6 +603,9 @@ class TicketContract < ActiveRecord::Base
         ticket_contract_payment_type: {
           only: [:id, :name],
         },
+        contract_payment_receiveds: {
+          only: [:id, :amount],
+        },
       },
     )
 
@@ -617,6 +627,10 @@ class TicketContract < ActiveRecord::Base
     product_brand.try(:name)
   end
 
+  def category_name
+    product_category.try(:name)
+  end
+
   def payment_type
     ticket_contract_payment_type.try(:name)
   end
@@ -631,6 +645,10 @@ class TicketContract < ActiveRecord::Base
 
   def formated_created_at
     created_at.strftime(INOCRM_CONFIG["short_date_format"])
+  end
+
+  def formated_accepted_at
+    accepted_at.try :strftime, INOCRM_CONFIG["short_date_format"]
   end
 
   def formated_contract_start_at
@@ -651,9 +669,14 @@ class TicketContract < ActiveRecord::Base
 
 end
 
+
 class ContractProduct < ActiveRecord::Base
   Product
   self.table_name = "spt_contract_product"
+  
+  include Tire::Model::Search
+  include Tire::Model::Callbacks
+
 
   belongs_to :ticket_contract, foreign_key: :contract_id
   belongs_to :product, foreign_key: :product_serial_id
@@ -663,7 +686,117 @@ class ContractProduct < ActiveRecord::Base
   belongs_to :installed_location, class_name: "Address"
 
   accepts_nested_attributes_for :product, allow_destroy: true
+  
+  mapping do
+    indexes :ticket_contract, type: "nested", include_in_parent: true
+    indexes :product, type: "nested", include_in_parent: true
+  end
+  def self.search(params)
+    tire.search(page: (params[:page] || 1), per_page: (params[:per_page] || 10)) do
+      query do
+        boolean do
+          must { string params[:query] } if params[:query].present?
+          must { range :ticket_contract_contract_end_at, lte: params[:ticket_contract_contract_end_at].to_date.end_of_day } if params[:ticket_contract_contract_end_at].present?
+          must { range :ticket_contract_contract_start_at, gte: params[:ticket_contract_contract_start_at].to_date.beginning_of_day } if params[:ticket_contract_contract_start_at].present?
+        end
+      end
+      if params[:sort_by]
+        sort { by :ticket_contract_season, {order: "asc", ignore_unmapped: true} }
+      else
+        sort { by :ticket_contract_created_at, {order: "desc", ignore_unmapped: true} }
+      end
+    end
+  end
 
+  def to_indexed_json
+    Organization
+    ContactNumber
+    Invoice
+    Product
+    to_json(
+      only: [:id, :amount, :discount_amount],
+      methods: [:contract_product_engineer_cost,:contract_product_support_engineer_cost, :contract_product_part_cost,:contract_product_additional_cost, :contract_product_external_cost, :ticket_contract_contract_end_at, :ticket_contract_contract_start_at,:ticket_contract_season, :ticket_contract_created_at ],
+      include: {
+        ticket_contract: {
+          only: [ :id, :created_at, :created_by, :customer_id, :products, :contract_no, :hold, :amount, :payment_completed, :contract_start_at,:contract_end_at, :season, :accepted_at],
+          methods: [:num_of_products, :brand_name, :category_name, :payment_type, :formated_created_at, :created_by_user_full_name, :formated_contract_start_at, :formated_contract_end_at, :dynamic_active, :formated_accepted_at, :product_amount, :contract_no_genarate],
+          include: {
+            organization: {
+              only: [:id, :name, :code],
+              include: {
+                account: {
+                  only: [:id, :industry_types_id],
+                  methods: [:get_account_manager],
+                  include: {
+                    industry_type: {
+                      only: [:id, :name, :code],
+                    },
+                  },
+                },
+              },
+            },
+            ticket_contract_type: {
+              only: [:id, :name, :contract_no_value],
+            },
+            ticket_currency: {
+              only: [:id, :code],
+            },
+            owner_organization: {
+              only: [:id, :name],
+            },
+            ticket_contract_payment_type: {
+              only: [:id, :name],
+            },
+            contract_payment_receiveds: {
+              only: [:id, :amount],
+            },
+          },
+        },
+        product: {
+          only: [:id, :serial_no, :name],
+        },
+      },
+    )
+
+  end
+
+  def contract_product_tickets
+    product.tickets.where(contract_id: self.contract_id)
+  end
+
+  def contract_product_engineer_cost
+    contract_product_tickets.to_a.sum { |t| t.ticket_total_cost.try(:engineer_cost).to_f}
+  end
+  
+  def contract_product_support_engineer_cost
+    contract_product_tickets.to_a.sum { |t| t.ticket_total_cost.try(:support_engineer_cost).to_f}
+  end
+
+  def contract_product_part_cost
+    contract_product_tickets.to_a.sum { |t| t.ticket_total_cost.try(:part_cost).to_f}
+  end
+
+  def contract_product_additional_cost
+    contract_product_tickets.to_a.sum { |t| t.ticket_total_cost.try(:additional_cost).to_f}
+  end
+
+  def contract_product_external_cost
+    contract_product_tickets.to_a.sum { |t| t.ticket_total_cost.try(:external_cost).to_f}
+  end
+
+  def ticket_contract_contract_end_at
+    ticket_contract.contract_end_at
+  end
+
+  def ticket_contract_contract_start_at
+    ticket_contract.contract_start_at
+  end
+  def ticket_contract_season
+    ticket_contract.season
+  end
+  def ticket_contract_created_at
+    ticket_contract.created_at
+  end
 end
 
 class TicketStatus < ActiveRecord::Base

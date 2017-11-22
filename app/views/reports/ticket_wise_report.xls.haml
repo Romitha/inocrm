@@ -1,0 +1,45 @@
+%h3 Ticket Wise Report
+%table{:border => "1"}
+  %thead
+    %tr
+      %th Contract No
+      %th Customer Name
+      %th Account manager
+      %th Product serial Number
+      %th Brand
+      %th Category
+      %th Product Name
+      %th Discounted Amount
+      %th Amount
+      %th Engineer cost
+      %th Support Engineer cost
+      %th Part cost
+      %th Additional cost
+      %th Total cost
+      %th Received payment
+      %th Profit
+
+  %tbody
+    - @contract_product.each do |contract_product|
+      %tr
+        %td= contract_product.ticket_contract.contract_no_genarate
+        %td= contract_product.ticket_contract.organization.name
+        %td= contract_product.ticket_contract.organization.account.get_account_manager
+        %td= contract_product.product.serial_no
+        %td= contract_product.ticket_contract.brand_name
+        %td= contract_product.ticket_contract.category_name
+        %td= contract_product.product.try(:name)
+        - contract_amount = (contract_product.try(:amount).to_f - contract_product.try(:discount_amount).to_f)
+        %td= contract_product.try(:discount_amount).to_f
+        %td= contract_amount
+        %td= contract_product.contract_product_engineer_cost
+        %td= contract_product.contract_product_support_engineer_cost
+        %td= contract_product.contract_product_part_cost
+        %td= contract_product.contract_product_additional_cost
+        - total_cost = (contract_product.contract_product_engineer_cost + contract_product.contract_product_support_engineer_cost + contract_product.contract_product_part_cost + contract_product.contract_product_additional_cost + contract_product.contract_product_external_cost)
+        %td= total_cost
+        - recived_amount = contract_product.ticket_contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f}
+        %td= recived_amount
+        %td= (recived_amount.to_f - total_cost.to_f)
+
+
