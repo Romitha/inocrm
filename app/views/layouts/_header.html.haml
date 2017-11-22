@@ -76,6 +76,8 @@
             %li.divider
             %li.dropdown-header Reports
             %li{role: "presentation"}= link_to "ERP Report", excel_output_reports_path
+            %li{role: "presentation"}= link_to "Contract - Product Wise Report", contract_report_reports_path
+            %li{role: "presentation"}= link_to "Ticket wise Cost Analysis Report", ticket_wise_report_reports_path
 
         - if user_signed_in?
           %li.dropdown.profile_image_dropdown

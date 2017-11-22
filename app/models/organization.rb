@@ -153,9 +153,7 @@ class Organization < ActiveRecord::Base
     organization_type.try(:code)
   end
 
-  # def acc_no
-  #   account.account_no
-  # end
+
 
   def self.customers
     joins(accounts_dealer_types: :dealer_type).where("mst_dealer_types.code = 'CUS' or mst_dealer_types.code = 'INDCUS'").order("name ASC").references(:dealer_type)
@@ -215,7 +213,8 @@ class Organization < ActiveRecord::Base
           methods: [:contact_info],
         },
         account: {
-          only: [:id, :industry_types_id,:account_no, :code],
+          only: [:id, :industry_types_id,:account_no, :code, :account_manager],
+          methods: [:get_account_manager],
           # include: {
           #   industry_type: {
           #     only: [:id, :code, :name],
@@ -365,6 +364,9 @@ class Account < ActiveRecord::Base
 
   def created_user
     User.cached_find_by_id(created_by)
+  end
+  def get_account_manager
+    account_manager.try(:first_name)
   end
 
   has_many :dyna_columns, as: :resourceable

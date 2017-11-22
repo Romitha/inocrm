@@ -343,6 +343,7 @@ class ContractsController < ApplicationController
               if params['contract_product_additional_params'][c_product.product_serial_id.to_s].present?
                 c_product_attr = params['contract_product_additional_params'].require(c_product.product_serial_id.to_s).permit('amount', 'discount_amount', 'installed_location_id' )
                 c_product.update c_product_attr
+                c_product.ticket_contract.update_index
               end
             end
 
@@ -409,7 +410,6 @@ class ContractsController < ApplicationController
     if params[:save_product].present?
       if params[:owner_customer_id].present?
         @cus_product = Organization.find params[:owner_customer_id]
-
         @cus_product.attributes = customer_product_params
         if @cus_product.save
           Rails.cache.fetch([:products, request.remote_ip]).to_a.each do |product|

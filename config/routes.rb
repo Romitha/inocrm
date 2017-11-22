@@ -51,6 +51,8 @@ Rails.application.routes.draw do
       get "quotation"
       get "excel_output"
       get "po_output"
+      get "contract_report"
+      get "ticket_wise_report"
     end
   end
 

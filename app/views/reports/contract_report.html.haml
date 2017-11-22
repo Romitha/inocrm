@@ -1,0 +1,60 @@
+.row
+  .col-md-12
+    %fieldset
+      %legend Contract - Product wise Report
+      #search_frame
+        = form_tag contract_report_reports_path, method: :get, class: "form-horizontal" do
+          .row
+            .col-md-3
+              = label_tag "Customer Name"
+              = select_tag "search_contracts[organization.id]", options_from_collection_for_select(Organization.all, :id, :name), class: "form-control parent_class", include_blank: true
+
+            .col-md-3
+              = label_tag "Service Provider:"
+              = select_tag "search_contracts[owner_organization.id]", options_from_collection_for_select([Organization.owner] + Organization.owner.members, :id, :name), class: "form-control parent_class", include_blank: true
+            
+            / .col-md-3
+            /   = label_tag "Agreement year", "Agreement year"
+            /   = text_field_tag "contract_date_from", params[:contract_date_from], class: "form-control datepicker", placeholder: "Select Agreement year"
+
+            .col-md-3
+              = label_tag "Account Manager:"
+              = select_tag "search_contracts[organization.account.get_account_manager]", options_from_collection_for_select(User.all, :first_name, :first_name), class: "form-control parent_class", include_blank: true
+
+            .col-md-3.small_scale_margin-top2
+              = label_tag "Payment completed"
+              = check_box_tag "search_contracts[payment_completed]", (params[:search_contracts] and params[:search_contracts][:payment_completed]), checked = false
+          .row
+            .col-md-3
+              = label_tag "Contract Date From", "Contract Date From"
+              = text_field_tag "contract_date_from", params[:contract_date_from], class: "form-control datepicker", placeholder: "Select from date"
+            .col-md-3
+              = label_tag "Contract Date To", "Contract Date To"
+              = text_field_tag "contract_date_to", params[:contract_date_to], class: "form-control datepicker", placeholder: "Select To date"
+          .row
+            .col-md-3
+              = label_tag "Brand"
+              = select_tag "search_contracts[brand_name]", options_from_collection_for_select(ProductBrand.all, :name, :name), class: "form-control parent_class", include_blank: true
+            
+            .col-md-3
+              = label_tag "Category"
+              = select_tag "search_contracts[category_name]", option_groups_from_collection_for_select(ProductBrand.all, :product_categories, :name, :name, :name), class: "form-control parent_class", include_blank: true
+            .col-md-3
+              = label_tag "Contract Type"
+              = select_tag "search_contracts[ticket_contract_type.id]", options_from_collection_for_select(TicketContractType.all, :id, :name), class: "form-control parent_class", include_blank: true
+
+            .col-md-3
+              = label_tag "Currency"
+              = select_tag "search_contracts[ticket_currency.id]", options_from_collection_for_select(TicketCurrency.all, :id, :code), class: "form-control parent_class", include_blank: true
+          .row    
+            .col-md-3
+              = label_tag "Payemnt Type:"
+              = select_tag "search_contracts[payment_type]", options_from_collection_for_select(TicketContractPaymentType.all, :name, :name), class: "form-control parent_class", include_blank: true
+            .col-md-3
+              = label_tag "Season:"
+              = select_tag "search_contracts[season]", raw("<option value=1>Season 1</option> <option value=2>Season 2</option>"), class: "form-control parent_class", include_blank: true
+
+          .row.small_scale_margin-top1
+            .col-md-1
+              .search
+                = submit_tag "Generate Report", class: "btn btn-sm btn-warning", name: "search"
