@@ -25,10 +25,13 @@ Rails.application.routes.draw do
       post "submit_selected_products"
       post "save_cus_products"
       post "payments_save"
+      post "generate_contract_document"
       put "contract_update"
       put "edit_contract"
       put "update_payments"
       put "update_contract_product"
+      post "upload_generated_document"
+      delete "remove_generated_document"
     end
   end
 

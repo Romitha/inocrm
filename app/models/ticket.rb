@@ -611,15 +611,17 @@ class TicketContract < ActiveRecord::Base
 
   end
 
+  after_create :contract_no_increase
+
   def contract_no_increase
     contract_no = CompanyConfig.first.increase_sup_last_contract_serial_no
     update contract_no: contract_no
+
   end
 
   def contract_no_genarate
-    # product_brand.try(:contract_no_value)
-
-    contract_no_value = "#{contract_start_at.try(:strftime, "%y")}-#{owner_organization.try(:contract_no_value)}-#{product_brand.try(:contract_no_value)}-#{product_category.try(:contract_no_value)}-#{ticket_contract_type.try(:contract_no_value)}-#{contract_no}"
+    "#{contract_start_at.try(:strftime, "%y")}-#{owner_organization.try(:contract_no_value)}-#{product_brand.try(:contract_no_value)}-#{product_category.try(:contract_no_value)}-#{ticket_contract_type.try(:contract_no_value)}-#{contract_no}"
+    # self.contract_no = "#{contract_start_at.try(:strftime, "%y")}-#{owner_organization.try(:contract_no_value)}-#{product_brand.try(:contract_no_value)}-#{product_category.try(:contract_no_value)}-#{ticket_contract_type.try(:contract_no_value)}-#{contract_no}"
 
   end
 
@@ -665,6 +667,26 @@ class TicketContract < ActiveRecord::Base
 
   def product_amount
     contract_products.to_a.sum{|e| e.try(:amount)} - contract_products.to_a.sum{|e| e.try(:discount_amount)}
+  end
+
+  def doc_varibles
+    {
+      contract_process_date: process_at.try(:strftime, "%d %b %Y"),
+      customer_name: organization.name,
+      customer_registration_no: organization.account.try(:business_registration_no),
+      customer_address_single_line: organization.primary_address.try(:full_name),
+      total_contract_amount: amount,
+      contract_start_date: contract_start_at.try(:strftime, "%d %b %Y"),
+      contract_end_date: contract_end_at.try(:strftime, "%d %b %Y"),
+      customer_addr_1: organization.primary_address.try(:address1),
+      customer_addr_2: organization.primary_address.try(:address2),
+      customer_addr_3: organization.primary_address.try(:address3),
+      customer_addr_city: organization.primary_address.try(:city),
+      customer_addr_country: organization.primary_address.try(:country).try(:Country),
+      contract_number: contract_no_genarate,
+      contact_person_name: organization.primary_address.try(:contact_person)
+
+    }
   end
 
 end

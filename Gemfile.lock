@@ -100,6 +100,10 @@ GEM
     capybara-webkit (1.11.1)
       capybara (>= 2.3.0, < 2.8.0)
       json
+    caracal (1.1.0)
+      nokogiri (~> 1.6)
+      rubyzip (~> 1.1)
+      tilt (>= 1.4)
     carrierwave (0.10.0)
       activemodel (>= 3.2.0)
       activesupport (>= 3.2.0)
@@ -203,10 +207,6 @@ GEM
       haml (~> 4.0.0)
       nokogiri (~> 1.6.0)
       ruby_parser (~> 3.5)
-    htmltoword (0.5.1)
-      actionpack
-      nokogiri
-      rubyzip (>= 1.0)
     http-cookie (1.0.2)
       domain_name (~> 0.5)
     httpi (2.4.0)
@@ -437,6 +437,7 @@ DEPENDENCIES
   capistrano-rvm
   capybara
   capybara-webkit
+  caracal
   carrierwave
   carrierwave-ftp
   chosen-rails
@@ -450,7 +451,6 @@ DEPENDENCIES
   ffaker
   god
   haml-rails
-  htmltoword
   httpi
   jbuilder (~> 2.0)
   jcrop-rails-v2
