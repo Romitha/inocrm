@@ -52,6 +52,8 @@
   $("#contractedit").html("#{j render 'contracts/contractform'}");
   $("a[href='#contracts_form_collapse_form_link']").trigger("click");
 
+  DocumentAttachment.generated_document_upload();
+
 - elsif params[:edit_create_contract].present?
   $("#contractedit1").removeClass("hide");
   $("#contractedit1").html("#{j render 'contracts/contractform'}");

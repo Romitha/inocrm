@@ -1,5 +1,6 @@
 class ContractsController < ApplicationController
 
+
   def index
     Ticket
     Organization
@@ -288,11 +289,9 @@ class ContractsController < ApplicationController
 
         else
           @contract = (cached_contract or TicketContract.new)
-          @contract.contract_no_genarate
           @contract.attributes = contract_params
         end
         Rails.cache.delete([:new_product_with_pop_doc_url1, request.remote_ip])
-        @contract.contract_no_genarate
         @contract.save
 
         # contract_document_path = File.join(Dir.home, INOCRM_CONFIG["upload_url"], "/contract_documents/#{@contract.id}/")
@@ -315,7 +314,7 @@ class ContractsController < ApplicationController
             # end
 
             if annexture.document_url.present?
-              name = "#{@contract.product_brand.name}_#{@contract.id}_#{annexture.template_name}"
+              name = "#{@contract.product_brand.try(:name)}_#{@contract.id}_#{annexture.template_name}"
 
               contract_document = @contract.contract_documents.find_or_initialize_by name: name
 
@@ -363,6 +362,7 @@ class ContractsController < ApplicationController
   end
 
   def generate_contract_document
+    Ticket
     @contract = TicketContract.find(params[:contract_id])
     # contract_document_path = File.join(Dir.home, INOCRM_CONFIG["upload_url"], "/contract_brand_documents/#{@contract.id}/")
     # contract_document_dir = Dir.exist?(contract_document_path)
@@ -370,30 +370,84 @@ class ContractsController < ApplicationController
     # if not contract_document_dir
     #   Dir.mkdir(contract_document_path, 0775)
     # end
-
-
+    generated = false
     @contract.product_brand.brand_documents.each do |brand_document|
       if brand_document.document_file_name.present?
 
         doc_name = "#{brand_document.id}_#{@contract.product_brand.name}"
-        doc = DocxReplace::Doc.new(brand_document.document_file_name.url, "#{Rails.root}/tmp")
-        {key: value}.each do |k, v|
+        cost_table = "#{brand_document.id}_#{@contract.product_brand.name}_cost_table"
+        doc = DocxReplace::Doc.new(brand_document.document_file_name.path, "#{Rails.root}/tmp")
+        # {key: value}.each do |k, v|
+        @contract.doc_varibles.each do |k, v|
           doc.replace "##{k}", v
         end
 
         contract_document = @contract.contract_documents.find_or_initialize_by name: doc_name
+        cost_table_document = @contract.contract_documents.find_or_initialize_by name: cost_table
         # contract_document_dir = File.join(contract_document.document_url.root, contract_document.document_url.store_dir)
 
         write_doc = Tempfile.new(doc_name, "#{Rails.root}/tmp")
         doc.commit(write_doc.path)
-        File.rename wdoc.path, "#{Rails.root}/tmp/#{doc_name}.docx"
+        File.rename write_doc.path, "#{Rails.root}/tmp/#{doc_name}.docx"
+
+        contract_elements = []
+        table_header = ["ELEMENT OR OPTION", "SERIAL NO", "DESCRIPTION", "AMOUNT"]
+
+        contract_elements << table_header
+
+        @contract.contract_products.each do |contract_product|
+          contract_elements << ['', contract_product.product.serial_no, contract_product.product.description, contract_product.amount]
+        end
+
+        contract_elements.concat [['', '', 'Sub Total', @contract.contract_products.sum(:amount)], ['', '', 'Special Total', @contract.contract_products.sum(:discount_amount)], ['', '', 'Total Amount', (@contract.contract_products.sum(:amount) - @contract.contract_products.sum(:discount_amount))]]
+
+        contract_document_path = File.join(Rails.root, 'tmp', "contract_#{@contract.id}")
+
+
+        contract_tmp_dir = Dir.exist?(contract_document_path)
+
+        if not contract_tmp_dir
+          Dir.mkdir(contract_document_path, 0775)
+        end
+
+        Caracal::Document.save "tmp/contract_#{@contract.id}/generated_table.docx" do |docx|
+          docx.table contract_elements, border_size: 4 do
+            cell_style rows[0], bold: true
+          end
+        end
 
         File.open("#{Rails.root}/tmp/#{doc_name}.docx"){|f| contract_document.document_url = f}
+        File.open("#{Rails.root}/tmp/contract_#{@contract.id}/generated_table.docx"){|f| cost_table_document.document_url = f}
 
         contract_document.save!
+        cost_table_document.save!
+
+        generated = true
 
       end
     end
+
+    if generated
+      # @contract.update "document_generated_count = document_generated_count+1 and last_doc_generated_at = #{DateTime.now} and last_doc_generated_by = #{current_user.id}"
+      @contract.update last_doc_generated_at: DateTime.now, last_doc_generated_by: current_user.id
+      @contract.increment! :document_generated_count, 1
+    end
+
+    render :index
+
+  end
+
+  def upload_generated_document
+    @contract_document = Documents::ContractDocument.find params[:contract_document_id]
+
+    @contract_document.document_url = params[:generated_document]
+
+    @contract_document.save!
+
+  end
+
+  def remove_generated_document
+    
   end
 
   def contract_update
