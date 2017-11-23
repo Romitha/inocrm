@@ -46,7 +46,7 @@ window.DocumentAttachment =
         console.log(data)
         updatedom = $(e.target).data("updatedom")
         contractdocumentid = $(e.target).data("contractdocumentid")
-        types = /(\.|\/)(docx)$/i
+        types = /(\.|\/)(gif|jpe?g|png|doc|docx|pdf|ppt|pptx|xls|xlsx|csv)$/i
         # maxsize = 1024*1024
         file = data.files[0]
         if types.test(file.type) || types.test(file.name)
