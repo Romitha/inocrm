@@ -75,7 +75,7 @@
             %h3.panel-title Brand Document
           .panel-body
             .row
-              = f.simple_fields_for :contract_documents do |document|
+              = f.simple_fields_for :brand_documents do |document|
                 .col-md-3
                   = document.input :code
                 .col-md-4
@@ -92,7 +92,7 @@
                   = link_to document.object.document_file_name.file.filename, document.object.document_file_name.url, target: "_blank" if document.object.try(:document_file_name).present?
                 .col-md-12
                   = document.link_to_remove "Remove"
-            = f.link_to_add "Add", :contract_documents
+            = f.link_to_add "Add", :brand_documents
 
         .row
           .col-md-12
