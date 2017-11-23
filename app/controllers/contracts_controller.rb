@@ -376,7 +376,11 @@ class ContractsController < ApplicationController
 
         doc_name = "#{brand_document.id}_#{@contract.product_brand.name}"
         cost_table = "#{brand_document.id}_#{@contract.product_brand.name}_cost_table"
-        doc = DocxReplace::Doc.new(brand_document.document_file_name.file.path, "#{Rails.root}/tmp")
+        doc = if Rails.env == 'production'
+          DocxReplace::Doc.new(File.join(brand_document.document_file_name.file.sftp_folder, brand_document.document_file_name.file.path), "#{Rails.root}/tmp")
+        else
+          DocxReplace::Doc.new(brand_document.document_file_name.file.path, "#{Rails.root}/tmp")
+        end
         # {key: value}.each do |k, v|
         @contract.doc_varibles.each do |k, v|
           doc.replace "##{k}", v
