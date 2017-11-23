@@ -93,6 +93,8 @@
               = link_to "View", contracts_path(view_contract: true, contract_id: con.id, customer_id: con.organization.id), target: "_blank", remote: false
               %br
               = link_to "Payments", contracts_path(view_contract: true, new_payments: true, contract_id: con.id, customer_id: con.organization.id),target: "_blank",  remote: false
+              %br
+              = link_to "Generate Document", generate_contract_document_contracts_path(contract_id: con.id), method: :post
     %br
     - unless params[:from_where] == "new_ticket"
       = link_to "New Contract", contracts_path(edit_create: true, new_contract: true,  customer_id: organization.id), remote: true, class: "btn btn-sm btn-warning", onclick: "Tickets.ajax_loader(); return false;"
