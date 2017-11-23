@@ -23,7 +23,7 @@ module Documents
 
   class ContractAttachment < ApplicationRecord
     self.table_name = "spt_contract_attachment"
-    mount_uploader :attachment_url, DocumentAttachmentUploader
+    mount_uploader :attachment_url, AttachmentUrlUploader
 
     belongs_to :ticket_contract, foreign_key: :contract_id
 

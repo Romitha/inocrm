@@ -196,8 +196,6 @@
                   = link_to "Remove", "#"
 
           .col-md-12
-            = link_to "Generate Document", generate_contract_document_contracts_path(contract_id: contract.id), method: :post, class: "btn btn-success btn-sm"
-            |
             Generated count: #{contract.document_generated_count.to_i}
             |
             Last Generated at: #{contract.last_doc_generated_at.try(:strftime, "%d-%m-%Y")}
