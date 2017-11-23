@@ -89,7 +89,7 @@
                     %span Upload
                     = document.file_field :document_file_name
                   %br/
-                  = link_to document.object.document_file_name.file.filename, document.object.document_file_name.url, target: "_blank" if document.object.document_file_name.present?
+                  = link_to document.object.document_file_name.file.filename, document.object.document_file_name.url, target: "_blank" if document.object.try(:document_file_name).present?
                 .col-md-12
                   = document.link_to_remove "Remove"
             = f.link_to_add "Add", :contract_documents
