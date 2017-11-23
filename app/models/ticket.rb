@@ -685,7 +685,7 @@ class TicketContract < ActiveRecord::Base
       customer_addr_city: organization.primary_address.try(:city),
       customer_addr_country: organization.primary_address.try(:country).try(:Country),
       contract_number: contract_no_genarate,
-      contact_person_name: organization.primary_address.try(:contact_person)
+      contact_person_name: organization.primary_address.try(:contact_person_full_name)
 
     }
   end
