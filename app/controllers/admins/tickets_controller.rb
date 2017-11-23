@@ -710,7 +710,7 @@ module Admins
       end
 
       def brands_and_category_params
-        params.require(:product_brand).permit(:organization_id, :currency_id, :sla_id, :name, :parts_return_days, :warranty_date_format, :contract_no_value, product_categories_attributes: [:_destroy, :id, :sla_id, :name, :contract_no_value], product_brand_costs_attributes: [:id, :engineer_cost, :support_engineer_cost, :currency_id, :updated_by], contract_documents_attributes: [:id, :_destroy, :code, :name, :description, :document, :document_file_name])
+        params.require(:product_brand).permit(:organization_id, :currency_id, :sla_id, :name, :parts_return_days, :warranty_date_format, :contract_no_value, product_categories_attributes: [:_destroy, :id, :sla_id, :name, :contract_no_value], product_brand_costs_attributes: [:id, :engineer_cost, :support_engineer_cost, :currency_id, :updated_by], brand_documents_attributes: [:id, :_destroy, :code, :name, :description, :document, :document_file_name])
       end
 
       def product_category_params
