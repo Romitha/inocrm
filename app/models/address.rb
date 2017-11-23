@@ -22,8 +22,8 @@ class Address < ActiveRecord::Base
     "#{address1}, #{address2}, #{address3}, #{city}"
   end
 
-  def contact_person
-    "#{contact_person_title.try(:title)} #{contact_person_name}"
+  def contact_person_full_name
+    "#{contact_person_title.try(:title)} #{name}"
   end
 
 end
