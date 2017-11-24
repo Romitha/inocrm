@@ -99,19 +99,19 @@
       / -if not params[:edit_create_contract].present? || (params[:edit_create].present? && !params[:new_contract].present? )
       = hidden_field_tag :product_count, contract.num_of_products, onclick:"Tickets.brand_edit();"
       - if contract.num_of_products > 0 
-        / .col-md-2
-        /   .product_brand_main.hide
-        /     = f.association :product_brand, required: true, include_blank: true
-        /   .product_brand_show
-        /     %strong Product Brand :
-        /     = text_field_tag :product_brand1,contract.product_brand.try(:name), disabled:true
+        .col-md-2
+          .product_brand_main.hide
+            = f.association :product_brand, required: true, include_blank: true
+          .product_brand_show
+            %strong Product Brand :
+            = text_field_tag :product_brand1,contract.product_brand.try(:name), disabled:true
 
-        / .col-md-3
-        /   .product_brand_main.hide
-        /     = f.association :product_category, collection: ProductBrand.all, as: :grouped_select, group_method: :product_categories, required: true
-        /   .product_brand_show
-        /     %strong Product Category :
-        /     = text_field_tag :product_category1,contract.product_category.try(:name), disabled:true
+        .col-md-3
+          .product_brand_main.hide
+            = f.association :product_category, collection: ProductBrand.all, as: :grouped_select, group_method: :product_categories, required: true
+          .product_brand_show
+            %strong Product Category :
+            = text_field_tag :product_category1,contract.product_category.try(:name), disabled:true
 
       - else
         .col-md-2

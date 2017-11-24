@@ -278,6 +278,31 @@ class ReportsController < ApplicationController
   end
 
   # before_filter :change_format
+  def job_tickets_report
+    Ticket
+    Invoice
+    if params[:search].present?
+      params[:from_where] = "job_ticket"
+
+      refined_contract = params[:search_contracts].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
+      refined_search = [refined_contract, refined_search].map{|v| v if v.present? }.compact.join(" AND ")
+
+      request.format = "xls"
+    end
+    params[:per_page] = 100
+    params[:sort_by] = true
+    params[:query] = refined_search
+    @ticket = Ticket.search(params)
+    respond_to do |format|
+      if params[:search].present?
+        format.xls
+      else
+        format.html
+      end
+    end
+  end
+
+
   def ticket_wise_report
     Ticket
     Invoice

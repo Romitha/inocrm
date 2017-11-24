@@ -10,11 +10,15 @@ class Ticket < ActiveRecord::Base
     indexes :ticket_status, type: "nested", include_in_parent: true
     indexes :district, type: "nested", include_in_parent: true
     indexes :owner_engineer, type: "nested", include_in_parent: true
+    indexes :ticket_contract, type: "nested", include_in_parent: true 
+
   end
 
   def self.search(params)
     all_page = {page: (params[:page] || 1)}
-    if params[:from_where] != "excel_output"
+    if params[:from_where] == "job_ticket"
+      all_page.merge!({per_page: 1000})
+    elsif params[:from_where] != "excel_output"
       all_page.merge!({per_page: 10})
     else
       all_page.merge!({per_page: (params[:per_page] || 10)})
@@ -30,6 +34,8 @@ class Ticket < ActiveRecord::Base
           must { range :logged_at, lte: params[:l_range_to].to_date } if params[:l_range_to].present?
           must { range :logged_at, gte: params[:l_range_from].to_date } if params[:l_range_from].present?
 
+          must { range :ticket_contract_contract_end_at, lte: params[:ticket_contract_contract_end_at].to_date.end_of_day } if params[:ticket_contract_contract_end_at].present?
+          must { range :ticket_contract_contract_start_at, gte: params[:ticket_contract_contract_start_at].to_date.beginning_of_day } if params[:ticket_contract_contract_start_at].present?
           # must { term :author_id, params[:author_id] } if params[:author_id].present?
         end
       end
@@ -48,11 +54,49 @@ class Ticket < ActiveRecord::Base
     User
     Invoice
     to_json(
-      only: [:created_at, :cus_chargeable, :id, :ticket_no, :logged_at, :slatime, :job_started_at, :job_started_action_id, :problem_description, :job_finished_at, :status_hold, :re_open_count, :final_invoice_id, :resolution_summary],
-      methods: [:customer_name, :ticket_status_name, :warranty_type_name, :support_ticket_no, :ticket_type_name],
+      only: [:created_at, :cus_chargeable, :id, :ticket_no, :logged_at, :slatime, :job_started_at, :job_started_action_id, :problem_description, :job_type_id, :job_finished_at, :status_hold, :re_open_count, :final_invoice_id, :resolution_summary],
+      methods: [:customer_name, :ticket_part_cost, :ticket_contract_contract_end_at, :ticket_contract_contract_start_at, :job_type_get, :owner_engineer_name, :ticket_status_name, :warranty_type_name, :support_ticket_no, :ticket_type_name, :ticket_contract_product_amount],
       include: {
+        ticket_contract: {
+          only: [ :id, :customer_id, :products, :contract_no,:amount, :contract_start_at,:contract_end_at, :season, :accepted_at],
+          methods: [:brand_name, :category_name, :payment_type, :formated_contract_start_at, :formated_contract_end_at, :product_amount, :contract_no_genarate],
+          include: {
+            contract_products:{
+              only: [:id, :amount, :product_serial_id],
+            },
+            organization: {
+              only: [:id, :name, :code],
+              include: {
+                account: {
+                  only: [:id, :industry_types_id],
+                  methods: [:get_account_manager],
+                  include: {
+                    industry_type: {
+                      only: [:id, :name, :code],
+                    },
+                  },
+                },
+              },
+            },
+            ticket_contract_type: {
+              only: [:id, :name, :contract_no_value],
+            },
+            ticket_currency: {
+              only: [:id, :code],
+            },
+            owner_organization: {
+              only: [:id, :name],
+            },
+            ticket_contract_payment_type: {
+              only: [:id, :name],
+            },
+            contract_payment_receiveds: {
+              only: [:id, :amount],
+            },
+          },
+        },
         products: {
-          only: [:id, :serial_no, :model_no, :product_no, :created_at],
+          only: [:id, :serial_no, :model_no, :product_no, :created_at, :name],
           methods: [:category_name, :brand_name],
         },
         customer: {
@@ -85,8 +129,8 @@ class Ticket < ActiveRecord::Base
           only: [:id, :action]
         },
         owner_engineer: {
-          only: [:id, :created_at, :created_action_id],
-          methods: [:sbu_name],
+          only: [:id, :created_at, :created_action_id, :user_id, :job_completed_at],
+          methods: [:sbu_name, :full_name],
           include: {
             user: {
               only: [:id, :last_name],
@@ -106,6 +150,27 @@ class Ticket < ActiveRecord::Base
       }
     )
 
+  end
+
+  def ticket_contract_contract_end_at
+    ticket_contract.try(:contract_end_at)
+  end
+
+  def ticket_contract_contract_start_at
+    ticket_contract.try(:contract_start_at)
+  end
+
+  def ticket_part_cost
+    ticket_total_cost.try(:part_cost)
+  end
+  def job_type_get
+    job_type.try(:name)
+  end
+  def ticket_contract_product_amount
+    if ticket_contract.present?
+      # ticket_contract.contract_products.where(product_serial_id: products.first.id).sum(:amount).to_f
+      ticket_contract.contract_products.where(product_serial_id: products.first.id).sum(:amount).to_f
+    end
   end
 
   def ticket_type_name
@@ -611,12 +676,11 @@ class TicketContract < ActiveRecord::Base
 
   end
 
-  before_create :contract_no_increase
+  after_create :contract_no_increase
 
   def contract_no_increase
     contract_no = CompanyConfig.first.increase_sup_last_contract_serial_no
-    # update contract_no: contract_no
-    self.contract_no = contract_no
+    self.update contract_no: contract_no
 
   end
 

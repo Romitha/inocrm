@@ -989,15 +989,22 @@ window.Tickets =
       $("#payment_completed").val("false")
       $(".completed").addClass("hide")
       $(".not_completed").removeClass("hide")
-
-  # show_hello: ->
-  #   strDate = $("#ticket_contract_contract_start_at").val()
-  #   dateParts = strDate.split("-");
-  #   date = new Date(dateParts[2], (dateParts[1]), dateParts[0]);
-  #   year = date.getFullYear()
-
-  #   # alert year
-  #   # $("#ticket_contract_contract_no").val("QQQQ")
+  
+  filter_instalments: ->
+    Type = $("#ticket_contract_payment_type").val()
+    Instalments = $("#contract_payment_received_payment_installment").val()
+    if (Type == "Annualy")
+      if (Instalments > 1 || Instalments < 0)
+        $("#contract_payment_received_payment_installment").val(1)
+    if (Type == "Monthly")
+      if (Instalments > 12 || Instalments < 0)
+        $("#contract_payment_received_payment_installment").val(12)
+    if (Type == "Quarterly")
+      if (Instalments > 4 || Instalments < 0)
+        $("#contract_payment_received_payment_installment").val(4)
+    if (Type == "Biannualy")
+      if (Instalments > 2 || Instalments < 0)
+        $("#contract_payment_received_payment_installment").val(2)
   count_down_remove_product: ->
     num_of_products = parseInt($("#product_count").val())
     remove_product = (num_of_products - 1)

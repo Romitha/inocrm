@@ -366,7 +366,7 @@ class Account < ActiveRecord::Base
     User.cached_find_by_id(created_by)
   end
   def get_account_manager
-    account_manager.try(:first_name)
+    account_manager.try(:full_name)
   end
 
   has_many :dyna_columns, as: :resourceable
