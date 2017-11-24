@@ -375,10 +375,10 @@ class ContractsController < ApplicationController
       if brand_document.document_file_name.present?
 
         doc_name = "brand_doc_#{brand_document.id}_brand_#{@contract.product_brand.name}"
-        doc = if Rails.env == 'develpment'
+        doc = if Rails.env == 'development'
           DocxReplace::Doc.new(brand_document.document_file_name.file.path, "#{Rails.root}/tmp")
         else
-          DocxReplace::Doc.new(File.join(brand_document.document_file_name.file.path), "#{Rails.root}/tmp")
+          DocxReplace::Doc.new(File.join(brand_document.document_file_name.sftp_folder, brand_document.document_file_name.file.path), "#{Rails.root}/tmp")
         end
 
         @contract.doc_varibles.each do |k, v|
