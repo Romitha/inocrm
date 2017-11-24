@@ -667,7 +667,7 @@ class TicketContract < ActiveRecord::Base
   end
 
   def product_amount
-    contract_products.to_a.sum{|e| e.try(:amount)} - contract_products.to_a.sum{|e| e.try(:discount_amount)}
+    contract_products.to_a.sum{|e| e.try(:amount).to_f } - contract_products.to_a.sum{|e| e.try(:discount_amount).to_f }
   end
 
   def doc_varibles
