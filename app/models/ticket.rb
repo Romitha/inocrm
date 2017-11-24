@@ -671,6 +671,7 @@ class TicketContract < ActiveRecord::Base
   end
 
   def doc_varibles
+    ContactNumber
     {
       contract_process_date: process_at.try(:strftime, "%d %b %Y"),
       customer_name: organization.name,

@@ -65,6 +65,6 @@ window.DocumentAttachment =
       progress: (e, data) ->
         if data.context
           progress = parseInt(data.loaded/data.total*100, 10)
-          data.context.find(".progress-bar").css("width", progress+"%").html(progress+"%")
+          data.context.find(".progress-bar").attr('aria-valuenow', progress).css("width", progress+"%").html(progress+"%")
           if progress==100
             console.log "ok"

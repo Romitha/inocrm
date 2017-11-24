@@ -374,8 +374,7 @@ class ContractsController < ApplicationController
     @contract.product_brand.brand_documents.each do |brand_document|
       if brand_document.document_file_name.present?
 
-        doc_name = "#{brand_document.id}_#{@contract.product_brand.name}"
-        cost_table = "#{brand_document.id}_#{@contract.product_brand.name}_cost_table"
+        doc_name = "brand_doc_#{brand_document.id}_brand_#{@contract.product_brand.name}"
         doc = if Rails.env == 'production'
           DocxReplace::Doc.new(File.join(brand_document.document_file_name.sftp_folder, brand_document.document_file_name.file.path), "#{Rails.root}/tmp")
         else
@@ -387,23 +386,11 @@ class ContractsController < ApplicationController
         end
 
         contract_document = @contract.contract_documents.find_or_initialize_by name: doc_name
-        cost_table_document = @contract.contract_documents.find_or_initialize_by name: cost_table
         # contract_document_dir = File.join(contract_document.document_url.root, contract_document.document_url.store_dir)
 
         write_doc = Tempfile.new(doc_name, "#{Rails.root}/tmp")
         doc.commit(write_doc.path)
         File.rename write_doc.path, "#{Rails.root}/tmp/#{doc_name}.docx"
-
-        contract_elements = []
-        table_header = ["ELEMENT OR OPTION", "SERIAL NO", "DESCRIPTION", "AMOUNT"]
-
-        contract_elements << table_header
-
-        @contract.contract_products.each do |contract_product|
-          contract_elements << ['', contract_product.product.serial_no, contract_product.product.description, contract_product.amount]
-        end
-
-        contract_elements.concat [['', '', 'Sub Total', @contract.contract_products.sum(:amount)], ['', '', 'Special Total', @contract.contract_products.sum(:discount_amount)], ['', '', 'Total Amount', (@contract.contract_products.sum(:amount) - @contract.contract_products.sum(:discount_amount))]]
 
         contract_document_path = File.join(Rails.root, 'tmp', "contract_#{@contract.id}")
 
@@ -414,30 +401,52 @@ class ContractsController < ApplicationController
           Dir.mkdir(contract_document_path, 0775)
         end
 
-        Caracal::Document.save "tmp/contract_#{@contract.id}/generated_table.docx" do |docx|
-          docx.table contract_elements, border_size: 4 do
-            cell_style rows[0], bold: true
-          end
-        end
-
         File.open("#{Rails.root}/tmp/#{doc_name}.docx"){|f| contract_document.document_url = f}
-        File.open("#{Rails.root}/tmp/contract_#{@contract.id}/generated_table.docx"){|f| cost_table_document.document_url = f}
 
         contract_document.save!
-        cost_table_document.save!
 
         generated = true
 
       end
+
     end
 
     if generated
-      # @contract.update "document_generated_count = document_generated_count+1 and last_doc_generated_at = #{DateTime.now} and last_doc_generated_by = #{current_user.id}"
+      cost_table = "contract_#{@contract.id}_brand_#{@contract.product_brand.name}_cost_table"
+
+      cost_table_document = @contract.contract_documents.find_or_initialize_by name: cost_table
+
+      contract_elements = []
+      table_header = ["ELEMENT OR OPTION", "SERIAL NO", "DESCRIPTION", "AMOUNT"]
+
+      contract_elements << table_header
+
+      @contract.contract_products.each do |contract_product|
+        contract_elements << ['', contract_product.product.serial_no, contract_product.product.description, contract_product.amount]
+      end
+
+      contract_elements.concat [['', '', 'Sub Total', @contract.contract_products.sum(:amount)], ['', '', 'Special Total', @contract.contract_products.sum(:discount_amount)], ['', '', 'Total Amount', (@contract.contract_products.sum(:amount) - @contract.contract_products.sum(:discount_amount))]]
+
+      Caracal::Document.save "tmp/contract_#{@contract.id}/generated_table.docx" do |docx|
+        docx.table contract_elements, border_size: 4 do
+          cell_style rows[0], bold: true
+        end
+      end
+
+      File.open("#{Rails.root}/tmp/contract_#{@contract.id}/generated_table.docx"){|f| cost_table_document.document_url = f}
+
+      cost_table_document.save!
+
       @contract.update last_doc_generated_at: DateTime.now, last_doc_generated_by: current_user.id
       @contract.increment! :document_generated_count, 1
+
+      flash[:notice] = "Successfully generated."
+    else
+      flash[:error] = "Please attach document(s) to related brand."
+
     end
 
-    render :index
+    redirect_to contracts_url
 
   end
 
@@ -451,7 +460,8 @@ class ContractsController < ApplicationController
   end
 
   def remove_generated_document
-    
+    @contract_document = Documents::ContractDocument.find params[:contract_document_id]
+    @contract_document.destroy
   end
 
   def contract_update
