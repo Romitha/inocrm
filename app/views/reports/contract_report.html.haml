@@ -38,7 +38,7 @@
             
             .col-md-3
               = label_tag "Category"
-              = select_tag "search_contracts[category_name]", option_groups_from_collection_for_select(ProductBrand.all, :product_categories, :name, :name, :name), class: "form-control parent_class", include_blank: true
+              = select_tag "search_contracts[category_cat_id]", option_groups_from_collection_for_select(ProductBrand.all, :product_categories, :name, :id, :name), class: "form-control parent_class", include_blank: true
             .col-md-3
               = label_tag "Contract Type"
               = select_tag "search_contracts[ticket_contract_type.id]", options_from_collection_for_select(TicketContractType.all, :id, :name), class: "form-control parent_class", include_blank: true

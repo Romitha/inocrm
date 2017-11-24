@@ -342,6 +342,49 @@ class ReportsController < ApplicationController
     params[:sort_by] = true
     params[:query] = refined_search
     @contracts = TicketContract.search(params)
+
+    ticket_contract_metas = []
+    organization_metas = []
+    owner_organization_metas = []
+    product_metas = []
+    @contracts.each do |contract|
+      ticket_contract_metas << {contract_id: contract.id, id: contract.ticket_contract.id, updated_at: contract.ticket_contract.updated_at} if contract.ticket_contract.present?
+      organization_metas << {contract_id: contract.id, id: contract.ticket_contract.organization.id, updated_at: contract.ticket_contract.organization.updated_at} if contract.ticket_contract.try(:organization).present?
+      owner_organization_metas << {contract_id: contract.id, id: contract.ticket_contract.owner_organization.id, updated_at: contract.ticket_contract.owner_organization.updated_at} if contract.ticket_contract.try(:owner_organization).present?
+      product_metas << {contract_id: contract.id, id: contract.ticket_contract.product.id, updated_at: contract.ticket_contract.product.updated_at} if contract.ticket_contract.try(:product).present?
+
+    end
+
+    if @contracts.present?
+      ticket_contract_metas.uniq{|e| e[:id]}.each do |ticket_contract_meta|
+        ticket_contract = TicketContract.find(ticket_contract_meta[:id])
+        if ticket_contract.updated_at != ticket_contract_meta[:updated_at]
+          ticket_contract.update_index
+        end
+      end
+
+      organization_metas.uniq{|e| e[:id]}.each do |organization_meta|
+        organization = Organization.find(organization_meta[:id])
+        if organization.updated_at != organization_meta[:updated_at]
+          organization.update_index
+        end
+      end
+
+      product_metas.uniq{|e| e[:id]}.each do |product_meta|
+        product = Product.find(product_meta[:id])
+        if product.updated_at != product_meta[:updated_at]
+          product.update_index
+        end
+      end
+
+      owner_organization_metas.uniq{|e| e[:id]}.each do |owner_organization_meta|
+        organization = Organization.find(owner_organization_meta[:id])
+        if organization.updated_at != owner_organization_meta[:updated_at]
+          organization.update_index
+        end
+      end
+    end
+
     respond_to do |format|
       if params[:search].present?
         format.xls
