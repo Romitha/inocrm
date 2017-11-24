@@ -678,11 +678,11 @@ class TicketContract < ActiveRecord::Base
 
   end
 
-  after_create :contract_no_increase
+  before_save :contract_no_increase
 
   def contract_no_increase
     contract_no = CompanyConfig.first.increase_sup_last_contract_serial_no
-    self.update contract_no: contract_no
+    self.contract_no = contract_no
 
   end
 
