@@ -240,6 +240,7 @@
                 %strong Payment Type:
                 = contract.ticket_contract_payment_type.try(:name)
             .col-md-7
+              = hidden_field_tag :ticket_contract_payment_type, contract.ticket_contract_payment_type.try(:name)
               - if contract.ticket_contract_payment_type.try(:name) == "Annualy"
                 %strong Max Payment Installment: 1
               - if contract.ticket_contract_payment_type.try(:name) == "Monthly"
@@ -248,7 +249,6 @@
                 %strong Max Payment Installment: 4
               - if contract.ticket_contract_payment_type.try(:name) == "Biannualy"
                 %strong Max Payment Installment: 2
-                = hidden_field_tag :ticket_contract_payment_type, contract.ticket_contract_payment_type.try(:name)
             %br
             %br
             = f.input :payment_installment, required:true, input_html: {oninput: "Tickets.filter_instalments();" }
