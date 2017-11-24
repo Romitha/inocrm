@@ -314,7 +314,7 @@ class ContractsController < ApplicationController
             # end
 
             if annexture.document_url.present?
-              name = "#{@contract.product_brand.try(:name)}_#{@contract.id}_#{annexture.template_name}"
+              name = (annexture.name || "#{@contract.product_brand.try(:name)}_#{@contract.id}_#{annexture.template_name}")
 
               contract_document = @contract.contract_documents.find_or_initialize_by name: name
 
@@ -374,7 +374,8 @@ class ContractsController < ApplicationController
     @contract.product_brand.brand_documents.each do |brand_document|
       if brand_document.document_file_name.present?
 
-        doc_name = "brand_doc_#{brand_document.id}_brand_#{@contract.product_brand.name}"
+        # doc_name = "brand_doc_#{brand_document.id}_brand_#{@contract.product_brand.name}"
+        doc_name = (brand_document.name || "brand_doc_#{brand_document.id}_brand_#{@contract.product_brand.name}")
         doc = if Rails.env == 'development'
           DocxReplace::Doc.new(brand_document.document_file_name.file.path, "#{Rails.root}/tmp")
         else
@@ -390,7 +391,8 @@ class ContractsController < ApplicationController
 
         write_doc = Tempfile.new(doc_name, "#{Rails.root}/tmp")
         doc.commit(write_doc.path)
-        File.rename write_doc.path, "#{Rails.root}/tmp/#{doc_name}.docx"
+        renamed_doc = (brand_document.document_file_name.file.filename || doc_name)
+        File.rename write_doc.path, "#{Rails.root}/tmp/#{renamed_doc}"
 
         contract_document_path = File.join(Rails.root, 'tmp', "contract_#{@contract.id}")
 
@@ -401,7 +403,7 @@ class ContractsController < ApplicationController
           Dir.mkdir(contract_document_path, 0775)
         end
 
-        File.open("#{Rails.root}/tmp/#{doc_name}.docx"){|f| contract_document.document_url = f}
+        File.open("#{Rails.root}/tmp/#{renamed_doc}"){|f| contract_document.document_url = f}
 
         contract_document.save!
 
