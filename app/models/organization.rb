@@ -235,6 +235,10 @@ class Organization < ActiveRecord::Base
     end
   end
 
+  def get_organization_account_manager
+    account.try(:get_account_manager)
+  end
+
 end
 
 class OrganizationType < ActiveRecord::Base

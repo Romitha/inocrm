@@ -59,7 +59,7 @@ class Ticket < ActiveRecord::Base
       include: {
         ticket_contract: {
           only: [ :id, :customer_id, :products, :contract_no,:amount, :contract_start_at,:contract_end_at, :season, :accepted_at],
-          methods: [:brand_name, :category_name, :payment_type, :formated_contract_start_at, :formated_contract_end_at, :product_amount, :contract_no_genarate],
+          methods: [:brand_name, :category_cat_id, :category_name, :payment_type, :formated_contract_start_at, :formated_contract_end_at, :product_amount, :contract_no_genarate],
           include: {
             contract_products:{
               only: [:id, :amount, :product_serial_id],
@@ -97,7 +97,7 @@ class Ticket < ActiveRecord::Base
         },
         products: {
           only: [:id, :serial_no, :model_no, :product_no, :created_at, :name],
-          methods: [:category_name, :brand_name],
+          methods: [:category_name, :category_cat_id, :brand_name],
         },
         customer: {
           only: [:id, :name, :address1, :address2, :address3, :address4],
@@ -639,7 +639,7 @@ class TicketContract < ActiveRecord::Base
     Invoice
     to_json(
       only: [ :id, :created_at, :created_by, :customer_id, :products, :contract_no, :hold, :amount, :payment_completed, :contract_start_at,:contract_end_at, :season, :accepted_at],
-      methods: [:num_of_products, :brand_name, :category_name, :payment_type, :formated_created_at, :created_by_user_full_name, :formated_contract_start_at, :formated_contract_end_at, :dynamic_active, :formated_accepted_at, :product_amount, :contract_no_genarate],
+      methods: [:num_of_products, :brand_name, :category_cat_id, :category_name, :payment_type, :formated_created_at, :created_by_user_full_name, :formated_contract_start_at, :formated_contract_end_at, :dynamic_active, :formated_accepted_at, :product_amount, :contract_no_genarate],
       include: {
         organization: {
           only: [:id, :name, :code],
@@ -694,6 +694,10 @@ class TicketContract < ActiveRecord::Base
 
   def brand_name
     product_brand.try(:name)
+  end
+
+  def category_cat_id
+    product_category.id
   end
 
   def category_name
@@ -808,11 +812,12 @@ class ContractProduct < ActiveRecord::Base
       methods: [:contract_product_engineer_cost,:contract_product_support_engineer_cost, :contract_product_part_cost,:contract_product_additional_cost, :contract_product_external_cost, :ticket_contract_contract_end_at, :ticket_contract_contract_start_at,:ticket_contract_season, :ticket_contract_created_at ],
       include: {
         ticket_contract: {
-          only: [ :id, :created_at, :created_by, :customer_id, :products, :contract_no, :hold, :amount, :payment_completed, :contract_start_at,:contract_end_at, :season, :accepted_at],
-          methods: [:num_of_products, :brand_name, :category_name, :payment_type, :formated_created_at, :created_by_user_full_name, :formated_contract_start_at, :formated_contract_end_at, :dynamic_active, :formated_accepted_at, :product_amount, :contract_no_genarate],
+          only: [ :id, :created_at, :created_by, :customer_id, :products, :contract_no, :hold, :amount, :payment_completed, :contract_start_at,:contract_end_at, :season, :accepted_at, :updated_at],
+          methods: [:num_of_products, :brand_name, :category_cat_id, :category_name, :payment_type, :formated_created_at, :created_by_user_full_name, :formated_contract_start_at, :formated_contract_end_at, :dynamic_active, :formated_accepted_at, :product_amount, :contract_no_genarate],
           include: {
             organization: {
-              only: [:id, :name, :code],
+              only: [:id, :name, :code, :updated_at],
+              methods: [:get_organization_account_manager],
               include: {
                 account: {
                   only: [:id, :industry_types_id],
@@ -832,18 +837,18 @@ class ContractProduct < ActiveRecord::Base
               only: [:id, :code],
             },
             owner_organization: {
-              only: [:id, :name],
+              only: [:id, :name, :updated_at],
             },
             ticket_contract_payment_type: {
               only: [:id, :name],
             },
             contract_payment_receiveds: {
-              only: [:id, :amount],
+              only: [:id, :amount, :updated_at],
             },
           },
         },
         product: {
-          only: [:id, :serial_no, :name],
+          only: [:id, :serial_no, :name, :updated_at],
         },
       },
     )

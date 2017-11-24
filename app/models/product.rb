@@ -30,7 +30,7 @@ class Product < ActiveRecord::Base
     Warranty
     to_json(
       only: [:id, :serial_no, :model_no, :product_no, :created_at, :owner_customer_id, :name, :description, :product_brand_id, :product_category_id],
-      methods: [:category_name, :brand_name, :owner_customer_name],
+      methods: [:category_name, :category_cat_id, :brand_name, :owner_customer_name],
       include: {
         tickets: {
           only: [:created_at, :cus_chargeable, :id],
@@ -54,6 +54,10 @@ class Product < ActiveRecord::Base
 
   def category_name
     product_category.try(:name)
+  end
+
+  def category_cat_id
+    product_category.id
   end
 
   def brand_name
@@ -134,7 +138,6 @@ class ProductBrand < ActiveRecord::Base
   validates_uniqueness_of :name
 
   validates_numericality_of [:parts_return_days]
-
   def is_used_anywhere?
     TicketSparePart
     products.any? or product_categories.any? or return_parts_bundles.any?

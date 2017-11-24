@@ -884,7 +884,7 @@ window.Tickets =
       category_list.empty().html(filtered_option).trigger('chosen:updated')
   
   filter_category_report: ->
-    category_list = $("#search_contracts_category_name")
+    category_list = $("#search_contracts_category_cat_id")
     category_list_html = category_list.html()
     category_list.prop("disabled", true)
     $("#search_contracts_brand_name").change ->
