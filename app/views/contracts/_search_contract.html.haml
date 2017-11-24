@@ -5,16 +5,16 @@
     .col-md-3
       = label_tag "Contract No" do
         Contract No
-        = text_field_tag "search_contracts[contract_no]", (params[:search_contracts] and params[:search_contracts][:contract_no_genarate]), :placeholder => "Contract No", class: "form-control"
+        = text_field_tag "search_contracts[contract_no]", (params[:search_contracts] and params[:search_contracts][:contract_no]), :placeholder => "Contract No", class: "form-control"
     .col-md-3
       = label_tag "Contract Date From", "Contract Date From"
       = text_field_tag "contract_date_from", params[:contract_date_from], class: "form-control datepicker", placeholder: "Select from date"
     .col-md-3
       = label_tag "Contract Date To", "Contract Date To"
       = text_field_tag "contract_date_to", params[:contract_date_to], class: "form-control datepicker", placeholder: "Select To date"
-    .col-md-3.small_scale_margin-top2
-      = label_tag "Payment completed"
-      = check_box_tag "search_contracts[payment_completed]", (params[:search_contracts] and params[:search_contracts][:payment_completed]), checked = false
+    .col-md-3
+      = label_tag "Payment Completed"
+      = select_tag "search_contracts[payment_completed]", raw("<option value=1>Yes</option> <option value=0>No</option>"), class: "form-control parent_class", include_blank: true
   .row
     .col-md-3
       = label_tag "Contract Type"

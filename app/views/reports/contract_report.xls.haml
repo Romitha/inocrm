@@ -1,4 +1,4 @@
-%h3 Contract Wise Report
+%h3 Contract Report
 %table{:border => "1"}
   %thead
     %tr
@@ -39,7 +39,7 @@
         %td= contract.brand_name
         %td= contract.category_name
         %td= contract.ticket_contract_type.try(:name)
-        %td= contract.product_amount 
+        %td= contract.product_amount
         %td= contract.ticket_currency.try(:code)
         %td
           - if  contract.formated_accepted_at.present?

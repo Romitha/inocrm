@@ -55,7 +55,8 @@ Rails.application.routes.draw do
       get "excel_output"
       get "po_output"
       get "contract_report"
-      get "ticket_wise_report"
+      get "ticket_wise_report" 
+      get "job_tickets_report"
     end
   end
 

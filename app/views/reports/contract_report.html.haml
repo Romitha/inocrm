@@ -1,13 +1,13 @@
 .row
   .col-md-12
     %fieldset
-      %legend Contract - Product wise Report
+      %legend Contract Report
       #search_frame
         = form_tag contract_report_reports_path, method: :get, class: "form-horizontal" do
           .row
             .col-md-3
               = label_tag "Customer Name"
-              = select_tag "search_contracts[organization.id]", options_from_collection_for_select(Organization.all, :id, :name), class: "form-control parent_class", include_blank: true
+              = select_tag "search_contracts[organization.id]", options_from_collection_for_select(Organization.customers, :id, :name), class: "form-control parent_class", include_blank: true
 
             .col-md-3
               = label_tag "Service Provider:"
@@ -19,7 +19,7 @@
 
             .col-md-3
               = label_tag "Account Manager:"
-              = select_tag "search_contracts[organization.account.get_account_manager]", options_from_collection_for_select(User.all, :first_name, :first_name), class: "form-control parent_class", include_blank: true
+              = select_tag "search_contracts[organization.account.get_account_manager]", options_from_collection_for_select(User.where(id: Account.pluck(:account_manager_id)).order("first_name ASC"), :full_name, :full_name), class: "form-control parent_class", include_blank: true
 
             .col-md-3.small_scale_margin-top2
               = label_tag "Payment completed"
