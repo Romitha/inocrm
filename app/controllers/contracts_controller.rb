@@ -427,7 +427,7 @@ class ContractsController < ApplicationController
         contract_elements << ['', contract_product.product.serial_no, contract_product.product.description, contract_product.amount]
       end
 
-      contract_elements.concat [['', '', 'Sub Total', @contract.contract_products.sum(:amount)], ['', '', 'Special Total', @contract.contract_products.sum(:discount_amount)], ['', '', 'Total Amount', (@contract.contract_products.sum(:amount) - @contract.contract_products.sum(:discount_amount))]]
+      contract_elements.concat [['', '', 'Sub Total', @contract.contract_products.sum(:amount)], ['', '', 'Special Discount', @contract.contract_products.sum(:discount_amount)], ['', '', 'Total Amount', (@contract.contract_products.sum(:amount) - @contract.contract_products.sum(:discount_amount))]]
 
       Caracal::Document.save "tmp/contract_#{@contract.id}/generated_table.docx" do |docx|
         docx.table contract_elements, border_size: 4 do
