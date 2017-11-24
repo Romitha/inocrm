@@ -163,11 +163,13 @@ class Ticket < ActiveRecord::Base
   def ticket_part_cost
     ticket_total_cost.try(:part_cost)
   end
+
   def job_type_get
     job_type.try(:name)
   end
+
   def ticket_contract_product_amount
-    if ticket_contract.present?
+    if ticket_contract.present? and products.first.present?
       # ticket_contract.contract_products.where(product_serial_id: products.first.id).sum(:amount).to_f
       ticket_contract.contract_products.where(product_serial_id: products.first.id).sum(:amount).to_f
     end
@@ -750,7 +752,7 @@ class TicketContract < ActiveRecord::Base
       customer_addr_city: organization.primary_address.try(:city),
       customer_addr_country: organization.primary_address.try(:country).try(:Country),
       contract_number: contract_no_genarate,
-      contact_person_name: organization.organization_contact_persons.first.try(:full_name)
+      contact_person_name: organization.organization_contact_persons.first.try(:full_name),
 
     }
   end
