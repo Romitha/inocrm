@@ -383,7 +383,7 @@ class ContractsController < ApplicationController
         end
 
         @contract.doc_varibles.each do |k, v|
-          doc.replace "##{k}", v, true # multiple occurance true
+          doc.replace "##{k.to_s}", v, true # multiple occurance true
         end
 
         contract_document = @contract.contract_documents.find_or_initialize_by name: doc_name
