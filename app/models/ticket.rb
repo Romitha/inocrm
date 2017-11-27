@@ -759,7 +759,7 @@ class TicketContract < ActiveRecord::Base
       # customer_addr_3: organization.primary_address.try(:address3),
       # customer_addr_city: organization.primary_address.try(:city),
       # customer_addr_country: organization.primary_address.try(:country).try(:Country),
-      customer_addr_1: 'as'.
+      customer_addr_1: 'as',
       customer_addr_2: 'df',
       customer_addr_3: 'fd',
       customer_addr_city: 'ff',
