@@ -383,7 +383,7 @@ class ContractsController < ApplicationController
         end
 
         @contract.doc_varibles.each do |k, v|
-          doc.replace "##{k}", v
+          doc.replace "##{k}", v, true # multiple occurance true
         end
 
         contract_document = @contract.contract_documents.find_or_initialize_by name: doc_name
@@ -414,7 +414,7 @@ class ContractsController < ApplicationController
     end
 
     if generated
-      cost_table = "contract_#{@contract.id}_brand_#{@contract.product_brand.name}_cost_table"
+      cost_table = "contract_#{@contract.id}_brand_#{@contract.product_brand.name}_contract_product_table"
 
       cost_table_document = @contract.contract_documents.find_or_initialize_by name: cost_table
 
@@ -429,13 +429,17 @@ class ContractsController < ApplicationController
 
       contract_elements.concat [['', '', 'Sub Total', @contract.contract_products.sum(:amount)], ['', '', 'Special Discount', @contract.contract_products.sum(:discount_amount)], ['', '', 'Total Amount', (@contract.contract_products.sum(:amount) - @contract.contract_products.sum(:discount_amount))]]
 
-      Caracal::Document.save "tmp/contract_#{@contract.id}/generated_table.docx" do |docx|
+      Caracal::Document.save "tmp/contract_#{@contract.id}/contract_product_table.docx" do |docx|
+        docx.h2 "HARDWARE MAINTENANCE AGREEMENT NO #{@contract.contract_no_genarate}", align: :center
+
         docx.table contract_elements, border_size: 4 do
           cell_style rows[0], bold: true
         end
+
+        docx.p "Note: The total amount will change, if the rate of VAT is varied by the Authorities", bold: true
       end
 
-      File.open("#{Rails.root}/tmp/contract_#{@contract.id}/generated_table.docx"){|f| cost_table_document.document_url = f}
+      File.open("#{Rails.root}/tmp/contract_#{@contract.id}/contract_product_table.docx"){|f| cost_table_document.document_url = f}
 
       cost_table_document.save!
 
