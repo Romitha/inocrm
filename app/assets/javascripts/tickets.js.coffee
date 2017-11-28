@@ -993,7 +993,7 @@ window.Tickets =
   filter_instalments: ->
     Type = $("#ticket_contract_payment_type").val()
     Instalments = $("#contract_payment_received_payment_installment").val()
-    if (Type == "Annualy")
+    if (Type == "Annually")
       if (Instalments > 1 || Instalments < 0)
         $("#contract_payment_received_payment_installment").val(1)
     if (Type == "Monthly")
@@ -1002,7 +1002,7 @@ window.Tickets =
     if (Type == "Quarterly")
       if (Instalments > 4 || Instalments < 0)
         $("#contract_payment_received_payment_installment").val(4)
-    if (Type == "Biannualy")
+    if (Type == "Binnually")
       if (Instalments > 2 || Instalments < 0)
         $("#contract_payment_received_payment_installment").val(2)
   count_down_remove_product: ->
