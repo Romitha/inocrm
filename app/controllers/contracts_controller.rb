@@ -383,7 +383,7 @@ class ContractsController < ApplicationController
         end
 
         @contract.doc_varibles.each do |k, v|
-          doc.replace "##{k.to_s}", v, true # multiple occurance true
+          doc.replace "##{k.to_s}#", v, true # multiple occurance true
         end
 
         contract_document = @contract.contract_documents.find_or_initialize_by name: doc_name
@@ -414,7 +414,7 @@ class ContractsController < ApplicationController
     end
 
     if generated
-      cost_table = "contract_#{@contract.id}_brand_#{@contract.product_brand.name}_contract_product_table"
+      cost_table = "#{@contract.product_brand.name}_contract_product_table"
 
       cost_table_document = @contract.contract_documents.find_or_initialize_by name: cost_table
 
