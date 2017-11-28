@@ -382,8 +382,8 @@ class ContractsController < ApplicationController
           DocxReplace::Doc.new(File.join(brand_document.document_file_name.sftp_folder, brand_document.document_file_name.file.path), "#{Rails.root}/tmp")
         end
 
-        @contract.doc_varibles.each do |k, v|
-          doc.replace "##{k.to_s}#", v, true # multiple occurance true
+        @contract.doc_variables.each do |k, v|
+          doc.replace k.to_s, v, true # multiple occurance true
         end
 
         contract_document = @contract.contract_documents.find_or_initialize_by name: doc_name
