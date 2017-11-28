@@ -10,7 +10,7 @@
       .col-md-12
         .col-md-3
           %strong Contract No:
-          = ticket.ticket_contract.contract_no
+          = ticket.ticket_contract.contract_no_genarate
         .col-md-3
           %strong Created At:
           = ticket.ticket_contract.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
