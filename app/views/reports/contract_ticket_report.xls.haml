@@ -1,0 +1,80 @@
+%h3 Contract - Ticket Report
+%table{:border => "1"}
+  %thead
+    %tr
+      %th Contract No
+      %th Customer Name
+      %th Account Manager
+      %th Brand
+      %th Product Name
+      %th Product Serial Number
+      %th Currency
+      %th Product Amount
+      %th Part Cost
+      %th Ticket Number
+      %th Log Date
+      %th Problem Description
+      %th Job Type
+      %th Start Date
+      %th Start Action
+      %th Engineer Name
+      %th Engineers Assign Date
+      %th Engineer Finished Date
+      %th Re-Open Count
+      %th Chargeable
+      %th Final Resolution
+  - total_ticket_part_cost = 0
+  - total_product_amount = 0
+
+  %tbody
+    - @tickets.each do |ticket|
+      %tr
+        - total_product_amount = total_product_amount + ticket.ticket_contract_product_amount.to_f
+        - total_ticket_part_cost = total_ticket_part_cost + ticket.ticket_part_cost.to_f
+
+        %td= ticket.ticket_contract.contract_no_genarate
+        %td= ticket.ticket_contract.try(:organization).try(:name)
+        %td= ticket.ticket_contract.organization.account.get_account_manager
+        %td= ticket.ticket_contract.try(:brand_name)
+        %td= ticket.products.first.try(:name)
+        %td= ticket.products.first.try(:serial_no)
+        %td= ticket.ticket_contract.ticket_currency.try(:code)
+        %td= ticket.ticket_contract_product_amount.to_f
+        %td= ticket.ticket_part_cost.to_f
+        %td= ticket.ticket_no
+        %td
+          - if ticket.present?
+            = ticket.try(:logged_at).to_date.strftime(INOCRM_CONFIG["short_date_format"])
+        %td= ticket.problem_description
+        %td= ticket.job_type_get
+        %td
+          - if ticket.job_started_at.present?
+            = ticket.job_started_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
+        %td= ticket.ticket_start_action.try(:action)
+        %td= ticket.owner_engineer.try(:full_name)
+        %td
+          - if ticket.owner_engineer.present?
+            = ticket.owner_engineer.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
+        %td
+          - if ticket.owner_engineer.present?
+            = ticket.owner_engineer.try(:job_completed_at).to_date.strftime(INOCRM_CONFIG["short_date_format"])
+        %td= ticket.re_open_count
+        %td= boolean_in_word ticket.cus_chargeable, "Yes", "No"
+        %td= ticket.resolution_summary
+    %tr
+      %td
+        %strong Total
+      %td 
+      %td 
+      %td 
+      %td 
+      %td 
+      %td 
+      %td 
+        %strong
+          = total_product_amount
+      %td
+        %strong
+          = total_ticket_part_cost
+
+%h4 * Note : Engineer = Ticket Owner Engineer

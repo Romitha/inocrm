@@ -54,18 +54,19 @@ class Ticket < ActiveRecord::Base
     User
     Invoice
     to_json(
-      only: [:created_at, :cus_chargeable, :id, :ticket_no, :logged_at, :slatime, :job_started_at, :job_started_action_id, :problem_description, :job_type_id, :job_finished_at, :status_hold, :re_open_count, :final_invoice_id, :resolution_summary],
+      only: [:created_at, :cus_chargeable, :id, :ticket_no, :logged_at, :slatime, :job_started_at, :job_started_action_id, :problem_description, :job_type_id, :job_finished_at, :status_hold, :re_open_count, :final_invoice_id, :resolution_summary, :updated_at],
       methods: [:customer_name, :ticket_part_cost, :ticket_contract_contract_end_at, :ticket_contract_contract_start_at, :job_type_get, :owner_engineer_name, :ticket_status_name, :warranty_type_name, :support_ticket_no, :ticket_type_name, :ticket_contract_product_amount],
       include: {
         ticket_contract: {
-          only: [ :id, :customer_id, :products, :contract_no,:amount, :contract_start_at,:contract_end_at, :season, :accepted_at],
+          only: [ :id, :customer_id, :products, :contract_no,:amount, :contract_start_at,:contract_end_at, :season, :accepted_at, :updated_at],
           methods: [:brand_name, :category_cat_id, :category_name, :payment_type, :formated_contract_start_at, :formated_contract_end_at, :product_amount, :contract_no_genarate],
           include: {
             contract_products:{
-              only: [:id, :amount, :product_serial_id],
+              only: [:id, :amount, :product_serial_id, :updated_at],
             },
             organization: {
-              only: [:id, :name, :code],
+              only: [:id, :name, :code, :updated_at],
+              methods: [:get_organization_account_manager],
               include: {
                 account: {
                   only: [:id, :industry_types_id],
@@ -85,7 +86,7 @@ class Ticket < ActiveRecord::Base
               only: [:id, :code],
             },
             owner_organization: {
-              only: [:id, :name],
+              only: [:id, :name, :updated_at],
             },
             ticket_contract_payment_type: {
               only: [:id, :name],
@@ -96,7 +97,7 @@ class Ticket < ActiveRecord::Base
           },
         },
         products: {
-          only: [:id, :serial_no, :model_no, :product_no, :created_at, :name],
+          only: [:id, :serial_no, :model_no, :product_no, :created_at, :name, :updated_at],
           methods: [:category_name, :category_cat_id, :brand_name],
         },
         customer: {
@@ -129,7 +130,7 @@ class Ticket < ActiveRecord::Base
           only: [:id, :action]
         },
         owner_engineer: {
-          only: [:id, :created_at, :created_action_id, :user_id, :job_completed_at],
+          only: [:id, :created_at, :created_action_id, :user_id, :job_completed_at, :updated_at],
           methods: [:sbu_name, :full_name],
           include: {
             user: {
@@ -276,6 +277,8 @@ class Ticket < ActiveRecord::Base
     ticket_total_cost_params = {engineer_time_spent: engineer_time, support_engineer_time_spent: sup_engineer_time, engineer_cost: engineer_cost, support_engineer_cost: sup_engineer_cost, part_cost: part_cost, additional_cost: additional_cost, external_cost: external_cost}
 
     ticket_total_cost.present? ? ticket_total_cost.update(ticket_total_cost_params) : create_ticket_total_cost(ticket_total_cost_params)
+
+    ticket_contract.contract_products.each(&:update_index)
 
   end
 
@@ -638,11 +641,12 @@ class TicketContract < ActiveRecord::Base
     ContactNumber
     Invoice
     to_json(
-      only: [ :id, :created_at, :created_by, :customer_id, :products, :contract_no, :hold, :amount, :payment_completed, :contract_start_at,:contract_end_at, :season, :accepted_at],
+      only: [ :id, :created_at, :created_by, :customer_id, :products, :contract_no, :hold, :amount, :payment_completed, :contract_start_at,:contract_end_at, :season, :accepted_at, :updated_at],
       methods: [:num_of_products, :brand_name, :category_cat_id, :category_name, :payment_type, :formated_created_at, :created_by_user_full_name, :formated_contract_start_at, :formated_contract_end_at, :dynamic_active, :formated_accepted_at, :product_amount, :contract_no_genarate],
       include: {
         organization: {
-          only: [:id, :name, :code],
+          only: [:id, :name, :code, :updated_at],
+          methods: [:get_organization_account_manager],
           include: {
             account: {
               only: [:id, :industry_types_id],
@@ -662,7 +666,7 @@ class TicketContract < ActiveRecord::Base
           only: [:id, :code],
         },
         owner_organization: {
-          only: [:id, :name],
+          only: [:id, :name, :updated_at],
         },
         organization_contact_person: {
           only: [:id, :name],
@@ -808,8 +812,8 @@ class ContractProduct < ActiveRecord::Base
     Invoice
     Product
     to_json(
-      only: [:id, :amount, :discount_amount],
-      methods: [:contract_product_engineer_cost,:contract_product_support_engineer_cost, :contract_product_part_cost,:contract_product_additional_cost, :contract_product_external_cost, :ticket_contract_contract_end_at, :ticket_contract_contract_start_at,:ticket_contract_season, :ticket_contract_created_at ],
+      only: [:id, :amount, :discount_amount, :updated_at],
+      methods: [:contract_product_engineer_cost, :contract_product_support_engineer_cost, :contract_product_part_cost,:contract_product_additional_cost, :contract_product_external_cost, :ticket_contract_contract_end_at, :ticket_contract_contract_start_at,:ticket_contract_season, :ticket_contract_created_at ],
       include: {
         ticket_contract: {
           only: [ :id, :created_at, :created_by, :customer_id, :products, :contract_no, :hold, :amount, :payment_completed, :contract_start_at,:contract_end_at, :season, :accepted_at, :updated_at],
@@ -878,7 +882,6 @@ class ContractProduct < ActiveRecord::Base
   def contract_product_external_cost
     contract_product_tickets.to_a.sum { |t| t.ticket_total_cost.try(:external_cost).to_f}
   end
-
   def ticket_contract_contract_end_at
     ticket_contract.contract_end_at
   end
