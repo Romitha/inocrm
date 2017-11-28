@@ -241,13 +241,13 @@
                 = contract.ticket_contract_payment_type.try(:name)
             .col-md-7
               = hidden_field_tag :ticket_contract_payment_type, contract.ticket_contract_payment_type.try(:name)
-              - if contract.ticket_contract_payment_type.try(:name) == "Annualy"
+              - if contract.ticket_contract_payment_type.try(:name) == "Annually"
                 %strong Max Payment Installment: 1
               - if contract.ticket_contract_payment_type.try(:name) == "Monthly"
                 %strong Max Payment Installment: 12
               - if contract.ticket_contract_payment_type.try(:name) == "Quarterly"
                 %strong Max Payment Installment: 4
-              - if contract.ticket_contract_payment_type.try(:name) == "Biannualy"
+              - if contract.ticket_contract_payment_type.try(:name) == "Binnually"
                 %strong Max Payment Installment: 2
             %br
             %br
