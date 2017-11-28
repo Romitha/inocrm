@@ -45,7 +45,7 @@
 
             .col-md-3
               = label_tag "Currency"
-              = select_tag "search_contracts[ticket_currency.id]", options_from_collection_for_select(TicketCurrency.all, :id, :code), class: "form-control parent_class", include_blank: true
+              = select_tag "search_contracts[ticket_currency.id]", options_from_collection_for_select(TicketCurrency.all, :id, :code), class: "form-control parent_class", include_blank: false
           .row    
             .col-md-3
               = label_tag "Payemnt Type:"

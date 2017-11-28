@@ -4,29 +4,38 @@
     %tr
       %th Contract No
       %th Customer Name
-      %th Customer- with descendants
-      %th Service provider
-      %th Account manager
-      %th Contract start date
-      %th Contract end date
+      %th Customer- With Descendants
+      %th Service Provider
+      %th Account Manager
+      %th Contract Start Date
+      %th Contract End Date
       %th Season
       %th Brand
       %th Category
-      %th Contract type
-      %th Contract amount
-      %th
+      %th Contract Type
+      %th Payment Mode
       %th Accepted
-      %th Received payment
-      %th Payment mode
-      %th Pending amount
+      %th Currency
+      %th Contract Amount
+      %th Payment Received
+      %th Pending Amount
 
+  - total_product_amount = 0
+  - total_payment_receiveds = 0
+  - total_pending_amount = 0
 
   %tbody
     - @contracts.each do |contract|
       %tr
+        - pending_amount = ((contract.product_amount).to_f - contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f})
+
+        - total_product_amount = total_product_amount + contract.product_amount.to_f
+        - total_payment_receiveds = total_payment_receiveds + contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f}
+        - total_pending_amount = total_pending_amount + pending_amount.to_f
+
         %td= contract.contract_no_genarate
         %td= contract.organization.name
-        %td= contract.organization.name
+        %td
         %td= contract.owner_organization.try(:name)
         %td= contract.organization.account.get_account_manager
         %td= contract.formated_contract_start_at
@@ -39,16 +48,40 @@
         %td= contract.brand_name
         %td= contract.category_name
         %td= contract.ticket_contract_type.try(:name)
-        %td= contract.product_amount
-        %td= contract.ticket_currency.try(:code)
+        %td= contract.ticket_contract_payment_type.try(:name)
         %td
           - if  contract.formated_accepted_at.present?
             Yes
           -else
             No
+        %td= contract.ticket_currency.try(:code)
+        %td= contract.product_amount
         %td= contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f}
-        %td= contract.ticket_contract_payment_type.try(:name)
-        - pending_amount = ((contract.product_amount).to_f - contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f})
         %td= pending_amount
+    %tr
+      %td
+        %strong Total
+      %td
+      %td
+      %td
+      %td
+      %td
+      %td
+      %td
+      %td
+      %td
+      %td
+      %td
+      %td
+      %td
+      %td
+        %strong
+          = total_product_amount
+      %td
+        %strong
+          = total_payment_receiveds
+      %td
+        %strong
+          = total_pending_amount
 
 

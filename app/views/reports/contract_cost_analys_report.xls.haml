@@ -1,0 +1,103 @@
+%h3 Contract Cost Analysis Report
+%table{:border => "1"}
+  %thead
+    %tr
+      %th Contract No
+      %th Customer Name
+      %th Account Manager
+      %th Brand
+      %th Category
+      %th Product Name
+      %th Product Serial Number
+      %th Currency
+      %th Discounted Product Amount
+      %th Discounted Contract Amount
+      %th Payment Received
+      %th Engineer Cost
+      %th Support Engineer Cost
+      %th Part Cost
+      %th Additional Cost
+      %th Total cost
+      %th Profit
+  - total_contract_amount = 0
+  - total_discount_amount = 0
+  - total_eng_cost = 0
+  - total_support_engineer_cost = 0
+  - total_part_cost = 0
+  - total_additional_cost = 0
+  - total_total_cost = 0
+  - total_recieved_payment = 0
+  - total_profit = 0
+  %tbody
+    - @contract_products.each do |contract_product|
+      %tr
+
+        - contract_amount = contract_product.ticket_contract.product_amount
+        - total_cost = (contract_product.contract_product_engineer_cost + contract_product.contract_product_support_engineer_cost + contract_product.contract_product_part_cost + contract_product.contract_product_additional_cost + contract_product.contract_product_external_cost)
+        - recived_amount = contract_product.ticket_contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f}
+
+        - total_contract_amount = total_contract_amount + contract_amount
+        - total_discount_amount = total_discount_amount + contract_product.try(:discount_amount).to_f
+        - total_eng_cost = total_eng_cost + contract_product.contract_product_engineer_cost
+        - total_support_engineer_cost = total_support_engineer_cost + contract_product.contract_product_support_engineer_cost
+        - total_part_cost = total_part_cost + contract_product.contract_product_part_cost
+        - total_additional_cost = total_additional_cost + contract_product.contract_product_additional_cost
+        - total_total_cost = total_total_cost + total_cost
+        - total_recieved_payment = total_recieved_payment + recived_amount
+        - total_profit = total_profit + (recived_amount.to_f - total_cost.to_f)
+
+
+        %td= contract_product.ticket_contract.contract_no_genarate
+        %td= contract_product.ticket_contract.organization.name
+        %td= contract_product.ticket_contract.organization.account.get_account_manager
+        %td= contract_product.ticket_contract.brand_name
+        %td= contract_product.ticket_contract.category_name
+        %td= contract_product.product.try(:name)
+        %td= contract_product.product.serial_no
+        %td= contract_product.ticket_contract.ticket_currency.try(:code)
+        %td= contract_product.try(:discount_amount).to_f
+        %td= contract_amount
+        %td= recived_amount
+        %td= contract_product.contract_product_engineer_cost
+        %td= contract_product.contract_product_support_engineer_cost
+        %td= contract_product.contract_product_part_cost
+        %td= contract_product.contract_product_additional_cost
+        %td= total_cost
+        %td= (recived_amount.to_f - total_cost.to_f)
+    %tr
+      %td
+        %strong Total
+      %td 
+      %td 
+      %td 
+      %td 
+      %td
+      %td
+      %td
+      %td
+        %strong
+          = total_discount_amount
+      %td
+        %strong
+          = total_contract_amount
+      %td
+        %strong
+          = total_eng_cost
+      %td
+        %strong
+          = total_support_engineer_cost
+      %td
+        %strong
+          = total_part_cost
+      %td
+        %strong
+          = total_additional_cost
+      %td
+        %strong
+          = total_total_cost
+      %td
+        %strong
+          = total_recieved_payment
+      %td
+        %strong
+          = total_profit

@@ -278,7 +278,7 @@ class ReportsController < ApplicationController
   end
 
   # before_filter :change_format
-  def job_tickets_report
+  def contract_ticket_report
     Ticket
     Invoice
     if params[:search].present?
@@ -287,14 +287,45 @@ class ReportsController < ApplicationController
       refined_contract = params[:search_contracts].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
       refined_search = [refined_contract, refined_search].map{|v| v if v.present? }.compact.join(" AND ")
 
+      params[:per_page] = 100
+      params[:sort_by] = true
+      params[:query] = refined_search
+      @tickets = Ticket.search(params)
+
       request.format = "xls"
+      not_need_index = []
+
+      @tickets.each do |ticket|
+        need_index_boolean = ((ticket.owner_engineer.try(:updated_at).try(:to_datetime) == TicketEngineer.find_by_id(ticket.owner_engineer.try(:id)).try(:updated_at).try(:to_datetime)) and ( ticket.updated_at.to_datetime == Ticket.find(ticket.id).updated_at.to_datetime ) and ( ticket.ticket_contract.try(:updated_at).try(:to_datetime) == TicketContract.find_by_id(ticket.ticket_contract.try(:id)).try(:updated_at).try(:to_datetime)) and ( ticket.ticket_contract.try(:organization).try(:updated_at).try(:to_datetime) == Organization.find_by_id(ticket.ticket_contract.try(:organization).try(:id)).try(:updated_at).try(:to_datetime) ) and ( ticket.ticket_contract.try(:owner_organization).try(:updated_at).try(:to_datetime) == Organization.find_by_id(ticket.ticket_contract.try(:owner_organization).try(:id)).try(:updated_at).try(:to_datetime)) and ( ticket.product.try(:updated_at).try(:to_datetime) == Product.find_by_id(ticket.product.try(:id)).try(:updated_at).try(:to_datetime) ) )
+
+        puts "*****************************************************************************"
+
+        puts Ticket.find(ticket.id).updated_at.to_datetime
+        puts ticket.updated_at.to_datetime
+        puts "*****************************************************************************"
+
+
+        not_need_index << {id: ticket.id, not_need_index: need_index_boolean}
+      end
+
+      if @tickets.present?
+        not_need_index.uniq{|n| n[:id]}.each do |n_index|
+          if !n_index[:not_need_index]
+            puts "*****************************************************************************"
+            puts "indexing"
+            puts "*****************************************************************************"
+            Ticket.find(n_index[:id]).update_index
+          end
+        end
+      end
+
+
     end
-    params[:per_page] = 100
-    params[:sort_by] = true
-    params[:query] = refined_search
-    @ticket = Ticket.search(params)
+
     respond_to do |format|
       if params[:search].present?
+        sleep 1
+        @tickets = Ticket.search(params) # New updated result of search
         format.xls
       else
         format.html
@@ -303,7 +334,7 @@ class ReportsController < ApplicationController
   end
 
 
-  def ticket_wise_report
+  def contract_cost_analys_report
     Ticket
     Invoice
     if params[:search].present?
@@ -317,7 +348,25 @@ class ReportsController < ApplicationController
     params[:per_page] = 100
     params[:sort_by] = true
     params[:query] = refined_search
-    @contract_product = ContractProduct.search(params)
+    @contract_products = ContractProduct.search(params)
+    not_need_index = []
+
+    @contract_products.each do |contract_product|
+
+      need_index_boolean = (( contract_product.ticket_contract.updated_at.to_datetime == TicketContract.find(contract_product.ticket_contract.id).updated_at.to_datetime ) and ( contract_product.updated_at.to_datetime == ContractProduct.find(contract_product.id).updated_at.to_datetime ) and ( contract_product.ticket_contract.organization.updated_at.to_datetime == Organization.find(contract_product.ticket_contract.organization.id).updated_at.to_datetime ) and ( contract_product.ticket_contract.owner_organization.updated_at.to_datetime == Organization.find(contract_product.ticket_contract.owner_organization.id).updated_at.to_datetime ) and ( contract_product.product.try(:updated_at).try(:to_datetime) == Product.find_by_id(contract_product.product.try(:id)).try(:updated_at).try(:to_datetime) ) )
+
+      not_need_index << {id: contract_product.id, not_need_index: need_index_boolean}
+
+    end
+
+    if @contract_products.present?
+      not_need_index.uniq{|n| n[:id]}.each do |n_index|
+        if !n_index[:not_need_index]
+          ContractProduct.find(n_index[:id]).update_index
+        end
+      end
+    end
+
     respond_to do |format|
       if params[:search].present?
         format.xls
@@ -347,42 +396,23 @@ class ReportsController < ApplicationController
     organization_metas = []
     owner_organization_metas = []
     product_metas = []
+    not_need_index = []
     @contracts.each do |contract|
-      ticket_contract_metas << {contract_id: contract.id, id: contract.ticket_contract.id, updated_at: contract.ticket_contract.updated_at} if contract.ticket_contract.present?
-      organization_metas << {contract_id: contract.id, id: contract.ticket_contract.organization.id, updated_at: contract.ticket_contract.organization.updated_at} if contract.ticket_contract.try(:organization).present?
-      owner_organization_metas << {contract_id: contract.id, id: contract.ticket_contract.owner_organization.id, updated_at: contract.ticket_contract.owner_organization.updated_at} if contract.ticket_contract.try(:owner_organization).present?
-      product_metas << {contract_id: contract.id, id: contract.ticket_contract.product.id, updated_at: contract.ticket_contract.product.updated_at} if contract.ticket_contract.try(:product).present?
+
+      need_index_boolean = (( contract.organization.updated_at.to_datetime == Organization.find(contract.organization.id).updated_at.to_datetime ) and ( contract.owner_organization.updated_at.to_datetime == Organization.find(contract.owner_organization.id).updated_at.to_datetime ) and ( contract.product.try(:updated_at).try(:to_datetime) == Product.find_by_id(contract.product.try(:id)).try(:updated_at).try(:to_datetime) ) )
+
+      not_need_index << {id: contract.id, not_need_index: need_index_boolean}
 
     end
 
     if @contracts.present?
-      ticket_contract_metas.uniq{|e| e[:id]}.each do |ticket_contract_meta|
-        ticket_contract = TicketContract.find(ticket_contract_meta[:id])
-        if ticket_contract.updated_at != ticket_contract_meta[:updated_at]
-          ticket_contract.update_index
+
+      not_need_index.uniq{|n| n[:id]}.each do |n_index|
+        if !n_index[:not_need_index]
+          TicketContract.find(n_index[:id]).update_index
         end
       end
 
-      organization_metas.uniq{|e| e[:id]}.each do |organization_meta|
-        organization = Organization.find(organization_meta[:id])
-        if organization.updated_at != organization_meta[:updated_at]
-          organization.update_index
-        end
-      end
-
-      product_metas.uniq{|e| e[:id]}.each do |product_meta|
-        product = Product.find(product_meta[:id])
-        if product.updated_at != product_meta[:updated_at]
-          product.update_index
-        end
-      end
-
-      owner_organization_metas.uniq{|e| e[:id]}.each do |owner_organization_meta|
-        organization = Organization.find(owner_organization_meta[:id])
-        if organization.updated_at != owner_organization_meta[:updated_at]
-          organization.update_index
-        end
-      end
     end
 
     respond_to do |format|
