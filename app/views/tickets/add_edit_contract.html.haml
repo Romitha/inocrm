@@ -30,7 +30,7 @@
           .panel-heading
             %h3.panel-title
               %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}", :style => "text-decoration: none;"}
-                Contract No : #{contract.try(:contract_no)}
+                Contract No : #{contract.try(:contract_no_genarate)}
               .pull-right
                 - unless contract.is_used_anywhere?
                   = link_to delete_add_edit_contract_tickets_path(contract_id: contract.id), method: :delete,  :data => { :confirm => 'Are you sure?' } do
@@ -45,7 +45,7 @@
                 .col-md-3
                   %strong Contract no:
                   = link_to "#", class: "inline_edit", data: {type: "text", resource: "ticket_contract", name: "contract_no", url: add_edit_contract_tickets_path(edit: true, contract_id: contract.id), "original-title" => "Update Contract"} do
-                    = contract.try(:contract_no)
+                    = contract.try(:contract_no_genarate)
                 .col-md-3
                   %strong Contract b to b:
                   = link_to "#", class: "inline_edit", data: {type: "select", source: {1=>"Yes",0=>"No"}, resource: "ticket_contract", name: "contract_b2b", url: add_edit_contract_tickets_path(edit: true, contract_id: contract.id), "original-title" => "Update Contract"} do

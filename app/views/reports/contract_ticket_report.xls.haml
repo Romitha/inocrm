@@ -41,7 +41,7 @@
         %td= ticket.ticket_contract.ticket_currency.try(:code)
         %td= ticket.ticket_contract_product_amount.to_f
         %td= ticket.ticket_part_cost.to_f
-        %td= ticket.ticket_no
+        %td= ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
         %td
           - if ticket.present?
             = ticket.try(:logged_at).to_date.strftime(INOCRM_CONFIG["short_date_format"])

@@ -37,7 +37,7 @@
         - recived_amount = contract_product.ticket_contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f}
 
         - total_contract_amount = total_contract_amount + contract_amount
-        - total_discount_amount = total_discount_amount + contract_product.try(:discount_amount).to_f
+        - total_discount_amount = total_discount_amount + (contract_product.try(:amount).to_f - contract_product.try(:discount_amount).to_f)
         - total_eng_cost = total_eng_cost + contract_product.contract_product_engineer_cost
         - total_support_engineer_cost = total_support_engineer_cost + contract_product.contract_product_support_engineer_cost
         - total_part_cost = total_part_cost + contract_product.contract_product_part_cost
@@ -55,7 +55,7 @@
         %td= contract_product.product.try(:name)
         %td= contract_product.product.serial_no
         %td= contract_product.ticket_contract.ticket_currency.try(:code)
-        %td= contract_product.try(:discount_amount).to_f
+        %td= (contract_product.try(:amount).to_f - contract_product.try(:discount_amount).to_f)
         %td= contract_amount
         %td= recived_amount
         %td= contract_product.contract_product_engineer_cost
