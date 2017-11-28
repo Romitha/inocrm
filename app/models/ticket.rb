@@ -744,7 +744,7 @@ class TicketContract < ActiveRecord::Base
     contract_products.to_a.sum{|e| e.try(:amount).to_f } - contract_products.to_a.sum{|e| e.try(:discount_amount).to_f }
   end
 
-  def doc_varibles
+  def doc_variables
     ContactNumber
     {
       contract_process_date: process_at.try(:strftime, "%d %b %Y"),
