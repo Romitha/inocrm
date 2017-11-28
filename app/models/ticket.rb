@@ -701,7 +701,7 @@ class TicketContract < ActiveRecord::Base
   end
 
   def category_cat_id
-    product_category.id
+    product_category.try(:id)
   end
 
   def category_name
