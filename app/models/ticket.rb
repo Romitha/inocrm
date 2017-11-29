@@ -761,7 +761,7 @@ class TicketContract < ActiveRecord::Base
       customer_addr_country: organization.primary_address.try(:country).try(:Country),
       contract_number: contract_no_genarate,
       contact_person_name: organization.organization_contact_persons.first.try(:full_name),
-
+      total_amount: "#{ticket_currency.try(:code)} #{product_amount}",
     }
   end
 
