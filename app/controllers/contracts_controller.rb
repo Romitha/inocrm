@@ -340,7 +340,7 @@ class ContractsController < ApplicationController
             if params['contract_product_additional_params'].present?
 
               if params['contract_product_additional_params'][c_product.product_serial_id.to_s].present?
-                c_product_attr = params['contract_product_additional_params'].require(c_product.product_serial_id.to_s).permit('amount', 'discount_amount', 'installed_location_id' )
+                c_product_attr = params['contract_product_additional_params'].require(c_product.product_serial_id.to_s).permit('amount', 'discount_amount', 'installed_location_id','remarks' )
                 c_product.update c_product_attr
                 c_product.ticket_contract.update_index
               end
@@ -571,7 +571,7 @@ class ContractsController < ApplicationController
     end
 
     def contract_product_params
-      params.require(:contract_product).permit(:id, :amount, :discount_amount, :installed_location_id)
+      params.require(:contract_product).permit(:id, :amount, :discount_amount, :installed_location_id,:remarks)
     end
 
 end

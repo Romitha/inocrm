@@ -18,6 +18,7 @@
             %th Amount
             %th Discount Amount
             %th Installed Location
+            %th Remarks
 
           %th Action
 
@@ -38,6 +39,7 @@
               %td= text_field_tag "contract_product_additional_params[#{p.id}][amount]", nil, class: "form-control", required:true
               %td= text_field_tag "contract_product_additional_params[#{p.id}][discount_amount]", nil, class: "form-control", required:true
               %td= select_tag "contract_product_additional_params[#{p.id}][installed_location_id]", options_from_collection_for_select(organization_for_location.addresses, :id, :full_address, nil), class: "form-control chosen-select", include_blank: true
+              %td= text_area_tag "contract_product_additional_params[#{p.id}][remarks]", nil, class: "form-control"
 
             %td
               - if params[:from_where] == "cus_product"
