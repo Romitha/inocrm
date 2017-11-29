@@ -215,11 +215,6 @@ class Organization < ActiveRecord::Base
         account: {
           only: [:id, :industry_types_id,:account_no, :code, :account_manager],
           methods: [:get_account_manager],
-          # include: {
-          #   industry_type: {
-          #     only: [:id, :code, :name],
-          #   },
-          # },
         },
       },
     )
