@@ -57,6 +57,7 @@ Rails.application.routes.draw do
       get "contract_report"
       get "contract_cost_analys_report" 
       get "contract_ticket_report"
+      get "summery"
     end
   end
 
