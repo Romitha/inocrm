@@ -91,7 +91,7 @@
         %td= ticket.ticket_contract.try(:organization).try(:account).try(:get_account_manager)
         %td= ticket.ticket_contract.try(:brand_name)
         %td= ticket.products.first.try(:name)
-        %td= ticket.inspect
+        %td
         %td= ticket.products.first.try(:serial_no)
         %td= ticket.ticket_contract.try(:ticket_currency).try(:code)
         %td= ticket.ticket_contract_product_amount.to_f
@@ -124,6 +124,9 @@
     %tr
       %td
         %strong Total
+      %td 
+      %td 
+      %td 
       %td 
       %td 
       %td 

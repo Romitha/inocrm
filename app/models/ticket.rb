@@ -35,15 +35,10 @@ class Ticket < ActiveRecord::Base
           must { range :logged_at, gte: params[:l_range_from].to_date } if params[:l_range_from].present?
 
           if not params[:report].present?
-            puts "not inside report"
             must { range :ticket_contract_contract_start_at, gte: params[:ticket_contract_contract_start_at].to_date.beginning_of_day } if params[:ticket_contract_contract_start_at].present?
             must { range :ticket_contract_contract_end_at, lte: params[:ticket_contract_contract_end_at].to_date.end_of_day } if params[:ticket_contract_contract_end_at].present?
           end
-          # must { range :created_at, lte: params[:po_date_to].to_date.end_of_day  } if params[:po_date_to].present?
-          # must { range :created_at, gte: params[:po_date_from].to_date.beginning_of_day } if params[:po_date_from].present?
-          # must { term :author_id, params[:author_id] } if params[:author_id].present?
           if params[:ticket_contract_contract_start_at].present? and params[:ticket_contract_contract_end_at].present? and params[:report].present?
-            puts "inside report"
             must { range :ticket_contract_contract_start_at, lte: params[:ticket_contract_contract_start_at].to_date.beginning_of_day } 
             must { range :ticket_contract_contract_end_at, gte: params[:ticket_contract_contract_end_at].to_date.end_of_day } 
           end
@@ -658,10 +653,12 @@ class TicketContract < ActiveRecord::Base
       query do
         boolean do
           must { string params[:query] } if params[:query].present?
-          if not params[:report].present?
-            puts "not inside report"
-            must { range :contract_start_at, gte: params[:contract_date_from].to_date.beginning_of_day } if params[:contract_date_from].present?
-            must { range :contract_end_at, lte: params[:contract_date_to].to_date.end_of_day } if params[:contract_date_to].present?
+          if not params[:report_summery].present?
+            if not params[:report].present?
+              puts "not inside report"
+              must { range :contract_start_at, gte: params[:contract_date_from].to_date.beginning_of_day } if params[:contract_date_from].present?
+              must { range :contract_end_at, lte: params[:contract_date_to].to_date.end_of_day } if params[:contract_date_to].present?
+            end
           end
           # must { range :created_at, lte: params[:po_date_to].to_date.end_of_day  } if params[:po_date_to].present?
           # must { range :created_at, gte: params[:po_date_from].to_date.beginning_of_day } if params[:po_date_from].present?
@@ -670,6 +667,10 @@ class TicketContract < ActiveRecord::Base
             puts "inside report"
             must { range :contract_start_at, lte: params[:contract_date_from].to_date.beginning_of_day }
             must { range :contract_end_at, gte: params[:contract_date_to].to_date.end_of_day }
+          end
+          if params[:contract_date_from].present? and params[:report_summery].present?
+            must { range :contract_start_at, lte: params[:contract_date_from].to_date.beginning_of_day }
+            must { range :contract_end_at, gte: params[:contract_date_from].to_date.end_of_day }
           end
 
         end
@@ -690,7 +691,7 @@ class TicketContract < ActiveRecord::Base
     ContactNumber
     Invoice
     to_json(
-      only: [ :id, :created_at, :created_by, :customer_id, :products, :contract_no, :hold, :amount, :payment_completed, :contract_start_at,:contract_end_at, :season, :accepted_at, :updated_at],
+      only: [ :id, :created_at, :created_by, :customer_id, :products, :contract_no, :hold, :amount, :payment_completed, :contract_start_at,:contract_end_at, :season, :accepted_at, :updated_at, :remarks],
       methods: [:num_of_products, :brand_name, :category_cat_id, :category_name, :payment_type, :formated_created_at, :created_by_user_full_name, :formated_contract_start_at, :formated_contract_end_at, :dynamic_active, :formated_accepted_at, :product_amount, :contract_no_genarate],
       include: {
         organization: {

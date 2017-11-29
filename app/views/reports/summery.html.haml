@@ -1,0 +1,15 @@
+.row
+  .col-md-12
+    %fieldset
+      %legend Summery Report
+      #search_frame
+        = form_tag summery_reports_path, method: :get, class: "form-horizontal" do
+          .row
+            .col-md-3
+              = label_tag "Contract Date From", "Contract Date From"
+              = text_field_tag "contract_date_from", params[:contract_date_from], class: "form-control datepicker", placeholder: "Select from date"
+
+          .row.small_scale_margin-top1
+            .col-md-1
+              .search
+                = submit_tag "Generate Report", class: "btn btn-sm btn-warning", name: "search"
