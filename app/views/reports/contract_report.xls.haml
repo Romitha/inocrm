@@ -13,7 +13,7 @@
       %th Brand
       %th Category
       %th Contract Type
-      %th Payment Mode
+      %th Payment Type
       %th Accepted
       %th Currency
       %th Contract Amount
@@ -84,4 +84,5 @@
         %strong
           = total_pending_amount
 
-
+%h5 Print By : #{current_user.full_name}
+%h5 Print At : #{(DateTime.now).to_date}
