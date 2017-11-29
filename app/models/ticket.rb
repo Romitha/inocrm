@@ -72,7 +72,7 @@ class Ticket < ActiveRecord::Base
           methods: [:brand_name, :category_cat_id, :category_name, :payment_type, :formated_contract_start_at, :formated_contract_end_at, :product_amount, :contract_no_genarate],
           include: {
             contract_products:{
-              only: [:id, :amount,:installed_location_id,:product_serial_id, :updated_at],
+              only: [:id, :amount,:installed_location_id, :remarks, :product_serial_id, :updated_at],
             },
             organization: {
               only: [:id, :name, :code, :updated_at],
@@ -874,7 +874,7 @@ class ContractProduct < ActiveRecord::Base
     Invoice
     Product
     to_json(
-      only: [:id, :amount, :discount_amount,:installed_location_id, :updated_at],
+      only: [:id, :amount, :discount_amount, :remarks, :installed_location_id, :updated_at],
       methods: [:instral_loc_full_address, :contract_product_engineer_cost, :num_of_tickets, :contract_product_support_engineer_cost, :contract_product_part_cost,:contract_product_additional_cost, :contract_product_external_cost, :ticket_contract_contract_end_at, :ticket_contract_contract_start_at,:ticket_contract_season, :ticket_contract_created_at ],
       include: {
         ticket_contract: {

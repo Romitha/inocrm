@@ -252,6 +252,13 @@
                                 = contrac.installed_location.try(:full_address)
                             - else
                               = contrac.installed_location.try(:full_address)
+                          %dt Remarks
+                          %dd
+                            -if !contract.accepted_at.present?
+                              = link_to "#", class: "inline_edit", data: {type: "text", resource: "contract_product", name: "remarks",url: update_contract_product_contracts_path(contract_product_id: contrac.id), "original-title" => "Update remarks"} do
+                                = contrac.try(:remarks)
+                            -else
+                              = contrac.try(:remarks)
                         %br
                           = link_to "View", contracts_path(view_product: true, product_id: product.id, contract_id:contrac.id), remote: false, class: "btn btn-sm btn-warning", target: "_blank"
                           - if p.object.cannot_removable_from_contract?(contract.id) || contract.accepted_at.present?
