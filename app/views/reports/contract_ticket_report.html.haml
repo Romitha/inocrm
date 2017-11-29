@@ -8,7 +8,7 @@
             .col-md-3
               = label_tag "Customer Name"
               = select_tag "search_contracts[ticket_contract.organization.id]", options_from_collection_for_select(Organization.customers, :id, :name), class: "form-control parent_class", include_blank: true
-
+              
             .col-md-3
               = label_tag "Service Provider:"
               = select_tag "search_contracts[ticket_contract.owner_organization.id]", options_from_collection_for_select([Organization.owner] + Organization.owner.members, :id, :name), class: "form-control parent_class", include_blank: true
@@ -46,7 +46,7 @@
 
             .col-md-3
               = label_tag "Currency"
-              = select_tag "search_contracts[ticket_contract.ticket_currency.id]", options_from_collection_for_select(TicketCurrency.all, :id, :code), class: "form-control parent_class", include_blank: false
+              = select_tag "search_contracts[ticket_contract.ticket_currency.id]", options_from_collection_for_select(TicketCurrency.all, :id, :code), class: "form-control parent_class", include_blank: true
 
           .row.small_scale_margin-top1
             .col-md-1

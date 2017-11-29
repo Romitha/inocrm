@@ -1,18 +1,58 @@
 %h3 Contract Cost Analysis Report
+
+
+/ %br
+/ %h4 Search Critaria
+/ %table{:border => "1"}
+/   %thead
+/     %tr
+/       %th Customer Name
+/       %th Service Provider
+/       %th Account Manager
+/       %th Pyment Completed
+/       %th Season
+/       %th Contract Date From
+/       %th Contract Date To
+/       %th Brand
+/       %th Category
+/       %th Contract Type
+/       %th Payment Type
+/       %th Currency
+/   %tbody
+/     %tr
+/       %td= @customer_name
+/       %td= @service_provider
+/       %td= @account_manager
+/       %td= @payment_completed
+/       %td= @season
+/       %td= @date_from
+/       %td= @date_to
+/       %td= @brand_name
+/       %td= @category_name
+/       %td= @contract_type
+/       %td= @payment_type
+/       %td= @currnecy
+/ %br
+/ %br
 %table{:border => "1"}
   %thead
     %tr
       %th Contract No
       %th Customer Name
+      %th Season
+      %th Contract Type
+      %th Payment Type
       %th Account Manager
       %th Brand
       %th Category
       %th Product Name
+      %th Location
       %th Product Serial Number
       %th Currency
       %th Discounted Product Amount
       %th Discounted Contract Amount
       %th Payment Received
+      %th Total Tickets
       %th Engineer Cost
       %th Support Engineer Cost
       %th Part Cost
@@ -44,26 +84,35 @@
         - total_additional_cost = total_additional_cost + contract_product.contract_product_additional_cost
         - total_total_cost = total_total_cost + total_cost
         - total_recieved_payment = total_recieved_payment + recived_amount
-        - total_profit = total_profit + (recived_amount.to_f - total_cost.to_f)
+        - total_profit = total_profit + ((contract_product.try(:amount).to_f - contract_product.try(:discount_amount).to_f)- total_cost.to_f)
 
 
         %td= contract_product.ticket_contract.contract_no_genarate
         %td= contract_product.ticket_contract.organization.name
+        %td
+          - if contract_product.ticket_contract.season == 1
+            Season 1
+          - if contract_product.ticket_contract.season == 2
+            Season 2
+        %td= contract_product.ticket_contract.ticket_contract_type.try(:name)
+        %td= contract_product.ticket_contract.ticket_contract_payment_type.try(:name)
         %td= contract_product.ticket_contract.organization.account.get_account_manager
         %td= contract_product.ticket_contract.brand_name
         %td= contract_product.ticket_contract.category_name
         %td= contract_product.product.try(:name)
+        %td= contract_product.instral_loc_full_address
         %td= contract_product.product.serial_no
         %td= contract_product.ticket_contract.ticket_currency.try(:code)
         %td= (contract_product.try(:amount).to_f - contract_product.try(:discount_amount).to_f)
         %td= contract_amount
         %td= recived_amount
+        %td= contract_product.num_of_tickets
         %td= contract_product.contract_product_engineer_cost
         %td= contract_product.contract_product_support_engineer_cost
         %td= contract_product.contract_product_part_cost
         %td= contract_product.contract_product_additional_cost
         %td= total_cost
-        %td= (recived_amount.to_f - total_cost.to_f)
+        %td= ((contract_product.try(:amount).to_f - contract_product.try(:discount_amount).to_f) - total_cost.to_f)
     %tr
       %td
         %strong Total
@@ -78,11 +127,7 @@
         %strong
           = total_discount_amount
       %td
-        %strong
-          = total_contract_amount
       %td
-        %strong
-          = total_recieved_payment
       %td
         %strong
           = total_eng_cost
@@ -101,3 +146,6 @@
       %td
         %strong
           = total_profit
+
+%h5 Print By : #{current_user.full_name}
+%h5 Print At : #{(DateTime.now).to_date}

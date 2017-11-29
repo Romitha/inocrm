@@ -34,9 +34,19 @@ class Ticket < ActiveRecord::Base
           must { range :logged_at, lte: params[:l_range_to].to_date } if params[:l_range_to].present?
           must { range :logged_at, gte: params[:l_range_from].to_date } if params[:l_range_from].present?
 
-          must { range :ticket_contract_contract_end_at, lte: params[:ticket_contract_contract_end_at].to_date.end_of_day } if params[:ticket_contract_contract_end_at].present?
-          must { range :ticket_contract_contract_start_at, gte: params[:ticket_contract_contract_start_at].to_date.beginning_of_day } if params[:ticket_contract_contract_start_at].present?
+          if not params[:report].present?
+            puts "not inside report"
+            must { range :ticket_contract_contract_start_at, gte: params[:ticket_contract_contract_start_at].to_date.beginning_of_day } if params[:ticket_contract_contract_start_at].present?
+            must { range :ticket_contract_contract_end_at, lte: params[:ticket_contract_contract_end_at].to_date.end_of_day } if params[:ticket_contract_contract_end_at].present?
+          end
+          # must { range :created_at, lte: params[:po_date_to].to_date.end_of_day  } if params[:po_date_to].present?
+          # must { range :created_at, gte: params[:po_date_from].to_date.beginning_of_day } if params[:po_date_from].present?
           # must { term :author_id, params[:author_id] } if params[:author_id].present?
+          if params[:ticket_contract_contract_start_at].present? and params[:ticket_contract_contract_end_at].present? and params[:report].present?
+            puts "inside report"
+            must { range :ticket_contract_contract_start_at, lte: params[:ticket_contract_contract_start_at].to_date.beginning_of_day } 
+            must { range :ticket_contract_contract_end_at, gte: params[:ticket_contract_contract_end_at].to_date.end_of_day } 
+          end
         end
       end
       # sort { by :created_at, {order: "asc", ignore_unmapped: true} }
@@ -55,14 +65,14 @@ class Ticket < ActiveRecord::Base
     Invoice
     to_json(
       only: [:created_at, :cus_chargeable, :id, :ticket_no, :logged_at, :slatime, :job_started_at, :job_started_action_id, :problem_description, :job_type_id, :job_finished_at, :status_hold, :re_open_count, :final_invoice_id, :resolution_summary, :updated_at],
-      methods: [:customer_name, :ticket_part_cost, :ticket_contract_contract_end_at, :ticket_contract_contract_start_at, :job_type_get, :owner_engineer_name, :ticket_status_name, :warranty_type_name, :support_ticket_no, :ticket_type_name, :ticket_contract_product_amount],
+      methods: [:customer_name,:ticket_support_engineer_cost,:ticket_additional_cost,:ticket_external_cost, :ticket_engineer_cost, :ticket_part_cost, :ticket_contract_contract_end_at, :ticket_contract_contract_start_at, :job_type_get, :owner_engineer_name, :ticket_status_name, :warranty_type_name, :support_ticket_no, :ticket_type_name, :ticket_contract_product_amount, :ticket_contract_location],
       include: {
         ticket_contract: {
           only: [ :id, :customer_id, :products, :contract_no,:amount, :contract_start_at,:contract_end_at, :season, :accepted_at, :updated_at],
           methods: [:brand_name, :category_cat_id, :category_name, :payment_type, :formated_contract_start_at, :formated_contract_end_at, :product_amount, :contract_no_genarate],
           include: {
             contract_products:{
-              only: [:id, :amount, :product_serial_id, :updated_at],
+              only: [:id, :amount,:installed_location_id,:product_serial_id, :updated_at],
             },
             organization: {
               only: [:id, :name, :code, :updated_at],
@@ -161,9 +171,32 @@ class Ticket < ActiveRecord::Base
     ticket_contract.try(:contract_start_at)
   end
 
+
+
   def ticket_part_cost
-    ticket_total_cost.try(:part_cost)
+    ticket_total_cost.try(:part_cost).to_f
   end
+
+
+  def ticket_engineer_cost
+    ticket_total_cost.try(:engineer_cost).to_f
+  end
+  
+  def ticket_support_engineer_cost
+    ticket_total_cost.try(:support_engineer_cost).to_f
+  end
+
+
+  def ticket_additional_cost
+    ticket_total_cost.try(:additional_cost).to_f
+  end
+
+  def ticket_external_cost
+    ticket_total_cost.try(:external_cost).to_f
+  end
+
+
+
 
   def job_type_get
     job_type.try(:name)
@@ -173,6 +206,13 @@ class Ticket < ActiveRecord::Base
     if ticket_contract.present? and products.first.present?
       # ticket_contract.contract_products.where(product_serial_id: products.first.id).sum(:amount).to_f
       ticket_contract.contract_products.where(product_serial_id: products.first.id).sum(:amount).to_f
+    end
+  end
+  
+  def ticket_contract_location
+    if ticket_contract.present? and products.first.present?
+      # ticket_contract.contract_products.where(product_serial_id: products.first.id).sum(:amount).to_f
+      ticket_contract.contract_products.where(product_serial_id: products.first.id).try(:installed_location).try(:full_address)
     end
   end
 
@@ -618,11 +658,20 @@ class TicketContract < ActiveRecord::Base
       query do
         boolean do
           must { string params[:query] } if params[:query].present?
-          must { range :contract_end_at, lte: params[:contract_date_to].to_date.end_of_day } if params[:contract_date_to].present?
-          must { range :contract_start_at, gte: params[:contract_date_from].to_date.beginning_of_day } if params[:contract_date_from].present?
+          if not params[:report].present?
+            puts "not inside report"
+            must { range :contract_start_at, gte: params[:contract_date_from].to_date.beginning_of_day } if params[:contract_date_from].present?
+            must { range :contract_end_at, lte: params[:contract_date_to].to_date.end_of_day } if params[:contract_date_to].present?
+          end
           # must { range :created_at, lte: params[:po_date_to].to_date.end_of_day  } if params[:po_date_to].present?
           # must { range :created_at, gte: params[:po_date_from].to_date.beginning_of_day } if params[:po_date_from].present?
           # must { term :author_id, params[:author_id] } if params[:author_id].present?
+          if params[:contract_date_from].present? and params[:contract_date_to].present? and params[:report].present?
+            puts "inside report"
+            must { range :contract_start_at, lte: params[:contract_date_from].to_date.beginning_of_day }
+            must { range :contract_end_at, gte: params[:contract_date_to].to_date.end_of_day }
+          end
+
         end
       end
       if params[:sort_by]
@@ -682,7 +731,7 @@ class TicketContract < ActiveRecord::Base
 
   end
 
-  before_save :contract_no_increase
+  before_create :contract_no_increase
 
   def contract_no_increase
     contract_no = CompanyConfig.first.increase_sup_last_contract_serial_no
@@ -794,8 +843,21 @@ class ContractProduct < ActiveRecord::Base
       query do
         boolean do
           must { string params[:query] } if params[:query].present?
-          must { range :ticket_contract_contract_end_at, lte: params[:ticket_contract_contract_end_at].to_date.end_of_day } if params[:ticket_contract_contract_end_at].present?
-          must { range :ticket_contract_contract_start_at, gte: params[:ticket_contract_contract_start_at].to_date.beginning_of_day } if params[:ticket_contract_contract_start_at].present?
+          if not params[:report].present?
+            puts "not inside report"
+            must { range :ticket_contract_contract_start_at, gte: params[:ticket_contract_contract_start_at].to_date.beginning_of_day } if params[:ticket_contract_contract_start_at].present?
+            must { range :ticket_contract_contract_end_at, lte: params[:ticket_contract_contract_end_at].to_date.end_of_day } if params[:ticket_contract_contract_end_at].present?
+          end
+          # must { range :created_at, lte: params[:po_date_to].to_date.end_of_day  } if params[:po_date_to].present?
+          # must { range :created_at, gte: params[:po_date_from].to_date.beginning_of_day } if params[:po_date_from].present?
+          # must { term :author_id, params[:author_id] } if params[:author_id].present?
+          if params[:ticket_contract_contract_start_at].present? and params[:ticket_contract_contract_end_at].present? and params[:report].present?
+            puts "inside report"
+            must { range :ticket_contract_contract_start_at, lte: params[:ticket_contract_contract_start_at].to_date.beginning_of_day } 
+            must { range :ticket_contract_contract_end_at, gte: params[:ticket_contract_contract_end_at].to_date.end_of_day } 
+          end
+
+
         end
       end
       if params[:sort_by]
@@ -812,8 +874,8 @@ class ContractProduct < ActiveRecord::Base
     Invoice
     Product
     to_json(
-      only: [:id, :amount, :discount_amount, :updated_at],
-      methods: [:contract_product_engineer_cost, :contract_product_support_engineer_cost, :contract_product_part_cost,:contract_product_additional_cost, :contract_product_external_cost, :ticket_contract_contract_end_at, :ticket_contract_contract_start_at,:ticket_contract_season, :ticket_contract_created_at ],
+      only: [:id, :amount, :discount_amount,:installed_location_id, :updated_at],
+      methods: [:instral_loc_full_address, :contract_product_engineer_cost, :num_of_tickets, :contract_product_support_engineer_cost, :contract_product_part_cost,:contract_product_additional_cost, :contract_product_external_cost, :ticket_contract_contract_end_at, :ticket_contract_contract_start_at,:ticket_contract_season, :ticket_contract_created_at ],
       include: {
         ticket_contract: {
           only: [ :id, :created_at, :created_by, :customer_id, :products, :contract_no, :hold, :amount, :payment_completed, :contract_start_at,:contract_end_at, :season, :accepted_at, :updated_at],
@@ -859,8 +921,15 @@ class ContractProduct < ActiveRecord::Base
 
   end
 
+  def instral_loc_full_address
+    installed_location.try(:full_address)
+  end
+
   def contract_product_tickets
     product.tickets.where(contract_id: self.contract_id)
+  end
+    def num_of_tickets
+    product.tickets.where(contract_id: self.contract_id).count
   end
 
   def contract_product_engineer_cost
