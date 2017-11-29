@@ -424,7 +424,7 @@ class ContractsController < ApplicationController
       contract_elements << table_header
 
       @contract.contract_products.each do |contract_product|
-        contract_elements << ['', contract_product.product.serial_no, contract_product.product.description, contract_product.amount]
+        contract_elements << ["#{contract_product.product.brand_name} - #{contract_product.product.category_name}", contract_product.product.serial_no, contract_product.product.description, contract_product.amount]
       end
 
       contract_elements.concat [['', '', 'Sub Total', @contract.contract_products.sum(:amount)], ['', '', 'Special Discount', @contract.contract_products.sum(:discount_amount)], ['', '', 'Total Amount', (@contract.contract_products.sum(:amount) - @contract.contract_products.sum(:discount_amount))]]
@@ -434,6 +434,8 @@ class ContractsController < ApplicationController
 
         docx.table contract_elements, border_size: 4 do
           cell_style rows[0], bold: true
+          cell_style cols[3], bold: true, align: :right
+          cell_style cols[3], align: :right
         end
 
         docx.p "Note: The total amount will change, if the rate of VAT is varied by the Authorities", bold: true
