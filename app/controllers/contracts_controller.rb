@@ -435,7 +435,7 @@ class ContractsController < ApplicationController
         docx.table contract_elements, border_size: 4 do
           cell_style rows[0], bold: true
           cell_style cols[3], bold: true, align: :right
-          cell_style cols[3], align: :right
+          cell_style cols[3] , align: :right
         end
 
         docx.p "Note: The total amount will change, if the rate of VAT is varied by the Authorities", bold: true
