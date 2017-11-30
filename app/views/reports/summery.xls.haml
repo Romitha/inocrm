@@ -59,20 +59,20 @@
         - if (contract_discounted_season_1 == 0)
           NaN
         - else
-          = (collected_amount_season_1/contract_discounted_season_1)*100
+          = ((collected_amount_season_1/contract_discounted_season_1)*100).round
           "%"
 
       %td
         - if (contract_discounted_season_2 == 0)
           NaN
         - else
-          = (collected_amount_season_2/contract_discounted_season_2)*100
+          = ((collected_amount_season_2/contract_discounted_season_2)*100).round
           "%"
       %td
         - if ((contract_discounted_season_1 + contract_discounted_season_2) == 0)
           NaN
         - else
-          = ((collected_amount_season_1 + collected_amount_season_2)/(contract_discounted_season_1 + contract_discounted_season_2))*100
+          = (((collected_amount_season_1 + collected_amount_season_2)/(contract_discounted_season_1 + contract_discounted_season_2))*100).round
           "%"
 / 2nd table
 - total_to_be_colected = 0
