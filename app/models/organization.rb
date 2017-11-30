@@ -367,6 +367,9 @@ class Account < ActiveRecord::Base
   def get_account_manager
     account_manager.try(:full_name)
   end
+  def get_account_manager_id
+    account_manager.try(:id)
+  end
 
   has_many :dyna_columns, as: :resourceable
 

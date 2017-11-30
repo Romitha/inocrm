@@ -19,7 +19,8 @@
 
             .col-md-3
               = label_tag "Account Manager:"
-              = select_tag "search_contracts[organization.account.get_account_manager]", options_from_collection_for_select(User.where(id: Account.pluck(:account_manager_id)).order("first_name ASC"), :full_name, :full_name), class: "form-control parent_class", include_blank: true
+              = select_tag "search_contracts[organization.account.get_account_manager_id]", options_from_collection_for_select(User.where(id: Account.pluck(:account_manager_id)).order("first_name ASC"), :id, :full_name), class: "form-control parent_class", include_blank: true
+
 
             .col-md-3.small_scale_margin-top2
               = label_tag "Payment completed"

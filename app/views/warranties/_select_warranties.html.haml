@@ -11,6 +11,8 @@
         .col-md-3
           %strong Contract No:
           = ticket.ticket_contract.contract_no_genarate
+          %br
+          = link_to "View Contract", contracts_path(view_contract: true, contract_id: ticket.ticket_contract.id, customer_id: ticket.ticket_contract.organization.id), class: "btn btn-sm btn-warning", target: "_blank", remote: false
         .col-md-3
           %strong Created At:
           = ticket.ticket_contract.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
@@ -24,7 +26,7 @@
           = ticket.ticket_contract.ticket_contract_type.name
         .col-md-3
           %strong Owner Department:
-          = ticket.ticket_contract.organization.name
+          = ticket.ticket_contract.owner_organization.try(:name)
         .col-md-3
           %strong Back to Back Contract:
           = boolean_in_word ticket.ticket_contract.contract_b2b, "Yes", "No"
