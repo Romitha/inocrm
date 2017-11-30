@@ -1,4 +1,5 @@
 %h3 Summery Report
+/ 1st table
 %table{:border => "1"}
   %thead
     %tr
@@ -8,6 +9,8 @@
       %th Service Contract Value Total
   - contract_value_season_1 = 0
   - contract_value_season_2 = 0
+  - contract_discounted_season_1 = 0
+  - contract_discounted_season_2 = 0
   - collected_amount_season_1 = 0
   - collected_amount_season_2 = 0
   - to_be_collected_season_1 = 0
@@ -16,11 +19,13 @@
     - 
     - @contracts.each do |contract|
       - if contract.season == 1
-        - contract_value_season_1 = contract_value_season_1 + contract.product_amount.to_f
+        - contract_value_season_1 = contract_value_season_1 + contract.discount_less_amount.to_f
+        - contract_discounted_season_1 = contract_discounted_season_1 + contract.product_amount.to_f
         - collected_amount_season_1 = collected_amount_season_1 + contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f}
         - to_be_collected_season_1 = to_be_collected_season_1 + (contract.product_amount.to_f - contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f})
       - if contract.season == 2
-        - contract_value_season_2 = contract_value_season_2 + contract.product_amount.to_f
+        - contract_value_season_2 = contract_value_season_2 + contract.discount_less_amount.to_f
+        - contract_discounted_season_2 = contract_discounted_season_2 + contract.product_amount.to_f
         - collected_amount_season_2 = collected_amount_season_2 + contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f}
         - to_be_collected_season_2 = to_be_collected_season_2 + (contract.product_amount.to_f - contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f})
     %tr
@@ -29,6 +34,12 @@
       %td= contract_value_season_1
       %td= contract_value_season_2
       %td= (contract_value_season_1 + contract_value_season_2)
+    %tr
+
+      %td Discounted Amount
+      %td= contract_discounted_season_1
+      %td= contract_discounted_season_2
+      %td= (contract_discounted_season_1 + contract_discounted_season_2)
     %tr
 
       %td Collected Amount
@@ -41,7 +52,31 @@
       %td= to_be_collected_season_1
       %td= to_be_collected_season_2
       %td= (to_be_collected_season_1 + to_be_collected_season_2)
+    %tr
 
+      %td Percentage %
+      %td
+        - if (contract_discounted_season_1 == 0)
+          NaN
+        - else
+          = (collected_amount_season_1/contract_discounted_season_1)*100
+          "%"
+
+      %td
+        - if (contract_discounted_season_2 == 0)
+          NaN
+        - else
+          = (collected_amount_season_2/contract_discounted_season_2)*100
+          "%"
+      %td
+        - if ((contract_discounted_season_1 + contract_discounted_season_2) == 0)
+          NaN
+        - else
+          = ((collected_amount_season_1 + collected_amount_season_2)/(contract_discounted_season_1 + contract_discounted_season_2))*100
+          "%"
+/ 2nd table
+- total_to_be_colected = 0
+- total_collected = 0
 %h3 Service Contract Value Season 1
 %table{:border => "1"}
   %thead
@@ -57,13 +92,24 @@
     - @contracts.each do |contract|
       - if contract.season == 1
         %tr
-          %td= contract.owner_organization.try(:name)
+          - total_to_be_colected = total_to_be_colected + (contract.product_amount.to_f - contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f})
+          %td= contract.organization.try(:name)
           %td= contract.formated_contract_start_at
           %td= contract.formated_contract_end_at
           %td= contract.contract_no_genarate
           %td= (contract.product_amount.to_f - contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f})
           %td= contract.organization.account.get_account_manager
           %td= contract.remarks
+    %td
+      %strong Total
+    %td
+    %td
+    %td
+    %td
+      = total_to_be_colected
+    %td
+/ 3rd table
+
 %br
 %br
 %table{:border => "1"}
@@ -80,13 +126,23 @@
     - @contracts.each do |contract|
       - if contract.season == 1
         %tr
-          %td= contract.owner_organization.try(:name)
+          - total_collected = total_collected + contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f}
+          %td= contract.organization.try(:name)
           %td= contract.formated_contract_start_at
           %td= contract.formated_contract_end_at
           %td= contract.contract_no_genarate
           %td= contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f}
           %td= contract.organization.account.get_account_manager
           %td= contract.remarks
+    %td
+      %strong Total
+    %td
+    %td
+    %td
+    %td
+      = total_collected
+/ 4th table
+
 %h3 Service Contract Value Season 2
 %table{:border => "1"}
   %thead
@@ -102,6 +158,7 @@
     - @contracts.each do |contract|
       - if contract.season == 2
         %tr
+          - total_to_be_colected = total_to_be_colected + (contract.product_amount.to_f - contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f})
           %td= contract.owner_organization.try(:name)
           %td= contract.formated_contract_start_at
           %td= contract.formated_contract_end_at
@@ -109,8 +166,17 @@
           %td= (contract.product_amount.to_f - contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f})
           %td= contract.organization.account.get_account_manager
           %td= contract.remarks
+    %td
+      %strong Total
+    %td
+    %td
+    %td
+    %td
+      = total_to_be_colected
 %br
 %br
+/ 5th table
+
 %table{:border => "1"}
   %thead
     %tr
@@ -125,6 +191,7 @@
     - @contracts.each do |contract|
       - if contract.season == 2
         %tr
+          - total_collected = total_collected + contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f}
           %td= contract.owner_organization.try(:name)
           %td= contract.formated_contract_start_at
           %td= contract.formated_contract_end_at
@@ -132,5 +199,12 @@
           %td= contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f}
           %td= contract.organization.account.get_account_manager
           %td= contract.remarks
+    %td
+      %strong Total
+    %td
+    %td
+    %td
+    %td
+      = total_collected
 %h5 Print By : #{current_user.full_name}
 %h5 Print At : #{(DateTime.now).to_date}

@@ -64,7 +64,7 @@ class Ticket < ActiveRecord::Base
       include: {
         ticket_contract: {
           only: [ :id, :customer_id, :products, :contract_no,:amount, :contract_start_at,:contract_end_at, :season, :accepted_at, :updated_at],
-          methods: [:brand_name, :category_cat_id, :category_name, :payment_type, :formated_contract_start_at, :formated_contract_end_at, :product_amount, :contract_no_genarate],
+          methods: [:brand_name, :category_cat_id, :category_name, :payment_type, :formated_contract_start_at, :formated_contract_end_at, :product_amount,:discount_less_amount, :contract_no_genarate],
           include: {
             contract_products:{
               only: [:id, :amount,:installed_location_id, :remarks, :product_serial_id, :updated_at],
@@ -75,7 +75,7 @@ class Ticket < ActiveRecord::Base
               include: {
                 account: {
                   only: [:id, :industry_types_id],
-                  methods: [:get_account_manager],
+                  methods: [:get_account_manager, :get_account_manager_id],
                   include: {
                     industry_type: {
                       only: [:id, :name, :code],
@@ -692,7 +692,7 @@ class TicketContract < ActiveRecord::Base
     Invoice
     to_json(
       only: [ :id, :created_at, :created_by, :customer_id, :products, :contract_no, :hold, :amount, :payment_completed, :contract_start_at,:contract_end_at, :season, :accepted_at, :updated_at, :remarks],
-      methods: [:num_of_products, :brand_name, :category_cat_id, :category_name, :payment_type, :formated_created_at, :created_by_user_full_name, :formated_contract_start_at, :formated_contract_end_at, :dynamic_active, :formated_accepted_at, :product_amount, :contract_no_genarate],
+      methods: [:num_of_products, :brand_name, :category_cat_id, :category_name, :payment_type, :formated_created_at, :created_by_user_full_name, :formated_contract_start_at, :formated_contract_end_at, :dynamic_active, :formated_accepted_at, :product_amount,:discount_less_amount, :contract_no_genarate],
       include: {
         organization: {
           only: [:id, :name, :code, :updated_at],
@@ -700,7 +700,7 @@ class TicketContract < ActiveRecord::Base
           include: {
             account: {
               only: [:id, :industry_types_id],
-              methods: [:get_account_manager],
+              methods: [:get_account_manager, :get_account_manager_id],
               include: {
                 industry_type: {
                   only: [:id, :name, :code],
@@ -789,7 +789,9 @@ class TicketContract < ActiveRecord::Base
     # !hold.present? and (contract_start_at.to_date .. contract_end_at.to_date+1.day).include?(Date.today)
     !hold.present? and (contract_start_at.to_date .. contract_end_at.to_date).include?(Date.today)
   end
-
+  def discount_less_amount
+    contract_products.to_a.sum{|e| e.try(:amount).to_f }
+  end
   def product_amount
     contract_products.to_a.sum{|e| e.try(:amount).to_f } - contract_products.to_a.sum{|e| e.try(:discount_amount).to_f }
   end
@@ -880,7 +882,7 @@ class ContractProduct < ActiveRecord::Base
       include: {
         ticket_contract: {
           only: [ :id, :created_at, :created_by, :customer_id, :products, :contract_no, :hold, :amount, :payment_completed, :contract_start_at,:contract_end_at, :season, :accepted_at, :updated_at],
-          methods: [:num_of_products, :brand_name, :category_cat_id, :category_name, :payment_type, :formated_created_at, :created_by_user_full_name, :formated_contract_start_at, :formated_contract_end_at, :dynamic_active, :formated_accepted_at, :product_amount, :contract_no_genarate],
+          methods: [:num_of_products, :brand_name, :category_cat_id, :category_name, :payment_type, :formated_created_at, :created_by_user_full_name, :formated_contract_start_at, :formated_contract_end_at, :dynamic_active, :formated_accepted_at, :product_amount, :discount_less_amount, :contract_no_genarate],
           include: {
             organization: {
               only: [:id, :name, :code, :updated_at],
@@ -888,7 +890,7 @@ class ContractProduct < ActiveRecord::Base
               include: {
                 account: {
                   only: [:id, :industry_types_id],
-                  methods: [:get_account_manager],
+                  methods: [:get_account_manager, :get_account_manager_id],
                   include: {
                     industry_type: {
                       only: [:id, :name, :code],
@@ -930,7 +932,7 @@ class ContractProduct < ActiveRecord::Base
     product.tickets.where(contract_id: self.contract_id)
   end
     def num_of_tickets
-    product.tickets.where(contract_id: self.contract_id).count
+    contract_product_tickets.count
   end
 
   def contract_product_engineer_cost
