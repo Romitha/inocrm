@@ -55,7 +55,7 @@
       %dt Contract No:
       %dd= contract.contract_no_genarate
       %hr
-      %dt Owner Department:
+      %dt Service Provider:
       %dd= contract.owner_organization.try(:name)
       %hr
       %dt Address Company:
@@ -67,8 +67,8 @@
       %dt Start Date:
       %dd= contract.contract_start_at.try(:strftime, INOCRM_CONFIG["short_date_format"])
       %hr
-      %dt Process Date:
-      %dd= contract.process_at.try(:strftime, INOCRM_CONFIG["short_date_format"])
+      %dt Exp. Date:
+      %dd= contract.contract_end_at.try(:strftime, INOCRM_CONFIG["short_date_format"])
       %hr
       %dt Hold:
       %dd= boolean_in_word contract.hold, "Yes", "No"
@@ -98,13 +98,16 @@
       - final_amount = (ttl_amunt_sum - ttl_disc_sum)
       - ttl_recived_amount = @contract_payment.to_a.sum{|e| e.try(:amount)}
       - balance_amount = (final_amount - ttl_recived_amount)
-
-      %font{:color => "red", :size => "2"}
-        %dt Total Recieved Amount:
-        %dd= number_with_precision ttl_recived_amount, precision: 2
-        %br
-        %dt Balance Amount:
-        %dd= number_with_precision balance_amount, precision: 2
+      %h4 Contract Amounts
+      %br
+      %dt Total Amount:
+      %dd= number_with_precision ttl_amunt_sum, precision: 2
+      %br
+      %dt Discount Amount:
+      %dd= number_with_precision ttl_disc_sum, precision: 2
+      %br
+      %dt Total Discounted Amount:
+      %dd= number_with_precision final_amount, precision: 2
       / - if @contract_products.present?
       /   %hr
       /   - ttl_amunt_sum = @contract_products.to_a.sum{|e| e.amount}
@@ -142,8 +145,8 @@
       %dt Bill Address:
       %dd= contract.bill_address.try(:full_address)
       %hr
-      %dt Exp. Date:
-      %dd= contract.contract_end_at.try(:strftime, INOCRM_CONFIG["short_date_format"])
+      %dt Process Date:
+      %dd= contract.process_at.try(:strftime, INOCRM_CONFIG["short_date_format"])
       %hr
       %dt Remind before Expiry:
       %dd= boolean_in_word contract.remind_required, "Yes", "No"
@@ -168,11 +171,16 @@
       %dd= contract.ticket_contract_payment_type.try(:name)
       %hr
       %dt Remarks:
-      %dd=simple_format contract.remarks
+      %dd= contract.remarks
       %hr
-      %dt Total Amount:
-      %dd=final_amount
-
+      %h4 Payment Amounts
+      %br
+      %font{:color => "red", :size => "2"}
+        %dt Total Recieved Amount:
+        %dd= number_with_precision ttl_recived_amount, precision: 2
+        %br
+        %dt Balance Amount:
+        %dd= number_with_precision balance_amount, precision: 2
 - if @contract_products.present?
   - if contract.payment_completed
     %font{:color => "green", :size => "4"}

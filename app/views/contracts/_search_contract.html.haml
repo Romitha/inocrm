@@ -31,7 +31,7 @@
       = select_tag "search_contracts[season]", raw("<option value=1>Season 1</option> <option value=2>Season 2</option>"), class: "form-control parent_class", include_blank: true
   .row
     .col-md-3
-      = label_tag "Owner Department:"
+      = label_tag "Service Provider:"
       = select_tag "search_contracts[owner_organization.id]", options_from_collection_for_select([Organization.owner] + Organization.owner.members, :id, :name), class: "form-control parent_class", include_blank: true
   %br
   .row
