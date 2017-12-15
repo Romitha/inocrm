@@ -671,6 +671,7 @@ class TicketContract < ActiveRecord::Base
           if params[:contract_date_from].present? and params[:report_summery].present?
             must { range :contract_start_at, lte: params[:contract_date_from].to_date.beginning_of_day }
             must { range :contract_end_at, gte: params[:contract_date_from].to_date.end_of_day }
+            # must { range :contract_end_at, gte: params[:contract_date_from].to_date.end_of_day }
           end
 
         end
@@ -779,10 +780,10 @@ class TicketContract < ActiveRecord::Base
   end
 
   def formated_contract_start_at
-    contract_start_at.try :strftime, INOCRM_CONFIG["short_date_format"]
+    contract_start_at.to_date.try :strftime, INOCRM_CONFIG["short_date_format"]
   end
   def formated_contract_end_at
-    contract_end_at.try :strftime, INOCRM_CONFIG["short_date_format"]
+    contract_end_at.to_date.try :strftime, INOCRM_CONFIG["short_date_format"]
   end
 
   def dynamic_active
