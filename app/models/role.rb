@@ -9,6 +9,19 @@ class Role < ActiveRecord::Base
 
   has_many :module_roles, foreign_key: :role_id
   has_many :bpm_module_roles, through: :module_roles
+
+  def cached_rpermissions
+    Rails.cache.fetch([id.try(:to_i), :rpermissions]){rpermissions}
+  end
+
+  def flush_cache
+    Rails.cache.delete([id.try(:to_i), :rpermissions])
+  end
+
+  after_save do |role|
+    role.flush_cache
+  end
+
 end
 
 class ModuleRole < ActiveRecord::Base

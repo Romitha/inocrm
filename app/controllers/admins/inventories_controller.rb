@@ -199,9 +199,10 @@ module Admins
       end
     end
 
-    def location
+    def location # permissioned
       Inventory
       Product
+      authorize! :location, InventoryRack
 
       if params[:edit]
         if params[:rack_id]
@@ -256,8 +257,10 @@ module Admins
 
     end
 
-    def inventory_brand
+    def inventory_brand # permissioned
       Inventory
+      authorize! :inventory_brand, InventoryCategory1
+
       if params[:edit]
         @inventory_brand = InventoryCategory1.find params[:inventory_category1_id]
         if @inventory_brand.update inventory_category1_params
@@ -285,6 +288,8 @@ module Admins
 
     def inventory_product_category
       Inventory
+      authorize! :inventory_product_category, InventoryCategory2
+
       if params[:edit]
         @inventory_product_category = InventoryCategory2.find params[:inventory_category2_id]
         if @inventory_product_category.update inventory_category2_params
@@ -310,6 +315,7 @@ module Admins
 
     def category
       Inventory
+      authorize! :category, InventoryCategory3
       if params[:edit]
         @inventory_category = InventoryCategory3.find params[:inventory_category3_id]
         if @inventory_category.update inventory_category3_params
@@ -349,6 +355,7 @@ module Admins
       Product
       Currency
       InventorySerialItem
+      authorize! :product, InventoryProduct
 
       if params[:edit]
         if params[:product_id]
@@ -399,8 +406,9 @@ module Admins
       render "admins/inventories/product"
     end
 
-    def product_condition
+    def product_condition # permissioned
       Inventory
+      authorize! :product_condition, ProductCondition
       if params[:edit]
         @inventory_product_condition = ProductCondition.find params[:product_condition_id]
         if @inventory_product_condition.update inventory_product_condition_params
@@ -426,6 +434,8 @@ module Admins
 
     def disposal_method
       Inventory
+      authorize! :disposal_method, InventoryDisposalMethod
+
       if params[:edit]
         @inventory_disposal_method = InventoryDisposalMethod.find params[:disposal_method]
         if @inventory_disposal_method.update inventory_disposal_method_params
@@ -451,6 +461,8 @@ module Admins
 
     def reason
       Inventory
+      authorize! :reason, InventoryReason
+
       if params[:edit]
         @inventory_reason = InventoryReason.find params[:inventory_reason_id]
         if @inventory_reason.update inventory_reason_params
@@ -474,8 +486,10 @@ module Admins
       end
     end
 
-    def manufacture
+    def manufacture # permissioned
       Inventory
+      authorize! :manufacture, Manufacture
+
       if params[:edit]
         @inventory_manufacture = Manufacture.find params[:manufacture_id]
         if @inventory_manufacture.update inventory_manufacture_params
@@ -511,6 +525,7 @@ module Admins
 
     def unit
       Inventory
+      authorize! :unit, InventoryUnit
       if params[:edit]
         @inventory_unit = InventoryUnit.find params[:unit_id]
         if @inventory_unit.update inventory_unit_params
@@ -1380,9 +1395,6 @@ module Admins
         @prn = InventoryPrn.find params[:prn_id]
         @store = @prn.store
         render "admins/inventories/prn/prns"
-        # @prn.inventory_prn_items.where(closed: false).each do |prn_item|
-        #   @po.inventory_po_items.build quantity: prn_item.quantity, prn_item_id: prn_item.id
-        # end
       end
     end
 
@@ -1496,6 +1508,7 @@ module Admins
     def inventory
       Inventory
       Grn
+      authorize! :inventory, Inventory
 
       if params[:edit]
         @inventory = Inventory.find params[:inventory_id]
@@ -1581,21 +1594,6 @@ module Admins
 
         render "admins/inventories/srr/srrs"
       end
-    end
-
-    def create_srn
-      Role
-
-      @srn = Srn.new srn_params
-      if @srn.srn_items.any? and @srn.save
-        Organization
-        CompanyConfig.first.increase_inv_last_srn_no
-        flash[:notice] = "Successfully created."
-      else
-        flash[:error] = "Unable to save. Please verify any validations and availabilities of SRN Item"
-      end
-
-      redirect_to srn_admins_inventories_url
     end
 
     def gin
@@ -2071,14 +2069,6 @@ module Admins
         end
 
         Rails.cache.write(session[:prn_srn_arrived_time], @srn_item_array)
-
-        # if params[:products_ids].present?
-        #   inventory_product = InventoryProduct.where(id: params[:products_ids])
-        #   puts inventory_product.country_id
-          # Rails.cache.delete([:contract_products, request.remote_ip])
-
-          # @cached_products = Rails.cache.fetch([:contract_products, request.remote_ip]){ inventory_product.to_a }
-        # end
       end
 
       if params[:srn_form] == "yes"
@@ -2249,6 +2239,21 @@ module Admins
       else
         render "admins/inventories/srn/srn"
       end
+    end
+
+    def create_srn
+      Role
+
+      @srn = Srn.new srn_params
+      if @srn.srn_items.any? and @srn.save
+        Organization
+        CompanyConfig.first.increase_inv_last_srn_no
+        flash[:notice] = "Successfully created."
+      else
+        flash[:error] = "Unable to save. Please verify any validations and availabilities of SRN Item"
+      end
+
+      redirect_to srn_admins_inventories_url
     end
 
     private

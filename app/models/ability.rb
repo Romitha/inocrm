@@ -24,8 +24,8 @@ class Ability
         # user.roles.find(user.current_user_role_id).rpermissions.where(controller_resource: "User").each do |rpermission|
         #   can rpermission.controller_action.to_sym, rpermission.controller_resource.constantize, id: ((user.organization && user.organization.user_ids.present?) ? user.organization.user_ids : user.id)
         # end
-        Role.find_by_id(user.current_user_role_id).rpermissions.each do |rpermission|
-          can rpermission.subject_actions.map { |s| s.name.to_sym }, rpermission.subject_class.name.classify.constantize, Hash[ rpermission.subject_attributes.map { |a| [ a.name.to_sym, a.value ] } ]
+        Role.find_by_id(user.current_user_role_id).cached_rpermissions.each do |rpermission|
+          can rpermission.cached_subject_actions.map { |s| s.name.to_sym }, rpermission.subject_class.name.classify.constantize, Hash[ rpermission.subject_attributes.map { |a| [ a.name.to_sym, a.value ] } ]
 
         end
 

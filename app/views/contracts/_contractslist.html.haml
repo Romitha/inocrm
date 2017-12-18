@@ -90,7 +90,7 @@
               -if !con.tickets.present?
                 = link_to "Edit", contracts_path(edit_create: true, contract_id: con.id, customer_id: con.organization.id), remote: true, onclick: "Tickets.ajax_loader(); return false;"
               %br
-              = link_to "View", contracts_path(view_contract: true, contract_id: con.id, customer_id: con.organization.id), target: "_blank", remote: false
+              = link_to "View", view_contracts_path(contract_id: con.id, customer_id: con.organization.id), target: "_blank", remote: false
               %br
               = link_to "Payments", contracts_path(view_contract: true, new_payments: true, contract_id: con.id, customer_id: con.organization.id),target: "_blank",  remote: false
               %br

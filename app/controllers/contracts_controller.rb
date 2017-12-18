@@ -98,31 +98,7 @@ class ContractsController < ApplicationController
       end
     end
 
-    if params[:view_contract]
-      Invoice
-      Rails.cache.delete([:contract_products, request.remote_ip])
-
-      @organization = Organization.find params[:customer_id]
-      @products = ContractProduct.all
-
-      @contract_products = @organization.contract_products.where(contract_id: params[:contract_id])
-
-
-      @contract_payment = ContractPaymentReceived.where(contract_id: params[:contract_id])
-      # @product = Product.find params[:product_serial_id]
-
-      @contract = if params[:contract_id].present?
-        @organization.ticket_contracts.find params[:contract_id]
-      else
-        @organization.ticket_contracts.build
-      end
-
-      @contract_payment_received = ContractPaymentReceived.new contract_id: params[:contract_id]
-
-      render "contracts/view_contract"
-    end
-
-   if params[:view_product]
+    if params[:view_product]
       # Rails.cache.delete([:contract_products, request.remote_ip])
       @product = Product.find params[:product_id]
       if params[:serial_product]
@@ -145,23 +121,6 @@ class ContractsController < ApplicationController
       end
     end
 
-    if params[:save].present?
-      if params[:contract_id].present?
-        @contract = TicketContract.find params[:contract_id]
-        @contract.attributes = contract_params
-      else
-        @contract = @organization.ticket_contracts.build contract_params
-      end
-
-      @contract.save
-
-      @contract.products.each do |product|
-        product.create_product_owner_history(@organization.id, current_user.id, "Added in contract")
-
-      end
-
-    end
-
     if params[:save_product].present?
       if params[:owner_customer_id].present?
 
@@ -179,6 +138,52 @@ class ContractsController < ApplicationController
 
       end
     end
+  end
+
+  def save
+    Ticket
+    @organization = Organization.find(params[:organization_id])
+
+    if params[:contract_id].present?
+      @contract = TicketContract.find params[:contract_id]
+      @contract.attributes = contract_params
+    else
+      @contract = @organization.ticket_contracts.build contract_params
+    end
+
+    @contract.save
+
+    @contract.products.each do |product|
+      product.create_product_owner_history(@organization.id, current_user.id, "Added in contract")
+
+    end
+
+  end
+
+  def view
+    Invoice
+    Ticket
+    Rails.cache.delete([:contract_products, request.remote_ip])
+
+    @organization = Organization.find params[:customer_id]
+    @products = ContractProduct.all
+
+    @contract_products = @organization.contract_products.where(contract_id: params[:contract_id])
+
+
+    @contract_payment = ContractPaymentReceived.where(contract_id: params[:contract_id])
+    # @product = Product.find params[:product_serial_id]
+
+    @contract = if params[:contract_id].present?
+      @organization.ticket_contracts.find params[:contract_id]
+    else
+      @organization.ticket_contracts.build
+    end
+
+    @contract_payment_received = ContractPaymentReceived.new contract_id: params[:contract_id]
+
+    render "contracts/view_contract"
+
   end
 
   def search_product

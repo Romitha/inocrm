@@ -25,288 +25,271 @@
 %br
 %br
 
-.row
-  %h3 Contract Details
+%h3 Contract Details
+= simple_nested_form_for contract, url: save_contracts_path(organization_id: organization.try(:id)), html: {class: "validate_form"}, method: :post, remote: true, multipart: true do |f|
+  = hidden_field_tag :contract_id, contract.id
+
+  = f.input :customer_id, as: :hidden
+  = f.input :created_by, as: :hidden, input_html: {value: current_user.id}
+
+  - if contract.errors.any?
+    .row
+      .col-md-12
+        %ul
+          - contract.errors.full_messages.each do |error|
+            %li= error
+
+  .row
+    .col-md-3
+      = f.input :legacy_contract_no
+    .col-md-2
+      = f.association :ticket_contract_type, include_blank: false, required: true, label: "Contract Type"
+    .col-md-2
+      = f.association :ticket_currency, label_method: :code, label: "Currency", required: true, include_blank: false
+
+    .col-md-2
+      = f.association :sla_time, required: true, label_method: :description, include_blank: false, label: "SLA"
+    .col-md-3
+      = label_tag "Owner Division" do
+        Owner Branch
+        = f.select :owner_organization_id, ( Organization.owner.members.collect{ |m| [m.name, m.id ] } << [Organization.owner.name, Organization.owner.id] ), {include_blank: false}, {class: "form-control col-md-12 small_scale_margin-top2"}
+
+  .row
+    .col-md-4
+      = f.input :contract_start_at, as: :string, required: true,input_html: {class: "datepicker", value: f.object.contract_start_at.try(:strftime, INOCRM_CONFIG["short_date_format"]), onblur:"Tickets.show_date();"}
+    .col-md-4
+      = f.input :contract_end_at, as: :string, required: true, input_html: {class: "datepicker", value: f.object.contract_end_at.try(:strftime, INOCRM_CONFIG["short_date_format"])}
+    .col-md-4
+      = f.input :process_at, as: :string, required: true, input_html: {class: "datepicker", value: f.object.process_at.try(:strftime, INOCRM_CONFIG["short_date_format"])}
+    .col-md-4
+      = f.input :hold, wrapper: :append
+    .col-md-4
+      = f.input :contract_b2b, wrapper: :append, label: "Back to Back Contract"
+    .col-md-4
+      = f.input :remind_required, wrapper: :append, label: "Need Remind before Expiry"
+
+  .row
+    .col-md-2
+      = f.association :organization_bill, label: "Bill company", required: true, collection: ([organization] + organization.members)
+    .col-md-3
+      = f.association :bill_address, collection: ([organization] + organization.members), as: :grouped_select, group_method: :addresses, label_method: :full_address, required: true
+    .col-md-2
+      = f.association :organization_contact, label: "Address company", required: true, collection: ([organization] + organization.members)
+    .col-md-3
+      = f.association :contact_address, collection: ([organization] + organization.members), as: :grouped_select, group_method: :addresses, label_method: :full_address, required: true
+    .col-md-2
+      = f.association :organization_contact_person, collection: (organization.organization_contact_persons),include_blank: false, required: true, label: "Contact Person"
+  .row
+
+    = hidden_field_tag :product_count, contract.num_of_products, onclick:"Tickets.brand_edit();"
+    - if contract.num_of_products > 0 
+      .col-md-2
+        .product_brand_main.hide
+          = f.association :product_brand, required: true, include_blank: true
+        .product_brand_show
+          %strong Product Brand :
+          = text_field_tag :product_brand1,contract.product_brand.try(:name), disabled:true
+
+      .col-md-3
+        .product_brand_main.hide
+          = f.association :product_category, collection: ProductBrand.all, as: :grouped_select, group_method: :product_categories, required: true
+        .product_brand_show
+          %strong Product Category :
+          = text_field_tag :product_category1,contract.product_category.try(:name), disabled:true
+
+    - else
+      .col-md-2
+        .product_brand_main
+          = f.association :product_brand, required: true, include_blank: true
+        .product_brand_show.hide
+          Product Brand
+          = text_field_tag :product_brand1,"", disabled:true
+
+      .col-md-2
+        .product_brand_main
+          = f.association :product_category, collection: ProductBrand.all, as: :grouped_select, group_method: :product_categories, required: true
+        .product_brand_show.hide
+          Product Category
+          = text_field_tag :product_category1,"", disabled:true
+      .col-md-1
+
+    .col-md-2
+      = label_tag "Additional Charges" do
+        Additional Charges
+        = f.select :additional_charges, additional_charges_array, {}, {class: "form-control col-md-12 small_scale_margin-top4"}
+    .col-md-2
+      = label_tag "Season" do
+        Season
+        = f.select :season, season_array, {},{class: "form-control col-md-12 small_scale_margin-top4"}
+
+  .row
+    .col-md-2
+      = f.association :ticket_contract_payment_type, include_blank: false, label: "Payment Type"
+    .col-md-2
+      = f.input :accepted_at, as: :string, input_html: {class: "datepicker", value: f.object.accepted_at.try(:strftime,INOCRM_CONFIG["short_date_format"])}
+    .col-md-4.small_scale_margin-top2
+      = f.input :documnet_received, wrapper: :append, label: "Signed Document Received"
   %br
-  = simple_nested_form_for contract, url: contracts_path(save: true), html: {class: "validate_form"}, method: :post, remote: true, multiple: true do |f|
-    = hidden_field_tag :contract_id, contract.id
+  .row
+    .col-md-10
+      = f.input :remarks
+  .row
+    = f.simple_fields_for :contract_attachments do |d|
+      .col-md-2
+        = d.link_to_remove "Remove"
+      .col-md-6
+        - if d.object.persisted?
+          = link_to d.object.attachment_url.file.filename, d.object.attachment_url.url, target: "_blank"
+        - else
+          #document_attachment_upload.btn.btn-info.btn-mini.fileinput-button{style: "min-height: 10px;"}
+            %span Upload attachment
+            = d.file_field :attachment_url
+      %hr
+    .col-md-5
+      = f.link_to_add "Add Attachment", :contract_attachments
+  %hr
+  .row
+    .col-md-3
+      = label_tag "Select Annexture"
+      = select_tag "contract_document[annexture_id][]", options_from_collection_for_select(Documents::Annexture.all, :id, :name), multiple: true, class: "form-control"
 
-    = f.input :customer_id, as: :hidden
-    = f.input :created_by, as: :hidden, input_html: {value: current_user.id}
-
-    - if contract.errors.any?
+    .col-md-9
       .row
         .col-md-12
-          %ul
-            - contract.errors.full_messages.each do |error|
-              %li= error
-    / -if params[:edit_create_contract].present? || (params[:edit_create].present? && !params[:new_contract].present? )
-    /   .row
-    /     .col-md-2
-    /       .product_bnd.hide
-    /         = f.association :product_brand, required: true, include_blank: true
-    /         = f.association :product_category, collection: ProductBrand.all, as: :grouped_select, group_method: :product_categories, required: true
-    /       %strong Product Brand :
-    /       = contract.product_brand.try(:name)
-    /     .col-md-4
-    /       %strong Product Category :
-    /       = contract.product_category.try(:name)
-    %br
-    .row
-      .col-md-3
-        = f.input :legacy_contract_no
-      .col-md-2
-        = f.association :ticket_contract_type, include_blank: false, required: true, label: "Contract Type"
-      .col-md-2
-        = f.association :ticket_currency, label_method: :code, label: "Currency", required: true, include_blank: false
+          #document_attachment_wrapper
 
-      .col-md-2
-        = f.association :sla_time, required: true, label_method: :description, include_blank: false, label: "SLA"
-      .col-md-3
-        = label_tag "Owner Division" do
-          Owner Branch
-          = f.select :owner_organization_id, ( Organization.owner.members.collect{ |m| [m.name, m.id ] } << [Organization.owner.name, Organization.owner.id] ), {include_blank: false}, {class: "form-control col-md-12 small_scale_margin-top2"}
+        .col-md-12
+          .row
+            .col-md-4.strong Name
+            .col-md-4.strong Document
+            .col-md-4.strong Actions
+          .row
+            - f.object.contract_documents.each do |contract_document|
+              %div{id: "contract_document_wrapper_#{contract_document.id}"}
+                .col-md-4= contract_document.name
+                .col-md-4{id: "contract_document_#{contract_document.id}"}= link_to contract_document.document_url.file.filename, contract_document.document_url.url, target: "_blank"
+                .col-md-4
+                  .btn.btn-info.btn-mini.fileinput-button{style: "min-height: 10px;"}
+                    %span Upload
+                    = file_field_tag 'generated_document', class: "btn btn-link generated_document_file_path", data: {url: "contracts/upload_generated_document", type: "post", updatedom: "contract_document_#{contract_document.id}", contractdocumentid: contract_document.id}
+                  |
+                  = link_to "Remove", remove_generated_document_contracts_path(contract_document_id: contract_document.id, wrapper: "contract_document_wrapper_#{contract_document.id}"), method: :delete, remote: true, data: {confirm: "Are you sure? Do you want to remove?"}
 
-      / .col-md-2
-      /   = f.input :amount
-    .row
-      .col-md-4
-        = f.input :contract_start_at, as: :string, required: true,input_html: {class: "datepicker", value: f.object.contract_start_at.try(:strftime, INOCRM_CONFIG["short_date_format"]), onblur:"Tickets.show_date();"}
-      .col-md-4
-        = f.input :contract_end_at, as: :string, required: true, input_html: {class: "datepicker", value: f.object.contract_end_at.try(:strftime, INOCRM_CONFIG["short_date_format"])}
-      .col-md-4
-        = f.input :process_at, as: :string, required: true, input_html: {class: "datepicker", value: f.object.process_at.try(:strftime, INOCRM_CONFIG["short_date_format"])}
-      .col-md-4
-        = f.input :hold, wrapper: :append
-      .col-md-4
-        = f.input :contract_b2b, wrapper: :append, label: "Back to Back Contract"
-      .col-md-4
-        = f.input :remind_required, wrapper: :append, label: "Need Remind before Expiry"
-    %br
-    %br
-    .row
-      .col-md-2
-        = f.association :organization_bill, label: "Bill company", required: true, collection: ([organization] + organization.members)
-      .col-md-3
-        = f.association :bill_address, collection: ([organization] + organization.members), as: :grouped_select, group_method: :addresses, label_method: :full_address, required: true
-      .col-md-2
-        = f.association :organization_contact, label: "Address company", required: true, collection: ([organization] + organization.members)
-      .col-md-3
-        = f.association :contact_address, collection: ([organization] + organization.members), as: :grouped_select, group_method: :addresses, label_method: :full_address, required: true
-      .col-md-2
-        = f.association :organization_contact_person, collection: (organization.organization_contact_persons),include_blank: false, required: true, label: "Contact Person"
-    .row
-      / -if not params[:edit_create_contract].present? || (params[:edit_create].present? && !params[:new_contract].present? )
-      = hidden_field_tag :product_count, contract.num_of_products, onclick:"Tickets.brand_edit();"
-      - if contract.num_of_products > 0 
-        .col-md-2
-          .product_brand_main.hide
-            = f.association :product_brand, required: true, include_blank: true
-          .product_brand_show
-            %strong Product Brand :
-            = text_field_tag :product_brand1,contract.product_brand.try(:name), disabled:true
+        .col-md-12
+          Generated count: #{contract.document_generated_count.to_i}
+          |
+          Last Generated at: #{contract.last_doc_generated_at.try(:strftime, "%d-%m-%Y")}
+          |
+          Last Generated by: #{User.find_by_id(contract.last_doc_generated_by).try(:full_name)}
 
-        .col-md-3
-          .product_brand_main.hide
-            = f.association :product_category, collection: ProductBrand.all, as: :grouped_select, group_method: :product_categories, required: true
-          .product_brand_show
-            %strong Product Category :
-            = text_field_tag :product_category1,contract.product_category.try(:name), disabled:true
-
-      - else
-        .col-md-2
-          .product_brand_main
-            = f.association :product_brand, required: true, include_blank: true
-          .product_brand_show.hide
-            Product Brand
-            = text_field_tag :product_brand1,"", disabled:true
-
-        .col-md-2
-          .product_brand_main
-            = f.association :product_category, collection: ProductBrand.all, as: :grouped_select, group_method: :product_categories, required: true
-          .product_brand_show.hide
-            Product Category
-            = text_field_tag :product_category1,"", disabled:true
-        .col-md-1
-
-      .col-md-2
-        = label_tag "Additional Charges" do
-          Additional Charges
-          = f.select :additional_charges, additional_charges_array, {}, {class: "form-control col-md-12 small_scale_margin-top4"}
-      .col-md-2
-        = label_tag "Season" do
-          Season
-          = f.select :season, season_array, {},{class: "form-control col-md-12 small_scale_margin-top4"}
-    %br
-    %br
-    .row
-      .col-md-2
-        = f.association :ticket_contract_payment_type, include_blank: false, label: "Payment Type"
-      .col-md-2
-        = f.input :accepted_at, as: :string, input_html: {class: "datepicker", value: f.object.accepted_at.try(:strftime,INOCRM_CONFIG["short_date_format"])}
-      .col-md-4.small_scale_margin-top2
-        = f.input :documnet_received, wrapper: :append, label: "Signed Document Received"
-    %br
-    .row
-      .col-md-10
-        = f.input :remarks
-    .row
-      = f.simple_fields_for :contract_attachments do |d|
-        .col-md-2
-          = d.link_to_remove "Remove"
-        .col-md-6
-          - if d.object.persisted?
-            = link_to d.object.attachment_url.file.filename, d.object.attachment_url.url, target: "_blank"
-          - else
-            #document_attachment_upload.btn.btn-info.btn-mini.fileinput-button{style: "min-height: 10px;"}
-              %span Upload attachment
-              = d.file_field :attachment_url
-        %hr
-      .col-md-5
-        = f.link_to_add "Add Attachment", :contract_attachments
     %hr
     .row
-      .col-md-3
-        = label_tag "Select Annexture"
-        = select_tag "contract_document[annexture_id][]", options_from_collection_for_select(Documents::Annexture.all, :id, :name), multiple: true, class: "form-control"
+      .col-md-5
+        .col-md-1
+        %br
+        %h4
+          %strong Products for selected contract
+      .col-md-6
+        = collapse_wrapper collapse_id: "products_collapse", labelledby: "products_collapse_labelledby" do
+          .row
+            = f.simple_fields_for :contract_products do |c|
+              - c.object.build_product unless c.object.product.present?
 
-      .col-md-9
-        .row
-          .col-md-12
-            #document_attachment_wrapper
-
-          .col-md-12
-            .row
-              .col-md-4.strong Name
-              .col-md-4.strong Document
-              .col-md-4.strong Actions
-            .row
-              - f.object.contract_documents.each do |contract_document|
-                %div{id: "contract_document_wrapper_#{contract_document.id}"}
-                  .col-md-4= contract_document.name
-                  .col-md-4{id: "contract_document_#{contract_document.id}"}= link_to contract_document.document_url.file.filename, contract_document.document_url.url, target: "_blank"
-                  .col-md-4
-                    .btn.btn-info.btn-mini.fileinput-button{style: "min-height: 10px;"}
-                      %span Upload
-                      = file_field_tag 'generated_document', class: "btn btn-link generated_document_file_path", data: {url: "contracts/upload_generated_document", type: "post", updatedom: "contract_document_#{contract_document.id}", contractdocumentid: contract_document.id}
-                    |
-                    = link_to "Remove", remove_generated_document_contracts_path(contract_document_id: contract_document.id, wrapper: "contract_document_wrapper_#{contract_document.id}"), method: :delete, remote: true, data: {confirm: "Are you sure? Do you want to remove?"}
-
-          .col-md-12
-            Generated count: #{contract.document_generated_count.to_i}
-            |
-            Last Generated at: #{contract.last_doc_generated_at.try(:strftime, "%d-%m-%Y")}
-            |
-            Last Generated by: #{User.find_by_id(contract.last_doc_generated_by).try(:full_name)}
-
-      %hr
-      .row
-        .col-md-5
-          .col-md-1
-          %br
-          %h4
-            %strong Products for selected contract
-        .col-md-6
-          = collapse_wrapper collapse_id: "products_collapse", labelledby: "products_collapse_labelledby" do
-            .row
-              = f.simple_fields_for :contract_products do |c|
-                - c.object.build_product unless c.object.product.present?
-
-                = c.simple_fields_for :product do |p|
-                  - if p.object.id.present?
-                    = collapse collapse_type: "info", labelledby: "labelledby_#{p.object.id}", header_content: "Product: #{p.object.product_brand.try(:name)}:#{p.object.product_category.try(:name)}:#{p.object.serial_no}", collapse_link: "invunitlink_#{p.object.id}", collapse_id: "products_collapse" do
-                      .col-md-12
-                        / - if p.object.tickets.any?
-                        - product = p.object
-                        / - product = c.object.product
-                        - contrac = c.object
-                        %dl.dl-horizontal
-                          %dt Serial No
-                          %dd= product.serial_no
-                          %dt Product Brand
-                          %dd= product.product_brand.try(:name)
-                          %dt Product Category
-                          %dd= product.product_category.try(:name)
-                          %dt Model No
-                          %dd= product.model_no
-                          %dt Product No
-                          %dd= product.product_no
-                          %dt Amount
-                          %dd
-                            -if !contract.accepted_at.present?
-                              = link_to "#", class: "inline_edit", data: {type: "text", resource: "contract_product", name: "amount",url: update_contract_product_contracts_path(contract_product_id: contrac.id), "original-title" => "Update Amount"} do
-                                = contrac.try(:amount)
-                            -else
+              = c.simple_fields_for :product do |p|
+                - if p.object.id.present?
+                  = collapse collapse_type: "info", labelledby: "labelledby_#{p.object.id}", header_content: "Product: #{p.object.product_brand.try(:name)}:#{p.object.product_category.try(:name)}:#{p.object.serial_no}", collapse_link: "invunitlink_#{p.object.id}", collapse_id: "products_collapse" do
+                    .col-md-12
+                      / - if p.object.tickets.any?
+                      - product = p.object
+                      / - product = c.object.product
+                      - contrac = c.object
+                      %dl.dl-horizontal
+                        %dt Serial No
+                        %dd= product.serial_no
+                        %dt Product Brand
+                        %dd= product.product_brand.try(:name)
+                        %dt Product Category
+                        %dd= product.product_category.try(:name)
+                        %dt Model No
+                        %dd= product.model_no
+                        %dt Product No
+                        %dd= product.product_no
+                        %dt Amount
+                        %dd
+                          -if !contract.accepted_at.present?
+                            = link_to "#", class: "inline_edit", data: {type: "text", resource: "contract_product", name: "amount",url: update_contract_product_contracts_path(contract_product_id: contrac.id), "original-title" => "Update Amount"} do
                               = contrac.try(:amount)
-                          %dt Discount Amount
-                          %dd
-                            -if !contract.accepted_at.present?
-                              = link_to "#", class: "inline_edit", data: {type: "text", resource: "contract_product", name: "discount_amount",url: update_contract_product_contracts_path(contract_product_id: contrac.id), "original-title" => "Update Discount Amount"} do
-                                = contrac.try(:discount_amount)
-                            - else
+                          -else
+                            = contrac.try(:amount)
+                        %dt Discount Amount
+                        %dd
+                          -if !contract.accepted_at.present?
+                            = link_to "#", class: "inline_edit", data: {type: "text", resource: "contract_product", name: "discount_amount",url: update_contract_product_contracts_path(contract_product_id: contrac.id), "original-title" => "Update Discount Amount"} do
                               = contrac.try(:discount_amount)
-                          %dt Installed Location
-                          %dd
-                            -if !contract.accepted_at.present?
-                              = link_to "#", class: "inline_edit", data: {type: "select", resource: "contract_product", source:organization.addresses.collect{|address| {value: address.id, text: address.try(:full_address)}}, name: "installed_location_id", url: update_contract_product_contracts_path(contract_product_id: contrac.id), "original-title" => "Update Installed Location"} do
-                                = contrac.installed_location.try(:full_address)
-                            - else
-                              = contrac.installed_location.try(:full_address)
-                          %dt Remarks
-                          %dd
-                            -if !contract.accepted_at.present?
-                              = link_to "#", class: "inline_edit", data: {type: "text", resource: "contract_product", name: "remarks",url: update_contract_product_contracts_path(contract_product_id: contrac.id), "original-title" => "Update remarks"} do
-                                = contrac.try(:remarks)
-                            -else
-                              = contrac.try(:remarks)
-                        %br
-                          = link_to "View", contracts_path(view_product: true, product_id: product.id, contract_id:contrac.id), remote: false, class: "btn btn-sm btn-warning", target: "_blank"
-                          - if p.object.cannot_removable_from_contract?(contract.id) || contract.accepted_at.present?
-
                           - else
-                            = c.link_to_remove  class: "remove_c_t_v_link",:data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Remove" do
-                              %button.btn.btn-danger{ onclick:"Tickets.count_down_remove_product();"} Remove
-                  %br
-    -if !contract.accepted_at.present?
-      .row
-        #selectedproducts
-      %button.btn.btn-info{"data-target" => "#productsModel", "data-toggle" => "modal", :type => "button", onclick:"Tickets.get_brand_id();" } Add Products
+                            = contrac.try(:discount_amount)
+                        %dt Installed Location
+                        %dd
+                          -if !contract.accepted_at.present?
+                            = link_to "#", class: "inline_edit", data: {type: "select", resource: "contract_product", source:organization.addresses.collect{|address| {value: address.id, text: address.try(:full_address)}}, name: "installed_location_id", url: update_contract_product_contracts_path(contract_product_id: contrac.id), "original-title" => "Update Installed Location"} do
+                              = contrac.installed_location.try(:full_address)
+                          - else
+                            = contrac.installed_location.try(:full_address)
+                        %dt Remarks
+                        %dd
+                          -if !contract.accepted_at.present?
+                            = link_to "#", class: "inline_edit", data: {type: "text", resource: "contract_product", name: "remarks",url: update_contract_product_contracts_path(contract_product_id: contrac.id), "original-title" => "Update remarks"} do
+                              = contrac.try(:remarks)
+                          -else
+                            = contrac.try(:remarks)
+                      %br
+                        = link_to "View", contracts_path(view_product: true, product_id: product.id, contract_id:contrac.id), remote: false, class: "btn btn-sm btn-warning", target: "_blank"
+                        - if p.object.cannot_removable_from_contract?(contract.id) || contract.accepted_at.present?
 
+                        - else
+                          = c.link_to_remove  class: "remove_c_t_v_link",:data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Remove" do
+                            %button.btn.btn-danger{ onclick:"Tickets.count_down_remove_product();"} Remove
+                %br
+  -if !contract.accepted_at.present?
     .row
-    .row
-      %hr
-      .col-md-12
-        = f.submit "Save", class: "btn btn-sm btn-success", remote: true, data: {disable_with: "Please wait..."}
+      #selectedproducts
+    %button.btn.btn-info{"data-target" => "#productsModel", "data-toggle" => "modal", :type => "button", onclick:"Tickets.get_brand_id();" } Add Products
 
-  %script#pop_doc_url_upload{type: "text/x-tmpl"}
-    .pop_doc_url_upload.span12
-      {%= o.name %}
-      .progress
-        .progress-bar.progress-bar-success.progress-bar-striped{role: "progressbar", "aria-valuemax" => 100, "aria-valuemin" => 0, "aria-valuenow" => 0}
+  .row
+  .row
+    %hr
+    .col-md-12
+      = f.submit "Save", class: "btn btn-sm btn-success", remote: true, data: {disable_with: "Please wait..."}
+
+%script#pop_doc_url_upload{type: "text/x-tmpl"}
+  .pop_doc_url_upload.span12
+    {%= o.name %}
+    .progress
+      .progress-bar.progress-bar-success.progress-bar-striped{role: "progressbar", "aria-valuemax" => 100, "aria-valuemin" => 0, "aria-valuenow" => 0}
 
 
-  #productsModel.modal.fade{:role => "dialog"}
-    .modal-dialog.modal-lg
-      / Modal content
-      .modal-content
-        .modal-header
-          %button.close{"data-dismiss" => "modal", :type => "button"}
-          %h3.modal-title Search Product
-        .modal-body
-          / = form_tag "#", method: :post, remote: true do
-          = form_tag search_product_contract_contracts_path(customer_id: organization.id, contract_id: contract.id, new_contract: params[:new_contract]), method: :get, remote: true do
-            .col-md-10
-              = hidden_field_tag :product_brand
-              = hidden_field_tag :product_category
-              = text_field_tag "query", params[:query], class: "form-control", placeholder: "Type any. for target search"
-            .col-md-2
-              = submit_tag "Search", :name => "search_product", class: "btn btn-sm btn-success"
-          .col-md-12
-            #searchproduct
-        .modal-footer
-          .col-md-12
-            %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
-            / = submit_tag "Done", :name => "done", class: "btn btn-sm btn-success btn-primary"
+#productsModel.modal.fade{:role => "dialog"}
+  .modal-dialog.modal-lg
+    / Modal content
+    .modal-content
+      .modal-header
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+        %h3.modal-title Search Product
+      .modal-body
+        / = form_tag "#", method: :post, remote: true do
+        = form_tag search_product_contract_contracts_path(customer_id: organization.id, contract_id: contract.id, new_contract: params[:new_contract]), method: :get, remote: true do
+          .col-md-10
+            = hidden_field_tag :product_brand
+            = hidden_field_tag :product_category
+            = text_field_tag "query", params[:query], class: "form-control", placeholder: "Type any. for target search"
+          .col-md-2
+            = submit_tag "Search", :name => "search_product", class: "btn btn-sm btn-success"
+        .col-md-12
+          #searchproduct
+      .modal-footer
+        .col-md-12
+          %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+          / = submit_tag "Done", :name => "done", class: "btn btn-sm btn-success btn-primary"
 
 %script#document_attachment_upload_tmpl{type: "text/x-tmpl"}
   .profile_image_upload.span12
