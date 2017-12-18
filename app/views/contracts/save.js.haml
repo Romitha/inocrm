@@ -1,0 +1,20 @@
+- if params[:ajax_upload].present?
+  $("#contractedit").html("#{j render 'contracts/contractform'}");
+  $("#contractedit1").html("#{j render 'contracts/contractform'}");
+- else
+
+  - if @contract.errors.any?
+    $("#contractedit").html("#{j render 'contracts/contractform'}");
+    $("#contractedit1").html("#{j render 'contracts/contractform'}");
+  - else
+    $("#contractedit").empty();
+    $("#contractedit1").empty();
+
+    $("#contractlist").empty();
+
+
+    $("#search_contract").addClass("hide");
+    $("#customerlist").addClass("hide");
+    
+    $("#contract_alert").removeClass("hide");
+    $("#contract_alert #content").html("successfully saved");

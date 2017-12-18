@@ -38,6 +38,7 @@ module Admins
 
     def title
       User
+      authorize! :title, MstTitle
 
       if params[:edit]
         @title = MstTitle.find params[:title_id]

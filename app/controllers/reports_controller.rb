@@ -312,14 +312,6 @@ class ReportsController < ApplicationController
         @tickets = before_contract_products.results
       end
 
-      # params.delete(:ticket_contract_contract_start_at)
-      # params.delete(:ticket_contract_contract_end_at)
-      puts "****************************************************"
-      puts before_contract_products.count
-      puts after_contract_products.count
-      puts "****************************************************"
-      # ********************************************************
-
       not_need_index = []
 
       @tickets.each do |ticket|
@@ -379,20 +371,6 @@ class ReportsController < ApplicationController
     params[:per_page] = 100
     params[:sort_by] = true
     params[:query] = refined_search
-    
-    # @cus_name = params[:search_contracts].map { |k, v| [k, v] if v.present? }.compact
-    # @customer_name = Organization.find_by_id(params[:search_contracts]["ticket_contract.organization.id"]).try(:name)
-    # @service_provider = Organization.find_by_id(params[:search_contracts]["ticket_contract.owner_organization.id"]).try(:name)
-    # @account_manager = params[:search_contracts]["ticket_contract.organization.account.get_account_manager"]
-    # @payment_completed = params[:search_contracts]["ticket_contract.payment_completed"]
-    # @date_from = params[:ticket_contract_contract_start_at]
-    # @date_to = params[:ticket_contract_contract_end_at]
-    # @season = params[:search_contracts]["ticket_contract.season"]
-    # @brand_name = params[:search_contracts]["ticket_contract.brand_name"]
-    # @category_name = ProductCategory.find_by_id(params[:search_contracts]["ticket_contract.category_cat_id"]).try(:name)
-    # @contract_type = TicketContractType.find_by_id(params[:search_contracts]["ticket_contract.ticket_contract_type.id"]).try(:name)
-    # @currnecy = TicketCurrency.find_by_id(params[:search_contracts]["ticket_contract.ticket_currency.id"]).try(:code)
-    # @payment_type = TicketContractPaymentType.find_by_id(params[:search_contracts]["ticket_contract.payment_type"])
     after_contract_products = []
     before_contract_products = ContractProduct.search(params)
     if params[:ticket_contract_contract_start_at].present? and params[:ticket_contract_contract_end_at].present?
@@ -435,8 +413,9 @@ class ReportsController < ApplicationController
   def contract_report
     Ticket
     Invoice
+    authorize! :contract_report, TicketContract
+
     if params[:search].present?
-      # params[:from_where] = "excel_output"
 
       refined_contract = params[:search_contracts].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
       refined_search = [refined_contract, refined_search].map{|v| v if v.present? }.compact.join(" AND ")

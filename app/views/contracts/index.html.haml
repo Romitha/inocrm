@@ -15,21 +15,21 @@
     .tab-content
       #tab1.tab-pane.fade.in.active
         .row.small_scale_padding-top1
-          .container
+          .containerx
             = collapse collapse_type: "info", labelledby: "contracts_form_collapse_search_customers", header_content: "Search Customers", collapse_link: "contracts_form_collapse_search_customers_link", collapse_id: "contracts_form_collapse", collapse_in: "in" do
               .col-md-12#searchform
                 / =render 'searchform'
                 =render 'customerlist'
               .col-md-12#customerlist
             = collapse collapse_type: "info", labelledby: "contracts_form_collapse_contracts", header_content: "Contracts", collapse_link: "contracts_form_collapse_contracts_link", collapse_id: "contracts_form_collapse" do
-              .col-md-12#contractlist
+              .col-md-12#contractlist{style: 'overflow-x: scroll;'}
             = collapse collapse_type: "info", labelledby: "contracts_form_collapse_form", header_content: "Contracts Details", collapse_link: "contracts_form_collapse_form_link", collapse_id: "contracts_form_collapse" do
               / .col-md-12#contractform
               .col-md-12#contractedit
 
       #tab2.tab-pane.fade
         .row.small_scale_padding-top1
-          .container
+          .containerx
             = collapse collapse_type: "info", labelledby: "contracts_form_collapse_search_contracts", header_content: "Search Contracts", collapse_link: "contracts_form_collapse_search_contracts_link", collapse_id: "contracts1_form_collapse", collapse_in: "in" do
               .col-md-12#searchform
                 / =render 'searchform'

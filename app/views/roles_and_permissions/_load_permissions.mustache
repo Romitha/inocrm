@@ -1,14 +1,9 @@
 .row
   #permission_list
     {{#rpermissions}}
-    .col-md-4
-      .panel.panel-info
-        .panel-heading {{resource}}
-        .panel-body
-          {{#value}}
-          .checkbox
-            %label
-              <input value={{id}} id="rpermission_{{id}}" name="rpermissions[]" type="checkbox" {{checked}} />
-              {{name}}
-          {{/value}}
+    .col-md-12
+      %ul.list-group
+        %li.list-group-item
+          {{name}}
+          .pull-right <input value={{id}} id="rpermission_{{id}}" name="rpermissions[]" type="checkbox" {{checked}} />
     {{/rpermissions}}

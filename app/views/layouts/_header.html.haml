@@ -28,58 +28,57 @@
         %li.dropdown.small_scale_margin-right10{role: "presentation"}
           = link_to "supplier", "#", id: "supplier_dropdown", class: "dropdown-toggle supplier text-hide nav-icon", data: {toggle: "dropdown", placement: "bottom"}, "aria-haspopup" => "true", "aria-expanded" => "true", title: "Supplier", rel: "tooltip"
           %ul.dropdown-menu{"aria-labelledby" => "supplier_dropdown"}
-            %li{role: "presentation"}
-              = link_to organizations_path(category: Organization::TYPES[0]) do
+
+            %li{role: "presentation", class: "#{can?(:index, Organization) ? '' : 'disabled'}"}
+              = link_to organizations_path(category: Organization::TYPES[0]), class: "#{can?(:index, Organization) ? '' : 'disabled'}" do
                 %span= image_tag "organization_suppliers.png", style: "width: 12%;"
                 %span Organization Suppliers
-            %li{role: "presentation"}
-              = link_to organizations_path(category: Organization::TYPES[2]) do
+            %li{role: "presentation", class: "#{can?(:index, Organization) ? '' : 'disabled'}"}
+              = link_to organizations_path(category: Organization::TYPES[2]), class: "#{can?(:index, Organization) ? '' : 'disabled'}" do
                 %span= image_tag "individual_supplier.png", style: "width: 12%;"
                 %span Individual Suppliers
-            - if can? :new, Organization
-              %li.divider
-              %li.dropdown-header Create Supplier
-              %li{role: "presentation"}= link_to "New Organization Supplier", new_organization_path(category: Organization::TYPES[0])
-              %li{role: "presentation"}= link_to "New Individual Supplier", new_organization_path(category: Organization::TYPES[2])
+            %li.divider
+            %li.dropdown-header Create Supplier
+            %li{role: "presentation", class: "#{can?(:new, Organization) ? '' : 'disabled'}"}= link_to "New Organization Supplier", new_organization_path(category: Organization::TYPES[0]), class: "#{can?(:new, Organization) ? '' : 'disabled'}"
+            %li{role: "presentation", class: "#{can?(:new, Organization) ? '' : 'disabled'}"}= link_to "New Individual Supplier", new_organization_path(category: Organization::TYPES[2]), class: "#{can?(:new, Organization) ? '' : 'disabled'}"
 
         %li.dropdown.small_scale_margin-right10{role: "presentation"}
           = link_to "Customers", "#", class: "dropdown-toggle customers text-hide nav-icon", id: "customer_dropdown", data: {toggle: "dropdown", placement: "bottom"}, title: "Customer", rel: "tooltip"
           %ul.dropdown-menu{"aria-labelledby" => "customer_dropdown"}
-            %li{role: "presentation"}
-              = link_to organizations_path(category: Organization::TYPES[1]) do
+            %li{role: "presentation", class: "#{can?(:index, Organization) ? '' : 'disabled'}"}
+              = link_to organizations_path(category: Organization::TYPES[1]), class: "#{can?(:index, Organization) ? '' : 'disabled'}" do
                 %span= image_tag "organization_customers.png", style: "width: 12%;"
                 %span Organizaion Customers
-            %li{role: "presentation"}
-              = link_to organizations_path(category: Organization::TYPES[3]) do
+            %li{role: "presentation", class: "#{can?(:index, Organization) ? '' : 'disabled'}"}
+              = link_to organizations_path(category: Organization::TYPES[3]), class: "#{can?(:index, Organization) ? '' : 'disabled'}" do
                 %span= image_tag "individual_customer.png", style: "width: 12%;"
                 %span Individual Customers
-            - if can? :new, Organization
-              %li.divider
-              %li.dropdown-header Create Customer
-              %li{role: "presentation"}= link_to "New Organization Customer", new_organization_path(category: Organization::TYPES[1])
-              %li{role: "presentation"}= link_to "New Individual Customer", new_organization_path(category: Organization::TYPES[3])
+            %li.divider
+            %li.dropdown-header Create Customer
+            %li{role: "presentation", class: "#{can?(:new, Organization) ? '' : 'disabled'}"}= link_to "New Organization Customer", new_organization_path(category: Organization::TYPES[1]), class: "#{can?(:new, Organization) ? '' : 'disabled'}"
+            %li{role: "presentation", class: "#{can?(:new, Organization) ? '' : 'disabled'}"}= link_to "New Individual Customer", new_organization_path(category: Organization::TYPES[3]), class: "#{can?(:new, Organization) ? '' : 'disabled'}"
 
         %li.dropdown.small_scale_margin-right10{role: "presentation"}
           = link_to "Supports", "#", class: "dropdown-toggle tickets text-hide nav-icon", id: "ticket_dropdown", data: {toggle: "dropdown", placement: "bottom"}, title: "Support tickets", rel: "tooltip"
           %ul.dropdown-menu{"aria-labelledby" => "ticket_dropdown"}
             / %li{role: "presentation"}= link_to "HP PO", hp_po_inventories_path
-            %li{role: "presentation"}= link_to "New Support Ticket", new_ticket_path
-            %li{role: "presentation"}= link_to "Customer Product", customer_search_contracts_path
-            %li{role: "presentation"}= link_to "Customer Contract", contracts_path
-            %li{role: "presentation"}= link_to "Customer Inquire", customer_inquire_tickets_path
-            %li{role: "presentation"}= link_to "Customer Advance Payment", customer_advance_payment_tickets_path
-            %li{role: "presentation"}= link_to "View Delivered Bundle", view_delivered_bundle_tickets_path
-            %li{role: "presentation"}= link_to "Create PO", hp_po_tickets_path
-            %li{role: "presentation"}= link_to "View PO", view_po_tickets_path
-            %li{role: "presentation"}= link_to "Create Invoice for HP", create_invoice_for_hp_tickets_path
-            / %li{role: "presentation"}= link_to "Add Edit Contract",add_edit_contract_tickets_path
+            %li{role: "presentation", class: "#{can?(:new, Ticket) ? '' : 'disabled'}"}= link_to "New Support Ticket", new_ticket_path, class: "#{can?(:new, Ticket) ? '' : 'disabled'}"
+            %li{role: "presentation", class: "#{can?(:customer_search, Organization) ? '' : 'disabled'}"}= link_to "Customer Product", customer_search_contracts_path, class: "#{can?(:customer_search, Organization) ? '' : 'disabled'}"
+            %li{role: "presentation", class: "#{can?(:customer_search, TicketContract) ? '' : 'disabled'}"}= link_to "Customer Contract", contracts_path, class: "#{can?(:customer_search, TicketContract) ? '' : 'disabled'}"
+            %li{role: "presentation", class: "#{can?(:customer_inquire, Ticket) ? '' : 'disabled'}"}= link_to "Customer Inquire", customer_inquire_tickets_path, class: "#{can?(:customer_inquire, Ticket) ? '' : 'disabled'}"
+            %li{role: "presentation", class: "#{can?(:customer_advance_payment, Ticket) ? '' : 'disabled'}"}= link_to "Customer Advance Payment", customer_advance_payment_tickets_path, class: "#{can?(:customer_advance_payment, Ticket) ? '' : 'disabled'}"
+            %li{role: "presentation", class: "#{can?(:view_delivered_bundle, (TicketSparePart and ReturnPartsBundle)) ? '' : 'disabled'}"}= link_to "View Delivered Bundle", view_delivered_bundle_tickets_path, class: "#{can?(:view_delivered_bundle, (TicketSparePart and ReturnPartsBundle)) ? '' : 'disabled'}"
+            %li{role: "presentation", class: "#{can?(:hp_po, SoPo) ? '' : 'disabled'}"}= link_to "Create PO", hp_po_tickets_path, class: "#{can?(:hp_po, SoPo) ? '' : 'disabled'}"
+            %li{role: "presentation", class: "#{can?(:view_po, SoPo) ? '' : 'disabled'}"}= link_to "View PO", view_po_tickets_path, class: "#{can?(:view_po, SoPo) ? '' : 'disabled'}"
+            %li{role: "presentation", class: "#{can?(:create_invoice_for_hp, SoPo) ? '' : 'disabled'}"}= link_to "Create Invoice for HP", create_invoice_for_hp_tickets_path, class: "#{can?(:create_invoice_for_hp, SoPo) ? '' : 'disabled'}"
+
             %li.divider
             %li.dropdown-header Reports
-            %li{role: "presentation"}= link_to "ERP Report", excel_output_reports_path
-            %li{role: "presentation"}= link_to "Contract Report", contract_report_reports_path
-            %li{role: "presentation"}= link_to "Contract Cost Analysis Report", contract_cost_analys_report_reports_path
-            %li{role: "presentation"}= link_to "Contract - Ticket Report", contract_ticket_report_reports_path
-            %li{role: "presentation"}= link_to "Summery Report", summery_reports_path
+            %li{role: "presentation", class: "#{can?(:excel_output, Ticket) ? '' : 'disabled'}"}= link_to "ERP Report", excel_output_reports_path, class: "#{can?(:excel_output, Ticket) ? '' : 'disabled'}"
+            %li{role: "presentation", class: "#{can?(:contract_report, TicketContract) ? '' : 'disabled'}"}= link_to "Contract Report", contract_report_reports_path, class: "#{can?(:contract_report, TicketContract) ? '' : 'disabled'}"
+            %li{role: "presentation", class: "#{can?(:contract_cost_analys_report, ContractProduct) ? '' : 'disabled'}"}= link_to "Contract Cost Analysis Report", contract_cost_analys_report_reports_path, class: "#{can?(:contract_cost_analys_report, ContractProduct) ? '' : 'disabled'}"
+            %li{role: "presentation", class: "#{can?(:contract_ticket_report, Ticket) ? '' : 'disabled'}"}= link_to "Contract - Ticket Report", contract_ticket_report_reports_path, class: "#{can?(:contract_ticket_report, Ticket) ? '' : 'disabled'}"
+            %li{role: "presentation", class: "#{can?(:summery, TicketContract) ? '' : 'disabled'}"}= link_to "Summery Report", summery_reports_path, class: "#{can?(:summery, TicketContract) ? '' : 'disabled'}"
 
         - if user_signed_in?
           %li.dropdown.profile_image_dropdown
@@ -100,22 +99,22 @@
               = link_to "Create", "#"
               %ul.dropdown-menu
                 %li.dropdown-header GRN
-                %li{role: "presentation"}= link_to "GRN", grn_admins_inventories_path
-                %li{role: "presentation"}= link_to "Part of main unit", grn_main_part_admins_inventories_path
+                %li{role: "presentation", class: "#{can?(:grn, Organization) ? '' : 'disabled'}"}= link_to "GRN", grn_admins_inventories_path, class: "#{can?(:grn, Organization) ? '' : 'disabled'}"
+                %li{role: "presentation", class: "#{can?(:create_grn_for_main_part, Organization) ? '' : 'disabled'}"}= link_to "Part of main unit", grn_main_part_admins_inventories_path, class: "#{can?(:create_grn_for_main_part, Organization) ? '' : 'disabled'}"
                 %li.divider
-                %li{role: "presentation"}= link_to "SRN", srn_admins_inventories_path
-                %li{role: "presentation"}= link_to "GIN", gin_admins_inventories_path
-                %li{role: "presentation"}= link_to "SRR", srr_admins_inventories_path
-                %li{role: "presentation"}= link_to "PO", po_admins_inventories_path, id: "go_to_po"
-                %li{role: "presentation"}= link_to "PRN", prn_admins_inventories_path
+                %li{role: "presentation", class: "#{can?(:srn, Organization) ? '' : 'disabled'}"}= link_to "SRN", srn_admins_inventories_path, class: "#{can?(:srn, Organization) ? '' : 'disabled'}"
+                %li{role: "presentation", class: "#{can?(:gin, Organization) ? '' : 'disabled'}"}= link_to "GIN", gin_admins_inventories_path, class: "#{can?(:gin, Organization) ? '' : 'disabled'}"
+                %li{role: "presentation", class: "#{can?(:srr, Organization) ? '' : 'disabled'}"}= link_to "SRR", srr_admins_inventories_path, class: "#{can?(:srr, Organization) ? '' : 'disabled'}"
+                %li{role: "presentation", class: "#{can?(:po, Organization) ? '' : 'disabled'}"}= link_to "PO", po_admins_inventories_path, id: "go_to_po", class: "#{can?(:po, Organization) ? '' : 'disabled'}"
+                %li{role: "presentation", class: "#{can?(:prn, Organization) ? '' : 'disabled'}"}= link_to "PRN", prn_admins_inventories_path, class: "#{can?(:prn, Organization) ? '' : 'disabled'}"
 
             %li.dropdown-submenu{role: "presentation"}
               = link_to "Search", "#"
               %ul.dropdown-menu
-                %li{role: "presentation"}= link_to "GRN", search_grn_admins_searches_path
-                %li{role: "presentation"}= link_to "Inventory", inventories_admins_searches_path
-                %li{role: "presentation"}= link_to "PO", pos_admins_inventories_path
-                %li{role: "presentation"}= link_to "Receives (PRN,PO,GRN)", search_receives_admins_searches_path
-                %li{role: "presentation"}= link_to "Returns (GIN,SRR,GRN)", search_returns_admins_searches_path
-                %li{role: "presentation"}= link_to "Issues (SRN,GIN)", search_issues_admins_searches_path
-                %li{role: "presentation"}= link_to "Inventory Serial Item", search_inventory_serial_item_admins_searches_path
+                %li{role: "presentation", class: "#{can?(:grn, Organization) ? '' : 'disabled'}"}= link_to "GRN", search_grn_admins_searches_path, class: "#{can?(:grn, Organization) ? '' : 'disabled'}"
+                %li{role: "presentation", class: "#{can?(:inventories, InventoryProduct) ? '' : 'disabled'}"}= link_to "Inventory", inventories_admins_searches_path, class: "#{can?(:inventories, InventoryProduct) ? '' : 'disabled'}"
+                %li{role: "presentation", class: "#{can?(:po, Organization) ? '' : 'disabled'}"}= link_to "PO", pos_admins_inventories_path, class: "#{can?(:po, Organization) ? '' : 'disabled'}"
+                %li{role: "presentation", class: "#{can?(:po, Organization) ? '' : 'disabled'}"}= link_to "Receives (PRN,PO,GRN)", search_receives_admins_searches_path, class: "#{can?(:po, Organization) ? '' : 'disabled'}"
+                %li{role: "presentation", class: "#{can?(:grn, Organization) ? '' : 'disabled'}"}= link_to "Returns (GIN,SRR,GRN)", search_returns_admins_searches_path, class: "#{can?(:grn, Organization) ? '' : 'disabled'}"
+                %li{role: "presentation", class: "#{can?(:gin, Organization) ? '' : 'disabled'}"}= link_to "Issues (SRN,GIN)", search_issues_admins_searches_path, class: "#{can?(:gin, Organization) ? '' : 'disabled'}"
+                %li{role: "presentation", class: "#{can?(:grn, Organization) ? '' : 'disabled'}"}= link_to "Inventory Serial Item", search_inventory_serial_item_admins_searches_path, class: "#{can?(:grn, Organization) ? '' : 'disabled'}"

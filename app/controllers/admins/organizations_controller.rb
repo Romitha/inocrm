@@ -8,6 +8,7 @@ module Admins
 
     def delete_admin_sla
       SlaTime
+      can?(:delete_admin_sla, SlaTime)
       @sla = SlaTime.find params[:sla_id]
       if @sla.present?
         @sla.delete
@@ -44,6 +45,7 @@ module Admins
       User
       Organization
       Role
+      authorize! :regional_support_center, RegionalSupportCenter
 
       if params[:edit]
         if params[:regional_support_center_id]
@@ -92,6 +94,8 @@ module Admins
     def store_and_branch
       Ticket
       Product
+      authorize! :store_and_branch, Organization
+
       if params[:edit]
         @organization = Organization.find params[:country_id]
         if @organization.update organization_params
@@ -120,6 +124,8 @@ module Admins
     def country
       Ticket
       Product
+      authorize! :country, ProductSoldCountry
+
       if params[:edit]
         @store_and_branch = ProductSoldCountry.find params[:country_id]
         if @store_and_branch.update admin_country_params
@@ -144,6 +150,8 @@ module Admins
     end
 
     def delete_admin_country
+      authorize! :delete_admin_country, ProductSoldCountry
+
       Ticket
       Product
       @admin_country = ProductSoldCountry.find params[:country_id]
@@ -157,6 +165,8 @@ module Admins
 
     def industry_type
       Organization
+      authorize! :industry_type, IndustryType
+
       # Account
       if params[:edit]
         @industry_type = IndustryType.find params[:industry_type_id]
@@ -194,6 +204,8 @@ module Admins
 
     def sla
       SlaTime
+      authorize! :sla, SlaTime
+
       if params[:edit]
         @sla = SlaTime.find params[:sla_id]
         if @sla.update sla_params

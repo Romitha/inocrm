@@ -26,6 +26,8 @@ Rails.application.routes.draw do
       post "save_cus_products"
       post "payments_save"
       post "generate_contract_document"
+      post 'save'
+      get 'view'
       put "contract_update"
       put "edit_contract"
       put "update_payments"

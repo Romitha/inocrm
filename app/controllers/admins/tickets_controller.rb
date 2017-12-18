@@ -120,16 +120,10 @@ module Admins
 
     def reason
       Product
+      authorize! :reason, Reason
+
       if params[:edit]
         @mst_reason = Reason.find params[:mst_reason_id]
-        # if @mst_reason.attributes = reason_params
-        #   if [:hold, :sla_pause, :re_assign_request, :terminate_job, :terminate_spare_part, :warranty_extend, :spare_part_unused, :reject_returned_part, :reject_close, :adjust_terminate_job_payment].any?{|c| @mst_reason.send(c) }
-        #     params[:edit] = nil
-        #     render json: @mst_reason
-        #   else
-        #     render json: @mst_reason.errors.full_messages.join
-        #   end
-        # end
         if @mst_reason.update reason_params
           params[:edit] = nil
           render json: @mst_reason
@@ -146,21 +140,6 @@ module Admins
         else
           @reason = Reason.new
         end
-        # if params[:create]
-        #   @reason = Reason.new reason_params
-        #   if [:hold, :sla_pause, :re_assign_request, :terminate_job, :terminate_spare_part, :warranty_extend, :spare_part_unused, :reject_returned_part, :reject_close, :adjust_terminate_job_payment].any?{|c| @reason.send(c) }
-
-        #     if @reason.save
-        #       params[:create] = nil
-        #       @reason = Reason.new
-        #     end
-        #     flash[:notice] = "Successfully saved!."
-        #   else
-        #     flash[:error] = "Please select ateast on condition"
-        #   end
-        # else
-        #   @reason = Reason.new
-        # end
         @reason_all = Reason.order(updated_at: :desc)
         render "admins/tickets/reason"
       end
@@ -169,6 +148,7 @@ module Admins
 
     def payment_item
       TaskAction
+      authorize! :payment_item, PaymentItem
 
       if params[:edit]
         @payment_item = PaymentItem.find params[:payment_item_id]
@@ -195,6 +175,8 @@ module Admins
 
     def payment_term
       Invoice
+      authorize! :payment_term, PaymentTerm
+
       if params[:edit]
         @payment_term = PaymentTerm.find params[:payment_term_id]
         if @payment_term.update payment_term_params
@@ -220,6 +202,8 @@ module Admins
 
     def tax
       Tax
+      authorize! :tax, Tax
+
       if params[:edit]
         if params[:tax_id]
           @tax = Tax.find params[:tax_id]
@@ -265,8 +249,9 @@ module Admins
       end
     end
 
-    def annexture
+    def annexture # permissioned
       Tax
+      authorize! :annexture, Documents::BrandDocument
       if params[:edit]
         if params[:annexture_id]
           @annexture = Documents::Annexture.find params[:annexture_id]
@@ -308,6 +293,8 @@ module Admins
 
     def dispatch_method
       Invoice
+      authorize! :dispatch_method, DispatchMethod
+
       if params[:edit]
         @dispatch_method = DispatchMethod.find params[:dispatch_method_id]
         if @dispatch_method.update dispatch_method_params
@@ -332,9 +319,11 @@ module Admins
 
     end
 
-    def accessories
+    def accessories # permissioned
       Product
       Ticket
+      authorize! :accessories, Accessory
+
       if params[:edit]
         @admin_accessory = Accessory.find params[:accessory_id]
         if @admin_accessory.update accessory_params
@@ -361,6 +350,8 @@ module Admins
 
     def additional_charge
       TicketEstimation
+      authorize! :additional_charge, AdditionalCharge
+
       if params[:edit]
         @add_charge = AdditionalCharge.find params[:add_charge_id]
         if @add_charge.update additional_charge_params
@@ -386,11 +377,13 @@ module Admins
     end
 
 
-    def spare_part_description
+    def spare_part_description # permissioned
       TicketSparePart
       TaskAction
       User
       Organization
+      authorize! :spare_part_description, SparePartDescription
+
       if params[:edit]
         @sp_description = SparePartDescription.find params[:sp_description_id]
         if  @sp_description.update spare_part_description_params
@@ -416,6 +409,8 @@ module Admins
 
     def start_action
       Ticket
+      authorize! :start_action, TicketStartAction
+
       if params[:edit]
         @ticket_start_action = TicketStartAction.find params[:ticket_start_action_id]
         if @ticket_start_action.update ticket_start_action_params
@@ -441,6 +436,7 @@ module Admins
 
     def customer_feedback
       User
+      authorize! :customer_feedback, Feedback
 
       if params[:edit]
         @ad_feedback = Feedback.find params[:customer_feedback_id]
@@ -474,7 +470,7 @@ module Admins
 
     def general_question
       QAndA
-
+      authorize! :general_question, GeQAndA
       if params[:edit]
         @g_question = GeQAndA.find params[:g_question_id]
         if @g_question.update ge_q_and_a_params
@@ -505,11 +501,11 @@ module Admins
       redirect_to general_question_admins_tickets_url
     end
 
-    def problem_and_category
+    def problem_and_category # permissioned
       Ticket
       TaskAction
       Product
-
+      authorize! :problem_and_category, ProblemCategory
       if params[:edit]
         if params[:problem_category_id]
           @problem_category = ProblemCategory.find params[:problem_category_id]
@@ -553,7 +549,7 @@ module Admins
       end
     end
 
-    def delete_problem_category
+    def delete_problem_category # permissioned
       @problem_category = ProblemCategory.find params[:problem_category_id]
       if @problem_category.present?
         @problem_category.delete
@@ -572,7 +568,9 @@ module Admins
         format.html { redirect_to problem_and_category_admins_tickets_path }
       end
     end
-    def brands_and_category
+
+    def brands_and_category # permissioned
+      authorize! :brands_and_category, SparePartDescription
       Product
       SlaTime
       Organization

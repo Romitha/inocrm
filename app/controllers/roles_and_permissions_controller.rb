@@ -14,7 +14,8 @@ class RolesAndPermissionsController < ApplicationController
   def load_permissions
     @role = Role.find params[:role_id]
     # @rpermissions = Rpermission.all.map { |rpermission| {resource: rpermission.controller_resource, name: rpermission.name, id: rpermission.id, checked: "#{'checked' if @role.rpermissions.include?(rpermission)}"} }
-    @rpermissions = [] #Rpermission.all.group_by{|g| g.controller_resource}.map{|k, v| {resource: k, value: v.map{|rpermission| {resource: rpermission.controller_resource, name: rpermission.name, id: rpermission.id, checked: "#{'checked' if @role.rpermissions.include?(rpermission)}"}}}}
+    # @rpermissions = @role.rpermissions#.group_by{|g| g.controller_resource}.map{|k, v| {resource: k, value: v.map{|rpermission| {resource: rpermission.controller_resource, name: rpermission.name, id: rpermission.id, checked: "#{'checked' if @role.rpermissions.include?(rpermission)}"}}}}
+    @rpermissions = Rpermission.all#.group_by{|g| g.controller_resource}.map{|k, v| {resource: k, value: v.map{|rpermission| {resource: rpermission.controller_resource, name: rpermission.name, id: rpermission.id, checked: "#{'checked' if @role.rpermissions.include?(rpermission)}"}}}}
     respond_to do |format|
       format.json
       format.html
@@ -41,7 +42,8 @@ class RolesAndPermissionsController < ApplicationController
   def edit
     @role = Role.find params[:id]
     # @rpermissions = Rpermission.all.map { |rpermission| {resource: rpermission.controller_resource, name: rpermission.name, id: rpermission.id, checked: "#{'checked' if @role.rpermissions.include?(rpermission)}"} }
-    @rpermissions = [] #Rpermission.all.group_by{|g| g.controller_resource}.map{|k, v| {resource: k, value: v.map{|rpermission| {resource: rpermission.controller_resource, name: rpermission.name, id: rpermission.id, checked: "#{'checked' if @role.rpermissions.include?(rpermission)}"}}}}
+    # @rpermissions = [] #Rpermission.all.group_by{|g| g.controller_resource}.map{|k, v| {resource: k, value: v.map{|rpermission| {resource: rpermission.controller_resource, name: rpermission.name, id: rpermission.id, checked: "#{'checked' if @role.rpermissions.include?(rpermission)}"}}}}
+    @rpermissions = Rpermission.all.map{|r| {id: r.id, name: r.name, checked: (@role.rpermission_ids.include?(r.id) ? 'checked' : '') } }
     
   end
 
@@ -50,12 +52,14 @@ class RolesAndPermissionsController < ApplicationController
     rpermission_ids = params[:rpermissions]
 
     if @role.update_attribute(:name, params[:role][:name])
-      @role.rpermission_ids = rpermission_ids
-      @role.bpm_module_role_ids = params[:bpm_role]
+      @role.rpermission_ids = rpermission_ids.to_a
+      @role.bpm_module_role_ids = params[:bpm_role].to_a
 
       redirect_to edit_organization_roles_and_permission_url(@organization, @role), notice: "Roles and Permissions are successfully updated."
+
     else
       redirect_to edit_organization_roles_and_permission_url(@organization, @role), error: "Roles and Permissions are unsuccessfully updated. Please try again."
+
     end
   end
 

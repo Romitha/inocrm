@@ -1,28 +1,26 @@
 = collapse_wrapper collapse_id: "sidebar-nav" do
   = collapse collapse_type: "#{controller_name == 'organizations' ? 'primary' : 'default'}", labelledby: "labelledby_organizations", header_content: content_tag(:span, "", class: "icon-sitemap")+"Organizations", collapse_link: "collapse_link_organizations" do
     .list-group.small_scale_margin0
-      = link_to country_admins_organizations_path, class: "list-group-item #{'active' if params[:action] == 'country' }" do
+      = link_to country_admins_organizations_path, class: "list-group-item #{'active' if params[:action] == 'country' } #{can?(:country, ProductSoldCountry) ? '' : 'disabled'}" do
         %i.fa.fa-flag
         Country
-      = link_to regional_support_center_admins_organizations_path, class: "list-group-item #{'active' if params[:action] == 'regional_support_center' }" do
+      = link_to regional_support_center_admins_organizations_path, class: "list-group-item #{'active' if params[:action] == 'regional_support_center' } #{can?(:regional_support_center, (TaskAction and RegionalSupportCenter)) ? '' : 'disabled'}" do
         %i.fa.fa-sitemap
         Regional
-      = link_to sla_admins_organizations_path, class: "list-group-item #{'active' if params[:action] == 'sla' }" do
+      = link_to sla_admins_organizations_path, class: "list-group-item #{'active' if params[:action] == 'sla' } #{can?(:sla, SlaTime) ? '' : 'disabled'}" do
         %i.fa.fa-clock-o
         SLA
-      = link_to store_and_branch_admins_organizations_path, class: "list-group-item #{'active' if params[:action] == 'store_and_branch' }" do
+      = link_to store_and_branch_admins_organizations_path, class: "list-group-item #{'active' if params[:action] == 'store_and_branch' } #{can?(:sla, SlaTime) ? '' : 'disabled'}" do
         %i.fa.fa-clock-o
         Store & branch
-      = link_to permissions_admins_roles_path, class: "list-group-item #{'active' if params[:action] == 'permissions' }" do
-        %i.fa.fa-clock-o
-        Permissions
-      = link_to industry_type_admins_organizations_path, class: "list-group-item #{'active' if params[:action] == 'industry_type' }" do
+
+      = link_to industry_type_admins_organizations_path, class: "list-group-item #{'active' if params[:action] == 'industry_type' } #{can?(:industry_type, IndustryType) ? '' : 'disabled'}" do
         %i.fa.fa-adjust
         Industry Type
 
   = collapse collapse_type: "#{controller_name == 'employees' ? 'primary' : 'default'}", labelledby: "labelledby_employees", header_content: content_tag(:span, "", class: "icon-group")+"Employees", collapse_link: "collapse_link_employees" do
     .list-group.small_scale_margin0
-      = link_to sbu_admins_employees_path, class: "list-group-item #{'active' if params[:action] == 'sbu' }" do
+      = link_to sbu_admins_employees_path, class: "list-group-item #{'active' if params[:action] == 'sbu' } #{can?(:sbu, Sbu) ? '' : 'disabled'}" do
         %i.fa.fa-asterisk
         Sbu
 
@@ -30,13 +28,13 @@
 
   = collapse collapse_type: "#{controller_name == 'users' ? 'primary' : 'default'}", labelledby: "labelledby_users", header_content: content_tag(:span, "", class: "icon-group")+"Users", collapse_link: "collapse_link_users" do
     .list-group.small_scale_margin0
-      = link_to title_admins_users_path, class: "list-group-item #{'active' if params[:action] == 'title' }" do
+      = link_to title_admins_users_path, class: "list-group-item #{'active' if params[:action] == 'title' } #{can?(:title, MstTitle) ? '' : 'disabled'}" do
         %i.fa.fa-users
         Title
 
   = collapse collapse_type: "#{controller_name == 'tickets' ? 'primary' : 'default'}", labelledby: "labelledby_tickets", header_content: content_tag(:span, "", class: "icon-tty")+"Tickets", collapse_link: "collapse_link_tickets" do
     .list-group.small_scale_margin0
-      = link_to brands_and_category_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'brands_and_category' }" do
+      = link_to brands_and_category_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'brands_and_category' } #{can?(:brands_and_category, SparePartDescription) ? '' : 'disabled'}" do
         %i.icon-paper
         Brand
       = link_to brand_category1_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'brand_category1' }" do
@@ -51,40 +49,40 @@
       = link_to spare_part_description_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'spare_part_description' }" do
         %i.fa.fa-file-text-o
         Spare Part Description
-      = link_to reason_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'reason' }" do
+      = link_to reason_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'reason' } #{can?(:reason, Reason) ? '' : 'disabled'}" do
         %i.fa.fa-comments-o
         Reason
-      = link_to accessories_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'accessories' }" do
+      = link_to accessories_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'accessories' } #{can?(:accessories, Accessory) ? '' : 'disabled'}" do
         %i.fa.fa-laptop
         Accessory
-      = link_to general_question_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'general_question' }" do
+      = link_to general_question_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'general_question' } #{can?(:general_question, (QAndA and GeQAndA)) ? '' : 'disabled'}" do
         %i.fa.fa-question-circle
         General Question
-      = link_to customer_feedback_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'customer_feedback' }" do
+      = link_to customer_feedback_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'customer_feedback' } #{can?(:customer_feedback, Feedback) ? '' : 'disabled'}" do
         %i.fa.fa-smile-o
         Customer Feedback
-      = link_to start_action_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'start_action' }" do
+      = link_to start_action_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'start_action' } #{can?(:start_action, TicketStartAction) ? '' : 'disabled'}" do
         %i.fa.fa-th-list
         Ticket Start Action
-      = link_to problem_and_category_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'problem_and_category' }" do
+      = link_to problem_and_category_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'problem_and_category' } #{can?(:problem_and_category, ProblemCategory) ? '' : 'disabled'}" do
         %i.fa.fa-exclamation-circle
         Problem & Categories
-      = link_to additional_charge_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'additional_charge' }" do
+      = link_to additional_charge_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'additional_charge' } #{can?(:additional_charge, (TicketEstimation and AdditionalCharge)) ? '' : 'disabled'}" do
         %i.fa.fa-money
         Additional Charge
-      = link_to dispatch_method_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'dispatch_method' }" do
+      = link_to dispatch_method_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'dispatch_method' } #{can?(:dispatch_method, (Invoice and DispatchMethod)) ? '' : 'disabled'}" do
         %i.fa.fa-certificate
         Dispatch Method
-      = link_to payment_item_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'payment_item' }" do
+      = link_to payment_item_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'payment_item' } #{can?(:payment_item, PaymentItem) ? '' : 'disabled'}" do
         %i.fa.fa-arrows
         Terminate payment item
-      = link_to payment_term_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'payment_term' }" do
+      = link_to payment_term_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'payment_term' } #{can?(:payment_term, PaymentTerm) ? '' : 'disabled'}" do
         %i.fa.fa-bullseye
         Payment term
-      = link_to tax_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'tax' }" do
+      = link_to tax_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'tax' } #{can?(:tax, Tax) ? '' : 'disabled'}" do
         %i.fa.fa-link
         Tax
-      = link_to annexture_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'annexture' }" do
+      = link_to annexture_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'annexture' } #{can?(:annexture, Documents::BrandDocument) ? '' : 'disabled'}" do
         %i.fa.fa-link
         Annextures
 
@@ -93,37 +91,37 @@
 
   = collapse collapse_type: "#{controller_name == 'inventories' ? 'primary' : 'default'}", labelledby: "labelledby_inventories", header_content: content_tag(:span, "", class: "icon-list-alt")+"Inventories", collapse_link: "collapse_link_inventories" do
     .list-group.small_scale_margin0
-      = link_to inventory_brand_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'inventory_brand' }" do
+      = link_to inventory_brand_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'inventory_brand' } #{can?(:inventory_brand, InventoryCategory1) ? '' : 'disabled'}" do
         %i.icon-paper
         Brand category
-      = link_to inventory_product_category_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'inventory_product_category' }" do
+      = link_to inventory_product_category_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'inventory_product_category' } #{can?(:inventory_product_category, InventoryCategory2) ? '' : 'disabled'}" do
         %i.icon-stack-2
         Product category
-      = link_to category_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'category' }" do
+      = link_to category_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'category' } #{can?(:category, InventoryCategory3) ? '' : 'disabled'}" do
         %i.icon-layers
         Category
-      = link_to disposal_method_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'disposal_method' }" do
+      = link_to disposal_method_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'disposal_method' } #{can?(:disposal_method, InventoryDisposalMethod) ? '' : 'disabled'}" do
         %i.icon-repeat
         Disposal methods
-      = link_to location_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'location' }" do
+      = link_to location_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'location' } #{can?(:location, InventoryRack) ? '' : 'disabled'}" do
         %i.icon-books
         Location
-      = link_to manufacture_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'manufacture' }" do
+      = link_to manufacture_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'manufacture' } #{can?(:manufacture, Manufacture) ? '' : 'disabled'}" do
         %i.icon-office
         Manufactures
-      = link_to product_condition_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'product_condition' }" do
+      = link_to product_condition_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'product_condition' } #{can?(:product_condition, ProductCondition) ? '' : 'disabled'}" do
         %i.icon-lab
         Product conditions
-      = link_to product_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'product' }" do
+      = link_to product_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'product' } #{can?(:product, InventoryProduct) ? '' : 'disabled'}" do
         %i.fa.fa-cubes
         Product
-      = link_to unit_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'unit' }" do
+      = link_to unit_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'unit' } #{can?(:unit, InventoryUnit) ? '' : 'disabled'}" do
         %i.icon-meter
         Unit
-      = link_to inventory_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'inventory' }" do
+      = link_to inventory_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'inventory' } #{can?(:inventory, Inventory) ? '' : 'disabled'}" do
         %i.fa.fa-adjust
         Inventory
-      = link_to reason_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'inventory_reason' }" do
+      = link_to reason_admins_inventories_path, class: "list-group-item #{'active' if params[:action] == 'inventory_reason' } #{can?(:reason, InventoryReason) ? '' : 'disabled'}" do
         %i.fa.fa-comments
         Reason
     / .panel-footer

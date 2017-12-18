@@ -2418,9 +2418,6 @@ class TicketsController < ApplicationController
     TaskAction
     Inventory
     TicketSparePart
-    # ticket_id = params[:ticket_id]
-    # @ticket = Ticket.find_by_id ticket_id
-    # session[:ticket_id] = @ticket.id
 
     bundle_id = params[:bundle_id]
     @return_bundle = ReturnPartsBundle.find bundle_id
@@ -2521,6 +2518,7 @@ class TicketsController < ApplicationController
   end
 
   def create_invoice_for_hp
+    authorize! :create_invoice_for_hp, SoPo
     Inventory
     TicketSparePart
     Product
@@ -5079,6 +5077,7 @@ class TicketsController < ApplicationController
     TicketSparePart
     Product
     Currency
+    authorize! :hp_po, SoPo
 
     @po = SoPo.new
     if params[:product_brand_id].present?
@@ -5096,6 +5095,8 @@ class TicketsController < ApplicationController
     TicketSparePart
     Product
     Currency
+
+    authorize! :view_po, SoPo
 
     refined_query = ""
     if params[:search].present?
@@ -5122,6 +5123,7 @@ class TicketsController < ApplicationController
   end
 
   def view_delivered_bundle
+    authorize! :view_delivered_bundle, ReturnPartsBundle
     TicketSparePart
     ReturnPartsBundle
     Product
@@ -5136,6 +5138,8 @@ class TicketsController < ApplicationController
     User
     TaskAction
     Ticket
+
+    authorize! :create_po, SoPo
 
     @po = SoPo.new po_params
 

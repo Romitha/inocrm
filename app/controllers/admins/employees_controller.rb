@@ -28,6 +28,7 @@ module Admins
 
     def sbu
       User
+      authorize! :sbu, Sbu
 
       if params[:edit]
         if params[:engineer_id]

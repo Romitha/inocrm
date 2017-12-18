@@ -1,10 +1,14 @@
 class OrganizationsController < ApplicationController
-  load_and_authorize_resource
+  # load_and_authorize_resource
   # before_action :authenticate_user!
   before_action :set_organization, only: [:show, :edit, :update, :relate, :remove_relation, :dashboard, :option_for_vat_number, :demote_as_department, :remove_department_org, :pin_relation]
 
   def index
     ContactNumber
+    Organization
+
+    authorize! :new, Organization
+
     if params[:search_members]
       @parent_organization = Organization.find params[:parent_organization] if params[:parent_organization].present?
       @organizations = Organization.joins(:organization_type).where("mst_organization_types.id = ? and organizations.name like ? and short_name like ? and organizations.id != ?", params[:type_id], "%#{params[:name]}%", "%#{params[:short_name]}%", params[:parent_organization]).references(:mst_organization_types)
@@ -21,6 +25,8 @@ class OrganizationsController < ApplicationController
   end
 
   def new
+    authorize! :new, Organization
+
     Rails.cache.delete(:upload_logo)
     @organization = Organization.new
   end

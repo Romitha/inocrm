@@ -217,7 +217,7 @@
               %td= p.product.model_no
               %td= p.product.product_no
               - amount_without_discount = p.try(:amount)
-              - discount = p.try(:discount_amount)
+              - discount = p.discount_amount.to_f
               - if !(amount_without_discount == "" && discount == "")
                 - final_amount = (amount_without_discount - discount)
               -else

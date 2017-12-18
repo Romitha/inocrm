@@ -41,7 +41,7 @@
               #load_permissions_json_render
                 = render "load_permissions", mustache: {rpermissions: rpermissions.as_json}
             .col-md-12
-              = f.submit "create role", class: "btn btn-primary btn-sm small_scale_margin-bottom1"
+              = f.submit "Save", class: "btn btn-primary btn-sm small_scale_margin-bottom1"
 
       = tab_content tabpointer: :bpm_mapping_form do
         %fieldset

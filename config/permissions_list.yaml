@@ -1,46 +1,116 @@
-User:
-  View personal profile:
+Organization:
+  View organizations:
     actions:
-      - profile
-      - initiate_user_profile_edit
+      - index
+      - show
 
-    attributes:
-      []
-
-  View users profile:
-    actions:
-      - check_user_session
-      - profile
-      - initiate_user_profile_edit
-    attributes:
-      []
-
-  Access user modifications:
+  Modify organization:
     actions:
       - new
-      - create
+      - edit
       - update
-      - upload_avatar
+      - destroy
+      - temp_save_user_profile_image
+      - relate
+      - demote_as_department
+      - remove_department_org
+      - option_for_vat_number
+      - pin_relation
 
+  # View parent organization:
+  #   actions:
+  #     - asdf
+  # Modify parent organization:
+  #   actions:
+  #     - asdf
+  Assign dealer type:
+    actions:
+      - dealer_types
     attributes:
       []
-      # -
-      #   :name: a
-      #   :value: b
-      # -
-      #   :name: c
-      #   :value: d
+  Modify customer contact details:
+    actions:
+      - inline_customer_contact_detail
+    attributes:
+      []
+  Access customer product:
+    actions:
+      - customer_search
 
-  Access admin store and branch information:
+  Add/Edit customer contract:
     actions:
-      []
-    attributes:
-      []
-  Access admin sbu information:
+      - save
+
+  view customer contract:
     actions:
-      []
-    attributes:
-      []
+      - view
+
+  Create GRN:
+    actions:
+      - grn
+      - upload_grn_file
+      - initiate_grn_for_i_product
+      - initialize_grn
+      - initiate_grn_for_srr
+      - create_grn
+      - search_grn
+
+  Update GRN Cost:
+    actions:
+      - update_grn_cost
+
+  View part of main cost:
+    actions:
+      - create_grn_for_main_part
+
+  Create GRN main part:
+    actions:
+      - grn_main_part
+      - create_grn_for_main_part
+
+  Create SRN:
+    actions:
+      - srn
+      - create_srn
+
+  Close SRN:
+    actions:
+      - close_srn
+
+  Create SRR:
+    actions:
+      - srr
+      - create_srr
+
+  Create GIN:
+    actions:
+      - gin
+      - gins
+      - create_gin
+
+  Create PO:
+    actions:
+      - po
+      - pos
+      - create_po
+  Close PO:
+    actions:
+      - close_po
+
+  Create PRN:
+    actions:
+      - prn
+      - prns
+      - create_prn
+      - view_prn
+
+  Close PRN:
+    actions:
+      - close_prn
+
+  Access admin stores and branches:
+    actions:
+      - store_and_branch
 
 ProductSoldCountry:
   Access admin country information:
@@ -79,30 +149,20 @@ Sbu:
     attributes:
       []
 
-Organization:
-  View organizations:
+MstTitle:
+  Access admin mst_title information:
     actions:
-      - single (need to review)
-      - list (need to review)
-  Modify organization:
-    actions:
-      - asdf
-
-  View parent organization:
-    actions:
-      - asdf
-  Modify parent organization:
-    actions:
-      - asdf
-
-ProductBrand:
-  Access admin brand information:
-    actions:
-      - inventory_brand
-      - delete_inventory_brand
+      - title
+      - delete_admin_title
 
 SparePartDescription:
   Access admin spare part information:
+    actions:
+      - spare_part_description
+  Access Brand & Category information:
+    actions:
+      - brands_and_category
+      - delete_admin_brands_and_category
 
 Reason:
   Access admin reason information:
@@ -171,6 +231,30 @@ Tax:
       - delete_tax
       - delete_tax_rate
 
+Documents::BrandDocument:
+  Access admin annexture information:
+    actions:
+      - annexture
+
+OrganizationBankDetail:
+  Access Organization Bank Details information:
+    actions:
+      - create_bank_detail
+      - update_organization_bank_detail
+      - delete_organization_bank_detail
+
+OrganizationContactPerson:
+  Access Contact Person information:
+    actions:
+      - create_organization_contact_person
+      - update_organization_contact_person
+
+ProductBrand:
+  Access admin brand information:
+    actions:
+      - inventory_brand
+      - delete_inventory_brand
+
 InventoryCategory1:
   Access admin inventory brand information:
     actions:
@@ -224,6 +308,10 @@ InventoryProduct:
       - product
       - delete_inventory_product_form
 
+  Access inventory information:
+    actions:
+      - inventories
+
 InventoryUnit:
   Access admin inventory unit information:
     actions:
@@ -245,8 +333,73 @@ Ticket:
   Add new ticket:
     actions:
       - set_ticket
+      - new
+      - find_by_serial
+      - create
+      - finalize_ticket_save
 
   Assign ticket:
     actions:
       - assign_ticket
       - update_assign_ticket
+
+  Access Customer inquire:
+    actions:
+      - customer_inquire
+
+  Access Customer advance payment:
+    actions:
+      - customer_advance_payment
+
+  Access contract-ticket report:
+    actions:
+      - contract_ticket_report
+
+  Generate ERP Report:
+    actions:
+      - excel_output
+
+SoPo:
+  Create PO:
+    actions:
+      - create_po
+  View PO:
+    actions:
+      - view_po
+      - hp_po
+  Create invoice for HP:
+    actions:
+      - create_invoice_for_hp
+      - js_call_invoice_for_hp
+      - js_call_invoice_item
+      - js_call_view_more_inv_so
+      - create_invoice_for_so
+
+ContractProduct:
+  Contract cost analytics report:
+    actions:
+      - contract_cost_analys_report
+
+TicketContract:
+  Generate documents in contract:
+    actions:
+      - generate_contract_document
+      - upload_generated_document
+      - remove_generated_document
+
+  Access Contract Report:
+    actions:
+      - contract_report
+
+  Access customer contract:
+    actions:
+      - index
+
+  Generate Summary report:
+    actions:
+      - summery
+
+ReturnPartsBundle:
+  View delivered bundle:
+    actions:
+      - view_delivered_bundle 

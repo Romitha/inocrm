@@ -8,6 +8,18 @@ class Rpermission < ActiveRecord::Base
   accepts_nested_attributes_for :subject_attributes, allow_destroy: true
   has_many :subject_actions # ok
 
+  def cached_subject_actions
+    Rails.cache.fetch([id.try(:to_i), :subject_actions]){ subject_actions }
+  end
+
+  def flush_cache
+    Rails.cache.delete([id.try(:to_i), :subject_actions])
+  end
+
+  after_save do |subject_action|
+    subject_action.flush_cache
+  end
+
 end
 
 class SubjectClass < ActiveRecord::Base
