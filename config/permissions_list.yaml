@@ -565,16 +565,22 @@ Gin:
   Search GIN, SRN:
     actions:
       - search_issues
+    system_module:
+      name: Inventory
 
 Grn:
   Search GIN, SRN:
     actions:
       - search_receives
+    system_module:
+      name: Inventory
 
 User:
   Search GIN, SRN:
     actions:
       - search_receives
+    system_module:
+      name: User
   Modify user profile:
     actions:
       - assign_role
@@ -585,3 +591,5 @@ User:
       - initiate_user_profile_edit
       - upload_avatar
       - assign_role
+    system_module:
+      name: User
