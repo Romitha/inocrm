@@ -92,9 +92,9 @@ end
 task seed_roles_permissions: :environment do
   Rpermission
 
-  SubjectAction.delete_all
-  Rpermission.delete_all
-  SubjectAttribute.delete_all
+  # SubjectAction.delete_all
+  # Rpermission.delete_all
+  # SubjectAttribute.delete_all
 
   permission_file = File.join Rails.root, "config", "permissions_list.yaml"
   permissions = YAML.load File.open(permission_file)
@@ -117,6 +117,16 @@ task seed_roles_permissions: :environment do
         # rpermission.subject_attributes.create s_value["attributes"]
         s_value["attributes"].to_a.each do |attribute|
           rpermission.subject_attributes.find_or_create_by name: attribute
+        end
+
+      end
+
+      if s_value and s_value["system_module"].present?
+        # rpermission.subject_attributes.create s_value["attributes"]
+        unless rpermission.rpermission_module.present?
+          rpermission.build_rpermission_module s_value["system_module"]
+          rpermission.save!
+
         end
 
       end

@@ -43,7 +43,7 @@ class RolesAndPermissionsController < ApplicationController
     @role = Role.find params[:id]
     # @rpermissions = Rpermission.all.map { |rpermission| {resource: rpermission.controller_resource, name: rpermission.name, id: rpermission.id, checked: "#{'checked' if @role.rpermissions.include?(rpermission)}"} }
     # @rpermissions = [] #Rpermission.all.group_by{|g| g.controller_resource}.map{|k, v| {resource: k, value: v.map{|rpermission| {resource: rpermission.controller_resource, name: rpermission.name, id: rpermission.id, checked: "#{'checked' if @role.rpermissions.include?(rpermission)}"}}}}
-    @rpermissions = Rpermission.all.map{|r| {id: r.id, name: r.name, checked: (@role.rpermission_ids.include?(r.id) ? 'checked' : '') } }
+    @rpermissions = Rpermission.all.group_by{|g| g.rpermission_module.try(:name)}.map{|k,v| {system_module: k, value: v.map { |r| {id: r.id, name: r.name, checked: (@role.rpermission_ids.include?(r.id) ? 'checked' : '') } } } }
     
   end
 

@@ -1,9 +1,20 @@
 .row
   #permission_list
-    {{#rpermissions}}
-    .col-md-12
-      %ul.list-group
-        %li.list-group-item
-          {{name}}
-          .pull-right <input value={{id}} id="rpermission_{{id}}" name="rpermissions[]" type="checkbox" {{checked}} />
-    {{/rpermissions}}
+    .panel-group#accordion{ "role"=>"tablist", "aria-multiselectable"=>"true"}
+      {{#rpermissions}}
+      .panel.panel-primary
+        .panel-heading{ "role"=>"tab", "id"=>"{{system_module}}"}
+          %h4.panel-title
+            %a{ "role"=>"button", "data-toggle"=>"collapse", "data-parent"=>"#accordion", "href"=>"#collapse_{{system_module}}", "aria-expanded"=>"true", "aria-controls"=>"collapse_{{system_module}}" }
+              {{system_module}}
+
+        .panel-collapse.collapse{"role"=>"tabpanel", "aria-labelledby"=>"{{system_module}}", "id" => "collapse_{{system_module}}"}
+          .panel-body
+            .col-md-12
+              %ul.list-group
+                {{#value}}
+                %li.list-group-item
+                  {{name}}
+                  .pull-right <input value={{id}} id="rpermission_{{id}}" name="rpermissions[]" type="checkbox" {{checked}} />
+                {{/value}}
+      {{/rpermissions}}
