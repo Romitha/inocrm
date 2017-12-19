@@ -3,6 +3,8 @@ Organization:
     actions:
       - index
       - show
+    system_module:
+      name: Organization
 
   Modify organization:
     actions:
@@ -16,6 +18,8 @@ Organization:
       - remove_department_org
       - option_for_vat_number
       - pin_relation
+    system_module:
+      name: Organization
 
   # View parent organization:
   #   actions:
@@ -28,22 +32,34 @@ Organization:
       - dealer_types
     attributes:
       []
+    system_module:
+      name: Organization
+
   Modify customer contact details:
     actions:
       - inline_customer_contact_detail
     attributes:
       []
+    system_module:
+      name: Contract
+
   Access customer product:
     actions:
       - customer_search
+    system_module:
+      name: Organization
 
   Add/Edit customer contract:
     actions:
       - save
+    system_module:
+      name: Contract
 
   view customer contract:
     actions:
       - view
+    system_module:
+      name: Contract
 
   Create GRN:
     actions:
@@ -58,44 +74,62 @@ Organization:
   Update GRN Cost:
     actions:
       - update_grn_cost
+    system_module:
+      name: Inventory
 
   View part of main cost:
     actions:
       - create_grn_for_main_part
+    system_module:
+      name: Inventory
 
   Create GRN main part:
     actions:
       - grn_main_part
       - create_grn_for_main_part
+    system_module:
+      name: Inventory
 
   Create SRN:
     actions:
       - srn
       - create_srn
+    system_module:
+      name: Inventory
 
   Close SRN:
     actions:
       - close_srn
+    system_module:
+      name: Inventory
 
   Create SRR:
     actions:
       - srr
       - create_srr
+    system_module:
+      name: Inventory
 
   Create GIN:
     actions:
       - gin
       - gins
       - create_gin
+    system_module:
+      name: Inventory
 
   Create PO:
     actions:
       - po
       - pos
       - create_po
+    system_module:
+      name: Inventory
   Close PO:
     actions:
       - close_po
+    system_module:
+      name: Inventory
 
   Create PRN:
     actions:
@@ -103,34 +137,48 @@ Organization:
       - prns
       - create_prn
       - view_prn
+    system_module:
+      name: Inventory
 
   Close PRN:
     actions:
       - close_prn
+    system_module:
+      name: Inventory
 
   Access admin stores and branches:
     actions:
       - store_and_branch
+    system_module:
+      name: Organization
 
 ProductSoldCountry:
   Access admin country information:
     actions:
       - country
       - delete_admin_country
+    system_module:
+      name: Organization
 
 RegionalSupportCenter:
   Access admin regional information:
     actions:
       - regional_support_center
       - delete_admin_regional_support_center
+    system_module:
+      name: Organization
 
 SlaTime:
   Access admin SLA information:
     actions:
       - sla
       - delete_admin_sla
+    system_module:
+      name: Organization
 
   Access admin permission information:
+    system_module:
+      name: Organization
 
 IndustryType:
   Access admin industry type information:
@@ -139,6 +187,8 @@ IndustryType:
       - delete_admin_industry_type
     attributes:
       []
+    system_module:
+      name: Organization
 
 Sbu:
   Access admin sbu information:
@@ -148,81 +198,109 @@ Sbu:
       - delete_admin_sbu_engineer
     attributes:
       []
+    system_module:
+      name: Organization
 
 MstTitle:
   Access admin mst_title information:
     actions:
       - title
       - delete_admin_title
+    system_module:
+      name: Organization
 
 SparePartDescription:
   Access admin spare part information:
     actions:
       - spare_part_description
+    system_module:
+      name: Ticket
   Access Brand & Category information:
     actions:
       - brands_and_category
       - delete_admin_brands_and_category
+    system_module:
+      name: Ticket
 
 Reason:
   Access admin reason information:
     actions:
       - reason
       - delete_admin_inventory_reason
+    system_module:
+      name: Organization
 
 Accessory:
   Access admin accessory information:
     actions:
       - accessories
       - delete_admin_accessory
+    system_module:
+      name: Ticket
 
 GeQAndA:
   Access admin general question information:
     actions:
       - general_question
       - delete_admin_general_question
+    system_module:
+      name: Ticket
 
 Feedback:
   Access admin customer feedback information:
     actions:
       - customer_feedback
       - delete_admin_customer_feedback
+    system_module:
+      name: Ticket
 
 TicketStartAction:
   Access admin ticket start action information:
     actions:
       - start_action
       - delete_admin_ticket_start_action
+    system_module:
+      name: Ticket
 
 ProblemCategory:
   Access admin ticket problem category information:
     actions:
       - problem_and_category
       - delete_problem_category
+    system_module:
+      name: Ticket
 
 AdditionalCharge:
   Access admin additional charge information:
     actions:
       - additional_charge
       - delete_admin_additional_charge
+    system_module:
+      name: Ticket
 
 DispatchMethod:
   Access admin dispatch method information:
     actions:
       - dispatch_method
       - delete_dispatch_method
+    system_module:
+      name: Ticket
 
 PaymentItem:
   Access admin payment item information:
     actions:
       - payment_item
       - delete_admin_payment_item
+    system_module:
+      name: Ticket
 
 PaymentTerm:
   Access admin payment term information:
     actions:
       - payment_term
       - delete_payment_term
+    system_module:
+      name: Ticket
 
 Tax:
   Access admin tax information:
@@ -230,11 +308,15 @@ Tax:
       - tax
       - delete_tax
       - delete_tax_rate
+    system_module:
+      name: Ticket
 
 Documents::BrandDocument:
   Access admin annexture information:
     actions:
       - annexture
+    system_module:
+      name: Contract
 
 OrganizationBankDetail:
   Access Organization Bank Details information:
@@ -242,18 +324,24 @@ OrganizationBankDetail:
       - create_bank_detail
       - update_organization_bank_detail
       - delete_organization_bank_detail
+    system_module:
+      name: Ticket
 
 OrganizationContactPerson:
   Access Contact Person information:
     actions:
       - create_organization_contact_person
       - update_organization_contact_person
+    system_module:
+      name: Organization
 
 ProductBrand:
   Access admin brand information:
     actions:
       - inventory_brand
       - delete_inventory_brand
+    system_module:
+      name: Ticket
 
 InventoryCategory1:
   Access admin inventory brand information:
@@ -261,12 +349,16 @@ InventoryCategory1:
       - inventory_brand
       - delete_inventory_brand
       - delete_admin_brands_and_category
+    system_module:
+      name: Inventory
 
 InventoryCategory2:
   Access admin inventory product meta information:
     actions:
       - inventory_product_category
       - delete_inventory_product_category
+    system_module:
+      name: Inventory
 
 InventoryCategory3:
   Access admin inventory category information:
@@ -274,12 +366,16 @@ InventoryCategory3:
       - category
       - delete_inventory_category
       - delete_admin_brands_and_category
+    system_module:
+      name: Inventory
 
 InventoryDisposalMethod:
   Access admin inventory disposal method information:
     actions:
       - disposal_method
       - delete_disposal_method
+    system_module:
+      name: Inventory
 
 InventoryRack:
   Access admin inventory location information:
@@ -288,6 +384,8 @@ InventoryRack:
       - delete_location_rack
       - delete_location_shelf
       - delete_location_bin
+    system_module:
+      name: Inventory
 
 Manufacture:
   Access admin inventory manufacture information:
@@ -295,39 +393,53 @@ Manufacture:
       - manufacture
       - delete_manufacture
       - delete_inventory_manufacture
+    system_module:
+      name: Inventory
 
 ProductCondition:
   Access admin inventory product condition information:
     actions:
       - product_condition
       - delete_product_condition
+    system_module:
+      name: Inventory
 
 InventoryProduct:
   Access admin inventory product information:
     actions:
       - product
       - delete_inventory_product_form
+    system_module:
+      name: Inventory
 
   Access inventory information:
     actions:
       - inventories
+    system_module:
+      name: Inventory
 
 InventoryUnit:
   Access admin inventory unit information:
     actions:
       - unit
       - delete_inventory_unit
+    system_module:
+      name: Inventory
 
 Inventory:
   Access admin inventory information:
     actions:
       - inventory
+    system_module:
+      name: Inventory
 
 InventoryReason:
   Access admin inventory reason information:
     actions:
       - reason
       - delete_admin_inventory_reason
+    system_module:
+      name: Inventory
 
 Ticket:
   Add new ticket:
@@ -337,36 +449,52 @@ Ticket:
       - find_by_serial
       - create
       - finalize_ticket_save
+    system_module:
+      name: Ticket
 
   Assign ticket:
     actions:
       - assign_ticket
       - update_assign_ticket
+    system_module:
+      name: Ticket
 
   Access Customer inquire:
     actions:
       - customer_inquire
+    system_module:
+      name: Ticket
 
   Access Customer advance payment:
     actions:
       - customer_advance_payment
+    system_module:
+      name: Ticket
 
   Access contract-ticket report:
     actions:
       - contract_ticket_report
+    system_module:
+      name: Contract
 
   Generate ERP Report:
     actions:
       - excel_output
+    system_module:
+      name: Ticket
 
 SoPo:
   Create PO:
     actions:
       - create_po
+    system_module:
+      name: Ticket
   View PO:
     actions:
       - view_po
       - hp_po
+    system_module:
+      name: Ticket
   Create invoice for HP:
     actions:
       - create_invoice_for_hp
@@ -374,11 +502,15 @@ SoPo:
       - js_call_invoice_item
       - js_call_view_more_inv_so
       - create_invoice_for_so
+    system_module:
+      name: Ticket
 
 ContractProduct:
   Contract cost analytics report:
     actions:
       - contract_cost_analys_report
+    system_module:
+      name: Contract
 
 TicketContract:
   Generate documents in contract:
@@ -386,20 +518,30 @@ TicketContract:
       - generate_contract_document
       - upload_generated_document
       - remove_generated_document
+    system_module:
+      name: Contract
 
   Access Contract Report:
     actions:
       - contract_report
+    system_module:
+      name: Contract
 
   Access customer contract:
     actions:
       - index
+    system_module:
+      name: Contract
 
   Generate Summary report:
     actions:
       - summery
+    system_module:
+      name: Contract
 
 ReturnPartsBundle:
   View delivered bundle:
     actions:
-      - view_delivered_bundle 
+      - view_delivered_bundle
+    system_module:
+      name: Ticket
