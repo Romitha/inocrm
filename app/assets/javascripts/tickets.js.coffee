@@ -317,13 +317,38 @@ window.Tickets =
         $(".ticket_resolution_summary").addClass("hide").prop("disabled", true)
 
   filter_select: ->
-    category_list = $("#product_product_category_id")
-    category_list_html = category_list.html()
-    category_list.empty()
+    category1_list = $("#search_product_category1")
+    category1_list_html = category1_list.html()
+    category1_list.empty()
+
+    category2_list = $("#search_product_category2")
+    category2_list_html = category2_list.html()
+    category2_list.empty()
+
+    category3_list = $("#product_product_category_id")
+    category3_list_html = category3_list.html()
+    category3_list.empty()
+
     $("#product_product_brand_id").change ->
-      selected = $("#product_product_brand_id :selected").text()
-      filtered_option = $(category_list_html).filter("optgroup[label='#{selected}']").html()
-      category_list.empty().html(filtered_option).trigger('chosen:updated')
+      selected = $(":selected", @).text()
+      console.log(selected)
+      filtered_option = $(category1_list_html).filter("optgroup[label='#{selected}']").html()
+      category1_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
+      category2_list.empty()
+      category3_list.empty()
+
+    $("#search_product_category1").change ->
+      selected = $(":selected", @).text()
+      console.log(selected)
+      filtered_option = $(category2_list_html).filter("optgroup[label='#{selected}']").html()
+      category2_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
+      category3_list.empty()
+
+    $("#search_product_category2").change ->
+      selected = $(":selected", @).text()
+      console.log(selected)
+      filtered_option = $(category3_list_html).filter("optgroup[label='#{selected}']").html()
+      category3_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
 
   touch_refresh: ->
     $("#create_contact_person").trigger("click")
@@ -836,7 +861,7 @@ window.Tickets =
       $("#email_to").prop("disabled", true)
 
 
-  dynamically_filter_select: (el, position, parent_class='')->
+  dynamically_filter_select: (el, position, parent_class='', cat1, cat2)->
     $('.datepicker').datepicker({
     format: "yyyy-m-dd",
     todayBtn: true,
@@ -845,34 +870,101 @@ window.Tickets =
     _this = $(el)
     if position == "prev"
       brand_id = _this.prev().find(".select_wrapper .product_brand")
-      category_id = _this.prev().find(".select_wrapper .product_category")
+      category1_id = _this.prev().find(".select_wrapper .product_category1")
+      category2_id = _this.prev().find(".select_wrapper .product_category2")
+      category3_id = _this.prev().find(".select_wrapper .product_category")
 
-      category_list = category_id
-      category_list_html = category_list.html()
-      category_list.empty()
+      category1_list = category1_id
+      category1_list_html = category1_list.html()
+      category1_list.empty()
+
+      category2_list = category2_id
+      category2_list_html = category2_list.html()
+      category2_list.empty()
+
+      category3_list = category3_id
+      category3_list_html = category3_list.html()
+      category3_list.empty()
 
       brand_id.change ->
         selected = $(":selected", @).text()
         console.log(selected)
-        filtered_option = $(category_list_html).filter("optgroup[label='#{selected}']").html()
-        category_list.empty().html(filtered_option).trigger('chosen:updated')
+        filtered_option = $(category1_list_html).filter("optgroup[label='#{selected}']").html()
+        category1_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
+        category2_list.empty()
+        category3_list.empty()
+
+      category1_id.change ->
+        selected = $(":selected", @).text()
+        console.log(selected)
+        filtered_option = $(category2_list_html).filter("optgroup[label='#{selected}']").html()
+        category2_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
+        category3_list.empty()
+
+      category2_id.change ->
+        selected = $(":selected", @).text()
+        console.log(selected)
+        filtered_option = $(category3_list_html).filter("optgroup[label='#{selected}']").html()
+        category3_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
+
+
 
     else if position == "parent"
       brand_id = _this.parents("."+parent_class).eq(0).find(".select_wrapper .product_brand")
-      category_id = _this.parents("."+parent_class).eq(0).find(".select_wrapper .product_category")
+      category1_id = _this.parents("."+parent_class).eq(0).find(".select_wrapper .product_category1")
+      category2_id = _this.parents("."+parent_class).eq(0).find(".select_wrapper .product_category2")
+      category3_id = _this.parents("."+parent_class).eq(0).find(".select_wrapper .product_category")
 
-      category_list = category_id
-      category_list_html = category_list.html()
+      category1_list = category1_id
+      category1_list_html = category1_list.html()
 
-      category_id.prop("disabled", true)
+      category1_id.prop("disabled", true)
+      category1_list.html("<option>#{cat1}</option>").trigger('chosen:updated')
 
-      brand_id.click ->
-        category_id.prop("disabled", false)
+
+      category2_list = category2_id
+      category2_list_html = category2_list.html()
+
+      category2_id.prop("disabled", true)
+      category2_list.html("<option>#{cat2}</option>").trigger('chosen:updated')
+
+      category3_list = category3_id
+      category3_list_html = category3_list.html()
+
+      category3_id.prop("disabled", true)
+
+      brand_id.change ->
+        category1_id.prop("disabled", false)
+        category2_id.prop("disabled", false)
+        category3_id.prop("disabled", false)
         selected = $(":selected", @).text()
         console.log(selected)
-        filtered_option = $(category_list_html).filter("optgroup[label='#{selected}']").html()
-        category_list.empty().html(filtered_option).trigger('chosen:updated')
+        filtered_option = $(category1_list_html).filter("optgroup[label='#{selected}']").html()
+        category1_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
+        category2_list.empty()
+        category3_list.empty()
 
+      category1_id.change ->
+        selected = $(":selected", @).text()
+        console.log(selected)
+        filtered_option = $(category2_list_html).filter("optgroup[label='#{selected}']").html()
+        category2_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
+        category3_list.empty()
+
+      category2_id.change ->
+        selected = $(":selected", @).text()
+        console.log(selected)
+        filtered_option = $(category3_list_html).filter("optgroup[label='#{selected}']").html()
+        category3_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
+  product_name: (el)->
+    _this = $(el)
+    brand_id = _this.parents(".product_cat").eq(0).find(".select_wrapper .product_brand")
+    category1_id = _this.parents(".product_cat").eq(0).find(".select_wrapper .product_category1")
+    category2_id = _this.parents(".product_cat").eq(0).find(".select_wrapper .product_category2")
+    category3_id = _this.parents(".product_cat").eq(0).find(".select_wrapper .product_category")
+    product_name = $(":selected", brand_id).text() + " "+$(":selected", category1_id).text() + "|"+ $(":selected", category2_id).text() + "|"+$(":selected", category3_id).text()
+    name_id = _this.parents(".product_cat").eq(0).siblings(".pro_name").find(".product_name")
+    name_id.val(product_name)
   filter_select_new_product: ->
     category_list = $("#ticket_contract_product_category_id")
     category_list_html = category_list.html()

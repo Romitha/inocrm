@@ -1,0 +1,18 @@
+%fieldset
+  %legend Product Category 3
+  = simple_form_for @product_category3, url: brand_category3_admins_tickets_path, method: :post, html: {class: "validate_form"} do |f|
+    / = f.input :created_by, as: :hidden, input_html: {value: current_user.id}
+    .row
+      .col-md-3
+        = f.association :product_category2, include_blank: false, onchange: "Admins.filter_cat1(this); return false;" ,input_html: {required: true, id: "filter_cat1", data: {"filter-params" => "product_category2_id", "render-dom" => "product_category"}}, label: "Product Category2"
+      .col-md-3
+        = f.input :name, input_html: {required: true}, label: "Product Category3 Name"
+      .col-md-3
+        = f.input :contract_no_value, input_html: {required: true}, label: "Contract No Value"
+      .col-md-3
+        = f.association :sla_time, include_blank: false, label: "SLA Time", label_method: :description
+    = f.submit "Save", class: "btn btn-sm btn-success", name: "#{params[:edit_more] ? 'update' : 'create'}"
+
+  %hr
+  #brand_category1s
+    = render "brand_category3s"

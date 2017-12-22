@@ -532,8 +532,8 @@ class InventoryCategory3 < ActiveRecord::Base
     inventory_products.any?
   end
 
-  validates :name, presence: true, uniqueness: true
-  validates :code, presence: true, uniqueness: true
+  validates :name, presence: true
+  validates :code, presence: true
   validates_uniqueness_of :name, scope: [:code, :category2_id]
   validates_uniqueness_of :code, scope: [:name, :category2_id]
 end

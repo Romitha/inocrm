@@ -33,7 +33,7 @@
         .product
           = initiate_table table_type: "table-hover table-bordered"  do
             = table_header ["Serial No", "Brand", "Category", "Model", "Product No", "Country", "POP Status", "POP Note"]
-            = table_body [product.serial_no, product.product_brand.name, product.product_category.name, product.model_no, product.product_no, product.product_sold_country.try(:Country), popstatus, popnote]
+            = table_body [product.serial_no, product.product_brand.name, product.category_full_name("|"), product.model_no, product.product_no, product.product_sold_country.try(:Country), popstatus, popnote]
 
         #form_frame
           %fieldset

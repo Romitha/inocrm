@@ -38,7 +38,16 @@
     .list-group.small_scale_margin0
       = link_to brands_and_category_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'brands_and_category' }" do
         %i.icon-paper
-        Brand category
+        Brand
+      = link_to brand_category1_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'brand_category1' }" do
+        %i.icon-paper
+        Product Category1
+      = link_to brand_category2_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'brand_category2' }" do
+        %i.icon-paper
+        Product Category2
+      = link_to brand_category3_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'brand_category3' }" do
+        %i.icon-paper
+        Product Category3
       = link_to spare_part_description_admins_tickets_path, class: "list-group-item #{'active' if params[:action] == 'spare_part_description' }" do
         %i.fa.fa-file-text-o
         Spare Part Description

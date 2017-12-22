@@ -87,6 +87,10 @@ window.Admins =
   filter_product: (e)->
     this_value = $(e).val()
     $.get "/admins/inventories/filter_brand_product?#{$(e).data('filter-params')}=#{this_value}&render_dom=#{$(e).data('render-dom')}"
+  
+  filter_cat1: (e)->
+    this_value = $(e).val()
+    $.get "/admins/tickets/filter_brand_cat1?#{$(e).data('filter-params')}=#{this_value}&render_dom=#{$(e).data('render-dom')}"
 
 
   import_csv_upload: ->
