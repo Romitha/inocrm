@@ -52,8 +52,20 @@ class Product < ActiveRecord::Base
 
   end
 
-  def category_name
+  def category1_name
+    product_category.try(:product_category2).try(:product_category1).try(:name)
+  end
+
+  def category2_name
+    product_category.try(:product_category2).try(:name)
+  end
+
+  def category3_name
     product_category.try(:name)
+  end
+
+  def category_full_name(divide_by)
+    "#{category1_name}#{divide_by}#{category2_name}#{divide_by}#{category3_name}"
   end
 
   def category_cat_id
@@ -75,6 +87,7 @@ class Product < ActiveRecord::Base
 
   has_many :tickets, through: :ticket_product_serials
   has_many :warranties, foreign_key: :product_serial_id
+  accepts_nested_attributes_for :warranties, allow_destroy: true
   has_many :contract_products, foreign_key: :product_serial_id
   has_many :ticket_contracts, through: :contract_products
 
@@ -90,6 +103,7 @@ class Product < ActiveRecord::Base
   belongs_to :product_sold_country, foreign_key: :sold_country_id
   belongs_to :inv_serial_item, foreign_key: :inventory_serial_item_id
   belongs_to :owner_customer, class_name: "Organization"
+  belongs_to :location_address, class_name: "Address"
 
   validates_presence_of [:serial_no, :product_brand_id, :product_category_id, :name]
   validates_uniqueness_of :serial_no, message: "This serial no has already been taken"
@@ -120,9 +134,9 @@ class ProductBrand < ActiveRecord::Base
 
   has_many :products, foreign_key: :product_brand_id
   has_many :so_pos, foreign_key: :product_brand_id
-  has_many :product_categories, foreign_key: :product_brand_id
-  accepts_nested_attributes_for :product_categories, allow_destroy: true
-
+  has_many :product_category1s, foreign_key: :product_brand_id
+  accepts_nested_attributes_for :product_category1s, allow_destroy: true
+  has_many :product_category2s, through: :product_category1s
   has_many :return_parts_bundles
 
   validates_presence_of [:name, :sla_time, :parts_return_days, :currency_id]
@@ -140,7 +154,28 @@ class ProductBrand < ActiveRecord::Base
   validates_numericality_of [:parts_return_days]
   def is_used_anywhere?
     TicketSparePart
-    products.any? or product_categories.any? or return_parts_bundles.any?
+    products.any? or product_category1s.any? or return_parts_bundles.any?
+  end
+end
+
+class ProductCategory1 < ActiveRecord::Base
+  self.table_name = "mst_spt_product_category1"
+  belongs_to :product_brand
+  has_many :product_category2s, foreign_key: :product_category1_id
+  accepts_nested_attributes_for :product_category2s, allow_destroy: true
+  has_many :product_category3s, through: :product_category2s
+  def is_used_anywhere?
+    product_category2s.any?
+  end
+end
+
+class ProductCategory2 < ActiveRecord::Base
+  self.table_name = "mst_spt_product_category2"
+  belongs_to :product_category1
+  has_many :product_categories, foreign_key: :product_category2_id
+  accepts_nested_attributes_for :product_categories, allow_destroy: true
+  def is_used_anywhere?
+    product_categories.any?
   end
 end
 
@@ -148,8 +183,7 @@ class ProductCategory < ActiveRecord::Base
   self.table_name = "mst_spt_product_category"
 
   has_many :products, foreign_key: :product_category_id
-
-  belongs_to :product_brand, foreign_key: :product_brand_id
+  belongs_to :product_category2
   belongs_to :sla_time, foreign_key: :sla_id
 
   validates_presence_of [:name]

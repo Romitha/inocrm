@@ -12,18 +12,30 @@
   = simple_form_for product, url: create_product_tickets_path, multipart: true, remote: true do |f|
     .row
       .col-md-3
-        = f.association :product_brand, wrapper_html: {class: "col-md-11"}
-        .add_sign
-          = link_to new_product_brand_tickets_path, remote: true, title: "New Product" do
-            %span.glyphicon.glyphicon-plus-sign
+        = f.association :product_brand
+        / .add_sign
+        /   = link_to new_product_brand_tickets_path, remote: true, title: "New Product" do
+        /     %span.glyphicon.glyphicon-plus-sign
       .col-md-3
-        = f.association :product_category, collection: ProductBrand.all, as: :grouped_select, group_method: :product_categories, input_html: {class: "chosen-select"}, wrapper_html: {class: "col-md-11"}
-        .add_sign
-          = link_to new_product_category_tickets_path, remote: true, title: "New Category" do
-            %span.glyphicon.glyphicon-plus-sign
-      = f.input :serial_no, wrapper_html: {class:"col-md-2"}, :readonly=>true, label: "Serial number"
-      = f.input :model_no, wrapper_html: {class:"col-md-2"}, label: "Model number"
-      = f.input :product_no, wrapper_html: {class:"col-md-2"}, label: "Product number"
+        = label_tag "Product Category 1"
+        = select_tag "search_product_category1", option_groups_from_collection_for_select(ProductBrand.all, :product_category1s, :name, :id, :name, "#"), include_blank: true, class: "product_category1 form-control"
+      .col-md-3
+        = label_tag "Product Category 2"
+        = select_tag "search_product_category2", option_groups_from_collection_for_select(ProductCategory1.all, :product_category2s, :name, :id, :name, "#"), include_blank: true, class: "product_category2 form-control"
+      .col-md-3
+        = f.association :product_category, collection: ProductCategory2.all, as: :grouped_select, group_method: :product_categories, required: true, input_html: {class: "product_category chosen-select"}, label: "Product Category 3"
+        / .add_sign
+        /   = link_to new_product_category_tickets_path, remote: true, title: "New Category" do
+        /     %span.glyphicon.glyphicon-plus-sign
+    .row
+      .col-md-3
+        = f.input :name, wrapper_html: {class:"product_name"}
+      .col-md-3
+        = f.input :serial_no, :readonly=>true, label: "Serial number"
+      .col-md-3
+        = f.input :model_no, label: "Model number"
+      .col-md-3
+        = f.input :product_no, label: "Product number"
 
     .row
       .col-md-3

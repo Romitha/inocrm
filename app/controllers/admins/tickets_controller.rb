@@ -586,14 +586,14 @@ module Admins
           else
             render json: @brands_and_category.errors.full_messages.join
           end
-        elsif params[:product_category_id]
-          @product_category = ProductCategory.find params[:product_category_id]
-          if @product_category.update product_category_params
-            params[:edit] = nil
-            render json: @product_category
-          else
-            render json: @product_category.errors.full_messages.join
-          end
+        # elsif params[:product_category_id]
+        #   @product_category = ProductCategory.find params[:product_category_id]
+        #   if @product_category.update product_category_params
+        #     params[:edit] = nil
+        #     render json: @product_category
+        #   else
+        #     render json: @product_category.errors.full_messages.join
+        #   end
         end
 
       else
@@ -630,7 +630,112 @@ module Admins
       end
     end
 
-    def delete_admin_brands_and_category # permissioned
+
+    def brand_category1
+      Product
+      if params[:edit]
+        @product_category1 = ProductCategory1.find params[:product_category1_id]
+        if @product_category1.update product_category1_params
+          params[:edit] = nil
+          render json: @product_category1
+        else
+          render json: @product_category1.errors.full_messages.join
+        end
+
+      else
+        if params[:create]
+          @product_category1 = ProductCategory1.new product_category1_params
+          if @product_category1.save
+            params[:create] = nil
+            @product_category1 = ProductCategory1.new
+          end
+        else
+          @product_category1 = ProductCategory1.new
+        end
+        @product_category1_all = ProductCategory1.all
+      end
+    end
+
+    def delete_brand_category1
+      Product
+      @delete_brand_category1 = ProductCategory1.find params[:product_category1_id]
+      if @delete_brand_category1.present?
+        @delete_brand_category1.delete
+      end
+      respond_to do |format|
+        format.html { redirect_to brand_category1_admins_tickets_path }
+      end
+    end
+
+    def brand_category2
+      Product
+      if params[:edit]
+        @product_category2 = ProductCategory2.find params[:product_category2_id]
+        if @product_category2.update product_category2_params
+          params[:edit] = nil
+          render json: @product_category2
+        else
+          render json: @product_category2.errors.full_messages.join
+        end
+      else
+        if params[:create]
+          @product_category2 = ProductCategory2.new product_category2_params
+          if @product_category2.save
+            params[:create] = nil
+            @product_category2 = ProductCategory2.new
+          end
+        else
+          @product_category2 = ProductCategory2.new
+        end
+        @product_category2_all = ProductCategory2.all
+      end
+    end
+    def delete_brand_category2
+      Product
+      @delete_brand_category2 = ProductCategory2.find params[:product_category2_id]
+      if @delete_brand_category2.present?
+        @delete_brand_category2.delete
+      end
+      respond_to do |format|
+        format.html { redirect_to brand_category2_admins_tickets_path }
+      end
+    end
+
+    def brand_category3
+      Product
+      if params[:edit]
+        @product_category3 = ProductCategory.find params[:product_category3_id]
+        if @product_category3.update product_category3_params
+          params[:edit] = nil
+          render json: @product_category3
+        else
+          render json: @product_category3.errors.full_messages.join
+        end
+      else
+        if params[:create]
+          @product_category3 = ProductCategory.new product_category3_params
+          if @product_category3.save
+            params[:create] = nil
+            @product_category3 = ProductCategory.new
+          end
+        else
+          @product_category3 = ProductCategory.new
+        end
+        @product_category3_all = ProductCategory.all
+      end
+    end
+    def delete_brand_category3
+      Product
+      @delete_brand_category3 = ProductCategory.find params[:product_category3_id]
+      if @delete_brand_category3.present?
+        @delete_brand_category3.delete
+      end
+      respond_to do |format|
+        format.html { redirect_to brand_category3_admins_tickets_path }
+      end
+    end
+
+    def delete_admin_brands_and_category
       Product
       @brands_and_category = ProductBrand.find params[:brands_and_category_id]
       if @brands_and_category.present?
@@ -710,6 +815,15 @@ module Admins
         params.require(:product_brand).permit(:organization_id, :currency_id, :sla_id, :name, :parts_return_days, :warranty_date_format, :contract_no_value, product_categories_attributes: [:_destroy, :id, :sla_id, :name, :contract_no_value], product_brand_costs_attributes: [:id, :engineer_cost, :support_engineer_cost, :currency_id, :updated_by], brand_documents_attributes: [:id, :_destroy, :code, :name, :description, :document, :document_file_name])
       end
 
+      def product_category1_params
+        params.require(:product_category1).permit(:name, :product_brand_id,:contract_no_value)
+      end
+      def product_category2_params
+        params.require(:product_category2).permit(:name, :product_category1_id,:contract_no_value)
+      end
+      def product_category3_params
+        params.require(:product_category).permit(:name, :sla_id, :product_category2_id,:contract_no_value)
+      end
       def product_category_params
         params.require(:product_category).permit(:name, :sla_id)
       end

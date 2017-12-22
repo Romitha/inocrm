@@ -78,8 +78,8 @@
 - elsif params[:save_product].present?
   - if params[:ajax_upload].present?
   - else
-    - if @cus_product.errors.any?
-      console.log("#{@cus_product.errors.full_messages.join(', ')}");
+    - if @organization.errors.any?
+      console.log("#{@organization.errors.full_messages.join(', ')}");
     - else
       $("#contractedit").empty();
       $("#contractlist").addClass("hide");

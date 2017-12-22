@@ -321,6 +321,9 @@ Rails.application.routes.draw do
         delete "delete_tax"
         delete "delete_tax_rate"
         delete "delete_admin_brands_and_category"
+        delete "delete_brand_category1"
+        delete "delete_brand_category2"
+        delete "delete_brand_category3"
         [
           :reason,
           :accessories,
@@ -335,6 +338,9 @@ Rails.application.routes.draw do
           :payment_term,
           :tax,
           :brands_and_category,
+          :brand_category1,
+          :brand_category2,
+          :brand_category3,
           :annexture
         ].each do |action|
           match "#{action.to_s}", action: action, via: [:get, :post, :put]

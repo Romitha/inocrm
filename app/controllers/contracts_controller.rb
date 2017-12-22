@@ -490,9 +490,9 @@ class ContractsController < ApplicationController
   def save_cus_products
     if params[:save_product].present?
       if params[:owner_customer_id].present?
-        @cus_product = Organization.find params[:owner_customer_id]
-        @cus_product.attributes = customer_product_params
-        if @cus_product.save
+        @organization = Organization.find params[:owner_customer_id]
+        @organization.attributes = customer_product_params
+        if @organization.save!
           Rails.cache.fetch([:products, request.remote_ip]).to_a.each do |product|
             product.update owner_customer_id: params[:owner_customer_id]
             # unless @cus_product.product_ids.include?(product.id)
@@ -501,8 +501,8 @@ class ContractsController < ApplicationController
           end
           Rails.cache.delete([:products, request.remote_ip])
 
-          @cus_product.products.each do |product|
-            product.create_product_owner_history(@cus_product.id, current_user.id, "Added in Product")
+          @organization.products.each do |product|
+            product.create_product_owner_history(@organization.id, current_user.id, "Added in Product")
           end
         end
       end
@@ -574,7 +574,7 @@ class ContractsController < ApplicationController
     end
 
     def customer_product_params
-      params.require(:organization).permit(:id, products_attributes: [:id, :serial_no, :product_brand_id, :product_category_id, :model_no, :product_no, :pop_status_id, :sold_country_id, :pop_note, :pop_doc_url, :corporate_product, :sold_at, :sold_by, :remarks, :description, :name, :date_installation, :note, :_destroy])
+      params.require(:organization).permit(:id, products_attributes: [:id, :serial_no, :product_brand_id, :product_category_id, :model_no, :product_no, :pop_status_id, :sold_country_id, :pop_note, :pop_doc_url, :corporate_product, :sold_at, :sold_by, :remarks, :description, :name, :date_installation, :note, :dn_number, :invoice_number, :invoice_date, :location_address_id, :_destroy, warranties_attributes:[:start_at, :end_at, :product_serial_id, :warranty_type_id, :period_part, :period_labour, :period_onsight, :care_pack_product_no, :care_pack_reg_no, :note]])
     end
 
     def contract_product_params
