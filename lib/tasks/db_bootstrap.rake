@@ -116,7 +116,7 @@ task seed_roles_permissions: :environment do
       if s_value and s_value["attributes"].present?
         # rpermission.subject_attributes.create s_value["attributes"]
         s_value["attributes"].to_a.each do |attribute|
-          rpermission.subject_attributes.find_or_create_by name: attribute
+          rpermission.subject_attributes.find_or_create_by name: attribute["name"], value: attribute["value"]
         end
 
       end
@@ -124,7 +124,8 @@ task seed_roles_permissions: :environment do
       if s_value and s_value["system_module"].present?
         # rpermission.subject_attributes.create s_value["attributes"]
         unless rpermission.rpermission_module.present?
-          rpermission.build_rpermission_module s_value["system_module"]
+          rm = RpermissionModule.find_or_create_by name: s_value["system_module"]["name"]
+          rpermission.rpermission_module_id = rm.id
           rpermission.save!
 
         end

@@ -4,6 +4,8 @@ class UsersController < ApplicationController
   before_filter :user_session_expired, except: [:check_user_session]
 
   def new
+    authorize! :new, User
+
     session[:is_customer] = nil
     begin
       organization_id = view_context.decrypt_org(params[:organization_id]) unless params[:is_customer]
@@ -17,6 +19,7 @@ class UsersController < ApplicationController
 
   #Displaying the user details
   def profile
+    authorize! :profile, User
 
     #Address linked to this user
     @address_list = @user.other_addresses
@@ -26,6 +29,8 @@ class UsersController < ApplicationController
   end
 
   def create
+    authorize! :create, User
+
     @user = User.new user_params
     respond_to do |format|
       # if(session[:is_customer]=="true" ? @user.save(validate: false) : @user.save)
@@ -40,6 +45,8 @@ class UsersController < ApplicationController
   end
   #Updating the user details
   def update
+    authorize! :update, User
+
     [:user_name_primary_details,:password_security_details, :additional_details].each do |template_param|
       if params[template_param]
         @template_params = template_param.to_s
@@ -66,6 +73,8 @@ class UsersController < ApplicationController
 
   #Functions for ajax
   def initiate_user_profile_edit
+    authorize! :initiate_user_profile_edit, User
+
     Product
     @template_params = params[:template_params]
     case @template_params
@@ -78,6 +87,8 @@ class UsersController < ApplicationController
   end
 
   def upload_avatar
+    authorize! :upload_avatar, User
+
     respond_to do |format|
       if @user.update_attributes user_params
         @errors = []
@@ -94,6 +105,8 @@ class UsersController < ApplicationController
   end
 
   def assign_role
+    authorize! :assign_role, User
+
     respond_to do |format|
       if current_user.role_ids.include?(params[:set_role_id].to_i)#.map{ |role| r.name }.include?(params[:set_role_id])
         role = Role.find params[:set_role_id]

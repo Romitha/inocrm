@@ -21,6 +21,21 @@ Organization:
     system_module:
       name: Organization
 
+  Re-Index access of all information:
+    actions:
+      - reindex_all_model
+
+  Access and Modify Owner Organization:
+    actions:
+      - new
+      - edit
+      - update
+      - destroy
+    attributes:
+      -
+        name: refers
+        value: CRM_OWNER
+
   # View parent organization:
   #   actions:
   #     - asdf
@@ -545,3 +560,28 @@ ReturnPartsBundle:
       - view_delivered_bundle
     system_module:
       name: Ticket
+
+Gin:
+  Search GIN, SRN:
+    actions:
+      - search_issues
+
+Grn:
+  Search GIN, SRN:
+    actions:
+      - search_receives
+
+User:
+  Search GIN, SRN:
+    actions:
+      - search_receives
+  Modify user profile:
+    actions:
+      - assign_role
+      - new
+      - profile
+      - create
+      - update
+      - initiate_user_profile_edit
+      - upload_avatar
+      - assign_role

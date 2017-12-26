@@ -29,6 +29,7 @@ class OrganizationsController < ApplicationController
 
     Rails.cache.delete(:upload_logo)
     @organization = Organization.new
+
   end
 
   def temp_save_user_profile_image
@@ -40,6 +41,8 @@ class OrganizationsController < ApplicationController
   end
 
   def edit
+    authorize! :edit, @organization
+
     Rails.cache.delete(:upload_logo)
     ContactNumber
     Product
@@ -55,8 +58,8 @@ class OrganizationsController < ApplicationController
 
   def create
     @organization = Rails.cache.fetch(:upload_logo){Organization.new organization_params}
-    # @organization = Organization.new organization_params
     @organization.attributes = organization_params
+    authorize! :create, Organization
 
     respond_to do |format|
       if @organization.save
@@ -94,6 +97,7 @@ class OrganizationsController < ApplicationController
     @organization = Rails.cache.fetch(:upload_logo){@organization}
     # @organization = Organization.new organization_params
     @organization.attributes = organization_params
+    authorize! :update, @organization
 
     respond_to do |format|
       if @organization.update_attributes(organization_params)

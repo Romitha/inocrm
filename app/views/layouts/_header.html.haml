@@ -111,9 +111,9 @@
               = link_to "Search", "#"
               %ul.dropdown-menu
                 %li{role: "presentation", class: "#{can?(:grn, Organization) ? '' : 'disabled'}"}= link_to "GRN", search_grn_admins_searches_path, class: "#{can?(:grn, Organization) ? '' : 'disabled'}"
-                %li{role: "presentation", class: "#{can?(:inventories, InventoryProduct) ? '' : 'disabled'}"}= link_to "Inventory", inventories_admins_searches_path, class: "#{can?(:inventories, InventoryProduct) ? '' : 'disabled'}"
+                %li{role: "presentation", class: "#{can?(:inventories, (Inventory and InventoryProduct)) ? '' : 'disabled'}"}= link_to "Inventory", inventories_admins_searches_path, class: "#{can?(:inventories, (Inventory and InventoryProduct)) ? '' : 'disabled'}"
                 %li{role: "presentation", class: "#{can?(:po, Organization) ? '' : 'disabled'}"}= link_to "PO", pos_admins_inventories_path, class: "#{can?(:po, Organization) ? '' : 'disabled'}"
-                %li{role: "presentation", class: "#{can?(:po, Organization) ? '' : 'disabled'}"}= link_to "Receives (PRN,PO,GRN)", search_receives_admins_searches_path, class: "#{can?(:po, Organization) ? '' : 'disabled'}"
+                %li{role: "presentation", class: "#{can?(:search_receives, Grn) ? '' : 'disabled'}"}= link_to "Receives (PRN,PO,GRN)", search_receives_admins_searches_path, class: "#{can?(:search_receives, Grn) ? '' : 'disabled'}"
                 %li{role: "presentation", class: "#{can?(:grn, Organization) ? '' : 'disabled'}"}= link_to "Returns (GIN,SRR,GRN)", search_returns_admins_searches_path, class: "#{can?(:grn, Organization) ? '' : 'disabled'}"
-                %li{role: "presentation", class: "#{can?(:gin, Organization) ? '' : 'disabled'}"}= link_to "Issues (SRN,GIN)", search_issues_admins_searches_path, class: "#{can?(:gin, Organization) ? '' : 'disabled'}"
+                %li{role: "presentation", class: "#{can?(:search_issues, Gin) ? '' : 'disabled'}"}= link_to "Issues (SRN,GIN)", search_issues_admins_searches_path, class: "#{can?(:search_issues, Gin) ? '' : 'disabled'}"
                 %li{role: "presentation", class: "#{can?(:grn, Organization) ? '' : 'disabled'}"}= link_to "Inventory Serial Item", search_inventory_serial_item_admins_searches_path, class: "#{can?(:grn, Organization) ? '' : 'disabled'}"

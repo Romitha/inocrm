@@ -32,6 +32,8 @@ module Admins
     end
 
     def search_receives
+      authorize! :search_receives, Grn
+
       render "admins/searches/inventory/search_receives"
       # Inventory
       # if params[:po_id].present?
@@ -57,6 +59,8 @@ module Admins
     end
 
     def search_issues
+      authorize! :search_issues, Gin
+
       render "admins/searches/inventory/search_issues"
     end
 
@@ -85,10 +89,6 @@ module Admins
                 extra_objects: (Grn.search( query: "srr.srr_item_sources.gin_source.gin_item.gin_id:#{k.id}").map { |k| { id: k.id, no: k.grn_no_format, created_at: k.formated_created_at, created_by: k.created_by_from_user, type: "GRN" } } + Srr.search( query: "srr_item_sources.gin_source.gin_item.gin_id:#{k.id} " ).map { |k| { id: k.id, no: k.formatted_srr_no, created_at: k.formated_created_at, created_by: k.created_by_from_user, type: "SRR" } }),
 
               }
-              # GIN - GRN -> rn_items.gin_sources.gin_item.gin_id:#{k.id}
-              # and srr.srr_item_sources.gin_source.gin_item.gin_id:#{k.id}
-              # gin_sources.srr_items.srr_id:#{k.id}
-            # end
 
             end
           elsif params[:request] == "search_issues"
