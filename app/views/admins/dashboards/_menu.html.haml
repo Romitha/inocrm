@@ -86,8 +86,8 @@
         %i.fa.fa-link
         Annextures
 
-    .panel-footer
-      = link_to "Tickets", admins_tickets_path
+    / .panel-footer
+    /   = link_to "Tickets", admins_tickets_path
 
   = collapse collapse_type: "#{controller_name == 'inventories' ? 'primary' : 'default'}", labelledby: "labelledby_inventories", header_content: content_tag(:span, "", class: "icon-list-alt")+"Inventories", collapse_link: "collapse_link_inventories" do
     .list-group.small_scale_margin0

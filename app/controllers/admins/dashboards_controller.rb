@@ -43,6 +43,7 @@ module Admins
     end
 
     def reindex_all_model
+      authorize! :reindex_all_model, Organization
 
       DashboardsController.async( ttr: 300.seconds ).reindex_all_models_async
 
