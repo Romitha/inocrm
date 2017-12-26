@@ -56,6 +56,7 @@ class ContractsController < ApplicationController
       if params[:organization_id]
         @organization = Organization.find params[:organization_id]
         @organization.products.build if @organization.products.blank?
+
         # @ticket_contracts = @organization.ticket_contracts.page params[:page]
         # @contract_products = @organization.contract_products
       end
@@ -505,6 +506,16 @@ class ContractsController < ApplicationController
     render :index
   end
 
+  def delete_warrenty
+    @warrenty = Warranty.find params[:warranty_id]
+    if @warrenty.present?
+      @warrenty.delete
+    end
+    respond_to do |format|
+      format.html {redirect_to customer_search_contracts_path, notice: "Warranty Removed Saved"}
+    end
+  end
+
   def payments_save
     Invoice
     Ticket
@@ -569,7 +580,7 @@ class ContractsController < ApplicationController
     end
 
     def customer_product_params
-      params.require(:organization).permit(:id, products_attributes: [:id, :serial_no, :product_brand_id, :product_category_id, :model_no, :product_no, :pop_status_id, :sold_country_id, :pop_note, :pop_doc_url, :corporate_product, :sold_at, :sold_by, :remarks, :description, :name, :date_installation, :note, :dn_number, :invoice_number, :invoice_date, :location_address_id, :_destroy, warranties_attributes:[:start_at, :end_at, :product_serial_id, :warranty_type_id, :period_part, :period_labour, :period_onsight, :care_pack_product_no, :care_pack_reg_no, :note]])
+      params.require(:organization).permit(:id, products_attributes: [:id, :serial_no, :product_brand_id, :product_category_id, :model_no, :product_no, :pop_status_id, :sold_country_id, :pop_note, :pop_doc_url, :corporate_product, :sold_at, :sold_by, :remarks, :description, :name, :date_installation, :note, :dn_number, :invoice_number, :invoice_date, :location_address_id, :_destroy, warranties_attributes:[:start_at, :end_at, :product_serial_id, :warranty_type_id, :period_part, :period_labour, :period_onsight, :care_pack_product_no, :care_pack_reg_no, :note, :_destroy]])
     end
 
     def contract_product_params
