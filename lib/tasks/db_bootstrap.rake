@@ -114,7 +114,6 @@ task seed_roles_permissions: :environment do
       end
 
       if s_value and s_value["attributes"].present?
-        # rpermission.subject_attributes.create s_value["attributes"]
         s_value["attributes"].to_a.each do |attribute|
           rpermission.subject_attributes.find_or_create_by name: attribute["name"], value: attribute["value"]
         end

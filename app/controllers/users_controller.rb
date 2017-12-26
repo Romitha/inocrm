@@ -19,7 +19,7 @@ class UsersController < ApplicationController
 
   #Displaying the user details
   def profile
-    authorize! :profile, User
+    authorize! :profile, @user
 
     #Address linked to this user
     @address_list = @user.other_addresses

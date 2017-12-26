@@ -569,23 +569,22 @@ Gin:
       name: Inventory
 
 Grn:
-  Search GIN, SRN:
+  Search PRN, PO, GRN:
     actions:
       - search_receives
     system_module:
       name: Inventory
 
 User:
-  Search GIN, SRN:
+  View Profile:
     actions:
-      - search_receives
+      - profile
     system_module:
       name: User
   Modify user profile:
     actions:
       - assign_role
       - new
-      - profile
       - create
       - update
       - initiate_user_profile_edit
