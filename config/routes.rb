@@ -34,6 +34,7 @@ Rails.application.routes.draw do
       put "update_contract_product"
       post "upload_generated_document"
       delete "remove_generated_document"
+      delete "delete_warrenty"
     end
   end
 

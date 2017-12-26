@@ -1,4 +1,6 @@
 - organization = @organization
+- created_warranty = Rails.cache.read([:created_warranty, request.remote_ip.to_s, session[:time_now]])
+-time = Time.now.getutc
 .row
   .col-md-12
     .row
@@ -190,9 +192,10 @@
                           %th{colspan: 2} Warranty date
                           %th{colspan: 3} Period in month
                           %th Warranty
-                          %th{colspan: 2} Car 
+                          %th{colspan: 2} Care Pack
                           %th
                         %tr
+                          %th
                           %th Start
                           %th End
                           %th Part
@@ -207,6 +210,9 @@
                       %tbody
                         - f.object.warranties.order("created_at ASC").each do |warranty|
                           %tr
+                            %td
+                              = link_to delete_warrenty_contracts_path(warranty_id: warranty.id), method: :delete, rel: "tooltip", :data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Delete" do
+                                %span.glyphicon.glyphicon-trash
                             %td= warranty.start_at.to_date.strftime("%b %d, %Y")
                             %td= (warranty.end_at && warranty.end_at.to_date.strftime("%b %d, %Y"))
                             %td= warranty.period_part
@@ -217,55 +223,48 @@
                             %td= warranty.care_pack_reg_no
                             %td= warranty.note
                   
-                  = f.simple_fields_for :warranties do |w| # "products_attributes[]", o.object.products.build
+                  = f.simple_fields_for :warranties do |w| # "products_attributes[]", w.object.warranties.build
                     - if w.object.new_record?
-                      .panel-group#accordion{ role: "tablist", "aria-multiselectable"=>"true"}
-                        .panel.panel-info
-                          .panel-heading{role: "tab", id: "headingOne_#{w.object.id}"}
-                            %h4.panel-title
-                              %a{"aria-controls" => "collapseOne_#{}", "aria-expanded" => "true", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseOne_#{w.object.id}", :role => "button"}
-                                New Warranty
-                          .panel-collapse.collapse{"aria-labelledby" => "headingOne_#{w.object.id}", :id => "collapseOne_#{w.object.id}", :role => "tabpanel"}
-
-                            %fieldset
-                              = w.input :product_serial_id, as: :hidden, input_html: {value: f.object.id}
-                              .row
-                                .col-md-6
-                                  = w.association :warranty_type, as: :radio_buttons, wrapper: :append, collection: WarrantyType.first(2), checked: WarrantyType.find_by_code("MW").id
-                                .col-md-6
-                                  .strong
-                                    Warranty date format
-                                  %select.selectpicker{:name => "selValue", class: "small_scale_margin-top1"}
-                                    %option dd M, yyyy
-                                    %option dd, yyyy, M
-                                    %option M, yyyy, dd
-                                    %option M, dd, yyyy
-                                    %option yyyy, M, dd
-                                    %option yyyy, dd, M
-                              .row
-                                .col-md-6
-                                  = w.input :start_at, as: :string, input_html: {class: "datepicker"}
-                                .col-md-6
-                                  = w.input :end_at, as: :string, input_html: {class: "datepicker"}
-                              .row
-                                .col-md-4
-                                  = w.input :period_part, input_html: {min: "0", class: "only_float"}
-                                .col-md-4
-                                  = w.input :period_labour, input_html: {min: "0", class: "only_float"}
-                                .col-md-4
-                                  = w.input :period_onsight, label: "Corporate on-site", input_html: {min: "0", class: "only_float"}
-                              .row
-                                .col-md-3
-                                  = w.input :care_pack_product_no, label: "Care pack product number"
-                                .col-md-3
-                                  = w.input :care_pack_reg_no, label: "Care pack reg number"
-                                .col-md-6
-                                  = w.input :note, input_html: {rows: 1}
-                              .row
-                                .col-md-2.small_scale_padding-top3
-                                  = w.link_to_remove  class: "remove_c_t_v_link",:data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Remove" do
-                                    %button.btn.btn-danger Remove
-                  = f.link_to_add "Add Warrenty", :warranties, class: "btn btn-sm btn-warning"
+                      %fieldset
+                        %h3 New Warranty
+                        = w.input :product_serial_id, as: :hidden, input_html: {value: f.object.id}
+                        .row
+                          .col-md-6
+                            = w.association :warranty_type, as: :radio_buttons, wrapper: :append, collection: WarrantyType.first(2), checked: WarrantyType.find_by_code("MW").id
+                          .col-md-6
+                            .strong
+                              Warranty date format
+                            %select.selectpicker{:name => "selValue", class: "small_scale_margin-top1"}
+                              %option dd M, yyyy
+                              %option dd, yyyy, M
+                              %option M, yyyy, dd
+                              %option M, dd, yyyy
+                              %option yyyy, M, dd
+                              %option yyyy, dd, M
+                        .row
+                          .col-md-6
+                            = w.input :start_at, as: :string, input_html: {class: "datepicker"}
+                          .col-md-6
+                            = w.input :end_at, as: :string, input_html: {class: "datepicker"}
+                        .row
+                          .col-md-4
+                            = w.input :period_part, input_html: {min: "0", class: "only_float"}
+                          .col-md-4
+                            = w.input :period_labour, input_html: {min: "0", class: "only_float"}
+                          .col-md-4
+                            = w.input :period_onsight, label: "Corporate on-site", input_html: {min: "0", class: "only_float"}
+                        .row
+                          .col-md-3
+                            = w.input :care_pack_product_no, label: "Care pack product number"
+                          .col-md-3
+                            = w.input :care_pack_reg_no, label: "Care pack reg number"
+                          .col-md-6
+                            = w.input :note, input_html: {rows: 1}
+                        .row
+                          .col-md-2.small_scale_padding-top3
+                            = w.link_to_remove  class: "remove_c_t_v_link",:data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Remove" do
+                              %button.btn.btn-danger Remove
+                  = f.link_to_add "Add Warrenty", :warranties, class: "btn btn-sm btn-warning", onclick: "var _this = this; setTimeout(function(){Tickets.date_picker_call(); return false;}, 200)"
                   %br
                   .row
                     .col-md-8
@@ -350,6 +349,55 @@
               .col-md-4
                 = f.input :date_installation, as: :string, input_html: {class: "datepicker", value: f.object.date_installation.try(:strftime, INOCRM_CONFIG["short_date_format"])}
               = hidden_field_tag :owner_customer_id, organization.id
+
+
+
+          %fieldset
+            %legend Warranty
+            = f.simple_fields_for :warranties do |w| # "products_attributes[]", w.object.warranties.build
+              - if w.object.new_record?
+                %fieldset
+                  %h3 New Warranty
+                  = w.input :product_serial_id, as: :hidden, input_html: {value: f.object.id}
+                  .row
+                    .col-md-6
+                      = w.association :warranty_type, as: :radio_buttons, wrapper: :append, collection: WarrantyType.first(2), checked: WarrantyType.find_by_code("MW").id
+                    .col-md-6
+                      .strong
+                        Warranty date format
+                      %select.selectpicker{:name => "selValue", class: "small_scale_margin-top1"}
+                        %option dd M, yyyy
+                        %option dd, yyyy, M
+                        %option M, yyyy, dd
+                        %option M, dd, yyyy
+                        %option yyyy, M, dd
+                        %option yyyy, dd, M
+                  .row
+                    .col-md-6
+                      = w.input :start_at, as: :string, input_html: {class: "datepicker"}
+                    .col-md-6
+                      = w.input :end_at, as: :string, input_html: {class: "datepicker"}
+                  .row
+                    .col-md-4
+                      = w.input :period_part, input_html: {min: "0", class: "only_float"}
+                    .col-md-4
+                      = w.input :period_labour, input_html: {min: "0", class: "only_float"}
+                    .col-md-4
+                      = w.input :period_onsight, label: "Corporate on-site", input_html: {min: "0", class: "only_float"}
+                  .row
+                    .col-md-3
+                      = w.input :care_pack_product_no, label: "Care pack product number"
+                    .col-md-3
+                      = w.input :care_pack_reg_no, label: "Care pack reg number"
+                    .col-md-6
+                      = w.input :note, input_html: {rows: 1}
+                  .row
+                    .col-md-2.small_scale_padding-top3
+                      = w.link_to_remove  class: "remove_c_t_v_link",:data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Remove" do
+                        %button.btn.btn-danger Remove
+            = f.link_to_add "Add Warrenty", :warranties, class: "btn btn-sm btn-warning", onclick: "var _this = this; setTimeout(function(){Tickets.date_picker_call(); return false;}, 200)"
+
+
           %br
           .row
             .col-md-8

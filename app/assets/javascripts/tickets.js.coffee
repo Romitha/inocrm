@@ -859,7 +859,12 @@ window.Tickets =
     else
       $("#email_to").val("");
       $("#email_to").prop("disabled", true)
-
+  date_picker_call:->
+    $('.datepicker').datepicker({
+    format: "yyyy-m-dd",
+    todayBtn: true,
+    todayHighlight: true
+    });
 
   dynamically_filter_select: (el, position, parent_class='', cat1, cat2)->
     $('.datepicker').datepicker({
