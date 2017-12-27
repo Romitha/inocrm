@@ -114,7 +114,7 @@
       = link_to "Back", find_by_serial_tickets_path(serial_search: product.serial_no, contract_id: ticket.contract_id), remote: true, method: :post, data: {disable_with: "Please wait..."}
 
       / "customer_id"=>"", "organization_id"=>"11", "function_param"=>"create"
-      - if existing_customer.organization.present?
+      - if existing_customer && existing_customer.organization.present?
         = link_to "Next", create_customer_tickets_path(organization_id: existing_customer.organization.id, "function_param"=>"create"), remote: true, method: :post, class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2", data: {disable_with: "Please wait..."}
       - elsif existing_customer
         = link_to "Next", create_customer_tickets_path(customer_id: existing_customer.id), remote: true, method: :post, class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2", data: {disable_with: "Please wait..."}

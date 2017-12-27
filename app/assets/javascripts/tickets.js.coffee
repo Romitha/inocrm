@@ -866,6 +866,40 @@ window.Tickets =
     todayHighlight: true
     });
 
+  dynamically_filter_select_for_new:->
+    category1_list = $("#search_product_category1")
+    category1_list_html = category1_list.html()
+    category1_list.empty()
+
+    category2_list = $("#search_product_category2")
+    category2_list_html = category2_list.html()
+    category2_list.empty()
+
+    category3_list = $("#organization_products_attributes_0_product_category_id")
+    category3_list_html = category3_list.html()
+    category3_list.empty()
+
+    $("#organization_products_attributes_0_product_brand_id").change ->
+      selected = $(":selected", @).text()
+      console.log(selected)
+      filtered_option = $(category1_list_html).filter("optgroup[label='#{selected}']").html()
+      category1_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
+      category2_list.empty()
+      category3_list.empty()
+
+    $("#search_product_category1").change ->
+      selected = $(":selected", @).text()
+      console.log(selected)
+      filtered_option = $(category2_list_html).filter("optgroup[label='#{selected}']").html()
+      category2_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
+      category3_list.empty()
+
+    $("#search_product_category2").change ->
+      selected = $(":selected", @).text()
+      console.log(selected)
+      filtered_option = $(category3_list_html).filter("optgroup[label='#{selected}']").html()
+      category3_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
+
   dynamically_filter_select: (el, position, parent_class='', cat1, cat2)->
     $('.datepicker').datepicker({
     format: "yyyy-m-dd",
@@ -969,6 +1003,14 @@ window.Tickets =
     category3_id = _this.parents(".product_cat").eq(0).find(".select_wrapper .product_category")
     product_name = $(":selected", brand_id).text() + " "+$(":selected", category1_id).text() + "|"+ $(":selected", category2_id).text() + "|"+$(":selected", category3_id).text()
     name_id = _this.parents(".product_cat").eq(0).siblings(".pro_name").find(".product_name")
+    name_id.val(product_name)
+  product_name_for_ticket:->
+    brand_id = $("#product_product_brand_id")
+    category1_id = $("#search_product_category1")
+    category2_id = $("#search_product_category2")
+    category3_id = $("#product_product_category_id")
+    product_name = $(":selected", brand_id).text() + " "+$(":selected", category1_id).text() + "|"+ $(":selected", category2_id).text() + "|"+$(":selected", category3_id).text()
+    name_id = $("#product_name")
     name_id.val(product_name)
   filter_select_new_product: ->
     category_list = $("#ticket_contract_product_category_id")

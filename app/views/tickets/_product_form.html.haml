@@ -23,7 +23,7 @@
         = label_tag "Product Category 2"
         = select_tag "search_product_category2", option_groups_from_collection_for_select(ProductCategory1.all, :product_category2s, :name, :id, :name, "#"), include_blank: true, class: "product_category2 form-control"
       .col-md-3
-        = f.association :product_category, collection: ProductCategory2.all, as: :grouped_select, group_method: :product_categories, required: true, input_html: {class: "product_category chosen-select"}, label: "Product Category 3"
+        = f.association :product_category, collection: ProductCategory2.all, as: :grouped_select, group_method: :product_categories, required: true, input_html: {class: "product_category chosen-select", onchange: "Tickets.product_name_for_ticket();"}, label: "Product Category 3"
         / .add_sign
         /   = link_to new_product_category_tickets_path, remote: true, title: "New Category" do
         /     %span.glyphicon.glyphicon-plus-sign

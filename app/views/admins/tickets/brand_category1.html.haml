@@ -4,11 +4,13 @@
     / = f.input :created_by, as: :hidden, input_html: {value: current_user.id}
     .row
       .col-md-4
-        = f.association :product_brand, include_blank: false, onchange: "Admins.filter_cat1(this); return false;" ,input_html: {required: true, id: "filter_cat1", data: {"filter-params" => "product_brand_id", "render-dom" => "product_category1"}}, label: "Brand"
+        %font{:color => "#90032A"}
+          = f.association :product_brand, include_blank: false, onchange: "Admins.filter_cat1(this); return false;" ,input_html: {required: true, id: "filter_cat1", data: {"filter-params" => "product_brand_id", "render-dom" => "product_category1"}}, label: "Brand"
       .col-md-4
-        = f.input :name, input_html: {required: true}, label: "Name"
+        %font{:color => "#90032A"}
+          = f.input :name, input_html: {required: true}, label: "Product Category1 Name"
       .col-md-4
-        = f.input :contract_no_value, input_html: {required: true}, label: "Contract No Value"
+        = f.input :contract_no_value, label: "Contract No Value"
     = f.submit "Save", class: "btn btn-sm btn-success", name: "#{params[:edit_more] ? 'update' : 'create'}"
 
   %hr

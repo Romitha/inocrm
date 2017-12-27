@@ -40,6 +40,7 @@
   $("a[href='#contracts_ticket_form_collapse_search_customers_link']").trigger("click");
   Inventories.filter_product();
   Inventories.filter_category();
+  Tickets.dynamically_filter_select_for_new();
   $("a[href='#contracts_ticket_form_collapse_contracts_link']").trigger("click");
 
 - elsif params[:select_product_ticket].present?
