@@ -368,7 +368,7 @@ InventoryCategory1:
       name: Inventory
 
 InventoryCategory2:
-  Access admin inventory product meta information:
+  Access admin inventory product information:
     actions:
       - inventory_product_category
       - delete_inventory_product_category

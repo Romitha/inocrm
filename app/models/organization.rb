@@ -153,7 +153,22 @@ class Organization < ActiveRecord::Base
     organization_type.try(:code)
   end
 
+  def self.organization_tree_path(who, level = 0)
+    @tree_path ||= [] # Here @tree_path is class variable.
 
+    if who.members.any?
+      who.members.each { |o| organization_tree_path(o, (level+1)) }
+      @tree_path << {member: who, level: level}
+      
+    else
+      return @tree_path << {member: who, level: level}
+    end
+
+  end
+
+  def anchestors
+    @anchestors ||= self.class.organization_tree_path(self) # first time call to sql, and thereafter @anchestors is saved in cache for particular instance
+  end
 
   def self.customers
     joins(accounts_dealer_types: :dealer_type).where("mst_dealer_types.code = 'CUS' or mst_dealer_types.code = 'INDCUS'").order("name ASC").references(:dealer_type)

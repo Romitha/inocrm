@@ -1,1 +1,1 @@
-= link_to "Re-Index", reindex_all_model_admins_dashboards_path, method: :post, data: {disable_with: 'Please wait...', confirm: 'Please make sure to keep application system idle and don\'t refresh page untill complete point of re-indexing...'}
+= link_to_if can?(:reindex_all_model, Organization), "Re-Index", reindex_all_model_admins_dashboards_path, method: :post, data: {disable_with: 'Please wait...', confirm: 'Please make sure to keep application system idle and don\'t refresh page untill complete point of re-indexing...'}
