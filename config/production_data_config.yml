@@ -42,16 +42,16 @@ Ticket:
   ticket_type_id: 2
 
 TicketSparePart:
-  faulty_serial_no: "N/A"
-  faulty_ct_no: "N/A"
-  received_part_serial_no: "N/A"
-  received_part_ct_no: "N/A"
+  faulty_serial_no: ""
+  faulty_ct_no: ""
+  received_part_serial_no: ""
+  received_part_ct_no: ""
   control_visible_request_from_radio: false
-  manufacture_label: "(MYOB)"
+  manufacture_label: ""
 
 TicketSparePartManufacture:
-  event_no: "N/A"
-  order_no: "N/A"
+  event_no: ""
+  order_no: ""
 
 TicketPaymentReceivedType:
   cash: 2
