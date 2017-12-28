@@ -39,10 +39,13 @@
                   = (index+1)
               %td= p.serial_no
               %td= p.brand_name
-              %td= p.category_name
+              %td
+                .has-tooltip{title: p.category_full_name_index, data: { toggle:"tooltip", placement: "top" } }= p.category_full_name_index.truncate(12)
               %td= p.model_no
               %td= p.product_no
-              %td= p.name
+              %td
+                - if p.name.present?
+                  .has-tooltip{title: p.name, data: { toggle:"tooltip", placement: "top" } }= p.try(:name).truncate(12)
               %td= p.description
               - if params[:from_where] == "cus_product"
                 %td= p.owner_customer_name

@@ -189,6 +189,7 @@
                     %table.table.table-responsive.table-condensed.table-bordered
                       %thead
                         %tr
+                          %th
                           %th{colspan: 2} Warranty date
                           %th{colspan: 3} Period in month
                           %th Warranty
@@ -248,18 +249,18 @@
                             = w.input :end_at, as: :string, input_html: {class: "datepicker"}
                         .row
                           .col-md-4
-                            = w.input :period_part, input_html: {min: "0", class: "only_float"}
+                            = w.input :period_part, input_html: {min: "0", class: "only_float"}, label: "Parts Warannty Period (Months):"
                           .col-md-4
-                            = w.input :period_labour, input_html: {min: "0", class: "only_float"}
+                            = w.input :period_labour, input_html: {min: "0", class: "only_float"}, label: "Labour Warannty Period (Months):"
                           .col-md-4
-                            = w.input :period_onsight, label: "Corporate on-site", input_html: {min: "0", class: "only_float"}
+                            = w.input :period_onsight, label: "Corporate on-site", input_html: {min: "0", class: "only_float"}, label: "On-Sight Warannty Period (Months):"
                         .row
                           .col-md-3
-                            = w.input :care_pack_product_no, label: "Care pack product number"
+                            = w.input :care_pack_product_no, label: "Care pack product number: "
                           .col-md-3
-                            = w.input :care_pack_reg_no, label: "Care pack reg number"
+                            = w.input :care_pack_reg_no, label: "Care pack / Agreement  Reg. No:  "
                           .col-md-6
-                            = w.input :note, input_html: {rows: 1}
+                            = w.input :note, input_html: {rows: 1}, label: "Warranty Note:"
                         .row
                           .col-md-2.small_scale_padding-top3
                             = w.link_to_remove  class: "remove_c_t_v_link",:data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Remove" do

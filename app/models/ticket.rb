@@ -103,7 +103,7 @@ class Ticket < ActiveRecord::Base
         },
         products: {
           only: [:id, :serial_no, :model_no, :product_no, :created_at, :name, :updated_at],
-          methods: [:category_name, :category_cat_id, :brand_name],
+          methods: [:category_full_name_index, :category_cat_id, :brand_name],
         },
         customer: {
           only: [:id, :name, :address1, :address2, :address3, :address4],

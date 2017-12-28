@@ -66,7 +66,7 @@
     .col-md-1.has-tooltip{title: ticket.customer_name, data: { toggle:"tooltip", placement: "top" } }= ticket.customer_name.truncate(12)
     .col-md-1= ticket.products.first.try(:serial_no)
     .col-md-1= ticket.products.first.try(:brand_name)
-    .col-md-1= ticket.products.first.try(:category_name)
+    .col-md-1.has-tooltip{title: ticket.products.first.category_full_name_index, data: { toggle:"tooltip", placement: "top" } }= ticket.products.first.category_full_name_index.truncate(12)
     .col-md-1= ticket.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
     .col-md-1= ticket.logged_at and ticket.logged_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
     .col-md-1= ticket.ticket_status_name
