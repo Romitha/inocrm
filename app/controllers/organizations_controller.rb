@@ -7,7 +7,7 @@ class OrganizationsController < ApplicationController
     ContactNumber
     Organization
 
-    authorize! :new, Organization
+    authorize! :index, Organization
 
     if params[:search_members]
       @parent_organization = Organization.find params[:parent_organization] if params[:parent_organization].present?
@@ -42,6 +42,7 @@ class OrganizationsController < ApplicationController
 
   def edit
     authorize! :edit, @organization
+    authorize! :access_owner_org, @organization
 
     Rails.cache.delete(:upload_logo)
     ContactNumber
@@ -52,6 +53,8 @@ class OrganizationsController < ApplicationController
   end
 
   def show
+    authorize! :show, @organization
+    authorize! :access_owner_org, @organization
     ContactNumber
     Product
   end
@@ -97,7 +100,8 @@ class OrganizationsController < ApplicationController
     @organization = Rails.cache.fetch(:upload_logo){@organization}
     # @organization = Organization.new organization_params
     @organization.attributes = organization_params
-    authorize! :update, @organization
+    authorize! :update, Organization
+    authorize! :access_owner_org, @organization
 
     respond_to do |format|
       if @organization.update_attributes(organization_params)

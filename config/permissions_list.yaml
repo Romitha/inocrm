@@ -24,17 +24,19 @@ Organization:
   Re-Index access of all information:
     actions:
       - reindex_all_model
+    system_module:
+      name: Organization
 
   Access and Modify Owner Organization:
     actions:
-      - new
-      - edit
-      - update
-      - destroy
+      - access_owner_org
     attributes:
       -
         name: refers
         value: CRM_OWNER
+
+    system_module:
+      name: Organization
 
   # View parent organization:
   #   actions:
@@ -85,6 +87,8 @@ Organization:
       - initiate_grn_for_srr
       - create_grn
       - search_grn
+    system_module:
+      name: Inventory
 
   Update GRN Cost:
     actions:
@@ -589,6 +593,5 @@ User:
       - update
       - initiate_user_profile_edit
       - upload_avatar
-      - assign_role
     system_module:
       name: User

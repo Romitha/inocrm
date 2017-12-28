@@ -20,12 +20,15 @@ class UsersController < ApplicationController
   #Displaying the user details
   def profile
     authorize! :profile, @user
-
-    #Address linked to this user
-    @address_list = @user.other_addresses
-    @primary_address = @user.primary_address
-    @primary_contact_number = @user.primary_contact_number
-    @contact_number_list = @user.other_contact_numbers
+    if current_user.id == @user.id or current_user.current_user_role_name.try(:to_sym) == :admin
+      #Address linked to this user
+      @address_list = @user.other_addresses
+      @primary_address = @user.primary_address
+      @primary_contact_number = @user.primary_contact_number
+      @contact_number_list = @user.other_contact_numbers
+    else
+      redirect_to root_url, error: "You are not authorized to access other profile"
+    end
   end
 
   def create
@@ -105,7 +108,7 @@ class UsersController < ApplicationController
   end
 
   def assign_role
-    authorize! :assign_role, User
+    # authorize! :assign_role, User
 
     respond_to do |format|
       if current_user.role_ids.include?(params[:set_role_id].to_i)#.map{ |role| r.name }.include?(params[:set_role_id])
