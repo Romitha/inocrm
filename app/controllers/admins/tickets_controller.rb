@@ -633,6 +633,8 @@ module Admins
 
     def brand_category1
       Product
+      authorize! :brands_and_category, SparePartDescription
+
       if params[:edit]
         @product_category1 = ProductCategory1.find params[:product_category1_id]
         if @product_category1.update product_category1_params
@@ -658,6 +660,8 @@ module Admins
 
     def delete_brand_category1
       Product
+      authorize! :brands_and_category, SparePartDescription
+
       @delete_brand_category1 = ProductCategory1.find params[:product_category1_id]
       if @delete_brand_category1.present?
         @delete_brand_category1.delete
@@ -669,6 +673,8 @@ module Admins
 
     def brand_category2
       Product
+      authorize! :brands_and_category, SparePartDescription
+
       if params[:edit]
         @product_category2 = ProductCategory2.find params[:product_category2_id]
         if @product_category2.update product_category2_params
@@ -692,6 +698,8 @@ module Admins
     end
     def delete_brand_category2
       Product
+      authorize! :brands_and_category, SparePartDescription
+
       @delete_brand_category2 = ProductCategory2.find params[:product_category2_id]
       if @delete_brand_category2.present?
         @delete_brand_category2.delete
@@ -703,6 +711,8 @@ module Admins
 
     def brand_category3
       Product
+      authorize! :brands_and_category, SparePartDescription
+
       if params[:edit]
         @product_category3 = ProductCategory.find params[:product_category3_id]
         if @product_category3.update product_category3_params
@@ -726,6 +736,8 @@ module Admins
     end
     def delete_brand_category3
       Product
+      authorize! :brands_and_category, SparePartDescription
+
       @delete_brand_category3 = ProductCategory.find params[:product_category3_id]
       if @delete_brand_category3.present?
         @delete_brand_category3.delete
@@ -737,6 +749,8 @@ module Admins
 
     def delete_admin_brands_and_category
       Product
+      authorize! :brands_and_category, SparePartDescription
+
       @brands_and_category = ProductBrand.find params[:brands_and_category_id]
       if @brands_and_category.present?
         @brands_and_category.delete
