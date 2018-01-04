@@ -20,25 +20,26 @@
             = check_box_tag :re_opened
           .col-md-6.hide#reopen_to_engineer
             = label_tag "Re-Open to Engineer"
-            - ticket_engineer_by_channel = ticket.ticket_engineers.group_by{|t| t.channel_no}.inject({}){|i, (k, v)| i.merge("channel_no:#{k}" => v.map { |e| [e.user.full_name, e.id] })}
+            - ticket_engineer_by_channel = ticket.ticket_engineers.where(re_open_index: (ticket.re_open_count)).group_by{|t| t.channel_no}.inject({}){|i, (k, v)| i.merge("channel_no:#{k}" => v.map { |e| [e.user.full_name, e.id] })}
 
             = select_tag :start_engineer_id, grouped_options_for_select(ticket_engineer_by_channel), class: "form-control", include_blank: "Root"
 
         %br/
-      .col-md-3#unit_dispatch_wrapper
-        = label_tag "Unit Returned to Customer"
-        = check_box_tag :unit_return_customer, true, (ticket.ticket_type.code == 'IH'), disabled: (ticket.ticket_type.code != 'IH')
-        %br/
-        = label_tag "Dispatch method"
-        = select_tag :dispatch_method_id, options_from_collection_for_select(DispatchMethod.all, :id, :name)
-      .col-md-3
-        = label_tag "Feedback"
-        %br
-        = select_tag :feedback_id, options_from_collection_for_select(Feedback.all, :id, :feedback), include_blank: true
-      .col-md-4
-        = label_tag "Feedback description"
-        %br
-        = text_area_tag :feedback_description, nil, class: "form-control"
+      #unit_dispatch_wrapper
+        .col-md-3
+          = label_tag "Unit Returned to Customer"
+          = check_box_tag :unit_return_customer, true, (ticket.ticket_type.code == 'IH'), disabled: (ticket.ticket_type.code != 'IH')
+          %br/
+          = label_tag "Dispatch method"
+          = select_tag :dispatch_method_id, options_from_collection_for_select(DispatchMethod.all, :id, :name)
+        .col-md-3
+          = label_tag "Feedback"
+          %br
+          = select_tag :feedback_id, options_from_collection_for_select(Feedback.all, :id, :feedback), include_blank: true
+        .col-md-4
+          = label_tag "Feedback description"
+          %br
+          = text_area_tag :feedback_description, nil, class: "form-control"
 
     - if ticket.cus_payment_required
       %fieldset#ticket_payment_reciever_wrapper
