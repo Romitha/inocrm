@@ -71,8 +71,10 @@
               %td= srn_item.remarks
 
 - unless srn.closed
-  = link_to "Issue", gin_admins_inventories_path(gin_callback: "select_srn", srn_id: srn.id, from: "srn_page"), remote: true, class: "btn btn-sm btn-primary"
-  = link_to "Terminate", close_srn_admins_inventories_path(srn_id: srn.id, close_srn: true), remote: "true"
+  - if can? :create_gin, Organization
+    = link_to "Issue", gin_admins_inventories_path(gin_callback: "select_srn", srn_id: srn.id, from: "srn_page"), remote: true, class: "btn btn-sm btn-primary"
+  - if can? :close_srn, Organization
+    = link_to "Terminate", close_srn_admins_inventories_path(srn_id: srn.id, close_srn: true), remote: "true"
 
 #gin_wrapper
 

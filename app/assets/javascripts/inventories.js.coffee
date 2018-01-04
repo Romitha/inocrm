@@ -91,7 +91,7 @@ window.Inventories =
 
   disable_store: ->
     if $(".control_visible_request_from_radio").length > 0
-      $("label[for='ticket_spare_part_request_from_s'], label[for='ticket_spare_part_request_from_s'], label[for='ticket_spare_part_request_from_ns'], .spare_part_select").addClass("hide")
+      $("label[for='ticket_spare_part_request_from_s'], label[for='ticket_spare_part_request_from_ns'], .spare_part_select").addClass("hide")
 
     disable_loaded_requested_quantity = (elem)->
       $(".requested_quantity_manufacture_wrapper").addClass("hide")

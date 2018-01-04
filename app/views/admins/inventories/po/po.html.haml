@@ -25,7 +25,7 @@
         %dt Created by
         %dd= @po.created_by_user_full_name
 
-      - if po.persisted?
+      - if po.persisted? and can?(:create_po, Organization)
         = link_to "Print PDF", po_output_reports_path(po_id: po.id, format: :pdf), target: "_blank", class: "btn btn-sm btn-info"
       %h4.small_scale_padding-top1 Purchase Order items
       %table.table.table-bordered
