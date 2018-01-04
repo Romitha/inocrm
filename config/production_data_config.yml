@@ -46,7 +46,7 @@ TicketSparePart:
   faulty_ct_no: ""
   received_part_serial_no: ""
   received_part_ct_no: ""
-  control_visible_request_from_radio: true
+  control_visible_store_request_from_radio: true
   manufacture_label: ""
 
 TicketSparePartManufacture:

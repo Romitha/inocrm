@@ -153,10 +153,10 @@
                 .panel-heading Part taxes
                 .panel-body
                   = t.simple_fields_for :ticket_estimation_part_taxes do |ee|
-                    = ee.input :tax_rate,  as: :hidden, input_html: {id: "tax_rate_hidden_field_id", class: "payment_item_value"}
 
                     .row.parent_class_set
 
+                      = ee.input :tax_rate,  as: :hidden, input_html: {class: "payment_item_value"}
                       .col-md-4
                         = label_tag "Tax"
                         %br/
