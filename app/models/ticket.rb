@@ -350,6 +350,8 @@ class Ticket < ActiveRecord::Base
       new_engineer = ticket_engineers.build current_engineer.attributes.select{|a| ["user_id", "sbu_id", "re_assignment_requested", "channel_no"].include? a}
       new_engineer.attributes = {created_action_id: re_open_action_id, re_open_index: self.re_open_count}
 
+      parent_engineer = nil if order_no == 1
+
       new_engineer.parent_engineer = parent_engineer
       new_engineer.order_no = order_no
 
