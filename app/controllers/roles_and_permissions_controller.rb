@@ -4,6 +4,8 @@ class RolesAndPermissionsController < ApplicationController
   before_action :set_organization, only: [:new, :create, :edit, :load_permissions, :update]
 
   def new
+    authorize! :access_owner_org, @organization
+
     # @rpermissions = Rpermission.all.map { |rpermission| {resource: rpermission.controller_resource, name: rpermission.name, id: rpermission.id, checked: false} }
     @rpermissions = [] #Rpermission.all.group_by{|g| g.controller_resource}.map{|k, v| {resource: k, value: v.map{|rpermission| {resource: rpermission.controller_resource, name: rpermission.name, id: rpermission.id, checked: false}}}}
     respond_to do |format|
@@ -26,6 +28,8 @@ class RolesAndPermissionsController < ApplicationController
     new_role_name = params[:role][:name]
     rpermission_ids = params[:rpermissions]
     @role = @organization.roles.build(name: new_role_name)
+    authorize! :access_owner_org, @organization
+
     if @role.save
       @role.rpermission_ids = rpermission_ids
       @role.bpm_module_role_ids = params[:bpm_role]
@@ -50,6 +54,7 @@ class RolesAndPermissionsController < ApplicationController
   def update
     @role = Role.find params[:id]
     rpermission_ids = params[:rpermissions]
+    authorize! :access_owner_org, @organization
 
     if @role.update_attribute(:name, params[:role][:name])
       @role.rpermission_ids = rpermission_ids.to_a
@@ -65,6 +70,8 @@ class RolesAndPermissionsController < ApplicationController
 
   def assign_bpm_role
     organization = Organization.find params[:organization_id]
+    authorize! :access_owner_org, organization
+
     @system_role = Role.find params[:system_role] if params[:system_role].present?
     @bpm_role = BpmModuleRole.find params[:bpm_role] if params[:bpm_role].present?
 

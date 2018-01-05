@@ -286,7 +286,7 @@ class InvoicesController < ApplicationController
 
                 view_context.ticket_bpm_headers @bpm_response1[:process_id], @ticket.id
 
-                ticket_engineer.update status: 1, job_assigned_at: DateTime.now, workflow_process_id: workflow_process.id
+                engineer.update status: 1, job_assigned_at: DateTime.now, workflow_process_id: workflow_process.id
 
                 newly_assigned_engs << engineer.user.full_name
                                 email_to = engineer.user.email

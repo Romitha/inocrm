@@ -48,16 +48,9 @@
                 = tab_content tabpointer: :child_org do
                   = render "organizations/members", organizations: organization.members, by: "origin", parent_organization: organization
 
-      / .tab-pane.limit-height{id: "organization_departments#{organization.id}"}
-      /   .fixed-height
-      /     - organization.members.each do |org|
-      /       - if org.organization_type.try(:code) == "DPT"
-      /         .col-md-12
-      /           = org.name
-
       - if organization.refers == "CRM_OWNER"
         .tab-pane.limit-height{id: "roles_and_permissions#{organization.id}"}
           .fixed-height
-            = link_to "Add Roles and set Permissions", new_organization_roles_and_permission_path(organization), class: "btn btn-primary btn-sm small_scale_margin-bottom1"
+            = link_to_if can?(:access_owner_org, organization), "Add Roles and set Permissions", new_organization_roles_and_permission_path(organization), class: "btn btn-primary btn-sm small_scale_margin-bottom1"
             - organization.roles.order("created_at DESC").each do |role|
               = render "roles_and_permissions/role", role: role
