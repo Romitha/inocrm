@@ -37,7 +37,7 @@
             %td= manufacture_part.ticket_spare_part.spare_part_no
             %td= manufacture_part.ticket_spare_part.spare_part_description
             %td= manufacture_part.ticket_spare_part.return_part_serial_no
-            %td= manufacture_part.ticket_spare_part.requested_quantity
+            %td= manufacture_part.requested_quantity
             %td= manufacture_part.ticket_spare_part.spare_part_status_action.name
             %td= link_to "Add", "#", onclick: "Inventories.load_mustache_bundle_return_part('add', #{manufacture_part.id}); return false;"
 .row.added_to_bundle_parts
