@@ -3189,7 +3189,7 @@ class TicketsController < ApplicationController
 
         job_engineers.update_all(job_close_approval_requested: false)
 
-        @ticket.update job_close_approval_requested: false if @ticket.job_close_approval_requested
+        @ticket.update ticket_close_approval_requested: false if @ticket.ticket_close_approval_requested
       end
 
       @ticket.ticket_spare_parts.each do |s|
