@@ -1167,12 +1167,14 @@ module Admins
         grn_item.grn_item_current_unit_cost_histories.build created_by: current_user.id, current_unit_cost: grn_item.current_unit_cost
 
 
-        po_item.update closed: (po_item.quantity.to_f <= po_item.grn_items.sum(:recieved_quantity).to_f )
 
         # serial_inventories << inventory #inventory has to save
         serial_inventories << {id: inventory.id, stock_quantity: tot_recieved_qty, available_quantity: tot_recieved_qty}
 
         grn_item.save!
+
+        po_item.update closed: (po_item.quantity.to_f <= po_item.grn_items.sum(:recieved_quantity).to_f )
+
         grn_item.update_relation_index
         Rails.cache.delete([:grn_item, po_item_id, session[:grn_arrived_time].to_i] )
         Rails.cache.delete([ :serial_item, po_item.class.to_s.to_sym, po_item.id, session[:grn_arrived_time].to_i ])

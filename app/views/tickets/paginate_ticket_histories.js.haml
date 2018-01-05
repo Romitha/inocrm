@@ -1,0 +1,5 @@
+Tickets.ajax_loader();
+
+$("#{@rendering_id}").html("#{j render 'tickets/'+@rendering_file, histories: @histories}");
+
+Tickets.remove_ajax_loader();
