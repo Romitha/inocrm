@@ -864,6 +864,53 @@ class TicketsController < ApplicationController
     end
   end
 
+  def regenerate_workflow
+    @ticket = Ticket.find params[:ticket_id]
+    @continue = false
+    @messages = []
+    @bpm_response = view_context.send_request_process_data process_history: true, process_instance_id: 1, variable_id: "ticket_id"
+    if !@bpm_response[:status].present? or @bpm_response[:status].upcase == "ERROR"
+      @messages << "BPM error. Please continue after rectify BPM."
+    elsif not warranty_constraint
+      @messages << "There are no present #{@ticket.warranty_type.name} for the product to initiate particular warranty related ticket."
+    else
+      @continue = true
+    end
+
+    if @continue
+      @status_open_id = TicketStatus.find_by_code("OPN").id
+
+      if (@ticket.status_id == @status_open_id) and @ticket.ticket_workflow_processes.empty?
+        # bpm output variables
+        ticket_id = @ticket.id
+        di_pop_approval_pending = ["RCD", "RPN", "APN", "LPN", "APV"].include?(@ticket.products.first.product_pop_status.try(:code)) ? "Y" : "N"
+        priority = @ticket.priority
+        d42_assignment_required = "Y"
+        engineer_id = "-"
+
+        @bpm_response = view_context.send_request_process_data start_process: true, process_name: "SPPT", query: {ticket_id: ticket_id, d1_pop_approval_pending: di_pop_approval_pending, priority: priority, d42_assignment_required: d42_assignment_required, engineer_id: engineer_id, supp_engr_user: engineer_id, supp_hd_user: @ticket.created_by }
+
+        if @bpm_response[:status].try(:upcase) == "SUCCESS"
+          @ticket.ticket_workflow_processes.create(process_id: @bpm_response[:process_id], process_name: @bpm_response[:process_name])
+        else
+          @bpm_process_error = true
+        end
+
+        @messages << @bpm_process_error ? "Ticket successfully saved. But BPM error. Please continue after rectifying BPM" : "Thank you. ticket is successfully registered. #{@email_response}"
+
+      else
+        @messages << "Process already running"
+
+      end
+
+    else
+      @messages << "BPM Error"
+    end
+
+    redirect_to ticket_url(@ticket), notice: @messages.join(", ")
+
+  end
+
   def product_update
     @product = Product.find(params[:product_id])
     formatted_product_params = product_params
