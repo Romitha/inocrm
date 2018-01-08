@@ -116,7 +116,7 @@ Organization:
     system_module:
       name: Inventory
 
-  Close SRN:
+  Terminate SRN:
     actions:
       - close_srn
     system_module:
