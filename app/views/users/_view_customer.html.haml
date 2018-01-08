@@ -5,7 +5,7 @@
       %dt Customer
       %dd #{customer.full_name}
       %dt Address
-      %dd #{customer.address1} #{customer.address2} #{customer.address3}
+      %dd= customer.full_address
       %dt
         - customer.contact_type_values.each do |contact_type_value|
           = contact_type_value.contact_type.try(:name)

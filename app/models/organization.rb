@@ -91,7 +91,7 @@ class Organization < ActiveRecord::Base
 
   scope :organization_suppliers, -> {where(category: TYPES[0])}
   scope :individual_suppliers, -> {where(category: TYPES[2])}
-  scope :organization_customers, -> {where(category: TYPES[1])}
+  scope :organization_customers, -> {where(category: TYPES[1]).order('name asc')}
   scope :individual_customers, -> {where(category: TYPES[3])}
   scope :owner, -> { where(refers: "CRM_OWNER").first }
 
@@ -178,13 +178,27 @@ class Organization < ActiveRecord::Base
     joins(accounts_dealer_types: :dealer_type).where("mst_dealer_types.code = 'SUP' or mst_dealer_types.code = 'INDSUP'").order("name ASC").references(:dealer_type)
   end
 
-  mapping do
-    indexes :industry_type, type: "nested", include_in_parent: true
-    indexes :accounts_dealer_types, type: "nested", include_in_parent: true
-    indexes :addresses, type: "nested", include_in_parent: true
-    indexes :contact_numbers, type: "nested", include_in_parent: true
-    indexes :account, type: "nested", include_in_parent: true
-    indexes :products, type: "nested", include_in_parent: true
+  settings :analysis => {
+    :analyzer => {
+      :case_insensitive_sort => {
+        "tokenizer"=>"keyword",
+        "filter"=>["lowercase"],
+        }
+      }
+    } do
+    mapping do
+      indexes :industry_type, type: "nested", include_in_parent: true
+      indexes :accounts_dealer_types, type: "nested", include_in_parent: true
+      indexes :addresses, type: "nested", include_in_parent: true
+      indexes :contact_numbers, type: "nested", include_in_parent: true
+      indexes :account, type: "nested", include_in_parent: true
+      indexes :products, type: "nested", include_in_parent: true
+      indexes :name, type: 'multi_field', fields: {
+        # analyzed: {type: 'string', index: :not_analyzed},
+        analyzed: {type: 'string', analyzer: 'case_insensitive_sort'},
+        name: {type: 'string', analyzer: "english"}
+      }
+    end
   end
 
   def self.search(params)
@@ -194,7 +208,10 @@ class Organization < ActiveRecord::Base
           must { string params[:query] } if params[:query].present?
         end
       end
-      sort { by :name, {order: "asc", ignore_unmapped: true} }
+      # sort { by :name, {order: "desc", ignore_unmapped: true} }
+      sort { by "name.analyzed", 'asc' }
+
+      # raise to_curl
     end
   end
 

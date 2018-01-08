@@ -1,4 +1,4 @@
-- tapbar = [["Contact Number", "#contact_numbers#{organization.id}"], ["Address", "#addresses#{organization.id}"], ["Employees", "#contact_persons#{organization.id}"], ["Documents & Attachements", "#documents#{organization.id}"], ["Designations", "#designations#{organization.id}"], ["Organization Relations", "#organization_relations#{organization.id}"], ["Roles and Permissions", "#roles_and_permissions#{organization.id}"], ["Dealer Types", "#dealer_types#{organization.id}"], ["Contact Person", "#organization_contact_persons#{organization.id}"], ["Bank Details", "#organization_bank_details#{organization.id}"], ["Contract Documents", "#organization_contract_documents#{organization.id}"]]
+- tapbar = [["Contact Number", "#contact_numbers#{organization.id}"], ["Address", "#addresses#{organization.id}"], ["Employees", "#contact_persons#{organization.id}"], ["Documents & Attachements", "#documents#{organization.id}"], ["Designations", "#designations#{organization.id}"], ["Organization Relations", "#organization_relations#{organization.id}"], ["Roles and Permissions", "#roles_and_permissions#{organization.id}"], ["Dealer Types", "#dealer_types#{organization.id}"], ["Contact Person", "#organization_contact_persons#{organization.id}"], (can?(:create_bank_detail, OrganizationBankDetail) ? ["Bank Details", "#organization_bank_details#{organization.id}"] : nil), ["Contract Documents", "#organization_contract_documents#{organization.id}"]].compact
 
 %h3
   - case
@@ -205,11 +205,12 @@
           - organization.organization_contact_persons.contact_persons2.each do |organization_contact_person|
             = render "organization_contact_persons/organization_contact_person", organization_contact_person: organization_contact_person
 
-    .tab-pane.limit-height{id: "organization_bank_details#{organization.id}"}
-      = render "organization_bank_details/form", organization_bank_detail: organization.organization_bank_details.build
+    - if can? :create_bank_detail, OrganizationBankDetail
+      .tab-pane.limit-height{id: "organization_bank_details#{organization.id}"}
+        = render "organization_bank_details/form", organization_bank_detail: organization.organization_bank_details.build
 
-      - organization.organization_bank_details.each do |organization_bank_detail|
-        = render "organization_bank_details/organization_bank_detail", organization_bank_detail: organization_bank_detail
+        - organization.organization_bank_details.each do |organization_bank_detail|
+          = render "organization_bank_details/organization_bank_detail", organization_bank_detail: organization_bank_detail
 
 %script{type: "text/html", id: "load_logo"}
   <img src="{{{result.logo.url}}}" alt= "Organization logo" class="img-responsive" />

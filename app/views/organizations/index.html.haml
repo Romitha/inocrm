@@ -4,15 +4,17 @@
     .col-md-11= text_field_tag "search", nil, placeholder: "Search", class: "form-control search"
     .col-md-1= submit_tag "Search", class: "btn btn-success btn-sm pull-right"
   %br
+  %h2
+    %strong= accounts.count
+    %span
+      - if params[:category] == "CUS"
+        Organization Customers
+      - if params[:category] == "INDCUS"
+        Individual Customers
+      - if params[:category] == "SUP"
+        Organization Suppliers
+      - if params[:category] == "INDSUP"
+        Individual Suppliers
   .organization_list
-    - if params[:category] == "CUS"
-      %h2 Organization Customers
-    - if params[:category] == "INDCUS"
-      %h2 Individual Customers
-    - if params[:category] == "SUP"
-      %h2 Organization Suppliers
-    - if params[:category] == "INDSUP"
-      %h2 Individual Suppliers
-    %br
     - accounts.each do |account|
       = render "organization", organization: account.organization if account.organization.present?

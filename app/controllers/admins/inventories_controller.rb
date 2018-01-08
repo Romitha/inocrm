@@ -2227,6 +2227,8 @@ module Admins
       Organization
       Role
       Inventory
+      authorize! :srn, Organization
+
       @store = Organization.find params[:store_id] if params[:store_id].present?
       case params[:srn_callback]
       when "call_search"
@@ -2245,6 +2247,7 @@ module Admins
 
     def create_srn
       Role
+      authorize! :create_srn, Organization
 
       @srn = Srn.new srn_params
       if @srn.srn_items.any? and @srn.save

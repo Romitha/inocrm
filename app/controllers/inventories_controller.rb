@@ -1853,6 +1853,7 @@ class InventoriesController < ApplicationController
     TaskAction
     estimation = TicketEstimation.find params[:part_estimation_id]
     @ticket = Ticket.find params[:ticket_id]
+    t_est_price = 0
 
     continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
 

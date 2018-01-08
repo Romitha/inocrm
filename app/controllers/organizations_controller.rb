@@ -234,6 +234,8 @@ class OrganizationsController < ApplicationController
   end
 
   def create_bank_detail
+    authorize! :create_bank_detail, OrganizationBankDetail
+
     @organization_bank_detail = OrganizationBankDetail.new organization_bank_detail_params
     respond_to do |format|
       @organization_bank_detail.created_by = current_user.id
@@ -248,6 +250,8 @@ class OrganizationsController < ApplicationController
   end
 
   def update_organization_bank_detail
+    authorize! :update_organization_bank_detail, OrganizationBankDetail
+
     @organization_bank_detail = OrganizationBankDetail.find params[:organization_bank_detail_id]
     respond_to do |format|
       if @organization_bank_detail.update organization_bank_detail_params
@@ -259,6 +263,8 @@ class OrganizationsController < ApplicationController
   end
 
   def delete_organization_bank_detail
+    authorize! :delete_organization_bank_detail, OrganizationBankDetail
+
     @organization_bank_detail = OrganizationBankDetail.find params[:organization_bank_detail_id]
     if @organization_bank_detail.present?
       @organization_bank_detail.delete
