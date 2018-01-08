@@ -1421,6 +1421,8 @@ class InventoriesController < ApplicationController
 
             @returned = true
 
+            @inventory_serial_item.update_index
+
           elsif @inventory_batch.present?  # Inventory Batch Item Returned
 
             @inventory_batch_attributes = inventory_batch_params
@@ -1484,13 +1486,17 @@ class InventoriesController < ApplicationController
             @inv_grn_item.grn_item_current_unit_cost_histories.create created_by: current_user.id, current_unit_cost: @inv_grn_item.current_unit_cost
 
             #inv_inventory Edit
-            @inventory_batch.inventory.increment! :stock_quantity, @inv_srr_item.quantity
+            inventory_increments = {stock_quantity: (@inventory_batch.inventory.stock_quantity.to_f + @inv_srr_item.quantity.to_f)}
+            # @inventory_batch.inventory.increment! :stock_quantity, @inv_srr_item.quantity
 
             if params[:damage_reason_check].present?
-              @inventory_batch.inventory.increment! :damage_quantity, @inv_srr_item.quantity
+              inventory_increments.merge! {damage_quantity: (@inventory_batch.inventory.damage_quantity.to_f + @inv_srr_item.quantity.to_f)}
+
+              # @inventory_batch.inventory.increment! :damage_quantity, @inv_srr_item.quantity
 
             else
-              @inventory_batch.inventory.increment! :available_quantity, @inv_srr_item.quantity
+              inventory_increments.merge! {available_quantity: (@inventory_batch.inventory.available_quantity.to_f + @inv_srr_item.quantity.to_f)}
+              # @inventory_batch.inventory.increment! :available_quantity, @inv_srr_item.quantity
 
             end
 
@@ -1533,6 +1539,8 @@ class InventoriesController < ApplicationController
 
             # inv_srr_item - edit
             @inv_srr_item.update closed: true
+
+            @inventory_batch.inventory.update inventory_increments
 
             @returned = true
 
