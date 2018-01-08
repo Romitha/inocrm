@@ -69,7 +69,13 @@
     %hr
 -else
   %h3 Product Details
-  = simple_nested_form_for organization, url: save_cus_products_contracts_path(save_product: true), html: {class: "validate_form"}, method: :post, remote: true do |o|
+  = simple_nested_form_for organization, url: save_cus_products_contracts_path(save_product: true), html: {class: "validate_form"}, method: :post, remote: true, multipart: true do |o|
+
+    - if organization.errors.present?
+      %ul
+        - organization.errors.full_messages.each do |error|
+          %li= error
+
     = o.simple_fields_for :products do |f| # "products_attributes[]", o.object.products.build
       - if f.object.id.present?
         .panel-group#accordion{ role: "tablist", "aria-multiselectable"=>"true"}
@@ -159,14 +165,15 @@
                     - if f.object.persisted?
                       .col-md-3
                         %strong.small_scale_padding-bottom3{style: "display: block;"} POP note document
-                        #preview_of_pop_doc_url{style: "word-wrap: break-word;"}
-                          - if f.object.pop_doc_url.present?
-                            = link_to f.object.pop_doc_url.file.filename, f.object.pop_doc_url.url, target: "_blank"
+                        - if f.object.pop_doc_url.present?
+                          = link_to f.object.pop_doc_url.file.filename, f.object.pop_doc_url.url, target: "_blank"
 
-                          = f.label "Upload pop note"
-                          = f.file_field :pop_doc_url, accept: 'image/png,image/gif,image/jpeg,application/pdf', class: "product_pop_doc_url", data: {class: "pop_doc_url_wrapper"}
+                        = f.label "Upload pop note"
+                        / = f.file_field :pop_doc_url, accept: 'image/png,image/gif,image/jpeg,application/pdf', class: "product_pop_doc_url", data: {class: "pop_doc_url_wrapper"}
+                        = f.file_field :pop_doc_url, accept: 'image/png,image/gif,image/jpeg,application/pdf'
+                        / #preview_of_pop_doc_url{style: "word-wrap: break-word;"}
 
-                        .pop_doc_url_wrapper
+                        / .pop_doc_url_wrapper
                 %fieldset
                   %legend Corparate Product
                   .row
@@ -325,12 +332,13 @@
                 = f.association :product_sold_country, label_method: :Country
               .col-md-3
                 %strong.small_scale_padding-bottom3{style: "display: block;"} POP note document
-                #preview_of_pop_doc_url{style: "word-wrap: break-word;"}
+                = f.label "Upload pop note"
+                / = f.file_field :pop_doc_url, accept: 'image/png,image/gif,image/jpeg,application/pdf', class: "product_pop_doc_url", data: {class: "pop_doc_url_wrapper"}
+                = f.file_field :pop_doc_url, accept: 'image/png,image/gif,image/jpeg,application/pdf'
+                / #preview_of_pop_doc_url{style: "word-wrap: break-word;"}
 
-                  = f.label "Upload pop note"
-                  = f.file_field :pop_doc_url, accept: 'image/png,image/gif,image/jpeg,application/pdf', class: "product_pop_doc_url", data: {class: "pop_doc_url_wrapper"}
 
-                .pop_doc_url_wrapper
+                / .pop_doc_url_wrapper
 
 
           %fieldset

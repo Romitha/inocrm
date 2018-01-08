@@ -377,7 +377,7 @@ class TicketsController < ApplicationController
         organization = Organization.find params[:organization_id]
         if organization.primary_address.present? or organization.addresses.present?
           address = (organization.primary_address or organization.addresses.first)
-          @new_customer = Customer.new address.attributes.select{|a| ["address1", "address2", "address3", "district_id"].include? a }
+          @new_customer = Customer.new address.attributes.select{|a| ["address1", "address2", "address3", "city", "district_id"].include? a }
           @new_customer.organization_id = organization.id
           @new_customer.name = organization.name
 

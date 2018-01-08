@@ -80,7 +80,7 @@
   - if params[:ajax_upload].present?
   - else
     - if @organization.errors.any?
-      console.log("#{@organization.errors.full_messages.join(', ')}");
+      alert("#{@organization.errors.full_messages.join(', ')}");
     - else
       $("#contractedit").empty();
       $("#contractlist").addClass("hide");

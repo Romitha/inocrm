@@ -498,7 +498,7 @@ class ContractsController < ApplicationController
       if params[:owner_customer_id].present?
         @organization = Organization.find params[:owner_customer_id]
         @organization.attributes = customer_product_params
-        if @organization.save!
+        if @organization.save
           Rails.cache.fetch([:products, request.remote_ip]).to_a.each do |product|
             product.update owner_customer_id: params[:owner_customer_id]
             # unless @cus_product.product_ids.include?(product.id)
