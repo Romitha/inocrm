@@ -14,18 +14,26 @@
       %dd= organization.account.account_no
       %dt Customer code:
       %dd= organization.account.try(:code)
-  .col-md-5
+  .col-md-4
     %dl.dl-horizontal
       %dt Created at:
       %dd= organization.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
       %dt Created by:
       %dd= organization.created_by_user.try(:full_name)
+  .col-md-2{style: "background-color: #{contract.contract_status.try(:colour_code)}; text-align:center; padding: 15px; border: 1px solid #000000;"}
+    %font{:color => "black", :size => "3"}
+      %strong Status: #{contract.contract_status.try(:name)}
 - additional_charges_array = [[ "",""],[ "Option 1","1"],[ "Option 2","2"]]
 - season_array = [[ "",""],[ "Season 1","1"],[ "Season 2","2"]]
 %br
-%br
 
-%h3 Contract Details
+%font{:color => "#393939", :size => "4"}
+  %strong Contract Details For Contract No :
+%font{:color => "#4355f2", :size => "3"}
+  %strong #{contract.contract_no_genarate}
+%br
+%br
+%br
 = simple_nested_form_for contract, url: save_contracts_path(organization_id: organization.try(:id)), html: {class: "validate_form"}, method: :post, remote: true, multipart: true do |f|
   = hidden_field_tag :contract_id, contract.id
 
@@ -38,19 +46,20 @@
         %ul
           - contract.errors.full_messages.each do |error|
             %li= error
-      .col-md-3
-        = f.input :legacy_contract_no
-      .col-md-2
-        = f.association :ticket_contract_type, include_blank: false, required: true, label: "Contract Type"
-      .col-md-2
-        = f.association :ticket_currency, label_method: :code, label: "Currency", required: true, include_blank: false
+  .row
+    .col-md-3
+      = f.input :legacy_contract_no
+    .col-md-2
+      = f.association :ticket_contract_type, include_blank: false, required: true, label: "Contract Type"
+    .col-md-2
+      = f.association :ticket_currency, label_method: :code, label: "Currency", required: true, include_blank: false
 
-      .col-md-2
-        = f.association :sla_time, required: true, label_method: :description, include_blank: false, label: "SLA"
-      .col-md-3
-        = label_tag "Service Provider" do
-          Service Provider
-          = f.select :owner_organization_id, ( Organization.owner.members.collect{ |m| [m.name, m.id ] } << [Organization.owner.name, Organization.owner.id] ), {include_blank: false}, {class: "form-control col-md-12 small_scale_margin-top2"}
+    .col-md-2
+      = f.association :sla_time, required: true, label_method: :description, include_blank: false, label: "SLA"
+    .col-md-3
+      = label_tag "Service Provider" do
+        Service Provider
+        = f.select :owner_organization_id, ( Organization.owner.members.collect{ |m| [m.name, m.id ] } << [Organization.owner.name, Organization.owner.id] ), {include_blank: false}, {class: "form-control col-md-12 small_scale_margin-top2"}
 
   .row
     .col-md-4
@@ -65,7 +74,7 @@
       = f.input :contract_b2b, wrapper: :append, label: "Back to Back Contract"
     .col-md-4
       = f.input :remind_required, wrapper: :append, label: "Need Remind before Expiry"
-
+  %br
   .row
     .col-md-2
       = f.association :organization_bill, label: "Bill company", required: true, collection: ([organization] + organization.members)
@@ -77,40 +86,83 @@
       = f.association :contact_address, collection: ([organization] + organization.members), as: :grouped_select, group_method: :addresses, label_method: :full_address, required: true
     .col-md-2
       = f.association :organization_contact_person, collection: (organization.organization_contact_persons),include_blank: false, required: true, label: "Contact Person"
+  %br
   .row
 
     = hidden_field_tag :product_count, contract.num_of_products, onclick:"Tickets.brand_edit();"
     - if contract.num_of_products > 0 
-      .col-md-2
-        .product_brand_main.hide
+      .product_brand_main.hide
+        .col-md-3
           = f.association :product_brand, required: true, include_blank: true
-        .product_brand_show
+        .col-md-3
+          %font{:color => "#90032A"}
+            = label_tag "Product Category 1: "
+            %font{:color => "black"}
+              %strong #{contract.try(:product_category).try(:product_category2).try(:product_category1).try(:name)}
+            = select_tag "search_product_category1", option_groups_from_collection_for_select(ProductBrand.all, :product_category1s, :name, :id, :name, "#"), include_blank: true, class: "product_category1 form-control"
+        .col-md-3
+          %font{:color => "#90032A"}
+            = label_tag "Product Category 2 : "
+            %font{:color => "black"}
+              %strong #{contract.try(:product_category).try(:product_category2).try(:name)}
+            = select_tag "search_product_category2", option_groups_from_collection_for_select(ProductCategory1.all, :product_category2s, :name, :id, :name, "#"), include_blank: true, class: "product_category2 form-control"
+        .col-md-3
+          %font{:color => "#90032A"}
+            = label_tag "Product Category 3: "
+            %font{:color => "black"}
+              %strong #{contract.try(:product_category).try(:name)}
+            = f.association :product_category, collection: ProductCategory2.all, as: :grouped_select, group_method: :product_categories, required: true, input_html: {class: "product_category chosen-select"}, label: false
+      .product_brand_show
+        .col-md-3
           %strong Product Brand :
           = text_field_tag :product_brand1,contract.product_brand.try(:name), disabled:true
-
-      .col-md-3
-        .product_brand_main.hide
-          = f.association :product_category, collection: ProductBrand.all, as: :grouped_select, group_method: :product_categories, required: true
-        .product_brand_show
-          %strong Product Category :
-          = text_field_tag :product_category1,contract.product_category.try(:name), disabled:true
+        .col-md-3
+          %strong Product Category1 :
+          = text_field_tag :product_cat1,contract.try(:product_category).try(:product_category2).try(:product_category1).try(:name), disabled:true
+        .col-md-3
+          %strong Product Category2 :
+          = text_field_tag :product_cat2,contract.try(:product_category).try(:product_category2).try(:name), disabled:true
+        .col-md-3
+          %strong Product Category3 :
+          = text_field_tag :product_cat3,contract.try(:product_category).try(:name), disabled:true
 
     - else
-      .col-md-2
-        .product_brand_main
+      .product_brand_main
+        .col-md-3
           = f.association :product_brand, required: true, include_blank: true
-        .product_brand_show.hide
-          Product Brand
-          = text_field_tag :product_brand1,"", disabled:true
-
-      .col-md-2
-        .product_brand_main
-          = f.association :product_category, collection: ProductBrand.all, as: :grouped_select, group_method: :product_categories, required: true
-        .product_brand_show.hide
-          Product Category
-          = text_field_tag :product_category1,"", disabled:true
-      .col-md-1
-
+        .col-md-3
+          %font{:color => "#90032A"}
+            = label_tag "Product Category 1: "
+            %font{:color => "black"}
+              %strong #{contract.try(:product_category).try(:product_category2).try(:product_category1).try(:name)}
+            = select_tag "search_product_category1", option_groups_from_collection_for_select(ProductBrand.all, :product_category1s, :name, :id, :name, "#"), include_blank: true, class: "product_category1 form-control"
+        .col-md-3
+          %font{:color => "#90032A"}
+            = label_tag "Product Category 2 : "
+            %font{:color => "black"}
+              %strong #{contract.try(:product_category).try(:product_category2).try(:name)}
+            = select_tag "search_product_category2", option_groups_from_collection_for_select(ProductCategory1.all, :product_category2s, :name, :id, :name, "#"), include_blank: true, class: "product_category2 form-control"
+        .col-md-3
+          %font{:color => "#90032A"}
+            = label_tag "Product Category 3: "
+            %font{:color => "black"}
+              %strong #{contract.try(:product_category).try(:name)}
+            = f.association :product_category, collection: ProductCategory2.all, as: :grouped_select, group_method: :product_categories, required: true, input_html: {class: "product_category chosen-select"}, label: false
+      .product_brand_show.hide
+        .col-md-3
+          %strong Product Brand :
+          = text_field_tag :product_brand1,contract.product_brand.try(:name), disabled:true
+        .col-md-3
+          %strong Product Category1 :
+          = text_field_tag :product_cat1,contract.try(:product_category).try(:product_category2).try(:product_category1).try(:name), disabled:true
+        .col-md-3
+          %strong Product Category2 :
+          = text_field_tag :product_cat2,contract.try(:product_category).try(:product_category2).try(:name), disabled:true
+        .col-md-3
+          %strong Product Category3 :
+          = text_field_tag :product_cat3,contract.try(:product_category).try(:name), disabled:true
+  %br
+  .row
     .col-md-2
       = label_tag "Additional Charges" do
         Additional Charges
@@ -119,8 +171,6 @@
       = label_tag "Season" do
         Season
         = f.select :season, season_array, {},{class: "form-control col-md-12 small_scale_margin-top4"}
-
-  .row
     .col-md-2
       = f.association :ticket_contract_payment_type, include_blank: false, label: "Payment Type"
     .col-md-2
@@ -256,6 +306,9 @@
   .row
   .row
     %hr
+    .col-md-2
+      = f.association :contract_status, include_blank: false, label: "Status"
+    .col-md-10
     .col-md-12
       = f.submit "Save", class: "btn btn-sm btn-success", remote: true, data: {disable_with: "Please wait..."}
 
@@ -279,6 +332,7 @@
           .col-md-10
             = hidden_field_tag :product_brand
             = hidden_field_tag :product_category
+            = hidden_field_tag :product_category12, contract.product_category.try(:id)
             = text_field_tag "query", params[:query], class: "form-control", placeholder: "Type any. for target search"
           .col-md-2
             = submit_tag "Search", :name => "search_product", class: "btn btn-sm btn-success"

@@ -623,6 +623,7 @@ class TicketContract < ActiveRecord::Base
   belongs_to :product_brand, foreign_key: :product_brand_id
   belongs_to :product_category, foreign_key: :product_category_id
   belongs_to :ticket_contract_payment_type, foreign_key: :payment_type_id 
+  belongs_to :contract_status, foreign_key: :status_id 
 
   belongs_to :organization_contact, class_name: "Organization"
   belongs_to :organization_bill, class_name: "Organization"
@@ -971,6 +972,11 @@ class ContractProduct < ActiveRecord::Base
   def ticket_contract_created_at
     ticket_contract.created_at
   end
+end
+
+class ContractStatus < ActiveRecord::Base
+  self.table_name = "mst_spt_contract_status"
+  has_many :ticket_contracts, foreign_key: :status_id
 end
 
 class TicketStatus < ActiveRecord::Base

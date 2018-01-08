@@ -7,32 +7,110 @@
 
         .row
           .col-md-3
-            %strong Work started at:
-            = ticket_fsr.work_started_at
+            %strong Form No:
+            = ticket_fsr.form_no
+        .row
           .col-md-3
-            %strong Work finished at:
-            = ticket_fsr.work_finished_at
+            %strong Work Started:
+            = ticket_fsr.work_started_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
           .col-md-3
-            %strong Hours worked:
+            %strong Work Finished:
+            = ticket_fsr.work_finished_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
+
+          .col-md-3
+            %strong Office In At:
+            = ticket_fsr.office_in_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
+          .col-md-3
+            %strong Office Out At:
+            = ticket_fsr.office_out_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
+        .row
+          .col-md-3
+            %strong FSR No:
+            = ticket_fsr.ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])
+          .col-md-3
+            %strong Hours Worked(hours):
             = ticket_fsr.hours_worked
           .col-md-3
-            %strong Down time:
+            %strong Down Time(hours):
             = ticket_fsr.down_time
+          .col-md-3
+            %strong Travel(hours):
+            = ticket_fsr.travel_hours
+        %hr
+        - if ticket_fsr.ticket_fsr_support_engineers.present?
+          .col-md-6
+            %table.table
+              %thead
+                %tr
+                  %th Engineer
+                  %th Hours Worked (Hrs)
+              %tbody
+                - ticket_fsr.ticket_fsr_support_engineers.each_with_index do |eng, index|
+                  %tr
+                    %td= eng.ticket_support_engineer.user.full_name
+                    %td= eng.hours_worked
 
-        = collapse_wrapper collapse_id: "ticket_spare_part_fsr_#{ticket_fsr.id}" do
-          - ticket_fsr.ticket_spare_parts.each do |ticket_spare_part|
-            = collapse collapse_type: "info", header_content: "Ticket spare part: #{ticket_spare_part.spare_part_no} - #{ticket_spare_part.spare_part_description} - FSR ID: #{ticket_spare_part.ticket_fsr.ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])}", collapse_link: "ticket_spare_part_fsr_link_#{ticket_spare_part.id}", collapse_id: "ticket_spare_part_fsr_#{ticket_fsr.id}", labelledby: "ticket_spare_part_lby_fsr#{ticket_spare_part.id}" do
+        %hr
+        .col-md-12
+          %h4 For Invoicing
+        .col-md-3
+          %strong Engineer Time Travel:
+          = ticket_fsr.engineer_time_travel
+        .col-md-3
+          %strong Engineer Time On Sight:
+          = ticket_fsr.engineer_time_on_site
+        .col-md-3
+          %strong Other Charges Mileage:
+          = ticket_fsr.other_mileage
+        .col-md-3
+          %strong Other Charges Repairs:
+          = ticket_fsr.other_repairs
+        .col-md-6
+          %strong Resolution:
+          = simple_format ticket_fsr.resolution
+        .col-md-6
+          %strong Level of Completion:
+          = ticket_fsr.completion_level
+        .col-md-12{style: "margin-top: 15px;"}
+          %p Replaced Parts
+          .col-md-12
+            %table.table
+              %thead
+                %tr
+                  %th No
+                  %th Part No
+                  %th Description
+                  %th Quantity
+                  %th Return Accepted
+                  %th Return Part S/N
+                  %th Event No.
+                  %th Event Closed
+              %tbody
+                - ticket_fsr.ticket_spare_parts.each_with_index do |tsp, i|
+                  %tr
+                    %th= i+1
+                    %td= tsp.spare_part_no
+                    %td= tsp.spare_part_description
+                    %td= tsp.request_from == "M" ? tsp.ticket_spare_part_manufacture.requested_quantity : tsp.request_from == "S" ? tsp.ticket_spare_part_store.approved_quantity : tsp.ticket_spare_part_non_stock.approved_quantity
 
-              .row
-                .col-md-3
-                  %strong Spare part No:
-                  = ticket_spare_part.spare_part_no
-                .col-md-3
-                  %strong Action status:
-                  = ticket_spare_part.spare_part_status_action.name
-                .col-md-3
-                  %strong Description:
-                  = ticket_spare_part.spare_part_description
-                .col-md-3
-                  %strong Faulty serial No:
-                  = ticket_spare_part.faulty_serial_no
+                    %td= tsp.returned_part_accepted ? "Yes" : "No"
+                    %td= tsp.return_part_serial_no
+                    %td= tsp.request_from == 'M' ? tsp.ticket_spare_part_manufacture.try(:event_no) : ""
+                    %td= tsp.ticket_spare_part_manufacture.try(:event_closed) ? "Yes" : "No"
+
+        / = collapse_wrapper collapse_id: "ticket_spare_part_fsr_#{ticket_fsr.id}" do
+        /   - ticket_fsr.ticket_spare_parts.each do |ticket_spare_part|
+        /     = collapse collapse_type: "info", header_content: "Ticket spare part: #{ticket_spare_part.spare_part_no} - #{ticket_spare_part.spare_part_description} - FSR ID: #{ticket_spare_part.ticket_fsr.ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])}", collapse_link: "ticket_spare_part_fsr_link_#{ticket_spare_part.id}", collapse_id: "ticket_spare_part_fsr_#{ticket_fsr.id}", labelledby: "ticket_spare_part_lby_fsr#{ticket_spare_part.id}" do
+        /       .row
+        /         .col-md-3
+        /           %strong Spare part No:
+        /           = ticket_spare_part.spare_part_no
+        /         .col-md-3
+        /           %strong Action status:
+        /           = ticket_spare_part.spare_part_status_action.name
+        /         .col-md-3
+        /           %strong Description:
+        /           = ticket_spare_part.spare_part_description
+        /         .col-md-3
+        /           %strong Faulty serial No:
+        /           = ticket_spare_part.faulty_serial_no

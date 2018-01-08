@@ -65,9 +65,9 @@ module ApplicationHelper
       "TICKET_REF=#{fsr.ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG['ticket_no_format'])}",
       "ENGINEER=#{fsr.ticket.owner_engineer and fsr.ticket.owner_engineer.user.full_name}",
       "SERIAL_NO=#{fsr.ticket.products.first.serial_no}",
-      "PRODUCT_DETAILS=#{[fsr.ticket.products.first.product_brand.name, fsr.ticket.products.first.product_category.name, fsr.ticket.products.first.model_no, fsr.ticket.products.first.product_no].join(' / ')}",
+      "PRODUCT_DETAILS=#{[fsr.ticket.products.first.product_brand.name, fsr.ticket.products.first.category_full_name_index, fsr.ticket.products.first.model_no, fsr.ticket.products.first.product_no].join(' / ')}",
       "PRODUCT_BRAND=#{fsr.ticket.products.first.product_brand.name}",
-      "PRODUCT_CATEGORY=#{fsr.ticket.products.first.product_category.name}",
+      "PRODUCT_CATEGORY=#{fsr.ticket.products.first.category_full_name_index}",
       "MODEL_NO=#{fsr.ticket.products.first.model_no}",
       "PRODUCT_NO=#{fsr.ticket.products.first.product_no}",
       "PROBLEM_DESC1=#{fsr.ticket.problem_description.to_s[0..100]}",
@@ -479,6 +479,11 @@ module ApplicationHelper
     balance_tobe_paid = 0
     db_net_total_amount = 0
 
+    if invoice.print_exchange_rate.present?
+      exchange_rate = invoice.print_exchange_rate.to_f
+    else
+      exchange_rate = 1
+    end
     item_index = 0
     repeat_data = ""
     invoice.ticket_invoice_estimations.each do |ticket_invoice_estimation|
@@ -497,6 +502,13 @@ module ApplicationHelper
         total_amount += totalprice
         net_total_amount += totalprice
 
+
+        if invoice.print_currency.try(:code) != ticket_invoice_estimation.ticket_estimation.currency.try(:code)
+          currency_1 = invoice.print_currency.try(:code)
+          unit_price *= exchange_rate
+          totalprice *= exchange_rate
+        end
+
         repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => quantity, "UNIT_PRICE" => standard_currency_format(unit_price), "CURRENCY1" => currency_1, "TOTAL_PRICE" => totalprice, "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
 
         estimation_external.ticket_estimation_external_taxes.each do |ticket_estimation_external_tax|
@@ -507,7 +519,10 @@ module ApplicationHelper
           totalprice = unit_price
           total_amount += totalprice
           net_total_amount += totalprice
-
+        if invoice.print_currency.try(:code) != ticket_invoice_estimation.ticket_estimation.currency.try(:code)
+          currency_1 = invoice.print_currency.try(:code)
+          totalprice *= exchange_rate
+        end
           repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => "", "UNIT_PRICE" => "", "CURRENCY1" => "", "TOTAL_PRICE" => standard_currency_format(totalprice), "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
         end
 
@@ -527,6 +542,12 @@ module ApplicationHelper
         total_amount += totalprice
         net_total_amount += totalprice
 
+        if invoice.print_currency.try(:code) != ticket_invoice_estimation.ticket_estimation.currency.try(:code)
+          currency_1 = invoice.print_currency.try(:code)
+          unit_price *= exchange_rate
+          totalprice *= exchange_rate
+        end
+
         repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => item_code, "DESCRIPTION" => description, "QUANTITY" => quantity, "UNIT_PRICE" => standard_currency_format(unit_price), "CURRENCY1" => currency_1, "TOTAL_PRICE" => standard_currency_format(totalprice), "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
 
         estimation_part.ticket_estimation_part_taxes.each do |ticket_estimation_part_tax|
@@ -538,7 +559,10 @@ module ApplicationHelper
           totalprice = unit_price
           total_amount += totalprice
           net_total_amount += totalprice
-
+          if invoice.print_currency.try(:code) != ticket_invoice_estimation.ticket_estimation.currency.try(:code)
+            currency_1 = invoice.print_currency.try(:code)
+            totalprice *= exchange_rate
+          end
           repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => "", "UNIT_PRICE" => "", "CURRENCY1" => "", "TOTAL_PRICE" => standard_currency_format(totalprice), "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
         end
       end
@@ -552,6 +576,11 @@ module ApplicationHelper
         total_amount += totalprice
         net_total_amount += totalprice
 
+        if invoice.print_currency.try(:code) != ticket_invoice_estimation.ticket_estimation.currency.try(:code)
+          currency_1 = invoice.print_currency.try(:code)
+          unit_price *= exchange_rate
+          totalprice *= exchange_rate
+        end
         repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => quantity, "UNIT_PRICE" => standard_currency_format(unit_price), "CURRENCY1" => currency_1, "TOTAL_PRICE" => standard_currency_format(totalprice), "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
 
         ticket_estimation_additional.ticket_estimation_additional_taxes.each do |ticket_estimation_additional_tax|
@@ -562,7 +591,10 @@ module ApplicationHelper
           totalprice = unit_price
           total_amount += totalprice
           net_total_amount += totalprice
-
+          if invoice.print_currency.try(:code) != ticket_invoice_estimation.ticket_estimation.currency.try(:code)
+            currency_1 = invoice.print_currency.try(:code)
+            totalprice *= exchange_rate
+          end
           repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => "", "UNIT_PRICE" => "", "CURRENCY1" => "", "TOTAL_PRICE" => standard_currency_format(totalprice), "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
 
         end
@@ -578,7 +610,11 @@ module ApplicationHelper
       totalprice = unit_price
       total_amount += totalprice
       net_total_amount += totalprice
-
+      if invoice.print_currency.try(:code) != ticket_invoice_terminate.act_terminate_job_payment.currency.try(:code)
+        currency_1 = invoice.print_currency.try(:code)
+        unit_price *= exchange_rate
+        totalprice *= exchange_rate
+      end
       repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => "", "UNIT_PRICE" => standard_currency_format(unit_price), "CURRENCY1" => currency_1, "TOTAL_PRICE" => standard_currency_format(totalprice), "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
     end
 
@@ -591,7 +627,10 @@ module ApplicationHelper
       totalprice = unit_price
       total_advance_recieved += totalprice
       net_total_amount += totalprice
-
+      if invoice.print_currency.try(:code) != ticket_invoice_advance_payment.ticket_payment_received.currency.try(:code)
+        currency_1 = invoice.print_currency.try(:code)
+        totalprice *= exchange_rate
+      end
       repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => "", "UNIT_PRICE" => "", "CURRENCY1" => "", "TOTAL_PRICE" => standard_currency_format(totalprice), "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
 
 
@@ -605,7 +644,10 @@ module ApplicationHelper
       totalprice = unit_price
       total_deduction += totalprice
       net_total_amount += totalprice
-
+      if invoice.print_currency.try(:code) != invoice.currency.try(:code)
+        currency_1 = invoice.print_currency.try(:code)
+        totalprice *= exchange_rate
+      end
       repeat_data += {"INDEX_NO" => item_index, "ITEM_CODE" => "", "DESCRIPTION" => description, "QUANTITY" => "", "UNIT_PRICE" => "", "CURRENCY1" => "", "TOTAL_PRICE" => totalprice, "CURRENCY2" => currency_1}.map { |k, v| "#{k}=#{v}$|#" }.join
     end
 
@@ -616,7 +658,13 @@ module ApplicationHelper
     if (db_net_total_amount != net_total_amount) or (@db_total_advance_recieved != total_advance_recieved) or (@db_total_deduction != total_deduction)
       @total_error="Calculation Error In Totals: net_total_amount=#{net_total_amount} total_advance_recieved=#{total_advance_recieved} total_deduction=#{total_deduction}"
     end
-
+    if invoice.print_currency.try(:code) != invoice.currency.try(:code)
+      currency = invoice.print_currency.try(:code)
+      total_amount *= exchange_rate
+      @db_total_advance_recieved *= exchange_rate
+      @db_total_deduction *= exchange_rate
+      db_net_total_amount *= exchange_rate
+    end
     [
       "DUPLICATE_D=#{ticket.ticket_complete_print_count > 0 ? 'D' : ''}",
       "CANCELED=#{canceled}",

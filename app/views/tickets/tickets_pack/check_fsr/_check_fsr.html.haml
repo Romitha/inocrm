@@ -121,24 +121,37 @@
                 %fieldset
                   %legend
                     FSR #{fsr.ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])}
-                  .col-md-3
-                    %strong Work Started:
-                    = fsr.work_started_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
-                  .col-md-3
-                    %strong Work Finished:
-                    = fsr.work_finished_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
-                  .col-md-3
-                    %strong FSR No:
-                    = fsr.ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])
-                  .col-md-3
-                    %strong Hours Worked(hours):
-                    = fsr.hours_worked
-                  .col-md-3
-                    %strong Down Time(hours):
-                    = fsr.down_time
-                  .col-md-4
-                    %strong Travel(hours):
-                    = fsr.travel_hours
+                  .row
+                    .col-md-3
+                      %strong Form No:
+                      = fsr.form_no
+                  .row
+                    .col-md-3
+                      %strong Work Started:
+                      = fsr.work_started_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
+                    .col-md-3
+                      %strong Work Finished:
+                      = fsr.work_finished_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
+
+                    .col-md-3
+                      %strong Office In At:
+                      = fsr.office_in_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
+                    .col-md-3
+                      %strong Office Out At:
+                      = fsr.office_out_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
+                  .row
+                    .col-md-3
+                      %strong FSR No:
+                      = fsr.ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])
+                    .col-md-3
+                      %strong Hours Worked(hours):
+                      = fsr.hours_worked
+                    .col-md-3
+                      %strong Down Time(hours):
+                      = fsr.down_time
+                    .col-md-3
+                      %strong Travel(hours):
+                      = fsr.travel_hours
                 %hr
                 - if fsr.ticket_fsr_support_engineers.present?
                   .col-md-6

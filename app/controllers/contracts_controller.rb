@@ -196,8 +196,13 @@ class ContractsController < ApplicationController
   def search_product_contract
     if params[:search_product]
       # @products = Product.where(owner_customer_id: params[:customer_id])
+      if params[:product_category] != ""
+        pro_cat = params[:product_category]
+      else
+        pro_cat = params[:product_category12]
+      end
       if params[:product_brand].present?
-        fined_query = ["owner_customer_id:#{params[:customer_id]}", "product_brand_id:#{params[:product_brand]}", "product_category_id:#{params[:product_category]}", params[:query]].map { |e| e if e.present? }.compact.join(" AND ")
+        fined_query = ["owner_customer_id:#{params[:customer_id]}", "product_brand_id:#{params[:product_brand]}", "product_category_id:#{pro_cat}", params[:query]].map { |e| e if e.present? }.compact.join(" AND ")
         if params[:contract_id].present?
           @contract_id = TicketContract.find params[:contract_id]
           @products = Product.search(query: fined_query).select{|p| !@contract_id.product_ids.map(&:to_s).include? p.id }
@@ -577,7 +582,7 @@ class ContractsController < ApplicationController
 
   private
     def contract_params
-      params.require(:ticket_contract).permit(:id, :created_at, :created_by, :customer_id, :sla_id, :contract_no, :contract_type_id, :hold, :contract_b2b, :remind_required, :currency_id, :amount, :contract_start_at, :contract_end_at, :remarks, :owner_organization_id, :process_at, :legacy_contract_no, :organization_bill_id, :bill_address_id, :organization_contact_id, :product_brand_id, :product_category_id, :contact_person_id, :additional_charges, :season, :contact_address_id, :accepted_at, :payment_type_id, :documnet_received, contract_products_attributes: [ :id, :_destroy, :invoice_id, :item_no, :description, :amount, :sla_id, :remarks, product_attributes: [:id, :_destroy, :serial_no, :product_brand_id, :product_category_id, :model_no, :product_no, :pop_status_id, :sold_country_id, :pop_note, :pop_doc_url, :corporate_product, :sold_at, :sold_by, :remarks]], contract_attachments_attributes: [:id, :_destroy, :attachment_url])
+      params.require(:ticket_contract).permit(:id, :created_at, :created_by, :customer_id, :sla_id, :contract_no, :contract_type_id, :hold, :contract_b2b, :remind_required, :currency_id, :amount, :contract_start_at, :contract_end_at, :remarks, :owner_organization_id, :process_at, :legacy_contract_no, :organization_bill_id, :bill_address_id, :organization_contact_id, :product_brand_id, :product_category_id, :contact_person_id, :additional_charges, :season, :status_id, :contact_address_id, :accepted_at, :payment_type_id, :documnet_received, contract_products_attributes: [ :id, :_destroy, :invoice_id, :item_no, :description, :amount, :sla_id, :remarks, product_attributes: [:id, :_destroy, :serial_no, :product_brand_id, :product_category_id, :model_no, :product_no, :pop_status_id, :sold_country_id, :pop_note, :pop_doc_url, :corporate_product, :sold_at, :sold_by, :remarks]], contract_attachments_attributes: [:id, :_destroy, :attachment_url])
     end
 
     def payment_params

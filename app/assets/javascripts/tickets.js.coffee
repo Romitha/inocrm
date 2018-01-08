@@ -1012,16 +1012,42 @@ window.Tickets =
     product_name = $(":selected", brand_id).text() + " "+$(":selected", category1_id).text() + "|"+ $(":selected", category2_id).text() + "|"+$(":selected", category3_id).text()
     name_id = $("#product_name")
     name_id.val(product_name)
+
   filter_select_new_product: ->
-    category_list = $("#ticket_contract_product_category_id")
-    category_list_html = category_list.html()
-    category_list.prop("disabled", true)
+    category1_list = $("#search_product_category1")
+    category1_list_html = category1_list.html()
+    category1_list.prop("disabled", true)
+
+    category2_list = $("#search_product_category2")
+    category2_list_html = category2_list.html()
+    category2_list.prop("disabled", true)
+
+    category3_list = $("#ticket_contract_product_category_id")
+    category3_list_html = category3_list.html()
+    category3_list.empty()
+    category3_list.prop("disabled", true)
+
     $("#ticket_contract_product_brand_id").change ->
-      category_list.prop("disabled", false)
+      category1_list.prop("disabled", false)
       selected = $("#ticket_contract_product_brand_id :selected").text()
-      filtered_option = $(category_list_html).filter("optgroup[label='#{selected}']").html()
-      category_list.empty().html(filtered_option).trigger('chosen:updated')
-  
+      filtered_option = $(category1_list_html).filter("optgroup[label='#{selected}']").html()
+      category1_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
+      category2_list.empty()
+      category3_list.empty()
+
+    $("#search_product_category1").change ->
+      category2_list.prop("disabled", false)
+      selected = $("#search_product_category1 :selected").text()
+      filtered_option = $(category2_list_html).filter("optgroup[label='#{selected}']").html()
+      category2_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
+      category3_list.empty()
+
+    $("#search_product_category2").change ->
+      category3_list.prop("disabled", false)
+      selected = $("#search_product_category2 :selected").text()
+      filtered_option = $(category3_list_html).filter("optgroup[label='#{selected}']").html()
+      category3_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
+
   filter_category_report: ->
     category_list = $("#search_contracts_category_cat_id")
     category_list_html = category_list.html()
@@ -1159,3 +1185,5 @@ window.Tickets =
     else
       $(".product_brand_main").addClass("hide");
       $(".product_brand_show").removeClass("hide");
+  hello: ->
+    alert "Hello"
