@@ -288,11 +288,11 @@ class ContractsController < ApplicationController
         @contract = TicketContract.new contract_params
       end
 
-      Rails.cache.write([:new_product_with_pop_doc_url1, request.remote_ip], @contract)
+      # Rails.cache.write([:new_product_with_pop_doc_url1, request.remote_ip], @contract)
 
     else
       if params[:save].present?
-        cached_contract = Rails.cache.fetch([:new_product_with_pop_doc_url1, request.remote_ip])
+        # cached_contract = Rails.cache.fetch([:new_product_with_pop_doc_url1, request.remote_ip])
         if params[:contract_id].present?
           @contract = TicketContract.find params[:contract_id]
           
@@ -302,7 +302,7 @@ class ContractsController < ApplicationController
           @contract = (cached_contract or TicketContract.new)
           @contract.attributes = contract_params
         end
-        Rails.cache.delete([:new_product_with_pop_doc_url1, request.remote_ip])
+        # Rails.cache.delete([:new_product_with_pop_doc_url1, request.remote_ip])
         @contract.save
 
         # contract_document_path = File.join(Dir.home, INOCRM_CONFIG["upload_url"], "/contract_documents/#{@contract.id}/")
@@ -483,6 +483,15 @@ class ContractsController < ApplicationController
     @contract_document.destroy
   end
 
+  def remove_pop_document
+    @pop_document = Product.find params[:pop_id]
+    @pop_document.remove_pop_doc_url!
+    @pop_document.save
+    respond_to do |format|
+      format.html {redirect_to customer_search_contracts_path, notice: "Pop Document Removed!"}
+    end
+  end
+
   def contract_update
     @contract = TicketContract.find params[:contract_id]
 
@@ -513,7 +522,13 @@ class ContractsController < ApplicationController
         end
       end
     end
-    render :index
+    if request.xhr?
+      render :index
+    else
+      respond_to do |format|
+        format.html {redirect_to customer_search_contracts_path, notice: "Successfully Saved!"}
+      end
+    end
   end
 
   def delete_warrenty
@@ -522,7 +537,7 @@ class ContractsController < ApplicationController
       @warrenty.delete
     end
     respond_to do |format|
-      format.html {redirect_to customer_search_contracts_path, notice: "Warranty Removed Saved"}
+      format.html {redirect_to customer_search_contracts_path, notice: "Warranty Removed!"}
     end
   end
 

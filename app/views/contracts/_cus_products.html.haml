@@ -166,13 +166,16 @@
                       .col-md-3
                         %strong.small_scale_padding-bottom3{style: "display: block;"} POP note document
                         - if f.object.pop_doc_url.present?
-                          = link_to f.object.pop_doc_url.file.filename, f.object.pop_doc_url.url, target: "_blank"
+                          .pop_url_show
+                            = link_to f.object.pop_doc_url.file.filename, f.object.pop_doc_url.url, target: "_blank"
 
                         = f.label "Upload pop note"
                         / = f.file_field :pop_doc_url, accept: 'image/png,image/gif,image/jpeg,application/pdf', class: "product_pop_doc_url", data: {class: "pop_doc_url_wrapper"}
                         = f.file_field :pop_doc_url, accept: 'image/png,image/gif,image/jpeg,application/pdf'
                         / #preview_of_pop_doc_url{style: "word-wrap: break-word;"}
 
+                        - if product.pop_doc_url.present?
+                          = link_to "Remove", remove_pop_document_contracts_path(pop_id: f.object.id, wrapper: "contract_pop_wrapper_#{f.object.id}"), method: :delete, remote: false, data: {confirm: "Are you sure? Do you want to remove?"}
                         / .pop_doc_url_wrapper
                 %fieldset
                   %legend Corparate Product
@@ -229,7 +232,7 @@
                           %td= warranty.care_pack_product_no
                           %td= warranty.care_pack_reg_no
                           %td= warranty.note
-                
+
                 = f.simple_fields_for :warranties do |w| # "products_attributes[]", w.object.warranties.build
                   - if w.object.new_record?
                     %fieldset

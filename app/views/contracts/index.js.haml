@@ -1,6 +1,6 @@
-- if params[:product] and params[:product][:pop_doc_url]
-  $("#preview_of_pop_doc_url").html("#{@new_product.pop_doc_url.file.filename if @new_product.pop_doc_url.present?}");
-  $(".pop_doc_url_wrapper").empty();
+/ - if params[:product] and params[:product][:pop_doc_url]
+/   $("#preview_of_pop_doc_url").html("#{@new_product.pop_doc_url.file.filename if @new_product.pop_doc_url.present?}");
+/   $(".pop_doc_url_wrapper").empty();
 
 
 
@@ -63,7 +63,7 @@
 
 
 - elsif params[:select_contract].present?
-  $("#contractselect").html("#{j render 'cont racts/contractproducts'}");
+  $("#contractselect").html("#{j render 'contracts/contractproducts'}");
 
 - elsif params[:search_product].present?
   $("#searchproduct").html("#{j render 'contracts/searchproduct'}");
@@ -88,9 +88,6 @@
       $("#contract_alert #content").html("successfully saved");
       $("#contract_alert").removeClass("hide");
       $("a[href='#contracts_ticket_form_collapse_search_customers_link']").trigger("click");
-
-
-
 Tickets.initial_loaders();
 Contracts.disabled_datepicker();
 Tickets.remove_ajax_loader();
