@@ -1,7 +1,7 @@
 class OrganizationsController < ApplicationController
   # load_and_authorize_resource
   # before_action :authenticate_user!
-  before_action :set_organization, only: [:show, :edit, :update, :relate, :remove_relation, :dashboard, :option_for_vat_number, :demote_as_department, :remove_department_org, :pin_relation]
+  before_action :set_organization, only: [:show, :edit, :update, :relate, :remove_relation, :dashboard, :option_for_vat_number, :demote_as_department, :remove_department_org, :pin_relation, :create_organization_contact_person]
 
   def index
     ContactNumber

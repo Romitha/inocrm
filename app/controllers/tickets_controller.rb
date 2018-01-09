@@ -1192,8 +1192,8 @@ class TicketsController < ApplicationController
     @ticket_engineer = TicketEngineer.find(params[:ticket_engineer_id])
 
     response = if @ticket_engineer.deletable?
-      @ticket_engineer.ticket_support_engineers.delete_all
-      @ticket_engineer.delete
+      @ticket_engineer.ticket_support_engineers.destroy_all # if delete_all is set, foreign_key will be set to null, but not deleting record.
+      @ticket_engineer.destroy
     end
 
     render json: response
