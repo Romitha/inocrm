@@ -34,9 +34,9 @@
         %td
           = history.problem_description
         %td
-          //= history.date_resolve
+          = history.job_closed_at.try(:strftime, INOCRM_CONFIG["short_date_format"])
         %td
-          //= history.payment_pending
+          = boolean_in_word !(history.cus_payment_completed or !history.cus_payment_required), "Pending", "Not Pending"
         %td
           = history.remarks and simple_format(history.remarks.split("<br/>").first)
         %td

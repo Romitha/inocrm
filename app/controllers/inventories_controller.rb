@@ -1335,7 +1335,7 @@ class InventoriesController < ApplicationController
 
             end
 
-            @inventory_serial_item_attributes.merge! damage: params[:damage_reason_check].present?, updated_by: current_user.id
+            # @inventory_serial_item_attributes.merge! damage: params[:damage_reason_check].present?, updated_by: current_user.id
             @inventory_serial_item.attributes = @inventory_serial_item_attributes
             @inventory_serial_item.save
             @inventory_serial_item.update(batch_id: @inv_batch.id) if @inv_batch.present?
@@ -1364,7 +1364,7 @@ class InventoriesController < ApplicationController
             @inv_grn_serial_item = @inv_grn_item.grn_serial_items.build
             @inv_grn_serial_item.serial_item_id = @inventory_serial_item.id
             @inv_grn_serial_item.remaining = 1
-            @inv_grn.save
+            @inv_grn.save!
 
             @inv_grn_item.grn_item_current_unit_cost_histories.create created_by: current_user.id, current_unit_cost: @inv_grn_item.current_unit_cost
 
@@ -1395,7 +1395,12 @@ class InventoriesController < ApplicationController
                 disposed_quantity: 0
               })
 
-              @inv_damage.save
+              if @inv_damage.save!
+                @inventory_serial_item.damage = true
+                @inventory_serial_item.updated_by = current_user.id
+
+              end
+
             else
               @inventory_serial_item.inventory.update({ 
                 stock_quantity: (@inventory_serial_item.inventory.stock_quantity.to_f + 1), 
@@ -1421,7 +1426,7 @@ class InventoriesController < ApplicationController
 
             @returned = true
 
-            @inventory_serial_item.update_index
+            @inventory_serial_item.save
 
           elsif @inventory_batch.present?  # Inventory Batch Item Returned
 
