@@ -6,30 +6,32 @@
 
 = tab_panel do
   / - if ticket.ticket_closed?
-  = tab_nav_tab({class: "small_scale_margin-bottom1"}, ticket_info: {content: "Ticket info", active_class: "active"} )
-  - unless ticket.ticket_closed?
-    - if ticket.final_invoice_id.present?
+  /   = tab_nav_tab({class: "small_scale_margin-bottom1"}, ticket_info: {content: "Ticket info", active_class: "active"} )
+  / - else
+  - if ticket.final_invoice_id.present?
 
-      = tab_nav_tab({class: "small_scale_margin-bottom1"}, ticket_info: {content: "Ticket info"}, customer_feedback: {content: "Customer Feedback", active_class: "active"}, view_invoice: {content: "Invoice"} )
-      / , inform_customer: {content: "Contact customer"}
+    = tab_nav_tab({class: "small_scale_margin-bottom1"}, ticket_info: {content: "Ticket info"}, customer_feedback: {content: "Customer Feedback", active_class: "active"}, view_invoice: {content: "Invoice"} )
+    / , inform_customer: {content: "Contact customer"}
+  - else
+    = tab_nav_tab({class: "small_scale_margin-bottom1"}, ticket_info: {content: "Ticket info"} ), customer_feedback: {content: "Customer Feedback", active_class: "active"}
 
   .tab-content
     = tab_content tabpointer: :ticket_info, active_class: "#{'active' if ticket.ticket_closed? }" do
       = tab_panel do
         = render "tickets/tickets_pack/ticket_info", ticket: ticket, product: product
 
-    - unless ticket.ticket_closed?
-      = tab_content tabpointer: :customer_feedback, active_class: "active" do
+    / - unless ticket.ticket_closed?
+    = tab_content tabpointer: :customer_feedback, active_class: "active" do
+      = tab_panel do
+        #customer_feedback
+          = render "tickets/tickets_pack/customer_feedback/customer_feedback", ticket: ticket, product: product, return_bundle: return_bundle, return_bundle_manufactures: return_bundle_manufactures
+
+    - if ticket.final_invoice_id.present?
+      = tab_content tabpointer: :view_invoice do
         = tab_panel do
-          #customer_feedback
-            = render "tickets/tickets_pack/customer_feedback/customer_feedback", ticket: ticket, product: product, return_bundle: return_bundle, return_bundle_manufactures: return_bundle_manufactures
+          = render "tickets/tickets_pack/customer_feedback/view_invoice", ticket: ticket
 
-      - if ticket.final_invoice_id.present?
-        = tab_content tabpointer: :view_invoice do
+      .hide
+        = tab_content tabpointer: :inform_customer do
           = tab_panel do
-            = render "tickets/tickets_pack/customer_feedback/view_invoice", ticket: ticket
-
-        .hide
-          = tab_content tabpointer: :inform_customer do
-            = tab_panel do
-              = render "tickets/tickets_pack/customer_feedback/inform_customer", ticket: ticket, product: product
+            = render "tickets/tickets_pack/customer_feedback/inform_customer", ticket: ticket, product: product

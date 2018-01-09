@@ -872,8 +872,6 @@ class TicketsController < ApplicationController
     @bpm_response = view_context.send_request_process_data process_history: true, process_instance_id: 1, variable_id: "ticket_id"
     if !@bpm_response[:status].present? or @bpm_response[:status].upcase == "ERROR"
       @messages << "BPM error. Please continue after rectify BPM."
-    elsif not warranty_constraint
-      @messages << "There are no present #{@ticket.warranty_type.name} for the product to initiate particular warranty related ticket."
     else
       @continue = true
     end
