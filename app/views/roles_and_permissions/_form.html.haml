@@ -7,7 +7,7 @@
         = content_tag(:div, "#{organization.name} (#{organization.category})", class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "More about #{organization.name}")
       -else
         = content_tag(:div, "#{organization.name}", class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "More about #{organization.name}")
-    Vat Number: #{organization.account.try(:vat_number)}
+    VAT Number: #{organization.account.try(:vat_number)}
     %div= link_to organization.web_site, organization.web_site, target: "_blank"
 
   = tab_panel do

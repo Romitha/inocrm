@@ -83,7 +83,7 @@
         = organization.short_name
         
   .row
-    .col-lg-6.padding-left0= "Vat Number: #{organization.account.vat_number}" if organization.account.vat_number
+    .col-lg-6.padding-left0= "VAT Number: #{organization.account.vat_number}" if organization.account.vat_number
     .col-lg-6.pull-right.padding0.text-right= link_to "Visit website",organization.web_site, data: {toggle: "tooltip", placement: "bottom"}, title: organization.web_site, rel: "tooltip", :target => "_blank" 
   .row.small_scale_margin-top1
     .col-lg-12.padding0
