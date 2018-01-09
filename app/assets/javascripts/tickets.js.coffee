@@ -867,11 +867,11 @@ window.Tickets =
     });
 
   dynamically_filter_select_for_new:->
-    category1_list = $("#search_product_category1")
+    category1_list = $("#search_product_category1_cus_product")
     category1_list_html = category1_list.html()
     category1_list.empty()
 
-    category2_list = $("#search_product_category2")
+    category2_list = $("#search_product_category2_cus_product")
     category2_list_html = category2_list.html()
     category2_list.empty()
 
@@ -887,20 +887,21 @@ window.Tickets =
       category2_list.empty()
       category3_list.empty()
 
-    $("#search_product_category1").change ->
+    $("#search_product_category1_cus_product").change ->
       selected = $(":selected", @).text()
       console.log(selected)
       filtered_option = $(category2_list_html).filter("optgroup[label='#{selected}']").html()
       category2_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
       category3_list.empty()
 
-    $("#search_product_category2").change ->
+    $("#search_product_category2_cus_product").change ->
       selected = $(":selected", @).text()
       console.log(selected)
       filtered_option = $(category3_list_html).filter("optgroup[label='#{selected}']").html()
       category3_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
 
   dynamically_filter_select: (el, position, parent_class='', cat1, cat2)->
+    console.log 'start'
     $('.datepicker').datepicker({
     format: "yyyy-m-dd",
     todayBtn: true,
@@ -908,6 +909,7 @@ window.Tickets =
     });
     _this = $(el)
     if position == "prev"
+      console.log 'say prev' 
       brand_id = _this.prev().find(".select_wrapper .product_brand")
       category1_id = _this.prev().find(".select_wrapper .product_category1")
       category2_id = _this.prev().find(".select_wrapper .product_category2")
@@ -949,10 +951,12 @@ window.Tickets =
 
 
     else if position == "parent"
+      console.log 'say parent'
       brand_id = _this.parents("."+parent_class).eq(0).find(".select_wrapper .product_brand")
       category1_id = _this.parents("."+parent_class).eq(0).find(".select_wrapper .product_category1")
       category2_id = _this.parents("."+parent_class).eq(0).find(".select_wrapper .product_category2")
       category3_id = _this.parents("."+parent_class).eq(0).find(".select_wrapper .product_category")
+      console.log category1_id
 
       category1_list = category1_id
       category1_list_html = category1_list.html()
@@ -973,11 +977,12 @@ window.Tickets =
       category3_id.prop("disabled", true)
 
       brand_id.change ->
+        console.log 'triggered'
         category1_id.prop("disabled", false)
         category2_id.prop("disabled", false)
         category3_id.prop("disabled", false)
         selected = $(":selected", @).text()
-        console.log(selected)
+        console.log(category1_list_html)
         filtered_option = $(category1_list_html).filter("optgroup[label='#{selected}']").html()
         category1_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
         category2_list.empty()

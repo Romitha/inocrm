@@ -40,8 +40,9 @@
   $("a[href='#contracts_ticket_form_collapse_search_customers_link']").trigger("click");
   Inventories.filter_product();
   Inventories.filter_category();
-  Tickets.dynamically_filter_select_for_new();
   $("a[href='#contracts_ticket_form_collapse_contracts_link']").trigger("click");
+  - if @organization.products.count == 0
+    Tickets.dynamically_filter_select_for_new();
 
 - elsif params[:select_product_ticket].present?
   $("#contractlist1").removeClass("hide");
@@ -93,8 +94,7 @@ Contracts.disabled_datepicker();
 Tickets.remove_ajax_loader();
 Tickets.multi_pop_url_doc_upload();
 Tickets.disabled_end_at();
-Tickets.filter_select_new_product();
 Tickets.filter_bill_address();
-
+Tickets.filter_select_new_product();
 $("#ticket_contract_contract_end_at").prop('disabled', ($("#ticket_contract_contract_end_at").val() == ''));
 $("a[rel~=popover], .has-popover").popover();

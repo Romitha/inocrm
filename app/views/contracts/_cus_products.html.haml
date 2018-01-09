@@ -82,7 +82,7 @@
           .panel.panel-info
             .panel-heading{role: "tab", id: "headingOne_#{f.object.id}"}
               %h4.panel-title
-                %a{"aria-controls" => "collapseOne_#{}", "aria-expanded" => "true", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseOne_#{f.object.id}", :role => "button", onclick:"Tickets.dynamically_filter_select(this, 'parent', 'panel-info', '#{f.object.try(:category1_name)}', '#{f.object.try(:category2_name)}');"}
+                %a{"aria-controls" => "collapseOne_#{}", "aria-expanded" => "true", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseOne_#{f.object.id}", :role => "button", onclick:"Tickets.dynamically_filter_select(this, 'parent', 'panel-info', '#{f.object.try(:category1_name)}', '#{f.object.try(:category2_name)}'); return false;"}
                   Product: #{f.object.product_brand.try(:name)}: #{f.object.category_full_name("|")}: #{f.object.serial_no}
             .panel-collapse.collapse{"aria-labelledby" => "headingOne_#{f.object.id}", :id => "collapseOne_#{f.object.id}", :role => "tabpanel"}
 
@@ -101,7 +101,7 @@
                   .row
                     .col-md-6
                       = label_tag "Category :"
-                      = product.product_category.try(:name)
+                      = product.category_full_name_index
                   .row
                     .col-md-2
                       = label_tag "Model No :"
@@ -129,11 +129,11 @@
                       .col-md-3
                         %font{:color => "#90032A"}
                           = label_tag "Product Category 1"
-                          = select_tag "search_product_category1", option_groups_from_collection_for_select(ProductBrand.all, :product_category1s, :name, :id, :name, "#"), include_blank: true, class: "product_category1 form-control"
+                          = select_tag "search_product_category1_cus_product", option_groups_from_collection_for_select(ProductBrand.all, :product_category1s, :name, :id, :name, "#"), include_blank: true, class: "product_category1 form-control"
                       .col-md-3
                         %font{:color => "#90032A"}
                           = label_tag "Product Category 2"
-                          = select_tag "search_product_category2", option_groups_from_collection_for_select(ProductCategory1.all, :product_category2s, :name, :id, :name, "#"), include_blank: true, class: "product_category2 form-control"
+                          = select_tag "search_product_category2_cus_product", option_groups_from_collection_for_select(ProductCategory1.all, :product_category2s, :name, :id, :name, "#"), include_blank: true, class: "product_category2 form-control"
 
                       / .col-md-3
                       /   = label_tag "Product Category 3"
@@ -299,11 +299,11 @@
               .col-md-3
                 %font{:color => "#90032A"}
                   = label_tag "Product Category 1"
-                  = select_tag "search_product_category1", option_groups_from_collection_for_select(ProductBrand.all, :product_category1s, :name, :id, :name, "#"), include_blank: true, class: "product_category1 form-control"
+                  = select_tag "search_product_category1_cus_product", option_groups_from_collection_for_select(ProductBrand.all, :product_category1s, :name, :id, :name, "#"), include_blank: true, class: "product_category1 form-control"
               .col-md-3
                 %font{:color => "#90032A"}
                   = label_tag "Product Category 2"
-                  = select_tag "search_product_category2", option_groups_from_collection_for_select(ProductCategory1.all, :product_category2s, :name, :id, :name, "#"), include_blank: true, class: "product_category2 form-control"
+                  = select_tag "search_product_category2_cus_product", option_groups_from_collection_for_select(ProductCategory1.all, :product_category2s, :name, :id, :name, "#"), include_blank: true, class: "product_category2 form-control"
                 
               / .col-md-3
               /   = label_tag "Product Category 3"
