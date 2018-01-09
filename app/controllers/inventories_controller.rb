@@ -1486,19 +1486,19 @@ class InventoriesController < ApplicationController
             @inv_grn_item.grn_item_current_unit_cost_histories.create created_by: current_user.id, current_unit_cost: @inv_grn_item.current_unit_cost
 
             #inv_inventory Edit
-            inventory_increments = {stock_quantity: (@inventory_batch.inventory.stock_quantity.to_f + @inv_srr_item.quantity.to_f)}
-            # @inventory_batch.inventory.increment! :stock_quantity, @inv_srr_item.quantity
+            # inventory_increments = {stock_quantity: (@inventory_batch.inventory.stock_quantity.to_f + @inv_srr_item.quantity.to_f)}
+            # # @inventory_batch.inventory.increment! :stock_quantity, @inv_srr_item.quantity
 
-            if params[:damage_reason_check].present?
-              inventory_increments.merge! {damage_quantity: (@inventory_batch.inventory.damage_quantity.to_f + @inv_srr_item.quantity.to_f)}
+            # if params[:damage_reason_check].present?
+            #   inventory_increments.merge! {damage_quantity: (@inventory_batch.inventory.damage_quantity.to_f + @inv_srr_item.quantity.to_f)}
 
-              # @inventory_batch.inventory.increment! :damage_quantity, @inv_srr_item.quantity
+            #   # @inventory_batch.inventory.increment! :damage_quantity, @inv_srr_item.quantity
 
-            else
-              inventory_increments.merge! {available_quantity: (@inventory_batch.inventory.available_quantity.to_f + @inv_srr_item.quantity.to_f)}
-              # @inventory_batch.inventory.increment! :available_quantity, @inv_srr_item.quantity
+            # else
+            #   inventory_increments.merge! {available_quantity: (@inventory_batch.inventory.available_quantity.to_f + @inv_srr_item.quantity.to_f)}
+            #   # @inventory_batch.inventory.increment! :available_quantity, @inv_srr_item.quantity
 
-            end
+            # end
 
             # inv_damage - Add
             if params[:damage_reason_check].present?
