@@ -1546,6 +1546,7 @@ class InventoriesController < ApplicationController
             @inv_srr_item.update closed: true
 
             @inventory_batch.inventory.update inventory_increments
+            @inventory_batch.inventory.update_relation_index
 
             @returned = true
 
@@ -1625,6 +1626,9 @@ class InventoriesController < ApplicationController
 
               # inv_srr_item - edit
               @inv_srr_item.update closed: true
+
+              @inv_inventory.update_relation_index
+
             #else # update record
               # Not Applicable
             end

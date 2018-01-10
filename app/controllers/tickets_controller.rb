@@ -3551,6 +3551,7 @@ class TicketsController < ApplicationController
               @grn_serial_item.grn_item.update remaining_quantity: (@grn_serial_item.grn_item.remaining_quantity-1)
 
               @grn_serial_item.inventory_serial_item.inventory.update stock_quantity: (@grn_serial_item.inventory_serial_item.inventory.stock_quantity - 1), available_quantity: (@grn_serial_item.inventory_serial_item.inventory.available_quantity - 1)
+              @grn_serial_item.inventory_serial_item.inventory.update_relation_index
               @issued = true
             end
 
@@ -3577,6 +3578,8 @@ class TicketsController < ApplicationController
               @inventory = Inventory.where(store_id: @grn_batch.grn_item.grn.store_id, product_id: @grn_batch.grn_item.product_id).order("created_at asc").first
 
               @inventory.update stock_quantity: (@inventory.stock_quantity - @srn_item.quantity), available_quantity: (@inventory.available_quantity - @srn_item.quantity)
+              @inventory.update_relation_index
+
               @issued = true
             end
 
@@ -3601,6 +3604,8 @@ class TicketsController < ApplicationController
               @inventory = Inventory.where(store_id: @grn_item.grn.store_id, product_id: @grn_item.product_id).order("created_at asc").first
 
               @inventory.update stock_quantity: (@inventory.stock_quantity - @srn_item.quantity), available_quantity: (@inventory.available_quantity - @srn_item.quantity)
+              @inventory.update_relation_index
+
               @issued = true
             end
 
@@ -3623,6 +3628,9 @@ class TicketsController < ApplicationController
           spare_part: true,
           inventory_not_updated: @inventory_not_updated
           )#inv_gin_item
+
+          @srn_item.srn.update closed: true
+          @srn_item.update closed: true
 
           gin_source = gin_item.gin_sources.create(grn_item_id: @iss_grn_item_id, grn_batch_id: @iss_grn_batch_id, grn_serial_item_id: @iss_grn_serial_item_id, grn_serial_part_id: @iss_grn_serial_part_id, main_part_grn_serial_item_id: @iss_main_part_grn_serial_item_id, issued_quantity: @srn_item.quantity, unit_cost: @part_cost_price, returned_quantity: 0)#inv_gin_source
 
