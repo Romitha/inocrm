@@ -8,12 +8,6 @@ class ContractsController < ApplicationController
     Product
     ContactNumber
 
-    # if params[:search].present?
-    #   refined_contract = params[:contract].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
-    #   params[:query] = refined_contract
-    #   @contracts = TicketContract.search(params)
-    # end
-
     if params[:search].present?
       refined_customer = params[:organization_customers].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
       params[:query] = ["accounts_dealer_types.dealer_code:CUS", refined_customer].map { |v| v if v.present? }.compact.join(" AND ")
@@ -166,6 +160,7 @@ class ContractsController < ApplicationController
     Ticket
     Rails.cache.delete([:contract_products, request.remote_ip])
 
+    authorize :view_contract, Organization
     @organization = Organization.find params[:customer_id]
     @products = ContractProduct.all
 
@@ -374,6 +369,7 @@ class ContractsController < ApplicationController
 
   def generate_contract_document
     Ticket
+    authorize! :generate_contract_document, TicketContract
     @contract = TicketContract.find(params[:contract_id])
     # contract_document_path = File.join(Dir.home, INOCRM_CONFIG["upload_url"], "/contract_brand_documents/#{@contract.id}/")
     # contract_document_dir = Dir.exist?(contract_document_path)

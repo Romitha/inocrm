@@ -101,7 +101,7 @@ class TicketsController < ApplicationController
   def find_by_serial
     serial_no = params[:serial_search]
     if serial_no.blank?
-      render js: "alert('Please enter any serial no');"
+      render js: "alert('Please enter any serial no'); Tickets.remove_ajax_loader();"
     else
       session[:product_id] = nil
       session[:customer_id] ||= nil

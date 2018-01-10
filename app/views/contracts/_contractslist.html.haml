@@ -1,11 +1,6 @@
 - organization = @organization
 - contracts = @contracts
 
-/ - contract_products = if params[:from_where] == "new_ticket"
-/   - @contract_products.to_a.select{|c| (c.ticket_contract.contract_start_at.to_date .. c.ticket_contract.contract_end_at.to_date).include?(Date.today)}
-/ - else
-/   - @contract_products.to_a.uniq{|c| c.contract_id }
-
 .row
   .col-md-12
     .row
@@ -33,8 +28,6 @@
           %dd= organization.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
           %dt Created by:
           %dd= organization.created_by_user.try(:full_name)
-          / %dt Under contract:
-          / %dd
       %br
 
     %table.table.table-bordered
@@ -83,21 +76,16 @@
             %td= boolean_in_word con.payment_completed, "Yes", "No"
 
             %td
-              / - if params[:from_where] == "new_ticket"
-              /   / %td= link_to "Select", contracts_path(select_contract: true, contract_id: con.id, customer_id: organization.id), remote: true
-              /   = link_to "Select", find_by_serial_tickets_path(contract_id: con.ticket_contract.id, serial_search: con.product.serial_no), remote: true, method: :post
-              / - else
               -if !con.tickets.present?
-                = link_to "Edit", contracts_path(edit_create: true, contract_id: con.id, customer_id: con.organization.id), remote: true, onclick: "Tickets.ajax_loader(); return false;"
+                = link_to_if can?(:save, Organization), "Edit", contracts_path(edit_create: true, contract_id: con.id, customer_id: con.organization.id), remote: true, onclick: "Tickets.ajax_loader(); return false;"
               %br
-              = link_to "View", view_contracts_path(contract_id: con.id, customer_id: con.organization.id), target: "_blank", remote: false
+              = link_to_if can?(:view_contract, Organization), "View", view_contracts_path(contract_id: con.id, customer_id: con.organization.id), target: "_blank", remote: false
               %br
-              = link_to "Payments", contracts_path(view_contract: true, new_payments: true, contract_id: con.id, customer_id: con.organization.id),target: "_blank",  remote: false
+              = link_to_if can?(:contract_payment, Organization), "Payments", contracts_path(view_contract: true, new_payments: true, contract_id: con.id, customer_id: con.organization.id),target: "_blank",  remote: false do
+                "Not accessed to payment"
               %br
-              = link_to "Generate Document", generate_contract_document_contracts_path(contract_id: con.id), method: :post
+              = link_to can?(:generate_contract_document, TicketContract), "Generate Document", generate_contract_document_contracts_path(contract_id: con.id), method: :post
     %br
     - unless params[:from_where] == "new_ticket"
-      = link_to "New Contract", contracts_path(edit_create: true, new_contract: true,  customer_id: organization.id), remote: true, class: "btn btn-sm btn-warning", onclick: "Tickets.ajax_loader(); return false;"
+      = link_to_if can?(:save, Organization), "New Contract", contracts_path(edit_create: true, new_contract: true,  customer_id: organization.id), remote: true, class: "btn btn-sm btn-warning", onclick: "Tickets.ajax_loader(); return false;"
     %br
-    %br
-/ #contractedit

@@ -52,14 +52,6 @@ Organization:
     system_module:
       name: Organization
 
-  Modify customer contact details:
-    actions:
-      - inline_customer_contact_detail
-    attributes:
-      []
-    system_module:
-      name: Contract
-
   Access customer product:
     actions:
       - customer_search
@@ -170,6 +162,18 @@ Organization:
       - store_and_branch
     system_module:
       name: Organization
+
+  Contract payment access:
+    actions:
+      - contract_payment
+    system_module:
+      name: Contract
+
+  View Contract Access:
+    actions:
+      - view_contract
+    system_module:
+      name: Contract
 
 ProductSoldCountry:
   Access admin country information:
@@ -595,3 +599,12 @@ User:
       - upload_avatar
     system_module:
       name: User
+
+Customer:
+  Modify customer contact details:
+    actions:
+      - inline_customer_contact_detail
+    attributes:
+      []
+    system_module:
+      name: Organization

@@ -42,7 +42,9 @@ class OrganizationsController < ApplicationController
 
   def edit
     authorize! :edit, @organization
-    authorize! :access_owner_org, @organization
+    if @organization.id == Organization.owner.id
+      authorize! :access_owner_org, @organization
+    end
 
     Rails.cache.delete(:upload_logo)
     ContactNumber
@@ -54,7 +56,9 @@ class OrganizationsController < ApplicationController
 
   def show
     authorize! :show, @organization
-    authorize! :access_owner_org, @organization
+    if @organization.id == Organization.owner.id
+      authorize! :access_owner_org, @organization
+    end
     ContactNumber
     Product
   end
@@ -101,7 +105,9 @@ class OrganizationsController < ApplicationController
     # @organization = Organization.new organization_params
     @organization.attributes = organization_params
     authorize! :update, Organization
-    authorize! :access_owner_org, @organization
+    if @organization.id == Organization.owner.id
+      authorize! :access_owner_org, @organization
+    end
 
     respond_to do |format|
       if @organization.update_attributes(organization_params)
@@ -116,6 +122,7 @@ class OrganizationsController < ApplicationController
   end
 
   def inline_customer_contact_detail
+    authorize! :inline_customer_contact_detail, Customer
     @customer = Customer.find params[:customer_id]
     if @customer.update customer_params
       render json: @customer
