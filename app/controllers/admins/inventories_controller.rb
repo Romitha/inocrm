@@ -1279,6 +1279,8 @@ module Admins
         if Rails.cache.fetch([ :extra_objects, srr_item_source_id, session[:grn_arrived_time].to_i ] ).present?
           inventory_serial_item = Rails.cache.fetch([ :extra_objects, srr_item_source_id, session[:grn_arrived_time].to_i ] )[:inventory_serial_item]
 
+          inventory_serial_item.try(:inv_status_id) = InventorySerialItemStatus.find_by_code("AV").id
+
           damage_request = Rails.cache.fetch([ :extra_objects, srr_item_source_id, session[:grn_arrived_time].to_i ] )[:damage_request]
 
           if damage_request.present?
@@ -1297,11 +1299,12 @@ module Admins
 
             grn_item.grn_batches.first.update remaining_quantity: (grn_item.grn_batches.first.remaining_quantity - damage_request.quantity) if grn_item.grn_batches.first.present?  
 
-            grn_item.grn_batches.first.update damage_quantity: damage_request.quantity if grn_item.grn_batches.first.present?      
+            grn_item.grn_batches.first.update damage_quantity: damage_request.quantity if grn_item.grn_batches.first.present?
+
           end
 
           # InventorySerialItem.find(inventory_serial_item.id).update_index
-          inventory_serial_item.save! if inventory_serial_item.present? # it make anavailable item to available item 
+          inventory_serial_item.save! if inventory_serial_item.present? # it make unavailable item to available item 
 
         end
 

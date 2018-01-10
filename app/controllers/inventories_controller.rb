@@ -1337,8 +1337,9 @@ class InventoriesController < ApplicationController
 
             # @inventory_serial_item_attributes.merge! damage: params[:damage_reason_check].present?, updated_by: current_user.id
             @inventory_serial_item.attributes = @inventory_serial_item_attributes
+            @inventory_serial_item.batch_id = @inv_batch.id if @inv_batch.present?
+            @inventory_serial_item.inv_status_id = InventorySerialItemStatus.find_by_code("AV").id
             @inventory_serial_item.save
-            @inventory_serial_item.update(batch_id: @inv_batch.id) if @inv_batch.present?
 
             # inv_grn - add
             @inv_grn = Grn.new store_id: @inv_srr.store.id, grn_no: CompanyConfig.first.increase_inv_last_grn_no, srr_id: @inv_srr.id, created_by: current_user.id
@@ -1349,7 +1350,7 @@ class InventoriesController < ApplicationController
             @inv_grn_item_attributes.merge!({
               product_id:  @inventory_serial_item.product_id,
               recieved_quantity: 1,
-              remaining_quantity: 1,
+              remaining_quantity: (params[:damage_reason_check].present? ? 0 : 1),
               reserved_quantity: 0,
               damage_quantity: (params[:damage_reason_check].present? ? 1 : 0),
               current_unit_cost: @inv_grn_item.unit_cost,
@@ -1363,7 +1364,7 @@ class InventoriesController < ApplicationController
             # inv_grn_serial_item - Add
             @inv_grn_serial_item = @inv_grn_item.grn_serial_items.build
             @inv_grn_serial_item.serial_item_id = @inventory_serial_item.id
-            @inv_grn_serial_item.remaining = true
+            @inv_grn_serial_item.remaining = !params[:damage_reason_check].present? 
             @inv_grn.save!
 
             @inv_grn_item.grn_item_current_unit_cost_histories.create created_by: current_user.id, current_unit_cost: @inv_grn_item.current_unit_cost
@@ -1426,7 +1427,8 @@ class InventoriesController < ApplicationController
 
             @returned = true
 
-            @inventory_serial_item.save
+            @inventory_serial_item.save!
+            InventorySerialItem.find(@inventory_serial_item.id).async.update_index
 
             @inventory_serial_item.inventory.update_relation_index
 

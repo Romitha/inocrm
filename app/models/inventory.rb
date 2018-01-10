@@ -95,7 +95,7 @@ class Inventory < ActiveRecord::Base
     # Srn.joins(:srn_items).where( store_id: store_id, inv_srn_item: {product_id: product_id} ).where.not(closed: true).async.import
 
     [:inventory_product].each do |parent|
-      send(parent).update_index
+      send(parent).async(queue: 'index-model').update_index
 
       # parent.to_s.classify.constantize.find(self.send(parent).id).grn_items.each{ |grn_item| grn_item.update_relation_index }
 
@@ -103,7 +103,7 @@ class Inventory < ActiveRecord::Base
 
   end
 
-  handle_asynchronously :update_relation_index, queue: 'index-model', pri: 5000, delay: 3.seconds, ttr: 0
+  # handle_asynchronously :update_relation_index, queue: 'index-model', pri: 5000, delay: 3.seconds, ttr: 0
 
   def reset_values
     if (["stock_quantity", "available_quantity"] & changed).present?
