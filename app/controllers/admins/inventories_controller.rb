@@ -1279,7 +1279,7 @@ module Admins
         if Rails.cache.fetch([ :extra_objects, srr_item_source_id, session[:grn_arrived_time].to_i ] ).present?
           inventory_serial_item = Rails.cache.fetch([ :extra_objects, srr_item_source_id, session[:grn_arrived_time].to_i ] )[:inventory_serial_item]
 
-          inventory_serial_item.try(:inv_status_id) = InventorySerialItemStatus.find_by_code("AV").id
+          inventory_serial_item.inv_status_id = InventorySerialItemStatus.find_by_code("AV").id if inventory_serial_item.present?
 
           damage_request = Rails.cache.fetch([ :extra_objects, srr_item_source_id, session[:grn_arrived_time].to_i ] )[:damage_request]
 
