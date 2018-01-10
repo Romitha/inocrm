@@ -37,7 +37,7 @@ class InventoriesController < ApplicationController
         approved_inventory_product = (@inventory_product || @inventory.inventory_product)
         # isi = approved_inventory_product.inventory_serial_items.joins(:inventory).where(inv_inventory: {store_id: session[:requested_store_id].to_i}, inv_status_id: InventorySerialItemStatus.find_by_code("AV").id)
 
-        gsi = GrnSerialItem.includes(:inventory_serial_item).where(grn_item_id: approved_inventory_product.grn_items.select{|grn_item| grn_item.grn.store_id == session[:requested_store_id]}.map{|grn_item| grn_item.id}, remaining: 1)
+        gsi = GrnSerialItem.includes(:inventory_serial_item).where(grn_item_id: approved_inventory_product.grn_items.select{|grn_item| grn_item.grn.store_id == session[:requested_store_id]}.map{|grn_item| grn_item.id}, remaining: true)
 
         if approved_inventory_product.fifo
           # @main_part_serial = isi.select{|i| i.grn_items.present? }.sort{|p, n| p.grn_items.last.grn.created_at <=> n.grn_items.last.grn.created_at}
@@ -1213,7 +1213,7 @@ class InventoriesController < ApplicationController
             @inv_grn_part = @inv_grn_item.grn_serial_parts.build
             @inv_grn_part.serial_item_id = @main_inventory_serial_part.id
             @inv_grn_part.inv_serial_part_id = @inventory_serial_part.id
-            @inv_grn_part.remaining = 1
+            @inv_grn_part.remaining = true
 
             @inv_grn.save
 
@@ -1363,7 +1363,7 @@ class InventoriesController < ApplicationController
             # inv_grn_serial_item - Add
             @inv_grn_serial_item = @inv_grn_item.grn_serial_items.build
             @inv_grn_serial_item.serial_item_id = @inventory_serial_item.id
-            @inv_grn_serial_item.remaining = 1
+            @inv_grn_serial_item.remaining = true
             @inv_grn.save!
 
             @inv_grn_item.grn_item_current_unit_cost_histories.create created_by: current_user.id, current_unit_cost: @inv_grn_item.current_unit_cost
@@ -1427,6 +1427,8 @@ class InventoriesController < ApplicationController
             @returned = true
 
             @inventory_serial_item.save
+
+            @inventory_serial_item.inventory.update_relation_index
 
           elsif @inventory_batch.present?  # Inventory Batch Item Returned
 

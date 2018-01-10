@@ -679,7 +679,7 @@ class InventorySerialItem < ActiveRecord::Base
   accepts_nested_attributes_for :grn_serial_items, allow_destroy: true
   has_many :grn_items, through: :grn_serial_items
 
-  has_many :remaining_grn_items, -> { where("inv_grn_serial_item.remaining= ?", true)}, through: :grn_serial_items, source: :grn_item
+  has_many :remaining_grn_items, -> { where("inv_grn_serial_item.remaining = ?", true)}, through: :grn_serial_items, source: :grn_item
 
   has_many :inventory_serial_items_additional_costs, foreign_key: :serial_item_id
   accepts_nested_attributes_for :inventory_serial_items_additional_costs, allow_destroy: true

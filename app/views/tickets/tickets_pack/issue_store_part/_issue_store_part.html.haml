@@ -443,7 +443,7 @@
             = sto.input :note, input_html: { value: nil}
             = simple_format sto.object.note
         .col-md-12
-          = f.submit "Save", class: "btn btn-success btn-sm", id: "approve_store_part"
+          = f.submit "Save", class: "btn btn-success btn-sm", id: "approve_store_part", data: {disable_with: "Please wait..."}
 
 
 #inventory_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "inventory_modal", "aria-hidden" => true}

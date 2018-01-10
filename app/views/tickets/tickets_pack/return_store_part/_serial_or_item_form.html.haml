@@ -190,4 +190,4 @@
       = simple_format ticket_spare_part.note
   .row
     .col-md-12
-      = link_to "Save", "#", onclick: "Inventories.submit_form('.form_serial_part_or_item'); return false;", class: "btn btn-success"
+      = link_to "Save", "#", onclick: "Inventories.submit_form('.form_serial_part_or_item'); return false;", class: "btn btn-success", data: {disable_with: "Please wait..."}

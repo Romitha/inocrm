@@ -3366,9 +3366,9 @@ class TicketsController < ApplicationController
 
       if @onloan_or_store.approved_inventory_product.inventory_product_info.need_serial
         @fifo_grn_serial_items = if @onloan_or_store.approved_inventory_product.fifo
-          GrnSerialItem.includes(:inventory_serial_item).where(grn_item_id: grn_item_ids, remaining: 1).sort{|p, n| p.grn_item.grn.created_at <=> n.grn_item.grn.created_at}
+          GrnSerialItem.includes(:inventory_serial_item).where(grn_item_id: grn_item_ids, remaining: true).sort{|p, n| p.grn_item.grn.created_at <=> n.grn_item.grn.created_at}
         else
-          GrnSerialItem.includes(:inventory_serial_item).where(grn_item_id: grn_item_ids, remaining: 1).sort{|p, n| n.grn_item.grn.created_at <=> p.grn_item.grn.created_at}
+          GrnSerialItem.includes(:inventory_serial_item).where(grn_item_id: grn_item_ids, remaining: true).sort{|p, n| n.grn_item.grn.created_at <=> p.grn_item.grn.created_at}
 
         end
 
@@ -3388,7 +3388,7 @@ class TicketsController < ApplicationController
     if @onloan_or_store.approved_main_inventory_product.present?
       approved_grn_item_ids = @onloan_or_store.approved_main_inventory_product.grn_items.search(query: "grn.store_id:#{@onloan_or_store.approved_store_id} AND inventory_not_updated:false").map{|grn_item| grn_item.id}
 
-      gen_serial_items = GrnSerialItem.includes(:inventory_serial_item).where(grn_item_id: approved_grn_item_ids, remaining: 1)
+      gen_serial_items = GrnSerialItem.includes(:inventory_serial_item).where(grn_item_id: approved_grn_item_ids, remaining: true)
 
       @main_part_serial = if @onloan_or_store.approved_main_inventory_product.fifo
         gen_serial_items.sort{|p, n| p.grn_item.grn.created_at <=> n.grn_item.grn.created_at }
