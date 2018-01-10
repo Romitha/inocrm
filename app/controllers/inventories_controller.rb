@@ -1428,7 +1428,8 @@ class InventoriesController < ApplicationController
             @returned = true
 
             @inventory_serial_item.save!
-            InventorySerialItem.find(@inventory_serial_item.id).async.update_index
+            File.open(Rails.root.join("error.txt"), "w") { |io| io.write(@inventory_serial_item.inspect); io.close; }
+            # InventorySerialItem.find(@inventory_serial_item.id).async.update_index
 
             @inventory_serial_item.inventory.update_relation_index
 
