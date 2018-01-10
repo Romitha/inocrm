@@ -1427,12 +1427,15 @@ class InventoriesController < ApplicationController
 
             @returned = true
 
-            @inventory_serial_item.save!
-            @inventory_serial_item.reload.update_index
+            if @inventory_serial_item.save
+              @inventory_serial_item.inventory.update_relation_index
+              @inventory_serial_item.reload.update_index
+
+            end
             # File.open(Rails.root.join("error.txt"), "w") { |io| io.write(@inventory_serial_item.inspect); io.close; }
             # InventorySerialItem.find(@inventory_serial_item.id).async.update_index
 
-            @inventory_serial_item.inventory.update_relation_index
+            # sleep 2
 
           elsif @inventory_batch.present?  # Inventory Batch Item Returned
 
