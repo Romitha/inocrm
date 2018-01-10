@@ -735,7 +735,7 @@ class InventorySerialItem < ActiveRecord::Base
     Inventory
     Grn
     to_json(
-      only: [:id, :serial_no, :ct_no, :damaged, :used, :scavenge, :repaired, :reserved, :parts_not_completed, :manufatured_date, :expiry_date, :remarks, :created_at],
+      only: [:id, :serial_no, :ct_no, :damage, :used, :scavenge, :repaired, :reserved, :parts_not_completed, :manufatured_date, :expiry_date, :remarks, :created_at],
       methods: [:generated_serial_no],
       include: {
         inventory_product: {
