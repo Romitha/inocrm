@@ -1639,7 +1639,8 @@ class TicketsController < ApplicationController
         if @onloan_request
 
           if @onloan_request_part.ticket_spare_part
-            @onloan_request_part.ticket_spare_part.update ticket_spare_part_params(@onloan_request_part.ticket_spare_part)
+            tsp = @onloan_request_part.ticket_spare_part
+            tsp.update ticket_spare_part_params(tsp)
           else
             @onloan_request_part.ticket.update ticket_params
           end
