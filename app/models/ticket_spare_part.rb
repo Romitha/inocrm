@@ -367,6 +367,8 @@ class TicketOnLoanSparePart < ActiveRecord::Base
 
   belongs_to :srr, foreign_key: :inv_srr_id
   belongs_to :srr_item, foreign_key: :inv_srr_item_id
+  belongs_to :engineer, class_name: "TicketEngineer", foreign_key: :engineer_id
+
 end
 
 class TicketOnLoanSparePartStatusAction < ActiveRecord::Base
