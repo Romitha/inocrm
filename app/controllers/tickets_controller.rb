@@ -1,8 +1,10 @@
 class TicketsController < ApplicationController
+  # skip_before_action :authenticate_user!, only: [ :update_approve_store_parts ]
   before_action :set_ticket, only: [:show, :edit, :update, :destroy, :update_change_ticket_cus_warranty, :update_change_ticket_repair_type, 
     :update_start_action, :update_re_assign, :update_request_close_approval, :update_hold, :update_create_fsr, :update_edit_serial_no_request, :update_edit_fsr, 
     :update_terminate_job, :update_action_taken, :update_request_spare_part, :update_request_on_loan_spare_part, :update_hp_case_id, :update_resolved_job, :update_deliver_unit, :update_job_estimation_request, :update_recieve_unit, :update_un_hold, :update_check_fsr]
   before_action :set_organization_for_ticket, only: [:new, :edit, :create_customer]
+
   # layout :workflow_diagram, only: [:workflow_diagram]
 
   after_action :update_bpm_header#, only: [:update_start_action, :]
@@ -1603,7 +1605,7 @@ class TicketsController < ApplicationController
   end
 
   def update_approve_store_parts
-
+    TicketSparePart
     @continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
     approved_quantity = params[:requested_quantity]
     d18_approve_request_store_part = "N"

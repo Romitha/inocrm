@@ -448,7 +448,7 @@ class Ticket < ActiveRecord::Base
   accepts_nested_attributes_for :ticket_spare_parts, allow_destroy: true
 
   has_many :ticket_on_loan_spare_parts
-  accepts_nested_attributes_for :ticket_on_loan_spare_parts, allow_destroy: true
+  accepts_nested_attributes_for :ticket_on_loan_spare_parts, allow_destroy: true, reject_if: :all_blank
 
 
   has_many :ticket_fsrs

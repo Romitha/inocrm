@@ -752,9 +752,11 @@ module ApplicationHelper
 
       if spare_part_id.present?
         spare_part = @ticket.ticket_spare_parts.find_by_id(spare_part_id)
-        store_part = spare_part.ticket_spare_part_store
-        manufacture_part = spare_part.ticket_spare_part_manufacture
-        non_stock_part = spare_part.ticket_spare_part_non_stock
+        if spare_part
+          store_part = spare_part.ticket_spare_part_store
+          manufacture_part = spare_part.ticket_spare_part_manufacture
+          non_stock_part = spare_part.ticket_spare_part_non_stock
+        end
 
         # store_part_name = (store_part && store_part.inventory_product) ? store_part.inventory_product.try(:description))
 
