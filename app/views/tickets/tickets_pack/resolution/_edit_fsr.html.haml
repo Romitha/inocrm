@@ -47,21 +47,21 @@
           .row
             .col-md-12
               %strong #{@ticket_fsr.ticket_engineer.user.full_name}
-              = fsr.input :hours_worked, input_html: {min: "0", class: "only_float", id: "worked_hours", onblur: "Tickets.set_max_support_eng_worked_hours(this);"}, label: "Hours worked (in hours)"
+              = fsr.input :hours_worked, as: :string, input_html: {min: "0", class: "after_two_decimal", id: "worked_hours", onblur: "Tickets.set_max_support_eng_worked_hours(this);"}, label: "Hours worked (in hours)"
             .col-md-12
-              = fsr.input :down_time, input_html: {min: "0", class: "only_float"}, label: "Down time (in hours)"
+              = fsr.input :down_time, as: :string, input_html: {min: "0", class: "after_two_decimal"}, label: "Down time (in hours)"
             .col-md-12
-              = fsr.input :travel_hours, input_html: {min: "0", class: "only_float", id: "travelled_hours"}, label: "Travel hours (in hours)"
+              = fsr.input :travel_hours, as: :string, input_html: {min: "0", class: "after_two_decimal", id: "travelled_hours"}, label: "Travel hours (in hours)"
             .col-md-12
-              = fsr.input :engineer_time_travel, input_html: {min: "0", class: "only_float"}, label: "Engineer time travel (in hours)"
+              = fsr.input :engineer_time_travel, as: :string, input_html: {min: "0", class: "after_two_decimal"}, label: "Engineer time travel (in hours)"
             .col-md-12
-              = fsr.input :engineer_time_on_site, input_html: {min: "0", class: "only_float"}, label: "Engineer time on site (in hours)"
+              = fsr.input :engineer_time_on_site, as: :string, input_html: {min: "0", class: "after_two_decimal"}, label: "Engineer time on site (in hours)"
 
         .col-md-6
           .col-md-6
-            = fsr.input :other_mileage, input_html: {min: "0", class: "only_float"}, label: "Other Charges Mileage"
+            = fsr.input :other_mileage, as: :string, input_html: {min: "0", class: "after_two_decimal"}, label: "Other Charges Mileage"
           .col-md-6
-            = fsr.input :other_repairs, input_html: {min: "0", class: "only_float"}, label: "Other Charges Repaires"
+            = fsr.input :other_repairs, as: :string, input_html: {min: "0", class: "after_two_decimal"}, label: "Other Charges Repaires"
           .col-md-12
             = fsr.input :resolution, input_html: {value: nil}
             = simple_format @ticket_fsr.resolution

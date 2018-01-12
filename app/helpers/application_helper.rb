@@ -26,7 +26,7 @@ module ApplicationHelper
       "FAX=#{ticket.customer.contact_type_values.select{|c| c.contact_type.name == "Fax"}.first.try(:value)}",
       "EMAIL=#{ticket.customer.contact_type_values.select{|c| c.contact_type.email}.first.try(:value)}",
       "PRODUCT_BRAND=#{ticket.products.first.product_brand.name}",
-      "PRODUCT_CATEGORY=#{ticket.products.first.product_category.name}",
+      "PRODUCT_CATEGORY=#{ticket.products.first.category_full_name_index}",
       "MODEL_NO=#{ticket.products.first.model_no}",
       "SERIAL_NO=#{ticket.products.first.serial_no}",
       "PRODUCT_NO=#{ticket.products.first.product_no}",
@@ -129,7 +129,7 @@ module ApplicationHelper
     serial_no = product.serial_no
     model_no = product.model_no
     product_brand = product.product_brand.name
-    product_category = product.product_category.name
+    product_category = product.category_full_name_index
     special_note = ticket.note
     accessory1 = accessories.first.try(:accessory)
     accessory2 = accessories.second.try(:accessory)
@@ -228,7 +228,7 @@ module ApplicationHelper
     fax = ticket.customer.contact_type_values.select{|c| c.contact_type.name == "Fax"}.first.try(:value)
     email = ticket.customer.contact_type_values.select{|c| c.contact_type.email}.first.try(:value)
     product_brand = ticket.products.first.product_brand.name
-    product_category = ticket.products.first.product_category.name
+    product_category = ticket.products.first.category_full_name_index
     model_no = ticket.products.first.model_no
     serial_no = ticket.products.first.serial_no
     product_no = ticket.products.first.product_no
@@ -440,7 +440,7 @@ module ApplicationHelper
     fax = ticket.customer.contact_type_values.select{|c| c.contact_type.name == "Fax"}.first.try(:value)
     email = ticket.customer.contact_type_values.select{|c| c.contact_type.email}.first.try(:value)
     product_brand = ticket.products.first.product_brand.name
-    product_category = ticket.products.first.product_category.name
+    product_category = ticket.products.first.category_full_name_index
     model_no = ticket.products.first.model_no
     serial_no = ticket.products.first.serial_no
     product_no = ticket.products.first.product_no

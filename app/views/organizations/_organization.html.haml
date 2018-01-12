@@ -20,14 +20,18 @@
     %table.table-default.col-md-offset-1.col-sm-offset-1
       %tbody
         %tr
-          %th.text-right VAT Number : &nbsp;
+          %td
+            %strong VAT Number : &nbsp;
           %td.vat_number= organization.account.try(:vat_number)
         %tr
-          %th.text-right Created at : &nbsp;
+          %td
+            %strong Created at :
           %td= organization.account and organization.account.created_at.try(:strftime, INOCRM_CONFIG["short_date_format"])
         %tr
-          %th.text-right Created by : &nbsp;
+          %td
+            %strong Created by :
           %td= organization.account and organization.account.created_user.try(:full_name)
         %tr
-          %th.text-right Industry type : &nbsp;
+          %td
+            %strong Industry type :
           %td.industry_type= organization.industry_type.try(:name)

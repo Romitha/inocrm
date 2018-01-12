@@ -171,56 +171,75 @@
         %tbody
           %tr
             %th
-            %td{colspan: 3}
-            %th.text-right Total Amount:
-            %td.text-right{colspan: 2}
+            %td
+            %td
+              %strong Total Amount
+            %td :&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+            %td
               = print_object[:currency]
               = number_with_precision print_object[:total_amount], precision: 2
 
           %tr
             %th
-            %td{colspan: 3}
-            %th.text-right Minimum Advanced Required:
-            %td.text-right{colspan: 2}
+            %td
+            %td
+              %strong Minimum Advanced Required
+            %td :
+            %td
               = print_object[:currency]
               = number_with_precision print_object[:total_advance_amount], precision: 2
 
           %tr
             %th
-            %td{colspan: 3}
-            %th.text-right Payment Term:
-            %td.text-right{colspan: 2}= print_object[:payment_term]
+            %td
+            %td
+              %strong Payment Term
+            %td :
+            %td= print_object[:payment_term]
 
           %tr
             %th
-            %td{colspan: 3}
-            %th.text-right Bank Name:
-            %td.text-right{colspan: 2}= print_object[:print_organization_bank]
+            %td
+            %td
+              %strong Bank Name
+            %td :
+            %td= print_object[:print_organization_bank]
           %tr
             %th
-            %td{colspan: 3}
-            %th.text-right Bank Account Number:
-            %td.text-right{colspan: 2}= print_object[:print_organization_bank_acc_no]
+            %td
+            %td
+              %strong Bank Account Number
+            %td :
+            %td= print_object[:print_organization_bank_acc_no]
           %tr
             %th
-            %td{colspan: 3}
-            %th.text-right Bank Address:
-            %td.text-right{colspan: 2}= print_object[:print_organization_bank_address]
+            %td
+            %td
+              %strong Bank Address
+            %td :
+            %td= print_object[:print_organization_bank_address]
           %tr
             %th
-            %td{colspan: 3}
-            %th.text-right Swift Code:
-            %td.text-right{colspan: 2}= print_object[:print_organization_bank_swift_code]
-    .col-xs-10
-      %table.table-condensed
-        %tr
-          %th Warranty:
-          %td
-            = print_object[:warranty]
-        %tr
-          %th Note:
-          %td.col-xs-11
-            = print_object[:note]
+            %td
+            %td
+              %strong Swift Code
+            %td :
+            %td= print_object[:print_organization_bank_swift_code]
+          %tr
+            %th
+            %td
+            %td
+              %strong Warranty
+            %td :
+            %td= print_object[:warranty]
+          %tr
+            %th
+            %td
+            %td
+              %strong Note
+            %td :
+            %td= print_object[:note]
+            
       %br/
 
     .col-xs-11
