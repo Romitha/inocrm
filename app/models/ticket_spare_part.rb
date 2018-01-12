@@ -53,6 +53,9 @@ class TicketSparePart < ActiveRecord::Base
   end
 
   after_save :flush_cache
+  def spare_part_brand_name
+    ticket.products.first.try(:brand_name)
+  end
 
   def flush_cache
     Rails.cache.delete([self.ticket.id, :ticket_spare_parts])
