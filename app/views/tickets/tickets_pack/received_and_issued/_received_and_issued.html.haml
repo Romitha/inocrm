@@ -27,7 +27,7 @@
     #{spare_part.spare_part_no}
   .col-md-4
     %strong Product Brand:
-    #{spare_part.ticket_spare_part_store.dynamic_inventry_product}
+    #{spare_part.ticket_spare_part_store.try(:dynamic_inventry_product)}
 
 .row
   .col-md-4
