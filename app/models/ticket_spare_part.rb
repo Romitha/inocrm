@@ -65,7 +65,6 @@ class TicketSparePart < ActiveRecord::Base
   def inventory_product_generated_serial_item
     inventory_product.try(:generated_item_code)
   end
-
   has_many :dyna_columns, as: :resourceable, autosave: true
 
   # has_many :invoices, foreign_key: "customer_id"
@@ -198,6 +197,13 @@ class TicketSparePartStore < ActiveRecord::Base
 
     update inv_srn_id: srn.id, inv_srn_item_id: srn_item.id
 
+  end
+  def dynamic_inventry_product
+    if ticket_spare_part.request_approved
+      approved_inventory_product.try(:category1_name)
+    else
+      inventory_product.try(:category1_name)
+    end
   end
 end
 

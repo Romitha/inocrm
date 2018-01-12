@@ -389,11 +389,11 @@
                       = w.input :end_at, as: :string, input_html: {class: "datepicker"}
                   .row
                     .col-md-4
-                      = w.input :period_part, input_html: {min: "0", class: "only_float"}
+                      = w.input :period_part, input_html: {min: "0", class: "only_float"}, label: "Parts Warannty Period (Months):"
                     .col-md-4
-                      = w.input :period_labour, input_html: {min: "0", class: "only_float"}
+                      = w.input :period_labour, input_html: {min: "0", class: "only_float"}, label: "Labour Warannty Period (Months):"
                     .col-md-4
-                      = w.input :period_onsight, label: "Corporate on-site", input_html: {min: "0", class: "only_float"}
+                      = w.input :period_onsight, label: "Corporate on-site", input_html: {min: "0", class: "only_float"}, label: "On-Sight Warannty Period (Months):"
                   .row
                     .col-md-3
                       = w.input :care_pack_product_no, label: "Care pack product number"

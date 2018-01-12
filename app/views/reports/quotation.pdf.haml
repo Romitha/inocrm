@@ -36,69 +36,106 @@
               %td
                 .col-xs-offset-1
                   = contact_detail[:value]
-
   %br/
   .row
-    .col-xs-6
-      %table.table-condensed
-        %tbody{style: "vertical-align: top;"}
+    .col-md-12
+      %table
+        %tbody
           %tr
-            %th{class: "text-right"} Customer Name:
             %td
-              .col-xs-11=print_object[:company_name]
+              %strong
+                Customer Name
+            %td :&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+            %td
+              =print_object[:company_name]
           %tr
-            %th{class: "text-right"} Address:
+            %td
+              %strong
+                Address
+            %td :
             %td
               =print_object[:address1]
-              %br/
+              ,
               =print_object[:address2]
-              %br/
+              ,
               =print_object[:address3]
-              %br/
+              ,
               =print_object[:address4]
           %tr
-            %th{class: "text-right"} Ticket No:
+            %td
+              %strong
+                Ticket No
+            %td :
             %td=print_object[:ticket_ref]
           %tr
-            %th{class: "text-right"} Product Brand:
+            %td
+              %strong
+                Product Brand
+            %td :
             %td=print_object[:product_brand]
+
           %tr
-            %th{class: "text-right"} Model No:
+            %td
+              %strong
+                Model No
+            %td :
             %td=print_object[:model_no]
           %tr
-            %th{class: "text-right"} Serial No:
+            %td
+              %strong
+                Serial No
+            %td :
             %td=print_object[:serial_no]
           %tr
-            %th{class: "text-right"} Product No:
+            %td
+              %strong
+                Product No
+            %td :
             %td=print_object[:product_no]
-
-    .col-xs-5.pull-right
-      %table.table-condensed.pull-right
-        %tbody{style: "vertical-align: top;"}
           %tr
-            %th.text-right Quotation No:
+            %td
+              %strong
+                Proforma Invoice No
+            %td :
             %td
               = print_object[:quotation_no]
+              = "-"
+              = Date.today.year
           %tr
-            %th.text-right VAT REG No:
+            %td
+              %strong
+                VAT REG No
+            %td :
             %td
               = print_object1.owner.vat_num
           %tr
-            %th.text-right Created Date:
+            %td
+              %strong
+                Created Date
+            %td :
             %td
               = print_object[:created_date]
           %tr
-            %th.text-right Validity Period:
+            %td
+              %strong
+                Validity Period
+            %td :
             %td
               = print_object[:validity_period]
           %tr
-            %th.text-right Delivery Period:
             %td
-              = print_object[:delivery_period]
-          %tr
-            %th.text-right Contact Person:
+              %strong
+                Contact Person
+            %td :
             %td
               = print_object[:created_by]
+          %tr
+            %td
+              %strong
+                Delivery Period
+            %td :
+            %td
+              = print_object[:delivery_period]
   %hr
   .row
     .col-xs-11
@@ -159,9 +196,21 @@
             %td{colspan: 3}
             %th.text-right Bank Name:
             %td.text-right{colspan: 2}= print_object[:print_organization_bank]
-
-
-
+          %tr
+            %th
+            %td{colspan: 3}
+            %th.text-right Bank Account Number:
+            %td.text-right{colspan: 2}= print_object[:print_organization_bank_acc_no]
+          %tr
+            %th
+            %td{colspan: 3}
+            %th.text-right Bank Address:
+            %td.text-right{colspan: 2}= print_object[:print_organization_bank_address]
+          %tr
+            %th
+            %td{colspan: 3}
+            %th.text-right Swift Code:
+            %td.text-right{colspan: 2}= print_object[:print_organization_bank_swift_code]
     .col-xs-10
       %table.table-condensed
         %tr

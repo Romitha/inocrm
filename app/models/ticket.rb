@@ -190,9 +190,6 @@ class Ticket < ActiveRecord::Base
     ticket_total_cost.try(:external_cost).to_f
   end
 
-
-
-
   def job_type_get
     job_type.try(:name)
   end

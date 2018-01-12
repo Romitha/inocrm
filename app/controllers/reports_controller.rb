@@ -45,6 +45,10 @@ class ReportsController < ApplicationController
     canceled = quotation.canceled
 
     print_organization_bank = quotation.organization_bank_detail.try(:bank_name)
+    print_organization_bank_acc_no = quotation.organization_bank_detail.try(:account_no)
+    print_organization_bank_address = quotation.organization_bank_detail.try(:bank_address)
+    print_organization_bank_swift_code = quotation.organization_bank_detail.try(:swift_code)
+
     if quotation.print_exchange_rate.present?
       exchange_rate = quotation.print_exchange_rate.to_f
     else
@@ -250,6 +254,9 @@ class ReportsController < ApplicationController
       note: quotation_note,
       created_by: created_by,
       print_organization_bank: print_organization_bank,
+      print_organization_bank_acc_no: print_organization_bank_acc_no,
+      print_organization_bank_address: print_organization_bank_address,
+      print_organization_bank_swift_code: print_organization_bank_swift_code,
 
 
 

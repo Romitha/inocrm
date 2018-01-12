@@ -48,7 +48,7 @@
 
   - if display_results
     = tab_panel do
-      = tab_nav_tab({id: "inventory_in_modal"}, {inventory_tab: {active_class: "active", content: "Inventory"}, non_inventory_tab: {content: "Non inventory"}, non_stock_tab: {content: "Non stock"}})
+      = tab_nav_tab({id: "inventory_in_modal"}, {inventory_tab: {active_class: "active", content: "Inventory"}, non_inventory_tab: {content: "Not in inventory"}, non_stock_tab: {content: "Non stock"}})
       .tab-content
         = tab_content tabpointer: :inventory_tab, active_class: "active" do
           %table.table.table-striped
