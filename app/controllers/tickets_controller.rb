@@ -3649,7 +3649,7 @@ class TicketsController < ApplicationController
               @onloan_request_part.ticket.update ticket_params
             end
 
-            @onloan_request_part.update inv_gin_id: gin.id, inv_gin_item_id: gin_item.id, cost_price: @part_cost_price, issued: true , issued_at: DateTime.now, issued_by: current_user.id
+            @onloan_request_part.update inv_gin_id: gin.id, inv_gin_item_id: gin_item.id, cost_price: @part_cost_price, issued: true , issued_at: DateTime.now, issued_by: current_user.id,received_part_serial_no: @product_serial_no
 
             #Issue store On-Loan Part
             action_id = TaskAction.find_by_action_no(50).id
