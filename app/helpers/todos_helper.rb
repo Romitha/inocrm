@@ -6,7 +6,7 @@ module TodosHelper
     response_hash = send_request args
 
     if response_hash["exception"].present?
-      response = {status: "error"}
+      response = {status: "error", message: response_hash["exception"]["message"]}
     else
       case 
       when args[:process_history]
@@ -32,6 +32,9 @@ module TodosHelper
         response = {status: "success", content: response_hash[versionized_bpm_wrapper[:task_list]]}
       end
     end
+
+    response
+
   end
 
   def initialize_bpm_variables
@@ -221,8 +224,12 @@ module TodosHelper
         # response = HTTPI.get request
         request_method = "get"
       end
-      response = HTTPI.send(request_method, request)
-      Hash.from_xml response.body
+      begin
+        response = HTTPI.send(request_method, request)
+        Hash.from_xml response.body
+      rescue
+        {"exception" => {"status" => "error", "message" => "Java Business Process Management tool is currently not available. Please contact System Administrator"}}
+      end
       # sleep 5
       # request.url
     end

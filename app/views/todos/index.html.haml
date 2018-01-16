@@ -2,7 +2,10 @@
 - formatted_workflow_mapping_for_user = @formatted_workflow_mapping_for_user
 - count = 0
 
-/ = formatted_workflow_mapping_for_role
+- if @err_message.present?
+  .alert.alert-danger
+    = @err_message
+
 .row
   .col-xs-12.col-sm-6.col-md-8
     #todo_list 
