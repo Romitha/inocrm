@@ -455,7 +455,8 @@ class InventoriesController < ApplicationController
               #product_condition_id
               #return_reason_id
               returnable_srn_item_id: ticket_on_loan_spare_part.srn_item.id,
-              spare_part: ticket_on_loan_spare_part.srn_item.spare_part
+              spare_part: ticket_on_loan_spare_part.srn_item.spare_part,
+              currency_id: ticket_on_loan_spare_part.gin_item.currency_id
             )
 
             srr_item_source = srr_item.srr_item_sources.create(

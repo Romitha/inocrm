@@ -799,6 +799,8 @@ class TicketsController < ApplicationController
 
     if @continue
       if @ticket.save
+        @ticket.update onsite_type_id: nil if @ticket.ticket_type_id == 1
+
         @ticket.products << @product
         @product.update_attribute :last_ticket_id, @ticket.id
         @ticket.customer.update_attribute :last_ticket_id, @ticket.id
