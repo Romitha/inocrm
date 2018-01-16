@@ -3668,7 +3668,7 @@ class TicketsController < ApplicationController
 
               email_to = @onloan_request_part.engineer.user.email
               if email_template.try(:active)
-                view_context.send_email(email_to: email_to, ticket_id: @onloan_request_part.ticket.id, engineer_id: @onloan_request_part.engineer_id, spare_part_id: @onloan_request_part.ticket_spare_part.id, onloan: true, email_code: "PART_ISSUED") if email_to.present?
+                view_context.send_email(email_to: email_to, ticket_id: @onloan_request_part.ticket.try(:id), engineer_id: @onloan_request_part.engineer_id, spare_part_id: @onloan_request_part.ticket_spare_part.try(:id), onloan: true, email_code: "PART_ISSUED") if email_to.present?
 
               end
 

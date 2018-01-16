@@ -10,3 +10,5 @@ Rails.application.config.assets.paths << "#{Rails.root}/app/assets/fonts"
 # Precompile additional assets.
 # application.js, application.css, and all non-JS/CSS in app/assets folder are already added.
 Rails.application.config.assets.precompile += %w( workflow_diagram.css )
+
+Rack::Utils.multipart_part_limit = 0
