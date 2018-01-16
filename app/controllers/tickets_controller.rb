@@ -3686,6 +3686,7 @@ class TicketsController < ApplicationController
           else #Store Request (not On-Loan)
 
             @ticket_spare_part.received_part_serial_no = @product_serial_no if @product_serial_no.present?
+            @ticket_spare_part.received_part_ct_no = @product_ct_no if @product_ct_no.present?
 
             @ticket_spare_part.update ticket_spare_part_params(@ticket_spare_part)
 
