@@ -3510,6 +3510,8 @@ class TicketsController < ApplicationController
 
             @product_serial_no = @main_inventory_serial_part.serial_no
 
+            @product_ct_no = @main_inventory_serial_part.ct_no
+
 
             @iss_main_part_grn_serial_item_id = @main_inventory_serial_part.inventory_serial_item.grn_serial_items.where(remaining: true).first.try(:id)
 
@@ -3543,6 +3545,7 @@ class TicketsController < ApplicationController
               @product_condition_id  = @grn_serial_item.inventory_serial_item.product_condition_id
               @part_cost_price = @grn_serial_item.grn_item.current_unit_cost.to_d + @grn_serial_item.inventory_serial_item.inventory_serial_items_additional_costs.sum(:cost).to_d #inventory_serial_items_additional_costs
               @product_serial_no = @grn_serial_item.inventory_serial_item.serial_no
+              @product_ct_no = @grn_serial_item.inventory_serial_item.ct_no
 
 
               @currency_id  = @grn_serial_item.grn_item.currency_id
@@ -3649,7 +3652,7 @@ class TicketsController < ApplicationController
               @onloan_request_part.ticket.update ticket_params
             end
 
-            @onloan_request_part.update inv_gin_id: gin.id, inv_gin_item_id: gin_item.id, cost_price: @part_cost_price, issued: true , issued_at: DateTime.now, issued_by: current_user.id,received_part_serial_no: @product_serial_no
+            @onloan_request_part.update inv_gin_id: gin.id, inv_gin_item_id: gin_item.id, cost_price: @part_cost_price, issued: true , issued_at: DateTime.now, issued_by: current_user.id,received_part_serial_no: @product_serial_no, received_part_ct_no: @product_ct_no
 
             #Issue store On-Loan Part
             action_id = TaskAction.find_by_action_no(50).id
