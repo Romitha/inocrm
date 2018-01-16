@@ -3508,6 +3508,8 @@ class TicketsController < ApplicationController
 
             @product_condition_id  = @main_inventory_serial_part.product_condition_id
 
+            @product_serial_no = @main_inventory_serial_part.serial_no
+
 
             @iss_main_part_grn_serial_item_id = @main_inventory_serial_part.inventory_serial_item.grn_serial_items.where(remaining: true).first.try(:id)
 
@@ -3540,6 +3542,7 @@ class TicketsController < ApplicationController
               @product_id = @grn_serial_item.inventory_serial_item.inventory_product.id
               @product_condition_id  = @grn_serial_item.inventory_serial_item.product_condition_id
               @part_cost_price = @grn_serial_item.grn_item.current_unit_cost.to_d + @grn_serial_item.inventory_serial_item.inventory_serial_items_additional_costs.sum(:cost).to_d #inventory_serial_items_additional_costs
+              @product_serial_no = @grn_serial_item.inventory_serial_item.serial_no
 
 
               @currency_id  = @grn_serial_item.grn_item.currency_id
@@ -3678,6 +3681,8 @@ class TicketsController < ApplicationController
             end
 
           else #Store Request (not On-Loan)
+
+            @ticket_spare_part.received_part_serial_no = @product_serial_no if @product_serial_no.present?
 
             @ticket_spare_part.update ticket_spare_part_params(@ticket_spare_part)
 

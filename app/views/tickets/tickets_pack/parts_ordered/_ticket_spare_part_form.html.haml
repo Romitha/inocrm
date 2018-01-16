@@ -25,8 +25,8 @@
       = f.input :faulty_serial_no, wrapper_html: {class: "col-md-6"}, required: true, input_html: {class: "faulty_serial_no_input", autocomplete: "off", value: INOCRM_CONFIG["TicketSparePart"]["faulty_serial_no"]}
       = f.input :faulty_ct_no, wrapper_html: {class: "col-md-6"}, required: true, input_html: {class: "faulty_ct_no_input", autocomplete: "off", value: INOCRM_CONFIG["TicketSparePart"]["faulty_ct_no"]}
 
-      = f.input :received_part_serial_no, wrapper_html: {class: "col-md-6"}, required: true, input_html: {class: "received_part_serial_no_input", autocomplete: "off", value: INOCRM_CONFIG["TicketSparePart"]["received_part_serial_no"]}
-      = f.input :received_part_ct_no, wrapper_html: {class: "col-md-6"}, required: true, input_html: {class: "received_part_ct_no_input", autocomplete: "off", value: INOCRM_CONFIG["TicketSparePart"]["received_part_ct_no"]}
+      = f.input :received_part_serial_no, wrapper_html: {class: "col-md-6"}, required: true, input_html: {class: "received_part_serial_no_input", autocomplete: "off", value: ( INOCRM_CONFIG["TicketSparePart"]["received_part_serial_no"].present? ? INOCRM_CONFIG["TicketSparePart"]["received_part_serial_no"] : f.object.received_part_serial_no )}
+      = f.input :received_part_ct_no, wrapper_html: {class: "col-md-6"}, required: true, input_html: {class: "received_part_ct_no_input", autocomplete: "off", value: (INOCRM_CONFIG["TicketSparePart"]["received_part_ct_no"].present? ? INOCRM_CONFIG["TicketSparePart"]["received_part_ct_no"] : f.object.received_part_ct_no)}
 
     - if (@rce and (@manufacture_warranty or @manufacture_chargeable or @store_warranty or @store_chargeable))
       .row
