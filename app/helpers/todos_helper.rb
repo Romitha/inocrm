@@ -171,7 +171,8 @@ module TodosHelper
 
     def base_url
       if Rails.env == "staging"
-        "http://192.168.100.157:8080/jbpm-console/rest"
+        # "http://192.168.100.157:8080/jbpm-console/rest"
+        "http://192.168.50.157:8080/jbpm-console/rest"
       elsif Rails.env == "production"
         "http://192.168.1.232:8080/jbpm-console/rest"
       else
