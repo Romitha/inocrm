@@ -66,7 +66,7 @@ class OrganizationsController < ApplicationController
   def create
     @organization = Rails.cache.fetch(:upload_logo){Organization.new organization_params}
     @organization.attributes = organization_params
-    authorize! :create, Organization
+    authorize! :new, Organization
 
     respond_to do |format|
       if @organization.save
