@@ -229,7 +229,7 @@ module TodosHelper
         response = HTTPI.send(request_method, request)
         Hash.from_xml response.body
       rescue
-        {"exception" => {"status" => "error", "message" => "Java Business Process Management tool is currently not available. Please contact System Administrator"}}
+        {"exception" => {"status" => "error", "message" => "JBoss Business Process Management tool is currently not available. Please contact System Administrator"}}
       end
       # sleep 5
       # request.url
