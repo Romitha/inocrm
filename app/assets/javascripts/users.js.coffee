@@ -97,5 +97,5 @@ window.Users =
     ).done( (data)->
       alert "successfully printed."
     ).fail (response)->
-      if response.statusText === 'error'
+      if response.statusText == 'error'
         alert "Some error occured in request to printer application. Please rectify and try again."
