@@ -27,7 +27,7 @@
           -if payment.ticket_invoice.present?
             = payment.ticket_invoice.try(:invoice_no).to_s.rjust(6, INOCRM_CONFIG['invoice_no_format'])
         %td
-          = link_to "#", onclick: "Users.request_printer_application('receipt', '#{payment.id}', 'receipt_request_type', 'print_receipt_tag_value', 'print_receipt'); false;", id: "receipt_print", data: {disable_with: "Printing..."}, class: "btn btn-default" do
+          = link_to "#", onclick: "Users.request_printer_application('receipt', '#{payment.id}', 'receipt_request_type', 'print_receipt_tag_value', 'print_receipt', this); false;", id: "receipt_print", data: {disable_with: "Printing..."}, class: "btn btn-default" do
             = ticket.ticket_print_count.to_i > 0 ? "Re-Print Receipt" : "Print Receipt"
 .row
   .col-md-9
@@ -93,5 +93,5 @@
         %td= number_to_currency ticket.final_invoice.net_total_amount, delimiter: ",", unit: ticket.ticket_currency.code, format: "%u %n"
 
         %td
-          = link_to "#", onclick: "Users.request_printer_application('invoice', '#{ticket.final_invoice.id}', 'invoice_request_type', 'print_ticket_invoice_tag_value', 'print_ticket_invoice'); false;", id: "ticket_print", data: {disable_with: "Printing..."}, class: "btn btn-default" do
+          = link_to "#", onclick: "Users.request_printer_application('invoice', '#{ticket.final_invoice.id}', 'invoice_request_type', 'print_ticket_invoice_tag_value', 'print_ticket_invoice', this); false;", id: "ticket_print", data: {disable_with: "Printing..."}, class: "btn btn-default" do
             Print

@@ -158,7 +158,6 @@ class ProductBrand < ActiveRecord::Base
   validates_numericality_of [:parts_return_days]
   def is_used_anywhere?
     TicketSparePart
-    # or product_brand_costs.any?
     products.any? or product_category1s.any? or return_parts_bundles.any? or so_pos.any? or brand_documents.any?
   end
 end

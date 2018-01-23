@@ -92,5 +92,5 @@
       .row
         .col-md-12
           = fsr.submit "Save", class: "btn btn-success btn-sm"
-          = link_to "#", onclick: "Users.request_printer_application('fsr', '#{@ticket_fsr.id}', 'fsr_request_type', 'print_fsr_tag_value', 'print_fsr'); false;", id: "ticket_print", data: {disable_with: "Printing..."}, class: "btn btn-default" do
+          = link_to "#", onclick: "Users.request_printer_application('fsr', '#{@ticket_fsr.id}', 'fsr_request_type', 'print_fsr_tag_value', 'print_fsr', this); false;", id: "ticket_print", data: {disable_with: "Printing..."}, class: "btn btn-default" do
             = @ticket_fsr.print_count.to_i > 0 ? "Re-Print" : "Print"

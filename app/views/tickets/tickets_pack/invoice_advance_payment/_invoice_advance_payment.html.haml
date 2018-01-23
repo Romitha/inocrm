@@ -89,4 +89,4 @@
       %strong Payment note:
       = ticket_payment_received.payment_note
     .col-md-12
-      = link_to "Print Receipt", "#", class: "btn btn-sm btn-success", onclick: "Users.request_printer_application('receipt', '#{ticket_payment_received.id}', 'receipt_request_type', 'print_receipt_tag_value', 'print_receipt'); false;"
+      = link_to "Print Receipt", "#", class: "btn btn-sm btn-success", onclick: "Users.request_printer_application('receipt', '#{ticket_payment_received.id}', 'receipt_request_type', 'print_receipt_tag_value', 'print_receipt', this); false;"

@@ -570,6 +570,7 @@ module Admins
     end
 
     def brands_and_category # permissioned
+      TicketSparePart
       authorize! :brands_and_category, SparePartDescription
       Product
       SlaTime
@@ -749,6 +750,7 @@ module Admins
 
     def delete_admin_brands_and_category
       Product
+      TicketSparePart
       authorize! :brands_and_category, SparePartDescription
 
       @brands_and_category = ProductBrand.find params[:brands_and_category_id]

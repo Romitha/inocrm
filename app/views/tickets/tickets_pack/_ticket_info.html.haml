@@ -5,14 +5,14 @@
     .row.small_scale_margin-bottom1
       - if ticket.job_finished
         .pull-right.small_scale_padding-left1
-          = link_to "#", onclick: "Users.request_printer_application('ticket_complete', '#{ticket.id}', 'ticket_complete_request_type', 'print_ticket_delivery_note_tag_value', 'print_ticket_delivery_note'); false;", data: {disable_with: "Printing..."}, class: "btn btn-default" do
+          = link_to "#", onclick: "Users.request_printer_application('ticket_complete', '#{ticket.id}', 'ticket_complete_request_type', 'print_ticket_delivery_note_tag_value', 'print_ticket_delivery_note', this); false;", data: {disable_with: "Printing..."}, class: "btn btn-default ajax_print" do
             = ticket.ticket_print_count.to_i > 0 ? "Re-Print TDN" : "Print TDN"
       .pull-right
-        = link_to "#", onclick: "Users.print_ticket_sticker('#{ticket.support_ticket_no}'); false;", data: {disable_with: "Printing..."}, class: "btn btn-default" do
+        = link_to "#", onclick: "Users.print_ticket_sticker('#{ticket.support_ticket_no}'); false;", data: {disable_with: "Printing..."}, class: "btn btn-default ajax_print" do
           Print Sticker
 
       .pull-right.small_scale_padding-right1
-        = link_to "#", onclick: "Users.request_printer_application('ticket', '#{ticket.id}', 'ticket_request_type', 'print_ticket_tag_value', 'print_ticket'); false;", id: "ticket_print", data: {disable_with: "Printing..."}, class: "btn btn-default" do
+        = link_to "#", onclick: "Users.request_printer_application('ticket', '#{ticket.id}', 'ticket_request_type', 'print_ticket_tag_value', 'print_ticket', this); false;", id: "ticket_print", data: {disable_with: "Printing..."}, class: "btn btn-default ajax_print" do
           = ticket.ticket_print_count.to_i > 0 ? "Re-Print Ticket" : "Print Ticket"
 
     = tab_content tabpointer: :job_info, active_class: "active" do

@@ -171,14 +171,14 @@
 
                         = f.label "Upload pop note"
                         / = f.file_field :pop_doc_url, accept: 'image/png,image/gif,image/jpeg,application/pdf', class: "product_pop_doc_url", data: {class: "pop_doc_url_wrapper"}
-                        = f.file_field :pop_doc_url, accept: 'image/png,image/gif,image/jpeg,application/pdf'
+                        = f.file_field :pop_doc_url, accept: 'image/png,image/gif,image/jpeg,application/pdf,application/msword,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                         / #preview_of_pop_doc_url{style: "word-wrap: break-word;"}
 
                         - if product.pop_doc_url.present?
                           = link_to "Remove", remove_pop_document_contracts_path(pop_id: f.object.id, wrapper: "contract_pop_wrapper_#{f.object.id}"), method: :delete, remote: false, data: {confirm: "Are you sure? Do you want to remove?"}
                         / .pop_doc_url_wrapper
                 %fieldset
-                  %legend Corparate Product
+                  %legend Corporate Product
                   .row
                     .col-md-4
                       = f.input :corporate_product, wrapper: :append
@@ -345,7 +345,7 @@
 
 
           %fieldset
-            %legend Corparate Product
+            %legend Corporate Product
             .row
               .col-md-4
                 = f.input :corporate_product, wrapper: :append
@@ -355,7 +355,7 @@
                 = f.input :invoice_number
             .row
               .col-md-4
-                = f.input :invoice_date, as: :string, input_html: {class: "partatepicker", value: f.object.invoice_date.try(:strftime, INOCRM_CONFIG["short_date_format"])}
+                = f.input :invoice_date, as: :string, input_html: {class: "datepicker", value: f.object.invoice_date.try(:strftime, INOCRM_CONFIG["short_date_format"])}
               .col-md-4
                 = f.input :date_installation, as: :string, input_html: {class: "datepicker", value: f.object.date_installation.try(:strftime, INOCRM_CONFIG["short_date_format"])}
               = hidden_field_tag :owner_customer_id, organization.id

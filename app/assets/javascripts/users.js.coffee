@@ -36,7 +36,7 @@ window.Users =
             $(".screener").addClass("fade")
             # $(".profile_image_wrapper").empty();
 
-  request_printer_application: (print_object, print_object_id, request_type, tag_value, action)->
+  request_printer_application: (print_object, print_object_id, request_type, tag_value, action, e)->
     _this = this
     $.post "/tickets/get_template", {print_object: print_object, print_object_id: print_object_id, request_type: request_type, tag_value: tag_value}, (data)->
       # headers:
@@ -44,16 +44,18 @@ window.Users =
       # headers:
       #   "Content-Type": "application/javascript; charset=utf-8"
       url = decodeURIComponent(data.url)
-      console.log url
       $.ajax
         async: false
         method: 'post'
         url: url
         data: data["request_printer_template"]
         timeout: 4000
-        success: (result)->
-      _this.update_database_after_printer_application(action, print_object_id)
-      $("#ticket_print").text("Re-Print")
+        success: ((result)->
+          _this.update_database_after_printer_application(action, print_object_id)
+          $(e).text("Re-Print")
+        ),
+        error: (error) =>
+          alert error.statusText
 
   update_database_after_printer_application: (action, print_object_id)->
     $.ajax
@@ -67,7 +69,7 @@ window.Users =
       e.preventDefault()
       $.post $("#create_fsr_form").attr("action"), $("#create_fsr_form").serialize(), (data) ->
         if data["print_fsr"]
-          _this.request_printer_application('fsr', data['fsr_id'], 'fsr_request_type', 'print_fsr_tag_value', 'print_fsr')
+          _this.request_printer_application('fsr', data['fsr_id'], 'fsr_request_type', 'print_fsr_tag_value', 'print_fsr', e)
           alert "FSR is being printed."
         else
           alert "FSR is created."
@@ -95,5 +97,5 @@ window.Users =
     ).done( (data)->
       alert "successfully printed."
     ).fail (response)->
-      if response.statusText == 'error'
+      if response.statusText === 'error'
         alert "Some error occured in request to printer application. Please rectify and try again."

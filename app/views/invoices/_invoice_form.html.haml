@@ -179,7 +179,7 @@
           = link_to "Cancel","#", onclick: "$('#estimation_wrapper').empty(); return false;"
         - if invoice.persisted?
           .col-md-2
-            = link_to "#", onclick: "Users.request_printer_application('invoice', '#{invoice.id}', 'invoice_request_type', 'print_ticket_invoice_tag_value', 'print_ticket_invoice'); false;", id: "ticket_print", data: {disable_with: "Printing..."}, class: "btn btn-default" do
+            = link_to "#", onclick: "Users.request_printer_application('invoice', '#{invoice.id}', 'invoice_request_type', 'print_ticket_invoice_tag_value', 'print_ticket_invoice', this); false;", id: "ticket_print", data: {disable_with: "Printing..."}, class: "btn btn-default" do
               Print
         .col-md-2
           = f.submit "Save", class: "btn btn-success" unless ticket.ticket_closed?

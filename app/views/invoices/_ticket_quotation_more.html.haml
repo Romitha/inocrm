@@ -127,7 +127,7 @@
     = quotation.note
 
   .col-md-1
-    = link_to "#", class: "btn btn-sm btn-success", onclick: "Users.request_printer_application('quotation', '#{quotation.id}', 'quotation_request_type', 'print_customer_quotation_tag_value', 'print_customer_quotation'); false;", data: {disable_with: "Printing..."}, class: "btn btn-default" do
+    = link_to "#", class: "btn btn-sm btn-success", onclick: "Users.request_printer_application('quotation', '#{quotation.id}', 'quotation_request_type', 'print_customer_quotation_tag_value', 'print_customer_quotation', this); false;", data: {disable_with: "Printing..."}, class: "btn btn-default" do
       Print
 
   .col-md-1

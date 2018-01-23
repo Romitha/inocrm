@@ -64,7 +64,7 @@
     = number_to_currency invoice.net_total_amount, delimiter: ",", unit: invoice.ticket.ticket_currency.code, format: "%u %n"
   %br/
   .col-md-12
-    = link_to "Print invoice", "#", class: "btn btn-sm btn-success", onclick: "Users.request_printer_application('invoice', '#{ticket.final_invoice_id}', 'invoice_request_type', 'print_ticket_invoice_tag_value', 'print_invoice'); false;"
+    = link_to "Print invoice", "#", class: "btn btn-sm btn-success", onclick: "Users.request_printer_application('invoice', '#{ticket.final_invoice_id}', 'invoice_request_type', 'print_ticket_invoice_tag_value', 'print_invoice', this); false;"
 .col-md-8
   %h4 Estimations
   %table.table.table-responsive.table-condensed.table-bordered
