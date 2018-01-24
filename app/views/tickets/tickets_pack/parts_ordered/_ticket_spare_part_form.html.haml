@@ -80,9 +80,15 @@
     = f.submit "Complete", name: "non_stock_complete", class: "btn btn-sm btn-success", data: {disable_with: "Please wait..."}
       
   - if @rce or @rpr #manufacture_warranty and (rce or rpr)
-    %div{class: "#{'hide' if (@manufacture_chargeable or @manufacture_warranty) and CompanyConfig.first.sup_mf_parts_return_required}"}
+  
+    / %div{class: "#{'hide' if (@manufacture_chargeable or @manufacture_warranty) and CompanyConfig.first.sup_mf_parts_return_required}"}
+    /   %label{:for => "Update without return"} Update without return
+    /   = check_box_tag "update_without_return", ((@manufacture_chargeable or @manufacture_warranty) and CompanyConfig.first.sup_mf_parts_return_required ), false, class: "small_scale_margin-right1"
+    / = hidden_field_tag :return, "return"
+
+    %div
       %label{:for => "Update without return"} Update without return
-      = check_box_tag "update_without_return", ((@manufacture_chargeable or @manufacture_warranty) and CompanyConfig.first.sup_mf_parts_return_required ), false, class: "small_scale_margin-right1"
+      = check_box_tag "update_without_return", nil, true, class: "small_scale_margin-right1"
     = hidden_field_tag :return, "return"
 
     = f.submit "Return", name: "return", class: "btn btn-sm btn-success", data: {confirm: "Are you sure? It cannot be undone.", disable_with: "Please wait..."}#, onclick: "Tickets.presence_validater(this, {presence: ['#ticket_spare_part_received_spare_part_no', '#ticket_spare_part_faulty_serial_no', '#ticket_spare_part_faulty_ct_no', '#ticket_spare_part_received_part_serial_no', '#ticket_spare_part_received_part_ct_no', '#ticket_spare_part_repare_start', '#ticket_spare_part_repare_end'], checked: ['b']}); return false;"

@@ -19,10 +19,10 @@
   .col-md-3
     %strong Repair Time:
     - if spare_part.repare_start and spare_part.repare_end
-      %em{title: "#{spare_part.repare_start.strftime('%Y-%b-%d')} - #{spare_part.repare_end.strftime('%Y-%b-%d')} (#{convert_hours_minutes(spare_part.repare_end - spare_part.repare_start)})"}
+      %em{title: "#{spare_part.repare_start.strftime(INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format'])} - #{spare_part.repare_end.strftime(INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format'])} (#{convert_hours_minutes(spare_part.repare_end - spare_part.repare_start)})"}
         = distance_of_time_in_words spare_part.repare_start, spare_part.repare_end
     - elsif spare_part.repare_start
-      %em= spare_part.repare_start.strftime('%Y-%b-%d')
+      %em= spare_part.repare_start.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
 
   .col-md-3
     %strong Part used status:
