@@ -166,6 +166,7 @@ class SoPo < ActiveRecord::Base
   has_many :so_po_items, foreign_key: :spt_so_po_id
   accepts_nested_attributes_for :so_po_items, allow_destroy: true
   validates :po_no, :po_date, :so_no, :amount, presence: true
+  validates_uniqueness_of :po_no
 
 end
 

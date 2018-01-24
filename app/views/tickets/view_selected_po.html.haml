@@ -19,6 +19,8 @@
         %th
           Part No
         %th
+          Ticket No
+        %th
           Item no
         %th
           Serial No 
@@ -40,6 +42,8 @@
               = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:issued_at).try(:strftime, INOCRM_CONFIG['short_date_format'])
             %td
               = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:spare_part_id)
+            %td
+              = po.so_po_items.map{|so| so.ticket_spare_part.ticket.support_ticket_no}.compact.join(", ")
             %td
               = po_item.item_no
             %td

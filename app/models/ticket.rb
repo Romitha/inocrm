@@ -212,6 +212,10 @@ class Ticket < ActiveRecord::Base
     ticket_type.name
   end
 
+  def ticket_type_code
+    ticket_type.code
+  end
+
   def customer_name
     customer.full_name
   end

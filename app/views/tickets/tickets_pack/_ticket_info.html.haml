@@ -3,7 +3,7 @@
 .col-md-10.col-xs-12.col-sm-10
   .tab-content
     .row.small_scale_margin-bottom1
-      - if ticket.job_finished
+      - if ticket.job_finished and ticket.ticket_type_code != "OS"
         .pull-right.small_scale_padding-left1
           = link_to "#", onclick: "Users.request_printer_application('ticket_complete', '#{ticket.id}', 'ticket_complete_request_type', 'print_ticket_delivery_note_tag_value', 'print_ticket_delivery_note', this); false;", data: {disable_with: "Printing..."}, class: "btn btn-default ajax_print" do
             = ticket.ticket_print_count.to_i > 0 ? "Re-Print TDN" : "Print TDN"

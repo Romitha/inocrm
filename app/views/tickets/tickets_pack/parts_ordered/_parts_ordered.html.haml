@@ -123,8 +123,16 @@
               %dd 
                 - if ticket_spare_part.received_eng
                   Yes
+
               %dt Repair Time
-              %dd= distance_of_time_in_words ticket_spare_part.repare_start, ticket_spare_part.repare_end if ticket_spare_part.repare_start and ticket_spare_part.repare_end
+              - if ticket_spare_part.repare_start and ticket_spare_part.repare_end
+                %dd{title: "#{ticket_spare_part.repare_start.strftime('%Y-%b-%d')} - #{ticket_spare_part.repare_end.strftime('%Y-%b-%d')} (#{convert_hours_minutes(ticket_spare_part.repare_end - ticket_spare_part.repare_start)})"}
+                  = distance_of_time_in_words ticket_spare_part.repare_start, ticket_spare_part.repare_end
+              - elsif ticket_spare_part.repare_start
+                %dd= ticket_spare_part.repare_start.strftime('%Y-%b-%d')
+              - else
+                %dd
+
               %dt Received Spare Part  No
               %dd= ticket_spare_part.received_spare_part_no
               %dt Received Serial No
@@ -451,9 +459,19 @@
             .col-md-4
               %dl.dl-horizontal
                 %dt Received
-                %dd= ticket_spare_part_ref.received_spare_part_no
+                %dd
+                  - if ticket_spare_part_ref.received_eng
+                    Yes
+
                 %dt Repair Time
-                %dd= distance_of_time_in_words ticket_spare_part_ref.repare_start, ticket_spare_part_ref.repare_end if ticket_spare_part_ref.repare_start and ticket_spare_part_ref.repare_end
+                - if ticket_spare_part_ref.repare_start and ticket_spare_part_ref.repare_end
+                  %dd{title: "#{ticket_spare_part_ref.repare_start.strftime('%Y-%b-%d')} - #{ticket_spare_part_ref.repare_end.strftime('%Y-%b-%d')} (#{convert_hours_minutes(ticket_spare_part_ref.repare_end - ticket_spare_part_ref.repare_start)})"}
+                    = distance_of_time_in_words ticket_spare_part_ref.repare_start, ticket_spare_part_ref.repare_end
+                - elsif ticket_spare_part_ref.repare_start
+                  %dd= ticket_spare_part_ref.repare_start.strftime('%Y-%b-%d')
+                - else
+                  %dd
+
                 %dt Received Spare Part  No
                 %dd= ticket_spare_part_ref.received_spare_part_no
                 %dt Received Serial No
