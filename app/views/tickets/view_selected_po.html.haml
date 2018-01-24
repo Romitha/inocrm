@@ -43,7 +43,7 @@
             %td
               = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:spare_part_id)
             %td
-              = po.so_po_items.map{|so| so.ticket_spare_part.ticket.support_ticket_no}.compact.join(", ")
+              = po_item.ticket_spare_part.ticket.support_ticket_no
             %td
               = po_item.item_no
             %td
