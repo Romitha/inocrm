@@ -126,7 +126,7 @@
 
               %dt Repair Time
               - if ticket_spare_part.repare_start and ticket_spare_part.repare_end
-                %dd{title: "#{ticket_spare_part.repare_start.strftime(INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format'])} - #{ticket_spare_part.repare_end.strftime(INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format'])} (#{convert_hours_minutes(ticket_spare_part.repare_end - ticket_spare_part.repare_start)})"}
+                %dd{title: "#{ticket_spare_part.repare_start.strftime(INOCRM_CONFIG['short_date_format']+' '+INOCRM_CONFIG['time_format'])} - #{ticket_spare_part.repare_end.strftime(INOCRM_CONFIG['short_date_format']+' '+INOCRM_CONFIG['time_format'])} (#{convert_hours_minutes(ticket_spare_part.repare_end - ticket_spare_part.repare_start)})"}
                   = distance_of_time_in_words ticket_spare_part.repare_start, ticket_spare_part.repare_end
               - elsif ticket_spare_part.repare_start
                 %dd= ticket_spare_part.repare_start.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
@@ -465,7 +465,7 @@
 
                 %dt Repair Time
                 - if ticket_spare_part_ref.repare_start and ticket_spare_part_ref.repare_end
-                  %dd{title: "#{ticket_spare_part_ref.repare_start.strftime(INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format'])} - #{ticket_spare_part_ref.repare_end.strftime(INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format'])} (#{convert_hours_minutes(ticket_spare_part_ref.repare_end - ticket_spare_part_ref.repare_start)})"}
+                  %dd{title: "#{ticket_spare_part_ref.repare_start.strftime(INOCRM_CONFIG['short_date_format']+' '+INOCRM_CONFIG['time_format'])} - #{ticket_spare_part_ref.repare_end.strftime(INOCRM_CONFIG['short_date_format']+' '+INOCRM_CONFIG['time_format'])} (#{convert_hours_minutes(ticket_spare_part_ref.repare_end - ticket_spare_part_ref.repare_start)})"}
                     = distance_of_time_in_words ticket_spare_part_ref.repare_start, ticket_spare_part_ref.repare_end
                 - elsif ticket_spare_part_ref.repare_start
                   %dd= ticket_spare_part_ref.repare_start.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
