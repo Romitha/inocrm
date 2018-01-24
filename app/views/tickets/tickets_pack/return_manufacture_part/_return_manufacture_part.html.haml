@@ -16,7 +16,7 @@
       %dd
         = spare_part.spare_part_no
       %dt
-        Status:
+        Part used status:
       %dd
         = spare_part.spare_part_status_use.name
       %dt
@@ -30,6 +30,15 @@
         Part Description:
       %dd
         = spare_part.spare_part_description
+      %dt Repair Time:
+      - if spare_part.repare_start and spare_part.repare_end
+        %dd{title: "#{spare_part.repare_start.strftime(INOCRM_CONFIG['short_date_format']+' '+INOCRM_CONFIG['time_format'])} - #{spare_part.repare_end.strftime(INOCRM_CONFIG['short_date_format']+' '+INOCRM_CONFIG['time_format'])} (#{convert_hours_minutes(spare_part.repare_end - spare_part.repare_start)})"}
+          = distance_of_time_in_words spare_part.repare_start, spare_part.repare_end
+      - elsif spare_part.repare_start
+        %dd= spare_part.repare_start.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
+      - else
+        %dd
+
       %dt
         Un Used Return Reason :
       %dd
