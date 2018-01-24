@@ -18,55 +18,67 @@
 	</fonts>
 	<header>
 	    <label name="DUPLICATE" left="15" top="0" right="200" bottom="65" h_align="left" v_align="top" font_code="F2" />
-					
+	    <label name="CANCELED" left="90" top="0" right="200" bottom="65" h_align="left" v_align="top" font_code="F5" />
+		<image name="IMAGE_VSIS" left="160" top="0" right="200" bottom="25" h_align="left" v_align="top" autosize="false" stretch="false" aspectratio="true" >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</image>
 		<line  name="LINE3" start_x="76" start_y="0" end_x="135" end_y="0" penwidth="1" penstyle="SOLID" color="00000"  />
-	    <label name="LABEL_C" left="76" top="2" right="71" bottom="56" h_align="left" v_align="top" font_code="F5" >CUSTOMER QUOTATION</label>
+	    <label name="LABEL_C" left="76" top="2" right="71" bottom="56" h_align="left" v_align="top" font_code="F5" >CUSTOMER QUOTATION </label>
 		<line  name="LINE3" start_x="76" start_y="9.3" end_x="135" end_y="9.3" penwidth="1" penstyle="SOLID" color="00000"  />
 		
-		<label name="LABEL_C"   left="15"  top="12.5" right="71" bottom="96" h_align="left" v_align="top" font_code="F2" >Customer Name:</label>
-		<label name="COMPANY_NAME" left="47"  top="12.5" right="61" bottom="56" h_align="left" v_align="top" font_code="F3" />
-		<label name="LABEL_C"   left="15"  top="16.5" right="71" bottom="96" h_align="left" v_align="top" font_code="F2" >Address             :</label>
-		<label name="ADDRESS1"     left="47"  top="16.5" right="61" bottom="96" h_align="left" v_align="top" font_code="F3" />
-		<label name="ADDRESS2"     left="47"  top="20.5" right="61" bottom="96" h_align="left" v_align="top" font_code="F3" />
-		<label name="ADDRESS3"     left="47"  top="24.5" right="61" bottom="96" h_align="left" v_align="top" font_code="F3" />
-		<label name="ADDRESS4"     left="47"  top="28.5" right="61" bottom="96" h_align="left" v_align="top" font_code="F3" />
-
-		<label name="LABEL_C"   left="122"  top="34" right="71" bottom="96" h_align="left" v_align="top" font_code="F2" >Quotation No    :</label>
-		<label name="QUOTATION_NO" left="150" top="34" right="81" bottom="96" h_align="left" v_align="top" font_code="F3" />
+		<label name="LABEL_C"   left="78"  top="12.5" right="71" bottom="96" h_align="left" v_align="top" font_code="F2" >V S Information Systems (Pvt) Ltd </label>
+		<label name="LABEL_C"   left="78"  top="17.5" right="71" bottom="96" h_align="left" v_align="top" font_code="F2" >NO: 07 , Suleimen Terrace , </label>
+		<label name="LABEL_C"   left="78"  top="22.5" right="71" bottom="96" h_align="left" v_align="top" font_code="F2" >Colombo - 05 . Sri Lanka. </label>
+		<label name="LABEL_C"   left="78"  top="25.5" right="71" bottom="96" h_align="left" v_align="top" font_code="F2" >Tel : 011 2 599 499 , 011 2 555 803 </label>
+		<label name="LABEL_C"   left="78"  top="30.5" right="71" bottom="96" h_align="left" v_align="top" font_code="F2" >Fax : 011 2 555 805 </label>
 		
-		<label name="LABEL_C"   left="122"  top="39" right="71" bottom="26" h_align="left" v_align="top" font_code="F2" >VAT REG No     : 114668095 - 7000</label>
-
-		<label name="LABEL_C"   left="122"  top="44" right="71" bottom="26" h_align="left" v_align="top" font_code="F2" >Created Date     :</label>
-		<label name="CREATED_DATE"   left="150"  top="44" right="81" bottom="96" h_align="left" v_align="top" font_code="F3" />
-		<label name="CREATED_TIME"   left="174"  top="44" right="81" bottom="96" h_align="left" v_align="top" font_code="F3" />
-
-		<label name="LABEL_C"   left="122"  top="49" right="71" bottom="26" h_align="left" v_align="top" font_code="F2" >Validity Period  :</label>
-		<label name="VALIDITY_PERIOD"   left="150"  top="49" right="81" bottom="116" h_align="left" v_align="top" font_code="F3" />
 		
-		<label name="LABEL_C"   left="122"  top="54" right="71" bottom="26" h_align="left" v_align="top" font_code="F2" >Delivery Period :</label>
-		<label name="DELIVERY_PERIOD"   left="150"  top="54" right="81" bottom="116" h_align="left" v_align="top" font_code="F3" />
+		
+		<label name="LABEL_C"   left="15"  top="40" right="71" bottom="96" h_align="left" v_align="top" font_code="F2" >Customer Name :</label>
+		<label name="COMPANY_NAME" left="47"  top="40" right="61" bottom="56" h_align="left" v_align="top" font_code="F3" />
+		<label name="LABEL_C"   left="15"  top="45" right="71" bottom="96" h_align="left" v_align="top" font_code="F2" >Address :</label>
+		<label name="ADDRESS1"     left="47"  top="45" right="61" bottom="96" h_align="left" v_align="top" font_code="F3" />
+		<label name="ADDRESS2"     left="47"  top="50" right="61" bottom="96" h_align="left" v_align="top" font_code="F3" />
+		<label name="ADDRESS3"     left="47"  top="55" right="61" bottom="96" h_align="left" v_align="top" font_code="F3" />
+		<label name="ADDRESS4"     left="47"  top="60" right="61" bottom="96" h_align="left" v_align="top" font_code="F3" />
 
-		<label name="LABEL_C"   left="15"  top="34" right="71" bottom="96" h_align="left" v_align="top" font_code="F2" >Ticket No        :</label>
-		<label name="TICKET_REF"   left="46"  top="34" right="81" bottom="96" h_align="left" v_align="top" font_code="F3" />
+		<label name="LABEL_C"   left="122"  top="40" right="71" bottom="96" h_align="left" v_align="top" font_code="F2" >Quotation No :</label>
+		<label name="QUOTATION_NO" left="150" top="40" right="81" bottom="96" h_align="left" v_align="top" font_code="F3" />
+		
+		<label name="LABEL_C"   left="122"  top="45" right="71" bottom="26" h_align="left" v_align="top" font_code="F2" >VAT REG No :     114668095 - 7000</label>
 
-		<label name="LABEL_C"   left="15"  top="39" right="71" bottom="26" h_align="left" v_align="top" font_code="F2" >Product Brand:</label>
-		<label name="PRODUCT_BRAND"     left="46"  top="39" right="61" bottom="26" h_align="left" v_align="top" font_code="F3" />
+		<label name="LABEL_C"   left="122"  top="50" right="71" bottom="26" h_align="left" v_align="top" font_code="F2" >Created Date :</label>
+		<label name="CREATED_DATE"   left="150"  top="50" right="81" bottom="96" h_align="left" v_align="top" font_code="F3" />
+		<label name="CREATED_TIME"   left="174"  top="50" right="81" bottom="96" h_align="left" v_align="top" font_code="F3" />
 
-		<label name="LABEL_C"   left="15"  top="44" right="71" bottom="26" h_align="left" v_align="top" font_code="F2" >Model No        :</label>
-		<label name="MODEL_NO"   left="46"  top="44" right="61" bottom="96" h_align="left" v_align="top" font_code="F3" /> 
+		<label name="LABEL_C"   left="122"  top="55" right="71" bottom="26" h_align="left" v_align="top" font_code="F2" >Validity Period :</label>
+		<label name="VALIDITY_PERIOD"   left="150"  top="55" right="81" bottom="116" h_align="left" v_align="top" font_code="F3" />
+		
+		<label name="LABEL_C"   left="122"  top="60" right="71" bottom="26" h_align="left" v_align="top" font_code="F2" >Delivery Period :</label>
+		<label name="DELIVERY_PERIOD"   left="150"  top="60" right="81" bottom="116" h_align="left" v_align="top" font_code="F3" />
+		
+		<label name="LABEL_C"   left="122"  top="65" right="71" bottom="26" h_align="left" v_align="top" font_code="F2" >Contact Person:</label>
+		<label name="CREATED_BY"   left="150"  top="65" right="81" bottom="116" h_align="left" v_align="top" font_code="F3" />
 
- 		<label name="LABEL_C"   left="15"  top="49" right="71" bottom="26" h_align="left" v_align="top" font_code="F2" >Serial No         :</label>
-		<label name="SERIAL_NO"     left="46"  top="49" right="61" bottom="96" h_align="left" v_align="top" font_code="F3" /> 
+		<label name="LABEL_C"   left="15"  top="70" right="71" bottom="96" h_align="left" v_align="top" font_code="F2" >Ticket No :</label>
+		<label name="TICKET_REF"   left="46"  top="70" right="81" bottom="96" h_align="left" v_align="top" font_code="F3" />
 
-		<label name="LABEL_C"   left="15"  top="54" right="71" bottom="26" h_align="left" v_align="top" font_code="F2" >Product No     :</label>
-		<label name="PRODUCT_NO"   left="46"  top="54" right="61" bottom="96" h_align="left" v_align="top" font_code="F3" /> 
+		<label name="LABEL_C"   left="15"  top="75" right="71" bottom="26" h_align="left" v_align="top" font_code="F2" >Product Brand :</label>
+		<label name="PRODUCT_BRAND"     left="46"  top="75" right="61" bottom="26" h_align="left" v_align="top" font_code="F3" />
+
+		<label name="LABEL_C"   left="15"  top="80" right="71" bottom="26" h_align="left" v_align="top" font_code="F2" >Model No :</label>
+		<label name="MODEL_NO"   left="46"  top="80" right="61" bottom="96" h_align="left" v_align="top" font_code="F3" /> 
+
+ 		<label name="LABEL_C"   left="15"  top="85" right="71" bottom="26" h_align="left" v_align="top" font_code="F2" >Serial No :</label>
+		<label name="SERIAL_NO"     left="46"  top="85" right="61" bottom="96" h_align="left" v_align="top" font_code="F3" /> 
+
+		<label name="LABEL_C"   left="15"  top="90" right="71" bottom="26" h_align="left" v_align="top" font_code="F2" >Product No :</label>
+		<label name="PRODUCT_NO"   left="46"  top="90" right="61" bottom="96" h_align="left" v_align="top" font_code="F3" /> 
 
 		
 		
 		
 		
 	</header>
-	<tables top="70" >
+	<tables top="96" >
 		<table>
 			<table_header height="10" >
 			   <line  name="LINE1" start_x="5" start_y="0" end_x="204" end_y="0" penwidth="4" penstyle="SOLID" color="00000"  />
@@ -76,17 +88,16 @@
 			   <label name="LABEL_C" left="130" top="2" right="138" bottom="116" h_align="right" v_align="top" font_code="F2" >Quantity</label>
 			   <label name="LABEL_C" left="172" top="2" right="166" bottom="116" h_align="right" v_align="top" font_code="F2" >Unit Price</label>
 			   <label name="LABEL_C" left="188" top="2" right="199" bottom="116" h_align="right" v_align="top" font_code="F2" >Total Price</label>
-			   <line  name="LINE1" start_x="5" start_y="7" end_x="204" end_y="7" penwidth="4" penstyle="SOLID" color="00000"  />
+			  <line  name="LINE1" start_x="5" start_y="7" end_x="204" end_y="7" penwidth="4" penstyle="SOLID" color="00000"  />
 			   
 			</table_header>	
 		
 			<table_repeat height="5.5" >
 			
 			   <label name="INDEX_NO" left="5" top="0" right="11" bottom="116" h_align="left" v_align="top" font_code="F3" />
-			   <label name="ITEM_CODE" left="14" top="0" right="21" bottom="116" h_align="left" v_align="top" font_code="F3" />
-            
-			   <label name="DESCRIPTION" left="44" top="0" right="56" bottom="116" h_align="left" v_align="top" font_code="F3" />
-
+			   <label name="ITEM_CODE" left="13" top="0" right="20" bottom="116" h_align="left" v_align="top" font_code="F3" />
+               <label name="DESCRIPTION" left="45" top="0" right="57" bottom="116" h_align="left" v_align="top" font_code="F3" />
+               <!-- label name="WARRANTY" left="44" top="0" right="56" bottom="116" h_align="right" v_align="top" font_code="F3" / -->
 			   <label name="QUANTITY" left="128" top="0" right="132" bottom="116" h_align="right" v_align="top" font_code="F3" />
 			   <label name="UNIT_PRICE" left="164" top="0" right="162" bottom="116" h_align="right" v_align="top" font_code="F3" />
 			   <label name="CURRENCY1" left="163" top="0" right="174" bottom="221" h_align="left" v_align="top" font_code="F3" />
@@ -98,7 +109,7 @@
 	</tables>
 	
 	<footer>
-	   <label name="LABEL_C"   left="105"  top="2" right="71" bottom="50" h_align="left" v_align="top" font_code="F2" >Total Amount :</label>
+	   <label name="LABEL_C"   left="120"  top="2" right="71" bottom="50" h_align="left" v_align="top" font_code="F2" >Total Amount :</label>
 	   <label name="TOTAL_AMOUNT" left="185" top="2" right="195" bottom="50" h_align="right" v_align="top" font_code="F3" />
 	   <label name="CURRENCY3" left="196" top="2" right="75" bottom="50" h_align="left" v_align="top" font_code="F3" />
 	   
@@ -106,24 +117,48 @@
 	  <line  name="LINE3" start_x="176" start_y="6.5" end_x="204" end_y="6.5" penwidth="2" penstyle="SOLID" color="00000"  />
 	   <line  name="LINE4" start_x="176" start_y="7" end_x="204" end_y="7" penwidth="2" penstyle="SOLID" color="00000"  />
 	   	
-	   <label name="LABEL_C"   left="105"  top="8.5" right="71" bottom="40" h_align="left" v_align="top" font_code="F2" >Minimum Advance Required :</label>
+	   <label name="LABEL_C"   left="120"  top="8.5" right="71" bottom="40" h_align="left" v_align="top" font_code="F2" >Minimum Advance Required :</label>
 	   <label name="MINIMUM_ADVANCE_PAYMENT" left="185" top="8.5" right="195" bottom="40" h_align="right" v_align="top" font_code="F3" />
 	   <label name="CURRENCY4" left="196" top="8.5" right="75" bottom="40" h_align="left" v_align="top" font_code="F3" />
 	   
 
-	   <label name="LABEL_C"   left="105"  top="14.5" right="71" bottom="30" h_align="left" v_align="top" font_code="F2" >Payment Term :</label>
+	   <label name="LABEL_C"   left="120"  top="14.5" right="71" bottom="30" h_align="left" v_align="top" font_code="F2" >Payment Term :</label>
 	   <label name="PAYMENT_TERM" left="198" top="14.5" right="203" bottom="30" h_align="right" v_align="top" font_code="F3" />
 	   
-	   <label name="LABEL_C"   left="15"  top="26" right="71" bottom="15" h_align="left" v_align="top" font_code="F2" >Warranty    :</label>
-	   <label name="WARRANTY" left="46" top="26" right="60" bottom="15" h_align="left" v_align="top" font_code="F3" />
+	   <label name="LABEL_C"   left="15"  top="17" right="71" bottom="15" h_align="left" v_align="top" font_code="F2" >Warranty :</label>
+	   <label name="WARRANTY" left="40" top="17" right="60" bottom="15" h_align="left" v_align="top" font_code="F3" />
 		
 		
-	   <label name="LABEL_C"   left="15"  top="32" right="71" bottom="8" h_align="left" v_align="top" font_code="F2" >Note            :</label>
-	   <label name="NOTE" left="46" top="32" right="60" bottom="8" h_align="left" v_align="top" font_code="F3" />
+	   <label name="LABEL_C"   left="15"  top="22" right="71" bottom="8" h_align="left" v_align="top" font_code="F2" >Note :</label>
+	   <label name="NOTE" left="40" top="22" right="60" bottom="8" h_align="left" v_align="top" font_code="F3" />
 		
 		
-	   <label name="LABEL_C"   left="15"  top="38" right="71" bottom="5" h_align="left" v_align="top" font_code="F2" >Created By :</label>	   
-	   <label name="CREATED_BY" left="46" top="38" right="60" bottom="5" h_align="left" v_align="top" font_code="F3" />
+	  
+	   
+	
+	   <label name="LABEL_C"   left="15"  top="30" right="71" bottom="5" h_align="left" v_align="top" font_code="F2" >TERMS AND CONDITIONS :</label>	
+	   <label name="LABEL_C"   left="15"  top="34" right="71" bottom="5" h_align="left" v_align="top" font_code="F2" >-------------------------------------- </label>	
+	   <label name="LABEL_C"   left="15"  top="40" right="71" bottom="5" h_align="left" v_align="top" font_code="F3" >1. Payment Terms: Full payment with the Purchase Order/Acknowledgement, </label>	
+	   <label name="LABEL_C"   left="15"  top="45" right="71" bottom="5" h_align="left" v_align="top" font_code="F3" >2. Taxes, Duty, Shipping and Freight Cost: This quotation inclusive of Duty, Shipping and Freight Cost. </label>	
+	   <label name="LABEL_C"   left="15"  top="50" right="71" bottom="5" h_align="left" v_align="top" font_code="F3" >3. Options and Accessories: Value of optional items and accessories (if any) not included in above total. </label>	 
+	   <!-- <label name="LABEL_C"   left="15"  top="55" right="71" bottom="5" h_align="left" v_align="top" font_code="F2" >4. Warranty: Six month warranty  </label>	-->
+       <label name="LABEL_C"   left="15"  top="55" right="71" bottom="5" h_align="left" v_align="top" font_code="F3" >4. Cheques to be drawn in favor of “V S Information Systems (Pvt)Ltd” and crossed :A/C Payee Only” </label>
+	   <label name="LABEL_C"   left="15"  top="60" right="71" bottom="5" h_align="left" v_align="top" font_code="F3" > </label>	
+	   <label name="LABEL_C"   left="15"  top="65" right="71" bottom="5" h_align="left" v_align="top" font_code="F3" >Should you have any changes/issues or require any clarifications to above terms and conditions </label>	
+	   <label name="LABEL_C"   left="15"  top="70" right="71" bottom="5" h_align="left" v_align="top" font_code="F3" >and details, please inform above mentioned person within 24 hours of the recipt of this acknowledgement. </label>	
+	   <label name="LABEL_C"   left="15"  top="75" right="71" bottom="5" h_align="left" v_align="top" font_code="F3" > </label>	
+	   <label name="LABEL_C"   left="15"  top="80" right="71" bottom="5" h_align="left" v_align="top" font_code="F3" >VSIS is pleased to accept this order in accordance with our standard terms and conditions. </label>	
+	   <label name="LABEL_C"   left="15"  top="85" right="71" bottom="5" h_align="left" v_align="top" font_code="F3" > </label>	
+	   <label name="LABEL_C"   left="15"  top="90" right="71" bottom="5" h_align="left" v_align="top" font_code="F3" >--------------------------------------------------------------------------------------------------------------------------------- </label>	
+	   <label name="LABEL_C"   left="15"  top="95" right="71" bottom="5" h_align="left" v_align="top" font_code="F3" >I hereby confirm that I am an authorized signatory and that I accept this quotation with given terms  </label>	
+	   <label name="LABEL_C"   left="15"  top="100" right="71" bottom="5" h_align="left" v_align="top" font_code="F3" >and conditions and confirm an order on these items on behalf of the purchaser/investor  (pl. put your   </label>	
+	   <label name="LABEL_C"   left="15"  top="105" right="71" bottom="5" h_align="left" v_align="top" font_code="F3" >official company stamp here)</label>	
+	   <!--<label name="LABEL_C"   left="15"  top="110" right="71" bottom="5" h_align="left" v_align="top" font_code="F3" ></label>	-->
+	   
+	   
+	   
+	   
+	   
 	   
 	</footer>
 </template>

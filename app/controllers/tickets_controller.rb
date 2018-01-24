@@ -394,6 +394,18 @@ class TicketsController < ApplicationController
             @ticket.contact_person2_id = (contact_person2 and contact_person2.report_persons.first.try(:id))
             @ticket.reporter_id = @ticket.contact_person1_id
 
+            contact_type_values = []
+
+            organization.contact_numbers.each do |cn|
+
+              contact_type_id = INOCRM_CONFIG['contact_type_values_map'][cn.organization_contact_type.id]
+
+              contact_type_values << {value: cn.value, contact_type_id: contact_type_id}
+
+            end
+
+            @new_customer.contact_type_values.create! contact_type_values if contact_type_values.present?
+
             if !@ticket.contact_person1_id.present? and contact_person1.present?
               built_c1 = contact_person1.report_persons.build(title_id: contact_person1.title_id, name: contact_person1.name)
               {email: "E-Mail", mobile: "Mobile", telephone: "Telephone"}.each do |key, value|

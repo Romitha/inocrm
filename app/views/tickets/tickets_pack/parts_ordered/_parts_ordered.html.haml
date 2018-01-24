@@ -340,7 +340,8 @@
         %hr
 
         - unless params[:action] == "ajax_show"
-          = render "tickets/tickets_pack/parts_ordered/ticket_spare_part_form", ticket_spare_part: ticket_spare_part
+          - if !ticket_spare_part.close_approved
+            = render "tickets/tickets_pack/parts_ordered/ticket_spare_part_form", ticket_spare_part: ticket_spare_part
 
   - ticket.ticket_on_loan_spare_parts.each do |ticket_on_loan_spare_part|
     - part_engineers = ticket_engineers.where(id: ticket_on_loan_spare_part.engineer_id)

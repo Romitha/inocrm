@@ -64,3 +64,14 @@ TicketPaymentReceivedType:
 request_part_default: "M"
 
 upload_url: "/inovacrm/production/uploads"
+
+spt_part_quotation_pdf: "vsis"
+
+contact_type_values_map:
+  1: 1
+  2: 3
+  3: 2
+  4: 1
+  5: 1
+  6: 1
+  # mst_contact_types.id => mst_spt_customer_contact_type.id

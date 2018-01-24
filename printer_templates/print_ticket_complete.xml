@@ -24,10 +24,10 @@
 			<table_header height="0" >
 			</table_header>			   
 			<table_repeat height="5" >
-			   <label name="LEFT_LINE_TITLE" left="45" top="0" right="45" bottom="116" h_align="right" v_align="top" font_code="F2" />
-			   <label name="LEFT_LINE_DATA" left="50" top="0" right="50" bottom="116" h_align="left" v_align="top" font_code="F3" />
-			   <label name="RIGHT_LINE_TITLE" left="135" top="0" right="135" bottom="116" h_align="right" v_align="top" font_code="F2" />
-			   <label name="RIGHT_LINE_DATA" left="138" top="0" right="140" bottom="116" h_align="left" v_align="top" font_code="F3" />
+			   <label name="LEFT_LINE_TITLE" left="39" top="0" right="39" bottom="116" h_align="right" v_align="top" font_code="F2" />
+			   <label name="LEFT_LINE_DATA" left="40" top="0" right="40" bottom="116" h_align="left" v_align="top" font_code="F3" />
+			   <label name="RIGHT_LINE_TITLE" left="119" top="0" right="119" bottom="116" h_align="right" v_align="top" font_code="F2" />
+			   <label name="RIGHT_LINE_DATA" left="120" top="0" right="120" bottom="116" h_align="left" v_align="top" font_code="F3" />
 			</table_repeat>
 		</table>		
 	</tables>

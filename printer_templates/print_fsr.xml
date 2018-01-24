@@ -19,8 +19,8 @@
 	  <label name="FSR_NO" left="166" top="37" right="166" bottom="37" h_align="left" v_align="top" font_code="F3" />
 	  <label name="COMPANY_NAME" left="15" top="45" right="15" bottom="45" h_align="left" v_align="top" font_code="F3" />
 	  <label name="ADDRESS" left="115" top="45" right="115" bottom="45" h_align="left" v_align="top" font_code="F3" />
-	  <label name="TELEPHONE" left="115" top="45" right="115" bottom="45" h_align="left" v_align="top" font_code="F3" />
-	  <label name="MOBILE" left="115" top="45" right="115" bottom="45" h_align="left" v_align="top" font_code="F3" />
+	  <label name="TELEPHONE" left="115" top="49" right="115" bottom="45" h_align="left" v_align="top" font_code="F3" />
+	  <label name="MOBILE" left="135" top="49" right="115" bottom="45" h_align="left" v_align="top" font_code="F3" />
 	  <label name="TICKET_REF" left="15" top="54" right="15" bottom="54" h_align="left" v_align="top" font_code="F3" />
 	  <label name="ENGINEER" left="115" top="54" right="115" bottom="54" h_align="left" v_align="top" font_code="F3" />
 	  <label name="SERIAL_NO" left="15" top="63" right="15" bottom="63" h_align="left" v_align="top" font_code="F3" />

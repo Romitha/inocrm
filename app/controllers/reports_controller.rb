@@ -258,8 +258,6 @@ class ReportsController < ApplicationController
       print_organization_bank_address: print_organization_bank_address,
       print_organization_bank_swift_code: print_organization_bank_swift_code,
 
-
-
       row_count: row_count,
       total_amount: view_context.standard_currency_format(total_amount),
       total_advance_amount: view_context.standard_currency_format(total_advance_amount),
@@ -267,6 +265,14 @@ class ReportsController < ApplicationController
     }
 
     @print_hash_to_object = HashToObject.new @print_object
+
+    render_template = case INOCRM_CONFIG['spt_part_quotation_pdf']
+
+    when "bobbin"
+      "quotation_bobbin"
+    else
+      "quotation"
+    end
 
     respond_to do |format|
       format.html
@@ -279,9 +285,11 @@ class ReportsController < ApplicationController
             right:             10
           },
           disable_javascript: false,
-          layout: "report_pdf"
+          layout: "report_pdf",
+          template: render_template
       end
     end
+
   end
 
   # before_filter :change_format

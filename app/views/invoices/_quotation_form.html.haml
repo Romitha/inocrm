@@ -14,7 +14,7 @@
           = label_tag "Payment term"
           = f.association :payment_term, required: true
           = f.input :customer_contacted, wrapper: :append
-          = f.input :canceled, wrapper: :append
+          = f.input :canceled, wrapper: :append, label: "Cancelled"
           = f.input :note, label: "Quotation Note"
           = f.input :remark, label: "Quotation Remark", input_html: {value: nil}
           = simple_format f.object.remark

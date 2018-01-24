@@ -54,3 +54,13 @@ TicketSparePartManufacture:
   order_no: "N/A"
 
 request_part_default: "M"
+
+spt_part_quotation_pdf: "bobbin"
+
+contact_type_values_map:
+  1: 1
+  2: 3
+  3: 2
+  4: 1
+  5: 1
+  6: 1

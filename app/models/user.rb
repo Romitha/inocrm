@@ -185,7 +185,7 @@ class Customer < ActiveRecord::Base
   belongs_to :organization
 
   def full_name
-    "#{try(:mst_title).try(:title)} #{name}"
+    ["#{try(:mst_title).try(:title)}", "#{name}"].map { |e| e.present? }.compact.join(" ")
   end
 
   def full_address
