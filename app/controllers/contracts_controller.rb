@@ -1,6 +1,4 @@
 class ContractsController < ApplicationController
-
-
   def index
     Ticket
     Organization
@@ -135,19 +133,107 @@ class ContractsController < ApplicationController
     end
   end
 
+  def load_installments
+    installments = params[:installments].to_i
+    amount_per_ins = params[:amount_per_ins].to_f
+    final_amount = params[:final_amount].to_f
+    num_of_ins = params[:num_of_ins].to_i
+    num_of_ins_count = params[:num_of_ins].to_i
+    start_date = (params[:start_date].to_date - (num_of_ins+1).month)
+    end_date = (params[:end_date].to_date - 1.month)
+    ttl_amount = amount_per_ins.to_f
+    # partial_amount = installments.to_f > 0 ? total.to_f/installments.to_f : 0
+    # data_array = [{start_date: start_date, end_date: (start_date.months_since(1) - 1.day)}]
+    data_array = []
+
+    if installments.to_i < 1
+      installments = 1
+    end
+    installments.to_i.times.each do |i|
+      if installments.to_i == (i.to_i + 1)
+        data_array << {start_date: start_date.months_since(num_of_ins), end_date: end_date, i:(i.to_i + 1), amount_per_ins: format("%.2f",amount_per_ins), ttl_amount: format("%.2f",final_amount) }
+      else
+        data_array << {start_date: start_date.months_since(num_of_ins), end_date: (start_date.months_since(num_of_ins +num_of_ins_count) - 1.day), i:(i.to_i + 1), amount_per_ins: format("%.2f",amount_per_ins), ttl_amount: format("%.2f",ttl_amount)}
+        num_of_ins += num_of_ins_count
+        ttl_amount += amount_per_ins
+      end
+    end
+
+    render json: {data_array: data_array }
+  end
+
   def save
     Ticket
     @organization = Organization.find(params[:organization_id])
 
+  # cached_contract = Rails.cache.fetch([:new_product_with_pop_doc_url1, request.remote_ip])
     if params[:contract_id].present?
       @contract = TicketContract.find params[:contract_id]
+      
       @contract.attributes = contract_params
-    else
-      @contract = @organization.ticket_contracts.build contract_params
-    end
 
+    else
+      @contract = (cached_contract or TicketContract.new)
+      @contract.attributes = contract_params
+    end
+    # Rails.cache.delete([:new_product_with_pop_doc_url1, request.remote_ip])
     @contract.save
 
+    # contract_document_path = File.join(Dir.home, INOCRM_CONFIG["upload_url"], "/contract_documents/#{@contract.id}/")
+    # contract_document_dir = Dir.exist?(contract_document_path)
+
+    # if not contract_document_dir
+    #   Dir.mkdir(contract_document_path, 0775)
+    # end
+
+    if params[:contract_document].present?
+      params[:contract_document]['annexture_id'].each do |annexture_id|
+        annexture = Documents::Annexture.find annexture_id
+
+        # annexture_exists = File.exist?( File.join( contract_document_path, [@contract.product_brand.name.downcase.gsub(/\W/, ""), "-", annexture.template_name.downcase.gsub(/\W/,""), File.extname(annexture.document_url.file.path)].join("") ) )
+
+        # if annexture.document_url.present? and !annexture_exists
+        #   FileUtils.cp annexture.document_url.file.path, contract_document_path
+        #   File.rename File.join(contract_document_path, File.basename(annexture.document_url.file.path)), [contract_document_path, @contract.product_brand.name.downcase.gsub(/\W/, ""), "-", annexture.template_name.downcase.gsub(/\W/,""), File.extname(annexture.document_url.file.path)].join("")
+
+        # end
+
+        if annexture.document_url.present?
+          name = (annexture.name || "#{@contract.product_brand.try(:name)}_#{@contract.id}_#{annexture.template_name}")
+
+          contract_document = @contract.contract_documents.find_or_initialize_by name: name
+
+          unless contract_document.document_url.present?
+            contract_document.document_url = annexture.document_url.file
+            contract_document.save!
+          end
+
+        end
+
+      end
+    end
+
+    # @contract.contract_attachments.each do |contract_attachment|
+    #   FileUtils.cp contract_attachment.attachment_url.file.path, contract_document_path
+
+    # end
+    Rails.cache.fetch([:contract_products, request.remote_ip]).to_a.each do |product|
+      unless @contract.product_ids.include?(product.id)
+        c_product = @contract.contract_products.create(product_serial_id: product.id, sla_id: product.product_brand.sla_id)
+
+        if params['contract_product_additional_params'].present?
+          if params['contract_product_additional_params'][c_product.product_serial_id.to_s].present?
+            c_product_attr = params['contract_product_additional_params'].require(c_product.product_serial_id.to_s).permit('amount', 'discount_amount', 'contract_start_at', 'contract_end_at', 'contract_b2b', 'location_address_id', 'installed_location_id','remarks' )
+            c_product.update c_product_attr
+            c_product.ticket_contract.update_index
+          end
+        end
+
+      end
+
+    end
+
+    Rails.cache.delete([:contract_products, request.remote_ip])
     @contract.products.each do |product|
       product.create_product_owner_history(@organization.id, current_user.id, "Added in contract")
 
@@ -279,6 +365,8 @@ class ContractsController < ApplicationController
         @contract = TicketContract.find params[:contract_id]
         @contract.attributes = contract_params
         @contract.save
+        puts "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ttttt"
+
       else
         @contract = TicketContract.new contract_params
       end
@@ -338,13 +426,11 @@ class ContractsController < ApplicationController
         #   FileUtils.cp contract_attachment.attachment_url.file.path, contract_document_path
 
         # end
-
         Rails.cache.fetch([:contract_products, request.remote_ip]).to_a.each do |product|
           unless @contract.product_ids.include?(product.id)
             c_product = @contract.contract_products.create(product_serial_id: product.id, sla_id: product.product_brand.sla_id)
 
             if params['contract_product_additional_params'].present?
-
               if params['contract_product_additional_params'][c_product.product_serial_id.to_s].present?
                 c_product_attr = params['contract_product_additional_params'].require(c_product.product_serial_id.to_s).permit('amount', 'discount_amount', 'installed_location_id','remarks' )
                 c_product.update c_product_attr

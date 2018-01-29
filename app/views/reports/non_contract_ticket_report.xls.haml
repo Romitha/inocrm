@@ -1,0 +1,155 @@
+%h3 Contract - Ticket Report
+
+/ %br
+/ %h4 Search Critaria
+/ %table{:border => "1"}
+/   %thead
+/     %tr
+/       %th Customer Name
+/       %th Service Provider
+/       %th Account manager
+/       %th Season
+/       %th Contract Date From
+/       %th Contract Date To
+/       %th Brand
+/       %th Category
+/       %th Contract type
+/       %th Currency
+/   %tbody
+/     %tr
+/       %td= @customer_name
+/       %td= @service_provider
+/       %td= @account_manager
+/       %td= @season
+/       %td= @date_from
+/       %td= @date_to
+/       %td= @brand_name
+/       %td= @category_name
+/       %td= @contract_type
+/       %td= @currnecy
+/ %br
+/ %br
+%table{:border => "1"}
+  %thead
+    %tr
+      %th Customer Name
+      %th Service Provider
+      %th Account Manager
+      %th Brand
+      %th Category
+      %th Product Name
+      %th Product Serial Number
+      %th Currency
+      / %th Product Amount
+      %th Ticket Number
+      %th Log Date
+      %th Problem Description
+      %th Job Type
+      %th Start Date
+      %th Start Action
+      / %th Engineer Name
+      / %th Engineers Assign Date
+      / %th Engineer Finished Date
+      %th Re-Open Count
+      %th Chargeable
+      %th Final Resolution
+      %th Engineer Cost
+      %th Support_engineer Cost
+      %th Additional Cost
+      %th Part Cost
+      %th Total Cost
+  - total_product_amount = 0
+  - total_eng_cost = 0
+  - total_support_engineer_cost = 0
+  - total_part_cost = 0
+  - total_additional_cost = 0
+  - total_total_cost = 0
+
+  %tbody
+    - @tickets.each do |ticket|
+      - if not ticket.ticket_contract.present?
+        %tr
+          - total_cost = (ticket.ticket_engineer_cost.to_f + ticket.ticket_support_engineer_cost.to_f + ticket.ticket_additional_cost.to_f + ticket.ticket_part_cost.to_f + ticket.ticket_external_cost.to_f)
+
+
+          - total_product_amount = total_product_amount + ticket.ticket_contract_product_amount.to_f
+          - total_eng_cost = total_eng_cost + ticket.ticket_engineer_cost.to_f
+          - total_support_engineer_cost = total_support_engineer_cost + ticket.ticket_support_engineer_cost.to_f
+          - total_part_cost = total_part_cost + ticket.ticket_part_cost.to_f
+          - total_additional_cost = total_additional_cost + ticket.ticket_additional_cost.to_f
+          - total_total_cost = total_total_cost + total_cost
+
+          %td= ticket.customer.try(:organization).try(:name)
+          %td= ticket.owner_organization.try(:name)
+          %td= ticket.customer.try(:organization).try(:account).try(:get_account_manager)
+          %td= ticket.ticket_product_brand_name
+          %td= ticket.products.first.try(:category_full_name_index)
+          %td= ticket.products.first.try(:name)
+          %td= ticket.ticket_product_serial_no
+          %td= ticket.ticket_currency.try(:code)
+          / %td= ticket.ticket_contract_product_amount.to_f
+          %td= ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
+          %td
+            - if ticket.present?
+              = ticket.try(:logged_at).to_date.strftime(INOCRM_CONFIG["short_date_format"])
+          %td= ticket.problem_description
+          %td= ticket.job_type_get
+          %td
+            - if ticket.job_started_at.present?
+              = ticket.job_started_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
+          %td= ticket.ticket_start_action.try(:action)
+          / %td= ticket.owner_engineer.try(:full_name)
+          / %td
+          /   - if ticket.owner_engineer.present?
+          /     = ticket.owner_engineer.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
+          / %td
+          /   - if ticket.owner_engineer.present?
+          /     = ticket.owner_engineer.try(:job_completed_at).to_date.strftime(INOCRM_CONFIG["short_date_format"])
+          %td= ticket.re_open_count
+          %td= boolean_in_word ticket.cus_chargeable, "Yes", "No"
+          %td= ticket.resolution_summary
+
+          %td= ticket.ticket_engineer_cost.to_f
+          %td= ticket.ticket_support_engineer_cost.to_f
+          %td= ticket.ticket_additional_cost.to_f
+          %td= ticket.ticket_part_cost.to_f
+          %td= total_cost
+    %tr
+      %td
+        %strong Total
+      %td
+      %td
+      %td
+      %td
+      %td
+      %td
+      / %td
+      /   %strong
+      /     = total_product_amount
+      %td
+      %td
+      %td
+      %td
+      %td
+      %td
+      %td
+      %td
+      %td
+      %td
+        %strong
+          = total_eng_cost
+      %td
+        %strong
+          = total_support_engineer_cost
+      %td
+        %strong
+          = total_additional_cost
+      %td
+        %strong
+          = total_part_cost
+      %td
+        %strong
+          = total_total_cost
+%h4 * Note : Engineer = Ticket Owner Engineer
+%h5 Print By : #{current_user.full_name}
+%h5 Print At : #{(DateTime.now).to_date}

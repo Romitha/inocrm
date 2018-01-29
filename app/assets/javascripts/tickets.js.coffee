@@ -911,7 +911,7 @@ window.Tickets =
     if position == "prev"
       console.log 'say prev' 
       brand_id = _this.prev().find(".select_wrapper .product_brand")
-      category1_id = _this.prev().find(".select_wrapper .product_category1")
+      category1_id = $("#product_product_brand_id")
       category2_id = _this.prev().find(".select_wrapper .product_category2")
       category3_id = _this.prev().find(".select_wrapper .product_category")
 
@@ -1054,24 +1054,84 @@ window.Tickets =
       category3_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
 
   filter_category_report: ->
-    category_list = $("#search_contracts_category_cat_id")
-    category_list_html = category_list.html()
-    category_list.prop("disabled", true)
-    $("#search_contracts_brand_name").change ->
-      category_list.prop("disabled", false)
-      selected = $("#search_contracts_brand_name :selected").text()
-      filtered_option = $(category_list_html).filter("optgroup[label='#{selected}']").html()
-      category_list.empty().html(filtered_option).trigger('chosen:updated')
+
+    brand_id = $("#search_contracts_brand_name")
+    category1_id = $("#search_product_category1")
+    category2_id = $("#search_product_category2")
+    category3_id = $("#search_contracts_category_cat_id")
+
+    category1_list = category1_id
+    category1_list_html = category1_list.html()
+    category1_list.empty()
+
+    category2_list = category2_id
+    category2_list_html = category2_list.html()
+    category2_list.empty()
+
+    category3_list = category3_id
+    category3_list_html = category3_list.html()
+    category3_list.empty()
+
+    brand_id.change ->
+      selected = $(":selected", @).text()
+      console.log(selected)
+      filtered_option = $(category1_list_html).filter("optgroup[label='#{selected}']").html()
+      category1_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
+      category2_list.empty()
+      category3_list.empty()
+
+    category1_id.change ->
+      selected = $(":selected", @).text()
+      console.log(selected)
+      filtered_option = $(category2_list_html).filter("optgroup[label='#{selected}']").html()
+      category2_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
+      category3_list.empty()
+
+    category2_id.change ->
+      selected = $(":selected", @).text()
+      console.log(selected)
+      filtered_option = $(category3_list_html).filter("optgroup[label='#{selected}']").html()
+      category3_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
   
   filter_category_ticket_report: ->
-    category_list = $("#search_contracts_ticket_contract_category_name")
-    category_list_html = category_list.html()
-    category_list.prop("disabled", true)
-    $("#search_contracts_ticket_contract_brand_name").change ->
-      category_list.prop("disabled", false)
-      selected = $("#search_contracts_ticket_contract_brand_name :selected").text()
-      filtered_option = $(category_list_html).filter("optgroup[label='#{selected}']").html()
-      category_list.empty().html(filtered_option).trigger('chosen:updated')
+    brand_id = $("#search_contracts_ticket_contract_brand_name")
+    category1_id = $("#search_product_category1_cost_analyse")
+    category2_id = $("#search_product_category2_cost_analyse")
+    category3_id = $("#search_contracts_ticket_contract_category_name")
+
+    category1_list = category1_id
+    category1_list_html = category1_list.html()
+    category1_list.empty()
+
+    category2_list = category2_id
+    category2_list_html = category2_list.html()
+    category2_list.empty()
+
+    category3_list = category3_id
+    category3_list_html = category3_list.html()
+    category3_list.empty()
+
+    brand_id.change ->
+      selected = $(":selected", @).text()
+      console.log(selected)
+      filtered_option = $(category1_list_html).filter("optgroup[label='#{selected}']").html()
+      category1_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
+      category2_list.empty()
+      category3_list.empty()
+
+    category1_id.change ->
+      selected = $(":selected", @).text()
+      console.log(selected)
+      filtered_option = $(category2_list_html).filter("optgroup[label='#{selected}']").html()
+      category2_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
+      category3_list.empty()
+
+    category2_id.change ->
+      selected = $(":selected", @).text()
+      console.log(selected)
+      filtered_option = $(category3_list_html).filter("optgroup[label='#{selected}']").html()
+      category3_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
+
   filter_bill_address: ->
     address_bill_list = $("#ticket_contract_bill_address_id")
     address_bill_list_html = address_bill_list.html()
@@ -1190,5 +1250,50 @@ window.Tickets =
     else
       $(".product_brand_main").addClass("hide");
       $(".product_brand_show").removeClass("hide");
-  hello: ->
-    alert "Hello"
+  calculate_installments: ->
+    end_dateParts = $("#ticket_contract_contract_end_at").val().split("-");
+    end_date = new Date(end_dateParts[2], (end_dateParts[1]), end_dateParts[0]);
+
+    start_dateParts = $("#ticket_contract_contract_start_at").val().split("-");
+    start_date = new Date(start_dateParts[2], (start_dateParts[1]), start_dateParts[0]);
+    Type = $(":selected","#ticket_contract_payment_type_id").text()
+    if (Type == "Annually")
+      num_of_ins = 12
+    if (Type == "Monthly")
+      num_of_ins = 1
+    if (Type == "Quarterly")
+      num_of_ins = 3
+    if (Type == "Binnually")
+      num_of_ins = 6
+
+    months = (end_date.getFullYear()*12+end_date.getMonth())-(start_date.getFullYear()*12+start_date.getMonth())
+    records = months/num_of_ins
+    amo = 0
+    dis_amo = 0
+    sum_amo = 0
+    sum_disamo = 0
+
+    $("input.cus_product_amount1").each ->
+      amo = $(this).val()
+      sum_amo = parseFloat(sum_amo) + parseFloat(amo)
+
+    $("a.cus_product_amount1").each ->
+      amo = $(this).text()
+      sum_amo = parseFloat(sum_amo) + parseFloat(amo)
+    
+    $("input.cus_product_disamount1").each ->
+      dis_amo = $(this).val()
+      sum_disamo = parseFloat(sum_disamo) + parseFloat(dis_amo)
+
+    $("a.cus_product_disamount1").each ->
+      dis_amo = $(this).val()
+      sum_disamo = parseFloat(sum_disamo) + parseFloat(dis_amo)
+    final_amount = (sum_amo - sum_disamo)
+    amount_per_ins = (final_amount/Math.ceil(records))
+    $.post("/contracts/load_installments", {start_date: start_date, end_date: end_date, installments: Math.ceil(records), num_of_ins:num_of_ins, amount_per_ins: amount_per_ins, final_amount: final_amount  }, (data)->
+      $('#load_permissions_json_render').html Mustache.to_html($('#load_installments').html(), data)
+    )
+    # alert num_of_ins
+    # $("#for_ins").val(records)
+
+    # data = {'installations': [{'date': records}, ]}

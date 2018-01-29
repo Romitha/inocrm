@@ -1,0 +1,17 @@
+%table.table.table-bordered
+  %thead
+    %tr
+      %th Installments
+      %th Installment Start Date
+      %th Installment End Date
+      %th Installment Amount
+      %th Total Amount
+  %tbody
+    {{#data_array}}
+    %tr
+      %td {{i}}
+      %td {{start_date}}
+      %td {{end_date}}
+      %td {{amount_per_ins}}
+      %td {{ttl_amount}}
+    {{/data_array}}

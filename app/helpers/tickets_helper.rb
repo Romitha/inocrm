@@ -70,9 +70,7 @@ module TicketsHelper
 
       if ticket.final_invoice.present?
         ticket_invoice = {ticket_invoice_no: ticket.final_invoice.invoice_no, ticket_invoice_currency: ticket.final_invoice.currency_type, ticket_invoice_net_total: (number_with_precision ticket.final_invoice.net_total_amount, precision: 2 )}
-
         body_merger.merge!(ticket_invoice)
-
       end
 
     end

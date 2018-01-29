@@ -26,6 +26,7 @@ Rails.application.routes.draw do
       post "save_cus_products"
       post "payments_save"
       post "generate_contract_document"
+      post "load_installments"
       post 'save'
       get 'view'
       put "contract_update"
@@ -61,6 +62,7 @@ Rails.application.routes.draw do
       get "contract_report"
       get "contract_cost_analys_report" 
       get "contract_ticket_report"
+      get "non_contract_ticket_report"
       get "summery"
     end
   end

@@ -98,7 +98,7 @@
         %td= contract_product.ticket_contract.ticket_contract_payment_type.try(:name)
         %td= contract_product.ticket_contract.organization.account.get_account_manager
         %td= contract_product.ticket_contract.brand_name
-        %td= contract_product.ticket_contract.category_name
+        %td= contract_product.ticket_contract.try(:category_full_name_index)
         %td= contract_product.product.try(:name)
         %td= contract_product.instral_loc_full_address
         %td= contract_product.product.serial_no

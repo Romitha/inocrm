@@ -370,6 +370,79 @@ class ReportsController < ApplicationController
       end
     end
   end
+  def non_contract_ticket_report
+    Ticket
+    Invoice
+    if params[:search].present?
+      params[:from_where] = "job_ticket"
+
+      refined_contract = params[:search_contracts].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
+      refined_search = [refined_contract, refined_search].map{|v| v if v.present? }.compact.join(" AND ")
+
+      request.format = "xls"
+      params[:per_page] = 100
+      params[:sort_by] = true
+      params[:query] = refined_search
+
+      # @customer_name = Organization.find_by_id(params[:search_contracts]["ticket_contract.organization.id"]).try(:name)
+      # @service_provider = Organization.find_by_id(params[:search_contracts]["ticket_contract.owner_organization.id"]).try(:name)
+      # @account_manager = params[:search_contracts]["ticket_contract.organization.account.get_account_manager"]
+      # @season = params[:search_contracts]["ticket_contract.season"]
+      # @date_from = params[:ticket_contract_contract_start_at]
+      # @date_to = params[:ticket_contract_contract_end_at]
+      # @brand_name = params[:search_contracts]["ticket_contract.brand_name"]
+      # @category_name = ProductCategory.find_by_id(params[:search_contracts]["ticket_contract.category_cat_id"]).try(:name)
+      # @contract_type = TicketContractType.find_by_id(params[:search_contracts]["ticket_contract.ticket_contract_type.id"]).try(:name)
+      # @currnecy = TicketCurrency.find_by_id(params[:search_contracts]["ticket_contract.ticket_currency.id"]).try(:code)
+      after_contract_products = []
+      before_contract_products = Ticket.search(params)
+      if params[:ticket_contract_contract_start_at].present? and params[:ticket_contract_contract_end_at].present?
+        params[:report] = true
+        after_contract_products = Ticket.search(params)
+        @tickets = (before_contract_products.results + after_contract_products.results).uniq{ |r| r.id }
+      else
+        @tickets = before_contract_products.results
+      end
+
+      not_need_index = []
+
+      @tickets.each do |ticket|
+        need_index_boolean = ((ticket.owner_engineer.try(:updated_at).try(:to_datetime) == TicketEngineer.find_by_id(ticket.owner_engineer.try(:id)).try(:updated_at).try(:to_datetime)) and ( ticket.updated_at.to_datetime == Ticket.find(ticket.id).updated_at.to_datetime ) and ( ticket.ticket_contract.try(:updated_at).try(:to_datetime) == TicketContract.find_by_id(ticket.ticket_contract.try(:id)).try(:updated_at).try(:to_datetime)) and ( ticket.ticket_contract.try(:organization).try(:updated_at).try(:to_datetime) == Organization.find_by_id(ticket.ticket_contract.try(:organization).try(:id)).try(:updated_at).try(:to_datetime) ) and ( ticket.ticket_contract.try(:owner_organization).try(:updated_at).try(:to_datetime) == Organization.find_by_id(ticket.ticket_contract.try(:owner_organization).try(:id)).try(:updated_at).try(:to_datetime)) and ( ticket.product.try(:updated_at).try(:to_datetime) == Product.find_by_id(ticket.product.try(:id)).try(:updated_at).try(:to_datetime) ) )
+        not_need_index << {id: ticket.id, not_need_index: need_index_boolean} unless need_index_boolean
+      end
+
+      if @tickets.present?
+        t_ids = []
+        not_need_index.uniq{|n| n[:id]}.each do |n_index|
+          t_ids << n_index[:id]
+          # if !n_index[:not_need_index]
+          #   # Ticket.find(n_index[:id]).update_index
+          # end
+        end
+        Ticket.index.import Ticket.where(id: t_ids) if t_ids.present?
+      end
+
+    end
+
+    respond_to do |format|
+      if params[:search].present?
+        sleep 3
+        after_contract_products = []
+        params[:report] = nil
+        before_contract_products = Ticket.search(params)
+        @tickets = if params[:ticket_contract_contract_start_at].present? and params[:ticket_contract_contract_end_at].present?
+          params[:report] = true
+          after_contract_products = Ticket.search(params)
+          (before_contract_products.results + after_contract_products.results).uniq{|r| r.id}
+        else
+          before_contract_products.results
+        end
+        format.xls
+      else
+        format.html
+      end
+    end
+  end
 
 
   def contract_cost_analys_report
@@ -507,7 +580,6 @@ class ReportsController < ApplicationController
       not_need_index << {id: contract.id, not_need_index: need_index_boolean}
 
     end
-
     if @contracts.present?
 
       not_need_index.uniq{|n| n[:id]}.each do |n_index|
@@ -517,7 +589,6 @@ class ReportsController < ApplicationController
       end
 
     end
-
     respond_to do |format|
       if params[:search].present?
         format.xls
@@ -526,8 +597,6 @@ class ReportsController < ApplicationController
       end
     end
   end
-
-
   def excel_output
     Ticket
     User

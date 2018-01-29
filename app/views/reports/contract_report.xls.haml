@@ -16,6 +16,7 @@
       %th Payment Type
       %th Accepted
       %th Currency
+      %th Status
       %th Contract Amount
       %th Payment Received
       %th Pending Amount
@@ -46,7 +47,7 @@
           - if contract.season == 2
             Season 2
         %td= contract.brand_name
-        %td= contract.category_name
+        %td= contract.category_full_name_index
         %td= contract.ticket_contract_type.try(:name)
         %td= contract.ticket_contract_payment_type.try(:name)
         %td
@@ -55,12 +56,14 @@
           -else
             No
         %td= contract.ticket_currency.try(:code)
+        %td= contract.status_name
         %td= contract.product_amount
         %td= contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f}
         %td= pending_amount
     %tr
       %td
         %strong Total
+      %td
       %td
       %td
       %td

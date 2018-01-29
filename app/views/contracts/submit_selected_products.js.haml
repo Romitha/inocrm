@@ -1,5 +1,5 @@
 $("#selectedproducts").html("#{j render 'selected_products'}");
-
+$("a[rel~=popover], .has-popover").popover();
 - if params[:done]
   $("#product_count").val(parseInt($("#product_count").val())+parseInt("#{@cached_products.to_a.count - @before_count}"))
   $("#product_count").click()

@@ -10,13 +10,13 @@
         %tr
           %th No
           %th Serial No
-          %th Product Brand
-          %th Product Category
-          %th Model No
-          %th Product No
           - if params[:from_where] != "cus_product"
             %th Amount
             %th Discount Amount
+            %th Start Date
+            %th End Date
+            %th B2B Contract
+            %th Installed Address
             %th Installed Location
             %th Remarks
 
@@ -24,20 +24,37 @@
 
       %tbody
         - products.each_with_index do |p, index|
+          - content_for :products_brief, flush: true do
+            %ul
+              %li
+                %strong Product Brand :
+                #{p.product_brand.name}
+            %ul
+              %li
+                %strong Product Category :
+                #{p.product_category.name}
+            %ul
+              %li
+                %strong Product No :
+                #{p.product_no}
+            %ul
+              %li
+                %strong Model No :
+                #{p.model_no}           
           %tr
-            %td
+            %td{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "#{p.serial_no}", "data-content"=> yield(:products_brief), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }
               - if params[:page]
                 = (index+1)+ 10*(params[:page].to_i-1)
               - else
                 = (index+1)
-            %td= p.serial_no
-            %td= p.product_brand.name
-            %td= p.product_category.name
-            %td= p.model_no
-            %td= p.product_no
+              %td=p.serial_no
             - if params[:from_where] != "cus_product"
-              %td= text_field_tag "contract_product_additional_params[#{p.id}][amount]", nil, class: "form-control", required:true
-              %td= text_field_tag "contract_product_additional_params[#{p.id}][discount_amount]", nil, class: "form-control", required:true
+              %td= text_field_tag "contract_product_additional_params[#{p.id}][amount]",0, class: "form-control cus_product_amount", required: true
+              %td= text_field_tag "contract_product_additional_params[#{p.id}][discount_amount]",0, class: "form-control cus_product_disamount", required: true
+              %td= text_field_tag "contract_product_additional_params[#{p.id}][contract_start_at]",Date.today, class: "datepicker form-control", required: true
+              %td= text_field_tag "contract_product_additional_params[#{p.id}][contract_end_at]",Date.today, class: "datepicker form-control", required: true
+              %td= check_box_tag "contract_product_additional_params[#{p.id}][contract_b2b]",nil, class: "form-control cus_product_disamount", required: true
+              %td= select_tag "contract_product_additional_params[#{p.id}][location_address_id]", options_from_collection_for_select(organization_for_location.addresses, :id, :full_address, nil), class: "form-control chosen-select", include_blank: true
               %td= select_tag "contract_product_additional_params[#{p.id}][installed_location_id]", options_from_collection_for_select(organization_for_location.addresses, :id, :full_address, nil), class: "form-control chosen-select", include_blank: true
               %td= text_area_tag "contract_product_additional_params[#{p.id}][remarks]", nil, class: "form-control"
 
