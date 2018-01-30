@@ -299,13 +299,20 @@
                               = contrac.try(:discount_amount)
                           - else
                             = contrac.try(:discount_amount)
+                        %dt Installed Address
+                        %dd
+                          -if !contract.accepted_at.present?
+                            = link_to "#", class: "inline_edit", data: {type: "select", resource: "contract_product", source:organization.addresses.collect{|address| {value: address.id, text: address.try(:full_address)}}, name: "location_address_id", url: update_contract_product_contracts_path(contract_product_id: contrac.id), "original-title" => "Update Installed Address"} do
+                              = contrac.location_address.try(:full_address)
+                          - else
+                            = contrac.location_address.try(:full_address)
                         %dt Installed Location
                         %dd
                           -if !contract.accepted_at.present?
-                            = link_to "#", class: "inline_edit", data: {type: "select", resource: "contract_product", source:organization.addresses.collect{|address| {value: address.id, text: address.try(:full_address)}}, name: "installed_location_id", url: update_contract_product_contracts_path(contract_product_id: contrac.id), "original-title" => "Update Installed Location"} do
-                              = contrac.installed_location.try(:full_address)
+                            = link_to "#", class: "inline_edit", data: {type: "select", resource: "contract_product", source:organization.anchestors.map{|m| m[:member]}.uniq{|m| m.id}.collect{|org| {value: org.id, text: org.try(:name)}}, name: "installed_location_id", url: update_contract_product_contracts_path(contract_product_id: contrac.id), "original-title" => "Update Installed Address"} do
+                              = contrac.installed_location.try(:name)
                           - else
-                            = contrac.installed_location.try(:full_address)
+                            = contrac.installed_location.try(:name)
                         %dt Remarks
                         %dd
                           -if !contract.accepted_at.present?

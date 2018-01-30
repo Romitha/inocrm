@@ -177,7 +177,7 @@ class ContractsController < ApplicationController
       @contract.attributes = contract_params
     end
     # Rails.cache.delete([:new_product_with_pop_doc_url1, request.remote_ip])
-    @contract.save
+    @contract.save!
 
     # contract_document_path = File.join(Dir.home, INOCRM_CONFIG["upload_url"], "/contract_documents/#{@contract.id}/")
     # contract_document_dir = Dir.exist?(contract_document_path)
@@ -224,7 +224,12 @@ class ContractsController < ApplicationController
         if params['contract_product_additional_params'].present?
           if params['contract_product_additional_params'][c_product.product_serial_id.to_s].present?
             c_product_attr = params['contract_product_additional_params'].require(c_product.product_serial_id.to_s).permit('amount', 'discount_amount', 'contract_start_at', 'contract_end_at', 'contract_b2b', 'location_address_id', 'installed_location_id','remarks' )
-            c_product.update c_product_attr
+            puts "****************************"
+            puts c_product_attr
+            puts "****************************"
+            puts c_product.inspect
+            puts "****************************"
+            c_product.update!(c_product_attr)
             c_product.ticket_contract.update_index
           end
         end
@@ -315,6 +320,7 @@ class ContractsController < ApplicationController
         @before_count = Rails.cache.fetch([:contract_products, request.remote_ip]).to_a.count
         Rails.cache.delete([:contract_products, request.remote_ip])
         @organization_for_location = Organization.find params[:organization_id]
+        # @organization_decendents = @organization_for_location.anchestors.map{|m| m[:member]}
         if params[:contract_id].present?
           @contract_id = TicketContract.find params[:contract_id]
         end

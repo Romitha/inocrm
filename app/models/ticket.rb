@@ -883,7 +883,8 @@ class ContractProduct < ActiveRecord::Base
   accepts_nested_attributes_for :product, allow_destroy: true
 
   belongs_to :sla_time, foreign_key: :sla_id
-  belongs_to :installed_location, class_name: "Address"
+  belongs_to :location_address, class_name: "Address"
+  belongs_to :installed_location, class_name: "Organization"
 
   accepts_nested_attributes_for :product, allow_destroy: true
   

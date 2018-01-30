@@ -165,6 +165,12 @@ class Organization < ActiveRecord::Base
     end
 
   end
+  # class << self
+  #   protected
+
+
+  # end
+
 
   def anchestors
     @anchestors ||= self.class.organization_tree_path(self) # first time call to sql, and thereafter @anchestors is saved in cache for particular instance
