@@ -173,7 +173,7 @@ class ContractsController < ApplicationController
       @contract.attributes = contract_params
 
     else
-      @contract = (cached_contract or TicketContract.new)
+      @contract = TicketContract.new
       @contract.attributes = contract_params
     end
     # Rails.cache.delete([:new_product_with_pop_doc_url1, request.remote_ip])

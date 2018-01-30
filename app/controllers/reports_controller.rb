@@ -444,6 +444,49 @@ class ReportsController < ApplicationController
     end
   end
 
+  def customer_product_report
+    Ticket
+    Invoice
+    if params[:search].present?
+      params[:from_where] = "customer_product"
+
+      refined_contract = params[:search_product].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
+      refined_search = [refined_contract, refined_search].map{|v| v if v.present? }.compact.join(" AND ")
+
+      request.format = "xls"
+      params[:query] = refined_search
+
+      after_contract_products = []
+      before_contract_products = Product.search(params)
+
+      @products = before_contract_products.results
+
+      not_need_index = []
+
+      @products.each do |product|
+        need_index_boolean = (product.updated_at.to_datetime == Product.find(product.id).updated_at.to_datetime)
+        not_need_index << {id: product.id, not_need_index: need_index_boolean} unless need_index_boolean
+      end
+
+      if @products.present?
+        t_ids = []
+        not_need_index.uniq{|n| n[:id]}.each do |n_index|
+          t_ids << n_index[:id]
+          # if !n_index[:not_need_index]
+          #   # Ticket.find(n_index[:id]).update_index
+          # end
+        end
+        Product.index.import Product.where(id: t_ids) if t_ids.present?
+      end
+    end
+    respond_to do |format|
+      if params[:search].present?
+        format.xls
+      else
+        format.html
+      end
+    end
+  end
 
   def contract_cost_analys_report
     Ticket
