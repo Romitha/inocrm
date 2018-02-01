@@ -9,10 +9,14 @@
               = label_tag "Customer Name"
               = select_tag "search_contracts[organization.id]", options_from_collection_for_select(Organization.customers, :id, :name), class: "form-control parent_class", include_blank: true
 
+            .col-md-3.small_scale_margin-top2
+              = label_tag "Decendent Customer"
+              = check_box_tag "search_contracts[payment_completed]", (params[:search_contracts] and params[:search_contracts][:payment_completed]), checked = false
+
             .col-md-3
               = label_tag "Service Provider:"
               = select_tag "search_contracts[owner_organization.id]", options_from_collection_for_select([Organization.owner] + Organization.owner.members, :id, :name), class: "form-control parent_class", include_blank: true
-            
+
             / .col-md-3
             /   = label_tag "Agreement year", "Agreement year"
             /   = text_field_tag "contract_date_from", params[:contract_date_from], class: "form-control datepicker", placeholder: "Select Agreement year"

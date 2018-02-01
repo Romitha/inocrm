@@ -33,6 +33,7 @@ class ContractsController < ApplicationController
       if params[:organization_id]
         @organization = Organization.find params[:organization_id]
         @contracts = @organization.ticket_contracts.page params[:page]
+        @status_colors = ContractStatus.all
       end
     end
 
@@ -41,6 +42,7 @@ class ContractsController < ApplicationController
         @organization = Organization.find params[:organization_id]
         # @ticket_contracts = @organization.ticket_contracts.page params[:page]
         @contract_products = @organization.contract_products
+        @status_colors = ContractStatus.all
       end
     end
 

@@ -1,5 +1,5 @@
 - organization = @organization
-
+- status_colors = @status_colors
 / - contract_products = if params[:from_where] == "new_ticket"
 - contract_products = @contract_products.to_a.select{|c| (c.ticket_contract.contract_start_at.to_date .. c.ticket_contract.contract_end_at.to_date).include?(Date.today)}
 
@@ -54,7 +54,7 @@
           %th Action
       %tbody
         - contract_products.each_with_index do |con, index|
-          %tr
+          %tr{style: "background-color: #{con.ticket_contract.contract_status.try(:colour_code)}; font-weight: bold;"}
             %td
               - if params[:page]
                 = (index+1)+ 10*(params[:page].to_i-1)
@@ -83,6 +83,11 @@
                 = link_to "Select", find_by_serial_tickets_path(contract_id: con.ticket_contract.id, serial_search: con.product.serial_no), remote: true, method: :post
               / - else
               /   %font{:color => "red"} Not Active
+    .row{style: "font-weight: bold;"}Status Colur Codes 
+    - status_colors.each_with_index do |color, index|
+      .row
+        .col-md-1{style: "background-color: #{color.try(:colour_code)};padding: 15px; border: 1px solid #000000;"}
+        .col-md-11{style: "font-weight: bold;"}= color.try(:name)
     %br
     %br
     %br

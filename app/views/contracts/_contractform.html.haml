@@ -96,19 +96,19 @@
           = f.association :product_brand, required: true, include_blank: true
         .col-md-3
           %font{:color => "#90032A"}
-            = label_tag "Product Category 1: "
+            = label_tag "#{CompanyConfig.first.try(:sup_product_category1_label)} :"
             %font{:color => "black"}
               %strong #{contract.try(:product_category).try(:product_category2).try(:product_category1).try(:name)}
             = select_tag "search_product_category1", option_groups_from_collection_for_select(ProductBrand.all, :product_category1s, :name, :id, :name, "#"), include_blank: true, class: "product_category1 form-control"
         .col-md-3
           %font{:color => "#90032A"}
-            = label_tag "Product Category 2 : "
+            = label_tag "#{CompanyConfig.first.try(:sup_product_category2_label)} :"
             %font{:color => "black"}
               %strong #{contract.try(:product_category).try(:product_category2).try(:name)}
             = select_tag "search_product_category2", option_groups_from_collection_for_select(ProductCategory1.all, :product_category2s, :name, :id, :name, "#"), include_blank: true, class: "product_category2 form-control"
         .col-md-3
           %font{:color => "#90032A"}
-            = label_tag "Product Category 3: "
+            = label_tag "#{CompanyConfig.first.try(:sup_product_category_label)} :"
             %font{:color => "black"}
               %strong #{contract.try(:product_category).try(:name)}
             = f.association :product_category, collection: ProductCategory2.all, as: :grouped_select, group_method: :product_categories, required: true, input_html: {class: "product_category chosen-select"}, label: false
@@ -117,13 +117,13 @@
           %strong Product Brand :
           = text_field_tag :product_brand1,contract.product_brand.try(:name), disabled:true
         .col-md-3
-          %strong Product Category1 :
+          %strong #{CompanyConfig.first.try(:sup_product_category1_label)} :
           = text_field_tag :product_cat1,contract.try(:product_category).try(:product_category2).try(:product_category1).try(:name), disabled:true
         .col-md-3
-          %strong Product Category2 :
+          %strong #{CompanyConfig.first.try(:sup_product_category2_label)} :
           = text_field_tag :product_cat2,contract.try(:product_category).try(:product_category2).try(:name), disabled:true
         .col-md-3
-          %strong Product Category3 :
+          %strong #{CompanyConfig.first.try(:sup_product_category_label)} :
           = text_field_tag :product_cat3,contract.try(:product_category).try(:name), disabled:true
 
     - else
@@ -132,19 +132,19 @@
           = f.association :product_brand, required: true, include_blank: true
         .col-md-3
           %font{:color => "#90032A"}
-            = label_tag "Product Category 1: "
+            = label_tag "#{CompanyConfig.first.try(:sup_product_category1_label)} :"
             %font{:color => "black"}
               %strong #{contract.try(:product_category).try(:product_category2).try(:product_category1).try(:name)}
             = select_tag "search_product_category1", option_groups_from_collection_for_select(ProductBrand.all, :product_category1s, :name, :id, :name, "#"), include_blank: true, class: "product_category1 form-control"
         .col-md-3
           %font{:color => "#90032A"}
-            = label_tag "Product Category 2 : "
+            = label_tag "#{CompanyConfig.first.try(:sup_product_category2_label)} :"
             %font{:color => "black"}
               %strong #{contract.try(:product_category).try(:product_category2).try(:name)}
             = select_tag "search_product_category2", option_groups_from_collection_for_select(ProductCategory1.all, :product_category2s, :name, :id, :name, "#"), include_blank: true, class: "product_category2 form-control"
         .col-md-3
           %font{:color => "#90032A"}
-            = label_tag "Product Category 3: "
+            = label_tag "#{CompanyConfig.first.try(:sup_product_category_label)} :"
             %font{:color => "black"}
               %strong #{contract.try(:product_category).try(:name)}
             = f.association :product_category, collection: ProductCategory2.all, as: :grouped_select, group_method: :product_categories, required: true, input_html: {class: "product_category chosen-select"}, label: false
@@ -153,13 +153,13 @@
           %strong Product Brand :
           = text_field_tag :product_brand1,contract.product_brand.try(:name), disabled:true
         .col-md-3
-          %strong Product Category1 :
+          %strong #{CompanyConfig.first.try(:sup_product_category1_label)} :
           = text_field_tag :product_cat1,contract.try(:product_category).try(:product_category2).try(:product_category1).try(:name), disabled:true
         .col-md-3
-          %strong Product Category2 :
+          %strong #{CompanyConfig.first.try(:sup_product_category2_label)} :
           = text_field_tag :product_cat2,contract.try(:product_category).try(:product_category2).try(:name), disabled:true
         .col-md-3
-          %strong Product Category3 :
+          %strong #{CompanyConfig.first.try(:sup_product_category_label)} :
           = text_field_tag :product_cat3,contract.try(:product_category).try(:name), disabled:true
   %br
   .row

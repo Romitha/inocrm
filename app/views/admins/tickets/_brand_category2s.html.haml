@@ -9,11 +9,11 @@
                 %span.glyphicon.glyphicon-trash
       .row
         .col-md-4
-          %strong Product Category1:
+          %strong #{CompanyConfig.first.try(:sup_product_category1_label)} :
           = link_to "#", class: "inline_edit", data: {type: "select", resource: "product_category2", source: ProductCategory1.all.collect{|category1| {value: category1.id, text: category1.name}}, name: "product_category1_id", url: brand_category2_admins_tickets_path(edit: true, product_category2_id: product_category2.id), "original-title" => "Update Product Category"} do
             = product_category2.product_category1.name
         .col-md-4
-          %strong Product Category2 Name:
+          %strong #{CompanyConfig.first.try(:sup_product_category2_label)} : Name:
           = link_to "#", class: "inline_edit", data: {type: "text", resource: "product_category2", name: "name", url: brand_category2_admins_tickets_path(edit: true, product_category2_id: product_category2.id), "original-title" => "Update Product Category"} do
             = product_category2.name
         .col-md-4

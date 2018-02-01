@@ -53,6 +53,9 @@
             .col-md-3
               = label_tag "Currency"
               = select_tag "search_contracts[ticket_contract.ticket_currency.id]", options_from_collection_for_select(TicketCurrency.all, :id, :code), class: "form-control parent_class", include_blank: false
+            .col-md-3
+              = label_tag "Customer Chargerble"
+              = select_tag "search_contracts[cus_chargeable]", raw("<option value=1>Yes</option> <option value=0>No</option>"), class: "form-control parent_class", include_blank: true
 
           .row.small_scale_margin-top1
             .col-md-1

@@ -1,5 +1,6 @@
 - organization = @organization
 - contracts = @contracts
+- status_colors = @status_colors
 
 .row
   .col-md-12
@@ -50,7 +51,7 @@
           %th Action
       %tbody
         - contracts.each_with_index do |con, index|
-          %tr
+          %tr{style: "background-color: #{con.contract_status.try(:colour_code)}; font-weight: bold;"}
             %td
               - if params[:page]
                 = (index+1)+ 10*(params[:page].to_i-1)
@@ -85,7 +86,13 @@
                 "Not accessed to payment"
               %br
               / = link_to can?(:generate_contract_document, TicketContract), "Generate Document", generate_contract_document_contracts_path(contract_id: con.id), method: :post
-    %br
-    - unless params[:from_where] == "new_ticket"
-      = link_to_if can?(:save, Organization), "New Contract", contracts_path(edit_create: true, new_contract: true,  customer_id: organization.id), remote: true, class: "btn btn-sm btn-warning", onclick: "Tickets.ajax_loader(); return false;"
-    %br
+    .row{style: "font-weight: bold;"}Status Colur Codes 
+    - status_colors.each_with_index do |color, index|
+      .row
+        .col-md-1{style: "background-color: #{color.try(:colour_code)};padding: 15px; border: 1px solid #000000;"}
+        .col-md-11{style: "font-weight: bold;"}= color.try(:name)
+    .row  
+      %br
+      - unless params[:from_where] == "new_ticket"
+        = link_to_if can?(:save, Organization), "New Contract", contracts_path(edit_create: true, new_contract: true,  customer_id: organization.id), remote: true, class: "btn btn-sm btn-warning", onclick: "Tickets.ajax_loader(); return false;"
+      %br
