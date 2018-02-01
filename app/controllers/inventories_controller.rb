@@ -514,7 +514,8 @@ class InventoriesController < ApplicationController
           @flash_message = "Bpm error. ticket is not updated"
         end
       else
-        @flash_message = "Bpm error. ticket is not updated"
+        # @flash_message = "Bpm error. ticket is not updated"
+        @flash_message = "spare part is updated. But not returned"
       end
 
 
