@@ -1,0 +1,54 @@
+%h3 Contract Report
+%table{:border => "1"}
+  %thead
+    %tr
+      %th Customer Name
+      %th Product Name
+      %th Product No
+      %th Serial No
+      %th Model No
+      %th Brand Name
+      %th Category
+      %th Location Address
+      %th Description
+
+  %tbody
+    - @products.each do |product|
+      %tr
+        %td= product.try(:owner_customer_name)
+        %td= product.try(:name)
+        %td= product.try(:product_no)
+        %td= product.try(:serial_no)
+        %td= product.try(:model_no)
+        %td= product.brand_name
+        %td= product.try(:category_full_name_index)
+        %td= product.try(:location_address_full)
+        %td= product.try(:description)
+    /   %td
+    /     %strong Total
+    /   %td
+    /   %td
+    /   %td
+    /   %td
+    /   %td
+    /   %td
+    /   %td
+    /   %td
+    /   %td
+    /   %td
+    /   %td
+    /   %td
+    /   %td
+    /   %td
+    /   %td
+    /     %strong
+    /       = total_product_amount
+    /   %td
+    /     %strong
+    /       = total_payment_receiveds
+    /   %td
+    /     %strong
+    /       = total_pending_amount
+
+%h5 Print By : #{current_user.full_name}
+%h5 Print At : #{(DateTime.now).to_date}

@@ -450,7 +450,7 @@ class ReportsController < ApplicationController
     if params[:search].present?
       params[:from_where] = "customer_product"
 
-      refined_contract = params[:search_product].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
+      refined_contract = params[:search_contracts].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
       refined_search = [refined_contract, refined_search].map{|v| v if v.present? }.compact.join(" AND ")
 
       request.format = "xls"
