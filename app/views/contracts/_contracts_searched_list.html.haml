@@ -1,5 +1,6 @@
 - contracts = @contracts
 - organization = @organization
+- status_colors = @status_colors
 = paginate contracts, remote: true, method: :get
 %table.table.table-bordered
   %thead
@@ -29,7 +30,7 @@
           %li
             %strong No Of Products:
             #{con.num_of_products}
-      %tr
+      %tr{style: "background-color: #{con.status_color}; font-weight: bold;"}
         %td{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Contract No: #{con.contract_no_genarate}", "data-content"=> yield(:contracts_brief), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }
           - if params[:page]
             = (index+1)+ 10*(params[:page].to_i-1)
@@ -63,4 +64,16 @@
           = link_to "Generate Document", generate_contract_document_contracts_path(contract_id: con.id), method: :post
           / = link_to "Edit", contracts_path(edit_create: true, contract_id: con.id, customer_id: con.organization.id), remote: true, onclick: "Tickets.ajax_loader(); return false;"
           / = link_to "Edit", contracts_path(edit_create: true, contract_id: con.id, customer_id: con.organization.id), remote: true, onclick: "Tickets.ajax_loader(); return false;"
-= paginate contracts, remote: true, method: :get
+.row{style: "font-weight: bold;"}Status colour code
+%br
+- status_colors.each_with_index do |color, index|
+  .col-md-1
+    .col-md-1{style: "background-color: #{color.try(:colour_code)};padding: 15px;"}
+    .col-md-2{style: "font-weight: bold;"}= color.try(:name)
+.row
+.row
+.row
+.row
+.row
+.row
+  = paginate contracts, remote: true, method: :get

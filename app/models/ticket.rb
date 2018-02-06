@@ -43,6 +43,13 @@ class Ticket < ActiveRecord::Base
             must { range :ticket_contract_contract_start_at, lte: params[:ticket_contract_contract_start_at].to_date.beginning_of_day } 
             must { range :ticket_contract_contract_end_at, gte: params[:ticket_contract_contract_end_at].to_date.end_of_day } 
           end
+          if params[:created_date_from].present? or params[:created_date_to].present? 
+            puts"***********************************************************"
+            puts "inside"
+            puts"***********************************************************"
+            must { range :created_at, gte: params[:created_date_from].to_date.beginning_of_day } if params[:created_date_from].present?
+            must { range :created_at, lte: params[:created_date_to].to_date.end_of_day } if params[:created_date_to].present?
+          end
         end
       end
       # sort { by :created_at, {order: "asc", ignore_unmapped: true} }
@@ -61,11 +68,11 @@ class Ticket < ActiveRecord::Base
     Invoice
     to_json(
       only: [:created_at, :cus_chargeable, :id, :ticket_no, :logged_at, :slatime, :job_started_at, :job_started_action_id, :problem_description, :job_type_id, :job_finished_at, :status_hold, :re_open_count, :final_invoice_id, :resolution_summary, :updated_at],
-      methods: [:customer_name, :ticket_product_brand_name, :ticket_product_serial_no, :ticket_product_cat_id, :ticket_support_engineer_cost,:ticket_additional_cost,:ticket_external_cost, :ticket_engineer_cost, :ticket_part_cost, :ticket_contract_contract_end_at, :ticket_contract_contract_start_at, :job_type_get, :owner_engineer_name, :ticket_status_name, :warranty_type_name, :support_ticket_no, :ticket_type_name, :ticket_contract_product_amount, :ticket_contract_location],
+      methods: [:customer_name, :ticket_product_brand_name, :ticket_product_serial_no, :ticket_product_cat_id, :ticket_product_cat1_id, :ticket_product_cat2_id, :ticket_support_engineer_cost,:ticket_additional_cost,:ticket_external_cost, :ticket_engineer_cost, :ticket_part_cost, :ticket_contract_contract_end_at, :ticket_contract_contract_start_at, :job_type_get, :owner_engineer_name, :ticket_status_name, :warranty_type_name, :support_ticket_no, :ticket_type_name, :ticket_contract_product_amount, :ticket_contract_location],
       include: {
         ticket_contract: {
           only: [ :id, :customer_id, :products, :contract_no,:amount, :contract_start_at,:contract_end_at, :season, :accepted_at, :updated_at],
-          methods: [:brand_name, :category_cat_id, :category_name, :payment_type, :formated_contract_start_at, :formated_contract_end_at, :product_amount,:discount_less_amount, :contract_no_genarate],
+          methods: [:brand_name, :category_cat_id, :category_cat1_id, :category_cat2_id, :category_name, :payment_type, :formated_contract_start_at, :formated_contract_end_at, :product_amount,:discount_less_amount, :contract_no_genarate],
           include: {
             contract_products:{
               only: [:id, :amount,:installed_location_id, :remarks, :product_serial_id, :updated_at],
@@ -237,6 +244,12 @@ class Ticket < ActiveRecord::Base
 
   def ticket_product_cat_id
     products.first.try(:category_cat_id)
+  end
+  def ticket_product_cat1_id
+    products.first.try(:category_cat1_id)
+  end
+  def ticket_product_cat2_id
+    products.first.try(:category_cat2_id)
   end
   def customer_name
     customer.full_name
@@ -622,7 +635,6 @@ end
 
 class TicketContract < ActiveRecord::Base
   self.table_name = "spt_contract"
-
   include Tire::Model::Search
   include Tire::Model::Callbacks
 
@@ -720,10 +732,11 @@ class TicketContract < ActiveRecord::Base
   def to_indexed_json
     Organization
     ContactNumber
+    OrganizationContactPerson
     Invoice
     to_json(
-      only: [ :id, :created_at, :created_by, :customer_id, :products, :contract_no, :hold, :amount, :payment_completed, :contract_start_at,:contract_end_at, :season, :accepted_at, :updated_at, :remarks],
-      methods: [:num_of_products, :brand_name, :category_cat_id, :status_name, :category_name, :category_full_name_index, :payment_type, :formated_created_at, :created_by_user_full_name, :formated_contract_start_at, :formated_contract_end_at, :dynamic_active, :formated_accepted_at, :product_amount,:discount_less_amount, :contract_no_genarate, ],
+      only: [ :id, :created_at, :created_by, :customer_id, :products, :contract_no, :hold, :amount, :payment_completed, :contract_start_at,:contract_end_at, :season, :accepted_at, :updated_at, :remarks, :contract_status],
+      methods: [:num_of_products, :brand_name,:category_cat1_id, :category_cat2_id, :category_cat_id, :status_name, :status_color, :category_name, :category_full_name_index, :payment_type, :formated_created_at, :created_by_user_full_name, :formated_contract_start_at, :formated_contract_end_at, :dynamic_active, :formated_accepted_at, :product_amount,:discount_less_amount, :contract_no_genarate, :contact_person_name ],
       include: {
         organization: {
           only: [:id, :name, :code, :updated_at],
@@ -780,15 +793,25 @@ class TicketContract < ActiveRecord::Base
   def brand_name
     product_brand.try(:name)
   end
-
+  def contact_person_name
+    ContactNumber
+    organization_contact_person.try(:name)
+  end
   def status_name
     contract_status.try(:name)
   end
-
+  def status_color
+    contract_status.try(:colour_code)
+  end
   def category_cat_id
     product_category.try(:id)
   end
-
+  def category_cat1_id
+    product_category.try(:product_category2).try(:product_category1).try(:id)
+  end
+  def category_cat2_id
+    product_category.try(:product_category2).try(:id)
+  end
   def category1_name
     product_category.try(:product_category2).try(:product_category1).try(:name)
   end
@@ -933,7 +956,7 @@ class ContractProduct < ActiveRecord::Base
       include: {
         ticket_contract: {
           only: [ :id, :created_at, :created_by, :customer_id, :products, :contract_no, :hold, :amount, :payment_completed, :contract_start_at,:contract_end_at, :season, :accepted_at, :updated_at],
-          methods: [:num_of_products, :brand_name, :category_cat_id, :category_name, :category_full_name_index, :payment_type, :formated_created_at, :created_by_user_full_name, :formated_contract_start_at, :formated_contract_end_at, :dynamic_active, :formated_accepted_at, :product_amount, :discount_less_amount, :contract_no_genarate],
+          methods: [:num_of_products, :brand_name, :category_cat_id, :category_cat1_id, :category_cat2_id, :category_name, :category_full_name_index, :payment_type, :formated_created_at, :created_by_user_full_name, :formated_contract_start_at, :formated_contract_end_at, :dynamic_active, :formated_accepted_at, :product_amount, :discount_less_amount, :contract_no_genarate],
           include: {
             organization: {
               only: [:id, :name, :code, :updated_at],

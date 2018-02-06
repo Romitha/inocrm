@@ -15,7 +15,7 @@
       %dd= product.product_brand.try(:name)
       %hr
       %dt Product Category:
-      %dd= product.product_category.try(:name)
+      %dd= product.category_full_name_index
       %hr
       %dt Product Name:
       %dd= product.try(:name)

@@ -25,7 +25,7 @@ class ReportsController < ApplicationController
 
     product_no = product.product_no
 
-    company_name = ticket.customer.full_name
+    company_name = ticket.customer.try(:name)
 
     address1 = ticket.customer.address1
     address2 = ticket.customer.address2
@@ -383,7 +383,7 @@ class ReportsController < ApplicationController
       params[:per_page] = 100
       params[:sort_by] = true
       params[:query] = refined_search
-
+      params[:non_report] = true
       # @customer_name = Organization.find_by_id(params[:search_contracts]["ticket_contract.organization.id"]).try(:name)
       # @service_provider = Organization.find_by_id(params[:search_contracts]["ticket_contract.owner_organization.id"]).try(:name)
       # @account_manager = params[:search_contracts]["ticket_contract.organization.account.get_account_manager"]

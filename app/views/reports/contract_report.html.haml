@@ -41,17 +41,17 @@
               = label_tag "Brand"
               = select_tag "search_contracts[brand_name]", options_from_collection_for_select(ProductBrand.all, :name, :name), class: "form-control parent_class", include_blank: true
             .col-md-3
-              = label_tag "Product Category 1: "
-              = select_tag "search_product_category1", option_groups_from_collection_for_select(ProductBrand.all, :product_category1s, :name, :id, :name, "#"), include_blank: true, class: "product_category1 form-control"
+              = label_tag "#{CompanyConfig.first.try(:sup_product_category1_label)} : "
+              = select_tag "search_contracts[category_cat1_id]", option_groups_from_collection_for_select(ProductBrand.all, :product_category1s, :name, :id, :name, "#"), include_blank: true, id: "search_product_category1", class: "product_category1 form-control"
             .col-md-3
-              = label_tag "Product Category 2 : "
-              = select_tag "search_product_category2", option_groups_from_collection_for_select(ProductCategory1.all, :product_category2s, :name, :id, :name, "#"), include_blank: true, class: "product_category2 form-control"
+              = label_tag "#{CompanyConfig.first.try(:sup_product_category2_label)} : "
+              = select_tag "search_contracts[category_cat2_id]", option_groups_from_collection_for_select(ProductCategory1.all, :product_category2s, :name, :id, :name, "#"), include_blank: true, id: "search_product_category2", class: "product_category2 form-control"
             / .col-md-3
             /   = label_tag "Product Category 2: "
             /   = select_tag "search_contracts[category_cat_id]", option_groups_from_collection_for_select(ProductCategory2.all, :product_categories, :name, :id, :name), class: "form-control parent_class product_category chosen-select", include_blank: true
 
             .col-md-3
-              = label_tag "Product Category 3: "
+              = label_tag "#{CompanyConfig.first.try(:sup_product_category_label)} : "
               = select_tag "search_contracts[category_cat_id]", option_groups_from_collection_for_select(ProductCategory2.all, :product_categories, :name, :id, :name), class: "form-control parent_class product_category", include_blank: true
           .row
             .col-md-3

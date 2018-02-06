@@ -88,7 +88,6 @@ end
 
 class OrganizationContactPerson < ActiveRecord::Base
   self.table_name = "organization_contact_person"
-
   belongs_to :organization
   belongs_to :contact_person_type
   belongs_to :mst_title, foreign_key: :title_id

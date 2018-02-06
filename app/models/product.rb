@@ -75,6 +75,12 @@ class Product < ActiveRecord::Base
   def category_cat_id
     product_category.try(:id)
   end
+  def category_cat1_id
+    product_category.try(:product_category2).try(:product_category1).try(:id)
+  end
+  def category_cat2_id
+    product_category.try(:product_category2).try(:id)
+  end
   def brand_id
     product_brand.try(:id)
   end

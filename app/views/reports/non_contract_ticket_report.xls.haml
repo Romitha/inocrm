@@ -1,4 +1,4 @@
-%h3 Contract - Ticket Report
+%h3 Non Contract - Ticket Report
 
 / %br
 / %h4 Search Critaria
@@ -42,6 +42,7 @@
       %th Currency
       / %th Product Amount
       %th Ticket Number
+      %th Created Date
       %th Log Date
       %th Problem Description
       %th Job Type
@@ -89,6 +90,7 @@
           %td= ticket.ticket_currency.try(:code)
           / %td= ticket.ticket_contract_product_amount.to_f
           %td= ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
+          %td= ticket.try(:created_at).to_date.strftime(INOCRM_CONFIG["short_date_format"])
           %td
             - if ticket.present?
               = ticket.try(:logged_at).to_date.strftime(INOCRM_CONFIG["short_date_format"])
@@ -123,9 +125,11 @@
       %td
       %td
       %td
+      %td
       / %td
       /   %strong
       /     = total_product_amount
+      %td
       %td
       %td
       %td

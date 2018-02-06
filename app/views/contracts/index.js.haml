@@ -8,9 +8,6 @@
   $("#search_contract").html("#{j render 'contracts/contracts_searched_list.html'}");
   $("#search_contract").removeClass("hide");
 
-
-
-
 - if params[:search].present?
   $("#customerlist").html("#{j render 'contracts/customersearchedlist'}");
   $("#contractlist").addClass("hide");

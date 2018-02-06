@@ -137,7 +137,7 @@
       %dd= contract.legacy_contract_no
       %hr
       %dt Contact Person:
-      %dd= contract.organization_contact_person.try(:name)
+      %dd= contract.contact_person_name
       %hr
       %dt Contact Address:
       %dd= contract.contact_address.try(:full_address)

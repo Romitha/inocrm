@@ -74,7 +74,8 @@
                 %font{:color => "red"} No
             %td= con.product.serial_no
             %td= con.product.product_brand.name
-            %td= con.product.product_category.name
+            %td
+              .has-tooltip{title: con.product.category_full_name_index, data: { toggle:"tooltip", placement: "top" } }= con.product.category_full_name_index.truncate(12)
             %td= con.product.model_no
             %td= con.product.product_no
             %td
@@ -83,10 +84,11 @@
                 = link_to "Select", find_by_serial_tickets_path(contract_id: con.ticket_contract.id, serial_search: con.product.serial_no), remote: true, method: :post
               / - else
               /   %font{:color => "red"} Not Active
-    .row{style: "font-weight: bold;"}Status Colur Codes 
+    .row{style: "font-weight: bold;"}Status colour code
+    %br
     - status_colors.each_with_index do |color, index|
-      .row
-        .col-md-1{style: "background-color: #{color.try(:colour_code)};padding: 15px; border: 1px solid #000000;"}
+      .col-md-1
+        .col-md-1{style: "background-color: #{color.try(:colour_code)};padding: 15px;"}
         .col-md-11{style: "font-weight: bold;"}= color.try(:name)
     %br
     %br

@@ -19,6 +19,7 @@ class ContractsController < ApplicationController
       
       params[:query] = refined_contract
       @contracts = TicketContract.search(params)
+      @status_colors = ContractStatus.all
 
     end
 
@@ -251,9 +252,10 @@ class ContractsController < ApplicationController
   def view
     Invoice
     Ticket
+    
     Rails.cache.delete([:contract_products, request.remote_ip])
 
-    authorize :view_contract, Organization
+    # authorize :view_contract, Organization
     @organization = Organization.find params[:customer_id]
     @products = ContractProduct.all
 
