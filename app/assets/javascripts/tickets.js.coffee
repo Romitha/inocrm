@@ -911,7 +911,7 @@ window.Tickets =
     if position == "prev"
       console.log 'say prev' 
       brand_id = _this.prev().find(".select_wrapper .product_brand")
-      category1_id = $("#product_product_brand_id")
+      category1_id = _this.prev().find(".select_wrapper .product_category1")
       category2_id = _this.prev().find(".select_wrapper .product_category2")
       category3_id = _this.prev().find(".select_wrapper .product_category")
 
