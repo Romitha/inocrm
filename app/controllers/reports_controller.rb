@@ -640,6 +640,170 @@ class ReportsController < ApplicationController
       end
     end
   end
+
+  def warranty_expire
+    Ticket
+    Invoice
+    if params[:search].present?
+      params[:from_where] = "job_ticket"
+      if params[:search_contracts].present?
+        refined_contract = params[:search_contracts].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
+        refined_search = [refined_contract, refined_search].map{|v| v if v.present? }.compact.join(" AND ")
+      end
+      request.format = "xls"
+      params[:per_page] = 100
+      params[:sort_by] = true
+      params[:query] = refined_search
+      after_contract_products = []
+      before_contract_products = Warranty.search(params)
+      if params[:ticket_contract_contract_start_at].present? and params[:ticket_contract_contract_end_at].present?
+        after_contract_products = Ticket.search(params)
+        @warranties = (before_contract_products.results + after_contract_products.results).uniq{ |r| r.id }
+      else
+        @warranties = before_contract_products.results
+      end
+
+      not_need_index = []
+
+      @warranties.each do |warranty|
+        need_index_boolean = (( warranty.product.updated_at.to_datetime == Product.find(warranty.product.id).updated_at.to_datetime ) and (warranty.updated_at.to_datetime == Warranty.find(warranty.id).updated_at.to_datetime))
+        not_need_index << {id: warranty.id, not_need_index: need_index_boolean} unless need_index_boolean
+      end
+
+      if @warranties.present?
+        t_ids = []
+        not_need_index.uniq{|n| n[:id]}.each do |n_index|
+          t_ids << n_index[:id]
+          # if !n_index[:not_need_index]
+          #   # Ticket.find(n_index[:id]).update_index
+          # end
+        end
+
+        Warranty.index.import Warranty.where(id: t_ids) if t_ids.present?
+
+      end
+
+    end
+
+    respond_to do |format|
+      if params[:search].present?
+        sleep 3
+        after_contract_products = []
+        params[:report] = nil
+        before_contract_products = Warranty.search(params)
+        @warranties = if params[:ticket_contract_contract_start_at].present? and params[:ticket_contract_contract_end_at].present?
+          params[:report] = true
+          after_contract_products = Warranty.search(params)
+          (before_contract_products.results + after_contract_products.results).uniq{|r| r.id}
+        else
+          before_contract_products.results
+        end
+        format.xls
+      else
+        format.html
+      end
+    end
+
+
+
+
+    # Ticket
+    # Invoice
+    # if params[:search].present?
+    #   params[:from_where] = "warranty_expire"
+    #   if params[:search_warrenty].present?
+    #     refined_contract = params[:search_warrenty].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
+    #     refined_search = [refined_contract, refined_search].map{|v| v if v.present? }.compact.join(" AND ")
+    #     params[:query] = refined_search
+    #   end
+    #   if params[:date_to].present?
+    #     params[:date_to] = params[:date_to].to_datetime.strftime(INOCRM_CONFIG['short_date_format'])
+    #   end
+    #   request.format = "xls"
+    #   params[:per_page] = 1000
+    #   params[:sort_by] = true
+
+    #   before_contract_products = Warranty.search(params)
+
+    #   @warranties = before_contract_products.results
+
+    #   not_need_index = []
+
+    #   @warranties.each do |warranty|
+    #     need_index_boolean = (( warranty.product.updated_at.to_datetime == Product.find(warranty.product.id).updated_at.to_datetime ) and (warranty.updated_at.to_datetime == Warranty.find(warranty.id).updated_at.to_datetime))
+    #     not_need_index << {id: warranty.id, not_need_index: need_index_boolean} unless need_index_boolean
+    #   end
+
+    #   if @warranties.present?
+    #     t_ids = []
+    #     not_need_index.uniq{|n| n[:id]}.each do |n_index|
+    #       t_ids << n_index[:id]
+    #     end
+    #     Warranty.index.import Warranty.where(id: t_ids) if t_ids.present?
+    #   end
+    # end
+    # respond_to do |format|
+    #   if params[:search].present?
+    #     format.xls
+    #   else
+    #     format.html
+    #   end
+    # end
+  end
+
+  def contract_expire
+    Ticket
+    Invoice
+    authorize! :contract_report, TicketContract
+
+    if params[:search].present?
+      if params[:search_contracts]
+        refined_contract = params[:search_contracts].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
+        refined_search = [refined_contract, refined_search].map{|v| v if v.present? }.compact.join(" AND ")
+      end
+      request.format = "xls"
+    end
+    params[:from_where] = "expire_report"
+    params[:per_page] = 100
+    params[:sort_by] = true
+    params[:query] = refined_search
+
+    after_contract_products = []
+    before_contract_products = TicketContract.search(params)
+    if params[:contract_date_from].present? and params[:contract_date_to].present?
+      params[:report] = true
+      after_contract_products = TicketContract.search(params)
+      @contracts = (before_contract_products.results + after_contract_products.results).uniq{|r| r.id}
+    else
+      @contracts = before_contract_products.results
+    end
+
+    not_need_index = []
+    @contracts.each do |contract|
+
+      need_index_boolean = (( contract.organization.updated_at.to_datetime == Organization.find(contract.organization.id).updated_at.to_datetime ) and ( contract.owner_organization.updated_at.to_datetime == Organization.find(contract.owner_organization.id).updated_at.to_datetime ) and ( contract.product.try(:updated_at).try(:to_datetime) == Product.find_by_id(contract.product.try(:id)).try(:updated_at).try(:to_datetime) ) )
+
+      not_need_index << {id: contract.id, not_need_index: need_index_boolean}
+
+    end
+
+    if @contracts.present?
+      not_need_index.uniq{|n| n[:id]}.each do |n_index|
+        if !n_index[:not_need_index]
+          TicketContract.find(n_index[:id]).update_index
+        end
+      end
+    end
+
+    respond_to do |format|
+      if params[:search].present?
+        format.xls
+      else
+        format.html
+      end
+    end
+  end
+
   def excel_output
     Ticket
     User

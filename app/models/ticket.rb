@@ -715,6 +715,10 @@ class TicketContract < ActiveRecord::Base
             must { range :contract_end_at, gte: params[:contract_date_from].to_date.end_of_day }
             # must { range :contract_end_at, gte: params[:contract_date_from].to_date.end_of_day }
           end
+          if params[:date_from].present? and params[:date_to].present?
+            must { range :contract_end_at, gte: params[:date_from].to_date.beginning_of_day } if params[:date_from].present?
+            must { range :contract_end_at, lte: params[:date_to].to_date.end_of_day } if params[:date_to].present?
+          end
 
         end
       end

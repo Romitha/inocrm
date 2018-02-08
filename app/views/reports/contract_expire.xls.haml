@@ -1,0 +1,30 @@
+%h3 Contract Expire Report
+%table{:border => "1"}
+  %thead
+    %tr
+      %th Contract No
+      %th Contract Start Date
+      %th Contract End Date
+      %th Customer Name
+      %th Service Provider
+      %th Account Manager
+      %th Brand
+      %th Category
+      %th Contract Type
+  %tbody
+    - @contracts.each do |contract|
+      %tr
+        %td= contract.contract_no_genarate
+        %td= contract.formated_contract_start_at
+        %td
+          %font{:color => "red"}
+            %strong= contract.formated_contract_end_at
+        %td= contract.organization.name
+        %td= contract.owner_organization.try(:name)
+        %td= contract.organization.account.get_account_manager
+        %td= contract.brand_name
+        %td= contract.category_full_name_index
+        %td= contract.ticket_contract_type.try(:name)
+
+%h5 Print By : #{current_user.full_name}
+%h5 Print At : #{(DateTime.now).to_date}

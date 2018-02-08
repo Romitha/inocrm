@@ -1,0 +1,40 @@
+%h3 Warranty Expire Report
+%table{:border => "1"}
+  %thead
+    %tr
+      %th No
+      %th Warranty Start At
+      %th Warranty End At
+      %th Warranty Type
+      %th Customer Name
+      %th Location Address
+      %th Product Name
+      %th Product Description
+      %th Brand Name
+      %th Category
+      %th Model No
+      %th Product No
+      %th Serial No
+
+  %tbody
+    - @warranties.each_with_index do |warranty, index|
+      %tr
+        %td
+          = (index+1)
+        %td= warranty.try(:start_at).to_date.strftime(INOCRM_CONFIG['short_date_format'])
+        %td
+          %font{:color => "red"}
+            %strong= warranty.try(:end_at).to_date.strftime(INOCRM_CONFIG['short_date_format'])
+        %td= warranty.try(:warranty_type_name)
+        %td= warranty.product.try(:owner_customer_name)
+        %td= warranty.product.try(:location_address_full)
+        %td= warranty.product.try(:name)
+        %td= warranty.product.try(:description)
+        %td= warranty.product.try(:brand_name)
+        %td= warranty.product.try(:category_full_name_index)
+        %td= warranty.product.try(:serial_no)
+        %td= warranty.product.try(:product_no)
+        %td= warranty.product.try(:model_no)
+
+%h5 Print By : #{current_user.full_name}
+%h5 Print At : #{(DateTime.now).to_date}

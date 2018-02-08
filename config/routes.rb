@@ -65,6 +65,8 @@ Rails.application.routes.draw do
       get "non_contract_ticket_report"
       get "customer_product_report"
       get "summery"
+      get "warranty_expire"
+      get "contract_expire"
     end
   end
 

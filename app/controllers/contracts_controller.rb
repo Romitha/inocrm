@@ -20,14 +20,12 @@ class ContractsController < ApplicationController
       params[:query] = refined_contract
       @contracts = TicketContract.search(params)
       @status_colors = ContractStatus.all
-
     end
 
     if params[:search_cus_product].present?
       refined_customer = params[:organization_customers].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
       params[:query] = ["accounts_dealer_types.dealer_code:CUS", refined_customer].map { |v| v if v.present? }.compact.join(" AND ")
       @organizations = Organization.search(params)
-
     end
 
     if params[:select]
@@ -210,9 +208,7 @@ class ContractsController < ApplicationController
             contract_document.document_url = annexture.document_url.file
             contract_document.save!
           end
-
         end
-
       end
     end
 
@@ -236,9 +232,7 @@ class ContractsController < ApplicationController
             c_product.ticket_contract.update_index
           end
         end
-
       end
-
     end
 
     Rails.cache.delete([:contract_products, request.remote_ip])
@@ -274,7 +268,6 @@ class ContractsController < ApplicationController
     @contract_payment_received = ContractPaymentReceived.new contract_id: params[:contract_id]
 
     render "contracts/view_contract"
-
   end
 
   def search_product
@@ -426,9 +419,7 @@ class ContractsController < ApplicationController
                 contract_document.document_url = annexture.document_url.file
                 contract_document.save!
               end
-
             end
-
           end
         end
 
@@ -447,9 +438,7 @@ class ContractsController < ApplicationController
                 c_product.ticket_contract.update_index
               end
             end
-
           end
-
         end
 
         Rails.cache.delete([:contract_products, request.remote_ip])
@@ -458,8 +447,6 @@ class ContractsController < ApplicationController
       @organization = @contract.organization
       @ticket_contracts = @organization.ticket_contracts
     end
-
-
     render :index
   end
 
@@ -511,9 +498,7 @@ class ContractsController < ApplicationController
         contract_document.save!
 
         generated = true
-
       end
-
     end
 
     if generated
@@ -540,7 +525,6 @@ class ContractsController < ApplicationController
           cell_style cols[3], bold: true, align: :right
           cell_style cols[3] , align: :right
         end
-
         docx.p "Note: The total amount will change, if the rate of VAT is varied by the Authorities", bold: true
       end
 
@@ -554,7 +538,6 @@ class ContractsController < ApplicationController
       flash[:notice] = "Successfully generated."
     else
       flash[:error] = "Please attach document(s) to related brand."
-
     end
 
     redirect_to contracts_url
@@ -567,7 +550,6 @@ class ContractsController < ApplicationController
     @contract_document.document_url = params[:generated_document]
 
     @contract_document.save!
-
   end
 
   def remove_generated_document

@@ -1297,3 +1297,16 @@ window.Tickets =
     # $("#for_ins").val(records)
 
     # data = {'installations': [{'date': records}, ]}
+  expire_time_cal: ->
+    start_dateParts = $("#date_from").val().split("-");
+    start_date = new Date(start_dateParts[2], (start_dateParts[1]), start_dateParts[0]);
+    Type = $(":selected","#time_period").val()
+    if (Type == "1")
+      num_of_mon = 30
+    if (Type == "2")
+      num_of_mon = 90
+    requiredDate = new Date(start_date.getFullYear(),start_date.getMonth()-1,start_date.getDate()+num_of_mon)
+    # alert Type
+    # alert start_dateParts
+
+    $("#date_to").val(requiredDate)

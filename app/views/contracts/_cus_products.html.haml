@@ -151,8 +151,8 @@
                     .col-md-8
                       =f.input :description
                 .row
-                  .col-md-4
-                    = f.association :location_address, collection: ([organization] + organization.members), as: :grouped_select, group_method: :addresses, label_method: :full_address, required: true
+                  .col-md-4                
+                    = f.association :location_address, collection: (organization.anchestors.map{|m| m[:member]}.uniq{|m| m.id}), as: :grouped_select, group_method: :addresses, label_method: :full_address, required: true
                 %fieldset
                   %legend POP
                   .row
@@ -298,18 +298,18 @@
                 = f.association :product_brand, required: true, input_html: {class: "product_brand"}
               .col-md-3
                 %font{:color => "#90032A"}
-                  = label_tag "Product Category 1"
+                  = label_tag "#{CompanyConfig.first.try(:sup_product_category1_label)} : "
                   = select_tag "search_product_category1_cus_product", option_groups_from_collection_for_select(ProductBrand.all, :product_category1s, :name, :id, :name, "#"), include_blank: true, class: "product_category1 form-control"
               .col-md-3
                 %font{:color => "#90032A"}
-                  = label_tag "Product Category 2"
+                  = label_tag "#{CompanyConfig.first.try(:sup_product_category2_label)} : "
                   = select_tag "search_product_category2_cus_product", option_groups_from_collection_for_select(ProductCategory1.all, :product_category2s, :name, :id, :name, "#"), include_blank: true, class: "product_category2 form-control"
                 
               / .col-md-3
               /   = label_tag "Product Category 3"
               /   = select_tag "search_product_category3", option_groups_from_collection_for_select(ProductCategory2.all, :product_categories, :name, :id, :name, "#"), include_blank: true, class: "product_category form-control"
               .col-md-3
-                = f.association :product_category, collection: ProductCategory2.all, as: :grouped_select, group_method: :product_categories, required: true, input_html: {class: "product_category chosen-select", onchange: "Tickets.product_name(this);"}, label: "Product Category 3"
+                = f.association :product_category, collection: ProductCategory2.all, as: :grouped_select, group_method: :product_categories, required: true, input_html: {class: "product_category chosen-select", onchange: "Tickets.product_name(this);"}, label: "#{CompanyConfig.first.try(:sup_product_category_label)} : "
           .row
             .col-md-2
               = f.input :model_no
@@ -322,8 +322,8 @@
               =f.input :description
           .row
             .col-md-4
-              = f.association :location_address, collection: ([organization] + organization.members), as: :grouped_select, group_method: :addresses, label_method: :full_address, required: true
-          
+              / = f.association :location_address, collection: ([organization] + organization.members), as: :grouped_select, group_method: :addresses, label_method: :full_address, required: true
+              = f.association :location_address, collection: (organization.anchestors.map{|m| m[:member]}.uniq{|m| m.id}), as: :grouped_select, group_method: :addresses, label_method: :full_address, required: true
           %fieldset
             %legend POP
             .row

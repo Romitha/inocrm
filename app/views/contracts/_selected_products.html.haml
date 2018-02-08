@@ -55,8 +55,11 @@
               %td= text_field_tag "contract_product_additional_params[#{p.id}][contract_start_at]",Date.today, class: "datepicker form-control", required: true
               %td= text_field_tag "contract_product_additional_params[#{p.id}][contract_end_at]",Date.today, class: "datepicker form-control", required: true
               %td= check_box_tag "contract_product_additional_params[#{p.id}][contract_b2b]",nil, class: "form-control cus_product_disamount", required: true
-              %td= select_tag "contract_product_additional_params[#{p.id}][location_address_id]", options_from_collection_for_select(organization_for_location.addresses, :id, :full_address, nil), class: "form-control chosen-select", include_blank: true
-              %td= select_tag "contract_product_additional_params[#{p.id}][installed_location_id]", options_from_collection_for_select(@organization_for_location.anchestors.map{|m| m[:member]}.uniq{|m| m.id}, :id, :name, :nil), class: "form-control chosen-select", include_blank: true
+              %td= label_tag "#{organization_for_location.try(:name)}"
+              %td.hide= hidden_field_tag "contract_product_additional_params[#{p.id}][installed_location_id]", organization_for_location.id
+              %td= label_tag "#{p.location_address.try(:full_address)}"           
+              %td.hide= hidden_field_tag "contract_product_additional_params[#{p.id}][location_address_id]",p.location_address_id
+              / = select_tag "contract_product_additional_params[#{p.id}][installed_location_id]", options_from_collection_for_select(@organization_for_location.anchestors.map{|m| m[:member]}.uniq{|m| m.id}, :id, :name, :nil), class: "form-control chosen-select", include_blank: true
               %td= text_area_tag "contract_product_additional_params[#{p.id}][remarks]", nil, class: "form-control"
 
             %td

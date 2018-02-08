@@ -1,0 +1,19 @@
+.row
+  .col-md-12
+    %fieldset
+      %legend Contract Expire Report
+      #search_frame
+        = form_tag contract_expire_reports_path, method: :get, class: "form-horizontal" do
+          .row
+            .col-md-3
+              = label_tag "Date From", "Date From"
+              = text_field_tag "date_from", Date.today.strftime(INOCRM_CONFIG['short_date_format']), class: "form-control datepicker", placeholder: "Select from date", onchange:"Tickets.expire_time_cal();"
+            .col-md-3
+              = label_tag "Select Time Period:"
+              = select_tag "time_period", raw("<option value=1>Expire In 30 Days</option> <option value=2>Expire In 90 Days</option>"), class: "form-control parent_class", include_blank: false, onchange:"Tickets.expire_time_cal();"
+            .col-md-3.hide
+              = text_field_tag "date_to", (Date.today + 30.days).strftime(INOCRM_CONFIG['short_date_format']), class: "form-control datepicker", placeholder: "Select To date"
+          .row.small_scale_margin-top1
+            .col-md-1
+              .search
+                = submit_tag "Generate Report", class: "btn btn-sm btn-warning", name: "search"

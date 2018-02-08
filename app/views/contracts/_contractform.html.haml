@@ -81,9 +81,9 @@
     .col-md-3
       = f.association :bill_address, collection: ([organization] + organization.members), as: :grouped_select, group_method: :addresses, label_method: :full_address, required: true
     .col-md-2
-      = f.association :organization_contact, label: "Address company", required: true, collection: ([organization] + organization.members)
+      = f.association :organization_contact, label: "Address company", required: true, collection: (organization.anchestors.map{|m| m[:member]}.uniq{|m| m.id})
     .col-md-3
-      = f.association :contact_address, collection: ([organization] + organization.members), as: :grouped_select, group_method: :addresses, label_method: :full_address, required: true
+      = f.association :contact_address, collection: (organization.anchestors.map{|m| m[:member]}.uniq{|m| m.id}), as: :grouped_select, group_method: :addresses, label_method: :full_address, required: true
     .col-md-2
       = f.association :organization_contact_person, collection: (organization.organization_contact_persons),include_blank: false, required: true, label: "Contact Person"
   %br
