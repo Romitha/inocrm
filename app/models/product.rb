@@ -30,7 +30,7 @@ class Product < ActiveRecord::Base
     Warranty
     to_json(
       only: [:id, :serial_no, :model_no, :product_no, :created_at, :owner_customer_id, :name, :description, :product_brand_id, :product_category_id, :updated_at],
-      methods: [:category_full_name_index, :category_cat_id, :category_cat1_id, :category_cat2_id, :brand_name, :brand_id, :owner_customer_name, :location_address_full],
+      methods: [:category_full_name_index, :category_cat_id, :category_cat1_id, :category_cat2_id, :brand_name, :brand_id, :owner_customer_name, :owner_customer_id, :location_address_full],
       include: {
         tickets: {
           only: [:created_at, :cus_chargeable, :id],
@@ -91,7 +91,9 @@ class Product < ActiveRecord::Base
   def owner_customer_name
     owner_customer.try(:name)
   end
-
+  def owner_customer_id
+    owner_customer.try(:id)
+  end
   def location_address_full
     location_address.try(:full_address)
   end

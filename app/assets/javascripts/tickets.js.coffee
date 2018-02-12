@@ -1310,3 +1310,9 @@ window.Tickets =
     # alert start_dateParts
 
     $("#date_to").val(requiredDate)
+  decendent_cus: ->
+    org = $(":selected","#organization_with_decendent").val()
+    if org == ""
+      $(".decendent").addClass("hide");
+    else
+      $(".decendent").removeClass("hide");

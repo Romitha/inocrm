@@ -15,3 +15,12 @@
       %td {{amount_per_ins}}
       %td {{ttl_amount}}
     {{/data_array}}
+
+.hide
+  {{#data_array}}
+  %input{type: 'hidden', name: "ticket_contract[contract_payment_installments_attributes][{{i}}][installment_start_date]", value: "{{start_date}}"}
+  %input{type: 'hidden', name: "ticket_contract[contract_payment_installments_attributes][{{i}}][installment_end_date]", value: "{{end_date}}"}
+  %input{type: 'hidden', name: "ticket_contract[contract_payment_installments_attributes][{{i}}][installment_amount]", value: "{{amount_per_ins}}"}
+  %input{type: 'hidden', name: "ticket_contract[contract_payment_installments_attributes][{{i}}][total_amount]", value: "{{ttl_amount}}"}
+  %input{type: 'hidden', name: "ticket_contract[contract_payment_installments_attributes][{{i}}][payment_installment]", value: "{{i}}"}
+  {{/data_array}}

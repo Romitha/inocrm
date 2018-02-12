@@ -1,5 +1,6 @@
 %h3 Summary Report
 / 1st table
+- given_date = @given_date.to_date
 %table{:border => "1"}
   %thead
     %tr
@@ -9,23 +10,27 @@
       %th Service Contract Value Total
   - contract_value_season_1 = 0
   - contract_value_season_2 = 0
-  - contract_discounted_season_1 = 0
-  - contract_discounted_season_2 = 0
+  - contract_due_amount_season_1 = []
+  - contract_due_amount_season_2 = []
   - collected_amount_season_1 = 0
   - collected_amount_season_2 = 0
   - to_be_collected_season_1 = 0
   - to_be_collected_season_2 = 0
+  - total_amountt1 = 0
+  - total_amountt2 = 0
+  - count = []
   %tbody
     - 
     - @contracts.each do |contract|
       - if contract.season == 1
-        - contract_value_season_1 = contract_value_season_1 + contract.discount_less_amount.to_f
-        - contract_discounted_season_1 = contract_discounted_season_1 + contract.product_amount.to_f
+        - count << contract.contract_payment_installments.map{|i| {start_date: i.installment_start_date.to_date, end_date: i.installment_end_date.to_date, given_date: given_date, total: i.total_amount, condition: (i.installment_start_date.to_date <= given_date and i.installment_end_date.to_date >= given_date)}}
+        - contract_value_season_1 = contract_value_season_1 + contract.product_amount.to_f
+        - contract_due_amount_season_1 << contract.contract_payment_installments.to_a.sum{|i| (i.installment_start_date.to_date <= given_date and i.installment_end_date.to_date >= given_date) ? i.total_amount.to_f : 0 }
         - collected_amount_season_1 = collected_amount_season_1 + contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f}
         - to_be_collected_season_1 = to_be_collected_season_1 + (contract.product_amount.to_f - contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f})
       - if contract.season == 2
-        - contract_value_season_2 = contract_value_season_2 + contract.discount_less_amount.to_f
-        - contract_discounted_season_2 = contract_discounted_season_2 + contract.product_amount.to_f
+        - contract_value_season_2 = contract_value_season_2 + contract.product_amount.to_f
+        - contract_due_amount_season_2 << contract.contract_payment_installments.to_a.sum{|i| (i.installment_start_date.to_date <= given_date and i.installment_end_date.to_date >= given_date) ? i.total_amount.to_f : 0 }
         - collected_amount_season_2 = collected_amount_season_2 + contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f}
         - to_be_collected_season_2 = to_be_collected_season_2 + (contract.product_amount.to_f - contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f})
     %tr
@@ -36,10 +41,10 @@
       %td= (contract_value_season_1 + contract_value_season_2)
     %tr
 
-      %td Discounted Amount
-      %td= contract_discounted_season_1
-      %td= contract_discounted_season_2
-      %td= (contract_discounted_season_1 + contract_discounted_season_2)
+      %td Due Amount Out Of Total
+      %td= contract_due_amount_season_1.sum
+      %td= contract_due_amount_season_2.sum
+      %td= (contract_due_amount_season_1.sum + contract_due_amount_season_2.sum)
     %tr
 
       %td Collected Amount
@@ -56,28 +61,30 @@
 
       %td Percentage %
       %td
-        - if (contract_discounted_season_1 == 0)
+        - if (contract_due_amount_season_1.sum == 0)
           NaN
         - else
-          = ((collected_amount_season_1/contract_discounted_season_1)*100).round
+          = ((collected_amount_season_1/contract_due_amount_season_1.sum)*100).round
           "%"
 
       %td
-        - if (contract_discounted_season_2 == 0)
+        - if (contract_due_amount_season_2.sum == 0)
           NaN
         - else
-          = ((collected_amount_season_2/contract_discounted_season_2)*100).round
+          = ((collected_amount_season_2/contract_due_amount_season_2.sum)*100).round
           "%"
       %td
-        - if ((contract_discounted_season_1 + contract_discounted_season_2) == 0)
+        - if ((contract_due_amount_season_1.sum + contract_due_amount_season_2.sum) == 0)
           NaN
         - else
-          = (((collected_amount_season_1 + collected_amount_season_2)/(contract_discounted_season_1 + contract_discounted_season_2))*100).round
+          = (((collected_amount_season_1 + collected_amount_season_2)/(contract_due_amount_season_1.sum + contract_due_amount_season_2.sum))*100).round
           "%"
 / 2nd table
 - total_to_be_colected = 0
 - total_collected = 0
-%h3 Service Contract Value Season 1
+%h3
+  %font{:color => "red"}
+    %strong Service Contract Value Season 1
 %table{:border => "1"}
   %thead
     %tr
@@ -143,7 +150,9 @@
       = total_collected
 / 4th table
 
-%h3 Service Contract Value Season 2
+%h3
+  %font{:color => "red"}
+    %strong Service Contract Value Season 2
 %table{:border => "1"}
   %thead
     %tr
@@ -206,5 +215,77 @@
     %td
     %td
       = total_collected
+
+%br
+%br
+- total = 0
+%h3
+  %font{:color => "red"}
+    %strong Under Contract Season 1
+%table{:border => "1"}
+  %thead
+    %tr
+      %th Customer Name
+      %th Contract Start Date
+      %th Contract End Date
+      %th Contract No
+      %th Amount
+      %th In Charge
+      %th Remarks
+  %tbody
+    - @contracts.each do |contract|
+      - if (contract.contract_payment_installments.map{|i| (i.installment_start_date.to_date <= given_date and i.installment_end_date.to_date >= given_date and i.contract_id == contract.id)}).present?
+        - if contract.season == 1
+          %tr
+            - total_amountt1 = total_amountt1 + contract.contract_payment_installments.sum{|i| (i.installment_start_date.to_date <= given_date and i.installment_end_date.to_date >= given_date and i.contract_id.to_s == contract.id ) ? (contract.product_amount.to_f) - (i.total_amount.to_f) : 0 } 
+            %td= contract.organization.try(:name)
+            %td= contract.formated_contract_start_at
+            %td= contract.formated_contract_end_at
+            %td= contract.contract_no_genarate
+            %td= contract.contract_payment_installments.sum{|i| (i.installment_start_date.to_date <= given_date and i.installment_end_date.to_date >= given_date and i.contract_id.to_s == contract.id ) ? (contract.product_amount.to_f) - (i.total_amount.to_f) : 0 }
+            %td= contract.organization.account.get_account_manager
+            %td= contract.remarks
+          %td
+            %strong Total
+          %td
+          %td
+          %td
+          %td
+            = total_amountt1
+%h3
+  %font{:color => "red"}
+    %strong Under Contract Season 2
+%table{:border => "1"}
+  %thead
+    %tr
+      %th Customer Name
+      %th Contract Start Date
+      %th Contract End Date
+      %th Contract No
+      %th Amount
+      %th In Charge
+      %th Remarks
+  %tbody
+    - @contracts.each do |contract|
+      - if (contract.contract_payment_installments.map{|i| (i.installment_start_date.to_date <= given_date and i.installment_end_date.to_date >= given_date and i.contract_id == contract.id)}).present?
+        - if contract.season == 2
+          %tr
+            - total_amountt2 = total_amountt2 + contract.contract_payment_installments.sum{|i| (i.installment_start_date.to_date <= given_date and i.installment_end_date.to_date >= given_date and i.contract_id.to_s == contract.id ) ? (contract.product_amount.to_f) - (i.total_amount.to_f) : 0 }
+            %td= contract.organization.try(:name)
+            %td= contract.formated_contract_start_at
+            %td= contract.formated_contract_end_at
+            %td= contract.contract_no_genarate
+            %td= contract.contract_payment_installments.sum{|i| (i.installment_start_date.to_date <= given_date and i.installment_end_date.to_date >= given_date and i.contract_id.to_s == contract.id ) ? (contract.product_amount.to_f) - (i.total_amount.to_f) : 0 }
+            %td= contract.organization.account.get_account_manager
+            %td= contract.remarks
+          %td
+            %strong Total
+          %td
+          %td
+          %td
+          %td
+            = total_amountt2
+/ 3rd table i.total_amount.to_f
+%br
 %h5 Print By : #{current_user.full_name}
 %h5 Print At : #{(DateTime.now).to_date}

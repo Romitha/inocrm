@@ -643,6 +643,7 @@ class TicketContract < ActiveRecord::Base
   has_many :tickets, foreign_key: :contract_id
   has_many :contract_products, foreign_key: :contract_id
   has_many :contract_payment_receiveds, foreign_key: :contract_id
+  has_many :contract_payment_installments, foreign_key: :contract_id
   has_many :contract_attachments, class_name: 'Documents::ContractAttachment', foreign_key: :contract_id
   accepts_nested_attributes_for :contract_attachments, allow_destroy: true
   has_many :contract_documents, class_name: 'Documents::ContractDocument', foreign_key: :contract_id
@@ -650,6 +651,7 @@ class TicketContract < ActiveRecord::Base
 
   accepts_nested_attributes_for :contract_products, allow_destroy: true
   accepts_nested_attributes_for :contract_payment_receiveds, allow_destroy: true
+  accepts_nested_attributes_for :contract_payment_installments, allow_destroy: true
   has_many :products, through: :contract_products
 
   belongs_to :sla_time, foreign_key: :sla_id
@@ -683,6 +685,7 @@ class TicketContract < ActiveRecord::Base
     indexes :organization_contact_person, type: "nested", include_in_parent: true
     indexes :ticket_contract_payment_type, type: "nested", include_in_parent: true
     indexes :contract_payment_receiveds, type: "nested", include_in_parent: true
+    indexes :contract_payment_installments, type: "nested", include_in_parent: true
     # indexes :organization_contact_addresses, type: "nested", include_in_parent: true
     # indexes :supplier, type: "nested", include_in_parent: true
     # indexes :store, type: "nested", include_in_parent: true
@@ -713,6 +716,8 @@ class TicketContract < ActiveRecord::Base
           if params[:contract_date_from].present? and params[:report_summery].present?
             must { range :contract_start_at, lte: params[:contract_date_from].to_date.beginning_of_day }
             must { range :contract_end_at, gte: params[:contract_date_from].to_date.end_of_day }
+            # must { range "contract_payment_installments.installment_start_date", lte: params[:contract_date_from].to_date.end_of_day }
+            # must { range "contract_payment_installments.installment_end_date", gte: params[:contract_date_from].to_date.beginning_of_day }
             # must { range :contract_end_at, gte: params[:contract_date_from].to_date.end_of_day }
           end
           if params[:date_from].present? and params[:date_to].present?
@@ -775,6 +780,9 @@ class TicketContract < ActiveRecord::Base
         contract_payment_receiveds: {
           only: [:id, :amount],
         },
+        contract_payment_installments: {
+          only: [:id, :contract_id, :total_amount, :installment_start_date, :installment_end_date ],
+        },
       },
     )
 
@@ -793,7 +801,6 @@ class TicketContract < ActiveRecord::Base
     # self.contract_no = "#{contract_start_at.try(:strftime, "%y")}-#{owner_organization.try(:contract_no_value)}-#{product_brand.try(:contract_no_value)}-#{product_category.try(:contract_no_value)}-#{ticket_contract_type.try(:contract_no_value)}-#{contract_no}"
 
   end
-
   def brand_name
     product_brand.try(:name)
   end
@@ -1231,4 +1238,14 @@ class TicketTotalCost < ActiveRecord::Base
 
   belongs_to :ticket
 
+end
+class ContractPaymentInstallment < ActiveRecord::Base
+  self.table_name = "spt_contract_payment_installment"
+  belongs_to :ticket_contract, foreign_key: :contract_id
+  def installment_start_date_at
+    installment_start_date.to_date
+  end
+  def installment_end_date_at
+    installment_end_date.to_date
+  end
 end

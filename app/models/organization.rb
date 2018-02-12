@@ -154,7 +154,7 @@ class Organization < ActiveRecord::Base
   end
 
   def self.organization_tree_path(who, level = 0)
-    @tree_path ||= [] # Here @tree_path is class variable.
+    @tree_path = [] # Here @tree_path is class variable.
 
     if who.members.any?
       who.members.each { |o| organization_tree_path(o, (level+1)) }

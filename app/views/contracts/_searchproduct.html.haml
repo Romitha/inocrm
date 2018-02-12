@@ -19,6 +19,8 @@
         %thead
           %tr
             %th No
+            %th Customer Name
+            %th Location
             %th Serial No
             %th Brand
             %th Category
@@ -26,8 +28,6 @@
             %th Product No
             %th Product Name
             %th Product Description
-            - if params[:from_where] == "cus_product"
-              %th Customer Name
             %th Action
         %tbody
           - products.each_with_index do |p, index|
@@ -37,6 +37,8 @@
                   = (index+1)+ 10*(params[:page].to_i-1)
                 - else
                   = (index+1)
+              %td= p.owner_customer_name
+              %td= p.location_address_full
               %td= p.serial_no
               %td= p.brand_name
               %td
@@ -47,8 +49,6 @@
                 - if p.name.present?
                   .has-tooltip{title: p.name, data: { toggle:"tooltip", placement: "top" } }= p.try(:name).truncate(12)
               %td= p.description
-              - if params[:from_where] == "cus_product"
-                %td= p.owner_customer_name
               / - if p.ticket_contracts.present?
               /   - if p.ticket_contracts.last.present?
               /     %td= p.ticket_contracts.last.organization.try(:name)

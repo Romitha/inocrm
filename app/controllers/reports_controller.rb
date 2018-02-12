@@ -546,10 +546,25 @@ class ReportsController < ApplicationController
     Invoice
     authorize! :contract_report, TicketContract
 
+    organization_ids_query = ""
+
     if params[:search].present?
 
-      refined_contract = params[:search_contracts].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
-      refined_search = [refined_contract, refined_search].map{|v| v if v.present? }.compact.join(" AND ")
+      refined_contract = params[:search_contracts]#.map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
+      if params[:decendent_customer].present?
+        organization = Organization.find(refined_contract["organization.id"])
+        decendent_ids = organization.anchestors.map{|m| m[:member]}.uniq{|m| m.id}.collect{|org| org.id}
+        organization_ids_query = "(#{decendent_ids.join(' ')})"
+        refined_contract["organization.id"] = organization_ids_query
+
+      end
+
+      refined_contract = refined_contract.map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
+
+
+
+      refined_search = [refined_contract].map{|v| v if v.present? }.compact.join(" AND ")
+
 
       request.format = "xls"
     end
@@ -610,7 +625,7 @@ class ReportsController < ApplicationController
     params[:per_page] = 100
     params[:sort_by] = true
     params[:query] = refined_search
-
+    @given_date = params[:contract_date_from]
 
     params[:report_summery] = true
     @contracts = TicketContract.search(params)
@@ -703,52 +718,6 @@ class ReportsController < ApplicationController
         format.html
       end
     end
-
-
-
-
-    # Ticket
-    # Invoice
-    # if params[:search].present?
-    #   params[:from_where] = "warranty_expire"
-    #   if params[:search_warrenty].present?
-    #     refined_contract = params[:search_warrenty].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
-    #     refined_search = [refined_contract, refined_search].map{|v| v if v.present? }.compact.join(" AND ")
-    #     params[:query] = refined_search
-    #   end
-    #   if params[:date_to].present?
-    #     params[:date_to] = params[:date_to].to_datetime.strftime(INOCRM_CONFIG['short_date_format'])
-    #   end
-    #   request.format = "xls"
-    #   params[:per_page] = 1000
-    #   params[:sort_by] = true
-
-    #   before_contract_products = Warranty.search(params)
-
-    #   @warranties = before_contract_products.results
-
-    #   not_need_index = []
-
-    #   @warranties.each do |warranty|
-    #     need_index_boolean = (( warranty.product.updated_at.to_datetime == Product.find(warranty.product.id).updated_at.to_datetime ) and (warranty.updated_at.to_datetime == Warranty.find(warranty.id).updated_at.to_datetime))
-    #     not_need_index << {id: warranty.id, not_need_index: need_index_boolean} unless need_index_boolean
-    #   end
-
-    #   if @warranties.present?
-    #     t_ids = []
-    #     not_need_index.uniq{|n| n[:id]}.each do |n_index|
-    #       t_ids << n_index[:id]
-    #     end
-    #     Warranty.index.import Warranty.where(id: t_ids) if t_ids.present?
-    #   end
-    # end
-    # respond_to do |format|
-    #   if params[:search].present?
-    #     format.xls
-    #   else
-    #     format.html
-    #   end
-    # end
   end
 
   def contract_expire

@@ -30,8 +30,10 @@ class ContractsController < ApplicationController
 
     if params[:select]
       if params[:organization_id]
+        @anchestors = []
         @organization = Organization.find params[:organization_id]
         @contracts = @organization.ticket_contracts.page params[:page]
+        @anchestors = @organization.anchestors.map{|m| m[:member]}.uniq{|m| m.id}
         @status_colors = ContractStatus.all
       end
     end
@@ -66,7 +68,7 @@ class ContractsController < ApplicationController
 
     if params[:edit_create]
       Rails.cache.delete([:contract_products, request.remote_ip])
-
+      @installments = ContractPaymentInstallment.all
       @organization = Organization.find params[:customer_id]
       # @product = Product.find params[:product_serial_id]
 
@@ -81,6 +83,7 @@ class ContractsController < ApplicationController
     if params[:edit_create_contract]
       Rails.cache.delete([:contract_products, request.remote_ip])
 
+      @installments = ContractPaymentInstallment.all
       @organization = Organization.find params[:customer_id]
       # @product = Product.find params[:product_serial_id]
       @contract_products = @organization.contract_products.where(contract_id: params[:contract_id])
@@ -177,6 +180,7 @@ class ContractsController < ApplicationController
       @contract = TicketContract.new
       @contract.attributes = contract_params
     end
+
     # Rails.cache.delete([:new_product_with_pop_doc_url1, request.remote_ip])
     @contract.save!
 
@@ -223,11 +227,7 @@ class ContractsController < ApplicationController
         if params['contract_product_additional_params'].present?
           if params['contract_product_additional_params'][c_product.product_serial_id.to_s].present?
             c_product_attr = params['contract_product_additional_params'].require(c_product.product_serial_id.to_s).permit('amount', 'discount_amount', 'contract_start_at', 'contract_end_at', 'contract_b2b', 'location_address_id', 'installed_location_id','remarks' )
-            puts "****************************"
-            puts c_product_attr
-            puts "****************************"
-            puts c_product.inspect
-            puts "****************************"
+
             c_product.update!(c_product_attr)
             c_product.ticket_contract.update_index
           end
@@ -284,8 +284,17 @@ class ContractsController < ApplicationController
       else
         pro_cat = params[:product_category12]
       end
+
+      if params[:decendent_customer].present?
+        organization = Organization.find(params[:customer_id])
+        decendent_ids = organization.anchestors.map{|m| m[:member]}.uniq{|m| m.id}.collect{|org| org.id}
+        organization_ids_query = "(#{decendent_ids.join(' ')})"
+      else
+        organization_ids_query = params[:customer_id]
+      end
+
       if params[:product_brand].present?
-        fined_query = ["owner_customer_id:#{params[:customer_id]}", "product_brand_id:#{params[:product_brand]}", "product_category_id:#{pro_cat}", params[:query]].map { |e| e if e.present? }.compact.join(" AND ")
+        fined_query = ["owner_customer_id:#{organization_ids_query}", "product_brand_id:#{params[:product_brand]}", "product_category_id:#{pro_cat}", params[:query]].map { |e| e if e.present? }.compact.join(" AND ")
         if params[:contract_id].present?
           @contract_id = TicketContract.find params[:contract_id]
           @products = Product.search(query: fined_query).select{|p| !@contract_id.product_ids.map(&:to_s).include? p.id }
@@ -671,7 +680,7 @@ class ContractsController < ApplicationController
 
   private
     def contract_params
-      params.require(:ticket_contract).permit(:id, :created_at, :created_by, :customer_id, :sla_id, :contract_no, :contract_type_id, :hold, :contract_b2b, :remind_required, :currency_id, :amount, :contract_start_at, :contract_end_at, :remarks, :owner_organization_id, :process_at, :legacy_contract_no, :organization_bill_id, :bill_address_id, :organization_contact_id, :product_brand_id, :product_category_id, :contact_person_id, :additional_charges, :season, :status_id, :contact_address_id, :accepted_at, :payment_type_id, :documnet_received, contract_products_attributes: [ :id, :_destroy, :invoice_id, :item_no, :description, :amount, :sla_id, :remarks, product_attributes: [:id, :_destroy, :serial_no, :product_brand_id, :product_category_id, :model_no, :product_no, :pop_status_id, :sold_country_id, :pop_note, :pop_doc_url, :corporate_product, :sold_at, :sold_by, :remarks]], contract_attachments_attributes: [:id, :_destroy, :attachment_url])
+      params.require(:ticket_contract).permit(:id, :created_at, :created_by, :customer_id, :sla_id, :contract_no, :contract_type_id, :hold, :contract_b2b, :remind_required, :currency_id, :amount, :contract_start_at, :contract_end_at, :remarks, :owner_organization_id, :process_at, :legacy_contract_no, :organization_bill_id, :bill_address_id, :organization_contact_id, :product_brand_id, :product_category_id, :contact_person_id, :additional_charges, :season, :status_id, :contact_address_id, :accepted_at, :payment_type_id, :documnet_received, contract_products_attributes: [ :id, :_destroy, :invoice_id, :item_no, :description, :amount, :sla_id, :remarks, product_attributes: [:id, :_destroy, :serial_no, :product_brand_id, :product_category_id, :model_no, :product_no, :pop_status_id, :sold_country_id, :pop_note, :pop_doc_url, :corporate_product, :sold_at, :sold_by, :remarks]], contract_attachments_attributes: [:id, :_destroy, :attachment_url], contract_payment_installments_attributes: [:id, :payment_installment, :installment_amount, :total_amount,:installment_start_date, :installment_end_date])
     end
 
     def payment_params

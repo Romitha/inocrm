@@ -7,11 +7,11 @@
           .row
             .col-md-3
               = label_tag "Customer Name"
-              = select_tag "search_contracts[organization.id]", options_from_collection_for_select(Organization.customers, :id, :name), class: "form-control parent_class", include_blank: true
-
-            .col-md-3.small_scale_margin-top2
-              = label_tag "Decendent Customer"
-              = check_box_tag "search_contracts[payment_completed]", (params[:search_contracts] and params[:search_contracts][:payment_completed]), checked = false
+              = select_tag "search_contracts[organization.id]", options_from_collection_for_select(Organization.customers, :id, :name), class: "form-control parent_class", include_blank: true, id: "organization_with_decendent", onchange: "Tickets.decendent_cus();"
+            .decendent.hide
+              .col-md-3.small_scale_margin-top2
+                = label_tag "Decendent Customer"
+                = check_box_tag "decendent_customer", nil, checked = false
 
             .col-md-3
               = label_tag "Service Provider:"
