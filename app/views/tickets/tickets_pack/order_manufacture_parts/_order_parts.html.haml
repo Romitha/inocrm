@@ -16,5 +16,16 @@
         .col-md-12
           = f.input :note, input_html: {value: nil}, label: "Spare Part Note"
           = simple_format spare_part.note
+        / .col-md-12
+        /   = f.input :part_terminated, wrapper: :append, input_html: {class: "part_terminated_reason_check"}
+
+        /   .part_terminated_reason.hide
+
+        /     = f.label "Part terminate reason"
+        /     = f.select :part_terminated_reason_id, Reason.where(terminate_spare_part: true).map{|r| [r.reason, r.id]}, {include_blank: false}, {class: "part_terminated_select"}
+
+        .col-md-12
+          %label{:for => "Update without return"} Update without Order
+          = check_box_tag "update_without_order", true, false, class: "small_scale_margin-right1"
         .col-md-12
           = f.submit "Save", class: "btn btn-success", onclick: "Tickets.presence_validater(this, {presence: ['#event_no', '#order_no']}); return false;", data: {disable_with: "Please wait..."}

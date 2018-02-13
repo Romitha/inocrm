@@ -137,7 +137,7 @@
       <label for="Assign to" class="required control-label">Assign to</label>
       {{select-box optionArray=assignTo click=(action (mut obj.assign_to) value="target.value") }}
     .col-sm-4
-      <label for="Assign to" class="required control-label">
+      <label for="Assign to" class="control-label">
       Task Description
       {{textarea value=obj.task_description cols="80" rows="3" class="form-control"}}
       </label>

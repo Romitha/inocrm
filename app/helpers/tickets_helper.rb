@@ -52,11 +52,11 @@ module TicketsHelper
     body_merger = {}
 
     if ticket.present?
-      customer_info = {customer_name: ticket.customer.full_name, customer_address: ticket.customer.full_address, customer_code: (ticket.customer.organization and ticket.customer.organization.account.code), customer_contact_person_name: ticket.contact_person1.full_name }
+      customer_info = {customer_name: ticket.customer.full_name, customer_address: ticket.customer.full_address, customer_code: (ticket.customer.organization and ticket.customer.organization.account.code), customer_contact_person_name: "#{ticket.contact_person1.full_name} (#{ticket.contact_person1.contact_person_contact_types.select{|c| c.contact_type.mobile }.map { |c| c.contact_info }.join(', ')})" }
 
       body_merger.merge!(customer_info)
 
-      ticket_info = {ticket_owner_engineer: ticket.ticket_engineers.first.try(:full_name), ticket_resolution: ticket.resolution_summary, ticket_no: ticket.ticket_no, ticket_logged_at: ticket.logged_at.try(:strftime, INOCRM_CONFIG["short_date_format"]),ticket_logged_by: ticket.logged_by_user, ticket_priority: INOCRM_CONFIG["priority"].key(ticket.priority), ticket_informed_method: ticket.inform_method.try(:name), ticket_product_name: ticket.products.first.name, ticket_problem_description: ticket.problem_description, ticket_product_brand: ticket.products.first.brand_name, ticket_product_category: ticket.products.first.category_full_name_index, ticket_product_serial_no: ticket.products.first.serial_no, ticket_type: ticket.ticket_type.name, ticket_owner_division: ticket.owner_organization.try(:name), ticket_status: ticket.ticket_status_name}
+      ticket_info = {ticket_owner_engineer: ticket.ticket_engineers.first.try(:full_name), ticket_resolution: ticket.resolution_summary, ticket_no: ticket.ticket_no, ticket_logged_at: ticket.logged_at.try(:strftime, INOCRM_CONFIG["short_date_format"]),ticket_logged_by: ticket.logged_by_user, ticket_priority: INOCRM_CONFIG["priority"].key(ticket.priority), ticket_informed_method: ticket.inform_method.try(:name), ticket_product_name: ticket.products.first.name, ticket_problem_description: ticket.problem_description, ticket_product_brand: ticket.products.first.brand_name, ticket_product_category: ticket.products.first.category_full_name_index, ticket_product_serial_no: ticket.products.first.serial_no, ticket_type: ticket.ticket_type.name, ticket_owner_division: ticket.owner_organization.try(:name), ticket_status: ticket.ticket_status_name, ticket_product_model_no: ticket.products.first.model_no, ticket_product_product_no: ticket.products.first.product_no}
 
       body_merger.merge!(ticket_info)
 

@@ -26,7 +26,7 @@
         .col-md-6
           = f.input :note, label: "Note"
         .col-md-2
-          = label_tag "amount" do
+          = label_tag "amount", class: "required control-label" do
             Amount
             %span#dynamic_currency_code
           = f.input :amount, label: false

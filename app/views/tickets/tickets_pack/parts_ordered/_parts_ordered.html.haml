@@ -68,7 +68,7 @@
                   - else
                     - next_index = ticket_spare_part.spare_part_status_action.manufacture_type_index + 1
 
-                  = SparePartStatusAction.find_by_manufacture_type_index(next_index).try(:name_next) unless (next_index > 11) or (ticket_spare_part.spare_part_status_action.manufacture_type_index == 0)
+                  = SparePartStatusAction.find_by_manufacture_type_index(next_index).try(:name_next) unless (next_index > 11) or (ticket_spare_part.spare_part_status_action.manufacture_type_index < 0)
 
                 - elsif @manufacture_chargeable
                   - if ticket_spare_part.spare_part_status_action.code == "RPR"
@@ -84,7 +84,7 @@
                   - else
                     - next_index = ticket_spare_part.spare_part_status_action.store_nc_type_index + 1
 
-                  = SparePartStatusAction.find_by_store_nc_type_index(next_index).try(:name_next) unless (next_index > 7) or (ticket_spare_part.spare_part_status_action.store_nc_type_index == 0) or (ticket_spare_part.spare_part_status_action.code == "RJS")
+                  = SparePartStatusAction.find_by_store_nc_type_index(next_index).try(:name_next) unless (next_index > 7) or (ticket_spare_part.spare_part_status_action.store_nc_type_index < 0) or (ticket_spare_part.spare_part_status_action.code == "RJS")
                 - elsif @store_chargeable
                   = SparePartStatusAction.find_by_store_ch_type_index(ticket_spare_part.spare_part_status_action.store_ch_type_index+1).try(:name_next) unless (ticket_spare_part.spare_part_status_action.store_ch_type_index+1 > 8) or (ticket_spare_part.spare_part_status_action.store_ch_type_index == 0) or (ticket_spare_part.spare_part_status_action.code == "RJS")
 

@@ -1411,7 +1411,6 @@ class TicketsController < ApplicationController
 
                   end
 
-
                 else
                   all_success = false
                   @bpm_process_error = true
@@ -1434,7 +1433,7 @@ class TicketsController < ApplicationController
         end
       end
     else
-      flash[:error] = "ticket is not updated. Bpm error"
+      flash[:error] = @continue ? "ticket is not updated. Bpm error" : 'Please add atleast one engineer.'
     end
     # redirect_to todos_url, notice: @flash_message
     redirect_to @ticket
@@ -2170,6 +2169,14 @@ class TicketsController < ApplicationController
         user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(37).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
         user_ticket_action.build_request_spare_part(ticket_spare_part_id: spt_ticket_spare_part.id)
         user_ticket_action.save
+
+        email_template = EmailTemplate.find_by_code("PART_COLLECTED")
+
+        email_to = spt_ticket_spare_part.engineer.user.email
+        if email_template.try(:active)
+          view_context.send_email(email_to: email_to, ticket_id: @ticket.id, engineer_id: spt_ticket_spare_part.engineer.id, spare_part_id: spt_ticket_spare_part.id, email_code: "PART_COLLECTED") if email_to.present?
+
+        end
 
         flash[:notice]= "Successfully updated"
 
@@ -3994,58 +4001,67 @@ class TicketsController < ApplicationController
     @ticket = spt_ticket_spare_part.ticket
     spt_ticket_spare_part.attributes = ticket_spare_part_params(spt_ticket_spare_part)
 
-    @continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    update_without_order = (params[:update_without_order].present? and params[:update_without_order].to_bool)
 
-    if @continue and (spt_ticket_spare_part.status_action_id != SparePartStatusAction.find_by_code("CLS").id) and spt_ticket_spare_part.save
+    if update_without_order
 
-      spt_ticket_spare_part.update_attributes status_action_id: SparePartStatusAction.find_by_code("ORD").id
+      spt_ticket_spare_part.save
+      @flash_message = {notice: "Successfully updated"}
 
-      spt_ticket_spare_part.ticket_spare_part_manufacture.update po_required: CompanyConfig.first.sup_mf_parts_po_required
-
-      spt_ticket_spare_part.ticket_spare_part_manufacture.update collect_pending_manufacture: true if spt_ticket_spare_part.ticket_spare_part_manufacture
-
-      spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
-
-      # Set Action (31) Order Spare Part from Sup, DB.spt_act_request_spare_part.
-      user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(31).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
-      user_ticket_action.build_request_spare_part(ticket_spare_part_id: spt_ticket_spare_part.id)
-      user_ticket_action.save
-
-
-      # bpm output variables
-      d30_parts_collection_pending = TicketSparePart.any?{|sp| sp.id != spt_ticket_spare_part.id and sp.ticket_spare_part_manufacture.try(:collect_pending_manufacture)} ? "Y" : "N"
-
-      if !CompanyConfig.first.sup_mf_parts_collect_required
-        d30_parts_collection_pending = "Y"
-
-        #Collect Part
-        spt_ticket_spare_part.ticket_spare_part_manufacture.update collect_pending_manufacture: false, collected_manufacture: true
-
-        spt_ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("CLT").id)
-        spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)  
-
-        #Recieve Part
-        #spt_ticket_spare_part.ticket_spare_part_manufacture.update_attributes recieved_manufacture: true
-
-        #spt_ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("RCS").id) 
-        #spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)   
-      end
-
-      bpm_variables = view_context.initialize_bpm_variables.merge(d30_parts_collection_pending: d30_parts_collection_pending)
-
-      @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
-
-      @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
-
-      if @bpm_response[:status].upcase == "SUCCESS"
-        @flash_message = {notice: "Successfully updated"}
-      else
-        @flash_message = {alert: "ticket is updated. but Bpm error"}
-      end
     else
-      @flash_message = {alert: "Unable to update. Bpm error"}
-    end
 
+      @continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+
+      if @continue and (spt_ticket_spare_part.status_action_id != SparePartStatusAction.find_by_code("CLS").id) and spt_ticket_spare_part.save
+
+        spt_ticket_spare_part.update_attributes status_action_id: SparePartStatusAction.find_by_code("ORD").id
+
+        spt_ticket_spare_part.ticket_spare_part_manufacture.update po_required: CompanyConfig.first.sup_mf_parts_po_required
+
+        spt_ticket_spare_part.ticket_spare_part_manufacture.update collect_pending_manufacture: true if spt_ticket_spare_part.ticket_spare_part_manufacture
+
+        spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
+
+        # Set Action (31) Order Spare Part from Sup, DB.spt_act_request_spare_part.
+        user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(31).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+        user_ticket_action.build_request_spare_part(ticket_spare_part_id: spt_ticket_spare_part.id)
+        user_ticket_action.save
+
+
+        # bpm output variables
+        d30_parts_collection_pending = TicketSparePart.any?{|sp| sp.id != spt_ticket_spare_part.id and sp.ticket_spare_part_manufacture.try(:collect_pending_manufacture)} ? "Y" : "N"
+
+        if !CompanyConfig.first.sup_mf_parts_collect_required
+          d30_parts_collection_pending = "Y"
+
+          #Collect Part
+          spt_ticket_spare_part.ticket_spare_part_manufacture.update collect_pending_manufacture: false, collected_manufacture: true
+
+          spt_ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("CLT").id)
+          spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)  
+
+          #Recieve Part
+          #spt_ticket_spare_part.ticket_spare_part_manufacture.update_attributes recieved_manufacture: true
+
+          #spt_ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("RCS").id) 
+          #spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)   
+        end
+
+        bpm_variables = view_context.initialize_bpm_variables.merge(d30_parts_collection_pending: d30_parts_collection_pending)
+
+        @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
+
+        @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+        if @bpm_response[:status].upcase == "SUCCESS"
+          @flash_message = {notice: "Successfully updated"}
+        else
+          @flash_message = {alert: "ticket is updated. but Bpm error"}
+        end
+      else
+        @flash_message = {alert: "Unable to update. Bpm error"}
+      end
+    end
     redirect_to todos_url, @flash_message
 
   end

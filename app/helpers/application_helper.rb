@@ -49,7 +49,8 @@ module ApplicationHelper
       "ACCESSORY5=#{ticket.accessories.fifth.try(:accessory)}",
       "ACCESSORY6=",
       "ACCESSORY_OTHER=#{ticket.other_accessories}",
-      "LOGGED_BY=#{User.cached_find_by_id(ticket.logged_by).try(:full_name)}"
+      "LOGGED_BY=#{User.cached_find_by_id(ticket.logged_by).try(:full_name)}",
+      "NOTE=#{ticket.note}",
     ]
 
   end
@@ -62,8 +63,9 @@ module ApplicationHelper
       "ADDRESS=#{fsr.ticket.customer.address1} #{fsr.ticket.customer.address2} #{fsr.ticket.customer.address3} #{fsr.ticket.customer.address4}",
       "TELPHONE=#{fsr.ticket.customer.contact_type_values.select{|c| c.contact_type.name == "Telephone"}.first.try(:value)}",
       "MOBILE=#{fsr.ticket.customer.contact_type_values.select{|c| c.contact_type.mobile}.first.try(:value)}",
+      "CONTACT_PERSON=#{fsr.ticket.contact_person1.full_name} (#{fsr.ticket.contact_person1.contact_person_contact_types.select{|c| c.contact_type.mobile }.map { |c| c.contact_info }.join(', ')})",
       "TICKET_REF=#{fsr.ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG['ticket_no_format'])}",
-      "ENGINEER=#{fsr.ticket.owner_engineer and fsr.ticket.owner_engineer.user.full_name}",
+      "ENGINEER=#{fsr.ticket_engineer and fsr.ticket_engineer.user.full_name}",
       "SERIAL_NO=#{fsr.ticket.products.first.serial_no}",
       "PRODUCT_DETAILS=#{[fsr.ticket.products.first.product_brand.name, fsr.ticket.products.first.category_full_name_index, fsr.ticket.products.first.model_no, fsr.ticket.products.first.product_no].join(' / ')}",
       "PRODUCT_BRAND=#{fsr.ticket.products.first.product_brand.name}",
