@@ -377,7 +377,6 @@ class ContractsController < ApplicationController
         @contract = TicketContract.find params[:contract_id]
         @contract.attributes = contract_params
         @contract.save
-        puts "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ttttt"
 
       else
         @contract = TicketContract.new contract_params
@@ -521,7 +520,7 @@ class ContractsController < ApplicationController
       contract_elements << table_header
 
       @contract.contract_products.each do |contract_product|
-        contract_elements << ["#{contract_product.product.brand_name} - #{contract_product.product.category_name}", contract_product.product.serial_no, contract_product.product.description, contract_product.amount]
+        contract_elements << ["#{contract_product.product.brand_name} - #{contract_product.product.category_full_name_index}", contract_product.product.serial_no, contract_product.product.description, contract_product.amount]
       end
 
       contract_elements.concat [['', '', 'Sub Total', @contract.contract_products.sum(:amount)], ['', '', 'Special Discount', @contract.contract_products.sum(:discount_amount)], ['', '', 'Total Amount', (@contract.contract_products.sum(:amount) - @contract.contract_products.sum(:discount_amount))]]

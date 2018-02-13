@@ -269,9 +269,9 @@ class ReportsController < ApplicationController
     render_template = case INOCRM_CONFIG['spt_part_quotation_pdf']
 
     when "bobbin"
-      "quotation_bobbin"
+      "reports/quotation_bobbin"
     else
-      "quotation"
+      "reports/quotation"
     end
 
     respond_to do |format|

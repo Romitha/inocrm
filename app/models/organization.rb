@@ -213,7 +213,9 @@ class Organization < ActiveRecord::Base
         boolean do
           must { string params[:query] } if params[:query].present?
         end
+
       end
+      # terms id: [1, 2]
       # sort { by :name, {order: "desc", ignore_unmapped: true} }
       sort { by "name.analyzed", 'asc' }
 

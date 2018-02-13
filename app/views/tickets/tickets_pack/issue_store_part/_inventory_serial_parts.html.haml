@@ -2,6 +2,8 @@
   = paginate @inventory_serial_parts, remote: true, method: :get, params: {controller: "inventories", action: "load_serial_and_part", rendering_id: "#main_part_part", per_page: 10, rendering_file: "tickets_pack/issue_store_part/issue_store_part"}
 
   %hr
+  %h3 Select the Part
+
   %table.table.table-hover.table-stripped
     %thead
       %tr
