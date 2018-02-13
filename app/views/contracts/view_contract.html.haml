@@ -147,9 +147,9 @@
       %hr
       %dt Process Date:
       %dd= contract.process_at.try(:strftime, INOCRM_CONFIG["short_date_format"])
-      %hr
-      %dt Remind before Expiry:
-      %dd= boolean_in_word contract.remind_required, "Yes", "No"
+      / %hr
+      / %dt Remind before Expiry:
+      / %dd= boolean_in_word contract.remind_required, "Yes", "No"
       %hr
       %dt Back to Back Contract:
       %dd= boolean_in_word contract.contract_b2b, "Yes", "No"
@@ -173,8 +173,12 @@
       %dt Remarks:
       %dd= contract.remarks
       %hr
+      %br
+      %br
+      %br
       %h4 Payment Amounts
       %br
+
       %font{:color => "red", :size => "2"}
         %dt Total Recieved Amount:
         %dd= number_with_precision ttl_recived_amount, precision: 2

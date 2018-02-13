@@ -1156,10 +1156,19 @@ window.Tickets =
     main_cat_name = $("#ticket_contract_product_category_id").val()
     main_brand_text = $("#ticket_contract_product_brand_id :selected").text()
     main_cat_text = $("#ticket_contract_product_category_id :selected").text()
+
+    main_cat1_text = $("#search_product_category1 :selected").text()
+    main_cat2_text = $("#search_product_category2 :selected").text()
+
+    
     $("#product_brand").val(main_brand_name)
     $("#product_category").val(main_cat_name)
     $("#product_brand1").val(main_brand_text)
     $("#product_category1").val(main_cat_text)
+
+    $("#product_cat1").val(main_cat1_text)
+    $("#product_cat2").val(main_cat2_text)
+    $("#product_cat3").val(main_cat_text)
     if main_brand_name == ""
       alert "Please Select A Brand First"
     #   $(".product_brand_main").removeClass("hide");
@@ -1173,7 +1182,7 @@ window.Tickets =
     strDate = $("#ticket_contract_contract_start_at").val()
     dateParts = strDate.split("-");
 
-    date1 = new Date(dateParts[2], (dateParts[1]), dateParts[0]);
+    date1 = new Date(dateParts[2], (dateParts[1])-1, dateParts[0]);
     # get_start_date = $("#ticket_contract_contract_start_at").val()
     # convert_start_date = get_start_date.replace("-", ",");
     # converted_start_date = convert_start_date.replace("-", ",");
@@ -1186,8 +1195,9 @@ window.Tickets =
 
     d = new Date(date)
     year = d.getFullYear()
-    month = d.getMonth()
+    month = (d.getMonth()+1)
     day = (d.getDate())
+
     if day < 10
       modi_day = '0'+day
     else
@@ -1197,8 +1207,7 @@ window.Tickets =
       modi_month = '0'+month
     else
       modi_month = month
-
-    someFormattedDate = (modi_day) + '-' + modi_month + '-' + (year+1)
+    someFormattedDate = (modi_day) + '-' + (modi_month) + '-' + (year+1)
     # finaldate = new Date(someFormattedDate)
     $("#ticket_contract_contract_end_at").val(someFormattedDate)
 
@@ -1286,7 +1295,7 @@ window.Tickets =
       sum_disamo = parseFloat(sum_disamo) + parseFloat(dis_amo)
 
     $("a.cus_product_disamount1").each ->
-      dis_amo = $(this).val()
+      dis_amo = $(this).text()
       sum_disamo = parseFloat(sum_disamo) + parseFloat(dis_amo)
     final_amount = (sum_amo - sum_disamo)
     amount_per_ins = (final_amount/Math.ceil(records))

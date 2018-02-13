@@ -78,7 +78,7 @@
                         %strong Contract No:
                         =ticket.ticket_contract.contract_no_genarate
                         %br
-                        = link_to "View Contract", contracts_path(view_contract: true, contract_id: ticket.ticket_contract.id, customer_id: ticket.ticket_contract.organization.id), class: "btn btn-sm btn-warning", target: "_blank", remote: false
+                        = link_to "View Contract", view_contracts_path(view_contract: true, contract_id: ticket.ticket_contract.id, customer_id: ticket.ticket_contract.organization.id), class: "btn btn-sm btn-warning", target: "_blank", remote: false
 
                 .col-md-3
                   .panel.panel-default

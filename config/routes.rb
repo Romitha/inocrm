@@ -37,6 +37,7 @@ Rails.application.routes.draw do
       delete "remove_generated_document"
       delete "remove_pop_document"
       delete "delete_warrenty"
+      delete "delete_instalments"
     end
   end
 

@@ -585,12 +585,21 @@ class ReportsController < ApplicationController
     not_need_index = []
     @contracts.each do |contract|
 
-      need_index_boolean = (( contract.organization.updated_at.to_datetime == Organization.find(contract.organization.id).updated_at.to_datetime ) and ( contract.owner_organization.updated_at.to_datetime == Organization.find(contract.owner_organization.id).updated_at.to_datetime ) and ( contract.product.try(:updated_at).try(:to_datetime) == Product.find_by_id(contract.product.try(:id)).try(:updated_at).try(:to_datetime) ) )
+      need_index_boolean = (( contract.updated_at.to_datetime == TicketContract.find(contract.id).updated_at.to_datetime ) and ( contract.organization.updated_at.to_datetime == Organization.find(contract.organization.id).updated_at.to_datetime ) and ( contract.owner_organization.updated_at.to_datetime == Organization.find(contract.owner_organization.id).updated_at.to_datetime ) and ( contract.product.try(:updated_at).try(:to_datetime) == Product.find_by_id(contract.product.try(:id)).try(:updated_at).try(:to_datetime) ) )
 
       not_need_index << {id: contract.id, not_need_index: need_index_boolean}
 
     end
-
+    # if @contracts.present?
+    #   t_ids = []
+    #   not_need_index.uniq{|n| n[:id]}.each do |n_index|
+    #     t_ids << n_index[:id]
+    #     # if !n_index[:not_need_index]
+    #     #   # Ticket.find(n_index[:id]).update_index
+    #     # end
+    #   end
+    #   TicketContract.index.import Product.where(id: t_ids) if t_ids.present?
+    # end
     if @contracts.present?
 
       not_need_index.uniq{|n| n[:id]}.each do |n_index|
@@ -603,6 +612,17 @@ class ReportsController < ApplicationController
 
     respond_to do |format|
       if params[:search].present?
+        sleep 3
+        after_contract_products = []
+        params[:report] = nil
+        before_contract_products = TicketContract.search(params)
+        @warranties = if params[:contract_date_from].present? and params[:contract_date_to].present?
+          params[:report] = true
+          after_contract_products = TicketContract.search(params)
+          (before_contract_products.results + after_contract_products.results).uniq{|r| r.id}
+        else
+          before_contract_products.results
+        end
         format.xls
       else
         format.html
@@ -659,6 +679,14 @@ class ReportsController < ApplicationController
   def warranty_expire
     Ticket
     Invoice
+    if params[:date_from].present?
+      @warranty_expireds = Warranty.all.select{|w| w.end_at.to_date < params[:date_from].to_date.beginning_of_day}
+    end
+    if params[:time_period] == "1"
+      @time_to_expire = 30
+    else
+      @time_to_expire = 90
+    end
     if params[:search].present?
       params[:from_where] = "job_ticket"
       if params[:search_contracts].present?
@@ -672,7 +700,7 @@ class ReportsController < ApplicationController
       after_contract_products = []
       before_contract_products = Warranty.search(params)
       if params[:ticket_contract_contract_start_at].present? and params[:ticket_contract_contract_end_at].present?
-        after_contract_products = Ticket.search(params)
+        after_contract_products = Warranty.search(params)
         @warranties = (before_contract_products.results + after_contract_products.results).uniq{ |r| r.id }
       else
         @warranties = before_contract_products.results
@@ -724,7 +752,14 @@ class ReportsController < ApplicationController
     Ticket
     Invoice
     authorize! :contract_report, TicketContract
-
+    if params[:time_period] == "1"
+      @time_to_expire = 30
+    else
+      @time_to_expire = 90
+    end
+    if params[:date_from].present?
+      @contract_expireds = TicketContract.all.select{|w| w.contract_end_at.to_date < params[:date_from].to_date.beginning_of_day}
+    end
     if params[:search].present?
       if params[:search_contracts]
         refined_contract = params[:search_contracts].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")

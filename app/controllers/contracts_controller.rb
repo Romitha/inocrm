@@ -624,6 +624,15 @@ class ContractsController < ApplicationController
     end
   end
 
+  def delete_instalments
+    @installments = ContractPaymentInstallment.where(contract_id: params[:contract_id])
+    if @installments.present?
+      @installments.delete_all
+    end
+    respond_to do |format|
+      format.html {redirect_to contracts_path, notice: "Installments Removed!"}
+    end
+  end
   def payments_save
     Invoice
     Ticket

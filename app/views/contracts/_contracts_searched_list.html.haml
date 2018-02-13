@@ -59,7 +59,8 @@
           %br
           = link_to "View", view_contracts_path(contract_id: con.id, customer_id: con.organization.id), target: "_blank", remote: false
           %br
-          = link_to "Payments", contracts_path(view_contract: true, new_payments: true, contract_id: con.id, customer_id: con.organization.id),target: "_blank",  remote: false
+          = link_to_if can?(:contract_payment, Organization), "Payments", view_contracts_path(view_contract: true, new_payments: true, contract_id: con.id, customer_id: con.organization.id),target: "_blank",  remote: false do
+            "Not accessed to payment"
           %br
           = link_to "Generate Document", generate_contract_document_contracts_path(contract_id: con.id), method: :post
           / = link_to "Edit", contracts_path(edit_create: true, contract_id: con.id, customer_id: con.organization.id), remote: true, onclick: "Tickets.ajax_loader(); return false;"

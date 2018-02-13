@@ -1,6 +1,6 @@
 = collapse_wrapper collapse_id: "product_category2_id", labelledby: "labelledby" do
   - @product_category2_all.each do |product_category2|
-    = collapse collapse_type: "success", labelledby: "labelledby_#{product_category2.id}", header_content: "#{product_category2.product_category1.name} -> #{product_category2.name}", collapse_link: "link_#{product_category2.id}", collapse_id: "product_category2_id" do
+    = collapse collapse_type: "success", labelledby: "labelledby_#{product_category2.id}", header_content: "#{product_category2.product_category1.product_brand.name} -> #{product_category2.product_category1.name} -> #{product_category2.name}", collapse_link: "link_#{product_category2.id}", collapse_id: "product_category2_id" do
       .row
         .col-md-12
           .pull-right
@@ -9,11 +9,7 @@
                 %span.glyphicon.glyphicon-trash
       .row
         .col-md-4
-          %strong #{CompanyConfig.first.try(:sup_product_category1_label)} :
-          = link_to "#", class: "inline_edit", data: {type: "select", resource: "product_category2", source: ProductCategory1.all.collect{|category1| {value: category1.id, text: category1.name}}, name: "product_category1_id", url: brand_category2_admins_tickets_path(edit: true, product_category2_id: product_category2.id), "original-title" => "Update Product Category"} do
-            = product_category2.product_category1.name
-        .col-md-4
-          %strong #{CompanyConfig.first.try(:sup_product_category2_label)} : Name:
+          %strong #{CompanyConfig.first.try(:sup_product_category2_label)} :
           = link_to "#", class: "inline_edit", data: {type: "text", resource: "product_category2", name: "name", url: brand_category2_admins_tickets_path(edit: true, product_category2_id: product_category2.id), "original-title" => "Update Product Category"} do
             = product_category2.name
         .col-md-4

@@ -105,7 +105,7 @@ class Ticket < ActiveRecord::Base
               only: [:id, :name],
             },
             contract_payment_receiveds: {
-              only: [:id, :amount],
+              only: [:id, :amount, :invoice_no],
             },
           },
         },
@@ -727,6 +727,9 @@ class TicketContract < ActiveRecord::Base
 
         end
       end
+      if params[:date_from].present?
+        sort { by :contract_end_at, {order: "ASC", ignore_unmapped: true} }
+      end
       if params[:sort_by]
         sort { by :season, {order: "asc", ignore_unmapped: true} }
       else
@@ -778,7 +781,7 @@ class TicketContract < ActiveRecord::Base
           only: [:id, :name],
         },
         contract_payment_receiveds: {
-          only: [:id, :amount],
+          only: [:id, :amount, :invoice_no],
         },
         contract_payment_installments: {
           only: [:id, :contract_id, :total_amount, :installment_start_date, :installment_end_date ],
@@ -997,7 +1000,7 @@ class ContractProduct < ActiveRecord::Base
               only: [:id, :name],
             },
             contract_payment_receiveds: {
-              only: [:id, :amount, :updated_at],
+              only: [:id, :amount, :invoice_no],
             },
           },
         },

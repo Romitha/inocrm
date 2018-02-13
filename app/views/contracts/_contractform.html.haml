@@ -72,7 +72,7 @@
       = f.input :hold, wrapper: :append
     .col-md-4
       = f.input :contract_b2b, wrapper: :append, label: "Back to Back Contract"
-    .col-md-4
+    .col-md-4.hide
       = f.input :remind_required, wrapper: :append, label: "Need Remind before Expiry"
   %br
   .row
@@ -177,6 +177,7 @@
       = f.input :accepted_at, as: :string, input_html: {class: "datepicker", value: f.object.accepted_at.try(:strftime,INOCRM_CONFIG["short_date_format"])}
     .col-md-4.small_scale_margin-top2
       = f.input :documnet_received, wrapper: :append, label: "Signed Document Received"
+  - have_instalments = false
   %h4
     %font{:color => "black"}
       %strong Installments
@@ -192,6 +193,7 @@
       %tbody
         - @installments.each do |i|
           - if i.contract_id == contract.id
+            - have_instalments = true
             %tr
               %td= i.payment_installment
               %td= i.installment_start_date.try :strftime, INOCRM_CONFIG["short_date_format"]
@@ -202,7 +204,11 @@
   %br
   .row
     .col-md-8
-      %button.btn.btn-info{:type => "button", onclick:"Tickets.calculate_installments();" } Add Instalments
+      - if have_instalments
+        = link_to delete_instalments_contracts_path(contract_id: contract.id), method: :delete, rel: "tooltip", :data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Delete" do
+          %button.btn.btn-info{:type => "button" } Delete Instalments
+      - else
+        %button.btn.btn-info{:type => "button", onclick:"Tickets.calculate_installments();" } Add Instalments
       %br
       %br
       #load_permissions_json_render
@@ -316,7 +322,7 @@
                         %dt Discount Amount
                         %dd
                           -if !contract.accepted_at.present?
-                            = link_to "#", class: "inline_edit", data: {type: "text", resource: "contract_product", name: "discount_amount",url: update_contract_product_contracts_path(contract_product_id: contrac.id), "original-title" => "Update Discount Amount"} do
+                            = link_to "#", class: "inline_edit cus_product_disamount1", data: {type: "text", resource: "contract_product", name: "discount_amount",url: update_contract_product_contracts_path(contract_product_id: contrac.id), "original-title" => "Update Discount Amount"} do
                               = contrac.try(:discount_amount)
                           - else
                             = contrac.try(:discount_amount)

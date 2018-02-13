@@ -3,13 +3,18 @@
   = simple_form_for @product_category2, url: brand_category2_admins_tickets_path, method: :post, html: {class: "validate_form"} do |f|
     / = f.input :created_by, as: :hidden, input_html: {value: current_user.id}
     .row
-      .col-md-4
+      .col-md-3
         %font{:color => "#90032A"}
-          = f.association :product_category1, include_blank: false, onchange: "Admins.filter_cat1(this); return false;" ,input_html: {required: true, id: "filter_cat1", data: {"filter-params" => "product_category1_id", "render-dom" => "product_category2"}}, label: "#{CompanyConfig.first.try(:sup_product_category1_label)} :"
-      .col-md-4
+          = label_tag "Brand"
+          = select_tag "search_contracts_brand_name", options_from_collection_for_select(ProductBrand.all, :name, :name), class: "form-control parent_class", include_blank: true
+
+      .col-md-3
+        %font{:color => "#90032A"}
+          = f.association :product_category1, include_blank: false ,input_html: {required: true, id: "search_product_category1", class: "product_category1 form-control"}, collection: ProductBrand.all, as: :grouped_select, group_method: :product_category1s, group_label_method: :name, label_method: :name, value_method: :id, label: "#{CompanyConfig.first.try(:sup_product_category1_label)} :"
+      .col-md-3
         %font{:color => "#90032A"}
           = f.input :name, input_html: {required: true}, label: "#{CompanyConfig.first.try(:sup_product_category2_label)} : Name"
-      .col-md-4
+      .col-md-3
         = f.input :contract_no_value, label: "Contract No Value"
     = f.submit "Save", class: "btn btn-sm btn-success", name: "#{params[:edit_more] ? 'update' : 'create'}"
 
