@@ -66,7 +66,7 @@
                           %br/
                           = f.select :job_type_id, options_from_collection_for_select(JobType.all, :id, :name), {},{class: "small_scale_margin-top3 small_scale_margin-bottom5 form-control"}
                         .col-md-12
-                          = f.input :problem_description, label:"Problem description", input_html: {rows: 1}
+                          = f.input :problem_description, label:"Problem description", input_html: {rows: 3}
 
                 .col-md-3
                   .panel.panel-default

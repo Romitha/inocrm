@@ -69,10 +69,10 @@
               %tr
                 %td= index+1
                 %td= inventory.inventory_product.generated_item_code
-                %td= inventory.inventory_product.description
-                %td= inventory.inventory_product.model_no
-                %td= inventory.inventory_product.product_no
-                %td= inventory.inventory_product.spare_part_no
+                %td.has-tooltip{title: inventory.inventory_product.description, data: { toggle:"tooltip", placement: "top" } }= inventory.inventory_product.description.truncate(12)
+                %td.has-tooltip{title: inventory.inventory_product.model_no, data: { toggle:"tooltip", placement: "top" } }= inventory.inventory_product.model_no.truncate(12)
+                %td.has-tooltip{title: inventory.inventory_product.product_no, data: { toggle:"tooltip", placement: "top" } }= inventory.inventory_product.product_no.truncate(12)
+                %td.has-tooltip{title: inventory.inventory_product.spare_part_no, data: { toggle:"tooltip", placement: "top" } }= inventory.inventory_product.spare_part_no.truncate(12)
                 %td= inventory.inventory_product.inventory_unit.unit
                 %td= inventory.inventory_product.inventory_product_info ? (inventory.inventory_product.inventory_product_info.need_serial ? "Serial" : (inventory.inventory_product.inventory_product_info.need_batch ? "Batch" : "")) : ""
 
@@ -97,10 +97,10 @@
               %tr
                 %td= index+1
                 %td= inventory_product.generated_item_code
-                %td= inventory_product.description
-                %td= inventory_product.model_no
-                %td= inventory_product.product_no
-                %td= inventory_product.spare_part_no
+                %td.has-tooltip{title: inventory_product.description, data: { toggle:"tooltip", placement: "top" } }= inventory_product.description.truncate(12)
+                %td.has-tooltip{title: inventory_product.model_no, data: { toggle:"tooltip", placement: "top" } }= inventory_product.model_no.truncate(12)
+                %td.has-tooltip{title: inventory_product.product_no, data: { toggle:"tooltip", placement: "top" } }= inventory_product.product_no.truncate(12)
+                %td.has-tooltip{title: inventory_product.spare_part_no, data: { toggle:"tooltip", placement: "top" } }= inventory_product.spare_part_no.truncate(12)
                 %td= inventory_product.inventory_unit.unit
                 %td= inventory_product.inventory_product_info ? inventory_product.inventory_product_info.need_serial ? "Serial" : (inventory_product.inventory_product_info.need_batch ? "Batch" : "") : "No product info"
                 %td{class: "#{'paginate_grn_select'}"}= link_to("Select", inventory_in_modal_inventories_path(select_inventory: true, inventory_product_id: inventory_product.id, select_frame: session[:select_frame], issue_part: params[:issue_part]), remote: true)
