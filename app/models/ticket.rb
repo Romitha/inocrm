@@ -13,6 +13,7 @@ class Ticket < ActiveRecord::Base
     indexes :owner_organization, type: "nested", include_in_parent: true
     indexes :ticket_contract, type: "nested", include_in_parent: true
     indexes :ticket_currency, type: "nested", include_in_parent: true
+    indexes :customer_quotations, type: "nested", include_in_parent: true
   end
 
   def self.search(params)
@@ -172,6 +173,9 @@ class Ticket < ActiveRecord::Base
         },
         ticket_status: {
           only: [:id, :name],
+        },
+        customer_quotations: {
+          only: [:id, :customer_quotation_no],
         },
       }
     )
@@ -510,9 +514,6 @@ class Ticket < ActiveRecord::Base
 
   has_many :ticket_estimation_additionals, foreign_key: :ticket_id
   accepts_nested_attributes_for :ticket_estimation_additionals, allow_destroy: true
-
-  has_many :customer_quotations, foreign_key: :ticket_id
-  accepts_nested_attributes_for :customer_quotations, allow_destroy: true
 
   has_many :ticket_invoices, foreign_key: :ticket_id
   accepts_nested_attributes_for :ticket_invoices, allow_destroy: true

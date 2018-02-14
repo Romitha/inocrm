@@ -42,6 +42,7 @@
       %th Currency
       / %th Product Amount
       %th Ticket Number
+      %th PI No
       %th Created Date
       %th Log Date
       %th Problem Description
@@ -90,6 +91,10 @@
           %td= ticket.ticket_currency.try(:code)
           / %td= ticket.ticket_contract_product_amount.to_f
           %td= ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
+          %td
+            - ticket.customer_quotations.each do |e|
+              = e.try(:customer_quotation_no).to_s.rjust(6, INOCRM_CONFIG['quotation_no_format'])
+              ,
           %td= ticket.try(:created_at).to_date.strftime(INOCRM_CONFIG["short_date_format"])
           %td
             - if ticket.present?
@@ -129,6 +134,7 @@
       / %td
       /   %strong
       /     = total_product_amount
+      %td
       %td
       %td
       %td

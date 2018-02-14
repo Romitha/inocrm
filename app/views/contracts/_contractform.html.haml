@@ -90,7 +90,7 @@
   .row
 
     = hidden_field_tag :product_count, contract.num_of_products, onclick:"Tickets.brand_edit();"
-    - if contract.num_of_products > 0 
+    - if contract.num_of_products > 0
       .product_brand_main.hide
         .col-md-3
           = f.association :product_brand, required: true, include_blank: true
