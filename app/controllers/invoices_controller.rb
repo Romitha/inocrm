@@ -488,7 +488,7 @@ class InvoicesController < ApplicationController
 
       @customer_quotation = CustomerQuotation.new customer_quotation_params
 
-      annualy_reset = INOCRM_CONFIG['TicketSparePartManufacture']['spt_quotation_no_annual_reset'] # boolean
+      annualy_reset = INOCRM_CONFIG['spt_quotation_no_annual_reset'] # boolean
       if annualy_reset
         last_quotation = CustomerQuotation.order('created_at asc').limit(1).first
         CompanyConfig.update sup_last_quotation_no: 0 if Date.today.year != last_quotation.creatd_at.year
