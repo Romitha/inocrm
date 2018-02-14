@@ -10,11 +10,14 @@
         = f.simple_fields_for :sbu_engineers do |engineer|
           .row
             .col-md-1
-              .add_sign
+              %div{class: "#{'add_sign' unless engineer.object.persisted?}"}
                 = engineer.link_to_remove do
                   %span.glyphicon.glyphicon-remove-sign
             .col-md-11
-              = engineer.association :engineer, label_method: :full_name, input_html: {class: "chosen-select"}, collection: User.select{|u| u.roles.any?{|r| r.bpm_module_roles.any?{|b| b.code == "supp_engr"} } unless SbuEngineer.where(engineer_id: u.id).present?}
+              - if engineer.object.persisted?
+                = engineer.object.engineer.full_name
+              - else
+                = engineer.association :engineer, label_method: :full_name, input_html: {class: "chosen-select"}, collection: User.select{|u| u.roles.any?{|r| r.bpm_module_roles.any?{|b| b.code == "supp_engr"} } unless SbuEngineer.where(engineer_id: u.id).present?}
         = f.link_to_add :sbu_engineers, onclick: "setTimeout(function(){Organizations.enable_chosen()}, 200); return false;" do
           %span.glyphicon.glyphicon-plus-sign
     .row
@@ -42,7 +45,7 @@
       .row.col-md-12
         = collapse_wrapper collapse_id: "ticket_sbuengineer_list", labelledby: "tic_sbuengineer_labelledby" do
           - sbu.engineers.each do |engineer|
-            = collapse collapse_type: "danger", labelledby: "labelledby_#{engineer.id}", header_content: "Engineer: #{engineer.user_name}", collapse_link: "ticpsbuengineerlink_#{engineer.id}", collapse_id: "ticket_sbuengineer_list" do
+            = collapse collapse_type: "danger", labelledby: "labelledby_#{engineer.id}", header_content: "Engineer: #{engineer.full_name}", collapse_link: "ticpsbuengineerlink_#{engineer.id}", collapse_id: "ticket_sbuengineer_list" do
               .pull-right
                 / - unless sbu.is_used_anywhere?
                 = link_to delete_admin_sbu_engineer_admins_employees_path(user_id: engineer.id, sbu_id: sbu.id), method: :delete, rel: "tooltip", :data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Delete" do
@@ -52,4 +55,4 @@
                   %strong Engineer:
                 .col-md-9
                   = link_to "#", class: "inline_edit", data: {type: "select", source: User.all.collect{|a| {value: a.id, text: a.email}}, resource: "sbu_engineer", name: "engineer_id", url: sbu_admins_employees_path(edit: true, engineer_id: engineer.id), "original-title" => "Update Admin SBU"} do
-                    = engineer.try(:email)
+                    = engineer.try(:full_name)

@@ -1433,7 +1433,7 @@ class TicketsController < ApplicationController
         end
       end
     else
-      flash[:error] = @continue ? "ticket is not updated. Bpm error" : 'Please add atleast one engineer.'
+      flash[:error] = @continue ? 'Please add atleast one engineer.' : "ticket is not updated. Bpm error"
     end
     # redirect_to todos_url, notice: @flash_message
     redirect_to @ticket

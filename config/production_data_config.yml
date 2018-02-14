@@ -10,7 +10,7 @@ ticket_no_format: "T00000"
 fsr_no_format: "F00000"
 receipt_no_format: "000000"
 invoice_no_format: "000000"
-quotation_no_format: "Q00000"
+quotation_no_format: "P000000000"
 inventory_serial_no_format: "000000"
 inventory_srn_no_format: "000000"
 inventory_grn_no_format: "000000"
@@ -42,30 +42,20 @@ Ticket:
   ticket_type_id: 2
 
 TicketSparePart:
-  faulty_serial_no: ""
-  faulty_ct_no: ""
-  received_part_serial_no: ""
-  received_part_ct_no: ""
-  control_visible_store_request_from_radio: true
-  manufacture_label: ""
+  faulty_serial_no: "N/A"
+  faulty_ct_no: "N/A"
+  received_part_serial_no: "N/A"
+  received_part_ct_no: "N/A"
+  control_visible_store_request_from_radio: false
+  manufacture_label: "(MYOB)"
 
 TicketSparePartManufacture:
-  event_no: ""
-  order_no: ""
-
-TicketPaymentReceivedType:
-  cash: 2
-  cheque: 3
-  credit card: 4
-  draft: 5
-  TT_payment: 6
-  other: 1
+  event_no: "N/A"
+  order_no: "N/A"
 
 request_part_default: "M"
 
-upload_url: "/inovacrm/production/uploads"
-
-spt_part_quotation_pdf: "vsis"
+spt_part_quotation_pdf: "bobbin"
 
 contact_type_values_map:
   1: 1
@@ -74,4 +64,5 @@ contact_type_values_map:
   4: 1
   5: 1
   6: 1
-  # mst_contact_types.id => mst_spt_customer_contact_type.id
+
+spt_quotation_no_annual_reset: true

@@ -10,7 +10,7 @@ ticket_no_format: "T00000"
 fsr_no_format: "F00000"
 receipt_no_format: "000000"
 invoice_no_format: "000000"
-quotation_no_format: "Q00000"
+quotation_no_format: "Q000000000"
 inventory_serial_no_format: "000000"
 inventory_srn_no_format: "000000"
 inventory_grn_no_format: "000000"
@@ -74,3 +74,5 @@ contact_type_values_map:
   4: 1
   5: 1
   6: 1
+
+spt_quotation_no_annual_reset: true
