@@ -154,7 +154,7 @@ class Organization < ActiveRecord::Base
   end
 
   def self.organization_tree_path(who, level = 0)
-    @tree_path = [] # Here @tree_path is class variable.
+    @tree_path ||= [] # Here @tree_path is class variable.
 
     if who.members.any?
       who.members.each { |o| organization_tree_path(o, (level+1)) }
@@ -165,6 +165,10 @@ class Organization < ActiveRecord::Base
     end
 
   end
+
+  def self.reset_tree_path
+    @tree_path = []
+  end
   # class << self
   #   protected
 
@@ -173,6 +177,7 @@ class Organization < ActiveRecord::Base
 
 
   def anchestors
+    self.class.reset_tree_path
     @anchestors ||= self.class.organization_tree_path(self) # first time call to sql, and thereafter @anchestors is saved in cache for particular instance
   end
 

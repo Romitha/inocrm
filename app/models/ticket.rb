@@ -879,7 +879,7 @@ class TicketContract < ActiveRecord::Base
     contract_products.to_a.sum{|e| e.try(:amount).to_f }
   end
   def product_amount
-    contract_products.to_a.sum{|e| e.try(:amount).to_f } - contract_products.to_a.sum{|e| e.try(:discount_amount).to_f }
+    contract_products.sum(:amount) - contract_products.sum(:discount_amount)
   end
 
   def doc_variables

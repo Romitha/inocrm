@@ -180,10 +180,11 @@ class ContractsController < ApplicationController
       @contract = TicketContract.new
       @contract.attributes = contract_params
     end
-
     # Rails.cache.delete([:new_product_with_pop_doc_url1, request.remote_ip])
     @contract.save!
+    # @contract.reload.update_index
 
+    # TicketContract.index.import TicketContract.all
     # contract_document_path = File.join(Dir.home, INOCRM_CONFIG["upload_url"], "/contract_documents/#{@contract.id}/")
     # contract_document_dir = Dir.exist?(contract_document_path)
 
@@ -396,6 +397,8 @@ class ContractsController < ApplicationController
           @contract = (cached_contract or TicketContract.new)
           @contract.attributes = contract_params
         end
+        puts "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
+        @contract.update_index
         # Rails.cache.delete([:new_product_with_pop_doc_url1, request.remote_ip])
         @contract.save
 
