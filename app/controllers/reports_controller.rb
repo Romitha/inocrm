@@ -680,7 +680,8 @@ class ReportsController < ApplicationController
     Ticket
     Invoice
     if params[:date_from].present?
-      @warranty_expireds = Warranty.all.select{|w| w.end_at.to_date < params[:date_from].to_date.beginning_of_day}
+      @warranty_expired_list = Warranty.all.select{|w| w.end_at.to_date < params[:date_from].to_date.beginning_of_day}
+      @warranty_expireds = @warranty_expired_list.sort_by{|e| e[:end_at]}.reverse
     end
     if params[:time_period] == "1"
       @time_to_expire = 30
@@ -758,7 +759,8 @@ class ReportsController < ApplicationController
       @time_to_expire = 90
     end
     if params[:date_from].present?
-      @contract_expireds = TicketContract.all.select{|w| w.contract_end_at.to_date < params[:date_from].to_date.beginning_of_day}
+      @contract_expire_list = TicketContract.all.select{|w| w.contract_end_at.to_date < params[:date_from].to_date.beginning_of_day}
+      @contract_expireds = @contract_expire_list.sort_by{|e| e[:contract_end_at]}.reverse
     end
     if params[:search].present?
       if params[:search_contracts]
@@ -769,7 +771,6 @@ class ReportsController < ApplicationController
     end
     params[:from_where] = "expire_report"
     params[:per_page] = 100
-    params[:sort_by] = true
     params[:query] = refined_search
 
     after_contract_products = []

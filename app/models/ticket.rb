@@ -727,10 +727,9 @@ class TicketContract < ActiveRecord::Base
 
         end
       end
-      if params[:date_from].present?
+      if params[:from_where] == "expire_report"
         sort { by :contract_end_at, {order: "ASC", ignore_unmapped: true} }
-      end
-      if params[:sort_by]
+      elsif params[:sort_by]
         sort { by :season, {order: "asc", ignore_unmapped: true} }
       else
         sort { by :created_at, {order: "desc", ignore_unmapped: true} }
