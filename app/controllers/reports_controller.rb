@@ -568,6 +568,7 @@ class ReportsController < ApplicationController
 
       request.format = "xls"
     end
+
     params[:per_page] = 100
     params[:sort_by] = true
     params[:query] = refined_search
@@ -628,6 +629,7 @@ class ReportsController < ApplicationController
         format.html
       end
     end
+    TicketContract.index.import TicketContract.all
   end
   
 
@@ -674,6 +676,7 @@ class ReportsController < ApplicationController
         format.html
       end
     end
+    TicketContract.index.import TicketContract.all
   end
 
   def warranty_expire
