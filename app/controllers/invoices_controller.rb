@@ -490,19 +490,15 @@ class InvoicesController < ApplicationController
 
       annualy_reset = INOCRM_CONFIG['spt_quotation_no_annual_reset'] # boolean
       if annualy_reset
-        last_quotation = CustomerQuotation.order('created_at asc').limit(1).try(:first)
-        if last_quotation
-          CompanyConfig.first.update(sup_last_quotation_no: 0) if Date.today.year != last_quotation.created_at.year
-          new_quotation_no = CompanyConfig.first.increase_sup_last_quotation_no
-          new_quotation_no = (Date.today.year*100000) + new_quotation_no
-          @customer_quotation.customer_quotation_no = new_quotation_no
-        end
+        first_quotation = CustomerQuotation.order('created_at asc').limit(1).try(:first)
+        CompanyConfig.first.update(sup_last_quotation_no: 0) if first_quotation and Date.today.year != first_quotation.created_at.year
+
+        @customer_quotation.customer_quotation_no = (Date.today.year*100000 + CompanyConfig.first.increase_sup_last_quotation_no)
       else
         @customer_quotation.customer_quotation_no = CompanyConfig.first.increase_sup_last_quotation_no
       end
 
       @customer_quotation.engineer_id = engineer_id
-
 
       checked_estimations.each { |estimation| estimation.update quoted: (estimation.quoted.to_i+1) }
       # Action (81) Create Quotation, DB.spt_act_quotation.
