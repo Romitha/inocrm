@@ -53,6 +53,14 @@ TicketSparePartManufacture:
   event_no: "N/A"
   order_no: "N/A"
 
+TicketPaymentReceivedType:
+  cash: 2
+  cheque: 3
+  credit card: 4
+  draft: 5
+  TT_payment: 6
+  other: 1
+
 request_part_default: "M"
 
 spt_part_quotation_pdf: "bobbin"
