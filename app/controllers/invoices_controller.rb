@@ -492,7 +492,7 @@ class InvoicesController < ApplicationController
       if annualy_reset
         last_quotation = CustomerQuotation.order('created_at asc').limit(1).try(:first)
         if last_quotation
-          CompanyConfig.update sup_last_quotation_no: 0 if Date.today.year != last_quotation.created_at.year
+          CompanyConfig.update(sup_last_quotation_no: 0) if Date.today.year != last_quotation.created_at.year
           new_quotation_no = CompanyConfig.first.increase_sup_last_quotation_no
           new_quotation_no = (Date.today.year*100000) + new_quotation_no
           @customer_quotation.customer_quotation_no = new_quotation_no

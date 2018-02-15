@@ -11,7 +11,7 @@
           = f.input :validity_period, input_html: {id: "validity_period_id"}
           = f.input :delivery_period
           = f.input :warranty
-          = label_tag "Payment term"
+          / = label_tag "Payment term"
           = f.association :payment_term, required: true
           = f.input :customer_contacted, wrapper: :append
           = f.input :canceled, wrapper: :append, label: "Cancelled"
