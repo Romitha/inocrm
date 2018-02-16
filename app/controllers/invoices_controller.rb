@@ -490,8 +490,8 @@ class InvoicesController < ApplicationController
 
       annualy_reset = INOCRM_CONFIG['spt_quotation_no_annual_reset'] # boolean
       if annualy_reset
-        first_quotation = CustomerQuotation.order('created_at asc').limit(1).try(:first)
-        CompanyConfig.first.update(sup_last_quotation_no: 0) if first_quotation and Date.today.year != first_quotation.created_at.year
+        last_quotation = CustomerQuotation.order('id asc').try(:last)
+        CompanyConfig.first.update(sup_last_quotation_no: 0) if last_quotation and Date.today.year != last_quotation.created_at.year
 
         @customer_quotation.customer_quotation_no = (Date.today.year*100000 + CompanyConfig.first.increase_sup_last_quotation_no)
       else
