@@ -5292,8 +5292,9 @@ class TicketsController < ApplicationController
         process_id = ((@bpm_response and @bpm_response[:process_id]) || params[:process_id])
         ticket_id = ( @ticket.try(:id) || params[:ticket_id] )
         ticket_spare_part_id = (@ticket_spare_part.try(:id) || params[:request_spare_part_id])
+        ticket_onloan_spare_part_id = (@onloan_request_part.try(:id) || params[:request_onloan_spare_part_id])
 
-        view_context.ticket_bpm_headers process_id, ticket_id, ticket_spare_part_id
+        view_context.ticket_bpm_headers process_id, ticket_id, ticket_spare_part_id, ticket_onloan_spare_part_id
         Rails.cache.delete([:workflow_header, process_id])
       end
       @ticket.current_user_id = current_user.id if @ticket.present? and @ticket.is_a?(Ticket) and @ticket.persisted?
