@@ -9,7 +9,7 @@ class Product < ActiveRecord::Base
   end
 
   def self.search(params)  
-    tire.search(page: (params[:page] || 1), per_page: 10000) do
+    tire.search(page: (params[:page] || 1), per_page: (params[:per_page] || 10)) do
       query do
         boolean do
           must { string params[:query] } if params[:query].present?

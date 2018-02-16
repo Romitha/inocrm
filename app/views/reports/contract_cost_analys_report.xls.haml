@@ -72,7 +72,7 @@
     - @contract_products.each do |contract_product|
       %tr
 
-        - contract_amount = contract_product.ticket_contract.product_amount
+        - contract_amount = contract_product.ticket_contract.product_amount.to_f
         - total_cost = (contract_product.contract_product_engineer_cost + contract_product.contract_product_support_engineer_cost + contract_product.contract_product_part_cost + contract_product.contract_product_additional_cost + contract_product.contract_product_external_cost)
         - recived_amount = contract_product.ticket_contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f}
 
