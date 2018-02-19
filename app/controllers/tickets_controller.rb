@@ -3559,6 +3559,8 @@ class TicketsController < ApplicationController
 
             @main_inventory_serial_part.inventory_serial_item.update parts_not_completed: true, updated_by: current_user.id
 
+            @grn_serial_part.update remaining: false
+
             @issued = true
           end
 
