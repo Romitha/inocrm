@@ -7,7 +7,7 @@
 
       .row
         .col-md-3
-          %strong Customer quotation no   #{ (@action_type=="create" ? CompanyConfig.first.next_sup_last_quotation_no : f.object.customer_quotation_no ).to_s.rjust(6, INOCRM_CONFIG["quotation_no_format"])}
+          %strong Customer quotation no   #{ (@action_type=="create" ? (Date.today.year*100000 + CompanyConfig.first.next_sup_last_quotation_no) : f.object.customer_quotation_no ).to_s.rjust(11, INOCRM_CONFIG["quotation_no_format"])}
           = f.input :validity_period, input_html: {id: "validity_period_id"}
           = f.input :delivery_period
           = f.input :warranty

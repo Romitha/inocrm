@@ -438,8 +438,10 @@ class SbuEngineer < ActiveRecord::Base
   belongs_to :sbu, foreign_key: :sbu_id
   belongs_to :engineer, class_name: "User", foreign_key: :engineer_id
 
+  has_many :ticket_engineers, foreign_key: :sbu_id
+
   def is_used_anywhere?
-    # engineer.present?
+    ticket_engineers.present?
   end
 end
 
@@ -449,12 +451,11 @@ class Sbu < ActiveRecord::Base
   has_many :sbu_engineers, foreign_key: :sbu_id
   accepts_nested_attributes_for :sbu_engineers, allow_destroy: true
   has_many :engineers, through: :sbu_engineers, source: :engineer
-  has_many :user_assign_ticket_actions
   has_many :user_assign_ticket_actions, foreign_key: :sbu_id
 
   def is_used_anywhere?
     TaskAction
-    sbu_engineers.any? or engineers.any? or user_assign_ticket_actions.any?
+    engineers.any? or user_assign_ticket_actions.any?
   end
 end
 

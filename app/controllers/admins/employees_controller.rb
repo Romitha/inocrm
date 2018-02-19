@@ -7,9 +7,11 @@ module Admins
 
     def delete_admin_sbu_engineer
       User
-      @sbu = Sbu.find params[:sbu_id]
-      @sbu_eng = User.find params[:user_id]
-      @sbu.engineers.delete @sbu_eng
+      # @sbu = Sbu.find params[:sbu_id]
+      # @sbu_eng = User.find params[:user_id]
+      # @sbu.engineers.delete @sbu_eng
+      @sbu_engineer = SbuEngineer.find(params[:sbu_engineer_id] )
+      @sbu_engineer.destroy
       respond_to do |format|
         format.html { redirect_to sbu_admins_employees_path }
       end
