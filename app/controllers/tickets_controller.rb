@@ -7,7 +7,7 @@ class TicketsController < ApplicationController
 
   # layout :workflow_diagram, only: [:workflow_diagram]
 
-  after_action :update_bpm_header#, only: [:update_start_action, :]
+  after_action :update_bpm_header, except: [:update_collect_parts]
 
   respond_to :html, :json
 
@@ -2016,6 +2016,7 @@ class TicketsController < ApplicationController
       if params[:manufacture_part]
 
         TicketSparePartManufacture.where(id: params[:manufacture_part]).each do |ticket_spare_part_manufacture|
+
           ticket_spare_part_manufacture.update(collected_manufacture: true, collect_pending_manufacture: false)
           ticket_spare_part_manufacture.ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("CLT").id)
           ticket_spare_part_manufacture.ticket_spare_part.ticket_spare_part_status_actions.create(status_id: ticket_spare_part_manufacture.ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)           
@@ -2023,6 +2024,18 @@ class TicketsController < ApplicationController
           user_ticket_action = ticket_spare_part_manufacture.ticket_spare_part.ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(36).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: ticket_spare_part_manufacture.ticket_spare_part.ticket.re_open_count)
           user_ticket_action.build_request_spare_part(ticket_spare_part_id: ticket_spare_part_manufacture.ticket_spare_part.id)
           user_ticket_action.save
+
+          ticket_id = ticket_spare_part_manufacture.ticket_spare_part.ticket.id
+          ticket_spare_part_id = ticket_spare_part_manufacture.ticket_spare_part.id
+          process = TicketWorkflowProcess.where(spare_part_id: ticket_spare_part_id, ticket_id: ticket_id, process_name: "SPPT_MFR_PART_REQUEST").last
+
+          if process
+            process_id = process.id
+
+            view_context.ticket_bpm_headers process_id, ticket_id, ticket_spare_part_id
+            Rails.cache.delete([:workflow_header, process_id])
+          end
+
         end
         flash[:notice] = "Successfully updated."
       end

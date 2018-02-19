@@ -732,7 +732,7 @@ module ApplicationHelper
 
       custormer_approval_pending = "[Customer Approval Pending]" if @ticket.cached_ticket_estimations.any?{ |estimation| estimation.cust_approval_required and !estimation.cust_approved_at.present? }
 
-      parts_recieve_pending = "[Part Recieve Pending]" if @ticket.cached_ticket_spare_parts.any?{ |spare_part| spare_part.spare_part_status_action.code == "ISS" }
+      parts_recieve_pending = "[Part Available]" if @ticket.cached_ticket_spare_parts.any?{ |spare_part| spare_part.spare_part_status_action.code == "CLT" }
 
       hold = "[Hold]" if @ticket.status_hold
 
@@ -750,10 +750,10 @@ module ApplicationHelper
       end
 
       @h1 = "color:#{color_code}|#{ticket_no}#{customer_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}#{delivery_stage}#{hold}#{parts_recieve_pending}#{not_started}#{custormer_approval_pending}"
+      @h3_sub = ""
 
-
-      if spare_part_id.present?
-        spare_part = @ticket.ticket_spare_parts.find_by_id(spare_part_id)
+      spare_part = @ticket.ticket_spare_parts.find_by_id(spare_part_id)
+      if spare_part.present?
         if spare_part
           store_part = spare_part.ticket_spare_part_store
           manufacture_part = spare_part.ticket_spare_part_manufacture
@@ -767,6 +767,7 @@ module ApplicationHelper
 
         elsif manufacture_part
           spare_part_name = "[M: #{spare_part.spare_part_description.truncate(18)}]"
+          @h3_sub = " (#{spare_part.spare_part_status_action.name_next}) " if ["ORD", "CLT", "RCS"].include?(spare_part.spare_part_status_action.code)
 
         elsif non_stock_part
           spare_part_name = "[NS: #{non_stock_part.inventory_product.description.try :truncate, 18}]"
@@ -780,15 +781,16 @@ module ApplicationHelper
 
         if spare_part
           spare_part_name = "[#{spare_part.spare_part_no}-#{spare_part.spare_part_description.truncate(18)}]"
-          @h3 = "#{ticket_no}#{customer_name}#{spare_part_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}"
+          @h3 = "#{@h3_sub}#{ticket_no}#{customer_name}#{spare_part_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}"
         else
           @h3 = ""
         end
 
       end
 
-      if onloan_spare_part_id.present?
-        onloan_spare_part = @ticket.ticket_on_loan_spare_parts.find_by_id(onloan_spare_part_id)
+      onloan_spare_part = @ticket.ticket_on_loan_spare_parts.find_by_id(onloan_spare_part_id)
+     # onloan_spare_part = TicketOnLoanSparePart.find_by_id(onloan_spare_part_id)
+      if onloan_spare_part.present?
 
         if onloan_spare_part and onloan_spare_part.inventory_product
           store_part_name = "[#{onloan_spare_part.inventory_product.description.try :truncate, 18}]"
@@ -799,9 +801,9 @@ module ApplicationHelper
         end
       end
 
-      found_process_id = WorkflowHeaderTitle.where(process_id: process_id)
-      if found_process_id.present?
-        found_process_id.first.update(h1: @h1, h2: @h2, h3: @h3)
+      found_process = WorkflowHeaderTitle.where(process_id: process_id)
+      if found_process.present?
+        found_process.first.update(h1: @h1, h2: @h2, h3: @h3)
       else
         WorkflowHeaderTitle.create(process_id: process_id, h1: @h1, h2: @h2, h3: @h3)
       end
