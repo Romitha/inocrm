@@ -4021,7 +4021,7 @@ class TicketsController < ApplicationController
     if update_without_order
 
       spt_ticket_spare_part.save
-      @flash_message = {notice: "Successfully updated"}
+      @flash_message = {notice: "Successfully updated without order"}
 
     else
 
