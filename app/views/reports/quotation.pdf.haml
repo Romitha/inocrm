@@ -98,7 +98,7 @@
                 Proforma Invoice No
             %td :
             %td
-              = print_object[:quotation_no]
+              = print_object[:quotation_no].to_s.rjust(10, INOCRM_CONFIG["quotation_no_format"])
           %tr
             %td
               %strong

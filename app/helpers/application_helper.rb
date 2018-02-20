@@ -767,7 +767,11 @@ module ApplicationHelper
 
         elsif manufacture_part
           spare_part_name = "[M: #{spare_part.spare_part_description.truncate(18)}]"
-          @h3_sub = " (#{spare_part.spare_part_status_action.name_next}) " if ["ORD", "CLT", "RCS"].include?(spare_part.spare_part_status_action.code)
+          if ["ORD", "CLT", "RCS"].include?(spare_part.spare_part_status_action.code)
+            part_next_status = SparePartStatusAction.find_by_manufacture_type_index(spare_part.spare_part_status_action.manufacture_type_index + 1)
+
+            @h3_sub = " (#{part_next_status.name_next}) " if part_next_status.present?
+          end
 
         elsif non_stock_part
           spare_part_name = "[NS: #{non_stock_part.inventory_product.description.try :truncate, 18}]"
