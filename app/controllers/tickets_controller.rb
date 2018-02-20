@@ -2030,7 +2030,7 @@ class TicketsController < ApplicationController
           process = TicketWorkflowProcess.where(spare_part_id: ticket_spare_part_id, ticket_id: ticket_id, process_name: "SPPT_MFR_PART_REQUEST").last
 
           if process
-            process_id = process.id
+            process_id = process.process_id
 
             view_context.ticket_bpm_headers process_id, ticket_id, ticket_spare_part_id
             Rails.cache.delete([:workflow_header, process_id])
