@@ -68,26 +68,32 @@
       - issued_serial_no = serial_part.serial_no
       .col-md-6
         %dl.dl-horizontal
-          %dt Item Code :
+          %dt Serial No
+          %dd= serial_part.serial_no
+          %dt CT No
+          %dd= serial_part.ct_no
+          %dt Item Code
           %dd= serial_part.inventory_product.generated_item_code
 
-          %dt Item Description:
+          %dt Item Description
           %dd= serial_part.inventory_product.description
 
-          %dt Unit :
+          %dt Unit
           %dd= serial_part.inventory_product.inventory_unit.unit
 
-          %dt Status:
+          %dt Status
           %dd= serial_part.inventory_serial_item_status.name
 
-          %dt GRN Date:
+          %dt GRN Date
           %dd= gin_source.main_part_grn_serial_item.grn_item.grn.created_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
 
-          %dt GRN No:
-          %dd= gin_source.main_part_grn_serial_item.grn_item.grn.grn_no
+          %dt GRN No
+          %dd= main_unit_of_serial_part.grn_item.grn.grn_no
 
-          %dt GRN Cost:
-          %dd= number_with_precision gin_source.main_part_grn_serial_item.grn_item.unit_cost, precision: 2
+          %dt GRN Cost
+          %dd= number_with_precision main_unit_of_serial_part.grn_item.unit_cost, precision: 2
+          %dt Costs (#{grn_serial_item.grn_item.currency.code})
+          %dd= serial_part.inventory_serial_part_additional_costs.sum(:cost).to_f + gin_source.grn_item.unit_cost.to_f
           %dt Scavange
           %dd= boolean_in_word serial_part.scavenge, "Yes", "No"
           %dt damaged
@@ -116,43 +122,26 @@
     .col-md-6
       %h4{class: "#{'hide' unless serial_part}"} Main Unit of the Part
       %dl.dl-horizontal
-        %dt Item Code :
-        %dd= serial_or_item.inventory_product.generated_item_code
-        %dt Item Description:
-        %dd= serial_or_item.inventory_product.description
         %dt Serial No :
         %dd= serial_or_item.serial_no
         %dt CT No :
         %dd= serial_or_item.ct_no
-        - content_for :more_info do
-          .row
-            .col-md-12
-              %strong Unit :
-              #{serial_or_item.inventory_product.inventory_unit.unit}
-
-            .col-md-12
-              %strong= "scavenge" if serial_or_item.scavenge
-            .col-md-12
-              %strong= "damage" if serial_or_item.damage
-            .col-md-12
-              %strong Status:
-              = serial_or_item.inventory_serial_item_status.name
-            .col-md-12
-              %strong Condition:
-              = serial_or_item.product_condition.condition
-            .col-md-12
-              - if serial_part
-                %strong Costs (#{gin_source.grn_item.currency.code}) :
-                = serial_part.inventory_serial_part_additional_costs.sum(:cost).to_f + gin_source.grn_item.unit_cost.to_f
-              - elsif grn_serial_item
-                %strong Costs (#{grn_serial_item.grn_item.currency.code}) :
-                = serial_or_item.inventory_serial_items_additional_costs.sum(:cost).to_f + gin_source.grn_item.unit_cost.to_f
-
-                / %strong Costs (#{serial_or_item.inventory_serial_items_additional_costs.first and serial_or_item.inventory_serial_items_additional_costs.first.currency.code}) :
-                / = serial_or_item.inventory_serial_items_additional_costs.sum(:cost).to_f + gin_source.grn_item.unit_cost.to_f
-
-        %button{ type: "button", title: "More info", class: "has-popover btn btn-link", data: {html: "true", trigger: "focus", toggle: "popover", content: yield(:more_info)}}
-          More
+        %dt Item Code :
+        %dd= serial_or_item.inventory_product.generated_item_code
+        %dt Item Description:
+        %dd= serial_or_item.inventory_product.description
+        %dt Unit
+        %dd= serial_or_item.inventory_product.inventory_unit.unit
+        %dt Status
+        %dd= serial_or_item.inventory_serial_item_status.name
+        %dt Condition
+        %dd= serial_or_item.product_condition.condition
+        %dt Scavange
+        %dd= boolean_in_word serial_or_item.scavange, "Yes", "No"
+        %dt Damaged
+        %dd= boolean_in_word serial_or_item.damage, "Yes", "No"
+        %dt Costs (#{grn_serial_item.grn_item.currency.code})
+        %dd= serial_or_item.inventory_serial_items_additional_costs.sum(:cost).to_f + gin_source.grn_item.unit_cost.to_f
 
   %hr
   .row
