@@ -92,7 +92,7 @@
 
           %dt GRN Cost
           %dd= number_with_precision main_unit_of_serial_part.grn_item.unit_cost, precision: 2
-          %dt Costs (#{gin_source.grn_item.currency.code})
+          %dt Costs (#{main_unit_of_serial_part.grn_item.currency.code})
           %dd= serial_part.inventory_serial_part_additional_costs.sum(:cost).to_f + gin_source.grn_item.unit_cost.to_f
           %dt Scavange
           %dd= boolean_in_word serial_part.scavenge, "Yes", "No"
