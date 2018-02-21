@@ -66,64 +66,57 @@
     - if serial_part
       - issued_serial_no = serial_part.serial_no
       .col-md-6
-        .row
-          .col-md-6
-            %strong Item Code :
-            = serial_part.inventory_product.generated_item_code
+        %dl.dl-horizontal
+          %dt Item Code :
+          %dd= serial_part.inventory_product.generated_item_code
 
-          .col-md-6
-            %strong Item Description:
-            = serial_part.inventory_product.description
+          %dd Item Description:
+          %dd= serial_part.inventory_product.description
 
-          .col-md-6
-            %strong Unit :
-            = serial_part.inventory_product.inventory_unit.unit
+          %dd Unit :
+          %dd= serial_part.inventory_product.inventory_unit.unit
+
+          %dt Status:
+          %dd= serial_part.inventory_serial_item_status.name
+
+          %dd GRN Date:
+          %dd= gin_source.main_part_grn_serial_item.grn_item.grn.created_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
+
+          %dd GRN No:
+          %dd= gin_source.main_part_grn_serial_item.grn_item.grn.grn_no
+
+          %dd GRN Cost:
+          %dd= number_with_precision gin_source.main_part_grn_serial_item.grn_item.unit_cost, precision: 2
+
+        - content_for :main_part_more_info do
           .col-md-12
-            %strong Status:
-            = serial_part.inventory_serial_item_status.name            
-          .col-md-6
-            %strong GRN Date:
-            = gin_source.main_part_grn_serial_item.grn_item.grn.created_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
-          .col-md-6
-            %strong GRN No:
-            = gin_source.main_part_grn_serial_item.grn_item.grn.grn_no
-          .col-md-6
-            %strong GRN Cost:
-            = number_with_precision gin_source.main_part_grn_serial_item.grn_item.unit_cost, precision: 2
-
-          - content_for :main_part_more_info do
-            .col-md-12
-              %strong Batch No:
-              = serial_part.inventory_serial_item.try(:inventory_batch).try(:batch_no)
-            .col-md-12
-              %strong Lot No:
-              = serial_part.inventory_serial_item.try(:inventory_batch).try(:lot_no)
-            .col-md-12
-              %strong= "scavenge" if serial_part.scavenge
-            .col-md-12
-              %strong= "damage" if serial_part.damage
-            .col-md-12
-              %strong Remarks:
-              = serial_part.remarks
-          %button{ type: "button", data: {html: "true", trigger: "focus", toggle: "popover", content: yield(:main_part_more_info)}, title: "More info", class: "has-popover btn btn-link"}
-            More
+            %strong Batch No:
+            = serial_part.inventory_serial_item.try(:inventory_batch).try(:batch_no)
+          .col-md-12
+            %strong Lot No:
+            = serial_part.inventory_serial_item.try(:inventory_batch).try(:lot_no)
+          .col-md-12
+            %strong= "scavenge" if serial_part.scavenge
+          .col-md-12
+            %strong= "damage" if serial_part.damage
+          .col-md-12
+            %strong Remarks:
+            = serial_part.remarks
+        %button{ type: "button", data: {html: "true", trigger: "focus", toggle: "popover", content: yield(:main_part_more_info)}, title: "More info", class: "has-popover btn btn-link"}
+          More
+        .row
 
     .col-md-6
       %h4{class: "#{'hide' unless serial_part}"} Main Unit of the Part
-      .row
-        .col-md-6
-          %strong Item Code :
-          = serial_or_item.inventory_product.generated_item_code
-
-        .col-md-6
-          %strong Item Description:
-          #{serial_or_item.inventory_product.description}
-        .col-md-6
-          %strong Serial No :
-          = serial_or_item.serial_no
-        .col-md-6
-          %strong CT No :
-          = serial_or_item.ct_no
+      %dl.dl-horizontal
+        %dt Item Code :
+        %dd= serial_or_item.inventory_product.generated_item_code
+        %dt Item Description:
+        %dd= serial_or_item.inventory_product.description
+        %dt Serial No :
+        %dd= serial_or_item.serial_no
+        %dt CT No :
+        %dd= serial_or_item.ct_no
         - content_for :more_info do
           .row
             .col-md-12
