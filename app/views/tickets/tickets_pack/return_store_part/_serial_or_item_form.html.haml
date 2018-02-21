@@ -27,7 +27,7 @@
           %br
           = ticket_spare_part.spare_part_status_use.name
 
-        - if ticket_spare_part.unused_reason.present?
+        - if ticket_spare_part.unused_reason.present? and ticket_spare_part.spare_part_status_use.code != "USD"
           .col-md-3
             %strong Unused reason
             %br
