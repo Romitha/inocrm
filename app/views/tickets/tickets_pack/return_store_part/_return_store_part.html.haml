@@ -9,6 +9,10 @@
 - grn_batch = gin_source.try(:grn_batch)
 - grn_item = gin_source.try(:grn_item)
 
+= gin_source.inspect
+%hr
+= serial_part.inspect
+
 - serial_or_item = (grn_serial_item.try(:inventory_serial_item) || serial_part)
 
 %h4
