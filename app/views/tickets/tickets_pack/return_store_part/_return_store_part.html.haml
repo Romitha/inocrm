@@ -5,11 +5,12 @@
 - srr_item = active_spare_part.try(:srr_item)
 - gin_source = srr_item.try(:gin_sources).try(:first)
 - serial_part = gin_source.try(:grn_serial_part).try(:inventory_serial_part)
+- main_unit_of_serial_part = gin_source.main_part_grn_serial_item
 - grn_serial_item = gin_source.try(:grn_serial_item)
 - grn_batch = gin_source.try(:grn_batch)
 - grn_item = gin_source.try(:grn_item)
 
-- serial_or_item = (grn_serial_item.try(:inventory_serial_item) || serial_part)
+- serial_or_item = ((main_unit_of_serial_part || grn_serial_item.try(:inventory_serial_item)) || serial_part)
 
 %h4
   - if serial_part
