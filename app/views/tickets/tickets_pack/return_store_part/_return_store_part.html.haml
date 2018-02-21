@@ -140,7 +140,7 @@
         %dd= boolean_in_word serial_or_item.scavenge, "Yes", "No"
         %dt Damaged
         %dd= boolean_in_word serial_or_item.damage, "Yes", "No"
-        %dt Costs (#{serial_or_item.grn_item.currency.code})
+        %dt Costs (#{grn_serial_item.grn_item.currency.code})
         %dd= serial_or_item.inventory_serial_items_additional_costs.sum(:cost).to_f + gin_source.grn_item.unit_cost.to_f
 
   %hr
