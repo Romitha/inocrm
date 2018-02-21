@@ -1,4 +1,4 @@
-= simple_nested_form_for form_serial_part_or_item, url: update_return_store_part_inventories_path, method: :post, html: {class: "form_serial_part_or_item validate_form"} do |f| # update_return_store_part_inventories_path
+= simple_nested_form_for form_serial_part_or_item, url: update_return_store_part_inventories_path, method: :post, html: {class: "form_serial_part_or_item validate_form"} do |f|
 
   - if f.object.new_record?
     = link_to "change product", inventory_in_modal_inventories_path(select_frame: "request_from"), id: "request_from_select", remote: true
@@ -24,26 +24,26 @@
           = f.input :ct_no, input_html: {value: ticket_spare_part.return_part_ct_no, readonly: true}
         .col-md-3
           %strong Part status
-          %br/
+          %br
           = ticket_spare_part.spare_part_status_use.name
 
         - if ticket_spare_part.unused_reason.present?
           .col-md-3
             %strong Unused reason
-            %br/
+            %br
             = ticket_spare_part.unused_reason.reason
 
         - if ticket_spare_part.is_a?(TicketOnLoanSparePart)
           - if ticket_spare_part.return_part_damage
             .col-md-3
               %strong Return part damage:
-              %br/
+              %br
               = ticket_spare_part.return_part_damage_reason.try(:reason)
         - else
           - if ticket_spare_part.ticket_spare_part_store.return_part_damage
             .col-md-3
               %strong Return part damage:
-              %br/
+              %br
               = ticket_spare_part.ticket_spare_part_store.return_part_damage_reason.try(:reason)
 
       .row
@@ -136,7 +136,7 @@
                   = link_to "#", data: {target: "#inventory_serial_parts", dismiss: "modal"}, class: "close" do
                     %span &times;
 
-                  %h4.modal-title Other parts of the main product
+                  %h4.modal-title Other parts of the Main unit
                 .modal-body
                   %table.table.table_striped
                     %thead
@@ -162,7 +162,7 @@
     - if f.object.is_a?(InventorySerialPart) and main_part_of_serial_part
       .col-md-6
         %fieldset
-          %legend Main Product of the Part
+          %legend Main Unit of the Part
           / = simple_form_for main_part_of_serial_part, url: "#" do |i|
           <input class="hidden form-control" type="hidden" value="#{main_part_of_serial_part.id}" name="inventory_serial_item[id]" id="inventory_serial_item_id">
           <input value="1" class="hidden form-control" type="hidden" name="inventory_serial_item[inv_status_id]" id="inventory_serial_item_inv_status_id">
@@ -191,3 +191,6 @@
   .row
     .col-md-12
       = link_to "Save", "#", onclick: "Inventories.submit_form('.form_serial_part_or_item'); return false;", class: "btn btn-success", data: {disable_with: "Please wait..."}
+
+
+/ TODO 

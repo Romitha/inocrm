@@ -277,7 +277,7 @@ class OrganizationsController < ApplicationController
       @organization_bank_detail.delete
     end
     respond_to do |format|
-      format.html {redirect_to organization_url(@organization.id), notice: "Bank Details Removed"}
+      format.html {redirect_to organization_url(@organization_bank_detail.organization.id), notice: "Bank Details Removed"}
     end
   end
 

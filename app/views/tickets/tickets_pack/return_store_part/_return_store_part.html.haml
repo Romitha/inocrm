@@ -9,13 +9,13 @@
 - grn_batch = gin_source.try(:grn_batch)
 - grn_item = gin_source.try(:grn_item)
 
-- serial_or_item = (serial_part || grn_serial_item.try(:inventory_serial_item))
+- serial_or_item = (grn_serial_item.try(:inventory_serial_item) || serial_part)
 
 %h4
   - if serial_part
     - session[:serial_part_item_id] = serial_part.inventory_serial_item.id
     - session[:serial_part_id] = serial_part.id
-    Receive Returned Inventory Serial Part (Part of main product)
+    Receive Returned Inventory Serial Part (Part of Main Unit)
 
   - elsif grn_serial_item
     - session[:serial_item_id] = grn_serial_item.id
@@ -60,113 +60,119 @@
     #{srr_item.try(:quantity)}
 
 - if serial_or_item
-  %hr
-  .row
+  - issued_serial_no = serial_or_item.serial_no
+
+  - if serial_part
+    - issued_serial_no = serial_part.serial_no
     .col-md-6
       .row
         .col-md-6
           %strong Item Code :
-          = serial_or_item.try(:inventory_product).try(:generated_item_code)
+          = serial_part.inventory_serial_item.try(:inventory_product).try(:generated_item_code)
 
         .col-md-6
           %strong Item Description:
-          #{serial_or_item.try(:inventory_product).try(:description)}
+          = serial_part.inventory_serial_item.try(:inventory_product).try(:description)
+
         .col-md-6
-          %strong Serial No :
-          = serial_or_item.serial_no
+          %strong Unit :
+          = serial_part.inventory_serial_item.try(:inventory_product).try(:inventory_unit).try(:unit)
+        .col-md-12
+          %strong Status:
+          = serial_part.inventory_serial_item.inventory_serial_item_status.name            
         .col-md-6
-          %strong CT No :
-          = serial_or_item.ct_no
-        - content_for :more_info do
-          .row
-            .col-md-12
-              %strong Unit :
-              #{serial_or_item.try(:inventory_product).try(:inventory_unit).try(:unit)}
+          %strong GRN Date:
+          = gin_source.main_part_grn_serial_item.grn_item.grn.created_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
+        .col-md-6
+          %strong GRN No:
+          = gin_source.main_part_grn_serial_item.grn_item.grn.grn_no
+        .col-md-6
+          %strong GRN Cost:
+          = number_with_precision gin_source.main_part_grn_serial_item.grn_item.unit_cost, precision: 2
 
-            .col-md-12
-              %strong= "scavenge" if serial_or_item.scavenge
-            .col-md-12
-              %strong= "damage" if serial_or_item.damage
-            .col-md-12
-              %strong Status:
-              = serial_or_item.inventory_serial_item_status.name
-            .col-md-12
-              %strong Condition:
-              = serial_or_item.product_condition.condition
-            .col-md-12
-              - if serial_part
-                %strong Costs (#{gin_source.grn_item.currency.code}) :
-                = serial_or_item.inventory_serial_part_additional_costs.sum(:cost).to_f + gin_source.grn_item.unit_cost.to_f
-              - elsif grn_serial_item
-                %strong Costs (#{serial_or_item.inventory_serial_items_additional_costs.first and serial_or_item.inventory_serial_items_additional_costs.first.currency.code}) :
-                = serial_or_item.inventory_serial_items_additional_costs.sum(:cost).to_f + gin_source.grn_item.unit_cost.to_f
+        - content_for :main_part_more_info do
+          .col-md-12
+            %strong Batch No:
+            = serial_part.inventory_serial_item.try(:inventory_batch).try(:batch_no)
+          .col-md-12
+            %strong Lot No:
+            = serial_part.inventory_serial_item.try(:inventory_batch).try(:lot_no)
+          .col-md-12
+            %strong= "scavenge" if serial_part.inventory_serial_item.scavenge
+          .col-md-12
+            %strong= "damage" if serial_part.inventory_serial_item.damage
+          .col-md-12
+            %strong Remarks:
+            = serial_part.inventory_serial_item.try(:remarks)
+        %button{ type: "button", data: {html: "true", trigger: "focus", toggle: "popover", content: yield(:main_part_more_info)}, title: "More info", class: "has-popover btn btn-link"}
+          More
 
-      %button{ type: "button", title: "More info", class: "has-popover btn btn-link", data: {html: "true", trigger: "focus", toggle: "popover", content: yield(:more_info)}}
-        More
-
-
-    - if serial_part
+  .col-md-6
+    %h4.margin-top0 Main Unit of the Part
+    .row
       .col-md-6
-        %h4.margin-top0 Main Product of the Part
+        %strong Item Code :
+        = serial_or_item.try(:inventory_product).try(:generated_item_code)
+
+      .col-md-6
+        %strong Item Description:
+        #{serial_or_item.try(:inventory_product).try(:description)}
+      .col-md-6
+        %strong Serial No :
+        = serial_or_item.serial_no
+      .col-md-6
+        %strong CT No :
+        = serial_or_item.ct_no
+      - content_for :more_info do
         .row
-
-          .col-md-6
-            %strong Item Code :
-            = serial_part.inventory_serial_item.try(:inventory_product).try(:generated_item_code)
-
-          .col-md-6
-            %strong Item Description:
-            = serial_part.inventory_serial_item.try(:inventory_product).try(:description)
-
-          .col-md-6
+          .col-md-12
             %strong Unit :
-            = serial_part.inventory_serial_item.try(:inventory_product).try(:inventory_unit).try(:unit)
-          .col-md-6
-            %strong GRN Date:
-            = gin_source.main_part_grn_serial_item.grn_item.grn.created_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
-          .col-md-6
-            %strong GRN No:
-            = gin_source.main_part_grn_serial_item.grn_item.grn.grn_no
-          .col-md-6
-            %strong GRN Cost:
-            = number_with_precision gin_source.main_part_grn_serial_item.grn_item.unit_cost, precision: 2
+            #{serial_or_item.try(:inventory_product).try(:inventory_unit).try(:unit)}
 
-          - content_for :main_part_more_info do
-            .col-md-12
-              %strong Batch No:
-              = serial_part.inventory_serial_item.try(:inventory_batch).try(:batch_no)
-            .col-md-12
-              %strong Lot No:
-              = serial_part.inventory_serial_item.try(:inventory_batch).try(:lot_no)
-            .col-md-12
-              %strong= "scavenge" if serial_part.inventory_serial_item.scavenge
-            .col-md-12
-              %strong= "damage" if serial_part.inventory_serial_item.damage
-            .col-md-12
-              %strong Status:
-              = serial_part.inventory_serial_item.inventory_serial_item_status.name
-            .col-md-12
-              %strong Remarks:
-              = serial_part.inventory_serial_item.try(:remarks)
-          %button{ type: "button", data: {html: "true", trigger: "focus", toggle: "popover", content: yield(:main_part_more_info)}, title: "More info", class: "has-popover btn btn-link"}
-            More
+          .col-md-12
+            %strong= "scavenge" if serial_or_item.scavenge
+          .col-md-12
+            %strong= "damage" if serial_or_item.damage
+          .col-md-12
+            %strong Status:
+            = serial_or_item.inventory_serial_item_status.name
+          .col-md-12
+            %strong Condition:
+            = serial_or_item.product_condition.condition
+          .col-md-12
+            - if serial_part
+              %strong Costs (#{gin_source.grn_item.currency.code}) :
+              = serial_or_item.inventory_serial_part_additional_costs.sum(:cost).to_f + gin_source.grn_item.unit_cost.to_f
+            - elsif grn_serial_item
+              %strong Costs (#{serial_or_item.inventory_serial_items_additional_costs.first and serial_or_item.inventory_serial_items_additional_costs.first.currency.code}) :
+              = serial_or_item.inventory_serial_items_additional_costs.sum(:cost).to_f + gin_source.grn_item.unit_cost.to_f
+
+    %button{ type: "button", title: "More info", class: "has-popover btn btn-link", data: {html: "true", trigger: "focus", toggle: "popover", content: yield(:more_info)}}
+      More
 
   %hr
   .row
-    - if (onloan_request and active_spare_part.spare_part_status_use.code == "USD") or ( !onloan_request and active_spare_part.ticket_spare_part.spare_part_status_use.code == "USD")
+    - returned_serial_no = (onloan_request ? onloan_spare_part : spare_part).return_part_serial_no
+
+    - if (onloan_request and active_spare_part.spare_part_status_use.code == "USD") or ( !onloan_request and active_spare_part.ticket_spare_part.spare_part_status_use.code == "USD") or (issued_serial_no != returned_serial_no)
       - if serial_part
-        - form_serial_part_or_item = InventorySerialPart.new
+        - form_serial_part_or_item = InventorySerialPart.new(serial_item_id: serial_or_item.id)
       - elsif grn_serial_item
         - form_serial_part_or_item = InventorySerialItem.new
-        
+      - update_inventory = false  
     - else
-      - form_serial_part_or_item = serial_or_item
+      - form_serial_part_or_item = (serial_part or serial_or_item)
+      - update_inventory = true
     .col-md-12
-      =radio_button_tag "radio_part", "add_part", ((onloan_request and active_spare_part.spare_part_status_use.code == "USD") or ( !onloan_request and active_spare_part.ticket_spare_part.spare_part_status_use.code == "USD")), data: {uri_path: uri.path, object_class: form_serial_part_or_item.class.to_s, task_id: params[:task_id], owner: params[:owner], process_id: params[:process_id], currency_code: gin_source.grn_item.currency.code, currency_id: gin_source.grn_item.currency_id, grn_cost: gin_source.grn_item.unit_cost, active_spare_part: (onloan_request ? "#{onloan_spare_part.class.to_s}-#{onloan_spare_part.id}" : "#{spare_part.class.to_s}-#{spare_part.id}")}, class: "toggle_add_update"
-      =label_tag :type_order, "Add Item"
+      %h3 Returned Part
 
-      =radio_button_tag "radio_part", "update_part", !((onloan_request and active_spare_part.spare_part_status_use.code == "USD") or ( !onloan_request and active_spare_part.ticket_spare_part.spare_part_status_use.code == "USD")), data: {uri_path: uri.path, object_class: form_serial_part_or_item.class.to_s, object_id: serial_or_item.id, task_id: params[:task_id], owner: params[:owner], process_id: params[:process_id], currency_code: gin_source.grn_item.currency.code, currency_id: gin_source.grn_item.currency_id, grn_cost: gin_source.grn_item.unit_cost, active_spare_part: (onloan_request ? "#{onloan_spare_part.class.to_s}-#{onloan_spare_part.id}" : "#{spare_part.class.to_s}-#{spare_part.id}")}, class: "toggle_add_update"
-      =label_tag :type_order, "Update Item"
+      %div{class: "#{'hide' if !update_inventory}"}
+        =radio_button_tag "radio_part", "add_part", ((onloan_request and active_spare_part.spare_part_status_use.code == "USD") or ( !onloan_request and active_spare_part.ticket_spare_part.spare_part_status_use.code == "USD")), data: {uri_path: uri.path, object_class: form_serial_part_or_item.class.to_s, task_id: params[:task_id], owner: params[:owner], process_id: params[:process_id], currency_code: gin_source.grn_item.currency.code, currency_id: gin_source.grn_item.currency_id, grn_cost: gin_source.grn_item.unit_cost, active_spare_part: (onloan_request ? "#{onloan_spare_part.class.to_s}-#{onloan_spare_part.id}" : "#{spare_part.class.to_s}-#{spare_part.id}")}, class: "toggle_add_update"
+        =label_tag :type_order, "Add Item"
+
+      %div{class: "#{'hide' if update_inventory}"}
+        =radio_button_tag "radio_part", "update_part", !((onloan_request and active_spare_part.spare_part_status_use.code == "USD") or ( !onloan_request and active_spare_part.ticket_spare_part.spare_part_status_use.code == "USD")), data: {uri_path: uri.path, object_class: form_serial_part_or_item.class.to_s, object_id: serial_or_item.id, task_id: params[:task_id], owner: params[:owner], process_id: params[:process_id], currency_code: gin_source.grn_item.currency.code, currency_id: gin_source.grn_item.currency_id, grn_cost: gin_source.grn_item.unit_cost, active_spare_part: (onloan_request ? "#{onloan_spare_part.class.to_s}-#{onloan_spare_part.id}" : "#{spare_part.class.to_s}-#{spare_part.id}")}, class: "toggle_add_update"
+        =label_tag :type_order, "Update Item"
 
       =radio_button_tag "radio_part", "reject", false, data: {reject: true, uri_path: uri.path, task_id: params[:task_id], owner: params[:owner], process_id: params[:process_id], active_spare_part: (onloan_request ? "#{onloan_spare_part.class.to_s}-#{onloan_spare_part.id}" : "#{spare_part.class.to_s}-#{spare_part.id}")}, class: "toggle_add_update"
       =label_tag :type_order, "Reject Item"
@@ -179,7 +185,6 @@
     - form_inv_batch = InventoryBatch.new
   - else
     - form_inv_batch = grn_batch.inventory_batch
-
 
   .row
     .col-md-6
@@ -233,6 +238,7 @@
             %td= inventory_warranty.inventory_warranty_type.try(:name)
             %td= simple_format inventory_warranty.remarks
 
+  %h3 Returned Part
   =radio_button_tag "radio_part", "add_batch", ((onloan_request and active_spare_part.spare_part_status_use.code == "USD") or ( !onloan_request and active_spare_part.ticket_spare_part.spare_part_status_use.code == "USD")), data: {uri_path: uri.path, object_class: form_inv_batch.class.to_s, task_id: params[:task_id], owner: params[:owner], process_id: params[:process_id], currency_code: gin_source.grn_item.currency.code, currency_id: gin_source.grn_item.currency_id, grn_cost: gin_source.grn_item.unit_cost, active_spare_part: (onloan_request ? "#{onloan_spare_part.class.to_s}-#{onloan_spare_part.id}" : "#{spare_part.class.to_s}-#{spare_part.id}")}, class: "toggle_add_update"
   =label_tag :type_order, "Add Item"
   =radio_button_tag "radio_part", "update_part", !((onloan_request and active_spare_part.spare_part_status_use.code == "USD") or ( !onloan_request and active_spare_part.ticket_spare_part.spare_part_status_use.code == "USD")), data: {uri_path: uri.path, object_class: form_inv_batch.class.to_s, object_id: grn_batch.inventory_batch.id, task_id: params[:task_id], owner: params[:owner], process_id: params[:process_id], currency_code: gin_source.grn_item.currency.code, currency_id: gin_source.grn_item.currency_id, grn_cost: gin_source.grn_item.unit_cost, active_spare_part: (onloan_request ? "#{onloan_spare_part.class.to_s}-#{onloan_spare_part.id}" : "#{spare_part.class.to_s}-#{spare_part.id}")}, class: "toggle_add_update"
@@ -277,6 +283,7 @@
       = number_with_precision grn_item.unit_cost, precision: 2
 
   %hr
+  %h3 Returned Part
   .hide
     =radio_button_tag "radio_part", "update_part", !((onloan_request and active_spare_part.spare_part_status_use.code == "USD") or ( !onloan_request and active_spare_part.ticket_spare_part.spare_part_status_use.code == "USD")), data: {uri_path: uri.path, object_class: form_grn_item.class.to_s, object_id: grn_item.id, task_id: params[:task_id], owner: params[:owner], process_id: params[:process_id], currency_code: gin_source.grn_item.currency.code, currency_id: gin_source.grn_item.currency_id, grn_cost: gin_source.grn_item.unit_cost, active_spare_part: (onloan_request ? "#{onloan_spare_part.class.to_s}-#{onloan_spare_part.id}" : "#{spare_part.class.to_s}-#{spare_part.id}")}, class: "toggle_add_update"
     =label_tag :type_order, "Update"

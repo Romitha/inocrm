@@ -88,10 +88,13 @@
 
     %div
       %label{:for => "Update without return"} Update without return
-      = check_box_tag "update_without_return", nil, true, class: "small_scale_margin-right1"
+      = check_box_tag "update_without_return", true, true, class: "small_scale_margin-right1", onchange: "if($(this).is(':checked')){$('.save_without_return, .save_with_return').toggleClass('hide')}"
     = hidden_field_tag :return, "return"
 
-    = f.submit "Return", name: "return", class: "btn btn-sm btn-success", data: {confirm: "Are you sure? It cannot be undone.", disable_with: "Please wait..."}#, onclick: "Tickets.presence_validater(this, {presence: ['#ticket_spare_part_received_spare_part_no', '#ticket_spare_part_faulty_serial_no', '#ticket_spare_part_faulty_ct_no', '#ticket_spare_part_received_part_serial_no', '#ticket_spare_part_received_part_ct_no', '#ticket_spare_part_repare_start', '#ticket_spare_part_repare_end'], checked: ['b']}); return false;"
+    .save_without_return
+      = f.submit "Return", name: "return", class: "btn btn-sm btn-success", data: { disable_with: "Please wait..."}
+    .save_with_return.hide
+      = f.submit "Return", name: "return", class: "btn btn-sm btn-success", data: {confirm: "Are you sure? It cannot be undone.", disable_with: "Please wait..."}#, onclick: "Tickets.presence_validater(this, {presence: ['#ticket_spare_part_received_spare_part_no', '#ticket_spare_part_faulty_serial_no', '#ticket_spare_part_faulty_ct_no', '#ticket_spare_part_received_part_serial_no', '#ticket_spare_part_received_part_ct_no', '#ticket_spare_part_repare_start', '#ticket_spare_part_repare_end'], checked: ['b']}); return false;"
 
   - if (@mpr and @manufacture_warranty) or (@rqt and @manufacture_warranty) or (@store_warranty and @str) or (@store_chargeable and (@rqt or @ecm or @cea)) or (@manufacture_chargeable and (@rqt or @ecm or @cea)) or (@non_stock_chargeable and (@rqt or @ecm or @cea)) or (@non_stock_warranty and @rqt)
     = f.input :part_terminated, wrapper: :append, input_html: {class: "part_terminated_reason_check"}
