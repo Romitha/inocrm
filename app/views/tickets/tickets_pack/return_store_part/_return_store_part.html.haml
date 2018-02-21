@@ -143,7 +143,7 @@
             .col-md-12
               - if serial_part
                 %strong Costs (#{gin_source.grn_item.currency.code}) :
-                = serial_or_item.inventory_serial_part_additional_costs.sum(:cost).to_f + gin_source.grn_item.unit_cost.to_f
+                = serial_part.inventory_serial_part_additional_costs.sum(:cost).to_f + gin_source.grn_item.unit_cost.to_f
               - elsif grn_serial_item
                 %strong Costs (#{grn_serial_item.grn_item.currency.code}) :
                 = serial_or_item.inventory_serial_items_additional_costs.sum(:cost).to_f + gin_source.grn_item.unit_cost.to_f
