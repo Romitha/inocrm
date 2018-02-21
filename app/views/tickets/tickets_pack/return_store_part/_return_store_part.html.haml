@@ -9,6 +9,10 @@
 - grn_batch = gin_source.try(:grn_batch)
 - grn_item = gin_source.try(:grn_item)
 
+= gin_source.inspect
+%hr
+= serial_part.inspect
+
 - serial_or_item = (grn_serial_item.try(:inventory_serial_item) || serial_part)
 
 %h4
@@ -61,94 +65,98 @@
 
 - if serial_or_item
   - issued_serial_no = serial_or_item.serial_no
+  %hr
+  .row
+    - if serial_part
+      - issued_serial_no = serial_part.serial_no
+      .col-md-6
+        .row
+          .col-md-6
+            %strong Item Code :
+            = serial_part.inventory_serial_item.try(:inventory_product).try(:generated_item_code)
 
-  - if serial_part
-    - issued_serial_no = serial_part.serial_no
+          .col-md-6
+            %strong Item Description:
+            = serial_part.inventory_serial_item.try(:inventory_product).try(:description)
+
+          .col-md-6
+            %strong Unit :
+            = serial_part.inventory_serial_item.try(:inventory_product).try(:inventory_unit).try(:unit)
+          .col-md-12
+            %strong Status:
+            = serial_part.inventory_serial_item.inventory_serial_item_status.name            
+          .col-md-6
+            %strong GRN Date:
+            = gin_source.main_part_grn_serial_item.grn_item.grn.created_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
+          .col-md-6
+            %strong GRN No:
+            = gin_source.main_part_grn_serial_item.grn_item.grn.grn_no
+          .col-md-6
+            %strong GRN Cost:
+            = number_with_precision gin_source.main_part_grn_serial_item.grn_item.unit_cost, precision: 2
+
+          - content_for :main_part_more_info do
+            .col-md-12
+              %strong Batch No:
+              = serial_part.inventory_serial_item.try(:inventory_batch).try(:batch_no)
+            .col-md-12
+              %strong Lot No:
+              = serial_part.inventory_serial_item.try(:inventory_batch).try(:lot_no)
+            .col-md-12
+              %strong= "scavenge" if serial_part.inventory_serial_item.scavenge
+            .col-md-12
+              %strong= "damage" if serial_part.inventory_serial_item.damage
+            .col-md-12
+              %strong Remarks:
+              = serial_part.inventory_serial_item.try(:remarks)
+          %button{ type: "button", data: {html: "true", trigger: "focus", toggle: "popover", content: yield(:main_part_more_info)}, title: "More info", class: "has-popover btn btn-link"}
+            More
+
     .col-md-6
+      %h4{class: "#{'hide' unless serial_part}"} Main Unit of the Part
       .row
         .col-md-6
           %strong Item Code :
-          = serial_part.inventory_serial_item.try(:inventory_product).try(:generated_item_code)
+          = serial_or_item.try(:inventory_product).try(:generated_item_code)
 
         .col-md-6
           %strong Item Description:
-          = serial_part.inventory_serial_item.try(:inventory_product).try(:description)
-
+          #{serial_or_item.try(:inventory_product).try(:description)}
         .col-md-6
-          %strong Unit :
-          = serial_part.inventory_serial_item.try(:inventory_product).try(:inventory_unit).try(:unit)
-        .col-md-12
-          %strong Status:
-          = serial_part.inventory_serial_item.inventory_serial_item_status.name            
+          %strong Serial No :
+          = serial_or_item.serial_no
         .col-md-6
-          %strong GRN Date:
-          = gin_source.main_part_grn_serial_item.grn_item.grn.created_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
-        .col-md-6
-          %strong GRN No:
-          = gin_source.main_part_grn_serial_item.grn_item.grn.grn_no
-        .col-md-6
-          %strong GRN Cost:
-          = number_with_precision gin_source.main_part_grn_serial_item.grn_item.unit_cost, precision: 2
+          %strong CT No :
+          = serial_or_item.ct_no
+        - content_for :more_info do
+          .row
+            .col-md-12
+              %strong Unit :
+              #{serial_or_item.try(:inventory_product).try(:inventory_unit).try(:unit)}
 
-        - content_for :main_part_more_info do
-          .col-md-12
-            %strong Batch No:
-            = serial_part.inventory_serial_item.try(:inventory_batch).try(:batch_no)
-          .col-md-12
-            %strong Lot No:
-            = serial_part.inventory_serial_item.try(:inventory_batch).try(:lot_no)
-          .col-md-12
-            %strong= "scavenge" if serial_part.inventory_serial_item.scavenge
-          .col-md-12
-            %strong= "damage" if serial_part.inventory_serial_item.damage
-          .col-md-12
-            %strong Remarks:
-            = serial_part.inventory_serial_item.try(:remarks)
-        %button{ type: "button", data: {html: "true", trigger: "focus", toggle: "popover", content: yield(:main_part_more_info)}, title: "More info", class: "has-popover btn btn-link"}
-          More
+            .col-md-12
+              %strong= "scavenge" if serial_or_item.scavenge
+            .col-md-12
+              %strong= "damage" if serial_or_item.damage
+            .col-md-12
+              %strong Status:
+              = serial_or_item.inventory_serial_item_status.name
+            .col-md-12
+              %strong Condition:
+              = serial_or_item.product_condition.condition
+            .col-md-12
+              - if serial_part
+                %strong Costs (#{gin_source.grn_item.currency.code}) :
+                = serial_or_item.inventory_serial_part_additional_costs.sum(:cost).to_f + gin_source.grn_item.unit_cost.to_f
+              - elsif grn_serial_item
+                %strong Costs (#{grn_serial_item.grn_item.currency.code}) :
+                = serial_or_item.inventory_serial_items_additional_costs.sum(:cost).to_f + gin_source.grn_item.unit_cost.to_f
 
-  .col-md-6
-    %h4.margin-top0 Main Unit of the Part
-    .row
-      .col-md-6
-        %strong Item Code :
-        = serial_or_item.try(:inventory_product).try(:generated_item_code)
+                / %strong Costs (#{serial_or_item.inventory_serial_items_additional_costs.first and serial_or_item.inventory_serial_items_additional_costs.first.currency.code}) :
+                / = serial_or_item.inventory_serial_items_additional_costs.sum(:cost).to_f + gin_source.grn_item.unit_cost.to_f
 
-      .col-md-6
-        %strong Item Description:
-        #{serial_or_item.try(:inventory_product).try(:description)}
-      .col-md-6
-        %strong Serial No :
-        = serial_or_item.serial_no
-      .col-md-6
-        %strong CT No :
-        = serial_or_item.ct_no
-      - content_for :more_info do
-        .row
-          .col-md-12
-            %strong Unit :
-            #{serial_or_item.try(:inventory_product).try(:inventory_unit).try(:unit)}
-
-          .col-md-12
-            %strong= "scavenge" if serial_or_item.scavenge
-          .col-md-12
-            %strong= "damage" if serial_or_item.damage
-          .col-md-12
-            %strong Status:
-            = serial_or_item.inventory_serial_item_status.name
-          .col-md-12
-            %strong Condition:
-            = serial_or_item.product_condition.condition
-          .col-md-12
-            - if serial_part
-              %strong Costs (#{gin_source.grn_item.currency.code}) :
-              = serial_or_item.inventory_serial_part_additional_costs.sum(:cost).to_f + gin_source.grn_item.unit_cost.to_f
-            - elsif grn_serial_item
-              %strong Costs (#{serial_or_item.inventory_serial_items_additional_costs.first and serial_or_item.inventory_serial_items_additional_costs.first.currency.code}) :
-              = serial_or_item.inventory_serial_items_additional_costs.sum(:cost).to_f + gin_source.grn_item.unit_cost.to_f
-
-    %button{ type: "button", title: "More info", class: "has-popover btn btn-link", data: {html: "true", trigger: "focus", toggle: "popover", content: yield(:more_info)}}
-      More
+      %button{ type: "button", title: "More info", class: "has-popover btn btn-link", data: {html: "true", trigger: "focus", toggle: "popover", content: yield(:more_info)}}
+        More
 
   %hr
   .row

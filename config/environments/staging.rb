@@ -82,4 +82,19 @@ Rails.application.configure do
 
   # config.assets.paths << Rails.root.join('app', 'assets', 'fonts')
   # config.assets.precompile += %w( .svg .eot .woff .ttf )
+  config.action_mailer.default_url_options = { host: ENV['INOCRM_EMAIL_HOST'] }
+
+  config.action_mailer.raise_delivery_errors = false
+  config.action_mailer.delivery_method = :smtp
+
+  config.action_mailer.smtp_settings = {
+    :address              => ENV['INOCRM_EMAIL_ADDRESS'],
+    :authentication       => :plain,
+    :enable_starttls_auto => false,
+    :port                 => ENV['INOCRM_EMAIL_PORT'],
+    :domain               => ENV['INOCRM_EMAIL_DOMAIN'],
+    :user_name            => ENV['INOCRM_EMAIL_USERNAME'],
+    :password             => ENV['INOCRM_EMAIL_PASSWORD'],
+  }
+
 end

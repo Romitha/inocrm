@@ -82,4 +82,20 @@ Rails.application.configure do
 
   # config.assets.paths << Rails.root.join('app', 'assets', 'fonts')
   # config.assets.precompile += %w( .svg .eot .woff .ttf )
+
+  config.action_mailer.default_url_options = { host: '192.168.1.146' }
+
+  config.action_mailer.raise_delivery_errors = false
+  config.action_mailer.delivery_method = :smtp
+
+  config.action_mailer.smtp_settings = {
+    :address              => "inovaitsys.com",
+    :authentication       => :plain,
+    :enable_starttls_auto => false,
+    :port                 => 25,
+    :domain               => "mail.inovaitsys.com",
+    :user_name            => "inocrmtest@inovaitsys.com",
+    :password             => "INOVA951",
+  }
+
 end

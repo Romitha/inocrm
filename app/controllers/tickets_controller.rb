@@ -3544,7 +3544,7 @@ class TicketsController < ApplicationController
             @product_ct_no = @main_inventory_serial_part.ct_no
 
 
-            @iss_main_part_grn_serial_item_id = @main_inventory_serial_part.inventory_serial_item.grn_serial_items.where(remaining: true).first.try(:id)
+            @iss_main_part_grn_serial_item_id = @main_inventory_serial_part.inventory_serial_item.grn_serial_items.active_serial_items.first.try(:id)
 
             @grn_serial_part =  @main_inventory_serial_part.grn_serial_parts.where(remaining: true).first
 
