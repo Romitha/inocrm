@@ -70,6 +70,9 @@
       .panel-group
         .panel{style: "border: 1px solid #dddddd;"}
           .panel-body{style: "background-color: ##{ticket.ticket_status.colour};"}
+            %strong Customer:
+            #{ticket.customer.full_name}
+            %br
             %strong Created at:
             #{ticket.created_at.try :strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}"}
             %br
@@ -78,12 +81,6 @@
             %br
             %strong Updated at:
             #{ticket.updated_at.try :strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}"}
-            %br
-            %strong Updated by:
-            %span.has-tooltip{:title => "#{User.cached_find_by_id(ticket.ticket_updated_by).try(:full_name)}"}
-              = truncate("#{User.cached_find_by_id(ticket.ticket_updated_by).try(:full_name)}", length: 17)
-            %br
-            %br
           .panel-heading{style: "text-align: center"}
             Ticket info
     .col-md-3.small_scale_padding-top1

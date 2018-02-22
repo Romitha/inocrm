@@ -44,10 +44,7 @@ class Ticket < ActiveRecord::Base
             must { range :ticket_contract_contract_start_at, lte: params[:ticket_contract_contract_start_at].to_date.beginning_of_day } 
             must { range :ticket_contract_contract_end_at, gte: params[:ticket_contract_contract_end_at].to_date.end_of_day } 
           end
-          if params[:created_date_from].present? or params[:created_date_to].present? 
-            puts"***********************************************************"
-            puts "inside"
-            puts"***********************************************************"
+          if params[:created_date_from].present? or params[:created_date_to].present?
             must { range :created_at, gte: params[:created_date_from].to_date.beginning_of_day } if params[:created_date_from].present?
             must { range :created_at, lte: params[:created_date_to].to_date.end_of_day } if params[:created_date_to].present?
           end
