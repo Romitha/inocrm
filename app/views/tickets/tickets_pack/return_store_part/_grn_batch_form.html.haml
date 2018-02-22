@@ -25,6 +25,18 @@
         %strong Return part damage:
         %br/
         = ticket_spare_part.ticket_spare_part_store.return_part_damage_reason.try(:reason)
+
+  .col-md-3
+    %strong Part status
+    %br
+    = ticket_spare_part.spare_part_status_use.name
+
+  - if ticket_spare_part.unused_reason.present? and ticket_spare_part.spare_part_status_use.code != "USD"
+    .col-md-3
+      %strong Unused reason
+      %br
+      = ticket_spare_part.unused_reason.reason
+
   .col-md-4
     .damage_reason_wrapper
       = label_tag "Damage"

@@ -1013,13 +1013,11 @@ class InventoriesController < ApplicationController
 
     if params[:inventory_serial_part].present? # Inventory Serial Part Returned
       @main_inventory_serial_part = InventorySerialItem.find session[:serial_part_item_id]
-      @main_inventory_serial_part.update inventory_serial_item_params
+      @main_inventory_serial_part.attributes = inventory_serial_item_params
       if params[:inventory_serial_part_or_item_id].present?
         @inventory_serial_part = InventorySerialPart.find params[:inventory_serial_part_or_item_id]
-        # @inventory_serial_part.update inventory_serial_part_params
       else
         @inventory_serial_part = InventorySerialPart.new inventory_serial_part_params
-        # @prev_inventory_serial_part = InventorySerialPart.find session[:serial_part_id]
         @add_rec = true
       end
 
@@ -1027,32 +1025,30 @@ class InventoriesController < ApplicationController
     elsif params[:inventory_serial_item].present? # Inventory Serial Item Returned
       if params[:inventory_serial_part_or_item_id].present?
         @inventory_serial_item = InventorySerialItem.find params[:inventory_serial_part_or_item_id]
-        # @inventory_serial_item.update inventory_serial_item_params
       else
         @inventory_serial_item = InventorySerialItem.new inventory_serial_item_params
-        # @prev_inventory_serial_item = InventorySerialItem.find session[:serial_item_id]
         @add_rec = true
       end
 
     elsif params[:inventory_batch].present? # Inventory Batch Item Returned
       if params[:inventory_batch_id].present?
         @inventory_batch = InventoryBatch.find params[:inventory_batch_id]
-        # @inventory_batch.update inventory_batch_params
       else
         @inventory_batch = InventoryBatch.new inventory_batch_params
-        # @prev_grn_batch = InventoryBatch.find session[:grn_batch_id]
         @add_rec = true
       end
 
     elsif params[:grn_item].present? # Inventory Item Returned (Not Serial Part, Serial Item or Inventory Batch Item)
-      if params[:grn_item_id].present?
-        @grn_item = GrnItem.find params[:grn_item_id]
-        @grn_item.update grn_item_params
-      else
-        @grn_item = GrnItem.new grn_item_params
-        # @prev_grn_item = GrnItem.find session[:grn_item_id]
-        @add_rec = true
-      end
+      @grn_item = GrnItem.new grn_item_params
+      @add_rec = true
+
+      # if params[:grn_item_id].present?
+      #   @grn_item = GrnItem.find params[:grn_item_id]
+      #   @grn_item.update grn_item_params
+      # else
+      #   @grn_item = GrnItem.new grn_item_params
+      #   @add_rec = true
+      # end
     end
 
     if @onloan_request
@@ -1149,6 +1145,8 @@ class InventoriesController < ApplicationController
 
           if @inventory_serial_part.present? and @inv_srr_item.quantity == 1 # Inventory Serial Part Returned
 
+            @main_inventory_serial_part.save
+
             @inventory_serial_part_attributes = inventory_serial_part_params
             @inv_grn_item_attributes = {}
 
@@ -1186,6 +1184,7 @@ class InventoriesController < ApplicationController
             end
             @inventory_serial_part_attributes.merge!(created_by: current_user.id, updated_by: current_user.id, damage: params[:damage_reason_check].present?)
             @inventory_serial_part.attributes = @inventory_serial_part_attributes
+            @inventory_serial_part.inv_status_id = InventorySerialItemStatus.find_by_code("AV").id
             @inventory_serial_part.save
 
             # inv_inventory_serial_item - edit
@@ -1200,7 +1199,7 @@ class InventoriesController < ApplicationController
             @inv_grn_item_attributes.merge!({
               product_id:  @inventory_serial_part.product_id,
               recieved_quantity: 1,
-              remaining_quantity: 1,
+              remaining_quantity: (params[:damage_reason_check].present? ? 0 : 1),
               reserved_quantity: 0,
               damage_quantity: (params[:damage_reason_check].present? ? 1 : 0),
               current_unit_cost: @inv_grn_item.unit_cost,
@@ -1215,7 +1214,7 @@ class InventoriesController < ApplicationController
             @inv_grn_part = @inv_grn_item.grn_serial_parts.build
             @inv_grn_part.serial_item_id = @main_inventory_serial_part.id
             @inv_grn_part.inv_serial_part_id = @inventory_serial_part.id
-            @inv_grn_part.remaining = true
+            @inv_grn_part.remaining = !params[:damage_reason_check].present? 
 
             @inv_grn.save
 

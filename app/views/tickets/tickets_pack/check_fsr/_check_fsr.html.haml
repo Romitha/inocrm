@@ -46,7 +46,7 @@
 
       - if f.object.ticket_spare_parts.present?
         %hr
-        %h4 Request spare parts
+        %h4 Requested manufacture and store spare parts
         %table.table
           %thead
             %tr
@@ -85,7 +85,7 @@
                 %td= check_box_tag :ticket_spare_part_ids, tsp.id, tsp.close_approved, name: "ticket_spare_part_ids[]", class: "dynamic_check"
 
       - if f.object.ticket_on_loan_spare_parts.present?
-        %h4 Request On loan spare parts
+        %h4 Requested On loan spare parts
         %table.table
           %thead
             %tr
@@ -95,6 +95,7 @@
               %th Status
               %th Used Status
               %th Part Returned
+              %th Return Accepted
               %th Return Part S/N
               %th Approved
           %tbody
@@ -106,8 +107,9 @@
                 %td #{tsp.spare_part_status_action.name}
                 %td #{tsp.spare_part_status_use.name}
                 %td= tsp.part_returned ? 'Yes' : 'No'
+                %td= tsp.ret_part_received ? 'Yes' : 'No'
                 %td= tsp.return_part_serial_no
-                %td= check_box_tag :ticket_on_loan_spare_part_ids, tsp.id, tsp.approved, name: "ticket_on_loan_spare_part_ids[]", class: "dynamic_check"
+                %td= check_box_tag :ticket_on_loan_spare_part_ids, tsp.id, tsp.close_approved, name: "ticket_on_loan_spare_part_ids[]", class: "dynamic_check"
       .row.col-md-12.col-xs-12
         %p FSR Information
         = f.simple_fields_for :ticket_fsrs do |ff|

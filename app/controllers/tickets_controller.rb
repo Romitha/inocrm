@@ -1187,7 +1187,7 @@ class TicketsController < ApplicationController
 
         end
 
-        filtered_engineers.group_by{ |t| t.channel_no.to_i }.map { |k, v| { channel_no: k, ticket_id: params[:ticket_id], eng_set: v.map{ |r| { name: r.user.full_name, image: r.user.avatar.url, id: r.id, order_no: r.order_no, channel_no: r.channel_no, ticket_id: r.ticket_id, deletable: r.deletable? } }.sort{ |p, n| p[:order_no].to_i <=> n[:order_no].to_i } } }
+        filtered_engineers.group_by{ |t| t.channel_no.to_i }.map { |k, v| { channel_no: k, ticket_id: params[:ticket_id], eng_set: v.map{ |r| { name: "#{r.user.full_name} (#{ TicketEngineer.where(user_id: r.user.id and job_completed_at: nil).count })", image: r.user.avatar.url, id: r.id, order_no: r.order_no, channel_no: r.channel_no, ticket_id: r.ticket_id, deletable: r.deletable? } }.sort{ |p, n| p[:order_no].to_i <=> n[:order_no].to_i } } }
 
       else
         {}
@@ -2183,7 +2183,7 @@ class TicketsController < ApplicationController
         user_ticket_action.build_request_spare_part(ticket_spare_part_id: spt_ticket_spare_part.id)
         user_ticket_action.save
 
-        email_template = EmailTemplate.find_by_code("PART_COLLECTED")
+        email_template = EmailTemplate.find_by_code("PART_AVAILABLE")
 
         email_to = spt_ticket_spare_part.engineer.user.email
         if email_template.try(:active)

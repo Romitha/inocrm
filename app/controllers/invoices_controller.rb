@@ -289,11 +289,11 @@ class InvoicesController < ApplicationController
                 engineer.update status: 1, job_assigned_at: DateTime.now, workflow_process_id: workflow_process.id
 
                 newly_assigned_engs << engineer.user.full_name
-                                email_to = engineer.user.email
+                email_to = engineer.user.email
                 to = email_to
 
                 if to.present?
-                  view_context.send_email(email_to: to, ticket_id: @ticket.id, email_code: "ASSIGN_JOB")
+                  view_context.send_email(email_to: to, ticket_id: @ticket.id, email_code: "TICKET_REOPEN")
                 end
 
               end
@@ -434,7 +434,7 @@ class InvoicesController < ApplicationController
                 to = email_to
 
                 if to.present?
-                  view_context.send_email(email_to: to, ticket_id: @ticket.id, email_code: "ASSIGN_JOB")
+                  view_context.send_email(email_to: to, ticket_id: @ticket.id, email_code: "TICKET_REOPEN")
                 end
 
               end

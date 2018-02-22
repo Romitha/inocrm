@@ -177,6 +177,9 @@
             .col-md-2
               <div class="control-group boolean optional inventory_serial_item_repaired"><label class="boolean optional control-label" for="inventory_serial_item_repaired">Repaired</label><div class="controls"><div class="input-append"><input value="0" type="hidden" name="inventory_serial_item[repaired]"><label class="checkbox"><input class="boolean optional" type="checkbox" value="1" name="inventory_serial_item[repaired]" id="inventory_serial_item_repaired"></label></div></div></div>
               / = i.input :repaired, as: :boolean, wrapper: :append
+            .col-md-2
+              <div class="control-group boolean optional inventory_serial_item_repaired"><label class="boolean optional control-label" for="inventory_serial_item_parts_not_completed">Parts not completed</label><div class="controls"><div class="input-append"><input value="0" type="hidden" name="inventory_serial_item[parts_not_completed]"><label class="checkbox"><input class="boolean optional" type="checkbox" value="1" name="inventory_serial_item[parts_not_completed]" id="inventory_serial_item_parts_not_completed"></label></div></div></div>
+              / = i.input :repaired, as: :boolean, wrapper: :append
             .col-md-12
               .damage_reason_wrapper
                 = label_tag "Damage"

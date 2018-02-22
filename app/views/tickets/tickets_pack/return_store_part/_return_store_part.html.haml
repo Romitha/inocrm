@@ -16,23 +16,24 @@
   - if serial_part
     - session[:serial_part_item_id] = serial_part.inventory_serial_item.id
     - session[:serial_part_id] = serial_part.id
-    Receive Returned Inventory Serial Part (Part of Main Unit)
+    Receive Returned Inventory - Serial Part (Part of Main Unit)
 
   - elsif grn_serial_item
     - session[:serial_item_id] = grn_serial_item.id
-    Receive Returned Inventory Serial Item
+    Receive Returned Inventory - Serial Item
 
   - elsif grn_batch
     - session[:grn_batch_id] = grn_batch.id
-    Receive Returned Inventory Batch Item
+    Receive Returned Inventory - Batch Item
 
   - else
     - session[:grn_item_id] = grn_item.id
-    Receive Returned Inventory Item
+    Receive Returned Inventory - Non Serial Non Batch Item
 
   - if onloan_request
     (On loan)
 
+%h5 Store: #{gin_source.gin_item.gin.store.name}
 .row
   .col-md-3
     %strong Date Issued:
