@@ -219,6 +219,13 @@ class InvoicesController < ApplicationController
           bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
           if bpm_response[:status].upcase == "SUCCESS"
+
+            email_to = @ticket.send("contact_person#{@ticket.inform_cp}").contact_person_contact_types.find_by_contact_type_id(ContactType.find_by_name("E-mail").id).try(:value)
+
+            if email_to.present?
+              view_context.send_email(email_to: email_to, ticket_id: @ticket.id, email_code: "INVOICE_COMPLETED")
+            end
+
             flash[:notice] = "Successfully updated"
           else
             flash[:error] = "invoice is updated. but Bpm error"
@@ -303,6 +310,15 @@ class InvoicesController < ApplicationController
           flash[:notice] = "Successfully re-assigned to #{newly_assigned_engs.join(', ')}"
 
         else
+
+          if params[:approve] and (@ticket.try(:ticket_type_code) != "OS") and (@ticket.ticket_status.code == 'CFB')  #Approve QC and Customer Feedback
+            email_to = @ticket.send("contact_person#{@ticket.inform_cp}").contact_person_contact_types.find_by_contact_type_id(ContactType.find_by_name("E-mail").id).try(:value)
+
+            if email_to.present?
+              view_context.send_email(email_to: email_to, ticket_id: @ticket.id, email_code: "COMPLETE_JOB")
+            end
+          end
+
           flash[:notice] = "Successfully updated"
         end
 
@@ -450,7 +466,7 @@ class InvoicesController < ApplicationController
           to = (email_to.scan(/\bto:+[a-zA-Z0-9._%+-]+@\w+\.\w{2,}\b/).map{|e| e[3..-1]}.first or cc.first)
 
           if params[:send_email].present? and params[:send_email].to_bool and to.present?
-            view_context.send_email(email_to: to, email_cc: cc, ticket_id: @ticket.id, email_code: "COMPLETE_JOB")
+            view_context.send_email(email_to: to, email_cc: cc, ticket_id: @ticket.id, email_code: "CLOSED_JOB")
           end
 
           flash[:notice] = "Successfully updated"

@@ -170,14 +170,18 @@
             .col-md-4
               = select_tag "inventory_serial_item[product_condition_id]", options_from_collection_for_select(ProductCondition.all, "id", "condition")
             .col-md-2
+              Savenge: #{boolean_in_word main_part_of_serial_part.scavenge, 'Yes', 'No'}
               <div class="control-group boolean optional inventory_serial_item_scavenge"><label class="boolean optional control-label" for="inventory_serial_item_scavenge">Scavenge</label><div class="controls"><div class="input-append"><input value="0" type="hidden" name="inventory_serial_item[scavenge]"><label class="checkbox"><input class="boolean optional" type="checkbox" value="1" name="inventory_serial_item[scavenge]" id="inventory_serial_item_scavenge"></label></div></div></div>
             .col-md-2
+              Used: #{boolean_in_word main_part_of_serial_part.used, 'Yes', 'No'}
               <div class="control-group boolean optional inventory_serial_item_used"><label class="boolean optional control-label" for="inventory_serial_item_used">Used</label><div class="controls"><div class="input-append"><input value="0" type="hidden" name="inventory_serial_item[used]"><label class="checkbox"><input class="boolean optional" type="checkbox" value="1" name="inventory_serial_item[used]" id="inventory_serial_item_used"></label></div></div></div>
               / = i.input :used, as: :boolean, wrapper: :append
             .col-md-2
+              Repaired: #{boolean_in_word main_part_of_serial_part.repaired, 'Yes', 'No'}
               <div class="control-group boolean optional inventory_serial_item_repaired"><label class="boolean optional control-label" for="inventory_serial_item_repaired">Repaired</label><div class="controls"><div class="input-append"><input value="0" type="hidden" name="inventory_serial_item[repaired]"><label class="checkbox"><input class="boolean optional" type="checkbox" value="1" name="inventory_serial_item[repaired]" id="inventory_serial_item_repaired"></label></div></div></div>
               / = i.input :repaired, as: :boolean, wrapper: :append
             .col-md-2
+              Parts Not Completed: #{boolean_in_word main_part_of_serial_part.parts_not_completed, 'Yes', 'No'}
               <div class="control-group boolean optional inventory_serial_item_repaired"><label class="boolean optional control-label" for="inventory_serial_item_parts_not_completed">Parts not completed</label><div class="controls"><div class="input-append"><input value="0" type="hidden" name="inventory_serial_item[parts_not_completed]"><label class="checkbox"><input class="boolean optional" type="checkbox" value="1" name="inventory_serial_item[parts_not_completed]" id="inventory_serial_item_parts_not_completed"></label></div></div></div>
               / = i.input :repaired, as: :boolean, wrapper: :append
             .col-md-12

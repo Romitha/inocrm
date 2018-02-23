@@ -148,7 +148,8 @@
   .row
     - returned_serial_no = (onloan_request ? onloan_spare_part : spare_part).return_part_serial_no
 
-    - if (onloan_request and active_spare_part.spare_part_status_use.code == "USD") or ( !onloan_request and active_spare_part.ticket_spare_part.spare_part_status_use.code == "USD") or (issued_serial_no != returned_serial_no)
+    / - if (onloan_request and active_spare_part.spare_part_status_use.code == "USD") or ( !onloan_request and active_spare_part.ticket_spare_part.spare_part_status_use.code == "USD") or (issued_serial_no != returned_serial_no)
+    - if (issued_serial_no != returned_serial_no)
       - if serial_part
         - form_serial_part_or_item = InventorySerialPart.new(serial_item_id: serial_or_item.id)
       - elsif grn_serial_item
@@ -160,12 +161,12 @@
     .col-md-12
       %h3 Returned Part
 
-      %div{class: "#{'hide' if !update_inventory}"}
-        =radio_button_tag "radio_part", "add_part", ((onloan_request and active_spare_part.spare_part_status_use.code == "USD") or ( !onloan_request and active_spare_part.ticket_spare_part.spare_part_status_use.code == "USD")), data: {uri_path: uri.path, object_class: form_serial_part_or_item.class.to_s, task_id: params[:task_id], owner: params[:owner], process_id: params[:process_id], currency_code: gin_source.grn_item.currency.code, currency_id: gin_source.grn_item.currency_id, grn_cost: gin_source.grn_item.unit_cost, active_spare_part: (onloan_request ? "#{onloan_spare_part.class.to_s}-#{onloan_spare_part.id}" : "#{spare_part.class.to_s}-#{spare_part.id}")}, class: "toggle_add_update"
+      %div{class: "#{'hide' if update_inventory}"}
+        =radio_button_tag "radio_part", "add_part", true, data: {uri_path: uri.path, object_class: form_serial_part_or_item.class.to_s, task_id: params[:task_id], owner: params[:owner], process_id: params[:process_id], currency_code: gin_source.grn_item.currency.code, currency_id: gin_source.grn_item.currency_id, grn_cost: gin_source.grn_item.unit_cost, active_spare_part: (onloan_request ? "#{onloan_spare_part.class.to_s}-#{onloan_spare_part.id}" : "#{spare_part.class.to_s}-#{spare_part.id}")}, class: "toggle_add_update"
         =label_tag :type_order, "Add Item"
 
-      %div{class: "#{'hide' if update_inventory}"}
-        =radio_button_tag "radio_part", "update_part", !((onloan_request and active_spare_part.spare_part_status_use.code == "USD") or ( !onloan_request and active_spare_part.ticket_spare_part.spare_part_status_use.code == "USD")), data: {uri_path: uri.path, object_class: form_serial_part_or_item.class.to_s, object_id: serial_or_item.id, task_id: params[:task_id], owner: params[:owner], process_id: params[:process_id], currency_code: gin_source.grn_item.currency.code, currency_id: gin_source.grn_item.currency_id, grn_cost: gin_source.grn_item.unit_cost, active_spare_part: (onloan_request ? "#{onloan_spare_part.class.to_s}-#{onloan_spare_part.id}" : "#{spare_part.class.to_s}-#{spare_part.id}")}, class: "toggle_add_update"
+      %div{class: "#{'hide' if !update_inventory}"}
+        =radio_button_tag "radio_part", "update_part", true, data: {uri_path: uri.path, object_class: form_serial_part_or_item.class.to_s, object_id: serial_or_item.id, task_id: params[:task_id], owner: params[:owner], process_id: params[:process_id], currency_code: gin_source.grn_item.currency.code, currency_id: gin_source.grn_item.currency_id, grn_cost: gin_source.grn_item.unit_cost, active_spare_part: (onloan_request ? "#{onloan_spare_part.class.to_s}-#{onloan_spare_part.id}" : "#{spare_part.class.to_s}-#{spare_part.id}")}, class: "toggle_add_update"
         =label_tag :type_order, "Update Item"
 
       =radio_button_tag "radio_part", "reject", false, data: {reject: true, uri_path: uri.path, task_id: params[:task_id], owner: params[:owner], process_id: params[:process_id], active_spare_part: (onloan_request ? "#{onloan_spare_part.class.to_s}-#{onloan_spare_part.id}" : "#{spare_part.class.to_s}-#{spare_part.id}")}, class: "toggle_add_update"
@@ -175,10 +176,10 @@
     = render "tickets/tickets_pack/return_store_part/serial_or_item_form", form_serial_part_or_item: form_serial_part_or_item, uri: uri, main_part_of_serial_part: (serial_part and serial_part.inventory_serial_item), ticket_spare_part: (onloan_request ? onloan_spare_part : spare_part), currency_code: gin_source.grn_item.currency.code, currency_id: gin_source.grn_item.currency_id, grn_cost: gin_source.grn_item.unit_cost
 
 - elsif grn_batch
-  - if (onloan_request and active_spare_part.spare_part_status_use.code == "USD") or ( !onloan_request and active_spare_part.ticket_spare_part.spare_part_status_use.code == "USD")
-    - form_inv_batch = InventoryBatch.new
-  - else
-    - form_inv_batch = grn_batch.inventory_batch
+  / - if (onloan_request and active_spare_part.spare_part_status_use.code == "USD") or ( !onloan_request and active_spare_part.ticket_spare_part.spare_part_status_use.code == "USD")
+  /   - form_inv_batch = InventoryBatch.new
+  / - else
+  - form_inv_batch = grn_batch.inventory_batch
 
   .row
     .col-md-6
@@ -244,10 +245,10 @@
     = render "tickets/tickets_pack/return_store_part/grn_batch_form", form_inv_batch: form_inv_batch, uri: uri, currency_code: gin_source.grn_item.currency.code, ticket_spare_part: (onloan_request ? onloan_spare_part : spare_part), currency_id: gin_source.grn_item.currency_id
 
 - elsif grn_item
-  - if (onloan_request and active_spare_part.spare_part_status_use.code == "USD") or ( !onloan_request and active_spare_part.ticket_spare_part.spare_part_status_use.code == "USD")
-    - form_grn_item = GrnItem.new
-  - else
-    - form_grn_item = grn_item
+  / - if (onloan_request and active_spare_part.spare_part_status_use.code == "USD") or ( !onloan_request and active_spare_part.ticket_spare_part.spare_part_status_use.code == "USD")
+  /   - form_grn_item = GrnItem.new
+  / - else
+  - form_grn_item = grn_item
 
   .row
     .col-md-3

@@ -84,9 +84,9 @@
                 %strong Informed Note:
                 = i.note
 
-    - if EmailTemplate.find_by_code("COMPLETE_JOB").try(:active)
+    - if EmailTemplate.find_by_code("CLOSED_JOB").try(:active)
       .col-md-12
-        = check_box_tag "send_email", true, EmailTemplate.find_by_code("COMPLETE_JOB").try(:default_enable)
+        = check_box_tag "send_email", true, EmailTemplate.find_by_code("CLOSED_JOB").try(:default_enable)
         = label_tag "Send Email"
       .col-md-4
         = text_field_tag "email_to", inform_email.map{ |e| "to:#{e}" }.join(","), placeholder: "Enter email like 'to:a@email.com, cc:b@email.com'", class: "form-control small_scale_margin-bottom2"

@@ -1167,7 +1167,7 @@ class TicketsController < ApplicationController
         # sbu_engineer = SbuEngineer.find params[:filter_sbu]
         # sbu = sbu_engineer.sbu
 
-        @sbus = sbu.engineers.map { |s| {id: s.id, name: s.full_name} }
+        @sbus = sbu.engineers.map { |s| {id: s.id, name: "#{s.full_name} (#{ TicketEngineer.where(user_id: s.user_id, job_completed_at: nil).count })"} }
 
       else
         @sbus = Sbu.all.map { |s| {id: s.id, name: s.sbu} }
@@ -1187,7 +1187,7 @@ class TicketsController < ApplicationController
 
         end
 
-        filtered_engineers.group_by{ |t| t.channel_no.to_i }.map { |k, v| { channel_no: k, ticket_id: params[:ticket_id], eng_set: v.map{ |r| { name: "#{r.user.full_name} (#{ TicketEngineer.where(user_id: r.user.id, job_completed_at: nil).count })", image: r.user.avatar.url, id: r.id, order_no: r.order_no, channel_no: r.channel_no, ticket_id: r.ticket_id, deletable: r.deletable? } }.sort{ |p, n| p[:order_no].to_i <=> n[:order_no].to_i } } }
+        filtered_engineers.group_by{ |t| t.channel_no.to_i }.map { |k, v| { channel_no: k, ticket_id: params[:ticket_id], eng_set: v.map{ |r| { name: r.user.full_name, image: r.user.avatar.url, id: r.id, order_no: r.order_no, channel_no: r.channel_no, ticket_id: r.ticket_id, deletable: r.deletable? } }.sort{ |p, n| p[:order_no].to_i <=> n[:order_no].to_i } } }
 
       else
         {}
@@ -1417,6 +1417,15 @@ class TicketsController < ApplicationController
                   error_engs << engineer_id
                 end
 
+              end
+            end
+          elsif @re_assignment
+            email_to = @ticket_engineer.user.email
+            if email_template.try(:active)
+              view_context.send_email(email_to: email_to, ticket_id: @ticket.id, engineer_id: @ticket_engineer.id, email_code: "ASSIGN_JOB") if email_to.present?
+
+              @ticket_engineer.ticket_support_engineers.each do |support_engineer|
+                view_context.send_email(email_to: support_engineer.user.email, engineer_id: @ticket_engineer.id, ticket_id: @ticket.id, email_code: "ASSIGN_JOB") if support_engineer.user.email.present?
               end
             end
           end
@@ -2326,6 +2335,13 @@ class TicketsController < ApplicationController
       @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
       if @bpm_response[:status].upcase == "SUCCESS"
+
+        if !spt_ticket_spare_part.returned_part_accepted
+          email_to =  User.cached_find_by_id(spt_ticket_spare_part.part_returned_by)
+          if email_to.present?
+            view_context.send_email(email_to: email_to, ticket_id: @ticket.id, email_code: "RETURNED_PART_REJECTED")
+          end
+        end
 
         flash[:notice]= "Successfully updated"
       else
@@ -3302,6 +3318,15 @@ class TicketsController < ApplicationController
       @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
       if @bpm_response[:status].upcase == "SUCCESS"
+        if !job_close_approved #Rejected
+          job_engineers.each do |engineer|
+            email_to = engineer.user.email
+            if email_to.present?
+              view_context.send_email(email_to: email_to, ticket_id: @ticket.id, email_code: "FSR_CLOSE_APPROVAL_REJECTED")
+            end
+          end
+        end
+
         flash[:notice] = "Successfully updated"
       else
         flash[:error] = "invoice is updated. but Bpm error"
@@ -4733,6 +4758,14 @@ class TicketsController < ApplicationController
                 error_engs << engineer_id
               end
 
+            end
+          else # Final Resolution
+            if (@ticket.try(:ticket_type_code) != "OS") and (@ticket.ticket_status.code == 'CFB')  #Customer Feedback
+              email_to = @ticket.send("contact_person#{@ticket.inform_cp}").contact_person_contact_types.find_by_contact_type_id(ContactType.find_by_name("E-mail").id).try(:value)
+
+              if email_to.present?
+                view_context.send_email(email_to: email_to, ticket_id: @ticket.id, email_code: "COMPLETE_JOB")
+              end
             end
           end
 

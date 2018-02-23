@@ -982,6 +982,13 @@ class InventoriesController < ApplicationController
           bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
           if bpm_response[:status].upcase == "SUCCESS"
+
+            email_template = EmailTemplate.find_by_code("EXTERNAL_JOB_UNIT_COLLECTED")           
+            email_to = User.find_by_id(@ticket_deliver_unit.created_by).try(:email)
+            if email_template.try(:active)
+              view_context.send_email(email_to: email_to, ticket_id: @ticket.id, email_code: "EXTERNAL_JOB_UNIT_COLLECTED") if email_to.present?
+            end
+
             @flash_message = {notice: "Successfully updated"}
           else
             @flash_message = {error: "ticket is updated. but Bpm error"}
@@ -1008,6 +1015,9 @@ class InventoriesController < ApplicationController
     @onloan_request = params[:onloan_request] == "Y" ? true : false
     params[:damage_reason_check]
     params[:damage_reason]
+    part_rejected = params[:radio_part] == 'reject'
+
+
 
     @add_rec = false
 
@@ -1031,7 +1041,8 @@ class InventoriesController < ApplicationController
       end
 
     elsif params[:inventory_batch].present? # Inventory Batch Item Returned
-      if params[:inventory_batch_id].present?
+      # if params[:inventory_batch_id].present?
+      if (params[:radio_part] == 'update_part')
         @inventory_batch = InventoryBatch.find params[:inventory_batch_id]
       else
         @inventory_batch = InventoryBatch.new inventory_batch_params
@@ -1124,6 +1135,12 @@ class InventoriesController < ApplicationController
           bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
           if bpm_response[:status].upcase == "SUCCESS"
+
+            email_to =  User.cached_find_by_id(spt_ticket_spare_part.part_returned_by).try(:email)
+            if email_to.present?
+              view_context.send_email(email_to: email_to, ticket_id: @ticket.id, email_code: "RETURNED_PART_REJECTED")
+            end
+
             flash[:notice] = "Successfully updated."
           else
             flash[:error] = "ticket is updated. but Bpm error"
