@@ -46,7 +46,7 @@ module TicketsHelper
     email_cc = options[:email_cc]
 
     ticket =  Ticket.find_by_id(ticket_id)
-    spare_part = TicketSparePart.find_by_id(spare_part_id)
+    spare_part = (onloan ? TicketOnLoanSparePart : TicketSparePart).find_by_id(spare_part_id)
     engineer = TicketEngineer.find_by_id(engineer_id)
 
     body_merger = {}
@@ -85,7 +85,7 @@ module TicketsHelper
         "Manufacture"
       end
 
-      spare_part_info = {spare_part_no: spare_part.spare_part_no, spare_part_name: spare_part.spare_part_description, spare_part_type: spare_part_type, spare_part_event_no: spare_part.ticket_spare_part_manufacture.try(:event_no), spare_part_order_no: spare_part.ticket_spare_part_manufacture.try(:order_no)}
+      spare_part_info = {spare_part_no: spare_part.try(:spare_part_no), spare_part_name: spare_part.spare_part_description, spare_part_type: spare_part_type, spare_part_event_no: spare_part.try(:ticket_spare_part_manufacture).try(:event_no), spare_part_order_no: spare_part.try(:ticket_spare_part_manufacture).try(:order_no)}
 
       body_merger.merge!(spare_part_info)
 

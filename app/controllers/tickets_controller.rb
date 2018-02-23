@@ -2337,9 +2337,9 @@ class TicketsController < ApplicationController
       if @bpm_response[:status].upcase == "SUCCESS"
 
         if !spt_ticket_spare_part.returned_part_accepted
-          email_to =  User.cached_find_by_id(spt_ticket_spare_part.part_returned_by)
+          email_to =  User.cached_find_by_id(spt_ticket_spare_part.part_returned_by).try(:email)
           if email_to.present?
-            view_context.send_email(email_to: email_to, ticket_id: @ticket.id, email_code: "RETURNED_PART_REJECTED")
+            view_context.send_email(email_to: email_to, ticket_id: @ticket.id, spare_part_id: spt_ticket_spare_part.id, email_code: "RETURNED_PART_REJECTED")
           end
         end
 
@@ -3732,7 +3732,7 @@ class TicketsController < ApplicationController
 
               email_to = @onloan_request_part.engineer.user.email
               if email_template.try(:active)
-                view_context.send_email(email_to: email_to, ticket_id: @onloan_request_part.ticket.try(:id), engineer_id: @onloan_request_part.engineer_id, spare_part_id: @onloan_request_part.ticket_spare_part.try(:id), onloan: true, email_code: "PART_ISSUED") if email_to.present?
+                view_context.send_email(email_to: email_to, ticket_id: @onloan_request_part.ticket.try(:id), engineer_id: @onloan_request_part.engineer_id, spare_part_id: @onloan_request_part.id, onloan: true, email_code: "PART_ISSUED") if email_to.present?
 
               end
 

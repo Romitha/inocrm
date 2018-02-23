@@ -633,6 +633,18 @@ class InventoriesController < ApplicationController
 
         user_ticket_action.save
 
+        if @estimation.cust_approved
+          email_template = "PART_ESTIMATION_CUSTOMER_APPROVED"
+        else
+          email_template = "PART_ESTIMATION_CUSTOMER_REJECTED"
+        end
+        @estimation.ticket_estimation_parts.each do |ticket_estimation_part|
+          email_to =  User.cached_find_by_id(@estimation.requested_by).try(:email)
+          if email_to.present?
+            view_context.send_email(email_to: email_to, ticket_id: @ticket.id, spare_part_id: ticket_estimation_part.ticket_spare_part.id, email_code: email_template)
+          end
+        end
+
         flash[:notice] = "Successfully updated"
 
       else
@@ -725,6 +737,7 @@ class InventoriesController < ApplicationController
                 flash[:error] = "Sorry! unable to requeted the part"
               end
             end
+
           end
 
         end
@@ -807,6 +820,16 @@ class InventoriesController < ApplicationController
           user_ticket_action.save
         end
 
+        if @estimation.cust_approved
+          email_template = "EXT_ESTIMATION_CUSTOMER_APPROVED"
+        else
+          email_template = "EXT_ESTIMATION_CUSTOMER_REJECTED"
+        end
+        email_to =  User.cached_find_by_id(@estimation.requested_by).try(:email)
+        if email_to.present?
+          view_context.send_email(email_to: email_to, ticket_id: @ticket.id, email_code: email_template)
+        end
+
         @flash_message = {notice: "Successfully updated"}
       else
 
@@ -877,6 +900,12 @@ class InventoriesController < ApplicationController
         bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
         if bpm_response[:status].upcase == "SUCCESS"
+
+          email_to =  User.cached_find_by_id(@ticket_estimation.requested_by).try(:email)
+          if email_to.present?
+            view_context.send_email(email_to: email_to, ticket_id: @ticket.id, email_code: "EXT_ESTIMATION_COMPLETED")
+          end
+
           @flash_message = {notice: "Successfully updated"}
         else
           @flash_message = {error: "ticket is updated. but Bpm error"}
@@ -1138,7 +1167,11 @@ class InventoriesController < ApplicationController
 
             email_to =  User.cached_find_by_id(spt_ticket_spare_part.part_returned_by).try(:email)
             if email_to.present?
-              view_context.send_email(email_to: email_to, ticket_id: @ticket.id, email_code: "RETURNED_PART_REJECTED")
+              if @onloan_request
+                view_context.send_email(email_to: email_to, ticket_id: @ticket.id, spare_part_id: @onloan_request_part.id, onloan: true, email_code: "RETURNED_PART_REJECTED")
+              else
+                view_context.send_email(email_to: email_to, ticket_id: @ticket.id, spare_part_id: @ticket_spare_part.id, email_code: "RETURNED_PART_REJECTED")
+              end
             end
 
             flash[:notice] = "Successfully updated."
@@ -1863,6 +1896,11 @@ class InventoriesController < ApplicationController
                     all_success = false
                     error_parts << ticket_spare_part.spare_part_no
                   end
+                end
+
+                email_to =  User.cached_find_by_id(estimation.requested_by).try(:email)
+                if email_to.present?
+                  view_context.send_email(email_to: email_to, ticket_id: @ticket.id, spare_part_id: ticket_spare_part.id, email_code: "PART_ESTIMATION_COMPLETED")
                 end
 
               end
