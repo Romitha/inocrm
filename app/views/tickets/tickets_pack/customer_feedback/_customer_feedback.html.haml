@@ -101,7 +101,7 @@
         .col-md-12
           = link_to "Print reciept", "#", class: "btn btn-sm btn-success", onclick: "Users.request_printer_application('receipt', '#{@ticket_payment_received.id}', 'receipt_request_type', 'print_receipt_tag_value', 'print_receipt', this); false;"
 
-    - if @ticket_payment_received and @ticket_payment_received.persisted? and @ticket_payment_received.ticket.ticket_type_code != "OS"
+    - if ticket.try(:ticket_type_code) != "OS"
       .row
         .col-md-12
-          = link_to "Print delivery", "#", class: "btn btn-sm btn-success", onclick: "Users.request_printer_application('ticket_complete', '#{@ticket_payment_received.ticket.id}', 'ticket_complete_request_type', 'print_ticket_delivery_note_tag_value', 'print_ticket_delivery_note', this); false;" if not params[:re_opened].present?
+          = link_to "Print delivery", "#", class: "btn btn-sm btn-success", onclick: "Users.request_printer_application('ticket_complete', '#{ticket.try(:id)}', 'ticket_complete_request_type', 'print_ticket_delivery_note_tag_value', 'print_ticket_delivery_note', this); false;" if not params[:re_opened].present?
