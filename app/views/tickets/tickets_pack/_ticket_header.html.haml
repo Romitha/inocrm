@@ -58,7 +58,7 @@
             %strong Remaining:
             %br
             %br
-          - if ticket.try(:reason).try(:sla_pause) == true
+          - if (ticket.status_hold) and (ticket.try(:reason).try(:sla_pause) == true)
             .panel.panel-danger
               .panel-heading{style: "text-align: center"}
                 SLA Pause

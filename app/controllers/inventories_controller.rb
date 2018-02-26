@@ -827,7 +827,7 @@ class InventoriesController < ApplicationController
         end
         email_to =  User.cached_find_by_id(@estimation.requested_by).try(:email)
         if email_to.present?
-          view_context.send_email(email_to: email_to, ticket_id: @ticket.id, email_code: email_template)
+          view_context.send_email(email_to: email_to, ticket_id: @estimation.ticket.id, email_code: email_template)
         end
 
         @flash_message = {notice: "Successfully updated"}
@@ -1173,11 +1173,14 @@ class InventoriesController < ApplicationController
 
           if bpm_response[:status].upcase == "SUCCESS"
 
-            email_to =  User.cached_find_by_id(spt_ticket_spare_part.part_returned_by).try(:email)
-            if email_to.present?
-              if @onloan_request
-                view_context.send_email(email_to: email_to, ticket_id: @ticket.id, spare_part_id: @onloan_request_part.id, onloan: true, email_code: "RETURNED_PART_REJECTED")
-              else
+            if @onloan_request
+              email_to =  User.cached_find_by_id(@onloan_request_part.part_returned_by).try(:email)
+              if email_to.present?
+                view_context.send_email(email_to: email_to, ticket_id: @onloan_request_part.ticket.id, spare_part_id: @onloan_request_part.id, onloan: true, email_code: "RETURNED_PART_REJECTED")
+              end
+            else
+              email_to =  User.cached_find_by_id(@ticket_spare_part.part_returned_by).try(:email)
+              if email_to.present?
                 view_context.send_email(email_to: email_to, ticket_id: @ticket.id, spare_part_id: @ticket_spare_part.id, email_code: "RETURNED_PART_REJECTED")
               end
             end
@@ -2059,7 +2062,7 @@ class InventoriesController < ApplicationController
                     if email_to.present?
                       view_context.send_email(email_to: email_to, ticket_id: @ticket.id, spare_part_id: ticket_spare_part.id, email_code: "PART_ESTIMATION_COMPLETED")
                     end
-                                        
+
                   else
                     @bpm_process_error = true
                     all_success = false

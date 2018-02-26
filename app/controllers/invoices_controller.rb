@@ -300,7 +300,7 @@ class InvoicesController < ApplicationController
                 to = email_to
 
                 if to.present?
-                  view_context.send_email(email_to: to, ticket_id: @ticket.id, email_code: "TICKET_REOPEN")
+                  view_context.send_email(email_to: to, ticket_id: @ticket.id, engineer_id: engineer.id, email_code: "TICKET_REOPEN")
                 end
 
               end
@@ -450,7 +450,7 @@ class InvoicesController < ApplicationController
                 to = email_to
 
                 if to.present?
-                  view_context.send_email(email_to: to, ticket_id: @ticket.id, email_code: "TICKET_REOPEN")
+                  view_context.send_email(email_to: to, ticket_id: @ticket.id, engineer_id: engineer.id, email_code: "TICKET_REOPEN")
                 end
 
               end

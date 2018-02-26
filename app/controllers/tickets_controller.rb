@@ -2197,7 +2197,6 @@ class TicketsController < ApplicationController
         email_to = spt_ticket_spare_part.engineer.user.email
         if email_template.try(:active)
           view_context.send_email(email_to: email_to, ticket_id: @ticket.id, engineer_id: spt_ticket_spare_part.engineer.id, spare_part_id: spt_ticket_spare_part.id, email_code: "PART_AVAILABLE") if email_to.present?
-
         end
 
         flash[:notice]= "Successfully updated"
@@ -2339,7 +2338,7 @@ class TicketsController < ApplicationController
         if !spt_ticket_spare_part.returned_part_accepted
           email_to =  User.cached_find_by_id(spt_ticket_spare_part.part_returned_by).try(:email)
           if email_to.present?
-            view_context.send_email(email_to: email_to, ticket_id: @ticket.id, spare_part_id: spt_ticket_spare_part.id, email_code: "RETURNED_PART_REJECTED")
+            view_context.send_email(email_to: email_to, ticket_id: @ticket.id, engineer_id: spt_ticket_spare_part.engineer.id, spare_part_id: spt_ticket_spare_part.id, email_code: "RETURNED_PART_REJECTED")
           end
         end
 
@@ -3323,7 +3322,7 @@ class TicketsController < ApplicationController
             if engineer.job_close_approval_required
               email_to = engineer.user.email
               if email_to.present?
-                view_context.send_email(email_to: email_to, ticket_id: @ticket.id, email_code: "FSR_CLOSE_APPROVAL_REJECTED")
+                view_context.send_email(email_to: email_to, ticket_id: @ticket.id, engineer_id: engineer.id, email_code: "FSR_CLOSE_APPROVAL_REJECTED")
               end
             end
           end
