@@ -85,7 +85,7 @@ module TicketsHelper
         "Manufacture"
       end
 
-      spare_part_info = {spare_part_no: spare_part.try(:spare_part_no), spare_part_name: spare_part.spare_part_description, spare_part_type: spare_part_type, spare_part_event_no: spare_part.try(:ticket_spare_part_manufacture).try(:event_no), spare_part_order_no: spare_part.try(:ticket_spare_part_manufacture).try(:order_no)}
+      spare_part_info = {spare_part_no: spare_part.try(:spare_part_no), spare_part_name: spare_part.try(:spare_part_description), spare_part_type: spare_part_type, spare_part_event_no: spare_part.try(:ticket_spare_part_manufacture).try(:event_no), spare_part_order_no: spare_part.try(:ticket_spare_part_manufacture).try(:order_no)}
 
       body_merger.merge!(spare_part_info)
 
