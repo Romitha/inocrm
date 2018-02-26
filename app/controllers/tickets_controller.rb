@@ -3257,7 +3257,7 @@ class TicketsController < ApplicationController
 
         bpm_variables.merge! d40_ticket_approved_to_close: "Y"
 
-#        Set Action:(56)Approve Close Ticket, and  DB.spt_act_ticket_close_approve 
+        # Set Action:(56)Approve Close Ticket, and  DB.spt_act_ticket_close_approve 
         user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(56).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
         user_ticket_action.build_act_ticket_close_approve(approved: true, owner_engineer_id: params[:owner_engineer_id])
         user_ticket_action.save
@@ -3320,9 +3320,11 @@ class TicketsController < ApplicationController
       if @bpm_response[:status].upcase == "SUCCESS"
         if !job_close_approved #Rejected
           job_engineers.each do |engineer|
-            email_to = engineer.user.email
-            if email_to.present?
-              view_context.send_email(email_to: email_to, ticket_id: @ticket.id, email_code: "FSR_CLOSE_APPROVAL_REJECTED")
+            if engineer.job_close_approval_required
+              email_to = engineer.user.email
+              if email_to.present?
+                view_context.send_email(email_to: email_to, ticket_id: @ticket.id, email_code: "FSR_CLOSE_APPROVAL_REJECTED")
+              end
             end
           end
         end

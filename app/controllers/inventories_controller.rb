@@ -901,9 +901,11 @@ class InventoriesController < ApplicationController
 
         if bpm_response[:status].upcase == "SUCCESS"
 
-          email_to =  User.cached_find_by_id(@ticket_estimation.requested_by).try(:email)
-          if email_to.present?
-            view_context.send_email(email_to: email_to, ticket_id: @ticket.id, email_code: "EXT_ESTIMATION_COMPLETED")
+          if !d14_val
+            email_to =  User.cached_find_by_id(@ticket_estimation.requested_by).try(:email)
+            if email_to.present?
+              view_context.send_email(email_to: email_to, ticket_id: @ticket.id, email_code: "EXT_ESTIMATION_COMPLETED")
+            end
           end
 
           @flash_message = {notice: "Successfully updated"}
@@ -959,6 +961,12 @@ class InventoriesController < ApplicationController
         bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
         if bpm_response[:status].upcase == "SUCCESS"
+
+          email_to =  User.cached_find_by_id(@ticket_estimation.requested_by).try(:email)
+          if email_to.present?
+            view_context.send_email(email_to: email_to, ticket_id: @ticket.id, email_code: "EXT_ESTIMATION_COMPLETED")
+          end
+
           @flash_message = {notice: "Successfully updated"}
         else
           @flash_message = {error: "ticket is updated. but Bpm error"}
@@ -1889,18 +1897,20 @@ class InventoriesController < ApplicationController
                   @bpm_response1 = view_context.send_request_process_data start_process: true, process_name: process_name, query: query
 
                   if @bpm_response1[:status].try(:upcase) == "SUCCESS"
+
                     @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name], engineer_id: ticket_spare_part.engineer_id, spare_part_id: request_spare_part_id)
                     view_context.ticket_bpm_headers @bpm_response1[:process_id], @ticket.id, request_spare_part_id
+
+                    email_to =  User.cached_find_by_id(estimation.requested_by).try(:email)
+                    if email_to.present?
+                      view_context.send_email(email_to: email_to, ticket_id: @ticket.id, spare_part_id: ticket_spare_part.id, email_code: "PART_ESTIMATION_COMPLETED")
+                    end
+
                   else
                     @bpm_process_error = true
                     all_success = false
                     error_parts << ticket_spare_part.spare_part_no
                   end
-                end
-
-                email_to =  User.cached_find_by_id(estimation.requested_by).try(:email)
-                if email_to.present?
-                  view_context.send_email(email_to: email_to, ticket_id: @ticket.id, spare_part_id: ticket_spare_part.id, email_code: "PART_ESTIMATION_COMPLETED")
                 end
 
               end
@@ -2041,8 +2051,15 @@ class InventoriesController < ApplicationController
                   @bpm_response1 = view_context.send_request_process_data start_process: true, process_name: process_name, query: query
 
                   if @bpm_response1[:status].try(:upcase) == "SUCCESS"
+
                     @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name], engineer_id: ticket_spare_part.engineer_id, spare_part_id: request_spare_part_id)
                     view_context.ticket_bpm_headers @bpm_response1[:process_id], @ticket.id, request_spare_part_id
+
+                    email_to =  User.cached_find_by_id(estimation.requested_by).try(:email)
+                    if email_to.present?
+                      view_context.send_email(email_to: email_to, ticket_id: @ticket.id, spare_part_id: ticket_spare_part.id, email_code: "PART_ESTIMATION_COMPLETED")
+                    end
+                                        
                   else
                     @bpm_process_error = true
                     all_success = false
