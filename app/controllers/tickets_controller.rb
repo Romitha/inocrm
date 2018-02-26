@@ -2196,7 +2196,7 @@ class TicketsController < ApplicationController
 
         email_to = spt_ticket_spare_part.engineer.user.email
         if email_template.try(:active)
-          view_context.send_email(email_to: email_to, ticket_id: @ticket.id, engineer_id: spt_ticket_spare_part.engineer.id, spare_part_id: spt_ticket_spare_part.id, email_code: "PART_COLLECTED") if email_to.present?
+          view_context.send_email(email_to: email_to, ticket_id: @ticket.id, engineer_id: spt_ticket_spare_part.engineer.id, spare_part_id: spt_ticket_spare_part.id, email_code: "PART_AVAILABLE") if email_to.present?
 
         end
 
