@@ -75,4 +75,4 @@ contact_type_values_map:
 
 spt_quotation_no_annual_reset: true
 
-contract_product_required: true
+contract_product_required: false
