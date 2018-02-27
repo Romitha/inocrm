@@ -755,7 +755,7 @@ module Admins
 
       @brands_and_category = ProductBrand.find params[:brands_and_category_id]
       if @brands_and_category.present?
-        @branch_and_category.product_brand_costs.destroy_all
+        @brands_and_category.product_brand_costs.destroy_all
         @brands_and_category.destroy
 
         flash[:notice] = "Successfully removed from system"
