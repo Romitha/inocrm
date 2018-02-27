@@ -1029,16 +1029,18 @@ window.Tickets =
 
     category3_list = $("#ticket_contract_product_category_id")
     category3_list_html = category3_list.html()
-    category3_list.empty()
     category3_list.prop("disabled", true)
 
     $("#ticket_contract_product_brand_id").change ->
       category1_list.prop("disabled", false)
+      category2_list.prop("disabled", false)
+      category3_list.prop("disabled", false)
+
       selected = $("#ticket_contract_product_brand_id :selected").text()
       filtered_option = $(category1_list_html).filter("optgroup[label='#{selected}']").html()
       category1_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
-      category2_list.empty()
-      category3_list.empty()
+      category2_list.empty().html("<option></option>")
+      category3_list.empty().html("<option></option>")
 
     $("#search_product_category1").change ->
       category2_list.prop("disabled", false)
@@ -1152,25 +1154,25 @@ window.Tickets =
       address_company_list.empty().html(filtered_option).trigger('chosen:updated')
 
   get_brand_id: ->
-    main_brand_name = $("#ticket_contract_product_brand_id").val()
-    main_cat_name = $("#ticket_contract_product_category_id").val()
     main_brand_text = $("#ticket_contract_product_brand_id :selected").text()
     main_cat_text = $("#ticket_contract_product_category_id :selected").text()
-
     main_cat1_text = $("#search_product_category1 :selected").text()
     main_cat2_text = $("#search_product_category2 :selected").text()
 
-    
-    $("#product_brand").val(main_brand_name)
-    $("#product_category").val(main_cat_name)
-    $("#product_brand1").val(main_brand_text)
-    $("#product_category1").val(main_cat_text)
+    brand_id = $("#ticket_contract_product_brand_id").val()
+    cat1_id = $("#search_product_category1").val()
+    cat2_id = $("#search_product_category2").val()
+    cat_id = $("#ticket_contract_product_category_id").val()
 
+    $("#product_brand").val(brand_id)
+    $("#product_category1").val(cat1_id)
+    $("#product_category2").val(cat2_id)
+    $("#product_category3").val(cat_id)
+   
+    $("#product_brand1").val(main_brand_text)
     $("#product_cat1").val(main_cat1_text)
     $("#product_cat2").val(main_cat2_text)
     $("#product_cat3").val(main_cat_text)
-    if main_brand_name == ""
-      alert "Please Select A Brand First"
     #   $(".product_brand_main").removeClass("hide");
     #   $(".product_brand_show").addClass("hide");
 

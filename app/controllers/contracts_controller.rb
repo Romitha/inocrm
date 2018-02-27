@@ -280,11 +280,30 @@ class ContractsController < ApplicationController
   def search_product_contract
     if params[:search_product]
       # @products = Product.where(owner_customer_id: params[:customer_id])
-      if params[:product_category] != ""
-        pro_cat = params[:product_category]
-      else
-        pro_cat = params[:product_category12]
-      end
+
+      # if params[:product_category1] != ""
+      #   pro_cat1 = params[:product_category1]
+      # else
+      #   pro_cat1 = params[:product_category11]
+      # end
+
+      # if params[:product_category2] != ""
+      #   pro_cat2 = params[:product_category2]
+      # else
+      #   pro_cat2 = params[:product_category22]
+      # end
+
+      # if params[:product_category3] != ""
+      #   pro_cat3 = params[:product_category3]
+      # else
+      #   pro_cat3 = params[:product_category33]
+      # end
+
+      # if params[:product_brand] != ""
+      #   pro_brand = params[:product_brand]
+      # else
+      #   pro_brand = params[:product_brand11]
+      # end
 
       if params[:decendent_customer].present?
         organization = Organization.find(params[:customer_id])
@@ -294,17 +313,33 @@ class ContractsController < ApplicationController
         organization_ids_query = params[:customer_id]
       end
 
-      if params[:product_brand].present?
-        fined_query = ["owner_customer_id:#{organization_ids_query}", "product_brand_id:#{params[:product_brand]}", "product_category_id:#{pro_cat}", params[:query]].map { |e| e if e.present? }.compact.join(" AND ")
-        if params[:contract_id].present?
-          @contract_id = TicketContract.find params[:contract_id]
-          @products = Product.search(query: fined_query).select{|p| !@contract_id.product_ids.map(&:to_s).include? p.id }
-        else
-          @products = Product.search(query: fined_query)
-        end
-
-        @organization1 = Organization.find params[:customer_id]
+      if params[:product_brand] == ""
+        puts "product brand null"
+        fined_query = ["owner_customer_id:#{organization_ids_query}", params[:query]].map { |e| e if e.present? }.compact.join(" AND ")
+      elsif params[:product_brand] != "" && params[:product_category1] != "" && params[:product_category2] != "" && params[:product_category3] != ""
+        fined_query = ["owner_customer_id:#{organization_ids_query}", "product_brand_id:#{params[:product_brand]}", "category_cat1_id:#{params[:product_category1]}", "category_cat2_id:#{params[:product_category2]}", "category_cat_id:#{params[:product_category3]}", params[:query]].map { |e| e if e.present? }.compact.join(" AND ")
+        puts "3nama have"
+      elsif params[:product_brand] != "" && params[:product_category1] != "" && params[:product_category2] != ""
+        fined_query = ["owner_customer_id:#{organization_ids_query}", "product_brand_id:#{params[:product_brand]}", "category_cat1_id:#{params[:product_category1]}", "category_cat2_id:#{params[:product_category2]}", params[:query]].map { |e| e if e.present? }.compact.join(" AND ")
+        puts "2k have"
+      elsif params[:product_brand] != "" && params[:product_category1] != ""
+        fined_query = ["owner_customer_id:#{organization_ids_query}", "product_brand_id:#{params[:product_brand]}", "category_cat1_id:#{params[:product_category1]}", params[:query]].map { |e| e if e.present? }.compact.join(" AND ")
+        puts "1k have"
+      elsif params[:product_brand] != ""
+        fined_query = ["owner_customer_id:#{organization_ids_query}", "product_brand_id:#{params[:product_brand]}", params[:query]].map { |e| e if e.present? }.compact.join(" AND ")
+        puts "brand witharai"
       end
+      puts "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+      puts fined_query
+      puts "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+      if params[:contract_id].present?
+        @contract_id = TicketContract.find params[:contract_id]
+        @products = Product.search(query: fined_query).select{|p| !@contract_id.product_ids.map(&:to_s).include? p.id }
+      else
+        @products = Product.search(query: fined_query)
+      end
+
+      @organization1 = Organization.find params[:customer_id]
     end
   end
 
@@ -691,7 +726,7 @@ class ContractsController < ApplicationController
 
   private
     def contract_params
-      params.require(:ticket_contract).permit(:id, :created_at, :created_by, :customer_id, :sla_id, :contract_no, :contract_type_id, :hold, :contract_b2b, :remind_required, :currency_id, :amount, :contract_start_at, :contract_end_at, :remarks, :owner_organization_id, :process_at, :legacy_contract_no, :organization_bill_id, :bill_address_id, :organization_contact_id, :product_brand_id, :product_category_id, :contact_person_id, :additional_charges, :season, :status_id, :contact_address_id, :accepted_at, :payment_type_id, :documnet_received, contract_products_attributes: [ :id, :_destroy, :invoice_id, :item_no, :description, :amount, :sla_id, :remarks, product_attributes: [:id, :_destroy, :serial_no, :product_brand_id, :product_category_id, :model_no, :product_no, :pop_status_id, :sold_country_id, :pop_note, :pop_doc_url, :corporate_product, :sold_at, :sold_by, :remarks]], contract_attachments_attributes: [:id, :_destroy, :attachment_url], contract_payment_installments_attributes: [:id, :payment_installment, :installment_amount, :total_amount,:installment_start_date, :installment_end_date])
+      params.require(:ticket_contract).permit(:id, :created_at, :created_by, :customer_id, :sla_id, :contract_no, :contract_type_id, :hold, :contract_b2b, :remind_required, :currency_id, :amount, :contract_start_at, :contract_end_at, :remarks, :owner_organization_id, :process_at, :legacy_contract_no, :organization_bill_id, :bill_address_id, :organization_contact_id, :product_brand_id, :product_category_id, :product_category1_id, :product_category2_id,:contact_person_id, :additional_charges, :season, :status_id, :contact_address_id, :accepted_at, :payment_type_id, :documnet_received, contract_products_attributes: [ :id, :_destroy, :invoice_id, :item_no, :description, :amount, :sla_id, :remarks, product_attributes: [:id, :_destroy, :serial_no, :product_brand_id, :product_category_id, :model_no, :product_no, :pop_status_id, :sold_country_id, :pop_note, :pop_doc_url, :corporate_product, :sold_at, :sold_by, :remarks]], contract_attachments_attributes: [:id, :_destroy, :attachment_url], contract_payment_installments_attributes: [:id, :payment_installment, :installment_amount, :total_amount,:installment_start_date, :installment_end_date])
     end
 
     def payment_params
@@ -699,7 +734,7 @@ class ContractsController < ApplicationController
     end
 
     def customer_product_params
-      params.require(:organization).permit(:id, products_attributes: [:id, :serial_no, :product_brand_id, :product_category_id, :model_no, :product_no, :pop_status_id, :sold_country_id, :pop_note, :pop_doc_url, :corporate_product, :sold_at, :sold_by, :remarks, :description, :name, :date_installation, :note, :dn_number, :invoice_number, :invoice_date, :location_address_id, :_destroy, warranties_attributes:[:start_at, :end_at, :product_serial_id, :warranty_type_id, :period_part, :period_labour, :period_onsight, :care_pack_product_no, :care_pack_reg_no, :note, :_destroy]])
+      params.require(:organization).permit(:id, products_attributes: [:id, :serial_no, :product_brand_id, :product_category_id, :model_no, :product_no, :pop_status_id, :sold_country_id, :pop_note, :pop_doc_url, :corporate_product, :sold_at, :sold_by, :remarks, :description, :name, :date_installation, :note, :dn_number, :invoice_number, :invoice_date, :location_address_id, :sla_id, :_destroy, warranties_attributes:[:start_at, :end_at, :product_serial_id, :warranty_type_id, :period_part, :period_labour, :period_onsight, :care_pack_product_no, :care_pack_reg_no, :note, :_destroy]])
     end
 
     def contract_product_params

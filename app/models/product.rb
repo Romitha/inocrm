@@ -121,7 +121,8 @@ class Product < ActiveRecord::Base
   belongs_to :inv_serial_item, foreign_key: :inventory_serial_item_id
   belongs_to :owner_customer, class_name: "Organization"
   belongs_to :location_address, class_name: "Address"
-
+  belongs_to :sla_time, foreign_key: :sla_id
+  
   validates_presence_of [:serial_no, :product_brand_id, :product_category_id, :name]
   validates_uniqueness_of :serial_no, message: "This serial no has already been taken"
 

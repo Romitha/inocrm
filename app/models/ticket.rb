@@ -659,6 +659,8 @@ class TicketContract < ActiveRecord::Base
   belongs_to :organization_contact_person, foreign_key: :contact_person_id
   belongs_to :created_by_user, class_name: "User", foreign_key: :created_by
   belongs_to :product_brand, foreign_key: :product_brand_id
+  belongs_to :product_category1, foreign_key: :product_category1_id
+  belongs_to :product_category2, foreign_key: :product_category2_id
   belongs_to :product_category, foreign_key: :product_category_id
   belongs_to :ticket_contract_payment_type, foreign_key: :payment_type_id 
   belongs_to :contract_status, foreign_key: :status_id 

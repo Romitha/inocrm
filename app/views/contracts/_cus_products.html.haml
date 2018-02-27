@@ -89,11 +89,15 @@
               / = collapse collapse_type: "info", labelledby: "labelledby_#{f.object.id}", header_content: "Product: #{f.object.product_brand.try(:name)}:#{f.object.product_category.try(:name)}:#{f.object.serial_no}", collapse_link: "invunitlink_#{f.object.id}", collapse_id: "products_collapse" do
               - product = f.object
               .panel-body
-                - if f.object.tickets.any?
+                - if f.object.tickets.any? || f.object.contract_products.any?
                   .row
                     .col-md-4
                       = label_tag "Serial No :"
                       = product.serial_no
+                  .row
+                    .col-md-4
+                      = label_tag "SLA Time :"
+                      = product.sla_time.try(:description)
                   .row
                     .col-md-6
                       = label_tag "Product Brand :"
@@ -122,6 +126,8 @@
                   .row
                     .col-md-4
                       = f.input :serial_no, required: true
+                    .col-md-4
+                      = f.association :sla_time, required: true, label_method: :description, include_blank: false, label: "SLA"
                   .row.product_cat
                     .select_wrapper
                       .col-md-3
@@ -152,7 +158,7 @@
                       =f.input :description
                 .row
                   .col-md-4                
-                    = f.association :location_address, collection: (organization.anchestors.map{|m| m[:member]}.uniq{|m| m.id}), as: :grouped_select, group_method: :addresses, label_method: :full_address, required: true
+                    = f.association :location_address, collection: ([organization] + organization.members), as: :grouped_select, group_method: :addresses, label_method: :full_address, required: true
                 %fieldset
                   %legend POP
                   .row

@@ -65,3 +65,5 @@ request_part_default: "M"
 upload_url: "/home/ubuntu/projects/rails/inova-crm/public/uploads"
 
 spt_quotation_no_annual_reset: true
+
+contract_product_required: false

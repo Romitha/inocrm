@@ -76,3 +76,5 @@ contact_type_values_map:
   6: 1
 
 spt_quotation_no_annual_reset: true
+
+contract_product_required: true
