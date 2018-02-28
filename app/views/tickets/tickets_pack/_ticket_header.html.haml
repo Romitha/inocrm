@@ -48,7 +48,7 @@
         .panel{style: "border: 1px solid #dddddd;"}
           .panel-body{style: "background-color: ##{ticket.ticket_status.colour};"}
             %strong SLA time:
-            #{pluralize ticket.slatime, 'Hr'}
+            #{pluralize ticket.products.first.try(:sla_time).try(:sla_time), 'Hr'}
             %br
             %strong Started at: 
             %br

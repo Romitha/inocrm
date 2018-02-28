@@ -87,7 +87,7 @@
         - total_profit = total_profit + ((contract_product.try(:amount).to_f - contract_product.try(:discount_amount).to_f)- total_cost.to_f)
 
 
-        %td= contract_product.ticket_contract.contract_no_genarate
+        %td= contract_product.ticket_contract.contract_no
         %td= contract_product.ticket_contract.organization.name
         %td
           - if contract_product.ticket_contract.season == 1

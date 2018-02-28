@@ -793,16 +793,16 @@ class TicketContract < ActiveRecord::Base
   before_create :contract_no_increase
 
   def contract_no_increase
-    contract_no = CompanyConfig.first.increase_sup_last_contract_serial_no
-    self.contract_no = contract_no
-
+    contract_product_required = INOCRM_CONFIG['contract_product_required']
+    if contract_product_required
+      contract_no = CompanyConfig.first.increase_sup_last_contract_serial_no
+      self.contract_no = "#{contract_start_at.try(:strftime, "%y")}-#{owner_organization.try(:contract_no_value)}-#{product_brand.try(:contract_no_value)}-#{product_category.try(:contract_no_value)}-#{ticket_contract_type.try(:contract_no_value)}-#{contract_no}"
+    end
   end
 
-  def contract_no_genarate
-    "#{contract_start_at.try(:strftime, "%y")}-#{owner_organization.try(:contract_no_value)}-#{product_brand.try(:contract_no_value)}-#{product_category.try(:contract_no_value)}-#{ticket_contract_type.try(:contract_no_value)}-#{contract_no}"
-    # self.contract_no = "#{contract_start_at.try(:strftime, "%y")}-#{owner_organization.try(:contract_no_value)}-#{product_brand.try(:contract_no_value)}-#{product_category.try(:contract_no_value)}-#{ticket_contract_type.try(:contract_no_value)}-#{contract_no}"
-
-  end
+  # def contract_no_genarate
+  #   "#{contract_start_at.try(:strftime, "%y")}-#{owner_organization.try(:contract_no_value)}-#{product_brand.try(:contract_no_value)}-#{product_category.try(:contract_no_value)}-#{ticket_contract_type.try(:contract_no_value)}-#{contract_no}"
+  # end
   def brand_name
     product_brand.try(:name)
   end

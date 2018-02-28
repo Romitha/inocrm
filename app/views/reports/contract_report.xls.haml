@@ -34,7 +34,7 @@
         - total_payment_receiveds = total_payment_receiveds + contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f}
         - total_pending_amount = total_pending_amount + pending_amount.to_f
 
-        %td= contract.contract_no_genarate
+        %td= contract.contract_no
         %td= contract.organization.name
         %td
         %td= contract.owner_organization.try(:name)

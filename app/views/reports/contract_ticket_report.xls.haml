@@ -80,7 +80,7 @@
         - total_additional_cost = total_additional_cost + ticket.ticket_additional_cost.to_f
         - total_total_cost = total_total_cost + total_cost
 
-        %td= ticket.ticket_contract.try(:contract_no_genarate)
+        %td= ticket.ticket_contract.try(:contract_no)
         %td= ticket.ticket_contract.try(:organization).try(:name)
         %td
           - if ticket.ticket_contract.try(:season) == 1

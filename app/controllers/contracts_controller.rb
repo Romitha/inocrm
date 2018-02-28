@@ -540,7 +540,7 @@ class ContractsController < ApplicationController
       contract_elements.concat [['', '', 'Sub Total', @contract.contract_products.sum(:amount)], ['', '', 'Special Discount', @contract.contract_products.sum(:discount_amount)], ['', '', 'Total Amount', (@contract.contract_products.sum(:amount) - @contract.contract_products.sum(:discount_amount))]]
 
       Caracal::Document.save "tmp/contract_#{@contract.id}/contract_product_table.docx" do |docx|
-        docx.h2 "HARDWARE MAINTENANCE AGREEMENT NO #{@contract.contract_no_genarate}", align: :center
+        docx.h2 "HARDWARE MAINTENANCE AGREEMENT NO #{@contract.contract_no}", align: :center
 
         docx.table contract_elements, border_size: 4 do
           cell_style rows[0], bold: true

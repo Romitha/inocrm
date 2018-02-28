@@ -31,14 +31,14 @@
             %strong No Of Products:
             #{con.num_of_products}
       %tr{style: "background-color: #{con.status_color}; font-weight: bold;"}
-        %td{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Contract No: #{con.contract_no_genarate}", "data-content"=> yield(:contracts_brief), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }
+        %td{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Contract No: #{con.contract_no}", "data-content"=> yield(:contracts_brief), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }
           - if params[:page]
             = (index+1)+ 10*(params[:page].to_i-1)
           - else
             = (index+1)
         %td= con.organization.try(:name)
         %td= con.formated_created_at
-        %td= con.contract_no_genarate
+        %td= con.contract_no
         %td= con.owner_organization.try(:name)
         %td= con.formated_contract_start_at
         %td= con.formated_contract_end_at

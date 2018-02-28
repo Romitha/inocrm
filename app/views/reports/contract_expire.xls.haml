@@ -14,7 +14,7 @@
   %tbody
     - @contracts.each do |contract|
       %tr
-        %td= contract.contract_no_genarate
+        %td= contract.contract_no
         %td= contract.formated_contract_start_at
         %td
           %font{:color => "red"}
@@ -42,7 +42,7 @@
   %tbody
     - @contract_expireds.each do |contract|
       %tr
-        %td= contract.contract_no_genarate
+        %td= contract.contract_no
         %td= contract.formated_contract_start_at
         %td
           %font{:color => "red"}
