@@ -298,6 +298,9 @@
           .row
             .col-md-4
               = f.input :serial_no, required: true
+            .col-md-4
+              = f.association :sla_time, required: true, label_method: :description, include_blank: false, label: "SLA"
+
           .row.product_cat
             .select_wrapper
               .col-md-3
