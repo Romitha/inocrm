@@ -4289,36 +4289,41 @@ class TicketsController < ApplicationController
     engineer_id = params[:engineer_id]
 
     if @continue
-      if @ticket.update(ticket_params)
-        @ticket.update job_started_at: DateTime.now if !@ticket.job_started_at.present?
-        @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(5).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id)
+       if !@ticket.job_started_at.present?
 
-        @ticket.ticket_status_resolve = TicketStatusResolve.find_by_code("NAP")
-        @ticket.ticket_status = TicketStatus.find_by_code("RSL")
+        if @ticket.update(ticket_params)
+          @ticket.update job_started_at: DateTime.now
+          @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(5).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id)
 
-        @ticket.save
+          @ticket.ticket_status_resolve = TicketStatusResolve.find_by_code("NAP")
+          @ticket.ticket_status = TicketStatus.find_by_code("RSL")
 
-        @ticket_engineer = TicketEngineer.find params[:engineer_id]
-        @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
+          @ticket.save
 
-        # bpm output variables
+          @ticket_engineer = TicketEngineer.find params[:engineer_id]
+          @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
 
-        bpm_variables = view_context.initialize_bpm_variables.merge(supp_engr_user: current_user.id)
+          # bpm output variables
 
-        @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+          bpm_variables = view_context.initialize_bpm_variables.merge(supp_engr_user: current_user.id)
 
-        if @bpm_response[:status].upcase == "SUCCESS"
-          @flash_message = "Successfully updated."
+          @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+          if @bpm_response[:status].upcase == "SUCCESS"
+            @flash_message = "Successfully updated."
+          else
+            @flash_message = "ticket is updated. but Bpm error"
+          end
+
+          redirect_to @ticket, notice: @flash_message
         else
-          @flash_message = "ticket is updated. but Bpm error"
+          redirect_to @ticket, error: "start action failed to updated."
         end
-
-        redirect_to @ticket, notice: @flash_message
       else
-        redirect_to @ticket, error: "start action failed to updated."
+        redirect_to todos_url, error: @flash_message
       end
     else
-      redirect_to todos_url, error: @flash_message
+      @flash_message = "ticket is not updated. Start Action already done."
     end
   end
 

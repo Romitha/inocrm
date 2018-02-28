@@ -44,6 +44,14 @@
                     .col-md-4
                       Regional Support Center: #{Organization.find(b.regional_support_center.organization_id).name}
 
+            -if action.action_id == 5
+              .panel-body
+                .row
+                  .col-md-4
+                    Start Action: #{action.ticket.ticket_start_action.try(:action)}
+                  .col-md-4
+                    Start Note: #{action.ticket.job_start_note}
+
             -if action.action_id == 6
               .panel-body
                 .row
