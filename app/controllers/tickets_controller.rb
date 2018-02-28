@@ -4289,7 +4289,7 @@ class TicketsController < ApplicationController
     engineer_id = params[:engineer_id]
 
     if @continue
-       if !@ticket.job_started_at.present?
+      if !@ticket.job_started_at.present?
 
         if @ticket.update(ticket_params)
           @ticket.update job_started_at: DateTime.now
@@ -4320,10 +4320,10 @@ class TicketsController < ApplicationController
           redirect_to @ticket, error: "start action failed to updated."
         end
       else
-        redirect_to todos_url, error: @flash_message
+        redirect_to todos_url, error: "ticket is not updated. Start Action already done."
       end
     else
-      @flash_message = "ticket is not updated. Start Action already done."
+      redirect_to todos_url, error: "ticket is not updated. BPM Error."
     end
   end
 
