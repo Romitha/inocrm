@@ -13,7 +13,7 @@ class SlaTime < ActiveRecord::Base
   def is_used_anywhere?
     Product
     Ticket
-    tickets.any? or product_brands.any? or product_categories.any?
+    tickets.any? or product_brands.any? or product_categories.any? or ticket_contracts.any?
   end
 
   def time_with_description
