@@ -281,30 +281,6 @@ class ContractsController < ApplicationController
     if params[:search_product]
       # @products = Product.where(owner_customer_id: params[:customer_id])
 
-      # if params[:product_category1] != ""
-      #   pro_cat1 = params[:product_category1]
-      # else
-      #   pro_cat1 = params[:product_category11]
-      # end
-
-      # if params[:product_category2] != ""
-      #   pro_cat2 = params[:product_category2]
-      # else
-      #   pro_cat2 = params[:product_category22]
-      # end
-
-      # if params[:product_category3] != ""
-      #   pro_cat3 = params[:product_category3]
-      # else
-      #   pro_cat3 = params[:product_category33]
-      # end
-
-      # if params[:product_brand] != ""
-      #   pro_brand = params[:product_brand]
-      # else
-      #   pro_brand = params[:product_brand11]
-      # end
-
       if params[:decendent_customer].present?
         organization = Organization.find(params[:customer_id])
         decendent_ids = organization.anchestors.map{|m| m[:member]}.uniq{|m| m.id}.collect{|org| org.id}

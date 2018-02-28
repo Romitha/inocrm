@@ -471,11 +471,15 @@ end
 
 class OrganizationBankDetail < ActiveRecord::Base
   self.table_name = "organization_bank_detail"
-
   belongs_to :organization
 
-  has_many :ticket_invoice
+  has_many :ticket_invoices, foreign_key: :print_bank_detail_id
+  has_many :customer_quotations, foreign_key: :print_bank_detail_id
+  def is_used_anywhere?
+    Invoice
+    ticket_invoices.any? || customer_quotations.any?
 
+  end
 end
 
 class OrganizationTreePath < ActiveRecord::Base

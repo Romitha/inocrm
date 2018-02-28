@@ -2,25 +2,22 @@
   .row.margin-none
     .col-md-5
       Bank Name :
-      = link_to "#", class: "inline_edit", data: {type: "text", resource: "organization_bank_detail", name: "bank_name",url: update_organization_bank_detail_organization_path(organization_bank_detail_id: organization_bank_detail.id), "original-title" => "Update Details"} do
-        = organization_bank_detail.bank_name
+
+      = link_to_if !organization_bank_detail.is_used_anywhere?,organization_bank_detail.bank_name, "#", class: "inline_edit", data: {type: "text", resource: "organization_bank_detail", name: "bank_name",url: update_organization_bank_detail_organization_path(organization_bank_detail_id: organization_bank_detail.id), "original-title" => "Update Details"}  
       %br/
       Account No :
-      = link_to "#", class: "inline_edit", data: {type: "text", resource: "organization_bank_detail", name: "account_no",url: update_organization_bank_detail_organization_path(organization_bank_detail_id: organization_bank_detail.id), "original-title" => "Update Details"} do
-        = organization_bank_detail.account_no
+      = link_to_if !organization_bank_detail.is_used_anywhere?,organization_bank_detail.account_no, "#", class: "inline_edit", data: {type: "text", resource: "organization_bank_detail", name: "account_no",url: update_organization_bank_detail_organization_path(organization_bank_detail_id: organization_bank_detail.id), "original-title" => "Update Details"} 
       %br/
       Swift Code :
-      = link_to "#", class: "inline_edit", data: {type: "text", resource: "organization_bank_detail", name: "swift_code",url: update_organization_bank_detail_organization_path(organization_bank_detail_id: organization_bank_detail.id), "original-title" => "Update Details"} do
-        = organization_bank_detail.swift_code
+      = link_to_if !organization_bank_detail.is_used_anywhere?,organization_bank_detail.swift_code,  "#", class: "inline_edit", data: {type: "text", resource: "organization_bank_detail", name: "swift_code",url: update_organization_bank_detail_organization_path(organization_bank_detail_id: organization_bank_detail.id), "original-title" => "Update Details"} 
       %br/
       Bank Address :
-      = link_to "#", class: "inline_edit", data: {type: "text", resource: "organization_bank_detail", name: "bank_address",url: update_organization_bank_detail_organization_path(organization_bank_detail_id: organization_bank_detail.id), "original-title" => "Update Details"} do
-        = organization_bank_detail.bank_address
+      = link_to_if !organization_bank_detail.is_used_anywhere?,organization_bank_detail.bank_address, "#", class: "inline_edit", data: {type: "text", resource: "organization_bank_detail", name: "bank_address",url: update_organization_bank_detail_organization_path(organization_bank_detail_id: organization_bank_detail.id), "original-title" => "Update Details"} 
       %br/
       Description :
-      = link_to "#", class: "inline_edit", data: {type: "text", resource: "organization_bank_detail", name: "description",url: update_organization_bank_detail_organization_path(organization_bank_detail_id: organization_bank_detail.id), "original-title" => "Update Details"} do
-        = organization_bank_detail.description
+      = link_to_if !organization_bank_detail.is_used_anywhere?, organization_bank_detail.description,"#", class: "inline_edit", data: {type: "text", resource: "organization_bank_detail", name: "description",url: update_organization_bank_detail_organization_path(organization_bank_detail_id: organization_bank_detail.id), "original-title" => "Update Details"} 
       %br/
-      = link_to content_tag(:span, glyph(:trash, {:tag => :span})), delete_organization_bank_detail_organization_path(organization_bank_detail_id: organization_bank_detail.id), method: :delete, rel: "tooltip", data: {toggle: "tooltip", placement: "right", confirm: "Are you sure? do you want to delete?"}, title: "Delete"
+      - if not organization_bank_detail.is_used_anywhere?
+        = link_to content_tag(:span, glyph(:trash, {:tag => :span})), delete_organization_bank_detail_organization_path(organization_bank_detail_id: organization_bank_detail.id), method: :delete, rel: "tooltip", data: {toggle: "tooltip", placement: "right", confirm: "Are you sure? do you want to delete?"}, title: "Delete"
       / type id and title id
     %hr
