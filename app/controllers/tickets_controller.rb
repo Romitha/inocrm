@@ -5374,7 +5374,7 @@ class TicketsController < ApplicationController
     end
 
     def product_params
-      params.require(:product).permit(:serial_no, :name,:pop_doc_url, :product_brand_id, :sold_country_id, :product_category_id, :model_no, :product_no, :pop_status_id, :coparate_product, :pop_note, ticket_product_serials_attributes: [:id, :ref_product_serial_id])
+      params.require(:product).permit(:serial_no, :name,:pop_doc_url, :product_brand_id, :sold_country_id, :product_category_id, :model_no, :product_no, :pop_status_id, :coparate_product, :sla_id, :pop_note, ticket_product_serials_attributes: [:id, :ref_product_serial_id])
     end
 
     def category_params

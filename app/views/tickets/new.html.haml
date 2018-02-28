@@ -35,7 +35,11 @@
           Ticket logged by: #{User.cached_find_by_id(@ticket.logged_by).full_name}
         .ticket_sla_time
           SLA Time (hrs) :
-          %span.sla_time #{ticket.sla_time}
+          -if ticket.ticket_contract.present?
+            %span.sla_time #{ticket.ticket_contract.try(:sla_time).try(:sla_time)}
+          -else
+            %span.sla_time #{ticket.products.first.try(:sla_time).try(:sla_time)}
+
 
 .row
   #product_load
