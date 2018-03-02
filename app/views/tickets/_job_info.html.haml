@@ -36,8 +36,8 @@
   .col-md-10
     %dl.dl-horizontal
       - ticket.ticket_accessories.each do |a|
-        %dd
-          = a.accessory.accessory
+        %dd= a.accessory.accessory
+        %dt= a.note
       %dd.italic= ticket.other_accessories
   %hr
 .row

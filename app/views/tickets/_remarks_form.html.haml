@@ -38,13 +38,14 @@
           .add_sign
             = er.link_to_remove class: "remove_c_t_v_link" do
               %span.glyphicon.glyphicon-remove-sign
-        .col-md-8.pull-right
-          = f.link_to_add :ticket_extra_remarks, class: "accessory_links small_scale_padding-right2" do
-            %span.glyphicon.glyphicon-plus-sign
-            Add extra remarks
-          = link_to create_extra_remark_tickets_path(status_param: "initiate"), remote: true, method: :post, title: "Create Accessory", class: "accessory_links", onclick: "Tickets.save_cached_ticket(); return false;" do
-            %span.glyphicon.glyphicon-plus-sign
-            Create extra remarks
+        .row
+          .col-md-12.pull-right
+            = f.link_to_add :ticket_extra_remarks, class: "accessory_links small_scale_padding-right2" do
+              %span.glyphicon.glyphicon-plus-sign
+              Add extra remarks
+            = link_to create_extra_remark_tickets_path(status_param: "initiate"), remote: true, method: :post, title: "Create Accessory", class: "accessory_links", onclick: "Tickets.save_cached_ticket(); return false;" do
+              %span.glyphicon.glyphicon-plus-sign
+              Create extra remarks
     .row
       .col-md-12
         = check_box_tag "first_resolution", nil, false, class: "first_resolution"
