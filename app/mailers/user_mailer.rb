@@ -4,10 +4,11 @@ class UserMailer < ApplicationMailer
 
   def welcome_email(body, *args)
     options = args.extract_options!
-    options[:content_type] = "text/html"
+    # options[:content_type] = "text/html"
     # @user = user
     # email_with_name = %(umeshblader@gmail.com)
-    attachments.inline['vsis.png'] = File.read(Rails.root.join('app', 'assets', 'images', 'vsis.png'))
+    @body = body
+    attachments.inline['header.jpeg'] = File.read(Rails.root.join('app', 'assets', 'images', 'header.jpeg'))
     mail(options)
   end
 

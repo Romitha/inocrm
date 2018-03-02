@@ -4264,6 +4264,14 @@ class TicketsController < ApplicationController
         if (spt_ticket_spare_part.ticket_spare_part_manufacture)
           spt_ticket_spare_part.ticket_spare_part_manufacture.update po_required: false
         end
+
+        email_template = EmailTemplate.find_by_code("PART_TERMINATED")
+
+        email_to = spt_ticket_spare_part.engineer.user.email
+        if email_template.try(:active)
+          view_context.send_email(email_to: email_to, ticket_id: @ticket.id, engineer_id: spt_ticket_spare_part.engineer.id, spare_part_id: spt_ticket_spare_part.id, email_code: "PART_TERMINATED") if email_to.present?
+        end
+
       end
 
       # bpm output variables
@@ -4704,6 +4712,8 @@ class TicketsController < ApplicationController
           #Action 88 - Finish Job
           user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(88).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id) 
           user_ticket_action.build_ticket_finish_job(resolution: "")
+
+          @ticket.owner_engineer_id = current_user.id if !@ticket.ticket_close_approval_required
         end
 
         @ticket.save
