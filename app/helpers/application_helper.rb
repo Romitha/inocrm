@@ -164,7 +164,6 @@ module ApplicationHelper
       "Product Category :" => product_category,
       "Special Notes :" => [special_note.to_s[0..100], special_note.to_s[101..200],special_note.to_s[101..200]],
       "Accessories :" => [accessory1, accessory2, accessory3, accessory4, accessory5],
-      "Other Accessories :" => accessory_other,
     }.map do |k, v|
       if v.is_a?(Array)
         left_count += v.count
@@ -183,6 +182,7 @@ module ApplicationHelper
       "Delivery Method :" => deliver_method,
       "Delivery Note :" => deliver_note,
       "Released By :" => delivered_by,
+      "Other Accessories :" => accessory_other,
       "Signature :" => "",
     }.map do |k, v|
       if v.is_a?(Array)

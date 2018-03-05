@@ -1,2 +1,3 @@
-.imager{style: "background-image: url(#{attachments['header.jpeg'].url});"}
-  = @body
+.imager{style: "background-image: url(#{attachments['header.jpeg'].url}); width: 995px; min-height: 170px; height: 100%; margin: auto;"}
+.content{style: "width: 995px; height: 100%; margin: auto;"}
+  = raw(@body)

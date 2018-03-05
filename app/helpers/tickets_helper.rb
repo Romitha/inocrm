@@ -106,7 +106,7 @@ module TicketsHelper
 
       if EmailTemplate.find_by_code(email_code).try(:active)
         # UserMailer.welcome_email(to: email_to, cc: email_cc, subject: reprocessed_email_subject, body: reprocessed_email_body).deliver_now
-        UserMailer.welcome_email(reprocessed_email_body ,{to: email_to, cc: email_cc, subject: reprocessed_email_subject}).deliver_now
+        UserMailer.welcome_email(reprocessed_email_body, {to: email_to, cc: email_cc, subject: reprocessed_email_subject}).deliver_now
       end
 
     end
