@@ -182,7 +182,7 @@ module ApplicationHelper
       "Delivery Method :" => deliver_method,
       "Delivery Note :" => deliver_note,
       "Released By :" => delivered_by,
-      "Other Accessories :" => (accessory_other.present? ? [accessory_other.to_s[0..100], accessory_other[101..200], accessory_other[201..300]]),
+      "Other Accessories :" => (accessory_other.present? ? [accessory_other.to_s[0..100], accessory_other[101..200], accessory_other[201..300]] : ''),
       "Signature :" => "",
     }.map do |k, v|
       if v.is_a?(Array)
