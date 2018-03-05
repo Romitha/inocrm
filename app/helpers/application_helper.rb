@@ -161,8 +161,8 @@ module ApplicationHelper
       "Serial No :" => serial_no,
       "Product Brand :" => product_brand,
       "Model No :" => model_no,
-      "Product Category :" => product_category,
-      "Special Notes :" => [special_note.to_s[0..100], special_note.to_s[101..200],special_note.to_s[101..200]],
+      "Product Category :" => (product_category.present? ? [product_category.to_s[0..40], product_category[41..80]] : ''),
+      "Special Notes :" => (special_note.present? ? [special_note.to_s[0..100], special_note.to_s[101..200],special_note.to_s[101..200]] : ''),
       "Accessories :" => [accessory1, accessory2, accessory3, accessory4, accessory5],
     }.map do |k, v|
       if v.is_a?(Array)
@@ -182,7 +182,7 @@ module ApplicationHelper
       "Delivery Method :" => deliver_method,
       "Delivery Note :" => deliver_note,
       "Released By :" => delivered_by,
-      "Other Accessories :" => accessory_other,
+      "Other Accessories :" => (accessory_other.present? ? [accessory_other.to_s[0..100], accessory_other[101..200], accessory_other[201..300]]),
       "Signature :" => "",
     }.map do |k, v|
       if v.is_a?(Array)

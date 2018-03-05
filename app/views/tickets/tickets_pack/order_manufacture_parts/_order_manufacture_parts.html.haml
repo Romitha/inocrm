@@ -37,6 +37,12 @@
   .col-md-3
     %strong Requested quantity:
     = spare_part.ticket_spare_part_manufacture.try(:requested_quantity)
+  .col-md-3
+    %strong Requested By:
+    = User.cached_find_by_id(spare_part.requested_by).try(:full_name)
+  .col-md-3
+    %strong Requested at:
+    = spare_part.requested_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
 
 .row
   .col-md-12.small_scale_margin-top2
