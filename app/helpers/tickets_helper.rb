@@ -34,6 +34,7 @@ module TicketsHelper
 
   def send_email(*args)
     WorkflowMapping
+    ContactNumber
 
     options = args.extract_options!
 
