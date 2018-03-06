@@ -646,7 +646,7 @@ class InventoriesController < ApplicationController
         @estimation.ticket_estimation_parts.each do |ticket_estimation_part|
           email_to =  User.cached_find_by_id(@estimation.requested_by).try(:email)
           if email_to.present?
-            view_context.send_email(email_to: email_to, ticket_id: @ticket.id, spare_part_id: ticket_estimation_part.ticket_spare_part.id, email_code: email_template)
+            view_context.send_email(email_to: email_to, ticket_id: @ticket.id, spare_part_id: ticket_estimation_part.ticket_spare_part.id, engineer_id: engineer_id, email_code: email_template)
           end
         end
 
@@ -832,7 +832,7 @@ class InventoriesController < ApplicationController
         end
         email_to =  User.cached_find_by_id(@estimation.requested_by).try(:email)
         if email_to.present?
-          view_context.send_email(email_to: email_to, ticket_id: @estimation.ticket.id, email_code: email_template)
+          view_context.send_email(email_to: email_to, ticket_id: @estimation.ticket.id, engineer_id: engineer_id, email_code: email_template)
         end
 
         @flash_message = {notice: "Successfully updated"}
@@ -1924,7 +1924,7 @@ class InventoriesController < ApplicationController
 
                 email_to =  User.cached_find_by_id(estimation.requested_by).try(:email)
                 if email_to.present?
-                  view_context.send_email(email_to: email_to, ticket_id: @ticket.id, spare_part_id: ticket_spare_part.id, email_code: "PART_ESTIMATION_COMPLETED")
+                  view_context.send_email(email_to: email_to, ticket_id: @ticket.id, spare_part_id: ticket_spare_part.id, engineer_id: ticket_spare_part.engineer_id, email_code: "PART_ESTIMATION_COMPLETED")
                 end
               end
             end
@@ -2083,7 +2083,7 @@ class InventoriesController < ApplicationController
 
               email_to =  User.cached_find_by_id(estimation.requested_by).try(:email)
               if email_to.present?
-                view_context.send_email(email_to: email_to, ticket_id: @ticket.id, spare_part_id: ticket_spare_part.id, email_code: "PART_ESTIMATION_COMPLETED")
+                view_context.send_email(email_to: email_to, ticket_id: @ticket.id, spare_part_id: ticket_spare_part.id, engineer_id: ticket_spare_part.engineer_id, email_code: "PART_ESTIMATION_COMPLETED")
               end
             end
 

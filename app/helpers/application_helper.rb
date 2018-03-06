@@ -157,14 +157,14 @@ module ApplicationHelper
     left_data = {
       "Ticket #:" => "#{ticket_ref} - #{ticket_datetime}",
       "Delivered To :" => [company_name, address1, address2, address3, address4],
-      "Mobile No :" => mobile,
+      "Phone No :" => mobile,
       "Serial No :" => serial_no,
       "Product Brand :" => product_brand,
       "Model No :" => model_no,
-      "Product Category :" => (product_category.present? ? [product_category.to_s[0..25], product_category[26..49]] : ''),
-      "Special Notes :" => (special_note.present? ? [special_note.to_s[0..25], special_note.to_s[26..49], special_note.to_s[50..74]] : ''),
+      "Product Category :" => (product_category.present? ? [product_category.to_s[0..25], product_category[26..49]].compact : ''),
+      "Special Notes :" => (special_note.present? ? [special_note.to_s[0..25], special_note.to_s[26..49], special_note.to_s[50..74]].compact : ''),
       "Accessories :" => [accessory1, accessory2, accessory3, accessory4, accessory5],
-      "Other Accessories :" => (accessory_other.present? ? [accessory_other.to_s[0..25], accessory_other[26..49], accessory_other[50..74]] : ''),
+
     }.map do |k, v|
       if v.is_a?(Array)
         left_count += v.count
@@ -176,6 +176,7 @@ module ApplicationHelper
     end
 
     right_data = {
+      "Other Accessories :" => (accessory_other.present? ? [accessory_other.to_s[0..25], accessory_other[26..49], accessory_other[50..74]].compact : ''),
       "Reported failure :" => [problem_des1, problem_des2],
       "Resolution :" => [resolution_summary1, resolution_summary2],
       "Invoice #:" => invoice_no,
