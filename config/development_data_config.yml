@@ -66,4 +66,4 @@ upload_url: "/home/ubuntu/projects/rails/inova-crm/public/uploads"
 
 spt_quotation_no_annual_reset: true
 
-contract_product_required: true
+contract_product_required: false

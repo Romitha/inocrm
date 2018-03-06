@@ -104,21 +104,21 @@
               = label_tag "#{CompanyConfig.first.try(:sup_product_category1_label)} :"
           - else
             = label_tag "#{CompanyConfig.first.try(:sup_product_category1_label)} :"
-          = f.association :product_category1, collection: ProductBrand.all, as: :grouped_select, group_method: :product_category1s, required: contract_product_required, input_html: {class: "product_category1", id: "search_product_category1"}, label: false
+          = f.association :product_category1, collection: ProductBrand.all, as: :grouped_select, group_method: :product_category1s, group_label_method: :id, value_method: :id, required: contract_product_required, input_html: {class: "product_category1", id: "search_product_category1"}, label: false
         .col-md-3
           - if contract_product_required
             %font{:color => "#90032A"}
               = label_tag "#{CompanyConfig.first.try(:sup_product_category2_label)} :"
           - else
             = label_tag "#{CompanyConfig.first.try(:sup_product_category2_label)} :"
-          = f.association :product_category2, collection: ProductCategory1.all, as: :grouped_select, group_method: :product_category2s, required: contract_product_required, input_html: {class: "product_category2", id: "search_product_category2"}, label: false
+          = f.association :product_category2, collection: ProductCategory1.all, as: :grouped_select, group_method: :product_category2s, group_label_method: :id, value_method: :id, required: contract_product_required, input_html: {class: "product_category2", id: "search_product_category2"}, label: false
         .col-md-3
           - if contract_product_required
             %font{:color => "#90032A"}
               = label_tag "#{CompanyConfig.first.try(:sup_product_category_label)} :"
           - else
             = label_tag "#{CompanyConfig.first.try(:sup_product_category_label)} :"
-          = f.association :product_category, collection: ProductCategory2.all, as: :grouped_select, group_method: :product_categories, required: contract_product_required, input_html: {class: "product_category chosen-select"}, label: false
+          = f.association :product_category, collection: ProductCategory2.all, as: :grouped_select, group_method: :product_categories, group_label_method: :id, value_method: :id, required: contract_product_required, input_html: {class: "product_category chosen-select"}, label: false
       .product_brand_show
         .col-md-3
           %strong Product Brand :
@@ -145,7 +145,7 @@
             = label_tag "#{CompanyConfig.first.try(:sup_product_category1_label)} :"
           / %font{:color => "black"}
           /   %strong #{contract.try(:product_category).try(:product_category2).try(:product_category1).try(:name)}
-          = f.association :product_category1, collection: ProductBrand.all, as: :grouped_select, group_method: :product_category1s, required: contract_product_required, input_html: {class: "product_category1", id: "search_product_category1"}, label: false
+          = f.association :product_category1, collection: ProductBrand.all, as: :grouped_select, group_method: :product_category1s, group_label_method: :id, value_method: :id,  required: contract_product_required, input_html: {class: "product_category1", id: "search_product_category1"}, label: false
           / = select_tag "search_product_category1", option_groups_from_collection_for_select(ProductBrand.all, :product_category1s, :name, :id, :name, "#"), include_blank: true, class: "product_category1 form-control"
           
         .col-md-3
@@ -156,7 +156,7 @@
             = label_tag "#{CompanyConfig.first.try(:sup_product_category2_label)} :"
             / %font{:color => "black"}
             /   %strong #{contract.try(:product_category).try(:product_category2).try(:name)}
-          = f.association :product_category2, collection: ProductCategory1.all, as: :grouped_select, group_method: :product_category2s, required: contract_product_required, input_html: {class: "product_category2", id: "search_product_category2"}, label: false
+          = f.association :product_category2, collection: ProductCategory1.all, as: :grouped_select, group_method: :product_category2s, group_label_method: :id, value_method: :id, required: contract_product_required, input_html: {class: "product_category2", id: "search_product_category2"}, label: false
   
         .col-md-3
           - if contract_product_required
@@ -166,7 +166,7 @@
             = label_tag "#{CompanyConfig.first.try(:sup_product_category_label)} :"
             / %font{:color => "black"}
             /   %strong #{contract.try(:product_category).try(:name)}
-          = f.association :product_category, collection: ProductCategory2.all, as: :grouped_select, group_method: :product_categories, required: contract_product_required, input_html: {class: "product_category chosen-select"}, label: false
+          = f.association :product_category, collection: ProductCategory2.all, as: :grouped_select, group_method: :product_categories, group_label_method: :id, value_method: :id, required: contract_product_required, input_html: {class: "product_category chosen-select"}, label: false
       .product_brand_show.hide
         .col-md-3
           %strong Product Brand :
@@ -197,40 +197,44 @@
     .col-md-4.small_scale_margin-top2
       = f.input :documnet_received, wrapper: :append, label: "Signed Document Received"
   - have_instalments = false
-  %h4
-    %font{:color => "black"}
-      %strong Installments
-  .col-md-8
-    %table.table.table-bordered
-      %thead
-        %tr
-          %th Installments
-          %th Installment Start Date
-          %th Installment End Date
-          %th Installment Amount
-          %th Total Amount
-      %tbody
-        - @installments.each do |i|
-          - if i.contract_id == contract.id
-            - have_instalments = true
-            %tr
-              %td= i.payment_installment
-              %td= i.installment_start_date.try :strftime, INOCRM_CONFIG["short_date_format"]
-              %td= i.installment_end_date.try :strftime, INOCRM_CONFIG["short_date_format"]
-              %td= i.installment_amount
-              %td= i.total_amount
-    
-  %br
-  .row
+  - if not contract_product_required
+    .col-md-2
+      = f.input :amount
+  - else
+    %h4
+      %font{:color => "black"}
+        %strong Installments
     .col-md-8
-      - if have_instalments
-        = link_to delete_instalments_contracts_path(contract_id: contract.id), method: :delete, rel: "tooltip", :data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Delete" do
-          %button.btn.btn-info{:type => "button" } Delete Instalments
-      - else
-        %button.btn.btn-info{:type => "button", onclick:"Tickets.calculate_installments();" } Add Instalments
-      %br
-      %br
-      #load_permissions_json_render
+      %table.table.table-bordered
+        %thead
+          %tr
+            %th Installments
+            %th Installment Start Date
+            %th Installment End Date
+            %th Installment Amount
+            %th Total Amount
+        %tbody
+          - @installments.each do |i|
+            - if i.contract_id == contract.id
+              - have_instalments = true
+              %tr
+                %td= i.payment_installment
+                %td= i.installment_start_date.try :strftime, INOCRM_CONFIG["short_date_format"]
+                %td= i.installment_end_date.try :strftime, INOCRM_CONFIG["short_date_format"]
+                %td= i.installment_amount
+                %td= i.total_amount
+      
+    %br
+    .row
+      .col-md-8
+        - if have_instalments
+          = link_to delete_instalments_contracts_path(contract_id: contract.id), method: :delete, rel: "tooltip", :data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Delete" do
+            %button.btn.btn-info{:type => "button" } Delete Instalments
+        - else
+          %button.btn.btn-info{:type => "button", onclick:"Tickets.calculate_installments();" } Add Instalments
+        %br
+        %br
+        #load_permissions_json_render
 
   %br
   .row

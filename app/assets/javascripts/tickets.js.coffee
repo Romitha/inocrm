@@ -330,7 +330,7 @@ window.Tickets =
     category3_list.empty()
 
     $("#product_product_brand_id").change ->
-      selected = $(":selected", @).text()
+      selected = $(":selected", @).val()
       console.log(selected)
       filtered_option = $(category1_list_html).filter("optgroup[label='#{selected}']").html()
       category1_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
@@ -338,14 +338,14 @@ window.Tickets =
       category3_list.empty()
 
     $("#search_product_category1").change ->
-      selected = $(":selected", @).text()
+      selected = $(":selected", @).val()
       console.log(selected)
       filtered_option = $(category2_list_html).filter("optgroup[label='#{selected}']").html()
       category2_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
       category3_list.empty()
 
     $("#search_product_category2").change ->
-      selected = $(":selected", @).text()
+      selected = $(":selected", @).val()
       console.log(selected)
       filtered_option = $(category3_list_html).filter("optgroup[label='#{selected}']").html()
       category3_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
@@ -880,7 +880,7 @@ window.Tickets =
     category3_list.empty()
 
     $("#organization_products_attributes_0_product_brand_id").change ->
-      selected = $(":selected", @).text()
+      selected = $(":selected", @).val()
       console.log(selected)
       filtered_option = $(category1_list_html).filter("optgroup[label='#{selected}']").html()
       category1_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
@@ -888,14 +888,14 @@ window.Tickets =
       category3_list.empty()
 
     $("#search_product_category1_cus_product").change ->
-      selected = $(":selected", @).text()
+      selected = $(":selected", @).val()
       console.log(selected)
       filtered_option = $(category2_list_html).filter("optgroup[label='#{selected}']").html()
       category2_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
       category3_list.empty()
 
     $("#search_product_category2_cus_product").change ->
-      selected = $(":selected", @).text()
+      selected = $(":selected", @).val()
       console.log(selected)
       filtered_option = $(category3_list_html).filter("optgroup[label='#{selected}']").html()
       category3_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
@@ -928,7 +928,7 @@ window.Tickets =
       category3_list.empty()
 
       brand_id.change ->
-        selected = $(":selected", @).text()
+        selected = $(":selected", @).val()
         console.log(selected)
         filtered_option = $(category1_list_html).filter("optgroup[label='#{selected}']").html()
         category1_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
@@ -936,14 +936,14 @@ window.Tickets =
         category3_list.empty()
 
       category1_id.change ->
-        selected = $(":selected", @).text()
+        selected = $(":selected", @).val()
         console.log(selected)
         filtered_option = $(category2_list_html).filter("optgroup[label='#{selected}']").html()
         category2_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
         category3_list.empty()
 
       category2_id.change ->
-        selected = $(":selected", @).text()
+        selected = $(":selected", @).val()
         console.log(selected)
         filtered_option = $(category3_list_html).filter("optgroup[label='#{selected}']").html()
         category3_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
@@ -981,7 +981,7 @@ window.Tickets =
         category1_id.prop("disabled", false)
         category2_id.prop("disabled", false)
         category3_id.prop("disabled", false)
-        selected = $(":selected", @).text()
+        selected = $(":selected", @).val()
         console.log(category1_list_html)
         filtered_option = $(category1_list_html).filter("optgroup[label='#{selected}']").html()
         category1_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
@@ -989,14 +989,14 @@ window.Tickets =
         category3_list.empty()
 
       category1_id.change ->
-        selected = $(":selected", @).text()
+        selected = $(":selected", @).val()
         console.log(selected)
         filtered_option = $(category2_list_html).filter("optgroup[label='#{selected}']").html()
         category2_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
         category3_list.empty()
 
       category2_id.change ->
-        selected = $(":selected", @).text()
+        selected = $(":selected", @).val()
         console.log(selected)
         filtered_option = $(category3_list_html).filter("optgroup[label='#{selected}']").html()
         category3_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
@@ -1036,7 +1036,7 @@ window.Tickets =
       category2_list.prop("disabled", false)
       category3_list.prop("disabled", false)
 
-      selected = $("#ticket_contract_product_brand_id :selected").text()
+      selected = $("#ticket_contract_product_brand_id :selected").val()
       filtered_option = $(category1_list_html).filter("optgroup[label='#{selected}']").html()
       category1_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
       category2_list.empty().html("<option></option>")
@@ -1044,14 +1044,14 @@ window.Tickets =
 
     $("#search_product_category1").change ->
       category2_list.prop("disabled", false)
-      selected = $("#search_product_category1 :selected").text()
+      selected = $("#search_product_category1 :selected").val()
       filtered_option = $(category2_list_html).filter("optgroup[label='#{selected}']").html()
       category2_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
       category3_list.empty()
 
     $("#search_product_category2").change ->
       category3_list.prop("disabled", false)
-      selected = $("#search_product_category2 :selected").text()
+      selected = $("#search_product_category2 :selected").val()
       filtered_option = $(category3_list_html).filter("optgroup[label='#{selected}']").html()
       category3_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
 
@@ -1075,7 +1075,7 @@ window.Tickets =
     category3_list.empty()
 
     brand_id.change ->
-      selected = $(":selected", @).text()
+      selected = $(":selected", @).val()
       console.log(selected)
       filtered_option = $(category1_list_html).filter("optgroup[label='#{selected}']").html()
       category1_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
@@ -1083,14 +1083,14 @@ window.Tickets =
       category3_list.empty()
 
     category1_id.change ->
-      selected = $(":selected", @).text()
+      selected = $(":selected", @).val()
       console.log(selected)
       filtered_option = $(category2_list_html).filter("optgroup[label='#{selected}']").html()
       category2_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
       category3_list.empty()
 
     category2_id.change ->
-      selected = $(":selected", @).text()
+      selected = $(":selected", @).val()
       console.log(selected)
       filtered_option = $(category3_list_html).filter("optgroup[label='#{selected}']").html()
       category3_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
@@ -1114,7 +1114,7 @@ window.Tickets =
     category3_list.empty()
 
     brand_id.change ->
-      selected = $(":selected", @).text()
+      selected = $(":selected", @).val()
       console.log(selected)
       filtered_option = $(category1_list_html).filter("optgroup[label='#{selected}']").html()
       category1_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
@@ -1122,14 +1122,14 @@ window.Tickets =
       category3_list.empty()
 
     category1_id.change ->
-      selected = $(":selected", @).text()
+      selected = $(":selected", @).val()
       console.log(selected)
       filtered_option = $(category2_list_html).filter("optgroup[label='#{selected}']").html()
       category2_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
       category3_list.empty()
 
     category2_id.change ->
-      selected = $(":selected", @).text()
+      selected = $(":selected", @).val()
       console.log(selected)
       filtered_option = $(category3_list_html).filter("optgroup[label='#{selected}']").html()
       category3_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
@@ -1140,7 +1140,7 @@ window.Tickets =
     address_bill_list.prop("disabled", true)
     $("#ticket_contract_organization_bill_id").change ->
       address_bill_list.prop("disabled", false)
-      selected = $("#ticket_contract_organization_bill_id :selected").text()
+      selected = $("#ticket_contract_organization_bill_id :selected").val()
       filtered_option = $(address_bill_list_html).filter("optgroup[label='#{selected}']").html()
       address_bill_list.empty().html(filtered_option).trigger('chosen:updated')
 
@@ -1149,7 +1149,7 @@ window.Tickets =
     address_company_list.prop("disabled", true)
     $("#ticket_contract_organization_contact_id").change ->
       address_company_list.prop("disabled", false)
-      selected = $("#ticket_contract_organization_contact_id :selected").text()
+      selected = $("#ticket_contract_organization_contact_id :selected").val()
       filtered_option = $(address_company_list_html).filter("optgroup[label='#{selected}']").html()
       address_company_list.empty().html(filtered_option).trigger('chosen:updated')
 

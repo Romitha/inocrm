@@ -6,19 +6,19 @@
       .col-md-3
         %font{:color => "#90032A"}
           = label_tag "Brand"
-          = select_tag "search_contracts_brand_name", options_from_collection_for_select(ProductBrand.all, :name, :name), class: "form-control parent_class", include_blank: true
+          = select_tag "search_contracts_brand_name", options_from_collection_for_select(ProductBrand.all, :id, :name), class: "form-control parent_class", include_blank: true
 
       .col-md-3
         %font{:color => "#90032A"}
           = label_tag "#{CompanyConfig.first.try(:sup_product_category1_label)} : "
-          = select_tag "search_product_category1", option_groups_from_collection_for_select(ProductBrand.all, :product_category1s, :name, :id, :name, "#"), include_blank: true, id: "search_product_category1", class: "product_category1 form-control"
+          = select_tag "search_product_category1", option_groups_from_collection_for_select(ProductBrand.all, :product_category1s, :id, :id, :name, "#"), include_blank: true, id: "search_product_category1", class: "product_category1 form-control"
       / .col-md-3
       /   %font{:color => "#90032A"}
       /     = f.association :product_category1, include_blank: false ,input_html: {required: true, id: "search_product_category1", class: "product_category1 form-control"}, collection: ProductBrand.all, as: :grouped_select, group_method: :product_category1s, group_label_method: :name, label_method: :name, value_method: :id, label: "#{CompanyConfig.first.try(:sup_product_category1_label)} :"
 
       .col-md-3
         %font{:color => "#90032A"}
-          = f.association :product_category2, include_blank: false ,input_html: {required: true, id: "search_product_category2", class: "product_category2 form-control"}, collection: ProductCategory1.all, as: :grouped_select, group_method: :product_category2s, group_label_method: :name, label_method: :name, value_method: :id, label: "#{CompanyConfig.first.try(:sup_product_category2_label)} :"
+          = f.association :product_category2, include_blank: false ,input_html: {required: true, id: "search_product_category2", class: "product_category2 form-control"}, collection: ProductCategory1.all, as: :grouped_select, group_method: :product_category2s, group_label_method: :id, label_method: :name, value_method: :id, label: "#{CompanyConfig.first.try(:sup_product_category2_label)} :"
       .col-md-3
         %font{:color => "#90032A"}
           = f.input :name, input_html: {required: true}, label: "#{CompanyConfig.first.try(:sup_product_category_label)} : Name"

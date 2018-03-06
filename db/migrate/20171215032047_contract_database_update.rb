@@ -25,8 +25,8 @@ class ContractDatabaseUpdate < ActiveRecord::Migration
     add_column :spt_product_serial, :invoice_number, :string, limit:100, null: true
     add_column :spt_product_serial, :invoice_date, :datetime, null: true
 
-    add_column :spt_contract_product, :contract_start_at, :datetime, null: false
-    add_column :spt_contract_product, :contract_end_at, :datetime, null: false
+    add_column :spt_contract_product, :contract_start_at, :datetime, null: true
+    add_column :spt_contract_product, :contract_end_at, :datetime, null: true
     add_column :spt_contract_product, :contract_b2b, :boolean
 
     add_column :spt_ticket_total_cost, :admin_cost, :decimal, precision: 10, scale: 2, null: false, default: 0
