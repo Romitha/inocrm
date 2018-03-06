@@ -20,7 +20,7 @@
         %strong= job_engineers.first.try(:re_open_index)
 
     .col-md-6.col-xs-6
-      %h4 Job belongs to : #{job_engineers.map{|eng| eng.user.full_name}.join(", ")}
+      %h4 Job belongs to: #{job_engineers.map{|eng| eng.user.full_name}.join(", ")}
       Job Completed (Approve To Close):
       = check_box_tag :job_close_approved, true, true, id: "ticket_close_approved_check", class: "hide"
       %strong.check_box_value_label
@@ -224,8 +224,8 @@
                     = simple_format ff.object.remarks
       .row.col-md-12.col-xs-12{style: "margin-top:20px; margin-bottom:20px;"}
         .col-md-6
-          = f.label "Job Belongs to:"
-          = f.select :owner_engineer_id, ticket.ticket_engineers.map{ |e| [e.user.email, e.id] }
+          = f.label "Ticket owner engineer:"
+          = f.select :owner_engineer_id, ticket.ticket_engineers.map{ |e| [e.user.full_name, e.id] }
         .col-md-12
           = f.input :remarks, input_html: {value: nil}, label: "Ticket Remarks"
           = simple_format f.object.remarks

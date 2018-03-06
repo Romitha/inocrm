@@ -334,7 +334,12 @@ class InventoriesController < ApplicationController
     elsif params[:recieved]
       if iss and (manufacture_warranty or manufacture_chargeable or store_warranty or store_chargeable)
         save_ticket_spare_part["RCE", 16] #Receive Spare Part by eng
-        ticket_spare_part.update received_eng: true
+
+        ticket_spare_part.update_attributes(
+          received_eng: true,
+          received_eng_at: DateTime.now,
+          received_eng_by: current_user.id,
+        )
         goto_url = same_page
       end
 

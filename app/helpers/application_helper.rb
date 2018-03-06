@@ -127,7 +127,7 @@ module ApplicationHelper
     address2 = customer.address2
     address3 = customer.address3
     address4 = customer.address4
-    mobile = customer.contact_type_values.select{|c| c.contact_type.mobile }.first.try(:value)
+    mobile = customer.contact_type_values.select{|c| c.contact_type.mobile or c.contact_type.fixedline }.first.try(:value)
     serial_no = product.serial_no
     model_no = product.model_no
     product_brand = product.product_brand.name
@@ -139,10 +139,10 @@ module ApplicationHelper
     accessory4 = accessories.fourth.try(:accessory)
     accessory5 = accessories.fifth.try(:accessory)
     accessory_other = ticket.other_accessories
-    problem_des1 = ticket.problem_description.to_s[0..100]
-    problem_des2 = ticket.problem_description.to_s[101..200]
-    resolution_summary1 = ticket.resolution_summary.to_s[0..100]
-    resolution_summary2 = ticket.resolution_summary.to_s[101..200]
+    problem_des1 = ticket.problem_description.to_s[0..31]
+    problem_des2 = ticket.problem_description.to_s[32..63]
+    resolution_summary1 = ticket.resolution_summary.to_s[0..31]
+    resolution_summary2 = ticket.resolution_summary.to_s[32..63]
     invoice_no = (final_invoice and final_invoice.invoice_no.to_s.rjust(6, INOCRM_CONFIG['invoice_no_format']))
 
     if customer_feedback
@@ -161,9 +161,10 @@ module ApplicationHelper
       "Serial No :" => serial_no,
       "Product Brand :" => product_brand,
       "Model No :" => model_no,
-      "Product Category :" => (product_category.present? ? [product_category.to_s[0..40], product_category[41..80]] : ''),
-      "Special Notes :" => (special_note.present? ? [special_note.to_s[0..100], special_note.to_s[101..200],special_note.to_s[101..200]] : ''),
+      "Product Category :" => (product_category.present? ? [product_category.to_s[0..25], product_category[26..49]] : ''),
+      "Special Notes :" => (special_note.present? ? [special_note.to_s[0..25], special_note.to_s[26..49], special_note.to_s[50..74]] : ''),
       "Accessories :" => [accessory1, accessory2, accessory3, accessory4, accessory5],
+      "Other Accessories :" => (accessory_other.present? ? [accessory_other.to_s[0..25], accessory_other[26..49], accessory_other[50..74]] : ''),
     }.map do |k, v|
       if v.is_a?(Array)
         left_count += v.count
@@ -182,7 +183,6 @@ module ApplicationHelper
       "Delivery Method :" => deliver_method,
       "Delivery Note :" => deliver_note,
       "Released By :" => delivered_by,
-      "Other Accessories :" => (accessory_other.present? ? [accessory_other.to_s[0..100], accessory_other[101..200], accessory_other[201..300]] : ''),
       "Signature :" => "",
     }.map do |k, v|
       if v.is_a?(Array)

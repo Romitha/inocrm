@@ -117,12 +117,14 @@
         .row
           .col-md-2
             %h4 Received
-          .col-md-4
+          .col-md-10
             %dl.dl-horizontal
               %dt Received
               %dd 
                 - if ticket_spare_part.received_eng
-                  Yes
+                  #{ticket_spare_part.received_eng_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")} by #{User.cached_find_by_id(ticket_spare_part.received_eng_by).try(:full_name)}
+                - else
+                  No
 
               %dt Repair Time
               - if ticket_spare_part.repare_start and ticket_spare_part.repare_end
@@ -133,7 +135,7 @@
               - else
                 %dd
 
-              %dt Received Spare Part  No
+              %dt Received Spare Part No
               %dd= ticket_spare_part.received_spare_part_no
               %dt Received Serial No
               %dd= ticket_spare_part.received_part_serial_no
@@ -142,12 +144,19 @@
               %dt Part used status:
               %dd= ticket_spare_part.spare_part_status_use.name
 
+        %hr
+        .row
           .col-md-2
             %h4 Returned
-          .col-md-4
+          .col-md-10
             %dl.dl-horizontal
               %dt Part Returned
-              %dd= ticket_spare_part.part_returned ? "Yes" : "No"
+              %dd
+                - if ticket_spare_part.part_returned
+                  #{ticket_spare_part.part_returned_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")} by #{User.cached_find_by_id(ticket_spare_part.part_returned_by).try(:full_name)}
+                - else
+                  No
+
               %dt Return Part Serial No
               %dd= ticket_spare_part.return_part_serial_no
               %dt Return Part CT No

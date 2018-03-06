@@ -28,11 +28,11 @@
       = f.input :received_part_serial_no, wrapper_html: {class: "col-md-6"}, required: true, input_html: {class: "received_part_serial_no_input", autocomplete: "off", value: ( INOCRM_CONFIG["TicketSparePart"]["received_part_serial_no"].present? ? INOCRM_CONFIG["TicketSparePart"]["received_part_serial_no"] : f.object.received_part_serial_no )}
       = f.input :received_part_ct_no, wrapper_html: {class: "col-md-6"}, required: true, input_html: {class: "received_part_ct_no_input", autocomplete: "off", value: (INOCRM_CONFIG["TicketSparePart"]["received_part_ct_no"].present? ? INOCRM_CONFIG["TicketSparePart"]["received_part_ct_no"] : f.object.received_part_ct_no)}
 
-    - if (@rce and (@manufacture_warranty or @manufacture_chargeable or @store_warranty or @store_chargeable))
-      .row
-        = f.input :repare_start, as: :string, label: "Repair start", input_html: {class: "datetimepicker", value: f.object.repare_start.try(:localtime).try(:strftime, "%m/%d/%Y %I:%M %p")}, wrapper_html: {class: "position_relative col-md-6"}, required: true
+    // - if (@rce and (@manufacture_warranty or @manufacture_chargeable or @store_warranty or @store_chargeable))
+    .row
+      = f.input :repare_start, as: :string, label: "Repair start", input_html: {class: "datetimepicker", value: f.object.repare_start.try(:localtime).try(:strftime, "%m/%d/%Y %I:%M %p")}, wrapper_html: {class: "position_relative col-md-6"}, required: true
 
-        = f.input :repare_end, as: :string, label: "Repair end", input_html: {class: "datetimepicker", value: f.object.repare_end.try(:localtime).try(:strftime, "%m/%d/%Y %I:%M %p")}, wrapper_html: {class: "position_relative col-md-6"}, required: true
+      = f.input :repare_end, as: :string, label: "Repair end", input_html: {class: "datetimepicker", value: f.object.repare_end.try(:localtime).try(:strftime, "%m/%d/%Y %I:%M %p")}, wrapper_html: {class: "position_relative col-md-6"}, required: true
 
     .row
       = f.association :spare_part_status_use, collection: SparePartStatusUse.offset(1).map{|s| [s.name, s.id]}, required: true, include_blank: false, selected: 2, wrapper_html: {class: "col-md-6"}, label: "Received part status", input_html: {class: "received_part_status chosen-select_disable_search"}
