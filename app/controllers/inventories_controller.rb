@@ -1916,12 +1916,17 @@ class InventoriesController < ApplicationController
                 end
 
               end
+            end
 
-              email_to =  User.cached_find_by_id(estimation.requested_by).try(:email)
-              if email_to.present?
-                view_context.send_email(email_to: email_to, ticket_id: @ticket.id, spare_part_id: ticket_spare_part.id, email_code: "PART_ESTIMATION_COMPLETED")
+            if !estimation_closed and d19_estimate_internal_below_margin == "N"
+              estimation.ticket_estimation_parts.each do |p|
+                ticket_spare_part = p.ticket_spare_part
+
+                email_to =  User.cached_find_by_id(estimation.requested_by).try(:email)
+                if email_to.present?
+                  view_context.send_email(email_to: email_to, ticket_id: @ticket.id, spare_part_id: ticket_spare_part.id, email_code: "PART_ESTIMATION_COMPLETED")
+                end
               end
-
             end
 
             if all_success
@@ -2063,11 +2068,6 @@ class InventoriesController < ApplicationController
                     @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name], engineer_id: ticket_spare_part.engineer_id, spare_part_id: request_spare_part_id)
                     view_context.ticket_bpm_headers @bpm_response1[:process_id], @ticket.id, request_spare_part_id
 
-                    email_to =  User.cached_find_by_id(estimation.requested_by).try(:email)
-                    if email_to.present?
-                      view_context.send_email(email_to: email_to, ticket_id: @ticket.id, spare_part_id: ticket_spare_part.id, email_code: "PART_ESTIMATION_COMPLETED")
-                    end
-
                   else
                     @bpm_process_error = true
                     all_success = false
@@ -2075,6 +2075,15 @@ class InventoriesController < ApplicationController
                   end
                 end
 
+              end
+            end
+
+            estimation.ticket_estimation_parts.each do |p|
+              ticket_spare_part = p.ticket_spare_part
+
+              email_to =  User.cached_find_by_id(estimation.requested_by).try(:email)
+              if email_to.present?
+                view_context.send_email(email_to: email_to, ticket_id: @ticket.id, spare_part_id: ticket_spare_part.id, email_code: "PART_ESTIMATION_COMPLETED")
               end
             end
 
