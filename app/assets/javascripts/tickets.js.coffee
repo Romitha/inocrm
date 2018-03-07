@@ -1149,7 +1149,7 @@ window.Tickets =
     address_company_list.prop("disabled", true)
     $("#ticket_contract_organization_contact_id").change ->
       address_company_list.prop("disabled", false)
-      selected = $("#ticket_contract_organization_contact_id :selected").val()
+      selected = $("#ticket_contract_organization_contact_id :selected").text()
       filtered_option = $(address_company_list_html).filter("optgroup[label='#{selected}']").html()
       address_company_list.empty().html(filtered_option).trigger('chosen:updated')
 
