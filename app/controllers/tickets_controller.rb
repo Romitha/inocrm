@@ -2318,7 +2318,8 @@ class TicketsController < ApplicationController
 
       else
         #Returned Part Rejected
-        spt_ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("RPR").id, part_returned_by: nil, part_returned_at: nil) 
+        part_returned_by_id = spt_ticket_spare_part.part_returned_by
+        spt_ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("RPR").id, part_returned_by: nil, part_returned_at: nil, part_returned: false) 
         spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)   
 
         #Set Action (42) Reject Returned Part, DB.spt_act_request_spare_part
@@ -2337,7 +2338,7 @@ class TicketsController < ApplicationController
       if @bpm_response[:status].upcase == "SUCCESS"
 
         if !spt_ticket_spare_part.returned_part_accepted
-          email_to =  User.cached_find_by_id(spt_ticket_spare_part.part_returned_by).try(:email)
+          email_to =  User.cached_find_by_id(part_returned_by_id).try(:email)
           if email_to.present?
             view_context.send_email(email_to: email_to, ticket_id: @ticket.id, engineer_id: spt_ticket_spare_part.engineer.id, spare_part_id: spt_ticket_spare_part.id, email_code: "RETURNED_PART_REJECTED")
           end
@@ -4266,13 +4267,6 @@ class TicketsController < ApplicationController
           spt_ticket_spare_part.ticket_spare_part_manufacture.update po_required: false
         end
 
-        email_template = EmailTemplate.find_by_code("PART_TERMINATED")
-
-        email_to = spt_ticket_spare_part.engineer.user.email
-        if email_template.try(:active)
-          view_context.send_email(email_to: email_to, ticket_id: @ticket.id, engineer_id: spt_ticket_spare_part.engineer.id, spare_part_id: spt_ticket_spare_part.id, email_code: "PART_TERMINATED") if email_to.present?
-        end
-
       end
 
       # bpm output variables
@@ -4280,6 +4274,14 @@ class TicketsController < ApplicationController
       @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
       if @bpm_response[:status].upcase == "SUCCESS"
+
+        email_template = EmailTemplate.find_by_code("PART_TERMINATED")
+
+        email_to = spt_ticket_spare_part.engineer.user.email
+        if email_template.try(:active)
+          view_context.send_email(email_to: email_to, ticket_id: @ticket.id, engineer_id: spt_ticket_spare_part.engineer.id, spare_part_id: spt_ticket_spare_part.id, email_code: "PART_TERMINATED") if email_to.present?
+        end
+
         @flash_message = {notice: "Successfully updated"}
       else
         @flash_message = {error: "ticket is updated. but Bpm error"}

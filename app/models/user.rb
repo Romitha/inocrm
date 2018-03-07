@@ -492,7 +492,8 @@ class TicketEngineer < ActiveRecord::Base
   scope :parent_engineers, -> {where(parent_engineer_id: nil)}
 
   def sbu_name
-    user_ticket_action.user_assign_ticket_action.sbu.sbu
+    # user_ticket_action.user_assign_ticket_action.sbu.sbu
+    sbu_engineer.try(:sbu).try(:sbu)
   end
 
   def rec_sub_engineers

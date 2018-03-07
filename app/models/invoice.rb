@@ -110,7 +110,7 @@ class CustomerFeedback < ActiveRecord::Base
 
   belongs_to :dispatch_method
 
-  validates_presence_of :feedback
+  # validates_presence_of :feedback
 
 end
 
