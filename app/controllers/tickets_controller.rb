@@ -296,7 +296,7 @@ class TicketsController < ApplicationController
 
     @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
 
-    @product = Product.find session[:product_id]
+    @product = Product.find (params[:product_id] or session[:product_id])
     @product_brand = @product.product_brand
     @product_category = @product.product_category
     @new_ticket.sla_id = (@product_category.sla_id || @product_brand.sla_id)
@@ -359,7 +359,7 @@ class TicketsController < ApplicationController
     User
     ContactNumber
     Warranty
-    @product = Product.find session[:product_id]
+    @product = Product.find (params[:product_id] || session[:product_id])
     @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
     respond_to do |format|
       if params[:customer_id].present?
@@ -647,7 +647,7 @@ class TicketsController < ApplicationController
   def contact_persons
     User
     ContactNumber
-    @product = Product.find session[:product_id]
+    @product = Product.find (params[:product_id] or session[:product_id])
     respond_to do |format|
       @new_customer = Customer.find(session[:customer_id])
       @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
@@ -724,11 +724,11 @@ class TicketsController < ApplicationController
       @new_accessory = Accessory.new accessory_params
       @new_accessory.save
       # @ticket = Ticket.new session[:ticket_initiated_attributes]
-      @product = Product.find(session[:product_id])
+      @product = Product.find((params[:product_id] or session[:product_id]))
     elsif params[:status_param] == "back"
       # @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
       # @ticket = Ticket.new session[:ticket_initiated_attributes]
-      @product = Product.find(session[:product_id])
+      @product = Product.find((params[:product_id] or session[:product_id]))
     end
   end
 
@@ -746,14 +746,14 @@ class TicketsController < ApplicationController
       render "remarks"
     elsif params[:status_param] == "back"
       # ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
-      @product = Product.find(session[:product_id])
+      @product = Product.find((params[:product_id] or session[:product_id]))
     end
   end
 
   def remarks
     QAndA
     @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
-    @product = Product.find session[:product_id]
+    @product = Product.find (params[:product_id] or session[:product_id])
   end
 
   def save_cache_ticket
@@ -773,7 +773,7 @@ class TicketsController < ApplicationController
     QAndA
     TaskAction
     Warranty
-    @product = Product.find session[:product_id]
+    @product = Product.find (params[:product_id] or session[:product_id])
     @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
 
     if params[:first_resolution]
@@ -967,6 +967,7 @@ class TicketsController < ApplicationController
     QAndA
     WorkflowMapping
 
+    @product = Product.find (params[:product_id] or session[:product_id])
     @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
     @ticket.q_and_answers.clear
     @ticket.ge_q_and_answers.clear

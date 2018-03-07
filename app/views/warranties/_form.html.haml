@@ -106,7 +106,7 @@
         .row
           .col-md-12
             = render "tickets/join_ticket", customer: customer, ticket: ticket# if ticket.joint_tickets.present?
-            = link_to "Back", create_customer_tickets_path(customer_id: customer.id), remote: true, method: :post
+            = link_to "Back", create_customer_tickets_path(customer_id: customer.id, product_id: @product.id), remote: true, method: :post
             = link_to "Next", "#", class: "btn btn-success", onclick: "Warranties.tab_trigger(); false;"
       = tab_content tabpointer: "q_and_a" do
         .row

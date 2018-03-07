@@ -121,10 +121,10 @@
               %br/
   .row
     .col-md-12
-      = link_to "Back", find_by_serial_tickets_path(serial_search: product.serial_no, contract_id: ticket.contract_id), remote: true, method: :post, data: {disable_with: "Please wait..."}
+      = link_to "Back", find_by_serial_tickets_path(serial_search: product.serial_no, contract_id: ticket.contract_id, product_id: product.id), remote: true, method: :post, data: {disable_with: "Please wait..."}
       / - if ticket.contact_person1 and ticket.contact_person2 and ticket.report_person
       - if ticket.contact_person1 and ticket.report_person
-        = link_to "Next", new_warranty_path, remote: true, class: "btn btn-sm btn-success  small_scale_margin-top2 small_scale_margin-bottom2", data: {disable_with: "Please wait..."}
+        = link_to "Next", new_warranty_path(product_id: product.id), remote: true, class: "btn btn-sm btn-success  small_scale_margin-top2 small_scale_margin-bottom2", data: {disable_with: "Please wait..."}
 
 #contact_person.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "contact_person", "aria-hidden" => true}
   .modal-dialog

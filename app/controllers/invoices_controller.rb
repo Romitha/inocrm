@@ -414,7 +414,7 @@ class InvoicesController < ApplicationController
       end
       user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(action_no).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
       user_ticket_action.build_customer_feedback(re_opened: customer_feedback_re_opened, unit_return_customer: customer_feedback_unit_return_customer, payment_received_id: @ticket_payment_received.try(:id), payment_completed: customer_feedback_payment_completed, feedback_id: customer_feedback_feedback_id, feedback_description: customer_feedback_feedback_description, created_at: DateTime.now, updated_at: current_user.id, dispatch_method_id: customer_feedback_dispatch_method_id, ticket_terminated: @ticket.ticket_terminated)
-      user_ticket_action.save
+      user_ticket_action.save!
 
       # bpm output variables
       bpm_variables = view_context.initialize_bpm_variables.merge d39_re_open: d39_re_open, d38_ticket_close_approved: d38_ticket_close_approved, supp_engr_user: params[:supp_engr_user]

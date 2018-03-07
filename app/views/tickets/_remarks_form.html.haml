@@ -1,6 +1,7 @@
 #remarks
 
   = simple_nested_form_for ticket, url: finalize_ticket_save_tickets_path, method: :post, remote: true, html: {class: "validate_form"} do |f|
+    = hidden_field_tag :product_id, @product.id
 
     .row
       .col-md-2

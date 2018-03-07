@@ -28,6 +28,7 @@
 
 = simple_nested_form_for ticket, url: url, remote: remote do |f|
   = hidden_field_tag :ticket_id, ticket.id
+  = hidden_field_tag :product_id, @product.id
 
   %h4 General questions
   - ge_q_and_answers.each_with_index do |ge_q_and_answer, index|
@@ -46,6 +47,7 @@
   %h4 Problematic questions
   - pr_q_and_answers.each_with_index do |pr_q_and_answer, index|
     = f.simple_fields_for "q_and_answers_attributes[#{index}]", pr_q_and_answer do |qa|
+
       = qa.input :id, as: :hidden
       = qa.input :problematic_question_id, as: :hidden
       = qa.input :ticket_action_id, as: :hidden, input_html: {value: action_no}

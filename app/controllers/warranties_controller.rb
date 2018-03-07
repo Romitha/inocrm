@@ -4,7 +4,7 @@ class WarrantiesController < ApplicationController
   # before_action :set_warranty, only: [:]
 
   def index
-    @product = Product.find(session[:product_id])
+    @product = Product.find((params[:product_id] or session[:product_id]))
     Warranty
     # @warranties = params[:search_warranties].present? ? WarrantyType.find(params[:search_warranties]).warranties : []
     @warranties = @product.warranties
@@ -16,7 +16,7 @@ class WarrantiesController < ApplicationController
     @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
     @problem_category = @ticket.try :problem_category
     @customer = Customer.find_by_id(session[:customer_id])
-    @warranty = Warranty.new(product_serial_id: session[:product_id])
+    @warranty = Warranty.new(product_serial_id: (params[:product_id] or session[:product_id]))
     QAndA
 
     @ge_questions = GeQAndA.actives.where(action_id: 1)
@@ -27,7 +27,7 @@ class WarrantiesController < ApplicationController
     elsif params[:function_param] == "select_for_pop"
       @select_for_pop = true
     end
-    @product = Product.find((session[:product_id] or params[:product_id]))
+    @product = Product.find((params[:product_id] or session[:product_id]))
     @warranties = @product.warranties
   end
 
@@ -36,7 +36,7 @@ class WarrantiesController < ApplicationController
     QAndA
     @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
     @customer = Customer.find_by_id(session[:customer_id])
-    @product = Product.find(session[:product_id])
+    @product = Product.find((params[:product_id] or session[:product_id]))
     @warranties = @product.warranties
     @ge_questions = GeQAndA.actives.where(action_id: 1)
     if params[:warranty_id]
@@ -69,7 +69,7 @@ class WarrantiesController < ApplicationController
   end
 
   def select_for_warranty
-    @product = Product.find session[:product_id]
+    @product = Product.find (params[:product_id] or session[:product_id])
     @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
 
     if params[:warranty_id]
@@ -90,7 +90,7 @@ class WarrantiesController < ApplicationController
     QAndA
     @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
     @customer = Customer.find_by_id(session[:customer_id])
-    @product = Product.find_by_id(session[:product_id])
+    @product = Product.find_by_id((params[:product_id] or session[:product_id]))
     @ge_questions = GeQAndA.actives.where(action_id: 1)
     @warranties = @product.warranties
 

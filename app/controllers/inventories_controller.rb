@@ -1186,7 +1186,7 @@ class InventoriesController < ApplicationController
             else
               email_to =  User.cached_find_by_id(@ticket_spare_part.part_returned_by).try(:email)
               if email_to.present?
-                view_context.send_email(email_to: email_to, ticket_id: @ticket.id, spare_part_id: @ticket_spare_part.id, email_code: "RETURNED_PART_REJECTED")
+                view_context.send_email(email_to: email_to, ticket_id: @ticket_spare_part.ticket_id, spare_part_id: @ticket_spare_part.id, email_code: "RETURNED_PART_REJECTED")
               end
             end
 
