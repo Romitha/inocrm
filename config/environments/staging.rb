@@ -82,19 +82,19 @@ Rails.application.configure do
 
   # config.assets.paths << Rails.root.join('app', 'assets', 'fonts')
   # config.assets.precompile += %w( .svg .eot .woff .ttf )
-  config.action_mailer.default_url_options = { host: ENV['INOCRM_EMAIL_HOST'] }
+  config.action_mailer.default_url_options = { host: ENV.fetch("INOCRM_EMAIL_HOST") { '192.168.50.155' } }
 
   config.action_mailer.raise_delivery_errors = false
   config.action_mailer.delivery_method = :smtp
 
   config.action_mailer.smtp_settings = {
-    :address              => ENV['INOCRM_EMAIL_ADDRESS'],
+    :address              => ENV.fetch("INOCRM_EMAIL_ADDRESS") { 'vsis.lk' },
     :authentication       => :plain,
     :enable_starttls_auto => false,
-    :port                 => ENV['INOCRM_EMAIL_PORT'],
-    :domain               => ENV['INOCRM_EMAIL_DOMAIN'],
-    :user_name            => ENV['INOCRM_EMAIL_USERNAME'],
-    :password             => ENV['INOCRM_EMAIL_PASSWORD'],
+    :port                 => ENV.fetch("INOCRM_EMAIL_PORT") { '587' },
+    :domain               => ENV.fetch("INOCRM_EMAIL_DOMAIN") { 'mail.vsis.lk' },
+    :user_name            => ENV.fetch("INOCRM_EMAIL_USERNAME") { 'crmsupport' },
+    :password             => ENV.fetch("INOCRM_EMAIL_PASSWORD") { 'support@crm' },
   }
 
 end
