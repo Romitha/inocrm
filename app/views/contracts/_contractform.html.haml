@@ -198,8 +198,9 @@
       = f.input :documnet_received, wrapper: :append, label: "Signed Document Received"
   - have_instalments = false
   - if not contract_product_required
-    .col-md-2
-      = f.input :amount
+    .row
+      .col-md-2
+        = f.input :amount
   - else
     %h4
       %font{:color => "black"}
