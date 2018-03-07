@@ -91,8 +91,8 @@ Rails.application.configure do
     :address              => ENV.fetch("INOCRM_EMAIL_ADDRESS") { 'vsis.lk' },
     :authentication       => :plain,
     :enable_starttls_auto => false,
-    :port                 => ENV.fetch("INOCRM_EMAIL_PORT") { '587' },
-    :domain               => ENV.fetch("INOCRM_EMAIL_DOMAIN") { 'mail.vsis.lk' },
+    :port                 => ENV.fetch("INOCRM_EMAIL_PORT") { '25' },
+    :domain               => ENV.fetch("INOCRM_EMAIL_DOMAIN") { 'mailgw.vsis.lk' },
     :user_name            => ENV.fetch("INOCRM_EMAIL_USERNAME") { 'crmsupport' },
     :password             => ENV.fetch("INOCRM_EMAIL_PASSWORD") { 'support@crm' },
   }
