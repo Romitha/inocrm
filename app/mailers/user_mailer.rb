@@ -1,5 +1,5 @@
 class UserMailer < ApplicationMailer
-  default from: "no_reply@inocrm.com"
+  default from: "helpdesk@vsis.lk"
   default to: "umesh.m@mailinator.com"
 
   def welcome_email(body, *args)
