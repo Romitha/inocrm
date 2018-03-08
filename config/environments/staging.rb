@@ -88,11 +88,11 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :smtp
 
   config.action_mailer.smtp_settings = {
-    :address              => ENV.fetch("INOCRM_EMAIL_ADDRESS") { 'vsis.lk' },
+    :address              => ENV.fetch("INOCRM_EMAIL_ADDRESS") { 'mail.vsis.lk' },
     :authentication       => :plain,
-    :enable_starttls_auto => false,
-    :port                 => ENV.fetch("INOCRM_EMAIL_PORT") { '25' },
-    :domain               => ENV.fetch("INOCRM_EMAIL_DOMAIN") { 'mailgw.vsis.lk' },
+    :enable_starttls_auto => true,
+    :port                 => ENV.fetch("INOCRM_EMAIL_PORT") { '587' },
+    :domain               => ENV.fetch("INOCRM_EMAIL_DOMAIN") { 'vsis.lk' },
     :user_name            => ENV.fetch("INOCRM_EMAIL_USERNAME") { 'crmsupport' },
     :password             => ENV.fetch("INOCRM_EMAIL_PASSWORD") { 'support@crm' },
   }
