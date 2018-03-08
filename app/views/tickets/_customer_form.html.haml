@@ -69,7 +69,7 @@
     %fieldset
       %legend New customer
       = simple_nested_form_for customer, url: create_customer_tickets_path, method: :post, remote: true, html: {id: "validate_contact_type", class: "validate_form"} do |f|
-        = hidden_field_tag :product_id, product.id
+        = hidden_field_tag :product_id, @product.id
 
         = f.input :organization_id, as: :hidden
         .row

@@ -252,12 +252,13 @@ class TicketsController < ApplicationController
     User
     ContactNumber
     Warranty
+    @product = Product.find (params[:product_id] || session[:product_id])
     @existing_customer = Rails.cache.fetch([:existing_customer, request.remote_ip.to_s, session[:time_now]])
     if params[:function_param]
       @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
       @customers = []
       @organization_customers = []
-      @display_select_option = true if params[:function_param]=="create"
+      @display_select_option = (params[:function_param]=="create")
     elsif params[:select_customer]
       search_customer = params[:search_customer].strip
       customers_nameonly = Customer.where("name like ?", "%#{search_customer}%").where(organization_id: nil)
@@ -737,6 +738,7 @@ class TicketsController < ApplicationController
     Ticket
     Warranty
     QAndA
+    @product = Product.find (params[:product_id] || session[:product_id])
     @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
     if params[:status_param] == "initiate"
       @new_extra_remark = ExtraRemark.new
