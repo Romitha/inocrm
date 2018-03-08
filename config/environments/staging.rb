@@ -82,19 +82,34 @@ Rails.application.configure do
 
   # config.assets.paths << Rails.root.join('app', 'assets', 'fonts')
   # config.assets.precompile += %w( .svg .eot .woff .ttf )
-  config.action_mailer.default_url_options = { host: ENV.fetch("INOCRM_EMAIL_HOST") { '192.168.50.155' } }
+  # config.action_mailer.default_url_options = { host: ENV.fetch("INOCRM_EMAIL_HOST") { '192.168.50.155' } }
+
+  # config.action_mailer.raise_delivery_errors = true
+  # config.action_mailer.delivery_method = :smtp
+
+  # config.action_mailer.smtp_settings = {
+  #   :address              => ENV.fetch("INOCRM_EMAIL_ADDRESS") { 'mail.vsis.lk' },
+  #   :authentication       => :plain,
+  #   :enable_starttls_auto => true,
+  #   :port                 => ENV.fetch("INOCRM_EMAIL_PORT") { '587' },
+  #   :domain               => ENV.fetch("INOCRM_EMAIL_DOMAIN") { 'vsis.lk' },
+  #   :user_name            => ENV.fetch("INOCRM_EMAIL_USERNAME") { 'crmsupport' },
+  #   :password             => ENV.fetch("INOCRM_EMAIL_PASSWORD") { 'support@crm' },
+  # }
+
+  config.action_mailer.default_url_options = { host:  '192.168.50.155' }
 
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.delivery_method = :smtp
 
   config.action_mailer.smtp_settings = {
-    :address              => ENV.fetch("INOCRM_EMAIL_ADDRESS") { 'mail.vsis.lk' },
+    :address              =>  'mail.vsis.lk',
     :authentication       => :plain,
     :enable_starttls_auto => true,
-    :port                 => ENV.fetch("INOCRM_EMAIL_PORT") { '587' },
-    :domain               => ENV.fetch("INOCRM_EMAIL_DOMAIN") { 'vsis.lk' },
-    :user_name            => ENV.fetch("INOCRM_EMAIL_USERNAME") { 'crmsupport' },
-    :password             => ENV.fetch("INOCRM_EMAIL_PASSWORD") { 'support@crm' },
+    :port                 =>  '587',
+    :domain               =>  'vsis.lk',
+    :user_name            =>  'crmsupport',
+    :password             =>  'support@crm',
   }
 
 end
