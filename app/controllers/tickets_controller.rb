@@ -473,6 +473,7 @@ class TicketsController < ApplicationController
     User
     ContactNumber
     Warranty
+    @product = Product.find (params[:product_id] || session[:product_id])
     case params[:data_param]
     when "select_contact_person1"
       @contact_persons = []
@@ -599,6 +600,8 @@ class TicketsController < ApplicationController
 
   def create_contact_person_record
     @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
+    @product = Product.find (params[:product_id] || session[:product_id])
+
     ContactNumber
     Warranty
 

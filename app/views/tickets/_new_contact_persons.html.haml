@@ -65,10 +65,10 @@
     .col-md-4
       %strong.name_validate Contact person1
       = label_tag "Select", class: "small_scale_margin-right1 small_scale_margin-left2" do
-        = radio_button_tag "contact_person1", "select", false, class: "radio_for_contact_person1", data: {param: "select_contact_person1"}
+        = radio_button_tag "contact_person1", "select", false, class: "radio_for_contact_person1", data: {param: "select_contact_person1", product_id: product.id}
         Select
       = label_tag "Create contact person1" do
-        = radio_button_tag "contact_person1", "create", false, class: "radio_for_contact_person1", onclick: "Tickets.assign_contact_person('', '1', 'initiate_contact_person'); false;", data: {param: "create_contact_person1"}
+        = radio_button_tag "contact_person1", "create", false, class: "radio_for_contact_person1", onclick: "Tickets.assign_contact_person('', '1', 'initiate_contact_person'); false;", data: {param: "create_contact_person1", product_id: product.id}
         Create
       #contact_persons_form1.contact_persons_form
         - if ticket.contact_person1
@@ -85,10 +85,10 @@
     .col-md-4
       %strong Contact person2
       = label_tag "Select contact person2", class: "small_scale_margin-right1 small_scale_margin-left2" do
-        = radio_button_tag "contact_person2", "select", false, class: "radio_for_contact_person2", data: {param: "select_contact_person2"}
+        = radio_button_tag "contact_person2", "select", false, class: "radio_for_contact_person2", data: {param: "select_contact_person2", product_id: product.id}
         Select
       = label_tag "Create contact person2" do
-        = radio_button_tag "contact_person2", "create", false, class: "radio_for_contact_person2", onclick: "Tickets.assign_contact_person('', '2', 'initiate_contact_person'); false;", data: {param: "create_contact_person2"}
+        = radio_button_tag "contact_person2", "create", false, class: "radio_for_contact_person2", onclick: "Tickets.assign_contact_person('', '2', 'initiate_contact_person'); false;", data: {param: "create_contact_person2", product_id: product.id}
         Create
       #contact_persons_form2.contact_persons_form
         - if ticket.contact_person2
@@ -104,10 +104,10 @@
     .col-md-4
       %strong.name_validate Report person
       = label_tag "Select report person", class: "small_scale_margin-right1 small_scale_margin-left2" do
-        = radio_button_tag "report_person", "select", false, class: "radio_for_report_person", data: {param: "select_report_person"}
+        = radio_button_tag "report_person", "select", false, class: "radio_for_report_person", data: {param: "select_report_person", product_id: product.id}
         Select
       = label_tag "Create report person" do
-        = radio_button_tag "report_person", "create", false, class: "radio_for_report_person", onclick: "Tickets.assign_contact_person('', '3', 'initiate_contact_person'); false;", data: {param: "create_report_person"}
+        = radio_button_tag "report_person", "create", false, class: "radio_for_report_person", onclick: "Tickets.assign_contact_person('', '3', 'initiate_contact_person'); false;", data: {param: "create_report_person", product_id: product.id}
         Create
       #report_persons_form.contact_persons_form
         - if ticket.report_person
