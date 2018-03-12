@@ -8,6 +8,7 @@
     .col-lg-12
       #select_contact_persons
         = form_tag new_customer_tickets_path, method: :get, remote: true do
+          = hidden_field_tag :product_id, product.id
           .input-group
             = text_field_tag "search_customer", nil, class: "form-control", placeholder: "search customer by name or contact value"
             %span.input-group-btn
@@ -56,8 +57,8 @@
                     %td
                       = link_to customer.organization.name, organization_path(customer.organization), target: "_blank" if customer.organization
                     %td
-                      = link_to "select", "#", onclick: "Tickets.assign_customer('#{customer.id}', '', 'select'); false;"
-                      = link_to "edit", "#", onclick: "Tickets.customer_select('create', '#{customer.id}'); false;"
+                      = link_to "select", "#", onclick: "Tickets.assign_customer('#{customer.id}', #{product.id}, '', 'select'); false;"
+                      = link_to "edit", "#", onclick: "Tickets.customer_select('create', #{product.id}, #{customer.id}); false;"
 
     #organization.tab-pane{:role => "tabpanel"}
       = paginate organization_customers, remote: true, method: :get if organization_customers.present?
@@ -86,7 +87,7 @@
                       %br/
                       = org.primary_address.address3
                     %td
-                      = link_to "select", "#", onclick: "Tickets.assign_customer('', '#{org.id}', 'create'); false;"
+                      = link_to "select", "#", onclick: "Tickets.assign_customer('', #{product.id}, '#{org.id}', 'create'); false;"
                   - else
                     %td{colspan: 2} No primary address for the customer. Please Set any primary address.
 

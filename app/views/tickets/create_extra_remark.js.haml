@@ -1,6 +1,6 @@
 - if params[:status_param] == "initiate" or @new_extra_remark.errors.present?
   $("#new_extra_remark").modal();
-  $("#new_extra_remark .modal-content").html("#{j render 'tickets/extra_remark_form'}");
+  $("#new_extra_remark .modal-content").html("#{j render 'tickets/extra_remark_form', product: @product}");
 - elsif params[:status_param] == "create"
   $("#product_load").html("#{j render 'tickets/form', product: @product, ticket: @ticket}");
 

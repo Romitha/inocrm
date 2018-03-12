@@ -51,10 +51,10 @@
 - unless ticket.ticket_contract.present?
   %strong.name_validate Customer
   = label_tag "Select Customer", class: "small_scale_margin-right1 small_scale_margin-left2" do
-    = radio_button_tag "customer_select", "select", false, class: "radio_for_customer_select", onchange: "Tickets.customer_select('select'); false;", required:true
+    = radio_button_tag "customer_select", "select", false, class: "radio_for_customer_select", onchange: "Tickets.customer_select('select', #{product.id}); false;", required:true
     Select
   = label_tag "New Customer" do
-    = radio_button_tag "customer_select", "create", false, class: "radio_for_customer_select", onchange: "Tickets.customer_select('create'); false;", required:true
+    = radio_button_tag "customer_select", "create", false, class: "radio_for_customer_select", onchange: "Tickets.customer_select('create', #{product.id}); false;", required:true
     New
 
   %hr

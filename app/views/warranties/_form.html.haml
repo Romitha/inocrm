@@ -97,7 +97,7 @@
                 %br
                   .col-md-3
                     = link_to "View Contract", view_contracts_path(view_contract: true, contract_id: ticket.ticket_contract.id, customer_id: ticket.ticket_contract.organization.id), class: "btn btn-sm btn-warning", target: "_blank", remote: false
-            = link_to "Back", create_customer_tickets_path(customer_id: customer.id), remote: true, method: :post
+            = link_to "Back", create_customer_tickets_path(customer_id: customer.id, product_id: @product.id), remote: true, method: :post
             = link_to "Next", "#", class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2", onclick: "Warranties.tab_trigger(); false;"
 
 
@@ -112,7 +112,7 @@
         .row
           .col-md-12
             = render "q_and_as/q_and_a_form", customer: customer, action_no: 1, url: q_and_answer_save_tickets_path, remote: true
-            = link_to "Back", create_customer_tickets_path(customer_id: customer.id), remote: true, method: :post, class: "customize_position"
+            = link_to "Back", create_customer_tickets_path(customer_id: customer.id, product_id: @product.id), remote: true, method: :post, class: "customize_position"
 
 #warranties_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "warranties_modal", "aria-hidden" => true}
   .modal-dialog

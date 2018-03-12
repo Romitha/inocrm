@@ -39,7 +39,7 @@
       - @rbn = ticket_spare_part.spare_part_status_action.code == "RBN" #Ready to Bundle
       - @mpr = ticket_spare_part.spare_part_status_action.code == "MPR" #Manufacture Part Requested
 
-      = collapse collapse_type: "info", header_content: "Ticket spare part (#{ticket_spare_part.ticket_spare_part_store ? 'Store' : (ticket_spare_part.ticket_spare_part_manufacture ? 'Manufacture' : 'Non Stock')}): #{ticket_spare_part.spare_part_no} - #{ticket_spare_part.spare_part_description}", collapse_link: "ticket_spare_part_link_#{params[:action]}_#{ticket_spare_part.id}", collapse_id: "ticket_spare_part_id_#{params[:action]}", labelledby: "ticket_spare_part_lby_#{params[:action]}_#{ticket_spare_part.id}" do
+      = collapse collapse_type: "info", header_content: "Ticket spare part (#{ticket_spare_part.ticket_spare_part_store ? 'Store' : (ticket_spare_part.ticket_spare_part_manufacture ? 'Manufacture' : 'Non Stock')}): #{ticket_spare_part.spare_part_no} - #{ticket_spare_part.spare_part_description} - (#{ticket_spare_part.spare_part_status_action.name})", collapse_link: "ticket_spare_part_link_#{params[:action]}_#{ticket_spare_part.id}", collapse_id: "ticket_spare_part_id_#{params[:action]}", labelledby: "ticket_spare_part_lby_#{params[:action]}_#{ticket_spare_part.id}" do
 
         .row
           .col-md-2
@@ -365,7 +365,7 @@
 
     - if part_engineers.any? or params[:partial_template_for_show] == "parts_odered"
 
-      = collapse collapse_type: "info", header_content: "Ticket spare part (On-loan): #{ticket_on_loan_spare_part.inventory_product.generated_item_code} - #{ticket_on_loan_spare_part.inventory_product.description}", collapse_link: "ticket_on_loan_spare_part_link_#{params[:action]}_#{ticket_on_loan_spare_part.id}", collapse_id: "ticket_spare_part_id_#{params[:action]}", labelledby: "ticket_spare_on_loan_part_lby_#{params[:action]}_#{ticket_on_loan_spare_part.id}" do
+      = collapse collapse_type: "info", header_content: "Ticket spare part (On-loan): #{ticket_on_loan_spare_part.inventory_product.generated_item_code} - #{ticket_on_loan_spare_part.inventory_product.description} - (#{ticket_on_loan_spare_part.spare_part_status_action.name})", collapse_link: "ticket_on_loan_spare_part_link_#{params[:action]}_#{ticket_on_loan_spare_part.id}", collapse_id: "ticket_spare_part_id_#{params[:action]}", labelledby: "ticket_spare_on_loan_part_lby_#{params[:action]}_#{ticket_on_loan_spare_part.id}" do
         - ticket_spare_part_ref = ticket_on_loan_spare_part.ticket_spare_part
 
         - @rce = ticket_on_loan_spare_part.spare_part_status_action.code == "RCE" #Received by Engineerspare_part_status_action
@@ -518,6 +518,8 @@
                   %dt FSR No
                   %dd= ticket_fsr.ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])
             %hr
+
+
 
         .row
           .col-md-2

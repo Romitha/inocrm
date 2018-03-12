@@ -1,6 +1,6 @@
 - if params[:function_param] == "select" or params[:select_customer].present?
   $("#customer_modal").modal();
-  $("#customer_modal .modal-content").html("#{j render 'tickets/select_customers', customers: @customers, organization_customers: @organization_customers}")
+  $("#customer_modal .modal-content").html("#{j render 'tickets/select_customers', customers: @customers, organization_customers: @organization_customers, product: @product}")
   $("#new_customer_form").addClass("hide")
 - else
   $("#form_frame").html("#{j render 'tickets/customer_form', customer: @new_customer, display_select_option: @display_select_option, existing_customer: @existing_customer, product: @product}");

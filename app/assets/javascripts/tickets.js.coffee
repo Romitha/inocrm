@@ -290,13 +290,13 @@ window.Tickets =
   assign_contact_person: (id, contact_person, function_param)->
     $.post "/tickets/create_contact_persons", {contact_person_id: id, contact_person: contact_person, data_param: function_param}
 
-  customer_select: (function_param, customer_id)->
-    $.get "/tickets/new_customer", {function_param: function_param, customer_id: customer_id}
+  customer_select: (function_param, product_id, customer_id)->
+    $.get "/tickets/new_customer", {function_param: function_param, customer_id: customer_id, product_id: product_id}
 
-  assign_customer: (customer_id, organization_id, function_param)->
+  assign_customer: (customer_id, product_id, organization_id, function_param)->
     # y = confirm("Are you sure?")
     # if y
-    $.post "/tickets/create_customer", {customer_id: customer_id, organization_id: organization_id, function_param: function_param}
+    $.post "/tickets/create_customer", {customer_id: customer_id, product_id: product_id, organization_id: organization_id, function_param: function_param}
 
   load_datapicker: ->
     $('.datepicker').datepicker
