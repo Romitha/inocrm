@@ -1245,7 +1245,7 @@ class TicketsController < ApplicationController
 
     # ticket_engineer.user_assign_ticket_actions.build(sbu_id: assign_eng_params["sbu_id"], assign_to: assign_eng_params["assign_to"])
 
-    parent_engineer = @ticket.ticket_engineers.select{|t| t.order_no.to_i == current_order_no and t.channel_no.to_i == current_channel_no }.first
+    parent_engineer = @ticket.ticket_engineers.select{|t| t.order_no.to_i == current_order_no and t.channel_no.to_i == current_channel_no and t.re_open_index == @ticket.re_open_count }.first
 
     ticket_engineer.parent_engineer_id = parent_engineer.try(:id)
 

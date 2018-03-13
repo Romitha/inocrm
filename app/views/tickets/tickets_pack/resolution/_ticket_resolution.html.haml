@@ -7,6 +7,8 @@
     - if ticket_engineer
       .col-md-12
         %h2 Task: #{ticket_engineer.task_description}
+    -if ticket.re_open_count > 0
+      %h3 Current Re-Open No.: #{ticket_engineer.re_open_index}
     .col-md-3
       Ticket Type:
       %strong= ticket.ticket_type.name
@@ -22,10 +24,6 @@
     .col-md-3
       Repair type:
       %strong= ticket.ticket_repair_type.name
-    -if ticket.re_open_count > 0
-      .col-md-3
-        Current Re-Open No.:
-        %strong= ticket_engineer.re_open_index
 
   .row
     .col-md-12
