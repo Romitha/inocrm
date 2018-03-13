@@ -8,6 +8,8 @@
     .col-lg-12
       #select_contact_persons
         = form_tag create_contact_persons_tickets_path, method: :post, remote: true do
+          = hidden_field_tag :product_id, @product.id
+          = hidden_field_tag :ticket_time_now, @ticket_time_now
           .input-group
             = text_field_tag "search_contact_person", nil, class: "form-control", placeholder: "search contact person by name or contact value"
             %span.input-group-btn
@@ -22,9 +24,9 @@
   .tab-content
 
     #contact_person_tab.tab-pane.active{:role => "tabpanel"}
-      = render "users/contact_persons", contact_persons: contact_persons
+      = render "users/contact_persons", contact_persons: contact_persons, product_id: @product.id
     #customer_tab.tab-pane{:role => "tabpanel"}
-      = render "users/customers", customers: customers
+      = render "users/customers", customers: customers, product_id: @product.id
 
 .modal-footer
   %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close

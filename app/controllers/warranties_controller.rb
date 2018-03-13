@@ -11,8 +11,10 @@ class WarrantiesController < ApplicationController
   end
 
   def new
-    session[:warranty_id] = nil
     ContactNumber
+    QAndA
+    @ticket_time_now = params[:ticket_time_now]
+    session[:warranty_id] = nil
     @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
     @problem_category = @ticket.try :problem_category
     @customer = Customer.find_by_id(session[:customer_id])

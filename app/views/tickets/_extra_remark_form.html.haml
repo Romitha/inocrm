@@ -1,5 +1,6 @@
 = simple_form_for @new_extra_remark, remote: true, url: create_extra_remark_tickets_path(status_param: "create"), method: :post do |f|
   = hidden_field_tag :product_id, product.id
+  = hidden_field_tag :ticket_time_now, @ticket_time_now
   .modal-body
     = f.input :extra_remark
   .modal-footer

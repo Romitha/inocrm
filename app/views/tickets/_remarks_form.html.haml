@@ -2,6 +2,7 @@
 
   = simple_nested_form_for ticket, url: finalize_ticket_save_tickets_path, method: :post, remote: true, html: {class: "validate_form"} do |f|
     = hidden_field_tag :product_id, @product.id
+    = hidden_field_tag :ticket_time_now, @ticket_time_now
 
     .row
       .col-md-2
@@ -44,7 +45,7 @@
             = f.link_to_add :ticket_extra_remarks, class: "accessory_links small_scale_padding-right2" do
               %span.glyphicon.glyphicon-plus-sign
               Add extra remarks
-            = link_to create_extra_remark_tickets_path(status_param: "initiate", product_id: @product.id), remote: true, method: :post, title: "Create Accessory", class: "accessory_links", onclick: "Tickets.save_cached_ticket(); return false;" do
+            = link_to create_extra_remark_tickets_path(status_param: "initiate", product_id: @product.id, ticket_time_now: @ticket_time_now), remote: true, method: :post, title: "Create Accessory", class: "accessory_links", onclick: "Tickets.save_cached_ticket(); return false;" do
               %span.glyphicon.glyphicon-plus-sign
               Create extra remarks
     .row
@@ -64,7 +65,7 @@
 
     .row
       .col-md-12
-        = link_to "Back", new_warranty_path( product_id: @product.id), remote: true, data: {disable_with: "Please wait..."}
+        = link_to "Back", new_warranty_path( product_id: @product.id, ticket_time_now: @ticket_time_now), remote: true, data: {disable_with: "Please wait..."}
         .btn-group
           = f.submit "Save", class: "btn btn-success ", data: {disable_with: "Please wait..."}
           %button.btn.btn-success.dropdown-toggle{"aria-expanded" => "false", "data-toggle" => "dropdown", :type => "button"}

@@ -49,10 +49,10 @@
 - unless ticket.ticket_contract.present?
   %strong.name_validate Customer
   = label_tag "Select Customer", class: "small_scale_margin-right1 small_scale_margin-left2" do
-    = radio_button_tag "customer_select", "select", false, class: "radio_for_customer_select", onchange: "Tickets.customer_select('select', #{product.id}); false;"
+    = radio_button_tag "customer_select", "select", false, class: "radio_for_customer_select", onchange: "Tickets.customer_select('select', #{product.id}, #{@ticket_time_now}); false;"
     Select
   = label_tag "New Customer" do
-    = radio_button_tag "customer_select", "create", false, class: "radio_for_customer_select", onchange: "Tickets.customer_select('create', #{product.id}); false;"
+    = radio_button_tag "customer_select", "create", false, class: "radio_for_customer_select", onchange: "Tickets.customer_select('create', #{product.id}, #{@ticket_time_now}); false;"
     New
 
 - if display_select_option
@@ -70,6 +70,7 @@
       %legend New customer
       = simple_nested_form_for customer, url: create_customer_tickets_path, method: :post, remote: true, html: {id: "validate_contact_type", class: "validate_form"} do |f|
         = hidden_field_tag :product_id, @product.id
+        = hidden_field_tag :ticket_time_now, @ticket_time_now
 
         = f.input :organization_id, as: :hidden
         .row
@@ -113,13 +114,13 @@
 - else
   .row
     .col-md-12
-      = link_to "Back", find_by_serial_tickets_path(serial_search: product.serial_no, contract_id: ticket.contract_id), remote: true, method: :post, data: {disable_with: "Please wait..."}
+      = link_to "Back", find_by_serial_tickets_path(serial_search: product.serial_no, contract_id: ticket.contract_id, ticket_time_now: @ticket_time_now), remote: true, method: :post, data: {disable_with: "Please wait..."}
 
       / "customer_id"=>"", "organization_id"=>"11", "function_param"=>"create"
       - if existing_customer && existing_customer.organization.present?
-        = link_to "Next", create_customer_tickets_path(organization_id: existing_customer.organization.id, product_id: @product.id, "function_param"=>"create"), remote: true, method: :post, class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2", data: {disable_with: "Please wait..."}
+        = link_to "Next", create_customer_tickets_path(organization_id: existing_customer.organization.id, product_id: @product.id, ticket_time_now: @ticket_time_now, "function_param"=>"create"), remote: true, method: :post, class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2", data: {disable_with: "Please wait..."}
       - elsif existing_customer
-        = link_to "Next", create_customer_tickets_path(customer_id: existing_customer.id, product_id: @product.id), remote: true, method: :post, class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2", data: {disable_with: "Please wait..."}
+        = link_to "Next", create_customer_tickets_path(customer_id: existing_customer.id, product_id: @product.id, ticket_time_now: @ticket_time_now), remote: true, method: :post, class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2", data: {disable_with: "Please wait..."}
 
 #customer_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "customer_modal", "aria-hidden" => true}
   .modal-dialog
