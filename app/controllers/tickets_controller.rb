@@ -1,9 +1,11 @@
 class TicketsController < ApplicationController
   # skip_before_action :authenticate_user!, only: [ :update_approve_store_parts ]
-  before_action :set_ticket, only: [:show, :edit, :update, :destroy, :update_change_ticket_cus_warranty, :update_change_ticket_repair_type, 
-    :update_start_action, :update_re_assign, :update_request_close_approval, :update_hold, :update_create_fsr, :update_edit_serial_no_request, :update_edit_fsr, 
+  before_action :set_ticket, only: [:show, :edit, :update, :destroy, :update_change_ticket_cus_warranty, :update_change_ticket_repair_type,
+    :update_start_action, :update_re_assign, :update_request_close_approval, :update_hold, :update_create_fsr, :update_edit_serial_no_request, :update_edit_fsr,
     :update_terminate_job, :update_action_taken, :update_request_spare_part, :update_request_on_loan_spare_part, :update_hp_case_id, :update_resolved_job, :update_deliver_unit, :update_job_estimation_request, :update_recieve_unit, :update_un_hold, :update_check_fsr]
   before_action :set_organization_for_ticket, only: [:new, :edit, :create_customer]
+
+  before_action :set_product_in_new_ticket, only: [:create, :new_customer, :create_customer, :create_contact_persons, :contact_persons, :create_contact_person_record, :q_and_answer_save, :create_extra_remark, :finalize_ticket_save]
 
   # layout :workflow_diagram, only: [:workflow_diagram]
 
@@ -46,6 +48,10 @@ class TicketsController < ApplicationController
     Rails.cache.delete([:ticket_params, request.remote_ip.to_s, session[:time_now]])
     Rails.cache.delete([:histories, request.remote_ip.to_s, session[:time_now]])
     Rails.cache.delete([:existing_customer, request.remote_ip.to_s, session[:time_now]])
+    Rails.cache.delete([:ticket_initiated_attributes, session[:time_now]])
+
+    Rails.cache.delete([:ticket_contract, session[:time_now]])
+
     session[:time_now] = nil
     session[:ticket_id] = nil
     session[:product_category_id] = nil
@@ -59,19 +65,67 @@ class TicketsController < ApplicationController
     @status = TicketStatus.find_by_code("OPN")
     @ticket_logged_at = DateTime.now
 
-    Rails.cache.delete([:ticket_initiated_attributes, session[:time_now]])
 
-    Rails.cache.delete([:ticket_contract, session[:time_now]])
-
-    session[:time_now] = Time.now.strftime("%H%M%S")
-    Rails.cache.write([:ticket_initiated_attributes, session[:time_now]], {ticket_no: @ticket_no, status_id: @status.id, logged_by: current_user.id, logged_at: DateTime.now})
+    session[:time_now] = @ticket_time_now = Time.now.strftime("%H%M%S")
+    Rails.cache.write([:ticket_initiated_attributes, @ticket_time_now], {ticket_no: @ticket_no, status_id: @status.id, logged_by: current_user.id, logged_at: DateTime.now})
 
     # session[:ticket_initiated_attributes] = {ticket_no: @ticket_no, status_id: @status.id, logged_by: current_user.id, logged_at: DateTime.now}
     # @ticket = Ticket.new(session[:ticket_initiated_attributes])
-    @ticket = Ticket.new Rails.cache.fetch([:ticket_initiated_attributes, session[:time_now]])
+    @ticket = Ticket.new Rails.cache.fetch([:ticket_initiated_attributes, @ticket_time_now])
 
-    Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @ticket)
+    Rails.cache.write([:new_ticket, request.remote_ip.to_s, @ticket_time_now], @ticket)
     respond_with(@ticket)
+  end
+
+  def find_by_serial
+    serial_no = params[:serial_search]
+    @ticket_time_now = params[:ticket_time_now]
+    if serial_no.blank?
+      render js: "alert('Please enter any serial no'); Tickets.remove_ajax_loader();"
+    else
+      session[:product_id] = nil
+      session[:customer_id] ||= nil
+      session[:serial_no] = serial_no
+      @product = (Product.find_by_serial_no(serial_no) || Product.new(serial_no: serial_no, corporate_product: false))
+
+      @contract = TicketContract.find(params[:contract_id]) if params[:contract_id].present?
+      Rails.cache.write([:ticket_contract, @ticket_time_now], @contract)
+
+      Warranty
+      #@base_currency = Currency.find_by_base_currency(true)
+      if @product.persisted?
+        @product_brand = @product.product_brand
+        @product_category = @product.product_category
+        ticket_attr = Rails.cache.fetch([:ticket_initiated_attributes, @ticket_time_now])
+        Rails.cache.write([:ticket_initiated_attributes, @ticket_time_now], ticket_attr.merge({sla_id: (@product_category.sla_id || @product_brand.sla_id)}))
+
+        # session[:ticket_initiated_attributes].merge!({sla_id: (@product_category.sla_id || @product_brand.sla_id)})
+
+        session[:product_id] = @product.id
+
+        # @ticket = (Rails.cache.read([:new_ticket, request.remote_ip.to_s, @ticket_time_now]) || Ticket.new(session[:ticket_initiated_attributes]))
+        @ticket = (Rails.cache.read([:new_ticket, request.remote_ip.to_s, @ticket_time_now]) || Ticket.new(Rails.cache.fetch([:ticket_initiated_attributes, @ticket_time_now])))
+
+        @ticket.contract_id = @contract.try(:id)
+
+        # @ticket.ticket_accessories.uniq!{|ac| ac.id}
+        @customer = @product.tickets.last.try(:customer)
+        Rails.cache.write([:histories, @product.id], Kaminari.paginate_array(@product.tickets.reject{|t| t.id==@ticket.id}))
+        @histories = Rails.cache.read([:histories, @product.id]).page(params[:page]).per(3)
+
+      else
+        @product_brands = ProductBrand.all
+        @product_categories = ProductCategory.all
+
+        @new_product_brand = ProductBrand.new# currency_id: @base_currency.try(:id)
+        @new_product_category = ProductCategory.new
+
+      end
+      respond_to do |format|
+        format.js
+      end
+
+    end
   end
 
   def update_attribute
@@ -98,57 +152,6 @@ class TicketsController < ApplicationController
     @customer = User.find params[:customer_id]
 
     render json: {id: @customer.id, email: @customer.email, full_name: @customer.full_name, phone_number: @customer.primary_phone_number.try(:value), address: @customer.primary_address.try(:address), nic: @customer.NIC, avatar: view_context.image_tag((@customer.avatar.thumb.url || "no_image.jpg"), alt: @customer.email)}
-  end
-
-  def find_by_serial
-    serial_no = params[:serial_search]
-    if serial_no.blank?
-      render js: "alert('Please enter any serial no'); Tickets.remove_ajax_loader();"
-    else
-      session[:product_id] = nil
-      session[:customer_id] ||= nil
-      session[:serial_no] = serial_no
-      @product = (Product.find_by_serial_no(serial_no) || Product.new(serial_no: serial_no, corporate_product: false))
-
-      @contract = TicketContract.find(params[:contract_id]) if params[:contract_id].present?
-      Rails.cache.write([:ticket_contract, session[:time_now]], @contract)
-
-      Warranty
-      #@base_currency = Currency.find_by_base_currency(true)
-      if @product.persisted?
-        @product_brand = @product.product_brand
-        @product_category = @product.product_category
-
-        ticket_attr = Rails.cache.fetch([:ticket_initiated_attributes, session[:time_now]])
-        Rails.cache.write([:ticket_initiated_attributes, session[:time_now]], ticket_attr.merge({sla_id: (@product_category.sla_id || @product_brand.sla_id)}))
-
-        # session[:ticket_initiated_attributes].merge!({sla_id: (@product_category.sla_id || @product_brand.sla_id)})
-
-        session[:product_id] = @product.id
-
-        # @ticket = (Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]]) || Ticket.new(session[:ticket_initiated_attributes]))
-        @ticket = (Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]]) || Ticket.new(Rails.cache.fetch([:ticket_initiated_attributes, session[:time_now]])))
-
-        @ticket.contract_id = @contract.try(:id)
-
-        # @ticket.ticket_accessories.uniq!{|ac| ac.id}
-        @customer = @product.tickets.last.try(:customer)
-        Rails.cache.write([:histories, session[:product_id]], Kaminari.paginate_array(@product.tickets.reject{|t| t.id==@ticket.id}))
-        @histories = Rails.cache.read([:histories, session[:product_id]]).page(params[:page]).per(3)
-
-      else
-        @product_brands = ProductBrand.all
-        @product_categories = ProductCategory.all
-
-        @new_product_brand = ProductBrand.new# currency_id: @base_currency.try(:id)
-        @new_product_category = ProductCategory.new
-
-      end
-      respond_to do |format|
-        format.js
-      end
-
-    end
   end
 
   def new_product_brand
@@ -252,10 +255,10 @@ class TicketsController < ApplicationController
     User
     ContactNumber
     Warranty
-    @product = Product.find (params[:product_id] || session[:product_id])
-    @existing_customer = Rails.cache.fetch([:existing_customer, request.remote_ip.to_s, session[:time_now]])
+    # @product = Product.find (params[:product_id] || session[:product_id])
+    @existing_customer = Rails.cache.fetch([:existing_customer, request.remote_ip.to_s, @ticket_time_now])
     if params[:function_param]
-      @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
+      @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, @ticket_time_now])
       @customers = []
       @organization_customers = []
       @display_select_option = (params[:function_param]=="create")
@@ -289,15 +292,15 @@ class TicketsController < ApplicationController
   def create
     # Rails.cache.write(:ticket_params, ticket_params)
     session[:time_now] ||= Time.now.strftime("%H%M%S")
-    @new_ticket = (Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]]) || Ticket.new)
+    @new_ticket = (Rails.cache.read([:new_ticket, request.remote_ip.to_s, @ticket_time_now]) || Ticket.new)
     @new_ticket.ticket_accessories.clear
     @new_ticket.attributes = ticket_params
 
-    Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @new_ticket)
+    Rails.cache.write([:new_ticket, request.remote_ip.to_s, @ticket_time_now], @new_ticket)
 
-    @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
+    @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, @ticket_time_now])
 
-    @product = Product.find (params[:product_id] or session[:product_id])
+    # @product = Product.find params[:product_id]
     @product_brand = @product.product_brand
     @product_category = @product.product_category
     @new_ticket.sla_id = (@product_category.sla_id || @product_brand.sla_id)
@@ -307,10 +310,10 @@ class TicketsController < ApplicationController
 
       if @new_ticket.valid?
         # session[:ticket_initiated_attributes] = {}
-        Rails.cache.write([:ticket_initiated_attributes, session[:time_now]], {})
+        Rails.cache.write([:ticket_initiated_attributes, @ticket_time_now], {})
 
         @notice = "Great! new ticket is initiated."
-        Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @new_ticket)
+        Rails.cache.write([:new_ticket, request.remote_ip.to_s, @ticket_time_now], @new_ticket)
         User
         ContactNumber
 
@@ -343,7 +346,7 @@ class TicketsController < ApplicationController
 
         end
 
-        Rails.cache.fetch([:existing_customer, request.remote_ip.to_s, session[:time_now]]){ @existing_customer }
+        Rails.cache.fetch([:existing_customer, request.remote_ip.to_s, @ticket_time_now]){ @existing_customer }
         @new_customer = Customer.new
         @new_customer.contact_type_values.build([{contact_type_id: 2}, {contact_type_id: 4}])
         format.js {render :new_customer}
@@ -360,8 +363,8 @@ class TicketsController < ApplicationController
     User
     ContactNumber
     Warranty
-    @product = Product.find (params[:product_id] || session[:product_id])
-    @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
+    # @product = Product.find (params[:product_id] || session[:product_id])
+    @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, @ticket_time_now])
     respond_to do |format|
       if params[:customer_id].present?
         @new_customer = Customer.find params[:customer_id]
@@ -370,7 +373,7 @@ class TicketsController < ApplicationController
 
         @ticket.contact_person2 ||= @product.tickets.last.try(:contact_person2)
         @ticket.report_person ||= @product.tickets.last.try(:report_person)
-        Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @ticket)
+        Rails.cache.write([:new_ticket, request.remote_ip.to_s, @ticket_time_now], @ticket)
         session[:customer_id] = @new_customer.id
         @notice = "Great! #{@new_customer.name} is added."
 
@@ -441,7 +444,7 @@ class TicketsController < ApplicationController
             end
 
             session[:customer_id] = @new_customer.id
-            Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @ticket)
+            Rails.cache.write([:new_ticket, request.remote_ip.to_s, @ticket_time_now], @ticket)
             @notice = "Great! #{@new_customer.name} is saved."
             format.js {render :create_contact_persons}
           else
@@ -456,7 +459,7 @@ class TicketsController < ApplicationController
         if @new_customer.save
           @ticket.customer_id = @new_customer.id
           session[:customer_id] = @new_customer.id
-          Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @ticket)
+          Rails.cache.write([:new_ticket, request.remote_ip.to_s, @ticket_time_now], @ticket)
           @notice = "Great! #{@new_customer.name} is saved."
           format.js {render :create_contact_persons}
         else
@@ -473,7 +476,7 @@ class TicketsController < ApplicationController
     User
     ContactNumber
     Warranty
-    @product = Product.find (params[:product_id] || session[:product_id])
+    # @product = Product.find (params[:product_id] || session[:product_id])
     case params[:data_param]
     when "select_contact_person1"
       @contact_persons = []
@@ -497,7 +500,7 @@ class TicketsController < ApplicationController
       # @c_p_c_t_attribs = @contact_person_for_customer.contact_type_values.map{|c_t_v| {contact_type_id: c_t_v.contact_type_id, value: c_t_v.value}}
       @c_p_c_t_attribs = []
 
-      @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
+      @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, @ticket_time_now])
       if params[:contact_person] == "1"
         @build_contact_person = @ticket.build_contact_person1(@contact_person_attribs)
         @contact_person_frame = "#contact_persons_form1"
@@ -538,32 +541,32 @@ class TicketsController < ApplicationController
         @build_contact_person = ReportPerson.new title_id: found_contact_person.title_id, name: found_contact_person.name
         @build_contact_person.contact_person_contact_types.build @c_p_c_t_attribs
         @contact_person_frame = "#report_persons_form"
-        @submitted_contact_person = "three"    
+        @submitted_contact_person = "three"
       end
     when "assign_contact_person"
       if params[:contact_person] == "1"
         @build_contact_person = ContactPerson1.find(params[:contact_person_id])
-        @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
+        @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, @ticket_time_now])
         @ticket.contact_person1_id = @build_contact_person.id
-        Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @ticket)
+        Rails.cache.write([:new_ticket, request.remote_ip.to_s, @ticket_time_now], @ticket)
         @contact_person_frame = "#contact_persons_form1"
         @submitted_contact_person = "one"
 
       elsif params[:contact_person] == "2"
         @build_contact_person = ContactPerson2.find(params[:contact_person_id])
-        @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
+        @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, @ticket_time_now])
         @ticket.contact_person2_id = @build_contact_person.id
-        Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @ticket)
+        Rails.cache.write([:new_ticket, request.remote_ip.to_s, @ticket_time_now], @ticket)
         @contact_person_frame = "#contact_persons_form2"
         @submitted_contact_person = "two"
 
       elsif params[:contact_person] == "3"
         @build_contact_person = ReportPerson.find(params[:contact_person_id])
-        @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
+        @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, @ticket_time_now])
         @ticket.reporter_id = @build_contact_person.id
-        Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @ticket)
+        Rails.cache.write([:new_ticket, request.remote_ip.to_s, @ticket_time_now], @ticket)
         @contact_person_frame = "#report_persons_form"
-        @submitted_contact_person = "three"    
+        @submitted_contact_person = "three"
       end
     else
       if params[:submit_contact_person1]
@@ -599,8 +602,9 @@ class TicketsController < ApplicationController
   end
 
   def create_contact_person_record
-    @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
-    @product = Product.find (params[:product_id] || session[:product_id])
+    ContactNumber
+    @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, @ticket_time_now])
+    # @product = Product.find (params[:product_id] || session[:product_id])
 
     ContactNumber
     Warranty
@@ -635,9 +639,9 @@ class TicketsController < ApplicationController
         @new_contact_person = ReportPerson.new(report_person_params)
       end
       @ticket.report_person = @new_contact_person
-      @submitted_contact_person = "three"      
+      @submitted_contact_person = "three"
     end
-    Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @ticket)
+    Rails.cache.write([:new_ticket, request.remote_ip.to_s, @ticket_time_now], @ticket)
     respond_to do |format|
       if @new_contact_person.save
         @build_contact_person = @new_contact_person
@@ -651,10 +655,10 @@ class TicketsController < ApplicationController
   def contact_persons
     User
     ContactNumber
-    @product = Product.find (params[:product_id] or session[:product_id])
+    # @product = Product.find (params[:product_id] or session[:product_id])
     respond_to do |format|
       @new_customer = Customer.find(session[:customer_id])
-      @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
+      @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, @ticket_time_now])
       format.js {render :create_contact_persons}
     end
   end
@@ -741,8 +745,8 @@ class TicketsController < ApplicationController
     Ticket
     Warranty
     QAndA
-    @product = Product.find (params[:product_id] || session[:product_id])
-    @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
+    # @product = Product.find (params[:product_id] || session[:product_id])
+    @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, @ticket_time_now])
     if params[:status_param] == "initiate"
       @new_extra_remark = ExtraRemark.new
     elsif params[:status_param] == "create"
@@ -778,8 +782,8 @@ class TicketsController < ApplicationController
     QAndA
     TaskAction
     Warranty
-    @product = Product.find (params[:product_id] or session[:product_id])
-    @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
+    # @product = Product.find (params[:product_id] or session[:product_id])
+    @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, @ticket_time_now])
 
     if params[:first_resolution]
       @status_close_id = TicketStatus.find_by_code("CLS").id
@@ -826,10 +830,10 @@ class TicketsController < ApplicationController
         q_and_answers.each{|q| q.ticket_action_id= ticket_user_action.id; @ticket.q_and_answers << q}
         ge_q_and_answers.each{|q| q.ticket_action_id= ticket_user_action.id; @ticket.ge_q_and_answers << q}
 
-        Rails.cache.delete([:new_ticket, request.remote_ip.to_s, session[:time_now]])
-        Rails.cache.delete([:ticket_params, request.remote_ip.to_s, session[:time_now]])
-        Rails.cache.delete([:created_warranty, request.remote_ip.to_s, session[:time_now]])
-        Rails.cache.delete([:existing_customer, request.remote_ip.to_s, session[:time_now]])
+        Rails.cache.delete([:new_ticket, request.remote_ip.to_s, @ticket_time_now])
+        Rails.cache.delete([:ticket_params, request.remote_ip.to_s, @ticket_time_now])
+        Rails.cache.delete([:created_warranty, request.remote_ip.to_s, @ticket_time_now])
+        Rails.cache.delete([:existing_customer, request.remote_ip.to_s, @ticket_time_now])
         Rails.cache.delete([:histories, session[:product_id]])
         session[:ticket_id] = nil
         session[:product_category_id] = nil
@@ -839,7 +843,7 @@ class TicketsController < ApplicationController
         session[:serial_no] = nil
         session[:warranty_id] = nil
         # session[:ticket_initiated_attributes] = {}
-        Rails.cache.delete([:ticket_initiated_attributes, session[:time_now]])
+        Rails.cache.delete([:ticket_initiated_attributes, @ticket_time_now])
 
         session[:time_now]= nil
 
@@ -972,13 +976,13 @@ class TicketsController < ApplicationController
     QAndA
     WorkflowMapping
 
-    @product = Product.find (params[:product_id] or session[:product_id])
-    @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
+    # @product = Product.find (params[:product_id] or session[:product_id])
+    @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, @ticket_time_now])
     @ticket.q_and_answers.clear
     @ticket.ge_q_and_answers.clear
     @ticket.attributes = ticket_params
     if @ticket.valid?
-      Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @ticket)
+      Rails.cache.write([:new_ticket, request.remote_ip.to_s, @ticket_time_now], @ticket)
       render "remarks"
     else
       render js: "alert('Please complete required questions');"
@@ -1271,7 +1275,7 @@ class TicketsController < ApplicationController
       @assign_regional_support_center = @user_ticket_action.assign_regional_support_centers.build
 
       #@ticket_workfow = @ticket.ticket_workflow_processes.where process_id: params["process_id"]
-      #@re_assignment_rq_engineer =  @ticket.ticket_engineers.where(workflow_process_id: @ticket_workfow.first.try(:id)).first 
+      #@re_assignment_rq_engineer =  @ticket.ticket_engineers.where(workflow_process_id: @ticket_workfow.first.try(:id)).first
       @engineer_id = params[:engineer_id]
       @re_assignment_rq_engineer = TicketEngineer.find @engineer_id if @engineer_id.present? and @engineer_id != "-"
       @re_assignment = @re_assignment_rq_engineer.present?
@@ -1293,7 +1297,7 @@ class TicketsController < ApplicationController
     TaskAction
     @continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
 
-    @ticket_workfows = @ticket.ticket_workflow_processes.where process_id: params["process_id"] 
+    @ticket_workfows = @ticket.ticket_workflow_processes.where process_id: params["process_id"]
     #@re_assignment_rq_engineer =  @ticket.ticket_engineers.where(workflow_process_id: @ticket_workfows.first.try(:id)).last
     engineer_id = params[:engineer_id]
     @re_assignment_rq_engineer = TicketEngineer.find engineer_id if engineer_id.present? and engineer_id != "-"
@@ -1330,7 +1334,7 @@ class TicketsController < ApplicationController
 
         if !user_assign_ticket_action.recorrection and user_assign_ticket_action.regional_support_center_job
 
-          regional_ticket_user_action = @ticket.user_ticket_actions.create(action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_id: TaskAction.find_by_action_no(4).id) #assign regional support center action.          
+          regional_ticket_user_action = @ticket.user_ticket_actions.create(action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_id: TaskAction.find_by_action_no(4).id) #assign regional support center action.
           h_assign_regional_support_center.update(ticket_action_id: regional_ticket_user_action.id)
 
         end
@@ -1522,7 +1526,7 @@ class TicketsController < ApplicationController
 
         redirect_to @ticket
       else
-        redirect_to pop_approval_tickets_path, notice: "There are no present #{@ticket.warranty_type.name} for the product to initiate particular warranty related ticket.')"  
+        redirect_to pop_approval_tickets_path, notice: "There are no present #{@ticket.warranty_type.name} for the product to initiate particular warranty related ticket.')"
       end
     else
       flash[:notice] = "ticket is not updated. Bpm error"
@@ -1685,7 +1689,7 @@ class TicketsController < ApplicationController
             d18_approve_request_store_part = "Y"
 
             @onloan_request_part.update status_action_id: SparePartStatusAction.find_by_code("APS").id
-            @onloan_request_part.ticket_on_loan_spare_part_status_actions.create(status_id: @onloan_request_part.status_action_id, done_by: current_user.id, done_at: DateTime.now) 
+            @onloan_request_part.ticket_on_loan_spare_part_status_actions.create(status_id: @onloan_request_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
 
             srn = @onloan_request_part.approved_store.srns.create(created_by: current_user.id, created_at: DateTime.now, requested_module_id: BpmModule.find_by_code("SPT").id, srn_no: CompanyConfig.first.increase_inv_last_srn_no)#inv_srn
 
@@ -1701,7 +1705,7 @@ class TicketsController < ApplicationController
 
             # @onloan_request_part.update status_action_id: SparePartStatusAction.find_by_code("CLS").id
 
-            @onloan_request_part.ticket_on_loan_spare_part_status_actions.create([{status_id: SparePartStatusAction.find_by_code("RJS").id, done_by: current_user.id, done_at: DateTime.now}, {status_id: SparePartStatusAction.find_by_code("CLS").id , done_by: current_user.id, done_at: DateTime.now}])  
+            @onloan_request_part.ticket_on_loan_spare_part_status_actions.create([{status_id: SparePartStatusAction.find_by_code("RJS").id, done_by: current_user.id, done_at: DateTime.now}, {status_id: SparePartStatusAction.find_by_code("CLS").id , done_by: current_user.id, done_at: DateTime.now}])
           end
 
           user_ticket_action = @onloan_request_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: @onloan_request_part.ticket.re_open_count, action_id: action_id)
@@ -1747,7 +1751,7 @@ class TicketsController < ApplicationController
             @ticket_spare_part.ticket_spare_part_store.update approved_inv_product_id: nil, approved_main_inv_product_id: nil, approved_store_id: nil
             @ticket_spare_part.update status_action_id: SparePartStatusAction.find_by_code("CLS").id
 
-            @ticket_spare_part.ticket_spare_part_status_actions.create([{status_id: SparePartStatusAction.find_by_code("RJS").id, done_by: current_user.id, done_at: DateTime.now}, {status_id: SparePartStatusAction.find_by_code("CLS").id , done_by: current_user.id, done_at: DateTime.now}])  
+            @ticket_spare_part.ticket_spare_part_status_actions.create([{status_id: SparePartStatusAction.find_by_code("RJS").id, done_by: current_user.id, done_at: DateTime.now}, {status_id: SparePartStatusAction.find_by_code("CLS").id , done_by: current_user.id, done_at: DateTime.now}])
           end
 
           user_ticket_action = @ticket_spare_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket_spare_part.ticket.re_open_count, action_id: action_id)
@@ -1843,7 +1847,7 @@ class TicketsController < ApplicationController
           d46_manufacture_part_approved = "Y"
 
           # @ticket_spare_part.update status_action_id: SparePartStatusAction.find_by_code("APM").id
-          @ticket_spare_part.ticket_spare_part_status_actions.create(status_id: @ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now) 
+          @ticket_spare_part.ticket_spare_part_status_actions.create(status_id: @ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
 
         else
           #Reject Spare Part Manufacture
@@ -1851,7 +1855,7 @@ class TicketsController < ApplicationController
 
           @ticket_spare_part.update status_action_id: SparePartStatusAction.find_by_code("CLS").id
 
-          @ticket_spare_part.ticket_spare_part_status_actions.create([{status_id: SparePartStatusAction.find_by_code("RJM").id, done_by: current_user.id, done_at: DateTime.now}, {status_id: SparePartStatusAction.find_by_code("CLS").id , done_by: current_user.id, done_at: DateTime.now}])  
+          @ticket_spare_part.ticket_spare_part_status_actions.create([{status_id: SparePartStatusAction.find_by_code("RJM").id, done_by: current_user.id, done_at: DateTime.now}, {status_id: SparePartStatusAction.find_by_code("CLS").id , done_by: current_user.id, done_at: DateTime.now}])
         end
 
         user_ticket_action = @ticket_spare_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket_spare_part.ticket.re_open_count, action_id: action_id)
@@ -1983,10 +1987,10 @@ class TicketsController < ApplicationController
 
         bpm_variables = view_context.initialize_bpm_variables.merge(supp_engr_user: current_user.id, d7_close_approval_requested: "Y", d4_job_complete: "Y", d9_qc_required: (@ticket.ticket_type.code == "IH" ? "Y" : "N"), d10_job_estimate_required_final: ((@ticket.cus_chargeable or @ticket.cus_payment_required) ? "Y" : "N"), d12_need_to_invoice: ((@ticket.cus_chargeable or @ticket.cus_payment_required) ? "Y" : "N"), d6_close_approval_required: "Y")
 
-        @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(55).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id) 
+        @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(55).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id)
 
         @ticket.ticket_close_approval_required = (@ticket.ticket_fsrs.any? or @ticket.ticket_spare_parts.any? or @ticket.ticket_on_loan_spare_parts.any?)
-        @ticket.ticket_close_approval_requested = true 
+        @ticket.ticket_close_approval_requested = true
         @ticket.ticket_close_approved = true
 
         if @ticket.ticket_close_approval_required
@@ -1994,10 +1998,10 @@ class TicketsController < ApplicationController
             if eng.job_close_approval_required
               @ticket.ticket_close_approval_requested = false if eng.job_close_approval_required and not eng.job_close_approval_requested
               @ticket.ticket_close_approved = false if eng.job_close_approval_required and not eng.job_close_approved
-            end            
+            end
           end
         else
-          @ticket.ticket_close_approval_requested = false 
+          @ticket.ticket_close_approval_requested = false
           @ticket.ticket_close_approved = false
         end
 
@@ -2034,7 +2038,7 @@ class TicketsController < ApplicationController
 
           ticket_spare_part_manufacture.update(collected_manufacture: true, collect_pending_manufacture: false)
           ticket_spare_part_manufacture.ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("CLT").id)
-          ticket_spare_part_manufacture.ticket_spare_part.ticket_spare_part_status_actions.create(status_id: ticket_spare_part_manufacture.ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)           
+          ticket_spare_part_manufacture.ticket_spare_part.ticket_spare_part_status_actions.create(status_id: ticket_spare_part_manufacture.ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
 
           user_ticket_action = ticket_spare_part_manufacture.ticket_spare_part.ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(36).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: ticket_spare_part_manufacture.ticket_spare_part.ticket.re_open_count)
           user_ticket_action.build_request_spare_part(ticket_spare_part_id: ticket_spare_part_manufacture.ticket_spare_part.id)
@@ -2230,9 +2234,9 @@ class TicketsController < ApplicationController
 
         receive_screen = true
 
-        spt_ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("RCS").id) 
+        spt_ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("RCS").id)
 
-        spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)   
+        spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
 
         spt_ticket_spare_part.ticket_spare_part_manufacture and spt_ticket_spare_part.ticket_spare_part_manufacture.update(received_manufacture: true)
 
@@ -2254,15 +2258,15 @@ class TicketsController < ApplicationController
       
       if !spt_ticket_spare_part.part_terminated and (!receive_screen or (receive_screen and issue)) and spt_ticket_spare_part.ticket_spare_part_manufacture.try(:received_manufacture) and !spt_ticket_spare_part.ticket_spare_part_manufacture.try(:issued)
 
-        spt_ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("ISS").id) 
-        spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now) 
+        spt_ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("ISS").id)
+        spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
 
         spt_ticket_spare_part.ticket_spare_part_manufacture and spt_ticket_spare_part.ticket_spare_part_manufacture.update(issued: true, issued_at: DateTime.now, issued_by: current_user.id)
 
         #Set Action (38) Issue Spare part, DB.spt_act_request_spare_part
         user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(38).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
         user_ticket_action.build_request_spare_part(ticket_spare_part_id: spt_ticket_spare_part.id)
-        user_ticket_action.save 
+        user_ticket_action.save
 
         # bpm output variables
         bpm_variables = view_context.initialize_bpm_variables
@@ -2329,31 +2333,31 @@ class TicketsController < ApplicationController
 
       spt_ticket_spare_part.update ticket_spare_part_params(spt_ticket_spare_part)
 
-      d33_return_part_reject = "N" 
+      d33_return_part_reject = "N"
       d34_event_closed = "N"
       d35_parts_bundle_pending = "N"
 
       if spt_ticket_spare_part.returned_part_accepted
         #Returned Part Accepted
-        spt_ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("RPA").id) 
-        spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)   
+        spt_ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("RPA").id)
+        spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
 
         #Set Action (43) Receive Returned part, DB.spt_act_request_spare_part.
         user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(43).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
         user_ticket_action.build_request_spare_part(ticket_spare_part_id: spt_ticket_spare_part.id, reject_return_part_reason_id: params[:manual_reject_return_part_reason_id])
-        user_ticket_action.save  
+        user_ticket_action.save
 
         if spt_ticket_spare_part.ticket_spare_part_manufacture.try(:ready_to_bundle)
           #Ready to Bundle
-          spt_ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("RBN").id) 
-          spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)   
+          spt_ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("RBN").id)
+          spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
 
           d35_parts_bundle_pending = TicketSparePartManufacture.where.not(id: spt_ticket_spare_part.ticket_spare_part_manufacture.id).any?{ |ticket_spare_part_manufacture| ticket_spare_part_manufacture.ready_to_bundle and not ticket_spare_part_manufacture.bundled } ? "Y" : "N"
         else
           #if no need Ready to Bundle then close
           d35_parts_bundle_pending = "Y"
-          spt_ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("CLS").id) 
-          spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)             
+          spt_ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("CLS").id)
+          spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
         end
 
         if spt_ticket_spare_part.ticket_spare_part_manufacture.try(:event_closed)
@@ -2361,7 +2365,7 @@ class TicketsController < ApplicationController
           #Set Action (44) Close Event, DB.spt_act_request_spare_part
           user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(44).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
           user_ticket_action.build_request_spare_part(ticket_spare_part_id: spt_ticket_spare_part.id, reject_return_part_reason_id: params[:manual_reject_return_part_reason_id])
-          user_ticket_action.save 
+          user_ticket_action.save
 
           d34_event_closed = "Y"
         end
@@ -2369,16 +2373,16 @@ class TicketsController < ApplicationController
       else
         #Returned Part Rejected
         part_returned_by_id = spt_ticket_spare_part.part_returned_by
-        spt_ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("RPR").id, part_returned_by: nil, part_returned_at: nil, part_returned: false) 
-        spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)   
+        spt_ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("RPR").id, part_returned_by: nil, part_returned_at: nil, part_returned: false)
+        spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
 
         #Set Action (42) Reject Returned Part, DB.spt_act_request_spare_part
         user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(42).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
         user_ticket_action.build_request_spare_part(ticket_spare_part_id: spt_ticket_spare_part.id, reject_return_part_reason_id: params[:manual_reject_return_part_reason_id])
-        user_ticket_action.save     
+        user_ticket_action.save
 
-        d33_return_part_reject = "Y"     
-      end  
+        d33_return_part_reject = "Y"
+      end
 
       # bpm output variables
       bpm_variables = view_context.initialize_bpm_variables.merge(d33_return_part_reject: d33_return_part_reject, d34_event_closed: d34_event_closed, d35_parts_bundle_pending: d35_parts_bundle_pending)
@@ -2457,7 +2461,7 @@ class TicketsController < ApplicationController
           @ticket_spare_part_manufacture.update ready_to_bundle: true, bundled: false, add_bundle_by: nil, add_bundle_at: nil
           @ticket_spare_part_manufacture.ticket_spare_part.update status_action_id: SparePartStatusAction.find_by_code("RBN").id
 
-          @ticket_spare_part_manufacture.ticket_spare_part.ticket_spare_part_status_actions.create(status_id: @ticket_spare_part_manufacture.ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now) 
+          @ticket_spare_part_manufacture.ticket_spare_part.ticket_spare_part_status_actions.create(status_id: @ticket_spare_part_manufacture.ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
 
 
           @bundle_manufactures = return_parts_bundle.ticket_spare_part_manufactures.map { |m| {id: m.id, event_no: m.event_no, ticket_no: m.ticket_spare_part.ticket_id, task_action: "remove_from_bundle", task_action_name: "remove from bundle"} }
@@ -2523,13 +2527,13 @@ class TicketsController < ApplicationController
             ticket_spare_part_manufacture.update(ready_to_bundle: false, bundled: true, add_bundle_by: current_user.id, add_bundle_at: DateTime.now)
 
             #Part Bundled
-            ticket_spare_part_manufacture.ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("BND").id) 
-            ticket_spare_part_manufacture.ticket_spare_part.ticket_spare_part_status_actions.create(status_id: ticket_spare_part_manufacture.ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)  
+            ticket_spare_part_manufacture.ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("BND").id)
+            ticket_spare_part_manufacture.ticket_spare_part.ticket_spare_part_status_actions.create(status_id: ticket_spare_part_manufacture.ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
      
             #Set Action (45) Part Bunndled, DB.spt_act_request_spare_part for all added parts
             user_ticket_action = ticket_spare_part_manufacture.ticket_spare_part.ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(45).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: ticket_spare_part_manufacture.ticket_spare_part.ticket.re_open_count)
             user_ticket_action.build_request_spare_part(ticket_spare_part_id: ticket_spare_part_manufacture.ticket_spare_part.id)
-            user_ticket_action.save 
+            user_ticket_action.save
 
           end
 
@@ -2554,7 +2558,7 @@ class TicketsController < ApplicationController
       end
     else
       flash[:error]= "Unable to update. Bpm error"
-    end      
+    end
     redirect_to todos_url
   end
 
@@ -2592,7 +2596,7 @@ class TicketsController < ApplicationController
     @continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
     if @continue
 
-      if !@return_bundle.delivered 
+      if !@return_bundle.delivered
 
         @return_bundle.update(return_bundle_params)
         @return_bundle.update(delivered: true, delivered_at: DateTime.now, delivered_by: current_user.id)
@@ -2600,13 +2604,13 @@ class TicketsController < ApplicationController
         @return_bundle.ticket_spare_part_manufactures.each do |ticket_spare_part_manufacture|
 
           #Part Closed
-          ticket_spare_part_manufacture.ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("CLS").id) 
-          ticket_spare_part_manufacture.ticket_spare_part.ticket_spare_part_status_actions.create(status_id: ticket_spare_part_manufacture.ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)  
+          ticket_spare_part_manufacture.ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("CLS").id)
+          ticket_spare_part_manufacture.ticket_spare_part.ticket_spare_part_status_actions.create(status_id: ticket_spare_part_manufacture.ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
     
           #Set Action (46) Part Bunndl Delivered for all added parts
           user_ticket_action = ticket_spare_part_manufacture.ticket_spare_part.ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(46).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: ticket_spare_part_manufacture.ticket_spare_part.ticket.re_open_count)
           user_ticket_action.build_request_spare_part(ticket_spare_part_id: ticket_spare_part_manufacture.ticket_spare_part.id)
-          user_ticket_action.save 
+          user_ticket_action.save
 
         end
       else
@@ -2622,11 +2626,11 @@ class TicketsController < ApplicationController
         flash[:notice]= "Successfully updated"
       else
         flash[:error]= "Bundle is updated. but Bpm error"
-      end            
+      end
 
     else
       flash[:error]= "Unable to update. Bpm error"
-    end      
+    end
     redirect_to todos_url
   end
 
@@ -2915,7 +2919,7 @@ class TicketsController < ApplicationController
           #Set Action (44) Close Event, DB.spt_act_request_spare_part
           user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(44).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
           user_ticket_action.build_request_spare_part(ticket_spare_part_id: ticket_spare_part.id, reject_return_part_reason_id: params[:manual_reject_return_part_reason_id])
-          user_ticket_action.save 
+          user_ticket_action.save
 
           # bpm output variables
           bpm_variables = view_context.initialize_bpm_variables
@@ -2926,7 +2930,7 @@ class TicketsController < ApplicationController
             flash[:notice]= "Successfully updated"
           else
             flash[:error]= "Close Event is updated. but Bpm error"
-          end            
+          end
         else
           flash[:notice] = "Successfully updated"
         end
@@ -3308,7 +3312,7 @@ class TicketsController < ApplicationController
 
         bpm_variables.merge! d40_ticket_approved_to_close: "Y"
 
-        # Set Action:(56)Approve Close Ticket, and  DB.spt_act_ticket_close_approve 
+        # Set Action:(56)Approve Close Ticket, and  DB.spt_act_ticket_close_approve
         user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(56).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
         user_ticket_action.build_act_ticket_close_approve(approved: true, owner_engineer_id: params[:owner_engineer_id])
         user_ticket_action.save
@@ -3319,7 +3323,7 @@ class TicketsController < ApplicationController
           @ticket.update ticket_close_approved: job_close_approved, job_closed: job_close_approved, job_closed_at: DateTime.now
 
           #Calculate Total Costs and Time
-          @ticket.calculate_ticket_total_cost 
+          @ticket.calculate_ticket_total_cost
 
           @ticket.set_ticket_close(current_user.id)
         end
@@ -3331,7 +3335,7 @@ class TicketsController < ApplicationController
         #bpm_variables.merge! d41_re_open: "Y" if @ticket.status_id == TicketStatus.find_by_code("ROP").id or !@ticket.job_finished
         bpm_variables.merge! d41_re_open: "N"
 
-#        Set Action:(66) Reject Close Ticket, and  DB.spt_act_ticket_close_approve 
+#        Set Action:(66) Reject Close Ticket, and  DB.spt_act_ticket_close_approve
         user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(66).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
         user_ticket_action.build_act_ticket_close_approve(approved: false, reject_reason_id: params[:reject_reason_id])
         user_ticket_action.save
@@ -3346,8 +3350,8 @@ class TicketsController < ApplicationController
           s.update close_approved: true, close_approved_action_id: user_ticket_action.id
 
           if s.ticket_spare_part_manufacture.present? and !CompanyConfig.first.sup_mf_parts_return_required and !s.ticket_spare_part_manufacture.po_required
-            s.update(status_action_id: SparePartStatusAction.find_by_code("CLS").id) 
-            s.ticket_spare_part_status_actions.create(status_id: s.status_action_id, done_by: current_user.id, done_at: DateTime.now) 
+            s.update(status_action_id: SparePartStatusAction.find_by_code("CLS").id)
+            s.ticket_spare_part_status_actions.create(status_id: s.status_action_id, done_by: current_user.id, done_at: DateTime.now)
           end
 
         else
@@ -3557,7 +3561,7 @@ class TicketsController < ApplicationController
         @onloan_note = params[:ticket][:ticket_on_loan_spare_parts_attributes].values.first["note"]
       end
     else
-      @spare_part_note = params[:ticket_spare_part]["note"]    
+      @spare_part_note = params[:ticket_spare_part]["note"]
     end
 
     if @continue
@@ -3566,7 +3570,7 @@ class TicketsController < ApplicationController
 
         if @srn_item.present?
 
-          @srn_item.update issue_terminated: true, issue_terminated_at: DateTime.now, issue_terminated_by: current_user.id   
+          @srn_item.update issue_terminated: true, issue_terminated_at: DateTime.now, issue_terminated_by: current_user.id
 
           bpm_variables = view_context.initialize_bpm_variables
           @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
@@ -3732,7 +3736,7 @@ class TicketsController < ApplicationController
             end
 
           end
-        end  
+        end
 
         if @issued
           gin = @srn_item.srn.gins.create(created_by: current_user.id, created_at: DateTime.now, gin_no: CompanyConfig.first.increase_inv_last_gin_no, store_id: @srn_item.srn.store.id, remarks: (@spare_part_note || @onloan_note) )#inv_gin
@@ -3769,7 +3773,7 @@ class TicketsController < ApplicationController
             action_id = TaskAction.find_by_action_no(50).id
 
             @onloan_request_part.update status_action_id: SparePartStatusAction.find_by_code("ISS").id
-            @onloan_request_part.ticket_on_loan_spare_part_status_actions.create(status_id: @onloan_request_part.status_action_id, done_by: current_user.id, done_at: DateTime.now) 
+            @onloan_request_part.ticket_on_loan_spare_part_status_actions.create(status_id: @onloan_request_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
 
             user_ticket_action = @onloan_request_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: @onloan_request_part.ticket.re_open_count, action_id: action_id)
             user_ticket_action.build_request_on_loan_spare_part(ticket_on_loan_spare_part_id: @onloan_request_part.id)
@@ -3809,7 +3813,7 @@ class TicketsController < ApplicationController
             action_id = TaskAction.find_by_action_no(48).id
 
             @ticket_spare_part.update status_action_id: SparePartStatusAction.find_by_code("ISS").id
-            @ticket_spare_part.ticket_spare_part_status_actions.create(status_id: @ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now) 
+            @ticket_spare_part.ticket_spare_part_status_actions.create(status_id: @ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
 
             user_ticket_action = @ticket_spare_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket_spare_part.ticket.re_open_count, action_id: action_id)
             user_ticket_action.build_request_spare_part(ticket_spare_part_id: @ticket_spare_part.id)
@@ -4131,13 +4135,13 @@ class TicketsController < ApplicationController
           spt_ticket_spare_part.ticket_spare_part_manufacture.update collect_pending_manufacture: false, collected_manufacture: true
 
           spt_ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("CLT").id)
-          spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)  
+          spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
 
           #Recieve Part
           #spt_ticket_spare_part.ticket_spare_part_manufacture.update_attributes recieved_manufacture: true
 
-          #spt_ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("RCS").id) 
-          #spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)   
+          #spt_ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("RCS").id)
+          #spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
         end
 
         bpm_variables = view_context.initialize_bpm_variables.merge(d30_parts_collection_pending: d30_parts_collection_pending)
@@ -4239,9 +4243,9 @@ class TicketsController < ApplicationController
         @bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT_PART_ESTIMATE", query: {ticket_id: ticket_id, part_estimation_id: @ticket_estimation.try(:id), supp_engr_user: supp_engr_user, priority: priority}
       else
         spt_ticket_spare_part.update_attributes status_action_id: SparePartStatusAction.find_by_code("STR").id
-        spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)   
+        spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
 
-        @bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT_STORE_PART_REQUEST", query: {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, request_onloan_spare_part_id: request_onloan_spare_part_id, onloan_request: onloan_request, supp_engr_user: supp_engr_user, priority: priority}            
+        @bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT_STORE_PART_REQUEST", query: {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, request_onloan_spare_part_id: request_onloan_spare_part_id, onloan_request: onloan_request, supp_engr_user: supp_engr_user, priority: priority}
       end
 
       #update record spt_ticket_spare_part
@@ -4437,7 +4441,7 @@ class TicketsController < ApplicationController
     if @continue
       if @ticket.update ticket_params
         @ticket_engineer = TicketEngineer.find params[:engineer_id]
-        @ticket_engineer.update status: 3, re_assignment_requested: true, job_completed_at: DateTime.now, job_closed_at: DateTime.now 
+        @ticket_engineer.update status: 3, re_assignment_requested: true, job_completed_at: DateTime.now, job_closed_at: DateTime.now
         @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
 
         # bpm output variables
@@ -4455,7 +4459,7 @@ class TicketsController < ApplicationController
         redirect_to @ticket, notice: @flash_message
       else
         redirect_to @ticket, alert: @flash_message
-      end    
+      end
     else
       redirect_to @ticket, alert: @flash_message
     end
@@ -4586,9 +4590,9 @@ class TicketsController < ApplicationController
         @ticket.ticket_close_approval_required = (@ticket.ticket_spare_parts.any? or @ticket.ticket_fsrs.any? or @ticket.ticket_on_loan_spare_parts.any?)
 
         if not @ticket.ticket_close_approval_required
-          @ticket.ticket_close_approval_requested = true 
+          @ticket.ticket_close_approval_requested = true
         else
-          @ticket.ticket_close_approval_requested = request_to_close 
+          @ticket.ticket_close_approval_requested = request_to_close
         end
 
         @ticket.ticket_status_resolve = TicketStatusResolve.find_by_code("TER")
@@ -4622,7 +4626,7 @@ class TicketsController < ApplicationController
         redirect_to @ticket, notice: @flash_message
       else
         redirect_to @ticket, alert: "Unable to save ticket"
-      end    
+      end
     else
       redirect_to @ticket, alert: @flash_message
     end
@@ -4644,7 +4648,7 @@ class TicketsController < ApplicationController
 
         if close_approval_requested
           @ticket.ticket_close_approval_required = (@ticket.ticket_fsrs.any? or @ticket.ticket_spare_parts.any? or @ticket.ticket_on_loan_spare_parts.any?)
-          @ticket.ticket_close_approval_requested = true 
+          @ticket.ticket_close_approval_requested = true
           @ticket.ticket_close_approved = true
 
           if @ticket.ticket_close_approval_required
@@ -4652,7 +4656,7 @@ class TicketsController < ApplicationController
               if eng.job_close_approval_required
                 @ticket.ticket_close_approval_requested = false if not eng.job_close_approval_requested
                 @ticket.ticket_close_approved = false if not eng.job_close_approved
-              end            
+              end
             end
           end
           @ticket.save
@@ -4705,7 +4709,7 @@ class TicketsController < ApplicationController
         @ticket_engineer.update status: (engineer_close_approval_required ? 2 : 3) , job_completed_at: DateTime.now, job_close_approval_required: engineer_close_approval_required, job_close_approval_requested: close_approval_requested, job_closed_at: (engineer_close_approval_required ? nil : DateTime.now)
 
         @ticket.ticket_close_approval_required = (@ticket.ticket_fsrs.any? or @ticket.ticket_spare_parts.any? or @ticket.ticket_on_loan_spare_parts.any?)
-        @ticket.ticket_close_approval_requested = true 
+        @ticket.ticket_close_approval_requested = true
         @ticket.ticket_close_approved = true
 
         final_resolution =  @ticket.ticket_engineers.none?{|eng| eng.status.to_i < 2 }
@@ -4725,10 +4729,10 @@ class TicketsController < ApplicationController
             if eng.job_close_approval_required
               @ticket.ticket_close_approval_requested = false if eng.job_close_approval_required and not eng.job_close_approval_requested
               @ticket.ticket_close_approved = false if eng.job_close_approval_required and not eng.job_close_approved
-            end            
+            end
           end
         else
-          @ticket.ticket_close_approval_requested = false 
+          @ticket.ticket_close_approval_requested = false
           @ticket.ticket_close_approved = false
         end
 
@@ -4755,15 +4759,15 @@ class TicketsController < ApplicationController
           elsif (@ticket.cus_chargeable or @ticket.cus_payment_required)
             @ticket.ticket_status = TicketStatus.find_by_code("PMT")
           else
-            @ticket.ticket_status = TicketStatus.find_by_code("CFB") 
-          end  
+            @ticket.ticket_status = TicketStatus.find_by_code("CFB")
+          end
         end
 
         @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(55).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id) if @ticket_engineer.job_close_approval_requested
 
         if final_resolution
           #Action 88 - Finish Job
-          user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(88).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id) 
+          user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(88).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id)
           user_ticket_action.build_ticket_finish_job(resolution: "")
 
           @ticket.owner_engineer_id = engineer_id if !@ticket.ticket_close_approval_required
@@ -4772,7 +4776,7 @@ class TicketsController < ApplicationController
         @ticket.save
 
         #Calculate Total Costs and Time
-        @ticket.calculate_ticket_total_cost   
+        @ticket.calculate_ticket_total_cost
 
         @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
@@ -5326,7 +5330,7 @@ class TicketsController < ApplicationController
     when "select_po"
       @po = SoPo.find_by_id params[:po_id]
       if SoPo.find_by_id params[:po_id]
-        render "tickets/view_selected_po"  
+        render "tickets/view_selected_po"
       end
     else
       render "tickets/view_po"
@@ -5420,6 +5424,11 @@ class TicketsController < ApplicationController
 
     def set_ticket
       @ticket = Ticket.find(params[:id])
+    end
+
+    def set_product_in_new_ticket
+      @ticket_time_now = params[:ticket_time_now]
+      @product = Product.find params[:product_id]
     end
 
     def set_organization_for_ticket

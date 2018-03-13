@@ -29,6 +29,7 @@
 = simple_nested_form_for ticket, url: url, remote: remote do |f|
   = hidden_field_tag :ticket_id, ticket.id
   = hidden_field_tag :product_id, @product.id
+  = hidden_field_tag :ticket_time_now, @ticket_time_now
 
   %h4 General questions
   - ge_q_and_answers.each_with_index do |ge_q_and_answer, index|

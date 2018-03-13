@@ -54,6 +54,7 @@
       #tab1.tab-pane.fade.in.active
         .serial_search.small_scale_margin-top1
           = form_tag find_by_serial_tickets_path, method: :post, remote: true do
+            = hidden_field_tag :ticket_time_now, @ticket_time_now
             = text_field_tag :serial_search, nil, class: "form-control", placeholder: "Search by serial"
 
       #tab2.tab-pane.fade

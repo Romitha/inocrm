@@ -4,6 +4,8 @@
   = simple_form_for warranty, remote: true do |f|
     = f.input :product_serial_id, as: :hidden
     = hidden_field_tag :function_param, warranty_create
+    = hidden_field_tag :product_id, product_id
+    = hidden_field_tag :ticket_time_now, @ticket_time_now
     .row
       .col-md-6
         = f.association :warranty_type, as: :radio_buttons, wrapper: :append, collection: WarrantyType.where(id: [1,2]), checked: WarrantyType.find_by_code("MW").id

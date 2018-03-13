@@ -285,18 +285,16 @@ window.Tickets =
   select_contact_person: ->
     $("#contact_person1_select, #contact_person2_select, #report_person_select").click ->
       $(@).parent().siblings(".contact_persons_form").empty()
-      $.post "/tickets/create_contact_persons", {data_param: $(@).data("param"), product_id: $(@).data("product-id")}
+      $.post "/tickets/create_contact_persons", {data_param: $(@).data("param"), product_id: $(@).data("productid"), ticket_time_now: $(@).data('tickettimenow')}
 
-  assign_contact_person: (id, contact_person, function_param)->
-    $.post "/tickets/create_contact_persons", {contact_person_id: id, contact_person: contact_person, data_param: function_param}
+  assign_contact_person: (id, contact_person, product_id, ticket_time_now, function_param)->
+    $.post "/tickets/create_contact_persons", {contact_person_id: id, contact_person: contact_person, data_param: function_param, product_id: product_id, ticket_time_now: ticket_time_now}
 
-  customer_select: (function_param, product_id, customer_id)->
-    $.get "/tickets/new_customer", {function_param: function_param, customer_id: customer_id, product_id: product_id}
+  customer_select: (function_param, product_id, ticket_time_now, customer_id)->
+    $.get "/tickets/new_customer", {function_param: function_param, customer_id: customer_id, product_id: product_id, ticket_time_now: ticket_time_now}
 
-  assign_customer: (customer_id, product_id, organization_id, function_param)->
-    # y = confirm("Are you sure?")
-    # if y
-    $.post "/tickets/create_customer", {customer_id: customer_id, product_id: product_id, organization_id: organization_id, function_param: function_param}
+  assign_customer: (customer_id, product_id, ticket_time_now, organization_id, function_param)->
+    $.post "/tickets/create_customer", {customer_id: customer_id, product_id: product_id, ticket_time_now: ticket_time_now, organization_id: organization_id, function_param: function_param}
 
   load_datapicker: ->
     $('.datepicker').datepicker

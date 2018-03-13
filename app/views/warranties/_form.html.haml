@@ -45,7 +45,7 @@
         #warranty_details
           - if display_form
 
-            = render "warranties/warranty_form", warranty: @warranty, display_form_for_pop: display_form_for_pop
+            = render "warranties/warranty_form", warranty: @warranty, display_form_for_pop: display_form_for_pop, product_id: @product.id
 
           - else
             = link_to "New Warranty", "#", onclick: "Warranties.warranty_create('display_form'); false;"
@@ -97,7 +97,7 @@
                 %br
                   .col-md-3
                     = link_to "View Contract", view_contracts_path(view_contract: true, contract_id: ticket.ticket_contract.id, customer_id: ticket.ticket_contract.organization.id), class: "btn btn-sm btn-warning", target: "_blank", remote: false
-            = link_to "Back", create_customer_tickets_path(customer_id: customer.id, product_id: @product.id), remote: true, method: :post
+            = link_to "Back", create_customer_tickets_path(customer_id: customer.id, product_id: @product.id, ticket_time_now: @ticket_time_now), remote: true, method: :post
             = link_to "Next", "#", class: "btn btn-success small_scale_margin-top2 small_scale_margin-bottom2", onclick: "Warranties.tab_trigger(); false;"
 
 
@@ -106,13 +106,13 @@
         .row
           .col-md-12
             = render "tickets/join_ticket", customer: customer, ticket: ticket# if ticket.joint_tickets.present?
-            = link_to "Back", create_customer_tickets_path(customer_id: customer.id, product_id: @product.id), remote: true, method: :post
+            = link_to "Back", create_customer_tickets_path(customer_id: customer.id, product_id: @product.id, ticket_time_now: @ticket_time_now), remote: true, method: :post
             = link_to "Next", "#", class: "btn btn-success", onclick: "Warranties.tab_trigger(); false;"
       = tab_content tabpointer: "q_and_a" do
         .row
           .col-md-12
             = render "q_and_as/q_and_a_form", customer: customer, action_no: 1, url: q_and_answer_save_tickets_path, remote: true
-            = link_to "Back", create_customer_tickets_path(customer_id: customer.id, product_id: @product.id), remote: true, method: :post, class: "customize_position"
+            = link_to "Back", create_customer_tickets_path(customer_id: customer.id, product_id: @product.id, ticket_time_now: @ticket_time_now), remote: true, method: :post, class: "customize_position"
 
 #warranties_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "warranties_modal", "aria-hidden" => true}
   .modal-dialog

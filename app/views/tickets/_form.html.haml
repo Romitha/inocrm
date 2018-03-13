@@ -40,6 +40,8 @@
             %legend Ticket
             = simple_nested_form_for ticket, remote: true, :authenticity_token => true, html: {class: "validate_form auto_save_form"} do |f|
               = hidden_field_tag :product_id, product.id
+              = hidden_field_tag :ticket_time_now, @ticket_time_now
+
               = f.input :status_id, as: :hidden
               = f.input :contract_id, as: :hidden
               = f.input :ticket_no, as: :hidden

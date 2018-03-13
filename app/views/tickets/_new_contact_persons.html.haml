@@ -51,24 +51,24 @@
 - unless ticket.ticket_contract.present?
   %strong.name_validate Customer
   = label_tag "Select Customer", class: "small_scale_margin-right1 small_scale_margin-left2" do
-    = radio_button_tag "customer_select", "select", false, class: "radio_for_customer_select", onchange: "Tickets.customer_select('select', #{product.id}); false;", required:true
+    = radio_button_tag "customer_select", "select", false, class: "radio_for_customer_select", onchange: "Tickets.customer_select('select', #{product.id}, #{@ticket_time_now}); false;", required:true
     Select
   = label_tag "New Customer" do
-    = radio_button_tag "customer_select", "create", false, class: "radio_for_customer_select", onchange: "Tickets.customer_select('create', #{product.id}); false;", required:true
+    = radio_button_tag "customer_select", "create", false, class: "radio_for_customer_select", onchange: "Tickets.customer_select('create', #{product.id}, #{@ticket_time_now}); false;", required:true
     New
 
   %hr
 
-= link_to "", contact_persons_tickets_path, remote: true, class: "glyphicon glyphicon-refresh hide", id: "create_contact_person"
+= link_to "", contact_persons_tickets_path(product_id: product.id, ticket_time_now: @ticket_time_now), remote: true, class: "glyphicon glyphicon-refresh hide", id: "create_contact_person"
 #contact_persons
   .row
     .col-md-4
       %strong.name_validate Contact person1
       = label_tag "Select", class: "small_scale_margin-right1 small_scale_margin-left2" do
-        = radio_button_tag "contact_person1", "select", false, class: "radio_for_contact_person1", data: {param: "select_contact_person1", product_id: product.id}
+        = radio_button_tag "contact_person1", "select", false, class: "radio_for_contact_person1", data: {param: "select_contact_person1", productid: product.id, tickettimenow: @ticket_time_now}
         Select
       = label_tag "Create contact person1" do
-        = radio_button_tag "contact_person1", "create", false, class: "radio_for_contact_person1", onclick: "Tickets.assign_contact_person('', '1', 'initiate_contact_person'); false;", data: {param: "create_contact_person1", product_id: product.id}
+        = radio_button_tag "contact_person1", "create", false, class: "radio_for_contact_person1", onclick: "Tickets.assign_contact_person('', '1', #{product.id}, #{@ticket_time_now}, 'initiate_contact_person'); false;", data: {param: "create_contact_person1", productid: product.id, tickettimenow: @ticket_time_now}
         Create
       #contact_persons_form1.contact_persons_form
         - if ticket.contact_person1
@@ -85,10 +85,10 @@
     .col-md-4
       %strong Contact person2
       = label_tag "Select contact person2", class: "small_scale_margin-right1 small_scale_margin-left2" do
-        = radio_button_tag "contact_person2", "select", false, class: "radio_for_contact_person2", data: {param: "select_contact_person2", product_id: product.id}
+        = radio_button_tag "contact_person2", "select", false, class: "radio_for_contact_person2", data: {param: "select_contact_person2", productid: product.id, tickettimenow: @ticket_time_now}
         Select
       = label_tag "Create contact person2" do
-        = radio_button_tag "contact_person2", "create", false, class: "radio_for_contact_person2", onclick: "Tickets.assign_contact_person('', '2', 'initiate_contact_person'); false;", data: {param: "create_contact_person2", product_id: product.id}
+        = radio_button_tag "contact_person2", "create", false, class: "radio_for_contact_person2", onclick: "Tickets.assign_contact_person('', '2', #{product.id}, #{@ticket_time_now}, 'initiate_contact_person'); false;", data: {param: "create_contact_person2", productid: product.id, tickettimenow: @ticket_time_now}
         Create
       #contact_persons_form2.contact_persons_form
         - if ticket.contact_person2
@@ -104,10 +104,10 @@
     .col-md-4
       %strong.name_validate Report person
       = label_tag "Select report person", class: "small_scale_margin-right1 small_scale_margin-left2" do
-        = radio_button_tag "report_person", "select", false, class: "radio_for_report_person", data: {param: "select_report_person", product_id: product.id}
+        = radio_button_tag "report_person", "select", false, class: "radio_for_report_person", data: {param: "select_report_person", productid: product.id, tickettimenow: @ticket_time_now}
         Select
       = label_tag "Create report person" do
-        = radio_button_tag "report_person", "create", false, class: "radio_for_report_person", onclick: "Tickets.assign_contact_person('', '3', 'initiate_contact_person'); false;", data: {param: "create_report_person", product_id: product.id}
+        = radio_button_tag "report_person", "create", false, class: "radio_for_report_person", onclick: "Tickets.assign_contact_person('', '3', #{product.id}, #{@ticket_time_now}, 'initiate_contact_person'); false;", data: {param: "create_report_person", productid: product.id, tickettimenow: @ticket_time_now}
         Create
       #report_persons_form.contact_persons_form
         - if ticket.report_person
@@ -121,10 +121,10 @@
               %br/
   .row
     .col-md-12
-      = link_to "Back", find_by_serial_tickets_path(serial_search: product.serial_no, contract_id: ticket.contract_id, product_id: product.id), remote: true, method: :post, data: {disable_with: "Please wait..."}
+      = link_to "Back", find_by_serial_tickets_path(serial_search: product.serial_no, contract_id: ticket.contract_id, product_id: product.id, ticket_time_now: @ticket_time_now), remote: true, method: :post, data: {disable_with: "Please wait..."}
       / - if ticket.contact_person1 and ticket.contact_person2 and ticket.report_person
       - if ticket.contact_person1 and ticket.report_person
-        = link_to "Next", new_warranty_path(product_id: product.id), remote: true, class: "btn btn-sm btn-success  small_scale_margin-top2 small_scale_margin-bottom2", data: {disable_with: "Please wait..."}
+        = link_to "Next", new_warranty_path(product_id: product.id, ticket_time_now: @ticket_time_now), remote: true, class: "btn btn-sm btn-success  small_scale_margin-top2 small_scale_margin-bottom2", data: {disable_with: "Please wait..."}
 
 #contact_person.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "contact_person", "aria-hidden" => true}
   .modal-dialog
