@@ -153,12 +153,12 @@ class TicketsController < ApplicationController
           @product_category = @new_product.product_category
           # session[:ticket_initiated_attributes].merge!({sla_id: (@product_category.sla_id || @product_brand.sla_id)})
 
-          ticket_attr = Rails.cache.fetch([:ticket_initiated_attributes, session[:time_now]])
-          Rails.cache.write([:ticket_initiated_attributes, session[:time_now]], ticket_attr.merge({sla_id: (@product_category.sla_id || @product_brand.sla_id)}))
+          ticket_attr = Rails.cache.fetch([:ticket_initiated_attributes, @ticket_time_now ])
+          Rails.cache.write([:ticket_initiated_attributes, @ticket_time_now ], ticket_attr.merge({sla_id: (@product_category.sla_id || @product_brand.sla_id)}))
 
           @product = @new_product
           # @ticket = @product.tickets.build session[:ticket_initiated_attributes]
-          @ticket = @product.tickets.build Rails.cache.fetch([:ticket_initiated_attributes, session[:time_now]])
+          @ticket = @product.tickets.build Rails.cache.fetch([:ticket_initiated_attributes, @ticket_time_now])
 
           @histories = Kaminari.paginate_array(@product.tickets)
           Rails.cache.write([:histories, session[:product_id]], Kaminari.paginate_array(@product.tickets))
