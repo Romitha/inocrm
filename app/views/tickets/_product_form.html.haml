@@ -10,6 +10,7 @@
 %fieldset
   %legend Product
   = simple_form_for product, url: create_product_tickets_path, multipart: true, remote: true do |f|
+    = hidden_field_tag :ticket_time_now, @ticket_time_now
     .row
       .col-md-3
         = f.association :product_brand

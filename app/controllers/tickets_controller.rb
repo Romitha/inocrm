@@ -128,6 +128,47 @@ class TicketsController < ApplicationController
     end
   end
 
+  def create_product
+    Ticket
+    ContactNumber
+    Warranty
+    @ticket_time_now = params[:ticket_time_now]
+
+    respond_to do |format|
+      if product_params[:pop_doc_url]
+        @new_product = Product.new product_params
+
+        Rails.cache.write([:new_product_with_pop_doc_url, request.remote_ip], @new_product)
+        format.js {render :new_product}
+      else
+        @new_product = (Rails.cache.read([:new_product_with_pop_doc_url, request.remote_ip]) or Product.new)
+        @new_product.attributes = product_params
+        if @new_product.save
+          Rails.cache.delete([:new_product_with_pop_doc_url, request.remote_ip])
+          session[:product_id] = @new_product.id
+          @notice = "Great! #{@new_product.serial_no} is saved."
+          @product_brand = @new_product.product_brand
+          @product_category = @new_product.product_category
+          # session[:ticket_initiated_attributes].merge!({sla_id: (@product_category.sla_id || @product_brand.sla_id)})
+
+          ticket_attr = Rails.cache.fetch([:ticket_initiated_attributes, session[:time_now]])
+          Rails.cache.write([:ticket_initiated_attributes, session[:time_now]], ticket_attr.merge({sla_id: (@product_category.sla_id || @product_brand.sla_id)}))
+
+          @product = @new_product
+          # @ticket = @product.tickets.build session[:ticket_initiated_attributes]
+          @ticket = @product.tickets.build Rails.cache.fetch([:ticket_initiated_attributes, session[:time_now]])
+
+          @histories = Kaminari.paginate_array(@product.tickets)
+          Rails.cache.write([:histories, session[:product_id]], Kaminari.paginate_array(@product.tickets))
+          @histories = Rails.cache.read([:histories, session[:product_id]]).page(params[:page]).per(3)
+          format.js {render :find_by_serial}
+        else
+          format.js {render :new_product}
+        end
+      end
+    end
+  end
+
   def update_attribute
     t_params = ticket_params
     t_params[:user_ticket_actions_attributes].first[:action_at] = Time.now if t_params[:user_ticket_actions_attributes].present?
@@ -209,46 +250,6 @@ class TicketsController < ApplicationController
   def new_product
     session[:product_id] = nil
     @new_product = Product.new serial_no: session[:serial_no]
-  end
-
-  def create_product
-    Ticket
-    ContactNumber
-    Warranty
-
-    respond_to do |format|
-      if product_params[:pop_doc_url]
-        @new_product = Product.new product_params
-
-        Rails.cache.write([:new_product_with_pop_doc_url, request.remote_ip], @new_product)
-        format.js {render :new_product}
-      else
-        @new_product = (Rails.cache.read([:new_product_with_pop_doc_url, request.remote_ip]) or Product.new)
-        @new_product.attributes = product_params
-        if @new_product.save
-          Rails.cache.delete([:new_product_with_pop_doc_url, request.remote_ip])
-          session[:product_id] = @new_product.id
-          @notice = "Great! #{@new_product.serial_no} is saved."
-          @product_brand = @new_product.product_brand
-          @product_category = @new_product.product_category
-          # session[:ticket_initiated_attributes].merge!({sla_id: (@product_category.sla_id || @product_brand.sla_id)})
-
-          ticket_attr = Rails.cache.fetch([:ticket_initiated_attributes, session[:time_now]])
-          Rails.cache.write([:ticket_initiated_attributes, session[:time_now]], ticket_attr.merge({sla_id: (@product_category.sla_id || @product_brand.sla_id)}))
-
-          @product = @new_product
-          # @ticket = @product.tickets.build session[:ticket_initiated_attributes]
-          @ticket = @product.tickets.build Rails.cache.fetch([:ticket_initiated_attributes, session[:time_now]])
-
-          @histories = Kaminari.paginate_array(@product.tickets)
-          Rails.cache.write([:histories, session[:product_id]], Kaminari.paginate_array(@product.tickets))
-          @histories = Rails.cache.read([:histories, session[:product_id]]).page(params[:page]).per(3)
-          format.js {render :find_by_serial}
-        else
-          format.js {render :new_product}
-        end
-      end
-    end
   end
 
   def new_customer
