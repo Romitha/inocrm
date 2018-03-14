@@ -48,7 +48,7 @@
             = render "warranties/warranty_form", warranty: @warranty, display_form_for_pop: display_form_for_pop, product_id: @product.id
 
           - else
-            = link_to "New Warranty", "#", onclick: "Warranties.warranty_create('display_form'); false;"
+            = link_to "New Warranty", "#", onclick: "Warranties.warranty_create('display_form', #{@product.id}, #{@ticket_time_now}); false;"
             %br
             - if @warranties.present?
               = render "warranties/select_warranties", warranties: @warranties

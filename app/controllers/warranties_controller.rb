@@ -36,7 +36,9 @@ class WarrantiesController < ApplicationController
   def create
     ContactNumber
     QAndA
-    @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
+    @ticket_time_now = params[:ticket_time_now]
+
+    @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, @ticket_time_now])
     @customer = Customer.find_by_id(session[:customer_id])
     @product = Product.find((params[:product_id] or session[:product_id]))
     @warranties = @product.warranties
@@ -46,10 +48,10 @@ class WarrantiesController < ApplicationController
     else
       @warranty = Warranty.new warranty_params
       if @warranty.save
-        Rails.cache.write([:created_warranty, request.remote_ip.to_s, session[:time_now]], @warranty)
+        Rails.cache.write([:created_warranty, request.remote_ip.to_s, @ticket_time_now], @warranty)
         @problem_category = @ticket.try :problem_category
         # @ticket.warranty_type_id = @warranty.warranty_type.id
-        Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @ticket)
+        Rails.cache.write([:new_ticket, request.remote_ip.to_s, @ticket_time_now], @ticket)
 
         @select_for_pop = true if params[:function_param] == 'select_for_pop'
         @flash_message = {notice: "Successfully updated"}

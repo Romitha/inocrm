@@ -79,7 +79,7 @@ class TicketsController < ApplicationController
 
   def find_by_serial
     serial_no = params[:serial_search]
-    @ticket_time_now = params[:ticket_time_now]
+    @ticket_time_now = (params[:ticket_time_now] || Time.now.strftime("%H%M%S") )
     if serial_no.blank?
       render js: "alert('Please enter any serial no'); Tickets.remove_ajax_loader();"
     else

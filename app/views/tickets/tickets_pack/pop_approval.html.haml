@@ -20,7 +20,7 @@
       .row
         .col-md-12
           #new_warranty_link
-            = link_to "New Warranty", "#", onclick: "Warranties.warranty_create('display_form_for_pop'); false;"
+            = link_to "New Warranty", "#", onclick: "Warranties.warranty_create('display_form_for_pop', #{product.id}); false;"
           #form_frame
             = render 'warranties/select_warranties', warranties: warranties
 
