@@ -15,7 +15,7 @@ class WarrantiesController < ApplicationController
     QAndA
     @ticket_time_now = params[:ticket_time_now]
     session[:warranty_id] = nil
-    @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
+    @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, @ticket_time_now])
     @problem_category = @ticket.try :problem_category
     @customer = Customer.find_by_id(session[:customer_id])
     @warranty = Warranty.new(product_serial_id: (params[:product_id] or session[:product_id]))

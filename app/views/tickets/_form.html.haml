@@ -115,7 +115,7 @@
                   = f.link_to_add :ticket_accessories, class: "accessory_links small_scale_padding-right2" do
                     %span.glyphicon.glyphicon-plus-sign
                     Add accessory
-                  = link_to create_accessory_tickets_path(status_param: "initiate"), remote: true, method: :post, title: "Create Accessory", class: "accessory_links", onclick: "Tickets.save_cached_ticket(); return false;" do
+                  = link_to create_accessory_tickets_path(status_param: "initiate", ticket_time_now: @ticket_time_now, product_id: product.id), remote: true, method: :post, title: "Create Accessory", class: "accessory_links", onclick: "Tickets.save_cached_ticket(); return false;" do
                     %span.glyphicon.glyphicon-plus-sign
                     Create accessory
 

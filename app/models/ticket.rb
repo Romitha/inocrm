@@ -1,6 +1,8 @@
 class Ticket < ActiveRecord::Base
   self.table_name = "spt_ticket"
 
+  attr_accessor :initiated_token
+
   include Tire::Model::Search
   include Tire::Model::Callbacks
 

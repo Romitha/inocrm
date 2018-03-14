@@ -1,5 +1,5 @@
 .row
-  = paginate customers, remote: true, method: :post if customers.present?
+  = paginate customers, remote: true, method: :post, params: {product_id: @product.id, ticket_time_now: @ticket_time_now} if customers.present?
 
   .table-responsive.col-md-8.table-stiped.table
     %table.table

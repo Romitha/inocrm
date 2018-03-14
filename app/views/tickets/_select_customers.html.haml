@@ -23,7 +23,7 @@
     #customer_second_id.tab-pane.active{:role => "tabpanel"}
       #contact_persons
         .row
-          = paginate customers, remote: true, method: :get if customers.present?
+          = paginate customers, remote: true, method: :get, params: {product_id: product.id, ticket_time_now: @ticket_time_now} if customers.present?
           .table-responsive.col-md-8.table-stiped.table
             %table.table
               %thead
@@ -62,7 +62,7 @@
                       = link_to "edit", "#", onclick: "Tickets.customer_select('create', #{product.id}, #{@ticket_time_now}, #{customer.id}); false;"
 
     #organization.tab-pane{:role => "tabpanel"}
-      = paginate organization_customers, remote: true, method: :get if organization_customers.present?
+      = paginate organization_customers, remote: true, method: :get, params: {product_id: product.id, ticket_time_now: @ticket_time_now} if organization_customers.present?
       .row
         .table-responsive.col-md-8.table-stiped.table
           %table.table

@@ -91,7 +91,7 @@
         = label_tag "Issue", "Issue"
         = check_box_tag "issue", true, false
 
-      %div{title: "#{'Part not yet collected' unless spare_part.ticket_spare_part_manufacture.try(:collected_manufacture)}"}= f.submit "Save", class: "btn btn-success", data: {disable_with: "Please wait..."}, disabled: (!spare_part.ticket_spare_part_manufacture.try(:collected_manufacture) or !(spare_part.part_terminated))
+      %div{title: "#{'Part not yet collected' unless spare_part.ticket_spare_part_manufacture.try(:collected_manufacture)}"}= f.submit "Save", class: "btn btn-success", data: {disable_with: "Please wait..."}, disabled: (!spare_part.ticket_spare_part_manufacture.try(:collected_manufacture) or (spare_part.part_terminated))
 
 
 #hold_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "hold_modal", "aria-hidden" => true}

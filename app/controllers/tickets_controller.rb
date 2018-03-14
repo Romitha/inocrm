@@ -5,7 +5,7 @@ class TicketsController < ApplicationController
     :update_terminate_job, :update_action_taken, :update_request_spare_part, :update_request_on_loan_spare_part, :update_hp_case_id, :update_resolved_job, :update_deliver_unit, :update_job_estimation_request, :update_recieve_unit, :update_un_hold, :update_check_fsr]
   before_action :set_organization_for_ticket, only: [:new, :edit, :create_customer]
 
-  before_action :set_product_in_new_ticket, only: [:create, :new_customer, :create_customer, :create_contact_persons, :contact_persons, :create_contact_person_record, :q_and_answer_save, :create_extra_remark, :finalize_ticket_save]
+  before_action :set_product_in_new_ticket, only: [:create, :save_cache_ticket, :create_accessory, :new_customer, :create_customer, :create_contact_persons, :contact_persons, :create_contact_person_record, :q_and_answer_save, :create_extra_remark, :finalize_ticket_save]
 
   # layout :workflow_diagram, only: [:workflow_diagram]
 
@@ -66,12 +66,14 @@ class TicketsController < ApplicationController
     @ticket_logged_at = DateTime.now
 
 
-    session[:time_now] = @ticket_time_now = Time.now.strftime("%H%M%S")
-    Rails.cache.write([:ticket_initiated_attributes, @ticket_time_now], {ticket_no: @ticket_no, status_id: @status.id, logged_by: current_user.id, logged_at: DateTime.now})
+    @ticket_time_now = Time.now.strftime("%H%M%S")
+    Rails.cache.write([:ticket_initiated_attributes, @ticket_time_now], {ticket_no: @ticket_no, status_id: @status.id, logged_by: current_user.id, logged_at: @ticket_logged_at })
 
     # session[:ticket_initiated_attributes] = {ticket_no: @ticket_no, status_id: @status.id, logged_by: current_user.id, logged_at: DateTime.now}
     # @ticket = Ticket.new(session[:ticket_initiated_attributes])
     @ticket = Ticket.new Rails.cache.fetch([:ticket_initiated_attributes, @ticket_time_now])
+
+    @ticket.initiated_token = @ticket_time_now
 
     Rails.cache.write([:new_ticket, request.remote_ip.to_s, @ticket_time_now], @ticket)
     respond_with(@ticket)
@@ -725,7 +727,7 @@ class TicketsController < ApplicationController
     Product
     Ticket
     Warranty
-    @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
+    @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, @ticket_time_now])
     @histories = Rails.cache.read([:histories, session[:product_id]]).page(params[:page]).per(3)
     if params[:status_param] == "initiate"
       @new_accessory = Accessory.new
@@ -735,7 +737,7 @@ class TicketsController < ApplicationController
       # @ticket = Ticket.new session[:ticket_initiated_attributes]
       @product = Product.find((params[:product_id] or session[:product_id]))
     elsif params[:status_param] == "back"
-      # @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
+      # @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, @ticket_time_now])
       # @ticket = Ticket.new session[:ticket_initiated_attributes]
       @product = Product.find((params[:product_id] or session[:product_id]))
     end
@@ -767,14 +769,14 @@ class TicketsController < ApplicationController
   end
 
   def save_cache_ticket
-    session[:time_now] ||= Time.now.strftime("%H%M%S")
-    @new_ticket = (Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]]) || Ticket.new)
+    # session[:time_now] ||= Time.now.strftime("%H%M%S")
+    @new_ticket = (Rails.cache.read([:new_ticket, request.remote_ip.to_s, @ticket_time_now]) || Ticket.new)
     @new_ticket.ticket_accessories.clear
     @new_ticket.attributes = ticket_params
 
-    Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @new_ticket)
+    Rails.cache.write([:new_ticket, request.remote_ip.to_s, @ticket_time_now], @new_ticket)
 
-    Rails.cache.read([:new_ticket, request.remote_ip.to_s, session[:time_now]])
+    Rails.cache.read([:new_ticket, request.remote_ip.to_s, @ticket_time_now])
     render plain: "OK"
   end
 
@@ -4104,9 +4106,12 @@ class TicketsController < ApplicationController
     if update_without_order
 
       spt_ticket_spare_part.save
+      spt_ticket_spare_part.ticket_spare_part_manufacture.update order_pending: 1 
       @flash_message = {notice: "Successfully updated without order"}
 
     else
+
+      spt_ticket_spare_part.ticket_spare_part_manufacture.update order_pending: nil 
 
       @continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
 
@@ -5501,7 +5506,7 @@ class TicketsController < ApplicationController
     end
 
     def ticket_spare_part_params(spt_ticket_spare_part)
-      tspt_params = params.require(:ticket_spare_part).permit(:approved_store_id, :approved_inv_product_id, :approved_main_inv_product_id, :spare_part_no, :spare_part_description, :ticket_id, :fsr_id, :cus_chargeable_part, :request_from, :faulty_serial_no, :received_part_serial_no, :received_part_ct_no, :repare_start, :repare_end, :faulty_ct_no, :note, :status_action_id, :status_use_id, :part_terminated_reason_id, :returned_part_accepted, :request_approved, ticket_attributes: [:remarks, :id], ticket_spare_part_manufacture_attributes: [:id, :event_no, :order_no, :id, :event_closed, :ready_to_bundle, :payment_expected_manufacture, :po_required], ticket_spare_part_store_attributes: [:part_of_main_product, :id, :approved_store_id, :approved_inv_product_id, :approved_main_inv_product_id, :return_part_damage, :return_part_damage_reason_id], request_spare_parts_attributes: [:reject_return_part_reason_id], ticket_on_loan_spare_parts_attributes: [:id, :approved_store_id, :approved_inv_product_id, :approved_main_inv_product_id, :approved, :ticket_id, :return_part_damage, :return_part_damage_reason_id] )
+      tspt_params = params.require(:ticket_spare_part).permit(:approved_store_id, :approved_inv_product_id, :approved_main_inv_product_id, :spare_part_no, :spare_part_description, :ticket_id, :fsr_id, :cus_chargeable_part, :request_from, :faulty_serial_no, :received_part_serial_no, :received_part_ct_no, :repare_start, :repare_end, :faulty_ct_no, :note, :status_action_id, :status_use_id, :part_terminated, :part_terminated_reason_id, :returned_part_accepted, :request_approved, ticket_attributes: [:remarks, :id], ticket_spare_part_manufacture_attributes: [:id, :event_no, :order_no, :id, :event_closed, :ready_to_bundle, :payment_expected_manufacture, :po_required], ticket_spare_part_store_attributes: [:part_of_main_product, :id, :approved_store_id, :approved_inv_product_id, :approved_main_inv_product_id, :return_part_damage, :return_part_damage_reason_id], request_spare_parts_attributes: [:reject_return_part_reason_id], ticket_on_loan_spare_parts_attributes: [:id, :approved_store_id, :approved_inv_product_id, :approved_main_inv_product_id, :approved, :ticket_id, :return_part_damage, :return_part_damage_reason_id] )
 
       tspt_params[:repare_start] = Time.strptime(tspt_params[:repare_start],'%m/%d/%Y %I:%M %p') if tspt_params[:repare_start].present?
       tspt_params[:repare_end] = Time.strptime(tspt_params[:repare_end],'%m/%d/%Y %I:%M %p') if tspt_params[:repare_end].present?

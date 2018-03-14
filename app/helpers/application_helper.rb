@@ -772,6 +772,7 @@ module ApplicationHelper
             part_next_status = SparePartStatusAction.find_by_manufacture_type_index(spare_part.spare_part_status_action.manufacture_type_index + 1)
 
             @h3_sub = " (#{part_next_status.name_next}) " if part_next_status.present?
+            @h3_sub = " [Order Updated]#{@h3_sub}" if manufacture_part.order_pending == 1
           end
 
         elsif non_stock_part

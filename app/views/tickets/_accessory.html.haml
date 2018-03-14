@@ -1,4 +1,6 @@
 = simple_form_for @new_accessory, url: create_accessory_tickets_path(status_param: "create"), method: :post, remote: true do |f|
+  = hidden_field_tag :ticket_time_now, @ticket_time_now
+  = hidden_field_tag :product_id, @product.id
   %fieldset
     %legend Create new accessory
     .row
