@@ -76,13 +76,14 @@
     = f.input :received_part_ct_no, wrapper_html: {class: "col-md-6"}
     = f.input :note, wrapper_html: {class: "col-md-12"}, input_html: {value: nil}, label: "Spare Part Note"
 
-    .col-md-12
-      = f.input :part_terminated, wrapper: :append, input_html: {class: "part_terminated_reason_check"}
+    - unless spare_part.ticket_spare_part_manufacture.try(:received_manufacture)
+      .col-md-12
+        = f.input :part_terminated, wrapper: :append, input_html: {class: "part_terminated_reason_check"}
 
-      .part_terminated_reason.hide
+        .part_terminated_reason.hide
 
-        = f.label "Part terminate reason"
-        = f.select :part_terminated_reason_id, Reason.where(terminate_spare_part: true).map{|r| [r.reason, r.id]}, {include_blank: false}, {class: "part_terminated_select"}
+          = f.label "Part terminate reason"
+          = f.select :part_terminated_reason_id, Reason.where(terminate_spare_part: true).map{|r| [r.reason, r.id]}, {include_blank: false}, {class: "part_terminated_select"}
 
     .col-md-12
       = simple_format f.object.note
@@ -91,7 +92,7 @@
         = label_tag "Issue", "Issue"
         = check_box_tag "issue", true, false
 
-      %div{title: "#{'Part not yet collected' unless spare_part.ticket_spare_part_manufacture.try(:collected_manufacture)}"}= f.submit "Save", class: "btn btn-success", data: {disable_with: "Please wait..."}, disabled: (!spare_part.ticket_spare_part_manufacture.try(:collected_manufacture) or (spare_part.part_terminated))
+      %div{title: "#{'Part not yet collected' unless spare_part.ticket_spare_part_manufacture.try(:collected_manufacture)}"}= f.submit "Save", class: "btn btn-success", data: {disable_with: "Please wait..."}, disabled: !spare_part.ticket_spare_part_manufacture.try(:collected_manufacture)
 
 
 #hold_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "hold_modal", "aria-hidden" => true}
