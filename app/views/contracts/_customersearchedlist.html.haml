@@ -8,7 +8,7 @@
 - if organizations.present?
   .row
     .col-md-12
-      = paginate organizations, remote: true, method: :get
+      = paginate organizations, remote: true, method: :get, params: {ticket_time_now: @ticket_time_now}
 
       %table.table.table-hover.table-responsive
         %thead
@@ -47,4 +47,4 @@
               - else
                 %td= link_to "Select", contracts_path(organization_id: org.id, select: true, from_where: params[:from_where], ticket_time_now: @ticket_time_now), remote: true, onclick: "Tickets.ajax_loader(); return false;"
 
-      = paginate organizations, remote: true, method: :get
+      = paginate organizations, remote: true, method: :get, params: {ticket_time_now: @ticket_time_now}

@@ -1406,7 +1406,7 @@ class InventoriesController < ApplicationController
             @inventory_serial_item.attributes = @inventory_serial_item_attributes
             @inventory_serial_item.batch_id = @inv_batch.id if @inv_batch.present?
             @inventory_serial_item.inv_status_id = InventorySerialItemStatus.find_by_code("AV").id
-            @inventory_serial_item.save
+            @inventory_serial_item.save!
 
             # inv_grn - add
             @inv_grn = Grn.new store_id: @inv_srr.store.id, grn_no: CompanyConfig.first.increase_inv_last_grn_no, srr_id: @inv_srr.id, created_by: current_user.id
