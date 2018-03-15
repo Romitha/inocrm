@@ -65,7 +65,7 @@
               %td= boolean_in_word product.corporate_product, "Yes", "No"
               %td
                 -if product.ticket_contracts.none?{|c| c.dynamic_active }
-                  = link_to "Select", find_by_serial_tickets_path(serial_search: product.serial_no), remote: true, method: :post
+                  = link_to "Select", find_by_serial_tickets_path(serial_search: product.serial_no, ticket_time_now: @ticket_time_now), remote: true, method: :post
     %hr
 -else
   %h3 Product Details

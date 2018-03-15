@@ -2,6 +2,8 @@
 
 / = collapse collapse_type: "info", labelledby: "contracts_form_collapse_search_customers", header_content: "Search Customers", collapse_link: "contracts_form_collapse_search_customers_link", collapse_id: "contracts_form_collapse", collapse_in: "in" do
 = form_tag contracts_path(contracts_callback: "search_customers", from_where: from_where), remote: true, method: :get, class: "form-horizontal" do
+  = hidden_field_tag :ticket_time_now, @ticket_time_now
+
   .row
     .col-md-3
       = label_tag "Customer Name" do

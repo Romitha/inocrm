@@ -6,6 +6,8 @@ class ContractsController < ApplicationController
     Product
     ContactNumber
 
+    @ticket_time_now = params[:ticket_time_now]
+
     if params[:search].present?
       refined_customer = params[:organization_customers].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
       params[:query] = ["accounts_dealer_types.dealer_code:CUS", refined_customer].map { |v| v if v.present? }.compact.join(" AND ")

@@ -1430,7 +1430,7 @@ class InventoriesController < ApplicationController
 
             # inv_grn_serial_item - Add
             @inv_grn_serial_item = @inv_grn_item.grn_serial_items.build
-            @inv_grn_serial_item.serial_item_id = @inventory_serial_item.id
+            @inv_grn_serial_item.inventory_serial_item = @inventory_serial_item
             @inv_grn_serial_item.remaining = !params[:damage_reason_check].present? 
             @inv_grn.save!
 

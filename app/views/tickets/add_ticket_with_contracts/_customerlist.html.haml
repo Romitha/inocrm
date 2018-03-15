@@ -3,6 +3,7 @@
 .row
   .col-md-12
     = form_tag contracts_path(contracts_callback: "search_customers", from_where: from_where), remote: true, method: :get, class: "form-horizontal" do
+      = hidden_field_tag :ticket_time_now, @ticket_time_now
       .col-md-3
         .col-md-12
           %strong Customer Name
