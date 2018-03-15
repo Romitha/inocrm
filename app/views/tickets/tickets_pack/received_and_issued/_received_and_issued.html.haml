@@ -104,12 +104,16 @@
 
 = javascript_tag do
   var check_test = function() {
+  if($(".part_terminated_reason_check").length > 0) {
   if($(".part_terminated_reason_check").is(":checked")) {
   $("input[type='submit']").prop('disabled', false);
+  $("input[name='issue']").prop('disabled', true);
   } else {
   $("input[type='submit']").prop('disabled', true);
+  $("input[name='issue']").prop('disabled', false);
   }
-  }
+  };
+  };
 
   check_test();
 
