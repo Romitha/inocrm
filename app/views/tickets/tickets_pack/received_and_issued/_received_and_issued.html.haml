@@ -103,6 +103,7 @@
       .modal-body
 
 = javascript_tag do
+  setTimeout(function(){
   var check_test = function() {
   if($(".part_terminated_reason_check").length > 0) {
   if($(".part_terminated_reason_check").is(":checked")) {
@@ -118,3 +119,4 @@
   check_test();
 
   $(".part_terminated_reason_check").change(check_test);
+  }, 300)
