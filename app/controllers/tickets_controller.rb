@@ -98,7 +98,7 @@ class TicketsController < ApplicationController
       if @product.persisted?
         @product_brand = @product.product_brand
         @product_category = @product.product_category
-        ticket_attr = Rails.cache.fetch([:ticket_initiated_attributes, @ticket_time_now])
+        ticket_attr = (Rails.cache.fetch([:ticket_initiated_attributes, @ticket_time_now]) || {})
         Rails.cache.write([:ticket_initiated_attributes, @ticket_time_now], ticket_attr.merge({sla_id: (@product_category.sla_id || @product_brand.sla_id)}))
 
         # session[:ticket_initiated_attributes].merge!({sla_id: (@product_category.sla_id || @product_brand.sla_id)})

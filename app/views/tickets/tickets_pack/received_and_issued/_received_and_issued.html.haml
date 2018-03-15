@@ -76,7 +76,7 @@
     = f.input :received_part_ct_no, wrapper_html: {class: "col-md-6"}
     = f.input :note, wrapper_html: {class: "col-md-12"}, input_html: {value: nil}, label: "Spare Part Note"
 
-    - unless spare_part.ticket_spare_part_manufacture.try(:received_manufacture)
+    - if !spare_part.ticket_spare_part_manufacture.try(:received_manufacture)
       .col-md-12
         = f.input :part_terminated, wrapper: :append, input_html: {class: "part_terminated_reason_check"}
 
@@ -105,8 +105,9 @@
 
 = javascript_tag do
   setTimeout(function(){
+  var disabled_on_load = $("input[type='submit']").prop('disabled');
   var check_test = function() {
-  if($(".part_terminated_reason_check").length > 0) {
+  if($(".part_terminated_reason_check").length > 0 && disabled_on_load) {
   if($(".part_terminated_reason_check").is(":checked")) {
   $("input[type='submit']").prop('disabled', false);
   $("input[name='issue']").prop('disabled', true);
