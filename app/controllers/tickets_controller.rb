@@ -4105,6 +4105,8 @@ class TicketsController < ApplicationController
 
     if update_without_order
 
+      @continue = true #to call update_bpm_header
+
       spt_ticket_spare_part.save
       spt_ticket_spare_part.ticket_spare_part_manufacture.update order_pending: 1 
       @flash_message = {notice: "Successfully updated without order"}

@@ -101,3 +101,16 @@
         = link_to "X", "#", class: "close", data: {dismiss: "modal"}, "aria-label"=>"Close"
         %h4.modal-title Hold and Unhold
       .modal-body
+
+= javascript_tag do
+  var check_test = function() {
+  if($(".part_terminated_reason_check").is(":checked")) {
+  $("input[type='submit']").prop('disabled', false);
+  } else {
+  $("input[type='submit']").prop('disabled', true);
+  }
+  }
+
+  check_test();
+
+  $(".part_terminated_reason_check").change(check_test);

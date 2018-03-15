@@ -1,4 +1,4 @@
-= simple_nested_form_for form_grn_item, url: update_return_store_part_inventories_path do |f|
+= simple_nested_form_for form_grn_item, url: update_return_store_part_inventories_path, method: :post do |f|
 
   = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
   = hidden_field_tag :task_id, Rails.cache.fetch([uri.path, params[:task_id]])[:task_id]

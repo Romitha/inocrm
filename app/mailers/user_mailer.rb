@@ -8,7 +8,7 @@ class UserMailer < ApplicationMailer
     # @user = user
     # email_with_name = %(umeshblader@gmail.com)
     @body = body
-    attachments.inline['header.jpeg'] = File.read(Rails.root.join('app', 'assets', 'images', 'header.jpeg'))
+    # attachments.inline['header.jpeg'] = File.read(Rails.root.join('app', 'assets', 'images', 'header.jpeg'))
     mail(options)
   end
 
