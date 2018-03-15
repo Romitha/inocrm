@@ -109,7 +109,7 @@
                 = w.input :period_onsight, label: "onsight"
               .col-md-4
                 = label_tag "Warranty Type"
-                = w.select :warranty_type_id, WarrantyType.all.collect { |p| [ p.name, p.id ] }, include_blank: true
+                = w.select :warranty_type_id, WarrantyType.all.collect { |p| [ p.name, p.id ] }, include_blank: false
               .col-md-8
                 = w.input :remarks
           - if f.object.is_a?(InventorySerialItem)
