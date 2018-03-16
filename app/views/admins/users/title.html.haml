@@ -21,6 +21,14 @@
         .panel-body
           .row.col-md-12
             .col-md-1
+              %strong Active:
+            .col-md-3
+              = link_to "#", class: "inline_edit", data: {type: "select", resource: "mst_title", source: {"1": "Active", "2": "Inactive"}, name: "active", url: title_admins_users_path(edit: true, title_id: title.id), "original-title" => "Update Active"} do
+                -if title.active
+                  Active
+                - else
+                  Inactive
+            .col-md-1
               %strong Title:
             .col-md-3
               = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "mst_title", name: "title", url: title_admins_users_path(edit: true, title_id: title.id), "original-title" => "Update Title", value: title.title}, style: "line-height: 6px;" do

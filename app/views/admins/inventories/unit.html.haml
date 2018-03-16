@@ -50,3 +50,15 @@
           %strong Description:
           = link_to "#", class: "inline_edit", data: {type: "textarea", resource: "inventory_unit", name: "description", url: unit_admins_inventories_path(edit: true, unit_id: inv_unit.id), "original-title" => "Update Inventory Unit code", value: inv_unit.description}, style: "line-height: 6px;" do
             = inv_unit.description
+      %br
+      %br
+      %br
+      %br
+      .row.col-md-12
+        .col-md-4
+          %strong Active :
+          = link_to "#", class: "inline_edit", data: {type: "select", resource: "inventory_unit", source: {"1": "Active", "2": "Inactive"}, name: "active", url: unit_admins_inventories_path(edit: true, unit_id: inv_unit.id), "original-title" => "Update Active"} do
+            -if inv_unit.active
+              Active
+            - else
+              Inactive

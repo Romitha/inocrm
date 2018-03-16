@@ -22,6 +22,17 @@
 
       .row.col-md-12
         .col-md-1
+          %strong Active:
+        .col-md-4
+          = link_to "#", class: "inline_edit", data: {type: "select", resource: "industry_type", source: {"1": "Active", "2": "Inactive"}, name: "active", url: industry_type_admins_organizations_path(edit: true, industry_type_id: ad_industry_type.id), "original-title" => "Update Active"} do
+            -if ad_industry_type.active
+              Active
+            - else
+              Inactive
+      %br
+      %br
+      .row.col-md-12
+        .col-md-1
           %strong Name:
         .col-md-4
           = link_to "#", class: "inline_edit load_style", data: {type: "text", resource: "industry_type", name: "name", url: industry_type_admins_organizations_path(edit: true, industry_type_id: ad_industry_type.id), "original-title" => "Update admin Industry Type"}, style: "line-height: 6px;" do

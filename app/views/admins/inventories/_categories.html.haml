@@ -2,6 +2,7 @@
   %table.table
     %thead
       %tr
+        %th Active
         %th Name
         %th Code
         %th Brand
@@ -9,6 +10,12 @@
     %tbody
       - @inventory_category_all.each do |inventory_category|
         %tr
+          %td
+            = link_to "#", class: "inline_edit", data: {type: "select", resource: "inventory_category3", source: {"1": "Active", "2": "Inactive"}, name: "active", url: category_admins_inventories_path(edit: true, inventory_category3_id: inventory_category.id), "original-title" => "Update Active"} do
+              -if inventory_category.active
+                Active
+              - else
+                Inactive
           %td
             = link_to "#", class: "inline_edit", data: {type: "text", resource: "inventory_category3", name: "name", url: category_admins_inventories_path(edit: true, inventory_category3_id: inventory_category.id), "original-title" => "Update Product Category"} do
               = inventory_category.name

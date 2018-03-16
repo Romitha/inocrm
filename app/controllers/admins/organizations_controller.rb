@@ -238,7 +238,7 @@ module Admins
       end
 
       def sla_params
-        params.require(:sla_time).permit(:sla_time, :description, :created_by)
+        params.require(:sla_time).permit(:sla_time, :description, :active, :created_by)
       end
 
       def sburegional_engineer_params
@@ -250,7 +250,7 @@ module Admins
     end
 
     def industry_type_params
-      params.require(:industry_type).permit(:name, :code)
+      params.require(:industry_type).permit(:name, :code, :active)
     end
   end
 end

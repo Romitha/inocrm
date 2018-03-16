@@ -72,6 +72,15 @@
           = link_to location_admins_inventories_path(edit_more: true, rack_id: rack.id), method: :post do
             %span.glyphicon.glyphicon-pencil Edit More>>
       .row.col-md-12
+        .col-md-1
+          %strong Active:
+
+        .col-md-9
+          = link_to "#", class: "inline_edit", data: {type: "select", resource: "inventory_rack", source: {"1": "Active", "2": "Inactive"}, name: "active", url: location_admins_inventories_path(edit: true, rack_id: rack.id), "original-title" => "Update Active"} do
+            -if rack.active
+              Active
+            - else
+              Inactive
         .col-md-2
           %strong Rack Description:
         .col-md-4
@@ -97,6 +106,7 @@
                 .col-md-9
                   = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "inventory_shelf", name: "description", url: location_admins_inventories_path(edit: true, shelf_id: shelf.id), "original-title" => "Update shelf description", value: ""}, style: "line-height: 6px;" do
                     = shelf.description
+
               .row.col-md-12
                 / - shelf.inventory_bins.each do |bin|
                 /   .panel.panel-info
@@ -114,7 +124,6 @@
                         - unless bin.is_used_anywhere?
                           = link_to delete_location_bin_admins_inventories_path(bin_id: bin.id), method: :delete, rel: "tooltip", :data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Delete" do
                             %span.glyphicon.glyphicon-trash
-
                       .row.col-md-12
                         .col-md-3
                           %strong Bin Description:

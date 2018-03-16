@@ -10,11 +10,18 @@
     = collapse collapse_type: "success", labelledby: "labelledby_#{inventory_brand.id}", header_content: inventory_brand.name, collapse_link: "link_#{inventory_brand.id}", collapse_id: "product_brand" do
       .row
         .col-md-4
+          %strong Active:
+          = link_to "#", class: "inline_edit", data: {type: "select", resource: "inventory_category1", source: {"1": "Active", "2": "Inactive"}, name: "active", url: inventory_brand_admins_inventories_path(edit: true, inventory_category1_id: inventory_brand.id), "original-title" => "Update Active"} do
+            -if inventory_brand.active
+              Active
+            - else
+              Inactive
+        .col-md-4
           %strong Brand code:
           = link_to "#", class: "inline_edit", data: {type: "text", resource: "inventory_category1", name: "code", url: inventory_brand_admins_inventories_path(edit: true, inventory_category1_id: inventory_brand.id), "original-title" => "Update Product Category"} do
             = inventory_brand.code
 
-        .col-md-5
+        .col-md-4
           %strong Brand name:
           = link_to "#", class: "inline_edit", data: {type: "text", resource: "inventory_category1", name: "name", url: inventory_brand_admins_inventories_path(edit: true, inventory_category1_id: inventory_brand.id), "original-title" => "Update Product Category"} do
             = inventory_brand.name
