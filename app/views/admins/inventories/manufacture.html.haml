@@ -22,6 +22,17 @@
       /   .panel-body
       .row.col-md-12
         .col-md-2
+          %strong Active:
+        .col-md-4
+          = link_to "#", class: "inline_edit", data: {type: "select", resource: "manufacture", source: {"1": "Active", "2": "Inactive"}, name: "active", url: manufacture_admins_inventories_path(edit: true, manufacture_id: maf.id),"original-title" => "Update Active"} do
+            -if maf.active
+              Active
+            - else
+              Inactive
+      %br
+      %br
+      .row.col-md-12
+        .col-md-2
           %strong Manufacture:
         .col-md-4
           = link_to "#", class: "inline_edit load_style", data: {type: "textarea", resource: "manufacture", name: "manufacture", url: manufacture_admins_inventories_path(edit: true, manufacture_id: maf.id), "original-title" => "Update rack description", value: ""}, style: "line-height: 6px;" do

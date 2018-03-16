@@ -2279,7 +2279,7 @@ module Admins
       end
 
       def inventory_rack_params
-        params.require(:inventory_rack).permit(:description, :location_id, :aisle_image, :created_by, :updated_by,inventory_shelfs_attributes: [:_destroy, :id, :description, :created_by, :updated_by, inventory_bins_attributes: [:_destroy, :id, :description, :created_by, :updated_by]])
+        params.require(:inventory_rack).permit(:description, :active, :location_id, :aisle_image, :created_by, :updated_by,inventory_shelfs_attributes: [:_destroy, :id, :description, :created_by, :updated_by, inventory_bins_attributes: [:_destroy, :id, :description, :created_by, :updated_by]])
       end
 
       def inventory_shelf_params
@@ -2291,15 +2291,15 @@ module Admins
       end
 
       def inventory_category1_params
-        params.require(:inventory_category1).permit(:code, :name, :created_by, :created_by)
+        params.require(:inventory_category1).permit(:code, :active, :name, :created_by, :created_by)
       end
 
       def inventory_category3_params
-        params.require(:inventory_category3).permit(:code, :name, :created_by, :category2_id)
+        params.require(:inventory_category3).permit(:code, :name, :created_by, :category2_id, :active)
       end
 
       def inventory_category2_params
-        params.require(:inventory_category2).permit(:code, :name, :created_by, :category1_id)
+        params.require(:inventory_category2).permit(:code, :name, :created_by, :category1_id, :active)
       end
 
       def inventory_product_params
@@ -2311,23 +2311,23 @@ module Admins
       end
 
       def inventory_product_condition_params
-        params.require(:product_condition).permit(:condition, :created_by, :updated_by)
+        params.require(:product_condition).permit(:condition, :active, :created_by, :updated_by)
       end
 
       def inventory_disposal_method_params
-        params.require(:inventory_disposal_method).permit(:disposal_method, :created_by, :updated_by)
+        params.require(:inventory_disposal_method).permit(:disposal_method, :active, :created_by, :updated_by)
       end
 
       def inventory_reason_params
-        params.require(:inventory_reason).permit(:srn_issue_terminate, :damage, :srr, :disposal, :reason, :created_by, :updated_by)
+        params.require(:inventory_reason).permit(:srn_issue_terminate, :active, :damage, :srr, :disposal, :reason, :created_by, :updated_by)
       end
 
       def inventory_manufacture_params
-        params.require(:manufacture).permit(:manufacture, :created_by, :created_by)
+        params.require(:manufacture).permit(:manufacture, :active, :created_by, :created_by)
       end
 
       def inventory_unit_params
-        params.require(:inventory_unit).permit(:unit, :base_unit_conversion, :per_base_unit, :description, :created_by, :updated_by)
+        params.require(:inventory_unit).permit(:unit, :active, :base_unit_conversion, :per_base_unit, :description, :created_by, :updated_by)
       end
 
       def inventory_po_item_params

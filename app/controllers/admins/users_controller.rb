@@ -66,7 +66,7 @@ module Admins
     private
 
       def title_params
-        params.require(:mst_title).permit(:title)
+        params.require(:mst_title).permit(:title, :active)
       end
   end
 end

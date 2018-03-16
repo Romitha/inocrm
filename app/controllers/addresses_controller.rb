@@ -61,7 +61,6 @@ class AddressesController < ApplicationController
       format.html {redirect_to (@address.addressable_type == "User" ? profile_user_path(@address.addressable) : polymorphic_path([@address.addressable])), notice: "Address is successfully deleted."}
     end
   end
-
   def make_primary_address
     @organization = Organization.find params[:organization_id]
 

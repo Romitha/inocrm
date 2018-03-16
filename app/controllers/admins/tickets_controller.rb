@@ -771,30 +771,30 @@ module Admins
     private
 
       def admin_payment_item_params
-        params.require(:payment_item).permit(:name, :default_amount)
+        params.require(:payment_item).permit(:name, :active, :default_amount)
       end
 
       def reason_params
-        params.require(:reason).permit(:hold, :sla_pause, :re_assign_request, :terminate_job, :terminate_spare_part, :warranty_extend, :spare_part_unused, :reject_returned_part, :reject_close, :adjust_terminate_job_payment, :reason)
+        params.require(:reason).permit(:hold, :sla_pause, :active, :re_assign_request, :terminate_job, :terminate_spare_part, :warranty_extend, :spare_part_unused, :reject_returned_part, :reject_close, :adjust_terminate_job_payment, :reason)
       end
 
       def accessory_params
-        params.require(:accessory).permit(:accessory)
+        params.require(:accessory).permit(:accessory, :active)
       end
 
       def additional_charge_params
-        params.require(:additional_charge).permit(:additional_charge, :default_cost_price, :default_estimated_price)
+        params.require(:additional_charge).permit(:additional_charge, :active, :default_cost_price, :default_estimated_price)
       end
 
       def spare_part_description_params
-        params.require(:spare_part_description).permit(:description)
+        params.require(:spare_part_description).permit(:description, :active)
       end
 
       def ticket_start_action_params
         params.require(:ticket_start_action).permit(:action, :active)
       end
       def feedback_params
-        params.require(:feedback).permit(:feedback)
+        params.require(:feedback).permit(:feedback, :active)
       end
 
       def ge_q_and_a_params
@@ -802,7 +802,7 @@ module Admins
       end
 
       def problem_category_params
-        params.require(:problem_category).permit(:name ,q_and_as_attributes: [:_destroy, :id, :question, :answer_type, :active, :action_id, :compulsory])
+        params.require(:problem_category).permit(:name , :active, q_and_as_attributes: [:_destroy, :id, :question, :answer_type, :active, :action_id, :compulsory])
       end
 
       def problem_category2_params
@@ -814,11 +814,11 @@ module Admins
       end
 
       def dispatch_method_params
-        params.require(:dispatch_method).permit(:name)
+        params.require(:dispatch_method).permit(:name, :active)
       end
 
       def payment_term_params
-        params.require(:payment_term).permit(:name, :description)
+        params.require(:payment_term).permit(:name, :description, :active)
       end
 
       def tax_params
@@ -830,24 +830,24 @@ module Admins
       end
 
       def brands_and_category_params
-        params.require(:product_brand).permit(:organization_id, :currency_id, :sla_id, :name, :parts_return_days, :warranty_date_format, :contract_no_value, product_categories_attributes: [:_destroy, :id, :sla_id, :name, :contract_no_value], product_brand_costs_attributes: [:id, :engineer_cost, :support_engineer_cost, :currency_id, :updated_by], brand_documents_attributes: [:id, :_destroy, :code, :name, :description, :document, :document_file_name])
+        params.require(:product_brand).permit(:organization_id, :active, :currency_id, :sla_id, :name, :parts_return_days, :warranty_date_format, :contract_no_value, product_categories_attributes: [:_destroy, :id, :sla_id, :name, :contract_no_value], product_brand_costs_attributes: [:id, :engineer_cost, :support_engineer_cost, :currency_id, :updated_by], brand_documents_attributes: [:id, :_destroy, :code, :name, :description, :document, :document_file_name])
       end
 
       def product_category1_params
-        params.require(:product_category1).permit(:name, :product_brand_id,:contract_no_value)
+        params.require(:product_category1).permit(:name, :product_brand_id, :contract_no_value, :active)
       end
       def product_category2_params
-        params.require(:product_category2).permit(:name, :product_category1_id,:contract_no_value)
+        params.require(:product_category2).permit(:name, :product_category1_id,:contract_no_value, :active)
       end
       def product_category3_params
-        params.require(:product_category).permit(:name, :sla_id, :product_category2_id,:contract_no_value)
+        params.require(:product_category).permit(:name, :sla_id, :product_category2_id,:contract_no_value, :active)
       end
       def product_category_params
         params.require(:product_category).permit(:name, :sla_id)
       end
 
       def annexture_params
-        params.require(:documents_annexture).permit(:name, :template_name, :document_url)
+        params.require(:documents_annexture).permit(:name, :template_name, :document_url, :active)
       end
   end
 end
