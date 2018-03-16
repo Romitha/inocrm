@@ -58,8 +58,8 @@
                     %td
                       = link_to customer.organization.name, organization_path(customer.organization), target: "_blank" if customer.organization
                     %td
-                      = link_to "select", "#", onclick: "Tickets.assign_customer('#{customer.id}', #{product.id}, #{@ticket_time_now}, '', 'select'); false;"
-                      = link_to "edit", "#", onclick: "Tickets.customer_select('create', #{product.id}, #{@ticket_time_now}, #{customer.id}); false;"
+                      = link_to "select", "#", onclick: "Tickets.assign_customer('#{customer.id}', '#{product.id}', '#{@ticket_time_now}', '', 'select'); false;"
+                      = link_to "edit", "#", onclick: "Tickets.customer_select('create', '#{product.id}', '#{@ticket_time_now}', '#{customer.id}'); false;"
 
     #organization.tab-pane{:role => "tabpanel"}
       = paginate organization_customers, remote: true, method: :get, params: {product_id: product.id, ticket_time_now: @ticket_time_now} if organization_customers.present?
@@ -88,7 +88,7 @@
                       %br/
                       = org.primary_address.address3
                     %td
-                      = link_to "select", "#", onclick: "Tickets.assign_customer('', #{product.id}, #{@ticket_time_now}, '#{org.id}', 'create'); false;"
+                      = link_to "select", "#", onclick: "Tickets.assign_customer('', '#{product.id}', '#{@ticket_time_now}', '#{org.id}', 'create'); false;"
                   - else
                     %td{colspan: 2} No primary address for the customer. Please Set any primary address.
 

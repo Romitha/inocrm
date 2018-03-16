@@ -51,10 +51,10 @@
 - unless ticket.ticket_contract.present?
   %strong.name_validate Customer
   = label_tag "Select Customer", class: "small_scale_margin-right1 small_scale_margin-left2" do
-    = radio_button_tag "customer_select", "select", false, class: "radio_for_customer_select", onchange: "Tickets.customer_select('select', #{product.id}, #{@ticket_time_now}); false;", required:true
+    = radio_button_tag "customer_select", "select", false, class: "radio_for_customer_select", onchange: "Tickets.customer_select('select', '#{product.id}', '#{@ticket_time_now}'); false;", required:true
     Select
   = label_tag "New Customer" do
-    = radio_button_tag "customer_select", "create", false, class: "radio_for_customer_select", onchange: "Tickets.customer_select('create', #{product.id}, #{@ticket_time_now}); false;", required:true
+    = radio_button_tag "customer_select", "create", false, class: "radio_for_customer_select", onchange: "Tickets.customer_select('create', '#{product.id}', '#{@ticket_time_now}'); false;", required:true
     New
 
   %hr
@@ -68,7 +68,7 @@
         = radio_button_tag "contact_person1", "select", false, class: "radio_for_contact_person1", data: {param: "select_contact_person1", productid: product.id, tickettimenow: @ticket_time_now}
         Select
       = label_tag "Create contact person1" do
-        = radio_button_tag "contact_person1", "create", false, class: "radio_for_contact_person1", onclick: "Tickets.assign_contact_person('', '1', #{product.id}, #{@ticket_time_now}, 'initiate_contact_person'); false;", data: {param: "create_contact_person1", productid: product.id, tickettimenow: @ticket_time_now}
+        = radio_button_tag "contact_person1", "create", false, class: "radio_for_contact_person1", onclick: "Tickets.assign_contact_person('', '1', '#{product.id}', '#{@ticket_time_now}', 'initiate_contact_person'); false;", data: {param: "create_contact_person1", productid: product.id, tickettimenow: @ticket_time_now}
         Create
       #contact_persons_form1.contact_persons_form
         - if ticket.contact_person1
@@ -88,7 +88,7 @@
         = radio_button_tag "contact_person2", "select", false, class: "radio_for_contact_person2", data: {param: "select_contact_person2", productid: product.id, tickettimenow: @ticket_time_now}
         Select
       = label_tag "Create contact person2" do
-        = radio_button_tag "contact_person2", "create", false, class: "radio_for_contact_person2", onclick: "Tickets.assign_contact_person('', '2', #{product.id}, #{@ticket_time_now}, 'initiate_contact_person'); false;", data: {param: "create_contact_person2", productid: product.id, tickettimenow: @ticket_time_now}
+        = radio_button_tag "contact_person2", "create", false, class: "radio_for_contact_person2", onclick: "Tickets.assign_contact_person('', '2', '#{product.id}', '#{@ticket_time_now}', 'initiate_contact_person'); false;", data: {param: "create_contact_person2", productid: product.id, tickettimenow: @ticket_time_now}
         Create
       #contact_persons_form2.contact_persons_form
         - if ticket.contact_person2
@@ -107,7 +107,7 @@
         = radio_button_tag "report_person", "select", false, class: "radio_for_report_person", data: {param: "select_report_person", productid: product.id, tickettimenow: @ticket_time_now}
         Select
       = label_tag "Create report person" do
-        = radio_button_tag "report_person", "create", false, class: "radio_for_report_person", onclick: "Tickets.assign_contact_person('', '3', #{product.id}, #{@ticket_time_now}, 'initiate_contact_person'); false;", data: {param: "create_report_person", productid: product.id, tickettimenow: @ticket_time_now}
+        = radio_button_tag "report_person", "create", false, class: "radio_for_report_person", onclick: "Tickets.assign_contact_person('', '3', '#{product.id}', '#{@ticket_time_now}', 'initiate_contact_person'); false;", data: {param: "create_report_person", productid: product.id, tickettimenow: @ticket_time_now}
         Create
       #report_persons_form.contact_persons_form
         - if ticket.report_person

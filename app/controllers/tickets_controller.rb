@@ -294,7 +294,7 @@ class TicketsController < ApplicationController
 
   def create
     # Rails.cache.write(:ticket_params, ticket_params)
-    session[:time_now] ||= Time.now.strftime("%H%M%S")
+    # session[:time_now] ||= Time.now.strftime("%H%M%S")
     @new_ticket = (Rails.cache.read([:new_ticket, request.remote_ip.to_s, @ticket_time_now]) || Ticket.new)
     @new_ticket.ticket_accessories.clear
     @new_ticket.attributes = ticket_params
