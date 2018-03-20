@@ -82,7 +82,7 @@ Rails.application.configure do
 
   # config.assets.paths << Rails.root.join('app', 'assets', 'fonts')
   # config.assets.precompile += %w( .svg .eot .woff .ttf )
-  config.action_mailer.default_url_options = { host: ENV.fetch("INOCRM_EMAIL_HOST") { '192.168.100.155' } }
+  config.action_mailer.default_url_options = { host: ENV.fetch("INOCRM_EMAIL_HOST") { '192.168.50.155' } }
 
   config.action_mailer.raise_delivery_errors = false
   config.action_mailer.delivery_method = :smtp
