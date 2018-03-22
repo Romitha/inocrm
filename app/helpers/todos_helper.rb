@@ -137,6 +137,7 @@ module TodosHelper
         # "lk.inova:INOCRM:1.0.0.9"
         # "lk.inova:INOCRM:1.0.1.0"
         # "lk.inova:INOCRM:1.0.2.4"
+        # "lk.inova:INOCRM:1.0.3.1"
         "lk.inova:INOCRM:1.0.2.5"
       when "production"
         # "lk.inova:INOCRM:1.0.0.4"
