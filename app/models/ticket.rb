@@ -666,7 +666,7 @@ class TicketContract < ActiveRecord::Base
   accepts_nested_attributes_for :contract_payment_installments, allow_destroy: true
   has_many :products, through: :contract_products
 
-  belongs_to :sla_time, foreign_key: :sla_id
+  belongs_to :sla_time,-> { where(active: true) }, foreign_key: :sla_id
   belongs_to :organization, foreign_key: :customer_id
   belongs_to :ticket_contract_type, foreign_key: :contract_type_id
   belongs_to :ticket_currency, foreign_key: :currency_id
