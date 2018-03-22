@@ -143,29 +143,39 @@ class TicketsController < ApplicationController
         Rails.cache.write([:new_product_with_pop_doc_url, request.remote_ip], @new_product)
         format.js {render :new_product}
       else
-        @new_product = (Rails.cache.read([:new_product_with_pop_doc_url, request.remote_ip]) or Product.new)
-        @new_product.attributes = product_params
-        if @new_product.save
-          Rails.cache.delete([:new_product_with_pop_doc_url, request.remote_ip])
-          session[:product_id] = @new_product.id
-          @notice = "Great! #{@new_product.serial_no} is saved."
-          @product_brand = @new_product.product_brand
-          @product_category = @new_product.product_category
-          # session[:ticket_initiated_attributes].merge!({sla_id: (@product_category.sla_id || @product_brand.sla_id)})
-
-          ticket_attr = Rails.cache.fetch([:ticket_initiated_attributes, @ticket_time_now ])
-          Rails.cache.write([:ticket_initiated_attributes, @ticket_time_now ], ticket_attr.merge({sla_id: (@product_category.sla_id || @product_brand.sla_id)}))
-
-          @product = @new_product
-          # @ticket = @product.tickets.build session[:ticket_initiated_attributes]
-          @ticket = @product.tickets.build Rails.cache.fetch([:ticket_initiated_attributes, @ticket_time_now])
-
-          @histories = Kaminari.paginate_array(@product.tickets)
-          Rails.cache.write([:histories, session[:product_id]], Kaminari.paginate_array(@product.tickets))
-          @histories = Rails.cache.read([:histories, session[:product_id]]).page(params[:page]).per(3)
-          format.js {render :find_by_serial}
+        if params[:edit]
+          @product = Product.find(params[:product_id])
+          if @product.update product_params
+            params[:edit] = nil
+            render json: @product
+          else
+            render json: @product.errors.full_messages.join
+          end
         else
-          format.js {render :new_product}
+          @new_product = (Rails.cache.read([:new_product_with_pop_doc_url, request.remote_ip]) or Product.new)
+          @new_product.attributes = product_params
+          if @new_product.save
+            Rails.cache.delete([:new_product_with_pop_doc_url, request.remote_ip])
+            session[:product_id] = @new_product.id
+            @notice = "Great! #{@new_product.serial_no} is saved."
+            @product_brand = @new_product.product_brand
+            @product_category = @new_product.product_category
+            # session[:ticket_initiated_attributes].merge!({sla_id: (@product_category.sla_id || @product_brand.sla_id)})
+
+            ticket_attr = Rails.cache.fetch([:ticket_initiated_attributes, @ticket_time_now ])
+            Rails.cache.write([:ticket_initiated_attributes, @ticket_time_now ], ticket_attr.merge({sla_id: (@product_category.sla_id || @product_brand.sla_id)}))
+
+            @product = @new_product
+            # @ticket = @product.tickets.build session[:ticket_initiated_attributes]
+            @ticket = @product.tickets.build Rails.cache.fetch([:ticket_initiated_attributes, @ticket_time_now])
+
+            @histories = Kaminari.paginate_array(@product.tickets)
+            Rails.cache.write([:histories, session[:product_id]], Kaminari.paginate_array(@product.tickets))
+            @histories = Rails.cache.read([:histories, session[:product_id]]).page(params[:page]).per(3)
+            format.js {render :find_by_serial}
+          else
+            format.js {render :new_product}
+          end
         end
       end
     end
@@ -2814,7 +2824,16 @@ class TicketsController < ApplicationController
 
     render "tickets/tickets_pack/customer_inquire/customer_inquire"
   end
-
+  def onloan_return_pending_parts
+    Product
+    TicketSparePart
+    if params[:search].present?
+      refined_onloan_return_pending_parts = params[:search_return_part].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
+    end
+    params[:query] = refined_onloan_return_pending_parts
+    @return_parts = TicketOnLoanSparePart.search(params)
+    render "onloan_returns/onloan_return_pending_parts"
+  end
   def delete_add_edit_contract
     Ticket
     User

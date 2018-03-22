@@ -65,6 +65,7 @@
             %li{role: "presentation", class: "#{can?(:customer_search, Organization) ? '' : 'disabled'}"}= link_to "Customer Product", customer_search_contracts_path, class: "#{can?(:customer_search, Organization) ? '' : 'disabled'}"
             %li{role: "presentation", class: "#{can?(:view, Organization) ? '' : 'disabled'}"}= link_to "Customer Contract", contracts_path, class: "#{can?(:view, Organization) ? '' : 'disabled'}"
             %li{role: "presentation", class: "#{can?(:customer_inquire, Ticket) ? '' : 'disabled'}"}= link_to "Customer Inquire", customer_inquire_tickets_path, class: "#{can?(:customer_inquire, Ticket) ? '' : 'disabled'}"
+            %li= link_to "Onloan Returns Pending Parts", onloan_return_pending_parts_tickets_path
             %li{role: "presentation", class: "#{can?(:customer_advance_payment, Ticket) ? '' : 'disabled'}"}= link_to "Customer Advance Payment", customer_advance_payment_tickets_path, class: "#{can?(:customer_advance_payment, Ticket) ? '' : 'disabled'}"
             %li{role: "presentation", class: "#{can?(:view_delivered_bundle, (TicketSparePart and ReturnPartsBundle)) ? '' : 'disabled'}"}= link_to "View Delivered Bundle", view_delivered_bundle_tickets_path, class: "#{can?(:view_delivered_bundle, (TicketSparePart and ReturnPartsBundle)) ? '' : 'disabled'}"
             %li{role: "presentation", class: "#{can?(:create_po, SoPo) ? '' : 'disabled'}"}= link_to "Create PO", hp_po_tickets_path, class: "#{can?(:create_po, SoPo) ? '' : 'disabled'}"
