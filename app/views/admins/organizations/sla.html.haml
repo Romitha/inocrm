@@ -21,7 +21,7 @@
       .row
         .col-md-12
           %strong Active :
-          = link_to "#", class: "inline_edit", data: {type: "select", resource: "sla_time", source: {"1": "Active", "2": "Inactive"}, name: "active", url: sla_admins_organizations_path(edit: true, sla_id: sla.id), "original-title" => "Update Active"} do
+          = link_to "#", class: "inline_edit", data: {type: "select", resource: "sla_time", source: {"1" => "Active", "2" => "Inactive"}, name: "active", url: sla_admins_organizations_path(edit: true, sla_id: sla.id), "original-title" => "Update Active"} do
             -if sla.active
               Active
             - else
