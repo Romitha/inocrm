@@ -38,5 +38,5 @@
         = f.input :care_pack_reg_no, label: "Care pack reg number"
       .col-md-6
         = f.input :note, input_html: {rows: 1}
-    = link_to "Cancel", "#", onclick: "Warranties.warranty_create('#{warranty_create}', '#{warranty.product.id}', #{@ticket_time_now}); false;"
+    = link_to "Cancel", "#", onclick: "Warranties.warranty_create('#{warranty_create}', '#{warranty.product.id}', '#{@ticket_time_now}'); false;"
     = f.submit "Save", class: "btn btn-info"
