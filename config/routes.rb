@@ -198,6 +198,7 @@ Rails.application.routes.draw do
       get "create_invoice_for_hp"
       get "terminate_job_foc_approval"
       get "customer_inquire"
+      get "onloan_return_pending_parts"
       match "add_edit_contract", to: "tickets#add_edit_contract", via: [:get, :post, :put]
       delete "delete_add_edit_contract"
       get "inform_customer_in_modal"

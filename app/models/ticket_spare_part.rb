@@ -335,6 +335,69 @@ end
 class TicketOnLoanSparePart < ActiveRecord::Base
   self.table_name = "spt_ticket_on_loan_spare_part"
 
+  include Tire::Model::Search
+  include Tire::Model::Callbacks
+  
+  mapping do
+    indexes :inventory_product, type: "nested", include_in_parent: true
+  end
+
+  def self.search(params)
+    tire.search(page: (params[:page] || 1), per_page: (params[:per_page] || 10)) do
+      query do
+        boolean do
+          must { string params[:query] } if params[:query].present?
+          must { range :issued_at, gte: params[:issued_date_from].to_date.beginning_of_day } if params[:issued_date_from].present?
+          must { range :issued_at, lte: params[:issued_date_to].to_date.end_of_day } if params[:issued_date_to].present?
+        end
+      end
+      if params[:sort_by]
+        sort { by :issued_at, {order: "ASC", ignore_unmapped: true} }
+      end
+    end
+  end
+
+  def to_indexed_json
+    Product
+    to_json(
+      only: [:id, :store_id, :requested_by, :issued_by, :issued_at, :requested_quantity, :created_at, :updated_at],
+      methods: [:store_name, :ticket_id, :ticket_no, :part_status, :rejected_reason, :formatted_issued_at, :issued_user, :requested_user],
+      include: {
+        inventory_product: {
+          only: [:id, :description],
+          methods: [:category3_id, :category2_id, :category1_id, :generated_item_code],
+        },
+        ticket_spare_part:{
+          only: [:id, :spare_part_no, :spare_part_description],
+        },
+      },
+    )
+  end
+  def issued_user
+    issued_by_user.try(:full_name)
+  end
+  def requested_user
+    user.try(:full_name)
+  end
+
+  def formatted_issued_at
+    issued_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
+  end
+  def store_name
+    store.try(:name)
+  end
+  def ticket_no
+    ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
+  end
+  def ticket_id
+    ticket.try(:id)
+  end
+  def part_status
+    spare_part_status_action.try(:name)
+  end
+  def rejected_reason
+    part_terminated_reason.try(:reason)
+  end
   belongs_to :ticket_spare_part, foreign_key: :ref_spare_part_id
   belongs_to :ticket, foreign_key: :ticket_id
   accepts_nested_attributes_for :ticket, allow_destroy: true
@@ -344,6 +407,7 @@ class TicketOnLoanSparePart < ActiveRecord::Base
   belongs_to :inventory_product, foreign_key: :inv_product_id
   belongs_to :main_inventory_product, class_name: "InventoryProduct", foreign_key: :main_inv_product_id
   belongs_to :spare_part_status_use, foreign_key: :status_use_id
+  belongs_to :issued_by_user ,class_name: "User", foreign_key: :issued_by
 
   belongs_to :approved_store, class_name: "Organization", foreign_key: :approved_store_id
   belongs_to :approved_inventory_product, class_name: "InventoryProduct", foreign_key: :approved_inv_product_id
