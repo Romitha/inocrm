@@ -120,7 +120,7 @@
             .col-md-2
               %strong Active:
             .col-md-4
-              = link_to "#", class: "inline_edit", data: {type: "select", resource: "product_brand", source: {"1": "Active", "2": "Inactive"}, name: "active", url: brands_and_category_admins_tickets_path(edit: true, brands_and_category_id: brands_and_category.id), "original-title" => "Update Active"} do
+              = link_to "#", class: "inline_edit", data: {type: "select", resource: "product_brand", source: {"1"=> "Active", "2"=> "Inactive"}, name: "active", url: brands_and_category_admins_tickets_path(edit: true, brands_and_category_id: brands_and_category.id), "original-title" => "Update Active"} do
                 -if brands_and_category.active
                   Active
                 - else

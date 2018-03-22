@@ -11,7 +11,7 @@
       .row
         .col-md-4
           %strong Active:
-          = link_to "#", class: "inline_edit", data: {type: "select", resource: "inventory_category1", source: {"1": "Active", "2": "Inactive"}, name: "active", url: inventory_brand_admins_inventories_path(edit: true, inventory_category1_id: inventory_brand.id), "original-title" => "Update Active"} do
+          = link_to "#", class: "inline_edit", data: {type: "select", resource: "inventory_category1", source: {"1"=> "Active", "2"=> "Inactive"}, name: "active", url: inventory_brand_admins_inventories_path(edit: true, inventory_category1_id: inventory_brand.id), "original-title" => "Update Active"} do
             -if inventory_brand.active
               Active
             - else
