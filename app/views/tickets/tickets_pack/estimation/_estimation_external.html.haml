@@ -17,7 +17,7 @@
     %h4 Selected external estimation
 
     %strong
-      - if ticket.ticket_deliver_units.any?{|d| !d.received}
+      - if estimation.ticket.ticket_deliver_units.any?{|d| !d.received}
         Unit Delivered 
 
 - ticket_estimation_externals.each do |estimation_external|
