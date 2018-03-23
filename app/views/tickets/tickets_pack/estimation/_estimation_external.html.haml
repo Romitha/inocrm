@@ -16,6 +16,10 @@
   .col-md-12
     %h4 Selected external estimation
 
+    %strong
+      - if ticket.ticket_deliver_units.any?{|d| !d.received}
+        Unit Delivered 
+
 - ticket_estimation_externals.each do |estimation_external|
   - if estimation_external.description.present?
     - total_estimated += (estimation.approval_required ? estimation_external.approved_estimated_price : estimation_external.estimated_price).to_i
@@ -186,7 +190,8 @@
         = f.input :cust_approved, as: :radio_buttons, collection: {approved: true, rejected: false}, wrapper: :append, label: false, input_html: {class: "approve_radio_button"}
         = f.input :note, input_html: {value: nil}
         = simple_format f.object.note
-        - if ticket_estimation_externals.present?
+        - if ticket_estimation_externals.present? and not (estimation.ticket.ticket_deliver_units.any?{|d| !d.received} or estimation.ticket.job_finished) 
+
           .request_part_check
             = label_tag "Request to deliver unit"
             = check_box_tag :request_deliver_unit, true, (estimation.advance_payment_amount.to_f == 0)
