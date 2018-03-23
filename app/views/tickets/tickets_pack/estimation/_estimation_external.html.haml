@@ -16,9 +16,9 @@
   .col-md-12
     %h4 Selected external estimation
 
-    %strong
-      - if estimation.ticket.ticket_deliver_units.any?{|d| !d.received}
-        Unit Delivered 
+    - if estimation.ticket.ticket_deliver_units.any?{|d| !d.received}
+      %strong.red
+        Unit Delivered: #{estimation.ticket.ticket_deliver_units.select{|d| !d.received}.last.try(:organization).try(:name)}
 
 - ticket_estimation_externals.each do |estimation_external|
   - if estimation_external.description.present?

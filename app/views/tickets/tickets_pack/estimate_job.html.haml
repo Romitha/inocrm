@@ -64,7 +64,7 @@
                         .append_profit_margin{ data: {estimate: te.object.estimated_price.to_f, cost: te.object.cost_price.to_f}}= (te.object.estimated_price.to_f/te.object.cost_price.to_f - 1)*100 if te.object.cost_price.to_f > 0
 
                     - if ticket.ticket_deliver_units.any?{|d| !d.received}
-                      %strong
+                      %strong.red
                         Unit Delivered to: #{ticket.ticket_deliver_units.select{|d| !d.received}.last.try(:organization).try(:name)}
 
                     .panel-group

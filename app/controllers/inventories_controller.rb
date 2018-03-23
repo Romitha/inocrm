@@ -1025,6 +1025,9 @@ class InventoriesController < ApplicationController
 
           if bpm_response[:status].upcase == "SUCCESS"
 
+            view_context.ticket_bpm_headers params[:process_id], @ticket.id
+            Rails.cache.delete([:workflow_header, params[:process_id]])
+
             email_template = EmailTemplate.find_by_code("EXTERNAL_JOB_UNIT_COLLECTED")           
             email_to = User.find_by_id(@ticket_deliver_unit.created_by).try(:email)
             if email_template.try(:active)
