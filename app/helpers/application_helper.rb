@@ -139,10 +139,8 @@ module ApplicationHelper
     accessory4 = accessories.fourth.try(:accessory)
     accessory5 = accessories.fifth.try(:accessory)
     accessory_other = ticket.other_accessories
-    problem_des1 = ticket.problem_description.to_s[0..31]
-    problem_des2 = ticket.problem_description.to_s[32..63]
-    resolution_summary1 = ticket.resolution_summary.to_s[0..31]
-    resolution_summary2 = ticket.resolution_summary.to_s[32..63]
+    problem_des1 = ticket.problem_description
+    resolution_summary1 = ticket.resolution_summary
     invoice_no = (final_invoice and final_invoice.invoice_no.to_s.rjust(6, INOCRM_CONFIG['invoice_no_format']))
 
     if customer_feedback
@@ -177,8 +175,8 @@ module ApplicationHelper
 
     right_data = {
       "Other Accessories :" => (accessory_other.present? ? [accessory_other.to_s[0..25], accessory_other[26..49], accessory_other[50..74]].compact : ''),
-      "Reported failure :" => [problem_des1, problem_des2],
-      "Resolution :" => [resolution_summary1, resolution_summary2],
+      "Reported failure :" => (problem_des1.present? ? [problem_des1.to_s[0..31], problem_des1.to_s[32..63]].compact : ''),
+      "Resolution :" => (resolution_summary1.present? ? [resolution_summary1.to_s[0..31], resolution_summary1.to_s[32..63]].compact : ''),
       "Invoice #:" => invoice_no,
       "Delivery Date :" => deliver_datetime,
       "Delivery Method :" => deliver_method,

@@ -4028,7 +4028,13 @@ class TicketsController < ApplicationController
       TicketEstimation
       @ticket_deliver_unit = @ticket.ticket_deliver_units.build
 
-      @report_bys = @ticket.ticket_estimation_externals.select{|ts| ((ts.ticket_estimation.status_id == EstimationStatus.find_by_code("EST").id) or (ts.ticket_estimation.status_id == EstimationStatus.find_by_code("CLS").id) or (ts.ticket_estimation.status_id == EstimationStatus.find_by_code("APP").id)) and ((ts.ticket_estimation.cust_approved) or ( !ts.ticket_estimation.cust_approval_required)) }.map { |ts| [ts.organization.name, ts.organization.id] }
+      @report_bys = if @ticket.ticket_estimation_externals.present?
+
+        # @report_bys = @ticket.ticket_estimation_externals.select{|ts| ((ts.ticket_estimation.status_id == EstimationStatus.find_by_code("EST").id) or (ts.ticket_estimation.status_id == EstimationStatus.find_by_code("CLS").id) or (ts.ticket_estimation.status_id == EstimationStatus.find_by_code("APP").id)) and ((ts.ticket_estimation.cust_approved) or ( !ts.ticket_estimation.cust_approval_required)) }.map { |ts| [ts.organization.name, ts.organization.id] }
+        @ticket.ticket_estimation_externals.select{ |ts| ["EST", "CLS", "APP"].include?(ts.ticket_estimation.estimation_status.code) and (ts.ticket_estimation.cust_approved or !ts.ticket_estimation.cust_approval_required ) }.map { |ts| [ts.organization.name, ts.organization.id] }
+      else
+        Organization.organization_suppliers.map { |o| [o.name, o.id] }
+      end
 
     when "edit_serial_no_request"
       @serial_request = @user_ticket_action.build_serial_request
