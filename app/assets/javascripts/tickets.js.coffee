@@ -1323,12 +1323,8 @@ window.Tickets =
   decendent_cus: ->
     org = $(":selected","#organization_with_decendent").val()
     if org == ""
-      $(".decendent").addClass("hide");
+      $(".decendent").addClass("hide")
     else
-      $(".decendent").removeClass("hide");
-  sla_priority_change: ->
-    org = $(":selected","#sla_change").val()
-    alert org
-    console.log org
+      $(".decendent").removeClass("hide")
 
     
