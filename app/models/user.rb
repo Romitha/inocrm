@@ -31,8 +31,8 @@ class User < ActiveRecord::Base
   belongs_to :organization
 
   has_many :so_pos, foreign_key: :created_by
-  has_many :sbu_engineers, foreign_key: :engineer_id
-  has_many :sbus, through: :sbu_engineers, source: :sbu
+  has_many :sbu_engineers,-> { where(active: true) }, foreign_key: :engineer_id
+  has_many :sbus,-> { where(active: true) }, through: :sbu_engineers, source: :sbu
 
   has_many :sbu_regional_engineers, foreign_key: :engineer_id
   has_many :regional_support_centers, through: :sbu_regional_engineers
@@ -172,10 +172,10 @@ class Customer < ActiveRecord::Base
   has_many :tickets, foreign_key: :customer_id
 
   has_many :contact_type_values, foreign_key: :customer_id
-  has_many :contact_types, through: :contact_type_values
+  has_many :contact_types,-> { where(active: true) }, through: :contact_type_values
   accepts_nested_attributes_for :contact_type_values, :allow_destroy => true
 
-  belongs_to :mst_title, foreign_key: :title_id
+  belongs_to :mst_title,-> { where(active: true) }, foreign_key: :title_id
 
   validates_presence_of [:name, :address1]
   # validates :address4, presence: {message: "City can't be blank"}
@@ -242,11 +242,11 @@ class ContactPerson1 < ActiveRecord::Base
   has_many :regular_customers
 
   has_many :contact_person_contact_types, foreign_key: :contact_report_person_id
-  has_many :contact_types, through: :contact_person_contact_types
+  has_many :contact_types,-> { where(active: true) }, through: :contact_person_contact_types
   accepts_nested_attributes_for :contact_person_contact_types, allow_destroy: true, reject_if: :all_blank
 
 
-  belongs_to :mst_title, foreign_key: :title_id
+  belongs_to :mst_title,-> { where(active: true) }, foreign_key: :title_id
   validates_presence_of [:title_id, :name]
 
   def full_name
@@ -300,11 +300,11 @@ class ContactPerson2 < ActiveRecord::Base
   has_many :regular_customers
 
   has_many :contact_person_contact_types, foreign_key: :contact_report_person_id
-  has_many :contact_types, through: :contact_person_contact_types
+  has_many :contact_types,-> { where(active: true) }, through: :contact_person_contact_types
   accepts_nested_attributes_for :contact_person_contact_types, allow_destroy: true, reject_if: :all_blank
 
 
-  belongs_to :mst_title, foreign_key: :title_id
+  belongs_to :mst_title,-> { where(active: true) }, foreign_key: :title_id
   validates_presence_of [:title_id, :name]
 
   def full_name
@@ -356,11 +356,11 @@ class ReportPerson < ActiveRecord::Base
   end
 
   has_many :contact_person_contact_types, foreign_key: :contact_report_person_id
-  has_many :contact_types, through: :contact_person_contact_types
+  has_many :contact_types,-> { where(active: true) }, through: :contact_person_contact_types
   accepts_nested_attributes_for :contact_person_contact_types, allow_destroy: true, reject_if: :all_blank
 
   
-  belongs_to :mst_title, foreign_key: :title_id
+  belongs_to :mst_title,-> { where(active: true) }, foreign_key: :title_id
   validates_presence_of [:title_id, :name]
 
   def full_name
@@ -435,7 +435,7 @@ end
 class SbuEngineer < ActiveRecord::Base
   self.table_name = "mst_spt_sbu_engineer"
 
-  belongs_to :sbu, foreign_key: :sbu_id
+  belongs_to :sbu,-> { where(active: true) }, foreign_key: :sbu_id
   belongs_to :engineer, class_name: "User", foreign_key: :engineer_id
 
   has_many :ticket_engineers, foreign_key: :sbu_id
@@ -448,7 +448,7 @@ end
 class Sbu < ActiveRecord::Base
   self.table_name = "mst_spt_sbu"
 
-  has_many :sbu_engineers, foreign_key: :sbu_id
+  has_many :sbu_engineers,-> { where(active: true) }, foreign_key: :sbu_id
   accepts_nested_attributes_for :sbu_engineers, allow_destroy: true
   has_many :engineers, through: :sbu_engineers, source: :engineer
   has_many :user_assign_ticket_actions, foreign_key: :sbu_id

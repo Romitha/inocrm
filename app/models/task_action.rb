@@ -3,7 +3,7 @@ class TaskAction < ActiveRecord::Base
 
   has_many :q_and_as, foreign_key: :action_id
 
-  has_many :ge_q_and_as, foreign_key: :action_id
+  has_many :ge_q_and_as,-> { where(active: true) }, foreign_key: :action_id
 
   has_many :user_ticket_actions, foreign_key: :action_id
 end
@@ -118,7 +118,7 @@ class ActTicketCloseApprove < ActiveRecord::Base
   self.table_name = "spt_act_ticket_close_approve"
 
   belongs_to :user_ticket_action, foreign_key: :ticket_action_id
-  belongs_to :reason, foreign_key: :reject_reason_id
+  belongs_to :reason,-> { where(active: true) }, foreign_key: :reject_reason_id
   belongs_to :user, foreign_key: :owner_engineer_id
 
 end
@@ -127,7 +127,7 @@ class UserAssignTicketAction < ActiveRecord::Base
   self.table_name = "spt_act_assign_ticket"
 
   belongs_to :user_ticket_action, foreign_key: :ticket_action_id
-  belongs_to :sbu, foreign_key: :sbu_id
+  belongs_to :sbu,-> { where(active: true) }, foreign_key: :sbu_id
   belongs_to :assign_to_user, class_name: "User", foreign_key: :assign_to
 end
 
@@ -178,7 +178,7 @@ class TicketTerminateJob < ActiveRecord::Base
   self.table_name = "spt_act_terminate_job"
 
   belongs_to :user_ticket_action, foreign_key: :ticket_action_id
-  belongs_to :reason, foreign_key: :reason_id
+  belongs_to :reason,-> { where(active: true) }, foreign_key: :reason_id
 end
 
 class ActTerminateJobPayment < ActiveRecord::Base
@@ -186,10 +186,10 @@ class ActTerminateJobPayment < ActiveRecord::Base
 
   belongs_to :user_ticket_action, foreign_key: :ticket_action_id
   belongs_to :ticket, foreign_key: :ticket_id
-  belongs_to :payment_item, foreign_key: :payment_item_id
+  belongs_to :payment_item,-> { where(active: true) }, foreign_key: :payment_item_id
 
   belongs_to :currency
-  belongs_to :reason, foreign_key: :adjust_reason_id
+  belongs_to :reason,-> { where(active: true) }, foreign_key: :adjust_reason_id
 
   has_many :ticket_invoice_terminates, foreign_key: :terminate_job_payment_id
   has_many :act_terminate_job_payments, through: :ticket_invoice_terminates
@@ -215,7 +215,7 @@ class ActHold < ActiveRecord::Base
   self.table_name = "spt_act_hold"
 
   belongs_to :user_ticket_action, foreign_key: :ticket_action_id
-  belongs_to :reason, foreign_key: :reason_id
+  belongs_to :reason,-> { where(active: true) }, foreign_key: :reason_id
 
   validates :reason_id, presence: true
 
@@ -292,7 +292,7 @@ class InformCustomer < ActiveRecord::Base
 
   belongs_to :user_ticket_action, foreign_key: :ticket_action_id
 
-  belongs_to :ticket_contact_type, foreign_key: :contact_type_id
+  belongs_to :ticket_contact_type,-> { where(active: true) }, foreign_key: :contact_type_id
 
 end
 

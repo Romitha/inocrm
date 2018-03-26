@@ -17,13 +17,13 @@ class Organization < ActiveRecord::Base
 
   has_one :account
   accepts_nested_attributes_for :account, allow_destroy: true
-  has_one :industry_type, through: :account
+  has_one :industry_type,-> { where(active: true) }, through: :account
   has_many :accounts_dealer_types, through: :account
 
   has_many :users
   has_many :customers
   accepts_nested_attributes_for :customers, allow_destroy: true
-  has_many :product_brands
+  has_many :product_brands, -> { where(active: true) }
 
   has_many :document_attachments, as: :attachable
   accepts_nested_attributes_for :document_attachments, allow_destroy: true
@@ -40,7 +40,7 @@ class Organization < ActiveRecord::Base
   # has_many :departments, class_name: "Organization", foreign_key: "department_org_id" # foreign_key refers belongs_to below.
   # belongs_to :department_org, class_name: "Organization" # org_department refers foreign_key above
 
-  belongs_to :organization_type, foreign_key: :type_id
+  belongs_to :organization_type,-> { where(active: true) }, foreign_key: :type_id
 
   has_many :ticket_estimation_externals, foreign_key: :repair_by_id
 
@@ -52,7 +52,7 @@ class Organization < ActiveRecord::Base
   has_many :act_job_estimations, foreign_key: :supplier_id
 
   has_many :inventories, foreign_key: :store_id
-  has_many :inventory_products, through: :inventories
+  has_many :inventory_products,-> { where(active: true) }, through: :inventories
 
   has_many :ticket_spare_part_stores, foreign_key: :store_id
 
@@ -428,11 +428,11 @@ class Account < ActiveRecord::Base
   self.table_name = "accounts"
 
   belongs_to :organization
-  belongs_to :industry_type, foreign_key: :industry_types_id
+  belongs_to :industry_type,-> { where(active: true) }, foreign_key: :industry_types_id
   belongs_to :account_manager, class_name: "User"
 
   has_many :accounts_dealer_types
-  has_many :dealer_types, through: :accounts_dealer_types
+  has_many :dealer_types,-> { where(active: true) }, through: :accounts_dealer_types
 
   validates_uniqueness_of :code, if: Proc.new { |account| account.code.present?}, message: "This code has already been taken"
 
@@ -476,7 +476,7 @@ end
 class AccountsDealerType < ActiveRecord::Base
   self.table_name = "accounts_dealer_type"
 
-  belongs_to :dealer_type, foreign_key: :dealer_types_id
+  belongs_to :dealer_type,-> { where(active: true) }, foreign_key: :dealer_types_id
   belongs_to :account
 
   def dealer_id
