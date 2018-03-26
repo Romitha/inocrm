@@ -44,7 +44,7 @@
       .col-md-3
         = f.association :product_pop_status, collection: ProductPopStatus.first(3), include_blank: false, wrapper_html: {class: "col-md-11"}, label: "Product POP status"
       .col-md-3
-        = f.association :product_sold_country, wrapper_html: {class: "col-md-11"}, label_method: :Country, value_method: :id
+        = f.association :product_sold_country, wrapper_html: {class: "col-md-11"}, label_method: :country_name_with_code, value_method: :id
         .add_sign
           = link_to create_product_country_tickets_path(status_param: "initiate"), method: :post, remote: true, title: "Country" do
             %span.glyphicon.glyphicon-plus-sign

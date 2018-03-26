@@ -21,7 +21,7 @@
           %dt Customer code:
           %dd= organization.account.code
           %dt Industry type:
-          %dd= organization.industry_type.name
+          %dd= organization.industry_type.try(:name)
       .col-md-5
         %dl.dl-horizontal
           %dt Created at:
@@ -167,7 +167,7 @@
                     .col-md-4
                       = f.input :pop_note
                     .col-md-3
-                      = f.association :product_sold_country, label_method: :Country
+                      = f.association :product_sold_country, label_method: :country_name_with_code
                     - if f.object.persisted?
                       .col-md-3
                         %strong.small_scale_padding-bottom3{style: "display: block;"} POP note document
@@ -341,7 +341,7 @@
               .col-md-4
                 = f.input :pop_note
               .col-md-3
-                = f.association :product_sold_country, label_method: :Country
+                = f.association :product_sold_country, label_method: :country_name_with_code
               .col-md-3
                 %strong.small_scale_padding-bottom3{style: "display: block;"} POP note document
                 = f.label "Upload pop note"

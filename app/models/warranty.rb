@@ -40,7 +40,7 @@ class Warranty < ActiveRecord::Base
   def warranty_type_name
     warranty_type.try(:name)
   end
-  belongs_to :warranty_type
+  belongs_to :warranty_type,-> { where(active: true) }
 
   belongs_to :product, foreign_key: :product_serial_id
 
@@ -64,7 +64,7 @@ class ActionWarrantyRepairType < ActiveRecord::Base
 
   belongs_to :ticket_repair_type, foreign_key: :ticket_repair_type_id
 
-  belongs_to :warranty_type, foreign_key: :ticket_warranty_type_id
+  belongs_to :warranty_type,-> { where(active: true) }, foreign_key: :ticket_warranty_type_id
 
 end
 

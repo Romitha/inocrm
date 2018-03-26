@@ -5228,7 +5228,7 @@ class TicketsController < ApplicationController
   def suggesstion_data
     TicketSparePart
     respond_to do |format|
-      format.json {render json: SparePartDescription.all.map { |s| s.description }} # ["DESC1", "desc2"]
+      format.json {render json: SparePartDescription.active_spare_part_descriptions.map { |s| s.description }} # ["DESC1", "desc2"]
     end
   end
 

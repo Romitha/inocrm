@@ -822,7 +822,7 @@ module Admins
       end
 
       def tax_params
-        params.require(:tax).permit(:id, :tax, :description, tax_rates_attributes: [:_destroy, :id, :tax_id, :rate, :created_by, :active])
+        params.require(:tax).permit(:id, :tax,:active, :description, tax_rates_attributes: [:_destroy, :id, :tax_id, :rate, :created_by, :active])
       end
 
       def tax_rate_params
