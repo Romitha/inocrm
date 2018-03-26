@@ -503,7 +503,7 @@ class Ticket < ActiveRecord::Base
   has_many :ticket_fsrs
   accepts_nested_attributes_for :ticket_fsrs, allow_destroy: true
 
-  has_many :ticket_deliver_units
+  has_many :ticket_deliver_units, -> { order("created_at ASC") }
   accepts_nested_attributes_for :ticket_deliver_units, allow_destroy: true
 
   has_many :act_terminate_job_payments

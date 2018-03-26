@@ -728,7 +728,10 @@ module ApplicationHelper
       repair_type = "[#{@ticket.ticket_repair_type.name}]" if @ticket.ticket_repair_type.code == "EX"
 
       # delivery_stage = @ticket.ticket_deliver_units.any?{|d| !d.received} ? "[to-be collected]" : (@ticket.ticket_deliver_units.any?{|d| !d.delivered_to_sup} ? "[to-be delivered]" : "")
-      delivery_stage =  @ticket.ticket_deliver_units.any?{|d| !d.delivered_to_sup} ? "[to-be delivered]" : (@ticket.ticket_deliver_units.any?{|d| !d.received} ? "[to-be collected]" : "")
+      tdu = @ticket.ticket_deliver_units.last
+      if tdu.present?
+        delivery_stage =  !tdu.delivered_to_sup ? "[to-be delivered]" : (!tdu.collected ? "[to-be collected]" : "")
+      end
 
       custormer_approval_pending = "[Customer Approval Pending]" if @ticket.ticket_estimations.any?{ |estimation| estimation.cust_approval_required and !estimation.cust_approved_at.present? }
 
