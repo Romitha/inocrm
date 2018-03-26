@@ -2,7 +2,7 @@ class SlaTime < ActiveRecord::Base
   self.table_name = "mst_spt_sla"
 
   has_many :tickets, foreign_key: :sla_id
-  has_many :product_brands, foreign_key: :sla_id
+  has_many :product_brands, -> { where(active: true) },foreign_key: :sla_id
   has_many :product_categories, foreign_key: :sla_id
   has_many :ticket_contracts, foreign_key: :sla_id
   # belongs_to :ticket, foreign_key: :ticket_id

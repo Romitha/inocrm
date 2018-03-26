@@ -15,7 +15,7 @@ class ContactNumber < ActiveRecord::Base
   belongs_to :country, class_name: "ProductSoldCountry"
   belongs_to :province
   belongs_to :district
-  belongs_to :organization_contact_type, foreign_key: :type_id
+  belongs_to :organization_contact_type,-> { where(active: true) }, foreign_key: :type_id
 
   def contact_info
     "#{organization_contact_type.try(:name)} : #{value}"
@@ -25,7 +25,7 @@ end
 
 class ContactTypeValidate < ActiveRecord::Base
   self.table_name = "mst_contact_type_validate"
-  has_many :contact_type, foreign_key: :validate_id
+  has_many :contact_type,-> { where(active: true) }, foreign_key: :validate_id
 
 end
 
@@ -49,7 +49,7 @@ class ContactTypeValue < ActiveRecord::Base
   self.table_name = "spt_customer_contact_type"
 
   belongs_to :customer
-  belongs_to :contact_type
+  belongs_to :contact_type,-> { where(active: true) }
 
   def contact_info
     "#{contact_type.try(:name)} : #{value}"
@@ -62,7 +62,7 @@ class ContactPersonContactType < ActiveRecord::Base
   belongs_to :contact_person1, foreign_key: :contact_report_person_id
   belongs_to :contact_person2, foreign_key: :contact_report_person_id
   belongs_to :report_person, foreign_key: :contact_report_person_id
-  belongs_to :contact_type, foreign_key: :contact_type_id
+  belongs_to :contact_type,-> { where(active: true) }, foreign_key: :contact_type_id
 
   validates_presence_of [:contact_type_id, :value]
 
@@ -89,9 +89,9 @@ end
 class OrganizationContactPerson < ActiveRecord::Base
   self.table_name = "organization_contact_person"
   belongs_to :organization
-  belongs_to :contact_person_type
-  belongs_to :mst_title, foreign_key: :title_id
-  belongs_to :contact_person_type, foreign_key: :type_id
+  belongs_to :contact_person_type, -> { where(active: true) }
+  belongs_to :mst_title, -> { where(active: true) },foreign_key: :title_id
+  belongs_to :contact_person_type,-> { where(active: true) }, foreign_key: :type_id
 
   has_many :contact_person_primary_type_connectors, foreign_key: :contact_person_id
   has_many :contact_person_primary_types, through: :contact_person_primary_type_connectors

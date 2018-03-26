@@ -38,6 +38,7 @@ window.Tickets =
     @edit_fsr_travel_hours()
     @filter_category_report()
     @filter_category_ticket_report()
+    @sla_priority_change()
     return
 
   initial_loaders: ->
@@ -1325,3 +1326,9 @@ window.Tickets =
       $(".decendent").addClass("hide");
     else
       $(".decendent").removeClass("hide");
+  sla_priority_change: ->
+    org = $(":selected","#sla_change").val()
+    alert org
+    console.log org
+
+    

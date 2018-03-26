@@ -437,11 +437,11 @@ class Ticket < ActiveRecord::Base
   end
 
   belongs_to :ticket_type, foreign_key: :ticket_type_id
-  belongs_to :warranty_type, foreign_key: :warranty_type_id
-  belongs_to :job_type, foreign_key: :job_type_id
-  belongs_to :inform_method, foreign_key: :informed_method_id
-  belongs_to :problem_category, foreign_key: :problem_category_id
-  belongs_to :ticket_contact_type, foreign_key: :contact_type_id
+  belongs_to :warranty_type,-> { where(active: true) }, foreign_key: :warranty_type_id
+  belongs_to :job_type,-> { where(active: true) }, foreign_key: :job_type_id
+  belongs_to :inform_method, -> { where(active: true) },foreign_key: :informed_method_id
+  belongs_to :problem_category, -> { where(active: true) },foreign_key: :problem_category_id
+  belongs_to :ticket_contact_type,-> { where(active: true) }, foreign_key: :contact_type_id
   belongs_to :ticket_contract, foreign_key: :contract_id
   belongs_to :ticket_status, foreign_key: :status_id
   belongs_to :ticket_currency, foreign_key: :base_currency_id
@@ -450,13 +450,13 @@ class Ticket < ActiveRecord::Base
   belongs_to :contact_person1, foreign_key: :contact_person1_id
   belongs_to :contact_person2, foreign_key: :contact_person2_id
   belongs_to :report_person, foreign_key: :reporter_id
-  belongs_to :sla_time, foreign_key: :sla_id
+  belongs_to :sla_time,-> { where(active: true) }, foreign_key: :sla_id
   belongs_to :ticket_status_resolve, foreign_key: :status_resolve_id
   belongs_to :repair_type, foreign_key: :repair_type_id
   belongs_to :manufacture_currency, class_name: "Currency", foreign_key: :manufacture_currency_id
-  belongs_to :ticket_start_action, foreign_key: :job_started_action_id
+  belongs_to :ticket_start_action,-> { where(active: true) }, foreign_key: :job_started_action_id
   belongs_to :ticket_repair_type, foreign_key: :repair_type_id
-  belongs_to :reason, foreign_key: :hold_reason_id
+  belongs_to :reason,-> { where(active: true) }, foreign_key: :hold_reason_id
   belongs_to :owner_engineer, class_name: "TicketEngineer"
   belongs_to :owner_organization, class_name: "Organization"
 
@@ -487,7 +487,7 @@ class Ticket < ActiveRecord::Base
   accepts_nested_attributes_for :user_ticket_actions, allow_destroy: true
 
   has_many :ticket_extra_remarks, foreign_key: :ticket_id
-  has_many :extra_remarks, through: :ticket_extra_remarks
+  has_many :extra_remarks,-> { where(active: true) }, through: :ticket_extra_remarks
   accepts_nested_attributes_for :ticket_extra_remarks, allow_destroy: true
 
   has_many :ticket_workflow_processes
@@ -533,7 +533,7 @@ class Ticket < ActiveRecord::Base
   has_many :users, through: :ticket_engineers
 
 
-  belongs_to :onsite_type
+  belongs_to :onsite_type,-> { where(active: true) }
   accepts_nested_attributes_for :onsite_type, allow_destroy: true
 
   has_many :hp_cases, through: :user_ticket_actions
@@ -667,12 +667,12 @@ class TicketContract < ActiveRecord::Base
   belongs_to :ticket_currency, foreign_key: :currency_id
   belongs_to :organization_contact_person, foreign_key: :contact_person_id
   belongs_to :created_by_user, class_name: "User", foreign_key: :created_by
-  belongs_to :product_brand, foreign_key: :product_brand_id
-  belongs_to :product_category1, foreign_key: :product_category1_id
-  belongs_to :product_category2, foreign_key: :product_category2_id
-  belongs_to :product_category, foreign_key: :product_category_id
+  belongs_to :product_brand,-> { where(active: true) }, foreign_key: :product_brand_id
+  belongs_to :product_category1,-> { where(active: true) }, foreign_key: :product_category1_id
+  belongs_to :product_category2,-> { where(active: true) }, foreign_key: :product_category2_id
+  belongs_to :product_category, -> { where(active: true) },foreign_key: :product_category_id
   belongs_to :ticket_contract_payment_type, foreign_key: :payment_type_id 
-  belongs_to :contract_status, foreign_key: :status_id 
+  belongs_to :contract_status, -> { where(active: true) },foreign_key: :status_id 
 
   belongs_to :organization_contact, class_name: "Organization"
   belongs_to :organization_bill, class_name: "Organization"
@@ -935,7 +935,7 @@ class ContractProduct < ActiveRecord::Base
   belongs_to :product, foreign_key: :product_serial_id
   accepts_nested_attributes_for :product, allow_destroy: true
 
-  belongs_to :sla_time, foreign_key: :sla_id
+  belongs_to :sla_time,-> { where(active: true) }, foreign_key: :sla_id
   belongs_to :location_address, class_name: "Address"
   belongs_to :installed_location, class_name: "Organization"
 
@@ -1120,7 +1120,7 @@ end
 class TicketAccessory < ActiveRecord::Base
   self.table_name = "spt_ticket_accessory"
 
-  belongs_to :accessory
+  belongs_to :accessory,-> { where(active: true) }
   belongs_to :ticket
 end
 
@@ -1141,7 +1141,7 @@ class TicketExtraRemark < ActiveRecord::Base
   self.table_name = "spt_ticket_extra_remark"
 
   belongs_to :ticket, foreign_key: :ticket_id
-  belongs_to :extra_remark, foreign_key: :extra_remark_id
+  belongs_to :extra_remark, -> { where(active: true) },foreign_key: :extra_remark_id
 end
 
 class TicketWorkflowProcess < ActiveRecord::Base
@@ -1247,7 +1247,7 @@ end
 class TicketReAssignRequest < ActiveRecord::Base
   self.table_name = "spt_act_re_assign_request"
 
-  belongs_to :reason
+  belongs_to :reason, -> { where(active: true) }
   belongs_to :user_ticket_action, foreign_key: :ticket_action_id
 
 end

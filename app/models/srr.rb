@@ -120,7 +120,7 @@ class SrrItem < ActiveRecord::Base
   self.table_name = "inv_srr_item"
 
   belongs_to :srr
-  belongs_to :inventory_product, foreign_key: :product_id
+  belongs_to :inventory_product,-> { where(active: true) }, foreign_key: :product_id
   belongs_to :currency
   belongs_to :return_reason, -> { where(srr: true) }, class_name: "InventoryReason"
 

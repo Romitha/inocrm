@@ -77,11 +77,11 @@ module Admins
 
     private
       def sbu_params
-        params.require(:sbu).permit(:sbu, sbu_engineers_attributes: [:_destroy, :id, :engineer_id])
+        params.require(:sbu).permit(:sbu, :active, sbu_engineers_attributes: [:_destroy, :id, :engineer_id])
       end
 
       def sbu_eng_params
-        params.require(:sbu_engineer).permit(:engineer_id)
+        params.require(:sbu_engineer).permit(:engineer_id, :active)
       end
   end
 end

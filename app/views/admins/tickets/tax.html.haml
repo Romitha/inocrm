@@ -50,7 +50,16 @@
         .col-md-2.pull-right
           = link_to tax_admins_tickets_path(edit_more: true, tax_id: tax.id), method: :post do
             %span.glyphicon.glyphicon-pencil Edit More>>
-
+      
+      .row.col-md-12
+        .col-md-1
+          %strong Active:
+        .col-md-3
+          = link_to "#", class: "inline_edit", data: {type: "select", resource: "tax", source: {"1"=> "Active", "2"=> "Inactive"}, name: "active", url: tax_admins_tickets_path(edit: true, tax_id: tax.id), "original-title" => "Update Active"} do
+            -if tax.active
+              Active
+            - else
+              Inactive
       .row.col-md-12
         .col-md-1
           %strong Name:
