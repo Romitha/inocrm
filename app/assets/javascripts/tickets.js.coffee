@@ -38,6 +38,7 @@ window.Tickets =
     @edit_fsr_travel_hours()
     @filter_category_report()
     @filter_category_ticket_report()
+    @sla_priority_change()
     return
 
   initial_loaders: ->

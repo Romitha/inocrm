@@ -454,13 +454,13 @@ class Ticket < ActiveRecord::Base
   belongs_to :contact_person1, foreign_key: :contact_person1_id
   belongs_to :contact_person2, foreign_key: :contact_person2_id
   belongs_to :report_person, foreign_key: :reporter_id
-  belongs_to :sla_time, foreign_key: :sla_id
+  belongs_to :sla_time,-> { where(active: true) }, foreign_key: :sla_id
   belongs_to :ticket_status_resolve, foreign_key: :status_resolve_id
   belongs_to :repair_type, foreign_key: :repair_type_id
   belongs_to :manufacture_currency, class_name: "Currency", foreign_key: :manufacture_currency_id
-  belongs_to :ticket_start_action, foreign_key: :job_started_action_id
+  belongs_to :ticket_start_action,-> { where(active: true) }, foreign_key: :job_started_action_id
   belongs_to :ticket_repair_type, foreign_key: :repair_type_id
-  belongs_to :reason, foreign_key: :hold_reason_id
+  belongs_to :reason,-> { where(active: true) }, foreign_key: :hold_reason_id
   belongs_to :owner_engineer, class_name: "TicketEngineer"
   belongs_to :owner_organization, class_name: "Organization"
 
@@ -491,7 +491,7 @@ class Ticket < ActiveRecord::Base
   accepts_nested_attributes_for :user_ticket_actions, allow_destroy: true
 
   has_many :ticket_extra_remarks, foreign_key: :ticket_id
-  has_many :extra_remarks, through: :ticket_extra_remarks
+  has_many :extra_remarks,-> { where(active: true) }, through: :ticket_extra_remarks
   accepts_nested_attributes_for :ticket_extra_remarks, allow_destroy: true
 
   has_many :ticket_workflow_processes
@@ -537,7 +537,7 @@ class Ticket < ActiveRecord::Base
   has_many :users, through: :ticket_engineers
 
 
-  belongs_to :onsite_type
+  belongs_to :onsite_type,-> { where(active: true) }
   accepts_nested_attributes_for :onsite_type, allow_destroy: true
 
   has_many :hp_cases, through: :user_ticket_actions
@@ -939,7 +939,7 @@ class ContractProduct < ActiveRecord::Base
   belongs_to :product, foreign_key: :product_serial_id
   accepts_nested_attributes_for :product, allow_destroy: true
 
-  belongs_to :sla_time, foreign_key: :sla_id
+  belongs_to :sla_time,-> { where(active: true) }, foreign_key: :sla_id
   belongs_to :location_address, class_name: "Address"
   belongs_to :installed_location, class_name: "Organization"
 
@@ -1124,7 +1124,7 @@ end
 class TicketAccessory < ActiveRecord::Base
   self.table_name = "spt_ticket_accessory"
 
-  belongs_to :accessory
+  belongs_to :accessory,-> { where(active: true) }
   belongs_to :ticket
 end
 
@@ -1251,7 +1251,7 @@ end
 class TicketReAssignRequest < ActiveRecord::Base
   self.table_name = "spt_act_re_assign_request"
 
-  belongs_to :reason
+  belongs_to :reason, -> { where(active: true) }
   belongs_to :user_ticket_action, foreign_key: :ticket_action_id
 
 end
