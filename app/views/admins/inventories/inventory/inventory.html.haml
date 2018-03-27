@@ -8,7 +8,7 @@
   = paginate @inventory_all, remote: false, method: :get
 
   - @inventory_all.each do |inventory|
-    = collapse collapse_type: "info", labelledby: "labelledby", header_content: "store: #{inventory.organization.name} [Item code: #{inventory.inventory_product.generated_item_code} - product description: #{inventory.inventory_product.try(:description)}]", collapse_link: "invlink_#{inventory.id}", collapse_id: "inventory_list" do
+    = collapse collapse_type: "info", labelledby: "labelledby", header_content: "store: #{inventory.try(:organization).try(:name)} [Item code: #{inventory.try(:inventory_product).try(:generated_item_code)} - product description: #{inventory.try(:inventory_product).try(:description)}]", collapse_link: "invlink_#{inventory.id}", collapse_id: "inventory_list" do
       .row
         .col-md-3
           %strong Store:
