@@ -743,7 +743,7 @@ module ApplicationHelper
         delivery_stage =  !tdu.delivered_to_sup ? "[to-be delivered]" : (!tdu.collected ? "[to-be collected]" : "")
       end
 
-      File.open(Rails.root.join("bug_file.txt"), "w+"){|file| file.write("ticket_deliver_units: #{tdu.inspect}"); file.close}
+      # File.open(Rails.root.join("bug_file.txt"), "w+"){|file| file.write("ticket_deliver_units: #{tdu.inspect}"); file.close}
 
       custormer_approval_pending = "[Customer Approval Pending]" if @ticket.ticket_estimations.any?{ |estimation| estimation.cust_approval_required and !estimation.cust_approved_at.present? }
 
