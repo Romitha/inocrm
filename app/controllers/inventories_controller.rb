@@ -1009,6 +1009,9 @@ class InventoriesController < ApplicationController
         user_ticket_action.save
       end
 
+      view_context.ticket_bpm_headers params[:process_id], @ticket.id
+      Rails.cache.delete([:workflow_header, params[:process_id]])
+
       if ticket_deliver_unit.collected
           continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
 
@@ -1031,9 +1034,6 @@ class InventoriesController < ApplicationController
           bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
           if bpm_response[:status].upcase == "SUCCESS"
-
-            view_context.ticket_bpm_headers params[:process_id], @ticket.id
-            Rails.cache.delete([:workflow_header, params[:process_id]])
 
             email_template = EmailTemplate.find_by_code("EXTERNAL_JOB_UNIT_COLLECTED")           
             email_to = User.find_by_id(@ticket_deliver_unit.created_by).try(:email)
