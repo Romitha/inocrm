@@ -1009,9 +1009,6 @@ class InventoriesController < ApplicationController
         user_ticket_action.save
       end
 
-      view_context.ticket_bpm_headers params[:process_id], @ticket.id
-      Rails.cache.delete([:workflow_header, params[:process_id]])
-
       if ticket_deliver_unit.collected
           continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
 
