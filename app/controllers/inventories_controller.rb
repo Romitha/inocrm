@@ -998,7 +998,9 @@ class InventoriesController < ApplicationController
 
       if ticket_deliver_unit.delivered_to_sup_changed? and ticket_deliver_unit.delivered_to_sup
 
-        @ticket_deliver_unit.update(delivered_to_sup_at: DateTime.now, delivered_to_sup_by: current_user.id)
+        # @ticket_deliver_unit.update(delivered_to_sup_at: DateTime.now, delivered_to_sup_by: current_user.id)
+        ticket_deliver_unit.delivered_to_sup_at = DateTime.now
+        ticket_deliver_unit.delivered_to_sup_by = current_user.id
 
         # Set Action (29) Delivered Unit To Supplier, DB.spt_act_deliver_unit
         user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(29).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
@@ -1007,14 +1009,13 @@ class InventoriesController < ApplicationController
         user_ticket_action.save
       end
 
-      view_context.ticket_bpm_headers params[:process_id], @ticket.id
-      Rails.cache.delete([:workflow_header, params[:process_id]])
-
       if ticket_deliver_unit.collected
           continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
 
         if continue
-          @ticket_deliver_unit.update(collected_at: DateTime.now, collected_by: current_user.id)
+          # @ticket_deliver_unit.update(collected_at: DateTime.now, collected_by: current_user.id)
+          ticket_deliver_unit.collected_at = DateTime.now
+          ticket_deliver_unit.collected_by = current_user.id
 
           #  Set Action (30) Collected Unit From Supplier, DB.spt_act_deliver_unit
           user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(30).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
@@ -1047,7 +1048,10 @@ class InventoriesController < ApplicationController
       end
     end
 
-    @ticket.save
+    @ticket.save!
+    view_context.ticket_bpm_headers params[:process_id], @ticket.id
+    Rails.cache.delete([:workflow_header, params[:process_id]])
+
     redirect_to todos_url, notice: "Successfully updated."
   end
 
