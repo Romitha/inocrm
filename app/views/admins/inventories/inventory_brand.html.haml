@@ -7,7 +7,7 @@
 %hr
 = collapse_wrapper collapse_id: "product_brand", labelledby: "labelledby" do
   - @inventory_brand_all.each do |inventory_brand|
-    = collapse collapse_type: "success", labelledby: "labelledby_#{inventory_brand.id}", header_content: inventory_brand.name, collapse_link: "link_#{inventory_brand.id}", collapse_id: "product_brand" do
+    = collapse collapse_type: "success", labelledby: "labelledby_#{inventory_brand.try(:id)}", header_content: inventory_brand.try(:name), collapse_link: "link_#{inventory_brand.try(:id)}", collapse_id: "product_brand" do
       .row
         .col-md-4
           %strong Active:
