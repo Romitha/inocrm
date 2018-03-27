@@ -793,7 +793,7 @@ class InventoriesController < ApplicationController
         if request_deliver_unit
 
           @ticket_deliver_unit = @estimation.ticket.ticket_deliver_units.build deliver_to_id: @estimation.ticket_estimation_externals.first.try(:repair_by_id), created_at: DateTime.now, created_by: current_user.id
-          @ticket_deliver_unit.save
+          @ticket_deliver_unit.save!
 
           # bpm output variables
           bpm_variables.merge!(supp_engr_user: current_user.id, d22_deliver_unit: "Y", deliver_unit_id: @ticket_deliver_unit.id, d23_delivery_items_pending: "N")
@@ -824,6 +824,9 @@ class InventoriesController < ApplicationController
           user_ticket_action.build_deliver_unit(ticket_deliver_unit_id: @ticket_deliver_unit.id)
           user_ticket_action.save
         end
+
+        view_context.ticket_bpm_headers params[:process_id], @estimation.ticket_id
+        Rails.cache.delete([:workflow_header, params[:process_id]])        
 
         if @estimation.cust_approved
           email_template = "EXT_ESTIMATION_CUSTOMER_APPROVED"
@@ -1004,6 +1007,9 @@ class InventoriesController < ApplicationController
         user_ticket_action.save
       end
 
+      view_context.ticket_bpm_headers params[:process_id], @ticket.id
+      Rails.cache.delete([:workflow_header, params[:process_id]])
+
       if ticket_deliver_unit.collected
           continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
 
@@ -1024,9 +1030,6 @@ class InventoriesController < ApplicationController
           bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
           if bpm_response[:status].upcase == "SUCCESS"
-
-            view_context.ticket_bpm_headers params[:process_id], @ticket.id
-            Rails.cache.delete([:workflow_header, params[:process_id]])
 
             email_template = EmailTemplate.find_by_code("EXTERNAL_JOB_UNIT_COLLECTED")           
             email_to = User.find_by_id(@ticket_deliver_unit.created_by).try(:email)
