@@ -435,7 +435,7 @@ class CompanyConfig < ActiveRecord::Base
       looped_count = 0
       started_last_ticket_no = last_ticket_no
 
-      while Ticket.where(ticket_no: last_ticket_no).order("created_at desc").limit(5).exists? do
+      while Ticket.where(ticket_no: last_ticket_no).where.not(id: ticket.id).order("created_at desc").limit(5).exists? do
         last_ticket_no += 1
         looped_count += 1
       end
