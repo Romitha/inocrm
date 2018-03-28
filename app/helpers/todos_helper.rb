@@ -266,3 +266,5 @@ end
 
 # bpm affecting methods
 # finalize_ticket_save
+
+# https://docs.jboss.org/jbpm/v6.0/userguide/jBPMRemoteAPI.html

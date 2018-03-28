@@ -392,6 +392,20 @@ class CompanyConfig < ActiveRecord::Base
     inv_last_srr_no.to_i+1
   end
 
+  def increase_after_assign_ticket_no ticket
+    if ticket.is_a? Ticket
+      last_ticket_no = self.sup_last_ticket_no.to_i
+
+      while Ticket.where(ticket_no: last_ticket_no).order("created_at desc").limit(5).any? do
+        last_ticket_no += 1
+      end
+      ticket.update! ticket_no: last_ticket_no
+      self.update! sup_last_ticket_no: (last_ticket_no + 1)
+    else
+      true
+    end
+  end
+
 end
 
 class Account < ActiveRecord::Base
