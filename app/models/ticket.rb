@@ -280,7 +280,6 @@ class Ticket < ActiveRecord::Base
   def update_on_create_ticket_info
     Organization
     company_config = CompanyConfig.first
-    CompanyConfig.inc_ticket_no ||= company_config.sup_last_ticket_no
     # update ticket_no: (company_config.sup_last_ticket_no.to_i+1) #(self.class.any? ? (self.class.order("created_at ASC").map{|t| t.ticket_no.to_i}.max + 1) : 1)
     # company_config.increment! :sup_last_ticket_no, 1
 
@@ -441,11 +440,11 @@ class Ticket < ActiveRecord::Base
   end
 
   belongs_to :ticket_type, foreign_key: :ticket_type_id
-  belongs_to :warranty_type, foreign_key: :warranty_type_id
-  belongs_to :job_type, foreign_key: :job_type_id
-  belongs_to :inform_method,foreign_key: :informed_method_id
-  belongs_to :problem_category,foreign_key: :problem_category_id
-  belongs_to :ticket_contact_type, foreign_key: :contact_type_id
+  belongs_to :warranty_type,-> { where(active: true) }, foreign_key: :warranty_type_id
+  belongs_to :job_type,-> { where(active: true) }, foreign_key: :job_type_id
+  belongs_to :inform_method, -> { where(active: true) },foreign_key: :informed_method_id
+  belongs_to :problem_category, -> { where(active: true) },foreign_key: :problem_category_id
+  belongs_to :ticket_contact_type,-> { where(active: true) }, foreign_key: :contact_type_id
   belongs_to :ticket_contract, foreign_key: :contract_id
   belongs_to :ticket_status, foreign_key: :status_id
   belongs_to :ticket_currency, foreign_key: :base_currency_id
