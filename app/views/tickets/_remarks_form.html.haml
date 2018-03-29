@@ -1,10 +1,12 @@
 #remarks
-
   = simple_nested_form_for ticket, url: finalize_ticket_save_tickets_path, method: :post, remote: true, html: {class: "validate_form"} do |f|
     = hidden_field_tag :product_id, @product.id
     = hidden_field_tag :ticket_time_now, @ticket_time_now
 
     .row
+      .col-md-12
+        %h3.red
+          = @flash_message
       .col-md-2
         %strong Contact By
         %br/
