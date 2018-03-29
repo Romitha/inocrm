@@ -449,7 +449,7 @@ class CompanyConfig < ActiveRecord::Base
 
     inspectable = {last_ticket_no: last_ticket_no, started_last_ticket_no: started_last_ticket_no, looped: looped_count, ticket_no: ticket.ticket_no, sup_last_ticket_no: self.sup_last_ticket_no, started_time: started_time.to_s, finished_time: finished_time.to_s}
 
-    File.open(Rails.root.join("bug_file.txt"), "w+"){|file| file.write("inspectable: #{inspectable}"); file.close}
+    File.open(Rails.root.join("bug_file.txt"), "a"){|file| file.write("inspectable: #{inspectable}\n"); file.close}
 
     true
   end
