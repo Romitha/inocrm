@@ -20,7 +20,7 @@
     .col-md-3
       = label_tag "Industry Type" do
         Industry Type
-        = select_tag "organization_customers[industry_type.id]", options_from_collection_for_select(IndustryType.all, :id, :name, (params[:organization_customers] and params[:organization_customers]["industry_type.id"])), include_blank: true, class: "form-control parent_class"
+        = select_tag "organization_customers[industry_type.id]", options_from_collection_for_select(IndustryType.where(active: true), :id, :name, (params[:organization_customers] and params[:organization_customers]["industry_type.id"])), include_blank: true, class: "form-control parent_class"
 
     .col-md-12
     

@@ -2,7 +2,7 @@
   = f.input :created_by, as: :hidden, input_html: {value: current_user.id}
   .row
     .col-md-4
-      = f.association :inventory_category1, include_blank: false, input_html: {required: true, id: "filter_product", onchange: "Admins.filter_product(this); return false;", data: {"filter-params" => "inventory_category1_id", "render-dom" => "product_categories"}}, label: "Brand"
+      = f.association :inventory_category1, collection: InventoryCategory1.where(active: true), include_blank: false, input_html: {required: true, id: "filter_product", onchange: "Admins.filter_product(this); return false;", data: {"filter-params" => "inventory_category1_id", "render-dom" => "product_categories"}}, label: "Brand"
     .col-md-4
       = f.input :code, input_html: {maxlength: InventoryCategoryCaption.second.code_length }, label: "Product code", required: true
     .col-md-4

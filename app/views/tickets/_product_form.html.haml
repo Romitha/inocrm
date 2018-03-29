@@ -13,18 +13,18 @@
     = hidden_field_tag :ticket_time_now, @ticket_time_now
     .row
       .col-md-3
-        = f.association :product_brand
+        = f.association :product_brand,collection: ProductBrand.where(active: true)
         / .add_sign
         /   = link_to new_product_brand_tickets_path, remote: true, title: "New Product" do
         /     %span.glyphicon.glyphicon-plus-sign
       .col-md-3
         = label_tag "#{CompanyConfig.first.try(:sup_product_category1_label)} :"
-        = select_tag "search_product_category1", option_groups_from_collection_for_select(ProductBrand.all, :product_category1s, :id, :id, :name, "#"), include_blank: true, class: "product_category1 form-control"
+        = select_tag "search_product_category1", option_groups_from_collection_for_select(ProductBrand.where(active: true), :active_product_category1s, :id, :id, :name, "#"), include_blank: true, class: "product_category1 form-control"
       .col-md-3
         = label_tag "#{CompanyConfig.first.try(:sup_product_category2_label)} :"
-        = select_tag "search_product_category2", option_groups_from_collection_for_select(ProductCategory1.all, :product_category2s, :id, :id, :name, "#"), include_blank: true, class: "product_category2 form-control"
+        = select_tag "search_product_category2", option_groups_from_collection_for_select(ProductCategory1.all, :active_product_category2s, :id, :id, :name, "#"), include_blank: true, class: "product_category2 form-control"
       .col-md-3
-        = f.association :product_category, collection: ProductCategory2.all, as: :grouped_select, group_method: :product_categories, group_label_method: :id, value_method: :id, required: true, input_html: {class: "product_category chosen-select", onchange: "Tickets.product_name_for_ticket();"}, label: "#{CompanyConfig.first.try(:sup_product_category_label)} :"
+        = f.association :product_category, collection: ProductCategory2.all, as: :grouped_select, group_method: :active_product_categories, group_label_method: :id, value_method: :id, required: true, input_html: {class: "product_category chosen-select", onchange: "Tickets.product_name_for_ticket();"}, label: "#{CompanyConfig.first.try(:sup_product_category_label)} :"
         / .add_sign
         /   = link_to new_product_category_tickets_path, remote: true, title: "New Category" do
         /     %span.glyphicon.glyphicon-plus-sign
@@ -39,10 +39,10 @@
         = f.input :product_no, label: "Product number"
     .row
       .col-md-3
-        = f.association :sla_time, required: true, label_method: :description, include_blank: false, label: "SLA"
+        = f.association :sla_time,collection: SlaTime.where(active: true), required: true, label_method: :description, include_blank: false, label: "SLA"
     .row
       .col-md-3
-        = f.association :product_pop_status, collection: ProductPopStatus.first(3), include_blank: false, wrapper_html: {class: "col-md-11"}, label: "Product POP status"
+        = f.association :product_pop_status, collection: ProductPopStatus.where(active: true).first(3), include_blank: false, wrapper_html: {class: "col-md-11"}, label: "Product POP status"
       .col-md-3
         = f.association :product_sold_country, wrapper_html: {class: "col-md-11"}, label_method: :country_name_with_code, value_method: :id
         .add_sign

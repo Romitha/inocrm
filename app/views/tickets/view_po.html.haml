@@ -12,7 +12,7 @@
                 = text_field_tag "po_no_format", params[:po_no_format], :placeholder => "PO No", class: "form-control", id: "po_no_id"
               .col-md-4
                 = label_tag "Brand"
-                = select_tag "product_brand_id", options_from_collection_for_select(ProductBrand.all, :id, :name, params[:product_brand_id]), include_blank: true, class: "form-control"
+                = select_tag "product_brand_id", options_from_collection_for_select(ProductBrand.where(active: true), :id, :name, params[:product_brand_id]), include_blank: true, class: "form-control"
             .row.small_scale_margin-top1
               .col-md-4
                 = text_field_tag "range_from", params[:range_from], class: "form-control datepicker", placeholder: "Select From date", id: "po_range_from_id"

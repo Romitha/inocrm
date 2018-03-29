@@ -17,7 +17,7 @@
         = ticket.ticket_currency.code
         %br/
         = f.input :deducted_amount, as: :string, input_html: {id: "deducted_amount" }
-        = f.association :payment_term, label: "Payment term", required: true
+        = f.association :payment_term,collection: PaymentTerm.where(active: true), label: "Payment term", required: true
         = f.input :note, label: "Invoice Note"
         = f.input :remark, label: "Invoice Remark", input_html: {value: nil}
         = simple_format f.object.remark

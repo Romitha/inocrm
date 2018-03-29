@@ -94,7 +94,7 @@
                   = w.input :created_by, as: :hidden, input_html: {value: current_user.id }
                   .row
                     .col-md-4
-                      = w.association :inventory_warranty_type
+                      = w.association :inventory_warranty_type, collection: InventoryWarrantyType.where(active: true)
                     .col-md-4
                       = w.input :start_at, as: :string, input_html: {class: "datepicker", onblur: "Warranties.update_end_at(this); return false;"}
                     .col-md-4
@@ -140,7 +140,7 @@
                   %legend New serial item
                   .row
                     .col-md-4
-                      = ib.association :product_condition, label_method: :condition, value_method: :id
+                      = ib.association :product_condition,collection: ProductCondition.where(active: true), label_method: :condition, value_method: :id
                     .col-md-4
                       = ib.input :serial_no
                     .col-md-4
@@ -172,7 +172,7 @@
                         = w.input :created_by, as: :hidden, input_html: {value: current_user.id }
                         .row
                           .col-md-4
-                            = w.association :inventory_warranty_type, label: "Warranty Type"
+                            = w.association :inventory_warranty_type, collection: InventoryWarrantyType.where(active: true), label: "Warranty Type"
                           .col-md-4
                             = w.input :start_at, as: :string, input_html: {class: "datepicker", onblur: "Warranties.update_end_at(this); return false;"}
                           .col-md-4

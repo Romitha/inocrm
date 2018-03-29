@@ -634,6 +634,8 @@ module Admins
 
     def brand_category1
       Product
+      TicketSparePart
+      Organization
       authorize! :brands_and_category, SparePartDescription
 
       if params[:edit]

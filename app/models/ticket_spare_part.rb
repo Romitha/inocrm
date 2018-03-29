@@ -6,7 +6,7 @@ class TicketSparePart < ActiveRecord::Base
 
   belongs_to :ticket_fsr, foreign_key: :fsr_id
   belongs_to :spare_part_status_action, foreign_key: :status_action_id
-  belongs_to :spare_part_status_use,-> { where(active: true) }, foreign_key: :status_use_id
+  belongs_to :spare_part_status_use, foreign_key: :status_use_id
 
   has_many :request_spare_parts
   accepts_nested_attributes_for :request_spare_parts, allow_destroy: true
@@ -159,7 +159,7 @@ class SoPo < ActiveRecord::Base
 
   belongs_to :currency, foreign_key: :currency_id
   belongs_to :user, foreign_key: :created_by
-  belongs_to :product_brand,-> { where(active: true) }, foreign_key: :product_brand_id
+  belongs_to :product_brand, foreign_key: :product_brand_id
 
   belongs_to :invoice
 
@@ -174,7 +174,7 @@ class TicketSparePartStore < ActiveRecord::Base
   self.table_name = "spt_ticket_spare_part_store"
 
   belongs_to :ticket_spare_part, foreign_key: :spare_part_id
-  belongs_to :inventory_product,-> { where(active: true) }, foreign_key: :inv_product_id
+  belongs_to :inventory_product, foreign_key: :inv_product_id
   belongs_to :ticket_estimation_part, foreign_key: :ticket_estimation_part_id
   belongs_to :store, -> { where(type_id: 4) }, class_name: "Organization", foreign_key: :store_id
   belongs_to :main_inventory_product, class_name: "InventoryProduct", foreign_key: :mst_inv_product_id
@@ -406,9 +406,9 @@ class TicketOnLoanSparePart < ActiveRecord::Base
   belongs_to :spare_part_status_action, foreign_key: :status_action_id
   belongs_to :user, foreign_key: :requested_by
   belongs_to :store, class_name: "Organization", foreign_key: :store_id
-  belongs_to :inventory_product,-> { where(active: true) }, foreign_key: :inv_product_id
+  belongs_to :inventory_product, foreign_key: :inv_product_id
   belongs_to :main_inventory_product, class_name: "InventoryProduct", foreign_key: :main_inv_product_id
-  belongs_to :spare_part_status_use, -> { where(active: true) },foreign_key: :status_use_id
+  belongs_to :spare_part_status_use,foreign_key: :status_use_id
   belongs_to :issued_by_user ,class_name: "User", foreign_key: :issued_by
 
   belongs_to :approved_store, class_name: "Organization", foreign_key: :approved_store_id
@@ -450,7 +450,7 @@ end
 class ReturnPartsBundle < ActiveRecord::Base
   self.table_name = "spt_return_parts_bundle"
 
-  belongs_to :product_brand, -> { where(active: true) }
+  belongs_to :product_brand
 
   has_many :ticket_spare_part_manufactures
   has_many :ticket_spare_parts, through: :ticket_spare_part_manufactures
@@ -465,7 +465,7 @@ class TicketSparePartNonStock < ActiveRecord::Base
   self.table_name = "spt_ticket_spare_part_non_stock"
 
   belongs_to :ticket_spare_part, foreign_key: :spare_part_id
-  belongs_to :inventory_product,-> { where(active: true) }, foreign_key: :inv_product_id
+  belongs_to :inventory_product, foreign_key: :inv_product_id
   belongs_to :approved_inventory_product, class_name: "mst_inv_product", foreign_key: :approved_inv_product_id
 
 end

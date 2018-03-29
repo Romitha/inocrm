@@ -5,7 +5,7 @@
     .row
       .col-md-4
         %font{:color => "#90032A"}
-          = f.association :product_brand, include_blank: false, onchange: "Admins.filter_cat1(this); return false;" ,input_html: {required: true, id: "filter_cat1", data: {"filter-params" => "product_brand_id", "render-dom" => "product_category1"}}, label: "Brand"
+          = f.association :product_brand, include_blank: false, collection: ProductBrand.where(active: true), onchange: "Admins.filter_cat1(this); return false;" ,input_html: {required: true, id: "filter_cat1", data: {"filter-params" => "product_brand_id", "render-dom" => "product_category1"}}, label: "Brand"
       .col-md-4
         %font{:color => "#90032A"}
           = f.input :name, input_html: {required: true}, label: "#{CompanyConfig.first.try(:sup_product_category1_label)} : Name"

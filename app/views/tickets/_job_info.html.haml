@@ -48,19 +48,19 @@
     %dl.dl-horizontal
       %dt Informed method
       %dd
-        = link_to_if params[:edit_ticket],"#{ticket.inform_method.name}", "#" , class: "inline_edit", data: {type: "select", source: InformMethod.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "pop_status_id", url: update_edit_ticket_tickets_path(ticket_id: ticket.id, edit_ticket: true), "original-title" => "Update inform_method"} do
+        = link_to_if params[:edit_ticket],"#{ticket.inform_method.name}", "#" , class: "inline_edit", data: {type: "select", source: InformMethod.where(active: true).first(3).collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "pop_status_id", url: update_edit_ticket_tickets_path(ticket_id: ticket.id, edit_ticket: true), "original-title" => "Update inform_method"} do
           = ticket.inform_method.name
 
       %dt Job type
       %dd
-        = link_to_if params[:edit_ticket],"#{ticket.job_type.name}","#", class: "inline_edit", data: {type: "select", source: JobType.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "job_type_id", url: update_edit_ticket_tickets_path(ticket_id: ticket.id, edit_ticket: true), "original-title" => "Update job_type"} do
+        = link_to_if params[:edit_ticket],"#{ticket.job_type.name}","#", class: "inline_edit", data: {type: "select", source: JobType.where(active: true).first(3).collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "job_type_id", url: update_edit_ticket_tickets_path(ticket_id: ticket.id, edit_ticket: true), "original-title" => "Update job_type"} do
           = ticket.job_type.name #ticket.job_type.name
 
       %dt Ticket type
       %dd #{ticket.ticket_type.name} #{"(Regional support job)" if ticket.regional_support_job} #{ticket.onsite_type.try(:name)}
       %dt Type of warranty
       %dd
-        = link_to_if params[:edit_ticket],"#{ticket.warranty_type.name}","#",class: "inline_edit", data: {type: "select", source: WarrantyType.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "warranty_type_id", url: update_edit_ticket_tickets_path(ticket_id: ticket.id, edit_ticket: true), "original-title" => "Update warranty_type"} do
+        = link_to_if params[:edit_ticket],"#{ticket.warranty_type.name}","#",class: "inline_edit", data: {type: "select", source: WarrantyType.where(active: true).first(3).collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "warranty_type_id", url: update_edit_ticket_tickets_path(ticket_id: ticket.id, edit_ticket: true), "original-title" => "Update warranty_type"} do
           = ticket.warranty_type.name #ticket.warranty_type.name
 
       %dt Customer chargeable

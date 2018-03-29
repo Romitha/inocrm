@@ -31,7 +31,7 @@
             .col-md-6
               = t.input :amount, label: "Adjust amount", input_html: {:class => "adjust_container", :id => "amount_field"}
             .col-md-6
-              = t.association :reason, label: "Adjust reason", input_html: {:class => "adjust_container", :id => "reason_field"}
+              = t.association :reason, collection: Reason.where(active: true), label: "Adjust reason", input_html: {:class => "adjust_container", :id => "reason_field"}
   .row
     .col-md-12
       Final amount to be paid:

@@ -16,7 +16,7 @@ end
 class TicketInvoice < ActiveRecord::Base
   self.table_name = "spt_ticket_invoice"
 
-  belongs_to :payment_term, -> { where(active: true) }
+  belongs_to :payment_term
   belongs_to :ticket
   belongs_to :currency
   belongs_to :created_by_ch_eng, class_name: "User", foreign_key: :created_by
@@ -35,7 +35,7 @@ class TicketInvoice < ActiveRecord::Base
 
   has_many :ticket_invoice_total_taxes, foreign_key: :invoice_id
   accepts_nested_attributes_for :ticket_invoice_total_taxes, allow_destroy: true
-  has_many :taxes, -> { where(active: true) },through: :ticket_invoice_total_taxes
+  has_many :taxes,through: :ticket_invoice_total_taxes
 
   def currency_type
     currency.code
@@ -102,13 +102,13 @@ end
 class CustomerFeedback < ActiveRecord::Base
   self.table_name = "spt_act_customer_feedback"
 
-  belongs_to :feedback,-> { where(active: true) }
+  belongs_to :feedback
 
   belongs_to :user_ticket_action, foreign_key: :ticket_action_id
 
   belongs_to :ticket_payment_received, foreign_key: :payment_received_id
 
-  belongs_to :dispatch_method,-> { where(active: true) }
+  belongs_to :dispatch_method
 
   # validates_presence_of :feedback
 
@@ -129,7 +129,7 @@ class CustomerQuotation < ActiveRecord::Base
   self.table_name = "spt_ticket_customer_quotation"
 
   belongs_to :ticket
-  belongs_to :payment_term,-> { where(active: true) }
+  belongs_to :payment_term
   belongs_to :currency
   belongs_to :organization, foreign_key: :print_organization_id
   belongs_to :organization_bank_detail, foreign_key: :print_bank_detail_id

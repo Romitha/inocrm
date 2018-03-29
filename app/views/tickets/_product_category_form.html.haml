@@ -11,7 +11,7 @@
   %legend Create new category
   = simple_form_for product_category, url: create_new_category_tickets_path, remote: true do |f|
     .row
-      = f.association :product_brand, wrapper_html: {class: "col-md-4"}
+      = f.association :product_brand,collection: ProductBrand.where(active: true), wrapper_html: {class: "col-md-4"}
       .add_sign
         = link_to new_product_brand_tickets_path, remote: true, title: "New Product" do
           %span.glyphicon.glyphicon-plus-sign

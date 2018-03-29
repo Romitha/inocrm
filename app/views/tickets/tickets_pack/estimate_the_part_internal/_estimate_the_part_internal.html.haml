@@ -175,7 +175,7 @@
                         .col-md-3
                           = label_tag "Tax"
                           %br/
-                          = ee.select :tax_id, Tax.all.map{|p| ["#{p.tax} (#{p.tax_rates.find_by_active(true).try(:rate).to_f}%)", p.id, {"data-default-amount" => (p.tax_rates.find_by_active(true).try(:rate).to_f || 0)}]}, {include_blank: true}, {class: "payment_item_select tax_rate_calculation", onchange: "Inventories.payment_amount_select(this); return false;"}
+                          = ee.select :tax_id, Tax.where(active: true).map{|p| ["#{p.tax} (#{p.tax_rates.find_by_active(true).try(:rate).to_f}%)", p.id, {"data-default-amount" => (p.tax_rates.find_by_active(true).try(:rate).to_f || 0)}]}, {include_blank: true}, {class: "payment_item_select tax_rate_calculation", onchange: "Inventories.payment_amount_select(this); return false;"}
 
                         .col-md-4
                           = ee.input :estimated_tax_amount, label: "Estimated tax amount (#{ticket.ticket_currency.code})", as: :string, input_html: {class: "estimated_tax_amount_class", oninput: "Inventories.add_tax_value(this)", data: {initvalue: ee.object.estimated_tax_amount.to_f }}
@@ -203,7 +203,7 @@
                 .col-md-3
                   = label_tag "Additional charge"
                   %br/
-                  = ta.select :additional_charge_id, AdditionalCharge.all.map{|p| [p.additional_charge, p.id, {"data-default-amount" => p.default_cost_price.to_f, "data-estimation-amount" => p.default_estimated_price.to_f}]}, {include_blank: true, required: true}, {class: "payment_item_select form-control", onchange: "Inventories.payment_amount_select(this); return false;", required: true}
+                  = ta.select :additional_charge_id, AdditionalCharge.where(active: true).map{|p| [p.additional_charge, p.id, {"data-default-amount" => p.default_cost_price.to_f, "data-estimation-amount" => p.default_estimated_price.to_f}]}, {include_blank: true, required: true}, {class: "payment_item_select form-control", onchange: "Inventories.payment_amount_select(this); return false;", required: true}
                 .col-md-3
                   = ta.input :cost_price, label: "Cost Price (#{ticket.ticket_currency.code})", as: :string, input_html: {data: { initValue: ta.object.cost_price.to_f }, min: 0, class: "value_class payment_item_value only_float", oninput: "Inventories.calculate_cost_price(this);"}
 
@@ -229,7 +229,7 @@
                             .col-md-3
                               = label_tag "Tax"
                               %br/
-                              = e.select :tax_id, Tax.all.map{|p| ["#{p.tax} (#{p.tax_rates.find_by_active(true).try(:rate).to_f}%)", p.id, {"data-default-amount" => p.tax_rates.find_by_active(true).try(:rate).to_f}]}, {include_blank: true}, {class: "payment_item_select tax_rate_calculation", onchange: "Inventories.payment_amount_select(this); return false;"}
+                              = e.select :tax_id, Tax.where(active: true).map{|p| ["#{p.tax} (#{p.tax_rates.find_by_active(true).try(:rate).to_f}%)", p.id, {"data-default-amount" => p.tax_rates.find_by_active(true).try(:rate).to_f}]}, {include_blank: true}, {class: "payment_item_select tax_rate_calculation", onchange: "Inventories.payment_amount_select(this); return false;"}
                             .col-md-3
                               = e.input :estimated_tax_amount, label: "Estimated tax amount (#{ticket.ticket_currency.code})",as: :string, input_html: {min: 0, class: "estimated_tax_amount_class only_float", oninput: "Inventories.add_tax_value(this)", data: {initvalue: e.object.estimated_tax_amount.to_f}}
                             .col-md-3

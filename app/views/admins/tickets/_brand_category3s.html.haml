@@ -25,5 +25,5 @@
             = product_category3.contract_no_value
         .col-md-3
           %strong SLA Time:
-          = link_to "#", class: "inline_edit", data: {type: "select", resource: "product_category", source: SlaTime.all.collect{|sla_time| {value: sla_time.id, text: sla_time.description}}, name: "sla_id", url: brand_category3_admins_tickets_path(edit: true, product_category3_id: product_category3.id), "original-title" => "Update Product Category"} do
+          = link_to "#", class: "inline_edit", data: {type: "select", resource: "product_category", source: SlaTime.where(active: true).collect{|sla_time| {value: sla_time.id, text: sla_time.description}}, name: "sla_id", url: brand_category3_admins_tickets_path(edit: true, product_category3_id: product_category3.id), "original-title" => "Update Product Category"} do
             = product_category3.sla_time.try(:description)

@@ -9,7 +9,7 @@
     %button.btn.btn-link.load_more{"data-container" => "body", "data-content" => product.pop_note, "data-placement" => "bottom", "data-toggle" => "popover", "data-trigger" =>"focus", :type => "button"}
       More
 
-- popstatus = link_to "#", class: "inline_edit", data: {type: "select", source: ProductPopStatus.first(3).collect{|category| {value: category.id, text: category.name}}, resource: "product", name: "pop_status_id", url: product_update_tickets_path(product_id: product.id), "original-title" => "Update pop_status"} do
+- popstatus = link_to "#", class: "inline_edit", data: {type: "select", source: ProductPopStatus.where(active: true).first(3).collect{|category| {value: category.id, text: category.name}}, resource: "product", name: "pop_status_id", url: product_update_tickets_path(product_id: product.id), "original-title" => "Update pop_status"} do
   = product.product_pop_status.try(:name)
 
 
@@ -56,25 +56,25 @@
                           = f.select :priority, INOCRM_CONFIG["priority"].collect{ |key,value| [ key, value ] }, {:selected => '3'}, class: "small_scale_margin-top3 form-control"
                         .col-md-12
                           .row
-                            = f.association :problem_category, wrapper_html: {class: "col-md-11"}, label:"Problem category"
+                            = f.association :problem_category, collection: ProblemCategory.where(active: true),wrapper_html: {class: "col-md-11"}, label:"Problem category"
                             .add_sign
                               = link_to create_problem_category_tickets_path(status_param: "initiate"), remote: true, method: :post, title: "Add", onclick: "Tickets.save_cached_ticket(); return false;" do
                                 %span.glyphicon.glyphicon-plus-sign
                         .col-md-12
                           %strong Informed method
                           %br/
-                          = f.select :informed_method_id, options_from_collection_for_select(InformMethod.all, :id, :name), {},{class: "small_scale_margin-top2 small_scale_margin-bottom5 form-control"}
+                          = f.select :informed_method_id, options_from_collection_for_select(InformMethod.where(active: true), :id, :name), {},{class: "small_scale_margin-top2 small_scale_margin-bottom5 form-control"}
                         .col-md-12
                           %strong Job type
                           %br/
-                          = f.select :job_type_id, options_from_collection_for_select(JobType.all, :id, :name), {},{class: "small_scale_margin-top3 small_scale_margin-bottom5 form-control"}
+                          = f.select :job_type_id, options_from_collection_for_select(JobType.where(active: true), :id, :name), {},{class: "small_scale_margin-top3 small_scale_margin-bottom5 form-control"}
                         .col-md-12
                           = f.input :problem_description, label:"Problem description", input_html: {rows: 3}
 
                 .col-md-3
                   .panel.panel-default
                     .panel-body
-                      = f.association :warranty_type, as: :radio_buttons, label: "Ticket warranty type", wrapper_html: {class: "radio_as_list"}, checked: (ticket.warranty_type_id or selected_warranty_id)
+                      = f.association :warranty_type, collection: WarrantyType.where(active: true), as: :radio_buttons, label: "Ticket warranty type", wrapper_html: {class: "radio_as_list"}, checked: (ticket.warranty_type_id or selected_warranty_id)
 
                       - if ticket.ticket_contract.present?
                         %br
@@ -89,7 +89,7 @@
                       = f.association :ticket_type, as: :radio_buttons, wrapper_html: {class: "radio_as_list"}, input_html: {class: "ticket_type"}, checked: (ticket.ticket_type_id or INOCRM_CONFIG["Ticket"]["ticket_type_id"])
                       = f.input :regional_support_job, label: "Regional", wrapper: :append
                       - unless ticket.ticket_contract.present?
-                        = f.association :onsite_type, include_blank: false
+                        = f.association :onsite_type,collection: OnsiteType.where(active: true), include_blank: false
                 .col-md-3
                   .panel.panel-default
                     .panel-body
@@ -105,7 +105,7 @@
                 = f.input :other_accessories, wrapper_html: {class: "col-md-4"}, input_html: {rows: 1}
                 .col-md-8
                   = f.simple_fields_for :ticket_accessories do |fc|
-                    = fc.association :accessory, label_method: :accessory, value_method: :id, include_blank: false, wrapper_html: {class: "col-md-6"}
+                    = fc.association :accessory, collection: Accessory.where(active: true), label_method: :accessory, value_method: :id, include_blank: false, wrapper_html: {class: "col-md-6"}
                     = fc.input :note, wrapper_html: {class: "col-md-5"}, input_html: {rows: 1}
                     .add_sign
                       = fc.link_to_remove class: "remove_c_t_v_link" do

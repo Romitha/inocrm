@@ -22,7 +22,7 @@
 
     .col-md-3
       = label_tag "Brand"
-      = select_tag "search_contracts[brand_name]", options_from_collection_for_select(ProductBrand.all, :name, :name), class: "form-control parent_class", include_blank: true
+      = select_tag "search_contracts[brand_name]", options_from_collection_for_select(ProductBrand.where(active: true), :name, :name), class: "form-control parent_class", include_blank: true
     .col-md-3
       = label_tag "Payemnt Type:"
       = select_tag "search_contracts[payment_type]", options_from_collection_for_select(TicketContractPaymentType.all, :name, :name), class: "form-control parent_class", include_blank: true

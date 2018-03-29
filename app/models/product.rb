@@ -113,15 +113,15 @@ class Product < ActiveRecord::Base
   has_many :ref_product_serials, class_name: "TicketProductSerial", foreign_key: :ref_product_serial_id
   accepts_nested_attributes_for :ref_product_serials, allow_destroy: true
 
-  # belongs_to :warranty_type,-> { where(active: true) }, foreign_key: :product_brand_id
-  belongs_to :product_brand,-> { where(active: true) }, foreign_key: :product_brand_id
-  belongs_to :product_category,-> { where(active: true) }, foreign_key: :product_category_id
-  belongs_to :product_pop_status,-> { where(active: true) }, foreign_key: :pop_status_id
+  # belongs_to :warranty_type, foreign_key: :product_brand_id
+  belongs_to :product_brand, foreign_key: :product_brand_id
+  belongs_to :product_category, foreign_key: :product_category_id
+  belongs_to :product_pop_status, foreign_key: :pop_status_id
   belongs_to :product_sold_country, foreign_key: :sold_country_id
   belongs_to :inv_serial_item, foreign_key: :inventory_serial_item_id
   belongs_to :owner_customer, class_name: "Organization"
   belongs_to :location_address, class_name: "Address"
-  belongs_to :sla_time,-> { where(active: true) }, foreign_key: :sla_id
+  belongs_to :sla_time, foreign_key: :sla_id
   
   validates_presence_of [:serial_no, :product_brand_id, :product_category_id, :name]
   validates_uniqueness_of :serial_no, message: "This serial no has already been taken"
@@ -152,9 +152,11 @@ class ProductBrand < ActiveRecord::Base
 
   has_many :products, foreign_key: :product_brand_id
   has_many :so_pos, foreign_key: :product_brand_id
-  has_many :product_category1s,-> { where(active: true) }, foreign_key: :product_brand_id
+  has_many :product_category1s, foreign_key: :product_brand_id
+  has_many :active_product_category1s, -> {where(active: true)}, foreign_key: :product_brand_id, class_name: "ProductCategory1"
+
   accepts_nested_attributes_for :product_category1s, allow_destroy: true
-  has_many :product_category2s, -> { where(active: true) },through: :product_category1s
+  has_many :product_category2s,through: :product_category1s
   has_many :return_parts_bundles
 
   validates_presence_of [:name, :sla_time, :parts_return_days, :currency_id]
@@ -164,7 +166,7 @@ class ProductBrand < ActiveRecord::Base
   has_many :product_brand_costs
   accepts_nested_attributes_for :product_brand_costs, allow_destroy: true
 
-  has_many :brand_documents, -> { where(active: true) },class_name: "Documents::BrandDocument"
+  has_many :brand_documents,class_name: "Documents::BrandDocument"
   accepts_nested_attributes_for :brand_documents, allow_destroy: true
 
   validates_uniqueness_of :name
@@ -178,10 +180,13 @@ end
 
 class ProductCategory1 < ActiveRecord::Base
   self.table_name = "mst_spt_product_category1"
-  belongs_to :product_brand,-> { where(active: true) }
-  has_many :product_category2s, -> { where(active: true) },foreign_key: :product_category1_id
+  belongs_to :product_brand
+  has_many :product_category2s, foreign_key: :product_category1_id
+  has_many :active_product_category2s, -> {where(active: true)}, foreign_key: :product_category1_id, class_name: "ProductCategory2"
   accepts_nested_attributes_for :product_category2s, allow_destroy: true
-  has_many :product_category3s, -> { where(active: true) },through: :product_category2s
+  has_many :product_category3s,through: :product_category2s
+  # scope :active_product_category1s, -> {where(active: true)}
+
   def is_used_anywhere?
     product_category2s.any?
   end
@@ -189,8 +194,9 @@ end
 
 class ProductCategory2 < ActiveRecord::Base
   self.table_name = "mst_spt_product_category2"
-  belongs_to :product_category1, -> { where(active: true) }
+  belongs_to :product_category1
   has_many :product_categories, foreign_key: :product_category2_id
+  has_many :active_product_categories, -> {where(active: true)}, foreign_key: :product_category2_id, class_name: "ProductCategory"
   accepts_nested_attributes_for :product_categories, allow_destroy: true
   def is_used_anywhere?
     product_categories.any?
@@ -201,8 +207,8 @@ class ProductCategory < ActiveRecord::Base
   self.table_name = "mst_spt_product_category"
 
   has_many :products, foreign_key: :product_category_id
-  belongs_to :product_category2, -> { where(active: true) }
-  belongs_to :sla_time,-> { where(active: true) }, foreign_key: :sla_id
+  belongs_to :product_category2
+  belongs_to :sla_time, foreign_key: :sla_id
 
   validates_presence_of [:name]
 
@@ -264,7 +270,7 @@ end
 class ProductBrandCost < ActiveRecord::Base
   self.table_name = "mst_spt_product_brand_cost"
 
-  belongs_to :product_brand,-> { where(active: true) }
+  belongs_to :product_brand
   belongs_to :currency
 end
 

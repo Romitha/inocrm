@@ -5,13 +5,13 @@
 - priority = link_to "#", class: "inline_edit", data: {type: "select", source: INOCRM_CONFIG["priority"].collect{ |key,value| {value: value, text: key} }, resource: "ticket", name: "priority", url: ticket_update_tickets_path, "original-title" => "Update priority"} do
   = INOCRM_CONFIG["priority"].key(ticket.priority.to_i)
 
-- problemcategory = link_to "#", class: "inline_edit disable", data: {type: "select", source: ProblemCategory.all.collect{|warranty| {value: warranty.id, text: warranty.name}}, resource: "ticket", name: "problem_category_id", url: ticket_update_tickets_path, "original-title" => "Update problem category"} do
+- problemcategory = link_to "#", class: "inline_edit disable", data: {type: "select", source: ProblemCategory.where(active: true).collect{|warranty| {value: warranty.id, text: warranty.name}}, resource: "ticket", name: "problem_category_id", url: ticket_update_tickets_path, "original-title" => "Update problem category"} do
   = ticket.problem_category.name
 
 - problemdescription = link_to "#", class: "inline_edit", data: {type: "text", resource: "ticket", name: "problem_description", url: ticket_update_tickets_path, "original-title" => "Update problem description"} do
   = ticket.problem_description
 
-- warranty = link_to "#", class: "inline_edit", data: {type: "select", source: WarrantyType.all.collect{|warranty| {value: warranty.id, text: warranty.name}}, resource: "ticket", name: "warranty_type_id", url: ticket_update_tickets_path, "original-title" => "Update Warranty type"} do
+- warranty = link_to "#", class: "inline_edit", data: {type: "select", source: WarrantyType.where(active: true).collect{|warranty| {value: warranty.id, text: warranty.name}}, resource: "ticket", name: "warranty_type_id", url: ticket_update_tickets_path, "original-title" => "Update Warranty type"} do
   = ticket.warranty_type.name
 
 - tickettype = link_to "#", class: "inline_edit", data: {type: "select", source: TicketType.all.collect{|warranty| {value: warranty.id, text: warranty.name}}, resource: "ticket", name: "ticket_type_id", url: ticket_update_tickets_path, "original-title" => "Update ticket type"} do
@@ -23,7 +23,7 @@
   - else
     yes
 
-- jobtype = link_to "#", class: "inline_edit", data: {type: "select", source: JobType.all.collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "job_type_id", url: ticket_update_tickets_path, "original-title" => "Update Job Type"} do
+- jobtype = link_to "#", class: "inline_edit", data: {type: "select", source: JobType.where(active: true).collect{|category| {value: category.id, text: category.name}}, resource: "ticket", name: "job_type_id", url: ticket_update_tickets_path, "original-title" => "Update Job Type"} do
   = ticket.job_type.name
 
 .col-md-2.col-xs-12.col-sm-2{style: "padding-left:0;"}

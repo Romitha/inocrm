@@ -16,7 +16,7 @@
       = f.input :received_part_ct_no, wrapper_html: {class: "col-md-6"}, required: true, input_html: {class: "received_part_ct_no_input", autocomplete: "off"}
 
     .row
-      = f.association :spare_part_status_use, collection: SparePartStatusUse.offset(1).map{|s| [s.name, s.id]}, required: true, include_blank: false, selected: 2, wrapper_html: {class: "col-md-6"}, label: "Received part status", input_html: {class: "received_part_status chosen-select_disable_search"}
+      = f.association :spare_part_status_use, collection: SparePartStatusUse.where(active: true).offset(1).map{|s| [s.name, s.id]}, required: true, include_blank: false, selected: 2, wrapper_html: {class: "col-md-6"}, label: "Received part status", input_html: {class: "received_part_status chosen-select_disable_search"}
       = f.association :unused_reason, label_method: :reason, value_method: :id, required: true, include_blank: false, wrapper_html: {class: "col-md-6"}, input_html: {class: "unused_reason chosen-select_disable_search"}, disabled: true
 
     .row
@@ -35,7 +35,7 @@
       .col-md-6
         = f.check_box :return_part_damage, {class: "damage_reason_check"}, 1,0
         = f.label :return_part_damage
-        = f.select :return_part_damage_reason_id, InventoryReason.where(damage: true).map{|r| [r.reason, r.id]}, {}, class: "damage_reason"
+        = f.select :return_part_damage_reason_id, InventoryReason.where(damage: true, active: true).map{|r| [r.reason, r.id]}, {}, class: "damage_reason"
 
     = f.input :note, input_html: {value: nil}
     = simple_format ticket_on_loan_spare_part.note

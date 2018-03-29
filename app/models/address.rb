@@ -15,7 +15,7 @@ class Address < ActiveRecord::Base
   belongs_to :country, class_name: "ProductSoldCountry"
   belongs_to :province
   belongs_to :district
-  belongs_to :organization_contact_type,-> { where(active: true) }, foreign_key: :type_id
+  belongs_to :organization_contact_type, foreign_key: :type_id
   belongs_to :contact_person_title, class_name: "MstTitle"
 
   def full_address

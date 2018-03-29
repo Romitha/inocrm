@@ -52,7 +52,7 @@
         .col-md-3
           = f.input :expiry_date, as: :string, input_html: {class: "datepicker"}
         .col-md-3
-          = f.association :product_condition, label_method: :condition, value_method: :id, include_blank: false
+          = f.association :product_condition, collection: ProductCondition.where(active: true),label_method: :condition, value_method: :id, include_blank: false
       .row
         .col-md-3
           = f.input :scavenge, as: :boolean, wrapper: :append
@@ -68,7 +68,7 @@
             = label_tag "Damage"
             = check_box_tag :damage_reason_check, true, false, class: "damage_reason_check"
             = label_tag "Damage reason", "Damage reason", class: "damage_reason_label"
-            = select_tag :damage_reason, options_from_collection_for_select(InventoryReason.where(damage: true), "id", "reason"), class: "damage_reason", include_blank: false
+            = select_tag :damage_reason, options_from_collection_for_select(InventoryReason.where(damage: true, active: true), "id", "reason"), class: "damage_reason", include_blank: false
 
 
     .col-md-6
@@ -109,7 +109,7 @@
                 = w.input :period_onsight, label: "onsight"
               .col-md-4
                 = label_tag "Warranty Type"
-                = w.select :warranty_type_id, WarrantyType.all.collect { |p| [ p.name, p.id ] }, include_blank: false
+                = w.select :warranty_type_id, WarrantyType.where(active: true).collect { |p| [ p.name, p.id ] }, include_blank: false
               .col-md-8
                 = w.input :remarks
           - if f.object.is_a?(InventorySerialItem)
@@ -168,7 +168,7 @@
           <input value="1" class="hidden form-control" type="hidden" name="inventory_serial_item[inv_status_id]" id="inventory_serial_item_inv_status_id">
           .row
             .col-md-4
-              = select_tag "inventory_serial_item[product_condition_id]", options_from_collection_for_select(ProductCondition.all, "id", "condition")
+              = select_tag "inventory_serial_item[product_condition_id]", options_from_collection_for_select(ProductCondition.where(active: true), "id", "condition")
             .col-md-2
               Savenge: #{boolean_in_word main_part_of_serial_part.scavenge, 'Yes', 'No'}
               <div class="control-group boolean optional inventory_serial_item_scavenge"><label class="boolean optional control-label" for="inventory_serial_item_scavenge">Scavenge</label><div class="controls"><div class="input-append"><input value="0" type="hidden" name="inventory_serial_item[scavenge]"><label class="checkbox"><input class="boolean optional" type="checkbox" value="1" name="inventory_serial_item[scavenge]" id="inventory_serial_item_scavenge"></label></div></div></div>
@@ -189,7 +189,7 @@
                 = label_tag "Damage"
                 = check_box_tag :main_part_damage_reason_check, true, false, class: "damage_reason_check"
                 = label_tag "Damage reason", "Damage reason", class: "damage_reason_label"
-                = select_tag :main_part_damage_reason, options_from_collection_for_select(InventoryReason.where(damage: true), "id", "reason"), class: "damage_reason", include_blank: false
+                = select_tag :main_part_damage_reason, options_from_collection_for_select(InventoryReason.where(damage: true, active: true), "id", "reason"), class: "damage_reason", include_blank: false
 
     .col-md-12
       = label_tag "Remarks"

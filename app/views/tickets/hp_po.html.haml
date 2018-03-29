@@ -2,9 +2,9 @@
 .row
   .col-md-12
     = label_tag InventoryCategoryCaption.first.caption
-    / = select_tag "search_inventory[brand]", options_from_collection_for_select(ProductBrand.all, :id, :name, nil), include_blank: true, id: "brand1"
+    / = select_tag "search_inventory[brand]", options_from_collection_for_select(ProductBrand.where(active: true), :id, :name, nil), include_blank: true, id: "brand1"
 
-    = select "search_inventory", "brand", ProductBrand.all.map{|p| [p.name, p.id, {data: {currencyId: p.currency_id, currencyCode: p.currency.code}}]}, {include_blank: true}, {class: "form-control", id: "brand1"}
+    = select "search_inventory", "brand", ProductBrand.where(active: true).map{|p| [p.name, p.id, {data: {currencyId: p.currency_id, currencyCode: p.currency.code}}]}, {include_blank: true}, {class: "form-control", id: "brand1"}
 #hp_po_page.hide
   .row
     %strong{style: "margin-left:16px;"} Parts to be PO

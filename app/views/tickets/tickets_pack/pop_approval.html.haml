@@ -34,13 +34,13 @@
 
           .row
             .col-md-12
-              = f.association :warranty_type, as: :radio_buttons, wrapper_html: {class: "col-md-6"}, wrapper: :append
+              = f.association :warranty_type, collection: WarrantyType.where(active: true), as: :radio_buttons, wrapper_html: {class: "col-md-6"}, wrapper: :append
               = f.input :cus_chargeable, label: "Customer chargeable", as: :radio_buttons, wrapper_html: {class: "col-md-2"}, wrapper: :append, required: true
           = f.simple_fields_for "products_attributes[]", ticket.products.first do |p|
             .row
               %br
               .col-md-3
-                = p.association :product_pop_status, collection: ProductPopStatus.offset(3), include_blank: false, wrapper_html: {class: "col-md-11"}, label: "Product POP status"
+                = p.association :product_pop_status, collection: ProductPopStatus.where(active: true).offset(3), include_blank: false, wrapper_html: {class: "col-md-11"}, label: "Product POP status"
               .col-md-3
                 = p.association :product_sold_country, wrapper_html: {class: "col-md-11"}, label_method: :Country, value_method: :id
 

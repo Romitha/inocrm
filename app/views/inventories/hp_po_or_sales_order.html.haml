@@ -6,7 +6,7 @@
     %strong.h4 Parts to be PO
   .col-md-6
     = label_tag InventoryCategoryCaption.first.caption
-    = select_tag "search_inventory[brand]", options_from_collection_for_select(ProductBrand.all, :id, :name, (params[:search_inventory] and params[:search_inventory][:brand])), include_blank: true
+    = select_tag "search_inventory[brand]", options_from_collection_for_select(ProductBrand.where(active: true), :id, :name, (params[:search_inventory] and params[:search_inventory][:brand])), include_blank: true
 
 .row
   = paginate @ticket_spare_part, remote: false, method: :get

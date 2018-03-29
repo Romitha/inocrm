@@ -4,7 +4,7 @@
     = form_tag dealer_types_organization_path(organization), :method => :post do
       .row
         = hidden_field_tag :organization_id, organization.id
-        - DealerType.select{|d| d_odd ? d.id.odd? : d.id.even? }.each do |d|
+        - DealerType.where(active: true).select{|d| d_odd ? d.id.odd? : d.id.even? }.each do |d|
           = label_tag d.name
           = check_box_tag "dealer_type_ids[]", d.id, organization.accounts_dealer_types.pluck(:dealer_types_id).include?(d.id), disabled: (organization.accounts_dealer_types.pluck(:dealer_types_id).include?(d.id)? true : false), class: "dealer_type_check"
       .row

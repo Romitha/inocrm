@@ -13,7 +13,7 @@
               .row
                 = panels panel_type: "success", header_content: "Add Contact Person 1" do
 
-                  = oc.association :mst_title, required: true, include_blank: false, label:"Title", wrapper_html: {class: "col-md-4"}, input_html: {class: "chosen-select"}
+                  = oc.association :mst_title, collection: MstTitle.where(active: true),required: true, include_blank: false, label:"Title", wrapper_html: {class: "col-md-4"}, input_html: {class: "chosen-select"}
                   .col-md-2
                   = oc.association :contact_person_type, required: true, include_blank: false, wrapper_html: {class: "col-md-4"}, input_html: {class: "chosen-select"}
 
@@ -41,7 +41,7 @@
               .row
                 = panels panel_type: "success", header_content: "Add Contact Person 2" do
 
-                  = oc.association :mst_title, required: true, include_blank: false, label:"Title", wrapper_html: {class: "col-md-4"}, input_html: {class: "chosen-select"}
+                  = oc.association :mst_title,collection: MstTitle.where(active: true), required: true, include_blank: false, label:"Title", wrapper_html: {class: "col-md-4"}, input_html: {class: "chosen-select"}
                   .col-md-2
                   = oc.association :contact_person_type, required: true, include_blank: false, wrapper_html: {class: "col-md-4"}, input_html: {class: "chosen-select"}
 

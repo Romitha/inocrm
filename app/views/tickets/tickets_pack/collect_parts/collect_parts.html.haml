@@ -2,6 +2,6 @@
 - product = @product
 - spare_part = @spare_part
 / = render "tickets/tickets_pack/ticket_header", ticket: ticket, product: product
-= select_tag("brand_name", options_from_collection_for_select(ProductBrand.all, :id, :name), data: {url: collect_parts_tickets_path, template: "collect_parts", task_id: params[:task_id]}, prompt: "Please select brand", class: "chosen-select")
+= select_tag("brand_name", options_from_collection_for_select(ProductBrand.where(active: true), :id, :name), data: {url: collect_parts_tickets_path, template: "collect_parts", task_id: params[:task_id]}, prompt: "Please select brand", class: "chosen-select")
 #bundle_parts.small_scale_margin-top1
   = render "tickets/tickets_pack/collect_parts/collect_parts", spare_part: spare_part

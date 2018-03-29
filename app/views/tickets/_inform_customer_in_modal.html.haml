@@ -7,7 +7,7 @@
       .col-md-3
         =label_tag "Informed To Customer:"
       .col-md-8
-        = i.select :contact_type_id,  TicketContactType.all.map {|c| [c.name, c.id]}
+        = i.select :contact_type_id,  TicketContactType.where(active: true).map {|c| [c.name, c.id]}
     .row
       .col-md-1
       .col-md-3

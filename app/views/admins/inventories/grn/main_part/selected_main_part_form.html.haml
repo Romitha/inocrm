@@ -265,7 +265,7 @@
                           .col-md-6
                             = p.input :expiry_date, as: :string, input_html: {class: "datepicker", value: p.object.expiry_date.try(:strftime, INOCRM_CONFIG["short_date_format"])}
                           .col-md-6
-                            = p.association :product_condition, label_method: :condition, required: true
+                            = p.association :product_condition, collection: ProductCondition.where(active: true),label_method: :condition, required: true
                       .col-md-5
                         .row
                           .col-md-12
@@ -301,7 +301,7 @@
                         = iw.input :created_by, as: :hidden, input_html: {value: current_user.id }
                         .row
                           .col-md-4
-                            = iw.association :inventory_warranty_type, include_blank: false, label: "Warranty Type"
+                            = iw.association :inventory_warranty_type, collection: InventoryWarrantyType.where(active: true),include_blank: false, label: "Warranty Type"
                           .col-md-4
                             = iw.input :start_at, as: :string, input_html: {class: "datepicker", value: iw.object.start_at.try(:strftime, INOCRM_CONFIG["short_date_format"])}
                           .col-md-4

@@ -1,0 +1,80 @@
+.row
+  .col-md-12
+    %fieldset
+      %legend Search Produts
+      #search_frame
+        = form_tag onloan_return_pending_parts_tickets_path, method: :get, class: "form-horizontal" do
+          .row
+            .col-md-4
+              = label_tag "Store: "
+              = select_tag "search_return_part[store_id]", options_from_collection_for_select(Organization.stores, :id, :name, (params[:search_return_part] and params[:search_return_part][:store_id])), include_blank: true, class: "form-control"
+            .col-md-4
+              = label_tag "Part Requested By: "
+              = select_tag "search_return_part[requested_by]", options_from_collection_for_select(User.select{|u| u.roles.any?{|r| r.bpm_module_roles.any?{|b| b.code == "supp_engr"} } }, :id, :full_name,(params[:search_return_part] and params[:search_return_part][:requested_by])), include_blank: true, class: "form-control"
+            .col-md-4
+              = label_tag "Part Issued By: "
+              = select_tag "search_return_part[issued_by]", options_from_collection_for_select(User.select{|u| u.roles.any?{|r| r.bpm_module_roles.any?{|b| b.code == "supp_coord"} } }, :id, :full_name,(params[:search_return_part] and params[:search_return_part][:issued_by])), include_blank: true, class: "form-control"
+          .row  
+            .col-md-4
+              = label_tag "Part Issued From", "Part Issued From"
+              = text_field_tag "issued_date_from", params[:issued_date_from], class: "form-control datepicker", placeholder: "Select from date"
+            .col-md-4
+              = label_tag "Part Issued To", "Part Issued To"
+              = text_field_tag "issued_date_to", params[:issued_date_to], class: "form-control datepicker", placeholder: "Select To date"
+          .row
+            .col-md-4.brand
+              = label_tag InventoryCategoryCaption.first.caption
+              = select_tag "search_return_part[category1_id]", options_from_collection_for_select(InventoryCategory1.where(active: true), :id, :name, (params[:search_return_part] and params[:search_return_part][:category1_id])), include_blank: true, class: "form-control", id: "search_inventory_brand"
+            .col-md-4.product
+              = label_tag InventoryCategoryCaption.second.caption
+              = select_tag "search_return_part[category2_id]", option_groups_from_collection_for_select(InventoryCategory1.where(active: true), :active_inventory_category2s, :id, :id, :name, (params[:search_return_part] and params[:search_return_part][:category2_id])), include_blank: true, class: "form-control", id: "search_inventory_product"
+            .col-md-4.category
+              = label_tag InventoryCategoryCaption.third.caption
+              = select_tag "search_return_part[category3_id]", option_groups_from_collection_for_select(InventoryCategory2.all, :active_inventory_category3s, :id, :id, :name), include_blank: true, class: "form-control", id: "search_inventory_mst_inv_product_category3_id"
+
+          .row.small_scale_margin-top1
+            .col-md-1
+              .search
+                = submit_tag "Search", class: "btn btn-sm btn-warning", name: "search"
+- if params[:search_return_part].present?
+  %table.table.table-bordered
+    %thead
+      %tr
+        %th No
+        %th Part Issued At
+        %th Part Issued By
+        %th Store
+        %th Item Code
+        %th Item Description
+        %th Quantity
+        %th Ticket No
+        %th Part No
+        %th Part Description
+        %th Part Requested By:
+        %th Part Status:
+        %th Part Reject Reason:
+        %th Action
+    %tbody
+      - @return_parts.each_with_index do |part, index|
+        %tr
+          %td
+            - if params[:page]
+              = (index+1)+ 10*(params[:page].to_i-1)
+            - else
+              = (index+1)
+          %td= part.formatted_issued_at
+          %td= part.issued_user
+          %td= part.store_name
+          %td= part.inventory_product.try(:generated_item_code)
+          %td= part.inventory_product.try(:description)
+          %td= part.requested_quantity
+          / = link_to "#{part.ticket_id}", target: "_blank" do
+          %td= part.ticket_no
+          %td= part.ticket_spare_part.try(:spare_part_no)
+          %td= part.ticket_spare_part.try(:spare_part_description)
+          %td= part.requested_user
+          %td= part.part_status
+          %td= part.rejected_reason
+
+          %td
+            = link_to "View Ticket", ticket_path(part.ticket_id), target: "_blank", remote: false

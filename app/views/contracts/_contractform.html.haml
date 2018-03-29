@@ -59,7 +59,7 @@
       = f.association :ticket_currency, label_method: :code, label: "Currency", required: true, include_blank: false
 
     .col-md-2
-      = f.association :sla_time, required: true, label_method: :description, include_blank: false, label: "SLA"
+      = f.association :sla_time, collection: SlaTime.where(active: true),required: true, label_method: :description, include_blank: false, label: "SLA"
     .col-md-3
       = label_tag "Service Provider" do
         Service Provider
@@ -97,28 +97,28 @@
     - if contract.num_of_products > 0
       .product_brand_main.hide
         .col-md-3
-          = f.association :product_brand, required: contract_product_required, include_blank: true
+          = f.association :product_brand,collection: ProductBrand.where(active: true), required: contract_product_required, include_blank: true
         .col-md-3
           - if contract_product_required
             %font{:color => "#90032A"}
               = label_tag "#{CompanyConfig.first.try(:sup_product_category1_label)} :"
           - else
             = label_tag "#{CompanyConfig.first.try(:sup_product_category1_label)} :"
-          = f.association :product_category1, collection: ProductBrand.all, as: :grouped_select, group_method: :product_category1s, group_label_method: :id, value_method: :id, required: contract_product_required, input_html: {class: "product_category1", id: "search_product_category1"}, label: false
+          = f.association :product_category1, collection: ProductBrand.where(active: true), as: :grouped_select, group_method: :active_product_category1s, group_label_method: :id, value_method: :id, required: contract_product_required, input_html: {class: "product_category1", id: "search_product_category1"}, label: false
         .col-md-3
           - if contract_product_required
             %font{:color => "#90032A"}
               = label_tag "#{CompanyConfig.first.try(:sup_product_category2_label)} :"
           - else
             = label_tag "#{CompanyConfig.first.try(:sup_product_category2_label)} :"
-          = f.association :product_category2, collection: ProductCategory1.all, as: :grouped_select, group_method: :product_category2s, group_label_method: :id, value_method: :id, required: contract_product_required, input_html: {class: "product_category2", id: "search_product_category2"}, label: false
+          = f.association :product_category2, collection: ProductCategory1.all, as: :grouped_select, group_method: :active_product_category2s, group_label_method: :id, value_method: :id, required: contract_product_required, input_html: {class: "product_category2", id: "search_product_category2"}, label: false
         .col-md-3
           - if contract_product_required
             %font{:color => "#90032A"}
               = label_tag "#{CompanyConfig.first.try(:sup_product_category_label)} :"
           - else
             = label_tag "#{CompanyConfig.first.try(:sup_product_category_label)} :"
-          = f.association :product_category, collection: ProductCategory2.all, as: :grouped_select, group_method: :product_categories, group_label_method: :id, value_method: :id, required: contract_product_required, input_html: {class: "product_category chosen-select"}, label: false
+          = f.association :product_category, collection: ProductCategory2.all, as: :grouped_select, group_method: :active_product_categories, group_label_method: :id, value_method: :id, required: contract_product_required, input_html: {class: "product_category chosen-select"}, label: false
       .product_brand_show
         .col-md-3
           %strong Product Brand :
@@ -136,7 +136,7 @@
     - else
       .product_brand_main
         .col-md-3
-          = f.association :product_brand, required: contract_product_required, include_blank: true
+          = f.association :product_brand,collection: ProductBrand.where(active: true), required: contract_product_required, include_blank: true
         .col-md-3
           - if contract_product_required
             %font{:color => "#90032A"}
@@ -145,8 +145,8 @@
             = label_tag "#{CompanyConfig.first.try(:sup_product_category1_label)} :"
           / %font{:color => "black"}
           /   %strong #{contract.try(:product_category).try(:product_category2).try(:product_category1).try(:name)}
-          = f.association :product_category1, collection: ProductBrand.all, as: :grouped_select, group_method: :product_category1s, group_label_method: :id, value_method: :id,  required: contract_product_required, input_html: {class: "product_category1", id: "search_product_category1"}, label: false
-          / = select_tag "search_product_category1", option_groups_from_collection_for_select(ProductBrand.all, :product_category1s, :name, :id, :name, "#"), include_blank: true, class: "product_category1 form-control"
+          = f.association :product_category1, collection: ProductBrand.where(active: true), as: :grouped_select, group_method: :active_product_category1s, group_label_method: :id, value_method: :id,  required: contract_product_required, input_html: {class: "product_category1", id: "search_product_category1"}, label: false
+          / = select_tag "search_product_category1", option_groups_from_collection_for_select(ProductBrand.where(active: true), :product_category1s, :name, :id, :name, "#"), include_blank: true, class: "product_category1 form-control"
           
         .col-md-3
           - if contract_product_required
@@ -156,7 +156,7 @@
             = label_tag "#{CompanyConfig.first.try(:sup_product_category2_label)} :"
             / %font{:color => "black"}
             /   %strong #{contract.try(:product_category).try(:product_category2).try(:name)}
-          = f.association :product_category2, collection: ProductCategory1.all, as: :grouped_select, group_method: :product_category2s, group_label_method: :id, value_method: :id, required: contract_product_required, input_html: {class: "product_category2", id: "search_product_category2"}, label: false
+          = f.association :product_category2, collection: ProductCategory1.all, as: :grouped_select, group_method: :active_product_category2s, group_label_method: :id, value_method: :id, required: contract_product_required, input_html: {class: "product_category2", id: "search_product_category2"}, label: false
   
         .col-md-3
           - if contract_product_required
@@ -166,7 +166,7 @@
             = label_tag "#{CompanyConfig.first.try(:sup_product_category_label)} :"
             / %font{:color => "black"}
             /   %strong #{contract.try(:product_category).try(:name)}
-          = f.association :product_category, collection: ProductCategory2.all, as: :grouped_select, group_method: :product_categories, group_label_method: :id, value_method: :id, required: contract_product_required, input_html: {class: "product_category chosen-select"}, label: false
+          = f.association :product_category, collection: ProductCategory2.all, as: :grouped_select, group_method: :active_product_categories, group_label_method: :id, value_method: :id, required: contract_product_required, input_html: {class: "product_category chosen-select"}, label: false
       .product_brand_show.hide
         .col-md-3
           %strong Product Brand :
@@ -261,7 +261,7 @@
     .row
       .col-md-3
         = label_tag "Select Annexture"
-        = select_tag "contract_document[annexture_id][]", options_from_collection_for_select(Documents::Annexture.all, :id, :name), multiple: true, class: "form-control"
+        = select_tag "contract_document[annexture_id][]", options_from_collection_for_select(Documents::Annexture.where(active: true), :id, :name), multiple: true, class: "form-control"
 
       .col-md-9
         .row
@@ -376,7 +376,7 @@
   .row
     %hr
     .col-md-2
-      = f.association :contract_status, include_blank: false, label: "Status"
+      = f.association :contract_status, collection: ContractStatus.where(active: true),include_blank: false, label: "Status"
     .col-md-10
     .col-md-12
       = f.submit "Save", class: "btn btn-sm btn-success", remote: true, data: {disable_with: "Please wait..."}
