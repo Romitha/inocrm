@@ -280,6 +280,7 @@ class Ticket < ActiveRecord::Base
   def update_on_create_ticket_info
     Organization
     company_config = CompanyConfig.first
+    CompanyConfig.inc_ticket_no ||= company_config.sup_last_ticket_no
     # update ticket_no: (company_config.sup_last_ticket_no.to_i+1) #(self.class.any? ? (self.class.order("created_at ASC").map{|t| t.ticket_no.to_i}.max + 1) : 1)
     # company_config.increment! :sup_last_ticket_no, 1
 
