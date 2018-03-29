@@ -71,11 +71,11 @@ class Inventory < ActiveRecord::Base
   end
 
   belongs_to :organization, -> { where(type_id: 4) }, foreign_key: :store_id
-  belongs_to :inventory_product,-> { where(active: true) }, foreign_key: :product_id
+  belongs_to :inventory_product, foreign_key: :product_id
 
   has_many :inventory_serial_items
 
-  belongs_to :inventory_bin,-> { where(active: true) }, foreign_key: :bin_id
+  belongs_to :inventory_bin, foreign_key: :bin_id
   belongs_to :created_by_user, class_name: "User", foreign_key: :created_by
   belongs_to :updated_by_user, class_name: "User", foreign_key: :updated_by
 
@@ -123,14 +123,14 @@ class InventoryProduct < ActiveRecord::Base
   include Tire::Model::Search
   include Tire::Model::Callbacks
 
-  belongs_to :inventory_category3,-> { where(active: true) }, foreign_key: :category3_id
+  belongs_to :inventory_category3, foreign_key: :category3_id
   belongs_to :created_by_user, class_name: "User", foreign_key: :created_by
   belongs_to :updated_by_user, class_name: "User", foreign_key: :updated_by
 
   has_many :inventories, foreign_key: :product_id
   has_many :stores, through: :inventories, source: :organization
 
-  belongs_to :inventory_unit,-> { where(active: true) }, foreign_key: :unit_id
+  belongs_to :inventory_unit, foreign_key: :unit_id
   has_many :inventory_serial_items, foreign_key: :product_id
   has_many :inventory_serial_parts, foreign_key: :product_id
   has_many :inventory_batches, foreign_key: :product_id
@@ -467,7 +467,7 @@ class InventoryProductInfo < ActiveRecord::Base
 
   mount_uploader :picture, ProductInfoUploader
 
-  belongs_to :inventory_product,-> { where(active: true) }, foreign_key: :product_id
+  belongs_to :inventory_product, foreign_key: :product_id
 
   belongs_to :manufacture,foreign_key: :manufacture_id
 
@@ -475,7 +475,7 @@ class InventoryProductInfo < ActiveRecord::Base
 
   belongs_to :currency, foreign_key: :currency_id
 
-  belongs_to :inventory_unit,-> { where(active: true) }, foreign_key: :secondary_unit_id
+  belongs_to :inventory_unit, foreign_key: :secondary_unit_id
 
   belongs_to :product_sold_country, foreign_key: :country_id
 
@@ -491,7 +491,7 @@ class InventoryCategory1 < ActiveRecord::Base
   has_many :inventory_category2s,foreign_key: :category1_id
   has_many :active_inventory_category2s, -> {where(active: true)}, foreign_key: :category1_id, class_name: "InventoryCategory2"
   accepts_nested_attributes_for :inventory_category2s, allow_destroy: true
-  has_many :inventory_category3s,-> { where(active: true) }, through: :inventory_category2s
+  has_many :inventory_category3s, through: :inventory_category2s
 
   def is_used_anywhere?
     inventory_category2s.any?
@@ -505,14 +505,14 @@ end
 class InventoryCategory2 < ActiveRecord::Base
   self.table_name = "mst_inv_category2"
 
-  belongs_to :inventory_category1,-> { where(active: true) }, foreign_key: :category1_id
+  belongs_to :inventory_category1, foreign_key: :category1_id
 
   has_many :inventory_category3s, foreign_key: :category2_id
   has_many :active_inventory_category3s, -> {where(active: true)}, foreign_key: :category2_id, class_name: "InventoryCategory3"
   has_many :inventory_category3s, foreign_key: :category2_id
   accepts_nested_attributes_for :inventory_category3s, allow_destroy: true
 
-  has_many :inventory_products,-> { where(active: true) }, through: :inventory_category3s
+  has_many :inventory_products, through: :inventory_category3s
 
   def is_used_anywhere?
     inventory_category3s.any? or inventory_products.any?
@@ -589,7 +589,7 @@ class InventoryBatch < ActiveRecord::Base
   has_many :inventory_warranties, through: :inventory_batch_warranties
 
   belongs_to :inventory
-  belongs_to :inventory_product,-> { where(active: true) }, foreign_key: :product_id
+  belongs_to :inventory_product, foreign_key: :product_id
 
   validates_presence_of [:inventory_id, :product_id, :created_by, :lot_no, :batch_no]
 
@@ -671,9 +671,9 @@ class InventorySerialItem < ActiveRecord::Base
 
   belongs_to :inventory_batch, foreign_key: :batch_id
   belongs_to :inventory
-  belongs_to :product_condition,-> { where(active: true) }
+  belongs_to :product_condition
   belongs_to :inventory_serial_item_status, foreign_key: :inv_status_id
-  belongs_to :inventory_product,-> { where(active: true) }, foreign_key: :product_id
+  belongs_to :inventory_product, foreign_key: :product_id
 
   has_many :inventory_serial_parts, foreign_key: :serial_item_id
   accepts_nested_attributes_for :inventory_serial_parts, allow_destroy: true
@@ -796,9 +796,9 @@ class InventorySerialPart < ActiveRecord::Base
   belongs_to :inventory_serial_item, foreign_key: :serial_item_id
   accepts_nested_attributes_for :inventory_serial_item, allow_destroy: true
 
-  belongs_to :inventory_product,-> { where(active: true) }, foreign_key: :product_id
+  belongs_to :inventory_product, foreign_key: :product_id
   belongs_to :inventory_serial_item_status, foreign_key: :inv_status_id
-  belongs_to :product_condition,-> { where(active: true) }
+  belongs_to :product_condition
 
   has_many :gin_sources, foreign_key: :serial_part_id
 
@@ -929,9 +929,9 @@ end
 class InventoryRack < ActiveRecord::Base
   self.table_name = "mst_inv_rack"
 
-  has_many :inventory_shelfs,-> { where(active: true) }, foreign_key: :rack_id
+  has_many :inventory_shelfs, foreign_key: :rack_id
   accepts_nested_attributes_for :inventory_shelfs, allow_destroy: true
-  has_many :inventory_bins,-> { where(active: true) }, through: :inventory_shelfs
+  has_many :inventory_bins, through: :inventory_shelfs
 
   belongs_to :organization, foreign_key: :location_id
   belongs_to :created_user, foreign_key: :created_by
@@ -949,11 +949,11 @@ end
 class InventoryShelf < ActiveRecord::Base
   self.table_name = "mst_inv_shelf"
 
-  has_many :inventory_bins,-> { where(active: true) }, foreign_key: :shelf_id
+  has_many :inventory_bins, foreign_key: :shelf_id
   accepts_nested_attributes_for :inventory_bins, allow_destroy: true
   has_many :inventories, through: :inventory_bins
 
-  belongs_to :inventory_rack,-> { where(active: true) }, foreign_key: :rack_id
+  belongs_to :inventory_rack, foreign_key: :rack_id
   belongs_to :created_user, foreign_key: :created_by
   belongs_to :updated_user, foreign_key: :updated_by
 
@@ -965,7 +965,7 @@ end
 class InventoryBin < ActiveRecord::Base
   self.table_name = "mst_inv_bin"
 
-  belongs_to :inventory_shelf,-> { where(active: true) }, foreign_key: :shelf_id
+  belongs_to :inventory_shelf, foreign_key: :shelf_id
   belongs_to :created_user, foreign_key: :created_by
   belongs_to :updated_user, foreign_key: :updated_by
   has_many :inventories, foreign_key: :bin_id
@@ -978,14 +978,14 @@ end
 
 class InventoryDamage < ActiveRecord::Base
   self.table_name = "inv_damage"
-  belongs_to :inventory_disposal_method,-> { where(active: true) }
+  belongs_to :inventory_disposal_method
 end
 
 class InventoryDisposalRequest < ActiveRecord::Base
   self.table_name = "inv_disposal_request"
 
-  belongs_to :inventory_disposal_method,-> { where(active: true) }
-  belongs_to :inventory_product,-> { where(active: true) }
+  belongs_to :inventory_disposal_method
+  belongs_to :inventory_product
   belongs_to :store, class_name: "Organization"
   belongs_to :disposal_reason, -> { where(disposal: true) }, class_name: "InventoryReason"
 
@@ -994,7 +994,7 @@ end
 class InventoryDisposal < ActiveRecord::Base
   self.table_name = "inv_disposal"
 
-  belongs_to :inventory_disposal_method,-> { where(active: true) }
+  belongs_to :inventory_disposal_method
 
 end
 
@@ -1027,7 +1027,7 @@ class InventoryPo < ActiveRecord::Base
   belongs_to :created_by_user, class_name: "User", foreign_key: :created_by
   belongs_to :approved_by_user, class_name: "User", foreign_key: :approved_by
   belongs_to :currency
-  belongs_to :payment_term,-> { where(active: true) }, foreign_key: :payment_term_id
+  belongs_to :payment_term, foreign_key: :payment_term_id
 
   has_many :inventory_po_items, foreign_key: :po_id
   accepts_nested_attributes_for :inventory_po_items, allow_destroy: true
@@ -1146,7 +1146,7 @@ class InventoryPoItem < ActiveRecord::Base
 
   belongs_to :inventory_po, foreign_key: :po_id
   belongs_to :inventory_prn_item, foreign_key: :prn_item_id
-  belongs_to :inventory_unit,-> { where(active: true) }, foreign_key: :unit_id
+  belongs_to :inventory_unit, foreign_key: :unit_id
 
   has_many :inventory_po_item_taxes, foreign_key: :po_item_id, dependent: :delete_all
   accepts_nested_attributes_for :inventory_po_item_taxes, allow_destroy: true
@@ -1187,7 +1187,7 @@ class InventoryPoItemTax < ActiveRecord::Base
   self.table_name = "inv_po_item_tax"
 
   belongs_to :inventory_po_item, foreign_key: :po_item_id
-  belongs_to :tax,-> { where(active: true) }, foreign_key: :tax_id
+  belongs_to :tax, foreign_key: :tax_id
 end
 
 class InventoryPrn < ActiveRecord::Base
@@ -1209,7 +1209,7 @@ class InventoryPrn < ActiveRecord::Base
   accepts_nested_attributes_for :inventory_prn_items, allow_destroy: true
   has_many :prn_srn_items, through: :inventory_prn_items
 
-  has_many :inventory_products,-> { where(active: true) }, through: :inventory_prn_items
+  has_many :inventory_products, through: :inventory_prn_items
 
   def self.search(params)  
     tire.search(page: (params[:page] || 1), per_page: 10) do
@@ -1315,7 +1315,7 @@ class InventoryPrnItem < ActiveRecord::Base
   self.table_name = "inv_prn_item"
 
   belongs_to :inventory_prn, foreign_key: :prn_id
-  belongs_to :inventory_product,-> { where(active: true) }, foreign_key: :product_id
+  belongs_to :inventory_product, foreign_key: :product_id
 
   has_many :inventory_po_items, foreign_key: :prn_item_id
 
