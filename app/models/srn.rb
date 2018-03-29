@@ -22,7 +22,7 @@ class Srn < ActiveRecord::Base
   accepts_nested_attributes_for :srn_items, allow_destroy: true
   has_many :prn_srn_items, through: :srn_items
 
-  has_many :inventory_products,-> { where(active: true) }, through: :srn_items
+  has_many :inventory_products, through: :srn_items
   has_many :gins
   accepts_nested_attributes_for :gins, allow_destroy: true
   has_many :ticket_spare_part_stores, foreign_key: :inv_srn_id
@@ -153,7 +153,7 @@ class SrnItem < ActiveRecord::Base
   include Tire::Model::Callbacks
 
   belongs_to :srn
-  belongs_to :inventory_product,-> { where(active: true) }, foreign_key: :product_id
+  belongs_to :inventory_product, foreign_key: :product_id
   belongs_to :main_inventory_product, class_name: "InventoryProduct", foreign_key: :main_product_id
   belongs_to :issue_terminated_reason, class_name: "InventoryReason"
   belongs_to :issue_terminated_by_user, class_name: "User", foreign_key: :issue_terminated_by

@@ -5,7 +5,7 @@ class Damage < ActiveRecord::Base
   belongs_to :grn_item, foreign_key: :grn_item_id
   belongs_to :grn_batch, foreign_key: :grn_batch_id
   belongs_to :inventory_serial_part, foreign_key: :serial_part_id
-  belongs_to :inventory_reason,-> { where(active: true) }, foreign_key: :damage_reason_id
+  belongs_to :inventory_reason, foreign_key: :damage_reason_id
 
 end
 
