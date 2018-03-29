@@ -11,7 +11,7 @@
       = f.input :email, placeholder: "Email", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Email"}, required: true
       .row
         .col-md-2
-          = f.association :mst_title, required: true, include_blank: false, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Title"}, label: "Title"
+          = f.association :mst_title,collection: MstTitle.where(active: true), required: true, include_blank: false, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Title"}, label: "Title"
         .col-md-5
           = f.input :first_name, placeholder: "First name", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "First Name"}, required: true
         .col-md-5

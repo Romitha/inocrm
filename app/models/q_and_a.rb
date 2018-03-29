@@ -1,7 +1,7 @@
 class QAndA < ActiveRecord::Base
   self.table_name = "mst_spt_problematic_question"
 
-  belongs_to :problem_category,-> { where(active: true) }, foreign_key: :problem_category_id
+  belongs_to :problem_category, foreign_key: :problem_category_id
   belongs_to :task_action, foreign_key: :action_id
 
   has_many :q_and_answers, foreign_key: :problematic_question_id
@@ -50,7 +50,7 @@ class GeQAndAnswer < ActiveRecord::Base
 
   belongs_to :user_ticket_action, foreign_key: :ticket_action_id
 
-  belongs_to :ge_q_and_a,-> { where(active: true) }, foreign_key: :general_question_id
+  belongs_to :ge_q_and_a, foreign_key: :general_question_id
   belongs_to :ticket
 
   validates_presence_of :answer, if: Proc.new{|ge_q_and_answer| ge_q_and_answer.ge_q_and_a.try(:compulsory) == true}

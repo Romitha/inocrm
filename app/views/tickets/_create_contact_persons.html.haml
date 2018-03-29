@@ -5,12 +5,12 @@
       = hidden_field_tag :product_id, @product.id
       = hidden_field_tag :ticket_time_now, @ticket_time_now
       .row
-        = f.association :mst_title, wrapper_html: {class:"col-md-4"}, label: "Title"
+        = f.association :mst_title,collection: MstTitle.where(active: true), wrapper_html: {class:"col-md-4"}, label: "Title"
         = f.input :name, wrapper_html: {class:"col-md-8"}
 
       = f.simple_fields_for :contact_person_contact_types do |c|
         .row
-          = c.association :contact_type, wrapper_html: {class: "col-md-5"}
+          = c.association :contact_type,collection: ContactType.where(active: true), wrapper_html: {class: "col-md-5"}
           = c.input :value, wrapper_html: {class:"col-md-6"}
           .add_sign
             = c.link_to_remove class: "remove_c_t_v_link" do

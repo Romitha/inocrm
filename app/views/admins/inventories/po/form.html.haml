@@ -48,7 +48,7 @@
         .col-md-3
           = f.input :delivery_mode, label: "Delivery Mode"
         .col-md-4
-          = f.association :payment_term, required: true
+          = f.association :payment_term, collection: PaymentTerm.where(active: true), required: true
         .col-md-4
           = f.input :deliver_to, label: "Deliver To", input_html: {value: Organization.owner.primary_address.try(:full_address)}
         .col-md-4
@@ -171,7 +171,7 @@
               .col-md-4
                 = label_tag "Tax"
                 %br/
-                = t.select :tax_id, Tax.all.map{|p| ["#{p.tax} (#{p.tax_rates.find_by_active(true).try(:rate).to_f}%)", p.id, {"data-default-amount" => (p.tax_rates.find_by_active(true).try(:rate).to_f || 0)}]}, {include_blank: true}, {class: "payment_item_select tax_rate_calculation col-md-4", onclick: "Inventories.payment_amount_select(this); Inventories.calculate_tax_ammount(this); return false;"}
+                = t.select :tax_id, Tax.where(active: true).map{|p| ["#{p.tax} (#{p.tax_rates.find_by_active(true).try(:rate).to_f}%)", p.id, {"data-default-amount" => (p.tax_rates.find_by_active(true).try(:rate).to_f || 0)}]}, {include_blank: true}, {class: "payment_item_select tax_rate_calculation col-md-4", onclick: "Inventories.payment_amount_select(this); Inventories.calculate_tax_ammount(this); return false;"}
               .col-md-5
                 %font{:color => "#90032A"}
                   = t.input :amount, require: true, input_html: {class: "tax_amount"}

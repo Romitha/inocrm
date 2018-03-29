@@ -16,7 +16,7 @@
       = f.input :repare_end, as: :string,label: "Repair end", input_html: {class: "datetimepicker", value: f.object.repare_end.try(:localtime).try(:strftime, "%m/%d/%Y %I:%M %p")}, wrapper_html: {class: "position_relative col-md-6"}, required: true
 
     .row
-      = f.association :spare_part_status_use, collection: SparePartStatusUse.offset(1).map{|s| [s.name, s.id]}, include_blank: false, required: true, selected: 2, wrapper_html: {class: "col-md-6"}, label: "Received part status", input_html: {class: "received_part_status chosen-select_disable_search"}
+      = f.association :spare_part_status_use, collection: SparePartStatusUse.where(active: true).offset(1).map{|s| [s.name, s.id]}, include_blank: false, required: true, selected: 2, wrapper_html: {class: "col-md-6"}, label: "Received part status", input_html: {class: "received_part_status chosen-select_disable_search"}
       = f.association :unused_reason, label_method: :reason, value_method: :id, required: true, include_blank: false, wrapper_html: {class: "col-md-6"}, input_html: {class: "unused_reason chosen-select_disable_search"}, disabled: true
 
   - if (@rce and (@manufacture_warranty or @manufacture_chargeable or @store_warranty or @store_chargeable)) or ((@manufacture_warranty or @manufacture_chargeable) and @rpr) or ((@store_chargeable or @store_warranty) and @rpr)
@@ -35,7 +35,7 @@
       = f.input :repare_end, as: :string, label: "Repair end", input_html: {class: "datetimepicker", value: f.object.repare_end.try(:localtime).try(:strftime, "%m/%d/%Y %I:%M %p")}, wrapper_html: {class: "position_relative col-md-6"}, required: true
 
     .row
-      = f.association :spare_part_status_use, collection: SparePartStatusUse.offset(1).map{|s| [s.name, s.id]}, required: true, include_blank: false, selected: 2, wrapper_html: {class: "col-md-6"}, label: "Received part status", input_html: {class: "received_part_status chosen-select_disable_search"}
+      = f.association :spare_part_status_use, collection: SparePartStatusUse.where(active: true).offset(1).map{|s| [s.name, s.id]}, required: true, include_blank: false, selected: 2, wrapper_html: {class: "col-md-6"}, label: "Received part status", input_html: {class: "received_part_status chosen-select_disable_search"}
       = f.association :unused_reason, label_method: :reason, value_method: :id, required: true, include_blank: false, wrapper_html: {class: "col-md-6"}, input_html: {class: "unused_reason chosen-select_disable_search"}, disabled: true
 
     - if f.object.ticket_spare_part_store.present?
@@ -44,7 +44,7 @@
           .col-md-6
             = s.check_box :return_part_damage, {class: "damage_reason_check"}, 1,0
             = s.label :return_part_damage
-            = s.select :return_part_damage_reason_id, InventoryReason.where(damage: true).map{|r| [r.reason, r.id]}, {}, class: "damage_reason"
+            = s.select :return_part_damage_reason_id, InventoryReason.where(damage: true, active: true).map{|r| [r.reason, r.id]}, {}, class: "damage_reason"
 
 
   - if (@rce and (@manufacture_warranty or @manufacture_chargeable or @store_warranty or @store_chargeable)) or ((@manufacture_warranty or @manufacture_chargeable) and @rpr) or ((@store_chargeable or @store_warranty) and @rpr)

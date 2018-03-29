@@ -12,7 +12,7 @@
     .col-md-6
       = f.input :subject
     .col-md-6
-      = f.association :ticket_contact_type, label: "Inform to customer"
+      = f.association :ticket_contact_type, collection: TicketContactType.where(active: true),label: "Inform to customer"
     .col-md-12
       = f.input :note, label: "Inform note"
     .col-md-12

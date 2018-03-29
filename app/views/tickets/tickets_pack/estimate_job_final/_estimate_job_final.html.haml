@@ -29,9 +29,9 @@
           .col-md-2
             = label_tag "Payment item"
             %br/
-            = t.select :payment_item_id, PaymentItem.all.map{|p| [p.name, p.id, {"data-default-amount" => p.default_amount.to_f}]}, {selected: (t.object.payment_item_id || 1 )}, {class: "payment_item_select", onchange: "Tickets.payment_amount_select(this); return false;"}
+            = t.select :payment_item_id, PaymentItem.where(active: true).map{|p| [p.name, p.id, {"data-default-amount" => p.default_amount.to_f}]}, {selected: (t.object.payment_item_id || 1 )}, {class: "payment_item_select", onchange: "Tickets.payment_amount_select(this); return false;"}
           .col-md-3
-            = t.input :amount, label: "Cost (#{ticket.ticket_currency.code})", input_html: {value: (t.object.amount || PaymentItem.first.try(:default_amount)), class: "payment_item_value"}
+            = t.input :amount, label: "Cost (#{ticket.ticket_currency.code})", input_html: {value: (t.object.amount || PaymentItem.where(active: true).first.try(:default_amount)), class: "payment_item_value"}
         = f.link_to_add :act_terminate_job_payments, class: "col-md-12" do
           %span.glyphicon.glyphicon-plus-sign
           Add

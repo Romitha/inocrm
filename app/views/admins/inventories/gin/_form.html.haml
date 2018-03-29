@@ -189,7 +189,7 @@
                   %div{id: "issued_quantity_text#{i.object.srn_item_id}"}
 
               .col-md-12
-                = i.association :product_condition, include_blank: false, label_method: :condition, required: true
+                = i.association :product_condition,collection: ProductCondition.where(active: true), include_blank: false, label_method: :condition, required: true
               .col-md-12
                 = i.input :remarks
 

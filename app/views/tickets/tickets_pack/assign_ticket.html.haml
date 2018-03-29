@@ -46,11 +46,11 @@
                 .col-md-2
                   = f.association :ticket_type, as: :radio_buttons, wrapper: :append, input_html: {class: "ticket_type"}
                 .col-md-2
-                  = f.association :onsite_type, include_blank: false
+                  = f.association :onsite_type, collection: OnsiteType.where(active: true),include_blank: false
 
                 .col-md-2
                   .strong Job type
-                  = f.select :job_type_id, options_from_collection_for_select(JobType.all, :id, :name), {}, {class: "form-control"}
+                  = f.select :job_type_id, options_from_collection_for_select(JobType.where(active: true), :id, :name), {}, {class: "form-control"}
 
               .pass_to_recorrection_hiddible
                 .row

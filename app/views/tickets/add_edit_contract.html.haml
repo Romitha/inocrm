@@ -11,7 +11,7 @@
               = f.select :customer_id, Organization.all.map{|a| [a.name, a.id]}
             .col-md-3
               %strong SLA Time
-              = f.select :sla_id, SlaTime.all.map{|a| [a.sla_time, a.id]}
+              = f.select :sla_id, SlaTime.where(active: true).map{|a| [a.sla_time, a.id]}
               = f.input :created_by,  as: :hidden, input_html: {value: current_user.id}
               = f.input :created_at, as: :hidden, input_html: {value: DateTime.now.strftime("%d-%m-%Y %H:%M")}
             .col-md-3
@@ -52,5 +52,5 @@
                     = contract.contract_b2b && "Yes" || "No"
                 .col-md-3
                   %strong SLA Time:
-                  = link_to "#", class: "inline_edit", data: {type: "select", source: SlaTime.all.collect{|sla| {value: sla.id, text: sla.sla_time}}, resource: "ticket_contract", name: "sla_id", url: add_edit_contract_tickets_path(edit: true, contract_id: contract.id), "original-title" => "Update Contract"} do
+                  = link_to "#", class: "inline_edit", data: {type: "select", source: SlaTime.where(active: true).collect{|sla| {value: sla.id, text: sla.sla_time}}, resource: "ticket_contract", name: "sla_id", url: add_edit_contract_tickets_path(edit: true, contract_id: contract.id), "original-title" => "Update Contract"} do
                     = contract.sla_time.try(:sla_time)

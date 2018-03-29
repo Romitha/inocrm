@@ -31,11 +31,11 @@
           = check_box_tag :unit_return_customer, true, (ticket.ticket_type.code == 'IH'), disabled: (ticket.ticket_type.code != 'IH')
           %br/
           = label_tag "Dispatch method"
-          = select_tag :dispatch_method_id, options_from_collection_for_select(DispatchMethod.all, :id, :name)
+          = select_tag :dispatch_method_id, options_from_collection_for_select(DispatchMethod.where(active: true), :id, :name)
         .col-md-3
           = label_tag "Feedback"
           %br
-          = select_tag :feedback_id, options_from_collection_for_select(Feedback.all, :id, :feedback), include_blank: true
+          = select_tag :feedback_id, options_from_collection_for_select(Feedback.where(active: true), :id, :feedback), include_blank: true
         .col-md-4
           = label_tag "Feedback description"
           %br
@@ -67,7 +67,7 @@
             = label_tag "Payment completed"
             = check_box_tag :payment_completed
         .row{style: "margin-top: 10px; margin-bottom: 10px;"}
-          - inform_email << @ticket.send("contact_person#{@ticket.inform_cp}").contact_person_contact_types.find_by_contact_type_id(ContactType.find_by_name("E-mail").id).try(:value)
+          - inform_email << @ticket.send("contact_person#{@ticket.inform_cp}").contact_person_contact_types.find_by_contact_type_id(ContactType.where(active: true).find_by_name("E-mail").id).try(:value)
           - InformCustomer.where(ticket_action_id: @ticket.user_ticket_action_ids).each do |i|
             .row
               .col-md-3

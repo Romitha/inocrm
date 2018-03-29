@@ -1325,5 +1325,3 @@ window.Tickets =
       $(".decendent").addClass("hide")
     else
       $(".decendent").removeClass("hide")
-
-    

@@ -7,7 +7,7 @@
     %strong All Ready-To Bundle Parts
   .col-md-4
     %strong Please Select Brand Name:
-    = select_tag("brand_name", options_from_collection_for_select(ProductBrand.all, :id, :name), data: {url: collect_parts_tickets_path, template: "bundle_return_part", task_id: params[:task_id]}, prompt: "Please select brand")
+    = select_tag("brand_name", options_from_collection_for_select(ProductBrand.where(active: true), :id, :name), data: {url: collect_parts_tickets_path, template: "bundle_return_part", task_id: params[:task_id]}, prompt: "Please select brand")
 
 #bundle_parts
   = render "tickets/tickets_pack/bundle_return_part/bundle_return_part", spare_part: spare_part

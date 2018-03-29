@@ -25,5 +25,5 @@
             = inventory_product_category.code
         .col-md-4
           %strong Brand:
-          = link_to "#", class: "inline_edit", data: {type: "select", resource: "inventory_category2", source: InventoryCategory1.all.collect{|category1| {value: category1.id, text: category1.name}}, name: "name", url: inventory_product_category_admins_inventories_path(edit: true, inventory_category2_id: inventory_product_category.id), "original-title" => "Update Product Category"} do
+          = link_to "#", class: "inline_edit", data: {type: "select", resource: "inventory_category2", source: InventoryCategory1.where(active: true).collect{|category1| {value: category1.id, text: category1.name}}, name: "name", url: inventory_product_category_admins_inventories_path(edit: true, inventory_category2_id: inventory_product_category.id), "original-title" => "Update Product Category"} do
             = inventory_product_category.inventory_category1.name

@@ -11,13 +11,13 @@
             = select_tag :store_id, options_from_collection_for_select(Organization.stores, :id, :name, params[:store_id]), include_blank: true, class: "form-control"
           .col-md-12.brand
             = label_tag InventoryCategoryCaption.first.caption
-            = select_tag "search_inventory[brand]", options_from_collection_for_select(InventoryCategory1.all, :id, :name, (params[:search_inventory] and params[:search_inventory][:brand])), include_blank: true, class: "form-control"
+            = select_tag "search_inventory[brand]", options_from_collection_for_select(InventoryCategory1.where(active: true), :id, :name, (params[:search_inventory] and params[:search_inventory][:brand])), include_blank: true, class: "form-control"
           .col-md-12.product
             = label_tag InventoryCategoryCaption.second.caption
-            = select_tag "search_inventory[product]", option_groups_from_collection_for_select(InventoryCategory1.all, :inventory_category2s, :name, :id, :name, (params[:search_inventory] and params[:search_inventory][:product])), include_blank: true, class: "form-control"
+            = select_tag "search_inventory[product]", option_groups_from_collection_for_select(InventoryCategory1.where(active: true), :active_inventory_category2s, :name, :id, :name, (params[:search_inventory] and params[:search_inventory][:product])), include_blank: true, class: "form-control"
           .col-md-12.category
             = label_tag InventoryCategoryCaption.third.caption
-            = select_tag "search_inventory[mst_inv_product][category3_id]", option_groups_from_collection_for_select(InventoryCategory2.all, :inventory_category3s, :name, :id, :name, (params[:search_inventory] and params[:search_inventory][:mst_inv_product][:category3_id])), include_blank: true, class: "form-control"
+            = select_tag "search_inventory[mst_inv_product][category3_id]", option_groups_from_collection_for_select(InventoryCategory2.all, :active_inventory_category3s, :name, :id, :name, (params[:search_inventory] and params[:search_inventory][:mst_inv_product][:category3_id])), include_blank: true, class: "form-control"
           / .col-md-4
           /   = label_tag "Brand"
           /   = select_tag :store_id, options_from_collection_for_select(Organization.stores, :id, :name, params[:store_id]), include_blank: true, class: "form-control"

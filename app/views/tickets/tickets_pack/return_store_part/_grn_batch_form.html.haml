@@ -42,7 +42,7 @@
       = label_tag "Damage"
       = check_box_tag :damage_reason_check, true, false, class: "damage_reason_check"
       = label_tag "Damage reason", "Damage reason", class: "damage_reason_label"
-      = select_tag :damage_reason, options_from_collection_for_select(InventoryReason.where(damage: true), "id", "reason"), class: "damage_reason", include_blank: false
+      = select_tag :damage_reason, options_from_collection_for_select(InventoryReason.where(damage: true, active: true), "id", "reason"), class: "damage_reason", include_blank: false
 
   .col-md-8
     = f.input :remarks, label: "Inventory part remarks", input_html: {value: nil}
@@ -84,7 +84,7 @@
             = w.input :period_onsight
           .col-md-4
             = label_tag "Warranty Type"
-            = w.select :warranty_type_id, WarrantyType.all.collect { |p| [ p.name, p.id ] }, include_blank: true
+            = w.select :warranty_type_id, WarrantyType.where(active: true).collect { |p| [ p.name, p.id ] }, include_blank: true
           .col-md-4
             = w.input :remarks
 

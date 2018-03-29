@@ -6,7 +6,7 @@
         = f.input :organization_id, as: :hidden
         .row
           .col-md-2
-            = f.association :mst_title, label:"Title", collection: MstTitle.all.map{|t| [t.title, t.id]}, selected: 1
+            = f.association :mst_title, collection: MstTitle.where(active: true),label:"Title", collection: MstTitle.where(active: true).map{|t| [t.title, t.id]}, selected: 1
           .col-md-10
             = f.input :name
         .row
@@ -32,7 +32,7 @@
                     %span.glyphicon.glyphicon-remove-sign
                 .col-md-5
                   =label_tag "Contact type"
-                  = fc.select :contact_type_id, ContactType.all.map {|c| [c.name, c.id]}, {}, class: "form-control"
+                  = fc.select :contact_type_id, ContactType.where(active: true).map {|c| [c.name, c.id]}, {}, class: "form-control"
                 .col-md-6
                   = fc.input :value
 

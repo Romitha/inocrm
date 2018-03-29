@@ -103,7 +103,7 @@ class TicketEstimationAdditional < ActiveRecord::Base
   belongs_to :ticket_estimation, foreign_key: :ticket_estimation_id
   belongs_to :ticket, foreign_key: :ticket_id
 
-  belongs_to :additional_charge,-> { where(active: true) }, foreign_key: :additional_charge_id
+  belongs_to :additional_charge, foreign_key: :additional_charge_id
 
   has_many :ticket_estimation_additional_taxes, foreign_key: :estimation_additional_id
   accepts_nested_attributes_for :ticket_estimation_additional_taxes, allow_destroy: true
@@ -139,7 +139,7 @@ class TicketPaymentReceived < ActiveRecord::Base
   has_many :ticket_payment_receiveds, through: :ticket_invoice_advance_payments
 
   belongs_to :ticket
-  belongs_to :ticket_payment_received_type,-> { where(active: true) }, foreign_key: :type_id
+  belongs_to :ticket_payment_received_type, foreign_key: :type_id
   belongs_to :ticket_invoice, foreign_key: :invoice_id
   belongs_to :customer_quotation
   belongs_to :currency

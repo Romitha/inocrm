@@ -4,13 +4,13 @@
   .row
     .col-md-3.brand
       = label_tag InventoryCategoryCaption.first.caption
-      = select_tag "search_inventory[brand]", options_from_collection_for_select(InventoryCategory1.all, :id, :name, (params[:search_inventory] and params[:search_inventory][:brand])), include_blank: true
+      = select_tag "search_inventory[brand]", options_from_collection_for_select(InventoryCategory1.where(active: true), :id, :name, (params[:search_inventory] and params[:search_inventory][:brand])), include_blank: true
     .col-md-3.product
       = label_tag InventoryCategoryCaption.second.caption
-      = select_tag "search_inventory[product]", option_groups_from_collection_for_select(InventoryCategory1.all, :inventory_category2s, :id, :id, :name, (params[:search_inventory] and params[:search_inventory][:product])), include_blank: true
+      = select_tag "search_inventory[product]", option_groups_from_collection_for_select(InventoryCategory1.where(active: true), :active_inventory_category2s, :id, :id, :name, (params[:search_inventory] and params[:search_inventory][:product])), include_blank: true
     .col-md-3.category
       = label_tag InventoryCategoryCaption.third.caption
-      = f.association :inventory_category3, collection: InventoryCategory2.all, as: :grouped_select, group_method: :inventory_category3s, group_label_method: :id, label_method: :name, value_method: :id, label: false
+      = f.association :inventory_category3, collection: InventoryCategory2.all, as: :grouped_select, group_method: :active_inventory_category3s, group_label_method: :id, label_method: :name, value_method: :id, label: false
   .row
     .col-md-3
       = f.input :serial_no, input_html: {value: InventorySerialItem.last.serial_no}
@@ -43,7 +43,7 @@
       = f.input :spare_part, wrapper: :append
     .col-md-3
       = f.label "Unit : "
-      = f.select :unit_id, InventoryUnit.all.uniq{|i| i.id}.map{|o| [o.unit, o.id]}
+      = f.select :unit_id, InventoryUnit.where(active: true).uniq{|i| i.id}.map{|o| [o.unit, o.id]}
 
   .row
     = f.input :created_by, as: :hidden, input_html: {value: current_user.id}
@@ -57,7 +57,7 @@
           = d.file_field :picture, accept: 'image/png,image/gif,image/jpeg,application/pdf'
         .col-md-3
           = d.label "Secondary Unit : "
-          = d.select :secondary_unit_id, InventoryUnit.all.uniq{|i| i.id}.map{|o| [o.unit, o.id]}
+          = d.select :secondary_unit_id, InventoryUnit.where(active: true).uniq{|i| i.id}.map{|o| [o.unit, o.id]}
         .col-md-3
           = check_box_tag(:issue_fractional_allowed)
           = label_tag(:issue_fractional_allowed, "Issue Fractional Allowed")
@@ -78,7 +78,7 @@
           = d.select :country_id, ProductSoldCountry.all.map {|c| [c.Country, c.id]}, label: "Country"
         .col-md-3
           = d.label "Manufacture:"
-          = d.select :manufacture_id, Manufacture.all.map {|c| [c.manufacture, c.id]}, label: "Manufacture"
+          = d.select :manufacture_id, Manufacture.where(active: true).map {|c| [c.manufacture, c.id]}, label: "Manufacture"
       .row
         .col-md-3
           = d.input :average_cost
@@ -161,7 +161,7 @@
             .col-md-2
               %strong unit:
             .col-md-4
-              = link_to "#", class: "inline_edit", data: {type: "select", source: InventoryUnit.all.collect{|invunit| {value: invunit.id, text: invunit.unit}}, resource: "inventory_product", name: "unit_id", url: inline_update_admins_path(product_id: inv_product.id), "original-title" => "Update rack name"} do
+              = link_to "#", class: "inline_edit", data: {type: "select", source: InventoryUnit.where(active: true).collect{|invunit| {value: invunit.id, text: invunit.unit}}, resource: "inventory_product", name: "unit_id", url: inline_update_admins_path(product_id: inv_product.id), "original-title" => "Update rack name"} do
                 = inv_product.inventory_unit.try(:unit)
 
           .row.col-md-12
@@ -180,12 +180,12 @@
                 .col-md-2
                   %strong  Secondary unit:
                 .col-md-4
-                  = link_to "#", class: "inline_edit", data: {type: "select", source: InventoryUnit.all.collect{|unit| {value: unit.id, text:  unit.unit}}, resource: "inventory_product_info", name: "secondary_unit_id", url: inline_update_product_info_admins_path(product_id: inv_product.inventory_product_info.product_id), "original-title" => "Update secondary unit"} do
+                  = link_to "#", class: "inline_edit", data: {type: "select", source: InventoryUnit.where(active: true).collect{|unit| {value: unit.id, text:  unit.unit}}, resource: "inventory_product_info", name: "secondary_unit_id", url: inline_update_product_info_admins_path(product_id: inv_product.inventory_product_info.product_id), "original-title" => "Update secondary unit"} do
                     = inv_product.inventory_product_info.inventory_unit.try(:unit)
                 .col-md-2
                   %strong  Manufacture:
                 .col-md-4
-                  = link_to "#", class: "inline_edit", data: {type: "select", source:Manufacture.all.collect{|m| {value: m.id, text:  m.manufacture}}, resource: "inventory_product_info", name: "manufacture_id", url: inline_update_product_info_admins_path(product_id: inv_product.inventory_product_info.product_id), "original-title" => "Update product info manufacture"} do
+                  = link_to "#", class: "inline_edit", data: {type: "select", source:Manufacture.where(active: true).collect{|m| {value: m.id, text:  m.manufacture}}, resource: "inventory_product_info", name: "manufacture_id", url: inline_update_product_info_admins_path(product_id: inv_product.inventory_product_info.product_id), "original-title" => "Update product info manufacture"} do
                     = inv_product.inventory_product_info.manufacture.try(:manufacture)
               .row.col-md-12
                 .col-md-2

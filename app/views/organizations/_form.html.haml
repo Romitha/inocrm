@@ -39,7 +39,7 @@
     .col-md-10.pull-right
       - if params[:category].to_s[0..2] == "IND"
         = f.label "Title ", {style: "color: #900303;"}
-        = f.select :title_id, MstTitle.all.uniq{|t| t.id}.map{|o| [o.title, o.id]}, {required: true}, include_blank: false
+        = f.select :title_id, MstTitle.where(active: true).uniq{|t| t.id}.map{|o| [o.title, o.id]}, {required: true}, include_blank: false
 
       = f.input :name, placeholder: "Name", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Name"}
       / %blockquote
@@ -54,7 +54,7 @@
   = f.simple_fields_for :account do |a|
     .row
       .col-md-4{class: "has-tooltip", title: "Industry type", data: {toggle: "tooltip", placement: "left"}}
-        = a.association :industry_type, include_blank: false
+        = a.association :industry_type,collection: IndustryType.where(active: true), include_blank: false
       - unless params[:action] == "store_and_branch"
         .col-md-2
           = a.input :credit_allow, as: :boolean, label: "Allow credit", input_html: {class: "credit_allow"}, wrapper: :append

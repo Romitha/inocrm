@@ -160,7 +160,7 @@
                       .col-md-4
                         = label_tag "Tax"
                         %br/
-                        = ee.select :tax_id, Tax.all.map{|p| ["#{p.tax} (#{p.tax_rates.find_by_active(true).try(:rate).to_f}%)", p.id, {"data-default-amount" => p.tax_rates.find_by_active(true).try(:rate).to_f}]}, {include_blank: true}, {class: "payment_item_select tax_rate_calculation col-md-12", onchange: "Inventories.payment_amount_select(this); return false;"}
+                        = ee.select :tax_id, Tax.where(active: true).map{|p| ["#{p.tax} (#{p.tax_rates.find_by_active(true).try(:rate).to_f}%)", p.id, {"data-default-amount" => p.tax_rates.find_by_active(true).try(:rate).to_f}]}, {include_blank: true}, {class: "payment_item_select tax_rate_calculation col-md-12", onchange: "Inventories.payment_amount_select(this); return false;"}
 
                       .col-md-3
                         %strong{style: "margin-bottom: 5px; display: inline-block;"} Estimated tax amount:
@@ -230,7 +230,7 @@
                           .col-md-4
                             = label_tag "Tax"
                             %br/
-                            = e.select :tax_id, Tax.all.map{|p| ["#{p.tax} (#{p.tax_rates.find_by_active(true).try(:rate).to_f}%)", p.id, {"data-default-amount" => p.tax_rates.find_by_active(true).try(:rate).to_f}]}, {include_blank: true}, {class: "payment_item_select tax_rate_calculation col-md-12", onchange: "Inventories.payment_amount_select(this); return false;"}
+                            = e.select :tax_id, Tax.where(active: true).map{|p| ["#{p.tax} (#{p.tax_rates.find_by_active(true).try(:rate).to_f}%)", p.id, {"data-default-amount" => p.tax_rates.find_by_active(true).try(:rate).to_f}]}, {include_blank: true}, {class: "payment_item_select tax_rate_calculation col-md-12", onchange: "Inventories.payment_amount_select(this); return false;"}
                           .col-md-3
                             %strong{style: "margin-bottom: 5px; display: inline-block;"} Estimated tax amount:
                             .panel.panel-success

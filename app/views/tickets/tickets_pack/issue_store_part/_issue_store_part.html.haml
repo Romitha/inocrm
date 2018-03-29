@@ -275,7 +275,7 @@
               / For Seperate Grn Batch Product
               %h4 Batch Product
               = label_tag "Product condition"
-              = select_tag "product_condition_id", options_from_collection_for_select(ProductCondition.all, "id", "condition")
+              = select_tag "product_condition_id", options_from_collection_for_select(ProductCondition.where(active: true), "id", "condition")
               %table.table.table-hover.table-condensed
                 %thead
                   %tr
@@ -350,7 +350,7 @@
               = paginate @grns, remote: false, method: :get
 
               = label_tag "Product condition"
-              = select_tag "product_condition_id", options_from_collection_for_select(ProductCondition.all, "id", "condition")
+              = select_tag "product_condition_id", options_from_collection_for_select(ProductCondition.where(active: true), "id", "condition")
           / For Part Of Main Serial Product
           = tab_content tabpointer: :main_product_part_tab do
             .row

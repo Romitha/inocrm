@@ -11,7 +11,7 @@
 
     = f.input :ticket_id, as: :hidden
     = f.input :status_action_id, as: :hidden, input_html: {value: SparePartStatusAction.find_by_code("RQT").id}
-    = f.input :status_use_id, as: :hidden, input_html: {value: SparePartStatusUse.find_by_code("NAP").id}
+    = f.input :status_use_id, as: :hidden, input_html: {value: SparePartStatusUse.where(active: true).find_by_code("NAP").id}
     = hidden_field_tag :store_id
     = hidden_field_tag :mst_store_id
     = hidden_field_tag :inv_product_id

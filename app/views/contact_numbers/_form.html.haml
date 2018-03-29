@@ -14,7 +14,7 @@
       .col-md-3
         .has-tooltip{data: {toggle: "tooltip", placement: "left"}, title: "Type"}
           / = contact_number.input :category, collection: ContactNumber::TYPES, include_blank: false, input_html: {class: "chosen-select"}
-          = contact_number.association :organization_contact_type, required: true, input_html: {class: "chosen-select"}
+          = contact_number.association :organization_contact_type, collection: OrganizationContactType.where(active: true), required: true, input_html: {class: "chosen-select"}
         = contact_number.input :c_numberable_type, as: :hidden
         = contact_number.input :c_numberable_id, as: :hidden
 
