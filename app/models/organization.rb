@@ -394,7 +394,7 @@ class CompanyConfig < ActiveRecord::Base
 
   class << self
     def inc_ticket_no
-      @@inc_ticket_no
+      @@inc_ticket_no = self.first.sup_last_ticket_no.to_i
     end
 
     def inc_ticket_no=(inc_ticket_no)
