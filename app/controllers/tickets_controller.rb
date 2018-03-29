@@ -61,7 +61,8 @@ class TicketsController < ApplicationController
     session[:serial_no] = nil
     session[:warranty_id] = nil
     # session[:ticket_initiated_attributes] = {}
-    @ticket_no = (Ticket.any? ? (Ticket.order("created_at ASC").map{|t| t.ticket_no.to_i}.max + 1) : 1)
+    # @ticket_no = (Ticket.any? ? (Ticket.order("created_at ASC").map{|t| t.ticket_no.to_i}.max + 1) : 1)
+    @ticket_no = CompanyConfig.first.sup_last_ticket_no.to_i
     @status = TicketStatus.find_by_code("OPN")
     @ticket_logged_at = DateTime.now
 
@@ -807,6 +808,15 @@ class TicketsController < ApplicationController
       @status_resolve_id = TicketStatusResolve.find_by_code("NAP").try(:id)
     end
 
+    @bpm_response = view_context.send_request_process_data process_history: true, process_instance_id: 1, variable_id: "ticket_id"
+    if !@bpm_response[:status].present? or @bpm_response[:status].upcase == "ERROR"
+      render js: "alert('BPM error. Please continue after rectify BPM.');"
+    elsif not warranty_constraint
+      render js: "alert('There are no present #{@ticket.warranty_type.name} for the product to initiate particular warranty related ticket.')"
+    else
+      @continue = true
+    end
+
     @repair_type_id = TicketRepairType.find_by_code("IN").try :id
     @manufacture_currency_id = @product.product_brand.currency.id
     @ticket.attributes = ticket_params.merge({created_by: current_user.id, slatime: @ticket.sla_time.try(:sla_time), status_resolve_id: @status_resolve_id, repair_type_id: @repair_type_id, manufacture_currency_id: @manufacture_currency_id, ticket_print_count: 0, ticket_complete_print_count: 0})
@@ -822,16 +832,8 @@ class TicketsController < ApplicationController
       warranty_constraint = @product.warranties.select{|w| w.warranty_type_id == @ticket.warranty_type_id and (w.start_at.to_date..w.end_at.to_date).include?(Date.today)}.present?
     end
 
-    @bpm_response = view_context.send_request_process_data process_history: true, process_instance_id: 1, variable_id: "ticket_id"
-    if !@bpm_response[:status].present? or @bpm_response[:status].upcase == "ERROR"
-      render js: "alert('BPM error. Please continue after rectify BPM.');"
-    elsif not warranty_constraint
-      render js: "alert('There are no present #{@ticket.warranty_type.name} for the product to initiate particular warranty related ticket.')"
-    else
-      @continue = true
-    end
-
     if @continue
+      @ticket.ticket_no = CompanyConfig.first.sup_last_ticket_no.to_i
       if @ticket.save
 
         @ticket.products << @product
@@ -891,11 +893,12 @@ class TicketsController < ApplicationController
 
         flash_message = @bpm_process_error ? "Ticket successfully saved. But BPM error. Please continue after rectifying BPM" : "Thank you. ticket is successfully registered. #{@email_response}"
 
-        WebsocketRails[:posts].trigger 'new', {task_name: "Ticket", task_id: @ticket.id, task_verb: "created.", by: current_user.email, at: Time.now.strftime('%d/%m/%Y at %H:%M:%S')}
+        # WebsocketRails[:posts].trigger 'new', {task_name: "Ticket", task_id: @ticket.id, task_verb: "created.", by: current_user.email, at: Time.now.strftime('%d/%m/%Y at %H:%M:%S')}
 
         render js: "alert('#{flash_message}'); window.location.href='#{ticket_path(@ticket)}';"
 
       else
+        @flash_message = "Please re-try"
         render :remarks
       end
      # render plain: @ticket_params.inspect
