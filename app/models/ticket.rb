@@ -547,6 +547,7 @@ class Ticket < ActiveRecord::Base
 
   validates_numericality_of [:ticket_no, :priority]
   validates_inclusion_of :cus_chargeable, in: [true, false]
+  validates_uniqueness_of :ticket_no
 
   before_save do |ticket|
 
