@@ -1,6 +1,10 @@
 $(".refresh").remove();
 $("body").removeClass("modal-open");
 $(".modal-backdrop").remove();
+
+- if @flash_message
+  alert("#{@flash_message}");
+
 $("#tab_panel").html("#{j render 'tickets/remarks_form', ticket: @ticket}");
 
 Tickets.first_resolution_visible();
