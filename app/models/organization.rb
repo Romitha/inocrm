@@ -392,22 +392,12 @@ class CompanyConfig < ActiveRecord::Base
     inv_last_srr_no.to_i+1
   end
 
-  class << self
-    def inc_ticket_no
-      @@inc_ticket_no = self.first.sup_last_ticket_no.to_i
-    end
-
-    def inc_ticket_no=(inc_ticket_no)
-      @@inc_ticket_no = inc_ticket_no
-    end
-  end
-
   def increase_after_assign_ticket_no ticket
     begin
+      sleep 1
       if ticket.is_a? Ticket
         started_time = DateTime.now
-        last_ticket_no = @@inc_ticket_no #self.sup_last_ticket_no.to_i
-        @@inc_ticket_no += 1
+        last_ticket_no = self.sup_last_ticket_no.to_i
         looped_count = 0
         started_last_ticket_no = last_ticket_no
 
@@ -422,7 +412,7 @@ class CompanyConfig < ActiveRecord::Base
         true
       end
 
-      inspectable = {class_ticket_no: @@inc_ticket_no, last_ticket_no: last_ticket_no, started_last_ticket_no: started_last_ticket_no, looped: looped_count, ticket_no: ticket.ticket_no, sup_last_ticket_no: self.sup_last_ticket_no, started_time: started_time.to_s, finished_time: finished_time.to_s}
+      inspectable = {last_ticket_no: last_ticket_no, started_last_ticket_no: started_last_ticket_no, looped: looped_count, ticket_no: ticket.ticket_no, sup_last_ticket_no: self.sup_last_ticket_no, started_time: started_time.to_s, finished_time: finished_time.to_s}
 
       File.open(Rails.root.join("bug_file.txt"), "a"){|file| file.write("inspectable: #{inspectable}\n"); file.close}
 
