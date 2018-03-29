@@ -808,15 +808,6 @@ class TicketsController < ApplicationController
       @status_resolve_id = TicketStatusResolve.find_by_code("NAP").try(:id)
     end
 
-    @bpm_response = view_context.send_request_process_data process_history: true, process_instance_id: 1, variable_id: "ticket_id"
-    if !@bpm_response[:status].present? or @bpm_response[:status].upcase == "ERROR"
-      render js: "alert('BPM error. Please continue after rectify BPM.');"
-    elsif not warranty_constraint
-      render js: "alert('There are no present #{@ticket.warranty_type.name} for the product to initiate particular warranty related ticket.')"
-    else
-      @continue = true
-    end
-
     @repair_type_id = TicketRepairType.find_by_code("IN").try :id
     @manufacture_currency_id = @product.product_brand.currency.id
     @ticket.attributes = ticket_params.merge({created_by: current_user.id, slatime: @ticket.sla_time.try(:sla_time), status_resolve_id: @status_resolve_id, repair_type_id: @repair_type_id, manufacture_currency_id: @manufacture_currency_id, ticket_print_count: 0, ticket_complete_print_count: 0})
@@ -830,6 +821,15 @@ class TicketsController < ApplicationController
 
     if ["CW", "MW"].include?(@ticket.warranty_type.code)
       warranty_constraint = @product.warranties.select{|w| w.warranty_type_id == @ticket.warranty_type_id and (w.start_at.to_date..w.end_at.to_date).include?(Date.today)}.present?
+    end
+
+    @bpm_response = view_context.send_request_process_data process_history: true, process_instance_id: 1, variable_id: "ticket_id"
+    if !@bpm_response[:status].present? or @bpm_response[:status].upcase == "ERROR"
+      render js: "alert('BPM error. Please continue after rectify BPM.');"
+    elsif not warranty_constraint
+      render js: "alert('There are no present #{@ticket.warranty_type.name} for the product to initiate particular warranty related ticket.')"
+    else
+      @continue = true
     end
 
     if @continue
