@@ -833,6 +833,7 @@ class TicketsController < ApplicationController
     end
 
     if @continue
+      sleep rand(5)
       begin
         @ticket.ticket_no = CompanyConfig.first.reload.sup_last_ticket_no.to_i
         if @ticket.save
