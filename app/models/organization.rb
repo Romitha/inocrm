@@ -394,6 +394,8 @@ class CompanyConfig < ActiveRecord::Base
 
   def increase_after_assign_ticket_no ticket
 
+    sleep rand(5)
+
     begin
       if ticket.is_a? Ticket
         # started_time = DateTime.now

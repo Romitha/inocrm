@@ -904,7 +904,7 @@ class TicketsController < ApplicationController
         end
       rescue Exception => e
         if e.is_a?(ActiveRecord::RecordNotUnique)
-          render js: "alert('Ticket token already available. Please try again save');"
+          render js: "alert('Ticket token already taken. Please try again saving. It will save with fresh ticket token');"
         else
           render js: "alert('Some error occured. Please try again');"
         end
