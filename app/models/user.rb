@@ -552,3 +552,8 @@ class TicketSupportEngineer < ActiveRecord::Base
     user.full_name
   end
 end
+
+class Employee < ActiveRecord::Base
+  self.table_name = "employees"
+
+end
