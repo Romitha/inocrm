@@ -393,32 +393,29 @@ class CompanyConfig < ActiveRecord::Base
   end
 
   def increase_after_assign_ticket_no ticket
-
-    sleep rand(5)
-
     begin
       if ticket.is_a? Ticket
-        # started_time = DateTime.now
+        started_time = DateTime.now
         last_ticket_no = self.reload.sup_last_ticket_no.to_i
         looped_count = 0
-        # started_last_ticket_no = last_ticket_no
+        started_last_ticket_no = last_ticket_no
 
         while Ticket.where(ticket_no: last_ticket_no).where.not(id: ticket.id).order("created_at desc").limit(5).exists? do
           last_ticket_no += 1
-          # looped_count += 1
+          looped_count += 1
         end
         ticket.update! ticket_no: last_ticket_no
         self.update! sup_last_ticket_no: (last_ticket_no + 1)
-        # finished_time = DateTime.now
+        finished_time = DateTime.now
       else
         true
       end
 
-      # inspectable = {last_ticket_no: last_ticket_no, started_last_ticket_no: started_last_ticket_no, looped: looped_count, ticket_no: ticket.ticket_no, sup_last_ticket_no: self.sup_last_ticket_no, started_time: started_time.to_s, finished_time: finished_time.to_s}
+      inspectable = {last_ticket_no: last_ticket_no, started_last_ticket_no: started_last_ticket_no, looped: looped_count, ticket_no: ticket.ticket_no, sup_last_ticket_no: self.sup_last_ticket_no, started_time: started_time.to_s, finished_time: finished_time.to_s}
 
-      # File.open(Rails.root.join("bug_file.txt"), "a"){|file| file.write("inspectable: #{inspectable}\n"); file.close}
+      File.open(Rails.root.join("bug_file.txt"), "a"){|file| file.write("inspectable: #{inspectable}\n"); file.close}
 
-      # true
+      true
     end
   end
 
