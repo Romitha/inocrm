@@ -418,7 +418,7 @@ class CompanyConfig < ActiveRecord::Base
 
       # File.open(Rails.root.join("bug_file.txt"), "a"){|file| file.write("inspectable: #{inspectable}\n"); file.close}
 
-      true
+      # true
     end
   end
 
