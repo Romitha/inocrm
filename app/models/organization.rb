@@ -393,10 +393,11 @@ class CompanyConfig < ActiveRecord::Base
   end
 
   def increase_after_assign_ticket_no ticket
+
     begin
       if ticket.is_a? Ticket
         started_time = DateTime.now
-        last_ticket_no = self.sup_last_ticket_no.to_i
+        last_ticket_no = self.reload.sup_last_ticket_no.to_i
         looped_count = 0
         started_last_ticket_no = last_ticket_no
 
