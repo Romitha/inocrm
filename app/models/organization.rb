@@ -395,18 +395,21 @@ class CompanyConfig < ActiveRecord::Base
   def increase_after_assign_ticket_no ticket
     begin
       if ticket.is_a? Ticket
-        started_time = DateTime.now
-        last_ticket_no = self.reload.sup_last_ticket_no.to_i
-        looped_count = 0
-        started_last_ticket_no = last_ticket_no
+        self.with_lock do
+          last_ticket_no = self.sup_last_ticket_no.to_i
+          started_time = DateTime.now
+          looped_count = 0
+          started_last_ticket_no = last_ticket_no
 
-        while Ticket.where(ticket_no: last_ticket_no).where.not(id: ticket.id).order("created_at desc").limit(5).exists? do
-          last_ticket_no += 1
-          looped_count += 1
+          while Ticket.where(ticket_no: last_ticket_no).where.not(id: ticket.id).order("created_at desc").limit(5).exists? do
+            last_ticket_no += 1
+            looped_count += 1
+          end
+          ticket.update! ticket_no: last_ticket_no
+          self.update! sup_last_ticket_no: (last_ticket_no + 1)
+          finished_time = DateTime.now
+
         end
-        ticket.update! ticket_no: last_ticket_no
-        self.update! sup_last_ticket_no: (last_ticket_no + 1)
-        finished_time = DateTime.now
       else
         true
       end

@@ -2,7 +2,7 @@ class TicketsController < ApplicationController
   # skip_before_action :authenticate_user!, only: [ :update_approve_store_parts ]
   before_action :set_ticket, only: [:show, :edit, :update, :destroy, :update_change_ticket_cus_warranty, :update_change_ticket_repair_type,
     :update_start_action, :update_re_assign, :update_request_close_approval, :update_hold, :update_create_fsr, :update_edit_serial_no_request, :update_edit_fsr,
-    :update_terminate_job, :update_action_taken, :update_request_spare_part, :update_request_on_loan_spare_part, :update_hp_case_id, :update_resolved_job, :update_deliver_unit, :update_job_estimation_request, :update_recieve_unit, :update_un_hold, :update_check_fsr]
+    :update_terminate_job, :update_action_taken, :update_request_spare_part, :update_request_on_loan_spare_part, :update_hp_case_id, :update_resolved_job, :update_deliver_unit, :update_job_estimation_request, :update_recieve_unit, :update_un_hold, :update_check_fsr, :update_attribute]
   before_action :set_organization_for_ticket, only: [:new, :edit, :create_customer]
 
   before_action :set_product_in_new_ticket, only: [:create, :save_cache_ticket, :create_accessory, :new_customer, :create_customer, :create_contact_persons, :contact_persons, :create_contact_person_record, :q_and_answer_save, :create_extra_remark, :finalize_ticket_save]
@@ -800,8 +800,6 @@ class TicketsController < ApplicationController
     @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, @ticket_time_now])
 
     # reference: http://ruby-concurrency.github.io/concurrent-ruby/Concurrent/ReentrantReadWriteLock.html
-    lock = Concurrent::ReentrantReadWriteLock.new
-    lock.acquire_write_lock
 
     if params[:first_resolution]
       @status_close_id = TicketStatus.find_by_code("CLS").id
@@ -839,9 +837,11 @@ class TicketsController < ApplicationController
     if @continue
       # sleep rand(5)
       begin
-        lock.with_write_lock do
-          @ticket.ticket_no = CompanyConfig.first.reload.sup_last_ticket_no.to_i
-          if @ticket.save
+        Ticket.transaction do
+          company_config = CompanyConfig.lock.first
+          
+          @ticket.ticket_no = company_config.sup_last_ticket_no.to_i
+          if @ticket.save!
 
             @ticket.products << @product
             @product.update_attribute :last_ticket_id, @ticket.id
@@ -908,13 +908,13 @@ class TicketsController < ApplicationController
             @flash_message = "Please re-try"
             render :remarks
           end
-        end
 
-        lock.release_write_lock
+        end
 
       rescue Exception => e
         if e.is_a?(ActiveRecord::RecordNotUnique)
-          render js: "alert('Ticket token already taken. Please try again saving. It will save with fresh ticket token');"
+          # render js: "alert('Ticket token already taken. Please try again saving. It will save with fresh ticket token');"
+          finalize_ticket_save
         else
           render js: "alert('Some error occured. Please try again');"
         end
