@@ -299,6 +299,7 @@ Rails.application.routes.draw do
       post 'update_recieve_unit'
       post 'update_check_fsr'
       post 'update_request_close_approval'
+      put 'update_attribute'
     end
   end
 
