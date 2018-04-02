@@ -70,7 +70,7 @@
         .col-md-3{style: "color: #900303;"}
           = d.association :currency, label_method: :currency, include_blank: false, input_html: {required: true}
         .col-md-3{style: "color: #900303;"}
-          = d.association :inventory_unit, label_method: :unit, include_blank: false, input_html: {required: true}
+          = d.association :inventory_unit, collection: InventoryUnit.where(active: true),label_method: :unit, include_blank: false, input_html: {required: true}
         .col-md-3
           = d.association :product_sold_country, label_method: :Country
         .col-md-3
