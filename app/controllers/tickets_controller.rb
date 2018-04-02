@@ -838,8 +838,8 @@ class TicketsController < ApplicationController
       # sleep rand(5)
       begin
         Ticket.transaction do
-          company_config = CompanyConfig.lock.first
-          
+          company_config = CompanyConfig.reload.first
+
           @ticket.ticket_no = company_config.sup_last_ticket_no.to_i
           if @ticket.save!
 
@@ -913,10 +913,9 @@ class TicketsController < ApplicationController
 
       rescue Exception => e
         if e.is_a?(ActiveRecord::RecordNotUnique)
-          # render js: "alert('Ticket token already taken. Please try again saving. It will save with fresh ticket token');"
-          finalize_ticket_save
+          render js: "alert('Ticket token already taken. Please try again saving. It will save with fresh ticket token');"
         else
-          render js: "alert('Some error occured. Please try again');"
+          render js: "alert('Some error occured. Please try again', '#{e.inspect}');"
         end
       end
       
