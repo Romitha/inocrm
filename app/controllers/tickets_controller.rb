@@ -838,7 +838,7 @@ class TicketsController < ApplicationController
       # sleep rand(5)
       begin
         Ticket.transaction do
-          company_config = CompanyConfig.first.reload
+          company_config = CompanyConfig.lock.first.reload
 
           @ticket.ticket_no = company_config.sup_last_ticket_no.to_i
           if @ticket.save!
