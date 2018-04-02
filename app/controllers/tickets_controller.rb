@@ -915,7 +915,7 @@ class TicketsController < ApplicationController
         if e.is_a?(ActiveRecord::RecordNotUnique)
           render js: "alert('Ticket token already taken. Please try again saving. It will save with fresh ticket token');"
         else
-          render js: "alert('Some error occured. Please try again', '#{e.inspect}');"
+          render js: "alert('Some error occured. Please try again'); console.log('#{e.inspect}')"
         end
       end
       
