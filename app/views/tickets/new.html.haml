@@ -12,7 +12,7 @@
       .col-md-6.pull-right.text-right
         .ticket_logged_at
           Ticket logged at:
-          = link_to "#", id: "logged_at_new_ticket", data: {type: "combodate", resource: "ticket", name: "logged_at", url: ticket_update_tickets_path(ticket_time_now: @ticket_time_now, product_id: ticket.products.first.try(:id) ), value: @ticket.logged_at.strftime("%d-%m-%Y %H:%M"), "original-title" => "Update Logged date"} do
+          = link_to "#", id: "logged_at_new_ticket", data: {type: "combodate", resource: "ticket", name: "logged_at", url: ticket_update_tickets_path(ticket_time_now: @ticket_time_now), value: @ticket.logged_at.strftime("%d-%m-%Y %H:%M"), "original-title" => "Update Logged date"} do
             = DateTime.now.strftime("%d-%m-%Y %H:%M")
 
           <script>
