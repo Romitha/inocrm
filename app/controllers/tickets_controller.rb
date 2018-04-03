@@ -365,9 +365,9 @@ class TicketsController < ApplicationController
         @new_customer.contact_type_values.build([{contact_type_id: 2}, {contact_type_id: 4}])
         format.js {render :new_customer}
       else
+        # File.open(Rails.root.join("bug_file.txt"), "a"){|file| file.write("inspectable: #{inspectable}\n"); file.close}
 
-        # format.js {render :find_by_serial}
-        format.js {render js: "alert('Please enter valid and required information.'); Tickets.remove_ajax_loader();"}
+        format.js {render js: "alert('Please enter valid and required information.'); Tickets.remove_ajax_loader(); console.log(#{@ticket.errors.full_messages.join(', ')})"}
       end
 
     end
