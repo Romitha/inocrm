@@ -2,7 +2,7 @@
   .col-md-5
     .row
       .col-md-12
-        = link_to "#", class: "inline_edit", data: {type: "select", source: OrganizationContactType.all, resource: "contact_number", name: "organization_contact_type", url: polymorphic_path([contact_number.c_numberable, contact_number]), "original-title" => "Update contact_number"} do
+        = link_to "#", class: "inline_edit", data: {type: "select", source: OrganizationContactType.all.collect{|category| {value: category.id, text: category.name}}, resource: "contact_number", name: "type_id", url: polymorphic_path([contact_number.c_numberable, contact_number]), "original-title" => "Update contact_number"} do
           / = contact_number.category
           = contact_number.organization_contact_type.try(:name)
       .col-md-12
