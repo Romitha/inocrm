@@ -367,7 +367,7 @@ class TicketsController < ApplicationController
       else
         # File.open(Rails.root.join("bug_file.txt"), "a"){|file| file.write("inspectable: #{inspectable}\n"); file.close}
 
-        format.js {render js: "alert('Please enter valid and required information.'); Tickets.remove_ajax_loader(); console.log(#{@ticket.errors.full_messages.join(', ')})"}
+        format.js {render js: "alert('Please enter valid and required information.'); Tickets.remove_ajax_loader(); console.log(#{@new_ticket.errors.full_messages.join(', ')})"}
       end
 
     end
