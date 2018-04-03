@@ -21,7 +21,7 @@ module ApplicationHelper
       "COMPANY_NAME=#{ticket.customer.full_name}",
       "CONTACT_PERSON=#{ticket.contact_person1.full_name}",
       "ADDRESS=#{ticket.customer.address1} #{ticket.customer.address2} #{ticket.customer.address3} #{ticket.customer.address4}",
-      "TELPHONE=#{ticket.customer.contact_type_values.select{|c| c.contact_type.name == "Telephone"}.first.try(:value)}",
+      "TELPHONE=#{ticket.customer.contact_type_values.select{|c| c.contact_type.fixedline }.first.try(:value)}",
       "MOBILE=#{ticket.customer.contact_type_values.select{|c| c.contact_type.mobile}.first.try(:value)}",
       "FAX=#{ticket.customer.contact_type_values.select{|c| c.contact_type.name == "Fax"}.first.try(:value)}",
       "EMAIL=#{ticket.customer.contact_type_values.select{|c| c.contact_type.email}.first.try(:value)}",
