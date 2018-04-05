@@ -67,7 +67,7 @@
             = label_tag "Payment completed"
             = check_box_tag :payment_completed
         .row{style: "margin-top: 10px; margin-bottom: 10px;"}
-          - inform_email << @ticket.send("contact_person#{@ticket.inform_cp}").contact_person_contact_types.find_by_contact_type_id(ContactType.where(active: true).find_by_name("E-mail").id).try(:value)
+          - inform_email << @ticket.send("contact_person#{@ticket.inform_cp}").contact_person_contact_types.find_by_contact_type_id(ContactType.where(active: true).find_by_email(true).id).try(:value)
           - InformCustomer.where(ticket_action_id: @ticket.user_ticket_action_ids).each do |i|
             .row
               .col-md-3

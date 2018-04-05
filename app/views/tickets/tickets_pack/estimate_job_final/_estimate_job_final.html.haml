@@ -53,6 +53,9 @@
         = f.submit "Save", class: "btn btn-sm btn-success", id: "save_only_submit", disabled: (ticket.final_invoice.present? ? false : true), data: {confirm: "Uninvoiced estimation is there. Are you sure?", disabled_with: "Please wait..."}
       - else
         = f.submit "Save", class: "btn btn-sm btn-success", id: "save_only_submit", disabled: (ticket.final_invoice.present? ? false : true), data: {confirm: "This is the final invoice. It cannot be modified further. Are you sure?", disabled_with: "Please wait...", deduction: (ticket.final_invoice.try(:net_total_amount))}
+      %br/
+      - unless ticket.send("contact_person#{ticket.inform_cp}").contact_person_contact_types.find_by_contact_type_id(ContactType.find_by_email(true).id).try(:value).present?
+        .red *** Customer's email contact is not available ***
 
 - if ticket.final_invoice.present?
   %table.table.table-responsive.table-condensed.table-bordered.small_scale_margin-top1

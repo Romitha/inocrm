@@ -4717,28 +4717,38 @@ class TicketsController < ApplicationController
           @ticket.save
         end
 
-        # bpm output variables
-
-        bpm_variables = view_context.initialize_bpm_variables.merge(supp_engr_user: current_user.id, d7_close_approval_requested: (close_approval_requested ? "Y" : "N") )
-
         @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
 
-        @ticket.user_ticket_actions.create(action_id: TaskAction.find_by_action_no(55).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id) if close_approval_requested
+        if close_approval_requested 
+          #Call BPM
 
-        @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+          @ticket.user_ticket_actions.create(action_id: TaskAction.find_by_action_no(55).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id) 
 
-        if @bpm_response[:status].upcase == "SUCCESS"
-          @flash_message = "Successfully updated."
+          # bpm output variables
+          bpm_variables = view_context.initialize_bpm_variables.merge(supp_engr_user: current_user.id, d7_close_approval_requested: (close_approval_requested ? "Y" : "N") )
+
+          @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+          if @bpm_response[:status].upcase == "SUCCESS"
+            @flash_message = "Successfully updated."
+          else
+            @flash_message = "ticket is updated. but Bpm error"
+          end
+
+          redirect_to todos_url, notice: @flash_message
         else
-          @flash_message = "ticket is updated. but Bpm error"
+          redirect_to "/tickets/resolution?process_id=#{params[:process_id]}&task_id=#{params[:task_id]}&owner=#{params[:owner]}&#{Rails.cache.fetch(['/tickets/resolution', params[:task_id]])[:bpm_input_variables].map{|e| e[:variable_id]+'='+e[:value]}.join('&')}", notice: "Successfully updated."
+
         end
       else
         @flash_message = "ticket is failed to updated."
+        redirect_to "/tickets/resolution?process_id=#{params[:process_id]}&task_id=#{params[:task_id]}&owner=#{params[:owner]}&#{Rails.cache.fetch(['/tickets/resolution', params[:task_id]])[:bpm_input_variables].map{|e| e[:variable_id]+'='+e[:value]}.join('&')}", error: @flash_message
+
       end
     else
-      @flash_message = @flash_message
+      redirect_to "/tickets/resolution?process_id=#{params[:process_id]}&task_id=#{params[:task_id]}&owner=#{params[:owner]}&#{Rails.cache.fetch(['/tickets/resolution', params[:task_id]])[:bpm_input_variables].map{|e| e[:variable_id]+'='+e[:value]}.join('&')}", error: 'There are some problem with BPM. Please re-try'
+
     end
-    redirect_to @ticket, notice: @flash_message
   end
 
   def update_resolved_job
@@ -4889,7 +4899,7 @@ class TicketsController < ApplicationController
             end
           else # Final Resolution
             if (@ticket.try(:ticket_type_code) != "OS") and (@ticket.ticket_status.code == 'CFB')  #Customer Feedback
-              email_to = @ticket.send("contact_person#{@ticket.inform_cp}").contact_person_contact_types.find_by_contact_type_id(ContactType.find_by_name("E-mail").id).try(:value)
+              email_to = @ticket.send("contact_person#{@ticket.inform_cp}").contact_person_contact_types.find_by_contact_type_id(ContactType.find_by_email(true).id).try(:value)
 
               if email_to.present?
                 view_context.send_email(email_to: email_to, ticket_id: @ticket.id, email_code: "COMPLETE_JOB")
