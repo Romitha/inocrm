@@ -2825,6 +2825,7 @@ class TicketsController < ApplicationController
     render "tickets/tickets_pack/customer_inquire/customer_inquire"
   end
   def onloan_return_pending_parts
+    authorize! :onloan_return_pending_parts, Ticket
     Product
     TicketSparePart
     if params[:search].present?

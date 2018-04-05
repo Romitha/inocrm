@@ -100,7 +100,7 @@
             %dt Returned quantity
             %dd= g.object.returned_quantity
             %dt.red Return Reason
-            %dd= g.association :return_reason, label_method: :reason, label: false, required: true, include_blank: false
+            %dd= g.association :return_reason, collection: InventoryReason.where(active: true), label_method: :reason, label: false, required: true, include_blank: false
             %dt Remarks
             %dd= g.input :remarks, label: false
 

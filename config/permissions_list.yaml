@@ -505,6 +505,13 @@ Ticket:
       - excel_output
     system_module:
       name: Ticket
+  Access Onloan Return Pending Parts:
+    actions:
+      - onloan_return_pending_parts
+    attributes:
+      []
+    system_module:
+      name: Ticket
 
 SoPo:
   Create PO:
