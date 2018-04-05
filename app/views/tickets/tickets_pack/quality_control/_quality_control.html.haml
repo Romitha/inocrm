@@ -103,5 +103,9 @@
   %br/
 
   .row
-    .col-md-12{style: "margin-bottom: 10px;"}
+    .col-md-2{style: "margin-bottom: 10px;"}
       = f.submit "Reject", class: "btn btn-success", id: "change_value_submit", name: "reject", data: {disable_with: "Please wait..."}
+    .col-md-10.red
+      %strong
+        - unless ticket.send("contact_person#{ticket.inform_cp}").contact_person_contact_types.find_by_contact_type_id(ContactType.find_by_email(true).id).try(:value).present?
+          *** Customer's email contact is not available ***
