@@ -5,7 +5,7 @@ class TicketsController < ApplicationController
     :update_terminate_job, :update_action_taken, :update_request_spare_part, :update_request_on_loan_spare_part, :update_hp_case_id, :update_resolved_job, :update_deliver_unit, :update_job_estimation_request, :update_recieve_unit, :update_un_hold, :update_check_fsr, :update_attribute]
   before_action :set_organization_for_ticket, only: [:new, :edit, :create_customer]
 
-  before_action :set_product_in_new_ticket, only: [:create, :save_cache_ticket, :create_accessory, :new_customer, :create_customer, :create_contact_persons, :contact_persons, :create_contact_person_record, :q_and_answer_save, :create_extra_remark, :finalize_ticket_save, :ticket_update]
+  before_action :set_product_in_new_ticket, only: [:create, :save_cache_ticket, :create_accessory, :new_customer, :create_customer, :create_contact_persons, :contact_persons, :create_contact_person_record, :q_and_answer_save, :create_extra_remark, :finalize_ticket_save]
 
   # layout :workflow_diagram, only: [:workflow_diagram]
 
@@ -977,6 +977,7 @@ class TicketsController < ApplicationController
   end
 
   def ticket_update
+    @ticket_time_now = params[:ticket_time_now]
     @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, @ticket_time_now])
     t_attributes = @ticket.attributes
     t_attributes.merge! ticket_params
@@ -984,7 +985,7 @@ class TicketsController < ApplicationController
     respond_to do |format|
       if @ticket.valid?
         format.html {redirect_to @ticket, notice: "Successfully updated."}
-        Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @ticket)
+        Rails.cache.write([:new_ticket, request.remote_ip.to_s, @ticket_time_now], @ticket)
         format.json {render json: @ticket}
       else
         if params[:ticket][:logged_at].present?
@@ -992,7 +993,7 @@ class TicketsController < ApplicationController
             @ticket.errors[:logged_at] << "Date and time cannot be future than current date time"
           else
             @ticket.errors.clear
-            Rails.cache.write([:new_ticket, request.remote_ip.to_s, session[:time_now]], @ticket)
+            Rails.cache.write([:new_ticket, request.remote_ip.to_s, @ticket_time_now], @ticket)
             # puts "logged at saved"
           end
 
