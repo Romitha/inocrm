@@ -24,13 +24,13 @@
           .row
             .col-md-4.brand
               = label_tag InventoryCategoryCaption.first.caption
-              = select_tag "search_return_part[category1_id]", options_from_collection_for_select(InventoryCategory1.where(active: true), :id, :name, (params[:search_return_part] and params[:search_return_part][:category1_id])), include_blank: true, class: "form-control", id: "search_inventory_brand"
+              = select_tag "search_return_part[inventory_product.category1_id]", options_from_collection_for_select(InventoryCategory1.where(active: true), :id, :name, (params[:search_return_part] and params[:search_return_part][:category1_id])), include_blank: true, class: "form-control", id: "search_inventory_brand"
             .col-md-4.product
               = label_tag InventoryCategoryCaption.second.caption
-              = select_tag "search_return_part[category2_id]", option_groups_from_collection_for_select(InventoryCategory1.where(active: true), :active_inventory_category2s, :id, :id, :name, (params[:search_return_part] and params[:search_return_part][:category2_id])), include_blank: true, class: "form-control", id: "search_inventory_product"
+              = select_tag "search_return_part[inventory_product.category2_id]", option_groups_from_collection_for_select(InventoryCategory1.where(active: true), :active_inventory_category2s, :id, :id, :name, (params[:search_return_part] and params[:search_return_part][:category2_id])), include_blank: true, class: "form-control", id: "search_inventory_product"
             .col-md-4.category
               = label_tag InventoryCategoryCaption.third.caption
-              = select_tag "search_return_part[category3_id]", option_groups_from_collection_for_select(InventoryCategory2.all, :active_inventory_category3s, :id, :id, :name), include_blank: true, class: "form-control", id: "search_inventory_mst_inv_product_category3_id"
+              = select_tag "search_return_part[inventory_product.category3_id]", option_groups_from_collection_for_select(InventoryCategory2.all, :active_inventory_category3s, :id, :id, :name), include_blank: true, class: "form-control", id: "search_inventory_mst_inv_product_category3_id"
 
           .row.small_scale_margin-top1
             .col-md-1
@@ -54,6 +54,7 @@
         %th Part Status:
         %th Part Reject Reason:
         %th Action
+    = paginate @return_parts, remote: false, method: :get
     %tbody
       - @return_parts.each_with_index do |part, index|
         %tr

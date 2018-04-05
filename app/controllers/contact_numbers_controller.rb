@@ -34,6 +34,9 @@ class ContactNumbersController < ApplicationController
   end
 
   def update
+    puts "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+    puts contact_number_params
+    puts "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
     @contact_number.update(contact_number_params)
     respond_with(@contact_number)
   end
