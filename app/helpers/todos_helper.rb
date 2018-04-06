@@ -120,7 +120,8 @@ module TodosHelper
     end    
   end
 
-  def redirect_to_resolution_page process_id, owner_id
+  def redirect_to_resolution_page process_id, owner_id, *args
+    args = args.extract_options!
     process_instance_id = process_id
     @todo_list_for_user = []
     @workflow_mapping_for_user = []
@@ -136,7 +137,8 @@ module TodosHelper
       @workflow_mapping_for_user << {process_instance_id: task_content["process_instance_id"], workflow_mapping: Rails.cache.fetch([:workflow_mapping_user, task_content["name"]]){WorkflowMapping.where(task_name: task_content["name"], process_name: task_content["process_id"]).first}, task_content: task_content}
     end
 
-    found_workflow = @workflow_mapping_for_user.select{ |task| task[:process_instance_id].to_s == process_instance_id.to_s }.first
+    # found_workflow = @workflow_mapping_for_user.select{ |task| task[:process_instance_id].to_s == process_instance_id.to_s }.first
+    found_workflow = @workflow_mapping_for_user.first
 
     if found_workflow.present?
       url = found_workflow[:workflow_mapping].url
@@ -162,14 +164,14 @@ module TodosHelper
         Rails.cache.fetch(session[:cache_key]){ {process_id: process_instance_id, task_id: task_id, owner: owner_id, bpm_input_variables: @bpm_input_variables.map{|e| [e[:variable_id], e[:value]]} } }
 
         @redirect_url = "#{url}?process_id=#{process_instance_id}&task_id=#{task_id}&owner=#{owner_id}&#{@bpm_input_variables.map{|e| e[:variable_id]+'='+e[:value]}.join('&')}"
-        {url: @redirect_url, flash_message: ""}
+        {url: @redirect_url, flash_message: "Successfully redirected"}
       else
         Rails.cache.delete(session[:cache_key]) if session[:cache_key].present?
-        {url: "/todos", flash_message: ""}
+        {url: "/todos", flash_message: "Task is not available"}
       end
 
     else
-      {url: '/todos', flash_message: ""}
+      {url: '/todos', flash_message: "Workflow is not found"}
     end
   end
 

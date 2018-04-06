@@ -4754,12 +4754,12 @@ class TicketsController < ApplicationController
           # redirect_to "/tickets/resolution?process_id=#{params[:process_id]}&task_id=#{params[:task_id]}&owner=#{params[:owner]}&#{Rails.cache.fetch(['/tickets/resolution', params[:task_id]])[:bpm_input_variables].map{|e| e[:variable_id]+'='+e[:value]}.join('&')}", notice: "Successfully updated."
 
           redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner]
-          @flash_message = "Successfully updated."
+          # @flash_message = "Successfully updated."
           # redirect_to redirect_response[:url], redirect_response[:flash_message]
 
         end
       else
-        @flash_message = "ticket is failed to updated."
+        @flash_message = "ticket is failed to updated. Not close approval"
         # redirect_to "/tickets/resolution?process_id=#{params[:process_id]}&task_id=#{params[:task_id]}&owner=#{params[:owner]}&#{Rails.cache.fetch(['/tickets/resolution', params[:task_id]])[:bpm_input_variables].map{|e| e[:variable_id]+'='+e[:value]}.join('&')}", error: @flash_message
         redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner]
         # redirect_to redirect_response[:url], redirect_response[:flash_message]
@@ -4770,7 +4770,7 @@ class TicketsController < ApplicationController
       @flash_message = 'There are some problem with BPM. Please re-try'
     end
 
-    redirect_to redirect_response[:url], notice: @flash_message
+    redirect_to redirect_response[:url], notice: (@flash_message || redirect_response[:flash_message])
 
   end
 
