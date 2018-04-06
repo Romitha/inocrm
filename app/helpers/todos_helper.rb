@@ -120,6 +120,58 @@ module TodosHelper
     end    
   end
 
+  def redirect_to_resolution_page process_id, owner_id, notice
+    process_instance_id = process_id
+
+    ["InProgress", "Reserved", "Ready"].each do |status|
+      @todo_list_for_user << send_request_process_data(task_list: true, status: status, potential_owner: owner_id, process_instance_id: process_instance_id, query: {})
+    end
+
+    @task_content_for_user = @todo_list_for_user.map { |list| list[:content] and list[:content]["task_summary"] }.compact.flatten
+
+    @task_content_for_user.each do |task_content|
+      @workflow_mapping_for_user << {process_instance_id: task_content["process_instance_id"], workflow_mapping: Rails.cache.fetch([:workflow_mapping_user, task_content["name"]]){WorkflowMapping.where(task_name: task_content["name"], process_name: task_content["process_id"]).first}, task_content: task_content}
+    end
+
+    found_workflow = @workflow_mapping_for_user.select{ |task| task[:process_instance_id].to_s == process_instance_id.to_s }.first
+
+    if found_workflow.present?
+      url = found_workflow[:workflow_mapping].url
+      task_id = found_workflow[:task_content]["id"]
+      input_variables = found_workflow[:workflow_mapping].input_variables
+
+      @bpm_response_start_task = send_request_process_data start_task: true, task_id: task_id
+
+      # To avoid call completed task again, check the status
+      @bpm_response_exist = send_request_process_data task_list: true, status: "InProgress", query: {taskId: task_id}
+
+      if @bpm_response_exist[:content].present?
+        @bpm_input_variables = []
+        input_variables.split(",").each do |input_variable|
+          @bpm_input_variables << send_request_process_data(process_history: true, process_instance_id: process_instance_id, variable_id: input_variable)
+        end
+        session[:process_id] = process_instance_id
+        session[:task_id] = task_id
+        session[:owner] = owner_id
+        # session[:bpm_input_variables] = @bpm_input_variables.map{|e| [e[:variable_id], e[:value]]}
+        session[:engineer_id] = @bpm_input_variables.map{|e| [e[:variable_id], e[:value]]}.detect{ |v| v.first == "engineer_id"}.try(:last)
+
+        session[:cache_key] = [url, task_id]
+        Rails.cache.fetch(session[:cache_key]){ {process_id: process_instance_id, task_id: task_id, owner: owner_id, bpm_input_variables: @bpm_input_variables.map{|e| [e[:variable_id], e[:value]]} } }
+
+        @redirect_url = "#{url}?process_id=#{process_instance_id}&task_id=#{task_id}&owner=#{owner_id}&#{@bpm_input_variables.map{|e| e[:variable_id]+'='+e[:value]}.join('&')}"
+        {url: @redirect_url, flash_message: {notice: notice}}
+      else
+        Rails.cache.delete(session[:cache_key]) if session[:cache_key].present?
+        @redirect_url = '/todos'
+        {url: @redirect_url, flash_message: {error: 'No Task Available...'}}
+      end
+
+    else
+      {url: '/todos', flash_message: {error: 'There is no more tasks for resolutions.'}}
+    end
+  end
+
   private
 
     def deployment_id
