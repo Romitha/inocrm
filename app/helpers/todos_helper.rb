@@ -122,6 +122,9 @@ module TodosHelper
 
   def redirect_to_resolution_page process_id, owner_id, notice
     process_instance_id = process_id
+    @todo_list_for_user = []
+    @workflow_mapping_for_user = []
+    @bpm_input_variables = []
 
     ["InProgress", "Reserved", "Ready"].each do |status|
       @todo_list_for_user << send_request_process_data(task_list: true, status: status, potential_owner: owner_id, process_instance_id: process_instance_id, query: {})
@@ -146,7 +149,6 @@ module TodosHelper
       @bpm_response_exist = send_request_process_data task_list: true, status: "InProgress", query: {taskId: task_id}
 
       if @bpm_response_exist[:content].present?
-        @bpm_input_variables = []
         input_variables.split(",").each do |input_variable|
           @bpm_input_variables << send_request_process_data(process_history: true, process_instance_id: process_instance_id, variable_id: input_variable)
         end
