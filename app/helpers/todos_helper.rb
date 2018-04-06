@@ -120,7 +120,7 @@ module TodosHelper
     end    
   end
 
-  def redirect_to_resolution_page process_id, owner_id, notice
+  def redirect_to_resolution_page process_id, owner_id
     process_instance_id = process_id
     @todo_list_for_user = []
     @workflow_mapping_for_user = []
@@ -162,15 +162,14 @@ module TodosHelper
         Rails.cache.fetch(session[:cache_key]){ {process_id: process_instance_id, task_id: task_id, owner: owner_id, bpm_input_variables: @bpm_input_variables.map{|e| [e[:variable_id], e[:value]]} } }
 
         @redirect_url = "#{url}?process_id=#{process_instance_id}&task_id=#{task_id}&owner=#{owner_id}&#{@bpm_input_variables.map{|e| e[:variable_id]+'='+e[:value]}.join('&')}"
-        {url: @redirect_url, flash_message: {notice: notice}}
+        {url: @redirect_url, flash_message: ""}
       else
         Rails.cache.delete(session[:cache_key]) if session[:cache_key].present?
-        @redirect_url = '/todos'
-        {url: @redirect_url, flash_message: {error: 'No Task Available...'}}
+        {url: "/todos", flash_message: ""}
       end
 
     else
-      {url: '/todos', flash_message: {error: 'There is no more tasks for resolutions.'}}
+      {url: '/todos', flash_message: ""}
     end
   end
 
