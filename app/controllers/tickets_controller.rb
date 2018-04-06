@@ -4408,6 +4408,7 @@ class TicketsController < ApplicationController
     TaskAction
     @continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
     engineer_id = params[:engineer_id]
+    redirect_response = {}
 
     if @continue
       if !@ticket.job_started_at.present?
@@ -4436,13 +4437,20 @@ class TicketsController < ApplicationController
             @flash_message = "ticket is updated. but Bpm error"
           end
 
-          redirect_to @ticket, notice: @flash_message
+          #redirect_to @ticket, notice: @flash_message
+
+          redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], @flash_message
         else
-          redirect_to @ticket, error: "start action failed to updated."
+          #redirect_to @ticket, error: "start action failed to updated."
+          redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], "start action failed to updated."
         end
       else
-        redirect_to todos_url, error: "ticket is not updated. Start Action already done."
+        #redirect_to todos_url, error: "ticket is not updated. Start Action already done."
+        redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], "ticket is not updated. Start Action already done."
       end
+
+      redirect_to redirect_response[:url], redirect_response[:flash_message]
+
     else
       redirect_to todos_url, error: "ticket is not updated. BPM Error."
     end
@@ -4693,6 +4701,7 @@ class TicketsController < ApplicationController
     TaskAction
     @continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
     engineer_id = params[:engineer_id]
+    redirect_response = {}
 
     if @continue
       if @ticket.update ticket_params
@@ -4736,20 +4745,29 @@ class TicketsController < ApplicationController
             @flash_message = "ticket is updated. but Bpm error"
           end
 
-          redirect_to todos_url, notice: @flash_message
+          # redirect_to todos_url, notice: @flash_message
+          redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], @flash_message
+          # redirect_to redirect_response[:url], redirect_response[:flash_message]
         else
-          redirect_to "/tickets/resolution?process_id=#{params[:process_id]}&task_id=#{params[:task_id]}&owner=#{params[:owner]}&#{Rails.cache.fetch(['/tickets/resolution', params[:task_id]])[:bpm_input_variables].map{|e| e[:variable_id]+'='+e[:value]}.join('&')}", notice: "Successfully updated."
+          # redirect_to "/tickets/resolution?process_id=#{params[:process_id]}&task_id=#{params[:task_id]}&owner=#{params[:owner]}&#{Rails.cache.fetch(['/tickets/resolution', params[:task_id]])[:bpm_input_variables].map{|e| e[:variable_id]+'='+e[:value]}.join('&')}", notice: "Successfully updated."
+
+          redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], "Successfully updated."
+          # redirect_to redirect_response[:url], redirect_response[:flash_message]
 
         end
       else
         @flash_message = "ticket is failed to updated."
-        redirect_to "/tickets/resolution?process_id=#{params[:process_id]}&task_id=#{params[:task_id]}&owner=#{params[:owner]}&#{Rails.cache.fetch(['/tickets/resolution', params[:task_id]])[:bpm_input_variables].map{|e| e[:variable_id]+'='+e[:value]}.join('&')}", error: @flash_message
-
+        # redirect_to "/tickets/resolution?process_id=#{params[:process_id]}&task_id=#{params[:task_id]}&owner=#{params[:owner]}&#{Rails.cache.fetch(['/tickets/resolution', params[:task_id]])[:bpm_input_variables].map{|e| e[:variable_id]+'='+e[:value]}.join('&')}", error: @flash_message
+        redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], @flash_message
+        # redirect_to redirect_response[:url], redirect_response[:flash_message]
       end
     else
-      redirect_to "/tickets/resolution?process_id=#{params[:process_id]}&task_id=#{params[:task_id]}&owner=#{params[:owner]}&#{Rails.cache.fetch(['/tickets/resolution', params[:task_id]])[:bpm_input_variables].map{|e| e[:variable_id]+'='+e[:value]}.join('&')}", error: 'There are some problem with BPM. Please re-try'
-
+      # redirect_to "/tickets/resolution?process_id=#{params[:process_id]}&task_id=#{params[:task_id]}&owner=#{params[:owner]}&#{Rails.cache.fetch(['/tickets/resolution', params[:task_id]])[:bpm_input_variables].map{|e| e[:variable_id]+'='+e[:value]}.join('&')}", error: 'There are some problem with BPM. Please re-try'
+      redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], 'There are some problem with BPM. Please re-try'
     end
+
+    redirect_to redirect_response[:url], redirect_response[:flash_message]
+
   end
 
   def update_resolved_job
