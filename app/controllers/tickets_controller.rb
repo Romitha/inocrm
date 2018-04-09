@@ -4451,7 +4451,7 @@ class TicketsController < ApplicationController
         @flash_message = "ticket is not updated. Start Action already done."
       end
 
-      redirect_to redirect_response[:url], notice: @flash_message
+      redirect_to redirect_response[:url], notice: (@flash_message + redirect_response[:flash_message].to_s)
 
     else
       redirect_to todos_url, error: "ticket is not updated. BPM Error."
