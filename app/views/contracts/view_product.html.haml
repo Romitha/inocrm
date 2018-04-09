@@ -28,7 +28,7 @@
       - if !params[:serial_product]
         %hr
         %dt Sla Time:
-        %dd= contract_product.sla_time.try(:description)
+        %dd= product.sla_time.try(:description)
       - if !params[:view_serial_product] && !params[:serial_product]
         %hr
         %dt Installed Location:
