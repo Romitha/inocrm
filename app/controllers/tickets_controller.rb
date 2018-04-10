@@ -4944,7 +4944,9 @@ class TicketsController < ApplicationController
     else
       flash[:error] = "BPM Error."
     end
-    redirect_to @ticket
+    # redirect_to @ticket
+    redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
+    redirect_to redirect_response[:url]
   end
 
   def update_hp_case_id
