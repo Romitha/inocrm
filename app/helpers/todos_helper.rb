@@ -120,7 +120,7 @@ module TodosHelper
     end    
   end
 
-  def redirect_to_resolution_page process_id, owner_id, *args
+  def redirect_to_resolution_page process_id, owner_id, current_user_id, *args
     args = args.extract_options!
     process_instance_id = process_id
     @todo_list_for_user = []
@@ -128,7 +128,7 @@ module TodosHelper
     @bpm_input_variables = []
 
     ["InProgress", "Reserved", "Ready"].each do |status|
-      @todo_list_for_user << send_request_process_data(task_list: true, status: status, potential_owner: owner_id, process_instance_id: process_instance_id, query: {})
+      @todo_list_for_user << send_request_process_data(task_list: true, status: status, potential_owner: current_user_id, process_instance_id: process_instance_id, query: {})
     end
 
     @task_content_for_user = @todo_list_for_user.map { |list| list[:content] and list[:content]["task_summary"] }.compact.flatten
@@ -273,7 +273,7 @@ module TodosHelper
 
         compulsory_query = {status: options[:status]}
         
-        compulsory_query.merge!(processInstanceId: options[:process_instance_id]) if options[:process_instance_id]
+        compulsory_query.merge!(processInstanceId: options[:process_instance_id]) if options[:process_instance_id] # processInstanceId
         compulsory_query.merge!(potentialOwner: options[:potential_owner]) if options[:potential_owner]
         compulsory_query.merge!(options[:query]) if options[:query]
 
