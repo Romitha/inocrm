@@ -91,12 +91,15 @@ class Product < ActiveRecord::Base
   def owner_customer_name
     owner_customer.try(:name)
   end
+
   def owner_customer_id
     owner_customer.try(:id)
   end
+
   def location_address_full
     location_address.try(:full_address)
   end
+
   mount_uploader :pop_doc_url, PopDocUrlUploader
 
   has_many :ticket_product_serials, foreign_key: :product_serial_id

@@ -1,8 +1,31 @@
 - if @product.persisted?
-  $("#product_load").html("#{j render 'tickets/form', product: @product, ticket: @ticket, customer: @customer}");
-  $(".ticket_sla_time .sla_time").html("#{@ticket.sla_time.try(:sla_time)} Hr(s)");
+  - if @product.ticket_contracts.any? and params[:from] == "serial_input"
 
-  Tickets.product_update();
+    - content_for :content_for do
+      %table.table
+        %thead
+          %tr
+            %th Option
+            %th Action
+        %tbody
+          - @product.ticket_contracts.each do |c|
+            %tr
+              %td= c.contract_no
+              %td= link_to "Select", find_by_serial_tickets_path(serial_search: @product.serial_no, contract_id: c.id), method: :post, remote: true
+          %tr
+            %td No Contract
+            %td= link_to "Select", find_by_serial_tickets_path(serial_search: @product.serial_no), method: :post, remote: true
+
+    $("#ticket_initiate_options_render").modal({backdrop: "static"});
+    $("#ticket_initiate_options_render .modal-body").html("#{j content_for :content_for}");
+
+  - else
+    $("#ticket_initiate_options_render").modal('hide');
+    $("#product_load").html("#{j render 'tickets/form', product: @product, ticket: @ticket, customer: @customer}");
+    $(".ticket_sla_time .sla_time").html("#{@ticket.sla_time.try(:sla_time)} Hr(s)");
+
+    Tickets.product_update();
+
 - else
   - if @product_brands.to_a.any?
     - if @product_categories.to_a.any?

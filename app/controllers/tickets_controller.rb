@@ -994,10 +994,15 @@ class TicketsController < ApplicationController
           else
             @ticket.errors.clear
             Rails.cache.write([:new_ticket, request.remote_ip.to_s, @ticket_time_now], @ticket)
-            # puts "logged at saved"
           end
 
-          format.json {render json: @ticket.errors[:logged_at].join}
+          format.json {render json: @ticket}
+
+        elsif params[:ticket][:sla_id].present?
+          @ticket.errors.clear
+          Rails.cache.write([:new_ticket, request.remote_ip.to_s, @ticket_time_now], @ticket)
+
+          format.json {render json: @ticket}
 
         else
           format.html {redirect_to @ticket, error: "Unable to update ticket. Please validate your inputs."}
@@ -2071,13 +2076,19 @@ class TicketsController < ApplicationController
 
         TicketSparePartManufacture.where(id: params[:manufacture_part]).each do |ticket_spare_part_manufacture|
 
-          ticket_spare_part_manufacture.update(collected_manufacture: true, collect_pending_manufacture: false)
-          ticket_spare_part_manufacture.ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("CLT").id)
-          ticket_spare_part_manufacture.ticket_spare_part.ticket_spare_part_status_actions.create(status_id: ticket_spare_part_manufacture.ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
+          if ticket_spare_part_manufacture.part_terminated
+            ticket_spare_part_manufacture.update(collected_manufacture: false, collect_pending_manufacture: false)
+          else
 
-          user_ticket_action = ticket_spare_part_manufacture.ticket_spare_part.ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(36).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: ticket_spare_part_manufacture.ticket_spare_part.ticket.re_open_count)
-          user_ticket_action.build_request_spare_part(ticket_spare_part_id: ticket_spare_part_manufacture.ticket_spare_part.id)
-          user_ticket_action.save
+            ticket_spare_part_manufacture.update(collected_manufacture: true, collect_pending_manufacture: false)
+            ticket_spare_part_manufacture.ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("CLT").id)
+            ticket_spare_part_manufacture.ticket_spare_part.ticket_spare_part_status_actions.create(status_id: ticket_spare_part_manufacture.ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
+
+            user_ticket_action = ticket_spare_part_manufacture.ticket_spare_part.ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(36).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: ticket_spare_part_manufacture.ticket_spare_part.ticket.re_open_count)
+            user_ticket_action.build_request_spare_part(ticket_spare_part_id: ticket_spare_part_manufacture.ticket_spare_part.id)
+            user_ticket_action.save
+
+          end
 
           ticket_id = ticket_spare_part_manufacture.ticket_spare_part.ticket.id
           ticket_spare_part_id = ticket_spare_part_manufacture.ticket_spare_part.id
@@ -2089,7 +2100,6 @@ class TicketsController < ApplicationController
             view_context.ticket_bpm_headers process_id, ticket_id, ticket_spare_part_id
             Rails.cache.delete([:workflow_header, process_id])
           end
-
         end
         flash[:notice] = "Successfully updated."
       end
