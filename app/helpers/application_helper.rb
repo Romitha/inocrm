@@ -21,6 +21,8 @@ module ApplicationHelper
     # "FAX=#{ticket.customer.contact_type_values.select{|c| c.contact_type.name == "Fax"}.first.try(:value)}",
     # "EMAIL=#{ticket.customer.contact_type_values.select{|c| c.contact_type.email}.first.try(:value)}",
 
+    # "FAX=#{ticket.customer.contact_type_values.select{|c| c.contact_type.code == "FX"}.first.try(:value)}",
+
     [
       "DUPLICATE=#{ticket.ticket_print_count > 0 ? 'D' : ''}",
       "DATETIME=#{ticket.created_at.strftime(INOCRM_CONFIG['long_date_format']+' '+INOCRM_CONFIG['time_format'])}",
@@ -31,7 +33,6 @@ module ApplicationHelper
 
       "TELPHONE=#{ticket.contact_person1.contact_person_contact_types.find_by_contact_type_id(ContactType.find_by_fixedline(true).id).try(:value)}",
       "MOBILE=#{ticket.contact_person1.contact_person_contact_types.find_by_contact_type_id(ContactType.find_by_mobile(true).id).try(:value)}",
-      "FAX=#{ticket.customer.contact_type_values.select{|c| c.contact_type.code == "FX"}.first.try(:value)}",
       "EMAIL=#{ticket.contact_person1.contact_person_contact_types.find_by_contact_type_id(ContactType.find_by_email(true).id).try(:value)}",
 
       "PRODUCT_BRAND=#{ticket.products.first.product_brand.name}",
